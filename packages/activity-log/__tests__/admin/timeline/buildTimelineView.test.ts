@@ -166,6 +166,47 @@ describe("buildTimelineView", () => {
             expect(view.revisions[0]!.label).toBe("Revision 2");
         });
 
+        it("says which revision is live, not only which one is being read", () => {
+            // The point of the label. A reader on a draft needs to see that an older revision is
+            // the published one — which is exactly the case where the revision being viewed is not
+            // the revision that is live.
+            const view = buildTimelineView({
+                records: [record({ revision: "abc#0003" }), record({ revision: "abc#0001" })],
+                filters: {},
+                hasMore: false,
+                currentRevision: "abc#0003",
+                currentStatus: "draft",
+                revisionStatuses: { "abc#0003": "draft", "abc#0001": "published" }
+            });
+
+            // Looked up rather than indexed: which revision carries which status is the point
+            // here, and the order the two arrive in has its own test.
+            const optionStatus = (revision: string) =>
+                view.revisions.find(option => option.revision === revision)?.status;
+            const groupStatus = (revision: string) =>
+                view.groups.find(group => group.revision === revision)?.status;
+
+            expect(optionStatus("abc#0003")).toBe("draft");
+            expect(optionStatus("abc#0001")).toBe("published");
+            expect(groupStatus("abc#0003")).toBe("draft");
+            expect(groupStatus("abc#0001")).toBe("published");
+        });
+
+        it("labels the revision on screen before the revision list arrives", () => {
+            // The list loads asynchronously and the form knows the viewed revision's status at
+            // once. Without the fallback the label would appear a moment after the rows do.
+            const view = buildTimelineView({
+                records: [record({ revision: "abc#0003" })],
+                filters: {},
+                hasMore: false,
+                currentRevision: "abc#0003",
+                currentStatus: "published",
+                revisionStatuses: {}
+            });
+
+            expect(view.revisions[0]!.status).toBe("published");
+        });
+
         it("carries the publishing status only for the revision whose status is known", () => {
             // Activity records say which revision a change landed on and nothing about how it is
             // published. Only the form knows, and only about the one it is showing — so anything

@@ -28,9 +28,10 @@ export interface TimelineViewGroup extends TimelineGroup {
     /**
      * The revision's publishing status, when it is known.
      *
-     * Only ever set for the current revision, and only because the entry form knows it. Per
-     * revision status is not part of the activity data, and reconstructing it from records would
-     * be a guess — a revision published before the feature existed has no publish record at all.
+     * Not part of the activity data and never reconstructed from it — a revision published before
+     * this feature existed has no publish record at all, so inferring one would be a guess. It
+     * comes from the entry form, which has already loaded the revision list for its own revision
+     * selector, so knowing it costs nothing.
      */
     status: string | null;
 }
@@ -53,11 +54,11 @@ export interface RevisionOption {
     revision: string;
     label: string;
     /**
-     * The revision's publishing status, on the one revision whose status is known.
+     * The revision's publishing status, where the caller knows it.
      *
-     * Null everywhere else, and that is a property of the data rather than of this function: the
-     * activity records say which revision a change landed on and nothing about how that revision
-     * is published. Only the entry form knows, and only about the one it is showing.
+     * Null when it does not — while the revision list is still loading, or for a revision that has
+     * activity but no longer exists. The activity records themselves say which revision a change
+     * landed on and nothing about how that revision is published.
      */
     status: string | null;
     /** How many rows this revision contributes, so a reader can see where the history is. */
@@ -93,6 +94,15 @@ export const buildTimelineView = (params: {
     /** The current revision's publishing status, if the caller knows it. */
     currentStatus?: string | null;
     /**
+     * Publishing status per revision id, so a reader can see which revision is live without
+     * having to be looking at it.
+     *
+     * The entry form has already loaded this for its own revision selector, so it is passed in
+     * rather than fetched — the timeline adds no query of its own for it. `currentStatus` stays
+     * as the fallback for the revision on screen, which is known before this list arrives.
+     */
+    revisionStatuses?: Record<string, string>;
+    /**
      * Records to build the filter options from, when they differ from the ones on screen.
      *
      * Filtering happens on the server, so once a filter is applied `records` holds only what
@@ -107,7 +117,7 @@ export const buildTimelineView = (params: {
         ...group,
         described: describeGroup(group),
         isCurrent: group.revision === params.currentRevision,
-        status: group.revision === params.currentRevision ? (params.currentStatus ?? null) : null
+        status: statusOf(group.revision, params)
     }));
 
     return {
@@ -165,9 +175,38 @@ const actorOptions = (records: TimelineRecord[]): ActorOption[] => {
     );
 };
 
+/**
+ * What a revision's publishing status is, from the two things that know.
+ *
+ * The revision list is the general answer and covers every revision. `currentStatus` is the
+ * fallback, and it matters: the form knows the status of the revision it is showing immediately,
+ * while the list arrives asynchronously, so without it the revision on screen would flicker from
+ * unlabelled to labelled on load.
+ */
+const statusOf = (
+    revision: string,
+    params: {
+        currentRevision?: string;
+        currentStatus?: string | null;
+        revisionStatuses?: Record<string, string>;
+    }
+): string | null => {
+    const known = params.revisionStatuses?.[revision];
+
+    if (known) {
+        return known;
+    }
+
+    return revision === params.currentRevision ? (params.currentStatus ?? null) : null;
+};
+
 const revisionOptions = (
     records: TimelineRecord[],
-    params: { currentRevision?: string; currentStatus?: string | null }
+    params: {
+        currentRevision?: string;
+        currentStatus?: string | null;
+        revisionStatuses?: Record<string, string>;
+    }
 ): RevisionOption[] => {
     const byRevision = new Map<string, RevisionOption>();
 
@@ -182,8 +221,7 @@ const revisionOptions = (
         byRevision.set(record.revision, {
             revision: record.revision,
             label: revisionLabel(record.revision),
-            status:
-                record.revision === params.currentRevision ? (params.currentStatus ?? null) : null,
+            status: statusOf(record.revision, params),
             rows: 1
         });
     }

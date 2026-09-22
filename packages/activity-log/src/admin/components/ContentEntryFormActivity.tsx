@@ -11,6 +11,7 @@ import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
+import { RevisionsListFeature } from "@webiny/app-headless-cms/presentation/contentEntries/revisionsList/feature.js";
 import { ActivityLogAdminFeature } from "~/admin/feature.js";
 import { useActivityTimeline } from "~/admin/hooks/useActivityTimeline.js";
 import { writeSignature } from "~/admin/timeline/writeSignature.js";
@@ -35,7 +36,29 @@ export const ContentEntryFormActivity = ContentEntryFormContent.createDecorator(
     ) {
         const presenter = useContentEntryFormPresenter();
         const { panel } = useFeature(ActivityLogAdminFeature);
+        const { presenter: revisions } = useFeature(RevisionsListFeature);
         const { entry, model, isNewEntry } = presenter.vm;
+
+        /*
+          Which revision is published, and which are drafts.
+
+          Read from the form's own revision list rather than fetched: the revision selector in the
+          header has already loaded it, and it is a singleton, so the timeline gets per-revision
+          status without adding a query. Without it the panel could only label the revision being
+          viewed — a reader on a draft could not see which revision was live, which is the one
+          thing the label is for.
+        */
+        const revisionStatuses = React.useMemo(() => {
+            const statuses: Record<string, string> = {};
+
+            for (const revision of revisions.vm.revisions) {
+                if (revision.meta?.status) {
+                    statuses[revision.id] = revision.meta.status;
+                }
+            }
+
+            return statuses;
+        }, [revisions.vm.revisions]);
 
         if (isNewEntry || !entry?.entryId || !panel.vm.open) {
             return <Original {...props} />;
@@ -57,6 +80,7 @@ export const ContentEntryFormActivity = ContentEntryFormContent.createDecorator(
                         modelId={model.modelId}
                         revision={entry.id}
                         status={entry.meta?.status ?? null}
+                        revisionStatuses={revisionStatuses}
                         writeToken={writeSignature(entry)}
                         onClose={() => panel.hide()}
                     />
@@ -71,6 +95,7 @@ interface ActivityPanelProps {
     modelId: string;
     revision: string;
     status: string | null;
+    revisionStatuses: Record<string, string>;
     writeToken: string;
     onClose(): void;
 }
@@ -87,6 +112,7 @@ const ActivityPanel = ({
     modelId,
     revision,
     status,
+    revisionStatuses,
     writeToken,
     onClose
 }: ActivityPanelProps) => {
@@ -96,7 +122,8 @@ const ActivityPanel = ({
         modelId,
         writeToken,
         currentRevision: revision,
-        currentStatus: status
+        currentStatus: status,
+        revisionStatuses
     });
 
     /**

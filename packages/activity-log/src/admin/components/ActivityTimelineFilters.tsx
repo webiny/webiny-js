@@ -144,7 +144,12 @@ const FilterDropdown = ({
                                 <span
                                     className={cn(
                                         TYPE.meta,
-                                        "shrink-0 rounded-xs bg-neutral-light px-[5px] text-neutral-strong"
+                                        "shrink-0 rounded-xs px-[5px]",
+                                        // Live is the one status worth colouring, here for the
+                                        // same reason as in the revision header.
+                                        option.tag === "published"
+                                            ? "bg-success-subtle text-neutral-primary"
+                                            : "bg-neutral-light text-neutral-strong"
                                     )}
                                 >
                                     {option.tag}

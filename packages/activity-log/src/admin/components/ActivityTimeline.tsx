@@ -61,6 +61,22 @@ import { ActivityTimelineFilters } from "./ActivityTimelineFilters.js";
  * requirement in the design, since one revision routinely holds many saves by several people.
  */
 
+/**
+ * Which revision is live, told apart from which revision is being read.
+ *
+ * Only `published` is coloured. The CMS marks the published revision the same way — an accent icon
+ * and "This revision is currently published!" — because it is the one status with a consequence
+ * outside the editor: that revision is what the public sees. A draft is the default state of a
+ * revision and reads as one.
+ *
+ * Green rather than the brand accent, which the "Current" tag beside it already uses. The two
+ * answer different questions — which revision is live, and which one you are looking at — and are
+ * routinely not the same revision.
+ */
+const STATUS_TAG_VARIANT: Record<string, "success-light" | "neutral-base-outline"> = {
+    published: "success-light"
+};
+
 const MACHINE_ICONS: Record<MachineIcon, React.ReactElement> = {
     key: <KeyIcon />,
     task: <ScheduleIcon />,
@@ -558,7 +574,12 @@ const RevisionGroup = ({ group }: { group: TimelineViewGroup }) => (
             <Text size={"md"} className={"font-semibold"}>
                 {group.described.label}
             </Text>
-            {group.status ? <Tag variant={"neutral-base-outline"} content={group.status} /> : null}
+            {group.status ? (
+                <Tag
+                    variant={STATUS_TAG_VARIANT[group.status] ?? "neutral-base-outline"}
+                    content={group.status}
+                />
+            ) : null}
             {group.isCurrent ? <Tag variant={"accent-light"} content={"Current"} /> : null}
             <Text size={"sm"} className={"ml-auto whitespace-nowrap text-neutral-muted"}>
                 {group.described.meta}

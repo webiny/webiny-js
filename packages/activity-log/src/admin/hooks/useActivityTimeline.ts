@@ -61,6 +61,8 @@ export interface UseActivityTimelineParams {
     currentRevision?: string;
     /** The current revision's publishing status, which only the form knows. */
     currentStatus?: string | null;
+    /** Publishing status per revision id, from the form's own revision list. */
+    revisionStatuses?: Record<string, string>;
 }
 
 export interface UseActivityTimelineResult {
@@ -369,9 +371,17 @@ export const useActivityTimeline = (
                 hasMore,
                 currentRevision: params.currentRevision,
                 currentStatus: params.currentStatus,
+                revisionStatuses: params.revisionStatuses,
                 catalogRecords: catalogRecords.current
             }),
-        [records, filters, hasMore, params.currentRevision, params.currentStatus]
+        [
+            records,
+            filters,
+            hasMore,
+            params.currentRevision,
+            params.currentStatus,
+            params.revisionStatuses
+        ]
     );
 
     return {
