@@ -2,6 +2,9 @@ import { makeAutoObservable } from "mobx";
 import { ActionRecorder } from "../../recording/abstractions.js";
 import { collectEnvironment } from "../../capture/collectEnvironment.js";
 import { SubmitBugReportGateway } from "../../gateway/abstractions.js";
+import { BuildParams } from "@webiny/app-admin/features/buildParams/abstractions.js";
+import { readTargetRepository } from "../../capture/readTargetRepository.js";
+import { REPOSITORY_PARAM } from "../../../shared/repository.js";
 import { ReportBugPresenter as Abstraction } from "./abstractions.js";
 import type { IReportedEnvironment } from "../../../shared/types.js";
 import type { IReportedScreenshot } from "../../../shared/types.js";
@@ -48,12 +51,17 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
     constructor(
         private recorder: ActionRecorder.Interface,
-        private gateway: SubmitBugReportGateway.Interface
+        private gateway: SubmitBugReportGateway.Interface,
+        private buildParams: BuildParams.Interface | undefined
     ) {
         // `controller` is machinery, not state anything renders, so it stays out of the map.
-        makeAutoObservable<ReportBugPresenterImpl, "recorder" | "gateway" | "controller">(this, {
+        makeAutoObservable<
+            ReportBugPresenterImpl,
+            "recorder" | "gateway" | "buildParams" | "controller"
+        >(this, {
             recorder: false,
             gateway: false,
+            buildParams: false,
             controller: false
         });
     }
@@ -64,6 +72,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             description: this.description,
             screenshots: this.screenshots,
             recordedEventCount: this.events.length,
+            targetRepository: this.readTargetRepository(),
             busy: this.status !== null,
             statusLabel: this.status,
             error: this.error,
@@ -204,6 +213,19 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.isOpen = false;
     }
 
+    /*
+     * Optional because `BuildParams` is only registered by the AdminBuildParam codegen, which runs
+     * only in projects that emit at least one admin build param. The bug reporter ships in every
+     * project, including ones that emit none, so requiring it here would break the dialog exactly
+     * where it is least configured. Absent means nothing was configured, which is the default.
+     */
+    private readTargetRepository(): string {
+        if (!this.buildParams) {
+            return readTargetRepository(null);
+        }
+        return readTargetRepository(this.buildParams.get(REPOSITORY_PARAM));
+    }
+
     private setStatus(status: string): void {
         this.status = status;
     }
@@ -260,5 +282,5 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
 export const ReportBugPresenter = Abstraction.createImplementation({
     implementation: ReportBugPresenterImpl,
-    dependencies: [ActionRecorder, SubmitBugReportGateway]
+    dependencies: [ActionRecorder, SubmitBugReportGateway, [BuildParams, { optional: true }]]
 });

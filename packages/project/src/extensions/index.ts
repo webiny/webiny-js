@@ -6,6 +6,7 @@ import { Telemetry } from "./Telemetry.js";
 import { EnvVar } from "./EnvVar.js";
 import { DatabaseSetup } from "./DatabaseSetup.js";
 import { FeatureFlags } from "./FeatureFlags.js";
+import { BugReporter } from "./BugReporter.js";
 import { BuildParam } from "./ApiBuildParam.js";
 import { AdminBuildParam } from "./AdminBuildParam.js";
 import { AdminApiUrl } from "./AdminApiUrl.js";
@@ -57,6 +58,7 @@ export { ProjectImplementation };
 export { ExtensionDefinitions };
 export { EnvVar };
 export { FeatureFlags };
+export { BugReporter };
 export { DatabaseSetup };
 export { BuildParam };
 export { AdminBuildParam };
@@ -106,6 +108,7 @@ export const definitions = [
     ExtensionDefinitions.def,
     EnvVar.def,
     FeatureFlags.def,
+    BugReporter.def,
 
     // Hooks.
     AdminAfterBuild.def,

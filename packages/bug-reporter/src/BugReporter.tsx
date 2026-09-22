@@ -1,7 +1,6 @@
 import React from "react";
 import { Admin } from "@webiny/project-aws";
 import { Api } from "@webiny/project-aws";
-import { BugReporterGitHub } from "./GitHub.js";
 
 /**
  * Report a bug by talking to the app.
@@ -11,15 +10,15 @@ import { BugReporterGitHub } from "./GitHub.js";
  * needs no credentials at all. That is why this is composed into `DefaultExtensions` — the
  * zero-config path is a working feature rather than a disabled one.
  *
- * To have the API file issues itself, add `<BugReporter.GitHub token={...} />` to the project's
- * own `webiny.config.tsx`. Kept separate so this component stays configuration-free and the
- * project decides where its secret comes from, rather than this package inventing env var names
- * and reading them behind the project's back.
+ * To have the API file issues itself, add `<Project.BugReporter token={...} repository={...} />` to
+ * the project's own `webiny.config.tsx`. That extension lives in `@webiny/project` rather than here,
+ * because this package depends on `@webiny/project-aws` and the Project namespace reaching back into
+ * it would close a cycle. It only emits build params, which the API reads.
  *
- * Drafting is not here either. The base files the reporter's own words; `extensions/bugReportAi`
- * decorates `IssueDrafter` to add a title and steps to reproduce.
+ * Drafting is not here either. The base files the reporter's own words; the `bug-report-ai`
+ * extension decorates `IssueDrafter` to add a title and steps to reproduce.
  */
-const BugReporterBase = () => {
+export const BugReporter = () => {
     return (
         <>
             <Api.Extension src={import.meta.dirname + "/api/Extension.js"} />
@@ -27,7 +26,3 @@ const BugReporterBase = () => {
         </>
     );
 };
-
-export const BugReporter = Object.assign(BugReporterBase, {
-    GitHub: BugReporterGitHub
-});

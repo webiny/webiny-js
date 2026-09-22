@@ -1,10 +1,14 @@
 import type { NormalJob } from "github-actions-wac";
-import { createCheckoutPrSteps, createSetupVerdaccioSteps } from "../steps/index.js";
+import { createCheckoutPrSteps } from "../steps/index.js";
+import { createConfigureBugReporterSteps } from "../steps/index.js";
+import { createSetupVerdaccioSteps } from "../steps/index.js";
+import { BUG_REPORTER_ENV } from "../steps/index.js";
 import { ACTION } from "../utils/index.js";
 import { createJob } from "../jobs/index.js";
 import {
     DIR_STANDALONE_PROJECT,
     DIR_WEBINY_JS,
+    PATH_STANDALONE_PROJECT,
     STANDALONE_ADMIN_PORT,
     STANDALONE_ADMIN_URL,
     STANDALONE_API_PORT,
@@ -146,6 +150,10 @@ export const createStandaloneProjectParts = (
                 name: "Create a new standalone Webiny project",
                 run: `npx create-webiny-project@local-npm ${DIR_STANDALONE_PROJECT} --tag local-npm --no-interactive --hosting-type standalone --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"storageOps":"${storageOps}"}'`
             },
+            ...createConfigureBugReporterSteps({
+                workingDirectory,
+                projectPath: PATH_STANDALONE_PROJECT
+            }),
             {
                 name: "Print CLI version",
                 "working-directory": DIR_STANDALONE_PROJECT,
@@ -163,7 +171,12 @@ export const createStandaloneProjectParts = (
                 // the runtime env on "Start API").
                 env: {
                     WEBINY_HOSTING_TYPE: "standalone",
-                    WEBINY_API_URL: STANDALONE_API_URL
+                    WEBINY_API_URL: STANDALONE_API_URL,
+                    /*
+                     * `<Project.BugReporter>` reads these while the API bundle is built, so they
+                     * belong on this step rather than at runtime on "Start API".
+                     */
+                    ...BUG_REPORTER_ENV
                 },
                 run: "yarn webiny build api && yarn webiny build admin"
             },

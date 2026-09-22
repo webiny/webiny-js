@@ -15,6 +15,8 @@ export const PATH_TEST_PROJECT = `\${{ github.workspace }}/${DIR_TEST_PROJECT}`;
 // The standalone test project. Kept separate from the AWS one so both can
 // exist in the same run without colliding.
 export const DIR_STANDALONE_PROJECT = "new-webiny-project-standalone";
+// Absolute, for the same reason as PATH_TEST_PROJECT above.
+export const PATH_STANDALONE_PROJECT = `\${{ github.workspace }}/${DIR_STANDALONE_PROJECT}`;
 export const STANDALONE_BUILD_DIR = `${DIR_STANDALONE_PROJECT}/.webiny/workspace/apps`;
 
 // Ports match the standalone template defaults (WEBINY_API_PORT / WEBINY_ADMIN_PORT), which is also
