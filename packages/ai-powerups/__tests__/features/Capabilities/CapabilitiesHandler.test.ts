@@ -64,18 +64,25 @@ describe("CapabilitiesHandler", () => {
         expect(result.success).toBe(false);
     });
 
-    it("drops an entry where nothing was decided", async () => {
+    /*
+     * The form posts every registered capability on every save, and all of them are kept. A blob
+     * that only lists the capabilities someone happened to customise reads as though the rest are
+     * missing rather than simply on.
+     */
+    it("stores an entry for every capability the form sent", async () => {
         const stored = await handler.mapToStorage(
             {
                 items: {
                     "cms.generateEntry": {
+                        enabled: true,
                         overrides: {
                             roleId: null,
                             connectionId: null,
-                            additionalInstructions: "   "
+                            additionalInstructions: "  "
                         }
                     },
                     "wb.generatePage": {
+                        enabled: true,
                         overrides: { additionalInstructions: "Keep it short." }
                     }
                 }
@@ -83,7 +90,13 @@ describe("CapabilitiesHandler", () => {
             null
         );
 
-        expect(Object.keys((stored as any).items)).toEqual(["wb.generatePage"]);
+        expect((stored as any).items).toEqual({
+            "cms.generateEntry": { enabled: true, overrides: {} },
+            "wb.generatePage": {
+                enabled: true,
+                overrides: { additionalInstructions: "Keep it short." }
+            }
+        });
     });
 
     /*
@@ -95,7 +108,7 @@ describe("CapabilitiesHandler", () => {
      * `entry.enabled !== false` — reads that as blank, drops the row, and the capability comes back
      * enabled on the next load. The switch appears to do nothing at all.
      */
-    it("keeps an entry whose only content is being switched off", async () => {
+    it("stores a capability that was switched off", async () => {
         const stored = await handler.mapToStorage(
             {
                 items: {
@@ -119,35 +132,16 @@ describe("CapabilitiesHandler", () => {
         });
     });
 
-    /*
-     * A licence that grants a capability enables it, with nothing written down. Storing `true`
-     * would be storing the default a second time, and would then disagree with it the day the
-     * default moves.
-     */
-    it("does not persist an entry that only says it is enabled", async () => {
+    /* An untouched switch can arrive as `null`, and that means on, same as absence. */
+    it("settles a null switch to enabled rather than storing the null", async () => {
         const stored = await handler.mapToStorage(
-            { items: { "cms.generateEntry": { enabled: true, overrides: {} } } },
-            null
-        );
-
-        expect((stored as any).items).toEqual({});
-    });
-
-    it("drops `enabled: true` from an entry that has real overrides", async () => {
-        const stored = await handler.mapToStorage(
-            {
-                items: {
-                    "cms.generateEntry": {
-                        enabled: true,
-                        overrides: { additionalInstructions: "Be brief." }
-                    }
-                }
-            },
+            { items: { "cms.generateEntry": { enabled: null, overrides: {} } } },
             null
         );
 
         expect((stored as any).items["cms.generateEntry"]).toEqual({
-            overrides: { additionalInstructions: "Be brief." }
+            enabled: true,
+            overrides: {}
         });
     });
 
@@ -169,6 +163,7 @@ describe("CapabilitiesHandler", () => {
         );
 
         expect((stored as any).items["wb.generatePage"]).toEqual({
+            enabled: true,
             overrides: { additionalInstructions: "Keep it short." }
         });
     });
