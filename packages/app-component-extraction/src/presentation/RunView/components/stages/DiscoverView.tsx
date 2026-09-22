@@ -165,7 +165,7 @@ const UnresolvedList = ({ urls }: { urls: DiscoverUrlDto[] }) => (
             >
                 <Text
                     size="sm"
-                    className="w-56 flex-shrink-0 truncate font-mono text-neutral-strong"
+                    className="min-w-0 flex-shrink basis-[28rem] truncate font-mono text-neutral-strong"
                 >
                     {pathOf(url.url)}
                 </Text>
@@ -358,7 +358,7 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
                                             <Text
                                                 size="sm"
                                                 className={cn(
-                                                    "w-56 flex-shrink-0 truncate font-mono",
+                                                    "min-w-0 flex-shrink basis-[28rem] truncate font-mono",
                                                     !included && "text-neutral-strong line-through"
                                                 )}
                                             >
