@@ -73,8 +73,21 @@ declare module "~/api/types.js" {
 
 export type CapabilitiesSettings = IAiPowerUpsSettings["capabilities"];
 
+/**
+ * What `mapToStorage` writes, where `enabled` is required.
+ *
+ * Reading has to tolerate its absence, because an entry saved before this flag existed, or a
+ * capability registered since the last save, has no value for it. Writing never does: every entry
+ * the form posts is settled to a real boolean. Saying so here is what makes the compiler check the
+ * one place that writes the flag this feature is about.
+ */
+export interface PersistedAiCapabilityEntry {
+    enabled: boolean;
+    overrides: AiCapabilityOverride;
+}
+
 export interface PersistedCapabilities {
-    items?: AiCapabilityEntries;
+    items?: Partial<Record<string, PersistedAiCapabilityEntry>>;
 }
 
 /** Absent means enabled. Spelled out once so no call site has to get the comparison right. */
