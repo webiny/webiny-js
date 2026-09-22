@@ -28,7 +28,7 @@ export const RevisionsMenu = () => {
     const { vm } = useRevisionList(id);
     const { revisions, isLoading } = vm;
 
-    const currentRevision = revisions.find(r => r.id === id);
+    const currentRevision = revisions.find(item => item.revision.id === id)?.revision;
 
     const goToRevision = useCallback((id: string) => {
         // TODO: make this work without a full app reload
@@ -51,7 +51,7 @@ export const RevisionsMenu = () => {
                 />
             }
         >
-            {revisions.slice(0, 5).map(revision => (
+            {revisions.slice(0, 5).map(({ revision }) => (
                 <Item
                     key={revision.id}
                     className={"cursor-pointer"}

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Container } from "@webiny/di";
-import { WbPageStatus } from "~/constants.js";
+import { WbPageStatus, type WbStatus } from "~/constants.js";
 import { PageRevision, pageRevisionsCacheFactory } from "~/domain/PageRevision/index.js";
 import { GetPageRevisionsUseCase } from "~/features/pages/getPageRevisions/abstractions.js";
 import {
@@ -8,6 +8,7 @@ import {
     WbPageLoadingRepository,
     WbPageRevisionsLoadingRepository
 } from "~/features/pages/shared/abstractions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { RevisionListPresenter as PresenterAbstraction } from "./abstractions.js";
 import { RevisionListPresenter } from "./RevisionListPresenter.js";
 
@@ -41,6 +42,13 @@ describe("RevisionListPresenter", () => {
         isLoading: vi.fn().mockReturnValue(false)
     };
 
+    const permissions = {
+        canEdit: vi.fn().mockReturnValue(true),
+        canDelete: vi.fn().mockReturnValue(true),
+        canPublish: vi.fn().mockReturnValue(true),
+        canUnpublish: vi.fn().mockReturnValue(true)
+    };
+
     const createPresenter = () => {
         const container = new Container();
         container.registerInstance(PageRevisionsCache, revisionsCache);
@@ -52,6 +60,10 @@ describe("RevisionListPresenter", () => {
             WbPageLoadingRepository,
             pageLoadingRepository as unknown as WbPageLoadingRepository.Interface
         );
+        container.registerInstance(
+            WbPermissions,
+            permissions as unknown as WbPermissions.Interface
+        );
         container.registerInstance(GetPageRevisionsUseCase, getPageRevisions);
         container.register(RevisionListPresenter).inSingletonScope();
 
@@ -62,6 +74,10 @@ describe("RevisionListPresenter", () => {
         vi.clearAllMocks();
         loadingRepository.isLoading.mockReturnValue(false);
         pageLoadingRepository.isLoading.mockReturnValue(false);
+        permissions.canEdit.mockReturnValue(true);
+        permissions.canDelete.mockReturnValue(true);
+        permissions.canPublish.mockReturnValue(true);
+        permissions.canUnpublish.mockReturnValue(true);
         revisionsCache.clear();
     });
 
@@ -98,7 +114,7 @@ describe("RevisionListPresenter", () => {
 
         presenter.init({ entryId: "page-1" });
 
-        expect(presenter.vm.revisions.map(revision => revision.id)).toEqual([
+        expect(presenter.vm.revisions.map(item => item.revision.id)).toEqual([
             "page-1#0002",
             "page-1#0001"
         ]);
@@ -117,13 +133,28 @@ describe("RevisionListPresenter", () => {
     });
 
     it("should report a mutation in progress", () => {
-        pageLoadingRepository.isLoading.mockImplementation(action => action === "PUBLISH");
+        pageLoadingRepository.isLoading.mockImplementation(
+            action => action === "CREATE_REVISION_FROM"
+        );
         const presenter = createPresenter();
 
         presenter.init({ entryId: "page-1" });
 
         expect(presenter.vm.isMutating).toBeTrue();
     });
+
+    it.each(["PUBLISH", "UNPUBLISH", "DELETE"])(
+        "should not report a mutation for %s, which is confirmed through a dialog",
+        action => {
+            // Those dialogs show their own loader, so a second one on the drawer is just noise.
+            pageLoadingRepository.isLoading.mockImplementation(a => a === action);
+            const presenter = createPresenter();
+
+            presenter.init({ entryId: "page-1" });
+
+            expect(presenter.vm.isMutating).toBeFalse();
+        }
+    );
 
     it("should not report a mutation for unrelated page actions", () => {
         // The "WbPage" namespace is shared with the pages table.
@@ -146,13 +177,86 @@ describe("RevisionListPresenter", () => {
 
         presenter.init({ entryId: "page-1" });
 
-        expect(presenter.vm.revisions[0].status).toEqual(WbPageStatus.Draft);
+        expect(presenter.vm.revisions[0].revision.status).toEqual(WbPageStatus.Draft);
 
         revisionsCache.updateItems(revision =>
             revision.id === "page-1#0001" ? revision.withStatus(WbPageStatus.Unpublished) : revision
         );
 
-        expect(presenter.vm.revisions[0].status).toEqual(WbPageStatus.Unpublished);
+        expect(presenter.vm.revisions[0].revision.status).toEqual(WbPageStatus.Unpublished);
         expect(getPageRevisions.execute).toHaveBeenCalledTimes(1);
+    });
+
+    describe("capabilities", () => {
+        const initWith = (status: WbStatus, locked = false) => {
+            const revision = PageRevision.create({
+                id: "page-1#0001",
+                entryId: "page-1",
+                version: 1,
+                status,
+                locked,
+                savedOn: "2026-09-20T00:00:00.000Z",
+                title: "Page 1",
+                createdBy: { id: "admin", displayName: "Admin", type: "admin" },
+                createdOn: "2026-09-20T00:00:00.000Z",
+                revisionDescription: undefined
+            });
+            revisionsCache.addItems([revision]);
+
+            const presenter = createPresenter();
+            presenter.init({ entryId: "page-1" });
+            return presenter.vm.revisions[0];
+        };
+
+        it("should allow publishing a draft, but not unpublishing it", () => {
+            const item = initWith(WbPageStatus.Draft);
+
+            expect(item.canPublish).toBeTrue();
+            expect(item.canUnpublish).toBeFalse();
+        });
+
+        it("should allow unpublishing a published revision, but not publishing it again", () => {
+            const item = initWith(WbPageStatus.Published);
+
+            expect(item.canPublish).toBeFalse();
+            expect(item.canUnpublish).toBeTrue();
+        });
+
+        it("should not allow editing a locked revision", () => {
+            const item = initWith(WbPageStatus.Unpublished, true);
+
+            expect(item.canEdit).toBeFalse();
+            // Creating a new revision from a locked one is still fine.
+            expect(item.canCreateFrom).toBeTrue();
+        });
+
+        it("should allow deleting a locked revision, matching the API", () => {
+            const item = initWith(WbPageStatus.Published, true);
+
+            expect(item.canDelete).toBeTrue();
+        });
+
+        it("should respect the permissions", () => {
+            permissions.canEdit.mockReturnValue(false);
+            permissions.canDelete.mockReturnValue(false);
+            permissions.canPublish.mockReturnValue(false);
+
+            const item = initWith(WbPageStatus.Draft);
+
+            expect(item.canCreateFrom).toBeFalse();
+            expect(item.canEdit).toBeFalse();
+            expect(item.canPublish).toBeFalse();
+            expect(item.canDelete).toBeFalse();
+        });
+
+        it("should check delete permission against the revision itself", () => {
+            initWith(WbPageStatus.Draft);
+
+            // Ownership is per revision, so the row must be passed to the permission check.
+            expect(permissions.canDelete).toHaveBeenCalledWith(
+                "page",
+                expect.objectContaining({ id: "page-1#0001" })
+            );
+        });
     });
 });
