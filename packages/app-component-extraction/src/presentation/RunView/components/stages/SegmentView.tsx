@@ -80,7 +80,7 @@ export const SegmentView = createReactiveComponent(function SegmentView({ presen
     return (
         <div className="flex h-full min-h-0">
             {/* Page selector */}
-            <div className="w-[200px] flex-shrink-0 border-r border-neutral-dimmed overflow-y-auto">
+            <div className="w-[260px] flex-shrink-0 border-r border-neutral-dimmed overflow-y-auto">
                 {artifact.pages.map(page => (
                     <div
                         key={page.url}
@@ -94,10 +94,13 @@ export const SegmentView = createReactiveComponent(function SegmentView({ presen
                             setFocused(null);
                         }}
                     >
-                        <Text size="sm" className="font-mono truncate">
+                        <Text size="sm" className="min-w-0 truncate font-mono">
                             {pathOf(page.url)}
                         </Text>
+                        {/* The count must not shrink: Tag clips its content, so a long path next to it
+                            squeezed the number down to a sliver rather than truncating the path. */}
                         <Tag
+                            className="flex-shrink-0"
                             variant={isOutlier(page) ? "warning" : "neutral-muted"}
                             content={String(page.sections.length)}
                         />
