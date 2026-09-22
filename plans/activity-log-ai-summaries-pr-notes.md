@@ -217,3 +217,36 @@ Every line under an actor's name now starts at that name's edge and the mark tra
 inline. Worth flagging for whoever reconciles the two: it is deliberate, it is the only such
 departure, and the alignment tests are written so that restoring the gutter fails loudly rather
 than silently re-indenting the panel.
+
+## One package, not three
+
+The feature shipped as `api-activity-log`, `app-activity-log` and `common-activity-log`, mirroring
+`audit-logs` — the closest sibling feature, and the reason that shape was reached for. It is the
+older convention. Webiny's `webiny-full-stack-architect` guidance says a full-stack feature is one
+package with `api/`, `admin/` and `shared/` directories, and states that this applies to core
+`packages/` as well as to `extensions/`.
+
+The repository agrees. Fifteen `api-X`/`app-X` pairs exist, all from 2023–2025. Twelve single
+packages with `src/api` + `src/admin` exist, and **every one of them was created in 2026** —
+tenant-manager, languages, ai-powerups, webhooks, background-tasks, remote-components. Checking
+every `api-*` package by creation date, ours was the only full-stack feature split that way this
+year; the other 2026 `api-*` packages are API-only or infra variants with no admin half.
+
+Consolidated to `@webiny/activity-log` while both PRs were still open, so nothing was ever
+published under the old names. Two consumers moved with it: `api-event-handler-core` to
+`@webiny/activity-log/api`, `app-serverless-cms` to `@webiny/activity-log/admin`.
+
+**The one thing that did not survive the merge cleanly.** `createTestConfig` returns a single
+vitest project per package, so a package gets one environment — and the two halves wanted
+different ones: node with storage-operations presets for the API suite, jsdom for the admin
+components. The package defaults to node, and the two admin suites that render carry a
+`// @vitest-environment jsdom` docblock. That is Vitest's supported per-file escape hatch and the
+documented replacement for `environmentMatchGlobs`, but nothing else in this repository uses it,
+so it is worth knowing it exists here. Verified before the move rather than after: the docblock was
+proven against the old package by flipping its config to node and watching only the undocblocked
+suite fail.
+
+**The root barrel deliberately exports only `shared/`.** `background-tasks` re-exports both halves
+from its root; doing the same here would let an API Lambda pull the admin timeline, and React with
+it, into its bundle by importing the package name alone. Both runtimes are reached through
+`@webiny/activity-log/api` and `@webiny/activity-log/admin`.

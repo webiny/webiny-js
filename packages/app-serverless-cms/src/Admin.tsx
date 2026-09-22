@@ -8,7 +8,7 @@ import { GraphQLPlayground } from "@webiny/app-graphql-playground";
 import { SdkPlayground } from "@webiny/app-sdk-playground";
 import { imagePlugin } from "@webiny/app/plugins/index.js";
 import { AuditLogs } from "@webiny/app-audit-logs";
-import { ActivityLog } from "@webiny/app-activity-log";
+import { ActivityLog } from "@webiny/activity-log/admin";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Extension as MailerSettings } from "@webiny/app-mailer";
 import { Websockets } from "@webiny/app-websockets";
