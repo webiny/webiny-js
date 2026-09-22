@@ -39,13 +39,13 @@ export interface AiCapabilityEntry {
     /**
      * Absent means enabled.
      *
-     * A licence that grants a capability turns it on immediately; nobody has to come here and opt
-     * in. The only thing worth recording is the decision to switch one *off*, so `false` is the
-     * only value that ever reaches storage. `true` is accepted on the way in and then dropped,
-     * because it says exactly what absence already says.
+     * A licence that grants a capability turns it on immediately; nobody opens settings to opt in.
+     * A save writes this explicitly either way, so a stored blob says plainly what the screen said,
+     * but absence still has to read as enabled: a capability registered since the last save has no
+     * entry at all.
      *
-     * Read it as `enabled !== false`, never as `!enabled`. The second is true for `undefined` as
-     * well, which silently disables every capability nobody has touched.
+     * Read it as `enabled !== false`, never as `!enabled`. The second is true for `undefined` too,
+     * which silently disables every capability nobody has saved yet.
      */
     enabled?: boolean;
     overrides: AiCapabilityOverride;
