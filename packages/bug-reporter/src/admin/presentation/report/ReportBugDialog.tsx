@@ -124,6 +124,12 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
                     {`Paste a screenshot to attach it. ${vm.recordedEventCount} recorded actions will be included.`}
                 </Text>
 
+                {/*
+                 * Named before the report is sent, not after. With no configuration this is our own
+                 * repository, and a reporter should not find that out by landing on it.
+                 */}
+                <Text size={"sm"}>{`Goes to ${vm.targetRepository} on GitHub.`}</Text>
+
                 {vm.statusLabel ? <Text size={"sm"}>{vm.statusLabel}</Text> : null}
             </div>
         </Dialog>

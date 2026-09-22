@@ -1,6 +1,7 @@
 import React from "react";
 import { z } from "zod";
 import { BuildParam } from "./ApiBuildParam.js";
+import { AdminBuildParam } from "./AdminBuildParam.js";
 import { defineExtension } from "~/defineExtension/index.js";
 
 /*
@@ -42,8 +43,16 @@ export const BugReporter = defineExtension({
         return (
             <>
                 {token ? <BuildParam paramName="BUG_REPORT_GITHUB_TOKEN" value={token} /> : null}
+                {/*
+                 * The repository goes to the admin app too, so the dialog can name where a report
+                 * is headed before the reporter sends it. The token never does: an admin build
+                 * param is serialized into the browser bundle.
+                 */}
                 {repository ? (
-                    <BuildParam paramName="BUG_REPORT_REPOSITORY" value={repository} />
+                    <>
+                        <BuildParam paramName="BUG_REPORT_REPOSITORY" value={repository} />
+                        <AdminBuildParam paramName="BUG_REPORT_REPOSITORY" value={repository} />
+                    </>
                 ) : null}
                 {labels ? <BuildParam paramName="BUG_REPORT_LABELS" value={labels} /> : null}
             </>

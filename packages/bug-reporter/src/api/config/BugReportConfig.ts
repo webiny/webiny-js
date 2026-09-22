@@ -1,13 +1,12 @@
 import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { BugReportConfig as Abstraction } from "./abstractions.js";
 import { parseRepository } from "../parseRepository.js";
+import { DEFAULT_REPOSITORY } from "../../shared/repository.js";
+import { REPOSITORY_PARAM } from "../../shared/repository.js";
 
 /* Set from webiny.config.tsx, which reads them from the environment at build time. */
 const TOKEN_PARAM = "BUG_REPORT_GITHUB_TOKEN";
-const REPOSITORY_PARAM = "BUG_REPORT_REPOSITORY";
 const LABELS_PARAM = "BUG_REPORT_LABELS";
-
-const DEFAULT_REPOSITORY = "webiny/webiny-js";
 
 /*
  * Always applied, on top of whatever BUG_REPORT_LABELS says, so these issues can be found and

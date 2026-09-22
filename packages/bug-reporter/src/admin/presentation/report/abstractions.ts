@@ -15,6 +15,8 @@ export interface IReportBugViewModel {
     /* Data URLs, ready to render, in the order they were pasted. */
     screenshots: string[];
     recordedEventCount: number;
+    /* "owner/name" the report is headed for, so the dialog can say so before it is sent. */
+    targetRepository: string;
     busy: boolean;
     statusLabel: string | null;
     error: string | null;
