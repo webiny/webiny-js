@@ -1,9 +1,47 @@
 import type { Box, CapturedNode } from "~/domain/artifacts.js";
 
+/**
+ * Why a child of a section was not taken as a boundary of its own.
+ *
+ * `too-short` and `too-narrow` are the child's own doing — it does not look like a section. The other
+ * two are the parent's: the child was section-shaped, and the parent was still kept whole.
+ */
+export type CandidateRejection =
+    | "too-short"
+    | "too-narrow"
+    | "parent-below-max-height"
+    | "too-few-siblings"
+    | "children-overlap";
+
+/**
+ * A child boundary the segmenter evaluated inside a section and did not take.
+ *
+ * Retained because a split correction should be a choice between boundaries the segmenter already
+ * computed, not a drawing exercise: the operator picks one of these, and the same list makes the
+ * choice reattachable on a later run.
+ */
+export interface SectionCandidate {
+    box: Box;
+    /** Position among the parent's considered children — the handle a split override keys on, so it
+     * survives a capture at a slightly different page height. */
+    index: number;
+    tag: string;
+    /** Why it was not taken. */
+    rejection: CandidateRejection;
+    /**
+     * Whether splitting here would produce two sections worth having. A boundary a few pixels from the
+     * section's top or bottom shaves off a sliver rather than dividing it, so both resulting parts must
+     * clear the same height floor that decides whether anything is a section at all.
+     */
+    offerable: boolean;
+}
+
 /** A detected section boundary before its crop is produced (Segment attaches `cropRef`). */
 export interface DetectedSection {
     box: Box;
     index: number;
+    /** The child boundaries considered inside this section and rejected (W11.1). */
+    candidates: SectionCandidate[];
 }
 
 export interface SegmentOptions {
@@ -85,6 +123,46 @@ const areVerticallyStacked = (children: CapturedNode[]): boolean => {
     return true;
 };
 
+/** A section as it leaves detection: the node it came from, plus the boundaries it declined to take. */
+interface CollectedSection {
+    node: CapturedNode;
+    candidates: SectionCandidate[];
+}
+
+/**
+ * The boundaries this section considered and did not take, with the reason for each.
+ *
+ * `parentRejection` is why the parent was kept whole, which is the reason that applies to every child
+ * that was section-shaped; a child that was not section-shaped carries its own reason instead.
+ */
+const rejectedCandidates = (
+    inner: CapturedNode,
+    options: SegmentOptions,
+    parentRejection: CandidateRejection
+): SectionCandidate[] =>
+    inner.children.map((child, index) => {
+        const tooNarrow = child.box.width < options.minWidthRatio * options.viewportWidth;
+        const tooShort = !(child.box.height >= options.minHeight || LANDMARK_TAGS.has(child.tag));
+        const rejection = tooNarrow ? "too-narrow" : tooShort ? "too-short" : parentRejection;
+
+        /*
+         * Both halves have to be worth having. A child whose top edge sits a few pixels below the
+         * section's own top divides off a sliver, not a block — measured on a real run, a boundary
+         * 24px into a 713px section was being offered as a split.
+         */
+        const above = child.box.y - inner.box.y;
+        const below = inner.box.y + inner.box.height - child.box.y;
+        const divides = above >= options.minHeight && below >= options.minHeight;
+
+        return {
+            box: child.box,
+            index,
+            tag: child.tag,
+            rejection,
+            offerable: !tooNarrow && !tooShort && divides
+        };
+    });
+
 /**
  * Resolve one candidate into section leaves. To decide whether the candidate is really a container of
  * sections, descend through single full-height wrappers (`<main><div class="container">…`) to reach where
@@ -92,26 +170,39 @@ const areVerticallyStacked = (children: CapturedNode[]): boolean => {
  * container. If that inner node is a tall vertical stack of several full-width children, the candidate is
  * a container: recurse into each child. Otherwise the candidate is itself one section, emitted with its
  * own (widest) box — so a plain section keeps its full-width box rather than collapsing to an inner column.
+ *
+ * When the candidate is kept whole, the children it declined to split at are retained with the reason,
+ * so a later correction chooses among boundaries the segmenter already computed.
  */
 const collectSections = (
     candidate: CapturedNode,
-    out: CapturedNode[],
+    out: CollectedSection[],
     options: SegmentOptions
 ): void => {
     const inner = findContentRoot(candidate);
     const children = inner.children.filter(child => isSectionCandidate(child, options));
-    const isContainer =
-        children.length >= options.minChildrenToSplit &&
-        inner.box.height > options.maxSectionHeight &&
-        areVerticallyStacked(children);
+    const stacked = areVerticallyStacked(children);
+    const enoughChildren = children.length >= options.minChildrenToSplit;
+    const tallEnough = inner.box.height > options.maxSectionHeight;
 
-    if (isContainer) {
+    if (enoughChildren && tallEnough && stacked) {
         for (const child of children) {
             collectSections(child, out, options);
         }
-    } else {
-        out.push(candidate);
+        return;
     }
+
+    // Which of the three conditions kept this one whole — the reason its children were not taken.
+    const parentRejection: CandidateRejection = !enoughChildren
+        ? "too-few-siblings"
+        : !tallEnough
+          ? "parent-below-max-height"
+          : "children-overlap";
+
+    out.push({
+        node: candidate,
+        candidates: rejectedCandidates(inner, options, parentRejection)
+    });
 };
 
 /**
@@ -123,11 +214,15 @@ const collectSections = (
  */
 export const detectSections = (root: CapturedNode, options: SegmentOptions): DetectedSection[] => {
     const contentRoot = findContentRoot(root);
-    const out: CapturedNode[] = [];
+    const out: CollectedSection[] = [];
     for (const child of contentRoot.children) {
         if (isSectionCandidate(child, options)) {
             collectSections(child, out, options);
         }
     }
-    return out.map((node, index) => ({ box: node.box, index }));
+    return out.map((section, index) => ({
+        box: section.node.box,
+        index,
+        candidates: section.candidates
+    }));
 };

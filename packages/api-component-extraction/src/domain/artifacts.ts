@@ -183,12 +183,38 @@ export interface CaptureArtifact {
 // ----- Segment -----------------------------------------------------------------------------------
 
 /** A candidate section on a page: a bounding box into the full-page screenshot, plus where in the tree. */
+/** Why a child boundary inside a section was not taken (W11.1). */
+export type CandidateRejection =
+    | "too-short"
+    | "too-narrow"
+    | "parent-below-max-height"
+    | "too-few-siblings"
+    | "children-overlap";
+
+/**
+ * A boundary the segmenter evaluated inside a section and did not take.
+ *
+ * Retained so a split correction is a choice between boundaries the segmenter already computed rather
+ * than a free-hand box, and so the same choice can be found again on a later run.
+ */
+export interface SectionCandidate {
+    box: Box;
+    /** Position among the parent's considered children — what a split override keys on. */
+    index: number;
+    tag: string;
+    rejection: CandidateRejection;
+    /** Whether splitting here would actually divide the section in two. */
+    offerable: boolean;
+}
+
 export interface SectionBox {
     box: Box;
     /** Index of the section among the content root's children — a stable handle within the page. */
     index: number;
     /** Blob key of this section's cropped, downscaled image, produced by Segment from the screenshot. */
     cropRef: string;
+    /** The child boundaries considered inside this section and rejected (W11.1). */
+    candidates: SectionCandidate[];
 }
 
 export interface SegmentedPage {

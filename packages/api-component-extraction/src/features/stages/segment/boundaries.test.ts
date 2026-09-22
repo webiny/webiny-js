@@ -162,3 +162,123 @@ describe("detectSections — semantic landmarks", () => {
         expect(detectSections(root, OPTIONS)).toHaveLength(1);
     });
 });
+
+/*
+ * The boundaries a section was kept whole across. These are what makes a split correction a choice
+ * between candidates the segmenter already computed rather than a drawing exercise — so what matters
+ * is that each one is retained with the reason it lost, not merely that some boxes came back.
+ *
+ * Each fixture gives the root a second child on purpose: with one dominant child, `findContentRoot`
+ * descends past the wrapper and the section under test is never the node that gets examined.
+ */
+describe("detectSections — the boundaries it declined to take", () => {
+    it("retains the section-shaped children of a section it kept whole", () => {
+        // Two stacked blocks inside a parent below the container height: the under-split shape.
+        const parent = block(0, 800, [block(0, 400), block(400, 400)]);
+        const root = block(0, 1200, [parent, block(800, 400)]);
+
+        const [section] = detectSections(root, OPTIONS);
+
+        expect(section.candidates).toHaveLength(2);
+        expect(section.candidates.map(c => c.rejection)).toEqual([
+            "parent-below-max-height",
+            "parent-below-max-height"
+        ]);
+        expect(section.candidates.map(c => c.index)).toEqual([0, 1]);
+    });
+
+    /*
+     * A boundary on the parent's own top edge divides nothing off, so the first child is retained with
+     * its reason but never offered. Offering it would produce an empty section and a no-op correction.
+     */
+    it("offers only the boundaries that would actually divide the section", () => {
+        const parent = block(0, 800, [block(0, 400), block(400, 400)]);
+        const root = block(0, 1200, [parent, block(800, 400)]);
+
+        const [section] = detectSections(root, OPTIONS);
+
+        expect(section.candidates.map(c => c.offerable)).toEqual([false, true]);
+        expect(section.candidates[1].box.y).toBe(400);
+    });
+
+    /*
+     * Found on a real run rather than in a fixture: a boundary 24px into a 713px section was offered,
+     * which would have shaved a sliver off the top instead of dividing the section. Both halves have to
+     * clear the height floor that decides whether anything is a section.
+     */
+    it("does not offer a boundary that would shave a sliver off either end", () => {
+        // The child is section-shaped, but it starts 24px in — the part above it is not a section.
+        // Kept under 90% of the parent's height so findContentRoot does not descend past the parent.
+        const parent = block(0, 800, [block(24, 600)]);
+        const root = block(0, 1200, [parent, block(800, 400)]);
+
+        const [section] = detectSections(root, OPTIONS);
+
+        expect(section.candidates[0].offerable).toBe(false);
+        expect(section.candidates[0].rejection).toBe("too-few-siblings");
+    });
+
+    it("offers a boundary once both halves clear the height floor", () => {
+        const parent = block(0, 800, [block(160, 640)]);
+        const root = block(0, 1200, [parent, block(800, 400)]);
+
+        const [section] = detectSections(root, OPTIONS);
+
+        expect(section.candidates[0].offerable).toBe(true);
+    });
+
+    it("says when a child was not section-shaped, rather than blaming the parent", () => {
+        const narrow: CapturedNode = {
+            tag: "div",
+            box: { x: 0, y: 400, width: 200, height: 300 },
+            styles: {},
+            children: []
+        };
+        const parent = block(0, 800, [block(0, 390), block(390, 8), narrow, block(500, 300)]);
+        const root = block(0, 1200, [parent, block(800, 400)]);
+
+        const [section] = detectSections(root, OPTIONS);
+
+        expect(section.candidates.map(c => c.rejection)).toEqual([
+            "parent-below-max-height",
+            "too-short",
+            "too-narrow",
+            "parent-below-max-height"
+        ]);
+        // Only the last one both looks like a section and would divide anything off.
+        expect(section.candidates.filter(c => c.offerable).map(c => c.index)).toEqual([3]);
+    });
+
+    it("distinguishes a parent kept whole because its children overlap", () => {
+        // A hero: a background layer and the text laid over it. Correctly not split, and it says so.
+        const parent = block(0, 1800, [block(0, 1800), block(100, 900)]);
+        const root = block(0, 2400, [parent, block(1800, 600)]);
+
+        const [section] = detectSections(root, OPTIONS);
+
+        expect(section.candidates.map(c => c.rejection)).toEqual([
+            "children-overlap",
+            "children-overlap"
+        ]);
+    });
+
+    it("says when there was only one section-shaped child to split at", () => {
+        const parent = block(0, 800, [block(0, 8), block(8, 700)]);
+        const root = block(0, 1200, [parent, block(800, 400)]);
+
+        const [section] = detectSections(root, OPTIONS);
+
+        expect(section.candidates.map(c => c.rejection)).toEqual(["too-short", "too-few-siblings"]);
+    });
+
+    it("leaves no candidates on a section that was split, since it was not kept whole", () => {
+        const wrapper = block(0, 2100, [block(0, 700), block(700, 700), block(1400, 700)]);
+        const root = block(0, 2100, [wrapper]);
+
+        const sections = detectSections(root, OPTIONS);
+
+        expect(sections).toHaveLength(3);
+        // Each leaf is childless, so there was nothing inside it to decline.
+        expect(sections.every(s => s.candidates.length === 0)).toBe(true);
+    });
+});
