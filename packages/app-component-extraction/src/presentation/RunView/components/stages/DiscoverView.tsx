@@ -1,7 +1,17 @@
 import React, { useMemo, useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Button, CheckboxPrimitive, Input, Tag, Text, cn } from "@webiny/admin-ui";
+import {
+    Button,
+    CheckboxPrimitive,
+    IconButton,
+    Input,
+    Tag,
+    Text,
+    Tooltip,
+    cn
+} from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+import { ReactComponent as OpenIcon } from "@webiny/icons/open_in_new.svg";
 import { normalizeUrl } from "~/shared/url.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type {
@@ -57,6 +67,31 @@ const SourceTag = ({ source }: { source?: string }) => {
     }
     return <Tag variant={descriptor.variant} content={descriptor.label} />;
 };
+
+/*
+ * Open the page itself. Every judgement this gate asks for — is this a real page, is it worth
+ * capturing, is a sitemap-only row an orphan or a leftover — is a question about what is actually at
+ * the URL, and the row can only show a path, a title and a status code.
+ *
+ * `noopener` is not boilerplate here: these are third-party customer sites, and without it the page
+ * being opened gets a live handle on the admin window.
+ */
+const OpenLink = ({ url }: { url: string }) => (
+    <Tooltip
+        content={<Text size="md">Open {url} in a new tab</Text>}
+        side="left"
+        trigger={
+            <IconButton
+                icon={<OpenIcon />}
+                size="xs"
+                variant="ghost"
+                aria-label={`Open ${url} in a new tab`}
+                className="cursor-pointer"
+                onClick={() => window.open(url, "_blank", "noopener,noreferrer")}
+            />
+        }
+    />
+);
 
 /*
  * What resolving the URL returned. An off-site redirect is labelled rather than shown as its status:
@@ -172,6 +207,7 @@ const UnresolvedList = ({ urls }: { urls: DiscoverUrlDto[] }) => (
                 <div className="min-w-0 flex-1" />
                 <SourceTag source={url.source} />
                 <ResolveStatus url={url} />
+                <OpenLink url={url.url} />
             </div>
         ))}
     </div>
@@ -381,6 +417,7 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
                                             )}
                                             <SourceTag source={item.source} />
                                             <ResolveStatus url={item} />
+                                            <OpenLink url={item.url} />
                                         </div>
                                     );
                                 })}
