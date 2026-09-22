@@ -1025,3 +1025,35 @@ describe("a save's fields sit on the clock's line", () => {
         expect(sitsOnTheClocksLine(screen.getByText("Alpha"))).toBe(false);
     });
 });
+
+describe("the filter panel opens where the reader is looking", () => {
+    /**
+     * A regression guard for a bug that looked like a console warning.
+     *
+     * `Popover` hands its trigger straight to Radix with `asChild`, and Radix anchors the panel off
+     * a ref to a real DOM node. Every admin-ui component is wrapped by `makeDecoratable`, which is
+     * a plain function component, so passing one directly drops the ref — React says so ("Function
+     * components cannot be given refs") and Radix, with no anchor to measure, lays the panel out at
+     * the viewport origin. Measured in the running admin before the fix: open, populated, and at
+     * left 0, top -340. Entirely off screen.
+     *
+     * Nothing about that reads as broken from the outside. The button responds, the panel mounts,
+     * `data-state` goes to `open` — the filters are just somewhere nobody can see. So the guard is
+     * on the one structural difference: which node Radix ends up holding.
+     *
+     * A proxy rather than the real property, which is "Radix can measure this node" and is not
+     * something jsdom can answer. `Tooltip` in the design system wraps its own trigger in a span
+     * for exactly this reason, so the span is the house convention as well as the fix.
+     */
+    it("gives Radix a real element to anchor the panel to", () => {
+        renderState([record({ changeset: [{ path: "title", label: "Title" }] })]);
+
+        const trigger = document.querySelector('[data-slot="popover-trigger"]');
+
+        // A BUTTON here means the slot landed on `IconButton`'s own element and the ref was
+        // dropped on the way — which is the broken arrangement, not the fixed one.
+        expect(trigger).not.toBeNull();
+        expect(trigger!.tagName).toBe("SPAN");
+        expect(trigger!.querySelector('[aria-label="Filter activity"]')).not.toBeNull();
+    });
+});

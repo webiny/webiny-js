@@ -54,12 +54,24 @@ export const ActivityTimelineFilters = ({
                 <div className={"ml-auto"}>
                     <Popover
                         trigger={
-                            <IconButton
-                                variant={anyApplied ? "primary" : "ghost"}
-                                size={"sm"}
-                                aria-label={"Filter activity"}
-                                icon={<FilterIcon />}
-                            />
+                            /*
+                              Wrapped in a span, which `Tooltip` in this design system does for the
+                              same reason. `Popover` hands its trigger straight to Radix with
+                              `asChild`, and Radix anchors the panel off a ref to a real DOM node.
+                              Every admin-ui component is wrapped by `makeDecoratable`, a plain
+                              function component, so that ref is dropped and the panel opens at the
+                              viewport origin — measured at left 0, top -340: open, populated and
+                              entirely off screen. The "Function components cannot be given refs"
+                              warning in the console is reporting exactly this.
+                            */
+                            <span className={"inline-block leading-none"}>
+                                <IconButton
+                                    variant={anyApplied ? "primary" : "ghost"}
+                                    size={"sm"}
+                                    aria-label={"Filter activity"}
+                                    icon={<FilterIcon />}
+                                />
+                            </span>
                         }
                         content={
                             <div className={"flex min-w-[220px] flex-col gap-sm p-sm"}>
