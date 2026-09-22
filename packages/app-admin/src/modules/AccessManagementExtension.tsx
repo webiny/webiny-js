@@ -32,7 +32,6 @@ import { ApiKeysView } from "~/presentation/accessManagement/apiKeys/components/
 import { ApiKeysPresenterFeature } from "~/presentation/accessManagement/apiKeys/feature.js";
 import { TeamsPresenterFeature } from "~/presentation/accessManagement/teams/feature.js";
 import { RolesAutocompletePresenterFeature } from "~/presentation/accessManagement/roles/rolesAutocomplete/feature.js";
-import { AssumedRoleSelector } from "~/presentation/assumedRole/components/AssumedRoleSelector.js";
 import { AssumedRoleBanner } from "~/presentation/assumedRole/components/AssumedRoleBanner.js";
 import { TeamsAutocompletePresenterFeature } from "~/presentation/accessManagement/teams/teamsAutocomplete/feature.js";
 
@@ -114,8 +113,7 @@ export const AccessManagementExtension = () => {
             <RegisterFeature feature={UpdateApiKeyFeature} />
             <RegisterFeature feature={DeleteApiKeyFeature} />
             <RegisterFeature feature={ApiKeysPresenterFeature} />
-            {/* Install the real header control and banner over the Layout's placeholders. */}
-            <AssumedRoleSelector />
+            {/* Install the real banner over the Layout's placeholder. */}
             <AssumedRoleBanner />
             <SecurityPermissions />
             <AdminConfig>

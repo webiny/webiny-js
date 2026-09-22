@@ -28,6 +28,14 @@ class AssumedRolePresenterImpl implements Abstraction.Interface {
     private _roleOptions: Abstraction.Option[] = [];
     private _teamOptions: Abstraction.Option[] = [];
     private _error: string | null = null;
+    /*
+     * The role this page was LOADED with, captured once. The banner renders from this rather than
+     * from the live context so it doesn't flicker during a switch: assuming a role would otherwise
+     * pop the banner up a moment before the reload, and exiting would drop it a moment before,
+     * both of which read as a glitch. Since every switch reloads, the snapshot and the live value
+     * only ever differ inside that window.
+     */
+    private readonly loadedAssumedRole: AssumedRoleContext.Value | null;
 
     constructor(
         private assumedRoleContext: AssumedRoleContext.Interface,
@@ -36,6 +44,7 @@ class AssumedRolePresenterImpl implements Abstraction.Interface {
         private listTeamsUseCase: ListTeamsUseCase.Interface,
         private featureFlags: FeatureFlagsService.Interface
     ) {
+        this.loadedAssumedRole = assumedRoleContext.get();
         makeAutoObservable(this, {}, { autoBind: true });
     }
 
@@ -45,14 +54,21 @@ class AssumedRolePresenterImpl implements Abstraction.Interface {
             switching: this._switching,
             roleOptions: this._roleOptions,
             teamOptions: this._teamOptions,
-            assumedRole: this.assumedRoleContext.get(),
+            assumedRole: this.loadedAssumedRole,
             error: this._error
         };
     }
 
     async load(): Promise<void> {
+        const hasOptions = this._roleOptions.length > 0 || this._teamOptions.length > 0;
+
         runInAction(() => {
-            this._loading = true;
+            /*
+             * Only show the loader when there is nothing to show yet. Every later call refreshes
+             * in the background, so a role or team added since the last time still turns up
+             * without the list blanking out first.
+             */
+            this._loading = !hasOptions;
             this._error = null;
         });
 
