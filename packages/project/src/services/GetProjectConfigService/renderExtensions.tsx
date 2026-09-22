@@ -32,22 +32,24 @@ export const renderExtensions = (params: RenderExtensionsParams): Promise<IProje
         return new Promise<IProjectConfigDto>((resolve, reject) => {
             const reactRoot = createRoot(container);
 
-            const timeout = setTimeout(() => {
-                reject(
-                    new Error(
-                        `Config rendering timed out after ${RENDER_TIMEOUT_MS}ms. ` +
-                            `This usually means an <Await> promise never settled.`
-                    )
-                );
-            }, RENDER_TIMEOUT_MS);
+            let settled = false;
+            let timeout: ReturnType<typeof setTimeout>;
 
             /*
-             * Unmount on a later tick, because React is mid-commit when `onChange` fires and will
-             * not unmount from inside its own render. Settling only afterwards matters: the DOM
-             * globals are torn down as soon as this promise resolves, and `unmount` commits one last
-             * time, so it has to happen while `window` still exists.
+             * Every way out of here goes through this, so the root is always unmounted while the DOM
+             * globals are still installed. Unmounting happens on a later tick, because React is
+             * mid-commit when `onChange` fires and will not unmount from inside its own render, and
+             * the promise settles only after that: `withDomGlobals` tears the globals down as soon as
+             * it resolves, and `unmount` commits one last time and needs `window` to still be there.
+             *
+             * Idempotent because a timeout and a late `onChange` can both arrive.
              */
             const settle = (finish: () => void) => {
+                if (settled) {
+                    return;
+                }
+
+                settled = true;
                 clearTimeout(timeout);
 
                 setTimeout(() => {
@@ -55,6 +57,17 @@ export const renderExtensions = (params: RenderExtensionsParams): Promise<IProje
                     finish();
                 }, 0);
             };
+
+            timeout = setTimeout(() => {
+                settle(() => {
+                    reject(
+                        new Error(
+                            `Config rendering timed out after ${RENDER_TIMEOUT_MS}ms. ` +
+                                `This usually means an <Await> promise never settled.`
+                        )
+                    );
+                });
+            }, RENDER_TIMEOUT_MS);
 
             const onChange = debounce((properties: Property[]) => {
                 const config: IProjectConfigDto = toObject(properties);

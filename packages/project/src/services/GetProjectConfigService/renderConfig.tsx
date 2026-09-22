@@ -6,7 +6,6 @@ import { renderExtensions } from "./renderExtensions.js";
 
 export interface RenderConfigParams {
     project: IProjectModel;
-    args?: Record<string, any>;
     sdkParams: ProjectSdkParamsService.Params;
 }
 
@@ -20,6 +19,12 @@ export interface RenderConfigParams {
  * round trip that lost the stack pointing into the user's config.
  *
  * Renders are serialised because they install `window` and `document` as globals for the duration.
+ *
+ * There is no `args` here any more. The child process put `{ project, args }` into its `process.argv`
+ * and read the project back out; the args half was never read by anything, and reproducing it would
+ * now mean rewriting the CLI's own `process.argv` mid-run. `renderArgs` still does its real job in
+ * `GetProjectConfigService`, where it keys the render cache so that build and watch get their own
+ * configs. If an extension ever needs those values, a context is the shape to give them.
  */
 let pendingRender: Promise<unknown> = Promise.resolve();
 

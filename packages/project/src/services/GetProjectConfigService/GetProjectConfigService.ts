@@ -46,7 +46,6 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
                     () => {
                         return renderConfig({
                             project,
-                            args: params.renderArgs,
                             sdkParams: projectSdkParams
                         });
                     }
