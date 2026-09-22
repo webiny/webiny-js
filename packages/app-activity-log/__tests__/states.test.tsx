@@ -962,3 +962,77 @@ describe("every line under an actor's name starts at the same edge", () => {
         expect(sentence.textContent).toContain("AI-generated");
     });
 });
+
+describe("a save's fields sit on the clock's line", () => {
+    /**
+     * The gap above a run's saves exists to separate them from what the run said about itself, so
+     * a run that said nothing must not have it.
+     *
+     * A row mapping onto a single run states that run's sentence in its own header and leaves the
+     * run inside the expansion silent — and there the gap had nothing to separate, so it pushed
+     * the first chip four pixels below the clock beside it. The clock's alignment is tuned to a
+     * 19px sentence line, which is right in every run that has one.
+     */
+    const spacersAbove = (node: Element | null) => {
+        const classes: string[] = [];
+        let current: Element | null = node;
+
+        while (current && current !== document.body) {
+            const className = current.className;
+            if (typeof className === "string") {
+                if (className.includes("grid-cols-[52px_1fr]")) {
+                    break;
+                }
+                classes.push(className);
+            }
+            current = current.parentElement;
+        }
+
+        return classes;
+    };
+
+    const sitsOnTheClocksLine = (node: Element | null) =>
+        spacersAbove(node).every(className => !/(^|\s)(mt-|pt-)/.test(className));
+
+    it("does not push the fields down when the run says nothing", () => {
+        // A single-run row: the header carries the sentence, so the run inside has none.
+        // The sentence deliberately does not name the field: it is bolded inside the sentence as
+        // well as being the chip, and a query for it would find either.
+        renderState([
+            record({
+                changeset: [{ path: "price", label: "Price" }],
+                summary: "Adjusted the listing.",
+                summaryKind: "deterministic"
+            })
+        ]);
+
+        fireEvent.click(screen.getByRole("button", { name: /Adjusted the listing/ }));
+
+        expect(sitsOnTheClocksLine(screen.getByText("Price"))).toBe(true);
+    });
+
+    it("keeps the gap where the run does say something", () => {
+        // Two runs, so each states its own sentence inside the expansion and the saves below it
+        // need separating from it again.
+        renderState([
+            record({
+                id: "a",
+                timestamp: "2026-09-10T10:30:00.000Z",
+                changeset: [{ path: "alpha", label: "Alpha" }],
+                summary: "Reworked the first run.",
+                summaryKind: "ai"
+            }),
+            record({
+                id: "b",
+                timestamp: "2026-09-10T10:20:00.000Z",
+                changeset: [{ path: "beta", label: "Beta" }],
+                summary: "A different run entirely.",
+                summaryKind: "ai"
+            })
+        ]);
+
+        fireEvent.click(screen.getByRole("button", { name: /made 2 saves/ }));
+
+        expect(sitsOnTheClocksLine(screen.getByText("Alpha"))).toBe(false);
+    });
+});

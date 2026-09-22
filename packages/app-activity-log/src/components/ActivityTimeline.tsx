@@ -370,7 +370,13 @@ const RunLine = ({ run }: { run: DisclosedRun }) => (
         <div className={"min-w-0 pl-xs"}>
             {run.summary ? <SummaryLine summary={run.summary} /> : null}
             {run.pending ? <PendingNote /> : null}
-            <div className={"mt-xs flex flex-col gap-xs"}>
+            {/*
+              The gap above the saves separates them from what the run said about itself, so it
+              belongs only where the run said something. A row that maps onto a single run states
+              its sentence in the header and leaves this one silent — and there the gap had nothing
+              to separate, so it pushed the first chip four pixels below the clock beside it.
+            */}
+            <div className={cn("flex flex-col gap-xs", (run.summary || run.pending) && "mt-xs")}>
                 {run.saves.map(save => (
                     <SaveLine key={save.id} save={save} showTime={run.showSaveTimes} />
                 ))}
