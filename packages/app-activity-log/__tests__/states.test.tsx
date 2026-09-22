@@ -789,17 +789,6 @@ describe("non-human activity", () => {
     });
 });
 
-describe("the route to compare", () => {
-    it("offers compare at the revision boundary and admits what it cannot show", () => {
-        // The honesty problem the design named: a reader looking at Tuesday's save wants to see
-        // Tuesday, and that state no longer exists anywhere.
-        const { text } = renderState([record()]);
-
-        expect(text()).toContain("Compare revisions");
-        expect(text()).toContain("not comparable");
-    });
-});
-
 describe("states around loading and failure", () => {
     it("renders while loading without throwing", () => {
         expect(() => renderState([], { loading: true })).not.toThrow();

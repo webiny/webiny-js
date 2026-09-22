@@ -15,7 +15,6 @@ import {
 } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as AutoAwesomeIcon } from "@webiny/icons/auto_awesome.svg";
-import { ReactComponent as CompareIcon } from "@webiny/icons/compare_arrows.svg";
 import { ReactComponent as HistoryToggleOffIcon } from "@webiny/icons/history_toggle_off.svg";
 import { ReactComponent as KeyIcon } from "@webiny/icons/key.svg";
 import { ReactComponent as PersonIcon } from "@webiny/icons/person.svg";
@@ -545,38 +544,6 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
     );
 };
 
-/**
- * Where compare belongs, and the honest limit on it.
- *
- * Compare works between revisions and can say nothing about the individual saves inside one, so
- * this sits at the boundary rather than on a row. The second line is the honesty problem the
- * design named: a reader looking at Tuesday's save wants to see Tuesday, and that state no longer
- * exists anywhere.
- */
-const RevisionBoundary = ({ group }: { group: TimelineViewGroup }) => (
-    <div
-        className={
-            "flex items-start gap-sm border-t-sm border-neutral-dimmed bg-neutral-light px-sm-extra py-xs"
-        }
-    >
-        <Icon
-            size={"sm"}
-            label={"Compare"}
-            icon={<CompareIcon />}
-            className={"mt-xxs shrink-0 fill-neutral-strong"}
-        />
-        <div className={"min-w-0"}>
-            <Text as={"div"} size={"sm"} className={"font-semibold"}>
-                {`Compare revisions to see values as of ${group.described.label}.`}
-            </Text>
-            <Text as={"div"} size={"sm"} className={"text-neutral-muted"}>
-                Individual saves inside a revision are not comparable — only the revision as a whole
-                is.
-            </Text>
-        </div>
-    </div>
-);
-
 const RevisionGroup = ({ group }: { group: TimelineViewGroup }) => (
     <div>
         {/*
@@ -602,8 +569,6 @@ const RevisionGroup = ({ group }: { group: TimelineViewGroup }) => (
             {group.items.map(item => (
                 <SaveRow key={item.latest.id} item={item} />
             ))}
-
-            <RevisionBoundary group={group} />
         </div>
     </div>
 );
