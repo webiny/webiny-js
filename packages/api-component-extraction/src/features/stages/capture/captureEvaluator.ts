@@ -27,7 +27,9 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
     return `(() => {
         var MAX = ${maxNodes};
         var count = 0;
-        var STYLE_PROPS = ["backgroundColor","color","fontFamily","fontSize","fontWeight","lineHeight","letterSpacing","borderTopColor","borderTopWidth","borderRadius","boxShadow","paddingTop","paddingLeft","marginTop","gap","display","textAlign"];
+        // position is here for segmentation, not for tokens: a fixed or sticky header is painted over
+        // the content rather than stacked above it, and its box cannot say so on its own.
+        var STYLE_PROPS = ["backgroundColor","color","fontFamily","fontSize","fontWeight","lineHeight","letterSpacing","borderTopColor","borderTopWidth","borderRadius","boxShadow","paddingTop","paddingLeft","marginTop","gap","display","textAlign","position"];
         var SKIP = { SCRIPT:1, STYLE:1, NOSCRIPT:1, TEMPLATE:1, SVG:1, PATH:1, LINK:1, META:1, HEAD:1, BR:1 };
         var MEDIA = { IMG:1, SOURCE:1, VIDEO:1, IFRAME:1, EMBED:1 };
 

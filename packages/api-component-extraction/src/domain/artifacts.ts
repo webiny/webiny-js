@@ -189,7 +189,9 @@ export type CandidateRejection =
     | "too-narrow"
     | "parent-below-max-height"
     | "too-few-siblings"
-    | "children-overlap";
+    | "children-overlap"
+    /** A fixed or sticky landmark, set aside from the stack test rather than disqualifying it. */
+    | "positioned-overlay";
 
 /**
  * A boundary the segmenter evaluated inside a section and did not take.

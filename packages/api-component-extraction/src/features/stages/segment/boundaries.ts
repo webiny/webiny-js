@@ -11,7 +11,8 @@ export type CandidateRejection =
     | "too-narrow"
     | "parent-below-max-height"
     | "too-few-siblings"
-    | "children-overlap";
+    | "children-overlap"
+    | "positioned-overlay";
 
 /**
  * A child boundary the segmenter evaluated inside a section and did not take.
@@ -106,6 +107,25 @@ const isSectionCandidate = (node: CapturedNode, options: SegmentOptions): boolea
     node.box.width >= options.minWidthRatio * options.viewportWidth;
 
 /**
+ * Page furniture the browser paints over the content instead of stacking above it.
+ *
+ * A `position: fixed` or `sticky` header has a box at the top of the document and a `<main>` that also
+ * starts at the top, so by geometry alone they overlap — and the stack test is all-or-nothing, so that
+ * single pair disqualifies every other sibling. One site in the five-site collection lost its entire
+ * segmentation to this: nine pages, nine sections, two components, because one sticky header overlapped
+ * the content on every page.
+ *
+ * Narrowed to the three landmarks on purpose. Any absolutely positioned decoration could be excluded on
+ * the same geometric argument, but `header`/`nav`/`footer` are the elements that are actually pinned in
+ * practice, and reading what the page declared beats inferring it from boxes that can be wrong for a
+ * stacked child of an oversized parent or a modal captured open.
+ */
+const OVERLAY_POSITIONS = new Set(["fixed", "sticky"]);
+
+const isPositionedOverlay = (node: CapturedNode): boolean =>
+    LANDMARK_TAGS.has(node.tag) && OVERLAY_POSITIONS.has(node.styles?.position ?? "");
+
+/**
  * Whether these blocks are stacked vertically (each begins at or below the previous one's bottom) rather
  * than layered on top of each other. A container of sections is a vertical stack; a hero's background and
  * content layers overlap, so they are not — which keeps a hero from being mistaken for a container and
@@ -143,7 +163,18 @@ const rejectedCandidates = (
     inner.children.map((child, index) => {
         const tooNarrow = child.box.width < options.minWidthRatio * options.viewportWidth;
         const tooShort = !(child.box.height >= options.minHeight || LANDMARK_TAGS.has(child.tag));
-        const rejection = tooNarrow ? "too-narrow" : tooShort ? "too-short" : parentRejection;
+        /*
+         * An overlay says so for itself, so a section kept whole records which child was set aside
+         * from the stack decision — a later collapse of this shape reads its cause off the artifact
+         * instead of needing the decision re-run over the trees to find it.
+         */
+        const rejection: CandidateRejection = tooNarrow
+            ? "too-narrow"
+            : tooShort
+              ? "too-short"
+              : isPositionedOverlay(child)
+                ? "positioned-overlay"
+                : parentRejection;
 
         /*
          * Both halves have to be worth having. A child whose top edge sits a few pixels below the
@@ -181,7 +212,13 @@ const collectSections = (
 ): void => {
     const inner = findContentRoot(candidate);
     const children = inner.children.filter(child => isSectionCandidate(child, options));
-    const stacked = areVerticallyStacked(children);
+    /*
+     * The stack test asks whether the children sit one below another. A pinned landmark does not, by
+     * construction, so it is set aside for that question only — it stays in `children`, and therefore
+     * still becomes a section of its own when the split goes ahead.
+     */
+    const stackable = children.filter(child => !isPositionedOverlay(child));
+    const stacked = areVerticallyStacked(stackable);
     const enoughChildren = children.length >= options.minChildrenToSplit;
     const tallEnough = inner.box.height > options.maxSectionHeight;
 

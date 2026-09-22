@@ -171,6 +171,101 @@ describe("detectSections — semantic landmarks", () => {
  * Each fixture gives the root a second child on purpose: with one dominant child, `findContentRoot`
  * descends past the wrapper and the section under test is never the node that gets examined.
  */
+/*
+ * A fixed or sticky header is painted over the content, not stacked above it. One site in the
+ * five-site collection lost its whole segmentation to this: nine pages, nine sections, two components
+ * for the entire site, because one sticky header overlapped the content on every page.
+ */
+describe("detectSections — a pinned landmark is not a stacking failure", () => {
+    const pinned = (tag: string, height: number, position: string): CapturedNode => ({
+        tag,
+        box: { x: 0, y: 0, width: 1440, height },
+        styles: { position },
+        children: []
+    });
+
+    it("splits a page whose sticky header overlaps the content", () => {
+        // The shape from the collection: <header> and <main> both start at y=0.
+        const header = pinned("header", 135, "sticky");
+        const main = block(0, 2000);
+        const footer = block(2000, 500);
+        const page = block(0, 2500, [header, main, footer]);
+        const root = block(0, 2500, [page, block(2500, 400)]);
+
+        const sections = detectSections(root, OPTIONS);
+
+        // The header is still a section of its own — set aside for the stack test, not discarded.
+        expect(sections.map(s => Math.round(s.box.height))).toEqual([135, 2000, 500, 400]);
+    });
+
+    it("does the same for a fixed header", () => {
+        const header = pinned("header", 135, "fixed");
+        const page = block(0, 2500, [header, block(0, 2000), block(2000, 500)]);
+        const root = block(0, 2900, [page, block(2500, 400)]);
+
+        expect(detectSections(root, OPTIONS)).toHaveLength(4);
+    });
+
+    /*
+     * Only the landmarks, and only when the page says they are pinned. A statically positioned header
+     * that overlaps is a layout we have not seen and should not guess at.
+     */
+    it("leaves a statically positioned header to disqualify the stack as before", () => {
+        const header = pinned("header", 135, "static");
+        const page = block(0, 2500, [header, block(0, 2000), block(2000, 500)]);
+        const root = block(0, 2900, [page, block(2500, 400)]);
+
+        const sections = detectSections(root, OPTIONS);
+
+        expect(sections).toHaveLength(2);
+        expect(sections[0].candidates.map(c => c.rejection)).toEqual([
+            "children-overlap",
+            "children-overlap",
+            "children-overlap"
+        ]);
+    });
+
+    it("does not excuse a pinned element that is not a landmark", () => {
+        const banner = pinned("div", 135, "sticky");
+        const page = block(0, 2500, [banner, block(0, 2000), block(2000, 500)]);
+        const root = block(0, 2900, [page, block(2500, 400)]);
+
+        expect(detectSections(root, OPTIONS)).toHaveLength(2);
+    });
+
+    /*
+     * The reason is recorded so a future collapse of this shape is readable from the artifact rather
+     * than needing the decision re-run over the captured trees to find it.
+     */
+    it("records the overlay as its own rejection reason when the section is still kept whole", () => {
+        // Two overlapping content blocks the header exclusion cannot rescue.
+        const header = pinned("nav", 135, "fixed");
+        const page = block(0, 2500, [header, block(0, 2000), block(200, 1800)]);
+        const root = block(0, 2900, [page, block(2500, 400)]);
+
+        const [section] = detectSections(root, OPTIONS);
+
+        expect(section.candidates.map(c => c.rejection)).toEqual([
+            "positioned-overlay",
+            "children-overlap",
+            "children-overlap"
+        ]);
+    });
+
+    it("treats a tree captured before position was recorded exactly as before", () => {
+        const header: CapturedNode = {
+            tag: "header",
+            box: { x: 0, y: 0, width: 1440, height: 135 },
+            styles: {},
+            children: []
+        };
+        const page = block(0, 2500, [header, block(0, 2000), block(2000, 500)]);
+        const root = block(0, 2900, [page, block(2500, 400)]);
+
+        expect(detectSections(root, OPTIONS)).toHaveLength(2);
+    });
+});
+
 describe("detectSections — the boundaries it declined to take", () => {
     it("retains the section-shaped children of a section it kept whole", () => {
         // Two stacked blocks inside a parent below the container height: the under-split shape.
