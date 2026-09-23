@@ -320,6 +320,18 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     const run = runResult.value;
 
                     /*
+                     * A cancelled run is over. Without this it would still accept stages, which makes
+                     * the status a label rather than a state — and worse, cancelling released the
+                     * job's run slot, so a restarted run would be in flight holding nothing while
+                     * another run legitimately took the lock.
+                     */
+                    if (run.status === "cancelled") {
+                        throw new Error(
+                            "This run was cancelled. Start a new run for the job rather than restarting this one."
+                        );
+                    }
+
+                    /*
                      * Predecessor enforcement: the stage before this one must be done AND its
                      * recorded artifacts must belong to the version it claims.
                      *

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { Button, Tag, Text } from "@webiny/admin-ui";
 import { RunImage } from "~/presentation/runImage/RunImage.js";
+import { OverlayClearanceDetail } from "./OverlayClearanceDetail.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type { CaptureArtifactDto, CapturePageDto } from "~/shared/types.js";
 
@@ -38,9 +39,9 @@ interface Tile {
 
 /**
  * The Capture view (W7.4). A thumbnail grid of the captured pages, five across, with failed pages and
- * flagged pages sorted to the top. A flag is a capture-quality warning: an unusually short page, a
- * cookie/consent overlay the browser could not dismiss, or images that failed to load. Opening a tile
- * shows the full-page screenshot. Pages can be selected and excluded so a bad capture doesn't flow into
+ * flagged pages sorted to the top. A flag is a capture-quality warning: an unusually short page, an
+ * overlay that survived the clearance pass, an overlay the pass had to remove, or images that failed
+ * to load. Opening a tile shows the full-page screenshot and what the overlay pass did to that page. Pages can be selected and excluded so a bad capture doesn't flow into
  * Segment (which marks Segment and everything downstream stale).
  */
 export const CaptureView = createReactiveComponent(function CaptureView({ presenter }: Props) {
@@ -71,6 +72,18 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
             }
             if (page.warnings?.overlayRemains) {
                 warnings.push("overlay still present");
+            }
+            /*
+             * Removals flag a tile; hidden consent banners do not. Every page of four of the five
+             * customer sites hides a banner, so flagging that would mark the whole run and mean
+             * nothing. A removal is the case where the capture acted against a page that offered no
+             * way out, which is worth a look.
+             */
+            const removed =
+                (page.overlayClearance?.early.removed.length ?? 0) +
+                (page.overlayClearance?.late.removed.length ?? 0);
+            if (removed > 0) {
+                warnings.push(removed === 1 ? "1 overlay removed" : `${removed} overlays removed`);
             }
             if (page.warnings && page.warnings.brokenImages > 0) {
                 warnings.push(`${page.warnings.brokenImages} broken image(s)`);
@@ -110,6 +123,13 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
 
     const failedCount = artifact.failed?.length ?? 0;
     const flagged = tiles.filter(tile => !tile.failed && tile.warnings.length > 0).length;
+    const overlaysRemoved = artifact.pages.reduce(
+        (total, page) =>
+            total +
+            (page.overlayClearance?.early.removed.length ?? 0) +
+            (page.overlayClearance?.late.removed.length ?? 0),
+        0
+    );
 
     const toggle = (url: string) =>
         setSelected(prev => {
@@ -133,6 +153,7 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
             <div className="flex items-center justify-between gap-sm px-md py-sm border-b border-neutral-dimmed">
                 <Text size="sm" className="text-neutral-strong">
                     {artifact.pages.length} captured · {failedCount} failed · {flagged} flagged
+                    {overlaysRemoved > 0 ? ` · ${overlaysRemoved} overlays removed` : ""}
                 </Text>
                 {selected.size > 0 ? (
                     <Button
@@ -237,13 +258,25 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
                     className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-xl cursor-pointer"
                     onClick={() => setLightbox(null)}
                 >
-                    <div className="max-h-full overflow-y-auto bg-neutral-base rounded-sm">
+                    <div
+                        className="max-h-full overflow-y-auto bg-neutral-base rounded-sm"
+                        onClick={event => event.stopPropagation()}
+                    >
                         <RunImage
                             runId={runId}
                             imageRef={lightbox.screenshotRef}
                             alt={lightbox.title?.trim() || lightbox.url}
                             className="w-[720px] max-w-full"
                         />
+                        <div className="w-[720px] max-w-full p-md flex flex-col gap-sm border-t border-neutral-dimmed cursor-auto">
+                            <Text size="sm" className="font-mono text-neutral-strong">
+                                {pathOf(lightbox.url)}
+                            </Text>
+                            <OverlayClearanceDetail
+                                clearance={lightbox.overlayClearance}
+                                overlayRemains={lightbox.warnings?.overlayRemains}
+                            />
+                        </div>
                     </div>
                 </div>
             ) : null}

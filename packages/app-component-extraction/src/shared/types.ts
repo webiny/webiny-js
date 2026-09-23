@@ -222,6 +222,8 @@ export interface CapturePageDto {
     narrowScreenshotRef: string;
     thumbnailRef: string;
     warnings?: CaptureWarningsDto;
+    /** What the overlay pass took off this page, by pass. Absent on runs captured before it shipped. */
+    overlayClearance?: OverlayClearanceDto;
 }
 
 /** A page that failed to capture, with its reason. */
