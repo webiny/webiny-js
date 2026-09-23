@@ -72,6 +72,10 @@ export class ReactLicense implements ILicense {
         return this.license.canUseAiLexicalGeneration();
     }
 
+    canUseAiAdminAssistant(): boolean {
+        return this.license.canUseAiAdminAssistant();
+    }
+
     canUseAiEntryGeneration(): boolean {
         return this.license.canUseAiEntryGeneration();
     }

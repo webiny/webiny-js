@@ -73,6 +73,7 @@ import {
     InitProjectSdkService
 } from "~/abstractions/index.js";
 import { getFeatureFlagsWithLicense } from "./decorators/index.js";
+import { traceAsync } from "./utils/trace/index.js";
 
 export const createProjectSdkContainer = async (
     params: Partial<ProjectSdkParamsService.Params>,
@@ -148,24 +149,34 @@ export const createProjectSdkContainer = async (
     // Initialize project SDK.
     container.resolve(ProjectSdkParamsService).set(params);
 
-    // Allow hosting-specific registrations (e.g. project-aws, project-server).
+    // Allow hosting-specific registrations (e.g. project-aws, project-standalone).
     // Must run before workspace services execute so decorators are in place.
     register?.(container);
 
-    await container.resolve(LoadEnvVarsService).execute();
-    await container.resolve(BuildProjectWorkspaceService).execute();
+    const loadEnvVars = container.resolve(LoadEnvVarsService);
+    await traceAsync("load env vars", () => loadEnvVars.execute());
+
+    const buildProjectWorkspace = container.resolve(BuildProjectWorkspaceService);
+    await traceAsync("build project workspace", () => buildProjectWorkspace.execute());
 
     const logger = container.resolve(LoggerService);
     logger.log("Initializing Project SDK container...");
 
-    const projectExtensions = await container.resolve(GetProjectConfig).execute({
-        tags: { runtimeContext: "project" }
+    const projectConfigGetter = container.resolve(GetProjectConfig);
+    const projectExtensions = await traceAsync("get project extensions", () => {
+        return projectConfigGetter.execute({
+            tags: { runtimeContext: "project" }
+        });
     });
 
-    await container.resolve(ValidateProjectConfig).execute(projectExtensions);
+    const projectConfigValidator = container.resolve(ValidateProjectConfig);
+    await traceAsync("validate project extensions", () => {
+        return projectConfigValidator.execute(projectExtensions);
+    });
 
     // Initialize project SDK extensions (env vars, hooks, pulumi, implementations, decorators).
-    await container.resolve(InitProjectSdkService).execute(container);
+    const initProjectSdk = container.resolve(InitProjectSdkService);
+    await traceAsync("register project SDK extensions", () => initProjectSdk.execute(container));
 
     return container;
 };

@@ -117,6 +117,12 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                             lexicalGeneration: flags.isEnabled("aiPowerups.lexicalGeneration")
                                 ? project.package.features.aiPowerups?.options?.lexicalGeneration
                                 : false,
+                            adminAssistant: flags.isEnabled("aiPowerups.adminAssistant")
+                                ? project.package.features.aiPowerups?.options?.adminAssistant
+                                : false,
+                            remoteComponents: flags.isEnabled("aiPowerups.remoteComponents")
+                                ? project.package.features.aiPowerups?.options?.remoteComponents
+                                : false,
                             cms: {
                                 entryGeneration: flags.isEnabled("aiPowerups.cms.entryGeneration")
                                     ? project.package.features.aiPowerups?.options?.cms
@@ -138,16 +144,6 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                         enabled: flags.isEnabled("abTesting")
                             ? project.package.features.abTesting?.enabled
                             : false
-                    },
-                    websiteBuilder: {
-                        ...project.package.features.websiteBuilder,
-                        // Every project has Website Builder; the flag governs what is inside it.
-                        enabled: true,
-                        options: {
-                            remoteComponents: flags.isEnabled("remoteComponents")
-                                ? project.package.features.websiteBuilder?.options?.remoteComponents
-                                : false
-                        }
                     },
                     collaboration: {
                         ...project.package.features.collaboration,
@@ -268,6 +264,13 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
         );
     }
 
+    canUseAiAdminAssistant() {
+        return (
+            this.decoratee.canUseAiAdminAssistant() &&
+            this.featureFlags.get().isEnabled("aiPowerups.adminAssistant")
+        );
+    }
+
     canUseAiEntryGeneration() {
         return (
             this.decoratee.canUseAiEntryGeneration() &&
@@ -300,7 +303,7 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
     canUseRemoteComponents() {
         return (
             this.decoratee.canUseRemoteComponents() &&
-            this.featureFlags.get().isEnabled("remoteComponents")
+            this.featureFlags.get().isEnabled("aiPowerups.remoteComponents")
         );
     }
 

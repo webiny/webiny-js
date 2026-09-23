@@ -61,12 +61,6 @@ export const createTestWcpLicense = (options?: LicenseOptions): DecryptedWcpProj
                 [PROJECT_PACKAGE_FEATURE_NAME.AB_TESTING]: {
                     enabled: false
                 },
-                [PROJECT_PACKAGE_FEATURE_NAME.WEBSITE_BUILDER]: {
-                    enabled: true,
-                    options: {
-                        remoteComponents: false
-                    }
-                },
                 [PROJECT_PACKAGE_FEATURE_NAME.COLLABORATION]: {
                     // Nested, and `canUseActivityLog()` checks the parent first, so a suite that
                     // wants the child has to grant both.

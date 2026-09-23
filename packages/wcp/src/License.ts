@@ -133,6 +133,10 @@ export class License implements ILicense {
         return this.license.package.features.aiPowerups?.options?.lexicalGeneration === true;
     }
 
+    canUseAiAdminAssistant(): boolean {
+        return this.license.package.features.aiPowerups?.options?.adminAssistant === true;
+    }
+
     canUseAiEntryGeneration(): boolean {
         return this.license.package.features.aiPowerups?.options?.cms?.entryGeneration === true;
     }
@@ -156,9 +160,11 @@ export class License implements ILicense {
             this.canUseAiPageGeneration() ||
             this.canUseAiPageTranslation() ||
             this.canUseAiLexicalGeneration() ||
+            this.canUseAiAdminAssistant() ||
             this.canUseAiEntryGeneration() ||
             this.canUseAiEntryComparison() ||
-            this.canUseAiEntryTranslation()
+            this.canUseAiEntryTranslation() ||
+            this.canUseRemoteComponents()
         );
     }
 
@@ -167,7 +173,7 @@ export class License implements ILicense {
     }
 
     canUseRemoteComponents(): boolean {
-        return this.license.package.features.websiteBuilder?.options?.remoteComponents === true;
+        return this.license.package.features.aiPowerups?.options?.remoteComponents === true;
     }
 
     canUseCollaboration(): boolean {

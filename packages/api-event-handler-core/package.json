@@ -19,7 +19,6 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/activity-log": "0.0.0",
-    "@webiny/ai-chat": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-audit-logs": "0.0.0",
     "@webiny/api-core": "0.0.0",

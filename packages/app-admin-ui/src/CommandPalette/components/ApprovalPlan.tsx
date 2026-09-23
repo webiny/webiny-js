@@ -5,10 +5,10 @@ import { Icon } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as BoltIcon } from "@webiny/icons/bolt.svg";
 import { ReactComponent as WarningIcon } from "@webiny/icons/warning.svg";
-import type { AiChatPendingApproval } from "@webiny/app-admin";
+import type { AdminAssistantPendingApproval } from "@webiny/app-admin";
 
 export interface ApprovalPlanProps {
-    approvals: AiChatPendingApproval[];
+    approvals: AdminAssistantPendingApproval[];
     busy: boolean;
     onApprove: () => void;
     onReject: () => void;

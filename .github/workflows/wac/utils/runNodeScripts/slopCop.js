@@ -1,11 +1,15 @@
 // "Slop cop" PR analyzer. Reads a pull request's stated intent (title/body),
 // its footprint (per-file additions/deletions, commit list) and a capped raw
 // diff, then asks Claude two things:
-//   (A) integrity - does anything look like it should NOT be in the PR? e.g. a
-//       bad rebase/merge that wiped commits (the footprint does not match the
-//       stated intent), leaked secrets, committed debug code, conflict markers.
-//   (B) style - do the diff's added lines break any project code-style rule?
-//       (only when CODE_STYLE_DIR is provided; otherwise skipped.)
+//   INTEGRITY - does anything look like it should NOT be in the PR? e.g. a bad
+//               rebase/merge that wiped commits (the footprint does not match
+//               the stated intent), leaked secrets, debug code, conflict markers.
+//   STYLE     - do the diff's added lines break any project code-style rule?
+//               (only when CODE_STYLE_DIR is provided; otherwise skipped.)
+//
+// Neither caps how much it reports. A cap would mean the comment says "clean"
+// about lines it never looked at, and a reviewer who trusts the comment then
+// merges on the strength of a check that quietly stopped looking.
 //
 // This script ONLY analyzes and prints a Markdown report to a file. It never
 // blocks and never touches GitHub - posting the sticky comment is the caller's
@@ -108,12 +112,12 @@ const buildPrompt = pr => {
 
     return [
         "You are reviewing a GitHub pull request for a large TypeScript monorepo",
-        "(the Webiny framework). You have two jobs.",
+        "(the Webiny framework). Two checks. Do both on every PR.",
         "",
-        'JOB A ("integrity") - catch content that most likely should NOT be in the',
-        "PR: things the author probably did by accident and would want to know about",
-        "BEFORE merging. This is NOT general code-quality review; ignore normal",
-        "design/naming/refactor opinions. Look specifically for:",
+        "INTEGRITY - catch content that most likely should NOT be in the PR: things the",
+        "author probably did by accident and would want to know about BEFORE merging.",
+        "This is NOT general code-quality review; ignore normal design/naming/refactor",
+        "opinions. Look specifically for:",
         "  1. FOOTPRINT MISMATCH (highest priority): the stated intent (title/body)",
         "     is narrow (a fix, a single feature) but the diff deletes a large number",
         "     of files or lines, or touches unrelated areas. This is the classic",
@@ -131,21 +135,25 @@ const buildPrompt = pr => {
         "",
         rules
             ? [
-                  'JOB B ("style") - check the code the PR ADDS or CHANGES against the',
+                  "STYLE - check the code the PR ADDS or CHANGES against the",
                   "project's code-style rules, listed under CODE-STYLE RULES below. Only",
                   "flag lines the diff actually adds or modifies (added lines start with",
                   "'+' in the raw diff) - never pre-existing/unchanged code, and never",
                   "removed lines. For each violation, cite the file and the rule filename",
                   "(e.g. one-import-per-line.md). Respect each rule's scope (e.g.",
                   "no-console-in-backend applies only to api-* / backend code). Be precise",
-                  "and conservative - skip anything you are not confident violates a rule -",
-                  "and report at most the ~15 most important style violations."
+                  "and conservative - skip anything you are not confident violates a rule.",
+                  "There is NO limit on how many violations you report: if the diff breaks",
+                  "a rule forty times, say so forty times. Reporting a subset would tell",
+                  "the author the rest of their diff is clean when you never said that."
               ].join("\n")
-            : 'JOB B is DISABLED for this run (no code-style rules provided). Do not report any "style" findings.',
+            : 'STYLE is DISABLED for this run (no code-style rules provided). Do not report any "style" findings.',
         "",
-        "Be conservative overall: only report a finding when you are reasonably",
+        "Be conservative on both: only report a finding when you are reasonably",
         "confident. A large but coherent PR (its diff matches its intent) with no rule",
-        "violations is FINE - say so. Do NOT invent problems to look useful.",
+        "violations is FINE - say so. Do NOT invent problems to look useful. Being",
+        "conservative is about confidence in each finding, not about how many you",
+        "report - once you are confident, report every one.",
         "",
         "Report your result by calling the `report` tool. If nothing is worth",
         'flagging, call it with verdict "ok" and an empty findings array.',
@@ -191,6 +199,8 @@ const REPORT_TOOL = {
             summary: { type: "string", description: "One short sentence." },
             findings: {
                 type: "array",
+                description:
+                    "Every finding, not a selection. Do not trim the list to keep the comment short.",
                 items: {
                     type: "object",
                     properties: {
@@ -220,7 +230,10 @@ const callClaude = async prompt => {
         },
         body: JSON.stringify({
             model: MODEL,
-            max_tokens: 4000,
+            // Headroom for an uncapped findings list. Nothing limits how many findings
+            // a PR can produce any more, so the old 4000 was the real cap - it just
+            // enforced itself by cutting the tool call off mid-JSON instead of saying so.
+            max_tokens: 16000,
             tools: [REPORT_TOOL],
             tool_choice: { type: "tool", name: "report" },
             messages: [{ role: "user", content: prompt }]
@@ -237,7 +250,10 @@ const callClaude = async prompt => {
         throw new Error("Model did not return a report tool call.");
     }
 
-    return toolUse.input;
+    // Hitting the output limit means the findings list is cut short. The report still
+    // goes out - a partial list beats no comment - but it has to say it is partial,
+    // or the missing findings read as an all-clear.
+    return { ...toolUse.input, cutShort: data.stop_reason === "max_tokens" };
 };
 
 const SEVERITY = {
@@ -293,6 +309,13 @@ const renderReport = result => {
             lines.push("📏 **Code-style rule checks**", "");
             renderFindings(lines, style);
         }
+        if (result.cutShort) {
+            lines.push(
+                "✂️ _The analysis hit its output limit, so this list is incomplete. " +
+                    "Treat anything not listed as unchecked, not as clean._",
+                ""
+            );
+        }
     }
 
     lines.push("");
@@ -316,20 +339,14 @@ const main = async () => {
     }
 
     const result = await callClaude(buildPrompt(loadPr()));
-    fs.writeFileSync(outputPath, renderReport(result), "utf8");
+    const report = renderReport(result);
+
+    fs.writeFileSync(outputPath, report, "utf8");
+
+    // Also printed, because the comment it is about to become is sticky: the next push overwrites
+    // it, and a finding nobody read by then is gone. Run logs are per-run and stay put.
+    console.log(report);
     console.log(`Slop cop report written (verdict: ${result.verdict}).`);
-
-    // Machine-readable signal for the workflow, which uses it to decide whether to fail the job for
-    // authors who have opted into blocking. Mirrors what renderReport treats as "worth a look", so
-    // the comment and the exit status can never disagree.
-    const findingsCount =
-        result.verdict === "warnings" && Array.isArray(result.findings)
-            ? result.findings.length
-            : 0;
-
-    if (process.env.GITHUB_OUTPUT) {
-        fs.appendFileSync(process.env.GITHUB_OUTPUT, `findings-count=${findingsCount}\n`);
-    }
 };
 
 main().catch(err => {

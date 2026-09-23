@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Command } from "cmdk";
 import {
-    AiChatFeature,
+    AdminAssistantFeature,
     CommandPaletteFeature,
     createReactiveComponent,
-    useAdminConfig
+    useAdminConfig,
+    useFeatureFlags
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
@@ -56,8 +57,15 @@ const CommandPaletteBase = () => {
      * assistant needs lives in `createAiMode` rather than here. A second mode turns this into a
      * registry; nothing above this line has to change for that.
      */
-    const { presenter: aiChat } = useFeature(AiChatFeature);
-    const aiMode = useMemo(() => createAiMode(aiChat), [aiChat]);
+    const { presenter: assistant } = useFeature(AdminAssistantFeature);
+    const aiMode = useMemo(() => createAiMode(assistant), [assistant]);
+
+    /*
+     * The assistant is licensed separately, and the api registers no route without it. Checked here
+     * rather than at registration because admin flags are fetched, so they are not known when the
+     * container is built.
+     */
+    const aiEnabled = useFeatureFlags().isEnabled("aiPowerups.adminAssistant");
 
     useEffect(() => {
         presenter.init();
@@ -81,7 +89,7 @@ const CommandPaletteBase = () => {
         [container, close]
     );
 
-    usePaletteHotkeys({ presenter, close });
+    usePaletteHotkeys({ presenter, close, aiEnabled });
 
     const groups = useMemo<CommandGroup[]>(() => {
         const result: CommandGroup[] = [];
@@ -89,10 +97,12 @@ const CommandPaletteBase = () => {
         if (navigationRows.length > 0) {
             result.push({ title: NAVIGATION_GROUP, rows: navigationRows });
         }
-        const commandGroups = commandVmsToGroups(vm.commands, name => presenter.useCommand(name));
+        // Filtered on `entersAiMode` rather than on a command name, so a second mode needs no edit.
+        const commands = aiEnabled ? vm.commands : vm.commands.filter(cmd => !cmd.entersAiMode);
+        const commandGroups = commandVmsToGroups(commands, name => presenter.useCommand(name));
         result.push(...commandGroups);
         return result;
-    }, [menus, vm.commands, navigateTo, presenter]);
+    }, [menus, vm.commands, navigateTo, presenter, aiEnabled]);
 
     /*
      * The input is shared across modes, so focus has to be restored after the surrounding tree swaps.
@@ -160,7 +170,7 @@ const CommandPaletteBase = () => {
 
         // Space on an EMPTY query enters the aiMode. Gated on `query === ""` so space stays an ordinary
         // character the moment there is anything to search — "new entry" must keep working.
-        if (e.key === " " && vm.query === "") {
+        if (e.key === " " && vm.query === "" && aiEnabled) {
             e.preventDefault();
             presenter.enterAiMode();
         }
@@ -227,7 +237,10 @@ const CommandPaletteBase = () => {
                             ) : (
                                 <Command.List>
                                     <Command.Empty>
-                                        <NoResults query={vm.query} onAskAi={askAiFromQuery} />
+                                        <NoResults
+                                            query={vm.query}
+                                            onAskAi={aiEnabled ? askAiFromQuery : undefined}
+                                        />
                                     </Command.Empty>
 
                                     {groups.map(group => (

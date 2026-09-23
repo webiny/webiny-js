@@ -1,10 +1,10 @@
 import type { NormalJob } from "github-actions-wac";
-import {
-    createCheckoutPrSteps,
-    createDeployWebinySteps,
-    createSetupVerdaccioSteps,
-    withCommonParams
-} from "../steps/index.js";
+import { createCheckoutPrSteps } from "../steps/index.js";
+import { createConfigureBugReporterSteps } from "../steps/index.js";
+import { createDeployWebinySteps } from "../steps/index.js";
+import { createSetupVerdaccioSteps } from "../steps/index.js";
+import { withCommonParams } from "../steps/index.js";
+import { BUG_REPORTER_ENV } from "../steps/index.js";
 import { ACTION, AWS_REGION } from "../utils/index.js";
 import { createJob } from "../jobs/index.js";
 import { DIR_TEST_PROJECT, DIR_WEBINY_JS, PATH_TEST_PROJECT } from "./constants.js";
@@ -59,7 +59,12 @@ export const createAwsJobs = (dbSetup: string) => {
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
         PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
         WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
-        WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}"
+        WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}",
+        /*
+         * Read by `<Project.BugReporter>` while `webiny deploy api` builds, so it has to be on the
+         * job that deploys, not only on the step that edits the config.
+         */
+        ...BUG_REPORTER_ENV
     };
 
     if (dbSetup === "ddb-os") {
@@ -126,6 +131,10 @@ export const createAwsJobs = (dbSetup: string) => {
                       }
                   ]
                 : []),
+            ...createConfigureBugReporterSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                projectPath: PATH_TEST_PROJECT
+            }),
             {
                 name: "Print CLI version",
                 "working-directory": DIR_TEST_PROJECT,
@@ -150,6 +159,17 @@ export const createAwsJobs = (dbSetup: string) => {
                 name: "Enable extension whitelabeling",
                 "working-directory": DIR_TEST_PROJECT,
                 run: "yarn webiny extension whitelabeling"
+            },
+            {
+                /*
+                 * Pulled from S3 like any other published extension, so this covers the install
+                 * path a customer takes as well as the extension itself. Drafting falls back to
+                 * the reporter's own words here, since no AI provider is configured: provider keys
+                 * are encrypted runtime settings, not build params, so CI has no way to set one.
+                 */
+                name: "Enable extension bug-report-ai",
+                "working-directory": DIR_TEST_PROJECT,
+                run: "yarn webiny extension bug-report-ai"
             },
             {
                 name: "API bundle size limit",

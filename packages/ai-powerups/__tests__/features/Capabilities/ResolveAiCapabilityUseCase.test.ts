@@ -8,7 +8,7 @@ import { ResolveAiCapabilityUseCase } from "~/api/features/Capabilities/abstract
 import { ResolveAiCapabilityUseCaseImplementation } from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
 
-type Overrides = IAiPowerUpsSettings["capabilities"]["overrides"];
+type Items = IAiPowerUpsSettings["capabilities"]["items"];
 type Roles = IAiPowerUpsSettings["modelRoles"]["roles"];
 
 const CHEAP = "anthropic/claude-haiku-4-5";
@@ -23,7 +23,7 @@ const roles = (partial: Partial<Roles> = {}): Roles => ({
 
 function settings(params: {
     roles?: Partial<Roles>;
-    overrides?: Overrides;
+    items?: Items;
     connections?: IAiPowerUpsSettings["connections"]["presets"];
 }): IAiPowerUpsSettings {
     return {
@@ -39,7 +39,7 @@ function settings(params: {
             ]
         },
         modelRoles: { roles: roles(params.roles) },
-        capabilities: { overrides: params.overrides ?? {} }
+        capabilities: { items: params.items ?? {} }
     } as unknown as IAiPowerUpsSettings;
 }
 
@@ -125,7 +125,7 @@ describe("ResolveAiCapabilityUseCase", () => {
         const result = await resolver(
             settings({
                 roles: { fast: { connectionId: "conn-1", model: CHEAP } },
-                overrides: { "test.capability": { roleId: "fast" } }
+                items: { "test.capability": { overrides: { roleId: "fast" } } }
             })
         ).execute("test.capability");
 
@@ -136,8 +136,10 @@ describe("ResolveAiCapabilityUseCase", () => {
     it("lets a pinned connection and model beat the role", async () => {
         const result = await resolver(
             settings({
-                overrides: {
-                    "test.capability": { roleId: "fast", connectionId: "conn-1", model: CHEAP }
+                items: {
+                    "test.capability": {
+                        overrides: { roleId: "fast", connectionId: "conn-1", model: CHEAP }
+                    }
                 }
             })
         ).execute("test.capability");
@@ -148,7 +150,7 @@ describe("ResolveAiCapabilityUseCase", () => {
 
     it("ignores a half-finished pin, because guessing the other half is worse", async () => {
         const result = await resolver(
-            settings({ overrides: { "test.capability": { model: CHEAP } } })
+            settings({ items: { "test.capability": { overrides: { model: CHEAP } } } })
         ).execute("test.capability");
 
         expect(result.value.model).toBe(MAIN);
@@ -219,8 +221,8 @@ describe("ResolveAiCapabilityUseCase", () => {
     it("ignores a prompt override, because there is no such thing any more", async () => {
         const result = await resolver(
             settings({
-                overrides: {
-                    "test.capability": { guidance: "Mine now." } as Overrides[string]
+                items: {
+                    "test.capability": { overrides: { guidance: "Mine now." } } as Items[string]
                 }
             })
         ).execute("test.capability");
@@ -231,11 +233,43 @@ describe("ResolveAiCapabilityUseCase", () => {
     it("passes additional instructions through, trimmed", async () => {
         const result = await resolver(
             settings({
-                overrides: { "test.capability": { additionalInstructions: "  Be brief.  " } }
+                items: {
+                    "test.capability": { overrides: { additionalInstructions: "  Be brief.  " } }
+                }
             })
         ).execute("test.capability");
 
         expect(result.value.additionalInstructions).toBe("Be brief.");
+    });
+
+    /*
+     * Enforced here rather than only in the admin, so the GraphQL mutation behind a hidden button
+     * is off too. The screen hiding the affordance is a courtesy; this is the gate.
+     */
+    it("refuses a capability that was switched off", async () => {
+        const result = await resolver(
+            settings({ items: { "test.capability": { enabled: false, overrides: {} } } })
+        ).execute("test.capability");
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.message).toContain("switched off");
+    });
+
+    /* Absent means enabled: a licence turns a capability on without anyone opting in. */
+    it("runs a capability nobody has an entry for", async () => {
+        const result = await resolver(settings({})).execute("test.capability");
+
+        expect(result.isOk()).toBe(true);
+    });
+
+    it("runs a capability whose entry only carries overrides", async () => {
+        const result = await resolver(
+            settings({
+                items: { "test.capability": { overrides: { additionalInstructions: "Hi." } } }
+            })
+        ).execute("test.capability");
+
+        expect(result.isOk()).toBe(true);
     });
 
     it("fails loudly on an unregistered capability id", async () => {

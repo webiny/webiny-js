@@ -2,6 +2,7 @@ import React from "react";
 import { Languages } from "@webiny/languages";
 import { TenantManager } from "@webiny/tenant-manager";
 import { AiPowerups } from "@webiny/ai-powerups";
+import { BugReporter } from "@webiny/bug-reporter";
 
 /**
  * Default feature extensions every Webiny project gets, shared across hosting types (aws + server). The
@@ -15,6 +16,7 @@ export const DefaultExtensions = () => {
             <Languages />
             <TenantManager />
             <AiPowerups />
+            <BugReporter />
         </>
     );
 };

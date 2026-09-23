@@ -8,6 +8,7 @@ import {
 } from "~/abstractions/models/index.js";
 import { type ProjectSdkParamsService } from "~/abstractions/index.js";
 import { serializeProjectSdkContext, WBY_PROJECT_SDK_CONTEXT } from "~/utils/index.js";
+import { traceRecorder } from "~/utils/trace/index.js";
 
 export interface RenderConfigParams {
     project: IProjectModel;
@@ -65,6 +66,12 @@ export async function renderConfig(params: RenderConfigParams) {
         // debugging the config render — e.g. feature flag resolution, extension registration).
         // childProcess.stdout?.pipe(process.stdout);
         // childProcess.stderr?.pipe(process.stderr);
+
+        // The worker is a second Node process with an import graph of its own, so when tracing we
+        // want its report too. It writes the report to stderr, which is otherwise swallowed.
+        if (traceRecorder.enabled) {
+            childProcess.stderr?.pipe(process.stderr);
+        }
 
         // The only message we expect to receive is the parsed project config.
         childProcess.on("message", (message: RenderConfigWorkerMessageDto) => {

@@ -27,6 +27,7 @@ export interface ILicense {
     canUseAiPageGeneration: () => boolean;
     canUseAiPageTranslation: () => boolean;
     canUseAiLexicalGeneration: () => boolean;
+    canUseAiAdminAssistant: () => boolean;
     canUseAiEntryGeneration: () => boolean;
     canUseAiEntryComparison: () => boolean;
     canUseAiEntryTranslation: () => boolean;
@@ -67,7 +68,6 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     FILE_MANAGER = "fileManager",
     AI_POWERUPS = "aiPowerups",
     AB_TESTING = "abTesting",
-    WEBSITE_BUILDER = "websiteBuilder",
     COLLABORATION = "collaboration"
 }
 
@@ -122,6 +122,8 @@ export interface ProjectPackageFeatures {
             websiteBuilder?: { pageGeneration?: boolean; pageTranslation?: boolean };
             fileManager?: { imageEnrichment?: boolean };
             lexicalGeneration?: boolean;
+            adminAssistant?: boolean;
+            remoteComponents?: boolean;
             cms?: {
                 entryGeneration?: boolean;
                 entryComparison?: boolean;
@@ -131,11 +133,6 @@ export interface ProjectPackageFeatures {
     };
     [PROJECT_PACKAGE_FEATURE_NAME.AB_TESTING]: {
         enabled: boolean;
-    };
-    [PROJECT_PACKAGE_FEATURE_NAME.WEBSITE_BUILDER]: {
-        // This is always true because every project has Website Builder. What is sold sits in `options`.
-        enabled: true;
-        options: { remoteComponents?: boolean };
     };
     [PROJECT_PACKAGE_FEATURE_NAME.COLLABORATION]: {
         enabled: boolean;

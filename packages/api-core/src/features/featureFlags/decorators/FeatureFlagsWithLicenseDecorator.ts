@@ -41,11 +41,12 @@ const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
     "aiPowerups.websiteBuilder.pageGeneration": l => l.canUseAiPageGeneration(),
     "aiPowerups.websiteBuilder.pageTranslation": l => l.canUseAiPageTranslation(),
     "aiPowerups.lexicalGeneration": l => l.canUseAiLexicalGeneration(),
+    "aiPowerups.adminAssistant": l => l.canUseAiAdminAssistant(),
+    "aiPowerups.remoteComponents": l => l.canUseRemoteComponents(),
     "aiPowerups.cms.entryGeneration": l => l.canUseAiEntryGeneration(),
     "aiPowerups.cms.entryComparison": l => l.canUseAiEntryComparison(),
     "aiPowerups.cms.entryTranslation": l => l.canUseAiEntryTranslation(),
     abTesting: l => l.canUseAbTesting(),
-    remoteComponents: l => l.canUseRemoteComponents(),
     collaboration: l => l.canUseCollaboration(),
     "collaboration.comments": l => l.canUseComments(),
     "collaboration.activityLog": l => l.canUseActivityLog()
