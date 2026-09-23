@@ -1,4 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { CollabThreadModel } from "./domain/thread/threadModel.js";
 import { CollabThreadMapper } from "./domain/thread/CollabThreadMapper.js";
 import { ResolveLocatorFeature } from "./features/locator/ResolveLocator/feature.js";
@@ -18,6 +19,16 @@ import { CollaborationSchema } from "./graphql/collaboration.js";
 export const Extension = createFeature({
     name: "Collaboration",
     register(container) {
+        /*
+         * Comments are the only collaboration feature today, so the whole extension is gated on
+         * them. `WcpContext` already combines the live licence with the project's feature flags,
+         * and the licence is refreshed before any feature registers. Nothing is registered when it
+         * is off, so an unlicensed project has no collaboration schema at all.
+         */
+        if (!container.resolve(WcpContext).canUseComments()) {
+            return;
+        }
+
         container.register(CollabThreadModel);
         container.register(CollabThreadMapper);
 
