@@ -12808,7 +12808,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/global-config@workspace:packages/global-config"
   dependencies:
-    "@webiny/stdlib": "npm:^0.0.17"
     ci-info: "npm:^4.4.0"
     load-json-file: "npm:^7.0.1"
     write-json-file: "npm:^7.0.0"

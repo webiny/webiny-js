@@ -24,7 +24,7 @@ export class VerifyDepsCommand implements CliCommandFactory.Interface<unknown> {
                 const referencesFile = getReferencesFilePath(project);
                 const duplicatesFile = getDuplicatesFilePath(project);
 
-                const tree = createDependencyTree(project);
+                const tree = await createDependencyTree(project);
 
                 const references: IDependencyCollection = {
                     dependencies: tree.dependencies,
