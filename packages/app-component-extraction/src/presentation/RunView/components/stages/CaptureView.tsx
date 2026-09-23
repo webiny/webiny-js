@@ -69,8 +69,8 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
             if (medianHeight > 0 && page.documentHeight < medianHeight * 0.4) {
                 warnings.push("unusually short");
             }
-            if (page.warnings?.consentPresent) {
-                warnings.push("consent overlay");
+            if (page.warnings?.overlayRemains) {
+                warnings.push("overlay still present");
             }
             if (page.warnings && page.warnings.brokenImages > 0) {
                 warnings.push(`${page.warnings.brokenImages} broken image(s)`);

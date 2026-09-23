@@ -38,11 +38,14 @@ export interface PageSnapshot {
      */
     failedScreenshots: string[];
     /**
-     * Overlays hidden before sampling, described well enough to identify.
+     * Everything the overlay pass took off the page — hidden, closed or removed — each described well
+     * enough to identify.
      *
      * Reported rather than kept quiet because this is the step most likely to have removed something it
      * should not have. "Why is the brand colour missing from my theme?" is answerable from this list and
      * very hard to answer without it.
      */
-    dismissedOverlays: string[];
+    clearedOverlays: string[];
+    /** What still covered the page when it was sampled, or `null`. A sample taken through a popup. */
+    overlayRemains: string | null;
 }

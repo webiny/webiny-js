@@ -142,11 +142,30 @@ export interface CapturedNode {
 
 /** Signals observed while a page was captured, surfaced as warnings on the Capture grid. */
 export interface CaptureWarnings {
-    /** A cookie/consent overlay was still present after the visit sequence (dismissal likely failed). */
-    consentPresent: boolean;
+    /**
+     * What the overlay pass found still covering the page after it ran, or `null` when it came back
+     * clean. The pass reports this itself rather than a separate detector re-deciding it: it is the
+     * code that did the clearing, so its answer and the page in the screenshot cannot disagree.
+     */
+    overlayRemains: string | null;
     /** Broken `<img>` elements (loaded, zero natural size) at capture time, and the total on the page. */
     brokenImages: number;
     totalImages: number;
+}
+
+/**
+ * What the overlay pass took off the page, per page.
+ *
+ * Separated by how it went, because that is the question worth asking of a capture that looks wrong.
+ * `hidden` is routine. `dismissed` means the overlay offered a way out and we took it. `removed` is
+ * the one carrying risk — the capture acted against a page that offered nothing — so each entry
+ * records the geometry that justified it, and it is the first thing to read when a section is missing.
+ */
+export interface OverlayClearance {
+    hidden: string[];
+    dismissed: string[];
+    removed: string[];
+    unlockedScroll: boolean;
 }
 
 export interface CapturedPage {
@@ -164,8 +183,10 @@ export interface CapturedPage {
     narrowScreenshotRef: string;
     /** A small downscaled derivative of the desktop screenshot, so the capture grid isn't tens of MB. */
     thumbnailRef: string;
-    /** Capture-time warnings (consent overlay, broken images) for the visibility view. */
+    /** Capture-time warnings (a surviving overlay, broken images) for the visibility view. */
     warnings: CaptureWarnings;
+    /** What the overlay pass hid, closed and removed on this page. */
+    overlayClearance: OverlayClearance;
 }
 
 /** A page that could not be captured, with the reason (so the operator can tell why). */

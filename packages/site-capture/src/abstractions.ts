@@ -132,8 +132,29 @@ export interface CaptureResult<TResult> {
     screenshots: Screenshot[];
     /** Labels of screenshots requested but not captured — a degraded result, reported not swallowed. */
     failedScreenshots: string[];
-    /** Overlays hidden before the evaluator ran, described well enough to identify. */
-    dismissedOverlays: string[];
+    /** What the overlay pass hid, closed and removed, and what was still covering the page after it. */
+    overlayClearance: OverlayClearanceResult;
+}
+
+/**
+ * The result of clearing popups, consent banners and overlays off a page.
+ *
+ * Kept as four separate lists rather than one, because they answer different questions: what was
+ * hidden is a property of the site, what was closed is a property of the overlay, and what had to be
+ * removed is the part carrying risk — it is the only one where the capture acted against a page that
+ * did not offer a way out, and the only one worth reading when a section comes back missing.
+ */
+export interface OverlayClearanceResult {
+    /** Consent banners hidden by selector or keyword. */
+    hidden: string[];
+    /** Overlays closed through their own close control. */
+    dismissed: string[];
+    /** Overlays removed because they resisted closing, each carrying the reason. */
+    removed: string[];
+    /** Whether a scroll lock had to be lifted. */
+    unlockedScroll: boolean;
+    /** What still covered the viewport centre when the screenshots were taken, or `null`. */
+    overlayRemains: string | null;
 }
 
 export interface IBrowserSession {

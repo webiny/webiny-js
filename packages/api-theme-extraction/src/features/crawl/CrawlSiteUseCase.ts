@@ -56,7 +56,12 @@ const toPageSnapshot = (capture: CaptureResult<SampleResult>): PageSnapshot => (
     fontResources: capture.fontResources,
     screenshots: capture.screenshots,
     failedScreenshots: capture.failedScreenshots,
-    dismissedOverlays: capture.dismissedOverlays
+    clearedOverlays: [
+        ...capture.overlayClearance.hidden,
+        ...capture.overlayClearance.dismissed,
+        ...capture.overlayClearance.removed
+    ],
+    overlayRemains: capture.overlayClearance.overlayRemains
 });
 
 /**
@@ -381,8 +386,9 @@ class CrawlSiteUseCaseImpl implements UseCaseAbstraction.Interface {
      * One entry per page read, carrying the facts that explain a surprising result.
      *
      * `finalUrl` is here because a redirect is invisible otherwise, and "we extracted the wrong site"
-     * usually starts with one. `dismissedOverlays` is here because hiding an overlay is the step most
-     * likely to have removed something it should not have.
+     * usually starts with one. `clearedOverlays` is here because taking an overlay off the page is the
+     * step most likely to have removed something it should not have, and `overlayRemains` because a
+     * sample read through a popup is wrong in a way nothing downstream can see.
      */
     private async logPage(log: IExtractionLog, url: string, snapshot: PageSnapshot): Promise<void> {
         await log.info({
@@ -397,7 +403,8 @@ class CrawlSiteUseCaseImpl implements UseCaseAbstraction.Interface {
                 cappedAtLimit: snapshot.candidateCount > snapshot.elements.length,
                 linksFound: snapshot.links.length,
                 webFonts: snapshot.fontResources.map(font => font.url),
-                dismissedOverlays: snapshot.dismissedOverlays,
+                clearedOverlays: snapshot.clearedOverlays,
+                overlayRemains: snapshot.overlayRemains,
                 screenshotsTaken: snapshot.screenshots.map(shot => shot.label),
                 screenshotsFailed: snapshot.failedScreenshots
             }

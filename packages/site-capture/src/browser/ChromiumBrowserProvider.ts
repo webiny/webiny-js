@@ -13,7 +13,7 @@ import {
     type Screenshot,
     type ScreenshotCrop
 } from "~/abstractions.js";
-import { dismissBannersScript, type BannerDismissalResult } from "./dismissBanners.js";
+import { clearOverlaysScript, type OverlayClearanceResult } from "./clearOverlays.js";
 import { BotChallengeError, detectBotChallenge } from "./botChallenge.js";
 import {
     ChromiumNotFoundError,
@@ -51,6 +51,40 @@ const CROP_LABELS: Record<ScreenshotCrop, string> = {
     footer: "bottom of the page",
     "full-page": "the full page"
 };
+
+const noClearance = (): OverlayClearanceResult => ({
+    hidden: [],
+    dismissed: [],
+    removed: [],
+    unlockedScroll: false,
+    overlayRemains: null
+});
+
+const clearOverlays = (page: Page): Promise<OverlayClearanceResult> => {
+    return withTimeoutOrDefault<OverlayClearanceResult>(
+        "clear popups and overlays",
+        DEFAULT_TIMEOUTS.bannerMs,
+        noClearance(),
+        () => page.evaluate(clearOverlaysScript()) as Promise<OverlayClearanceResult>
+    );
+};
+
+/**
+ * Both passes, as one record.
+ *
+ * Only the second pass's verdict on what is left is kept: it ran against the page as photographed,
+ * and the first pass's answer describes a page that no longer exists by the time of the screenshot.
+ */
+const mergeClearance = (
+    first: OverlayClearanceResult,
+    second: OverlayClearanceResult
+): OverlayClearanceResult => ({
+    hidden: [...first.hidden, ...second.hidden],
+    dismissed: [...first.dismissed, ...second.dismissed],
+    removed: [...first.removed, ...second.removed],
+    unlockedScroll: first.unlockedScroll || second.unlockedScroll,
+    overlayRemains: second.overlayRemains
+});
 
 /**
  * Resolves the executable, falling back to unpacking a compressed layer.
@@ -305,12 +339,7 @@ class ChromiumSession implements IBrowserSession {
         await this.assertNotChallenged(page, params.url, status, headers, title);
 
         // Before sampling, so the sampler's own `display: none` filter excludes whatever was hidden.
-        const dismissal = await withTimeoutOrDefault<BannerDismissalResult>(
-            "dismiss consent banners",
-            DEFAULT_TIMEOUTS.bannerMs,
-            { hidden: [], unlockedScroll: false },
-            () => page.evaluate(dismissBannersScript()) as Promise<BannerDismissalResult>
-        );
+        const firstClearance = await clearOverlays(page);
 
         // The pluggable seam. The visit sequence above is fixed; what to read off the settled page is
         // the caller's — a token sampler, a DOM/segment sampler — supplied as an in-page script whose
@@ -320,6 +349,20 @@ class ChromiumSession implements IBrowserSession {
             DEFAULT_TIMEOUTS.evaluateMs,
             () => page.evaluate(params.evaluate) as Promise<TResult>
         );
+
+        /*
+         * Again, immediately before the screenshots.
+         *
+         * The first pass runs seconds after navigation, and the overlays that matter most are the ones
+         * that are not there yet: a newsletter modal on a three-second timer, an exit-intent layer, a
+         * promo that waits for scroll depth. Those arrive between the sampler and the camera, so a
+         * single pass leaves the element tree clean and photographs the popup — the worst of both, and
+         * a disagreement between the tree and the image that nothing downstream can detect.
+         *
+         * The pass is idempotent, so on a page that was already clear this costs one evaluate and
+         * returns nothing.
+         */
+        const clearance = mergeClearance(firstClearance, await clearOverlays(page));
 
         const screenshots = await this.captureScreenshots(page, params);
 
@@ -334,7 +377,7 @@ class ChromiumSession implements IBrowserSession {
             failedScreenshots: screenshots.failed,
             // Returned rather than logged here: the caller has its own logger, and this belongs in the
             // consumer's own log where someone debugging a missing element will look for it.
-            dismissedOverlays: dismissal.hidden
+            overlayClearance: clearance
         };
     }
 

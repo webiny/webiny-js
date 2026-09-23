@@ -192,9 +192,18 @@ export interface DiscoverArtifactDto {
 
 /** Capture-time warnings on a page. Optional — runs captured before this shipped won't carry it. */
 export interface CaptureWarningsDto {
-    consentPresent: boolean;
+    /** What the overlay pass found still covering the page, or null/absent when it came back clean. */
+    overlayRemains?: string | null;
     brokenImages: number;
     totalImages: number;
+}
+
+/** What the overlay pass hid, closed and removed on a page. Absent on runs captured before it shipped. */
+export interface OverlayClearanceDto {
+    hidden: string[];
+    dismissed: string[];
+    removed: string[];
+    unlockedScroll: boolean;
 }
 
 export interface CapturePageDto {

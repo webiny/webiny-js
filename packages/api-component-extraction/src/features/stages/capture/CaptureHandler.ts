@@ -313,9 +313,15 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             narrowScreenshotRef,
             thumbnailRef,
             warnings: {
-                consentPresent: desktop.result.consentPresent,
+                overlayRemains: desktop.overlayClearance.overlayRemains,
                 brokenImages: desktop.result.imagesBroken,
                 totalImages: desktop.result.imagesTotal
+            },
+            overlayClearance: {
+                hidden: desktop.overlayClearance.hidden,
+                dismissed: desktop.overlayClearance.dismissed,
+                removed: desktop.overlayClearance.removed,
+                unlockedScroll: desktop.overlayClearance.unlockedScroll
             }
         };
     }
