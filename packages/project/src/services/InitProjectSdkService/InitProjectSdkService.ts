@@ -20,6 +20,7 @@ import { registerHooks } from "./registerHooks.js";
 import { registerPulumiExtensions } from "./registerPulumiExtensions.js";
 import { registerImplementations } from "./registerImplementations.js";
 import { registerDecorators } from "./registerDecorators.js";
+import { traceAsync } from "~/utils/trace/index.js";
 
 export class DefaultInitProjectSdkService implements InitProjectSdkService.Interface {
     constructor(
@@ -37,13 +38,17 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
         applyEnvVars(projectExtensions);
 
         // Set WCP environment variables if project ID exists.
-        await applyWcpEnvVars(container);
+        await traceAsync("apply WCP env vars", () => applyWcpEnvVars(container));
 
         // Register hooks from extensions.
-        await registerHooks(container, projectExtensions, project);
+        await traceAsync("register hooks", () => {
+            return registerHooks(container, projectExtensions, project);
+        });
 
         // Register Pulumi extensions.
-        await registerPulumiExtensions(container, projectExtensions, project);
+        await traceAsync("register Pulumi extensions", () => {
+            return registerPulumiExtensions(container, projectExtensions, project);
+        });
 
         // Decorators that must be applied last on top of potentially custom ones.
         container.registerDecorator(buildAppWithHooks);
@@ -56,10 +61,14 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
         container.registerDecorator(getPulumiServiceWithDownloadInfo);
 
         // Register custom implementations first (they replace existing implementations).
-        await registerImplementations(container, projectExtensions, project);
+        await traceAsync("register implementations", () => {
+            return registerImplementations(container, projectExtensions, project);
+        });
 
         // Register decorators after implementations (they enhance existing implementations).
-        await registerDecorators(container, projectExtensions, project);
+        await traceAsync("register decorators", () => {
+            return registerDecorators(container, projectExtensions, project);
+        });
     }
 }
 
