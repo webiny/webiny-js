@@ -1,13 +1,69 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { FeatureFlagsService } from "~/features/featureFlags/abstractions.js";
-import { ListRolesUseCase } from "~/features/accessManagement/roles/listRoles/abstractions.js";
-import { ListTeamsUseCase } from "~/features/accessManagement/teams/listTeams/abstractions.js";
+import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { AssumedRoleContext } from "~/features/assumedRole/abstractions.js";
 import { AssumeRoleUseCase } from "~/features/assumedRole/abstractions.js";
+import { ListAssumableRolesUseCase } from "~/features/assumedRole/abstractions.js";
 import { AssumedRolePresenter as Abstraction } from "./abstractions.js";
 
-function optionValue(assumedRole: AssumedRoleContext.Value): string {
-    return `${assumedRole.type}:${assumedRole.id}`;
+type AssumableRole = ListAssumableRolesUseCase.Role;
+type Permission = AssumableRole["permissions"][number];
+
+function optionValue(entry: { type: string; id: string }): string {
+    return `${entry.type}:${entry.id}`;
+}
+
+function grantsFullAccess(permissions: Permission[]): boolean {
+    return permissions.some(permission => permission.name === "*");
+}
+
+function grantsWrite(permission: Permission): boolean {
+    if (permission.name === "*") {
+        return true;
+    }
+
+    if (typeof permission.pw === "string" && permission.pw !== "") {
+        return true;
+    }
+
+    // "Own records" scoping still lets the holder edit what they created.
+    if (permission.own === true) {
+        return true;
+    }
+
+    if (typeof permission.rwd === "string") {
+        return permission.rwd.includes("w") || permission.rwd.includes("d");
+    }
+
+    // An app-wide grant with no rwd restriction is full access to that app.
+    return permission.name.endsWith(".*");
+}
+
+/*
+ * Conservative on purpose: a role only counts as read-only when it reads something and nothing in
+ * it could write. A wrong "Read-only" chip would tell someone a role is harmless when it is not.
+ */
+function isReadOnly(permissions: Permission[]): boolean {
+    if (permissions.some(grantsWrite)) {
+        return false;
+    }
+
+    return permissions.some(permission => {
+        return typeof permission.rwd === "string" && permission.rwd.includes("r");
+    });
+}
+
+function toOption(entry: AssumableRole, isCurrent: boolean): Abstraction.Option {
+    return {
+        value: optionValue(entry),
+        type: entry.type,
+        label: entry.name,
+        description: entry.description,
+        isCurrent,
+        fullAccess: grantsFullAccess(entry.permissions),
+        readOnly: isReadOnly(entry.permissions),
+        permissionNames: entry.permissions.map(permission => permission.name)
+    };
 }
 
 function reloadPage(): void {
@@ -23,11 +79,11 @@ function toMessage(error: unknown, fallback: string): string {
 }
 
 class AssumedRolePresenterImpl implements Abstraction.Interface {
-    private _loading = false;
-    private _switching = false;
-    private _roleOptions: Abstraction.Option[] = [];
-    private _teamOptions: Abstraction.Option[] = [];
-    private _error: string | null = null;
+    private loading = false;
+    private switching = false;
+    private roles: AssumableRole[] = [];
+    private teams: AssumableRole[] = [];
+    private error: string | null = null;
     /*
      * The role this page was LOADED with, captured once. The banner renders from this rather than
      * from the live context so it doesn't flicker during a switch: assuming a role would otherwise
@@ -38,17 +94,17 @@ class AssumedRolePresenterImpl implements Abstraction.Interface {
     private readonly loadedAssumedRole: AssumedRoleContext.Value | null;
 
     constructor(
-        private assumedRoleContext: AssumedRoleContext.Interface,
+        assumedRoleContext: AssumedRoleContext.Interface,
         private assumeRoleUseCase: AssumeRoleUseCase.Interface,
-        private listRolesUseCase: ListRolesUseCase.Interface,
-        private listTeamsUseCase: ListTeamsUseCase.Interface,
+        private listAssumableRolesUseCase: ListAssumableRolesUseCase.Interface,
+        private identityContext: IdentityContext.Interface,
         private featureFlags: FeatureFlagsService.Interface
     ) {
         this.loadedAssumedRole = assumedRoleContext.get();
         makeAutoObservable(this, {}, { autoBind: true });
 
         /*
-         * Preload, but only for a page that loaded into a preview — that is the one case where a
+         * Preload, but only for a page that loaded into a preview. That is the one case where a
          * header control exists to open, and it should open on a ready list rather than a spinner.
          * On the other 99% of page loads nobody is switching roles, so nothing is fetched.
          */
@@ -58,67 +114,54 @@ class AssumedRolePresenterImpl implements Abstraction.Interface {
     }
 
     get vm(): Abstraction.ViewModel {
+        const identity = this.identityContext.getIdentity();
+        const ownRoleIds = new Set(identity.roles.map(role => role.id));
+        const ownTeamIds = new Set(identity.teams.map(team => team.id));
+
         return {
-            loading: this._loading,
-            switching: this._switching,
-            roleOptions: this._roleOptions,
-            teamOptions: this._teamOptions,
+            loading: this.loading,
+            switching: this.switching,
+            roleOptions: this.roles.map(role => toOption(role, ownRoleIds.has(role.id))),
+            teamOptions: this.teams.map(team => toOption(team, ownTeamIds.has(team.id))),
             assumedRole: this.loadedAssumedRole,
-            error: this._error
+            error: this.error
         };
     }
 
     async load(): Promise<void> {
-        const hasOptions = this._roleOptions.length > 0 || this._teamOptions.length > 0;
+        const hasOptions = this.roles.length > 0 || this.teams.length > 0;
 
-        runInAction(() => {
-            /*
-             * Only show the loader when there is nothing to show yet. Every later call refreshes
-             * in the background, so a role or team added since the last time still turns up
-             * without the list blanking out first.
-             */
-            this._loading = !hasOptions;
-            this._error = null;
-        });
+        /*
+         * Only show the loader when there is nothing to show yet. Every later call refreshes in the
+         * background, so a role or team added since the last time still turns up without the list
+         * blanking out first.
+         */
+        this.startLoading(!hasOptions);
+
+        const includeTeams = this.featureFlags
+            .getFlags()
+            .isEnabled("advancedAccessControlLayer.teams");
 
         try {
-            const roles = await this.listRolesUseCase.execute();
-            const teamOptions = await this.loadTeamOptions();
-
-            const roleOptions = roles.data.map(role => {
-                const assumedRole: AssumedRoleContext.Value = {
-                    type: "role",
-                    id: role.id,
-                    name: role.name
-                };
-
-                return { label: role.name, value: optionValue(assumedRole), assumedRole };
-            });
-
-            runInAction(() => {
-                this._roleOptions = roleOptions;
-                this._teamOptions = teamOptions;
-            });
+            const result = await this.listAssumableRolesUseCase.execute({ includeTeams });
+            this.setEntries(result.roles, result.teams);
         } catch (error) {
-            runInAction(() => {
-                this._error = toMessage(error, "Could not load roles.");
-            });
+            const message = toMessage(error, "Could not load roles.");
+            this.setError(message);
         } finally {
-            runInAction(() => {
-                this._loading = false;
-            });
+            this.stopLoading();
         }
     }
 
     async assume(value: string): Promise<void> {
-        const options = [...this._roleOptions, ...this._teamOptions];
-        const option = options.find(item => item.value === value);
+        const entries = [...this.roles, ...this.teams];
+        const entry = entries.find(item => optionValue(item) === value);
 
-        if (!option) {
+        if (!entry) {
             return;
         }
 
-        await this.switchTo(option.assumedRole);
+        await this.switchTo({ type: entry.type, id: entry.id, name: entry.name });
     }
 
     async exit(): Promise<void> {
@@ -126,60 +169,59 @@ class AssumedRolePresenterImpl implements Abstraction.Interface {
     }
 
     dismissError(): void {
-        runInAction(() => {
-            this._error = null;
-        });
+        this.error = null;
     }
 
     private async switchTo(assumedRole: AssumedRoleContext.Value | null): Promise<void> {
-        runInAction(() => {
-            this._switching = true;
-            this._error = null;
-        });
+        this.startSwitching();
 
         try {
             await this.assumeRoleUseCase.execute(assumedRole);
         } catch (error) {
-            runInAction(() => {
-                this._error = toMessage(error, "Could not switch roles.");
-                this._switching = false;
-            });
+            const message = toMessage(error, "Could not switch roles.");
+            this.failSwitching(message);
             return;
         }
 
         /*
          * A full reload, not an in-place identity swap. Permission checks such as
          * `createHasPermission` read the identity during render without observing it, and every
-         * list fetched under the old role is still cached, so a swap leaves parts of the Admin —
-         * menus, the dashboard — still showing the previous role. The tenant switcher reaches for
-         * a full page load for the same reason.
+         * list fetched under the old role is still cached, so a swap leaves parts of the Admin,
+         * such as menus and the dashboard, still showing the previous role. The tenant switcher
+         * reaches for a full page load for the same reason.
          *
-         * `_switching` stays true on purpose: the page is on its way out, and the control should
+         * `switching` stays true on purpose: the page is on its way out, and the control should
          * not look ready for another click in the meantime.
          */
         reloadPage();
     }
 
-    private async loadTeamOptions(): Promise<Abstraction.Option[]> {
-        const teamsEnabled = this.featureFlags
-            .getFlags()
-            .isEnabled("advancedAccessControlLayer.teams");
+    private startLoading(showLoader: boolean): void {
+        this.loading = showLoader;
+        this.error = null;
+    }
 
-        if (!teamsEnabled) {
-            return [];
-        }
+    private stopLoading(): void {
+        this.loading = false;
+    }
 
-        const teams = await this.listTeamsUseCase.execute();
+    private setEntries(roles: AssumableRole[], teams: AssumableRole[]): void {
+        this.roles = roles;
+        this.teams = teams;
+    }
 
-        return teams.data.map(team => {
-            const assumedRole: AssumedRoleContext.Value = {
-                type: "team",
-                id: team.id,
-                name: team.name
-            };
+    private setError(message: string): void {
+        this.error = message;
+    }
 
-            return { label: team.name, value: optionValue(assumedRole), assumedRole };
-        });
+    private startSwitching(): void {
+        this.switching = true;
+        this.error = null;
+    }
+
+    private failSwitching(message: string): void {
+        this.switching = false;
+        this.error = message;
     }
 }
 
@@ -188,8 +230,8 @@ export const AssumedRolePresenter = Abstraction.createImplementation({
     dependencies: [
         AssumedRoleContext,
         AssumeRoleUseCase,
-        ListRolesUseCase,
-        ListTeamsUseCase,
+        ListAssumableRolesUseCase,
+        IdentityContext,
         FeatureFlagsService
     ]
 });

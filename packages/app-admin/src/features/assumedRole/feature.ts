@@ -6,12 +6,16 @@ import { AssumedRoleContext } from "./AssumedRoleContext.js";
 import { AssumeRoleUseCase } from "./AssumeRoleUseCase.js";
 import { GraphQLClientDecorator } from "./GraphQLClientDecorator.js";
 import { ApiStreamClientDecorator } from "./ApiStreamClientDecorator.js";
+import { ListAssumableRolesGateway } from "./ListAssumableRolesGateway.js";
+import { ListAssumableRolesUseCase } from "./ListAssumableRolesUseCase.js";
 
 export const AssumedRoleFeature = createFeature({
     name: "AssumedRole",
     register(container: Container) {
         container.register(AssumedRoleContext).inSingletonScope();
         container.register(AssumeRoleUseCase);
+        container.register(ListAssumableRolesGateway).inSingletonScope();
+        container.register(ListAssumableRolesUseCase);
         container.registerDecorator(GraphQLClientDecorator);
         container.registerDecorator(ApiStreamClientDecorator);
     },

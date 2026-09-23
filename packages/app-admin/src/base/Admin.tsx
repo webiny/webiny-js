@@ -16,8 +16,6 @@ import { TelemetryAdminAppStart } from "./TelemetryAdminAppStart.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { AssumedRoleFeature } from "~/features/assumedRole/index.js";
 import { AssumedRolePresenterFeature } from "~/presentation/assumedRole/feature.js";
-import { ListRolesFeature } from "~/features/accessManagement/roles/listRoles/feature.js";
-import { ListTeamsFeature } from "~/features/accessManagement/teams/listTeams/feature.js";
 import { FormModelFeature } from "~/features/formModel/feature.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import { AdminConfigPlugin, AdminConfigProvider } from "~/config/AdminConfig.js";
@@ -49,13 +47,12 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     // After SecurityFeature: the use case re-runs the login query through its LogInRepository.
     AssumedRoleFeature.register(container);
     /*
-     * The header control renders from the Layout, which mounts before the Admin config tree, so
-     * its presenter cannot be registered through RegisterFeature down there: a useFeature() miss
-     * throws, and the error boundary keeps the subtree dead even once the registration arrives.
-     * Registering here also keeps the features layer from importing the presentation layer.
+     * The banner and header control render from the Layout, which mounts before the Admin config
+     * tree, so their presenter cannot be registered through RegisterFeature down there: a
+     * useFeature() miss throws, and the error boundary keeps the subtree dead even once the
+     * registration arrives. Registering here also keeps the features layer from importing the
+     * presentation layer.
      */
-    ListRolesFeature.register(container);
-    ListTeamsFeature.register(container);
     AssumedRolePresenterFeature.register(container);
     DateFormatterFeature.register(container);
     StringFormatterFeature.register(container);

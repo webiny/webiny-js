@@ -2,10 +2,17 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { AssumedRoleContext } from "~/features/assumedRole/abstractions.js";
 
 export interface IAssumedRoleOption {
-    label: string;
     // `${type}:${id}`, so a single string identifies an option across both lists.
     value: string;
-    assumedRole: AssumedRoleContext.Value;
+    type: "role" | "team";
+    label: string;
+    description: string;
+    // The signed-in user's own role or team. Their real one, which login reports even mid-preview.
+    isCurrent: boolean;
+    fullAccess: boolean;
+    readOnly: boolean;
+    // Names only. The view matches them against each app's permission prefix for "Can access".
+    permissionNames: string[];
 }
 
 export interface IAssumedRoleViewModel {

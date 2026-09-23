@@ -17,7 +17,11 @@ class ApiStreamClientWithAssumedRole implements ApiStreamClient.Interface {
         const headers: ApiStreamClient.Headers = { ...params.headers };
         const assumedRole = this.context.get();
 
-        if (assumedRole) {
+        /*
+         * A caller that set the header itself keeps its value. The role picker sends it empty, so
+         * its own lists come back as the signed-in user rather than as the role being previewed.
+         */
+        if (assumedRole && !(ASSUME_ROLE_HEADER in headers)) {
             headers[ASSUME_ROLE_HEADER] = assumeRoleHeaderValue(assumedRole);
         }
 

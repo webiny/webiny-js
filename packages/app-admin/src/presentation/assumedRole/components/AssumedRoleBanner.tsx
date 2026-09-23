@@ -10,7 +10,7 @@ import { AssumedRolePresenterFeature } from "../feature.js";
  * fail while previewing, and someone who has lost the banner has no way to explain why.
  *
  * Rendered outside every permission gate, because the previewed role usually cannot see the menu
- * the preview was started from — leaving it behind a gate would strand the user.
+ * the preview was started from. Leaving it behind a gate would strand the user.
  */
 const AssumedRoleBannerView = observer(() => {
     const { presenter } = useFeature(AssumedRolePresenterFeature);

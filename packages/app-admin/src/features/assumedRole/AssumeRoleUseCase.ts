@@ -21,7 +21,7 @@ function hasUsablePermissions(identity: Identity): boolean {
  * the client.
  *
  * This only records the choice and proves it works. The caller reloads the page afterwards, which
- * is what actually re-renders the Admin as the new role — swapping the identity in place leaves
+ * is what actually re-renders the Admin as the new role. Swapping the identity in place leaves
  * half the UI stale, because permission checks like `createHasPermission` read the identity during
  * render without observing it, and every list already fetched still holds the previous role's
  * data. The tenant switcher reaches for a full page load for the same reason.
