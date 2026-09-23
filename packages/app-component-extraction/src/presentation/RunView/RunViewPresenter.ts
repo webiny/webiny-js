@@ -4,6 +4,7 @@ import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
 import { stageEntry } from "~/shared/ledger.js";
 import { normalizeUrl } from "~/shared/url.js";
 import type {
+    AssembleArtifactDto,
     DecisionsDto,
     GenerateArtifactDto,
     ModelCallDto,
@@ -53,6 +54,11 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         selectedClusters: [],
         clusterBusy: false,
         showOverrides: false,
+        showComposed: false,
+        pageMap: null,
+        pageMapLoading: false,
+        composedAssemble: null,
+        comparedPath: null,
         reattachments: [],
         promoteComponents: [],
         libraryNames: []
@@ -491,9 +497,65 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         runInAction(() => {
             this.vm.showTokens = opening;
             this.vm.showOverrides = false;
+            this.vm.showComposed = false;
         });
         if (opening && this.vm.run && this.vm.modelCalls === null) {
             void this.loadModelCalls(this.vm.run);
+        }
+    }
+
+    /**
+     * The composed-pages panel. Composition runs outside the nine stages and has no ledger entry, so
+     * it is a panel beside the stage views rather than a tenth stage — the same place Overrides and
+     * Token usage sit, for the same reason.
+     */
+    toggleComposed(): void {
+        const opening = !this.vm.showComposed;
+        runInAction(() => {
+            this.vm.showComposed = opening;
+            this.vm.showTokens = false;
+            this.vm.showOverrides = false;
+            // Closing drops the open comparison: reopening the panel should start at the list.
+            if (!opening) {
+                this.vm.comparedPath = null;
+            }
+        });
+        if (opening && this.vm.run && this.vm.pageMap === null) {
+            void this.loadPageMap(this.vm.run);
+        }
+    }
+
+    comparePage(path: string | null): void {
+        runInAction(() => {
+            this.vm.comparedPath = path;
+        });
+    }
+
+    /** The run's composed pages. Absent is a normal answer — most runs are never composed. */
+    private async loadPageMap(run: RunDto): Promise<void> {
+        runInAction(() => {
+            this.vm.pageMapLoading = true;
+        });
+        try {
+            /*
+             * Both together: the map says what was composed, Assemble says what each page was
+             * composed from — its source screenshot and its instances. The comparison needs both, and
+             * loading them separately would show half a comparison while the other half arrives.
+             */
+            const [pageMap, assemble] = await Promise.all([
+                this.gateway.getPageMap(run.id),
+                this.gateway.getStageArtifact(run.id, "assemble")
+            ]);
+            runInAction(() => {
+                this.vm.pageMap = pageMap;
+                this.vm.composedAssemble = (assemble as AssembleArtifactDto | null) ?? null;
+                this.vm.pageMapLoading = false;
+            });
+        } catch (error) {
+            runInAction(() => {
+                this.vm.pageMapLoading = false;
+                this.vm.error = (error as Error).message;
+            });
         }
     }
 
@@ -502,6 +564,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         runInAction(() => {
             this.vm.showOverrides = opening;
             this.vm.showTokens = false;
+            this.vm.showComposed = false;
         });
         if (opening && this.vm.run) {
             void this.loadOverrides(this.vm.run);

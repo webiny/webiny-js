@@ -1,5 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type {
+    AssembleArtifactDto,
+    PageMapDto,
     ComponentDecisionDto,
     GeneratedComponentDto,
     JobDto,
@@ -63,6 +65,18 @@ export interface IRunViewVm {
     clusterBusy: boolean;
     /** The overrides panel is open (W8.7), replacing the artifact panel. */
     showOverrides: boolean;
+    /** The composed-pages panel. Composition is not a stage, so it sits beside the stage views. */
+    showComposed: boolean;
+    /** The run's page map, null until loaded or when the run has never been composed. */
+    pageMap: PageMapDto | null;
+    pageMapLoading: boolean;
+    /**
+     * The run's Assemble artifact, loaded with the page map. It carries each source page's capture
+     * screenshot and its instance list, which is both halves of the comparison below the images.
+     */
+    composedAssemble: AssembleArtifactDto | null;
+    /** The composed page the comparison is open on, by its Website Builder path. */
+    comparedPath: string | null;
     /** This run's override reattachment outcomes (W8.7). */
     reattachments: ReattachmentDto[];
     /** The generated components eligible for Promotion, for the Promote gate (W8.6). */
@@ -98,6 +112,9 @@ export interface IRunViewPresenter {
     toggleTokens(): void;
     /** Toggle the overrides panel; loads the job's overrides + this run's reattachments (W8.7). */
     toggleOverrides(): void;
+    toggleComposed(): void;
+    /** Open the side-by-side comparison for one composed page, or close it with null. */
+    comparePage(path: string | null): void;
     /** Toggle a cluster's selection for a bulk correction (W8.3). */
     toggleClusterSelection(signature: string): void;
     /** Clear the cluster selection (W8.3). */

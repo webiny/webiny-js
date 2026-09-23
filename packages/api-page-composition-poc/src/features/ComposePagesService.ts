@@ -29,8 +29,11 @@ import type {
     ComposePagesResult,
     DiscardEntry,
     PageMapEntry,
-    PageMapFailure
+    PageMapFailure,
+    PageSignals,
+    UnplacedInstance
 } from "~/domain/types.js";
+import { validateTextPreservation } from "@webiny/api-component-extraction/features/shared/validators.js";
 import { extractComponentManifest } from "~/manifest/extractComponentManifest.js";
 import { buildPageDocument, type ComponentPlacement } from "~/pages/buildPageDocument.js";
 import { collectSectionTexts } from "~/pages/collectSectionTexts.js";
@@ -57,6 +60,25 @@ interface CreatedPage {
     bindings: Record<string, any>;
     /** Destinations the model invented on this page, emptied before it was built. */
     invented: PlacedInvention[];
+    /** What composing this page covered and what it left behind — see `PageSignals`. */
+    coverage: PageCoverage;
+}
+
+/**
+ * The half of a page's signals that only `composePage` can see: how many sections the source had,
+ * how many instances were asked for, which of them found no component, and the page's own text.
+ *
+ * Gathered here rather than recomputed later because the section nodes are already resolved and the
+ * trees already in memory at this point; reading them again afterwards would be a second walk over
+ * the same S3 blobs for numbers we have in hand.
+ */
+interface PageCoverage {
+    sourceSections: number;
+    assembledInstances: number;
+    composedInstances: number;
+    unplaced: UnplacedInstance[];
+    /** Every text run of every section that was placed, for the coverage check against the page. */
+    sourceTexts: string[];
 }
 
 /** What a promoted component needs to be placed: its final name, and the manifest for its inputs. */
@@ -191,6 +213,39 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                             : `${item.value} left empty at ${item.path}: the page never linked there`
                 });
             }
+
+            /*
+             * This page's own signals, recorded from the pass that is already running rather than
+             * recomputed later. `tally` produces the run totals from the same outcomes below, so the
+             * per-page and run-level numbers come from one source and cannot disagree.
+             *
+             * The text check reuses W5's `validateTextPreservation` — the same containment rule the
+             * Generate stage applies to a component's source, pointed at the composed page's bindings
+             * instead. Its failures are the source runs the page does not carry, so the count of them
+             * is the coverage shortfall; a second implementation would be a second answer.
+             */
+            const pageCounts = tally(rewrite.outcomes);
+            const text = validateTextPreservation(
+                page.coverage.sourceTexts,
+                JSON.stringify(recovery.bindings)
+            );
+            page.entry.signals = {
+                sourceSections: page.coverage.sourceSections,
+                assembledInstances: page.coverage.assembledInstances,
+                composedInstances: page.coverage.composedInstances,
+                unplaced: page.coverage.unplaced,
+                textTotal: page.coverage.sourceTexts.length,
+                textPresent: page.coverage.sourceTexts.length - text.failures.length,
+                links: {
+                    before: pageCounts.destinations,
+                    after: pageCounts.destinations,
+                    rewritten: pageCounts.rewritten,
+                    external: pageCounts.external,
+                    unmigrated: pageCounts.unmigrated,
+                    dropped: page.invented.length,
+                    recovered: recovery.recovered.length
+                }
+            } satisfies PageSignals;
 
             const changed =
                 rewrite.outcomes.some(outcome => outcome.kind === "rewritten") ||
@@ -332,9 +387,17 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         // Per placement, because the element each one becomes is only known once the document is
         // built, and both the destination check and the recovery pass work on specific elements.
         const capturedByPlacement: Set<string>[] = [];
-        for (const instance of page.instances) {
+        const unplaced: UnplacedInstance[] = [];
+        const sourceTexts: string[] = [];
+        for (const [index, instance] of page.instances.entries()) {
             const component = placeable.get(instance.signature);
             if (!component) {
+                /*
+                 * Recorded rather than skipped silently. Nothing on the composed page marks the gap —
+                 * the section is simply not there — so this list is the only account of it, and the
+                 * one number that explains a page whose section count does not match its source.
+                 */
+                unplaced.push({ signature: instance.signature, index });
                 continue;
             }
             const derivedInputs = await this.instanceInputs({
@@ -346,6 +409,11 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             });
             capturedByPlacement.push(derivedInputs.captured);
             placements.push({ manifest: component.manifest, inputs: derivedInputs.inputs });
+
+            // The source copy this instance was built from, for the text-coverage check later. Only
+            // for placed instances: an unplaced one has no composed counterpart to look for it in,
+            // and counting its text as missing would double-charge the same gap.
+            sourceTexts.push(...derivedInputs.texts);
         }
 
         if (placements.length === 0) {
@@ -429,7 +497,14 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 entryId: createdPage.value.entryId
             },
             bindings,
-            invented
+            invented,
+            coverage: {
+                sourceSections: segmentByUrl.get(page.url)?.sections.length ?? 0,
+                assembledInstances: page.instances.length,
+                composedInstances: placements.length,
+                unplaced,
+                sourceTexts
+            }
         });
     }
 
@@ -446,7 +521,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         component: PlaceableComponent;
         segmentByUrl: Map<string, SegmentedPage>;
         trees: Map<string, CapturedNode>;
-    }): Promise<{ inputs: Record<string, unknown>; captured: Set<string> }> {
+    }): Promise<{ inputs: Record<string, unknown>; captured: Set<string>; texts: string[] }> {
         const { page, instance, component, segmentByUrl, trees } = params;
 
         const node = await this.sectionNode(page.url, instance.sectionIndex, segmentByUrl, trees);
@@ -507,7 +582,14 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
          */
         const captured = node ? collectLinks(node).map(link => link.href) : [];
 
-        return { inputs: previewed, captured: new Set(captured) };
+        /*
+         * The section's own copy, taken from the node already resolved above. Carried out with the
+         * links rather than walked again in the caller: it is the same node, and resolving it twice
+         * would be two answers to one question.
+         */
+        const texts = node ? collectSectionTexts(node) : [];
+
+        return { inputs: previewed, captured: new Set(captured), texts };
     }
 
     /** The captured node for one section of one page, resolved by the box Segment recorded. */

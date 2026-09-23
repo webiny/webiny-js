@@ -447,3 +447,71 @@ export type ComponentDecisionDto = "accepted" | "rejected";
 export interface DecisionsDto {
     decisions: Record<string, ComponentDecisionDto>;
 }
+
+// ----- Page composition (proof of concept) -------------------------------------------------------
+
+/** An instance Assemble placed that composition could not turn into a component. */
+export interface UnplacedInstanceDto {
+    signature: string;
+    index: number;
+}
+
+/** This page's destination outcome. Same shape as the run total, counted for one page. */
+export interface PageLinksDto {
+    before: number;
+    after: number;
+    rewritten: number;
+    external: number;
+    unmigrated: number;
+    dropped: number;
+    recovered: number;
+}
+
+/**
+ * The four fidelity signals for one composed page.
+ *
+ * Deliberately not a similarity score: heights differ, fonts load differently, and one missing
+ * section shifts everything below it, so a single number reads badly on a page that migrated well.
+ * These say where a page went wrong instead.
+ */
+export interface PageSignalsDto {
+    sourceSections: number;
+    assembledInstances: number;
+    composedInstances: number;
+    unplaced: UnplacedInstanceDto[];
+    textTotal: number;
+    textPresent: number;
+    links: PageLinksDto;
+}
+
+export interface ComposedPageDto {
+    sourceUrl: string;
+    normalizedUrl: string;
+    path: string;
+    title: string;
+    pageId: string;
+    entryId: string;
+    /** Absent on page maps composed before the signals shipped. */
+    signals?: PageSignalsDto;
+}
+
+export interface ComposedPageFailureDto {
+    sourceUrl: string;
+    reason: string;
+}
+
+export interface ComposedDiscardDto {
+    kind: string;
+    page: string;
+    sourceUrl: string;
+    detail: string;
+}
+
+export interface PageMapDto {
+    runId: string;
+    composedOn: string;
+    pages: ComposedPageDto[];
+    failed: ComposedPageFailureDto[];
+    links: PageLinksDto;
+    discarded: ComposedDiscardDto[];
+}

@@ -16,6 +16,7 @@ import { useWebsockets, type IncomingGenericData } from "@webiny/app-websockets"
 import { ReactComponent as ChevronIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 import { RunViewFeature } from "../feature.js";
 import { ArtifactPanel } from "./ArtifactPanel.js";
+import { ComposedPagesPanel } from "./composed/ComposedPagesPanel.js";
 import { TokenPanel } from "./TokenPanel.js";
 import { OverridesPanel } from "./OverridesPanel.js";
 import { SegmentHeightControl } from "./SegmentHeightControl.js";
@@ -261,6 +262,12 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                         text="Token usage"
                         onClick={() => presenter.toggleTokens()}
                     />
+                    <Button
+                        variant={vm.showComposed ? "primary" : "secondary"}
+                        size="sm"
+                        text="Composed pages"
+                        onClick={() => presenter.toggleComposed()}
+                    />
                 </div>
             </div>
             <Separator />
@@ -297,6 +304,8 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                         <TokenPanel presenter={presenter} />
                     ) : vm.showOverrides ? (
                         <OverridesPanel presenter={presenter} />
+                    ) : vm.showComposed ? (
+                        <ComposedPagesPanel presenter={presenter} />
                     ) : (
                         <div className="flex min-h-0 flex-1 flex-col">
                             <div className="flex flex-col gap-sm border-b border-neutral-dimmed px-md py-sm">

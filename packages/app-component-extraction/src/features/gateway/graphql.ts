@@ -388,3 +388,20 @@ export const CHECK_REACHABILITY = /* GraphQL */ `
         }
     }
 `;
+
+/**
+ * The run's page map from the composition proof of concept.
+ *
+ * Returns `JSON`, so the shape is the API's `PageMap` verbatim — including the per-page `signals`,
+ * which are absent on maps composed before they shipped.
+ */
+export const GET_PAGE_MAP = /* GraphQL */ `
+    query GetPageMap($runId: ID!) {
+        pageCompositionPocPageMap(runId: $runId) {
+            data
+            error {
+                message
+            }
+        }
+    }
+`;

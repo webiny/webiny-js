@@ -4,6 +4,7 @@ import type {
     JobDto,
     JobListItemDto,
     OverrideDto,
+    PageMapDto,
     ReachabilityDto,
     ReattachmentDto,
     RunDto,
@@ -62,6 +63,8 @@ export interface IComponentExtractionGateway {
     listOverrides(jobId: string): Promise<OverrideDto[]>;
     /** A run's override reattachment outcomes (W8.1). */
     getReattachments(runId: string): Promise<ReattachmentDto[]>;
+    /** The run's composed pages, or null when composition has not been run for it. */
+    getPageMap(runId: string): Promise<PageMapDto | null>;
     /** Set (upsert) an override from a run, re-applying in place and marking downstream stale (W8.1). */
     setOverride(
         runId: string,

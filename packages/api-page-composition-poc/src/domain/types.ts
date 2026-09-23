@@ -10,6 +10,45 @@ export interface PageMapEntry {
     /** The created page's revision id, and the stable entry id across revisions. */
     pageId: string;
     entryId: string;
+    /** Optional: absent on page maps composed before the signals shipped. */
+    signals?: PageSignals;
+}
+
+/**
+ * An instance Assemble placed on the page that composition could not turn into a component.
+ *
+ * There is no raw-markup fallback in this PoC: an instance whose cluster was never promoted is
+ * skipped, not degraded. So this is the honest form of "what did not become a component" — the
+ * section is simply absent from the composed page, and nothing on the page says so.
+ */
+export interface UnplacedInstance {
+    /** The cluster signature Assemble asked for. */
+    signature: string;
+    /** Its position in the page's instance list, so it can be located in the source. */
+    index: number;
+}
+
+/**
+ * Per-page fidelity signals — deterministic counts, never a similarity score.
+ *
+ * A whole-page similarity number is worse than useless here: heights differ, fonts load differently,
+ * and one missing section shifts everything below it, so a page that migrated well can read 0.62.
+ * These four say *where* a page went wrong instead of how wrong it is.
+ */
+export interface PageSignals {
+    /** Sections Segment found on the source page. */
+    sourceSections: number;
+    /** Instances Assemble placed on this page — what it intended to compose. */
+    assembledInstances: number;
+    /** Instances that actually became components on the Website Builder page. */
+    composedInstances: number;
+    /** The difference between the two above, named. */
+    unplaced: UnplacedInstance[];
+    /** Source text runs on this page, and how many of them the composed page carries. */
+    textTotal: number;
+    textPresent: number;
+    /** This page's own destination outcome, from the same pass that produces the run totals. */
+    links: PageMapLinks;
 }
 
 /** A page Assemble listed that could not be created, kept so the report is honest about coverage. */

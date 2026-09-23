@@ -5,6 +5,7 @@ import type {
     JobDto,
     JobListItemDto,
     OverrideDto,
+    PageMapDto,
     ReachabilityDto,
     ReattachmentDto,
     RunDto,
@@ -20,6 +21,7 @@ import {
     EXCLUDE_CAPTURED_PAGES,
     GET_DECISIONS,
     GET_JOB,
+    GET_PAGE_MAP,
     GET_REATTACHMENTS,
     GET_RENDERS,
     GET_RUN,
@@ -206,6 +208,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: GET_REATTACHMENTS, variables: { runId } });
 
         return unwrap(response.componentExtractionGetReattachments) ?? [];
+    }
+
+    async getPageMap(runId: string): Promise<PageMapDto | null> {
+        const response = await this.client.execute<{
+            pageCompositionPocPageMap: GqlEnvelope<PageMapDto | null>;
+        }>({ query: GET_PAGE_MAP, variables: { runId } });
+
+        return unwrap(response.pageCompositionPocPageMap) ?? null;
     }
 
     async setOverride(
