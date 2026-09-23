@@ -198,12 +198,18 @@ export interface CaptureWarningsDto {
     totalImages: number;
 }
 
-/** What the overlay pass hid, closed and removed on a page. Absent on runs captured before it shipped. */
-export interface OverlayClearanceDto {
+/** One run of the overlay pass. */
+export interface OverlayPassDto {
     hidden: string[];
     dismissed: string[];
     removed: string[];
     unlockedScroll: boolean;
+}
+
+/** Both runs, kept apart. Absent on runs captured before this shipped. */
+export interface OverlayClearanceDto {
+    early: OverlayPassDto;
+    late: OverlayPassDto;
 }
 
 export interface CapturePageDto {

@@ -145,8 +145,17 @@ export const clearOverlaysScript = (): string => {
 
     const all = () => document.body ? document.body.querySelectorAll("*") : [];
 
+    /*
+     * Hiding something already hidden is not an event. The check is here rather than at each call
+     * site because this runs twice: without it the second pass re-hides every vendor banner the first
+     * one took and records it again, so a page with one consent banner reports two — and the record
+     * is the only evidence anyone has about what the capture did to the page.
+     */
     const hide = (element, description, into) => {
         if (!element || !element.style) {
+            return false;
+        }
+        if (window.getComputedStyle(element).display === "none") {
             return false;
         }
         element.style.setProperty("display", "none", "important");

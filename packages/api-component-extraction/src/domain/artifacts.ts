@@ -154,18 +154,32 @@ export interface CaptureWarnings {
 }
 
 /**
- * What the overlay pass took off the page, per page.
+ * What one run of the overlay pass took off the page.
  *
  * Separated by how it went, because that is the question worth asking of a capture that looks wrong.
  * `hidden` is routine. `dismissed` means the overlay offered a way out and we took it. `removed` is
  * the one carrying risk — the capture acted against a page that offered nothing — so each entry
  * records the geometry that justified it, and it is the first thing to read when a section is missing.
  */
-export interface OverlayClearance {
+export interface OverlayPass {
     hidden: string[];
     dismissed: string[];
     removed: string[];
     unlockedScroll: boolean;
+}
+
+/**
+ * Both runs of the pass, kept apart rather than summed.
+ *
+ * They clean different artifacts and the distinction is not cosmetic: `early` runs before the sampler,
+ * so it decides what the element tree contains, and `late` runs immediately before the camera, so it
+ * decides what the screenshot contains. An overlay only `late` caught was never in the tree but would
+ * have been in the photograph; one only `early` caught is the reverse. Summing them would hide exactly
+ * the thing worth knowing — whether one pass would have done.
+ */
+export interface OverlayClearance {
+    early: OverlayPass;
+    late: OverlayPass;
 }
 
 export interface CapturedPage {

@@ -111,9 +111,6 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
             return node;
         }
 
-        // A cookie/consent overlay still on the page means the browser's dismissal did not take — the
-        // captured screenshot has a banner across it. Heuristic: a visible, banner-sized element whose id/
-        // class or text reads as consent. Defensive: any failure just reports "no banner".
         // Broken images: loaded (complete) but zero natural size. Lazy images not yet loaded have
         // complete === false, so they are not miscounted as broken.
         function imageStats() {

@@ -70,23 +70,6 @@ const clearOverlays = (page: Page): Promise<OverlayClearanceResult> => {
 };
 
 /**
- * Both passes, as one record.
- *
- * Only the second pass's verdict on what is left is kept: it ran against the page as photographed,
- * and the first pass's answer describes a page that no longer exists by the time of the screenshot.
- */
-const mergeClearance = (
-    first: OverlayClearanceResult,
-    second: OverlayClearanceResult
-): OverlayClearanceResult => ({
-    hidden: [...first.hidden, ...second.hidden],
-    dismissed: [...first.dismissed, ...second.dismissed],
-    removed: [...first.removed, ...second.removed],
-    unlockedScroll: first.unlockedScroll || second.unlockedScroll,
-    overlayRemains: second.overlayRemains
-});
-
-/**
  * Resolves the executable, falling back to unpacking a compressed layer.
  *
  * The candidate scan comes first because an already-extracted binary costs nothing, whereas
@@ -339,7 +322,7 @@ class ChromiumSession implements IBrowserSession {
         await this.assertNotChallenged(page, params.url, status, headers, title);
 
         // Before sampling, so the sampler's own `display: none` filter excludes whatever was hidden.
-        const firstClearance = await clearOverlays(page);
+        const earlyClearance = await clearOverlays(page);
 
         // The pluggable seam. The visit sequence above is fixed; what to read off the settled page is
         // the caller's — a token sampler, a DOM/segment sampler — supplied as an in-page script whose
@@ -362,7 +345,7 @@ class ChromiumSession implements IBrowserSession {
          * The pass is idempotent, so on a page that was already clear this costs one evaluate and
          * returns nothing.
          */
-        const clearance = mergeClearance(firstClearance, await clearOverlays(page));
+        const lateClearance = await clearOverlays(page);
 
         const screenshots = await this.captureScreenshots(page, params);
 
@@ -377,7 +360,8 @@ class ChromiumSession implements IBrowserSession {
             failedScreenshots: screenshots.failed,
             // Returned rather than logged here: the caller has its own logger, and this belongs in the
             // consumer's own log where someone debugging a missing element will look for it.
-            overlayClearance: clearance
+            earlyClearance,
+            lateClearance
         };
     }
 

@@ -313,15 +313,24 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             narrowScreenshotRef,
             thumbnailRef,
             warnings: {
-                overlayRemains: desktop.overlayClearance.overlayRemains,
+                // The late pass's verdict: it ran against the page as photographed.
+                overlayRemains: desktop.lateClearance.overlayRemains,
                 brokenImages: desktop.result.imagesBroken,
                 totalImages: desktop.result.imagesTotal
             },
             overlayClearance: {
-                hidden: desktop.overlayClearance.hidden,
-                dismissed: desktop.overlayClearance.dismissed,
-                removed: desktop.overlayClearance.removed,
-                unlockedScroll: desktop.overlayClearance.unlockedScroll
+                early: {
+                    hidden: desktop.earlyClearance.hidden,
+                    dismissed: desktop.earlyClearance.dismissed,
+                    removed: desktop.earlyClearance.removed,
+                    unlockedScroll: desktop.earlyClearance.unlockedScroll
+                },
+                late: {
+                    hidden: desktop.lateClearance.hidden,
+                    dismissed: desktop.lateClearance.dismissed,
+                    removed: desktop.lateClearance.removed,
+                    unlockedScroll: desktop.lateClearance.unlockedScroll
+                }
             }
         };
     }

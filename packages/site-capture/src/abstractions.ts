@@ -132,8 +132,10 @@ export interface CaptureResult<TResult> {
     screenshots: Screenshot[];
     /** Labels of screenshots requested but not captured — a degraded result, reported not swallowed. */
     failedScreenshots: string[];
-    /** What the overlay pass hid, closed and removed, and what was still covering the page after it. */
-    overlayClearance: OverlayClearanceResult;
+    /** The early overlay pass — before the evaluator, so it decides what the element tree contains. */
+    earlyClearance: OverlayClearanceResult;
+    /** The late overlay pass — immediately before the camera, so it decides what the screenshot shows. */
+    lateClearance: OverlayClearanceResult;
 }
 
 /**

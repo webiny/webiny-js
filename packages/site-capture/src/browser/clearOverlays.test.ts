@@ -445,8 +445,18 @@ describe("the post-pass check", () => {
 });
 
 describe("running twice", () => {
+    it("records a vendor banner once, not once per pass", () => {
+        // Found on a real capture: the second pass re-hid an element the first had already hidden and
+        // recorded it again, so every site with a consent banner reported two of them. The record is
+        // the only evidence anyone has about what the capture did to the page, so it has to be right.
+        run(`<div id="onetrust-consent-sdk">We use cookies</div>`);
+
+        expect(again().hidden).toEqual([]);
+    });
+
     it("is a no-op the second time", () => {
         run(`
+            <div id="onetrust-consent-sdk">We use cookies</div>
             <div class="scrim" style="position: fixed; z-index: 9998; background-color: rgba(0, 0, 0, 0.6)" data-rect="0,0,1440,900"></div>
             <div class="dialog" ${MODAL}><button aria-label="Close">x</button></div>
             <header class="site-header" ${HEADER}>Northbeam</header>

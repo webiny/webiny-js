@@ -57,11 +57,14 @@ const toPageSnapshot = (capture: CaptureResult<SampleResult>): PageSnapshot => (
     screenshots: capture.screenshots,
     failedScreenshots: capture.failedScreenshots,
     clearedOverlays: [
-        ...capture.overlayClearance.hidden,
-        ...capture.overlayClearance.dismissed,
-        ...capture.overlayClearance.removed
+        ...capture.earlyClearance.hidden,
+        ...capture.earlyClearance.dismissed,
+        ...capture.earlyClearance.removed,
+        ...capture.lateClearance.hidden,
+        ...capture.lateClearance.dismissed,
+        ...capture.lateClearance.removed
     ],
-    overlayRemains: capture.overlayClearance.overlayRemains
+    overlayRemains: capture.lateClearance.overlayRemains
 });
 
 /**
