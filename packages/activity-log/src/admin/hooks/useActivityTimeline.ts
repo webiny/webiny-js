@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useContainer } from "@webiny/app";
 import { ActivityLogGateway } from "~/admin/gateway/ActivityLogGateway.js";
+import { applyFieldPermissions } from "~/admin/timeline/fieldPermissions.js";
 import type { TimelineRecord } from "~/admin/timeline/types.js";
 import {
     buildTimelineView,
@@ -63,6 +64,14 @@ export interface UseActivityTimelineParams {
     currentStatus?: string | null;
     /** Publishing status per revision id, from the form's own revision list. */
     revisionStatuses?: Record<string, string>;
+    /**
+     * Fields this reader has no access to.
+     *
+     * Applied to the records before anything shapes them, so nothing downstream — grouping,
+     * collapsing, sentence building — ever sees a field the reader may not. When the product
+     * enforces field permissions on the API this becomes empty and the server does the same work.
+     */
+    hiddenFields?: Set<string>;
 }
 
 export interface UseActivityTimelineResult {
@@ -363,10 +372,15 @@ export const useActivityTimeline = (
         catalogRecords.current = records;
     }
 
+    const permitted = useMemo(
+        () => applyFieldPermissions(records, params.hiddenFields ?? new Set()),
+        [records, params.hiddenFields]
+    );
+
     const view = useMemo(
         () =>
             buildTimelineView({
-                records,
+                records: permitted,
                 filters,
                 hasMore,
                 currentRevision: params.currentRevision,
@@ -375,7 +389,7 @@ export const useActivityTimeline = (
                 catalogRecords: catalogRecords.current
             }),
         [
-            records,
+            permitted,
             filters,
             hasMore,
             params.currentRevision,

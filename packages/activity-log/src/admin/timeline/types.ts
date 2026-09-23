@@ -39,6 +39,14 @@ export interface TimelineRecord {
     subject?: TimelineSubject | null;
     hasNote?: boolean | null;
     /**
+     * How many of this record's changed fields the reader has no access to.
+     *
+     * Set when field permissions withheld part of a changeset, so the row can say it stands for
+     * more than it lists. Never set by the API — the withholding happens in the browser, because
+     * that is where the CMS evaluates field permissions today.
+     */
+    hiddenFieldCount?: number;
+    /**
      * A generated sentence describing what changed, when there is one.
      *
      * An enrichment, never the row's only description. The deterministic sentence is derived from

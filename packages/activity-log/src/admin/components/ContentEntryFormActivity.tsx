@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
-import { useFeature } from "@webiny/app";
+import { useContainer, useFeature } from "@webiny/app";
 import { Heading, IconButton } from "@webiny/admin-ui";
 import {
     LeftPanel,
@@ -12,6 +12,8 @@ import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { RevisionsListFeature } from "@webiny/app-headless-cms/presentation/contentEntries/revisionsList/feature.js";
+import { RuleEvaluator } from "@webiny/app-admin/features/formModel/abstractions.js";
+import { hiddenFieldIds, type PermissionedField } from "~/admin/timeline/fieldPermissions.js";
 import { ActivityLogAdminFeature } from "~/admin/feature.js";
 import { useActivityTimeline } from "~/admin/hooks/useActivityTimeline.js";
 import { writeSignature } from "~/admin/timeline/writeSignature.js";
@@ -37,6 +39,7 @@ export const ContentEntryFormActivity = ContentEntryFormContent.createDecorator(
         const presenter = useContentEntryFormPresenter();
         const { panel } = useFeature(ActivityLogAdminFeature);
         const { presenter: revisions } = useFeature(RevisionsListFeature);
+        const container = useContainer();
         const { entry, model, isNewEntry } = presenter.vm;
 
         /*
@@ -60,6 +63,33 @@ export const ContentEntryFormActivity = ContentEntryFormContent.createDecorator(
             return statuses;
         }, [revisions.vm.revisions]);
 
+        /*
+          The fields this reader has no access to.
+
+          Asked the same way the form beside the panel asks it — the CMS's own rule evaluators,
+          against the same rules stored on the model's fields — so the timeline and the form can
+          never disagree about who may see what. The evaluator is a `TODO` returning false today,
+          so this is empty for everyone; when the CMS implements it, the timeline follows without
+          a change here.
+
+          `evaluate` takes the form the rule is being evaluated against. An access-control rule is
+          about the identity rather than the form's values, and the CMS's evaluator ignores the
+          argument, so the entry form is passed when there is one.
+        */
+        const hiddenFields = React.useMemo(() => {
+            const evaluators = container.resolveAll(RuleEvaluator);
+
+            return hiddenFieldIds((model?.fields ?? []) as PermissionedField[], rule => {
+                const evaluator = evaluators.find(candidate =>
+                    candidate.canEvaluate(rule as never)
+                );
+
+                return evaluator
+                    ? evaluator.evaluate(rule as never, presenter.vm.form as never)
+                    : false;
+            });
+        }, [container, model, presenter.vm.form]);
+
         if (isNewEntry || !entry?.entryId || !panel.vm.open) {
             return <Original {...props} />;
         }
@@ -81,6 +111,7 @@ export const ContentEntryFormActivity = ContentEntryFormContent.createDecorator(
                         revision={entry.id}
                         status={entry.meta?.status ?? null}
                         revisionStatuses={revisionStatuses}
+                        hiddenFields={hiddenFields}
                         writeToken={writeSignature(entry)}
                         onClose={() => panel.hide()}
                     />
@@ -96,6 +127,8 @@ interface ActivityPanelProps {
     revision: string;
     status: string | null;
     revisionStatuses: Record<string, string>;
+    /** Fields this reader has no access to, withheld from the timeline the way the form withholds them. */
+    hiddenFields: Set<string>;
     writeToken: string;
     onClose(): void;
 }
@@ -113,6 +146,7 @@ const ActivityPanel = ({
     revision,
     status,
     revisionStatuses,
+    hiddenFields,
     writeToken,
     onClose
 }: ActivityPanelProps) => {
@@ -123,7 +157,8 @@ const ActivityPanel = ({
         writeToken,
         currentRevision: revision,
         currentStatus: status,
-        revisionStatuses
+        revisionStatuses,
+        hiddenFields
     });
 
     /**
