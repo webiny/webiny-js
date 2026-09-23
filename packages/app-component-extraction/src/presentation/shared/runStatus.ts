@@ -40,6 +40,14 @@ export const runOverallStatus = (run: RunDto | null): DisplayStatus => {
     if (!run) {
         return "not-started";
     }
+    /*
+     * Checked before the ledger, because cancelling records the interrupted stage as not having
+     * finished — which the rules below would read as a failure and invite a retry of a run that was
+     * deliberately stopped.
+     */
+    if (run.status === "cancelled") {
+        return "cancelled";
+    }
     if (run.stages.some(entry => entry.status === "running" || entry.status === "starting")) {
         return "running";
     }

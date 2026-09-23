@@ -41,7 +41,8 @@ export class ExtractionRunInProgressError extends BaseError<{ jobId: string; run
         super({
             message:
                 `A run (${runId}) is already in progress for this job. ` +
-                "Component extraction runs one at a time per job — wait for it to finish, or cancel it.",
+                "Component extraction runs one at a time per job — wait for it to finish, " +
+                "or cancel it with componentExtractionCancelRun.",
             data: { jobId, runId }
         });
     }

@@ -87,6 +87,8 @@ const runSentence = (run: RunDto | null, overall: DisplayStatus): string => {
             return "Some items failed. Review them, then retry or continue without them.";
         case "stale":
             return "Upstream changes left later stages stale. Re-run from the earliest stale stage.";
+        case "cancelled":
+            return "This run was cancelled. The job is free — start a new run when you are ready.";
         case "complete":
             return "The run finished. Start a new run to extract again.";
         default:

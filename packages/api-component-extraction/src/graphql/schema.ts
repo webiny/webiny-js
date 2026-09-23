@@ -15,6 +15,7 @@ import { StageArtifactStore } from "~/domain/stage.js";
 import {
     hasOutstandingClaim,
     initLedger,
+    markStageFailed,
     markStaleFrom,
     stageEntry,
     withStageClaim
@@ -207,6 +208,89 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     }
 
                     return run;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionCancelRun",
+        dependencies: [ComponentExtractionPermissions, RunRepository, RunLock, TaskService],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            runLock: RunLock.Interface,
+            taskService: TaskService.Interface
+        ) {
+            return ({ args }: { args: { runId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+
+                    if (run.status === "cancelled") {
+                        throw new Error("This run has already been cancelled.");
+                    }
+                    if (run.status === "done") {
+                        throw new Error(
+                            "This run has finished, so there is nothing to cancel. It is not holding the job's run slot."
+                        );
+                    }
+
+                    /*
+                     * Abort the in-flight task first, and best-effort: the run is being abandoned
+                     * either way, and a task that cannot be reached — already dead, which is the
+                     * usual reason for cancelling — must not block the release below. What matters
+                     * is the lock; stopping the task only saves it doing work nobody will read.
+                     */
+                    const running = run.stages.find(entry => entry.status === "running");
+                    if (running?.taskId) {
+                        await taskService.abort({
+                            id: running.taskId,
+                            message: `Run ${run.id} was cancelled.`
+                        });
+                    }
+
+                    /*
+                     * A stage left "running" on an abandoned run would read as still working forever.
+                     * It is recorded as not having finished rather than as a new "cancelled" stage
+                     * status: the stage genuinely did not complete, the message says why, and the
+                     * distinction that matters — deliberate versus broken — belongs on the run.
+                     */
+                    const stages = running
+                        ? markStageFailed(
+                              run.stages,
+                              running.stage,
+                              "Cancelled before it finished.",
+                              new Date().toISOString()
+                          )
+                        : run.stages;
+
+                    const updated = await runRepository.update(run.id, {
+                        stages,
+                        status: "cancelled"
+                    });
+                    if (updated.isFail()) {
+                        throw updated.error;
+                    }
+
+                    /*
+                     * Last, and only after the status is persisted. Releasing first would let a new
+                     * run start against a job whose old run still reads as in flight, and the lock is
+                     * the thing this mutation exists to free — if the update above failed, the run
+                     * must stay locked rather than leave two runs believing they hold the job.
+                     */
+                    const released = await runLock.release(run.jobId, run.id);
+                    if (released.isFail()) {
+                        throw released.error;
+                    }
+
+                    return updated.value;
                 });
         }
     });

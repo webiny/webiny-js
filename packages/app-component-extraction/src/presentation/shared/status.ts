@@ -5,10 +5,19 @@
  *
  * `DisplayStatus` is the vocabulary the UI renders. It is derived from the ledger's raw stage status
  * (pending/running/done/stale/failed) plus a little run context (whether this stage is the gate the run is
- * paused at), by `toDisplayStatus`.
+ * paused at), by `toDisplayStatus`. `cancelled` is the one that comes from the run rather than a stage:
+ * an abandoned run has a stage recorded as not having finished, and showing that as a failure would
+ * invite a retry of something deliberately stopped.
  */
 
-export type DisplayStatus = "complete" | "running" | "paused" | "failed" | "stale" | "not-started";
+export type DisplayStatus =
+    | "complete"
+    | "running"
+    | "paused"
+    | "failed"
+    | "stale"
+    | "cancelled"
+    | "not-started";
 
 /** The admin-ui Tag variants this vocabulary uses — a subset, aliased to the design's tag families. */
 export type StatusTagVariant = "success-light" | "accent-light" | "neutral-light" | "warning";
@@ -80,6 +89,16 @@ export const STATUS_CONFIG: Record<DisplayStatus, StatusConfig> = {
         glyph: "history",
         pulse: false,
         pip: "bg-warning-muted"
+    },
+    cancelled: {
+        label: "Cancelled",
+        // Neutral, not destructive: nothing went wrong, the run was stopped on purpose.
+        tagVariant: "neutral-light",
+        dot: "bg-neutral-muted border border-neutral-strong",
+        glyphColor: "text-neutral-strong",
+        glyph: "history",
+        pulse: false,
+        pip: "bg-neutral-muted"
     },
     "not-started": {
         label: "Not started",

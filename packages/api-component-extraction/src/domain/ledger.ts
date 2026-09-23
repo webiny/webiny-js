@@ -81,11 +81,22 @@ export const markStageRunning = (
  * output becomes `stale` — its artifact was derived from an older upstream version. A downstream stage
  * that never ran stays `pending`; there is nothing to invalidate.
  */
+/**
+ * The version is passed in rather than derived by incrementing, and that is the point.
+ *
+ * The artifact keys were already stamped with a version when the stage started — the run computes it
+ * once and builds every key from it — so incrementing again here re-decides a number that was decided
+ * elsewhere, and the two only agree by coincidence. When they disagreed, the ledger claimed a version
+ * its own artifact ref did not carry, and the next stage refused to start on the grounds that the
+ * artifact might be from a different run of the stage. Taking the version the keys were built from
+ * makes them the same value by construction.
+ */
 export const markStageDone = (
     ledger: StageLedgerEntry[],
     stage: Stage,
     artifacts: Record<string, string>,
-    now: string
+    now: string,
+    stageVersion: number
 ): StageLedgerEntry[] => {
     const downstream = new Set<Stage>(stagesAfter(stage));
 
@@ -97,7 +108,7 @@ export const markStageDone = (
                 finishedOn: now,
                 error: null,
                 artifacts,
-                stageVersion: entry.stageVersion + 1
+                stageVersion
             };
         }
         if (downstream.has(entry.stage) && entry.status !== "pending") {

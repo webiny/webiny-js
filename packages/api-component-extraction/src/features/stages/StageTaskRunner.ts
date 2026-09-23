@@ -229,6 +229,8 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         // The version this run of the stage is producing — one past whatever it currently has. Stable
         // across continuations: the entry's `stageVersion` only bumps at `markStageDone`, so re-deriving
         // it every iteration yields the same value, and artifact keys stay consistent while resuming.
+        // This single value is both what stamps the artifact keys and what is recorded on the ledger
+        // when the stage completes, so the two cannot describe different versions.
         const targetVersion = (existing?.stageVersion ?? 0) + 1;
 
         let ledger = run.stages;
@@ -363,7 +365,9 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         // Apply the done transition to the latest ledger, not the snapshot from execute start (stale
         // after a long handler run), so completing this stage never reverts another stage's status.
         const latest = await latestRun(run);
-        let done = markStageDone(latest.stages, stage, effectiveArtifacts, now());
+        // `targetVersion`, not an increment: it is the version every artifact key above was built
+        // from, so recording it here is what keeps the ledger and its refs the same version.
+        let done = markStageDone(latest.stages, stage, effectiveArtifacts, now(), targetVersion);
         // Single-writer point for a model-backed stage's token aggregate: sum its recorded calls once,
         // now that the stage is complete, so the UI reads a total rather than scanning while it runs.
         if (MODEL_STAGES.has(stage)) {

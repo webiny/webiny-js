@@ -22,8 +22,8 @@ describe("initLedger", () => {
 });
 
 describe("markStageDone — staleness cascade", () => {
-    it("bumps the stage version and records artifacts", () => {
-        const ledger = markStageDone(initLedger(), "capture", { tree: "s3://key" }, NOW);
+    it("records the version it was given, alongside the artifacts", () => {
+        const ledger = markStageDone(initLedger(), "capture", { tree: "s3://key" }, NOW, 1);
         const capture = stageEntry(ledger, "capture")!;
         expect(capture.status).toBe("done");
         expect(capture.stageVersion).toBe(1);
@@ -33,9 +33,9 @@ describe("markStageDone — staleness cascade", () => {
 
     it("marks downstream stages that had output stale, but leaves pending ones pending", () => {
         // segment is done (has output); classify is still pending.
-        let ledger = markStageDone(initLedger(), "segment", { boxes: "k1" }, NOW);
+        let ledger = markStageDone(initLedger(), "segment", { boxes: "k1" }, NOW, 1);
         // Re-run capture (upstream of both): segment must go stale, classify stays pending.
-        ledger = markStageDone(ledger, "capture", { tree: "k2" }, NOW);
+        ledger = markStageDone(ledger, "capture", { tree: "k2" }, NOW, 1);
 
         expect(stageEntry(ledger, "segment")!.status).toBe("stale");
         expect(stageEntry(ledger, "classify")!.status).toBe("pending");
@@ -43,15 +43,38 @@ describe("markStageDone — staleness cascade", () => {
         expect(stageEntry(ledger, "discover")!.status).toBe("pending");
     });
 
+    it("records the version the artifacts were written at, not one past the entry's", () => {
+        /*
+         * The defect this closes: the version was derived twice — once at the start of the run to
+         * stamp the artifact keys, and again here by incrementing. A stage that resumed to completion
+         * ended up recorded at a version its own `pages` ref did not carry, and the next stage
+         * refused to start because the ref looked like it came from a different run. Refusing was
+         * right; the two numbers disagreeing was not.
+         */
+        let ledger = markStageDone(
+            initLedger(),
+            "capture",
+            { pages: "…:capture:v1:pages" },
+            NOW,
+            1
+        );
+        // A resumed run: the keys were stamped v2, so v2 is what the ledger must record.
+        ledger = markStageDone(ledger, "capture", { pages: "…:capture:v2:pages" }, NOW, 2);
+
+        const capture = stageEntry(ledger, "capture")!;
+        expect(capture.stageVersion).toBe(2);
+        expect(capture.artifacts.pages).toContain(`:v${capture.stageVersion}:`);
+    });
+
     it("does not touch the stage's own downstream on a first run when nothing downstream has output", () => {
-        const ledger = markStageDone(initLedger(), "discover", { urls: "k" }, NOW);
+        const ledger = markStageDone(initLedger(), "discover", { urls: "k" }, NOW, 1);
         expect(ledger.filter(e => e.status === "stale")).toHaveLength(0);
     });
 });
 
 describe("markStageFailed", () => {
     it("marks failed with the error and does not bump version or cascade", () => {
-        let ledger = markStageDone(initLedger(), "capture", { tree: "k" }, NOW);
+        let ledger = markStageDone(initLedger(), "capture", { tree: "k" }, NOW, 1);
         ledger = markStageRunning(ledger, "segment", NOW);
         ledger = markStageFailed(ledger, "segment", "boom", NOW);
 
@@ -68,38 +91,38 @@ describe("mergeLedgers — drops only regressions", () => {
     it("keeps a running stage when a stale writer's ledger still has it pending", () => {
         // stored: discover done, capture running (started, not yet done).
         const stored = markStageRunning(
-            markStageDone(initLedger(), "discover", { urls: "k" }, NOW),
+            markStageDone(initLedger(), "discover", { urls: "k" }, NOW, 1),
             "capture",
             NOW
         );
         // A stale writer holds the pre-capture snapshot (capture still pending) and re-writes it.
-        const stale = markStageDone(initLedger(), "discover", { urls: "k" }, NOW);
+        const stale = markStageDone(initLedger(), "discover", { urls: "k" }, NOW, 1);
         const merged = mergeLedgers(stored, stale);
         // Capture must not be knocked back to pending.
         expect(stageEntry(merged, "capture")?.status).toBe("running");
     });
 
     it("keeps a done stage against a stale pending write", () => {
-        const stored = markStageDone(initLedger(), "capture", { tree: "k" }, NOW);
+        const stored = markStageDone(initLedger(), "capture", { tree: "k" }, NOW, 1);
         const stale = initLedger(); // capture pending
         const merged = mergeLedgers(stored, stale);
         expect(stageEntry(merged, "capture")?.status).toBe("done");
     });
 
     it("keeps a re-run of a stale stage (running/done wins over the stored stale)", () => {
-        let stored = markStageDone(initLedger(), "capture", { tree: "k" }, NOW);
-        stored = markStageDone(stored, "segment", { boxes: "b" }, NOW);
+        let stored = markStageDone(initLedger(), "capture", { tree: "k" }, NOW, 1);
+        stored = markStageDone(stored, "segment", { boxes: "b" }, NOW, 1);
         stored = markStaleFrom(stored, "segment"); // segment stale, v1
         // The segment re-run's markStageDone (segment done, v2) must win over the stored stale.
-        const incoming = markStageDone(stored, "segment", { boxes: "b2" }, NOW);
+        const incoming = markStageDone(stored, "segment", { boxes: "b2" }, NOW, 2);
         const merged = mergeLedgers(stored, incoming);
         expect(stageEntry(merged, "segment")?.status).toBe("done");
         expect(stageEntry(merged, "segment")?.stageVersion).toBe(2);
     });
 
     it("drops a stale writer whose stage version is behind", () => {
-        let stored = markStageDone(initLedger(), "segment", { boxes: "b1" }, NOW);
-        stored = markStageDone(stored, "segment", { boxes: "b2" }, NOW); // segment done v2
+        let stored = markStageDone(initLedger(), "segment", { boxes: "b1" }, NOW, 1);
+        stored = markStageDone(stored, "segment", { boxes: "b2" }, NOW, 2); // segment done v2
         const staleAtV1 = stored.map(entry =>
             entry.stage === "segment"
                 ? { ...entry, status: "stale" as const, stageVersion: 1 }

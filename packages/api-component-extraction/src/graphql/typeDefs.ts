@@ -146,6 +146,16 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionCreateRun(jobId: ID!, note: String): ComponentExtractionRunResponse!
         "Trigger one stage of a run. Rejected if the stage's predecessor is not yet done."
         componentExtractionRunStage(runId: ID!, stage: String!): ComponentExtractionTaskResponse!
+        """
+        Abandon a run and free the job's one-in-flight-run slot, so a new run can start.
+
+        The escape hatch for a run that cannot make progress: a stage that will not pass its
+        predecessor check, a task that died leaving its stage "running", or simply a run started by
+        mistake. Aborts the in-flight stage task where there is one, marks any running stage as not
+        having finished, and releases the lock. A finished run cannot be cancelled — there is nothing
+        to free.
+        """
+        componentExtractionCancelRun(runId: ID!): ComponentExtractionRunResponse!
         "Drop captured (or failed) pages from a run so they don't flow into Segment. Marks Segment and everything downstream stale."
         componentExtractionExcludeCapturedPages(
             runId: ID!

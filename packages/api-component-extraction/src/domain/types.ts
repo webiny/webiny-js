@@ -127,8 +127,13 @@ export interface Job extends JobValues {
 
 // ----- Run ---------------------------------------------------------------------------------------
 
-/** Overall run status, distinct from any single stage's status. */
-export type RunStatus = "pending" | "running" | "done" | "failed";
+/**
+ * Overall run status, distinct from any single stage's status.
+ *
+ * `cancelled` is deliberate abandonment, and separate from `failed` for a reason: a failed run is a
+ * problem to look into, a cancelled one has already been dealt with. Both release the job's run slot.
+ */
+export type RunStatus = "pending" | "running" | "done" | "failed" | "cancelled";
 
 export interface RunCounts {
     pages: number;
