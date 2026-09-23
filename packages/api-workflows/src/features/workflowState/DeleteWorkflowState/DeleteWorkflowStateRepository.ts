@@ -11,7 +11,9 @@ class DeleteWorkflowStateRepositoryImpl implements Repository.Interface {
 
     async execute(id: string): Repository.Return {
         const model = await this.modelProvider.get();
-        await this.deleteEntry.execute(model, id);
+        await this.deleteEntry.execute(model, id, {
+            permanently: true
+        });
 
         return Result.ok();
     }
