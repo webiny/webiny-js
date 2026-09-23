@@ -444,19 +444,22 @@ interface FieldRule {
 
 Operators available for `type: "condition"` rules, grouped by target field type:
 
-| Operator       | Label            | Applicable to                   | `value`                   |
-| -------------- | ---------------- | ------------------------------- | ------------------------- |
-| `"=="`         | Equals           | text, number, boolean, datetime | The value to match        |
-| `"!="`         | Not equals       | text, number, boolean, datetime | The value to not match    |
-| `">"`          | Greater than     | number, datetime                | Numeric/date threshold    |
-| `"<"`          | Less than        | number, datetime                | Numeric/date threshold    |
-| `">="`         | Greater or equal | number, datetime                | Numeric/date threshold    |
-| `"<="`         | Less or equal    | number, datetime                | Numeric/date threshold    |
-| `"contains"`   | Contains         | text, long-text                 | Substring to search for   |
-| `"startsWith"` | Starts with      | text, long-text                 | Prefix to match           |
-| `"endsWith"`   | Ends with        | text, long-text                 | Suffix to match           |
-| `"isEmpty"`    | Is empty         | all field types                 | `null` (value is ignored) |
-| `"isNotEmpty"` | Is not empty     | all field types                 | `null` (value is ignored) |
+| Operator          | Alias   | Label               | Applicable to                   | `value`                   |
+| ----------------- | ------- | ------------------- | ------------------------------- | ------------------------- |
+| `"=="`            | `"eq"`  | Equals              | text, number, boolean, datetime | The value to match        |
+| `"!="`            | `"neq"` | Not equals          | text, number, boolean, datetime | The value to not match    |
+| `">"`             | `"gt"`  | Greater than        | number, datetime                | Numeric/date threshold    |
+| `"<"`             | `"lt"`  | Less than           | number, datetime                | Numeric/date threshold    |
+| `">="`            | `"gte"` | Greater or equal    | number, datetime                | Numeric/date threshold    |
+| `"<="`            | `"lte"` | Less or equal       | number, datetime                | Numeric/date threshold    |
+| `"contains"`      | —       | Contains            | text, long-text                 | Substring to search for   |
+| `"notContains"`   | —       | Does not contain    | text, long-text                 | Substring to exclude      |
+| `"startsWith"`    | —       | Starts with         | text, long-text                 | Prefix to match           |
+| `"notStartsWith"` | —       | Does not start with | text, long-text                 | Prefix to exclude         |
+| `"endsWith"`      | —       | Ends with           | text, long-text                 | Suffix to match           |
+| `"notEndsWith"`   | —       | Does not end with   | text, long-text                 | Suffix to exclude         |
+| `"isEmpty"`       | —       | Is empty            | all field types                 | `null` (value is ignored) |
+| `"isNotEmpty"`    | —       | Is not empty        | all field types                 | `null` (value is ignored) |
 
 ### Access control operators
 

@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { z } from "zod";
 import { Container } from "@webiny/di";
 import { FormModelFeature } from "./feature.js";
+import { IdentityContextFeature } from "~/features/security/IdentityContext/feature.js";
 import {
     FormModelFactory,
     type IFormModel,
@@ -16,6 +17,7 @@ import {
 
 function createForm(config: IFormModelConfig): IFormModel {
     const container = new Container();
+    IdentityContextFeature.register(container);
     FormModelFeature.register(container);
     return container.resolve(FormModelFactory).create(config);
 }
@@ -4725,7 +4727,7 @@ describe("FormModel", () => {
                                 {
                                     type: "condition",
                                     target: "$.status",
-                                    operator: "eq",
+                                    operator: "==",
                                     value: "draft",
                                     action: "hide"
                                 }
@@ -4753,7 +4755,7 @@ describe("FormModel", () => {
                                 {
                                     type: "condition",
                                     target: "$.locked",
-                                    operator: "eq",
+                                    operator: "==",
                                     value: "yes",
                                     action: "disable"
                                 }

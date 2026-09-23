@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.js";
+import { IdentityContextFeature } from "@webiny/app-admin/features/security/IdentityContext/feature.js";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { IFormModel, IFormModelConfig, IRowNodeVM } from "@webiny/app-admin";
 import type { LanguageDto } from "@webiny/languages/admin/features/listLanguages/abstractions.js";
@@ -21,6 +22,7 @@ function createLanguageMocks(languages: LanguageDto[]) {
 
 function createBaseForm(config?: Partial<IFormModelConfig>) {
     const container = new Container();
+    IdentityContextFeature.register(container);
     FormModelFeature.register(container);
     const factory = container.resolve(FormModelFactory);
 
