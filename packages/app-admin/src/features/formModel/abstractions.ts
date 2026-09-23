@@ -106,19 +106,35 @@ export type FieldContextCallback = (params: IFieldCallbackParams) => Record<stri
 export type RuleAction = "hide" | "disable";
 
 export type RuleOperator =
+    | "=="
     | "eq"
+    | "!="
     | "neq"
+    | ">"
+    | "gt"
+    | "<"
+    | "lt"
+    | ">="
+    | "gte"
+    | "<="
+    | "lte"
     | "isEmpty"
     | "isNotEmpty"
     | "isTruthy"
     | "isFalsy"
-    | "matches";
+    | "matches"
+    | "contains"
+    | "notContains"
+    | "startsWith"
+    | "notStartsWith"
+    | "endsWith"
+    | "notEndsWith";
 
 export interface IRule {
     type: string;
     target: string;
     operator: RuleOperator | (string & {});
-    value: string | null;
+    value: string | number | boolean | null;
     action: RuleAction;
 }
 
