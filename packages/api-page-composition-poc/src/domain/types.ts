@@ -47,6 +47,14 @@ export interface PageSignals {
     /** Source text runs on this page, and how many of them the composed page carries. */
     textTotal: number;
     textPresent: number;
+    /**
+     * A sample of the runs the composed page does not carry, capped.
+     *
+     * A proportion says how much is missing; this says what, which is the difference between a
+     * number an operator can act on and one they can only worry about. Capped because a badly
+     * composed page can be missing hundreds and the page map is a key-value item, not a log.
+     */
+    textMissingSample: string[];
     /** This page's own destination outcome, from the same pass that produces the run totals. */
     links: PageMapLinks;
 }

@@ -481,6 +481,8 @@ export interface PageSignalsDto {
     unplaced: UnplacedInstanceDto[];
     textTotal: number;
     textPresent: number;
+    /** A capped sample of the source runs the composed page does not carry. */
+    textMissingSample?: string[];
     links: PageLinksDto;
 }
 

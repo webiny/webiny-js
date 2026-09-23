@@ -54,6 +54,9 @@ import {
 import { toPageIdentity } from "~/pages/toPageIdentity.js";
 import { scalarInputNames } from "~/pages/scalarInputNames.js";
 
+/** How many of a page's missing text runs to keep. Enough to see the shape of the loss, not a log. */
+const MISSING_TEXT_SAMPLE = 12;
+
 /** A page created but not yet published, held until every page exists and links can be rewritten. */
 interface CreatedPage {
     entry: PageMapEntry;
@@ -236,6 +239,9 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 unplaced: page.coverage.unplaced,
                 textTotal: page.coverage.sourceTexts.length,
                 textPresent: page.coverage.sourceTexts.length - text.failures.length,
+                textMissingSample: text.failures
+                    .slice(0, MISSING_TEXT_SAMPLE)
+                    .map(failure => failure.replace(/^missing text: /, "")),
                 links: {
                     before: pageCounts.destinations,
                     after: pageCounts.destinations,

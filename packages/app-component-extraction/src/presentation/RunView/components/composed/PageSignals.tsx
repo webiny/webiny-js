@@ -92,6 +92,37 @@ export const PageSignals = ({ signals }: Props) => {
                 />
             </div>
 
+            {(signals.textMissingSample ?? []).length > 0 ? (
+                <div className="flex flex-col gap-xxs">
+                    <Text size="sm" className="uppercase tracking-wide text-neutral-strong">
+                        Not found on the composed page
+                    </Text>
+                    {/* What is missing, not just how much: a proportion tells an operator to worry,
+                        these tell them where to look. */}
+                    <div className="flex flex-wrap gap-xxs">
+                        {(signals.textMissingSample ?? []).map((text, index) => (
+                            <Text
+                                key={`${text}-${index}`}
+                                size="sm"
+                                className="rounded-sm bg-neutral-light px-xs py-xxs font-mono text-neutral-strong"
+                            >
+                                {text}
+                            </Text>
+                        ))}
+                        {signals.textTotal - signals.textPresent >
+                        (signals.textMissingSample ?? []).length ? (
+                            <Text size="sm" className="px-xs py-xxs text-neutral-strong">
+                                and{" "}
+                                {signals.textTotal -
+                                    signals.textPresent -
+                                    (signals.textMissingSample ?? []).length}{" "}
+                                more
+                            </Text>
+                        ) : null}
+                    </div>
+                </div>
+            ) : null}
+
             {reasons.length > 0 ? (
                 <div className="flex flex-col gap-xxs rounded-sm border border-warning bg-warning-subtle p-sm">
                     {reasons.map(reason => (
