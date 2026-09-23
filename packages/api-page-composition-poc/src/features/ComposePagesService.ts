@@ -37,7 +37,7 @@ import { collectSectionTexts } from "~/pages/collectSectionTexts.js";
 import { deriveInstanceProps } from "~/pages/deriveInstanceProps.js";
 import { deriveCompositeInputs } from "~/pages/deriveCompositeInputs.js";
 import { applyFormPreview } from "~/pages/applyFormPreview.js";
-import { stripInventedDestinations, type StripResult } from "~/pages/stripInventedDestinations.js";
+import { stripInventedBindings, type ElementContext } from "~/pages/stripInventedBindings.js";
 import {
     recoverInventedDestinations,
     type PlacedInvention
@@ -329,9 +329,9 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         const identity = toPageIdentity(page.url, page.title);
 
         const placements: ComponentPlacement[] = [];
-        // Per placement, because the element that ends up carrying these is only known once the
-        // document is built — and the recovery pass has to write back to a specific element.
-        const inventedByPlacement: { path: string; value: string }[][] = [];
+        // Per placement, because the element each one becomes is only known once the document is
+        // built, and both the destination check and the recovery pass work on specific elements.
+        const capturedByPlacement: Set<string>[] = [];
         for (const instance of page.instances) {
             const component = placeable.get(instance.signature);
             if (!component) {
@@ -344,7 +344,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 segmentByUrl,
                 trees
             });
-            inventedByPlacement.push(derivedInputs.invented);
+            capturedByPlacement.push(derivedInputs.captured);
             placements.push({ manifest: component.manifest, inputs: derivedInputs.inputs });
         }
 
@@ -356,25 +356,45 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             );
         }
 
-        const { elements, bindings } = buildPageDocument({
+        const built = buildPageDocument({
             path: identity.path,
             title: identity.title,
             placements
         });
+        const elements = built.elements;
 
         /*
          * Document order is the root's children list, in placement order — so the nth placement's
-         * element id is the nth entry. That is the only link between an input path recorded during
-         * derivation and the binding that ends up holding it.
+         * element id is the nth entry, which is what ties a section's captured links to the element
+         * built from it.
          */
-        const childIds: string[] = bindings.root?.inputs?.children?.static ?? [];
-        const invented: PlacedInvention[] = inventedByPlacement.flatMap((items, index) => {
+        const childIds: string[] = built.bindings.root?.inputs?.children?.static ?? [];
+        const contextByElement = new Map<string, ElementContext>();
+        for (const [index, captured] of capturedByPlacement.entries()) {
             const elementId = childIds[index];
-            if (!elementId) {
-                return [];
+            if (elementId) {
+                contextByElement.set(elementId, { captured });
             }
-            return items.map(item => ({ elementId, path: item.path, value: item.value }));
+        }
+
+        /*
+         * Checked here rather than on the inputs, because this is the first point at which the page
+         * is what it will actually be: `ElementFactory` fills anything the composition did not supply
+         * from the input's own `params.defaultValue`, which happens after the inputs are handed over.
+         */
+        let sourceHost = "";
+        try {
+            sourceHost = new URL(page.url).host;
+        } catch {
+            sourceHost = "";
+        }
+        const stripped = stripInventedBindings({
+            bindings: built.bindings,
+            contextByElement,
+            sourceHost
         });
+        const bindings = stripped.bindings;
+        const invented = stripped.invented;
 
         const createdPage = await this.createPage.execute({
             location: { folderId: ROOT_FOLDER },
@@ -426,7 +446,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         component: PlaceableComponent;
         segmentByUrl: Map<string, SegmentedPage>;
         trees: Map<string, CapturedNode>;
-    }): Promise<StripResult> {
+    }): Promise<{ inputs: Record<string, unknown>; captured: Set<string> }> {
         const { page, instance, component, segmentByUrl, trees } = params;
 
         const node = await this.sectionNode(page.url, instance.sectionIndex, segmentByUrl, trees);
@@ -482,25 +502,12 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         });
 
         /*
-         * Last of all, and deliberately outside the three layers: every destination on the finished
-         * inputs is checked against what this section actually linked to, whatever shape it arrived
-         * in. Putting the check inside derivation is what let 36 invented paths through on the five
-         * customer sites — it ran on lists of composites and was never asked about a scalar or a
-         * single composite, which is where headers, footers and CTAs keep their links.
+         * The links this section actually had, carried out so the finished page can be checked
+         * against them. The check itself happens on the bindings, not here — see `composePage`.
          */
         const captured = node ? collectLinks(node).map(link => link.href) : [];
-        let sourceHost = "";
-        try {
-            sourceHost = new URL(page.url).host;
-        } catch {
-            sourceHost = "";
-        }
 
-        return stripInventedDestinations({
-            inputs: previewed,
-            manifest: component.manifest,
-            context: { captured: new Set(captured), sourceHost }
-        });
+        return { inputs: previewed, captured: new Set(captured) };
     }
 
     /** The captured node for one section of one page, resolved by the box Segment recorded. */

@@ -14,7 +14,8 @@ export interface RewriteResult {
     outcomes: DestinationOutcome[];
 }
 
-const isDestinationPath = (path: string): boolean => /(^|\/)(url|href|link|to)$/i.test(path);
+/** Which input paths name a destination. Shared, so the strip and the rewrite cannot disagree. */
+export const isDestinationPath = (path: string): boolean => /(^|\/)(url|href|link|to)$/i.test(path);
 
 /**
  * Where a same-host destination would have been migrated to.
