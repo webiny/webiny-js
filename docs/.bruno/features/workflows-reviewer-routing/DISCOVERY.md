@@ -178,7 +178,14 @@ isn't persisted by `WorkflowStateMapper.toCmsEntry` — the CMS sets it.
 
 ## Still open
 
-- Nothing. All concerns from the brief are settled.
+- Nothing from the brief.
+
+Pulled into scope along the way, because the feature cannot be correct without them:
+
+- `WORKFLOWS_PERMISSION` must become `"workflows.*"`, or workflow editing stays ungranted
+  for everyone but super-admins.
+- `CreateWorkflowState` never authorizes the caller against `targetRevisionId`; the same
+  target-access check the reviewer query needs closes it.
 
 Known gaps against the brief, accepted deliberately: no assignment history, so no audit
 entry; and rotation is least-recently-assigned across the tenant rather than within a step.

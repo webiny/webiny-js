@@ -89,8 +89,7 @@ it must be returned as `null` when absent. Language is a CMS model (`wbyLanguage
 request-scoped locale; there is no locale concept in the API.
 
 Requester conditions come from the state, not from an app. `requesterId` is `createdBy`.
-`requesterTeamId` matches when the requester's snapshotted team list contains the rule's id;
-when that list is `null` the rule is skipped with a distinct reason.
+`requesterTeamId` matches when the requester's snapshotted team list contains the rule's id.
 
 A rule stores `folderId`, never a folder path. Paths are rebuilt on move by the FLP cascade,
 so a path stored on the rule would break the first time that folder moves.
@@ -99,7 +98,7 @@ so a path stored on the rule would break the first time that folder moves.
 
 ```
 currentAssignee: { id, displayName, type } | null
-requesterTeams:  string[] | null
+requesterTeams:  string[]
 ```
 
 `currentAssignee` is the queryable projection of who holds the current step. It must live at
@@ -116,11 +115,13 @@ the same at step 1 and step 3. Reading it live would split one review across two
 bases when the requester changes team mid-review, and would silently stop matching if they
 leave — `GetUserTeamsUseCase` swallows every failure to `[]`.
 
-It is nullable on purpose. `ListUserTeamsUseCase` fails for every identity that is not an
-admin user, API keys included, and `GetUserTeamsUseCase` turns that into `[]`. Storing `null`
-for "no answer" keeps it distinct from "genuinely in no team", so the inspector can say why a
-`requesterTeamId` rule did not fire instead of silently reporting no match. `fromCmsEntry`
-defaults it to `null` for states written before the field existed.
+Declared as a `text().list()`, defaulted to `[]` by `fromCmsEntry` for states written before
+the field existed.
+
+Empty means no teams, whatever the cause. `GetUserTeamsUseCase` swallows every failure to
+`[]`, and so does `ListUserTeamsUseCase` for a `ListTeams` failure, so a caller cannot tell a
+failed lookup from a genuine absence without a parallel lookup path. For an API-key requester
+— the common case where the lookup fails — "in no team" is the honest answer anyway.
 
 ### `wbyWorkflowState` — step additions
 
@@ -133,6 +134,11 @@ assignedOn:       datetime | null
 assignmentSource: "manual" | "rule:<ruleId>" | "strategy:<name>"
                   | "reassign" | "takeover" | null
 ```
+
+Three fields answering different questions, all written together. `assignmentSource` says
+*how* the assignee was chosen. `assignedBy` says *whose action* produced it — the requester at
+creation, the approver of the previous step, the reassigner, or the person taking over.
+`assignedOn` is when.
 
 `assignment` is snapshotted alongside `teams`, so a review behaves the way it was configured
 when it started. Editing a workflow never changes a review in flight.
@@ -157,7 +163,18 @@ userId:         string
 lastAssignedOn: datetime
 ```
 
-One entry per reviewer. Answers "whose turn is it" without touching workflow states — a
+One entry per reviewer. Read and written as:
+
+```
+read     GetEntriesByIds([`${sha256(userId)}#0001`])   // partial results; absent = never assigned
+absent   CreateEntry with id = sha256(userId)
+present  UpdateEntry on  `${sha256(userId)}#0001`
+```
+
+Split get-or-create from update, as `GetWebhookSettingsRepository` and
+`UpdateWebhookSettingsRepository` do. Private models set `authorization: false`, so this
+works under whichever identity is approving. A concurrent first create is harmless — nothing
+checks for an existing id, and both writers store the same timestamp. Answers "whose turn is it" without touching workflow states — a
 reviewer holding nothing appears in no open state at all, so they are invisible to any query
 over states, and scanning finished states grows with history forever.
 
@@ -277,10 +294,12 @@ one answer everywhere.
 
 | Event | Effect |
 | --- | --- |
-| Resolution | holder := decision, source := rule/strategy/manual |
-| `start()` / `takeOver()` by a non-assignee | holder := actor, source := `takeover` |
-| Reassign | holder := target, source := `reassign` |
-| Resolution yields nothing | holder := `null` |
+| Resolution | holder := decision, source := rule/strategy/manual, `assignedBy` := acting identity |
+| `start()` / `takeOver()` by a non-assignee | holder := actor, source := `takeover`, `assignedBy` := actor |
+| Reassign | holder := target, source := `reassign`, `assignedBy` := reassigner |
+| Resolution yields nothing | holder := `null`, source and `assignedBy` cleared |
+
+`assignedOn` is written with each of these.
 
 `lastAssignedOn` is written on every assignment, not only the first — rotation reads it, so
 setting it once at creation would break rotation from the second step onward.
@@ -356,11 +375,13 @@ existing `ClearEntryStateOnWorkflowStateAfterDelete` fails silently. The work ha
 before the flag is written.
 
 ```
-api-headless-cms-workflows     -> EntryBeforeDeleteEventHandler
-api-website-builder-workflows  -> PageBeforeTrashEventHandler
+api-headless-cms-workflows     -> DeleteWorkflowStateOnEntryBeforeDelete
+api-website-builder-workflows  -> DeleteWorkflowStateOnPageBeforeTrash
 ```
 
-Two new handlers, each its own file. Website Builder needs its own because `TrashPage`
+Two new handlers, each its own file, named for behaviour like their existing siblings —
+`EntryBeforeDeleteEventHandler` and `PageBeforeTrashEventHandler` are the *abstractions*, so
+naming an implementation after one shadows the import. Website Builder needs its own because `TrashPage`
 publishes its own events — and it needs the **Before** one for the same reason: `TrashPage`
 calls CMS `deleteEntry(pageModel, id, { permanently: false })`, so by the time
 `PageAfterTrashEvent` fires the page is flagged and `GetEntriesByIdsNotDeleted` hides it from
@@ -383,8 +404,23 @@ trash and permanent delete — the event carries `permanent`, and only the badge
 skipped when true, since the entry is already flagged by then. A state the index missed at
 trash time is caught when the bin is emptied.
 
-`DeleteWorkflowStateRepository` must pass `{ permanently: true }`. States are hard-deleted,
-never binned.
+`DeleteWorkflowStateRepository` should pass `{ permanently: true }` explicitly.
+`DeleteEntryUseCase` already defaults to `true`, so this documents intent rather than
+changing behaviour — states are hard-deleted, never binned.
+
+The existing `DeleteWorkflowStateOnEntryAfterDelete` is retired. It is `permanent`-guarded
+and would find nothing once the before-delete handler has run.
+
+`DeleteWorkflowStateOnPageAfterDelete` stays but switches to the `targetId`-keyed delete.
+Website Builder has no single event covering both paths: `PageBeforeTrashEvent` carries only
+`{ page }`, and permanent delete goes through `DeletePageUseCase` and its own events. Without
+this the WB side keeps the gap the CMS side closes — an earlier revision's review surviving
+permanent delete, and nothing catching what the index missed at trash time.
+
+Deletion covers **every** state for the target, not only `isActive: true` ones. The content
+is gone, so no review of it should survive, and this also clears the cancelled-state orphans
+that accumulate today. Clear the entry badge once, in the handler, rather than relying on
+`ClearEntryStateOnWorkflowStateAfterDelete` firing per state.
 
 The handler must swallow its own failures. `EventPublisher` awaits handlers with no
 try/catch and `MoveEntryToBinUseCase` turns a throw into `Result.fail`, so a failing
@@ -406,10 +442,10 @@ WorkflowNotFoundError` entries — which appear in **seven** places, not two: Up
 DeleteTarget, Start, Approve, Reject and TakeOver. The last four never fetched a workflow at
 all, so theirs were already unreachable.
 
-This fixes a live bug rather than tidying dead code. Today `DeleteTargetWorkflowStateUseCase`
-returns `WorkflowNotFoundError` when the workflow is gone, `EventPublisher` has no try/catch,
-and `DeleteEntryUseCase` turns that into `Result.fail` — so deleting content whose workflow
-was deleted currently fails the content delete.
+One of the seven is a live failure. `UpdateWorkflowStateUseCase` returns the error to its
+caller, so **cancelling** a review whose workflow was deleted fails today. The delete path
+does not: `DeleteWorkflowStateOnEntryAfterDelete` discards the `Result`, and the event fires
+after the entry is already gone, so the state simply orphans silently.
 
 Running reviews then approve, reject, cancel and delete normally; no new review can start,
 because `CreateWorkflowState` still needs a workflow and correctly fails.
@@ -425,6 +461,16 @@ No warning is added on delete. Nothing breaks, so there is nothing to warn about
 Configuring assignment, rules and the exclusion list falls under the existing `editor` flag.
 That flag is coarse — anyone who can edit one workflow can edit all of them — but widening it
 is out of scope.
+
+**The existing check is broken and must be fixed as part of this work.** The admin stores
+full access as `{ name: "workflows.*", editor: true }`, while the API asks for
+`getPermissions("workflows")` — and `minimatch("workflows", "workflows.*")` is `false`. So a
+group granted Workflows full access cannot edit workflows at all today; only a `*`
+super-admin passes, which is what every api-workflows test uses. `WORKFLOWS_PERMISSION` must
+become `"workflows.*"`. See `docs/bugs/workflows-full-access-permission-never-matches.md`.
+
+This is not optional here: `getPermission("workflows.reassign")` *does* match `workflows.*`,
+so without the fix a full-access editor could reassign a review but not edit a workflow.
 
 Reassignment gets its own entity, so it can be granted without workflow editing — except to
 full-access holders. `IdentityContext.getPermission` matches with minimatch, so `workflows.*`
@@ -505,6 +551,7 @@ input StepAssignmentInput {
 
 input AssignmentContextInput {
     requesterId: ID!
+    requesterTeamIds: [ID!]
     folderId: ID
     modelId: String
     language: String
@@ -544,6 +591,21 @@ type SimulateAssignmentResult {
     reason: String!
 }
 
+type ListTeamReviewersResponse {
+    data: [Reviewer!]
+    error: WorkflowsError
+}
+
+type ListRequestReviewersResponse {
+    data: [StepReviewers!]
+    error: WorkflowsError
+}
+
+type SimulateAssignmentResponse {
+    data: SimulateAssignmentResult
+    error: WorkflowsError
+}
+
 extend type WorkflowsQuery {
     listTeamReviewers(data: ListTeamReviewersInput!): ListTeamReviewersResponse!
     listRequestReviewers(data: ListRequestReviewersInput!): ListRequestReviewersResponse!
@@ -555,6 +617,20 @@ extend type WorkflowsMutation {
     reassignWorkflowStateStep(id: ID!, userId: ID!): WorkflowStateResponse!
 }
 ```
+
+Existing types also change, and the design is not done until they do:
+
+- `WorkflowStepInput` gains `resolutionType` and `assignment`; `WorkflowStep` gains them on
+  the way out.
+- `WorkflowStateStep` gains `resolutionType`, `assignee`, `assignedBy`, `assignedOn`,
+  `assignmentSource`.
+- `WorkflowState` gains `currentAssignee` and `requesterTeams`.
+- Exclusion CRUD — list, create, update, delete — for the tenant settings screen.
+- A query returning the condition keys each app declares it supplies, which the rule editor
+  needs to decide which conditions to offer.
+
+`AssignmentContextInput` carries `requesterTeamIds` so the inspector can simulate
+`requesterTeamId` rules without looking the requester up live.
 
 `createWorkflowState` moving to an input object is a breaking change. In-repo callers:
 `app-workflows/src/features/requestReview/RequestReviewGateway.ts`, plus the api-workflows
@@ -574,13 +650,22 @@ trusted to name:
   `targetRevisionId` authorizes nothing today — the same gap exists there and is worth
   closing at the same time.
 
-  `api-workflows` is app-agnostic and cannot read a target itself, so this needs a companion
-  to `WorkflowStateContextProvider` on the app side answering "can this identity read this
-  target". A new abstraction, not free.
+  `api-workflows` is app-agnostic and cannot read a target itself. This needs a `WorkflowTargetAccess`
+  abstraction in `api-workflows` with a **default-deny** implementation, plus one
+  `createDecorator` per app — exactly the shape `WorkflowStateContextProvider` already uses.
+  Default deny matters: an app that has not implemented the decorator must refuse, not leak.
 
-  The response returns only steps with `allowManualSelection`, and omits the exclusion
-  `reason` — that is free text an administrator typed, and it should not reach every
-  requester. Show the candidate as unavailable instead.
+  The CMS decorator must call `AccessControl.canAccessEntry({ model, entry })` directly.
+  Reusing the existing reads does not authorize: `GetRevisionByIdUseCase` has no access
+  control at all, and `GetEntriesByIdsUseCase` calls `canAccessEntry({ model })` without the
+  entry, so folder-level and own-only scoping never apply. The WB decorator can use
+  `GetPageByIdUseCase`, which is already checked.
+
+  The response returns only steps with `allowManualSelection`. It does include the exclusion
+  `reason`, which the brief asks for so an editor understands the constraint rather than
+  assuming something is broken. The reason is free text an administrator typed about a
+  person, so the exclusion form must say plainly that it is shown to anyone requesting a
+  review.
 
 Collapsing these into one query keyed on `teamIds` does not work. Validating the ids against
 "workflows the caller can list" protects nothing, because `ListWorkflowsUseCase` performs no
@@ -658,8 +743,9 @@ Per the one-implementation-per-file convention:
 - `PageBeforeTrashEventHandler` (`api-website-builder-workflows`).
 - A `targetId`-keyed list and delete on the workflow-state repository.
 - A rule-target validator invoked from `StoreWorkflow`.
-- A target-access check abstraction per app, companion to `WorkflowStateContextProvider`.
 - Notification handlers for create, approve and reassign.
+- A `WorkflowTargetAccess` abstraction with a default-deny implementation, plus one decorator
+  per app package.
 
 ## Out of scope
 
