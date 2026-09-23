@@ -29,7 +29,16 @@ const loadObjectUrl = async (
             token ? { headers: { Authorization: `Bearer ${token}` } } : {}
         );
         if (!response.ok) {
-            throw new Error(`Image request failed (${response.status}).`);
+            /*
+             * The status is carried through rather than swallowed. A large full-page screenshot can
+             * exceed the Lambda response cap and come back 500, and a view that renders nothing for
+             * that looks identical to a page with no screenshot at all.
+             */
+            throw new Error(
+                response.status === 500
+                    ? "The image could not be delivered (500). It may be too large to return."
+                    : `The image request failed (${response.status}).`
+            );
         }
         return URL.createObjectURL(await response.blob());
     })();
@@ -43,6 +52,8 @@ export interface RunImageState {
     src: string | null;
     loading: boolean;
     failed: boolean;
+    /** Why it failed, for a view that should say so rather than show a gap. */
+    error: string | null;
 }
 
 export function useRunImage(runId: string, imageRef: string | null | undefined): RunImageState {
@@ -50,27 +61,33 @@ export function useRunImage(runId: string, imageRef: string | null | undefined):
     const [state, setState] = useState<RunImageState>({
         src: null,
         loading: Boolean(imageRef),
-        failed: false
+        failed: false,
+        error: null
     });
 
     useEffect(() => {
         if (!imageRef) {
-            setState({ src: null, loading: false, failed: false });
+            setState({ src: null, loading: false, failed: false, error: null });
             return;
         }
         let cancelled = false;
-        setState({ src: null, loading: true, failed: false });
+        setState({ src: null, loading: true, failed: false, error: null });
         (async () => {
             try {
                 const apiUrl = container.resolve(EnvConfig).get("apiUrl");
                 const token = (await container.resolve(AuthenticationContext).getIdToken()) ?? "";
                 const src = await loadObjectUrl(apiUrl, token, runId, imageRef);
                 if (!cancelled) {
-                    setState({ src, loading: false, failed: false });
+                    setState({ src, loading: false, failed: false, error: null });
                 }
-            } catch {
+            } catch (error) {
                 if (!cancelled) {
-                    setState({ src: null, loading: false, failed: true });
+                    setState({
+                        src: null,
+                        loading: false,
+                        failed: true,
+                        error: (error as Error).message
+                    });
                 }
             }
         })();
