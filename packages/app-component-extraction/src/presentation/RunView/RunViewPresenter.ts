@@ -100,7 +100,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 this.vm.run = run;
                 this.vm.job = job;
                 this.vm.loading = false;
-                this.vm.selectedStage = selected;
+                // Nested in this action deliberately: MobX flushes once at the outer boundary, so
+                // observers see the run, the stage and the artifact change together.
+                this.openStage(selected);
             });
             if (selected) {
                 await this.loadLogs(run, selected);
@@ -207,9 +209,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             // drop the stage back to a plain "pending" look during that gap. refresh() clears it once the
             // ledger shows the stage picked up this task (or reached running).
             this.pendingActionTaskId = result.taskId;
-            runInAction(() => {
-                this.vm.selectedStage = stage;
-            });
+            // Same pairing as `selectStage`: running a stage opens it, and the previous stage's
+            // artifact must not survive into the new stage's first render.
+            this.openStage(stage);
             await this.refresh();
         } catch (error) {
             this.pendingActionTaskId = null;
@@ -222,13 +224,34 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     }
 
     selectStage(stage: string) {
-        runInAction(() => {
-            this.vm.selectedStage = stage;
-        });
+        this.openStage(stage);
         if (this.vm.run) {
             void this.loadLogs(this.vm.run, stage);
             void this.loadArtifact(this.vm.run, stage);
         }
+    }
+
+    /**
+     * Change the open stage and drop the previous stage's artifact in the same action.
+     *
+     * These two have to move together. `selectedStage` is observable, so the moment it changes MobX
+     * re-renders — the new stage's view mounts immediately, synchronously, while `artifact` still
+     * holds the stage it was showing before. `loadArtifact` clears it, but it is async and therefore
+     * one render too late: the view has already read `components` off a Promote artifact, or
+     * `promoted` off a Generate one, and thrown.
+     *
+     * Clearing here rather than in each view keeps the invariant in one place: whatever `artifact`
+     * holds belongs to `artifactStage`, and `artifactStage` is the stage being rendered.
+     */
+    private openStage(stage: string | null) {
+        runInAction(() => {
+            if (this.vm.artifactStage !== stage) {
+                this.loadedArtifactKey = null;
+                this.vm.artifact = null;
+                this.vm.artifactStage = stage;
+            }
+            this.vm.selectedStage = stage;
+        });
     }
 
     async setDiscoverExclusion(url: string, excluded: boolean): Promise<void> {
