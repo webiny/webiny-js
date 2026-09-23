@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { Alert, Tag, Text } from "@webiny/admin-ui";
 import { RunImage } from "~/presentation/runImage/RunImage.js";
+import { useRunImage } from "~/presentation/runImage/useRunImage.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type { SegmentArtifactDto, SegmentPageDto, SegmentSectionDto } from "~/shared/types.js";
 
@@ -63,6 +64,15 @@ export const SegmentView = createReactiveComponent(function SegmentView({ presen
         () => median((artifact?.pages ?? []).map(page => page.sections.length)),
         [artifact]
     );
+
+    /*
+     * Resolved before the early returns because it feeds a hook, and re-derived below once the
+     * artifact is known to exist. The loader caches by URL, so the image rendered further down
+     * shares this request rather than making a second one.
+     */
+    const previewPage =
+        (artifact?.pages ?? []).find(page => page.url === selectedUrl) ?? artifact?.pages?.[0];
+    const { src: previewSrc } = useRunImage(runId, previewPage?.screenshotRef);
 
     if (vm.artifactLoading && !artifact) {
         return <Text className="p-md text-neutral-strong">Loading segmentation…</Text>;
@@ -137,35 +147,44 @@ export const SegmentView = createReactiveComponent(function SegmentView({ presen
                         alt={selected.url}
                         className="w-[560px] max-w-full block"
                     />
-                    {sections.map((section, i) => {
-                        const color = colorFor(i);
-                        const isFocused = focused === i;
-                        const dimmed = focused !== null && !isFocused;
-                        return (
-                            <div
-                                key={section.index}
-                                className="absolute cursor-pointer transition-opacity"
-                                style={{
-                                    left: `${(section.box.x / DOCUMENT_WIDTH) * 100}%`,
-                                    width: `${(section.box.width / DOCUMENT_WIDTH) * 100}%`,
-                                    top: `${(section.box.y / selected.documentHeight) * 100}%`,
-                                    height: `${(section.box.height / selected.documentHeight) * 100}%`,
-                                    border: `${isFocused ? 3 : 2}px solid ${color}`,
-                                    backgroundColor: `${color}${isFocused ? "40" : "1f"}`,
-                                    opacity: dimmed ? 0.25 : 1
-                                }}
-                                onMouseEnter={() => setFocused(i)}
-                                onMouseLeave={() => setFocused(null)}
-                            >
-                                <span
-                                    className="absolute top-0 left-0 text-neutral-light text-xs font-medium px-xs py-xxs"
-                                    style={{ backgroundColor: color }}
-                                >
-                                    {i + 1}
-                                </span>
-                            </div>
-                        );
-                    })}
+                    {/*
+                     * Overlays annotate the screenshot, so without one they annotate nothing — and
+                     * being absolutely positioned they would be drawn on top of whatever replaced
+                     * it, covering the reason the preview is missing with a stack of empty boxes.
+                     * The request is shared with the image above through the loader's cache, so
+                     * asking about its state here costs no second fetch.
+                     */}
+                    {previewSrc
+                        ? sections.map((section, i) => {
+                              const color = colorFor(i);
+                              const isFocused = focused === i;
+                              const dimmed = focused !== null && !isFocused;
+                              return (
+                                  <div
+                                      key={section.index}
+                                      className="absolute cursor-pointer transition-opacity"
+                                      style={{
+                                          left: `${(section.box.x / DOCUMENT_WIDTH) * 100}%`,
+                                          width: `${(section.box.width / DOCUMENT_WIDTH) * 100}%`,
+                                          top: `${(section.box.y / selected.documentHeight) * 100}%`,
+                                          height: `${(section.box.height / selected.documentHeight) * 100}%`,
+                                          border: `${isFocused ? 3 : 2}px solid ${color}`,
+                                          backgroundColor: `${color}${isFocused ? "40" : "1f"}`,
+                                          opacity: dimmed ? 0.25 : 1
+                                      }}
+                                      onMouseEnter={() => setFocused(i)}
+                                      onMouseLeave={() => setFocused(null)}
+                                  >
+                                      <span
+                                          className="absolute top-0 left-0 text-neutral-light text-xs font-medium px-xs py-xxs"
+                                          style={{ backgroundColor: color }}
+                                      >
+                                          {i + 1}
+                                      </span>
+                                  </div>
+                              );
+                          })
+                        : null}
                 </div>
             </div>
 
