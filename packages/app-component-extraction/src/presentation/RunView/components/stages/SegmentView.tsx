@@ -48,7 +48,8 @@ const median = (values: number[]): number => {
  * detected section drawn as a colour-coded overlay (numbered badge, dimmed when another is focused); and
  * a matching sections list — same colour and number — showing each block's size and its actual crop, so
  * it's clear what every highlighted region is. Hovering a list row or an overlay focuses that section on
- * both. A page whose segmentation collapsed is banner-flagged.
+ * both. A page whose segmentation looks to have collapsed — one section, or far fewer than the run
+ * typically produces — is banner-flagged.
  */
 export const SegmentView = createReactiveComponent(function SegmentView({ presenter }: Props) {
     const { vm } = presenter;
@@ -70,9 +71,22 @@ export const SegmentView = createReactiveComponent(function SegmentView({ presen
         return <Text className="p-md text-neutral-strong">Run Segment to detect sections.</Text>;
     }
 
-    const isOutlier = (page: SegmentPageDto): boolean =>
+    /*
+     * Under-segmentation only, which is what this check was for.
+     *
+     * It used a symmetric distance from the median, and that is unsatisfiable downwards — a count
+     * below the median can never be more than the median away from it — so the only thing it ever
+     * flagged besides a single-section page was a page with MORE sections than usual. On a site whose
+     * index page is long and whose interior pages are short, that flagged the one page that was
+     * right and stayed quiet about the rest.
+     *
+     * A page with an unusually high count is not flagged at all: an index page legitimately carries
+     * more sections than an interior one, so warning about it is noise on every site with a long
+     * home page.
+     */
+    const isUnderSegmented = (page: SegmentPageDto): boolean =>
         page.sections.length <= 1 ||
-        (medianSections > 0 && Math.abs(page.sections.length - medianSections) > medianSections);
+        (medianSections >= 3 && page.sections.length * 2 < medianSections);
 
     const selected = artifact.pages.find(page => page.url === selectedUrl) ?? artifact.pages[0];
     const sections = selected.sections;
@@ -101,7 +115,7 @@ export const SegmentView = createReactiveComponent(function SegmentView({ presen
                             squeezed the number down to a sliver rather than truncating the path. */}
                         <Tag
                             className="flex-shrink-0"
-                            variant={isOutlier(page) ? "warning" : "neutral-muted"}
+                            variant={isUnderSegmented(page) ? "warning" : "neutral-muted"}
                             content={String(page.sections.length)}
                         />
                     </div>
@@ -110,9 +124,9 @@ export const SegmentView = createReactiveComponent(function SegmentView({ presen
 
             {/* Screenshot with colour-coded overlays */}
             <div className="flex-1 min-w-0 overflow-y-auto p-md">
-                {isOutlier(selected) ? (
+                {isUnderSegmented(selected) ? (
                     <Alert type="warning" variant="subtle" className="mb-md">
-                        {`Segmentation may have collapsed: this page has ${sections.length} section(s), far from the run's typical ${medianSections}.`}
+                        {`Segmentation may have collapsed: this page has ${sections.length} section(s), well below the run's typical ${medianSections}. A page that comes back as one section contributes no header or footer to clustering.`}
                     </Alert>
                 ) : null}
 
