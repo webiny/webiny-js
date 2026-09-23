@@ -26,20 +26,31 @@ export interface RenderConfigParams {
  * `GetProjectConfigService`, where it keys the render cache so that build and watch get their own
  * configs. If an extension ever needs those values, a context is the shape to give them.
  */
-let pendingRender: Promise<unknown> = Promise.resolve();
+// Settles when the most recently queued render has finished, whether it succeeded or failed. It never
+// rejects, so a failed render cannot block the ones queued behind it.
+let lastQueuedRender: Promise<void> = Promise.resolve();
 
-export const renderConfig = (params: RenderConfigParams): Promise<IProjectConfigDto> => {
-    const startRender = () => renderConfigNow(params);
+export const renderConfig = async (params: RenderConfigParams): Promise<IProjectConfigDto> => {
+    // Take our place in the queue straight away, before any `await`. If two calls arrive together,
+    // this is what makes the second one wait for the first rather than both starting at once.
+    const previousRender = lastQueuedRender;
 
-    const result = pendingRender.then(startRender, startRender);
+    let markThisRenderDone: () => void = () => undefined;
+    const thisRender = new Promise<void>(resolve => {
+        markThisRenderDone = resolve;
+    });
 
-    // A failed render must not poison the queue for whoever is behind it.
-    pendingRender = result.then(
-        () => undefined,
-        () => undefined
-    );
+    lastQueuedRender = thisRender;
 
-    return result;
+    // Wait for whoever was ahead of us to finish with the DOM globals.
+    await previousRender;
+
+    try {
+        return await renderConfigNow(params);
+    } finally {
+        // Let the next render in, no matter how this one ended.
+        markThisRenderDone();
+    }
 };
 
 const renderConfigNow = async (params: RenderConfigParams): Promise<IProjectConfigDto> => {
