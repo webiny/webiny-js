@@ -24,21 +24,25 @@ const loadObjectUrl = async (
         return existing;
     }
     const promise = (async () => {
-        const response = await fetch(
-            url,
-            token ? { headers: { Authorization: `Bearer ${token}` } } : {}
-        );
-        if (!response.ok) {
-            /*
-             * The status is carried through rather than swallowed. A large full-page screenshot can
-             * exceed the Lambda response cap and come back 500, and a view that renders nothing for
-             * that looks identical to a page with no screenshot at all.
-             */
-            throw new Error(
-                response.status === 500
-                    ? "The image could not be delivered (500). It may be too large to return."
-                    : `The image request failed (${response.status}).`
+        let response: Response;
+        try {
+            response = await fetch(
+                url,
+                token ? { headers: { Authorization: `Bearer ${token}` } } : {}
             );
+        } catch {
+            /*
+             * The request never completed, so there is no status to report and claiming one would be
+             * wrong. This is what the oversized-response failure looked like from the browser: the
+             * platform replaced the response with an error carrying no CORS headers, so the fetch was
+             * blocked before any status could be read, and the only honest thing to say is that the
+             * request did not complete.
+             */
+            throw new Error("The request did not complete — no response could be read.");
+        }
+
+        if (!response.ok) {
+            throw new Error(`The image request failed (${response.status}).`);
         }
         return URL.createObjectURL(await response.blob());
     })();

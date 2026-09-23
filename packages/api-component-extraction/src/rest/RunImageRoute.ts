@@ -5,7 +5,7 @@ import {
 } from "@webiny/event-handler-core";
 import type { IHttpResponse } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
-import { IMMUTABLE_CACHE_CONTROL, RUN_IMAGE_ROUTE, stageArtifactKey } from "~/constants.js";
+import { RUN_IMAGE_ROUTE, stageArtifactKey } from "~/constants.js";
 import { RunRepository } from "~/domain/abstractions.js";
 import { StageArtifactStore, BlobStore } from "~/domain/stage.js";
 import { stageEntry } from "~/domain/ledger.js";
@@ -21,6 +21,14 @@ const json = (statusCode: number, body: unknown): IHttpResponse => ({
 
 const notFound = json(404, { message: "Image not found." });
 
+/*
+ * Long enough for a browser to follow the redirect and finish the transfer on a slow connection,
+ * short enough that a URL captured from a log or a shared screenshot is not a lasting grant. The
+ * authorisation this route performs is what decides access; the signature only carries it far enough
+ * to reach storage.
+ */
+const SIGNED_URL_SECONDS = 300;
+
 /**
  * `GET /_webiny/component-extraction/run/:runId/image?ref=<blob key>` — serves a run's derived images
  * (screenshots, section crops, page thumbnails) for the W7 visibility screens.
@@ -32,8 +40,12 @@ const notFound = json(404, { message: "Image not found." });
  * lookup, not the key, the authority. Everything is a 404 rather than a 403 so an unauthorised caller
  * cannot probe which runs or images exist.
  *
- * Derived-image keys carry the stage version, so an object never changes under a key — hence the
- * immutable cache header; the content type comes from the stored object.
+ * The response is a redirect to a short-lived pre-signed URL rather than the bytes themselves. A
+ * Lambda response is capped at 6MB and is base64-encoded on the way out, so a full-page screenshot
+ * over roughly 4.5MB could not be returned at all: the platform replaced it with a 500 that carried
+ * no CORS headers, which reached the admin as a network failure it could not even read the status
+ * of. Redirecting keeps every check above — permission, tenant-scoped run lookup, and the allowlist
+ * — and moves only the transfer, so size stops being a limit.
  */
 class RunImageRouteImpl implements HttpRouteHandler.Interface {
     constructor(private container: Container) {}
@@ -60,18 +72,27 @@ class RunImageRouteImpl implements HttpRouteHandler.Interface {
             return notFound;
         }
 
-        const object = await this.container.resolve(BlobStore).getObject(ref);
-        if (object.isFail()) {
+        const signed = await this.container.resolve(BlobStore).signedUrl(ref, SIGNED_URL_SECONDS);
+        if (signed.isFail()) {
             return notFound;
         }
 
         return {
-            statusCode: 200,
+            statusCode: 302,
             headers: {
-                "content-type": object.value.contentType,
-                "cache-control": IMMUTABLE_CACHE_CONTROL
+                location: signed.value.url,
+                "content-type": signed.value.contentType,
+                /*
+                 * The redirect is never cached, even though the object it points at is immutable.
+                 * A cached redirect outlives the signature it carries, and the second visit then
+                 * follows a URL S3 has started refusing. The object itself is still safe to cache
+                 * hard — that now happens on S3's response rather than on this one — and the admin
+                 * keeps its per-session object-URL cache, so a repeated view makes no new request
+                 * at all.
+                 */
+                "cache-control": "no-store"
             },
-            body: Buffer.from(object.value.bytes)
+            body: ""
         };
     }
 

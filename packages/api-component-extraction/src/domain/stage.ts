@@ -55,6 +55,15 @@ export interface IBlobStore {
     getObject(
         ref: string
     ): Promise<Result<{ bytes: Uint8Array; contentType: string }, ExtractionError>>;
+    /**
+     * A short-lived URL the caller can be redirected to, so a large blob is transferred by storage
+     * rather than through the function's response. Returns the URL and the content type the object
+     * is stored with, which the URL pins so the served type cannot disagree with the recorded one.
+     */
+    signedUrl(
+        ref: string,
+        expiresInSeconds: number
+    ): Promise<Result<{ url: string; contentType: string }, ExtractionError>>;
     /** Remove every blob written under a run's prefix, when the run's working data is no longer needed. */
     deleteAll(runId: string): Promise<Result<void, ExtractionError>>;
 }

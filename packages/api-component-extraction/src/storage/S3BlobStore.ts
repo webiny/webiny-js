@@ -2,7 +2,9 @@ import { createImplementation, Result } from "@webiny/feature/api";
 import {
     createS3,
     DeleteObjectCommand,
+    getSignedUrl,
     GetObjectCommand,
+    HeadObjectCommand,
     ListObjectsV2Command,
     PutObjectCommand
 } from "@webiny/aws-sdk/client-s3/index.js";
@@ -86,6 +88,42 @@ class S3BlobStoreImpl implements BlobStoreAbstraction.Interface {
             return Result.fail(
                 new ExtractionStorageError(
                     "read a blob",
+                    error instanceof Error ? error.message : String(error)
+                )
+            );
+        }
+    }
+
+    async signedUrl(
+        ref: string,
+        expiresInSeconds: number
+    ): Promise<Result<{ url: string; contentType: string }, ExtractionError>> {
+        try {
+            const s3 = createS3();
+
+            /*
+             * The stored type is read first and then pinned onto the signed URL. S3 serves whatever
+             * it has, so without pinning it the type an operator's browser sees depends on what was
+             * set at upload; with it, the served type is the recorded one by construction.
+             */
+            const head = await s3.send(new HeadObjectCommand({ Bucket: bucket(), Key: ref }));
+            const contentType = head.ContentType ?? "application/octet-stream";
+
+            const url = await getSignedUrl(
+                s3,
+                new GetObjectCommand({
+                    Bucket: bucket(),
+                    Key: ref,
+                    ResponseContentType: contentType
+                }),
+                { expiresIn: expiresInSeconds }
+            );
+
+            return Result.ok({ url, contentType });
+        } catch (error) {
+            return Result.fail(
+                new ExtractionStorageError(
+                    "sign a blob URL",
                     error instanceof Error ? error.message : String(error)
                 )
             );
