@@ -29,7 +29,7 @@
     "ci-info": "^4.4.0",
     "debounce": "^3.0.0",
     "deepmerge": "^4.3.1",
-    "dotenv": "^18.0.0",
+    "dotenv": "^18.0.1",
     "execa": "^5.1.1",
     "exit-hook": "^5.1.0",
     "fast-glob": "^3.3.3",
@@ -51,7 +51,7 @@
     "replace-in-path": "^1.1.0",
     "serialize-error": "^13.0.1",
     "ts-morph": "^28.0.0",
-    "tsx": "4.23.13",
+    "tsx": "4.23.15",
     "write-json-file": "^7.0.0",
     "zod": "4.6.5"
   },

@@ -27,7 +27,7 @@
     "@webiny/build-tools": "0.0.0",
     "typescript": "6.0.3",
     "vitest": "^5.0.1",
-    "webpack": "^5.111.0"
+    "webpack": "^5.111.1"
   },
   "peerDependencies": {
     "next": ">=15"

@@ -63,7 +63,7 @@
     "rimraf": "^6.1.3",
     "sass": "^1.104.1",
     "storybook": "^10.6.0",
-    "storybook-react-rsbuild": "^3.4.2",
+    "storybook-react-rsbuild": "^3.6.0",
     "typescript": "6.0.3",
     "vitest": "^5.0.1"
   },
