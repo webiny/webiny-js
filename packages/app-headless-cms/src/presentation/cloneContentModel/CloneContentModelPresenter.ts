@@ -44,18 +44,20 @@ class CloneContentModelPresenterImpl implements ICloneContentModelPresenter {
     }
 
     get vm(): ICloneContentModelPresenterViewModel {
-        const groups = this.groupsCache.getItems().map(g => ({
-            value: g.slug,
-            label: g.name
-        }));
-
         return {
             loading: this.loading,
             saving: this.saving,
-            groups,
+            groups: this.groupOptions,
             models: this.modelsCache.getItems(),
             form: this.form.vm
         };
+    }
+
+    private get groupOptions() {
+        return this.groupsCache.getItems().map(group => ({
+            value: group.slug,
+            label: group.name
+        }));
     }
 
     async init(sourceModel: CmsModel): Promise<void> {
@@ -129,7 +131,13 @@ class CloneContentModelPresenterImpl implements ICloneContentModelPresenter {
                     .text()
                     .label("Plural API Name")
                     .required("Plural API Name is required."),
-                group: fields.text().label("Content model group").required("Group is required."),
+                group: fields
+                    .text()
+                    .label("Content model group")
+                    .required("Group is required.")
+                    // Options turn the text field into a select. The groups arrive after the form
+                    // is built, so they have to be read through a callback.
+                    .options(() => this.groupOptions),
                 icon: fields.text().label("Icon").renderer("cmsIconPicker"),
                 description: fields.text().label("Description").renderer("textarea")
             }),
