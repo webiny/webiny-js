@@ -30,6 +30,17 @@ import {
 import { createAiMode } from "./modes/index.js";
 import { usePaletteHotkeys } from "./usePaletteHotkeys.js";
 
+/*
+ * A detail view that owns the panel sizes to its content, capped by the panel's max height, so a
+ * short list doesn't sit in a mostly empty box. Everything else keeps the fixed height it had.
+ */
+function panelHeight(tall: boolean, detailOwnsPanel: boolean): string | undefined {
+    if (detailOwnsPanel) {
+        return undefined;
+    }
+    return tall ? "70vh" : "45vh";
+}
+
 const COMMAND_HINTS: Hint[] = [
     {
         keys: (
@@ -145,6 +156,19 @@ const CommandPaletteBase = () => {
     const appearance = vm.aiModeActive ? aiMode.appearance : null;
     const placeholder = appearance ? appearance.placeholder : "Search for pages and actions…";
 
+    const detailOwnsPanel = active?.command.detailViewOwnsPanel === true;
+
+    const renderDetail = (detail: NonNullable<typeof active>) => {
+        const onBack = () => presenter.cancelCommand();
+
+        if (detail.command.detailViewOwnsPanel) {
+            const { DetailView } = detail;
+            return <DetailView command={detail.command} onClose={close} onBack={onBack} />;
+        }
+
+        return <CommandDetail active={detail} onBack={onBack} onClose={close} />;
+    };
+
     const onKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Escape") {
             e.preventDefault();
@@ -190,15 +214,11 @@ const CommandPaletteBase = () => {
                 style={{
                     maxWidth: 680,
                     maxHeight: "70vh",
-                    height: appearance?.tall ? "70vh" : "45vh"
+                    height: panelHeight(appearance?.tall === true, detailOwnsPanel)
                 }}
             >
                 {active ? (
-                    <CommandDetail
-                        active={active}
-                        onBack={() => presenter.cancelCommand()}
-                        onClose={close}
-                    />
+                    renderDetail(active)
                 ) : (
                     <Command
                         label="Command palette"

@@ -129,10 +129,24 @@ export const deriveNavigationRows = (
     return rows;
 };
 
+/*
+ * "Choose" for a command that opens a list to pick from, so the pill says what enter will do next.
+ * "Open" for one that opens a form, "Run" for one that simply acts.
+ */
+function commandVerb(command: CommandItemVm): string {
+    if (command.drillsIn) {
+        return "Choose";
+    }
+    if (command.hasDetailView) {
+        return "Open";
+    }
+    return "Run";
+}
+
 /**
  * Group DI commands (from the presenter view model) by their `category` (default
- * "Actions"), preserving order. Commands with a detail view show "Open" (the palette
- * stays open on a sub-view); the rest show "Run".
+ * "Actions"), preserving order. Each row's verb comes from `commandVerb`: "Choose" for a
+ * command that opens a list, "Open" for one with a detail view, "Run" for the rest.
  */
 export const commandVmsToGroups = (
     commands: CommandItemVm[],
@@ -149,7 +163,8 @@ export const commandVmsToGroups = (
             sub: command.description,
             icon: command.icon,
             shortcut: formatShortcut(command.shortcut),
-            verb: command.hasDetailView ? "Open" : "Run",
+            verb: commandVerb(command),
+            drillsIn: command.drillsIn,
             onRun: () => runCommand(command.name)
         });
         groups.set(category, rows);

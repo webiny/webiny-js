@@ -10,6 +10,8 @@ export interface CommandRow {
     shortcut?: string[];
     /* Verb shown in the "run" pill on the selected row, e.g. "Open" / "Run". */
     verb: string;
+    // Opens a second list rather than running something, so the row carries a chevron.
+    drillsIn?: boolean;
     onRun: () => void;
 }
 

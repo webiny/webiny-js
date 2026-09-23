@@ -1,7 +1,12 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import Helmet from "react-helmet";
 import type { LayoutProps } from "@webiny/app-admin";
-import { LayoutRenderer, Navigation, TenantSelector, UserMenu } from "@webiny/app-admin";
+import { AssumedRoleBanner } from "@webiny/app-admin";
+import { AssumedRoleSelector } from "@webiny/app-admin";
+import { LayoutRenderer } from "@webiny/app-admin";
+import { Navigation } from "@webiny/app-admin";
+import { TenantSelector } from "@webiny/app-admin";
+import { UserMenu } from "@webiny/app-admin";
 import { HeaderBar, SidebarProvider, cn, useSidebar } from "@webiny/admin-ui";
 import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
 import { CommandPalette } from "./CommandPalette/CommandPalette.js";
@@ -53,6 +58,7 @@ const LayoutContent = ({
                     hideNavigation ? undefined : widthClassNames
                 )}
             >
+                <AssumedRoleBanner />
                 <HeaderBar
                     start={
                         <div className="flex items-center gap-sm">
@@ -63,6 +69,7 @@ const LayoutContent = ({
                     end={
                         <div className={"flex gap-x-sm items-center justify-end"}>
                             <TenantSelector />
+                            <AssumedRoleSelector />
                             <UserMenu />
                         </div>
                     }

@@ -38,6 +38,32 @@ export namespace RawAuthToken {
 }
 
 /**
+ * Per-request holder for the role or team the caller asked to be evaluated as, EXTRACTED by the
+ * transport from the `x-webiny-assume-role` header. This is a preview mechanism: it can only ever
+ * narrow what a caller may do, never widen it. AssumedRolePermissions reads this holder and
+ * substitutes the permission set, but only after confirming the caller's own permissions grant
+ * full access.
+ *
+ * Note: only the HTTP transports set this. S3 and background tasks have no caller to preview as.
+ */
+export interface IAssumedRoleRequest {
+    type: "role" | "team";
+    id: string;
+}
+
+export interface IRawAssumedRole {
+    get(): IAssumedRoleRequest | null;
+    set(value: IAssumedRoleRequest | null): void;
+}
+
+export const RawAssumedRole = createAbstraction<IRawAssumedRole>("RequestContext/RawAssumedRole");
+
+export namespace RawAssumedRole {
+    export type Interface = IRawAssumedRole;
+    export type Request = IAssumedRoleRequest;
+}
+
+/**
  * LOAD step: authenticates the token held by RawAuthToken and sets IdentityContext. Fully
  * transport-agnostic — transports only EXTRACT the token into RawAuthToken.
  */

@@ -4,6 +4,7 @@ import { CopyCurrentUrlCommand } from "./CopyCurrentUrlCommand.js";
 import { SignOutCommand } from "./SignOutCommand.js";
 import { SendMessageCommand } from "./SendMessageCommand.js";
 import { AskAiCommand } from "./AskAiCommand.js";
+import { ViewAsCommand } from "./ViewAsCommand.js";
 
 /**
  * Baseline command-palette actions available everywhere in the admin app. Registered
@@ -15,6 +16,7 @@ export const AdminCommandsFeature = createFeature({
         container.register(CopyCurrentUrlCommand);
         container.register(SignOutCommand);
         container.register(AskAiCommand);
+        container.register(ViewAsCommand);
         // Demo of the detail-view capability — safe to remove.
         container.register(SendMessageCommand);
     }

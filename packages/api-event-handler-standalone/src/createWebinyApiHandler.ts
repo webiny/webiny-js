@@ -32,6 +32,7 @@ import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/sched
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
+import { NodeHttpAssumedRoleDecorator } from "~/handlers/NodeHttpAssumedRoleDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
 import { EmptyTrashBinRouteFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
 
@@ -64,6 +65,9 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // runs, then identity, then the router.
             rootContainer.registerDecorator(NodeHttpIdentityLoaderDecorator);
             rootContainer.registerDecorator(NodeHttpTenantLoaderDecorator);
+
+            // Assume-role preview. Mirrors the AWS handler.
+            rootContainer.registerDecorator(NodeHttpAssumedRoleDecorator);
 
             // ── Storage + identity provider (variant-supplied) ─────────
             await config.registerRootStorage(rootContainer);

@@ -15,7 +15,11 @@ const ALLOWED_HEADERS = [
     // The SigV4 payload hash a streaming client sends when its request carries a body, because OAC
     // signs the request without hashing the body itself. Same consequence as above if omitted: the
     // browser fails the preflight and the real request is never sent.
-    "x-amz-content-sha256"
+    "x-amz-content-sha256",
+    // The role or team the Admin is previewing. Sent on every request while a preview is active,
+    // so omitting it would fail the preflight for all of them the moment a role is assumed, on any
+    // deploy where the Admin and the API are on different origins.
+    "x-webiny-assume-role"
 ].join(", ");
 
 class SecureHeadersDecoratorImpl implements IHttpRouter {
