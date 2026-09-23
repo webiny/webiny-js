@@ -1,5 +1,6 @@
 import React from "react";
-import { createVoidComponent, makeDecoratable } from "@webiny/app";
+import { createVoidComponent } from "@webiny/app";
+import { makeDecoratable } from "@webiny/app";
 
 /**
  * Placeholder for the preview banner, mirroring TenantSelector.

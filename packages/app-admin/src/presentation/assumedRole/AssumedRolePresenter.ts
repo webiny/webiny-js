@@ -17,6 +17,15 @@ function grantsFullAccess(permissions: Permission[]): boolean {
     return permissions.some(permission => permission.name === "*");
 }
 
+/*
+ * Bare permissions known to only gate access. `cms.endpoint.*` decides which CMS GraphQL endpoint a
+ * request may reach (see checkEndpointAccess in api-headless-cms); what can be done there is up to
+ * the other CMS permissions, so it cannot write by itself.
+ */
+function isAccessGate(name: string): boolean {
+    return name.startsWith("cms.endpoint.");
+}
+
 function grantsWrite(permission: Permission): boolean {
     if (permission.name === "*") {
         return true;
@@ -35,8 +44,12 @@ function grantsWrite(permission: Permission): boolean {
         return permission.rwd.includes("w") || permission.rwd.includes("d");
     }
 
-    // An app-wide grant with no rwd restriction is full access to that app.
-    return permission.name.endsWith(".*");
+    /*
+     * No rwd means the API only checks that the permission exists, and for most of them that is
+     * full control. `security.role` alone lets its holder create and delete roles. So a bare
+     * permission counts as writing unless it is a known access gate.
+     */
+    return !isAccessGate(permission.name);
 }
 
 /*
@@ -115,14 +128,25 @@ class AssumedRolePresenterImpl implements Abstraction.Interface {
 
     get vm(): Abstraction.ViewModel {
         const identity = this.identityContext.getIdentity();
-        const ownRoleIds = new Set(identity.roles.map(role => role.id));
-        const ownTeamIds = new Set(identity.teams.map(team => team.id));
+        const roleIds = identity.roles.map(role => role.id);
+        const teamIds = identity.teams.map(team => team.id);
+        const ownRoleIds = new Set(roleIds);
+        const ownTeamIds = new Set(teamIds);
+
+        const roleOptions = this.roles.map(role => {
+            const isCurrent = ownRoleIds.has(role.id);
+            return toOption(role, isCurrent);
+        });
+        const teamOptions = this.teams.map(team => {
+            const isCurrent = ownTeamIds.has(team.id);
+            return toOption(team, isCurrent);
+        });
 
         return {
             loading: this.loading,
             switching: this.switching,
-            roleOptions: this.roles.map(role => toOption(role, ownRoleIds.has(role.id))),
-            teamOptions: this.teams.map(team => toOption(team, ownTeamIds.has(team.id))),
+            roleOptions,
+            teamOptions,
             assumedRole: this.loadedAssumedRole,
             error: this.error
         };
@@ -172,11 +196,11 @@ class AssumedRolePresenterImpl implements Abstraction.Interface {
         this.error = null;
     }
 
-    private async switchTo(assumedRole: AssumedRoleContext.Value | null): Promise<void> {
+    private async switchTo(target: AssumeRoleUseCase.Target | null): Promise<void> {
         this.startSwitching();
 
         try {
-            await this.assumeRoleUseCase.execute(assumedRole);
+            await this.assumeRoleUseCase.execute(target);
         } catch (error) {
             const message = toMessage(error, "Could not switch roles.");
             this.failSwitching(message);

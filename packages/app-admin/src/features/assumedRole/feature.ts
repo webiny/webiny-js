@@ -8,6 +8,8 @@ import { GraphQLClientDecorator } from "./GraphQLClientDecorator.js";
 import { ApiStreamClientDecorator } from "./ApiStreamClientDecorator.js";
 import { ListAssumableRolesGateway } from "./ListAssumableRolesGateway.js";
 import { ListAssumableRolesUseCase } from "./ListAssumableRolesUseCase.js";
+import { LogInUseCaseDecorator } from "./LogInUseCaseDecorator.js";
+import { LogOutUseCaseDecorator } from "./LogOutUseCaseDecorator.js";
 
 export const AssumedRoleFeature = createFeature({
     name: "AssumedRole",
@@ -18,6 +20,8 @@ export const AssumedRoleFeature = createFeature({
         container.register(ListAssumableRolesUseCase);
         container.registerDecorator(GraphQLClientDecorator);
         container.registerDecorator(ApiStreamClientDecorator);
+        container.registerDecorator(LogInUseCaseDecorator);
+        container.registerDecorator(LogOutUseCaseDecorator);
     },
     resolve(container: Container) {
         return {

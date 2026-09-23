@@ -2,7 +2,8 @@ import type { APIGatewayProxyEvent } from "@webiny/aws-sdk/types/index.js";
 import { ApiGatewayEventHandler } from "@webiny/event-handler-aws";
 import { RawAssumedRole } from "@webiny/api-core/features/requestContext/index.js";
 import { extractAssumedRole } from "@webiny/api-core/features/requestContext/index.js";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import type { EventContext } from "@webiny/event-handler-core";
+import type { NextFunction } from "@webiny/event-handler-core";
 
 /**
  * EXTRACT (transport-specific): reads the `x-webiny-assume-role` header of an API Gateway event

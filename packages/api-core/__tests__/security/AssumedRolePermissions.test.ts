@@ -1,4 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { FeatureFlags as FeatureFlagsClass } from "@webiny/feature-flags";
@@ -12,7 +14,8 @@ import { GroupsTeamsAuthorizerFeature } from "~/features/security/authorization/
 import { RequestContextFeature } from "~/features/requestContext/feature.js";
 import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import type { Identity } from "~/features/security/IdentityContext/index.js";
-import type { Role, Team } from "~/types/security.js";
+import type { Role } from "~/types/security.js";
+import type { Team } from "~/types/security.js";
 
 const identity = { id: "u1", type: "admin" } as unknown as Identity;
 

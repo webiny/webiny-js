@@ -19,7 +19,8 @@ function toRole(role: RoleDto): Abstraction.Role {
  * from the role list already fetched rather than with another query per team.
  */
 function toTeam(team: TeamDto, roles: RoleDto[]): Abstraction.Role {
-    const roleIds = new Set((team.roles ?? []).map(role => role.id));
+    const teamRoleIds = (team.roles ?? []).map(role => role.id);
+    const roleIds = new Set(teamRoleIds);
     const teamRoles = roles.filter(role => roleIds.has(role.id));
     const permissions = teamRoles.flatMap(role => role.permissions ?? []);
 

@@ -1,7 +1,8 @@
 import { FunctionUrlStreamEventHandler } from "@webiny/event-handler-aws";
 import { RawAssumedRole } from "@webiny/api-core/features/requestContext/index.js";
 import { extractAssumedRole } from "@webiny/api-core/features/requestContext/index.js";
-import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import type { EventContext } from "@webiny/event-handler-core";
+import type { NextFunction } from "@webiny/event-handler-core";
 import { headersFromFunctionUrlEvent } from "./extractRequestAuth.js";
 
 /**

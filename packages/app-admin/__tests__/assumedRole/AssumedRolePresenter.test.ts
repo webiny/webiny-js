@@ -1,4 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Identity } from "~/domain/Identity.js";
 import { IdentityContext } from "~/features/security/IdentityContext/abstractions.js";
@@ -26,19 +28,19 @@ const setup = (options: SetupOptions) => {
     const container = new Container();
 
     container.register(IdentityContextImpl).inSingletonScope();
-    container.resolve(IdentityContext).setIdentity(
-        Identity.createAuthenticated({
-            id: "u1",
-            displayName: "Admin",
-            type: "admin",
-            roles: ownRoleIds.map(id => ({ id, slug: id, name: id })),
-            teams: ownTeamIds.map(id => ({ id, slug: id, name: id })),
-            permissions: [{ name: "*" }],
-            profile: { external: false },
-            currentTenant: { id: "root", name: "Root" },
-            defaultTenant: { id: "root", name: "Root" }
-        })
-    );
+    const identity = Identity.createAuthenticated({
+        id: "u1",
+        displayName: "Admin",
+        type: "admin",
+        roles: ownRoleIds.map(id => ({ id, slug: id, name: id })),
+        teams: ownTeamIds.map(id => ({ id, slug: id, name: id })),
+        permissions: [{ name: "*" }],
+        profile: { external: false },
+        currentTenant: { id: "root", name: "Root" },
+        defaultTenant: { id: "root", name: "Root" }
+    });
+    const identityContext = container.resolve(IdentityContext);
+    identityContext.setIdentity(identity);
 
     container.registerInstance(AssumedRoleContext, {
         get: () => null,
@@ -83,7 +85,6 @@ describe("AssumedRolePresenter", () => {
          */
         it("marks a role that only reads", async () => {
             const option = await optionFor([
-                { name: "content.i18n" },
                 { name: "cms.endpoint.manage" },
                 { name: "cms.contentModel", rwd: "r" },
                 { name: "cms.contentEntry", rwd: "r" }
@@ -98,7 +99,11 @@ describe("AssumedRolePresenter", () => {
             ["publishing", { name: "cms.contentEntry", rwd: "r", pw: "p" }],
             ["own-record scoping", { name: "cms.contentEntry", rwd: "r", own: true }],
             ["an app-wide grant", { name: "cms.*" }],
-            ["full access", { name: "*" }]
+            ["full access", { name: "*" }],
+            // Checked for existence alone by the API, which is full control over roles.
+            ["a bare security permission", { name: "security.role" }],
+            // Not a known access gate, so it can't be assumed harmless.
+            ["an unrecognised bare permission", { name: "content.i18n" }]
         ])("does not mark a role that has %s", async (_label, permission) => {
             const option = await optionFor([{ name: "cms.contentModel", rwd: "r" }, permission]);
 
@@ -106,7 +111,7 @@ describe("AssumedRolePresenter", () => {
         });
 
         it("does not mark a role that grants nothing readable", async () => {
-            const option = await optionFor([{ name: "content.i18n" }]);
+            const option = await optionFor([{ name: "cms.endpoint.read" }]);
 
             expect(option.readOnly).toBe(false);
         });

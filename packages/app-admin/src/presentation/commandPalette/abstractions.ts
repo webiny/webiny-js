@@ -60,7 +60,7 @@ export interface CommandItemVm {
     keywords?: string[];
     shortcut?: string;
     hasDetailView: boolean;
-    /** Selecting this opens a second list in place of the palette's, rather than a form. */
+    // Selecting this opens a second list in place of the palette's, rather than a form.
     drillsIn: boolean;
     /** Selecting this switches the palette into AI mode. Lets a caller hide it when AI is off. */
     entersAiMode: boolean;

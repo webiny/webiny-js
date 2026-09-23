@@ -1,3 +1,4 @@
+import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { LogInRepository } from "~/features/security/LogIn/abstractions.js";
 import { AssumedRoleContext } from "./abstractions.js";
 import { AssumeRoleUseCase as Abstraction } from "./abstractions.js";
@@ -33,11 +34,13 @@ function hasUsablePermissions(identity: Identity): boolean {
 class AssumeRoleUseCaseImpl implements Abstraction.Interface {
     constructor(
         private assumedRoleContext: AssumedRoleContext.Interface,
+        private identityContext: IdentityContext.Interface,
         private logInRepository: LogInRepository.Interface
     ) {}
 
-    async execute(value: AssumedRoleContext.Value | null): Promise<void> {
+    async execute(target: Abstraction.Target | null): Promise<void> {
         const previous = this.assumedRoleContext.get();
+        const value = this.toStored(target);
         this.assumedRoleContext.set(value);
 
         try {
@@ -52,6 +55,20 @@ class AssumeRoleUseCaseImpl implements Abstraction.Interface {
         }
     }
 
+    /*
+     * The identity id is the same whether or not a preview is running (only the permissions
+     * change), so switching straight from one role to another still records the right person.
+     */
+    private toStored(target: Abstraction.Target | null): AssumedRoleContext.Value | null {
+        if (!target) {
+            return null;
+        }
+
+        const identity = this.identityContext.getIdentity();
+
+        return { ...target, startedBy: identity.id };
+    }
+
     private async verify(value: AssumedRoleContext.Value | null): Promise<void> {
         const identity = await this.logInRepository.login();
 
@@ -63,5 +80,5 @@ class AssumeRoleUseCaseImpl implements Abstraction.Interface {
 
 export const AssumeRoleUseCase = Abstraction.createImplementation({
     implementation: AssumeRoleUseCaseImpl,
-    dependencies: [AssumedRoleContext, LogInRepository]
+    dependencies: [AssumedRoleContext, IdentityContext, LogInRepository]
 });

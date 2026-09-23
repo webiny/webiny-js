@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
-import { DropdownMenu, Icon, useToast } from "@webiny/admin-ui";
+import { DropdownMenu } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { useToast } from "@webiny/admin-ui";
 import { ReactComponent as VisibilityIcon } from "@webiny/icons/visibility.svg";
 import { AssumedRoleSelector as BaseAssumedRoleSelector } from "~/base/ui/AssumedRoleSelector.js";
 import { AssumedRolePresenterFeature } from "../feature.js";

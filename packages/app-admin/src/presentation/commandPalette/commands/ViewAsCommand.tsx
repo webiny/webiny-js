@@ -1,8 +1,13 @@
 import React, { useEffect } from "react";
-import { Command as CommandPrimitive, useCommandState } from "cmdk";
+import { Command as CommandPrimitive } from "cmdk";
+import { useCommandState } from "cmdk";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
-import { Alert, cn, Icon, IconButton, Text } from "@webiny/admin-ui";
+import { Alert } from "@webiny/admin-ui";
+import { cn } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 import { ReactComponent as VisibilityIcon } from "@webiny/icons/visibility.svg";
 import { ReactComponent as BackIcon } from "@webiny/icons/arrow_back.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
@@ -14,7 +19,6 @@ import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
 import { ReactComponent as NoMatchIcon } from "@webiny/icons/person_search.svg";
 import { useAdminConfig } from "~/config/AdminConfig.js";
 import type { PermissionRendererConfig } from "~/permissions/types.js";
-import { Permission } from "~/features/accessManagement/constants.js";
 import { useIdentity } from "~/presentation/security/hooks/useIdentity.js";
 import { AssumedRolePresenterFeature } from "~/presentation/assumedRole/feature.js";
 import type { AssumedRolePresenter } from "~/presentation/assumedRole/abstractions.js";
@@ -30,8 +34,7 @@ import { Command } from "../abstractions.js";
 const EXIT_VALUE = "exit-preview";
 
 const ROW_CLASS =
-    "flex cursor-pointer items-center gap-sm rounded-md px-sm py-xs-plus " +
-    "data-[selected=true]:bg-neutral-dimmed";
+    "flex cursor-pointer items-center gap-sm rounded-md px-sm py-xs-plus data-[selected=true]:bg-neutral-dimmed";
 
 const HINTS = [
     { keys: "↑↓", label: "Navigate" },
@@ -52,7 +55,8 @@ const FOOTER_TEXT = "Changes made while previewing are real and will be saved.";
  */
 function matchKeywords(_value: string, search: string, keywords?: string[]): number {
     const haystack = (keywords ?? []).join(" ").toLowerCase();
-    return haystack.includes(search.trim().toLowerCase()) ? 1 : 0;
+    const needle = search.trim().toLowerCase();
+    return haystack.includes(needle) ? 1 : 0;
 }
 
 interface AppAccess {
@@ -368,11 +372,16 @@ const ViewAsDetailView = observer(({ onBack }: Command.DetailProps) => {
     const options = [...vm.roleOptions, ...vm.teamOptions];
 
     /*
-     * While a preview is active the identity carries the previewed role's permissions, which
-     * usually cannot manage roles. Whoever started the preview already passed this check, and the
-     * picker's own query runs as them, so an active preview is enough.
+     * The same rule the API enforces in AssumedRolePermissions: only a caller with full access can
+     * preview. The API doesn't refuse anyone else, it quietly keeps their own permissions, so a
+     * looser check here would let someone start a "preview" whose banner is a lie.
+     *
+     * While a preview is active the identity carries the previewed role's permissions instead.
+     * Whoever started it already passed this check, and the picker's own query runs as them, so an
+     * active preview is enough.
      */
-    const canPick = vm.assumedRole !== null || identity.getPermissions(Permission.Roles).length > 0;
+    const hasFullAccess = identity.getPermission("*", true) !== null;
+    const canPick = vm.assumedRole !== null || hasFullAccess;
 
     useEffect(() => {
         if (canPick) {
@@ -443,7 +452,7 @@ const ViewAsDetailView = observer(({ onBack }: Command.DetailProps) => {
                 {!canPick ? (
                     <div className="p-sm">
                         <Alert type={"info"} variant={"subtle"}>
-                            {"Previewing a role needs permission to manage roles."}
+                            {"Previewing a role needs full access."}
                         </Alert>
                     </div>
                 ) : null}

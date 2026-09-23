@@ -1,13 +1,22 @@
 import { createAbstraction } from "@webiny/feature/admin";
 
 /**
- * The role or team the Admin is currently previewing. `name` is carried alongside the id purely so
- * the banner can say whose permissions are in effect without a second query.
+ * The role or team to preview. `name` is carried alongside the id purely so the banner can say
+ * whose permissions are in effect without a second query.
  */
-export interface IAssumedRole {
+export interface IAssumedRoleTarget {
     type: "role" | "team";
     id: string;
     name: string;
+}
+
+/**
+ * A preview as stored. `startedBy` is the id of the identity that started it: the selection
+ * outlives a reload by design, so it is also there for whoever signs in next on this browser, and
+ * the id is how their login tells it isn't theirs.
+ */
+export interface IAssumedRole extends IAssumedRoleTarget {
+    startedBy: string;
 }
 
 export interface IAssumedRoleContext {
@@ -23,13 +32,14 @@ export namespace AssumedRoleContext {
 }
 
 export interface IAssumeRoleUseCase {
-    execute(value: IAssumedRole | null): Promise<void>;
+    execute(target: IAssumedRoleTarget | null): Promise<void>;
 }
 
 export const AssumeRoleUseCase = createAbstraction<IAssumeRoleUseCase>("AssumeRoleUseCase");
 
 export namespace AssumeRoleUseCase {
     export type Interface = IAssumeRoleUseCase;
+    export type Target = IAssumedRoleTarget;
 }
 
 /**

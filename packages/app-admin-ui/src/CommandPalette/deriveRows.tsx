@@ -129,11 +129,6 @@ export const deriveNavigationRows = (
     return rows;
 };
 
-/**
- * Group DI commands (from the presenter view model) by their `category` (default
- * "Actions"), preserving order. Commands with a detail view show "Open" (the palette
- * stays open on a sub-view); the rest show "Run".
- */
 /*
  * "Choose" for a command that opens a list to pick from, so the pill says what enter will do next.
  * "Open" for one that opens a form, "Run" for one that simply acts.
@@ -148,6 +143,11 @@ function commandVerb(command: CommandItemVm): string {
     return "Run";
 }
 
+/**
+ * Group DI commands (from the presenter view model) by their `category` (default
+ * "Actions"), preserving order. Each row's verb comes from `commandVerb`: "Choose" for a
+ * command that opens a list, "Open" for one with a detail view, "Run" for the rest.
+ */
 export const commandVmsToGroups = (
     commands: CommandItemVm[],
     runCommand: (name: string) => void
