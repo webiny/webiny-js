@@ -136,8 +136,10 @@ class NewContentModelPresenterImpl implements INewContentModelPresenter {
                     .text()
                     .label("Content model group")
                     .required("Group is required.")
-                    // Options turn the text field into a select. The groups arrive after the form
-                    // is built, so they have to be read through a callback.
+                    /*
+                     * Options turn the text field into a select. The groups arrive after the form
+                     * is built, so they have to be read through a callback.
+                     */
                     .options(() => this.groupOptions),
                 icon: fields.text().label("Icon").renderer("cmsIconPicker"),
                 description: fields.text().label("Description").renderer("textarea"),
