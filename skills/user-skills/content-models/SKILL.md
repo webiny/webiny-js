@@ -68,19 +68,45 @@ Register in `webiny.config.tsx`:
 
 ## Model Configuration Methods
 
-| Method                                        | Purpose                                                                                                                                                                                                                       |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `.public({ modelId, name, group })`           | Creates a public model (accessible via Read API). `modelId` is the internal DB identifier. `group` organizes it in the Admin sidebar.                                                                                         |
-| `.description("...")`                         | Model description shown in Admin UI                                                                                                                                                                                           |
-| `.fields(fields => ({ ... }))`                | Define all fields using the fluent field builder                                                                                                                                                                              |
-| `.layout([["field1", "field2"], ["field3"]])` | Arrange fields in rows in the Admin editor. Each inner array is one row.                                                                                                                                                      |
-| `.titleFieldId("name")`                       | Which field to use as the entry's display title                                                                                                                                                                               |
-| `.descriptionFieldId("message")`              | Which field to use as the entry's description                                                                                                                                                                                 |
-| `.singularApiName("Product")`                 | Singular name for GraphQL queries (e.g., `getProduct`)                                                                                                                                                                        |
-| `.pluralApiName("Products")`                  | Plural name for GraphQL queries (e.g., `listProducts`)                                                                                                                                                                        |
-| `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                                                                                                           |
-| `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                                                                                                                |
-| `.settings({ ... })`                          | Model settings. Supported properties: `aiEntryWizard` (boolean), `previewPrefix` (string — base URL for live preview, e.g. `"https://example.com/articles"`), `previewSlug` (string — slug template, e.g. `"{values.slug}"`). |
+| Method                                        | Purpose                                                                                                                                                                                                         |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.public({ modelId, name, group })`           | Creates a public model (accessible via Read API). `modelId` is the internal DB identifier. `group` organizes it in the Admin sidebar.                                                                           |
+| `.description("...")`                         | Model description shown in Admin UI                                                                                                                                                                             |
+| `.fields(fields => ({ ... }))`                | Define all fields using the fluent field builder                                                                                                                                                                |
+| `.layout([["field1", "field2"], ["field3"]])` | Arrange fields in rows in the Admin editor. Each inner array is one row.                                                                                                                                        |
+| `.titleFieldId("name")`                       | Which field to use as the entry's display title                                                                                                                                                                 |
+| `.descriptionFieldId("message")`              | Which field to use as the entry's description                                                                                                                                                                   |
+| `.singularApiName("Product")`                 | Singular name for GraphQL queries (e.g., `getProduct`)                                                                                                                                                          |
+| `.pluralApiName("Products")`                  | Plural name for GraphQL queries (e.g., `listProducts`)                                                                                                                                                          |
+| `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                                                                                             |
+| `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                                                                                                  |
+| `.settings({ ... })`                          | Model settings. Supported properties: `aiEntryWizard` (boolean), `previewPath` (string — frontend path pattern that enables live preview, e.g. `"/articles/{values.slug}"`; see [Live Preview](#live-preview)). |
+
+## Live Preview
+
+Setting `previewPath` turns on CMS Live Preview for the model. The entry editor then shows a
+split view: the form on the left and the frontend, loaded in an iframe, on the right. As the user
+edits the form, the values are pushed into the iframe live.
+
+```typescript
+.settings({
+  previewPath: "/articles/{values.slug}"
+})
+```
+
+- `previewPath` is a **path, not a full URL**. The domain comes from the project's Frontend
+  Settings (preview domain), which Website Builder uses too. It defaults to `http://localhost:3000`.
+- `{...}` placeholders are dot-paths into the entry, e.g. `{values.slug}` or `{entryId}`. A
+  placeholder with an empty value resolves to `new`. The resolved URL (e.g. `/articles/my-post`)
+  is used for the address bar, "open in new tab" and "copy URL".
+- **The iframe loads a dedicated preview route, not the resolved URL.** That route is the static
+  part of the pattern before the first `{`, followed by `/preview`. For example,
+  `/articles/{values.slug}` loads `<domain>/articles/preview?wb.editing=true&wb.type=entry&wb.id=<entry id>&...`.
+  The frontend must implement that route, typically with `@webiny/cms-nextjs` (`EntryRenderer`,
+  `useEntry`, `DynamicZoneField`), and it receives the entry data from the editor instead of the API.
+- With `previewPath` set, the model editor also discovers the components the frontend registers.
+  It offers them in the **Frontend Component** dropdown of dynamic zone templates (see
+  `componentName` below).
 
 ## Layout
 
@@ -136,6 +162,10 @@ The outer model layout simply references the dynamicZone field by its ID.
 Each template config accepts an optional `componentName` property that maps the template
 to a frontend UI component (e.g. `"Custom/Hero"`). This is used by the CMS live preview
 and Website Builder to resolve which React component renders the template's data.
+The API exposes the mapping as `model.metadata.componentMap` (template ID → component name).
+On the frontend, the component is registered under the same name with
+`createComponent(Component, { name, label, description })` from `@webiny/cms-nextjs`, and it
+receives the template's field values directly as props.
 
 ```typescript
 .fields((fields) => ({
