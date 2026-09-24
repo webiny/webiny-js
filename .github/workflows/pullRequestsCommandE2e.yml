@@ -3,7 +3,10 @@
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
 name: 💬 PR Command - E2E
-'on': issue_comment
+'on':
+  issue_comment:
+    types:
+      - created
 env:
   NODE_OPTIONS: '--max_old_space_size=4096'
   AWS_REGION: eu-central-1
