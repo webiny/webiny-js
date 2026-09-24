@@ -46,10 +46,11 @@ export interface QueryMatcherConfig<TRow> {
  * });
  *
  * // In DataSource.query(), after fetching:
- * matcher.updateFromQuery(params, result.data.map(item => item.id));
+ * matcher.updateFromQuery(params, result.data.map(item => item.id), result.meta.hasMoreItems);
  *
- * // In DataSource.rows getter:
- * return cache.getItems().filter(matcher.matcher);
+ * // In DataSource.rows getter (filters, sorts by the applied sort, and cuts off at the
+ * // last loaded item):
+ * return matcher.select(cache.getItems());
  * ```
  */
 export class QueryMatcher<TRow> {
@@ -229,14 +230,16 @@ function getValueByPath(item: unknown, path: string): unknown {
 }
 
 /**
- * Compares two sort values in ascending order. Empty values sort first.
- * Strings are compared by code point, which keeps ISO dates in chronological order.
+ * Compares two sort values in ascending order, the same way the DDB and SQL storage sort
+ * entries: `null` and `undefined` sort last (so first in descending order), and an empty
+ * string is a regular string. Strings are compared by code point, which keeps ISO dates in
+ * chronological order.
  */
 function compareValues(a: unknown, b: unknown): number {
-    const aEmpty = a === null || a === undefined || a === "";
-    const bEmpty = b === null || b === undefined || b === "";
+    const aEmpty = a === null || a === undefined;
+    const bEmpty = b === null || b === undefined;
     if (aEmpty || bEmpty) {
-        return aEmpty === bEmpty ? 0 : aEmpty ? -1 : 1;
+        return aEmpty === bEmpty ? 0 : aEmpty ? 1 : -1;
     }
 
     const left = a instanceof Date ? a.getTime() : a;

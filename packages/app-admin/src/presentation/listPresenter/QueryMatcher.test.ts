@@ -91,11 +91,37 @@ describe("QueryMatcher.select", () => {
         expect(ids(matcher.select(cached))).toEqual(["b", "a", "c"]);
     });
 
-    it("should sort empty values first in ascending order", () => {
+    // Empty values are ordered the same way as the DDB and SQL storage sort them.
+    it("should sort empty values last in ascending order", () => {
         const matcher = createMatcher();
         matcher.updateFromQuery({ sort: { field: "savedOn", direction: "ASC" } }, ["a", "b"]);
 
-        expect(ids(matcher.select([row("a", "1"), row("b")]))).toEqual(["b", "a"]);
+        const cached = [row("n"), row("b", "2"), row("u"), row("a", "1")];
+        cached[0].savedOn = null as unknown as string;
+
+        expect(ids(matcher.select(cached))).toEqual(["a", "b", "n", "u"]);
+    });
+
+    it("should sort empty values first in descending order", () => {
+        const matcher = createMatcher();
+        matcher.updateFromQuery({ sort: { field: "savedOn", direction: "DESC" } }, ["b", "a"]);
+
+        expect(ids(matcher.select([row("a", "1"), row("e"), row("b", "2")]))).toEqual([
+            "e",
+            "b",
+            "a"
+        ]);
+    });
+
+    it("should sort an empty string as a regular string", () => {
+        const matcher = createMatcher();
+        matcher.updateFromQuery({ sort: { field: "savedOn", direction: "ASC" } }, ["a", "b"]);
+
+        expect(ids(matcher.select([row("b", "1"), row("u"), row("a", "")]))).toEqual([
+            "a",
+            "b",
+            "u"
+        ]);
     });
 
     it("should keep the server order while searching", () => {
