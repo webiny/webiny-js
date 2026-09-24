@@ -29,11 +29,23 @@ export const hasDefaultExport = (source: SourceFile): boolean => {
         // export { Extension as default } and export { default } from "./Extension.js"
         if (Node.isExportDeclaration(statement)) {
             return statement.getNamedExports().some(namedExport => {
-                const exportedName = namedExport.getAliasNode()?.getText() ?? namedExport.getName();
-                return exportedName === "default";
+                const exportedAs = namedExport.getAliasNode() ?? namedExport.getNameNode();
+                return getExportedName(exportedAs) === "default";
             });
         }
 
         return false;
     });
+};
+
+/*
+ * An exported name can also be written as a string, as in `export { Extension as "default" }`.
+ * Its text then includes the quotes, so strings are compared by their value instead.
+ */
+const getExportedName = (node: Node): string => {
+    if (Node.isStringLiteral(node)) {
+        return node.getLiteralValue();
+    }
+
+    return node.getText();
 };

@@ -20,6 +20,13 @@ const cases: [string, string, boolean][] = [
         `export { Extension as default } from "./Extension.js";`,
         true
     ],
+    ["a string-literal default", `const Extension = 1;\nexport { Extension as "default" };`, true],
+    ["a re-exported string-literal default", `export { "default" } from "./Extension.js";`, true],
+    [
+        "a string-literal default re-exported under a name",
+        `export { "default" as Extension } from "./Extension.js";`,
+        false
+    ],
     ["a named export", `export const Extension = () => null;`, false],
     ["a named function", `export function Extension() {}`, false],
     [
