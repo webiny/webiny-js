@@ -7,6 +7,7 @@ import { CheckboxPrimitiveRenderer } from "~/Checkbox/index.js";
 import { Icon } from "~/Icon/index.js";
 import { IconButton } from "~/Button/index.js";
 import { selectTriggerVariants } from "~/Select/primitives/components/index.js";
+import { useEscapeScrollLock } from "~/hooks/index.js";
 
 interface MultiSelectOptionDto {
     label: string;
@@ -115,9 +116,16 @@ interface MultiSelectContentProps {
 }
 
 const MultiSelectContent = ({ options, value, onToggle }: MultiSelectContentProps) => {
+    /*
+     * This popover is built on the Radix primitive directly, so it needs the same scroll-lock
+     * escape hatch that `PopoverPrimitive.Content` applies.
+     */
+    const contentRef = useEscapeScrollLock<HTMLDivElement>();
+
     return (
         <Popover.Portal>
             <Popover.Content
+                ref={contentRef}
                 className={cn(
                     "relative z-popover shadow-lg py-sm overflow-y-auto rounded-sm border-sm border-neutral-muted bg-neutral-base text-neutral-strong",
                     "data-[state=open]:animate-in data-[state=closed]:animate-out",
