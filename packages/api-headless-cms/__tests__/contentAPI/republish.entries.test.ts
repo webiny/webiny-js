@@ -156,15 +156,12 @@ describe("Republish entries", () => {
                 republishCategory: {
                     data: {
                         ...applePublished,
-                        modifiedOn: expect.toBeDateString(),
-                        lastPublishedOn: expect.toBeDateString(),
-                        savedOn: expect.toBeDateString()
+                        lastPublishedOn: expect.toBeDateString()
                     },
                     error: null
                 }
             }
         });
-        applePublished.savedOn = appleRepublishResponse.data.republishCategory.data!.savedOn;
 
         const [bananaRepublishResponse] = await republishCategory({
             variables: {
@@ -176,15 +173,12 @@ describe("Republish entries", () => {
                 republishCategory: {
                     data: {
                         ...bananaPublished,
-                        modifiedOn: expect.toBeDateString(),
-                        lastPublishedOn: expect.toBeDateString(),
-                        savedOn: expect.toBeDateString()
+                        lastPublishedOn: expect.toBeDateString()
                     },
                     error: null
                 }
             }
         });
-        bananaPublished.savedOn = bananaRepublishResponse.data.republishCategory.data!.savedOn;
 
         const [orangeRepublishResponse] = await republishCategory({
             variables: {
@@ -196,15 +190,12 @@ describe("Republish entries", () => {
                 republishCategory: {
                     data: {
                         ...orangePublished,
-                        modifiedOn: expect.toBeDateString(),
-                        lastPublishedOn: expect.toBeDateString(),
-                        savedOn: expect.toBeDateString()
+                        lastPublishedOn: expect.toBeDateString()
                     },
                     error: null
                 }
             }
         });
-        orangePublished.savedOn = orangeRepublishResponse.data.republishCategory.data!.savedOn;
 
         const [response] = await listCategories({
             sort: ["createdOn_ASC"]

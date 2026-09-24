@@ -1255,10 +1255,13 @@ export const createEntriesStorageOperations = (
             });
 
             // 2.3.3 Finally, if we got a published entry, but it wasn't the latest one, we need to take
-            //    an extra step and mark it as unpublished.
+            //    an extra step and mark it as unpublished. When re-publishing (the same published
+            //    revision being published again), this does not apply: its REV# record was already
+            //    written in step 1, and it must stay published.
+            const isRepublishing = publishedRevisionId === entry.id;
             const publishedRevisionDifferentFromLatest =
                 publishedRevisionId && publishedRevisionId !== latestStorageEntry.id;
-            if (publishedRevisionDifferentFromLatest) {
+            if (!isRepublishing && publishedRevisionDifferentFromLatest) {
                 const publishedStorageEntry = convertToStorageEntry({
                     storageEntry: initialPublishedStorageEntry,
                     model

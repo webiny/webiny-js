@@ -20,7 +20,10 @@ import { MoveEntryFeature } from "~/features/contentEntry/moveEntry/feature.js";
 import { UpdateRevisionDescriptionFeature } from "~/features/contentEntry/updateRevisionDescription/feature.js";
 import { ListEntriesGateway } from "~/features/contentEntry/listEntries/abstractions.js";
 import { DeleteEntryGateway } from "~/features/contentEntry/deleteEntry/abstractions.js";
-import { PublishEntryGateway } from "~/features/contentEntry/publishEntry/abstractions.js";
+import {
+    PublishEntryGateway,
+    PublishEntryUseCase
+} from "~/features/contentEntry/publishEntry/abstractions.js";
 import { UnpublishEntryGateway } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { MoveEntryGateway } from "~/features/contentEntry/moveEntry/abstractions.js";
 import { UpdateRevisionDescriptionGateway } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
@@ -124,6 +127,8 @@ interface TestSetup {
     deleteEntryGateway: { execute: ReturnType<typeof vi.fn> };
     getDescendantFolders: ReturnType<typeof vi.fn>;
     foldersPresenter: MockFolderTreePresenter;
+    publishEntryGateway: { execute: ReturnType<typeof vi.fn> };
+    container: Container;
 }
 
 function setup(): TestSetup {
@@ -167,7 +172,8 @@ function setup(): TestSetup {
     container.registerInstance(ListEntriesGateway, listEntriesGateway);
     container.registerInstance(MoveEntryGateway, moveEntryGateway);
     container.registerInstance(DeleteEntryGateway, deleteEntryGateway);
-    container.registerInstance(PublishEntryGateway, { execute: vi.fn() });
+    const publishEntryGateway = { execute: vi.fn() };
+    container.registerInstance(PublishEntryGateway, publishEntryGateway);
     container.registerInstance(UnpublishEntryGateway, { execute: vi.fn() });
     container.registerInstance(UpdateRevisionDescriptionGateway, { execute: vi.fn() });
 
@@ -180,7 +186,9 @@ function setup(): TestSetup {
         moveEntryGateway,
         deleteEntryGateway,
         getDescendantFolders,
-        foldersPresenter
+        foldersPresenter,
+        publishEntryGateway,
+        container
     };
 }
 
@@ -548,6 +556,59 @@ describe("ContentEntriesPresenter", () => {
             await vi.waitFor(() => {
                 expect(t.presenter.vm.showFolders).toBe(false);
             });
+        });
+    });
+
+    describe("publish entry", () => {
+        /**
+         * Publishing is not a content modification: the API returns the entry with its
+         * `savedOn` unchanged, so the entry must keep its position in a list sorted by `savedOn`.
+         */
+        const entries = [
+            createEntry("entry-3", "root", { savedOn: "2024-01-03T00:00:00.000Z" }),
+            createEntry("entry-2", "root", { savedOn: "2024-01-02T00:00:00.000Z" }),
+            createEntry("entry-1", "root", { savedOn: "2024-01-01T00:00:00.000Z" })
+        ];
+
+        const publish = async (entry: CmsContentEntry) => {
+            t.publishEntryGateway.execute.mockResolvedValueOnce({
+                ...entry,
+                meta: { ...entry.meta, status: "published", locked: true }
+            });
+            await t.container
+                .resolve(PublishEntryUseCase)
+                .execute({ model: MODEL, revisionId: entry.id });
+        };
+
+        it("should keep a published entry in its position", async () => {
+            await initPresenter(t, { data: entries });
+
+            await publish(entries[1]);
+
+            const rows = t.presenter.list.vm.rows;
+            expect(rows.map(r => r.entryId)).toEqual(["entry-3", "entry-2", "entry-1"]);
+            expect((rows[1].meta as { status: string }).status).toBe("published");
+        });
+
+        it("should keep a published entry in its position when sorted ascending", async () => {
+            await initPresenter(t, { data: entries });
+
+            t.listEntriesGateway.execute.mockResolvedValueOnce({
+                data: [...entries].reverse(),
+                meta: { cursor: null, hasMoreItems: false, totalCount: entries.length }
+            });
+            t.presenter.list.actions.sort.set("savedOn", "ASC");
+            await vi.waitFor(() => {
+                expect(t.presenter.list.vm.appliedQuery?.sort?.direction).toBe("ASC");
+            });
+
+            await publish(entries[1]);
+
+            expect(t.presenter.list.vm.rows.map(r => r.entryId)).toEqual([
+                "entry-1",
+                "entry-2",
+                "entry-3"
+            ]);
         });
     });
 });

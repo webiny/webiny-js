@@ -6,7 +6,6 @@ import {
 } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
-import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import type {
     CmsEntry,
     CmsEntryValues,
@@ -20,7 +19,6 @@ import {
     EntryRevisionCreateErrorEvent
 } from "./events.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
-import { parseIdentifier } from "@webiny/utils";
 import { CreateEntryRevisionFromDataFactory } from "~/features/contentEntry/entryDataFactories/CreateEntryRevisionFromDataFactory/index.js";
 
 class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -28,7 +26,6 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
         private repository: CreateEntryRevisionFromRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
-        private getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
         private eventPublisher: EventPublisher.Interface,
         private createEntryRevisionFromDataFactory: CreateEntryRevisionFromDataFactory.Interface
     ) {}
@@ -44,7 +41,6 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        const { id: uniqueId } = parseIdentifier(sourceId);
         const originalResult = await this.getRevisionById.execute<T>(model, sourceId);
 
         if (originalResult.isFail()) {
@@ -53,22 +49,17 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
 
         const originalEntry = originalResult.value;
 
-        const latestResult = await this.getLatestRevision.execute<T>(model, { id: uniqueId });
-
-        if (latestResult.isFail()) {
-            return Result.fail(latestResult.error);
-        }
-
-        const latestStorageEntry = latestResult.value;
-
-        const { entry, input } = await this.createEntryRevisionFromDataFactory.create<T>(
+        const dataResult = await this.createEntryRevisionFromDataFactory.create<T>(
             sourceId,
             model,
             rawInput,
             originalEntry,
-            latestStorageEntry,
             options
         );
+        if (dataResult.isFail()) {
+            return Result.fail(dataResult.error);
+        }
+        const { entry, input } = dataResult.value;
 
         const canAccessEntry = await this.accessControl.canAccessEntry({
             model,
@@ -139,7 +130,6 @@ export const CreateEntryRevisionFromUseCase = createImplementation({
         CreateEntryRevisionFromRepository,
         AccessControl,
         GetRevisionByIdUseCase,
-        GetLatestRevisionByEntryIdUseCase,
         EventPublisher,
         CreateEntryRevisionFromDataFactory
     ]

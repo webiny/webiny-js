@@ -47,12 +47,16 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 return Result.fail(new EntryLockedError());
             }
 
-            const { entry, input } = await this.updateEntryDataFactory.create<T>(
+            const dataResult = await this.updateEntryDataFactory.create<T>(
                 model,
                 rawInput,
                 originalEntry,
                 options
             );
+            if (dataResult.isFail()) {
+                return Result.fail(dataResult.error);
+            }
+            const { entry, input } = dataResult.value;
 
             const canAccessEntry = await this.accessControl.canAccessEntry({
                 model,

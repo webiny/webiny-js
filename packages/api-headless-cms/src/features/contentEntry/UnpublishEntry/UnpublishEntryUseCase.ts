@@ -62,7 +62,14 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        const { entry } = await this.createUnpublishEntryDataFactory.create<T>(originalEntry);
+        const dataResult = await this.createUnpublishEntryDataFactory.create<T>(
+            model,
+            originalEntry
+        );
+        if (dataResult.isFail()) {
+            return Result.fail(dataResult.error);
+        }
+        const { entry } = dataResult.value;
 
         try {
             await this.eventPublisher.publish(new EntryBeforeUnpublishEvent({ entry, model }));
