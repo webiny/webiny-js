@@ -69,6 +69,9 @@ export const applyWcpEnvVars = async (container: Container) => {
         return;
     }
 
+    // The `id` has the orgId/projectId structure, for example `my-org-x/my-project-y`.
+    const [orgId, projectId] = wcpProjectId.split("/");
+
     // Case 1: For development purposes, we allow setting the WCP_PROJECT_ENVIRONMENT env var directly.
     if (process.env.WCP_PROJECT_ENVIRONMENT) {
         loggerService.info(
@@ -82,19 +85,32 @@ export const applyWcpEnvVars = async (container: Container) => {
         // Build and watch processes inherit `WCP_PROJECT_LICENSE` along with this variable, so they
         // already have one. Someone who sets `WCP_PROJECT_ENVIRONMENT` by hand, in CI for instance,
         // usually doesn't, and without it the config renders as though the project had no license.
-        if (!process.env.WCP_PROJECT_LICENSE) {
+        //
+        // Only if the environment belongs to the project this config names, though. Otherwise the
+        // config would render with another project's entitlements. This path has never checked
+        // that, and failing here would break setups that work today, so a mismatch skips the
+        // license with a warning instead, the same as if it had never been fetched.
+        const suppliedOrgId = decryptedProjectEnvironment.org?.id;
+        const suppliedProjectId = decryptedProjectEnvironment.project?.id;
+        const belongsToThisProject = suppliedOrgId === orgId && suppliedProjectId === projectId;
+
+        if (!process.env.WCP_PROJECT_LICENSE && !belongsToThisProject) {
+            loggerService.warn(
+                { suppliedOrgId, suppliedProjectId, wcpProjectId },
+                `"WCP_PROJECT_ENVIRONMENT" belongs to "${suppliedOrgId}/${suppliedProjectId}", not to "${wcpProjectId}". Not fetching its license.`
+            );
+        }
+
+        if (!process.env.WCP_PROJECT_LICENSE && belongsToThisProject) {
             await applyProjectLicense(wcpService, {
                 apiKey: decryptedProjectEnvironment.apiKey,
-                orgId: decryptedProjectEnvironment.org.id,
-                projectId: decryptedProjectEnvironment.project.id
+                orgId,
+                projectId
             });
         }
 
         return;
     }
-
-    // The `id` has the orgId/projectId structure, for example `my-org-x/my-project-y`.
-    const [orgId, projectId] = wcpProjectId.split("/");
 
     // Check if API key is already set (prefer WEBINY_PROJECT_API_KEY over WCP_PROJECT_ENVIRONMENT_API_KEY).
     const apiKey =
