@@ -17,6 +17,7 @@ import { ProjectConfigModel } from "~/models/ProjectConfigModel.js";
 import { toImportSpecifier } from "~/utils/index.js";
 import { traceAsync } from "~/utils/trace/index.js";
 import { renderConfig } from "./renderConfig.js";
+import { getRenderCacheKey } from "./getRenderCacheKey.js";
 
 export class DefaultGetProjectConfigService implements GetProjectConfigService.Interface {
     cachedRenderedConfigs: Record<string, IProjectConfigDto> = {};
@@ -32,7 +33,7 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
     ): Promise<GetProjectConfigService.Result> {
         const project = this.getProjectService.execute();
 
-        const cacheKey = JSON.stringify(params.renderArgs);
+        const cacheKey = getRenderCacheKey(params.renderArgs);
         if (!this.cachedRenderedConfigs[cacheKey]) {
             this.loggerService.info(
                 { renderArgs: params.renderArgs },

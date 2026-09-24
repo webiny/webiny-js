@@ -14,8 +14,6 @@ import {
     watchWithHooks,
     getPulumiServiceWithDownloadInfo
 } from "~/decorators/index.js";
-import { applyEnvVars } from "./applyEnvVars.js";
-import { applyWcpEnvVars } from "./applyWcpEnvVars.js";
 import { registerHooks } from "./registerHooks.js";
 import { registerPulumiExtensions } from "./registerPulumiExtensions.js";
 import { registerImplementations } from "./registerImplementations.js";
@@ -34,11 +32,8 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
             tags: { runtimeContext: "project" }
         });
 
-        // Apply environment variables from extensions.
-        applyEnvVars(projectExtensions);
-
-        // Set WCP environment variables if project ID exists.
-        await traceAsync("apply WCP env vars", () => applyWcpEnvVars(container));
+        // Environment variables, WCP ones included, are applied by `createProjectSdkContainer` before
+        // this runs, because the WCP license has to be known before the config is rendered.
 
         // Register hooks from extensions.
         await traceAsync("register hooks", () => {
