@@ -116,8 +116,10 @@ interface MultiSelectContentProps {
 }
 
 const MultiSelectContent = ({ options, value, onToggle }: MultiSelectContentProps) => {
-    // This popover is built on the Radix primitive directly, so it needs the same scroll-lock
-    // escape hatch that `PopoverPrimitive.Content` applies.
+    /*
+     * This popover is built on the Radix primitive directly, so it needs the same scroll-lock
+     * escape hatch that `PopoverPrimitive.Content` applies.
+     */
     const contentRef = useEscapeScrollLock<HTMLDivElement>();
 
     return (

@@ -43,8 +43,10 @@ const PopoverContent = ({
     collisionPadding = 8,
     ...props
 }: PopoverContentProps) => {
-    // The popover is portaled to `document.body`, which puts it outside of a modal dialog's scroll
-    // lock. Without this, anything scrollable within the popover freezes while a dialog is open.
+    /*
+     * The popover is portaled to `document.body`, which puts it outside of a modal dialog's scroll
+     * lock. Without this, anything scrollable within the popover freezes while a dialog is open.
+     */
     const contentRef = useEscapeScrollLock<HTMLDivElement>();
 
     return (
