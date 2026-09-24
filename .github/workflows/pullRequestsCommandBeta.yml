@@ -3,7 +3,10 @@
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
 name: 💬 PR Command - Beta Release
-'on': issue_comment
+'on':
+  issue_comment:
+    types:
+      - created
 concurrency:
   group: beta-release-${{ github.event.issue.number }}
   cancel-in-progress: true

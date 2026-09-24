@@ -3,14 +3,19 @@
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
 name: (v5) Pull Requests Command - Jest
-'on': issue_comment
+'on':
+  issue_comment:
+    types:
+      - created
 env:
   NODE_OPTIONS: '--max_old_space_size=4096'
   AWS_REGION: eu-central-1
 jobs:
   checkComment:
     name: Check comment for /v5_jest
-    if: ${{ github.event.issue.pull_request }}
+    if: >-
+      ${{ github.event.issue.pull_request && (github.event.comment.body ==
+      '/v5_jest' || startsWith(github.event.comment.body, '/v5_jest ')) }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
