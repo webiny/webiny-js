@@ -24,6 +24,11 @@ interface ScrollAreaProps extends Omit<
      * with its content up to a maximum, instead of filling a parent of a known height.
      */
     viewportClassName?: string;
+    /**
+     * Native scroll handler for the scrolling element, for callers that need the event itself.
+     * `onScroll` reports positions instead.
+     */
+    onViewportScroll?: React.UIEventHandler<HTMLDivElement>;
 }
 
 function ScrollArea({
@@ -32,6 +37,7 @@ function ScrollArea({
     onScrollPositionChange,
     onScroll,
     viewportClassName,
+    onViewportScroll,
     ...props
 }: ScrollAreaProps) {
     const viewportRef = React.useRef<HTMLDivElement>(null);
@@ -78,6 +84,7 @@ function ScrollArea({
             <ScrollAreaPrimitive.Viewport
                 ref={viewportRef}
                 data-slot="scroll-area-viewport"
+                onScroll={onViewportScroll}
                 className={cn(
                     "focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1",
                     viewportClassName
@@ -100,8 +107,10 @@ function ScrollBar({
     const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
         onMouseDown?.(event);
 
-        // Grabbing a scrollbar must not move focus. An autocomplete closes its list the moment its
-        // input blurs, so without this, dragging the thumb dismisses the list under the pointer.
+        /*
+         * Grabbing a scrollbar must not move focus. An autocomplete closes its list the moment its
+         * input blurs, so without this, dragging the thumb dismisses the list under the pointer.
+         */
         event.preventDefault();
     };
 
