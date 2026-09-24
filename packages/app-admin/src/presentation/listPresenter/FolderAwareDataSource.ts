@@ -8,6 +8,11 @@ export interface FolderAwareDataSourceConfig<TRow> {
     getDescendantFolders?: { execute(folderId: string): { id: string }[] };
     keyField: keyof TRow & string;
     localFilters?: Record<string, (item: TRow, value: unknown) => boolean>;
+    /**
+     * Reads the value of a sort field from an item, for ordering rows locally.
+     * See `QueryMatcherConfig.getSortValue`.
+     */
+    getSortValue?: (item: TRow, field: string) => unknown;
 }
 
 export interface FetchParams {
@@ -57,7 +62,8 @@ export abstract class FolderAwareDataSource<TRow> implements IDataSource<TRow> {
 
         this.queryMatcher = new QueryMatcher<TRow>({
             keyField: config.keyField,
-            localFilters
+            localFilters,
+            getSortValue: config.getSortValue
         });
 
         makeObservable<FolderAwareDataSource<TRow>, "_meta" | "_loading">(this, {

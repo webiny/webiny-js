@@ -108,7 +108,10 @@ export class QueryMatcher<TRow> {
         }
 
         const serverIndex = new Map(view.resultKeys.map((key, index) => [key, index]));
-        const indexOf = (item: TRow) => serverIndex.get(this.getKey(item)) ?? -1;
+        // Items the server did not return for this view (cached by other views, or created
+        // locally) sort after the server's items among equal sort values.
+        const indexOf = (item: TRow) =>
+            serverIndex.get(this.getKey(item)) ?? Number.POSITIVE_INFINITY;
 
         const sort = view.searching ? undefined : view.sort;
         const sorted = [...matched].sort((a, b) => {
@@ -121,7 +124,9 @@ export class QueryMatcher<TRow> {
                     return sort.direction === "ASC" ? result : -result;
                 }
             }
-            return indexOf(a) - indexOf(b);
+            const left = indexOf(a);
+            const right = indexOf(b);
+            return left === right ? 0 : left < right ? -1 : 1;
         });
 
         if (!view.hasMore) {

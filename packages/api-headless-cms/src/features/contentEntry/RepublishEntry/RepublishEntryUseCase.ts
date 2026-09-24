@@ -52,10 +52,14 @@ class RepublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        const { entry } = await this.createRepublishEntryDataFactory.create<T>(
+        const dataResult = await this.createRepublishEntryDataFactory.create<T>(
             model,
             originalEntry
         );
+        if (dataResult.isFail()) {
+            return Result.fail(dataResult.error);
+        }
+        const { entry } = dataResult.value;
 
         try {
             await this.eventPublisher.publish(

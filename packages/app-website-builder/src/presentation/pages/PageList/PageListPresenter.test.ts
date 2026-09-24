@@ -14,9 +14,11 @@ import {
 } from "~/features/pages/listPages/abstractions.js";
 import { ListPagesUseCase } from "~/features/pages/listPages/ListPagesUseCase.js";
 import { ListPagesRepository } from "~/features/pages/listPages/ListPagesRepository.js";
-import { PageListCache } from "~/features/pages/shared/abstractions.js";
+import { FullPageCache, PageListCache } from "~/features/pages/shared/abstractions.js";
+import { PublishPageGateway } from "~/features/pages/publishPage/abstractions.js";
+import { PublishPageUseCase as PublishPageUseCaseImpl } from "~/features/pages/publishPage/PublishPageUseCase.js";
+import { PublishPageRepository } from "~/features/pages/publishPage/PublishPageRepository.js";
 import { DeletePageUseCase } from "~/features/pages/deletePage/abstractions.js";
-import { PublishPageUseCase } from "~/features/pages/publishPage/abstractions.js";
 import { UnpublishPageUseCase } from "~/features/pages/unpublishPage/abstractions.js";
 import { MovePageUseCase } from "~/features/pages/movePage/abstractions.js";
 import { DuplicatePageUseCase } from "~/features/pages/duplicatePage/abstractions.js";
@@ -132,6 +134,17 @@ describe("PageListPresenter", () => {
     let presenter: Abstraction.Interface;
     let cache: ListCache<Page>;
 
+    /**
+     * Simulates the publish API: publishing is not a content modification, so the page
+     * comes back with its `savedOn` unchanged.
+     */
+    const publishGateway: PublishPageGateway.Interface = {
+        execute: vi.fn(async (id: string) => {
+            const page = cache.getItem(p => p.id === id)!;
+            return { ...page, status: "published" } as any;
+        })
+    };
+
     const rowIds = () => presenter.list.vm.rows.map(row => row.entryId);
 
     const waitForQuery = async (field: string, direction: "ASC" | "DESC") => {
@@ -167,7 +180,10 @@ describe("PageListPresenter", () => {
         container.registerInstance(Confirmation, { confirm: vi.fn() } as Confirmation.Interface);
         container.registerInstance(GetDescendantFoldersUseCase, { execute: () => [] });
         container.registerInstance(DeletePageUseCase, noopUseCase as any);
-        container.registerInstance(PublishPageUseCase, noopUseCase as any);
+        container.registerInstance(FullPageCache, new ListCache<Page>("id"));
+        container.registerInstance(PublishPageGateway, publishGateway);
+        container.register(PublishPageRepository).inSingletonScope();
+        container.register(PublishPageUseCaseImpl);
         container.registerInstance(UnpublishPageUseCase, noopUseCase as any);
         container.registerInstance(MovePageUseCase, noopUseCase as any);
         container.registerInstance(DuplicatePageUseCase, noopUseCase as any);
@@ -294,6 +310,29 @@ describe("PageListPresenter", () => {
             cache.addItems([Page.create({ ...page, savedOn: minutes(TOTAL_PAGES + 1) })]);
 
             expect(rowIds()).toEqual(["page-260", ...range(299, 261), ...range(259, 250)]);
+        });
+    });
+
+    describe("publishing", () => {
+        it("should keep a published page in its position", async () => {
+            await initAndWait();
+            const before = rowIds();
+
+            await presenter.publishPage("page-260#0001");
+
+            expect(rowIds()).toEqual(before);
+            const published = presenter.list.vm.rows.find(row => row.entryId === "page-260");
+            expect(published?.status).toBe("published");
+        });
+
+        it("should keep a published page in its position after loading more pages", async () => {
+            await initAndWait();
+            await presenter.list.actions.loadMore();
+            const before = rowIds();
+
+            await presenter.publishPage("page-210#0001");
+
+            expect(rowIds()).toEqual(before);
         });
     });
 });

@@ -136,4 +136,20 @@ describe("QueryMatcher.select", () => {
 
         expect(ids(matcher.select(cached))).toEqual(["b", "a"]);
     });
+
+    it("should put items the server did not return after the server's items among equal values", () => {
+        const matcher = createMatcher();
+        matcher.updateFromQuery(
+            { sort: { field: "savedOn", direction: "DESC" } },
+            ["b", "a"],
+            true
+        );
+
+        // "x" and "y" were cached by another view and tie with the loaded items.
+        const cached = [row("x", "1"), row("a", "1"), row("y", "1"), row("b", "1")];
+
+        // Server items come first, in server order, and the tied leftovers are cut off
+        // together with everything else past the last loaded item.
+        expect(ids(matcher.select(cached))).toEqual(["b", "a"]);
+    });
 });
