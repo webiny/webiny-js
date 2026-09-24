@@ -121,7 +121,8 @@ export const applyWcpEnvVars = async (container: Container) => {
 
     let projectEnvironment;
     if (apiKey) {
-        projectEnvironment = await wcpService.getProjectEnvironment({ apiKey });
+        // The org and project let the lookup use WCP's cacheable REST endpoint.
+        projectEnvironment = await wcpService.getProjectEnvironment({ apiKey, orgId, projectId });
     } else {
         const isValidId = orgId && projectId;
         if (!isValidId) {
