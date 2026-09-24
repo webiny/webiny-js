@@ -56,6 +56,7 @@ const getIcon = (rev: CmsContentEntryRevision) => {
                     <Icon
                         label={"Locked revision"}
                         icon={<LockIcon />}
+                        color={"neutral-strong"}
                         data-testid={"cms.revision.status.locked"}
                     />
                 ),
@@ -79,6 +80,7 @@ const getIcon = (rev: CmsContentEntryRevision) => {
                     <Icon
                         label={"Draft revision"}
                         icon={<GestureIcon />}
+                        color={"neutral-strong"}
                         data-testid={"cms.revision.status.draft"}
                     />
                 ),

@@ -7,7 +7,7 @@
 .wa-unordered-list-1,
 .wa-ordered-list-1 {
   font-family: var(--wa-theme-font-family);
-  color: var(--wa-theme-color-text-base);
+  color: var(--wa-theme-color-text-base, var(--text-color-neutral-primary));
   -webkit-font-smoothing: antialiased;
   margin: 0;
 }

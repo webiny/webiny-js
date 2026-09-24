@@ -15,12 +15,12 @@ const itemVariants = cva(
         "px-sm-plus py-xs-plus rounded-md",
         "text-neutral-primary",
         "cursor-pointer",
-        "hover:bg-neutral-dark/5"
+        "hover:bg-neutral-overlay/5"
     ],
     {
         variants: {
             active: {
-                true: "bg-neutral-dark/5 font-semibold"
+                true: "bg-neutral-overlay/5 font-semibold"
             },
             loading: {
                 true: "text-neutral-disabled! fill-neutral-disabled! pointer-events-none!"

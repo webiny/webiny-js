@@ -40,7 +40,7 @@
 }
 
 .LinkPreview__description {
-  color: #999;
+  color: var(--text-color-neutral-muted);
   font-size: 90%;
   margin-left: 12px;
   margin-right: 12px;
@@ -48,7 +48,7 @@
 }
 
 .LinkPreview__domain {
-  color: #999;
+  color: var(--text-color-neutral-muted);
   font-size: 90%;
   margin-left: 12px;
   margin-right: 12px;

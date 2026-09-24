@@ -38,6 +38,7 @@ const getIcon = (revision: PageRevision) => {
                     <Icon
                         label={"Locked revision"}
                         icon={<LockIcon />}
+                        color={"neutral-strong"}
                         data-testid={"page.revision.status.locked"}
                     />
                 ),
@@ -61,6 +62,7 @@ const getIcon = (revision: PageRevision) => {
                     <Icon
                         label={"Draft revision"}
                         icon={<GestureIcon />}
+                        color={"neutral-strong"}
                         data-testid={"page.revision.status.draft"}
                     />
                 ),

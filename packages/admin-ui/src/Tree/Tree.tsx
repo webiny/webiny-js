@@ -153,7 +153,7 @@ const BaseTree = <TData,>(props: TreeProps<TData>) => {
                 canDrop={canDrop}
                 placeholderRender={props.placeholderRender}
                 classes={{
-                    dropTarget: "bg-neutral-dark/5",
+                    dropTarget: "bg-neutral-overlay/5",
                     draggingSource: "opacity-50 bg-neutral-dimmed",
                     placeholder: "relative"
                 }}

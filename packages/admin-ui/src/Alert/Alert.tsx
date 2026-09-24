@@ -41,7 +41,10 @@ const alertVariants = cva(
             {
                 type: "warning",
                 variant: "strong",
-                className: "bg-warning text-neutral-primary [&_a]:text-neutral-primary!"
+                // `bg-warning` is a fixed accent surface (not remapped by darkThemeBase), so
+                // its text must not flip either -- `text-neutral-primary` would go near-white
+                // on bright yellow in dark. Same rule as `--text-color-neutral-light`.
+                className: "bg-warning text-neutral-900 [&_a]:text-neutral-900!"
             },
             {
                 type: "warning",
