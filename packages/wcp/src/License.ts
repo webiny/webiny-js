@@ -133,6 +133,10 @@ export class License implements ILicense {
         return this.license.package.features.aiPowerups?.options?.lexicalGeneration === true;
     }
 
+    canUseAiAdminAssistant(): boolean {
+        return this.license.package.features.aiPowerups?.options?.adminAssistant === true;
+    }
+
     canUseAiEntryGeneration(): boolean {
         return this.license.package.features.aiPowerups?.options?.cms?.entryGeneration === true;
     }
@@ -145,11 +149,50 @@ export class License implements ILicense {
         return this.license.package.features.aiPowerups?.options?.cms?.entryTranslation === true;
     }
 
+    /*
+     * Derived, not read off `aiPowerups.enabled`. The individual capabilities above already ignore
+     * that parent, and WCP has projects carrying capabilities under a parent that reads false, so
+     * anything else would switch off capabilities customers are currently using.
+     */
+    canUseAiPowerups(): boolean {
+        return (
+            this.canUseAiImageEnrichment() ||
+            this.canUseAiPageGeneration() ||
+            this.canUseAiPageTranslation() ||
+            this.canUseAiLexicalGeneration() ||
+            this.canUseAiAdminAssistant() ||
+            this.canUseAiEntryGeneration() ||
+            this.canUseAiEntryComparison() ||
+            this.canUseAiEntryTranslation() ||
+            this.canUseRemoteComponents()
+        );
+    }
+
     canUseAbTesting(): boolean {
         return this.canUseFeature("abTesting");
     }
 
     canUseRemoteComponents(): boolean {
-        return this.canUseFeature("remoteComponents");
+        return this.license.package.features.aiPowerups?.options?.remoteComponents === true;
+    }
+
+    canUseCollaboration(): boolean {
+        return this.canUseFeature("collaboration");
+    }
+
+    canUseComments(): boolean {
+        if (!this.canUseCollaboration()) {
+            return false;
+        }
+
+        return this.license.package.features.collaboration.options?.comments === true;
+    }
+
+    canUseActivityLog(): boolean {
+        if (!this.canUseCollaboration()) {
+            return false;
+        }
+
+        return this.license.package.features.collaboration.options?.activityLog === true;
     }
 }

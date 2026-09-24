@@ -3,7 +3,10 @@
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
 name: 💬 PR Command - E2E
-'on': issue_comment
+'on':
+  issue_comment:
+    types:
+      - created
 env:
   NODE_OPTIONS: '--max_old_space_size=4096'
   AWS_REGION: eu-central-1
@@ -239,6 +242,8 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
+      BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+      BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -327,6 +332,12 @@ jobs:
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION
           }}","storageOps":"ddb"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -344,6 +355,9 @@ jobs:
       - name: Enable extension whitelabeling
         working-directory: new-webiny-project
         run: yarn webiny extension whitelabeling
+      - name: Enable extension bug-report-ai
+        working-directory: new-webiny-project
+        run: yarn webiny extension bug-report-ai
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
@@ -490,6 +504,8 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
+      BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+      BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
       AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.OPENSEARCH_DOMAIN_NAME }}
       OPENSEARCH_ENDPOINT: ${{ secrets.OPENSEARCH_ENDPOINT }}
       OPENSEARCH_USERNAME: ${{ secrets.OPENSEARCH_USERNAME }}
@@ -592,6 +608,12 @@ jobs:
           ""} endpoint={process.env.OPENSEARCH_ENDPOINT}
           username={process.env.OPENSEARCH_USERNAME}
           password={process.env.OPENSEARCH_PASSWORD} />|g' webiny.config.tsx
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -609,6 +631,9 @@ jobs:
       - name: Enable extension whitelabeling
         working-directory: new-webiny-project
         run: yarn webiny extension whitelabeling
+      - name: Enable extension bug-report-ai
+        working-directory: new-webiny-project
+        run: yarn webiny extension bug-report-ai
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
@@ -783,6 +808,12 @@ jobs:
           --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"storageOps":"sqlite"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -791,6 +822,8 @@ jobs:
         env:
           WEBINY_HOSTING_TYPE: standalone
           WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
         run: yarn webiny build api && yarn webiny build admin
       - name: Start API
         env:
@@ -1006,6 +1039,12 @@ jobs:
           --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"storageOps":"postgres"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -1014,6 +1053,8 @@ jobs:
         env:
           WEBINY_HOSTING_TYPE: standalone
           WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
         run: yarn webiny build api && yarn webiny build admin
       - name: Start API
         env:

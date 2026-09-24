@@ -16,11 +16,15 @@ export type KnownFeatureFlag =
     | "aiPowerups.websiteBuilder.pageTranslation"
     | "aiPowerups.fileManager.imageEnrichment"
     | "aiPowerups.lexicalGeneration"
+    | "aiPowerups.adminAssistant"
+    | "aiPowerups.remoteComponents"
     | "aiPowerups.cms.entryGeneration"
     | "aiPowerups.cms.entryComparison"
     | "aiPowerups.cms.entryTranslation"
     | "abTesting"
-    | "remoteComponents";
+    | "collaboration"
+    | "collaboration.comments"
+    | "collaboration.activityLog";
 
 export type FeatureFlagName = KnownFeatureFlag | (string & {});
 
@@ -113,6 +117,8 @@ export class FeatureFlags {
                           imageEnrichment: this.isEnabled("aiPowerups.fileManager.imageEnrichment")
                       },
                       lexicalGeneration: this.isEnabled("aiPowerups.lexicalGeneration"),
+                      adminAssistant: this.isEnabled("aiPowerups.adminAssistant"),
+                      remoteComponents: this.isEnabled("aiPowerups.remoteComponents"),
                       cms: {
                           entryGeneration: this.isEnabled("aiPowerups.cms.entryGeneration"),
                           entryComparison: this.isEnabled("aiPowerups.cms.entryComparison"),
@@ -121,7 +127,12 @@ export class FeatureFlags {
                   }
                 : false,
             abTesting: this.isEnabled("abTesting"),
-            remoteComponents: this.isEnabled("remoteComponents")
+            collaboration: this.isEnabled("collaboration")
+                ? {
+                      comments: this.isEnabled("collaboration.comments"),
+                      activityLog: this.isEnabled("collaboration.activityLog")
+                  }
+                : false
         };
     }
 }

@@ -6,6 +6,7 @@ import { CliCommand } from "@webiny/cli-core/extensions/index.js";
 import { CLI_PASSWORD_RESET_BUILD_PARAM } from "./shared/buildParams.js";
 import { SIGNING_SECRET_BUILD_PARAM } from "./shared/buildParams.js";
 import { TOKEN_EXPIRES_IN_BUILD_PARAM } from "./shared/buildParams.js";
+import { EMAIL_PASSWORD_RESET_BUILD_PARAM } from "./shared/buildParams.js";
 
 /**
  * Config-time extension rendered in `webiny.config.tsx` (like `Cognito`). It only wires things by
@@ -39,10 +40,20 @@ export const SelfHostedAuth = defineExtension({
                 "Whether `webiny reset-password` and the mutation behind it are available. On by " +
                     "default. Set to false to drop both the command and the mutation, leaving the " +
                     "admin UI as the only way to change a password."
+            ),
+        emailPasswordReset: z
+            .boolean()
+            .optional()
+            .describe(
+                "Whether users can reset their own password from the login screen, with a code " +
+                    "sent by email. On by default. Set to false to drop the 'Forgot password?' " +
+                    "flow and the mutations behind it. Needs a configured mail transport to be " +
+                    "of any use."
             )
     }),
-    render: ({ signingSecret, tokenExpiresIn, cliPasswordReset }) => {
+    render: ({ signingSecret, tokenExpiresIn, cliPasswordReset, emailPasswordReset }) => {
         const cliPasswordResetEnabled = cliPasswordReset !== false;
+        const emailPasswordResetEnabled = emailPasswordReset !== false;
 
         return (
             <>
@@ -55,6 +66,11 @@ export const SelfHostedAuth = defineExtension({
                 <BuildParam
                     paramName={CLI_PASSWORD_RESET_BUILD_PARAM}
                     value={cliPasswordResetEnabled}
+                />
+                {/* Same, for the self-service reset the login screen offers. */}
+                <BuildParam
+                    paramName={EMAIL_PASSWORD_RESET_BUILD_PARAM}
+                    value={emailPasswordResetEnabled}
                 />
                 {/* Lockout escape hatch: `webiny reset-password <email>`. Loaded by path, like the
                     admin extension below, so webiny.config.tsx pulls in no CLI code itself.
@@ -71,6 +87,14 @@ export const SelfHostedAuth = defineExtension({
                 )}
                 {/* Tells the install wizard's admin-user step which AppInstaller to target. */}
                 <EnvVar varName="REACT_APP_AUTH_INSTALLER_APP_NAME" value="SelfHostedAuth" />
+                {/* The same flag as the build param above, in the one form the login screen can
+                    read it: the screen renders before authentication and has no API call it could
+                    ask, so "is there a reset flow" has to be baked into the bundle. Without this
+                    the screen would offer a link to mutations that are not in the schema. */}
+                <EnvVar
+                    varName="REACT_APP_SELF_HOSTED_EMAIL_PASSWORD_RESET"
+                    value={emailPasswordResetEnabled ? "true" : "false"}
+                />
                 {/* Admin login screen (loaded by path, not imported here). */}
                 <AdminExtension src={import.meta.dirname + "/admin/Extension.js"} />
             </>

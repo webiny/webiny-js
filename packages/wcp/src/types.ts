@@ -27,11 +27,16 @@ export interface ILicense {
     canUseAiPageGeneration: () => boolean;
     canUseAiPageTranslation: () => boolean;
     canUseAiLexicalGeneration: () => boolean;
+    canUseAiAdminAssistant: () => boolean;
     canUseAiEntryGeneration: () => boolean;
     canUseAiEntryComparison: () => boolean;
     canUseAiEntryTranslation: () => boolean;
     canUseAbTesting: () => boolean;
     canUseRemoteComponents: () => boolean;
+    canUseAiPowerups: () => boolean;
+    canUseCollaboration: () => boolean;
+    canUseComments: () => boolean;
+    canUseActivityLog: () => boolean;
 }
 
 export declare type WcpProjectEnvironment = {
@@ -63,7 +68,7 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     FILE_MANAGER = "fileManager",
     AI_POWERUPS = "aiPowerups",
     AB_TESTING = "abTesting",
-    REMOTE_COMPONENTS = "remoteComponents"
+    COLLABORATION = "collaboration"
 }
 
 export enum MT_OPTIONS_MAX_COUNT_TYPE {
@@ -117,6 +122,8 @@ export interface ProjectPackageFeatures {
             websiteBuilder?: { pageGeneration?: boolean; pageTranslation?: boolean };
             fileManager?: { imageEnrichment?: boolean };
             lexicalGeneration?: boolean;
+            adminAssistant?: boolean;
+            remoteComponents?: boolean;
             cms?: {
                 entryGeneration?: boolean;
                 entryComparison?: boolean;
@@ -127,8 +134,12 @@ export interface ProjectPackageFeatures {
     [PROJECT_PACKAGE_FEATURE_NAME.AB_TESTING]: {
         enabled: boolean;
     };
-    [PROJECT_PACKAGE_FEATURE_NAME.REMOTE_COMPONENTS]: {
+    [PROJECT_PACKAGE_FEATURE_NAME.COLLABORATION]: {
         enabled: boolean;
+        options: {
+            comments?: boolean;
+            activityLog?: boolean;
+        };
     };
 }
 

@@ -10,8 +10,8 @@ import path from "node:path";
  * which is the same way the api and admin servers learn theirs.
  *
  * Unlike `spawnApiServer` / `spawnAdminServer`, the runner isn't copied into an app workspace: the
- * proxy belongs to no app, so it runs from project-server's own build and imports `DevProxy` instead
- * of inlining a server the way theirs have to.
+ * proxy belongs to no app, so it runs from project-standalone's own build and imports `DevProxy`
+ * instead of inlining a server the way theirs have to.
  *
  * Returns the spawned child (stdio piped); the caller owns rendering + lifecycle.
  */

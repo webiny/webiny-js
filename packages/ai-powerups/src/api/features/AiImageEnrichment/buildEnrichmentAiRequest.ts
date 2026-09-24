@@ -1,6 +1,6 @@
 import { Output } from "ai";
 import type { Ai } from "@webiny/api-core/features/ai/index.js";
-import { AI_ENRICHMENT_PROMPT, aiEnrichmentSchema } from "./abstractions.js";
+import { aiEnrichmentSchema } from "./abstractions.js";
 import type { IPreparedImageEnrichment } from "./abstractions.js";
 
 /**
@@ -32,7 +32,7 @@ export function buildEnrichmentAiRequest(
                     },
                     {
                         type: "text",
-                        text: AI_ENRICHMENT_PROMPT
+                        text: prepared.prompt
                     }
                 ]
             }

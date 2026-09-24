@@ -14,5 +14,5 @@ export const WCP_FEATURE_LABEL = {
     recordLocking: "Record Locking",
     fileManager: "File Manager",
     abTesting: "A/B Testing",
-    remoteComponents: "Remote Components"
+    collaboration: "Collaboration"
 };
