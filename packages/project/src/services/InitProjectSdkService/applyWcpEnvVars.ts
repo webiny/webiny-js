@@ -8,6 +8,32 @@ import {
     WcpService
 } from "~/abstractions/index.js";
 
+/*
+ * Fetches the project license and puts it in `WCP_PROJECT_LICENSE`, which is where the config render
+ * reads it from. License-gated feature flags decide which extensions the rendered config contains,
+ * so a missing license silently produces a config without them.
+ */
+const applyProjectLicense = async (
+    wcpService: WcpService.Interface,
+    params: { apiKey: string; orgId: string; projectId: string }
+): Promise<ILicense | null> => {
+    if (!params.apiKey) {
+        return null;
+    }
+
+    const license = await wcpService.getProjectLicense(params);
+    if (!license) {
+        return null;
+    }
+
+    const licenseDto = license.toDto();
+    if (licenseDto) {
+        process.env.WCP_PROJECT_LICENSE = JSON.stringify(licenseDto);
+    }
+
+    return license;
+};
+
 export const applyWcpEnvVars = async (container: Container) => {
     /**
      * The environment variables we set via these hooks are the following:
@@ -46,12 +72,24 @@ export const applyWcpEnvVars = async (container: Container) => {
     // Case 1: For development purposes, we allow setting the WCP_PROJECT_ENVIRONMENT env var directly.
     if (process.env.WCP_PROJECT_ENVIRONMENT) {
         loggerService.info(
-            'The "WCP_PROJECT_ENVIRONMENT" env var is already set. Using that value and skipping the rest of the process.'
+            'The "WCP_PROJECT_ENVIRONMENT" env var is already set. Using that value instead of looking the environment up.'
         );
         // If we have WCP_PROJECT_ENVIRONMENT env var, we set the WEBINY_PROJECT_API_KEY and WCP_PROJECT_ENVIRONMENT_API_KEY too.
         const decryptedProjectEnvironment = decrypt(process.env.WCP_PROJECT_ENVIRONMENT);
         process.env.WEBINY_PROJECT_API_KEY = decryptedProjectEnvironment.apiKey;
         process.env.WCP_PROJECT_ENVIRONMENT_API_KEY = decryptedProjectEnvironment.apiKey;
+
+        // Build and watch processes inherit `WCP_PROJECT_LICENSE` along with this variable, so they
+        // already have one. Someone who sets `WCP_PROJECT_ENVIRONMENT` by hand, in CI for instance,
+        // usually doesn't, and without it the config renders as though the project had no license.
+        if (!process.env.WCP_PROJECT_LICENSE) {
+            await applyProjectLicense(wcpService, {
+                apiKey: decryptedProjectEnvironment.apiKey,
+                orgId: decryptedProjectEnvironment.org.id,
+                projectId: decryptedProjectEnvironment.project.id
+            });
+        }
+
         return;
     }
 
@@ -139,17 +177,13 @@ export const applyWcpEnvVars = async (container: Container) => {
         );
     }
 
-    // Fetch license
-    let license: ILicense | null = null;
-    if (projectEnvironment.apiKey) {
-        license = await wcpService.getProjectLicense({
-            apiKey: projectEnvironment.apiKey,
-            orgId,
-            projectId
-        });
-    }
+    const license = await applyProjectLicense(wcpService, {
+        apiKey: projectEnvironment.apiKey,
+        orgId,
+        projectId
+    });
 
-    // Assign `WCP_PROJECT_ENVIRONMENT`, `WEBINY_PROJECT_API_KEY`, `WCP_PROJECT_ENVIRONMENT_API_KEY`, and `WCP_PROJECT_LICENSE`.
+    // Assign `WCP_PROJECT_ENVIRONMENT`, `WEBINY_PROJECT_API_KEY` and `WCP_PROJECT_ENVIRONMENT_API_KEY`. The license was assigned above.
     const wcpProjectEnvironment = {
         id: projectEnvironment.id,
         apiKey: projectEnvironment.apiKey,
@@ -160,12 +194,6 @@ export const applyWcpEnvVars = async (container: Container) => {
     process.env.WCP_PROJECT_ENVIRONMENT = encrypt(wcpProjectEnvironment);
     process.env.WEBINY_PROJECT_API_KEY = projectEnvironment.apiKey;
     process.env.WCP_PROJECT_ENVIRONMENT_API_KEY = projectEnvironment.apiKey;
-    if (license) {
-        const licenseDto = license.toDto();
-        if (licenseDto) {
-            process.env.WCP_PROJECT_LICENSE = JSON.stringify(licenseDto);
-        }
-    }
 
     loggerService.debug(
         {
