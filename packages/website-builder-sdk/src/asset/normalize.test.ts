@@ -94,13 +94,13 @@ describe("normalizeToAsset — legacy Website Builder image value", () => {
         expect(asset?.image).toEqual({ width: 800, height: 600 });
     });
 
-    it("upgrades an original flat WB file value (type + top-level dims, no edit)", () => {
-        // The shape existing released pages store: flat, uses `type`, no sub-object.
+    it("upgrades a flat 6.4 file value (mimeType + top-level dims, no edit)", () => {
+        // The shape released 6.x versions store: flat, no image sub-object.
         const asset = normalizeToAsset({
             id: "f",
             src: "https://cdn/x.jpg",
             name: "x.jpg",
-            type: "image/jpeg",
+            mimeType: "image/jpeg",
             size: 10,
             width: 800,
             height: 600
@@ -164,45 +164,6 @@ describe("normalizeToAsset — already-unified asset", () => {
             video: { autoplay: true, poster: "https://cdn/v/poster.jpg" }
         });
         expect(asset?.video).toEqual({ autoplay: true, poster: "https://cdn/v/poster.jpg" });
-    });
-
-    it("reads a 6.5 beta value that uses type and keeps dimensions only in image", () => {
-        const asset = normalizeToAsset({
-            id: "b1",
-            src: "https://cdn/b/pic.jpg",
-            url: "https://cdn/b/pic.jpg?crop=0.1,0,0.1,0",
-            name: "pic.jpg",
-            type: "image/jpeg",
-            size: 5,
-            image: { width: 1200, height: 900, crop: { top: 0.1, left: 0, bottom: 0.1, right: 0 } }
-        });
-        expect(asset).toEqual({
-            id: "b1",
-            src: "https://cdn/b/pic.jpg",
-            url: "https://cdn/b/pic.jpg?crop=0.1,0,0.1,0",
-            name: "pic.jpg",
-            mimeType: "image/jpeg",
-            size: 5,
-            width: 1200,
-            height: 900,
-            image: { width: 1200, height: 900, crop: { top: 0.1, left: 0, bottom: 0.1, right: 0 } }
-        });
-    });
-
-    it("fills image dimensions from the root when the image object lacks them", () => {
-        const asset = normalizeToAsset({
-            id: "r1",
-            src: "https://cdn/r.jpg",
-            name: "r.jpg",
-            mimeType: "image/jpeg",
-            size: 1,
-            width: 640,
-            height: 480,
-            image: { alt: "Root dims" }
-        });
-        expect(asset?.image).toEqual({ width: 640, height: 480, alt: "Root dims" });
-        expect(asset?.width).toBe(640);
-        expect(asset?.height).toBe(480);
     });
 
     it("returns null for invalid input", () => {

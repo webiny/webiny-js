@@ -135,11 +135,6 @@ const syncImageDimensions = (asset: Asset): Asset => {
     return asset;
 };
 
-// Values saved by 6.5 betas use `type` instead of `mimeType`.
-const readMimeType = (raw: Record<string, unknown>): string => {
-    return asString(raw.mimeType) ?? asString(raw.type) ?? "";
-};
-
 export function normalizeToAsset(input: unknown): Asset | null {
     if (!isObject(input)) {
         return null;
@@ -148,7 +143,7 @@ export function normalizeToAsset(input: unknown): Asset | null {
     const hasTypedSubObject =
         isObject(input.image) || isObject(input.document) || isObject(input.video);
 
-    const mimeType = readMimeType(input);
+    const mimeType = asString(input.mimeType) ?? "";
     const asset = buildBase(input, mimeType);
     const category = getAssetCategory(mimeType);
 
@@ -166,15 +161,8 @@ export function normalizeToAsset(input: unknown): Asset | null {
     }
 
     if (category === "image") {
-        const image = normalizeAssetImage(input.image) ?? {};
-        // Fall back to root dimensions when the image object doesn't carry them.
-        if (image.width === undefined && asNumber(input.width) !== undefined) {
-            image.width = asNumber(input.width);
-        }
-        if (image.height === undefined && asNumber(input.height) !== undefined) {
-            image.height = asNumber(input.height);
-        }
-        if (Object.keys(image).length > 0) {
+        const image = normalizeAssetImage(input.image);
+        if (image) {
             asset.image = image;
         }
     } else if (category === "video") {

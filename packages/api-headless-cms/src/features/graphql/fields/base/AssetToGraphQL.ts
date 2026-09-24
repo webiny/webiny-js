@@ -126,11 +126,7 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
             resolver: null,
             typeResolvers: {
                 FmAsset: {
-                    url: (parent: any) => resolveAssetUrl(parent),
-                    // Values saved by 6.5 betas use `type` and keep dimensions only in `image`.
-                    mimeType: (parent: any) => parent.mimeType ?? parent.type,
-                    width: (parent: any) => parent.width ?? parent.image?.width,
-                    height: (parent: any) => parent.height ?? parent.image?.height
+                    url: (parent: any) => resolveAssetUrl(parent)
                 }
             }
         };
