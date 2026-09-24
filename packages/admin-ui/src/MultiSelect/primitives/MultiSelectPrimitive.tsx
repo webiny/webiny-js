@@ -128,7 +128,7 @@ const MultiSelectContent = ({ options, value, onToggle }: MultiSelectContentProp
             <Popover.Content
                 ref={contentRef}
                 className={cn(
-                    "relative z-popover shadow-lg py-sm overflow-hidden rounded-sm border-sm border-neutral-muted bg-neutral-base text-neutral-strong",
+                    "relative z-popover shadow-lg overflow-hidden rounded-sm border-sm border-neutral-muted bg-neutral-base text-neutral-strong",
                     "data-[state=open]:animate-in data-[state=closed]:animate-out",
                     "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
                     "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -139,10 +139,16 @@ const MultiSelectContent = ({ options, value, onToggle }: MultiSelectContentProp
                 align={"start"}
                 sideOffset={4}
             >
+                {/*
+                 * The padding sits inside the scroller so the scrollbar runs the full height, and
+                 * the cap leaves room for the popover's border, so the whole dropdown fits in the
+                 * space Radix says is available.
+                 */}
                 <ScrollArea
-                    viewportClassName={
-                        "max-h-[min(250px,var(--radix-popover-content-available-height,250px))]"
-                    }
+                    viewportClassName={cn(
+                        "py-sm",
+                        "max-h-[calc(min(250px,var(--radix-popover-content-available-height,250px))_-_2*var(--border-width-sm))]"
+                    )}
                 >
                     {options.map(option => (
                         <div
