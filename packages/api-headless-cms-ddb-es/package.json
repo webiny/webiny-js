@@ -31,6 +31,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
+    "@webiny/api-core": "0.0.0",
     "@webiny/api-elasticsearch-tasks": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-opensearch": "0.0.0",
@@ -46,11 +47,10 @@
   },
   "devDependencies": {
     "@types/jsonpack": "^1.1.6",
-    "@webiny/api-core": "0.0.0",
     "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.0.2",
+    "@webiny/di": "^1.1.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
@@ -59,7 +59,7 @@
     "jest-dynalite": "^3.6.1",
     "rimraf": "^6.1.3",
     "typescript": "6.0.3",
-    "vitest": "^4.1.10"
+    "vitest": "^5.0.1"
   },
   "publishConfig": {
     "access": "public"
