@@ -1,5 +1,6 @@
 import { LocalStorageService } from "~/abstractions/index.js";
 import { WcpGqlClient } from "./WcpGqlClient.js";
+import { fetchProjectEnvironmentByApiKey } from "./fetchProjectEnvironmentByApiKey.js";
 import { IGetProjectEnvironmentParams } from "~/abstractions/services/WcpService.js";
 import { IWcpEnvironmentDto } from "~/abstractions/models/index.js";
 import { WcpEnvironmentModel } from "~/models/index.js";
@@ -92,6 +93,24 @@ export class GetProjectEnvironment {
         const { orgId, projectId, userId, environmentId, apiKey } = params;
 
         if (apiKey) {
+            // The cacheable REST endpoint needs the org and project in its URL. When a caller has
+            // them, try it first. Anything but a clean answer falls through to the GraphQL query
+            // below, which keeps every failure reported exactly as it was before the endpoint
+            // existed, and keeps working against a WCP that doesn't have the endpoint.
+            if (orgId && projectId) {
+                try {
+                    const environment = await fetchProjectEnvironmentByApiKey({
+                        apiKey,
+                        orgId,
+                        projectId
+                    });
+
+                    return WcpEnvironmentModel.fromDto(environment);
+                } catch {
+                    // Fall through to GraphQL.
+                }
+            }
+
             return WcpGqlClient.execute<IGetEnvironmentResponse>(GET_ENVIRONMENT, { apiKey })
                 .then(response => WcpEnvironmentModel.fromDto(response.projects.getEnvironment))
                 .catch(() => {
