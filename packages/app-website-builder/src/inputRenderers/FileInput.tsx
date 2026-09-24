@@ -21,9 +21,9 @@ import { fileManagerItemToValue } from "~/shared/fileManagerItemToValue.js";
 const isEditableImage = (asset: Asset | undefined): asset is Asset => {
     return (
         !!asset?.src &&
-        typeof asset.type === "string" &&
-        asset.type.startsWith("image/") &&
-        asset.type !== "image/svg+xml"
+        typeof asset.mimeType === "string" &&
+        asset.mimeType.startsWith("image/") &&
+        asset.mimeType !== "image/svg+xml"
     );
 };
 

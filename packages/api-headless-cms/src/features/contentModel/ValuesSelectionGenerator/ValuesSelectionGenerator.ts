@@ -15,7 +15,7 @@ import { createTypeName } from "~/utils/createTypeName.js";
 const REF_SELECTION = "{ id modelId }";
 
 const ASSET_SELECTION = [
-    "{ id src url name type size",
+    "{ id src url name mimeType size width height",
     "image { width height crop { top left bottom right } focalPoint { x y } alt caption }",
     "document { pages }",
     "video { autoplay poster } }"

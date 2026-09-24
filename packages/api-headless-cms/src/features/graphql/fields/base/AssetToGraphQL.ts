@@ -85,8 +85,11 @@ const baseTypeDefs = /* GraphQL */ `
         src: String!
         url: String
         name: String!
-        type: String!
+        mimeType: String!
         size: Number!
+        # Same as image.width/image.height, kept at the root for 6.4 frontends.
+        width: Number
+        height: Number
         image: FmAssetImage
         document: FmAssetDocument
         video: FmAssetVideo
@@ -98,8 +101,10 @@ const baseTypeDefs = /* GraphQL */ `
         # TODO: figure out how to remove this from here, as this is a derived read-only value.
         url: String
         name: String!
-        type: String!
+        mimeType: String!
         size: Number!
+        width: Number
+        height: Number
         image: FmAssetImageInput
         document: FmAssetDocumentInput
         video: FmAssetVideoInput
@@ -121,7 +126,11 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
             resolver: null,
             typeResolvers: {
                 FmAsset: {
-                    url: (parent: any) => resolveAssetUrl(parent)
+                    url: (parent: any) => resolveAssetUrl(parent),
+                    // Values saved by 6.5 betas use `type` and keep dimensions only in `image`.
+                    mimeType: (parent: any) => parent.mimeType ?? parent.type,
+                    width: (parent: any) => parent.width ?? parent.image?.width,
+                    height: (parent: any) => parent.height ?? parent.image?.height
                 }
             }
         };

@@ -68,15 +68,17 @@ describe("normalizeToAsset — legacy Website Builder image value", () => {
         }
     };
 
-    it("upgrades mimeType -> type and edit -> image", () => {
+    it("keeps mimeType, maps edit -> image, and mirrors dimensions at the root", () => {
         const asset = normalizeToAsset(legacy);
         expect(asset).toEqual({
             id: "file-1",
             src: "https://cdn/x/cat.jpg",
             url: "https://cdn/x/cat.jpg",
             name: "cat.jpg",
-            type: "image/jpeg",
+            mimeType: "image/jpeg",
             size: 1234,
+            width: 800,
+            height: 600,
             image: {
                 width: 800,
                 height: 600,
@@ -108,8 +110,10 @@ describe("normalizeToAsset — legacy Website Builder image value", () => {
             src: "https://cdn/x.jpg",
             url: "https://cdn/x.jpg",
             name: "x.jpg",
-            type: "image/jpeg",
+            mimeType: "image/jpeg",
             size: 10,
+            width: 800,
+            height: 600,
             image: { width: 800, height: 600 }
         });
     });
@@ -122,7 +126,8 @@ describe("normalizeToAsset — legacy Website Builder image value", () => {
             width: undefined,
             height: undefined
         });
-        expect(asset?.type).toBe("application/pdf");
+        expect(asset?.mimeType).toBe("application/pdf");
+        expect(asset?.width).toBeUndefined();
         expect(asset?.image).toBeUndefined();
     });
 });
@@ -134,8 +139,10 @@ describe("normalizeToAsset — already-unified asset", () => {
             src: "https://cdn/y/pic.png",
             url: "https://cdn/y/pic.png",
             name: "pic.png",
-            type: "image/png",
+            mimeType: "image/png",
             size: 9,
+            width: 400,
+            height: 300,
             image: {
                 width: 400,
                 height: 300,
@@ -152,11 +159,50 @@ describe("normalizeToAsset — already-unified asset", () => {
             id: "v1",
             src: "https://cdn/v/clip.mp4",
             name: "clip.mp4",
-            type: "video/mp4",
+            mimeType: "video/mp4",
             size: 42,
             video: { autoplay: true, poster: "https://cdn/v/poster.jpg" }
         });
         expect(asset?.video).toEqual({ autoplay: true, poster: "https://cdn/v/poster.jpg" });
+    });
+
+    it("reads a 6.5 beta value that uses type and keeps dimensions only in image", () => {
+        const asset = normalizeToAsset({
+            id: "b1",
+            src: "https://cdn/b/pic.jpg",
+            url: "https://cdn/b/pic.jpg?crop=0.1,0,0.1,0",
+            name: "pic.jpg",
+            type: "image/jpeg",
+            size: 5,
+            image: { width: 1200, height: 900, crop: { top: 0.1, left: 0, bottom: 0.1, right: 0 } }
+        });
+        expect(asset).toEqual({
+            id: "b1",
+            src: "https://cdn/b/pic.jpg",
+            url: "https://cdn/b/pic.jpg?crop=0.1,0,0.1,0",
+            name: "pic.jpg",
+            mimeType: "image/jpeg",
+            size: 5,
+            width: 1200,
+            height: 900,
+            image: { width: 1200, height: 900, crop: { top: 0.1, left: 0, bottom: 0.1, right: 0 } }
+        });
+    });
+
+    it("fills image dimensions from the root when the image object lacks them", () => {
+        const asset = normalizeToAsset({
+            id: "r1",
+            src: "https://cdn/r.jpg",
+            name: "r.jpg",
+            mimeType: "image/jpeg",
+            size: 1,
+            width: 640,
+            height: 480,
+            image: { alt: "Root dims" }
+        });
+        expect(asset?.image).toEqual({ width: 640, height: 480, alt: "Root dims" });
+        expect(asset?.width).toBe(640);
+        expect(asset?.height).toBe(480);
     });
 
     it("returns null for invalid input", () => {
