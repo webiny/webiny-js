@@ -8,6 +8,7 @@ import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { FolderCannotMoveToNewParent, FolderValidationError } from "~/domain/folder/errors.js";
 import { CodeFlpMerger } from "~/features/flp/shared/index.js";
 import { CodeFlpsProvider } from "~/features/flp/shared/index.js";
+import { Path } from "~/utils/Path.js";
 
 class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;
@@ -42,8 +43,13 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
             rwd: "w"
         });
 
+        // The guard below asks whether the user keeps access once the update is saved. A new slug or
+        // a new parent changes the path, and code-defined rules match on the path, so resolve them
+        // against where the folder is going rather than where it is now.
+        const targetFolder = await this.getTargetFolder(original, params);
+
         const submittedPermissions = await this.withCodePermissions(
-            original,
+            targetFolder,
             params.permissions ?? []
         );
 
@@ -132,6 +138,45 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
             ...result.value,
             permissions: updatedPermissionsWithDefaults
         });
+    }
+
+    /**
+     * The type and path the folder will have after this update, computed the same way
+     * `UpdateFolderRepository` computes them: the submitted slug and parent, falling back to the
+     * current ones.
+     */
+    private async getTargetFolder(
+        original: Folder,
+        params: UpdateFolderParams
+    ): Promise<Pick<Folder, "type" | "path">> {
+        const slug = params.slug || original.slug;
+        const parentId = params.parentId !== undefined ? params.parentId : original.parentId;
+
+        // Same parent: only the last segment of the path can change, so it is derived from the
+        // current path. This avoids reading the parent, which the user may not have access to.
+        if (parentId === original.parentId) {
+            const parentPath = original.path.slice(0, -(original.slug.length + 1));
+            const path = Path.create(slug, parentPath);
+
+            return { type: original.type, path };
+        }
+
+        if (!parentId) {
+            const path = Path.create(slug);
+
+            return { type: original.type, path };
+        }
+
+        // A move. If the destination cannot be read, keep the current path: the parent check further
+        // down rejects the move with its own error.
+        const parentResult = await this.getFolder.execute(parentId);
+        if (parentResult.isFail()) {
+            return original;
+        }
+
+        const path = Path.create(slug, parentResult.value.path);
+
+        return { type: original.type, path };
     }
 
     /**

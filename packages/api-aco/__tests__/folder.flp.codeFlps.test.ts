@@ -299,6 +299,53 @@ describe("Folder Level Permissions - code-defined FLPs", () => {
             ])
         );
     });
+    // A stored permission for someone else, so the list the Admin UI sends back with every update is
+    // not empty. An empty list makes the folder public, which would pass the access guard anyway.
+    const OTHER_STORED = [{ target: "admin:999", level: "viewer" }];
+
+    it("should let a user whose only access is a code rule rename the folder", async () => {
+        const folderA = await createFolder({
+            title: "Folder A",
+            slug: "folder-a",
+            type: FOLDER_TYPE
+        });
+        await acoIdentityA.updateFolder({ id: folderA.id, data: { permissions: OTHER_STORED } });
+
+        // Identity B's only access is the code rule on "/folder-a". A title change keeps the path, so
+        // the rule still applies after the save and the guard must not claim B loses access.
+        const [response] = await acoIdentityB.updateFolder({
+            id: folderA.id,
+            data: { title: "Folder A renamed", permissions: OTHER_STORED }
+        });
+
+        expect(response.data.aco.updateFolder.error).toBeNull();
+
+        const { data } = await getFolder(acoIdentityB, folderA.id);
+        expect(data).toMatchObject({ title: "Folder A renamed" });
+    });
+
+    it("should refuse a slug change that takes the folder out of the user's only code rule", async () => {
+        const folderA = await createFolder({
+            title: "Folder A",
+            slug: "folder-a",
+            type: FOLDER_TYPE
+        });
+        await acoIdentityA.updateFolder({ id: folderA.id, data: { permissions: OTHER_STORED } });
+
+        // The rule matches "/folder-a" exactly. Moving the folder to "/folder-b" would leave identity B
+        // with no access, which is what the guard exists to prevent.
+        const [response] = await acoIdentityB.updateFolder({
+            id: folderA.id,
+            data: { slug: "folder-b", permissions: OTHER_STORED }
+        });
+
+        expect(response.data.aco.updateFolder.error).toMatchObject({
+            message: "Cannot continue because you would loose access to this folder."
+        });
+
+        const { data } = await getFolder(acoIdentityB, folderA.id);
+        expect(data).toMatchObject({ slug: "folder-a", path: "root/folder-a" });
+    });
 });
 
 describe("Folder Level Permissions - no FlpFactory registered", () => {
