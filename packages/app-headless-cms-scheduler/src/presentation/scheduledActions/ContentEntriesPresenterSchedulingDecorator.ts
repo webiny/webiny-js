@@ -1,4 +1,4 @@
-import { comparer, reaction } from "mobx";
+import { compareStructural, reaction } from "mobx";
 import type { IReactionDisposer } from "mobx";
 import {
     ContentEntriesPresenter,
@@ -47,7 +47,7 @@ class ContentEntriesPresenterWithScheduling implements IContentEntriesPresenter 
                 }
                 this.scheduledActions.loadForModel(this.original.vm.model.modelId);
             },
-            { fireImmediately: true, equals: comparer.structural }
+            { fireImmediately: true, equals: compareStructural }
         );
     }
 
