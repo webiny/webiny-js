@@ -31,6 +31,9 @@ type FieldRendererFn<TName extends string> = (props: {
 // to where "jump to field" (a comment locator, a form error) scrolled to.
 const FOCUS_HIGHLIGHT_MS = 1800;
 
+// A 6px tint around the field, then a 2px ring outside it.
+const FOCUS_HIGHLIGHT_SHADOW = "0 0 0 6px var(--color-primary-100), 0 0 0 8px var(--color-primary)";
+
 const ScrollOnFocus = observer(
     ({ field, children }: { field: IFieldVM; children: React.ReactNode }) => {
         const ref = useRef<HTMLDivElement>(null);
@@ -70,13 +73,15 @@ const ScrollOnFocus = observer(
                 ref={ref}
                 data-field-path={field.qualifiedName}
                 style={{
-                    // Padding gives the highlight ring/tint breathing room from the field content;
-                    // the matching negative margin keeps the field's layout position unchanged.
-                    padding: 6,
-                    margin: -6,
-                    borderRadius: 8,
+                    /*
+                     * The highlight is drawn with shadows, which paint around the field without
+                     * taking up room. Padding with a matching negative margin looked the same, but
+                     * the padded box still stuck out of the field, so a scroll area around a form
+                     * always had 6px to scroll.
+                     */
+                    borderRadius: 2,
                     transition: "box-shadow .35s ease, background-color .35s ease",
-                    boxShadow: highlighted ? "0 0 0 2px var(--color-primary)" : undefined,
+                    boxShadow: highlighted ? FOCUS_HIGHLIGHT_SHADOW : undefined,
                     backgroundColor: highlighted ? "var(--color-primary-100)" : undefined
                 }}
             >
