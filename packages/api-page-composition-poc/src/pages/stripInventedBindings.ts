@@ -2,15 +2,37 @@ import { isCredibleDestination, isPlaceholderDestination } from "~/pages/isCredi
 import { isDestinationPath } from "~/pages/rewriteDestinations.js";
 import type { PlacedInvention } from "~/pages/recoverInventedDestinations.js";
 
-/** What each element's destinations are judged against: the links its own section actually had. */
+/** What each element's bindings are judged against: what its own section actually had. */
 export interface ElementContext {
+    /** The destinations the section carried. */
     captured: ReadonlySet<string>;
+    /** The image sources the section carried, for the same judgement applied to pictures. */
+    capturedImages?: ReadonlySet<string>;
 }
 
 export interface BindingStripResult {
     bindings: Record<string, any>;
     invented: PlacedInvention[];
+    /** Images the model invented, emptied rather than rendered. */
+    inventedImages: PlacedInvention[];
 }
+
+/**
+ * The url a file-typed binding carries, whichever shape it is in. A component reads either the object
+ * or the bare string (see `fileInputShape`), so both are recognised here — checking only one shape
+ * would let that shape's inventions through.
+ */
+const fileBindingUrl = (value: unknown): string | null => {
+    if (typeof value === "string") {
+        return value.trim() ? value : null;
+    }
+    if (value && typeof value === "object") {
+        const record = value as { url?: unknown; src?: unknown };
+        const url = record.url ?? record.src;
+        return typeof url === "string" && url.trim() ? url : null;
+    }
+    return null;
+};
 
 /**
  * Remove destinations the model invented, from the finished page rather than from the inputs.
@@ -37,6 +59,7 @@ export const stripInventedBindings = (params: {
 }): BindingStripResult => {
     const { bindings, contextByElement, sourceHost } = params;
     const invented: PlacedInvention[] = [];
+    const inventedImages: PlacedInvention[] = [];
     const next: Record<string, any> = {};
 
     for (const [elementId, element] of Object.entries(bindings)) {
@@ -50,6 +73,27 @@ export const stripInventedBindings = (params: {
         const nextInputs: Record<string, any> = {};
         for (const [path, binding] of Object.entries(inputs)) {
             const value = (binding as { static?: unknown })?.static;
+
+            /*
+             * An image the section never showed is an invention, and it gets the judgement a
+             * destination gets. It is emptied, never substituted: an empty slot is honest, and a
+             * photograph of a different building is the first thing a customer would notice.
+             *
+             * Judged on the binding rather than on the inputs, for the reason the destination strip
+             * already is — an input the composition never derived is filled from the input's own
+             * `params.defaultValue` while the element is built, which is after any check on inputs.
+             */
+            if ((binding as { type?: unknown })?.type === "file") {
+                const url = fileBindingUrl(value);
+                const observed = context.capturedImages;
+                if (url && observed && !observed.has(url)) {
+                    inventedImages.push({ elementId, path, value: url });
+                    nextInputs[path] = { ...(binding as object), static: null };
+                    continue;
+                }
+                nextInputs[path] = binding;
+                continue;
+            }
 
             if (!isDestinationPath(path) || typeof value !== "string" || !value.trim()) {
                 nextInputs[path] = binding;
@@ -73,5 +117,5 @@ export const stripInventedBindings = (params: {
         next[elementId] = { ...(element as object), inputs: nextInputs };
     }
 
-    return { bindings: next, invented };
+    return { bindings: next, invented, inventedImages };
 };

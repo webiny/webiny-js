@@ -60,9 +60,17 @@ const locate = (texts: string[], value: string): number => {
  * section whose text runs differ in number or order between pages will mis-align, and the caller
  * logs every fallback so the demo never silently claims per-page fidelity it does not have.
  *
- * Only scalar text props are derived. Images, links and anything composite are not addressed here:
- * the captured tree Segment forwards carries text and geometry but no element attributes, so an
- * `href` or `src` simply is not in it (`CapturedNode`). Those stay on the cluster sample.
+ * Only scalar TEXT props are derived here, because text is the only thing this alignment can speak
+ * about: it matches a prop's sample against the section's text runs by position. An image has no
+ * position in that sequence, and routing a text run into an image input would be worse than leaving
+ * it empty.
+ *
+ * This comment used to say images and links were absent from the tree — that `href` or `src` "simply
+ * is not in it (CapturedNode)". That has not been true since the capture evaluator began recording
+ * `node.src`, `node.href` and `node.alt`; `harvest.ts` reads all three. The exclusion outlived its
+ * reason, and while it stood, every scalar image input kept whatever default the model invented.
+ * Images and links are bound from the captured tree by `deriveCompositeInputs`, which is the path
+ * that can see them.
  */
 export const deriveInstanceProps = (params: {
     props: AlignableProp[];

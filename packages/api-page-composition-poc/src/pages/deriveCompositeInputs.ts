@@ -8,6 +8,7 @@ import {
     coverage,
     siblingGroups
 } from "~/pages/harvest.js";
+import { fileInputValue, type FileInputShape } from "~/pages/fileInputShape.js";
 
 /** A manifest input, loosened to what a parsed manifest actually carries. */
 interface InputDefinition {
@@ -174,14 +175,15 @@ const itemContainers = (
 const buildItem = (
     node: CapturedNode,
     fields: InputDefinition[],
-    claimed: Set<CapturedNode>
+    claimed: Set<CapturedNode>,
+    shapeOf: (field: InputDefinition) => FileInputShape
 ): Record<string, unknown> => {
     const cursors = cursorsFor(node, claimed);
     const item: Record<string, unknown> = {};
 
     for (const field of fields) {
         if (isComposite(field)) {
-            const nested = deriveList(node, field, claimed);
+            const nested = deriveList(node, field, claimed, shapeOf);
             if (nested.length > 0) {
                 item[field.name] = nested;
             }
@@ -214,7 +216,7 @@ const buildItem = (
             const image = cursors.images[cursors.imageAt];
             if (image) {
                 cursors.imageAt++;
-                item[field.name] = image.src;
+                item[field.name] = fileInputValue(image.src, shapeOf(field));
             }
             continue;
         }
@@ -332,7 +334,8 @@ const compositeContainer = (
 const deriveList = (
     node: CapturedNode,
     definition: InputDefinition,
-    claimed: Set<CapturedNode>
+    claimed: Set<CapturedNode>,
+    shapeOf: (field: InputDefinition) => FileInputShape
 ): Record<string, unknown>[] => {
     const fields = definition.fields ?? [];
     const containers = itemContainers(node, fields, claimed);
@@ -346,7 +349,7 @@ const deriveList = (
     }
 
     const items = containers
-        .map(container => buildItem(container, fields, claimed))
+        .map(container => buildItem(container, fields, claimed, shapeOf))
         .filter(item => Object.keys(item).length > 0);
 
     /*
@@ -389,8 +392,30 @@ export const deriveCompositeInputs = (params: {
     manifest: ComponentManifest;
     /** The page this instance came from, to tell an invented same-host URL from a captured one. */
     sourceUrl: string;
+    /**
+     * How this component reads each of its file inputs, from its own source. See `fileInputShape`:
+     * the corpus was generated under more than one rule and the component is the authority on what
+     * its own input expects.
+     */
+    fileShapes?: ReadonlyMap<string, FileInputShape>;
 }): Record<string, unknown> => {
     const { node, manifest } = params;
+    /*
+     * `isImageField` matches on NAME as well as type, deliberately — the generator types a picture's
+     * url as plain text often enough that going by type alone loses them. That breadth means the
+     * shape cannot be decided by name: a `text` input called `imageUrl` is a string and always was.
+     *
+     * So the declared type decides whether an object is even a candidate, and the component's source
+     * decides which shape it reads. A field the source does not name as a file input keeps the string
+     * it has always been given.
+     */
+    const shapeOf = (field: InputDefinition): FileInputShape => {
+        const declared = params.fileShapes?.get(field.name);
+        if (declared) {
+            return declared;
+        }
+        return field.type !== undefined && IMAGE_TYPES.has(field.type) ? "object" : "string";
+    };
     const claimed = new Set<CapturedNode>();
     const values: Record<string, unknown> = {};
 
@@ -409,7 +434,7 @@ export const deriveCompositeInputs = (params: {
         const definition = asDefinition(input);
 
         if (definition.list && isComposite(definition)) {
-            const items = deriveList(node, definition, claimed);
+            const items = deriveList(node, definition, claimed, shapeOf);
             if (items.length > 0) {
                 values[definition.name] = items;
                 continue;
@@ -454,9 +479,28 @@ export const deriveCompositeInputs = (params: {
             if (container !== node) {
                 claimed.add(container);
             }
-            const item = buildItem(container, fields, claimed);
+            const item = buildItem(container, fields, claimed, shapeOf);
             if (Object.keys(item).length > 0) {
                 values[definition.name] = item;
+            }
+            continue;
+        }
+
+        /*
+         * A scalar image input — a hero picture, a logo, a background — read straight from the
+         * section.
+         *
+         * These were unreachable: scalar derivation aligns TEXT runs against the cluster
+         * representative, so it has nothing to say about an image, and `scalarInputNames` excludes
+         * `file` for exactly that reason. Nothing else bound them, so they kept whatever the
+         * generated default held — which is where the invented stock photography reached the page.
+         * The fix belongs here, in the path that reads captured images, not in the text path: routing
+         * a text run into an image input would be worse than leaving it empty.
+         */
+        if (!definition.list && !isComposite(definition) && isImageField(definition)) {
+            const image = collectImages(node, claimed)[0];
+            if (image) {
+                values[definition.name] = fileInputValue(image.src, shapeOf(definition));
             }
             continue;
         }

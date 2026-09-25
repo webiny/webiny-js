@@ -46,7 +46,7 @@ import {
     recoverInventedDestinations,
     type PlacedInvention
 } from "~/pages/recoverInventedDestinations.js";
-import { collectLinks } from "~/pages/harvest.js";
+import { collectImages, collectLinks } from "~/pages/harvest.js";
 import {
     rewriteDestinations,
     tally,
@@ -54,6 +54,7 @@ import {
 } from "~/pages/rewriteDestinations.js";
 import { toPageIdentity } from "~/pages/toPageIdentity.js";
 import { scalarInputNames } from "~/pages/scalarInputNames.js";
+import { fileInputShapes, type FileInputShape } from "~/pages/fileInputShape.js";
 
 /** How many of a page's missing text runs to keep. Enough to see the shape of the loss, not a log. */
 const MISSING_TEXT_SAMPLE = 12;
@@ -64,6 +65,8 @@ interface CreatedPage {
     bindings: Record<string, any>;
     /** Destinations the model invented on this page, emptied before it was built. */
     invented: PlacedInvention[];
+    /** Images the model invented on this page, emptied rather than rendered. */
+    inventedImages: PlacedInvention[];
     /** What composing this page covered and what it left behind — see `PageSignals`. */
     coverage: PageCoverage;
 }
@@ -92,6 +95,8 @@ interface PlaceableComponent {
     type: string;
     /** Manifest inputs a derived scalar may be bound to — see `scalarInputNames`. */
     scalarInputs: Set<string>;
+    /** How this component reads each of its file inputs — see `fileInputShape`. */
+    fileShapes: ReadonlyMap<string, FileInputShape>;
     props: GeneratedComponent["props"];
     /** Text runs of the cluster's reference member, for per-instance alignment. */
     representativeTexts: string[];
@@ -206,6 +211,21 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 migratedPaths
             });
             recovered.push(...recovery.recovered);
+
+            /*
+             * An invented image is recorded and left empty, never recovered. A destination can be
+             * recovered because a plausible path may still name a real migrated page; there is no
+             * equivalent for a photograph — nothing on this site can stand in for one, and
+             * substituting anything would put a picture of somewhere else on the customer's page.
+             */
+            for (const item of page.inventedImages) {
+                discarded.push({
+                    kind: "image.invented",
+                    page: page.entry.path,
+                    sourceUrl: page.entry.sourceUrl,
+                    detail: `${item.value} left empty at ${item.path}: the section never showed that image`
+                });
+            }
 
             for (const item of recovery.unrecovered) {
                 discarded.push({
@@ -346,7 +366,8 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             // The bundler persists the manifest alongside the bundle, built from the same expression
             // the bundle embeds. Reading it here means the API and the browser agree by construction
             // rather than by two implementations happening to match.
-            const manifest = await this.promotedManifest(promoted.componentId);
+            const promotedComponent = await this.promotedComponent(promoted.componentId);
+            const manifest = promotedComponent?.manifest ?? null;
             if (!manifest) {
                 // A component whose manifest cannot be read cannot be placed; its instances will be
                 // reported per page rather than failing the whole run.
@@ -357,6 +378,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 manifest,
                 type: component.type,
                 scalarInputs: scalarInputNames(manifest),
+                fileShapes: fileInputShapes(promotedComponent?.source ?? ""),
                 props: component.props,
                 representativeTexts: await this.referenceTexts(component, segmentByUrl, trees)
             });
@@ -371,7 +393,9 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
      * one, or its bundling failed. Either way it cannot be placed, and the caller reports that per
      * page rather than failing the run.
      */
-    private async promotedManifest(componentId: string): Promise<ComponentManifest | null> {
+    private async promotedComponent(
+        componentId: string
+    ): Promise<{ manifest: ComponentManifest; source: string } | null> {
         const result = await this.getComponent.execute(componentId);
 
         if (result.isFail() || !result.value.manifest) {
@@ -379,7 +403,12 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         }
 
         try {
-            return JSON.parse(result.value.manifest) as ComponentManifest;
+            return {
+                manifest: JSON.parse(result.value.manifest) as ComponentManifest,
+                // The source comes back with the manifest so the two cannot describe different
+                // components: how an input is READ is only answerable from the source.
+                source: result.value.source ?? ""
+            };
         } catch {
             return null;
         }
@@ -425,6 +454,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         // Per placement, because the element each one becomes is only known once the document is
         // built, and both the destination check and the recovery pass work on specific elements.
         const capturedByPlacement: Set<string>[] = [];
+        const capturedImagesByPlacement: Set<string>[] = [];
         const unplaced: UnplacedInstance[] = [];
         const sourceTexts: string[] = [];
         for (const [index, instance] of page.instances.entries()) {
@@ -446,6 +476,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 trees
             });
             capturedByPlacement.push(derivedInputs.captured);
+            capturedImagesByPlacement.push(derivedInputs.capturedImages);
             placements.push({ manifest: component.manifest, inputs: derivedInputs.inputs });
 
             // The source copy this instance was built from, for the text-coverage check later. Only
@@ -479,7 +510,10 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         for (const [index, captured] of capturedByPlacement.entries()) {
             const elementId = childIds[index];
             if (elementId) {
-                contextByElement.set(elementId, { captured });
+                contextByElement.set(elementId, {
+                    captured,
+                    capturedImages: capturedImagesByPlacement[index] ?? new Set<string>()
+                });
             }
         }
 
@@ -501,6 +535,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         });
         const bindings = stripped.bindings;
         const invented = stripped.invented;
+        const inventedImages = stripped.inventedImages;
 
         const createdPage = await this.createPage.execute({
             location: { folderId: ROOT_FOLDER },
@@ -536,6 +571,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             },
             bindings,
             invented,
+            inventedImages,
             coverage: {
                 sourceSections: segmentByUrl.get(page.url)?.sections.length ?? 0,
                 assembledInstances: page.instances.length,
@@ -559,7 +595,12 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         component: PlaceableComponent;
         segmentByUrl: Map<string, SegmentedPage>;
         trees: Map<string, CapturedNode>;
-    }): Promise<{ inputs: Record<string, unknown>; captured: Set<string>; texts: string[] }> {
+    }): Promise<{
+        inputs: Record<string, unknown>;
+        captured: Set<string>;
+        capturedImages: Set<string>;
+        texts: string[];
+    }> {
         const { page, instance, component, segmentByUrl, trees } = params;
 
         const node = await this.sectionNode(page.url, instance.sectionIndex, segmentByUrl, trees);
@@ -597,7 +638,8 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 deriveCompositeInputs({
                     node,
                     manifest: component.manifest,
-                    sourceUrl: page.url
+                    sourceUrl: page.url,
+                    fileShapes: component.fileShapes
                 })
             );
         }
@@ -619,6 +661,9 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
          * against them. The check itself happens on the bindings, not here — see `composePage`.
          */
         const captured = node ? collectLinks(node).map(link => link.href) : [];
+        // The images this section actually showed, so an image the model invented can be told from
+        // one the page had — the same question the links above answer for destinations.
+        const capturedImages = node ? collectImages(node).map(image => image.src) : [];
 
         /*
          * The section's own copy, taken from the node already resolved above. Carried out with the
@@ -627,7 +672,12 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
          */
         const texts = node ? collectSectionTexts(node) : [];
 
-        return { inputs: previewed, captured: new Set(captured), texts };
+        return {
+            inputs: previewed,
+            captured: new Set(captured),
+            capturedImages: new Set(capturedImages),
+            texts
+        };
     }
 
     /** The captured node for one section of one page, resolved by the box Segment recorded. */

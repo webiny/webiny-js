@@ -110,3 +110,62 @@ describe("stripInventedBindings — checking the page rather than the inputs", (
         expect(result.bindings["el-1"]).toEqual({ styles: { color: "red" } });
     });
 });
+
+describe("stripInventedBindings — invented images", () => {
+    const CAPTURED_IMAGES = new Set([
+        "https://res.cloudinary.com/g5/image/upload/hero.jpg",
+        "https://res.cloudinary.com/g5/image/upload/logo.png"
+    ]);
+
+    const imageBindings = (value: unknown): Record<string, any> => ({
+        root: { inputs: { children: { static: ["el-1"], type: "slot", list: true } } },
+        "el-1": { inputs: { "images/0/src": { static: value, type: "file" } } }
+    });
+
+    const stripImages = (value: unknown) =>
+        stripInventedBindings({
+            bindings: imageBindings(value),
+            contextByElement: new Map([
+                ["el-1", { captured: CAPTURED, capturedImages: CAPTURED_IMAGES }]
+            ]),
+            sourceHost: SOURCE_HOST
+        });
+
+    it("empties a stock photo the section never showed, and records it", () => {
+        const result = stripImages({ url: "https://images.unsplash.com/photo-160058.jpg" });
+
+        expect(result.bindings["el-1"].inputs["images/0/src"].static).toBeNull();
+        expect(result.inventedImages).toEqual([
+            {
+                elementId: "el-1",
+                path: "images/0/src",
+                value: "https://images.unsplash.com/photo-160058.jpg"
+            }
+        ]);
+    });
+
+    it("keeps an image the section actually showed", () => {
+        const result = stripImages({ url: "https://res.cloudinary.com/g5/image/upload/hero.jpg" });
+
+        expect(result.bindings["el-1"].inputs["images/0/src"].static).toEqual({
+            url: "https://res.cloudinary.com/g5/image/upload/hero.jpg"
+        });
+        expect(result.inventedImages).toEqual([]);
+    });
+
+    it("judges the bare-string shape too, so one shape's inventions cannot slip through", () => {
+        const invented = stripImages("https://images.unsplash.com/photo-160058.jpg");
+        expect(invented.inventedImages).toHaveLength(1);
+
+        const captured = stripImages("https://res.cloudinary.com/g5/image/upload/logo.png");
+        expect(captured.inventedImages).toEqual([]);
+    });
+
+    it("never substitutes: an invented image is emptied, not replaced", () => {
+        const result = stripImages({ url: "https://images.unsplash.com/photo-160058.jpg" });
+        const value = result.bindings["el-1"].inputs["images/0/src"].static;
+
+        expect(value).toBeNull();
+        expect(JSON.stringify(value)).not.toContain("cloudinary");
+    });
+});

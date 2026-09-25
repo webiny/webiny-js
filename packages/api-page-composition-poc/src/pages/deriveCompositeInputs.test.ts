@@ -226,12 +226,72 @@ describe("deriveCompositeInputs — other shapes", () => {
             ]
         } as unknown as ComponentManifest;
 
+        // A `file` input gets the object shape unless the component's source says it reads a bare
+        // string: a component that dereferences `.url` renders nothing at all from a plain string.
         expect(
             deriveCompositeInputs({ node: section, manifest, sourceUrl: SOURCE_URL }).cards
         ).toEqual([
-            { title: "Fast", image: "/a.png", imageAlt: "Speed" },
-            { title: "Secure", image: "/b.png", imageAlt: "Lock" }
+            { title: "Fast", image: { url: "/a.png" }, imageAlt: "Speed" },
+            { title: "Secure", image: { url: "/b.png" }, imageAlt: "Lock" }
         ]);
+    });
+
+    it("gives a file input the bare string when the component reads it that way", () => {
+        const card = (title: string, src: string, alt: string) =>
+            node("article", {}, [node("h3", { text: title }), node("img", { src, alt })]);
+        const section = node("section", {}, [node("div", {}, [card("Fast", "/a.png", "Speed")])]);
+        const manifest = {
+            name: "Custom/Cards",
+            tags: [],
+            inputs: [
+                {
+                    name: "cards",
+                    type: "object",
+                    list: true,
+                    fields: [
+                        { name: "title", type: "text" },
+                        { name: "image", type: "file" }
+                    ]
+                }
+            ]
+        } as unknown as ComponentManifest;
+
+        expect(
+            deriveCompositeInputs({
+                node: section,
+                manifest,
+                sourceUrl: SOURCE_URL,
+                fileShapes: new Map([["image", "string" as const]])
+            }).cards
+        ).toEqual([{ title: "Fast", image: "/a.png" }]);
+    });
+
+    it("leaves a text input named like an image as a string", () => {
+        // `isImageField` matches on name as well as type, so this is the case that must not be
+        // wrapped: `imageUrl` is text, and the component has always been handed a string.
+        const section = node("section", {}, [
+            node("div", {}, [node("article", {}, [node("img", { src: "/a.png", alt: "Speed" })])])
+        ]);
+        const manifest = {
+            name: "Custom/Cards",
+            tags: [],
+            inputs: [
+                {
+                    name: "cards",
+                    type: "object",
+                    list: true,
+                    fields: [{ name: "imageUrl", type: "text" }]
+                }
+            ]
+        } as unknown as ComponentManifest;
+
+        const cards = deriveCompositeInputs({
+            node: section,
+            manifest,
+            sourceUrl: SOURCE_URL
+        }).cards as Record<string, unknown>[];
+
+        expect(typeof cards?.[0]?.imageUrl).toBe("string");
     });
 
     it("empties a list it could not derive when the default would render dead links", () => {
