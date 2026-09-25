@@ -1,4 +1,4 @@
-import { makeObservable, observable, computed, action } from "mobx";
+import { makeObservable, observableRef, computed, action } from "mobx";
 import type { IDataSourceQuery } from "./abstractions.js";
 
 type ItemPredicate<TRow> = (item: TRow, value: unknown) => boolean;
@@ -74,8 +74,8 @@ export class QueryMatcher<TRow> {
         this.getSortValue = config.getSortValue ?? getValueByPath;
 
         makeObservable<QueryMatcher<TRow>, "_matcher" | "_view">(this, {
-            _matcher: observable.ref,
-            _view: observable.ref,
+            _matcher: observableRef,
+            _view: observableRef,
             matcher: computed,
             updateFromQuery: action,
             appendResultKeys: action

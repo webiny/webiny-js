@@ -12,7 +12,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@lexical/code": "^0.51.0",
+    "@lexical/code-prism": "^0.51.0",
     "@lexical/history": "^0.51.0",
     "@lexical/react": "^0.51.0",
     "@lexical/rich-text": "^0.51.0",
