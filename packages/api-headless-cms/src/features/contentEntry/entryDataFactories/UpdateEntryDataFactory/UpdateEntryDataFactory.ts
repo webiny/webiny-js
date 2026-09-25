@@ -1,7 +1,6 @@
-import { createImplementation } from "@webiny/feature/api";
+import { createImplementation, Result } from "@webiny/feature/api";
 import {
     type IUpdateEntryDataFactory,
-    type IUpdateEntryDataResponse,
     UpdateEntryDataFactory as FactoryAbstraction
 } from "./abstractions.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
@@ -16,13 +15,16 @@ import type {
 } from "~/types/index.js";
 import { getDate } from "~/utils/date.js";
 import { getIdentity } from "~/utils/identity.js";
-import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation.js";
+import { validateModelEntryData } from "~/crud/contentEntry/entryDataValidation.js";
+import { EntryValidationError } from "~/domain/contentEntry/errors.js";
 import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping.js";
 import { mapAndCleanUpdatedInputData } from "../mapAndCleanUpdatedInputData.js";
 import { getSystem } from "../system.js";
 import { getExpiresAt } from "../expiresAt.js";
 import { ModelToAstConverter } from "~/features/contentModel/ModelToAstConverter/abstractions.js";
 import { ensureItemIds } from "../../ensureItemIds.js";
+import { hasEntryContentChanged } from "../hasEntryContentChanged.js";
+import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 
 const allowedEntryStatus: string[] = ["draft", "published", "unpublished"];
 
@@ -34,7 +36,8 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
     public constructor(
         private readonly cmsContext: CmsContext.Interface,
         private readonly identityContext: IdentityContext.Interface,
-        private readonly modelToAstConverter: ModelToAstConverter.Interface
+        private readonly modelToAstConverter: ModelToAstConverter.Interface,
+        private readonly getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface
     ) {}
 
     public async create<TValues extends CmsEntryValues = CmsEntryValues>(
@@ -42,19 +45,30 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
         rawInput: UpdateCmsEntryInput<TValues>,
         originalEntry: CmsEntry<TValues>,
         options?: UpdateCmsEntryOptionsInput
-    ): Promise<IUpdateEntryDataResponse<TValues>> {
+    ): Promise<FactoryAbstraction.Return<TValues>> {
+        const latestResult = await this.getLatestRevision.execute<TValues>(model, {
+            id: originalEntry.entryId
+        });
+        if (latestResult.isFail()) {
+            return Result.fail(latestResult.error);
+        }
+        const latestEntry = latestResult.value;
+
         const cleanedValues = mapAndCleanUpdatedInputData<TValues>(
             model,
             rawInput?.values || ({} as TValues)
         );
 
-        await validateModelEntryDataOrThrow({
+        const invalidFields = await validateModelEntryData({
             context: this.cmsContext,
             model,
             values: cleanedValues,
             entry: originalEntry,
             skipValidation: options?.skipValidation
         });
+        if (invalidFields.length > 0) {
+            return Result.fail(new EntryValidationError("Validation failed.", invalidFields));
+        }
 
         const mergedValues: TValues = {
             ...originalEntry.values,
@@ -74,13 +88,59 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
         const currentIdentity = this.identityContext.getIdentity();
         const currentDateTime = new Date();
 
+        /**
+         * Saving without changing the content (e.g. clicking "Save" without editing anything) is
+         * not a modification, so the saved/modified meta fields are kept. Entry-level values are
+         * then taken from the latest revision, because storage copies them onto the latest
+         * revision when a non-latest revision is updated. Revision-level values are this
+         * revision's own. Explicitly provided meta field values always take precedence.
+         */
+        const contentChanged = hasEntryContentChanged({
+            values,
+            baselineValues: originalEntry.values
+        });
+
+        const entryLevelSaved = contentChanged
+            ? {
+                  savedOn: currentDateTime,
+                  modifiedOn: currentDateTime,
+                  savedBy: currentIdentity,
+                  modifiedBy: currentIdentity
+              }
+            : {
+                  savedOn: latestEntry.savedOn,
+                  modifiedOn: latestEntry.modifiedOn,
+                  savedBy: latestEntry.savedBy,
+                  modifiedBy: latestEntry.modifiedBy
+              };
+
+        const revisionLevelSaved = contentChanged
+            ? {
+                  revisionSavedOn: currentDateTime,
+                  revisionModifiedOn: currentDateTime,
+                  revisionSavedBy: currentIdentity,
+                  revisionModifiedBy: currentIdentity
+              }
+            : {
+                  revisionSavedOn: originalEntry.revisionSavedOn,
+                  revisionModifiedOn: originalEntry.revisionModifiedOn,
+                  revisionSavedBy: originalEntry.revisionSavedBy,
+                  revisionModifiedBy: originalEntry.revisionModifiedBy
+              };
+
         const entry: CmsEntry<TValues> = {
             ...originalEntry,
             revisionCreatedOn: getDate(rawInput.revisionCreatedOn, originalEntry.revisionCreatedOn),
-            revisionModifiedOn: getDate(rawInput.revisionModifiedOn, currentDateTime),
-            revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
-            revisionDeletedOn: getDate(rawInput.revisionDeletedOn, null),
-            revisionRestoredOn: getDate(rawInput.revisionRestoredOn, null),
+            revisionModifiedOn: getDate(
+                rawInput.revisionModifiedOn,
+                revisionLevelSaved.revisionModifiedOn
+            ),
+            revisionSavedOn: getDate(rawInput.revisionSavedOn, revisionLevelSaved.revisionSavedOn),
+            revisionDeletedOn: getDate(rawInput.revisionDeletedOn, originalEntry.revisionDeletedOn),
+            revisionRestoredOn: getDate(
+                rawInput.revisionRestoredOn,
+                originalEntry.revisionRestoredOn
+            ),
             revisionFirstPublishedOn: getDate(
                 rawInput.revisionFirstPublishedOn,
                 originalEntry.revisionFirstPublishedOn
@@ -93,10 +153,22 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
                 rawInput.revisionCreatedBy,
                 originalEntry.revisionCreatedBy
             )!,
-            revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, currentIdentity),
-            revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity)!,
-            revisionDeletedBy: getIdentity(rawInput.revisionSavedBy, null),
-            revisionRestoredBy: getIdentity(rawInput.revisionRestoredBy, null),
+            revisionModifiedBy: getIdentity(
+                rawInput.revisionModifiedBy,
+                revisionLevelSaved.revisionModifiedBy
+            ),
+            revisionSavedBy: getIdentity(
+                rawInput.revisionSavedBy,
+                revisionLevelSaved.revisionSavedBy
+            )!,
+            revisionDeletedBy: getIdentity(
+                rawInput.revisionDeletedBy,
+                originalEntry.revisionDeletedBy
+            ),
+            revisionRestoredBy: getIdentity(
+                rawInput.revisionRestoredBy,
+                originalEntry.revisionRestoredBy
+            ),
             revisionFirstPublishedBy: getIdentity(
                 rawInput.revisionFirstPublishedBy,
                 originalEntry.revisionFirstPublishedBy
@@ -105,23 +177,20 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
                 rawInput.revisionLastPublishedBy,
                 originalEntry.revisionLastPublishedBy
             ),
-            createdOn: getDate(rawInput.createdOn, originalEntry.createdOn),
-            savedOn: getDate(rawInput.savedOn, currentDateTime),
-            modifiedOn: getDate(rawInput.modifiedOn, currentDateTime),
-            deletedOn: getDate(rawInput.deletedOn, null),
-            restoredOn: getDate(rawInput.restoredOn, null),
-            firstPublishedOn: getDate(rawInput.firstPublishedOn, originalEntry.firstPublishedOn),
-            lastPublishedOn: getDate(rawInput.lastPublishedOn, originalEntry.lastPublishedOn),
-            createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy)!,
-            savedBy: getIdentity(rawInput.savedBy, currentIdentity)!,
-            modifiedBy: getIdentity(rawInput.modifiedBy, currentIdentity),
-            deletedBy: getIdentity(rawInput.deletedBy, null),
-            restoredBy: getIdentity(rawInput.restoredBy, null),
-            firstPublishedBy: getIdentity(
-                rawInput.firstPublishedBy,
-                originalEntry.firstPublishedBy
-            ),
-            lastPublishedBy: getIdentity(rawInput.lastPublishedBy, originalEntry.lastPublishedBy),
+            createdOn: getDate(rawInput.createdOn, latestEntry.createdOn),
+            savedOn: getDate(rawInput.savedOn, entryLevelSaved.savedOn),
+            modifiedOn: getDate(rawInput.modifiedOn, entryLevelSaved.modifiedOn),
+            deletedOn: getDate(rawInput.deletedOn, latestEntry.deletedOn),
+            restoredOn: getDate(rawInput.restoredOn, latestEntry.restoredOn),
+            firstPublishedOn: getDate(rawInput.firstPublishedOn, latestEntry.firstPublishedOn),
+            lastPublishedOn: getDate(rawInput.lastPublishedOn, latestEntry.lastPublishedOn),
+            createdBy: getIdentity(rawInput.createdBy, latestEntry.createdBy)!,
+            savedBy: getIdentity(rawInput.savedBy, entryLevelSaved.savedBy)!,
+            modifiedBy: getIdentity(rawInput.modifiedBy, entryLevelSaved.modifiedBy),
+            deletedBy: getIdentity(rawInput.deletedBy, latestEntry.deletedBy),
+            restoredBy: getIdentity(rawInput.restoredBy, latestEntry.restoredBy),
+            firstPublishedBy: getIdentity(rawInput.firstPublishedBy, latestEntry.firstPublishedBy),
+            lastPublishedBy: getIdentity(rawInput.lastPublishedBy, latestEntry.lastPublishedBy),
             values,
             status: transformEntryStatus(originalEntry.status),
             system: getSystem({
@@ -139,18 +208,23 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
             };
         }
 
-        return {
+        return Result.ok({
             entry,
             input: {
                 ...rawInput,
                 values: structuredClone(values)
             }
-        };
+        });
     }
 }
 
 export const UpdateEntryDataFactory = createImplementation({
     abstraction: FactoryAbstraction,
     implementation: UpdateEntryDataFactoryImpl,
-    dependencies: [CmsContext, IdentityContext, ModelToAstConverter]
+    dependencies: [
+        CmsContext,
+        IdentityContext,
+        ModelToAstConverter,
+        GetLatestRevisionByEntryIdUseCase
+    ]
 });

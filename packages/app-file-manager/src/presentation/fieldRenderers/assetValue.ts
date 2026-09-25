@@ -5,7 +5,7 @@ import type { Asset, AssetImage } from "@webiny/sdk";
 export type { Asset, AssetImage };
 
 export const isImageAsset = (asset: Asset | null | undefined): boolean => {
-    return typeof asset?.type === "string" && asset.type.startsWith("image/");
+    return typeof asset?.mimeType === "string" && asset.mimeType.startsWith("image/");
 };
 
 export const hasAsset = (asset: Asset | null | undefined): boolean => {
@@ -43,7 +43,7 @@ export const fileItemToAsset = (file: FileManagerFileItem): Asset => {
         src,
         url: src,
         name: file.name,
-        type: file.type,
+        mimeType: file.type,
         size: file.size
     };
     if (typeof file.type === "string" && file.type.startsWith("image/")) {
@@ -65,6 +65,9 @@ export const fileItemToAsset = (file: FileManagerFileItem): Asset => {
             image.caption = meta.caption;
         }
         asset.image = image;
+        // Root dimensions mirror `image.*` for consumers that read them at the root.
+        asset.width = image.width;
+        asset.height = image.height;
         asset.url = buildAssetUrl(src, image.crop);
     }
     return asset;
@@ -88,12 +91,16 @@ export const assetImageToEditorValue = (
 
 export const applyImageEditToAsset = (asset: Asset, edit: ImageEditorValue): Asset => {
     const crop = edit.crop ?? undefined;
+    const width = asset.image?.width ?? asset.width;
+    const height = asset.image?.height ?? asset.height;
     return {
         ...asset,
         url: buildAssetUrl(asset.src, crop),
+        width,
+        height,
         image: {
-            width: asset.image?.width,
-            height: asset.image?.height,
+            width,
+            height,
             crop,
             focalPoint: edit.hotspot ? { x: edit.hotspot.x, y: edit.hotspot.y } : undefined,
             alt: edit.alt ?? undefined,

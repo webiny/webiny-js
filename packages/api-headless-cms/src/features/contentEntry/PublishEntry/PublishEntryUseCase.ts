@@ -5,7 +5,6 @@ import { PublishEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { PublishEntryRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
-import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import {
     EntryBeforePublishEvent,
@@ -20,7 +19,6 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: PublishEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
-        private getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
         private eventPublisher: EventPublisher.Interface,
         private createPublishEntryDataFactory: CreatePublishEntryDataFactory.Interface
     ) {}
@@ -52,21 +50,11 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        const latestResult = await this.getLatestRevision.execute<T>(model, {
-            id: originalEntry.entryId
-        });
-
-        if (latestResult.isFail()) {
-            return Result.fail(latestResult.error);
+        const dataResult = await this.createPublishEntryDataFactory.create<T>(model, originalEntry);
+        if (dataResult.isFail()) {
+            return Result.fail(dataResult.error);
         }
-
-        const latestEntry = latestResult.value;
-
-        const { entry } = await this.createPublishEntryDataFactory.create<T>(
-            model,
-            originalEntry,
-            latestEntry
-        );
+        const { entry } = dataResult.value;
 
         try {
             await this.eventPublisher.publish(
@@ -123,7 +111,6 @@ export const PublishEntryUseCase = createImplementation({
         PublishEntryRepository,
         AccessControl,
         GetRevisionByIdUseCase,
-        GetLatestRevisionByEntryIdUseCase,
         EventPublisher,
         CreatePublishEntryDataFactory
     ]

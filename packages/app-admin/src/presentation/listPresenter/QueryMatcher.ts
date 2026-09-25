@@ -3,9 +3,17 @@ import type { IDataSourceQuery } from "./abstractions.js";
 
 type ItemPredicate<TRow> = (item: TRow, value: unknown) => boolean;
 
+type SortValueGetter<TRow> = (item: TRow, field: string) => unknown;
+
 export interface QueryMatcherConfig<TRow> {
     keyField: keyof TRow & string;
     localFilters: Record<string, ItemPredicate<TRow>>;
+    /**
+     * Reads the value of a sort field from an item. Defaults to a dot-path lookup
+     * (e.g. `savedOn`, `values.title`). Override when the query's sort field name
+     * does not match the item's shape.
+     */
+    getSortValue?: SortValueGetter<TRow>;
 }
 
 /**
@@ -38,22 +46,36 @@ export interface QueryMatcherConfig<TRow> {
  * });
  *
  * // In DataSource.query(), after fetching:
- * matcher.updateFromQuery(params, result.data.map(item => item.id));
+ * matcher.updateFromQuery(params, result.data.map(item => item.id), result.meta.hasMoreItems);
  *
- * // In DataSource.rows getter:
- * return cache.getItems().filter(matcher.matcher);
+ * // In DataSource.rows getter (filters, sorts by the applied sort, and cuts off at the
+ * // last loaded item):
+ * return matcher.select(cache.getItems());
  * ```
  */
 export class QueryMatcher<TRow> {
     private _queryResultKeys: Set<string> | null = null;
     private _matcher: (item: TRow) => boolean = () => true;
     private localFilterKeys: Set<string>;
+    private getSortValue: SortValueGetter<TRow>;
+
+    // Ordering state of the current view: the keys the server returned for the active
+    // query (in server order, extended by `appendResultKeys`), the applied sort, and
+    // whether the server has more items beyond the loaded ones.
+    private _view: {
+        resultKeys: string[];
+        sort: IDataSourceQuery["sort"];
+        searching: boolean;
+        hasMore: boolean;
+    } | null = null;
 
     constructor(private config: QueryMatcherConfig<TRow>) {
         this.localFilterKeys = new Set(Object.keys(config.localFilters));
+        this.getSortValue = config.getSortValue ?? getValueByPath;
 
-        makeObservable<QueryMatcher<TRow>, "_matcher">(this, {
+        makeObservable<QueryMatcher<TRow>, "_matcher" | "_view">(this, {
             _matcher: observable.ref,
+            _view: observable.ref,
             matcher: computed,
             updateFromQuery: action,
             appendResultKeys: action
@@ -68,6 +90,64 @@ export class QueryMatcher<TRow> {
         return items.filter(this._matcher);
     }
 
+    /**
+     * Returns the items that belong in the current view, in the view's order.
+     *
+     * The cache is shared by views with different sorts, so its order means nothing to
+     * this view. Instead, matching items are sorted by the applied sort (ties keep the
+     * server order), and the result is cut off after the last item the server returned
+     * for this view. That keeps locally created or updated items in their sort position,
+     * and hides cached items that sort past the loaded pages until pagination reaches them.
+     *
+     * While searching, the server's (relevance) order is kept as is.
+     */
+    select(items: TRow[]): TRow[] {
+        const matched = this.filter(items);
+        const view = this._view;
+        if (!view) {
+            return matched;
+        }
+
+        const serverIndex = new Map(view.resultKeys.map((key, index) => [key, index]));
+        // Items the server did not return for this view (cached by other views, or created
+        // locally) sort after the server's items among equal sort values.
+        const indexOf = (item: TRow) =>
+            serverIndex.get(this.getKey(item)) ?? Number.POSITIVE_INFINITY;
+
+        const sort = view.searching ? undefined : view.sort;
+        const sorted = [...matched].sort((a, b) => {
+            if (sort) {
+                const result = compareValues(
+                    this.getSortValue(a, sort.field),
+                    this.getSortValue(b, sort.field)
+                );
+                if (result !== 0) {
+                    return sort.direction === "ASC" ? result : -result;
+                }
+            }
+            const left = indexOf(a);
+            const right = indexOf(b);
+            return left === right ? 0 : left < right ? -1 : 1;
+        });
+
+        if (!view.hasMore) {
+            return sorted;
+        }
+
+        let lastLoaded = -1;
+        sorted.forEach((item, index) => {
+            if (serverIndex.has(this.getKey(item))) {
+                lastLoaded = index;
+            }
+        });
+
+        return lastLoaded < 0 ? sorted : sorted.slice(0, lastLoaded + 1);
+    }
+
+    private getKey(item: TRow): string {
+        return String(item[this.config.keyField]);
+    }
+
     hasServerSideFilters(params: IDataSourceQuery): boolean {
         if (params.search) {
             return true;
@@ -76,20 +156,33 @@ export class QueryMatcher<TRow> {
         return Object.keys(filters).some(key => !this.localFilterKeys.has(key));
     }
 
-    updateFromQuery(params: IDataSourceQuery, resultKeys: string[]): void {
+    updateFromQuery(params: IDataSourceQuery, resultKeys: string[], hasMore = false): void {
         if (this.hasServerSideFilters(params)) {
             this._queryResultKeys = new Set(resultKeys);
         } else {
             this._queryResultKeys = null;
         }
         this._matcher = this.buildMatcher(params);
+        this._view = {
+            resultKeys: [...resultKeys],
+            sort: params.sort,
+            searching: !!params.search,
+            hasMore
+        };
     }
 
-    appendResultKeys(keys: string[]): void {
+    appendResultKeys(keys: string[], hasMore = false): void {
         if (this._queryResultKeys) {
             for (const key of keys) {
                 this._queryResultKeys.add(key);
             }
+        }
+        if (this._view) {
+            this._view = {
+                ...this._view,
+                resultKeys: [...this._view.resultKeys, ...keys],
+                hasMore
+            };
         }
     }
 
@@ -123,4 +216,43 @@ export class QueryMatcher<TRow> {
             return true;
         };
     }
+}
+
+function getValueByPath(item: unknown, path: string): unknown {
+    let current: unknown = item;
+    for (const part of path.split(".")) {
+        if (current === null || current === undefined || typeof current !== "object") {
+            return undefined;
+        }
+        current = (current as Record<string, unknown>)[part];
+    }
+    return current;
+}
+
+/**
+ * Compares two sort values in ascending order, the same way the DDB and SQL storage sort
+ * entries: `null` and `undefined` sort last (so first in descending order), and an empty
+ * string is a regular string. Strings are compared by code point, which keeps ISO dates in
+ * chronological order.
+ */
+function compareValues(a: unknown, b: unknown): number {
+    const aEmpty = a === null || a === undefined;
+    const bEmpty = b === null || b === undefined;
+    if (aEmpty || bEmpty) {
+        return aEmpty === bEmpty ? 0 : aEmpty ? 1 : -1;
+    }
+
+    const left = a instanceof Date ? a.getTime() : a;
+    const right = b instanceof Date ? b.getTime() : b;
+
+    if (typeof left === "number" && typeof right === "number") {
+        return left - right;
+    }
+    if (typeof left === "boolean" && typeof right === "boolean") {
+        return Number(left) - Number(right);
+    }
+
+    const leftString = String(left);
+    const rightString = String(right);
+    return leftString < rightString ? -1 : leftString > rightString ? 1 : 0;
 }

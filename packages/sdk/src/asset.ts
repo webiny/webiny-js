@@ -33,8 +33,14 @@ export interface Asset {
     src: string;
     url: string;
     name: string;
-    type: string;
+    mimeType: string;
     size: number;
+    /**
+     * Intrinsic image dimensions, the same values as `image.width` and `image.height`.
+     * Kept at the root because 6.4 frontends read them there. New code should read `image.*`.
+     */
+    width?: number;
+    height?: number;
     image?: AssetImage;
     document?: AssetDocument;
     video?: AssetVideo;

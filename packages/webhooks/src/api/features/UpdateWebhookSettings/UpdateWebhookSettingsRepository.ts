@@ -55,7 +55,7 @@ class UpdateWebhookSettingsRepositoryImpl implements RepositoryAbstraction.Inter
                 return Result.fail(WebhookPersistenceError.from(entryResult.error));
             }
 
-            const { entry } = await this.updateEntryDataFactory.create<WebhookSettingsValues>(
+            const dataResult = await this.updateEntryDataFactory.create<WebhookSettingsValues>(
                 model,
                 {
                     values: {
@@ -65,6 +65,10 @@ class UpdateWebhookSettingsRepositoryImpl implements RepositoryAbstraction.Inter
                 },
                 entryResult.value
             );
+            if (dataResult.isFail()) {
+                return Result.fail(WebhookPersistenceError.from(dataResult.error));
+            }
+            const { entry } = dataResult.value;
 
             const updateResult = await this.updateEntryRepository.execute(model, entry);
             if (updateResult.isFail()) {
