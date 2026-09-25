@@ -63,6 +63,24 @@ export const isNonContentText = (text: string): boolean =>
  * page will put it.
  */
 /**
+ * The model writes the page's text into a string literal, so where the page has a curly apostrophe
+ * or a line break, the source has a six-character unicode escape or a two-character newline escape.
+ * Comparing a fragment against the raw source therefore misses text the component demonstrably
+ * contains, and misses it on one character: a freehill privacy-policy fragment matched 704 of its 704
+ * characters once decoded.
+ *
+ * Only the two escapes measured to occur are decoded. Folding curly quotes to ASCII was measured
+ * alongside this and changed nothing, so it is deliberately left out.
+ *
+ * This runs after the strips below, not before: their regexes match string literals with
+ * `(?:[^"\\]|\\.)*`, which relies on a quote inside a literal still being escaped.
+ */
+const decodeStringEscapes = (source: string): string =>
+    source
+        .replace(/\\u([0-9a-fA-F]{4})/g, (_, hex: string) => String.fromCharCode(parseInt(hex, 16)))
+        .replace(/\\n/g, " ");
+
+/**
  * The component's source with everything that can never reach the page removed: comments, the
  * `description` shown to an editor beside an input, and the `aiContext` blurb.
  *
@@ -72,11 +90,13 @@ export const isNonContentText = (text: string): boolean =>
  * exist only in comments and descriptions.
  */
 const renderableSource = (source: string): string =>
-    source
-        .replace(/\/\*[\s\S]*?\*\//g, " ")
-        .replace(/\/\/[^\n]*/g, " ")
-        .replace(/description:\s*"(?:[^"\\]|\\.)*"/g, " ")
-        .replace(/aiContext:\s*"(?:[^"\\]|\\.)*"/g, " ");
+    decodeStringEscapes(
+        source
+            .replace(/\/\*[\s\S]*?\*\//g, " ")
+            .replace(/\/\/[^\n]*/g, " ")
+            .replace(/description:\s*"(?:[^"\\]|\\.)*"/g, " ")
+            .replace(/aiContext:\s*"(?:[^"\\]|\\.)*"/g, " ")
+    );
 
 export const validateTextPreservation = (
     sourceTexts: string[],
@@ -84,8 +104,21 @@ export const validateTextPreservation = (
     renderedValues: string[] = [],
     source = ""
 ): ValidationResult => {
-    const haystack = normalise(renderedText);
-    const haystackWords = words(renderedText);
+    /*
+     * Both lists come out of a stored artifact, and an artifact held in DynamoDB cannot round-trip an
+     * empty string: `convertEmptyValues: true` is set for every document client
+     * (aws-sdk/client-dynamodb/getDocumentClient.ts) and is deliberately not configurable, so `""`
+     * comes back as `null`. A model writing an empty observed value for an optional field — a logo
+     * link with no label, say — is therefore enough to hand this function a null.
+     *
+     * Generate calls it outside any try/catch, so an unguarded null is an uncaught TypeError that
+     * fails the stage rather than the component. One such value exists in a stored parkcityplace plan.
+     */
+    const texts = sourceTexts.filter((text): text is string => typeof text === "string");
+    const values = renderedValues.filter((value): value is string => typeof value === "string");
+
+    const haystack = normalise(renderedText ?? "");
+    const haystackWords = words(renderedText ?? "");
 
     /*
      * A single render exercises a single branch. Tabs, filters, empty states and rows beyond the
@@ -101,7 +134,7 @@ export const validateTextPreservation = (
     const renderable = normalise(renderableSource(source));
 
     // Only values the component actually rendered can account for a fragment.
-    const rendered = renderedValues
+    const rendered = values
         .map(words)
         .filter(value => value.length > 2 && haystackWords.includes(value))
         .sort((a, b) => b.length - a.length);
@@ -122,7 +155,7 @@ export const validateTextPreservation = (
         return false;
     };
 
-    const failures = sourceTexts
+    const failures = texts
         .filter(text => {
             if (!text.trim() || isNonContentText(text)) {
                 return false;

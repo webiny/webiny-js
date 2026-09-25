@@ -22,6 +22,46 @@ describe("validateTextPreservation", () => {
         expect(result.passed).toBe(false);
         expect(result.failures[0]).toContain("Join thousands of teams");
     });
+
+    it("matches source text the model wrote with unicode and newline escapes", () => {
+        // A model writes the page's text into a string literal, so a curly apostrophe arrives as
+        // ’ and a line break as \n. The fragment still has the real characters.
+        const source = `const BODY = "you\\u2019ll be close to work,\\nshopping and more";
+            export default function C() { return BODY; }`;
+        const result = validateTextPreservation(
+            ["you’ll be close to work, shopping and more"],
+            "",
+            [],
+            source
+        );
+        expect(result.passed).toBe(true);
+    });
+
+    it("survives a null observed value, which DynamoDB returns for an empty string", () => {
+        // convertEmptyValues is on for every document client, so "" is stored as NULL and read back
+        // as null. Generate calls this outside a try/catch, so an unguarded null fails the stage.
+        const run = () =>
+            validateTextPreservation(
+                ["Ready to get started?"],
+                "<h2>Ready to get started?</h2>",
+                [null as unknown as string, "Ready to get started?"],
+                ""
+            );
+        expect(run).not.toThrow();
+        expect(run().passed).toBe(true);
+    });
+
+    it("still fails text that is absent, escapes decoded or not", () => {
+        const source = `const BODY = "you\\u2019ll be close to work";
+            export default function C() { return BODY; }`;
+        const result = validateTextPreservation(
+            ["an entirely different paragraph"],
+            "",
+            [],
+            source
+        );
+        expect(result.passed).toBe(false);
+    });
 });
 
 describe("validateContractConformance", () => {
