@@ -26,14 +26,29 @@ export class CodeFlpMerger {
             return flp;
         }
 
-        const codeTargets = new Set(codePermissions.map(permission => permission.target));
-
         return {
             ...flp,
-            permissions: [
-                ...codePermissions,
-                ...flp.permissions.filter(permission => !codeTargets.has(permission.target))
-            ]
+            permissions: CodeFlpMerger.mergePermissions(flp.permissions, codePermissions)
         };
+    }
+
+    /**
+     * The same merge, for callers that hold a plain permission list rather than a stored FLP record
+     * — the write paths, which resolve code permissions from the folder's own type and path.
+     */
+    static mergePermissions(
+        permissions: FolderPermission[],
+        codePermissions: FolderPermission[]
+    ): FolderPermission[] {
+        if (!codePermissions.length) {
+            return permissions;
+        }
+
+        const codeTargets = new Set(codePermissions.map(permission => permission.target));
+
+        return [
+            ...codePermissions,
+            ...permissions.filter(permission => !codeTargets.has(permission.target))
+        ];
     }
 }

@@ -235,4 +235,149 @@ describe("Folder Level Permissions - code-defined FLPs", () => {
         // Exactly one code-defined permission, still marked as such — not duplicated, not stored.
         expect(after.permissions.filter((p: Record<string, unknown>) => p.plugin)).toHaveLength(1);
     });
+    it("should include code-defined permissions in the createFolder response", async () => {
+        // Regression: the create path used to compute permissions straight from the submitted
+        // folder, so the mutation response omitted code-defined ones until something refetched.
+        const folderA = await createFolder({
+            title: "Folder A",
+            slug: "folder-a",
+            type: FOLDER_TYPE
+        });
+
+        expect(folderA.permissions).toEqual(
+            expect.arrayContaining([
+                { target: "team:editors", level: "editor", inheritedFrom: null, plugin: true }
+            ])
+        );
+    });
+
+    it("should include code-defined permissions in the updateFolder response", async () => {
+        const folderA = await createFolder({
+            title: "Folder A",
+            slug: "folder-a",
+            type: FOLDER_TYPE
+        });
+
+        const [response] = await acoIdentityA.updateFolder({
+            id: folderA.id,
+            data: { title: "Folder A renamed" }
+        });
+
+        const { data, error } = response.data.aco.updateFolder;
+        expect(error).toBeNull();
+        expect(data.permissions).toEqual(
+            expect.arrayContaining([
+                { target: "team:editors", level: "editor", inheritedFrom: null, plugin: true }
+            ])
+        );
+    });
+
+    it("should re-resolve code-defined permissions when a folder moves into a rule's path", async () => {
+        // No rule matches "/folder-unmatched".
+        const folder = await createFolder({
+            title: "Folder Unmatched",
+            slug: "folder-unmatched",
+            type: FOLDER_TYPE
+        });
+
+        expect(folder.permissions).not.toEqual(
+            expect.arrayContaining([expect.objectContaining({ plugin: true })])
+        );
+
+        // Renaming it onto "/folder-a" brings it under that rule, and the response has to reflect
+        // the folder's new path rather than the one it had on the way in.
+        const [response] = await acoIdentityA.updateFolder({
+            id: folder.id,
+            data: { slug: "folder-a" }
+        });
+
+        const { data, error } = response.data.aco.updateFolder;
+        expect(error).toBeNull();
+        expect(data.permissions).toEqual(
+            expect.arrayContaining([
+                { target: "team:editors", level: "editor", inheritedFrom: null, plugin: true }
+            ])
+        );
+    });
+    // A stored permission for someone else, so the list the Admin UI sends back with every update is
+    // not empty. An empty list makes the folder public, which would pass the access guard anyway.
+    const OTHER_STORED = [{ target: "admin:999", level: "viewer" }];
+
+    it("should let a user whose only access is a code rule rename the folder", async () => {
+        const folderA = await createFolder({
+            title: "Folder A",
+            slug: "folder-a",
+            type: FOLDER_TYPE
+        });
+        await acoIdentityA.updateFolder({ id: folderA.id, data: { permissions: OTHER_STORED } });
+
+        // Identity B's only access is the code rule on "/folder-a". A title change keeps the path, so
+        // the rule still applies after the save and the guard must not claim B loses access.
+        const [response] = await acoIdentityB.updateFolder({
+            id: folderA.id,
+            data: { title: "Folder A renamed", permissions: OTHER_STORED }
+        });
+
+        expect(response.data.aco.updateFolder.error).toBeNull();
+
+        const { data } = await getFolder(acoIdentityB, folderA.id);
+        expect(data).toMatchObject({ title: "Folder A renamed" });
+    });
+
+    it("should refuse a slug change that takes the folder out of the user's only code rule", async () => {
+        const folderA = await createFolder({
+            title: "Folder A",
+            slug: "folder-a",
+            type: FOLDER_TYPE
+        });
+        await acoIdentityA.updateFolder({ id: folderA.id, data: { permissions: OTHER_STORED } });
+
+        // The rule matches "/folder-a" exactly. Moving the folder to "/folder-b" would leave identity B
+        // with no access, which is what the guard exists to prevent.
+        const [response] = await acoIdentityB.updateFolder({
+            id: folderA.id,
+            data: { slug: "folder-b", permissions: OTHER_STORED }
+        });
+
+        expect(response.data.aco.updateFolder.error).toMatchObject({
+            message: "Cannot continue because you would loose access to this folder."
+        });
+
+        const { data } = await getFolder(acoIdentityB, folderA.id);
+        expect(data).toMatchObject({ slug: "folder-a", path: "root/folder-a" });
+    });
+});
+
+describe("Folder Level Permissions - no FlpFactory registered", () => {
+    // Only the team factory: nothing contributes code-defined FLPs.
+    const { aco } = useGraphQlHandler({
+        identity: identityA,
+        plugins: [
+            (container: Container) => {
+                container.registerInstance(TeamFactory, new TestTeamFactory());
+            }
+        ]
+    });
+
+    it("should leave folder permissions untouched on create and update", async () => {
+        const [createResponse] = await aco.createFolder({
+            data: { title: "Folder A", slug: "folder-a", type: FOLDER_TYPE }
+        });
+
+        const created = createResponse.data.aco.createFolder.data;
+        expect(created.permissions).not.toEqual(
+            expect.arrayContaining([expect.objectContaining({ plugin: true })])
+        );
+
+        const [updateResponse] = await aco.updateFolder({
+            id: created.id,
+            data: { title: "Folder A renamed" }
+        });
+
+        const { data, error } = updateResponse.data.aco.updateFolder;
+        expect(error).toBeNull();
+        expect(data.permissions).not.toEqual(
+            expect.arrayContaining([expect.objectContaining({ plugin: true })])
+        );
+    });
 });
