@@ -10492,7 +10492,7 @@ __metadata:
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.11"
   peerDependencies:
-    "@webiny/di": ">=0.2.3"
+    "@webiny/di": ^1.1.0
   languageName: unknown
   linkType: soft
 
@@ -10513,7 +10513,7 @@ __metadata:
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.11"
   peerDependencies:
-    "@webiny/di": ">=0.2.3"
+    "@webiny/di": ^1.1.0
   languageName: unknown
   linkType: soft
 
@@ -10541,7 +10541,7 @@ __metadata:
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.11"
   peerDependencies:
-    "@webiny/di": ">=0.2.3"
+    "@webiny/di": ^1.1.0
   languageName: unknown
   linkType: soft
 
@@ -10577,7 +10577,7 @@ __metadata:
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.11"
   peerDependencies:
-    "@webiny/di": ">=0.2.3"
+    "@webiny/di": ^1.1.0
   languageName: unknown
   linkType: soft
 
@@ -10629,7 +10629,7 @@ __metadata:
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.11"
   peerDependencies:
-    "@webiny/di": ">=0.2.3"
+    "@webiny/di": ^1.1.0
   languageName: unknown
   linkType: soft
 
@@ -10811,7 +10811,7 @@ __metadata:
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.11"
   peerDependencies:
-    "@webiny/di": ">=0.2.3"
+    "@webiny/di": ^1.1.0
   languageName: unknown
   linkType: soft
 
@@ -12725,7 +12725,7 @@ __metadata:
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.11"
   peerDependencies:
-    "@webiny/di": ^1.0.2
+    "@webiny/di": ^1.1.0
   languageName: unknown
   linkType: soft
 
@@ -12756,7 +12756,7 @@ __metadata:
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.11"
   peerDependencies:
-    "@webiny/di": ^1.0.2
+    "@webiny/di": ^1.1.0
   languageName: unknown
   linkType: soft
 
@@ -13448,7 +13448,7 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.2"
+    "@webiny/di": "npm:^1.1.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
