@@ -29,6 +29,7 @@ import { ContentEntryTraverserFeature } from "./ContentEntryTraverser/feature.js
 import { UpdateRevisionFeature } from "./UpdateRevision/feature.js";
 import { UpdateRevisionDescriptionFeature } from "./UpdateRevisionDescription/feature.js";
 import { EntryDataFactoriesFeature } from "./entryDataFactories/EntryDataFactoriesFeature.js";
+import { EntryEventPublisherFeature } from "./EntryEventPublisher/feature.js";
 import { RuntimeTenant } from "../runtimeTenant/RuntimeTenant.js";
 
 export const ContentEntriesFeature = createFeature({
@@ -36,6 +37,7 @@ export const ContentEntriesFeature = createFeature({
     register(container) {
         container.register(RuntimeTenant);
         EntryDataFactoriesFeature.register(container);
+        EntryEventPublisherFeature.register(container);
         // Query features
         GetRevisionByIdFeature.register(container);
         GetEntriesByIdsFeature.register(container);

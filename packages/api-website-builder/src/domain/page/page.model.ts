@@ -6,7 +6,8 @@ class PageModelFactory implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
         const model = builder.private({
             modelId: PAGE_MODEL_ID,
-            name: "Website Builder - Page"
+            name: "Website Builder - Page",
+            lifecycleEvents: false
         });
 
         model.fields(fields => ({

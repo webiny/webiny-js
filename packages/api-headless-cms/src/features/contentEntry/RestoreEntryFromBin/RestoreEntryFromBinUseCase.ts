@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import { RestoreEntryFromBinUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { RestoreEntryFromBinRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -35,7 +35,7 @@ class RestoreEntryFromBinUseCaseImpl implements UseCaseAbstraction.Interface {
         private accessControl: AccessControl.Interface,
         private getDeletedEntry: GetLatestDeletedRevisionByEntryIdUseCase.Interface,
         private identityContext: IdentityContext.Interface,
-        private eventPublisher: EventPublisher.Interface
+        private eventPublisher: EntryEventPublisher.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -146,6 +146,6 @@ export const RestoreEntryFromBinUseCase = createImplementation({
         AccessControl,
         GetLatestDeletedRevisionByEntryIdUseCase,
         IdentityContext,
-        EventPublisher
+        EntryEventPublisher
     ]
 });
