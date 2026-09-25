@@ -13,6 +13,20 @@ import type { AiCapability } from "~/admin/features/listCapabilities/abstraction
 import type { FormModel, FormModelFactory } from "@webiny/app-admin";
 
 /**
+ * Absent means enabled, exactly as it does in storage and in the resolver.
+ *
+ * The form seeds an untouched switch to `true`, so in practice this only reads `false` after someone
+ * flips one. Spelled `!== false` anyway, so it keeps agreeing with the other two if that default
+ * ever goes away.
+ */
+function isEnabled(form: FormModel.Interface, capabilityId: string): boolean {
+    const data = form.getData() as {
+        capabilities?: { items?: Record<string, { enabled?: boolean }> };
+    };
+    return data.capabilities?.items?.[capabilityId]?.enabled !== false;
+}
+
+/**
  * One row per AI feature, all of them empty by default.
  *
  * The rows come from the api's registered capabilities, so a feature that declares one appears here
@@ -50,7 +64,7 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
 
     buildForm(form: AiPowerUpsSettingsGroup.FormBuilder): void {
         form.fields(fields => ({
-            overrides: fields
+            items: fields
                 .object()
                 .label("Capabilities")
                 .renderer("passthrough")
@@ -64,7 +78,7 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                 )
         }));
 
-        form.layout(layout => [layout.row("overrides")]);
+        form.layout(layout => [layout.row("items")]);
     }
 
     private buildCapabilityField(
@@ -91,56 +105,94 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                 })
                 .fields(cf => ({
                     /*
-                     * The inherited role goes in the description, not in the option list. An option
-                     * with an empty value is dropped by the select renderer, so the "Inherit (Fast)"
-                     * entry never rendered and nothing said which role this feature falls back to.
-                     * Clearing the field is done with the select's own reset control.
+                     * On unless someone turns it off. A licence that grants a capability enables it
+                     * immediately, so nobody has to come here and opt in; the only thing this
+                     * records is a decision to switch one off.
                      */
-                    roleId: cf
-                        .text()
-                        .label("Model role")
+                    enabled: cf
+                        .boolean()
+                        .label("Enabled")
+                        /*
+                         * On unless storage explicitly says otherwise. Nothing is written down for a
+                         * capability a licence enabled, so the stored value is absent, and a switch
+                         * renders absent as off. Without this default every untouched capability
+                         * shows as disabled while actually running, which is the same `undefined`
+                         * confusion the storage side guards against, seen from the front.
+                         */
+                        .defaultValue(true)
                         .description(
-                            `Which role supplies this feature's model. Left empty, it uses ${defaultRoleLabel}.`
-                        )
-                        .options(() =>
-                            AI_MODEL_ROLE_DISPLAY.map(role => ({
-                                label: role.label,
-                                value: role.id
-                            }))
+                            "Turn this off to remove the feature from the app. The settings below are kept, but ignored, while it is off."
                         ),
 
-                    /*
-                     * Pinning a model bypasses roles for this one feature. It is the escape hatch, not
-                     * the mechanism: a project that pins everything has thrown away the indirection
-                     * that makes "switch our cheap model" a single edit.
-                     */
-                    connectionId: cf
-                        .text()
-                        .label("Pin a connection")
-                        .description("Advanced. Overrides the role above for this feature only.")
-                        .options(({ form }) => [
-                            { label: "Use the role's connection", value: "" },
-                            ...this.getConnections(form).map(c => ({ label: c.name, value: c.id }))
-                        ]),
-                    model: cf
-                        .text()
-                        .label("Pin a model")
-                        .disabledWhen(({ form }) => !this.getPinnedConnection(form, capability.id))
-                        .description(
-                            "Both the connection and the model must be set for a pin to apply."
-                        )
-                        .options(({ form }) => this.getModelOptions(form, capability.id)),
+                    overrides: cf
+                        .object()
+                        .label("Overrides")
+                        .renderer("passthrough")
+                        .fields(of => ({
+                            /*
+                             * The inherited role goes in the description, not in the option list. An option
+                             * with an empty value is dropped by the select renderer, so the "Inherit (Fast)"
+                             * entry never rendered and nothing said which role this feature falls back to.
+                             * Clearing the field is done with the select's own reset control.
+                             */
+                            roleId: of
+                                .text()
+                                .label("Model role")
+                                .disabledWhen(({ form }) => !isEnabled(form, capability.id))
+                                .description(
+                                    `Which role supplies this feature's model. Left empty, it uses ${defaultRoleLabel}.`
+                                )
+                                .options(() =>
+                                    AI_MODEL_ROLE_DISPLAY.map(role => ({
+                                        label: role.label,
+                                        value: role.id
+                                    }))
+                                ),
 
-                    additionalInstructions: cf
-                        .text()
-                        .label("Additional instructions")
-                        .renderer("textarea", { rows: 5 })
-                        .description(
-                            "Appended to this feature's prompt. Use this for house style and standing rules."
-                        )
-                        .note(
-                            "Appending keeps Webiny's prompt in place, including the output format the feature depends on."
-                        )
+                            /*
+                             * Pinning a model bypasses roles for this one feature. It is the escape hatch, not
+                             * the mechanism: a project that pins everything has thrown away the indirection
+                             * that makes "switch our cheap model" a single edit.
+                             */
+                            connectionId: of
+                                .text()
+                                .label("Pin a connection")
+                                .disabledWhen(({ form }) => !isEnabled(form, capability.id))
+                                .description(
+                                    "Advanced. Overrides the role above for this feature only."
+                                )
+                                .options(({ form }) => [
+                                    { label: "Use the role's connection", value: "" },
+                                    ...this.getConnections(form).map(c => ({
+                                        label: c.name,
+                                        value: c.id
+                                    }))
+                                ]),
+                            model: of
+                                .text()
+                                .label("Pin a model")
+                                .disabledWhen(
+                                    ({ form }) =>
+                                        !isEnabled(form, capability.id) ||
+                                        !this.getPinnedConnection(form, capability.id)
+                                )
+                                .description(
+                                    "Both the connection and the model must be set for a pin to apply."
+                                )
+                                .options(({ form }) => this.getModelOptions(form, capability.id)),
+
+                            additionalInstructions: of
+                                .text()
+                                .label("Additional instructions")
+                                .renderer("textarea", { rows: 5 })
+                                .disabledWhen(({ form }) => !isEnabled(form, capability.id))
+                                .description(
+                                    "Appended to this feature's prompt. Use this for house style and standing rules."
+                                )
+                                .note(
+                                    "Appending keeps Webiny's prompt in place, including the output format the feature depends on."
+                                )
+                        }))
                 }))
         );
     }
@@ -157,9 +209,9 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
         capabilityId: string
     ): { connectionId?: string } {
         const data = form.getData() as {
-            capabilities?: { overrides?: Record<string, { connectionId?: string }> };
+            capabilities?: { items?: Record<string, { overrides?: { connectionId?: string } }> };
         };
-        return data.capabilities?.overrides?.[capabilityId] ?? {};
+        return data.capabilities?.items?.[capabilityId]?.overrides ?? {};
     }
 
     private getPinnedConnection(

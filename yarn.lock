@@ -8832,18 +8832,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsdom@npm:^30.0.0":
-  version: 30.0.0
-  resolution: "@types/jsdom@npm:30.0.0"
-  dependencies:
-    "@types/node": "npm:*"
-    "@types/tough-cookie": "npm:*"
-    parse5: "npm:^8.0.0"
-    undici-types: "npm:^8.9.0"
-  checksum: 10/f430fe309267733e6df8fecdc9724ffd035cee2da21f504e21cf6e879fb91796b56b96794bdec5e134cdb025be63292e258dca25fe7059861b60542b220a86f5
-  languageName: node
-  linkType: hard
-
 "@types/json-schema@npm:^7.0.15, @types/json-schema@npm:^7.0.8, @types/json-schema@npm:^7.0.9":
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
@@ -9023,6 +9011,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-reconciler@npm:0.28.9":
+  version: 0.28.9
+  resolution: "@types/react-reconciler@npm:0.28.9"
+  peerDependencies:
+    "@types/react": "*"
+  checksum: 10/2450e3df6169fb887591f2a949ca8f08439ac76c756124feeee7370f1a79b5060ba8e5f612302dc70169433e043da7f617dd7ea3b14a3c2bb39559d66b7a0986
+  languageName: node
+  linkType: hard
+
 "@types/react-resizable@npm:^4.0.0":
   version: 4.0.0
   resolution: "@types/react-resizable@npm:4.0.0"
@@ -9150,13 +9147,6 @@ __metadata:
   version: 0.2.6
   resolution: "@types/tmp@npm:0.2.6"
   checksum: 10/e14a094c10569d3b56805552b21417860ef21060d969000d5d5b53604a78c2bdac216f064b03797d4b07a081e0141dd3ab22bc36923e75300eb1c023f7252cc7
-  languageName: node
-  linkType: hard
-
-"@types/tough-cookie@npm:*":
-  version: 4.0.5
-  resolution: "@types/tough-cookie@npm:4.0.5"
-  checksum: 10/01fd82efc8202670865928629697b62fe9bf0c0dcbc5b1c115831caeb073a2c0abb871ff393d7df1ae94ea41e256cb87d2a5a91fd03cdb1b0b4384e08d4ee482
   languageName: node
   linkType: hard
 
@@ -10223,27 +10213,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/ai-chat@npm:0.0.0, @webiny/ai-chat@workspace:packages/ai-chat":
-  version: 0.0.0-use.local
-  resolution: "@webiny/ai-chat@workspace:packages/ai-chat"
-  dependencies:
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.2"
-    "@webiny/event-handler-core": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    ai: "npm:^7.0.73"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^4.1.11"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/ai-powerups@npm:0.0.0, @webiny/ai-powerups@workspace:packages/ai-powerups":
   version: 0.0.0-use.local
   resolution: "@webiny/ai-powerups@workspace:packages/ai-powerups"
   dependencies:
     "@webiny/admin-ui": "npm:0.0.0"
-    "@webiny/ai-chat": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
@@ -10575,7 +10549,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-event-handler-core@workspace:packages/api-event-handler-core"
   dependencies:
-    "@webiny/ai-chat": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
@@ -12456,6 +12429,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/bug-reporter@npm:0.0.0, @webiny/bug-reporter@workspace:packages/bug-reporter":
+  version: 0.0.0-use.local
+  resolution: "@webiny/bug-reporter@workspace:packages/bug-reporter"
+  dependencies:
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/icons": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
+    mobx: "npm:^7.0.3"
+    react: "npm:18.3.1"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.11"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/build-tools@npm:0.0.0, @webiny/build-tools@workspace:packages/build-tools":
   version: 0.0.0-use.local
   resolution: "@webiny/build-tools@workspace:packages/build-tools"
@@ -12563,6 +12557,7 @@ __metadata:
     "@webiny/di": "npm:^1.1.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-standalone": "npm:0.0.0"
+    "@webiny/system-requirements": "npm:0.0.0"
     chalk: "npm:^6.0.0"
     tsx: "npm:4.23.12"
     typescript: "npm:^7.0.2"
@@ -12813,7 +12808,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/global-config@workspace:packages/global-config"
   dependencies:
-    "@webiny/stdlib": "npm:^0.0.17"
     ci-info: "npm:^4.4.0"
     load-json-file: "npm:^7.0.1"
     write-json-file: "npm:^7.0.0"
@@ -13195,6 +13189,7 @@ __metadata:
   resolution: "@webiny/project-template-base@workspace:packages/project-template-base"
   dependencies:
     "@webiny/ai-powerups": "npm:0.0.0"
+    "@webiny/bug-reporter": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/languages": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
@@ -13210,8 +13205,8 @@ __metadata:
   dependencies:
     "@types/debounce": "npm:^1.2.4"
     "@types/humanize-duration": "npm:^3.27.4"
-    "@types/jsdom": "npm:^30.0.0"
     "@types/lodash": "npm:^4.17.25"
+    "@types/react-reconciler": "npm:0.28.9"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.1.0"
     "@webiny/feature-flags": "npm:0.0.0"
@@ -13235,7 +13230,6 @@ __metadata:
     get-tsconfig: "npm:^4.14.3"
     graphql-request: "npm:^7.4.0"
     humanize-duration: "npm:3.34.1"
-    jsdom: "npm:^30.0.1"
     load-json-file: "npm:^7.0.1"
     lodash: "npm:^4.18.1"
     minimatch: "npm:^10.2.6"
@@ -13246,13 +13240,14 @@ __metadata:
     pino: "npm:^10.3.1"
     pino-pretty: "npm:^13.1.3"
     react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
+    react-reconciler: "npm:0.29.2"
     rimraf: "npm:^6.1.3"
     serialize-error: "npm:^13.0.1"
     ts-morph: "npm:^28.0.0"
     tsx: "npm:4.23.12"
     type-fest: "npm:^5.8.0"
     typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.11"
     wrap-ansi: "npm:9.0.2"
     write-json-file: "npm:^7.0.0"
     zod: "npm:4.4.3"
@@ -22715,7 +22710,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"parse5@npm:^8.0.0, parse5@npm:^8.0.1":
+"parse5@npm:^8.0.1":
   version: 8.0.1
   resolution: "parse5@npm:8.0.1"
   dependencies:
@@ -23949,6 +23944,18 @@ __metadata:
   version: 3.0.4
   resolution: "react-lifecycles-compat@npm:3.0.4"
   checksum: 10/c66b9c98c15cd6b0d0a4402df5f665e8cc7562fb7033c34508865bea51fd7b623f7139b5b7e708515d3cd665f264a6a9403e1fa7e6d61a05759066f5e9f07783
+  languageName: node
+  linkType: hard
+
+"react-reconciler@npm:0.29.2":
+  version: 0.29.2
+  resolution: "react-reconciler@npm:0.29.2"
+  dependencies:
+    loose-envify: "npm:^1.1.0"
+    scheduler: "npm:^0.23.2"
+  peerDependencies:
+    react: ^18.3.1
+  checksum: 10/f9ef98a88ec07efaf520ce4508bc4f499cfbec6c929549b4b802a09c2c7cd1b7b893f197ab0505dc03398a991b4f57d7b6572ae53d2699db74496cadde541cfc
   languageName: node
   linkType: hard
 
@@ -26988,13 +26995,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:^8.9.0":
-  version: 8.10.0
-  resolution: "undici-types@npm:8.10.0"
-  checksum: 10/eae2070aa650bb2ce972c621ffc8a3d627670620233ba978d211ececb64c7d07597d11b6028a3058bc205421de98e858d9809d22eff30df1bc915755c43c118a
-  languageName: node
-  linkType: hard
-
 "undici-types@npm:~7.18.0":
   version: 7.18.2
   resolution: "undici-types@npm:7.18.2"
@@ -27650,6 +27650,7 @@ __metadata:
     "@webiny/app-website-builder": "npm:0.0.0"
     "@webiny/app-websockets": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
+    "@webiny/bug-reporter": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
     "@webiny/db": "npm:0.0.0"

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Command } from "cmdk";
 import {
-    AiChatFeature,
+    AdminAssistantFeature,
     CommandPaletteFeature,
     createReactiveComponent,
     useAdminConfig,
@@ -57,8 +57,8 @@ const CommandPaletteBase = () => {
      * assistant needs lives in `createAiMode` rather than here. A second mode turns this into a
      * registry; nothing above this line has to change for that.
      */
-    const { presenter: aiChat } = useFeature(AiChatFeature);
-    const aiMode = useMemo(() => createAiMode(aiChat), [aiChat]);
+    const { presenter: assistant } = useFeature(AdminAssistantFeature);
+    const aiMode = useMemo(() => createAiMode(assistant), [assistant]);
 
     /*
      * The assistant is licensed separately, and the api registers no route without it. Checked here

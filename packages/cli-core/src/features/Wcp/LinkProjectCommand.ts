@@ -1,5 +1,4 @@
 import { createImplementation } from "@webiny/di";
-import inquirer from "inquirer";
 import { CliCommandFactory, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import { setTimeout } from "node:timers/promises";
 
@@ -21,6 +20,11 @@ export class LinkProjectCommand implements CliCommandFactory.Interface<void> {
             description: "Link a Webiny project with Webiny Control Panel",
             examples: ["$0 link-project"],
             handler: async () => {
+                // Imported here rather than at the top of the file. The CLI imports every command's
+                // code on every run, even `webiny --help`, and inquirer with its dependencies is about
+                // 60 modules that only this command's prompts ever need.
+                const { default: inquirer } = await import("inquirer");
+
                 const user = await wcp.getUser();
 
                 if (!user) {

@@ -163,7 +163,7 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
 
         /*
          * The assistant shipped ungated: it had no accessor, no LICENSE_CHECKS entry, and no flag
-         * check anywhere in `@webiny/ai-chat`, so every project got it regardless of license.
+         * check anywhere in the chat feature, so every project got it regardless of license.
          */
         it("governs the admin assistant, which shipped ungated", () => {
             const licensed = flagsFor({}, { present: true, allows: ["canUseAiAdminAssistant"] });
@@ -176,6 +176,25 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
             expect(unlicensed.isEnabled("aiPowerups.adminAssistant")).toBe(false);
         });
 
+        /*
+         * `isEnabled` answering correctly is not enough: the admin app never calls it, it reads the
+         * DTO this serialises to. The assistant shipped with the flag wired into LICENSE_CHECKS but
+         * missing from `toDto`, so the api said yes, the browser never heard, and the palette hid a
+         * feature the project had paid for.
+         */
+        it("carries the admin assistant through the DTO the admin app reads", () => {
+            // The parent too: `toDto` omits the whole `aiPowerups` object when it is off. The real
+            // `License` derives the parent from its children, this fake answers each one on its own.
+            const flags = flagsFor(
+                {},
+                { present: true, allows: ["canUseAiAdminAssistant", "canUseAiPowerups"] }
+            );
+
+            const dto = flags.toDto();
+
+            expect(dto.aiPowerups).toMatchObject({ adminAssistant: true });
+        });
+
         it("lets config disable the admin assistant the license allows", () => {
             const flags = flagsFor(
                 { aiPowerups: { adminAssistant: false } },
@@ -185,12 +204,15 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
             expect(flags.isEnabled("aiPowerups.adminAssistant")).toBe(false);
         });
 
-        it("governs remote components, which no license ever granted before", () => {
+        it("governs remote components, which now sit under aiPowerups", () => {
             const licensed = flagsFor({}, { present: true, allows: ["canUseRemoteComponents"] });
-            const unlicensed = flagsFor({ remoteComponents: true }, { present: true });
+            const unlicensed = flagsFor(
+                { aiPowerups: { remoteComponents: true } },
+                { present: true }
+            );
 
-            expect(licensed.isEnabled("remoteComponents")).toBe(true);
-            expect(unlicensed.isEnabled("remoteComponents")).toBe(false);
+            expect(licensed.isEnabled("aiPowerups.remoteComponents")).toBe(true);
+            expect(unlicensed.isEnabled("aiPowerups.remoteComponents")).toBe(false);
         });
 
         it("governs collaboration", () => {

@@ -4,6 +4,7 @@ import { z } from "zod";
 import path from "path";
 import { Node, Project, ArrayLiteralExpression } from "ts-morph";
 import crypto from "crypto";
+import { hasDefaultExport } from "./hasDefaultExport.js";
 
 export const ApiExtension = defineExtension({
     type: "Api/Extension",
@@ -66,10 +67,9 @@ export const ApiExtension = defineExtension({
         const extensionProject = new Project();
         extensionProject.addSourceFileAtPath(absoluteExtensionFilePath);
         const extensionSource = extensionProject.getSourceFileOrThrow(absoluteExtensionFilePath);
-        const hasDefaultExport = extensionSource.getDefaultExportSymbol() !== undefined;
 
         // Support both default and named exports.
-        if (hasDefaultExport) {
+        if (hasDefaultExport(extensionSource)) {
             source.insertImportDeclaration(index, {
                 defaultImport: exportNameAlias,
                 moduleSpecifier: importPath

@@ -1,5 +1,4 @@
 import React, { createContext, useContext } from "react";
-import { getProjectSdkContextFromEnv } from "~/utils/index.js";
 
 export interface EnvContextValue {
     env: string;
@@ -7,15 +6,22 @@ export interface EnvContextValue {
     region?: string;
 }
 
+export interface EnvProviderProps extends Partial<EnvContextValue> {
+    children: React.ReactNode;
+}
+
 const EnvContext = createContext<EnvContextValue | null>(null);
 
-export const EnvProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const context = getProjectSdkContextFromEnv();
-
+/*
+ * Takes the environment explicitly. It used to read it back out of `WBY_PROJECT_SDK_CONTEXT`, which
+ * was the only way to get it across to the child process the config was rendered in. The render
+ * happens in the caller's process now, so the values are simply passed down.
+ */
+export const EnvProvider = ({ children, env, variant, region }: EnvProviderProps) => {
     const value: EnvContextValue = {
-        env: context?.env || "dev",
-        variant: context?.variant,
-        region: context?.region
+        env: env || "dev",
+        variant,
+        region
     };
 
     return <EnvContext.Provider value={value}>{children}</EnvContext.Provider>;
