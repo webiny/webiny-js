@@ -99,7 +99,10 @@ export const manifest = {
         expect(result.cssSha256).toBeDefined();
         expect(result.css).toContain(".rc-test-card .card");
         expect(result.css).toContain(".rc-test-card .card-title");
-        expect(result.css).toContain("padding: 16px");
+        // Declarations come back normalised: the shared derivation scopes CSS with css-tree, which
+        // reprints the stylesheet. The server used to scope by regex and preserve the original
+        // spacing, so the same CSS hashed differently in the editor and on the server.
+        expect(result.css).toContain("padding:16px");
     });
 
     it("should return no CSS when none is provided", async () => {
@@ -167,6 +170,41 @@ export default function X() { return null; }
     });
 });
 
+/**
+ * The shape this whole workstream started from: a component whose module scope carries a constant
+ * and a helper component alongside the default export.
+ *
+ * Asserting that the bundle *contains* them is not the same as asserting it *renders*. The old
+ * editor bundler emitted a bundle that contained neither and reported no error, because
+ * `platform: "neutral"` treats an unresolved identifier as a global — esbuild was happy, the sha was
+ * valid, and only rendering threw. So this renders.
+ */
+const HELPER_AND_CONSTANT_SOURCE = `
+const TONE = "#2563eb";
+
+function Badge({ label }) {
+    return <span data-testid="badge" style={{ color: TONE }}>{label}</span>;
+}
+
+export default function Feature({ inputs }) {
+    return (
+        <section data-testid="feature">
+            <h2>{inputs.title}</h2>
+            <Badge label={inputs.tag} />
+        </section>
+    );
+}
+
+export const manifest = {
+    name: "Test/Feature",
+    label: "Feature",
+    inputs: [
+        { name: "title", factory: "createTextInput", params: { label: "Title", defaultValue: "Hello" } },
+        { name: "tag", factory: "createTextInput", params: { label: "Tag", defaultValue: "New" } }
+    ]
+};
+`;
+
 describe("bundleComponent → eval integration", () => {
     it("should produce a bundle that can be eval'd and rendered", async () => {
         const bundled = await bundleComponent({
@@ -203,5 +241,41 @@ describe("bundleComponent → eval integration", () => {
         expect(html).toContain("Bundled and loaded!");
         expect(html).toContain("Click me");
         expect(html).toContain('data-testid="banner"');
+    });
+
+    it("renders a component whose module scope carries a constant and a helper", async () => {
+        const bundled = await bundleComponent({
+            name: "Test/Feature",
+            source: HELPER_AND_CONSTANT_SOURCE
+        });
+
+        const fn = new Function(
+            `var __remoteComponent__; ${bundled.bundled}; return __remoteComponent__;`
+        );
+        const mod = fn();
+
+        const result = mod.createComponent({
+            version: "1" as const,
+            dependencies: { sdk: sdkNextjs, React },
+            environment: { tenantId: "test-tenant", locale: "en-US", mode: "server" as const }
+        });
+
+        const FeatureComponent = result.component as React.ComponentType<any>;
+
+        // Throws with "Badge is not defined" if the helper was dropped, which is what the editor's
+        // bundler used to do — silently, all the way to render.
+        const html = renderToString(
+            React.createElement(FeatureComponent, {
+                inputs: { title: "Module scope survives", tag: "kept" },
+                styles: {},
+                element: { id: "test" },
+                breakpoint: "desktop"
+            })
+        );
+
+        expect(html).toContain("Module scope survives");
+        expect(html).toContain('data-testid="badge"');
+        // The constant reached the rendered output, not just the bundle text.
+        expect(html).toContain("#2563eb");
     });
 });

@@ -12,7 +12,8 @@ import type {
     RenderRecordDto,
     RunDto,
     StageLogItem,
-    StageProgress
+    StageProgress,
+    GeneratedComponentDetailDto
 } from "~/shared/types.js";
 
 export interface IRunViewVm {
@@ -109,6 +110,10 @@ export interface IRunViewPresenter {
     regenerateComponent(signature: string, instruction: string): Promise<void>;
     regeneratePlanComponent(signature: string, instruction?: string): Promise<void>;
     /** Toggle the token-usage panel; loads the call list on first open (W7.9). */
+    loadComponentDetail(
+        runId: string,
+        signature: string
+    ): Promise<GeneratedComponentDetailDto | null>;
     toggleTokens(): void;
     /** Toggle the overrides panel; loads the job's overrides + this run's reattachments (W8.7). */
     toggleOverrides(): void;

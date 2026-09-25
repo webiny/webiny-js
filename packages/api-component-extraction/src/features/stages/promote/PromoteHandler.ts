@@ -2,15 +2,18 @@ import { Result } from "@webiny/feature/api";
 import { CreateRemoteComponentUseCase } from "@webiny/remote-components/api/features/createComponent/abstractions.js";
 import { UpdateRemoteComponentUseCase } from "@webiny/remote-components/api/features/updateComponent/abstractions.js";
 import { ListRemoteComponentsUseCase } from "@webiny/remote-components/api/features/listComponents/abstractions.js";
+import { bundleComponent } from "@webiny/remote-components/api/bundler/index.js";
 import { StageHandler, type StageContext, type StageOutcome } from "~/domain/stage.js";
 import { OverrideRepository } from "~/domain/abstractions.js";
 import { decisionsFromOverrides, overridesForStage } from "~/domain/overrides.js";
+import { readComponents } from "~/domain/generatedComponents.js";
 import type { Correction } from "~/domain/types.js";
 import type {
     AssembleArtifact,
     GenerateArtifact,
     PromoteArtifact,
-    PromotedComponent
+    PromotedComponent,
+    SkippedComponent
 } from "~/domain/artifacts.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
@@ -25,6 +28,23 @@ interface PromoteChoice {
  * "Webiny4". A name with no alphanumerics yields "" (no prefix).
  */
 const namespaceSegment = (jobName: string): string => jobName.replace(/[^a-zA-Z0-9]+/g, "");
+
+/**
+ * Build a component's bundle for the Library. Promote does this before it writes anything, so a
+ * component that cannot be bundled is skipped rather than stored unplaceable — for a Replace that
+ * also means a working Library component is never overwritten by one that does not build.
+ */
+const buildBundle = async (name: string, source: string, css?: string) => {
+    const built = await bundleComponent({ name, source, css: css || undefined });
+
+    return {
+        bundledJs: built.bundled,
+        bundledJsSha256: built.sha256,
+        bundledCss: built.css ?? "",
+        bundledCssSha256: built.cssSha256 ?? "",
+        manifest: built.manifest
+    };
+};
 
 /** Qualify a component name with the extraction namespace: "Webiny4" + "Hero" → "Webiny4/Hero". */
 const qualify = (segment: string, name: string): string => (segment ? `${segment}/${name}` : name);
@@ -116,18 +136,31 @@ class PromoteHandlerImpl implements StageHandler.Interface {
         // Every promoted component is namespaced under the extraction's name, e.g. "Webiny4/Hero".
         const namespace = namespaceSegment(context.job.name);
 
+        // Promote reads each component's source and css to bundle it, so it resolves all of them.
+        const resolved = await readComponents(context.store, generate);
+        if (resolved.isFail()) {
+            return Result.fail(resolved.error);
+        }
+        const generatedComponents = resolved.value;
+
         const promoted: PromotedComponent[] = [];
-        const skipped: string[] = [];
-        const total = generate.components.length;
+        const skipped: SkippedComponent[] = [];
+        const total = generatedComponents.length;
 
         for (let index = 0; index < total; index++) {
-            const component = generate.components[index];
+            const component = generatedComponents[index];
 
             // Honour the operator's decisions first: a rejected component is never promoted, and once any
             // decision has been made, an undecided one is held back too (only explicit accepts promote).
             const decision = decisions[component.signature];
             if (decision === "rejected" || (hasDecisions && decision !== "accepted")) {
-                skipped.push(component.signature);
+                skipped.push({
+                    signature: component.signature,
+                    reason:
+                        decision === "rejected"
+                            ? "rejected by operator"
+                            : "not accepted by operator"
+                });
                 await context.progress({
                     message: `Skipped ${component.name} — ${
                         decision === "rejected"
@@ -146,7 +179,6 @@ class PromoteHandlerImpl implements StageHandler.Interface {
             const textCheck = component.validation.textPreservation;
             const propsCheck = component.validation.contractConformance;
             if (!textCheck.passed || !propsCheck.passed) {
-                skipped.push(component.signature);
                 // A specific reason on the trail, so the user can tell a real problem from a strict check.
                 const reasons: string[] = [];
                 if (!textCheck.passed) {
@@ -159,6 +191,7 @@ class PromoteHandlerImpl implements StageHandler.Interface {
                             .join(", ")}`
                     );
                 }
+                skipped.push({ signature: component.signature, reason: reasons.join("; ") });
                 await context.progress({
                     message: `Skipped ${component.name} — ${reasons.join("; ")} — ${index + 1}/${total}`,
                     current: index + 1,
@@ -178,7 +211,7 @@ class PromoteHandlerImpl implements StageHandler.Interface {
             // Honour the operator's Promote selection: a component explicitly deselected is not promoted.
             const choice = choices.get(component.signature);
             if (choice && !choice.selected) {
-                skipped.push(component.signature);
+                skipped.push({ signature: component.signature, reason: "deselected" });
                 await context.progress({
                     message: `Skipped ${component.name} — deselected — ${index + 1}/${total}`,
                     current: index + 1,
@@ -197,16 +230,44 @@ class PromoteHandlerImpl implements StageHandler.Interface {
             if (collides && resolution === "replace") {
                 const existingId = existingIdByName.get(qualifiedName);
                 if (existingId) {
+                    let replacement;
+                    try {
+                        replacement = await buildBundle(
+                            qualifiedName,
+                            component.source,
+                            component.css
+                        );
+                    } catch (error) {
+                        const message = (error as Error).message;
+                        await context.log.error({
+                            message: `Could not bundle "${qualifiedName}" for replacement: ${message}`
+                        });
+                        skipped.push({
+                            signature: component.signature,
+                            reason: `could not bundle: ${message}`
+                        });
+                        await context.progress({
+                            message: `Skipped ${component.name} — could not bundle — ${index + 1}/${total}`,
+                            current: index + 1,
+                            total
+                        });
+                        continue;
+                    }
+
                     const updated = await this.updateComponent.execute(existingId, {
                         label: qualifiedName,
                         source: component.source,
-                        css: component.css
+                        css: component.css,
+                        bundle: replacement
                     });
                     if (updated.isFail()) {
                         await context.log.error({
                             message: `Could not replace "${qualifiedName}": ${updated.error.message}`
                         });
-                        skipped.push(component.signature);
+                        skipped.push({
+                            signature: component.signature,
+                            reason: `could not replace: ${updated.error.message}`
+                        });
                         continue;
                     }
                     promoted.push({
@@ -230,19 +291,47 @@ class PromoteHandlerImpl implements StageHandler.Interface {
                     ? choice.collision.renameTo
                     : qualifiedName;
             const name = uniqueName(requested, taken);
+
+            // Bundle before creating anything. The Library's invariant is that everything in it is
+            // placeable, so a component that cannot be bundled is skipped exactly the way one that
+            // fails validation is — never stored in a state it can never leave. The reason goes on the
+            // run, which is where the operator is looking.
+            let bundle;
+            try {
+                bundle = await buildBundle(name, component.source, component.css);
+            } catch (error) {
+                const message = (error as Error).message;
+                await context.log.error({
+                    message: `Could not bundle "${name}": ${message}`
+                });
+                skipped.push({
+                    signature: component.signature,
+                    reason: `could not bundle: ${message}`
+                });
+                await context.progress({
+                    message: `Skipped ${component.name} — could not bundle — ${index + 1}/${total}`,
+                    current: index + 1,
+                    total
+                });
+                continue;
+            }
+
             const created = await this.createComponent.execute({
                 name,
                 label: name,
                 description: `Extracted ${component.type} section`,
                 source: component.source,
                 css: component.css,
-                status: "draft"
+                bundle
             });
             if (created.isFail()) {
                 await context.log.error({
                     message: `Could not promote "${name}": ${created.error.message}`
                 });
-                skipped.push(component.signature);
+                skipped.push({
+                    signature: component.signature,
+                    reason: `could not create: ${created.error.message}`
+                });
                 continue;
             }
 

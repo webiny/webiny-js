@@ -1,10 +1,15 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { RemoteComponentDto } from "~/shared/types.js";
+import type { PrebuiltBundle } from "~/shared/bundler/types.js";
 import type {
     RemoteComponentPersistenceError,
     RemoteComponentNotFoundError
 } from "~/api/domain/errors.js";
 
+/**
+ * `status` is absent on purpose. It is a transition, not a property a caller sets — see
+ * `shared/componentStatus.ts`. A create yields `draft`, or `bundled` when `bundle` is supplied.
+ */
 export interface ICreateRemoteComponentInput {
     name: string;
     label: string;
@@ -13,7 +18,7 @@ export interface ICreateRemoteComponentInput {
     source: string;
     css?: string;
     aiPrompt?: string;
-    status?: string;
+    bundle?: PrebuiltBundle;
 }
 
 type IError = RemoteComponentPersistenceError | RemoteComponentNotFoundError;

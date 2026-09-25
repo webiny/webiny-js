@@ -22,8 +22,9 @@ const ROOT_ID = "root";
  * static array is what the renderer reads to order them. `AddToParent` maintains that array, appending
  * when no index is passed — so iterating placements in Assemble's order is enough to preserve it.
  *
- * The factory needs each component's manifest to emit correctly typed input bindings, which is why
- * this package has to recover one (see `src/manifest/extractComponentManifest.ts`).
+ * The factory needs each component's manifest to emit correctly typed input bindings. That manifest
+ * is read from the promoted component, where the bundler persists it alongside the bundle; this
+ * package used to reconstruct one from the component's source instead.
  */
 export const buildPageDocument = (params: {
     path: string;

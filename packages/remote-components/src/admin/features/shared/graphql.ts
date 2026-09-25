@@ -42,6 +42,8 @@ export const GET_REMOTE_COMPONENT = /* GraphQL */ `
                     bundledJsSha256
                     bundledCss
                     bundledCssSha256
+                    manifest
+                    bundleError
                     aiPrompt
                     status
                     sdkVersion
@@ -99,6 +101,40 @@ export const UPDATE_REMOTE_COMPONENT = /* GraphQL */ `
                     bundledJsSha256
                     bundledCss
                     bundledCssSha256
+                    manifest
+                    bundleError
+                    aiPrompt
+                    status
+                    sdkVersion
+                    savedOn
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
+export const BUNDLE_REMOTE_COMPONENT = /* GraphQL */ `
+    mutation BundleRemoteComponent($id: ID!) {
+        remoteComponents {
+            bundleRemoteComponent(id: $id) {
+                data {
+                    id
+                    name
+                    label
+                    description
+                    aiContext
+                    source
+                    css
+                    bundledJs
+                    bundledJsSha256
+                    bundledCss
+                    bundledCssSha256
+                    manifest
+                    bundleError
                     aiPrompt
                     status
                     sdkVersion
@@ -118,30 +154,6 @@ export const DELETE_REMOTE_COMPONENT = /* GraphQL */ `
         remoteComponents {
             deleteRemoteComponent(id: $id) {
                 data
-                error {
-                    code
-                    message
-                }
-            }
-        }
-    }
-`;
-
-export const BUNDLE_REMOTE_COMPONENT = /* GraphQL */ `
-    mutation BundleRemoteComponent($id: ID!) {
-        remoteComponents {
-            bundleRemoteComponent(id: $id) {
-                data {
-                    id
-                    name
-                    label
-                    bundledJs
-                    bundledJsSha256
-                    bundledCss
-                    bundledCssSha256
-                    status
-                    savedOn
-                }
                 error {
                     code
                     message

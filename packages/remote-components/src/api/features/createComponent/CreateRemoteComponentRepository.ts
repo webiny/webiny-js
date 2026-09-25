@@ -35,12 +35,14 @@ class CreateRemoteComponentRepositoryImpl implements RepositoryAbstraction.Inter
                     aiContext: input.aiContext ?? "",
                     source: input.source,
                     css: input.css ?? "",
-                    bundledJs: "",
-                    bundledJsSha256: "",
-                    bundledCss: "",
-                    bundledCssSha256: "",
+                    bundledJs: input.bundle?.bundledJs ?? "",
+                    bundledJsSha256: input.bundle?.bundledJsSha256 ?? "",
+                    bundledCss: input.bundle?.bundledCss ?? "",
+                    bundledCssSha256: input.bundle?.bundledCssSha256 ?? "",
+                    manifest: input.bundle?.manifest ?? "",
                     aiPrompt: input.aiPrompt ?? "",
-                    status: input.status ?? "draft",
+                    status: input.bundle ? "bundled" : "draft",
+                    bundleError: "",
                     sdkVersion: "1"
                 }
             });

@@ -17,25 +17,8 @@ import {
     type ThemePolicy,
     type ThemeSettings
 } from "@webiny/theme-common";
-import { bundleComponentInBrowser } from "~/admin/bundler/browserBundler.js";
 import type { RemoteComponentDto } from "~/shared/types.js";
 import { ComponentSourceEditor } from "./ComponentSourceEditor.js";
-import {
-    createTextInput,
-    createLongTextInput,
-    createNumberInput,
-    createBooleanInput,
-    createColorInput,
-    createFileInput,
-    createDateInput,
-    createLexicalInput,
-    createSelectInput,
-    createRadioInput,
-    createObjectInput,
-    createTagsInput,
-    createSlotInput,
-    createInput
-} from "@webiny/website-builder-sdk";
 
 interface ExtractedManifest {
     name: string;
@@ -44,51 +27,19 @@ interface ExtractedManifest {
     applyDefaultStyles?: boolean;
 }
 
-function extractManifest(bundledJs: string): ExtractedManifest | null {
-    try {
-        const fn = new Function(
-            `var __remoteComponent__; ${bundledJs}; return __remoteComponent__;`
-        );
-        const mod = fn();
+const parseManifest = (stored: string | undefined): ExtractedManifest | null => {
+    if (!stored) {
+        return null;
+    }
 
-        const stub = {
-            version: "1",
-            dependencies: {
-                sdk: {
-                    createComponent: (component: any, manifest: any) => ({ component, manifest }),
-                    createTextInput,
-                    createLongTextInput,
-                    createNumberInput,
-                    createBooleanInput,
-                    createColorInput,
-                    createFileInput,
-                    createDateInput,
-                    createLexicalInput,
-                    createSelectInput,
-                    createRadioInput,
-                    createObjectInput,
-                    createTagsInput,
-                    createSlotInput,
-                    createInput
-                },
-                React: { createElement: () => null, Fragment: null }
-            },
-            environment: { tenantId: "root", locale: "en-US", mode: "browser" }
-        };
-        const result = mod.createComponent(stub);
-        if (!result?.manifest) {
-            return null;
-        }
-        return {
-            name: result.manifest.name,
-            inputs: result.manifest.inputs ?? [],
-            defaults: result.manifest.defaults ?? undefined,
-            applyDefaultStyles: result.manifest.applyDefaultStyles
-        };
+    try {
+        const manifest = JSON.parse(stored) as ExtractedManifest;
+
+        return Array.isArray(manifest?.inputs) ? manifest : null;
     } catch {
         return null;
     }
-}
+};
 
 const sourceEditor = new ComponentSourceEditor();
 
@@ -155,7 +106,10 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
             return null;
         }
 
-        const manifest = extractManifest(bundledJs);
+        // The manifest is stored beside the bundle it was built from. The editor used to recover one
+        // by executing the bundle here with a stubbed runtime — a third implementation of the same
+        // derivation, and the last one left.
+        const manifest = parseManifest(this._component?.manifest);
         if (!manifest) {
             return null;
         }
@@ -353,20 +307,19 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
         });
 
         try {
-            const bundled = await this.buildBundle(formData.name);
-
-            const updated = await this.gateway.update(this._component.id, {
+            await this.gateway.update(this._component.id, {
                 name: formData.name,
                 label: formData.label,
                 description: formData.description,
                 aiContext: formData.aiContext,
                 source: this._source,
-                css: this._css,
-                bundledJs: bundled.bundled,
-                bundledJsSha256: bundled.sha256,
-                bundledCss: bundled.css ?? "",
-                bundledCssSha256: bundled.cssSha256 ?? ""
+                css: this._css
             });
+
+            // The source is saved first, then the server bundles from what it stored. The editor
+            // never sends a bundle: one built here could differ from the stored source, and the
+            // manifest persisted beside it has to come from the same derivation.
+            const updated = await this.gateway.bundle(this._component.id);
 
             runInAction(() => {
                 this._component = updated;
@@ -395,14 +348,15 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
         });
 
         try {
-            const bundled = await this.buildBundle(formData.name);
-
-            const updated = await this.gateway.update(this._component.id, {
-                bundledJs: bundled.bundled,
-                bundledJsSha256: bundled.sha256,
-                bundledCss: bundled.css ?? "",
-                bundledCssSha256: bundled.cssSha256 ?? ""
+            // Bundling is the server's job. Unsaved source has to be stored first, or the server
+            // would bundle the previous revision.
+            await this.gateway.update(this._component.id, {
+                name: formData.name,
+                source: this._source,
+                css: this._css
             });
+
+            const updated = await this.gateway.bundle(this._component.id);
 
             runInAction(() => {
                 this._component = updated;
@@ -416,14 +370,6 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
                 this._bundling = false;
             });
         }
-    }
-
-    private async buildBundle(name: string) {
-        return bundleComponentInBrowser({
-            name,
-            source: this._source,
-            css: this._css || undefined
-        });
     }
 
     setDefaultInputs(bindings: Record<string, any>) {

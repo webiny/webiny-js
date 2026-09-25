@@ -3,6 +3,7 @@ import { RunRepository } from "@webiny/api-component-extraction/domain/abstracti
 import { BlobStore, StageArtifactStore } from "@webiny/api-component-extraction/domain/stage.js";
 import { stageEntry } from "@webiny/api-component-extraction/domain/ledger.js";
 import { stageArtifactKey } from "@webiny/api-component-extraction/constants.js";
+import { readComponents } from "@webiny/api-component-extraction/domain/generatedComponents.js";
 import { normalizeUrl } from "@webiny/api-component-extraction/domain/overrides.js";
 import { findNodeByBox } from "@webiny/api-component-extraction/features/stages/cluster/sectionNode.js";
 import type {
@@ -18,6 +19,7 @@ import type {
     SegmentedPage
 } from "@webiny/api-component-extraction/domain/artifacts.js";
 import type { Run } from "@webiny/api-component-extraction/domain/types.js";
+import { GetRemoteComponentUseCase } from "@webiny/remote-components/api/features/getComponent/abstractions.js";
 import { CreatePageUseCase } from "@webiny/api-website-builder/features/pages/CreatePage/abstractions.js";
 import { PublishPageUseCase } from "@webiny/api-website-builder/features/pages/PublishPage/abstractions.js";
 import { UpdatePageUseCase } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";
@@ -34,7 +36,6 @@ import type {
     UnplacedInstance
 } from "~/domain/types.js";
 import { validateTextPreservation } from "@webiny/api-component-extraction/features/shared/validators.js";
-import { extractComponentManifest } from "~/manifest/extractComponentManifest.js";
 import { buildPageDocument, type ComponentPlacement } from "~/pages/buildPageDocument.js";
 import { collectSectionTexts } from "~/pages/collectSectionTexts.js";
 import { deriveInstanceProps } from "~/pages/deriveInstanceProps.js";
@@ -113,7 +114,8 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         private createPage: CreatePageUseCase.Interface,
         private publishPage: PublishPageUseCase.Interface,
         private updatePage: UpdatePageUseCase.Interface,
-        private pageMaps: PageMapStore.Interface
+        private pageMaps: PageMapStore.Interface,
+        private getComponent: GetRemoteComponentUseCase.Interface
     ) {}
 
     async execute(runId: string): Promise<Result<ComposePagesResult, PageCompositionError>> {
@@ -321,8 +323,17 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         trees: Map<string, CapturedNode>;
     }): Promise<Map<string, PlaceableComponent>> {
         const { promote, generate, segmentByUrl, trees } = params;
+
+        // Composition needs each component's props and its cluster members, which the Generate
+        // aggregate references rather than carries — so they are resolved once, here, for the whole
+        // run. Only promoted components are placed, but resolving all of them keeps this a single
+        // pass rather than a fetch inside the loop.
+        const resolved = await readComponents(this.artifacts, generate);
+        if (resolved.isFail()) {
+            return new Map<string, PlaceableComponent>();
+        }
         const generated = new Map(
-            generate.components.map(component => [component.signature, component])
+            resolved.value.map(component => [component.signature, component])
         );
         const placeable = new Map<string, PlaceableComponent>();
 
@@ -332,10 +343,11 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 continue;
             }
 
-            let manifest: ComponentManifest;
-            try {
-                manifest = extractComponentManifest(component.source, promoted.name);
-            } catch {
+            // The bundler persists the manifest alongside the bundle, built from the same expression
+            // the bundle embeds. Reading it here means the API and the browser agree by construction
+            // rather than by two implementations happening to match.
+            const manifest = await this.promotedManifest(promoted.componentId);
+            if (!manifest) {
                 // A component whose manifest cannot be read cannot be placed; its instances will be
                 // reported per page rather than failing the whole run.
                 continue;
@@ -351,6 +363,26 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         }
 
         return placeable;
+    }
+
+    /**
+     * Reads a promoted component's persisted manifest. Returns null when the component cannot be
+     * read or carries no manifest — which means it was promoted before the bundler began persisting
+     * one, or its bundling failed. Either way it cannot be placed, and the caller reports that per
+     * page rather than failing the run.
+     */
+    private async promotedManifest(componentId: string): Promise<ComponentManifest | null> {
+        const result = await this.getComponent.execute(componentId);
+
+        if (result.isFail() || !result.value.manifest) {
+            return null;
+        }
+
+        try {
+            return JSON.parse(result.value.manifest) as ComponentManifest;
+        } catch {
+            return null;
+        }
     }
 
     /**
@@ -691,6 +723,7 @@ export const ComposePagesService = Abstraction.createImplementation({
         CreatePageUseCase,
         PublishPageUseCase,
         UpdatePageUseCase,
-        PageMapStore
+        PageMapStore,
+        GetRemoteComponentUseCase
     ]
 });

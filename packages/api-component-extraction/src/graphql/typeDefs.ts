@@ -114,6 +114,17 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionListRuns(jobId: ID!): ComponentExtractionRunListResponse!
         "Read a run, including its nine-stage ledger. The polling fallback to the websocket stream."
         componentExtractionGetRun(runId: ID!): ComponentExtractionRunResponse!
+        """
+        One generated component in full — source, css, props and cluster members.
+
+        The Generate stage artifact references its components rather than carrying them, so that it
+        stays a bounded item however many components a run produces. The list views read the artifact;
+        this is for a view that opens one component.
+        """
+        componentExtractionGetGeneratedComponent(
+            runId: ID!
+            signature: String!
+        ): ComponentExtractionArtifactResponse!
         "The structured artifact a stage produced, for the visibility screens. Image refs are served by the run-image route. Pass machine:true for the un-overridden (machine) artifact (W8)."
         componentExtractionGetStageArtifact(
             runId: ID!

@@ -8,6 +8,7 @@
     { "path": "../api-website-builder" },
     { "path": "../background-tasks" },
     { "path": "../feature" },
+    { "path": "../remote-components" },
     { "path": "../website-builder-sdk" }
   ],
   "compilerOptions": {
@@ -29,6 +30,8 @@
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/remote-components/*": ["../remote-components/src/*"],
+      "@webiny/remote-components": ["../remote-components/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
       "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
     }

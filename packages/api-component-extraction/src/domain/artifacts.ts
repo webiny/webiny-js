@@ -137,6 +137,19 @@ export interface CapturedNode {
     src?: string;
     /** An image's alternative text. Present when the element carries a non-empty `alt`. */
     alt?: string;
+    /**
+     * This node's box was **inferred from its children** rather than measured, because the element
+     * reported a zero-area rect while rendering content — an absolutely positioned header inside a
+     * zero-height flex wrapper, a carousel track escaping its rail.
+     *
+     * The box is the union of the boxes of the children that survived, so it says where the content
+     * is, not where the browser said the element was. Absent means the box was measured.
+     *
+     * It is not only a debugging aid. A derived box is an inference about extent, and Segment's
+     * stacking test must not let an inference veto a decision about measured siblings — see
+     * `areVerticallyStacked`.
+     */
+    boxDerived?: boolean;
     children: CapturedNode[];
 }
 
@@ -470,8 +483,63 @@ export interface GeneratedComponent {
     };
 }
 
+/**
+ * One component's entry in the Generate aggregate: what a consumer can use *without* opening the
+ * component, plus a reference to where the rest of it lives.
+ *
+ * The aggregate used to carry each `GeneratedComponent` whole. Its size then scaled with source and
+ * with cluster membership — `members` grows with the number of pages a component appears on, not
+ * with the number of components — and the aggregate is one DynamoDB item, capped at 400 KB. Measured
+ * on real runs that put the ceiling near 12 components per run, which is below what most sites
+ * produce.
+ *
+ * Measured at ~0.64 KB per entry in this shape, so the aggregate reaches 400 KB at roughly 600
+ * components. Its size is now a function of component count alone.
+ */
+export interface GeneratedComponentRef {
+    signature: string;
+    name: string;
+    type: string;
+    /** How many generation attempts it took to pass validation. */
+    attempts: number;
+    /**
+     * Counts, so a list can say "3 instances across 2 pages" without loading `members` or `props`.
+     * `pageCount` is distinct member URLs — the number the Generate and Promote views show, and not
+     * something `memberCount` yields, since a component can appear twice on one page.
+     */
+    memberCount: number;
+    pageCount: number;
+    propCount: number;
+    /**
+     * Carried whole rather than summarised. A consumer must see the same validator results before and
+     * after this change, and the largest validation block measured is 446 bytes — so capping the
+     * failure lists would alter what the admin shows and save nothing worth having.
+     */
+    validation: {
+        textPreservation: ValidationResult;
+        contractConformance: ValidationResult;
+        tokenBinding: ValidationResult;
+    };
+    /** Where the whole `GeneratedComponent` lives — the key `generateResultKey` already writes. */
+    resultRef: string;
+    /**
+     * Incremented on every write to the referenced artifact.
+     *
+     * This exists because a content hash cannot answer "has a refine landed yet". Refining is a model
+     * call and may legitimately return byte-identical source; anything derived from content then does
+     * not move, and a poll waiting on it never terminates. `revision` is bumped by the writer whether
+     * or not the content changed, so it always moves.
+     */
+    revision: number;
+    /**
+     * sha256 over the referenced component's content. Answers "did this change materially", which is
+     * what a cache key wants — and is deliberately *not* what completion is detected with.
+     */
+    contentSha256: string;
+}
+
 export interface GenerateArtifact {
-    components: GeneratedComponent[];
+    components: GeneratedComponentRef[];
     /** Signatures of clusters that never produced a valid component. */
     failed: string[];
 }
@@ -559,10 +627,21 @@ export interface PromotedComponent {
     name: string;
 }
 
+/**
+ * A component that did not reach the Library, and why. The reason matters most for a bundle failure:
+ * the Library's invariant is that everything in it is placeable, so a component that cannot be
+ * bundled is skipped rather than stored in a broken state — and the run is then the only place an
+ * operator can find out what went wrong.
+ */
+export interface SkippedComponent {
+    signature: string;
+    reason: string;
+}
+
 export interface PromoteArtifact {
     promoted: PromotedComponent[];
-    /** Signatures not promoted — failed validation, or a create error. */
-    skipped: string[];
+    /** Signatures not promoted — failed validation, failed bundling, deselected, or a create error. */
+    skipped: SkippedComponent[];
 }
 
 // ----- Cluster (structural signature inputs) -----------------------------------------------------

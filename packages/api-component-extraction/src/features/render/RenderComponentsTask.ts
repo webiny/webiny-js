@@ -7,6 +7,7 @@ import { RENDER_COMPONENTS_TASK_ID, stageArtifactKey } from "~/constants.js";
 import { RunRepository, JobRepository } from "~/domain/abstractions.js";
 import { StageArtifactStore } from "~/domain/stage.js";
 import { stageEntry } from "~/domain/ledger.js";
+import { readComponents } from "~/domain/generatedComponents.js";
 import type {
     GenerateArtifact,
     PlanArtifact,
@@ -99,7 +100,12 @@ class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
         if (generateArtifact.isFail() || !generateArtifact.value) {
             return controller.response.error("The generate artifact could not be read.");
         }
-        const components = generateArtifact.value.components;
+        // Rendering needs each component's source and css, so every one is resolved.
+        const resolved = await readComponents(this.artifactStore, generateArtifact.value);
+        if (resolved.isFail()) {
+            return controller.response.error(resolved.error.message);
+        }
+        const components = resolved.value;
         const total = components.length;
 
         // The source section crop per component, for the visual-similarity indicator — read from the

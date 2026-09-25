@@ -21,8 +21,10 @@ class WbyRemoteComponentModelFactory implements ModelFactory.Interface {
             bundledJsSha256: fields.text().label("Bundled JS SHA-256"),
             bundledCss: fields.text().compress().label("Bundled CSS"),
             bundledCssSha256: fields.text().label("Bundled CSS SHA-256"),
+            manifest: fields.text().compress().label("Manifest"),
             aiPrompt: fields.text().compress().label("AI Prompt"),
             status: fields.text().label("Status"),
+            bundleError: fields.text().compress().label("Bundle Error"),
             sdkVersion: fields.text().label("SDK Version")
         }));
 

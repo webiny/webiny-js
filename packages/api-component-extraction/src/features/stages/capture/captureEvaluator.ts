@@ -69,27 +69,66 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
             } catch (e) { return ""; }
         }
 
+        // The union of the boxes of the children that survived — where a zero-area element's content
+        // actually is, as opposed to where the browser said the element was.
+        function unionBox(children) {
+            var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            for (var i = 0; i < children.length; i++) {
+                var b = children[i].box;
+                if (b.x < minX) { minX = b.x; }
+                if (b.y < minY) { minY = b.y; }
+                if (b.x + b.width > maxX) { maxX = b.x + b.width; }
+                if (b.y + b.height > maxY) { maxY = b.y + b.height; }
+            }
+            return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+        }
+
         function walk(el) {
             if (count >= MAX || !el || el.nodeType !== 1 || SKIP[el.tagName]) { return null; }
             var cs = window.getComputedStyle(el);
             if (cs.display === "none" || cs.visibility === "hidden") { return null; }
             var rect = el.getBoundingClientRect();
             var width = Math.round(rect.width), height = Math.round(rect.height);
-            if (width <= 0 || height <= 0) { return null; }
 
-            count++;
-            var styles = {};
-            for (var i = 0; i < STYLE_PROPS.length; i++) {
-                try { styles[STYLE_PROPS[i]] = cs[STYLE_PROPS[i]]; } catch (e) {}
-            }
+            /*
+             * A zero-area box used to prune the whole subtree, which discarded rendered content: a
+             * zero-height position:absolute flex wrapper around a 1300x60 navigation bar took 66
+             * descendants and 19 links with it, on every page of one site — measured at 1/11 pages
+             * carrying a header where the real answer is 11/11. Zero-height wrappers around positioned
+             * content are an ordinary CSS pattern (absolute headers, flex containers with out-of-flow
+             * children, sticky bars built as overlays, carousel tracks escaping their rail), and they
+             * skew toward the elements worth migrating, because those are the ones built as overlays.
+             *
+             * The element is not absent — its box is wrong. So the node is kept and its box is derived
+             * from its children, marked boxDerived so a reader downstream can tell an inference from a
+             * measurement. A wrapper whose subtree is genuinely empty has nothing to derive from and
+             * keeps the old treatment: it is dropped, because a wrapper around nothing is nothing. Across
+             * six sites, 91% of zero-area nodes are that case.
+             */
+            var zeroArea = width <= 0 || height <= 0;
+
+            if (!zeroArea) { count++; }
+
+            // Children first, so a chain of zero-area wrappers resolves from the inside out and a
+            // repaired child already carries a real box when its parent takes the union.
             var children = [];
             for (var j = 0; j < el.children.length; j++) {
                 var c = walk(el.children[j]);
                 if (c) { children.push(c); }
             }
+
+            if (zeroArea) {
+                if (!children.length || count >= MAX) { return null; }
+                count++;
+            }
+
+            var styles = {};
+            for (var i = 0; i < STYLE_PROPS.length; i++) {
+                try { styles[STYLE_PROPS[i]] = cs[STYLE_PROPS[i]]; } catch (e) {}
+            }
             var node = {
                 tag: el.tagName.toLowerCase(),
-                box: {
+                box: zeroArea ? unionBox(children) : {
                     x: Math.round(rect.x + window.scrollX),
                     y: Math.round(rect.y + window.scrollY),
                     width: width,
@@ -98,6 +137,7 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
                 styles: styles,
                 children: children
             };
+            if (zeroArea) { node.boxDerived = true; }
             var text = directText(el);
             if (text) { node.text = text.slice(0, 2000); }
             // Only set when present, like \`text\` — an absent field keeps the tree small and keeps a

@@ -25,8 +25,10 @@ import type {
     SegmentArtifact,
     ClusterArtifact,
     ComponentDecision,
+    GenerateArtifact,
     PlanArtifact
 } from "~/domain/artifacts.js";
+import { readComponent } from "~/domain/generatedComponents.js";
 import type { Correction, Run } from "~/domain/types.js";
 import {
     DEFAULT_PAGE_CAP,
@@ -559,6 +561,46 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         throw runsResult.error;
                     }
                     return runsResult.value.runs;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionGetGeneratedComponent",
+        dependencies: [ComponentExtractionPermissions, RunRepository, StageArtifactStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            store: StageArtifactStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string; signature: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const generate = stageEntry(runResult.value.stages, "generate");
+                    const componentsKey = generate?.artifacts.components;
+                    if (!componentsKey) {
+                        return null;
+                    }
+                    const artifact = await store.getJson<GenerateArtifact>(componentsKey);
+                    if (artifact.isFail() || !artifact.value) {
+                        return null;
+                    }
+                    const entry = artifact.value.components.find(
+                        component => component.signature === args.signature
+                    );
+                    if (!entry) {
+                        return null;
+                    }
+                    // One component, resolved through the same path every other consumer uses — so an
+                    // artifact written before the aggregate referenced its components still reads.
+                    const component = await readComponent(store, entry);
+                    return component.isOk() ? component.value : null;
                 });
         }
     });

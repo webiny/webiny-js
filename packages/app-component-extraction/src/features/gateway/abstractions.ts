@@ -33,6 +33,11 @@ export interface IComponentExtractionGateway {
     listStageLogs(taskId: string): Promise<StageLogItem[]>;
     /** The structured artifact a stage produced, for the visibility views. Null if the stage has no output. */
     getStageArtifact(runId: string, stage: string, machine?: boolean): Promise<unknown>;
+    /**
+     * One generated component in full. The Generate artifact references its components rather than
+     * carrying them, so the list is served without their source and a view that opens one asks for it.
+     */
+    getGeneratedComponent(runId: string, signature: string): Promise<unknown>;
     /** Drop captured/failed pages from a run; returns the run with Segment+downstream marked stale. */
     excludeCapturedPages(runId: string, urls: string[]): Promise<RunDto>;
     /** Trigger the render task that screenshots the run's generated components (W7.7). */

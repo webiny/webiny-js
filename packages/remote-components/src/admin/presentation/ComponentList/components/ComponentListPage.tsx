@@ -26,6 +26,7 @@ import { RemoteComponentGatewayFeature } from "~/admin/features/shared/feature.j
 import { useCreateComponentDialog } from "~/admin/presentation/CreateComponent/components/CreateComponentDialog.js";
 import { Routes } from "~/admin/routes.js";
 import type { RemoteComponentDto } from "~/shared/types.js";
+import type { ComponentStatus } from "~/shared/componentStatus.js";
 
 const ComponentListContent = observer(function ComponentListContent() {
     const { presenter } = useFeature(ComponentListFeature);
@@ -66,10 +67,7 @@ const ComponentListContent = observer(function ComponentListContent() {
             status: {
                 header: "Status",
                 cell: (row: RemoteComponentDto) => (
-                    <Tag
-                        variant={row.status === "published" ? "success" : "neutral-muted"}
-                        content={row.status}
-                    />
+                    <Tag variant={statusVariant(row.status)} content={row.status} />
                 ),
                 size: 100
             },
@@ -164,6 +162,19 @@ const ComponentListHeader = () => {
             />
         </div>
     );
+};
+
+const statusVariant = (status: ComponentStatus) => {
+    switch (status) {
+        case "bundled":
+            return "success" as const;
+        case "failed":
+            return "destructive" as const;
+        case "stale":
+            return "neutral-strong" as const;
+        default:
+            return "neutral-muted" as const;
+    }
 };
 
 export const ComponentListPage = () => {

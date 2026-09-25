@@ -7,6 +7,11 @@ import { REGENERATE_COMPONENT_TASK_ID, stageArtifactKey } from "~/constants.js";
 import { RunRepository, JobRepository } from "~/domain/abstractions.js";
 import { StageArtifactStore } from "~/domain/stage.js";
 import { stageEntry } from "~/domain/ledger.js";
+import { readComponent, toComponentRef } from "~/domain/generatedComponents.js";
+import {
+    generateResultKey,
+    type ComponentResult
+} from "~/features/stages/generate/componentGeneration.js";
 import type { GenerateArtifact, PlanArtifact, RenderArtifact } from "~/domain/artifacts.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import {
@@ -79,7 +84,13 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
         if (index === -1) {
             return controller.response.error("The component to refine was not found.");
         }
-        const component = generateArtifact.components[index];
+        const entry = generateArtifact.components[index];
+
+        const currentResult = await readComponent(this.artifactStore, entry);
+        if (currentResult.isFail()) {
+            return controller.response.error(currentResult.error.message);
+        }
+        const component = currentResult.value;
 
         // Refine from the current source/css, not the original plan prompt — preserving the work so far.
         const refined = await this.refine.execute({
@@ -136,11 +147,46 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
                   }
         };
 
+        const refinedComponent = { ...component, source, css, validation };
+
+        // The component's own artifact is the source of truth now, so it is written first. `revision`
+        // is bumped unconditionally: refining is a model call that may return byte-identical source,
+        // and the admin's poll clears on this moving — if it were derived from content, a no-op refine
+        // would leave the component spinning forever.
+        const resultRef =
+            "resultRef" in entry && entry.resultRef
+                ? entry.resultRef
+                : generateResultKey(run.id, generateVersion, input.signature);
+        const previous = await this.artifactStore.getJson<ComponentResult>(resultRef);
+        const revision = (previous.isOk() ? (previous.value?.revision ?? 0) : 0) + 1;
+
+        const componentWritten = await this.artifactStore.putJson(resultRef, {
+            signature: input.signature,
+            component: refinedComponent,
+            revision
+        } satisfies ComponentResult);
+        if (componentWritten.isFail()) {
+            return controller.response.error(componentWritten.error.message);
+        }
+
+        // Then only this component's entry in the aggregate. The whole aggregate used to be rewritten
+        // on every refine; nothing depended on that, and `failed` was spread through unchanged, so a
+        // refine that fixed validation left the component listed as failed.
         const components = [...generateArtifact.components];
-        components[index] = { ...component, source, css, validation };
+        components[index] = toComponentRef(refinedComponent, resultRef, revision);
+        const failed = generateArtifact.failed.filter(
+            signature =>
+                signature !== input.signature ||
+                !(
+                    validation.textPreservation.passed &&
+                    validation.contractConformance.passed &&
+                    validation.tokenBinding.passed
+                )
+        );
         const written = await this.artifactStore.putJson(componentsKey, {
             ...generateArtifact,
-            components
+            components,
+            failed
         });
         if (written.isFail()) {
             return controller.response.error(written.error.message);

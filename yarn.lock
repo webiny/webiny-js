@@ -11403,6 +11403,7 @@ __metadata:
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/remote-components": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"

@@ -34,6 +34,12 @@ export const generateResultKey = (runId: string, stageVersion: number, signature
 export interface ComponentResult {
     signature: string;
     component: GeneratedComponent | null;
+    /**
+     * Bumped on every write. The aggregate copies it, and the admin's refine poll watches it rather
+     * than comparing source — refining is a model call that may return byte-identical source, and a
+     * poll waiting on content then never terminates.
+     */
+    revision: number;
 }
 
 export interface GenerationDeps {

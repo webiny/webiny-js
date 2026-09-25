@@ -7,6 +7,7 @@ import type {
     AssembleArtifactDto,
     DecisionsDto,
     GenerateArtifactDto,
+    GeneratedComponentDetailDto,
     ModelCallDto,
     OverrideDto,
     PlanArtifactDto,
@@ -68,7 +69,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     private loadedLogsTaskId: string | null = null;
 
     /** Pre-refine source per signature, so a completed regenerate is detected when the source changes. */
-    private regenerateBaseline: Record<string, string> = {};
+    private regenerateBaseline: Record<string, number> = {};
 
     /** Pre-regenerate props fingerprint per signature, so a completed Plan regenerate is detected. */
     private planRegenerateBaseline: Record<string, string> = {};
@@ -403,10 +404,13 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         if (!runId || !trimmed) {
             return;
         }
-        // Remember the current source so the refresh loop can tell when the refined version lands.
+        // Remember the current revision so the refresh loop can tell when the refined version lands.
+        // Not the source: refining is a model call that may return byte-identical source, and this
+        // used to compare source strings — so a refine that changed nothing left the spinner on
+        // forever. `revision` is bumped by the writer on every write, changed content or not.
         const artifact = this.vm.artifact as GenerateArtifactDto | null;
         const current = artifact?.components.find(component => component.signature === signature);
-        this.regenerateBaseline[signature] = current?.source ?? "";
+        this.regenerateBaseline[signature] = current?.revision ?? 0;
         runInAction(() => {
             this.vm.regenerating = [...new Set([...this.vm.regenerating, signature])];
             this.vm.error = null;
@@ -475,20 +479,41 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     }
 
     /**
-     * While a regenerate is in flight, reload the Generate artifact and clear each signature whose source
-     * has changed — the refine task replaces the component in place, so a changed source means it's done.
+     * While a regenerate is in flight, reload the Generate artifact and clear each signature whose
+     * revision has moved — the refine task bumps it on every write, so this terminates even when the
+     * model returns the same source it was given.
      */
     private async pollRegenerations(run: RunDto): Promise<void> {
         await this.loadArtifact(run, "generate");
         const artifact = this.vm.artifact as GenerateArtifactDto | null;
         const stillRunning = this.vm.regenerating.filter(signature => {
             const component = artifact?.components.find(item => item.signature === signature);
-            return !component || component.source === this.regenerateBaseline[signature];
+            return !component || component.revision === this.regenerateBaseline[signature];
         });
         if (stillRunning.length !== this.vm.regenerating.length) {
             runInAction(() => {
                 this.vm.regenerating = stillRunning;
             });
+        }
+    }
+
+    /**
+     * Fetches one component in full, for the view that shows its code.
+     *
+     * The Generate list is served without source — the artifact references its components so that its
+     * size depends on how many a run produced rather than how large they are — so opening one is a
+     * fetch. Returns null rather than throwing: a missing component should leave the panel empty, not
+     * break the run view around it.
+     */
+    async loadComponentDetail(
+        runId: string,
+        signature: string
+    ): Promise<GeneratedComponentDetailDto | null> {
+        try {
+            const detail = await this.gateway.getGeneratedComponent(runId, signature);
+            return (detail as GeneratedComponentDetailDto | null) ?? null;
+        } catch {
+            return null;
         }
     }
 

@@ -31,8 +31,9 @@ const RESOLUTION_OPTIONS = [
     { value: "keepBoth", label: "Keep both" }
 ];
 
-const pageCountOf = (component: GeneratedComponentDto): number =>
-    new Set(component.members.map(member => member.url)).size;
+// Carried on the artifact rather than derived, because the aggregate references its components
+// instead of holding their cluster members.
+const pageCountOf = (component: GeneratedComponentDto): number => component.pageCount;
 
 /** Promotable = editability-critical validators pass, and the operator hasn't rejected/withheld it. */
 const isPromotable = (
@@ -194,6 +195,15 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
     ).length;
     const promoted = result?.promoted.length ?? 0;
     const skipped = result?.skipped.length ?? 0;
+    // Why components did not reach the Library. A component that cannot be bundled is skipped rather
+    // than stored unplaceable, so this is the only place an operator can find that out. Grouped,
+    // because a whole run tends to fail the same way. Truncated: the reason carries a bundler error.
+    const skipReasons = [
+        ...(result?.skipped ?? []).reduce((counts, entry) => {
+            const reason = entry.reason ? entry.reason.slice(0, 120) : "no reason recorded";
+            return counts.set(reason, (counts.get(reason) ?? 0) + 1);
+        }, new Map<string, number>())
+    ].sort((a, b) => b[1] - a[1]);
 
     return (
         <div className="flex h-full min-h-0 flex-col">
@@ -210,6 +220,15 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
                             Last run: promoted {result.promoted.length}, skipped{" "}
                             {result.skipped.length}
                         </Text>
+                    ) : null}
+                    {skipReasons.length > 0 ? (
+                        <div className="flex flex-col gap-xxs">
+                            {skipReasons.map(([reason, count]) => (
+                                <Text key={reason} size="sm" className="text-neutral-strong">
+                                    {count} × {reason}
+                                </Text>
+                            ))}
+                        </div>
                     ) : null}
                 </div>
                 <div className="flex flex-shrink-0 items-center gap-sm">

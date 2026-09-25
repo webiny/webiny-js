@@ -24,6 +24,7 @@
     "@webiny/api-website-builder": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/feature": "0.0.0",
+    "@webiny/remote-components": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0"
   },
   "devDependencies": {

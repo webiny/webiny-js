@@ -216,8 +216,19 @@ const collectSections = (
      * The stack test asks whether the children sit one below another. A pinned landmark does not, by
      * construction, so it is set aside for that question only — it stays in `children`, and therefore
      * still becomes a section of its own when the split goes ahead.
+     *
+     * A node with a derived box is set aside for the same question, for a different reason: its box was
+     * inferred from its children rather than measured, because the element reported zero area while
+     * rendering content. An inference about extent should not be allowed to veto a decision about where
+     * measured siblings sit — that gives a guess authority over a measurement. Such a node is still a
+     * section in its own right; it simply does not get a vote on whether its siblings stack.
+     *
+     * Without this, recovering a zero-area wrapper defeats the very segmentation it was recovered for:
+     * an absolutely positioned header, repaired to a box spanning y=0..255, overlaps the content block
+     * that also begins at y=0, the all-or-nothing stack test fails, and the page is emitted as one
+     * section instead of six.
      */
-    const stackable = children.filter(child => !isPositionedOverlay(child));
+    const stackable = children.filter(child => !isPositionedOverlay(child) && !child.boxDerived);
     const stacked = areVerticallyStacked(stackable);
     const enoughChildren = children.length >= options.minChildrenToSplit;
     const tallEnough = inner.box.height > options.maxSectionHeight;

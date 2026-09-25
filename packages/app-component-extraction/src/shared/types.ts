@@ -303,7 +303,12 @@ export interface ClassifyArtifactDto {
 
 export interface PromoteArtifactDto {
     promoted: { signature: string; componentId: string; name: string }[];
-    skipped: string[];
+    /**
+     * Components that did not reach the Library, with why. A component that cannot be bundled is
+     * skipped rather than stored unplaceable, so this is the only record of that decision — runs
+     * written before the reason existed carry bare signatures, which is why `reason` is optional.
+     */
+    skipped: { signature: string; reason?: string }[];
 }
 
 // ----- Overrides (W8) ----------------------------------------------------------------------------
@@ -342,11 +347,43 @@ export interface ComponentMemberDto {
     cropRef: string;
 }
 
+/**
+ * A component as the Generate list sees it: enough to render a row, and no source.
+ *
+ * The stage artifact references its components rather than carrying them, so that its size depends on
+ * how many components a run produced rather than on how large they are. Source and cluster members
+ * are fetched per component, by the view that opens one.
+ */
 export interface GeneratedComponentDto {
     signature: string;
     name: string;
     type: string;
-    /** The generated JSX source and CSS — surfaced for "view code". */
+    attempts: number;
+    memberCount: number;
+    pageCount: number;
+    propCount: number;
+    validation: {
+        textPreservation: ValidationResultDto;
+        contractConformance: ValidationResultDto;
+        tokenBinding: ValidationResultDto;
+    };
+    /**
+     * Moves on every write to the component, whether or not its content changed. A refine may return
+     * byte-identical source, so watching content would leave the poll running forever.
+     */
+    revision: number;
+    contentSha256: string;
+    /** Absent on artifacts written before components were referenced, which carried source inline. */
+    source?: string;
+    css?: string;
+    members?: ComponentMemberDto[];
+}
+
+/** One component in full, from `componentExtractionGetGeneratedComponent`. */
+export interface GeneratedComponentDetailDto {
+    signature: string;
+    name: string;
+    type: string;
     source: string;
     css: string;
     attempts: number;

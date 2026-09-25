@@ -11,6 +11,7 @@ import {
     GET_REMOTE_COMPONENT,
     CREATE_REMOTE_COMPONENT,
     UPDATE_REMOTE_COMPONENT,
+    BUNDLE_REMOTE_COMPONENT,
     DELETE_REMOTE_COMPONENT,
     GENERATE_REMOTE_COMPONENT,
     REFINE_REMOTE_COMPONENT,
@@ -85,6 +86,21 @@ class RemoteComponentGraphQLGatewayImpl implements RemoteComponentGateway.Interf
         }>({ query: UPDATE_REMOTE_COMPONENT, variables: { id, data } });
 
         const envelope = response.remoteComponents.updateRemoteComponent;
+        if (envelope.error) {
+            throw new Error(envelope.error.message);
+        }
+
+        return envelope.data!;
+    }
+
+    async bundle(id: string) {
+        const response = await this.client.execute<{
+            remoteComponents: {
+                bundleRemoteComponent: GqlEnvelope<RemoteComponentDto>;
+            };
+        }>({ query: BUNDLE_REMOTE_COMPONENT, variables: { id } });
+
+        const envelope = response.remoteComponents.bundleRemoteComponent;
         if (envelope.error) {
             throw new Error(envelope.error.message);
         }

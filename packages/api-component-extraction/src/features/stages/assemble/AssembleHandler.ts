@@ -1,5 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { StageHandler, type StageContext, type StageOutcome } from "~/domain/stage.js";
+import { readComponents } from "~/domain/generatedComponents.js";
 import type {
     AssembleArtifact,
     AssembledPage,
@@ -42,6 +43,13 @@ class AssembleHandlerImpl implements StageHandler.Interface {
             message: `Assembling ${generate.components.length} component(s) across the pages…`
         });
 
+        // Assemble reads css, props and members for every component, so it resolves all of them.
+        const resolved = await readComponents(context.store, generate);
+        if (resolved.isFail()) {
+            return Result.fail(resolved.error);
+        }
+        const generatedComponents = resolved.value;
+
         // Valid css variables from the manifest, for the token validator.
         let validVariables = new Set<string>();
         let manifestAvailable = false;
@@ -63,7 +71,7 @@ class AssembleHandlerImpl implements StageHandler.Interface {
         }
 
         const tokenValidation: Record<string, ValidationResult> = {};
-        for (const component of generate.components) {
+        for (const component of generatedComponents) {
             tokenValidation[component.signature] = manifestAvailable
                 ? validateTokenBinding(component.css, validVariables)
                 : {
@@ -95,7 +103,7 @@ class AssembleHandlerImpl implements StageHandler.Interface {
 
         // Per-page instances, ordered by section, from each component's members.
         const byUrl = new Map<string, ComponentInstance[]>();
-        for (const component of generate.components) {
+        for (const component of generatedComponents) {
             const propValues: Record<string, string> = {};
             for (const prop of component.props) {
                 propValues[prop.name] = prop.observedValues[0] ?? "";

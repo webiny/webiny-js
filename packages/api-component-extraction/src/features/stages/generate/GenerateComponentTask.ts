@@ -78,7 +78,8 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
             // coordinator sees this component as resolved rather than waiting on it forever.
             await this.artifactStore.putJson(resultKey, {
                 signature: input.signature,
-                component: null
+                component: null,
+                revision: 1
             } satisfies ComponentResult);
             return controller.response.done("Planned component not found; nothing to generate.");
         }
@@ -132,7 +133,8 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
 
         const written = await this.artifactStore.putJson(resultKey, {
             signature: input.signature,
-            component
+            component,
+            revision: 1
         } satisfies ComponentResult);
         if (written.isFail()) {
             return controller.response.error(written.error.message);

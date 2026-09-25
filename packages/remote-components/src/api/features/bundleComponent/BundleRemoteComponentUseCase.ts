@@ -33,6 +33,16 @@ class BundleRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
                 css: component.css || undefined
             });
         } catch (error) {
+            const message = (error as Error).message;
+
+            // Record the failure rather than only returning it. `failed` with nothing to read is not
+            // actionable, and this is the only path that reaches `failed` at all: Promote skips a
+            // component it cannot bundle instead of creating one.
+            await this.updateRepository.execute(id, {
+                status: "failed",
+                bundleError: message
+            });
+
             return Result.fail(new RemoteComponentBundleError(error as Error));
         }
 
@@ -40,7 +50,10 @@ class BundleRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
             bundledJs: bundled.bundled,
             bundledJsSha256: bundled.sha256,
             bundledCss: bundled.css ?? "",
-            bundledCssSha256: bundled.cssSha256 ?? ""
+            bundledCssSha256: bundled.cssSha256 ?? "",
+            manifest: bundled.manifest,
+            status: "bundled",
+            bundleError: ""
         });
 
         if (updateResult.isFail()) {

@@ -68,6 +68,18 @@ class RemoteComponentSchema_ implements GraphQLSchemaFactory.Interface {
                 totalCount: Int!
             }
 
+            """
+            A component's bundle state. Not availability: it says whether the stored bundle can be
+            placed on a page, and it is written only by the bundler and by an update that changes the
+            source.
+            """
+            enum RemoteComponentStatus {
+                draft
+                bundled
+                stale
+                failed
+            }
+
             type RemoteComponent {
                 id: ID!
                 name: String!
@@ -80,8 +92,10 @@ class RemoteComponentSchema_ implements GraphQLSchemaFactory.Interface {
                 bundledJsSha256: String
                 bundledCss: String
                 bundledCssSha256: String
+                manifest: String
                 aiPrompt: String
-                status: String!
+                status: RemoteComponentStatus!
+                bundleError: String
                 sdkVersion: String!
                 createdOn: DateTime
                 savedOn: DateTime
@@ -106,7 +120,6 @@ class RemoteComponentSchema_ implements GraphQLSchemaFactory.Interface {
                 source: String!
                 css: String
                 aiPrompt: String
-                status: String
             }
 
             input UpdateRemoteComponentInput {
@@ -116,12 +129,7 @@ class RemoteComponentSchema_ implements GraphQLSchemaFactory.Interface {
                 aiContext: String
                 source: String
                 css: String
-                bundledJs: String
-                bundledJsSha256: String
-                bundledCss: String
-                bundledCssSha256: String
                 aiPrompt: String
-                status: String
             }
 
             type RemoteComponentQuery {

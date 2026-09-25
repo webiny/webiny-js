@@ -160,6 +160,18 @@ export const RENDER_COMPONENTS = /* GraphQL */ `
     }
 `;
 
+export const GET_GENERATED_COMPONENT = /* GraphQL */ `
+    query GetGeneratedComponent($runId: ID!, $signature: String!) {
+        componentExtractionGetGeneratedComponent(runId: $runId, signature: $signature) {
+            data
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
 export const GET_STAGE_ARTIFACT = /* GraphQL */ `
     query GetComponentExtractionStageArtifact($runId: ID!, $stage: String!, $machine: Boolean) {
         componentExtractionGetStageArtifact(runId: $runId, stage: $stage, machine: $machine) {

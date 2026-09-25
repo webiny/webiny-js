@@ -26,6 +26,7 @@ import {
     GET_RENDERS,
     GET_RUN,
     GET_STAGE_ARTIFACT,
+    GET_GENERATED_COMPONENT,
     GET_STAGE_TASK,
     LIST_JOBS,
     LIST_LIBRARY_NAMES,
@@ -160,6 +161,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: GET_STAGE_ARTIFACT, variables: { runId, stage, machine } });
 
         return unwrap(response.componentExtractionGetStageArtifact);
+    }
+
+    async getGeneratedComponent(runId: string, signature: string): Promise<unknown> {
+        const response = await this.client.execute<{
+            componentExtractionGetGeneratedComponent: GqlEnvelope<unknown>;
+        }>({ query: GET_GENERATED_COMPONENT, variables: { runId, signature } });
+
+        return unwrap(response.componentExtractionGetGeneratedComponent);
     }
 
     async excludeCapturedPages(runId: string, urls: string[]): Promise<RunDto> {

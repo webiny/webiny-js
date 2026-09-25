@@ -1,7 +1,13 @@
 import { Result } from "@webiny/feature/api";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { StageHandler, type StageContext, type StageOutcome } from "~/domain/stage.js";
-import type { GeneratedComponent, GenerateArtifact, PlanArtifact } from "~/domain/artifacts.js";
+import type {
+    GeneratedComponent,
+    GeneratedComponentRef,
+    GenerateArtifact,
+    PlanArtifact
+} from "~/domain/artifacts.js";
+import { toComponentRef } from "~/domain/generatedComponents.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 import { GENERATE_COMPONENT_TASK_ID } from "~/constants.js";
 import { decideCoordination, initCoordinatorState, type CoordinatorState } from "./coordination.js";
@@ -140,16 +146,21 @@ class GenerateHandlerImpl implements StageHandler.Interface {
             });
         }
 
-        // Every component is terminal — aggregate the per-component results into the stage artifact.
-        const components: GeneratedComponent[] = [];
+        // Every component is terminal — reference the per-component results from the stage artifact.
+        //
+        // These results are already written, already keyed by stage version, and already hold the whole
+        // component. Inlining them here is what made the aggregate scale with source size and cluster
+        // membership, and one DynamoDB item caps at 400 KB. Referencing them keeps the aggregate a
+        // function of component count alone.
+        const components: GeneratedComponentRef[] = [];
         const failed: string[] = [];
         for (const signature of signatures) {
-            const result = await context.store.getJson<ComponentResult>(
-                generateResultKey(context.run.id, context.stageVersion, signature)
-            );
-            const component = result.isOk() ? result.value?.component : null;
+            const resultRef = generateResultKey(context.run.id, context.stageVersion, signature);
+            const result = await context.store.getJson<ComponentResult>(resultRef);
+            const stored = result.isOk() ? result.value : null;
+            const component = stored?.component ?? null;
             if (component) {
-                components.push(component);
+                components.push(toComponentRef(component, resultRef, stored?.revision ?? 1));
                 if (!allPassed(component)) {
                     failed.push(signature);
                 }

@@ -9,6 +9,7 @@ import type {
     ComponentDecisionDto,
     GenerateArtifactDto,
     GeneratedComponentDto,
+    GeneratedComponentDetailDto,
     RenderRecordDto,
     ValidationResultDto
 } from "~/shared/types.js";
@@ -17,8 +18,9 @@ interface Props {
     presenter: RunViewPresenter.Interface;
 }
 
-const pageCountOf = (component: GeneratedComponentDto): number =>
-    new Set(component.members.map(member => member.url)).size;
+// Carried on the artifact rather than derived, because the aggregate references its components
+// instead of holding their cluster members.
+const pageCountOf = (component: GeneratedComponentDto): number => component.pageCount;
 
 const allPassed = (component: GeneratedComponentDto): boolean => {
     const v = component.validation;
@@ -294,7 +296,19 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
     const { vm } = presenter;
     const artifact = vm.artifact as GenerateArtifactDto | null;
     const runId = vm.run?.id ?? "";
-    const [codeFor, setCodeFor] = useState<GeneratedComponentDto | null>(null);
+    // Opening a component's code is a fetch: the Generate artifact references its components rather
+    // than carrying their source, so the list is served without it.
+    const [codeFor, setCodeFor] = useState<GeneratedComponentDetailDto | null>(null);
+    const [codeLoading, setCodeLoading] = useState(false);
+
+    const viewCode = async (signature: string) => {
+        setCodeLoading(true);
+        try {
+            setCodeFor(await presenter.loadComponentDetail(runId, signature));
+        } finally {
+            setCodeLoading(false);
+        }
+    };
 
     const rendersBySignature = useMemo(() => {
         const map = new Map<string, RenderRecordDto>();
@@ -386,11 +400,19 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
                             decision={vm.decisions[component.signature]}
                             regenerating={vm.regenerating.includes(component.signature)}
                             runId={runId}
-                            onViewCode={() => setCodeFor(component)}
+                            onViewCode={() => viewCode(component.signature)}
                         />
                     ))}
                 </div>
             </div>
+
+            {codeLoading ? (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-xl">
+                    <Text size="sm" className="text-neutral-light">
+                        Loading source…
+                    </Text>
+                </div>
+            ) : null}
 
             {codeFor ? (
                 <div

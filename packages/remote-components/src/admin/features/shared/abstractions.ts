@@ -41,14 +41,17 @@ export interface IRemoteComponentGateway {
             aiContext?: string;
             source?: string;
             css?: string;
-            bundledJs?: string;
-            bundledJsSha256?: string;
-            bundledCss?: string;
-            bundledCssSha256?: string;
             aiPrompt?: string;
-            status?: string;
         }
     ): Promise<RemoteComponentDto>;
+    /**
+     * Bundles a component on the server and returns it with the stored bundle and manifest.
+     *
+     * The editor cannot write a bundle itself — `update` has no field for one. Its local build is a
+     * preview: it never leaves the browser, so there is no way for what a page renders to come from
+     * a different derivation than the one the server ran.
+     */
+    bundle(id: string): Promise<RemoteComponentDto>;
     remove(id: string): Promise<boolean>;
     generate(
         prompt: string,
