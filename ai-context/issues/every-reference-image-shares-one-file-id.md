@@ -1,9 +1,12 @@
 # Every Generate reference image is created with the file id "component-extraction"
 
 > **Package:** `@webiny/api-component-extraction`
-> **Severity:** **high** — it is live, it corrupts the visual ground truth a component is generated
+> **Severity:** **high** — it was live, it corrupts the visual ground truth a component is generated
 > from, and Generate fans out concurrently so the wrong crop can be read by design rather than by
 > race alone.
+
+> **Status: fixed.** The id is now passed explicitly and the key is shaped `${id}/${filename}`. Kept
+> as the record of what it was and how far the damage can be established.
 
 ## The defect
 
@@ -66,22 +69,38 @@ The reference crop is the visual ground truth for the whole generation. Being ha
 produces a component that is plausibly built and wrong, which is the failure mode hardest to see in
 review — it looks like a normal component, just of the wrong section.
 
-This has not been proven to have caused a specific bad component; what is proven is that the
-mechanism is live and that only one file record exists. Whether past generations were affected can be
-checked by re-generating one component in isolation and comparing.
+**How far this can be established.** No component stores a reference file id — it is used transiently
+in the generation call — and the model-call log records only `stage, name, modelId, inputTokens,
+outputTokens, latencyMs, ok, createdOn`, with nothing about attachments. So **which crop any given
+component received cannot be recovered**, and no existing component can be shown to be wrong.
 
-## Fix sketch (not implemented)
+What can be established is that the exposure was real rather than theoretical. Reconstructing each
+generate call's window from `createdOn` and `latencyMs`:
 
-Pass an explicit `id`, or key the object the way File Manager expects:
+| run                   | generate calls | wall  | summed | peak concurrent |
+| --------------------- | -------------- | ----- | ------ | --------------- |
+| parkcityplace (fresh) | 11             | 366s  | 998s   | **4**           |
+| 2424tulane            | 24             | 1060s | 2858s  | **4**           |
+| thevibe               | 38             | 564s  | 1885s  | **4**           |
+| 71westland            | 38             | —     | 2910s  | **4**           |
+
+Summed latency is roughly three times wall time and up to **four generations were in flight at once**
+on every run, so the single constant file id was being replaced while other generations were reading
+it. (71westland's wall time spans a resume gap and is not meaningful; its concurrency is.)
+
+## The fix
+
+Both: the id is passed explicitly **and** the key is shaped the way File Manager expects, so the
+convention is satisfied rather than worked around and the two cannot disagree.
 
 ```ts
 const fileId = randomUUID();
-const fileKey = `${fileId}/${input.planned.name}-reference.png`;
+const fileKey = `${fileId}/${slug(input.planned.name)}-reference.png`;
 ```
 
-The second is better: it satisfies the convention rather than working around it, and it makes the S3
-key self-describing. The run id, which the current key carries for cleanup, belongs in `metadata` —
-and cleanup by prefix then needs rethinking, which is the one non-trivial part of this fix.
+The run id moves to `metadata.componentExtractionRunId`. It was in the key for grouping; nothing
+deletes these files by key prefix today, so nothing depended on that grouping — checked before
+changing it.
 
 Worth checking at the same time whether any other caller builds a File Manager key without an id-first
 segment; this convention is easy to miss because nothing enforces it and the failure is silent.

@@ -190,7 +190,25 @@ const createReferenceImage = async (
     try {
         const bytes = Buffer.from(cropResult.value);
         const tenant = deps.tenantContext.getTenant().id;
-        const fileKey = `component-extraction/${input.runId}/${randomUUID()}.png`;
+        /*
+         * The id is passed explicitly AND the key is shaped `${id}/${filename}`, because File Manager
+         * derives a file's id from the first segment of its key when none is given
+         * (`CreateFileUseCase`: `const [id] = input.key.split("/")`).
+         *
+         * Keying these `component-extraction/${runId}/${uuid}.png` gave every reference image the id
+         * "component-extraction": one File Manager record for all of them, each create overwriting
+         * the last, every earlier object orphaned in S3. Generate fans out concurrently and passes
+         * this id straight to the model call, so a component could be handed another component's
+         * reference crop — or another run's. The crop is the visual ground truth for the generation,
+         * so being handed the wrong one yields a component that looks well built and is of the wrong
+         * section.
+         *
+         * The run id moves to metadata: it was in the key for grouping, and the key cannot carry it
+         * without taking the id segment. Nothing deletes these by key prefix today, so nothing
+         * depended on that grouping.
+         */
+        const fileId = randomUUID();
+        const fileKey = `${fileId}/${input.planned.name.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}-reference.png`;
         await createS3().send(
             new PutObjectCommand({
                 Bucket: String(process.env.S3_BUCKET),
@@ -200,12 +218,13 @@ const createReferenceImage = async (
             })
         );
         const created = await deps.createFile.execute({
+            id: fileId,
             key: fileKey,
             size: bytes.length,
             type: "image/png",
             name: `${input.planned.name} reference`,
             // A machine input for the generation call, not a media-library asset — skip AI enrichment.
-            metadata: { aiImageEnrichment: false }
+            metadata: { aiImageEnrichment: false, componentExtractionRunId: input.runId }
         });
         if (created.isFail()) {
             await input.log(
