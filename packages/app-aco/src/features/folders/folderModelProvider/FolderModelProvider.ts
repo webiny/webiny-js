@@ -47,6 +47,7 @@ class FolderModelProviderImpl implements Provider.Interface {
                     target
                     level
                     inheritedFrom
+                    plugin
                 }
                 hasNonInheritedPermissions
                 canManagePermissions
