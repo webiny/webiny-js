@@ -130,7 +130,7 @@ describe("CapabilitiesHandler", () => {
             }
         });
 
-        expect(stored.items["fm.imageEnrichment"]).toEqual({
+        expect(stored.items?.["fm.imageEnrichment"]).toEqual({
             enabled: false,
             overrides: {}
         });
@@ -138,19 +138,18 @@ describe("CapabilitiesHandler", () => {
 
     /* An untouched switch can arrive as `null`, and that means on, same as absence. */
     it("settles a null switch to enabled rather than storing the null", async () => {
-        const stored = await store(
-            { items: { "cms.generateEntry": { enabled: null, overrides: {} } } },
-            null
-        );
+        const stored = await store({
+            items: { "cms.generateEntry": { enabled: null, overrides: {} } }
+        });
 
-        expect(stored.items["cms.generateEntry"]).toEqual({
+        expect(stored.items?.["cms.generateEntry"]).toEqual({
             enabled: true,
             overrides: {}
         });
     });
 
     it("keeps nulls and empty strings out of a stored override", async () => {
-        const stored = await handler.mapToStorage({
+        const stored = await store({
             items: {
                 "wb.generatePage": {
                     overrides: {
@@ -163,7 +162,7 @@ describe("CapabilitiesHandler", () => {
             }
         });
 
-        expect(stored.items["wb.generatePage"]).toEqual({
+        expect(stored.items?.["wb.generatePage"]).toEqual({
             enabled: true,
             overrides: { additionalInstructions: "Keep it short." }
         });
