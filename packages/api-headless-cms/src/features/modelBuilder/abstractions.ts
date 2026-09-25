@@ -10,6 +10,10 @@ import type { IModelBuilderPrivateInput, IModelBuilderPublicInput } from "./mode
 export interface IModelSettings {
     aiEntryWizard?: boolean;
     previewPath?: string;
+    /**
+     * Set via `builder.private({ lifecycleEvents: false })`. Only honored for private models.
+     */
+    lifecycleEvents?: boolean;
     [key: string]: any;
 }
 
