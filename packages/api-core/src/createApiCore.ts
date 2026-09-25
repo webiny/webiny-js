@@ -7,6 +7,7 @@ import { createAdminUsersContext } from "~/legacy/users/createAdminUsersContext.
 import { createTenancyContext } from "~/legacy/tenancy/createTenancyContext.js";
 import { createSystemGraphQL } from "~/graphql/system/createSystemGraphQL.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
+import { createDebuggerPlugins } from "~/features/debugger/index.js";
 
 export interface ApiCoreConfig {
     storageOperations: ApiCoreStorageOperations;
@@ -25,6 +26,7 @@ export const createApiCore = (config: ApiCoreConfig) => {
         createTenancyContext(),
         createSecurityContext(),
         createAdminUsersContext(),
-        createSystemGraphQL()
+        createSystemGraphQL(),
+        ...createDebuggerPlugins()
     ];
 };

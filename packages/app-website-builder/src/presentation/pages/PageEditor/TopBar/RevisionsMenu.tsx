@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback } from "react";
 import { Button, DropdownMenu, Text } from "@webiny/admin-ui";
 import { ReactComponent as ArrowDown } from "@webiny/icons/keyboard_arrow_down.svg";
 import { ReactComponent as Draft } from "@webiny/icons/draw.svg";
 import { ReactComponent as Unpublished } from "@webiny/icons/lock.svg";
 import { ReactComponent as Published } from "@webiny/icons/remove_red_eye.svg";
-import { useGetPageRevisions } from "~/features/pages/index.js";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
-import type { PageRevision } from "~/domain/PageRevision/index.js";
-import type { EditorPage } from "@webiny/website-builder-sdk";
+import { useRevisionList } from "~/presentation/pages/PageEditor/Revisions/useRevisionList.js";
 import { useRouter } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 import { usePageEditorDrawer } from "~/presentation/pages/PageEditor/Revisions/usePageEditorDrawer.js";
@@ -22,27 +20,15 @@ const statusIcon: Record<string, React.JSX.Element> = {
 
 export const RevisionsMenu = () => {
     const { getLink } = useRouter();
-    const [revisions, setRevisions] = useState<PageRevision[]>([]);
-    const { loading, getPageRevisions } = useGetPageRevisions();
     const id = useSelectFromDocument(document => document.id);
-    const status = useSelectFromDocument<string, EditorPage>(document => document.status);
 
     const { openRevisionList } = usePageEditorDrawer();
 
-    useEffect(() => {
-        const [entryId] = id.split("#");
-        getPageRevisions({ entryId }).then(revisions => {
-            setRevisions(
-                revisions
-                    .sort((a, b) => {
-                        return new Date(a.savedOn).getTime() - new Date(b.savedOn).getTime();
-                    })
-                    .reverse()
-            );
-        });
-    }, [id, status]);
+    // Shares the presenter with the revisions drawer, so mutations made there are reflected here.
+    const { vm } = useRevisionList(id);
+    const { revisions, isLoading } = vm;
 
-    const currentRevision = revisions.find(r => r.id === id);
+    const currentRevision = revisions.find(item => item.revision.id === id)?.revision;
 
     const goToRevision = useCallback((id: string) => {
         // TODO: make this work without a full app reload
@@ -57,7 +43,7 @@ export const RevisionsMenu = () => {
         <DropdownMenu
             trigger={
                 <Button
-                    disabled={loading}
+                    disabled={isLoading}
                     variant="ghost"
                     text={currentRevision ? currentRevision.getLabel() : "Loading..."}
                     icon={<ArrowDown />}
@@ -65,7 +51,7 @@ export const RevisionsMenu = () => {
                 />
             }
         >
-            {revisions.slice(0, 5).map(revision => (
+            {revisions.slice(0, 5).map(({ revision }) => (
                 <Item
                     key={revision.id}
                     className={"cursor-pointer"}
@@ -79,7 +65,6 @@ export const RevisionsMenu = () => {
                     text={<Text size={"sm"}>{revision.getLabel()}</Text>}
                 />
             ))}
-
             <DropdownMenu.Separator />
             <DropdownMenu.Item
                 key={"revisions-all"}

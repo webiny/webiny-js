@@ -1,4 +1,6 @@
 import { WebinyError } from "@webiny/error";
+import { Debugger } from "@webiny/api-core/features/debugger/index.js";
+import "~/debuggerNamespaces.js";
 import type {
     CmsEntry,
     CmsEntryStorageOperationsCreateParams,
@@ -99,6 +101,7 @@ export interface CreateEntriesStorageOperationsParams {
     valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
     filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
     fieldFactory: OpenSearchFieldFactory.Interface;
+    debuggerService: Debugger.Interface;
 }
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
@@ -141,7 +144,8 @@ export const createEntriesStorageOperations = (
         fullTextSearches,
         valuesModifiers,
         filterRegistry,
-        fieldFactory
+        fieldFactory,
+        debuggerService
     } = params;
 
     let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
@@ -1433,12 +1437,32 @@ export const createEntriesStorageOperations = (
         });
 
         let response: OpenSearchSearchResponse;
+        const startedAt = Date.now();
         try {
             response = await elasticsearch.search({
                 index,
                 body
             });
+
+            debuggerService.log("cms.os.list", () => ({
+                index,
+                query: body,
+                /**
+                 * Only the response body and status. The full client response also carries
+                 * `meta.connection.url` - the cluster endpoint - plus request headers.
+                 */
+                body: response.body,
+                statusCode: response.statusCode,
+                tookMs: Date.now() - startedAt
+            }));
         } catch (error) {
+            debuggerService.log("cms.os.list", () => ({
+                index,
+                query: body,
+                error,
+                tookMs: Date.now() - startedAt
+            }));
+
             /**
              * We will silently ignore the `index_not_found_exception` error and return an empty result set.
              * This is because the index might not exist yet, and we don't want to throw an error.

@@ -5,6 +5,7 @@ import { HeadlessCMS } from "@webiny/app-headless-cms";
 import { AdminUI } from "@webiny/app-admin-ui";
 import { FileManager } from "@webiny/app-file-manager/app.js";
 import { GraphQLPlayground } from "@webiny/app-graphql-playground";
+import { Debugger } from "@webiny/app-admin";
 import { SdkPlayground } from "@webiny/app-sdk-playground";
 import { imagePlugin } from "@webiny/app/plugins/index.js";
 import { createApolloClient } from "./apolloClientFactory.js";
@@ -48,6 +49,7 @@ const App = (props: AdminProps) => {
             <AdminUI />
             <SystemInstallerProvider />
             <GraphQLPlayground />
+            <Debugger />
             <SdkPlayground />
             <Websockets />
             <RecordLocking />

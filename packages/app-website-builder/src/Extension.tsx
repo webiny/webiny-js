@@ -27,6 +27,7 @@ import { UpdatePageRevisionDescriptionFeature } from "~/features/pages/updatePag
 import { CreatePageFeature as CreatePageHeadlessFeature } from "~/features/pages/createPage/index.js";
 import { GetPageFeature } from "~/features/pages/getPage/index.js";
 import { GetPageRevisionsFeature } from "~/features/pages/getPageRevisions/index.js";
+import { RevisionListFeature } from "~/presentation/pages/RevisionList/feature.js";
 import { SharedPageInfrastructureFeature } from "~/features/pages/shared/feature.js";
 import { CreatePageConfig } from "./presentation/pages/CreatePage/CreatePageConfig.js";
 import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
@@ -59,6 +60,7 @@ export const Extension = () => {
             <RegisterFeature feature={CreatePageHeadlessFeature} />
             <RegisterFeature feature={GetPageFeature} />
             <RegisterFeature feature={GetPageRevisionsFeature} />
+            <RegisterFeature feature={RevisionListFeature} />
             <RegisterFeature feature={CreatePageFeature} />
             <RegisterFeature feature={PageSettingsFeature} />
             <RegisterFeature feature={GetSettingsFeature} />

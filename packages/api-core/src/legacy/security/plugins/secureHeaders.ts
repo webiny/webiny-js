@@ -7,6 +7,7 @@ const whitelistedHeaders = [
     "content-type",
     "x-tenant",
     "x-apollo-tracing",
+    "x-webiny-debug",
     "apollo-query-plan-experimental"
 ];
 

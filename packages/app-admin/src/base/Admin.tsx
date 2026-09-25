@@ -27,6 +27,7 @@ import { SortableFeature } from "~/presentation/sortable/index.js";
 import { NotificationsRenderer } from "~/features/notifications/NotificationsRenderer.js";
 import { CommandPaletteFeature } from "~/presentation/commandPalette/index.js";
 import { AdminCommandsFeature } from "~/presentation/commandPalette/commands/feature.js";
+import { DebuggerFeature } from "~/features/debugger/feature.js";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
@@ -51,6 +52,7 @@ export const Admin = ({ children, createApolloClient, createLegacyPlugins }: Adm
     CommandPaletteFeature.register(container);
     AdminCommandsFeature.register(container);
     SortableFeature.register(container);
+    DebuggerFeature.register(container);
 
     const ApolloProvider = createApolloProvider(apolloClient);
     const UIProviders = createUiProviders();
