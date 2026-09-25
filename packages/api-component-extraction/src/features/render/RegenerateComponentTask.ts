@@ -9,10 +9,20 @@ import { StageArtifactStore } from "~/domain/stage.js";
 import { stageEntry } from "~/domain/ledger.js";
 import { readComponent, toComponentRef } from "~/domain/generatedComponents.js";
 import {
+    bundleComponent,
+    renderComponentText
+} from "@webiny/remote-components/api/bundler/index.js";
+import { flattenObservedValues } from "~/features/stages/generate/componentGeneration.js";
+import {
     generateResultKey,
     type ComponentResult
 } from "~/features/stages/generate/componentGeneration.js";
-import type { GenerateArtifact, PlanArtifact, RenderArtifact } from "~/domain/artifacts.js";
+import type {
+    GenerateArtifact,
+    PlanArtifact,
+    RenderArtifact,
+    ValidationResult
+} from "~/domain/artifacts.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import {
     validateContractConformance,
@@ -130,9 +140,30 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
             );
         }
 
+        // Same checks Generate runs, including the render: a refined component is validated the way a
+        // generated one is, or the operator gets a different verdict for the same code.
+        let renderedText = "";
+        let renderedValues: string[] = [];
+        let bundling: ValidationResult = { passed: true, failures: [] };
+
+        try {
+            const bundled = await bundleComponent({
+                name: component.name,
+                source,
+                css: css || undefined
+            });
+            renderedText = renderComponentText(bundled.bundled, component.name, component.props);
+            renderedValues = flattenObservedValues(component.props);
+        } catch (error) {
+            bundling = { passed: false, failures: [(error as Error).message] };
+        }
+
         const validation = {
+            bundling,
             textPreservation: validateTextPreservation(
                 sourceTexts.slice(0, PRESERVED_TEXT_LIMIT),
+                renderedText,
+                renderedValues,
                 source
             ),
             contractConformance: validateContractConformance(

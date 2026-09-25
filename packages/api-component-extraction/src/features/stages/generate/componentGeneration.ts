@@ -4,7 +4,16 @@ import { GenerateRemoteComponentUseCase } from "@webiny/remote-components/api/fe
 import { CreateFileUseCase } from "@webiny/api-file-manager/features/file/CreateFile/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { BlobStore } from "~/domain/stage.js";
-import type { GeneratedComponent, PlannedComponent } from "~/domain/artifacts.js";
+import {
+    bundleComponent,
+    renderComponentText
+} from "@webiny/remote-components/api/bundler/index.js";
+import type {
+    ComponentProp,
+    GeneratedComponent,
+    PlannedComponent,
+    ValidationResult
+} from "~/domain/artifacts.js";
 import { stageArtifactKey } from "~/constants.js";
 import {
     validateContractConformance,
@@ -121,6 +130,17 @@ const buildPrompt = (
     return lines.join("\n");
 };
 
+/**
+ * Every observed value on a prop tree, flattened. These are what the component had available to
+ * render, and a source fragment built entirely out of values it did render counts as preserved —
+ * observations are deduped per field, so the exact rows the page showed cannot be rebuilt from them.
+ */
+export const flattenObservedValues = (props: ComponentProp[]): string[] =>
+    props.flatMap(prop => [
+        ...(prop.observedValues ?? []),
+        ...flattenObservedValues(prop.fields ?? [])
+    ]);
+
 /** Whether two attempts produced the same set of validation failures (so a retry made no progress). */
 const sameFailures = (a: string[], b: string[]): boolean => {
     if (a.length !== b.length) {
@@ -236,9 +256,61 @@ export const generateComponentAttempts = async (
         }
 
         const output = generated.value;
+
+        /*
+         * Bundle and render before checking text.
+         *
+         * Text preservation asks whether the component puts the page's text on the page, which cannot
+         * be answered from the source code: a correctly parameterised component does not contain the
+         * text, because the text arrives as a prop. So the candidate is bundled and rendered with the
+         * values Plan observed, and the check runs against what came out.
+         *
+         * This bundle is for validation only and is thrown away. Promote builds the bundle that is
+         * stored, from the source that was actually promoted — bundling here would otherwise be work
+         * done for components that are never promoted, and two bundles that could disagree.
+         */
+        let renderedText = "";
+        let renderedValues: string[] = [];
+        let bundling: ValidationResult = { passed: true, failures: [] };
+
+        try {
+            const bundled = await bundleComponent({
+                name: planned.name,
+                source: output.source,
+                css: output.css || undefined
+            });
+            renderedValues = flattenObservedValues(planned.props);
+
+            try {
+                renderedText = renderComponentText(bundled.bundled, planned.name, planned.props);
+            } catch {
+                /*
+                 * A render that throws is not a bundle failure and not a text failure.
+                 *
+                 * It is this check's own limitation: the props are synthesised from observations, and
+                 * a component reaching into a value the pipeline never observed can fault on data it
+                 * would never see from a real instance. Failing the component for that would reject
+                 * working code for a shortcoming of the validator. The text check falls back to the
+                 * renderable source, which is the same evidence it uses for a branch this render did
+                 * not take.
+                 */
+                renderedText = "";
+            }
+        } catch (error) {
+            // Bundling itself failed: the component cannot be built, which is a real defect and a
+            // different remedy from missing text.
+            bundling = {
+                passed: false,
+                failures: [(error as Error).message]
+            };
+        }
+
         const validation = {
+            bundling,
             textPreservation: validateTextPreservation(
                 planned.sourceTexts.slice(0, PRESERVED_TEXT_LIMIT),
+                renderedText,
+                renderedValues,
                 output.source
             ),
             contractConformance: validateContractConformance(
@@ -253,6 +325,7 @@ export const generateComponentAttempts = async (
                   }
         };
         const failures = [
+            ...(validation.bundling.passed ? [] : validation.bundling.failures),
             ...(validation.textPreservation.passed ? [] : validation.textPreservation.failures),
             ...(validation.contractConformance.passed
                 ? []

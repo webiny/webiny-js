@@ -31,6 +31,38 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
         var SKIP = { SCRIPT:1, STYLE:1, NOSCRIPT:1, TEMPLATE:1, SVG:1, PATH:1, LINK:1, META:1, HEAD:1, BR:1 };
         var MEDIA = { IMG:1, SOURCE:1, VIDEO:1, IFRAME:1, EMBED:1 };
 
+        /*
+         * An element's own text, as one string and as the runs it is actually made of.
+         *
+         * A paragraph like <p>By submitting this form, you agree to the <a>privacy policy</a>.</p> has
+         * two direct text runs with a link between them. Concatenating them yields "By submitting this
+         * form, you agree to the ." — a string with a stray space and period that the page never
+         * displays, and that nothing downstream can reproduce. Requiring a generated component to
+         * contain it is requiring text that does not exist.
+         *
+         * So the runs are kept alongside the joined form. text is unchanged for every existing
+         * reader; textRuns is present only when an element's text was interrupted, and is what the
+         * section digest uses to build the fragments a validator checks.
+         */
+        function directTextRuns(el) {
+            var runs = [];
+            var current = "";
+            for (var i = 0; i < el.childNodes.length; i++) {
+                var n = el.childNodes[i];
+                if (n.nodeType === 3) {
+                    current += n.nodeValue;
+                } else if (n.nodeType === 1 && !SKIP[n.tagName]) {
+                    // An element between text runs breaks them apart.
+                    var done = current.replace(/\\s+/g, " ").trim();
+                    if (done) { runs.push(done); }
+                    current = "";
+                }
+            }
+            var tail = current.replace(/\\s+/g, " ").trim();
+            if (tail) { runs.push(tail); }
+            return runs;
+        }
+
         function directText(el) {
             var t = "";
             for (var i = 0; i < el.childNodes.length; i++) {
@@ -140,6 +172,8 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
             if (zeroArea) { node.boxDerived = true; }
             var text = directText(el);
             if (text) { node.text = text.slice(0, 2000); }
+            var runs = directTextRuns(el);
+            if (runs.length > 1) { node.textRuns = runs.map(function (r) { return r.slice(0, 2000); }); }
             // Only set when present, like \`text\` — an absent field keeps the tree small and keeps a
             // node's shape identical to what earlier runs produced.
             var href = linkDestination(el);

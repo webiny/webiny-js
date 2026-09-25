@@ -125,6 +125,15 @@ export interface CapturedNode {
     /** Direct text content, for the text-preservation validator. Absent if the node has none. */
     text?: string;
     /**
+     * The runs `text` was joined from, present only when an inline element interrupted them.
+     *
+     * `text` concatenates an element's direct text children, so a paragraph with a link in the middle
+     * yields one string containing the text either side of the link glued together — a fragment the
+     * page never displays. Where that happened, these are the pieces that were actually rendered, and
+     * they are what the section digest turns into checkable fragments.
+     */
+    textRuns?: string[];
+    /**
      * A link's destination, absolute (the evaluator reads the DOM property, so the browser has already
      * resolved it). Present on `a`/`area` only.
      *
@@ -477,6 +486,16 @@ export interface GeneratedComponent {
     /** How many generation attempts it took to pass validation. */
     attempts: number;
     validation: {
+        /**
+         * Whether the component bundles at all.
+         *
+         * Separate from the others on purpose. Text preservation is now checked against the component
+         * rendered with its values, which means bundling it first — and a component that fails to
+         * bundle would otherwise surface as "missing text: …" for every fragment, which is the wrong
+         * diagnosis and the wrong remedy. A bundle failure is a code problem; a text failure is a
+         * content problem.
+         */
+        bundling: ValidationResult;
         textPreservation: ValidationResult;
         contractConformance: ValidationResult;
         tokenBinding: ValidationResult;
@@ -516,6 +535,16 @@ export interface GeneratedComponentRef {
      * failure lists would alter what the admin shows and save nothing worth having.
      */
     validation: {
+        /**
+         * Whether the component bundles at all.
+         *
+         * Separate from the others on purpose. Text preservation is now checked against the component
+         * rendered with its values, which means bundling it first — and a component that fails to
+         * bundle would otherwise surface as "missing text: …" for every fragment, which is the wrong
+         * diagnosis and the wrong remedy. A bundle failure is a code problem; a text failure is a
+         * content problem.
+         */
+        bundling: ValidationResult;
         textPreservation: ValidationResult;
         contractConformance: ValidationResult;
         tokenBinding: ValidationResult;

@@ -32,9 +32,16 @@ export const sectionDigest = (node: CapturedNode, maxTexts = 40): SectionDigest 
         if (HEADING_TAGS.has(current.tag)) {
             headingCount++;
         }
-        if (current.text && !seen.has(current.text) && texts.length < maxTexts) {
-            seen.add(current.text);
-            texts.push(current.text);
+        /*
+         * Prefer the runs over the joined text. An element whose text was interrupted by a link
+         * contributes the pieces the page actually shows, rather than one string gluing them together
+         * across the link — which is text no component can contain because no page displays it.
+         */
+        for (const fragment of current.textRuns ?? (current.text ? [current.text] : [])) {
+            if (!seen.has(fragment) && texts.length < maxTexts) {
+                seen.add(fragment);
+                texts.push(fragment);
+            }
         }
         current.children.forEach(walk);
     };

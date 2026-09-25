@@ -24,6 +24,7 @@ const component = (overrides: Partial<GeneratedComponent> = {}): GeneratedCompon
     ] as GeneratedComponent["members"],
     attempts: 1,
     validation: {
+        bundling: { passed: true, failures: [] },
         textPreservation: { passed: true, failures: [] },
         contractConformance: { passed: true, failures: [] },
         tokenBinding: { passed: true, failures: [] }
