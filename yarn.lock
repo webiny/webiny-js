@@ -12142,6 +12142,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    mobx: "npm:^6.16.1"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
