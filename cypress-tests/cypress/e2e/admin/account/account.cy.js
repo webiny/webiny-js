@@ -8,7 +8,7 @@ context("Account Module", () => {
 
         cy.visit("/account");
         cy.findByTestId("account.email");
-        cy.should("value", Cypress.env("DEFAULT_ADMIN_USER_USERNAME"));
+        cy.should("value", Cypress.expose("DEFAULT_ADMIN_USER_USERNAME"));
         cy.findByTestId("account.password");
         cy.should("value", "");
         cy.findByLabelText("First Name").clear().type(firstName);
@@ -20,7 +20,7 @@ context("Account Module", () => {
         // Make sure the changes were propagated in the top-right user menu,
         cy.findByTestId("logged-in-user-menu-avatar").click();
         cy.findByTestId("logged-in-user-menu-list").within(() => {
-            cy.findByText(Cypress.env("DEFAULT_ADMIN_USER_USERNAME"));
+            cy.findByText(Cypress.expose("DEFAULT_ADMIN_USER_USERNAME"));
             cy.should("exist");
             cy.findByText(`${firstName} ${lastName}`);
             cy.should("exist");

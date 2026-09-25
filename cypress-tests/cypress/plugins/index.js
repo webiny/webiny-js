@@ -1,7 +1,6 @@
 import uniqid from "uniqid";
 import { deleteSync } from "del";
 import some from "lodash/some.js";
-import { addMatchImageSnapshotPlugin } from "cypress-image-snapshot/plugin.js";
 import vitePreprocessor from "cypress-vite";
 
 export default (on, config) => {
@@ -13,7 +12,12 @@ export default (on, config) => {
             }
         })
     );
-    config.env.TEST_RUN_ID = uniqid();
+    /**
+     * Generated per run and read by specs through `Cypress.expose`, so it belongs in `expose`
+     * rather than `env` - Cypress 16 split the two, and `env` is now reachable only through the
+     * asynchronous `cy.env()`.
+     */
+    config.expose = { ...config.expose, TEST_RUN_ID: uniqid() };
     /*
      * Only keep video recording file for failed Spec.
      * This will help reducing media noise in the Slack channel posted by Github action.
@@ -30,8 +34,6 @@ export default (on, config) => {
             }
         }
     });
-
-    addMatchImageSnapshotPlugin(on, config);
 
     return config;
 };
