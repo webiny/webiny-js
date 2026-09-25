@@ -219,6 +219,12 @@ const parseProp = (item: unknown, depth: number): ComponentProp | null => {
     };
 };
 
+/** Trailing "..." or "…" — the shape the model uses when it abbreviates a value. */
+const ENDS_WITH_ELLIPSIS = /\s*(\.{3}|…)\s*$/;
+
+/** Whitespace-insensitive comparison, so a value wrapped differently still matches its capture. */
+const collapse = (text: string): string => text.replace(/\s+/g, " ").trim();
+
 /** Stamp the grounded instance count onto every prop (recursively), overriding any model-supplied total. */
 const stampTotals = (props: ComponentProp[], total: number): void => {
     for (const prop of props) {
@@ -229,9 +235,64 @@ const stampTotals = (props: ComponentProp[], total: number): void => {
     }
 };
 
+/**
+ * Restore observed values the model abbreviated, from the captured text it was abbreviating.
+ *
+ * The model is shown the section's text in full and still writes a shortened value ending in an
+ * ellipsis for long prose — measured across six stored runs, 28 of 643 values (4%), keeping 2,386 of
+ * 10,281 characters and discarding 77% of those paragraphs. That is not a cosmetic loss: Assemble
+ * writes `observedValues[0]` straight onto the composed page, so the page renders the ellipsis.
+ *
+ * The repair is deterministic because the pool the model was abbreviating is the same list stored as
+ * the component's `sourceTexts`. Of those 28, 26 are a substring of exactly one captured text and
+ * none of more than one, so the answer is unambiguous where there is one at all. The model's string
+ * is used only as the key for which captured text belongs to this prop; the text itself comes from
+ * the capture.
+ *
+ * **Only values carrying an explicit ellipsis are touched.** A further 63 values are substrings of a
+ * longer captured text without one, and those are usually legitimately distinct short text — "Learn
+ * More" inside "Learn More About Us" — which rewriting would corrupt.
+ *
+ * A match is positional-agnostic on purpose: one freehill value starts mid-paragraph, so the model
+ * dropped text from the front as well as the end. Restoring the containing text recovers both.
+ */
+const restoreAbbreviatedValues = (props: ComponentProp[], capturedTexts: string[]): void => {
+    const captured = capturedTexts.filter((text): text is string => typeof text === "string");
+    if (captured.length === 0) {
+        return;
+    }
+    const normalised = captured.map(collapse);
+
+    const restore = (value: string): string => {
+        if (!ENDS_WITH_ELLIPSIS.test(value.trim())) {
+            return value;
+        }
+        const core = collapse(value.replace(ENDS_WITH_ELLIPSIS, ""));
+        if (!core) {
+            return value;
+        }
+        const matches = normalised.reduce<number[]>((found, text, index) => {
+            if (text.length > core.length && text.includes(core)) {
+                found.push(index);
+            }
+            return found;
+        }, []);
+        return matches.length === 1 ? captured[matches[0]] : value;
+    };
+
+    for (const prop of props) {
+        // Restoring can make two values identical, so dedupe rather than store the paragraph twice.
+        prop.observedValues = [...new Set(prop.observedValues.map(restore))];
+        if (prop.fields) {
+            restoreAbbreviatedValues(prop.fields, capturedTexts);
+        }
+    }
+};
+
 export const parsePlanContract = (
     text: string,
-    instanceCount?: number
+    instanceCount?: number,
+    capturedTexts: string[] = []
 ): { props: ComponentProp[]; tokenBindings: TokenBinding[] } | null => {
     const raw = extractJson<ContractJson>(text);
     if (!raw) {
@@ -248,6 +309,7 @@ export const parsePlanContract = (
     if (typeof instanceCount === "number") {
         stampTotals(props, instanceCount);
     }
+    restoreAbbreviatedValues(props, capturedTexts);
 
     const tokenBindings: TokenBinding[] = [];
     for (const item of Array.isArray(raw.tokenBindings) ? (raw.tokenBindings as unknown[]) : []) {

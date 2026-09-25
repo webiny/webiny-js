@@ -16,6 +16,108 @@ const cluster = (members: number): ClassifiedCluster =>
         }
     }) as unknown as ClassifiedCluster;
 
+describe("parsePlanContract — restoring abbreviated observed values", () => {
+    const FULL =
+        "Let loose and indulge in all the fine things that 2424 Tulane Apartments has to offer. " +
+        "Right outside your door, a great neighborhood makes it easy to mix up your routine.";
+
+    it("restores a value the model abbreviated, from the captured text", () => {
+        const result = parsePlanContract(
+            contract([
+                {
+                    name: "body",
+                    type: "richText",
+                    observedValues: [
+                        "Let loose and indulge in all the fine things that 2424 Tulane Apartments has to offer..."
+                    ]
+                }
+            ]),
+            1,
+            [FULL]
+        );
+        expect(result?.props[0].observedValues).toEqual([FULL]);
+    });
+
+    it("restores when the model dropped text from the front as well as the end", () => {
+        const result = parsePlanContract(
+            contract([
+                {
+                    name: "body",
+                    type: "richText",
+                    observedValues: ["Right outside your door, a great neighborhood..."]
+                }
+            ]),
+            1,
+            [FULL]
+        );
+        expect(result?.props[0].observedValues).toEqual([FULL]);
+    });
+
+    it("leaves a value alone when more than one captured text contains it", () => {
+        const abbreviated = "Welcome to the community...";
+        const result = parsePlanContract(
+            contract([{ name: "body", type: "string", observedValues: [abbreviated] }]),
+            1,
+            ["Welcome to the community pool.", "Welcome to the community garden."]
+        );
+        expect(result?.props[0].observedValues).toEqual([abbreviated]);
+    });
+
+    it("leaves a prefix alone when it carries no ellipsis", () => {
+        // "Learn More" is a legitimately distinct label, not an abbreviation of the longer one.
+        const result = parsePlanContract(
+            contract([{ name: "cta", type: "string", observedValues: ["Learn More"] }]),
+            1,
+            ["Learn More About Us"]
+        );
+        expect(result?.props[0].observedValues).toEqual(["Learn More"]);
+    });
+
+    it("restores inside nested fields", () => {
+        const result = parsePlanContract(
+            contract([
+                {
+                    name: "card",
+                    type: "object",
+                    fields: [
+                        {
+                            name: "body",
+                            type: "string",
+                            observedValues: ["Right outside your door, a great..."]
+                        }
+                    ]
+                }
+            ]),
+            1,
+            [FULL]
+        );
+        expect(result?.props[0].fields?.[0].observedValues).toEqual([FULL]);
+    });
+
+    it("dedupes when restoring makes two values identical", () => {
+        const result = parsePlanContract(
+            contract([
+                {
+                    name: "body",
+                    type: "string",
+                    observedValues: ["Let loose and indulge...", "Let loose and indulge in all..."]
+                }
+            ]),
+            1,
+            [FULL]
+        );
+        expect(result?.props[0].observedValues).toEqual([FULL]);
+    });
+
+    it("is a no-op when no captured text is supplied", () => {
+        const abbreviated = "Let loose and indulge...";
+        const result = parsePlanContract(
+            contract([{ name: "body", type: "string", observedValues: [abbreviated] }])
+        );
+        expect(result?.props[0].observedValues).toEqual([abbreviated]);
+    });
+});
+
 describe("parsePlanContract", () => {
     it("keeps the base type and reads the optional/array flags", () => {
         const result = parsePlanContract(
