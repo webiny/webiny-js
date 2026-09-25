@@ -68,15 +68,17 @@ describe("normalizeToAsset — legacy Website Builder image value", () => {
         }
     };
 
-    it("upgrades mimeType -> type and edit -> image", () => {
+    it("keeps mimeType, maps edit -> image, and mirrors dimensions at the root", () => {
         const asset = normalizeToAsset(legacy);
         expect(asset).toEqual({
             id: "file-1",
             src: "https://cdn/x/cat.jpg",
             url: "https://cdn/x/cat.jpg",
             name: "cat.jpg",
-            type: "image/jpeg",
+            mimeType: "image/jpeg",
             size: 1234,
+            width: 800,
+            height: 600,
             image: {
                 width: 800,
                 height: 600,
@@ -92,13 +94,13 @@ describe("normalizeToAsset — legacy Website Builder image value", () => {
         expect(asset?.image).toEqual({ width: 800, height: 600 });
     });
 
-    it("upgrades an original flat WB file value (type + top-level dims, no edit)", () => {
-        // The shape existing released pages store: flat, uses `type`, no sub-object.
+    it("upgrades a flat 6.4 file value (mimeType + top-level dims, no edit)", () => {
+        // The shape released 6.x versions store: flat, no image sub-object.
         const asset = normalizeToAsset({
             id: "f",
             src: "https://cdn/x.jpg",
             name: "x.jpg",
-            type: "image/jpeg",
+            mimeType: "image/jpeg",
             size: 10,
             width: 800,
             height: 600
@@ -108,8 +110,10 @@ describe("normalizeToAsset — legacy Website Builder image value", () => {
             src: "https://cdn/x.jpg",
             url: "https://cdn/x.jpg",
             name: "x.jpg",
-            type: "image/jpeg",
+            mimeType: "image/jpeg",
             size: 10,
+            width: 800,
+            height: 600,
             image: { width: 800, height: 600 }
         });
     });
@@ -122,7 +126,8 @@ describe("normalizeToAsset — legacy Website Builder image value", () => {
             width: undefined,
             height: undefined
         });
-        expect(asset?.type).toBe("application/pdf");
+        expect(asset?.mimeType).toBe("application/pdf");
+        expect(asset?.width).toBeUndefined();
         expect(asset?.image).toBeUndefined();
     });
 });
@@ -134,8 +139,10 @@ describe("normalizeToAsset — already-unified asset", () => {
             src: "https://cdn/y/pic.png",
             url: "https://cdn/y/pic.png",
             name: "pic.png",
-            type: "image/png",
+            mimeType: "image/png",
             size: 9,
+            width: 400,
+            height: 300,
             image: {
                 width: 400,
                 height: 300,
@@ -152,7 +159,7 @@ describe("normalizeToAsset — already-unified asset", () => {
             id: "v1",
             src: "https://cdn/v/clip.mp4",
             name: "clip.mp4",
-            type: "video/mp4",
+            mimeType: "video/mp4",
             size: 42,
             video: { autoplay: true, poster: "https://cdn/v/poster.jpg" }
         });
