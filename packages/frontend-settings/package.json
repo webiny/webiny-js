@@ -23,8 +23,8 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/project-aws": "0.0.0",
-    "markdown-to-jsx": "^9.9.0",
-    "mobx": "^6.16.1",
+    "markdown-to-jsx": "^9.10.3",
+    "mobx": "^7.0.3",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
