@@ -7,14 +7,19 @@ export const ToggleEditorMode = observer(() => {
     const { presenter } = useWorkflowState();
     const editor = useDocumentEditor();
 
-    const hasState = presenter.vm.hasState;
+    /**
+     * A page is locked for the duration of the review. Once the review is approved the page can
+     * be published, so the editor has to become writable again - otherwise the top bar keeps
+     * offering "New Revision" instead of "Publish".
+     */
+    const isUnderReview = presenter.vm.hasState && !presenter.vm.isApproved;
 
     useEffect(() => {
         const options = editor.getEditorOptions();
         editor.updateEditor(state => {
-            state.isReadOnly = options.isReadOnly || hasState;
+            state.isReadOnly = options.isReadOnly || isUnderReview;
         });
-    }, [hasState]);
+    }, [isUnderReview]);
 
     return null;
 });
