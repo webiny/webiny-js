@@ -9,6 +9,7 @@ import {
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
 import { EmptyState, Icon, Text } from "@webiny/admin-ui";
+import { ScrollArea } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
@@ -147,29 +148,32 @@ const CommandPaletteBase = () => {
                             <Kbd>esc</Kbd>
                         </div>
 
-                        <Command.List
-                            className="p-xs-plus"
-                            style={{ flex: 1, minHeight: 0, overflowY: "auto" }}
-                        >
-                            <Command.Empty>
-                                <EmptyState
-                                    type="select"
-                                    title={`No results for “${query}”`}
-                                    description="Try a page name, or an action like “new entry”."
-                                />
-                            </Command.Empty>
+                        {/*
+                         * The list scrolls inside a `ScrollArea`, so it shows the same scrollbar
+                         * as the rest of the admin instead of the operating system's.
+                         */}
+                        <ScrollArea className="min-h-0 flex-1">
+                            <Command.List className="p-xs-plus">
+                                <Command.Empty>
+                                    <EmptyState
+                                        type="select"
+                                        title={`No results for “${query}”`}
+                                        description="Try a page name, or an action like “new entry”."
+                                    />
+                                </Command.Empty>
 
-                            {groups.map(group => (
-                                <Command.Group
-                                    key={group.title}
-                                    heading={<GroupHeading title={group.title} />}
-                                >
-                                    {group.rows.map(row => (
-                                        <CommandItemRow key={row.key} row={row} />
-                                    ))}
-                                </Command.Group>
-                            ))}
-                        </Command.List>
+                                {groups.map(group => (
+                                    <Command.Group
+                                        key={group.title}
+                                        heading={<GroupHeading title={group.title} />}
+                                    >
+                                        {group.rows.map(row => (
+                                            <CommandItemRow key={row.key} row={row} />
+                                        ))}
+                                    </Command.Group>
+                                ))}
+                            </Command.List>
+                        </ScrollArea>
                     </Command>
                 )}
 
