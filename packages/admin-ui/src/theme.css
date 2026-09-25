@@ -13,6 +13,8 @@
   --color-warning-300: hsl(45 95.1% 75.9%);
   --color-warning-200: hsl(45 96.9% 87.5%);
   --color-warning-100: hsl(43 100% 96.5%);
+  --color-warning-50: hsl(43 100% 98.3%);
+  --color-warning-0: hsl(0 0% 100%);
 
   --color-success-900: hsl(160 100% 14.5%);
   --color-success-800: hsl(160 100% 19.6%);
@@ -23,6 +25,8 @@
   --color-success-300: hsl(168 58.1% 79.4%);
   --color-success-200: hsl(170 57.1% 91.8%);
   --color-success-100: hsl(168 50% 96.1%);
+  --color-success-50: hsl(168 50% 98.1%);
+  --color-success-0: hsl(0 0% 100%);
   --color-secondary-900: hsl(160 100% 14.5%);
   --color-secondary-800: hsl(160 100% 19.6%);
   --color-secondary-700: hsl(165 100% 28.6%);
@@ -32,6 +36,8 @@
   --color-secondary-300: hsl(168 58.1% 79.4%);
   --color-secondary-200: hsl(170 57.1% 91.8%);
   --color-secondary-100: hsl(168 50% 96.1%);
+  --color-secondary-50: hsl(168 50% 98.1%);
+  --color-secondary-0: hsl(0 0% 100%);
   --color-primary-900: hsl(14 100% 25.5%);
   --color-primary-800: hsl(14 100% 32.2%);
   --color-primary-700: hsl(14 94.1% 40%);
@@ -41,16 +47,18 @@
   --color-primary-300: hsl(14 94.7% 77.8%);
   --color-primary-200: hsl(15 94.2% 86.5%);
   --color-primary-100: hsl(5 100% 97.5%);
+  --color-primary-50: hsl(5 100% 98.8%);
+  --color-primary-0: hsl(0 0% 100%);
   --color-neutral-900: hsl(214 12.3% 11.2%);
   --color-neutral-800: hsl(215 11.1% 21.2%);
   --color-neutral-700: hsl(213 10.1% 38.8%);
   --color-neutral-600: hsl(215 9.6% 51%);
   --color-neutral-500: hsl(218 10.7% 65.3%);
-  --color-neutral-50: hsl(180 11.1% 98.2%);
   --color-neutral-400: hsl(219 12.1% 77.3%);
   --color-neutral-300: hsl(225 16.7% 90.6%);
   --color-neutral-200: hsl(220 11.1% 94.7%);
   --color-neutral-100: hsl(210 14.3% 97.3%);
+  --color-neutral-50: hsl(180 11.1% 98.2%);
   --color-neutral-0: hsl(0 0% 100%);
   --color-destructive-900: hsl(359 81.6% 17.1%);
   --color-destructive-800: hsl(0 83.6% 21.6%);
@@ -61,6 +69,8 @@
   --color-destructive-300: hsl(1 83.2% 76.7%);
   --color-destructive-200: hsl(0 96.4% 89.2%);
   --color-destructive-100: hsl(0 100% 96.9%);
+  --color-destructive-50: hsl(0 100% 98.5%);
+  --color-destructive-0: hsl(0 0% 100%);
 
   /* Background color. */
   --color-destructive: var(--color-destructive-500);
@@ -71,7 +81,9 @@
   --color-destructive-xstrong: var(--color-destructive-800);
 
   --color-neutral-base: var(--color-neutral-0);
+  --color-neutral-elevated: var(--color-neutral-0);
   --color-neutral-dark: var(--color-neutral-900);
+  --color-neutral-overlay: var(--color-neutral-dark);
   --color-neutral-dimmed: var(--color-neutral-200);
   --color-neutral-disabled: var(--color-neutral-200);
   --color-neutral-light: var(--color-neutral-100);
@@ -149,6 +161,7 @@
   --fill-destructive: var(--color-destructive-500);
 
   --fill-neutral-base: var(--color-neutral-0);
+  --fill-neutral-primary: var(--color-neutral-900);
   --fill-neutral-dark: var(--color-neutral-800);
   --fill-neutral-disabled: var(--color-neutral-400);
   --fill-neutral-strong: var(--color-neutral-500);
@@ -246,6 +259,7 @@
   --text-color-accent-subtle: var(--color-primary-100);
 
   --text-color-destructive-muted: var(--color-destructive-300);
+  --text-color-destructive-strong: var(--color-destructive-700);
   --text-color-destructive-primary: var(--color-destructive-500);
   --text-color-destructive-subtle: var(--color-destructive-100);
 
@@ -258,7 +272,10 @@
 
   --text-color-success-muted: var(--color-success-400);
   --text-color-success-primary: var(--color-success-500);
+  --text-color-success-strong: var(--color-success-700);
   --text-color-success-subtle: var(--color-success-200);
+
+  --text-color-warning-strong: var(--color-warning-700);
 
   /* Text sizes. */
   --text-sm: 12px;
@@ -354,6 +371,32 @@
       background-color: var(--color-neutral-disabled);
     }
   }
+}
+
+/*
+ * Light is the built-in default theme (the `@theme` values above). Dark themes are no longer
+ * static `[data-theme]` blocks — they are registered at runtime as individual files (see the
+ * admin themes extension) and applied as inline CSS variables on `<html>` by
+ * `@webiny/app-admin`'s applyTheme (the shared dark mapping lives in
+ * `@webiny/admin-ui` `themes/darkThemeBase.ts`).
+ *
+ * The page background follows the neutral surface for every theme: in light it is white, and a
+ * dark theme overrides `--color-neutral-base` at runtime.
+ */
+body {
+  background-color: var(--color-neutral-base);
+}
+
+/*
+ * Tells the browser which palette to draw *native* UI in — the widgets CSS cannot reach:
+ * the `::-webkit-calendar-picker-indicator` on `<input type="date">` / `type="time"`,
+ * scrollbars, `<select>` popups, autofill, spinners. These ignore `fill` and `color`, so
+ * without this they stay black-on-light in every theme (and, on an OS set to dark, could go
+ * dark while the light theme is active). A dark theme sets `--color-scheme: dark`; the
+ * fallback keeps light explicit rather than leaving it to the OS preference.
+ */
+:root {
+  color-scheme: var(--color-scheme, light);
 }
 
 @utility container {
