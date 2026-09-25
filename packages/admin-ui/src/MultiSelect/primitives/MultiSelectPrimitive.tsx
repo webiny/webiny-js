@@ -142,9 +142,11 @@ const MultiSelectContent = ({ options, value, onToggle }: MultiSelectContentProp
                 {/*
                  * The padding sits inside the scroller so the scrollbar runs the full height, and
                  * the cap leaves room for the popover's border, so the whole dropdown fits in the
-                 * space Radix says is available.
+                 * space Radix says is available. The thumb shows whenever the list overflows, as in
+                 * the other dropdowns.
                  */}
                 <ScrollArea
+                    type={"auto"}
                     viewportClassName={cn(
                         "py-sm",
                         "max-h-[calc(min(250px,var(--radix-popover-content-available-height,250px))_-_2*var(--border-width-sm))]"

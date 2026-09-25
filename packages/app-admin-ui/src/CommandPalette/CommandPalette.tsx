@@ -150,9 +150,10 @@ const CommandPaletteBase = () => {
 
                         {/*
                          * The list scrolls inside a `ScrollArea`, so it shows the same scrollbar
-                         * as the rest of the admin instead of the operating system's.
+                         * as the rest of the admin instead of the operating system's, and like
+                         * the dropdown lists it shows the thumb whenever there's more to scroll.
                          */}
-                        <ScrollArea className="min-h-0 flex-1">
+                        <ScrollArea type={"auto"} className="min-h-0 flex-1">
                             <Command.List className="p-xs-plus">
                                 <Command.Empty>
                                     <EmptyState
