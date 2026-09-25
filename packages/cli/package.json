@@ -19,10 +19,10 @@
     "@webiny/cli-core": "0.0.0",
     "@webiny/system-requirements": "0.0.0",
     "execa": "^5.1.1",
-    "tsx": "4.23.1"
+    "tsx": "4.23.15"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.24",
+    "@types/lodash": "^4.17.25",
     "@webiny/build-tools": "0.0.0"
   },
   "publishConfig": {
