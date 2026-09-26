@@ -260,7 +260,13 @@ export interface IField {
     setValueSilent(value: unknown): void;
     setDisabled(value: boolean): void;
     setVisible(value: boolean): void;
-    setForm(form: IFormModel, parentPath?: string): void;
+    /**
+     * `parentPath` is the parent's qualified name. `scopePath` returns a path that
+     * `form.field()` resolves to the parent itself; it differs from `parentPath` for
+     * list item children, where it includes the item index (`blocks.2`). `$.` rule
+     * targets and `field.parent()` resolve against it. Defaults to `parentPath`.
+     */
+    setForm(form: IFormModel, parentPath?: string, scopePath?: () => string): void;
     setAncestorRules(rules: IRule[]): void;
     setValidation(validation: IFieldValidation): void;
     resetValidation(): void;

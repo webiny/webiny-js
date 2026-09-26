@@ -33,28 +33,34 @@ export const TEMPLATE_DISCRIMINATOR = "_templateId";
 function createChildFields(
     childBuilders: Record<string, IFieldBuilder>,
     form: IFormModel | null,
-    parentPath?: string
+    parentPath?: string,
+    scopePath?: () => string
 ): Map<string, IField> {
     const children = new Map<string, IField>();
     for (const [name, builder] of Object.entries(childBuilders)) {
         const config = builder.build(name);
-        const field = createFieldFromConfig(config, form, parentPath);
+        const field = createFieldFromConfig(config, form, parentPath, scopePath);
         children.set(name, field);
     }
     return children;
 }
 
-function createFieldFromConfig(config: any, form: IFormModel | null, parentPath?: string): IField {
+function createFieldFromConfig(
+    config: any,
+    form: IFormModel | null,
+    parentPath?: string,
+    scopePath?: () => string
+): IField {
     if (config.childBuilders) {
         const objField = new ObjectField(config as IObjectFieldConfig);
         if (form) {
-            objField.setForm(form, parentPath);
+            objField.setForm(form, parentPath, scopePath);
         }
         return objField;
     }
     const field = new Field(config);
     if (form) {
-        field.setForm(form, parentPath);
+        field.setForm(form, parentPath, scopePath);
     }
     return field;
 }
@@ -156,8 +162,10 @@ export class ObjectField implements IObjectField {
             this._children = createChildFields(config.childBuilders, null);
         }
 
-        makeAutoObservable(this, {
-            config: false
+        makeAutoObservable<this, "_childScope" | "_itemScope">(this, {
+            config: false,
+            _childScope: false,
+            _itemScope: false
         });
     }
 
@@ -173,7 +181,12 @@ export class ObjectField implements IObjectField {
                     `Available: ${this._templates.map(t => t.id).join(", ") || "(none)"}.`
             );
         }
-        const children = createChildFields(template.childBuilders, this._form, this.qualifiedName);
+        const children = createChildFields(
+            template.childBuilders,
+            this._form,
+            this.qualifiedName,
+            this._childScope
+        );
         this._children = children;
         this._activeTemplateId = templateId;
         const inner = this._innerLayoutFor(templateId);
@@ -212,18 +225,35 @@ export class ObjectField implements IObjectField {
         this._base.setAncestorRules(rules);
     }
 
-    setForm(form: IFormModel, parentPath?: string): void {
+    setForm(form: IFormModel, parentPath?: string, scopePath?: () => string): void {
         this._form = form;
-        this._base.setForm(form, parentPath);
+        this._base.setForm(form, parentPath, scopePath);
         const myPath = this._base.qualifiedName;
         for (const [, field] of this._children) {
-            field.setForm(form, myPath);
+            field.setForm(form, myPath, this._childScope);
         }
         for (const item of this._items) {
             for (const [, field] of item.children) {
-                field.setForm(form, myPath);
+                field.setForm(form, myPath, this._itemScope(item.key));
             }
         }
+    }
+
+    /** Scope for direct children: a path `form.field()` resolves to this field. */
+    private _childScope = (): string => {
+        return this._base.scopedName;
+    };
+
+    /**
+     * Scope for the children of a list item. Children keep `qualifiedName` without an
+     * item selector, so `$.` rule targets and `field.parent()` need the item's index to
+     * reach their siblings. Resolved lazily, so it follows reorders and removals.
+     */
+    private _itemScope(key: string): () => string {
+        return () => {
+            const index = this._items.findIndex(item => item.key === key);
+            return `${this._base.scopedName}.${index}`;
+        };
     }
 
     setValidation(validation: IFieldValidation): void {
@@ -557,12 +587,22 @@ export class ObjectField implements IObjectField {
 
             this.config.childBuilders[name] = builder;
             const built = builder.build(name);
-            const newField = createFieldFromConfig(built, this._form, this.qualifiedName);
+            const newField = createFieldFromConfig(
+                built,
+                this._form,
+                this.qualifiedName,
+                this._childScope
+            );
             this._children.set(name, newField);
 
             if (this.config.isList) {
                 for (const item of this._items) {
-                    const itemField = createFieldFromConfig(built, this._form, this.qualifiedName);
+                    const itemField = createFieldFromConfig(
+                        built,
+                        this._form,
+                        this.qualifiedName,
+                        this._itemScope(item.key)
+                    );
                     item.children.set(name, itemField);
                 }
             }
@@ -707,13 +747,14 @@ export class ObjectField implements IObjectField {
             return;
         }
         const data = getChildrenData(source.children);
+        const key = `item_${++itemKeyCounter}`;
         const children = createChildFields(
             this._templateChildBuilders(source.templateId),
             this._form,
-            this.qualifiedName
+            this.qualifiedName,
+            this._itemScope(key)
         );
         hydrateChildren(children, data, { clone: true });
-        const key = `item_${++itemKeyCounter}`;
         this._items.splice(index + 1, 0, { key, children, templateId: source.templateId });
         const inner = this._innerLayoutFor(source.templateId);
         if (inner) {
@@ -733,15 +774,16 @@ export class ObjectField implements IObjectField {
     }
 
     private _addItemInternal(data?: Record<string, unknown>, templateId?: string): void {
+        const key = `item_${++itemKeyCounter}`;
         const children = createChildFields(
             this._templateChildBuilders(templateId),
             this._form,
-            this.qualifiedName
+            this.qualifiedName,
+            this._itemScope(key)
         );
         if (data) {
             hydrateChildren(children, data);
         }
-        const key = `item_${++itemKeyCounter}`;
         this._items.push({ key, children, templateId });
         const inner = this._innerLayoutFor(templateId);
         if (inner) {
