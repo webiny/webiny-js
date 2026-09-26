@@ -4999,4 +4999,102 @@ describe("FormModel", () => {
             });
         });
     });
+
+    describe("setErrors", () => {
+        const createProductForm = () =>
+            createForm({
+                fields: fields => ({
+                    sku: fields.text().label("SKU"),
+                    variants: fields
+                        .object()
+                        .list()
+                        .label("Variants")
+                        .fields(f => ({ code: f.text().label("Code") }))
+                })
+            });
+
+        it("assigns an error to the field at its path and lists it in form errors", () => {
+            const form = createProductForm();
+
+            form.setErrors([{ path: "sku", message: "Value must be unique." }]);
+
+            expect(form.field("sku").vm.validation).toMatchObject({
+                isValid: false,
+                message: "Value must be unique."
+            });
+            expect(form.vm.hasErrors).toBe(true);
+            expect(form.errors).toEqual([
+                {
+                    path: "sku",
+                    label: "SKU",
+                    breadcrumb: ["SKU"],
+                    message: "Value must be unique."
+                }
+            ]);
+        });
+
+        it("resolves paths into list items", () => {
+            const form = createProductForm();
+            form.setData({ variants: [{ code: "a" }, { code: "b" }] });
+
+            form.setErrors([{ path: "variants.1.code", message: "Invalid code." }]);
+
+            const list = form.field("variants") as any;
+            expect(list.items[1].children.get("code").vm.validation.isValid).toBe(false);
+            expect(list.items[0].children.get("code").vm.validation.isValid).not.toBe(false);
+            expect(form.errors).toEqual([
+                expect.objectContaining({
+                    path: "variants.1.code",
+                    breadcrumb: ["Variants", "Code"]
+                })
+            ]);
+        });
+
+        it("keeps errors without a matching field as form-level errors", () => {
+            const form = createProductForm();
+
+            form.setErrors([
+                { path: "", message: "Could not update entry." },
+                { path: "unknown.field", message: "Something is wrong." }
+            ]);
+
+            expect(form.errors).toEqual([
+                { path: "", message: "Could not update entry." },
+                { path: "unknown.field", message: "Something is wrong." }
+            ]);
+            expect(form.isValid).toBe(false);
+        });
+
+        it("bumps submitCount so FormErrors scrolls into view", () => {
+            const form = createProductForm();
+            const before = form.submitCount;
+
+            form.setErrors([{ path: "sku", message: "Value must be unique." }]);
+
+            expect(form.submitCount).toBe(before + 1);
+        });
+
+        it("is cleared by the next validate()", async () => {
+            const form = createProductForm();
+            form.setErrors([
+                { path: "sku", message: "Value must be unique." },
+                { path: "", message: "Could not update entry." }
+            ]);
+
+            await form.validate();
+
+            expect(form.errors).toEqual([]);
+            expect(form.field("sku").vm.validation.isValid).not.toBe(false);
+        });
+
+        it("is cleared by setData()", () => {
+            const form = createProductForm();
+            form.setErrors([{ path: "", message: "Could not update entry." }]);
+
+            form.setData({ sku: "ABC" });
+
+            expect(form.errors).toEqual([]);
+            expect(form.vm.hasErrors).toBe(false);
+        });
+    });
 });
