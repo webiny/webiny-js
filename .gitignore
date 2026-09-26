@@ -66,6 +66,9 @@ packages/tasks/tpl/*
 
 ./db/
 
+.design-sync
+.ds-sync
+ds-bundle
 /.local
 CLAUDE.local.md
 .claude/*.local.*
