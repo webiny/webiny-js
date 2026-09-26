@@ -21,7 +21,8 @@ Security findings are not described in committed reports. They are referenced by
 | 6     | 7        | Done   |
 | 7     | 13       | Done   |
 | 8     | 15       | Done   |
-| 9–14  | 42       | Pending |
+| 9     | 17       | Done   |
+| 10–14 | 25       | Pending |
 
 ## Level 0 — top findings
 
@@ -202,6 +203,28 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 | [api-headless-cms-es-tasks](level-08/api-headless-cms-es-tasks.md) | Whole package (~7.6k lines) has no consumers. `enableIndexing` hardcodes tenant `root`. | Low (dead code) | No |
 | [api-search-index-tasks](level-08/api-search-index-tasks.md) | Index marked done before creation succeeds. | Medium | No |
 
+## Level 9 — top findings
+
+`ai-powerups` is split into two slices under `level-09/ai-powerups/`.
+
+| Package | Finding | Severity | Verified |
+| ------- | ------- | -------- | -------- |
+| [ai-powerups — API](level-09/ai-powerups/api.md) | Security finding SEC-52 (private). Admin assistant tool approval defaults to safe. | Critical | Yes |
+| [ai-powerups — admin](level-09/ai-powerups/admin.md) | Security finding SEC-49 (private). AI generation responses matched only by action name; late responses overwrite user edits. Generation flow triplicated. | High | No |
+| [api-file-manager-standalone](level-09/api-file-manager-standalone.md) | Security finding SEC-51 (private). No time-limited signed links for private files. | Critical | Yes |
+| [api-file-manager-s3](level-09/api-file-manager-s3.md) | Reimplements api-file-manager's upload utilities instead of importing (also carries SEC-47). No multipart cleanup. Uses the level-0 wcp threat-detection gate. `WidthCollection` unused. | High | No |
+| [api-audit-logs](level-09/api-audit-logs.md) | Security finding SEC-50 (private). Login/auth events are not audited. `cleanupApiKey` duplicated 4x; shared copy unused. | High | Yes |
+| [api-headless-cms-workflows](level-09/api-headless-cms-workflows.md), [api-website-builder-workflows](level-09/api-website-builder-workflows.md) | SEC-39 confirmed on the backend for CMS and website builder (private). Website-builder publish gate throws on non-NotFound lookup failures. | High | Yes |
+| [api-website-builder-scheduler](level-09/api-website-builder-scheduler.md) | SEC-36 addendum (private). Cancel handlers read `Result.value` without `isFail()`. Schedule use cases are not on the real call path. | High | No |
+| [app-website-builder-workflows](level-09/app-website-builder-workflows.md) | `ToggleReadonly`/`ToggleEditorMode` duplicate each other and are both mounted. | Low | No |
+| [api-headless-cms-ddb-es](level-09/api-headless-cms-ddb-es.md) | Entry mutations write primary table then ES-bridge table non-atomically; failures leave entries unsearchable. Unique-values aggregation hardcodes size 1,000,000. | High | No |
+| [api-headless-cms-pg-os](level-09/api-headless-cms-pg-os.md) | OpenSearch path skips storage converters that ddb-es applies (value-shape drift). Same unbounded aggregation. | Medium | No |
+| [api-search-index-tasks-os](level-09/api-search-index-tasks-os.md) | `OsIndexManager.list()` swallows errors and returns `[]`, so indices can stay in reindex settings. | Medium | No |
+| [api-headless-cms-tasks](level-09/api-headless-cms-tasks.md) | Task trigger correctly authorizes before triggering (good pattern). No test for the rejection. | — | — |
+| [api-headless-cms-aco](level-09/api-headless-cms-aco.md), [api-file-manager-aco](level-09/api-file-manager-aco.md) | Confirm SEC-44 reaches every folder-aware model (private). | High | No |
+| [api-aco-ddb](level-09/api-aco-ddb.md), [api-aco-sql](level-09/api-aco-sql.md) | Correct tenant scoping. SQL adapter still uses legacy extension-plugin registration. | Low | No |
+| [api-website-builder-scheduler](level-09/api-website-builder-scheduler.md), [app-website-builder-scheduler](level-09/app-website-builder-scheduler.md) | Frontend delegates to app-scheduler, so the DateTimePicker timezone bug applies. | High | Yes |
+
 ## Cross-cutting observations
 
 - Most level-0 packages have no tests at all (`error`, `feature`, `wcp`, `mcp`, `sdk`, `pulumi-sdk`, `lexical-theme`, and others), including heavily used ones such as `error` (~260 consumer files).
@@ -210,7 +233,7 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 - The shared OIDC token verification (`api-core`) is used by Cognito, Auth0 and Okta; one fix there covers all three (see private notes).
 - CMS model field validation is incomplete on every path: UI has no fieldId uniqueness check, API create/update allows reserved field IDs, code-defined models skip uniqueness validation.
 - Background tasks run with authorization disabled (`background-tasks` `TaskManager`), so every task-triggering entry point must authorize first. Scheduled actions and bulk actions currently do not (private notes).
-- Missing stale-response guards in async loaders: `cms-nextjs`, `app-headless-cms` `loadRevision`, `app-file-manager` `loadFile`, `app-headless-cms-scheduler`, `app-website-builder` `PageEditor`. A shared latest-request-wins helper would cover all of them.
+- Missing stale-response guards in async loaders: `cms-nextjs`, `app-headless-cms` `loadRevision`, `app-file-manager` `loadFile`, `app-headless-cms-scheduler`, `app-website-builder` `PageEditor`, `ai-powerups` generation over websockets. A shared latest-request-wins helper would cover all of them.
 - Check-then-write without an atomic condition: `background-tasks` task execution, `api-record-locking` lock acquisition, `api-core-sql` `TableManager.ensure()`.
 - Both form systems (`@webiny/form` and `app-admin` form model) over-cache validation results.
 - Roles/Teams/API Keys CRUD is triplicated on both backend (`api-core`) and frontend (`app-admin`).
