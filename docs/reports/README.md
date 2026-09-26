@@ -15,7 +15,7 @@ Security findings are not described in committed reports. They are referenced by
 | 0     | 20       | Done   |
 | 1     | 11       | Done   |
 | 2     | 16       | Done   |
-| 3     | 11       | In progress (2/11) |
+| 3     | 11       | In progress (7/11) |
 | 4–14  | 108      | Pending |
 
 ## Level 0 — top findings
@@ -86,6 +86,11 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 | ------- | ------- | -------- | -------- |
 | [cli-core](level-03/cli-core.md) | `LinkProjectCommand` calls `open(wcpAppUrl)` without importing `open`; TypeScript accepts it via the DOM `window.open` type, so `link-project` throws `ReferenceError` at runtime. | High | Yes |
 | [api-graphql](level-03/api-graphql.md) | `RefInputScalar` uses `"id" in value` without an object check, so a numeric/boolean RefInput throws `TypeError` instead of a validation error. | Low | Reproduced by agent |
+| [event-handler-aws](level-03/event-handler-aws.md) | `apiGatewayEventToHttpRequest` ignores `event.isBase64Encoded` (the Function URL translator handles it), so base64-encoded bodies reach routes undecoded. Also security finding SEC-6 (private). | Medium | No |
+| [lexical-editor-actions](level-03/lexical-editor-actions.md) | `LexicalColorPicker` memoizes `themeColors` with an empty dependency array, so swatches go stale when the theme changes. | Medium | No |
+| [db](level-03/db.md) | `Db` and `Store` have no consumers; `db-dynamodb` uses only the type contracts. `DbRegistry.register` sorts `input.tags` in place. | Low (dead code) | No |
+| [api-sync-to-opensearch](level-03/api-sync-to-opensearch.md) | Logs `operations.total` (double-counts) instead of `operations.count`. | Low | No |
+| [pulumi](level-03/pulumi.md) | No bugs; no tests despite ~30 module definitions built on it. | Test gap | — |
 
 ## Cross-cutting observations
 
