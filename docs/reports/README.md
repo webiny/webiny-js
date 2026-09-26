@@ -19,7 +19,8 @@ Security findings are not described in committed reports. They are referenced by
 | 4     | 17       | Done   |
 | 5     | 14       | Done   |
 | 6     | 7        | Done   |
-| 7–14  | 70       | Pending |
+| 7     | 13       | Done   |
+| 8–14  | 57       | Pending |
 
 ## Level 0 — top findings
 
@@ -157,6 +158,26 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 | [api-websockets-sql](level-06/api-websockets-sql.md) | Every registry call re-runs three schema-introspection queries. | Low (perf) | No |
 | [self-hosted-auth-sql](level-06/self-hosted-auth-sql.md) | No bugs; no tests for the credential persistence layer. | Test gap | — |
 
+## Level 7 — top findings
+
+`app-file-manager` is split into two slices under `level-07/app-file-manager/`.
+
+| Package | Finding | Severity | Verified |
+| ------- | ------- | -------- | -------- |
+| [api-scheduler](level-07/api-scheduler.md) | Security findings SEC-36 (critical) and SEC-37 (private). Backend takes `scheduleFor` at face value, so the admin-ui `DateTimePicker` `.000Z` bug makes scheduled actions fire at the wrong time for non-UTC users (confirmed end to end). Cancel orphans the EventBridge schedule if its delete fails. | Critical | Yes |
+| [tenant-manager](level-07/tenant-manager.md) | Security findings SEC-34 and SEC-35 (private). `IsNotRootTenant` unused. | Critical | Partly |
+| [languages](level-07/languages.md) | Security finding SEC-38 (private). `GetDefaultLanguage`/`GetLanguageByCode` return disabled languages. | High | Partly |
+| [app-headless-cms-workflows](level-07/app-headless-cms-workflows.md) | Security finding SEC-39 (private). | High | No |
+| [api-workflows](level-07/api-workflows.md) | Step e-mail notifications are wired in DI but never invoked; reviewers are never notified. Approve/reject authorization is correctly enforced in the domain layer. | Medium | No |
+| [background-tasks](level-07/background-tasks.md) | A task already `RUNNING` can be executed again concurrently (no re-entrancy guard, blind read-then-write store). Status guards reimplemented 3x. Timeout handling is correct. | High | No |
+| [api-record-locking](level-07/api-record-locking.md), [app-record-locking](level-07/app-record-locking.md) | Lock acquisition is non-atomic (check-then-put). Locks are enforced only by the admin UI; the API does not reject updates to locked entries. | High | No |
+| [api-headless-cms-storage](level-07/api-headless-cms-storage.md) | Whole legacy plugin-based filter system is dead code. `searchable-json` where-filters can reach the db-utils `StartsWithFilter` crash. | Medium | No |
+| [api-headless-cms-utils-os](level-07/api-headless-cms-utils-os.md) | Confirms the api-opensearch regex-vs-glob dynamic-template bug affects every real CMS index. | Medium | No |
+| [app-file-manager — features](level-07/app-file-manager/features-and-modules.md) | `FileUploader.uploadMany` shares one `AbortController` per batch and matches results by filename. Paste-to-upload skips client size/type checks. `GetFileFeature` registered twice. | Medium | No |
+| [app-file-manager — list](level-07/app-file-manager/file-list-and-details.md) | `FileDetailsPresenter.loadFile` has no stale-response guard. | Medium | No |
+| [app-headless-cms-scheduler](level-07/app-headless-cms-scheduler.md) | `fetchModel`/`fetchEntry` have no stale-response guard. | Medium | No |
+| [api-headless-cms-testing](level-07/api-headless-cms-testing.md) | No bugs; shared harness (~26 callers) has no tests of its own. | Test gap | — |
+
 ## Cross-cutting observations
 
 - Most level-0 packages have no tests at all (`error`, `feature`, `wcp`, `mcp`, `sdk`, `pulumi-sdk`, `lexical-theme`, and others), including heavily used ones such as `error` (~260 consumer files).
@@ -164,6 +185,8 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 - The same bug travels with copy-pasted code: `decodeCursor` ASCII bug in `utils` and `db-dynamodb`; hardcoded Timer in both sync adapters; `ListCache` copied four times (three in `admin-ui`, one in `app-admin`).
 - The shared OIDC token verification (`api-core`) is used by Cognito, Auth0 and Okta; one fix there covers all three (see private notes).
 - CMS model field validation is incomplete on every path: UI has no fieldId uniqueness check, API create/update allows reserved field IDs, code-defined models skip uniqueness validation.
+- Missing stale-response guards in async loaders: `cms-nextjs`, `app-headless-cms` `loadRevision`, `app-file-manager` `loadFile`, `app-headless-cms-scheduler`. A shared latest-request-wins helper would cover all of them.
+- Check-then-write without an atomic condition: `background-tasks` task execution, `api-record-locking` lock acquisition, `api-core-sql` `TableManager.ensure()`.
 - Both form systems (`@webiny/form` and `app-admin` form model) over-cache validation results.
 - Roles/Teams/API Keys CRUD is triplicated on both backend (`api-core`) and frontend (`app-admin`).
 - Dead exports are common in level 1 (`handler`, `utils`, `cms-sdk`, `lexical-nodes`, `website-builder-sdk`).
