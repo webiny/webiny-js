@@ -17,7 +17,8 @@ Security findings are not described in committed reports. They are referenced by
 | 2     | 16       | Done   |
 | 3     | 11       | Done   |
 | 4     | 17       | Done   |
-| 5–14  | 91       | Pending |
+| 5     | 14       | Done   |
+| 6–14  | 77       | Pending |
 
 ## Level 0 — top findings
 
@@ -109,7 +110,7 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 | [project-aws — extensions](level-04/project-aws/extensions-and-features.md) | `set-variant` CLI command handler is an empty TODO stub. Admin env vars set in two places that disagree on `WEBINY_ADMIN_DEBUG`. Also SEC-13 (private). | Medium | No |
 | [api-sync-ddb-to-opensearch](level-04/api-sync-ddb-to-opensearch.md), [api-sync-pg-to-opensearch](level-04/api-sync-pg-to-opensearch.md) | `TimerFeature` hardcodes `getRemainingSeconds: () => 900`, defeating the abort-before-Lambda-timeout check (same copy-pasted bug in both). | High | No |
 | [db-dynamodb](level-04/db-dynamodb.md) | `decodeCursor` uses `"ascii"` for UTF-8 cursors — same bug as `@webiny/utils`. `DynamoDbDriver` has no consumers. | High | No |
-| [api-mailer](level-04/api-mailer.md) | Unconfigured SMTP silently falls back to `DummyMailTransport`, so `sendMail()` (e.g. password reset) reports success without sending. | Medium | No |
+| [api-mailer](level-04/api-mailer.md) | Unconfigured SMTP silently falls back to `DummyMailTransport`, so `sendMail()` reports success without sending. (Level 5 correction: `self-hosted-auth` password reset is not affected — it checks SMTP settings first.) | Medium | No |
 | [project-standalone](level-04/project-standalone.md) | `createAdminApp.ts`/`createApiApp.ts` copied from project-aws and unused. | Low (dead code) | No |
 | [app-websockets](level-04/app-websockets.md) | `WebsocketsSubscriptionManager.onOpen` stores subscriptions in `subscriptions.close`, so open callbacks fire on close instead. | High | Yes |
 | [sdk-nextjs](level-04/sdk-nextjs.md) | Security finding SEC-19 (private). | Critical | Yes |
@@ -120,11 +121,28 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 | [app-admin-ui](level-04/app-admin-ui.md) | User menu renders "undefined undefined" for profiles without a name. `MissingPermissionsWidget` unused. | Low | No |
 | [app-mailer](level-04/app-mailer.md), [app-sdk-playground](level-04/app-sdk-playground.md), [app-headless-cms-common](level-04/app-headless-cms-common.md) | No significant bugs; no tests. | — | — |
 
+## Level 5 — top findings
+
+| Package | Finding | Severity | Verified |
+| ------- | ------- | -------- | -------- |
+| [api-websockets](level-05/api-websockets.md) | Security findings SEC-27 (critical) and SEC-28 (private). No `GoneException` cleanup; hardcoded 3-hour cutoff hides long-lived connections. | Critical | Partly |
+| [api-core-ddb](level-05/api-core-ddb.md), [api-core-sql](level-05/api-core-sql.md) | Confirm SEC-14 affects both storage backends (private). SQL `TableManager.ensure()` has a check-then-create race. | High | Yes |
+| [api-sync-system](level-05/api-sync-system.md) | `attachToDynamoDbDocument` wraps both `send` and `put`/`delete`/`update`/`batchWrite`, so helper-method writes are captured twice. `Fetcher.exec` throws instead of returning per-bundle errors. Cognito worker actions swallow failures. | High | No |
+| [cognito](level-05/cognito.md) | `UpdateUserUseCase` uses the new email as Cognito `Username` when setting a password, so email+password updates silently fail. Also SEC-21 (private). | High | No |
+| [auth0](level-05/auth0.md), [okta](level-05/okta.md) | Security findings SEC-24, SEC-25, SEC-26 (private). Auth0 redirect detection is substring-based; Okta uses the SDK. | Medium | No |
+| [self-hosted-auth](level-05/self-hosted-auth.md) | Security findings SEC-29, SEC-30 (private). | Medium | No |
+| [bug-reporter](level-05/bug-reporter.md) | Security findings SEC-22, SEC-23, SEC-31 (private). `ActionRecorder` always runs. | Medium | No |
+| [app-aco — features](level-05/app-aco/features-and-presentation.md) | `RepositoryWithPermissionsChange` repeats the `shared-aco` stale-`inheritedFrom` bug on re-parent (masked by reload). `UncontrolledFolderTree` unused. | Medium | No |
+| [app-aco — components](level-05/app-aco/components.md) | Two parallel, near-identical folder tree implementations both live. | Duplication | No |
+| [cli-aws](level-05/cli-aws.md), [cli-standalone](level-05/cli-standalone.md) | `allow-production` declared `type: "number"` but read as boolean. Both CLIs ignore the system-requirements exit code. | Medium | No |
+| [api-opensearch-aws](level-05/api-opensearch-aws.md), [api-core-testing](level-05/api-core-testing.md) | No significant bugs. | — | — |
+
 ## Cross-cutting observations
 
 - Most level-0 packages have no tests at all (`error`, `feature`, `wcp`, `mcp`, `sdk`, `pulumi-sdk`, `lexical-theme`, and others), including heavily used ones such as `error` (~260 consumer files).
 - Client/instance caching helpers are repeatedly broken (`aws-sdk`, `app-utils`), and copy-pasted caching code drifts between copies.
 - The same bug travels with copy-pasted code: `decodeCursor` ASCII bug in `utils` and `db-dynamodb`; hardcoded Timer in both sync adapters; `ListCache` copied four times (three in `admin-ui`, one in `app-admin`).
+- The shared OIDC token verification (`api-core`) is used by Cognito, Auth0 and Okta; one fix there covers all three (see private notes).
 - Both form systems (`@webiny/form` and `app-admin` form model) over-cache validation results.
 - Roles/Teams/API Keys CRUD is triplicated on both backend (`api-core`) and frontend (`app-admin`).
 - Dead exports are common in level 1 (`handler`, `utils`, `cms-sdk`, `lexical-nodes`, `website-builder-sdk`).
