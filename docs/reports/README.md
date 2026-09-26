@@ -20,7 +20,8 @@ Security findings are not described in committed reports. They are referenced by
 | 5     | 14       | Done   |
 | 6     | 7        | Done   |
 | 7     | 13       | Done   |
-| 8–14  | 57       | Pending |
+| 8     | 15       | Done   |
+| 9–14  | 42       | Pending |
 
 ## Level 0 — top findings
 
@@ -178,6 +179,29 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 | [app-headless-cms-scheduler](level-07/app-headless-cms-scheduler.md) | `fetchModel`/`fetchEntry` have no stale-response guard. | Medium | No |
 | [api-headless-cms-testing](level-07/api-headless-cms-testing.md) | No bugs; shared harness (~26 callers) has no tests of its own. | Test gap | — |
 
+## Level 8 — top findings
+
+`app-website-builder` (four slices) and `api-website-builder` (two slices) are under `level-08/`.
+
+| Package | Finding | Severity | Verified |
+| ------- | ------- | -------- | -------- |
+| [api-headless-cms-bulk-actions](level-08/api-headless-cms-bulk-actions.md) | Security finding SEC-40 (private). Two GraphQL builder modules are dead. | Critical | Yes |
+| [webhooks](level-08/webhooks.md) | Security findings SEC-41, SEC-42 (private). HMAC encoding differs between signing and verification. `WebhookVerifyPayload` never registered. | High | Yes (SEC-41) |
+| [api-file-manager](level-08/api-file-manager.md) | Security findings SEC-45, SEC-46, SEC-47 (private). | High | No |
+| [api-aco](level-08/api-aco.md) | Security findings SEC-43, SEC-44 (private). Folder move has no cycle detection. `ListCache` and `FoldersCacheFactory` unused. | High | No |
+| [api-headless-cms-scheduler](level-08/api-headless-cms-scheduler.md) | SEC-36 addendum (private). Two delete-cancellation handlers overlap. | Medium | No |
+| [background-tasks-aws](level-08/background-tasks-aws.md), [background-tasks-standalone](level-08/background-tasks-standalone.md) | Neither transport deduplicates task triggers (random Step Functions execution name; standalone spawns a new worker unconditionally), so the level-7 double-execution bug is unmitigated. | High | No |
+| [api-scheduler-aws](level-08/api-scheduler-aws.md), [api-scheduler-standalone](level-08/api-scheduler-standalone.md) | AWS silently falls back to a no-op scheduler on transient service-discovery errors. Standalone never retries failed jobs. | High | No |
+| [api-website-builder — pages](level-08/api-website-builder/pages-and-graphql.md) | Page path uniqueness is never enforced; `GetPageByPath` returns an arbitrary match. `utils/resolve.ts` duplicates api-graphql. | Medium | No |
+| [api-website-builder — experiments](level-08/api-website-builder/experiments-and-redirects.md) | Redirects REST route reads `Result.value` without `isFail()`, crashing instead of 403. Redirect loops not prevented. | Medium | No |
+| [app-website-builder — editor SDK](level-08/app-website-builder/editor-sdk-and-misc.md) | Undo/redo sends an empty diff to the preview, desyncing it. Another `ListCache` reimplementation. Preview postMessage target origin is correctly scoped. | High | No |
+| [app-website-builder — presentation](level-08/app-website-builder/presentation.md) | `PageEditor` load effect has no stale-response guard; autosave can hit the wrong page. Pages/Redirects list stacks duplicated. | Medium | No |
+| [app-website-builder — features](level-08/app-website-builder/features.md) | Settings repositories write the cache before the mutation succeeds, with no rollback. | High | No |
+| [app-website-builder — BaseEditor](level-08/app-website-builder/base-editor.md) | Module-level drag state shared across editor instances. Box-model editors duplicated 4x. Expression-binding UI is disabled (dead). | Medium | No |
+| [api-headless-cms-ddb](level-08/api-headless-cms-ddb.md), [api-headless-cms-sql](level-08/api-headless-cms-sql.md) | "List revisions" order differs: DynamoDB oldest-first, SQL newest-first. Also SEC-48 (private, low). SQL package has no executable tests. | Medium | No |
+| [api-headless-cms-es-tasks](level-08/api-headless-cms-es-tasks.md) | Whole package (~7.6k lines) has no consumers. `enableIndexing` hardcodes tenant `root`. | Low (dead code) | No |
+| [api-search-index-tasks](level-08/api-search-index-tasks.md) | Index marked done before creation succeeds. | Medium | No |
+
 ## Cross-cutting observations
 
 - Most level-0 packages have no tests at all (`error`, `feature`, `wcp`, `mcp`, `sdk`, `pulumi-sdk`, `lexical-theme`, and others), including heavily used ones such as `error` (~260 consumer files).
@@ -185,7 +209,8 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 - The same bug travels with copy-pasted code: `decodeCursor` ASCII bug in `utils` and `db-dynamodb`; hardcoded Timer in both sync adapters; `ListCache` copied four times (three in `admin-ui`, one in `app-admin`).
 - The shared OIDC token verification (`api-core`) is used by Cognito, Auth0 and Okta; one fix there covers all three (see private notes).
 - CMS model field validation is incomplete on every path: UI has no fieldId uniqueness check, API create/update allows reserved field IDs, code-defined models skip uniqueness validation.
-- Missing stale-response guards in async loaders: `cms-nextjs`, `app-headless-cms` `loadRevision`, `app-file-manager` `loadFile`, `app-headless-cms-scheduler`. A shared latest-request-wins helper would cover all of them.
+- Background tasks run with authorization disabled (`background-tasks` `TaskManager`), so every task-triggering entry point must authorize first. Scheduled actions and bulk actions currently do not (private notes).
+- Missing stale-response guards in async loaders: `cms-nextjs`, `app-headless-cms` `loadRevision`, `app-file-manager` `loadFile`, `app-headless-cms-scheduler`, `app-website-builder` `PageEditor`. A shared latest-request-wins helper would cover all of them.
 - Check-then-write without an atomic condition: `background-tasks` task execution, `api-record-locking` lock acquisition, `api-core-sql` `TableManager.ensure()`.
 - Both form systems (`@webiny/form` and `app-admin` form model) over-cache validation results.
 - Roles/Teams/API Keys CRUD is triplicated on both backend (`api-core`) and frontend (`app-admin`).
