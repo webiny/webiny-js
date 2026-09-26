@@ -75,3 +75,7 @@ CLAUDE.local.md
 docs/.reports
 tsconfig.check-tests.json
 tsconfig.build.tmp-*.json
+
+.ds-sync
+.design-sync
+ds-bundle
