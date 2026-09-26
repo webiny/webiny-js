@@ -6,7 +6,7 @@ Findings are produced by LLM agents (plus `jscpd` for copy-paste detection) and 
 
 Audited at commit `19c9ca1b91`.
 
-Security findings are not described in committed reports. They are referenced by ID (`SEC-n`) and kept in `docs/.reports/security.md`, which is gitignored.
+Security findings are not described in committed reports. Severities shown for `SEC-n` rows in this index are first-pass ratings; a later verification pass re-rated every finding, and those verified ratings are kept privately with the details. They are referenced by ID (`SEC-n`) and kept in `docs/.reports/security.md`, which is gitignored.
 
 ## Progress
 
@@ -42,7 +42,7 @@ All 156 packages with a `package.json` are audited. The 10 remaining directories
 | [validation](level-00/validation.md) | `dateGte` / `dateLte` throw `RangeError` on an invalid comparison value instead of a useful validation message. | Low | No |
 | [wcp](level-00/wcp.md) | `canUseFileManagerThreatDetection()` skips the `fileManager.enabled` check other gates perform. | Low–Medium | No |
 | [mcp](level-00/mcp.md) | Copilot adapter omits `--additional-skills`; `instructions.ts` prints `webiny-mcp server` instead of `serve`. | Medium | No |
-| [shared-aco](level-00/shared-aco.md) | `Permissions.create` only strips inherited permissions matching the current parent, so stale ones survive a re-parent. | Medium | No |
+| [shared-aco](level-00/shared-aco.md) | Reported `Permissions.create` stale-inheritance bug was **refuted** in verification (state unreachable on the backend). | — | Refuted |
 | [logger](level-00/logger.md) | Package has no consumers; `cli-core` reimplements the same logger. | Low (dead code) | No |
 
 Packages with no significant findings: [aws-layers](level-00/aws-layers.md), [common-audit-logs](level-00/common-audit-logs.md), [error](level-00/error.md), [feature-flags](level-00/feature-flags.md), [global-config](level-00/global-config.md), [icons](level-00/icons.md).
