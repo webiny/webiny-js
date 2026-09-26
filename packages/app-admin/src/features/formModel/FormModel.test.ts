@@ -10,6 +10,7 @@ import {
     type IRowNodeVM,
     type ITabsNodeVM,
     type IElementNodeVM,
+    type IRule,
     type IObjectFieldVM,
     type ILayoutNodeAccessHandle,
     type LayoutNodeVM
@@ -4769,6 +4770,233 @@ describe("FormModel", () => {
 
             form.field("wrapper.locked").setValue("no");
             expect(form.field("wrapper.editable").disabled).toBe(false);
+        });
+    });
+
+    describe("$. static references in rules inside list items", () => {
+        const hideWhen = (target: string, operator: string, value: IRule["value"]): IRule[] => [
+            { type: "condition", target, operator, value, action: "hide" }
+        ];
+
+        // Reads a child of a list item without relying on its qualified path.
+        const itemChild = (form: IFormModel, listPath: string, index: number, name: string) => {
+            const list = form.field(listPath) as any;
+            const child = list.items[index]?.children.get(name);
+            if (!child) {
+                throw new Error(`No child "${name}" on item ${index} of "${listPath}".`);
+            }
+            return child as ReturnType<IFormModel["field"]>;
+        };
+
+        it("resolves $. against the owning item of an object list", () => {
+            const form = createForm({
+                fields: fields => ({
+                    links: fields
+                        .object()
+                        .list()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            style: f.text(),
+                            url: f.text().rules(hideWhen("$.style", "==", "initiative")),
+                            customUrls: f.text().rules(hideWhen("$.style", "!=", "initiative"))
+                        }))
+                })
+            });
+
+            form.setData({ links: [{ style: "initiative" }, { style: "standard" }] });
+
+            expect(itemChild(form, "links", 0, "url").visible).toBe(false);
+            expect(itemChild(form, "links", 0, "customUrls").visible).toBe(true);
+            expect(itemChild(form, "links", 1, "url").visible).toBe(true);
+            expect(itemChild(form, "links", 1, "customUrls").visible).toBe(false);
+
+            itemChild(form, "links", 1, "style").setValue("initiative");
+            expect(itemChild(form, "links", 1, "url").visible).toBe(false);
+            expect(itemChild(form, "links", 1, "customUrls").visible).toBe(true);
+        });
+
+        it("resolves $. for items added with addItem()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    links: fields
+                        .object()
+                        .list()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            locked: f.boolean(),
+                            label: f.text().rules([
+                                {
+                                    type: "condition",
+                                    target: "$.locked",
+                                    operator: "==",
+                                    value: true,
+                                    action: "disable"
+                                }
+                            ])
+                        }))
+                })
+            });
+
+            (form.field("links") as any).addItem();
+            expect(itemChild(form, "links", 0, "label").disabled).toBe(false);
+
+            itemChild(form, "links", 0, "locked").setValue(true);
+            expect(itemChild(form, "links", 0, "label").disabled).toBe(true);
+        });
+
+        it("keeps resolving against the owning item after reorder and removal", () => {
+            const form = createForm({
+                fields: fields => ({
+                    links: fields
+                        .object()
+                        .list()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            style: f.text(),
+                            url: f.text().rules(hideWhen("$.style", "==", "initiative"))
+                        }))
+                })
+            });
+
+            form.setData({ links: [{ style: "initiative" }, { style: "standard" }] });
+            const list = form.field("links") as any;
+            const firstUrl = itemChild(form, "links", 0, "url");
+            const secondUrl = itemChild(form, "links", 1, "url");
+
+            list.moveItem(0, 1);
+            expect(firstUrl.visible).toBe(false);
+            expect(secondUrl.visible).toBe(true);
+
+            list.removeItem(0);
+            expect(firstUrl.visible).toBe(false);
+        });
+
+        it("field.parent() resolves siblings of the owning item in callbacks", () => {
+            const form = createForm({
+                fields: fields => ({
+                    links: fields
+                        .object()
+                        .list()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            style: f.text(),
+                            url: f
+                                .text()
+                                .hiddenWhen(
+                                    ({ field }) =>
+                                        field.parent().field("style").getValue() === "initiative"
+                                )
+                        }))
+                })
+            });
+
+            form.setData({ links: [{ style: "initiative" }, { style: "standard" }] });
+
+            expect(itemChild(form, "links", 0, "url").visible).toBe(false);
+            expect(itemChild(form, "links", 1, "url").visible).toBe(true);
+        });
+
+        describe("dynamic zone shaped templated list", () => {
+            const createBlocksForm = () =>
+                createForm({
+                    fields: fields => ({
+                        blocks: fields
+                            .object()
+                            .list()
+                            .renderer("passthrough")
+                            .template("heroBlock", t => {
+                                t.label("Hero").fields(f => ({
+                                    _id: f.text().hidden(),
+                                    ctaStyle: f.text(),
+                                    ctaUrl: f
+                                        .text()
+                                        .rules(hideWhen("$.ctaStyle", "==", "initiative")),
+                                    customUrls: f
+                                        .text()
+                                        .rules(hideWhen("$.ctaStyle", "!=", "initiative"))
+                                }));
+                            })
+                            .template("richTextBlock", t => {
+                                t.label("Rich Text").fields(f => ({
+                                    _id: f.text().hidden(),
+                                    headerStyle: f.text().defaultValue("manual"),
+                                    header: f
+                                        .text()
+                                        .rules(hideWhen("$.headerStyle", "!=", "manual")),
+                                    headingGroupRef: f
+                                        .text()
+                                        .rules(hideWhen("$.headerStyle", "!=", "reference"))
+                                }));
+                            })
+                            .template("classesBlock", t => {
+                                t.label("Classes").fields(f => ({
+                                    _id: f.text().hidden(),
+                                    classes: f
+                                        .object()
+                                        .list()
+                                        .renderer("passthrough")
+                                        .fields(c => ({
+                                            customCTA: c.boolean(),
+                                            customCTALabel: c
+                                                .text()
+                                                .rules(hideWhen("$.customCTA", "!=", true))
+                                        }))
+                                }));
+                            })
+                    })
+                });
+
+            it("resolves $. against the owning template item", () => {
+                const form = createBlocksForm();
+                form.setData({
+                    blocks: [
+                        { _templateId: "heroBlock", _id: "hero1", ctaStyle: "initiative" },
+                        { _templateId: "heroBlock", _id: "hero2", ctaStyle: "standard" }
+                    ]
+                });
+
+                expect(itemChild(form, "blocks", 0, "ctaUrl").visible).toBe(false);
+                expect(itemChild(form, "blocks", 0, "customUrls").visible).toBe(true);
+                expect(itemChild(form, "blocks", 1, "ctaUrl").visible).toBe(true);
+                expect(itemChild(form, "blocks", 1, "customUrls").visible).toBe(false);
+            });
+
+            it("re-evaluates when the referenced sibling changes", () => {
+                const form = createBlocksForm();
+                form.setData({
+                    blocks: [{ _templateId: "richTextBlock", _id: "rt1", headerStyle: "manual" }]
+                });
+
+                expect(itemChild(form, "blocks", 0, "header").visible).toBe(true);
+                expect(itemChild(form, "blocks", 0, "headingGroupRef").visible).toBe(false);
+
+                itemChild(form, "blocks", 0, "headerStyle").setValue("reference");
+                expect(itemChild(form, "blocks", 0, "header").visible).toBe(false);
+                expect(itemChild(form, "blocks", 0, "headingGroupRef").visible).toBe(true);
+            });
+
+            it("resolves $. inside an object list nested in a template item", () => {
+                const form = createBlocksForm();
+                form.setData({
+                    blocks: [
+                        {
+                            _templateId: "classesBlock",
+                            _id: "classes1",
+                            classes: [{ customCTA: true }, { customCTA: false }]
+                        }
+                    ]
+                });
+
+                const classes = itemChild(form, "blocks", 0, "classes");
+                const classItem = (index: number, name: string) =>
+                    (classes as any).items[index].children.get(name);
+
+                expect(classItem(0, "customCTALabel").visible).toBe(true);
+                expect(classItem(1, "customCTALabel").visible).toBe(false);
+
+                classItem(1, "customCTA").setValue(true);
+                expect(classItem(1, "customCTALabel").visible).toBe(true);
+            });
         });
     });
 });
