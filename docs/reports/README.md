@@ -18,7 +18,8 @@ Security findings are not described in committed reports. They are referenced by
 | 3     | 11       | Done   |
 | 4     | 17       | Done   |
 | 5     | 14       | Done   |
-| 6–14  | 77       | Pending |
+| 6     | 7        | Done   |
+| 7–14  | 70       | Pending |
 
 ## Level 0 — top findings
 
@@ -137,12 +138,32 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 | [cli-aws](level-05/cli-aws.md), [cli-standalone](level-05/cli-standalone.md) | `allow-production` declared `type: "number"` but read as boolean. Both CLIs ignore the system-requirements exit code. | Medium | No |
 | [api-opensearch-aws](level-05/api-opensearch-aws.md), [api-core-testing](level-05/api-core-testing.md) | No significant bugs. | — | — |
 
+## Level 6 — top findings
+
+`api-headless-cms` and `app-headless-cms` are split into four slices each under `level-06/`.
+
+| Package | Finding | Severity | Verified |
+| ------- | ------- | -------- | -------- |
+| [api-headless-cms — graphql](level-06/api-headless-cms/graphql-and-storage.md) | Security finding SEC-33 (private). Read API confirmed to return only published entries. dateGte/dateLte error swallowing confirmed. | High | Yes |
+| [api-headless-cms — content entry](level-06/api-headless-cms/content-entry.md) | Security finding SEC-32 (private). Publish/republish/unpublish return the pre-storage-transform entry. | High | Partly |
+| [api-headless-cms — crud](level-06/api-headless-cms/crud-and-utils.md) | Reserved system field IDs (`id`, `createdOn`, …) are rejected on model import but allowed on create/update — `crud` and `domain` schemas have drifted. Dynamic-zone converter drops vs throws on unknown templates. | High | No |
+| [api-headless-cms — models](level-06/api-headless-cms/models.md) | Code-defined models skip field id/fieldId/storageId uniqueness validation, so explicit `storageId` collisions go unnoticed. | Medium | No |
+| [app-headless-cms — features](level-06/app-headless-cms/features.md) | `mapCmsValidators` discards the combined schema when a field has 2+ validators, silently disabling them in the entry form. Bulk actions and model import skip cache invalidation. | High | No |
+| [app-headless-cms — model editor](level-06/app-headless-cms/model-editor.md) | No fieldId uniqueness check in the field editor. | High | No |
+| [app-headless-cms — entries](level-06/app-headless-cms/entries-and-renderers.md) | `loadRevision` has no stale-response guard; fast revision switching binds the form to the wrong revision. | Medium | No |
+| [app-headless-cms — admin](level-06/app-headless-cms/admin.md) | Legacy `EditFieldDialog` rules/permissions editors duplicate the new renderers line-for-line; layout fields still use the old copy. `src/admin` is partly live, not purely legacy. | Duplication | Yes (jscpd) |
+| [app-scheduler](level-06/app-scheduler.md) | `admin-ui` `DateTimePicker` (`dateTimeLocal`) appends `.000Z` to a local time, so scheduled publish/unpublish fires offset by the user's timezone. | High | Yes (client side) |
+| [api-websockets-aws](level-06/api-websockets-aws.md), [api-websockets-standalone](level-06/api-websockets-standalone.md) | Security finding SEC-27 in both transports (private). Standalone never dispatches client messages to route handlers. `AwsWebsocketsEventValidator` never invoked. | Critical | Partly |
+| [api-websockets-sql](level-06/api-websockets-sql.md) | Every registry call re-runs three schema-introspection queries. | Low (perf) | No |
+| [self-hosted-auth-sql](level-06/self-hosted-auth-sql.md) | No bugs; no tests for the credential persistence layer. | Test gap | — |
+
 ## Cross-cutting observations
 
 - Most level-0 packages have no tests at all (`error`, `feature`, `wcp`, `mcp`, `sdk`, `pulumi-sdk`, `lexical-theme`, and others), including heavily used ones such as `error` (~260 consumer files).
 - Client/instance caching helpers are repeatedly broken (`aws-sdk`, `app-utils`), and copy-pasted caching code drifts between copies.
 - The same bug travels with copy-pasted code: `decodeCursor` ASCII bug in `utils` and `db-dynamodb`; hardcoded Timer in both sync adapters; `ListCache` copied four times (three in `admin-ui`, one in `app-admin`).
 - The shared OIDC token verification (`api-core`) is used by Cognito, Auth0 and Okta; one fix there covers all three (see private notes).
+- CMS model field validation is incomplete on every path: UI has no fieldId uniqueness check, API create/update allows reserved field IDs, code-defined models skip uniqueness validation.
 - Both form systems (`@webiny/form` and `app-admin` form model) over-cache validation results.
 - Roles/Teams/API Keys CRUD is triplicated on both backend (`api-core`) and frontend (`app-admin`).
 - Dead exports are common in level 1 (`handler`, `utils`, `cms-sdk`, `lexical-nodes`, `website-builder-sdk`).
