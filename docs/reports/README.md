@@ -22,7 +22,9 @@ Security findings are not described in committed reports. They are referenced by
 | 7     | 13       | Done   |
 | 8     | 15       | Done   |
 | 9     | 17       | Done   |
-| 10–14 | 25       | Pending |
+| 10–14 | 15       | Done   |
+
+All 156 packages with a `package.json` are audited. The 10 remaining directories under `packages/` are empty leftovers, listed in [_empty-package-dirs.md](_empty-package-dirs.md).
 
 ## Level 0 — top findings
 
@@ -225,13 +227,30 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 | [api-aco-ddb](level-09/api-aco-ddb.md), [api-aco-sql](level-09/api-aco-sql.md) | Correct tenant scoping. SQL adapter still uses legacy extension-plugin registration. | Low | No |
 | [api-website-builder-scheduler](level-09/api-website-builder-scheduler.md), [app-website-builder-scheduler](level-09/app-website-builder-scheduler.md) | Frontend delegates to app-scheduler, so the DateTimePicker timezone bug applies. | High | Yes |
 
+## Levels 10–14 — top findings
+
+| Package | Finding | Severity | Verified |
+| ------- | ------- | -------- | -------- |
+| [remote-components](level-10/remote-components.md) | Security findings SEC-53 and SEC-54 (private). Server and browser bundlers duplicate the esbuild config; AI generate/refine duplicate provider resolution. | Critical | Yes (SEC-53) |
+| [api-audit-logs-ddb](level-10/api-audit-logs-ddb.md) | `expiresAt` is not declared on the entity, so dynamodb-toolbox strips it and DynamoDB TTL never fires — audit logs are never expired. | High | No |
+| [api-audit-logs-sql](level-10/api-audit-logs-sql.md) | Security finding SEC-56 (private). | High | No |
+| [api-event-handler-standalone](level-11/api-event-handler-standalone.md) | Security finding SEC-55 (private). No tests in the package. | Medium | No |
+| [api-event-handler-aws](level-11/api-event-handler-aws.md) | API Gateway tenant loader checks the tenant header with exact casing instead of the shared case-insensitive helper used by the Function URL path. | Medium | No |
+| [api-event-handler-core](level-10/api-event-handler-core.md) | Shared per-request composition (`registerApiRequestStack`) has no tests for its load-bearing registration order. | Test gap | — |
+| [api-event-handler-aws-ddb-os](level-12/api-event-handler-aws-ddb-os.md), [api-event-handler-standalone-sql](level-12/api-event-handler-standalone-sql.md) | No smoke tests. OpenSearch endpoint becomes `https://undefined` when its env var is unset. | Low | No |
+| [api-search-index-tasks-ddb-os](level-10/api-search-index-tasks-ddb-os.md) | Unvalidated `JSON.parse(cursor)`. | Low | No |
+| [webiny](level-14/webiny.md) | Re-exports ~85 deep internal paths from ~40 packages, all pinned `0.0.0`; any internal rename silently breaks the public export map. | Medium | No |
+| [project-template-base](level-10/project-template-base.md) | `FeatureFlagsGate` wrapper duplicated in both project templates instead of living here. | Low | No |
+| [app-serverless-cms](level-10/app-serverless-cms.md), [project-standalone-template](level-13/project-standalone-template.md), [project-aws-template](level-13/project-aws-template.md) | Agent-reported "missing backend packages" **refuted** in main-session verification: they arrive transitively via `api-event-handler-core` and the composition roots. Only the implicitness is noteworthy. | — | Refuted |
+
 ## Cross-cutting observations
 
 - Most level-0 packages have no tests at all (`error`, `feature`, `wcp`, `mcp`, `sdk`, `pulumi-sdk`, `lexical-theme`, and others), including heavily used ones such as `error` (~260 consumer files).
 - Client/instance caching helpers are repeatedly broken (`aws-sdk`, `app-utils`), and copy-pasted caching code drifts between copies.
-- The same bug travels with copy-pasted code: `decodeCursor` ASCII bug in `utils` and `db-dynamodb`; hardcoded Timer in both sync adapters; `ListCache` copied four times (three in `admin-ui`, one in `app-admin`).
+- The same bug travels with copy-pasted code: `api-file-manager-s3` re-implements api-file-manager's key utilities; `decodeCursor` ASCII bug in `utils` and `db-dynamodb`; hardcoded Timer in both sync adapters; `ListCache` copied four times (three in `admin-ui`, one in `app-admin`).
 - The shared OIDC token verification (`api-core`) is used by Cognito, Auth0 and Okta; one fix there covers all three (see private notes).
 - CMS model field validation is incomplete on every path: UI has no fieldId uniqueness check, API create/update allows reserved field IDs, code-defined models skip uniqueness validation.
+- Several whole feature packages expose GraphQL operations with no authorization at all (`ai-powerups`, `remote-components`, `api-scheduler`, bulk actions; details private). A namespace-level authorization gate or a lint rule for resolvers without permission checks would prevent recurrence.
 - Background tasks run with authorization disabled (`background-tasks` `TaskManager`), so every task-triggering entry point must authorize first. Scheduled actions and bulk actions currently do not (private notes).
 - Missing stale-response guards in async loaders: `cms-nextjs`, `app-headless-cms` `loadRevision`, `app-file-manager` `loadFile`, `app-headless-cms-scheduler`, `app-website-builder` `PageEditor`, `ai-powerups` generation over websockets. A shared latest-request-wins helper would cover all of them.
 - Check-then-write without an atomic condition: `background-tasks` task execution, `api-record-locking` lock acquisition, `api-core-sql` `TableManager.ensure()`.
