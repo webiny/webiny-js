@@ -14,7 +14,8 @@ Security findings are not described in committed reports. They are referenced by
 | ----- | -------- | ------ |
 | 0     | 20       | Done   |
 | 1     | 11       | Done   |
-| 2–14  | 135      | Pending |
+| 2     | 16       | Done   |
+| 3–14  | 119      | Pending |
 
 ## Level 0 — top findings
 
@@ -53,7 +54,33 @@ Packages with no significant findings: [aws-layers](level-00/aws-layers.md), [co
 | [event-handler-core](level-01/event-handler-core.md) | `SecureHeadersDecorator` overwrites an existing `Vary` header instead of merging. | Low (latent) | No |
 | [handler](level-01/handler.md) | No bugs; mostly Fastify-migration leftovers with 3 unused exports. | — | — |
 
+## Level 2 — top findings
+
+`admin-ui` and `project` are split into slice reports under `level-02/admin-ui/` and `level-02/project/`.
+
+| Package | Finding | Severity | Verified |
+| ------- | ------- | -------- | -------- |
+| [app](level-02/app.md) | `useRoute` starts a MobX `autorun` in `useEffect` without returning the disposer, leaking one reaction per mount (~49 call sites). `getLink()` and `SimpleLink` ignore `baseUrl`. | Medium | Leak: yes |
+| [project — features](level-02/project/features-and-extensions.md) | `RunnableBuildProcess` has no `error`/`exit` handlers: a spawn failure crashes `webiny build`, a crashed worker hangs it. | High | No |
+| [project — services](level-02/project/services-and-utils.md) | `IsRemotePulumiBackendService` and `PulumiLoginService` disagree on remote-backend env vars, so the production local-state safety check can be skipped. | High | No |
+| [aws-sdk](level-02/aws-sdk.md) | `createStepFunctionClient` never populates its cache (new `SFNClient` per call); DynamoDB "decorate once" flag is never checked. | High | No |
+| [create-webiny-project](level-02/create-webiny-project.md) | `--help` documents `--hosting-type server`, but only `"standalone"` is recognised, silently creating an AWS project. | High | No |
+| [app-utils](level-02/app-utils.md) | Repository factories fall back to a `Date.now()` cache key, so no-namespace calls never hit cache. Two whole subsystems are dead. | Medium | No |
+| [api-opensearch](level-02/api-opensearch.md) | Dynamic-template `match` patterns are regexes but `match_pattern` defaults to glob, so they never match. | Medium | No |
+| [admin-ui — primitives](level-02/admin-ui/primitives.md) | `CodeEditor` passes `value` as Monaco `defaultValue`, so it shows stale content (visible in audit-log Preview). | Medium | No |
+| [admin-ui — navigation](level-02/admin-ui/navigation-and-data.md) | Sidebar item id is `btoa` of a `ReactNode` label; JSX labels collide and share pin/expand state. | Medium | No |
+| [admin-ui — pickers](level-02/admin-ui/pickers.md) | `ListCache` copy-pasted into three components; AutoComplete/MultiAutoComplete heavily duplicated. | Duplication | Yes (jscpd) |
+| [website-builder-vue](level-02/website-builder-vue.md) | Keys `documentStoreManager` by `document.id` while React and `LiveSdk` use `document.properties.id`; Vue component manifests lack `aiContext`. | Medium | No |
+| [website-builder-react](level-02/website-builder-react.md) | Whole `src/image/*` submodule is unexported and unused. | Low (dead code) | No |
+| [cms-nextjs](level-02/cms-nextjs.md) | Entry fetch effect has no stale-response guard. | Medium | No |
+| [api](level-02/api.md) | About half of `Context` (`waitFor`, result helpers, `decorateContext.ts`) is dead code. | Low (dead code) | No |
+| [lexical-editor](level-02/lexical-editor.md) | No tests across ~90 source files. | Test gap | — |
+| [event-handler-standalone](level-02/event-handler-standalone.md), [sdk-frontend](level-02/sdk-frontend.md) | Security findings SEC-3, SEC-5 (private). SEC-4 affects website-builder React/Vue. | High | No |
+
+No significant findings: [lexical-converter](level-02/lexical-converter.md), [api-headless-cms-bulk-actions-standalone](level-02/api-headless-cms-bulk-actions-standalone.md).
+
 ## Cross-cutting observations
 
 - Most level-0 packages have no tests at all (`error`, `feature`, `wcp`, `mcp`, `sdk`, `pulumi-sdk`, `lexical-theme`, and others), including heavily used ones such as `error` (~260 consumer files).
+- Client/instance caching helpers are repeatedly broken (`aws-sdk`, `app-utils`), and copy-pasted caching code drifts between copies.
 - Dead exports are common in level 1 (`handler`, `utils`, `cms-sdk`, `lexical-nodes`, `website-builder-sdk`).
