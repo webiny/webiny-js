@@ -1,0 +1,44 @@
+# @webiny/db-dynamodb
+
+> Level 4 · commit 19c9ca1b91 · audited 2026-09-26
+
+## Summary
+`@webiny/db-dynamodb` is the DynamoDB storage layer used by essentially every `-ddb`/`-ddb-es` API package: it wraps `dynamodb-toolbox` with query/scan/batch helpers (`queryAll`, `queryPerPage`, `scanWithCallback`, `batchReadAll`, `batchWriteAll`), a filter engine (`FilterUtil`/`createFilters`) that turns GraphQL `where` args into DynamoDB-side filter predicates, and a `DynamoDbDriver` that implements `@webiny/db`'s `DbDriver` interface for the generic key/value store. Overall the query/batch primitives are solid — batch writes correctly loop on `UnprocessedItems` via the toolbox's `next()` continuation, and chunking respects DynamoDB's 25/100 item limits — but the package's own cursor codec (`utils/cursor.ts`) decodes base64 with `"ascii"` instead of `"utf8"`, which corrupts any non-ASCII byte in a paginated cursor. `DynamoDbDriver`, the package's implementation of `@webiny/db`'s `DbDriver`, has zero consumers anywhere in the monorepo outside its own tests, mirroring the level-3 finding that `@webiny/db`'s concrete classes are unused — the interface contract is real, but nothing wires this driver in. The package does not itself call `@webiny/aws-sdk`'s `decorateDocumentClient`/`getDocumentClient` decoration path (the level-2 "decorate once" issue); it only ever receives an already-constructed `DynamoDBDocument` from its caller, so it neither triggers nor mitigates that bug.
+
+## Public API
+- `queryAll`/`queryPerPage`/`queryAllWithCallback`/`count` (`src/utils/query.ts`, `src/utils/count.ts`) and `scan`/`scanWithCallback` (`src/utils/scan.ts`) — the core read primitives; used by ~5+ downstream packages including `api-aco-ddb`, `api-audit-logs-ddb`, `api-core-ddb`, `api-headless-cms-ddb`, `api-headless-cms-ddb-es`.
+- `batchReadAll`/`batchWriteAll` (`src/utils/batch/`) and the higher-level `EntityReadBatch`/`EntityWriteBatch`/`TableReadBatch`/`TableWriteBatch` builders (`src/utils/entity/`, `src/utils/table/`) — batch orchestration with automatic `UnprocessedItems` retry; `createTableWriteBatch` is consumed externally (e.g. `api-search-index-tasks-ddb-os/src/storage/StorageWriter.ts`), `createTableReadBatch` has no external consumers found.
+- `FilterUtil`/`FilterUtilFeature`/`createFilters` (`src/feature/FilterUtil/`) — translates GraphQL `where` args (via `extractWhereArgs`) into in-memory filter predicates using `@webiny/db-utils`'s `ValueFilterRegistry`; consumed by CMS DDB entry-listing code.
+- `DynamoDBCoreFeature`/`registerDynamoDBCore` (`src/DynamoDBCoreFeature.ts`, `src/index.ts`) — DI wiring that registers the document client, filter utilities and value filters; `registerDynamoDBCore`'s only real (non-package) consumer found is `api-headless-cms-testing/src/createCmsTestHandler.ts`, `DynamoDBClientFeature` similarly narrow (`api-event-handler-aws`, one test helper).
+- `DynamoDbDriver` (`src/DynamoDbDriver.ts:23`) — implements `@webiny/db`'s `DbDriver<DynamoDBDocument>`; codegraph shows callers only inside `src/index.ts` (the re-export) and the package's own test — no other package instantiates it.
+- `encodeCursor`/`decodeCursor` (`src/utils/cursor.ts`) — re-exported from `src/utils/index.ts`; consumed externally by `api-audit-logs-ddb/src/cursorSchema.ts` and `results/ListSuccessResult.ts`.
+
+## Bugs
+| # | Severity | Location (file:line) | Problem | Failure scenario | Confidence |
+|---|---|---|---|---|---|
+| 1 | high | packages/db-dynamodb/src/utils/cursor.ts:14 | `decodeCursor` converts the base64-decoded buffer with `.toString("ascii")`, while `encodeCursor` (line 6) produces the base64 from a UTF-8 buffer (`Buffer.from(JSON.stringify(cursor))` defaults to utf8). ASCII decoding masks the high bit of every byte, corrupting any multi-byte UTF-8 sequence. | A pagination cursor whose encoded value contains a non-ASCII character (e.g. a sort/partition key value with an accented letter, CJK, or emoji, as happens with `api-audit-logs-ddb`'s `cursorSchema.ts` which pipes `decodeCursor` straight into `JSON.parse`) comes back as mangled bytes; `JSON.parse` either throws (cursor rejected, pagination breaks) or silently returns a corrupted key, causing `fetchCursor` to return `undefined` and the caller to treat a valid cursor as invalid. | high |
+| 2 | low | packages/db-dynamodb/src/utils/entity/EntityWriteBatch.ts:62-72 vs packages/db-dynamodb/src/utils/table/TableWriteBatch.ts:56-66 | `execute()` in both classes is an almost line-for-line duplicate (snapshot `_items`, clear the array, call `batchWriteAll`), confirmed by jscpd (13 duplicated lines, ~16%). Not a correctness bug on its own, but any future fix to the "clear before await" pattern (e.g. adding error handling that must restore `_items` on failure) has to be applied twice or it silently diverges. | If `batchWriteAll` throws, both implementations have already emptied `_items`, so a caller who retries `execute()` after catching the error silently sends zero items instead of retrying the batch — reproducible by making `batchWriteAll` reject after the array is cleared. | medium |
+
+## Duplication
+- `EntityWriteBatch.execute()` (`src/utils/entity/EntityWriteBatch.ts:62-72`) and `TableWriteBatch.execute()` (`src/utils/table/TableWriteBatch.ts:56-66`) are jscpd-flagged clones (13 duplicated lines each, ~16% of file) — see Bugs #2.
+- `EntityReadBatch`/`TableReadBatch` and `EntityWriteBatch`/`TableWriteBatch` are two parallel abstractions (single-entity vs multi-entity-per-table) built on the same underlying `batchReadAll`/`batchWriteAll` and builder classes; jscpd only flagged the write-side pair as literal clones, but the read-side pair follows the identical `total`/`items`/constructor-loop/`execute` shape and would benefit from a shared base class.
+
+## Dead code
+- `DynamoDbDriver` (`src/DynamoDbDriver.ts:23`) — codegraph/grep: no consumers outside `src/index.ts` (re-export) and the package's own test; the one non-package hit for the string "DynamoDbDriver" is a source-path comment in `api-sync-system`, not an import.
+- `createTableReadBatch`/`TableReadBatch` (`src/utils/table/TableReadBatch.ts:73`) — grep: no consumers outside the `dist/*.d.ts` build artifact; nothing in `packages/*/src` imports it (contrast with `createTableWriteBatch`, which is used by `api-search-index-tasks-ddb-os`).
+- `scanWithCallback` (`src/utils/scan.ts:102`) — grep: no consumers outside the `dist/*.d.ts` build artifact.
+
+## Convention issues
+- `FieldType` (`src/plugins/definitions/FieldPlugin.ts:4`) is declared as `DynamoDBTypes & "date" & any`; intersecting with `any` collapses the whole type to `any`, silently defeating the intended constraint on `FieldPluginParams.type`. Low-severity (type-level only, no runtime effect), but worth a one-line fix (`DynamoDBTypes | "date"`).
+- No violations of the DI naming/one-abstraction-per-file/minimal-barrel conventions were found; `FilterUtilImpl`, `DynamoDBClient`, and the feature files consistently name implementations after their abstraction and keep one class per file.
+
+## Test gaps
+- No test file exercises `utils/cursor.ts`'s `encodeCursor`/`decodeCursor` directly (only `DynamoDbDriver.test.ts` and the `ValueFilter`/`FilterUtil` suites exist under `__tests__/`), so the ASCII/UTF-8 mismatch in Bug #1 has no coverage that would have caught it.
+- `utils/batch/batchWrite.ts`'s `UnprocessedItems` retry path (`hasUnprocessedItems`/`retry`) and `utils/batch/batchRead.ts`'s multi-page `next()` loop have no dedicated tests; both rely entirely on `dynamodb-toolbox` behaving as expected under partial-failure/pagination responses.
+- `scan`/`scanWithCallback`'s early-return conditions (no items and no `lastEvaluatedKey` → return without invoking the callback even once) and the `mustBreak` callback-cancellation path are untested.
+- `createFilters`/`extractWhereArgs`'s field-name parsing (`key.split("_")`, `not_` substring matching) has no test covering a field name that itself contains an underscore, which would be misparsed into the wrong field/operation pair.
+
+## Recommendations
+1. Fix `decodeCursor` in `src/utils/cursor.ts:14` to use `.toString("utf8")` (or delegate to `@webiny/utils`'s cursor helpers instead of maintaining a second, less defensive copy) — this is the one confirmed, reachable correctness bug affecting real pagination cursors.
+2. Decide whether `DynamoDbDriver` is meant to be wired up anywhere; if it's meant to replace `@webiny/db`'s unused `Db`/`Store` classes as the "real" `DbDriver`, find/add its actual registration point, otherwise remove it along with `@webiny/db`'s dead concrete classes to stop the interface from looking load-bearing when it isn't.
+3. Extract the shared `snapshot → clear → batchWriteAll` logic out of `EntityWriteBatch.execute()`/`TableWriteBatch.execute()` into one helper so the two copies can't silently diverge (Bugs #2), and add a unit test for the batch-write failure/retry path.

@@ -15,8 +15,9 @@ Security findings are not described in committed reports. They are referenced by
 | 0     | 20       | Done   |
 | 1     | 11       | Done   |
 | 2     | 16       | Done   |
-| 3     | 11       | In progress (7/11) |
-| 4–14  | 108      | Pending |
+| 3     | 11       | Done   |
+| 4     | 17       | In progress (7/17) |
+| 5–14  | 91       | Pending |
 
 ## Level 0 — top findings
 
@@ -91,9 +92,31 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 | [db](level-03/db.md) | `Db` and `Store` have no consumers; `db-dynamodb` uses only the type contracts. `DbRegistry.register` sorts `input.tags` in place. | Low (dead code) | No |
 | [api-sync-to-opensearch](level-03/api-sync-to-opensearch.md) | Logs `operations.total` (double-counts) instead of `operations.count`. | Low | No |
 | [pulumi](level-03/pulumi.md) | No bugs; no tests despite ~30 module definitions built on it. | Test gap | — |
+| [app-admin — form model](level-03/app-admin/form-model.md) | Per-field validation cache is keyed only by the field value, not by `requiredWhen()` state, so a field made required by another field returns a stale "valid" result. | Medium | No |
+| [app-admin — features](level-03/app-admin/features-and-permissions.md) | `LogOutUseCase` calls `authContext.clear()` without `await` and invokes `logoutCallback` twice. Also SEC-16 (private). | Medium | No |
+| [app-admin — presentation](level-03/app-admin/presentation.md) | Roles/Teams/API Keys presenters and views are a three-way copy; `ApiKeysPresenter` duplicate `form.setData` block misses `token`. | Duplication | Yes (jscpd) |
+| [app-admin — components](level-03/app-admin/components-and-base.md) | `ColumnsVisibilityUpdater.update` drops plain-value updates. `UiStateProvider`/`AdminUiStateProvider` duplicated and mounted twice. | Medium | No |
+| [website-builder-nextjs](level-03/website-builder-nextjs.md) | Security finding SEC-7 (private). | Medium | No |
+| [website-builder-nuxt](level-03/website-builder-nuxt.md) | No equivalent of the Next.js preview/draft and A/B-cookie middleware. | Low (parity) | No |
+
+## Level 4 — top findings (in progress)
+
+| Package | Finding | Severity | Verified |
+| ------- | ------- | -------- | -------- |
+| [api-core — security](level-04/api-core/security.md) | Security findings SEC-17 (critical) and SEC-18 (private). Roles/Teams/API Keys CRUD use cases copy-pasted three times. | Critical | No |
+| [api-core — core services](level-04/api-core/core-services.md) | `JwksCache` never expires and `clearCache()` has no callers, so IdP key rotation breaks auth until restart. Also SEC-14, SEC-15 (private). | High | No |
+| [project-aws — pulumi](level-04/project-aws/pulumi.md) | Security findings SEC-8 to SEC-12 (infrastructure defaults, private). Dead `SyncSystemLambda` chain. | High | No |
+| [project-aws — extensions](level-04/project-aws/extensions-and-features.md) | `set-variant` CLI command handler is an empty TODO stub. Admin env vars set in two places that disagree on `WEBINY_ADMIN_DEBUG`. Also SEC-13 (private). | Medium | No |
+| [api-sync-ddb-to-opensearch](level-04/api-sync-ddb-to-opensearch.md), [api-sync-pg-to-opensearch](level-04/api-sync-pg-to-opensearch.md) | `TimerFeature` hardcodes `getRemainingSeconds: () => 900`, defeating the abort-before-Lambda-timeout check (same copy-pasted bug in both). | High | No |
+| [db-dynamodb](level-04/db-dynamodb.md) | `decodeCursor` uses `"ascii"` for UTF-8 cursors — same bug as `@webiny/utils`. `DynamoDbDriver` has no consumers. | High | No |
+| [api-mailer](level-04/api-mailer.md) | Unconfigured SMTP silently falls back to `DummyMailTransport`, so `sendMail()` (e.g. password reset) reports success without sending. | Medium | No |
+| [project-standalone](level-04/project-standalone.md) | `createAdminApp.ts`/`createApiApp.ts` copied from project-aws and unused. | Low (dead code) | No |
 
 ## Cross-cutting observations
 
 - Most level-0 packages have no tests at all (`error`, `feature`, `wcp`, `mcp`, `sdk`, `pulumi-sdk`, `lexical-theme`, and others), including heavily used ones such as `error` (~260 consumer files).
 - Client/instance caching helpers are repeatedly broken (`aws-sdk`, `app-utils`), and copy-pasted caching code drifts between copies.
+- The same bug travels with copy-pasted code: `decodeCursor` ASCII bug in `utils` and `db-dynamodb`; hardcoded Timer in both sync adapters; `ListCache` copied four times (three in `admin-ui`, one in `app-admin`).
+- Both form systems (`@webiny/form` and `app-admin` form model) over-cache validation results.
+- Roles/Teams/API Keys CRUD is triplicated on both backend (`api-core`) and frontend (`app-admin`).
 - Dead exports are common in level 1 (`handler`, `utils`, `cms-sdk`, `lexical-nodes`, `website-builder-sdk`).
