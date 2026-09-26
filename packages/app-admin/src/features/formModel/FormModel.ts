@@ -417,6 +417,26 @@ export class FormModel implements IFormModel {
         return isValid;
     }
 
+    setErrors(errors: IFormError[]): void {
+        const formErrors: IFormError[] = [];
+        runInAction(() => {
+            for (const error of errors) {
+                const field = error.path ? this._tryGetField(error.path) : undefined;
+                if (field?.visible) {
+                    // Collected by `errors` from the field, with its label and breadcrumb.
+                    field.setValidation({ isValid: false, message: error.message });
+                } else {
+                    formErrors.push(error);
+                }
+            }
+            // Form-level errors share the slot `validate()` replaces, so the next submit clears them.
+            this._formRuleErrors = formErrors;
+            this._isValid = errors.length === 0;
+            this._submitted = true;
+            this._submitCount++;
+        });
+    }
+
     async submit<T = Record<string, unknown>>(options?: {
         skipValidation?: boolean;
     }): Promise<T | false> {
