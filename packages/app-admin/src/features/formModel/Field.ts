@@ -81,6 +81,7 @@ export class Field implements IField {
     private _focusRequested = false;
     private _qualifiedName: string = "";
     private _parentPath: string = "";
+    private _scopePath: () => string = () => this._parentPath;
     private _form: IFormModel | null = null;
     private _ancestorRules: IRule[] = [];
 
@@ -124,9 +125,10 @@ export class Field implements IField {
             this._computedUntilDirty = config.computedUntilDirty;
         }
 
-        makeAutoObservable(this, {
+        makeAutoObservable<this, "_scopePath">(this, {
             config: false,
-            vm: computed
+            vm: computed,
+            _scopePath: false
         });
     }
 
@@ -234,10 +236,11 @@ export class Field implements IField {
         if (all.length === 0) {
             return { visible: true, disabled: false };
         }
-        if (this._parentPath) {
+        const scopePath = this._scopePath();
+        if (scopePath) {
             const resolved = all.map(rule => {
                 if (rule.target.startsWith("$.")) {
-                    return { ...rule, target: `${this._parentPath}.${rule.target.slice(2)}` };
+                    return { ...rule, target: `${scopePath}.${rule.target.slice(2)}` };
                 }
                 return rule;
             });
@@ -375,10 +378,20 @@ export class Field implements IField {
         }
     }
 
-    setForm(form: IFormModel, parentPath?: string): void {
+    setForm(form: IFormModel, parentPath?: string, scopePath?: () => string): void {
         this._form = form;
         this._parentPath = parentPath || "";
+        this._scopePath = scopePath ?? (() => this._parentPath);
         this._qualifiedName = parentPath ? `${parentPath}.${this.config.name}` : this.config.name;
+    }
+
+    /**
+     * A path `form.field()` resolves to exactly this field. Same as `qualifiedName`,
+     * except inside list items, where it carries the item index (`blocks.2.title`).
+     */
+    get scopedName(): string {
+        const scopePath = this._scopePath();
+        return scopePath ? `${scopePath}.${this.config.name}` : this.config.name;
     }
 
     private _callbackParams(): IFieldCallbackParams {
@@ -386,7 +399,7 @@ export class Field implements IField {
             throw new Error("Field not attached to a form.");
         }
         return {
-            field: new FieldNavigator(this._form, this._qualifiedName),
+            field: new FieldNavigator(this._form, this.scopedName),
             form: this._form
         };
     }
