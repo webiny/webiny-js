@@ -16,7 +16,7 @@ Security findings are not described in committed reports. They are referenced by
 | 1     | 11       | Done   |
 | 2     | 16       | Done   |
 | 3     | 11       | Done   |
-| 4     | 17       | In progress (7/17) |
+| 4     | 17       | Done   |
 | 5–14  | 91       | Pending |
 
 ## Level 0 — top findings
@@ -99,7 +99,7 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 | [website-builder-nextjs](level-03/website-builder-nextjs.md) | Security finding SEC-7 (private). | Medium | No |
 | [website-builder-nuxt](level-03/website-builder-nuxt.md) | No equivalent of the Next.js preview/draft and A/B-cookie middleware. | Low (parity) | No |
 
-## Level 4 — top findings (in progress)
+## Level 4 — top findings
 
 | Package | Finding | Severity | Verified |
 | ------- | ------- | -------- | -------- |
@@ -111,6 +111,14 @@ No significant findings: [lexical-converter](level-02/lexical-converter.md), [ap
 | [db-dynamodb](level-04/db-dynamodb.md) | `decodeCursor` uses `"ascii"` for UTF-8 cursors — same bug as `@webiny/utils`. `DynamoDbDriver` has no consumers. | High | No |
 | [api-mailer](level-04/api-mailer.md) | Unconfigured SMTP silently falls back to `DummyMailTransport`, so `sendMail()` (e.g. password reset) reports success without sending. | Medium | No |
 | [project-standalone](level-04/project-standalone.md) | `createAdminApp.ts`/`createApiApp.ts` copied from project-aws and unused. | Low (dead code) | No |
+| [app-websockets](level-04/app-websockets.md) | `WebsocketsSubscriptionManager.onOpen` stores subscriptions in `subscriptions.close`, so open callbacks fire on close instead. | High | Yes |
+| [sdk-nextjs](level-04/sdk-nextjs.md) | Security finding SEC-19 (private). | Critical | Yes |
+| [app-graphql-playground](level-04/app-graphql-playground.md) | Security finding SEC-20 (private). `useResizableSplit` duplicated with app-sdk-playground. | High | No |
+| [app-workflows](level-04/app-workflows.md) | Approve/reject moves an item into a bucket without incrementing its `total`, so the Content Reviews widget under-counts until reload. | Medium | No |
+| [app-audit-logs](level-04/app-audit-logs.md) | `useAuditLogsList` has no error handling on `useCase.execute`, leaving the list loading forever on error. Confirms admin-ui `CodeEditor` stale preview. | Medium | No |
+| [api-headless-cms-bulk-actions-aws](level-04/api-headless-cms-bulk-actions-aws.md) | Handler ignores the `taskService.trigger()` result and always returns `{ success: true }`. | Medium | No |
+| [app-admin-ui](level-04/app-admin-ui.md) | User menu renders "undefined undefined" for profiles without a name. `MissingPermissionsWidget` unused. | Low | No |
+| [app-mailer](level-04/app-mailer.md), [app-sdk-playground](level-04/app-sdk-playground.md), [app-headless-cms-common](level-04/app-headless-cms-common.md) | No significant bugs; no tests. | — | — |
 
 ## Cross-cutting observations
 
