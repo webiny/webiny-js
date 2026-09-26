@@ -15,7 +15,8 @@ Security findings are not described in committed reports. They are referenced by
 | 0     | 20       | Done   |
 | 1     | 11       | Done   |
 | 2     | 16       | Done   |
-| 3–14  | 119      | Pending |
+| 3     | 11       | In progress (2/11) |
+| 4–14  | 108      | Pending |
 
 ## Level 0 — top findings
 
@@ -78,6 +79,13 @@ Packages with no significant findings: [aws-layers](level-00/aws-layers.md), [co
 | [event-handler-standalone](level-02/event-handler-standalone.md), [sdk-frontend](level-02/sdk-frontend.md) | Security findings SEC-3, SEC-5 (private). SEC-4 affects website-builder React/Vue. | High | No |
 
 No significant findings: [lexical-converter](level-02/lexical-converter.md), [api-headless-cms-bulk-actions-standalone](level-02/api-headless-cms-bulk-actions-standalone.md).
+
+## Level 3 — top findings
+
+| Package | Finding | Severity | Verified |
+| ------- | ------- | -------- | -------- |
+| [cli-core](level-03/cli-core.md) | `LinkProjectCommand` calls `open(wcpAppUrl)` without importing `open`; TypeScript accepts it via the DOM `window.open` type, so `link-project` throws `ReferenceError` at runtime. | High | Yes |
+| [api-graphql](level-03/api-graphql.md) | `RefInputScalar` uses `"id" in value` without an object check, so a numeric/boolean RefInput throws `TypeError` instead of a validation error. | Low | Reproduced by agent |
 
 ## Cross-cutting observations
 
