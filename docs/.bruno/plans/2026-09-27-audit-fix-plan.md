@@ -1,4 +1,4 @@
-# Audit Fix Plan (non-security) — v3
+# Audit Fix Plan (non-security) — v4
 
 Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`), audit commit `19c9ca1b91`. Security findings are out of scope here.
 
@@ -17,13 +17,13 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 
 | ID | Root cause | Instances | Fix | Size | Repro |
 |---|---|---|---|---|---|
-| A1 | Async loaders without a stale-response guard | [cms-nextjs](../../reports/level-02/cms-nextjs.md) entry fetch; [app-headless-cms](../../reports/level-06/app-headless-cms/entries-and-renderers.md) `loadRevision`; [app-file-manager](../../reports/level-07/app-file-manager/file-list-and-details.md) `loadFile`; [app-headless-cms-scheduler](../../reports/level-07/app-headless-cms-scheduler.md) `fetchModel`/`fetchEntry`; [app-website-builder](../../reports/level-08/app-website-builder/presentation.md) `PageEditor`; [ai-powerups](../../reports/level-09/ai-powerups/admin.md) generation responses | Shared "latest request wins" helper (request token / AbortController). Do `PageEditor` and `loadRevision` first — they can save to the wrong record; the others are display-only. | M | ☐ |
-| A2a | Check-then-write without an atomic condition | [background-tasks](../../reports/level-07/background-tasks.md) task claim; [api-record-locking](../../reports/level-07/api-record-locking.md) lock acquire; [api-core-sql](../../reports/level-05/api-core-sql.md) `TableManager.ensure()` | Conditional writes (DynamoDB `ConditionExpression`, SQL unique constraint / `ON CONFLICT`). Record locking also depends on decision Q1. | M | ☐ |
+| A1 | Async loaders without a stale-response guard | [cms-nextjs](../../reports/level-02/cms-nextjs.md) entry fetch; [app-headless-cms](../../reports/level-06/app-headless-cms/entries-and-renderers.md) `loadRevision`; [app-file-manager](../../reports/level-07/app-file-manager/file-list-and-details.md) `loadFile`; [app-headless-cms-scheduler](../../reports/level-07/app-headless-cms-scheduler.md) `fetchModel`/`fetchEntry`; [app-website-builder](../../reports/level-08/app-website-builder/presentation.md) `PageEditor`; app-headless-cms entries `search(query)` (`searchOptions` from the last response to resolve); [ai-powerups](../../reports/level-09/ai-powerups/admin.md) generation responses | Shared "latest request wins" helper (request token / AbortController). Do `PageEditor` and `loadRevision` first — they can save to the wrong record; the others are display-only. | M | ☐ |
+| A2a | Check-then-write without an atomic condition | [background-tasks](../../reports/level-07/background-tasks.md) task claim; [api-record-locking](../../reports/level-07/api-record-locking.md) lock acquire; [api-core-sql](../../reports/level-05/api-core-sql.md) `TableManager.ensure()` | Conditional writes (DynamoDB `ConditionExpression`, SQL unique constraint / `ON CONFLICT`). Independent of Q1 (server-side lock enforcement is B3.8). | M | ☐ |
 | A2b | Optimistic versioning for concurrent updates | same packages | Separate design decision (Q6) — do not bundle with A2a. | L | — |
-| A3 | Same bug copied into several places | `decodeCursor` ASCII bug in [utils](../../reports/level-01/utils.md) and [db-dynamodb](../../reports/level-04/db-dynamodb.md); unvalidated `JSON.parse(cursor)` in [api-search-index-tasks-ddb-os](../../reports/level-10/api-search-index-tasks-ddb-os.md); hardcoded 900s timer in [api-sync-ddb-to-opensearch](../../reports/level-04/api-sync-ddb-to-opensearch.md) and [api-sync-pg-to-opensearch](../../reports/level-04/api-sync-pg-to-opensearch.md) | One UTF-8, validated cursor codec used everywhere; timer from the real Lambda context. | S | 🔍 timer, ✅ cursor (agent repro) |
-| A4 | Over-eager validation caching | [@webiny/form](../../reports/level-01/form.md) `FormValidator`; [app-admin form model](../../reports/level-03/app-admin/form-model.md) `Field.ts` | Invalidate on `setValue`; include `requiredWhen` state in the cache key. | S | ☐ |
-| A5 | Broken instance caches | [aws-sdk](../../reports/level-02/aws-sdk.md) Step Functions client never cached, DynamoDB decorate flag never read; [app-utils](../../reports/level-02/app-utils.md) `Date.now()` cache key | Fix cache writes/keys; test that instances are reused. | S | 🔍 SFN + app-utils; ☐ DynamoDB flag |
-| A6 | `Result.value` read without `isFail()` | [api-website-builder redirects route](../../reports/level-08/api-website-builder/experiments-and-redirects.md); [api-website-builder-scheduler](../../reports/level-09/api-website-builder-scheduler.md) cancel handlers | Review sweep for unchecked `.value`; consider a helper or lint rule. Low priority. | S | ☐ |
+| A3 | Same bug copied into several places | `decodeCursor` ASCII bug in [utils](../../reports/level-01/utils.md) and [db-dynamodb](../../reports/level-04/db-dynamodb.md); unvalidated `JSON.parse(cursor)` in [api-search-index-tasks-ddb-os](../../reports/level-10/api-search-index-tasks-ddb-os.md); hardcoded 900s timer in [api-sync-ddb-to-opensearch](../../reports/level-04/api-sync-ddb-to-opensearch.md) and [api-sync-pg-to-opensearch](../../reports/level-04/api-sync-pg-to-opensearch.md). Also consolidate the third `"ascii"` decode in [api-opensearch](../../reports/level-02/api-opensearch.md) `cursors.ts` (most-used copy; inert today because items are URI-encoded) | One UTF-8, validated cursor codec used everywhere; timer from the real Lambda context. | S | 🔍 timer, ✅ cursor (agent repro) |
+| A4 | Over-eager validation caching | [@webiny/form](../../reports/level-01/form.md) `FormValidator` (also: `registerField` applies a default from a stale closed-over value inside `requestAnimationFrame`); [app-admin form model](../../reports/level-03/app-admin/form-model.md) `Field.ts` | Invalidate on `setValue`; include `requiredWhen` state in the cache key. | S | ☐ |
+| A5 | Broken instance caches | [aws-sdk](../../reports/level-02/aws-sdk.md) Step Functions client never cached, DynamoDB decorate flag never read; [app-utils](../../reports/level-02/app-utils.md) `Date.now()` cache key | Fix cache writes/keys; test that instances are reused. | S | 🔍 |
+| A6 | `Result.value` read without `isFail()` | [api-website-builder redirects route](../../reports/level-08/api-website-builder/experiments-and-redirects.md); [api-website-builder-scheduler](../../reports/level-09/api-website-builder-scheduler.md) cancel handlers | Review sweep for unchecked `.value`; consider a helper or lint rule. Low priority. | S | 🔍 |
 
 ## Phase B — bugs by area
 
@@ -50,14 +50,14 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 |---|---|---|---|
 | B2.1 | [background-tasks](../../reports/level-07/background-tasks.md): a `RUNNING` task can run again concurrently; status guards reimplemented 3×. [AWS](../../reports/level-08/background-tasks-aws.md) and [standalone](../../reports/level-08/background-tasks-standalone.md) transports don't deduplicate triggers. Depends on A2a; add deterministic execution names. | M | ☐ |
 | B2.2 | [api-scheduler-aws](../../reports/level-08/api-scheduler-aws.md) falls back to a no-op scheduler on transient service-discovery errors; [standalone](../../reports/level-08/api-scheduler-standalone.md) never retries failed jobs. | M | ☐ |
-| B2.3a | Scheduler path of the `DateTimePicker` timezone bug ([app-scheduler](../../reports/level-06/app-scheduler.md), [api-scheduler](../../reports/level-07/api-scheduler.md)): `dateTimeLocal` sends a local wall-clock time labelled UTC. Fix it in the scheduler only (convert to real UTC before sending); do not change `DateTimePicker` itself. | S | ✅ |
-| B2.3b | Global `DateTimePicker` fix. Changing it changes what every consumer stores (incl. CMS datetime fields), and existing values are ambiguous. Blocked by decision Q5. | M/L | ✅ |
+| B2.3a | Scheduler path of the `DateTimePicker` timezone bug ([app-scheduler](../../reports/level-06/app-scheduler.md), [api-scheduler](../../reports/level-07/api-scheduler.md)): `dateTimeLocal` sends a local wall-clock time labelled UTC. Fix it in the scheduler only; do not change `DateTimePicker` itself. Done when also: converted in all three places — on send (`SchedulePublishActionGateway`, `ScheduleUnpublishActionGateway`), in `createMinDateValidator` (app-scheduler bug #2), and on load/display of an existing scheduled action. Temporary: B2.3b removes this conversion. | S | ✅ |
+| B2.3b | Global `DateTimePicker` fix. Changing it changes what every consumer stores (incl. CMS datetime fields), and existing values are ambiguous. Blocked by decision Q5. Done when also: the B2.3a scheduler-side conversion is removed, so values are not converted twice. | M/L | ✅ |
 | B2.4 | [api-scheduler](../../reports/level-07/api-scheduler.md): cancel deletes the tracking entry even if the EventBridge delete fails (orphaned schedule). | S | ☐ |
 | B2.5 | [api-headless-cms-bulk-actions-aws](../../reports/level-04/api-headless-cms-bulk-actions-aws.md): handler ignores the trigger result and returns success. | S | ☐ |
 | B2.6 | [api-headless-cms-scheduler](../../reports/level-08/api-headless-cms-scheduler.md): two delete-cancellation handlers overlap. | S | ☐ |
 | B2.7 | [api-websockets-standalone](../../reports/level-06/api-websockets-standalone.md): client messages never reach route handlers. [api-websockets](../../reports/level-05/api-websockets.md): no `GoneException` cleanup; hardcoded 3-hour cutoff hides long-lived connections. | M | ☐ |
 | B2.8 | [event-handler-aws](../../reports/level-03/event-handler-aws.md): `apiGatewayEventToHttpRequest` ignores `isBase64Encoded`. | S | ☐ |
-| B2.9 | [webhooks](../../reports/level-08/webhooks.md): signing and verification use different encodings (legitimate verification can fail); `WebhookVerifyPayload` never registered. | S | ☐ |
+| B2.9 | [webhooks](../../reports/level-08/webhooks.md): signing/verification mismatch (see report). | S | ☐ |
 | B2.10 | [api-file-manager-s3](../../reports/level-09/api-file-manager-s3.md): no cleanup of abandoned multipart uploads. | S | ☐ |
 
 ### B3. Headless CMS
@@ -67,10 +67,11 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 | B3.1 | [api-headless-cms crud](../../reports/level-06/api-headless-cms/crud-and-utils.md): reserved system field IDs allowed on model create/update (only import rejects them) — `crud`/`domain` schemas drifted. Dynamic-zone converter drops vs throws on unknown templates. | M | ☐ |
 | B3.2 | [api-headless-cms models](../../reports/level-06/api-headless-cms/models.md): code-defined models skip field/storageId uniqueness. | S | ☐ |
 | B3.3 | [app-headless-cms model editor](../../reports/level-06/app-headless-cms/model-editor.md): no fieldId uniqueness check. | S | ☐ |
-| B3.4 | [app-headless-cms features](../../reports/level-06/app-headless-cms/features.md): `mapCmsValidators` drops the combined schema when a field has 2+ schema-producing validators (`required` doesn't count); bulk actions and model import skip cache invalidation. | S | 🔍 validators |
+| B3.4 | [app-headless-cms features](../../reports/level-06/app-headless-cms/features.md): `mapCmsValidators` drops the combined schema when a field has 2+ schema-producing validators (`required` doesn't count) — also fix the intersection `reduce` that seeds with `schemas[0]` and intersects it again; bulk actions and model import skip cache invalidation. | S | 🔍 validators |
 | B3.5 | [api-headless-cms content entry](../../reports/level-06/api-headless-cms/content-entry.md): publish/republish/unpublish return the pre-storage-transform entry. | S | ☐ |
 | B3.6 | [cms-sdk](../../reports/level-01/cms-sdk.md): resolved references treated as unresolved on every patch. | M | ☐ |
 | B3.7 | [validation](../../reports/level-00/validation.md): `dateGte`/`dateLte` throw on bad config and CMS swallows the error. | S | ✅ |
+| B3.8 | [api-record-locking](../../reports/level-07/api-record-locking.md): no server-side enforcement of record locks on entry mutations (bug #2). Blocked by decision Q1. | M | ☐ |
 
 ### B4. Website Builder
 
@@ -78,10 +79,11 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 |---|---|---|---|
 | B4.1 | [api-website-builder pages](../../reports/level-08/api-website-builder/pages-and-graphql.md): page path uniqueness never enforced; lookup returns an arbitrary match; duplicate appends a single "-copy". Done when also: plan for existing duplicate paths. | M | ☐ |
 | B4.2 | [app-website-builder editor SDK](../../reports/level-08/app-website-builder/editor-sdk-and-misc.md): undo/redo sends an empty diff to the preview. | S | ☐ |
-| B4.3 | [app-website-builder features](../../reports/level-08/app-website-builder/features.md): settings cache written before the mutation succeeds, no rollback. | S | ☐ |
+| B4.3 | [app-website-builder features](../../reports/level-08/app-website-builder/features.md): settings cache written before the mutation succeeds, no rollback; `DeletePageRevisionRepository` never removes the revision from `PageRevisionsCache`, and the description update never updates it. | S | ☐ |
 | B4.4 | [api-website-builder experiments](../../reports/level-08/api-website-builder/experiments-and-redirects.md): redirect loops not prevented; experiment start race. (Route crash is A6.) | S | ☐ |
 | B4.5 | [website-builder-vue](../../reports/level-02/website-builder-vue.md): store keyed by `document.id` vs `document.properties.id`; Vue manifests lack `aiContext`. | S | ☐ |
 | B4.6 | [app-website-builder BaseEditor](../../reports/level-08/app-website-builder/base-editor.md): module-level drag state shared across editor instances. | S | ☐ |
+| B4.7 | [api-website-builder-workflows](../../reports/level-09/api-website-builder-workflows.md): publish gate throws on any lookup failure other than NotFound (`ValidateWorkflowStateOnPageBeforePublish`). Do together with C7. | S | ☐ |
 
 ### B5. CLI, build and project tooling
 
@@ -91,9 +93,9 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 | B5.2 | [project features](../../reports/level-02/project/features-and-extensions.md): `RunnableBuildProcess` has no `error`/`exit` handlers. | S | ☐ |
 | B5.3 | [project services](../../reports/level-02/project/services-and-utils.md): remote-Pulumi-backend env var detection disagrees between two services; `AdminAfterBuildExt` hooks included twice; `getVersionFromVersionFolders` sorts versions as strings (5.9 above 5.40). | M | ☐ |
 | B5.4 | [create-webiny-project](../../reports/level-02/create-webiny-project.md): `--hosting-type server` documented but only `standalone` recognized. | S | ☐ |
-| B5.5 | [cli-aws](../../reports/level-05/cli-aws.md): `allow-production` declared as number but read as boolean. Both CLIs ignore the [system-requirements](../../reports/level-00/system-requirements.md) failure exit code. | S | 🔍 type |
+| B5.5 | [cli-aws](../../reports/level-05/cli-aws.md): `allow-production` declared as number but read as boolean. [system-requirements](../../reports/level-00/system-requirements.md) exits 0 on failure (`process.exit()` with no code); fix it there — both CLIs call it as-is. | S | 🔍 type |
 | B5.6 | [pulumi-sdk](../../reports/level-00/pulumi-sdk.md): Linux ARM64 downloads the x64 binary. | S | ☐ |
-| B5.7 | [build-tools](../../reports/level-00/build-tools.md): build/watch helpers ignore definition-time config. | S | ☐ |
+| B5.7 | [build-tools](../../reports/level-00/build-tools.md): build/watch helpers ignore definition-time config; `linkWorkspaces.js` "already linked" check compares the link path to itself, so it never skips. | S | ☐ |
 | B5.8 | [project-aws extensions](../../reports/level-04/project-aws/extensions-and-features.md): `set-variant` is an empty TODO; admin env vars set in two places that disagree. | S | ☐ |
 | B5.9 | [api-event-handler-aws-ddb-os](../../reports/level-12/api-event-handler-aws-ddb-os.md): OpenSearch endpoint becomes `https://undefined` when its env var is unset. | S | ☐ |
 
@@ -104,8 +106,8 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 | B6.1 | [app](../../reports/level-02/app.md): `useRoute` leaks a MobX reaction per mount (~49 call sites). `getLink()`/`SimpleLink` ignore `baseUrl` (not verified). | S | ✅ leak |
 | B6.2 | [app-websockets](../../reports/level-04/app-websockets.md): `onOpen` stored in the `close` bucket; `useEffect` cleanup never closes the socket. | S | ✅ onOpen |
 | B6.3 | [admin-ui primitives](../../reports/level-02/admin-ui/primitives.md): `CodeEditor` uses Monaco `defaultValue` (stale audit-log preview — [app-audit-logs](../../reports/level-04/app-audit-logs.md)). | S | ☐ |
-| B6.4 | [admin-ui navigation](../../reports/level-02/admin-ui/navigation-and-data.md): sidebar id is `btoa` of a ReactNode label (collisions; may throw on non-Latin-1 labels). | S | ☐ |
-| B6.5 | [app-admin components](../../reports/level-03/app-admin/components-and-base.md): `ColumnsVisibilityUpdater` drops plain-value updates; `UiStateProvider`/`AdminUiStateProvider` mounted twice. | S | ☐ |
+| B6.4 | [admin-ui navigation](../../reports/level-02/admin-ui/navigation-and-data.md): sidebar id is `btoa` of a ReactNode label (collisions; plan inference, not in report: `btoa` may throw on non-Latin-1 labels). | S | ☐ |
+| B6.5 | [app-admin components](../../reports/level-03/app-admin/components-and-base.md): `ColumnsVisibilityUpdater` drops plain-value updates; `UiStateProvider`/`AdminUiStateProvider` mounted twice; [form model](../../reports/level-03/app-admin/form-model.md) `TabsBuilder.before()/after()` are no-ops. | S | ☐ |
 | B6.6 | [app-admin features](../../reports/level-03/app-admin/features-and-permissions.md): logout calls async `clear()` without `await` and fires the IdP callback twice. | S | 🔍 |
 | B6.7 | [app-audit-logs](../../reports/level-04/app-audit-logs.md): list stuck loading on error. | S | ☐ |
 | B6.8 | [app-workflows](../../reports/level-04/app-workflows.md): Content Reviews widget under-counts after approve/reject. | S | ☐ |
@@ -119,14 +121,14 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 |---|---|---|---|
 | B7.1 | [feature](../../reports/level-00/feature.md): `BaseError` wipes the native stack trace (api and admin copies). | S | ✅ |
 | B7.2 | [api-core core services](../../reports/level-04/api-core/core-services.md): JWKS cache never expires; identity-provider key rotation breaks auth until restart. | S | ☐ |
-| B7.3 | [cognito](../../reports/level-05/cognito.md): `UpdateUserUseCase` uses the new email as `Username` when setting a password, so email+password updates silently fail. | S | ☐ |
+| B7.3 | [cognito](../../reports/level-05/cognito.md): `UpdateUserUseCase` uses the new email as `Username` when setting a password, so email+password updates silently fail. Also: `UpdateUserUseCase`/`DeleteUserUseCase` change the local user before calling Cognito and never roll back on failure. | S | ☐ |
 | B7.4 | [languages](../../reports/level-07/languages.md): `GetDefaultLanguage`/`GetLanguageByCode` return disabled languages. | S | ☐ |
 | B7.5 | [i18n](../../reports/level-00/i18n.md): locale-specific formats never apply. | S | ☐ |
 | B7.6 | [api-workflows](../../reports/level-07/api-workflows.md): reviewer e-mail notifications wired but never sent. | S | ☐ |
 | B7.7 | [api-mailer](../../reports/level-04/api-mailer.md): unconfigured SMTP silently uses a dummy transport. Depends on decision Q2. | S | ☐ |
 | B7.8 | [sdk](../../reports/level-00/sdk.md): `createFiles` fail-fast leaves in-flight uploads creating records. | S | ☐ |
 | B7.9 | [api-graphql](../../reports/level-03/api-graphql.md): `RefInputScalar` throws `TypeError` on non-object input. | S | ✅ (agent repro) |
-| B7.10 | Smaller correctness issues: [plugins](../../reports/level-00/plugins.md) register misclassification; [mcp](../../reports/level-00/mcp.md) Copilot adapter + `serve` typo; [telemetry](../../reports/level-01/telemetry.md) opt-out event never sent; [api-event-handler-aws](../../reports/level-11/api-event-handler-aws.md) tenant header casing; [event-handler-core](../../reports/level-01/event-handler-core.md) `Vary` overwrite. | S each | ☐ |
+| B7.10 | Smaller correctness issues: [plugins](../../reports/level-00/plugins.md) register misclassification; [mcp](../../reports/level-00/mcp.md) Copilot adapter + `serve` typo; [telemetry](../../reports/level-01/telemetry.md) opt-out event never sent; [api-event-handler-aws](../../reports/level-11/api-event-handler-aws.md) tenant header handling differs between API Gateway and Function URL paths; [event-handler-core](../../reports/level-01/event-handler-core.md) `Vary` overwrite. | S each | ☐ |
 | B7.11 | [webiny](../../reports/level-14/webiny.md): re-exports ~85 deep internal paths pinned `0.0.0`. Depends on decision Q4. | M | ☐ |
 
 ## Phase C — duplication to consolidate
@@ -135,7 +137,7 @@ Highest value first (drift has already caused bugs):
 
 | ID | Item | Size |
 |---|---|---|
-| C1 | Roles / Teams / API Keys CRUD triplicated on backend ([api-core security](../../reports/level-04/api-core/security.md)) and frontend ([app-admin presentation](../../reports/level-03/app-admin/presentation.md)); frontend copy dropped `token` in one path. | L |
+| C1 | Roles / Teams / API Keys CRUD triplicated on backend ([api-core security](../../reports/level-04/api-core/security.md)) and frontend ([app-admin presentation](../../reports/level-03/app-admin/presentation.md)); frontend copy has already drifted in one path. | L |
 | C2 | `crud/` vs `domain/` model schemas in [api-headless-cms](../../reports/level-06/api-headless-cms/crud-and-utils.md) (caused B3.1). | M |
 | C3 | Legacy vs new field-editor rules/permissions editors in [app-headless-cms admin](../../reports/level-06/app-headless-cms/admin.md). | M |
 | C4 | Two live folder-tree implementations in [app-aco](../../reports/level-05/app-aco/components.md). | M |
@@ -171,7 +173,7 @@ Confirm with CodeGraph/grep before deleting; small PRs.
 
 | ID | Question | Blocks |
 |---|---|---|
-| Q1 | Record locking: enforce locks server-side (reject updates to locked entries) or keep them advisory in the UI? | A2a (record locking) |
+| Q1 | Record locking: enforce locks server-side (reject updates to locked entries) or keep them advisory in the UI? | B3.8 |
 | Q2 | Mailer: fail loudly when SMTP is not configured, or keep the silent dummy transport? | B7.7 |
 | Q3 | website-builder-nuxt parity with the Next.js preview/draft and A/B-cookie middleware. | C6 |
 | Q4 | `webiny` meta package: re-export curated entry points and version them properly? | B7.11 |
@@ -181,7 +183,7 @@ Confirm with CodeGraph/grep before deleting; small PRs.
 ## Suggested order
 
 1. Reproduce and fill the *Repro* column for Phase A and the B items you intend to do next.
-2. Phase A: A3 and A5 (small, verified), then A1 (start with `PageEditor`/`loadRevision`), A4, A2a.
+2. Phase A: A3 and A5 (small, code-confirmed), then A1 (start with `PageEditor`/`loadRevision`), A4, A2a.
 3. Cheap user-visible fixes: B5.1, B6.1, B6.2, B6.6, B7.1, B2.3a.
 4. Remaining Phase B by area, one area per PR series.
 5. Phase C items that remove copies touched by Phase B (C2 with B3.1, C8, C5).
