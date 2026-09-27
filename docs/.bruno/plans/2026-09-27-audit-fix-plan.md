@@ -1,6 +1,6 @@
 # Audit Fix Plan (non-security)
 
-Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`), audit commit `19c9ca1b91`. Security findings are out of scope here and have their own private plan.
+Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`), audit commit `19c9ca1b91`. Security findings are out of scope here.
 
 ## How to use this plan
 
@@ -13,13 +13,12 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 
 | # | Root cause | Instances | Fix |
 |---|---|---|---|
-| A1 | Un-awaited promises in conditions | Pattern seen in several places (e.g. app-admin logout) | Enable a lint rule for misused/floating promises in backend packages and fix what it reports. |
 | A2 | Async loaders without a stale-response guard | `cms-nextjs` entry fetch, `app-headless-cms` `loadRevision`, `app-file-manager` `loadFile`, `app-headless-cms-scheduler` `fetchModel`/`fetchEntry`, `app-website-builder` `PageEditor`, `ai-powerups` generation responses | Add a shared "latest request wins" helper (request token / AbortController) and use it in every listed loader. The `PageEditor` and `loadRevision` cases can save to the wrong record, so do those first. |
 | A3 | Check-then-write without an atomic condition | `background-tasks` task execution, `api-record-locking` lock acquisition, `api-core-sql` `TableManager.ensure()` | Use conditional writes (DynamoDB `ConditionExpression`, SQL unique constraints / `ON CONFLICT`) and optimistic versioning. |
 | A4 | Copy-pasted helpers carrying the same bug | `decodeCursor` ASCII bug in [utils](../../reports/level-01/utils.md) and [db-dynamodb](../../reports/level-04/db-dynamodb.md); hardcoded 900s timer in both [sync adapters](../../reports/level-04/api-sync-ddb-to-opensearch.md); `ListCache` in 5–6 places (admin-ui ×3, app-admin, app-website-builder, api-aco) | One cursor codec (UTF-8, validated) used everywhere; one timer from the real Lambda context; one `ListCache` in a shared package. |
 | A5 | Over-eager validation caching | [@webiny/form](../../reports/level-01/form.md) `FormValidator`, [app-admin form model](../../reports/level-03/app-admin/form-model.md) `Field.ts` | Invalidate cached validation on `setValue` and include `requiredWhen` state in the cache key. |
 | A6 | Broken instance caches | [aws-sdk](../../reports/level-02/aws-sdk.md) Step Functions client never cached, DynamoDB decorate flag never read; [app-utils](../../reports/level-02/app-utils.md) `Date.now()` cache key | Fix the cache writes/keys; add tests asserting reuse. |
-| A7 | `Result.value` read without `isFail()` | Redirects REST route, website-builder scheduler cancel handlers, website-builder workflow publish gate | Add a lint/type helper or review sweep for `.value` on unchecked `Result`s. |
+| A7 | `Result.value` read without `isFail()` | Redirects REST route, website-builder scheduler cancel handlers | Add a lint/type helper or review sweep for `.value` on unchecked `Result`s. |
 
 ## Phase B — high-impact bugs by area
 
@@ -131,7 +130,6 @@ Confirm with CodeGraph/grep before deleting, then remove in small PRs:
 These are product/design questions rather than bugs:
 
 1. **Record locking:** enforce locks server-side (reject updates to locked entries) or keep them advisory in the UI only?
-2. **Workflows:** should a model be able to require review before publish? Today review is always optional.
 3. **Mailer:** fail loudly when SMTP is not configured, or keep the silent dummy transport?
 4. **website-builder-nuxt parity** with the Next.js preview/draft and A/B-cookie middleware.
 5. **`webiny` meta package:** re-export curated package entry points instead of deep paths, and version them properly.
@@ -139,7 +137,7 @@ These are product/design questions rather than bugs:
 
 ## Suggested order
 
-1. Phase A (A1, A2, A3, A4 first) — each is small and closes several bugs.
+1. Phase A (A2, A3, A4 first) — each is small and closes several bugs.
 2. B2 timezone bug and B5 `link-project`/build-process fixes (user-visible, verified or cheap to verify).
 3. Remaining Phase B by area, one area per PR series.
 4. Phase C consolidations that remove drift-prone copies touched by Phase B.
