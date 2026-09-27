@@ -16,7 +16,7 @@
 | # | Severity | Location | Problem | Failure scenario | Confidence |
 |---|---|---|---|---|---|
 | 1 | critical | `src/ComponentSandbox.tsx` | Security finding SEC-19 — see private notes. | — | high |
-| 2 | medium | `src/remoteComponents/GraphQLRemoteComponentLoader.ts:51-67` | `RemoteComponentEntry` (defined in the `@webiny/sdk-frontend` dependency this loader consumes) carries `bundledJsSha256`/`bundledCssSha256` fields specifically for integrity verification — the sibling `RemoteComponentLoader` in this same package always verifies a bundle's hash (via `fetchAndVerify`/`verifyHash`, `src/remoteComponents/verifyArtifact.ts`) before executing it — but `GraphQLRemoteComponentLoader.loadComponents` passes each `entry` straight to `hydrateComponent` without ever comparing `entry.bundledJs`/`entry.bundledCss` against their declared hashes. | If a cached/stale GraphQL response, a proxy, or any intermediary between the GraphQL API and this loader ever returns a `bundledJs` string that doesn't match its own declared hash, this loader (unlike `RemoteComponentLoader`) has no way to detect or reject it before executing the code. | medium |
+| 2 | low | `src/remoteComponents/GraphQLRemoteComponentLoader.ts` | Security finding SEC-5 — see private notes. | — | low |
 
 ## Duplication
 No jscpd-detected clones within the package. The re-export files (`index.ts`, `webpack.ts`) are pure pass-throughs with no reimplementation.
@@ -34,5 +34,5 @@ None of note — the package has no DI code, and file-per-concern is followed (`
 
 ## Recommendations
 1. Fix the critical issue in `ComponentSandbox.tsx` (see `docs/.reports/security.md`) before this code path is exercised in production.
-2. Add hash verification to `GraphQLRemoteComponentLoader` (reusing `verifyHash` from `./verifyArtifact.js`) so both loaders enforce the same integrity guarantee, or document why the GraphQL path is exempt.
+2. Fix security finding SEC-5 (see private notes).
 3. Add test coverage for `ComponentSandbox` and `GraphQLRemoteComponentLoader`, including regression coverage for the fix once #1 is addressed.

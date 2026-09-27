@@ -29,7 +29,7 @@
 None found that rise above the duplication/dead-code items already listed. The DI abstraction/implementation split, one-feature-per-subscription-module layout (`subscriptions/<app>/index.ts` + `handlers/*.ts`), and namespace-typed abstractions (`AuditLogsContext`, `AuditLogsStorage`, event handler abstractions) are applied consistently throughout.
 
 ## Test gaps
-- No test exercises permission enforcement on any of the four `AuditLogsContextValue` methods. `__tests__/filtering.test.ts` and `__tests__/tenantIndex.test.ts` cover filter/pagination behavior only, and `__tests__/createAuditLog.test.ts`/`updateAuditLog.test.ts` do not assert a `NotAuthorizedError` case for a caller lacking `al.*`. This gap is directly why the `listAuditLogs` finding above went unnoticed.
+- `__tests__/filtering.test.ts` and `__tests__/tenantIndex.test.ts` cover filter/pagination behavior only. Security finding SEC-50 needs a regression test — see private notes.
 - No test covers the `getAuditConfig`'s "delayed"/coalescing path (`createOrMergeAuditLog` in `src/utils/getAuditConfig.ts:37-75`) merging a new `after` payload into an existing entry's `before` — the merge logic (falling back to `payload.content` when there's no prior `before`) is untested.
 - No test exercises the license-gate branch in `AuditLogsFeature.ts:25-27` (nothing registered when `auditLogs` is disabled).
 

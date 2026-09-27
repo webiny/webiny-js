@@ -30,7 +30,7 @@ None found with confirmed reachability; `CleanupStaleMultipartUploadsFeature`/`C
 - `GetFileContentsByKeyUseCase.ts` and `GetFileContentsByIdUseCase.ts` inline a `Record<string, string>`-shaped content-type map and a local `AssetMetadata` interface (`LocalAssetResolver.ts:10-16`) rather than extracting named types to their own files, contrary to the "no inline types" convention.
 
 ## Test gaps
-- `__tests__/uploadRoutes.test.ts`, `uploadToken.test.ts`, `completeMultiPartUpload.test.ts`, `getFileContents.test.ts`, and `roundTrip.test.ts` give this package noticeably better coverage than `api-file-manager-s3`, but none of them appears to test a `key`/`bucketKey` value containing `../` or an absolute path against `GetFileContentsByKeyUseCase`/`GetFileContentsByIdUseCase`/`LocalContentsReader` — i.e., there is no regression test for the read-side containment gap noted above, even though the write-side (`UploadSingleFileRoute`) is presumably covered by `isPathContained` behavior.
+- `__tests__/uploadRoutes.test.ts`, `uploadToken.test.ts`, `completeMultiPartUpload.test.ts`, `getFileContents.test.ts`, and `roundTrip.test.ts` give this package noticeably better coverage than `api-file-manager-s3`. A regression test is needed for security finding SEC-51 — see private notes.
 - No test covers `CleanupStaleMultipartUploadsTask`'s age-threshold deletion logic.
 
 ## Recommendations

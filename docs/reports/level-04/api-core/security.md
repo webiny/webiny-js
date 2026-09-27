@@ -26,10 +26,10 @@ This slice's main exports (all consumed from `packages/api-core/src/features/sec
 - Several pairs across `Get*UseCase.ts`/`List*UseCase.ts`/`Delete*UseCase.ts`/`Update*UseCase.ts` for roles vs. teams vs. api-keys (e.g. `GetRoleUseCase.ts:9-18` / `ListRolesUseCase.ts:9-18`, `DeleteRoleUseCase.ts:10-25` / `UpdateRoleUseCase.ts:16-31`, `DeleteApiKeyUseCase.ts:9-24` / `UpdateApiKeyUseCase.ts:12-28`) — these three CRUD families (roles, teams, api keys) are essentially the same use-case template copy-pasted three times. Given how consistently this pattern repeats, a shared "permission-gated repository CRUD use case" helper would cut a meaningful fraction of this slice's size and reduce the risk of a fix (e.g. the permission-escalation issue above) being applied to only one of the three copies.
 - `apiKeys/shared/ApiKeysRepository.ts:50-65` / `:80-95` — `getByToken`/`getBySlug`'s storage-then-factory-fallback logic is duplicated inline; could be extracted into one private helper parameterized by lookup function.
 - `permissions/createPermissions.ts` has several internal near-duplicate blocks (lines ~50-229) — not reviewed in depth for this slice beyond noting the clones exist.
-- `apiKeys/shared/schemas.ts:9-16` / `:20-27` — `createApiKeyInputSchema`/`updateApiKeyInputSchema` share the same `permissions`/`description` field definitions verbatim; a shared base schema (`.extend()`) would remove the duplication and is also the natural place to add the permission-escalation fix's validation.
+- `apiKeys/shared/schemas.ts:9-16` / `:20-27` — `createApiKeyInputSchema`/`updateApiKeyInputSchema` share the same `permissions`/`description` field definitions verbatim; a shared base schema (`.extend()`) would remove the duplication. Related: security finding SEC-17 — see private notes.
 
 ## Dead code
-No dead exports found within the reviewed scope. `IdentityContext.withIdentity()` currently has no production callers (see SEC-18 in private notes before adding one).
+No dead exports found within the reviewed scope.
 
 ## Convention issues
 No significant AGENTS.md convention violations found. The slice consistently follows the one-abstraction-per-file / DI-naming pattern (`abstractions.ts` + implementation file named after the exported symbol, e.g. `ApiKeyAuthenticator.ts` exporting `ApiKeyAuthenticator`), and barrel `index.ts` files in this slice export only what's needed by `SecurityFeature.ts` and downstream consumers.
@@ -42,5 +42,5 @@ No significant AGENTS.md convention violations found. The slice consistently fol
 
 ## Recommendations
 1. Fix security finding SEC-17 (see private notes).
-2. Fix security finding SEC-18 before any package starts calling `IdentityContext.withIdentity()` (see private notes).
+2. Fix security finding SEC-18 (see private notes).
 3. Extract the repeated roles/teams/api-keys CRUD use-case template (see Duplication) into a shared helper — beyond the token savings, it would make the Bug #1-style fix apply uniformly across all three instead of needing three separate patches.
