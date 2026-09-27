@@ -19,7 +19,8 @@ class CollabThreadModelImpl implements ModelFactory.Interface {
             builder
                 .private({
                     modelId: COLLAB_THREAD_MODEL_ID,
-                    name: "Collaboration Thread"
+                    name: "Collaboration Thread",
+                    lifecycleEvents: false
                 })
                 .fields(fields => ({
                     contentType: fields

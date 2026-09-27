@@ -1,4 +1,4 @@
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { parseIdentifier } from "@webiny/utils";
@@ -18,7 +18,7 @@ import { CreateUnpublishEntryDataFactory } from "~/features/contentEntry/entryDa
 
 class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
-        private eventPublisher: EventPublisher.Interface,
+        private eventPublisher: EntryEventPublisher.Interface,
         private repository: UnpublishEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getPublishedRevisionByEntryId: GetPublishedRevisionByEntryIdUseCase.Interface,
@@ -106,7 +106,7 @@ export const UnpublishEntryUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: UnpublishEntryUseCaseImpl,
     dependencies: [
-        EventPublisher,
+        EntryEventPublisher,
         UnpublishEntryRepository,
         AccessControl,
         GetPublishedRevisionByEntryIdUseCase,

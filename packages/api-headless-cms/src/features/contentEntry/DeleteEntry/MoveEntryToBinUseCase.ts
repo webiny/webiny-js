@@ -6,7 +6,7 @@ import { MoveEntryToBinRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import type { CmsModel } from "~/types/index.js";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import { EntryBeforeDeleteEvent, EntryAfterDeleteEvent, EntryDeleteErrorEvent } from "./events.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
@@ -31,7 +31,7 @@ class MoveEntryToBinUseCaseImpl implements UseCaseAbstraction.Interface {
         private accessControl: AccessControl.Interface,
         private getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
         private identityContext: IdentityContext.Interface,
-        private eventPublisher: EventPublisher.Interface
+        private eventPublisher: EntryEventPublisher.Interface
     ) {}
 
     async execute(model: CmsModel, id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
@@ -144,6 +144,6 @@ export const MoveEntryToBinUseCase = createImplementation({
         AccessControl,
         GetLatestRevisionByEntryIdUseCase,
         IdentityContext,
-        EventPublisher
+        EntryEventPublisher
     ]
 });

@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import { DeleteMultipleEntriesUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { DeleteMultipleEntriesRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -33,7 +33,7 @@ class DeleteMultipleEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: DeleteMultipleEntriesRepository.Interface,
         private accessControl: AccessControl.Interface,
         private listEntries: ListEntriesUseCase.Interface,
-        private eventPublisher: EventPublisher.Interface
+        private eventPublisher: EntryEventPublisher.Interface
     ) {}
 
     async execute(
@@ -152,6 +152,6 @@ export const DeleteMultipleEntriesUseCase = createImplementation({
         DeleteMultipleEntriesRepository,
         AccessControl,
         ListEntriesUseCase,
-        EventPublisher
+        EntryEventPublisher
     ]
 });

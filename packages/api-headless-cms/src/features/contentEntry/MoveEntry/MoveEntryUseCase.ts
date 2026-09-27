@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import { MoveEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { MoveEntryRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -25,7 +25,7 @@ class MoveEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: MoveEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
-        private eventPublisher: EventPublisher.Interface
+        private eventPublisher: EntryEventPublisher.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -116,5 +116,5 @@ class MoveEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 export const MoveEntryUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: MoveEntryUseCaseImpl,
-    dependencies: [MoveEntryRepository, AccessControl, GetRevisionByIdUseCase, EventPublisher]
+    dependencies: [MoveEntryRepository, AccessControl, GetRevisionByIdUseCase, EntryEventPublisher]
 });

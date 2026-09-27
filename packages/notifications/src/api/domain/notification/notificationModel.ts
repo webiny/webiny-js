@@ -16,7 +16,8 @@ class NotificationModelImpl implements ModelFactory.Interface {
             builder
                 .private({
                     modelId: NOTIFICATION_MODEL_ID,
-                    name: "Notification"
+                    name: "Notification",
+                    lifecycleEvents: false
                 })
                 .fields(fields => ({
                     recipientId: fields

@@ -1,6 +1,6 @@
 import { createImplementation, Result } from "@webiny/feature/api";
 import { CreateEntryRepository, CreateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import { EntryAfterCreateEvent, EntryBeforeCreateEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import type {
@@ -15,7 +15,7 @@ import { CreateEntryDataFactory } from "~/features/contentEntry/entryDataFactori
 
 class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
-        private eventPublisher: EventPublisher.Interface,
+        private eventPublisher: EntryEventPublisher.Interface,
         private repository: CreateEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private createEntryDataFactory: CreateEntryDataFactory.Interface
@@ -73,5 +73,10 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 export const CreateEntryUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: CreateEntryUseCaseImpl,
-    dependencies: [EventPublisher, CreateEntryRepository, AccessControl, CreateEntryDataFactory]
+    dependencies: [
+        EntryEventPublisher,
+        CreateEntryRepository,
+        AccessControl,
+        CreateEntryDataFactory
+    ]
 });
