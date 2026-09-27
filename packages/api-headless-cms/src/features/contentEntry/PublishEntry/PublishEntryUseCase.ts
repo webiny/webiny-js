@@ -1,5 +1,5 @@
 import { Result } from "@webiny/feature/api";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import { PublishEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { PublishEntryRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -18,7 +18,7 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: PublishEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
-        private eventPublisher: EventPublisher.Interface,
+        private eventPublisher: EntryEventPublisher.Interface,
         private createPublishEntryDataFactory: CreatePublishEntryDataFactory.Interface
     ) {}
 
@@ -109,7 +109,7 @@ export const PublishEntryUseCase = UseCaseAbstraction.createImplementation({
         PublishEntryRepository,
         AccessControl,
         GetRevisionByIdUseCase,
-        EventPublisher,
+        EntryEventPublisher,
         CreatePublishEntryDataFactory
     ]
 });

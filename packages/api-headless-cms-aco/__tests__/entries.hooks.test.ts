@@ -3,7 +3,7 @@ import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { assignCmsLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
 import { ROOT_FOLDER } from "@webiny/api-headless-cms/constants";
 
-describe("HCMS Entries -> onEntryBeforeRestoreFromBin", () => {
+describe("HCMS Entries -> restore from bin folder fallback", () => {
     beforeEach(async () => {
         tracker.reset();
     });
