@@ -1,4 +1,4 @@
-# Audit Fix Plan (non-security) — v2
+# Audit Fix Plan (non-security) — v3
 
 Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`), audit commit `19c9ca1b91`. Security findings are out of scope here.
 
@@ -6,22 +6,23 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 
 ## How to use this plan
 
-- **Verify first.** Only items marked ✅ in the *Repro* column were checked by a second pass. First-pass ratings were often overstated, so for every other item the first step is to reproduce it, ideally as a failing test, and record the result in the *Repro* column: ✅ reproduced, ❌ refuted (drop the item), or ☐ not yet checked.
+- **Verify first.** Only items marked ✅ or 🔍 in the *Repro* column were checked by a second pass. ✅ means the bug was reproduced by running code; 🔍 means it was confirmed by reading the code only, so write the failing test first. First-pass ratings were often overstated, so for every other item the first step is to reproduce it, ideally as a failing test, and record the result in the *Repro* column: ✅ reproduced, ❌ refuted (drop the item), or ☐ not yet checked.
 - **Done when** (default for every item): a regression test fails before the fix and passes after, and the finding in the linked report is marked fixed. Extra criteria are listed per item.
 - **Size:** S = under a day, M = a few days, L = a week or more / needs a design decision.
 - **One PR per item** (or per Phase A root cause), referencing the item ID.
 - **Owner:** assign when an item is picked up.
+- **Before starting an item**, check with the plan owner whether the same files are being changed elsewhere.
 
 ## Phase A — shared root causes
 
 | ID | Root cause | Instances | Fix | Size | Repro |
 |---|---|---|---|---|---|
 | A1 | Async loaders without a stale-response guard | [cms-nextjs](../../reports/level-02/cms-nextjs.md) entry fetch; [app-headless-cms](../../reports/level-06/app-headless-cms/entries-and-renderers.md) `loadRevision`; [app-file-manager](../../reports/level-07/app-file-manager/file-list-and-details.md) `loadFile`; [app-headless-cms-scheduler](../../reports/level-07/app-headless-cms-scheduler.md) `fetchModel`/`fetchEntry`; [app-website-builder](../../reports/level-08/app-website-builder/presentation.md) `PageEditor`; [ai-powerups](../../reports/level-09/ai-powerups/admin.md) generation responses | Shared "latest request wins" helper (request token / AbortController). Do `PageEditor` and `loadRevision` first — they can save to the wrong record; the others are display-only. | M | ☐ |
-| A2a | Check-then-write without an atomic condition | [background-tasks](../../reports/level-07/background-tasks.md) task claim; [api-record-locking](../../reports/level-07/api-record-locking.md) lock acquire; [api-core-sql](../../reports/level-05/api-core-sql.md) `TableManager.ensure()` | Conditional writes (DynamoDB `ConditionExpression`, SQL unique constraint / `ON CONFLICT`). Record locking also depends on decision D1. | M | ☐ |
-| A2b | Optimistic versioning for concurrent updates | same packages | Separate design decision (D6) — do not bundle with A2a. | L | — |
-| A3 | Same bug copied into several places | `decodeCursor` ASCII bug in [utils](../../reports/level-01/utils.md) and [db-dynamodb](../../reports/level-04/db-dynamodb.md); unvalidated `JSON.parse(cursor)` in [api-search-index-tasks-ddb-os](../../reports/level-10/api-search-index-tasks-ddb-os.md); hardcoded 900s timer in [api-sync-ddb-to-opensearch](../../reports/level-04/api-sync-ddb-to-opensearch.md) and [api-sync-pg-to-opensearch](../../reports/level-04/api-sync-pg-to-opensearch.md) | One UTF-8, validated cursor codec used everywhere; timer from the real Lambda context. | S | ✅ timer, ✅ cursor (agent repro) |
+| A2a | Check-then-write without an atomic condition | [background-tasks](../../reports/level-07/background-tasks.md) task claim; [api-record-locking](../../reports/level-07/api-record-locking.md) lock acquire; [api-core-sql](../../reports/level-05/api-core-sql.md) `TableManager.ensure()` | Conditional writes (DynamoDB `ConditionExpression`, SQL unique constraint / `ON CONFLICT`). Record locking also depends on decision Q1. | M | ☐ |
+| A2b | Optimistic versioning for concurrent updates | same packages | Separate design decision (Q6) — do not bundle with A2a. | L | — |
+| A3 | Same bug copied into several places | `decodeCursor` ASCII bug in [utils](../../reports/level-01/utils.md) and [db-dynamodb](../../reports/level-04/db-dynamodb.md); unvalidated `JSON.parse(cursor)` in [api-search-index-tasks-ddb-os](../../reports/level-10/api-search-index-tasks-ddb-os.md); hardcoded 900s timer in [api-sync-ddb-to-opensearch](../../reports/level-04/api-sync-ddb-to-opensearch.md) and [api-sync-pg-to-opensearch](../../reports/level-04/api-sync-pg-to-opensearch.md) | One UTF-8, validated cursor codec used everywhere; timer from the real Lambda context. | S | 🔍 timer, ✅ cursor (agent repro) |
 | A4 | Over-eager validation caching | [@webiny/form](../../reports/level-01/form.md) `FormValidator`; [app-admin form model](../../reports/level-03/app-admin/form-model.md) `Field.ts` | Invalidate on `setValue`; include `requiredWhen` state in the cache key. | S | ☐ |
-| A5 | Broken instance caches | [aws-sdk](../../reports/level-02/aws-sdk.md) Step Functions client never cached, DynamoDB decorate flag never read; [app-utils](../../reports/level-02/app-utils.md) `Date.now()` cache key | Fix cache writes/keys; test that instances are reused. | S | ✅ |
+| A5 | Broken instance caches | [aws-sdk](../../reports/level-02/aws-sdk.md) Step Functions client never cached, DynamoDB decorate flag never read; [app-utils](../../reports/level-02/app-utils.md) `Date.now()` cache key | Fix cache writes/keys; test that instances are reused. | S | 🔍 SFN + app-utils; ☐ DynamoDB flag |
 | A6 | `Result.value` read without `isFail()` | [api-website-builder redirects route](../../reports/level-08/api-website-builder/experiments-and-redirects.md); [api-website-builder-scheduler](../../reports/level-09/api-website-builder-scheduler.md) cancel handlers | Review sweep for unchecked `.value`; consider a helper or lint rule. Low priority. | S | ☐ |
 
 ## Phase B — bugs by area
@@ -32,10 +33,10 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 |---|---|---|---|
 | B1.1 | [api-sync-system](../../reports/level-05/api-sync-system.md): DocumentClient helper-method writes captured twice; `Fetcher.exec` throws instead of returning per-bundle errors; Cognito worker actions swallow failures. | M | ☐ |
 | B1.2 | [api-headless-cms-ddb-es](../../reports/level-09/api-headless-cms-ddb-es.md): primary-table and ES-bridge writes not atomic (entries left unsearchable). | M | ☐ |
-| B1.3 | Unique-values aggregation hardcodes size 1,000,000 in [ddb-es](../../reports/level-09/api-headless-cms-ddb-es.md) and [pg-os](../../reports/level-09/api-headless-cms-pg-os.md). | S | ✅ |
+| B1.3 | Unique-values aggregation hardcodes size 1,000,000 in [ddb-es](../../reports/level-09/api-headless-cms-ddb-es.md) and [pg-os](../../reports/level-09/api-headless-cms-pg-os.md). | S | 🔍 |
 | B1.4 | [api-headless-cms-pg-os](../../reports/level-09/api-headless-cms-pg-os.md): OpenSearch path skips storage converters that ddb-es applies. | M | ☐ |
 | B1.5 | [api-opensearch](../../reports/level-02/api-opensearch.md): dynamic-template `match` patterns are regexes but `match_pattern` defaults to glob (affects every CMS index — [utils-os](../../reports/level-07/api-headless-cms-utils-os.md)). Done when also: reindex path for existing indexes documented. | M | ☐ |
-| B1.6 | [api-audit-logs-ddb](../../reports/level-10/api-audit-logs-ddb.md): `expiresAt` not declared on the entity, so TTL never fires. Done when also: note for existing records without TTL. | S | ✅ |
+| B1.6 | [api-audit-logs-ddb](../../reports/level-10/api-audit-logs-ddb.md): `expiresAt` not declared on the entity, so TTL never fires. Done when also: note for existing records without TTL. | S | 🔍 |
 | B1.7 | "List revisions" order differs between [api-headless-cms-ddb](../../reports/level-08/api-headless-cms-ddb.md) and [api-headless-cms-sql](../../reports/level-08/api-headless-cms-sql.md). | S | ☐ |
 | B1.8 | [api-headless-cms-storage](../../reports/level-07/api-headless-cms-storage.md): `searchable-json` where-filters crash via [db-utils](../../reports/level-01/db-utils.md) `StartsWithFilter` on non-string values. | S | ☐ |
 | B1.9 | [api-search-index-tasks](../../reports/level-08/api-search-index-tasks.md) marks an index done before creation succeeds; [api-search-index-tasks-os](../../reports/level-09/api-search-index-tasks-os.md) swallows `list()` errors. | S | ☐ |
@@ -49,7 +50,8 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 |---|---|---|---|
 | B2.1 | [background-tasks](../../reports/level-07/background-tasks.md): a `RUNNING` task can run again concurrently; status guards reimplemented 3×. [AWS](../../reports/level-08/background-tasks-aws.md) and [standalone](../../reports/level-08/background-tasks-standalone.md) transports don't deduplicate triggers. Depends on A2a; add deterministic execution names. | M | ☐ |
 | B2.2 | [api-scheduler-aws](../../reports/level-08/api-scheduler-aws.md) falls back to a no-op scheduler on transient service-discovery errors; [standalone](../../reports/level-08/api-scheduler-standalone.md) never retries failed jobs. | M | ☐ |
-| B2.3 | `DateTimePicker` timezone bug ([app-scheduler](../../reports/level-06/app-scheduler.md), [api-scheduler](../../reports/level-07/api-scheduler.md)): `dateTimeLocal` sends a local wall-clock time labelled UTC. Fix the **scheduler path first**; changing `DateTimePicker` globally changes what every consumer stores (incl. CMS datetime fields) and existing values are ambiguous — decision D5. | M/L | ✅ |
+| B2.3a | Scheduler path of the `DateTimePicker` timezone bug ([app-scheduler](../../reports/level-06/app-scheduler.md), [api-scheduler](../../reports/level-07/api-scheduler.md)): `dateTimeLocal` sends a local wall-clock time labelled UTC. Fix it in the scheduler only (convert to real UTC before sending); do not change `DateTimePicker` itself. | S | ✅ |
+| B2.3b | Global `DateTimePicker` fix. Changing it changes what every consumer stores (incl. CMS datetime fields), and existing values are ambiguous. Blocked by decision Q5. | M/L | ✅ |
 | B2.4 | [api-scheduler](../../reports/level-07/api-scheduler.md): cancel deletes the tracking entry even if the EventBridge delete fails (orphaned schedule). | S | ☐ |
 | B2.5 | [api-headless-cms-bulk-actions-aws](../../reports/level-04/api-headless-cms-bulk-actions-aws.md): handler ignores the trigger result and returns success. | S | ☐ |
 | B2.6 | [api-headless-cms-scheduler](../../reports/level-08/api-headless-cms-scheduler.md): two delete-cancellation handlers overlap. | S | ☐ |
@@ -65,7 +67,7 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 | B3.1 | [api-headless-cms crud](../../reports/level-06/api-headless-cms/crud-and-utils.md): reserved system field IDs allowed on model create/update (only import rejects them) — `crud`/`domain` schemas drifted. Dynamic-zone converter drops vs throws on unknown templates. | M | ☐ |
 | B3.2 | [api-headless-cms models](../../reports/level-06/api-headless-cms/models.md): code-defined models skip field/storageId uniqueness. | S | ☐ |
 | B3.3 | [app-headless-cms model editor](../../reports/level-06/app-headless-cms/model-editor.md): no fieldId uniqueness check. | S | ☐ |
-| B3.4 | [app-headless-cms features](../../reports/level-06/app-headless-cms/features.md): `mapCmsValidators` drops the combined schema when a field has 2+ schema-producing validators (`required` doesn't count); bulk actions and model import skip cache invalidation. | S | ✅ validators |
+| B3.4 | [app-headless-cms features](../../reports/level-06/app-headless-cms/features.md): `mapCmsValidators` drops the combined schema when a field has 2+ schema-producing validators (`required` doesn't count); bulk actions and model import skip cache invalidation. | S | 🔍 validators |
 | B3.5 | [api-headless-cms content entry](../../reports/level-06/api-headless-cms/content-entry.md): publish/republish/unpublish return the pre-storage-transform entry. | S | ☐ |
 | B3.6 | [cms-sdk](../../reports/level-01/cms-sdk.md): resolved references treated as unresolved on every patch. | M | ☐ |
 | B3.7 | [validation](../../reports/level-00/validation.md): `dateGte`/`dateLte` throw on bad config and CMS swallows the error. | S | ✅ |
@@ -89,7 +91,7 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 | B5.2 | [project features](../../reports/level-02/project/features-and-extensions.md): `RunnableBuildProcess` has no `error`/`exit` handlers. | S | ☐ |
 | B5.3 | [project services](../../reports/level-02/project/services-and-utils.md): remote-Pulumi-backend env var detection disagrees between two services; `AdminAfterBuildExt` hooks included twice; `getVersionFromVersionFolders` sorts versions as strings (5.9 above 5.40). | M | ☐ |
 | B5.4 | [create-webiny-project](../../reports/level-02/create-webiny-project.md): `--hosting-type server` documented but only `standalone` recognized. | S | ☐ |
-| B5.5 | [cli-aws](../../reports/level-05/cli-aws.md): `allow-production` declared as number but read as boolean. Both CLIs ignore the [system-requirements](../../reports/level-00/system-requirements.md) failure exit code. | S | ✅ type |
+| B5.5 | [cli-aws](../../reports/level-05/cli-aws.md): `allow-production` declared as number but read as boolean. Both CLIs ignore the [system-requirements](../../reports/level-00/system-requirements.md) failure exit code. | S | 🔍 type |
 | B5.6 | [pulumi-sdk](../../reports/level-00/pulumi-sdk.md): Linux ARM64 downloads the x64 binary. | S | ☐ |
 | B5.7 | [build-tools](../../reports/level-00/build-tools.md): build/watch helpers ignore definition-time config. | S | ☐ |
 | B5.8 | [project-aws extensions](../../reports/level-04/project-aws/extensions-and-features.md): `set-variant` is an empty TODO; admin env vars set in two places that disagree. | S | ☐ |
@@ -104,7 +106,7 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 | B6.3 | [admin-ui primitives](../../reports/level-02/admin-ui/primitives.md): `CodeEditor` uses Monaco `defaultValue` (stale audit-log preview — [app-audit-logs](../../reports/level-04/app-audit-logs.md)). | S | ☐ |
 | B6.4 | [admin-ui navigation](../../reports/level-02/admin-ui/navigation-and-data.md): sidebar id is `btoa` of a ReactNode label (collisions; may throw on non-Latin-1 labels). | S | ☐ |
 | B6.5 | [app-admin components](../../reports/level-03/app-admin/components-and-base.md): `ColumnsVisibilityUpdater` drops plain-value updates; `UiStateProvider`/`AdminUiStateProvider` mounted twice. | S | ☐ |
-| B6.6 | [app-admin features](../../reports/level-03/app-admin/features-and-permissions.md): logout calls async `clear()` without `await` and fires the IdP callback twice. | S | ✅ |
+| B6.6 | [app-admin features](../../reports/level-03/app-admin/features-and-permissions.md): logout calls async `clear()` without `await` and fires the IdP callback twice. | S | 🔍 |
 | B6.7 | [app-audit-logs](../../reports/level-04/app-audit-logs.md): list stuck loading on error. | S | ☐ |
 | B6.8 | [app-workflows](../../reports/level-04/app-workflows.md): Content Reviews widget under-counts after approve/reject. | S | ☐ |
 | B6.9 | [app-file-manager features](../../reports/level-07/app-file-manager/features-and-modules.md): one `AbortController` per batch; results matched by filename; `GetFileFeature` registered twice. | S | ☐ |
@@ -121,11 +123,11 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 | B7.4 | [languages](../../reports/level-07/languages.md): `GetDefaultLanguage`/`GetLanguageByCode` return disabled languages. | S | ☐ |
 | B7.5 | [i18n](../../reports/level-00/i18n.md): locale-specific formats never apply. | S | ☐ |
 | B7.6 | [api-workflows](../../reports/level-07/api-workflows.md): reviewer e-mail notifications wired but never sent. | S | ☐ |
-| B7.7 | [api-mailer](../../reports/level-04/api-mailer.md): unconfigured SMTP silently uses a dummy transport. Depends on decision D2. | S | ☐ |
+| B7.7 | [api-mailer](../../reports/level-04/api-mailer.md): unconfigured SMTP silently uses a dummy transport. Depends on decision Q2. | S | ☐ |
 | B7.8 | [sdk](../../reports/level-00/sdk.md): `createFiles` fail-fast leaves in-flight uploads creating records. | S | ☐ |
 | B7.9 | [api-graphql](../../reports/level-03/api-graphql.md): `RefInputScalar` throws `TypeError` on non-object input. | S | ✅ (agent repro) |
 | B7.10 | Smaller correctness issues: [plugins](../../reports/level-00/plugins.md) register misclassification; [mcp](../../reports/level-00/mcp.md) Copilot adapter + `serve` typo; [telemetry](../../reports/level-01/telemetry.md) opt-out event never sent; [api-event-handler-aws](../../reports/level-11/api-event-handler-aws.md) tenant header casing; [event-handler-core](../../reports/level-01/event-handler-core.md) `Vary` overwrite. | S each | ☐ |
-| B7.11 | [webiny](../../reports/level-14/webiny.md): re-exports ~85 deep internal paths pinned `0.0.0`. Depends on decision D4. | M | ☐ |
+| B7.11 | [webiny](../../reports/level-14/webiny.md): re-exports ~85 deep internal paths pinned `0.0.0`. Depends on decision Q4. | M | ☐ |
 
 ## Phase C — duplication to consolidate
 
@@ -169,19 +171,19 @@ Confirm with CodeGraph/grep before deleting; small PRs.
 
 | ID | Question | Blocks |
 |---|---|---|
-| D1 | Record locking: enforce locks server-side (reject updates to locked entries) or keep them advisory in the UI? | A2a (record locking) |
-| D2 | Mailer: fail loudly when SMTP is not configured, or keep the silent dummy transport? | B7.7 |
-| D3 | website-builder-nuxt parity with the Next.js preview/draft and A/B-cookie middleware. | C6 |
-| D4 | `webiny` meta package: re-export curated entry points and version them properly? | B7.11 |
-| D5 | Timezone: after fixing the scheduler path, change `DateTimePicker` globally? How to treat already-stored `dateTimeLocal` values? | B2.3 (global part) |
-| D6 | Optimistic versioning for concurrent updates. | A2b |
+| Q1 | Record locking: enforce locks server-side (reject updates to locked entries) or keep them advisory in the UI? | A2a (record locking) |
+| Q2 | Mailer: fail loudly when SMTP is not configured, or keep the silent dummy transport? | B7.7 |
+| Q3 | website-builder-nuxt parity with the Next.js preview/draft and A/B-cookie middleware. | C6 |
+| Q4 | `webiny` meta package: re-export curated entry points and version them properly? | B7.11 |
+| Q5 | Timezone: after fixing the scheduler path, change `DateTimePicker` globally? How to treat already-stored `dateTimeLocal` values? | B2.3b |
+| Q6 | Optimistic versioning for concurrent updates. | A2b |
 
 ## Suggested order
 
 1. Reproduce and fill the *Repro* column for Phase A and the B items you intend to do next.
 2. Phase A: A3 and A5 (small, verified), then A1 (start with `PageEditor`/`loadRevision`), A4, A2a.
-3. Cheap user-visible fixes: B5.1, B6.1, B6.2, B6.6, B7.1, B2.3 (scheduler path).
+3. Cheap user-visible fixes: B5.1, B6.1, B6.2, B6.6, B7.1, B2.3a.
 4. Remaining Phase B by area, one area per PR series.
 5. Phase C items that remove copies touched by Phase B (C2 with B3.1, C8, C5).
 6. Phase D and Phase E alongside; they block nothing.
-7. Decisions D1–D6 in parallel, before the items they block.
+7. Decisions Q1–Q6 in parallel, before the items they block.
