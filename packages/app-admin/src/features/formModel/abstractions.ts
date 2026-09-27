@@ -260,7 +260,13 @@ export interface IField {
     setValueSilent(value: unknown): void;
     setDisabled(value: boolean): void;
     setVisible(value: boolean): void;
-    setForm(form: IFormModel, parentPath?: string): void;
+    /**
+     * `parentPath` is the parent's qualified name. `scopePath` returns a path that
+     * `form.field()` resolves to the parent itself; it differs from `parentPath` for
+     * list item children, where it includes the item index (`blocks.2`). `$.` rule
+     * targets and `field.parent()` resolve against it. Defaults to `parentPath`.
+     */
+    setForm(form: IFormModel, parentPath?: string, scopePath?: () => string): void;
     setAncestorRules(rules: IRule[]): void;
     setValidation(validation: IFieldValidation): void;
     resetValidation(): void;
@@ -760,6 +766,13 @@ export interface IFormModel<T = Record<string, any>> {
     setData(data: T, options?: { dirty?: boolean }): void;
     reset(): void;
     validate(): Promise<boolean>;
+    /**
+     * Assign errors from outside the form, e.g. a rejected save. Errors whose `path`
+     * resolves to a visible field become that field's validation error; the rest are
+     * form-level. The form is marked as submitted so `FormErrors` renders them. They are
+     * cleared by the next `validate()`, `setData()` or `reset()`.
+     */
+    setErrors(errors: IFormError[]): void;
     submit<T = Record<string, unknown>>(options?: { skipValidation?: boolean }): Promise<T | false>;
     evaluateRules(rules: IRule[] | undefined): { visible: boolean; disabled: boolean };
     focusField(name: string): void;

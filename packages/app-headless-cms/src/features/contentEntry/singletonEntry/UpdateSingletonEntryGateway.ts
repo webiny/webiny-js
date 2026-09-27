@@ -6,6 +6,7 @@ import {
     type IUpdateSingletonEntryParams
 } from "./abstractions.js";
 import { EntryDataPreparer } from "~/features/contentEntry/valueTransformers/EntryDataPreparer.js";
+import { CmsEntryError } from "~/features/contentEntry/CmsEntryError.js";
 
 interface UpdateSingletonEntryResponse {
     content: {
@@ -46,7 +47,7 @@ class UpdateSingletonEntryGatewayImpl implements GatewayAbstraction.Interface {
         const { data: entry, error } = response.content;
 
         if (!entry) {
-            throw new Error(error?.message || "Could not update singleton entry");
+            throw new CmsEntryError(error, "Could not update singleton entry");
         }
 
         return entry;

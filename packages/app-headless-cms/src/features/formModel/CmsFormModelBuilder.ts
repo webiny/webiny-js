@@ -25,6 +25,7 @@ import { applyFieldProps } from "./mappers/applyFieldProps.js";
 class CmsFormModelBuilderImpl implements ICmsFormModelBuilder {
     private mappers: Map<string, ICmsFieldTypeMapper>;
     private rendererMap: Map<string, string>;
+    private renderers: Map<string, ICmsFieldRenderer>;
 
     constructor(
         customMappers: ICmsFieldTypeMapper[] | undefined,
@@ -39,8 +40,10 @@ class CmsFormModelBuilderImpl implements ICmsFormModelBuilder {
         }
 
         this.rendererMap = new Map();
+        this.renderers = new Map();
         for (const renderer of fieldRenderers || []) {
             this.rendererMap.set(renderer.rendererName, renderer.formRenderer);
+            this.renderers.set(renderer.rendererName, renderer);
         }
     }
 
@@ -77,16 +80,45 @@ class CmsFormModelBuilderImpl implements ICmsFormModelBuilder {
     }
 
     private mapField(
-        field: CmsModelField,
+        modelField: CmsModelField,
         registry: IFieldBuilderRegistry,
         context: ICmsFieldMapperContext
     ): IFieldBuilder {
+        const field = this.withCompatibleRenderer(modelField, context.model);
         const mapper = this.mappers.get(field.type);
         if (mapper) {
             return mapper.map(field, registry, context);
         }
 
         return applyFieldProps(registry.text(), field, context.rendererMap);
+    }
+
+    /**
+     * A list renderer can't render a single value: `dateTimeInputs` calls `.map()` on a
+     * stored date string and crashes the form. When a single-value field is configured with
+     * a renderer that only accepts list fields, drop it so the field type's default
+     * single-value renderer is used instead.
+     */
+    private withCompatibleRenderer(field: CmsModelField, model: CmsModel): CmsModelField {
+        if (field.list || !field.renderer || typeof field.renderer !== "object") {
+            return field;
+        }
+        const renderer = this.renderers.get(field.renderer.name);
+        if (!renderer || renderer.canUse({ field, model })) {
+            return field;
+        }
+        if (!renderer.canUse({ field: { ...field, list: true }, model })) {
+            return field;
+        }
+        if (process.env.NODE_ENV === "development") {
+            console.warn(
+                `[CmsFormModelBuilder] Renderer "${field.renderer.name}" is for list fields; ` +
+                    `field "${field.fieldId}" is not a list and uses its default renderer instead.`
+            );
+        }
+        // Mappers treat a missing renderer as "use the field type's default".
+        const { renderer: _renderer, ...rest } = field;
+        return rest as CmsModelField;
     }
 }
 

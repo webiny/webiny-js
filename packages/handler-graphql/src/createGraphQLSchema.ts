@@ -10,6 +10,7 @@ import {
     AnyScalar,
     DateScalar,
     DateTimeScalar,
+    DateTimeZScalar,
     JsonScalar,
     TimeScalar,
     LongScalar,
@@ -49,6 +50,7 @@ export const createGraphQLSchema = async (context: Context) => {
             scalar Any
             scalar Date
             scalar DateTime
+            scalar DateTimeZ
             scalar Time
 
             type Error {
@@ -77,6 +79,7 @@ export const createGraphQLSchema = async (context: Context) => {
             Number: NumberScalar,
             Any: AnyScalar,
             DateTime: DateTimeScalar,
+            DateTimeZ: DateTimeZScalar,
             Date: DateScalar,
             Time: TimeScalar,
             Icon: IconScalar
