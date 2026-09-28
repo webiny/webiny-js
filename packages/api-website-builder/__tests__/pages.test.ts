@@ -318,11 +318,14 @@ describe("Pages Use Cases (Authorized)", () => {
         }
         const duplicatedPage = duplicateResult.value;
 
+        /**
+         * Only the page-level events fire. The Pages model is a private model with
+         * `lifecycleEvents: false`, so the underlying CMS entry lifecycle events
+         * (entry.beforeCreate / entry.afterCreate) are suppressed.
+         */
         expect(events).toEqual([
             "page.beforeDuplicate",
             "page.beforeCreate",
-            "entry.beforeCreate",
-            "entry.afterCreate",
             "page.afterCreate",
             "page.afterDuplicate"
         ]);
