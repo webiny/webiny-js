@@ -84,6 +84,7 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 | B4.5 | [website-builder-vue](../../reports/level-02/website-builder-vue.md): store keyed by `document.id` vs `document.properties.id`; Vue manifests lack `aiContext`. | S | ☐ |
 | B4.6 | [app-website-builder BaseEditor](../../reports/level-08/app-website-builder/base-editor.md): module-level drag state shared across editor instances. | S | ☐ |
 | B4.7 | [api-website-builder-workflows](../../reports/level-09/api-website-builder-workflows.md): publish gate throws on any lookup failure other than NotFound (`ValidateWorkflowStateOnPageBeforePublish`). Do together with C7. | S | ☐ |
+| B4.8 | [website-builder-nuxt](../../reports/level-03/website-builder-nuxt.md): per Q3, ship a Nitro server middleware (`@webiny/website-builder-nuxt/server`) matching [website-builder-nextjs](../../reports/level-03/website-builder-nextjs.md) `createWebsiteBuilderMiddleware`: `X-Tenant` from `wb.tenant`, `X-Preview-Params` built from `wb.*` params with `no-store` cache headers while previewing, and the `wb_ab_vid` visitor cookie. Also: `src/index.ts` comment claims `X-Preview-Params` is synthesized but the code does not — fix it; check manually whether Nuxt preview works today. Put tenant/preview-param parsing in `website-builder-sdk` so both frameworks share it (see C6). Done when also: setup documented. | S | ☐ |
 
 ### B5. CLI, build and project tooling
 
@@ -175,7 +176,7 @@ Confirm with CodeGraph/grep before deleting; small PRs.
 |---|---|---|
 | Q1 | ✅ Decided 2026-09-28: enforce server-side (details in B3.8). | B3.8 |
 | Q2 | ✅ Decided 2026-09-28: the dummy transport is intended; a send through it counts as sent. No change. | B7.7 (dropped) |
-| Q3 | website-builder-nuxt parity with the Next.js preview/draft and A/B-cookie middleware. | C6 |
+| Q3 | ✅ Decided 2026-09-28: full parity — Nuxt gets its own middleware (B4.8). | B4.8, C6 |
 | Q4 | `webiny` meta package: re-export curated entry points and version them properly? | B7.11 |
 | Q5 | Timezone: after fixing the scheduler path, change `DateTimePicker` globally? How to treat already-stored `dateTimeLocal` values? | B2.3b |
 | Q6 | Optimistic versioning for concurrent updates. | A2b |
