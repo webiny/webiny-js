@@ -1,6 +1,6 @@
-# A string bound to a list input takes the whole page down with a 500
+# ElementFactory collapses a scalar list to its last item, and the page 500s
 
-> **Package:** `@webiny/api-page-composition-poc`
+> **Package:** `@webiny/website-builder-sdk` (`ElementFactory`)
 > **Severity:** high — 5 of 2424tulane's 11 composed pages return HTTP 500 and render nothing at all.
 > Surfaced the moment components started resolving; it was invisible while every page was blank.
 
@@ -57,16 +57,59 @@ stats/1/label   type=text  list=false  "Schedule a tour"
 
 So the composition binds lists correctly in general, and writes a scalar into this one.
 
-## What is established and what is not
+## The cause: ElementFactory, not the composition
 
-**Established:** the component declares a list, the default is an array, the page carries a bare
-string, and the page 500s as a result.
+The composition is correct. Every layer that builds an instance's inputs was run against the real
+manifest and each one produces an array for `features`:
 
-**Not established:** which composition path writes it. It should not be the scalar path —
-`scalarInputNames` excludes `definition.list` precisely so "a list input handed anything other than an
-array throws inside `ComponentInputTraverser`" — and the list-of-scalars branch in
-`deriveCompositeInputs` assigns `collectPlainTexts(node)`, an array. Something between those two
-writes a string, and finding it is the first step of the fix rather than a guess to build on.
+```
+deriveCompositeInputs   features  declared list=true  ->  array(8)
+scalarInputNames        -> eyebrow, heading, body     (no list input can receive a scalar)
+manifest defaults       features  -> undefined
+```
+
+`ElementFactory.createElementFromComponent` is the step after them, and it is where the array stops
+being an array. Given five distinct items for a scalar-typed list input:
+
+```
+features = ["ONE", "TWO", "THREE", "FOUR", "FIVE"]
+
+   ->  features   list=true   "FIVE"
+```
+
+**It keeps the last item and discards the rest**, writing a bare string into a binding it simultaneously
+marks `list: true`. An object-typed list on the same component is handled correctly, element-wise:
+
+```
+   stats/0/value   "80"      stats/0/label   "Walk Score"
+   stats/1/value   "86"      stats/1/label   "Bike Score"
+```
+
+So the defect is specific to **lists of scalars** — `text`, `longText`, `lexical`. Supplying nothing
+yields `[]`, which is right; supplying a bare string throws `value.forEach is not a function`, which is
+why the composition could never have produced this shape itself.
+
+Measured across the four composed sites: 2,231 bindings, 91 declared `list: true`, **34 of them
+collapsed to a scalar**. Affected inputs are `features`, `body` and `formFields` — every one a scalar
+list.
+
+## The inverse does not happen
+
+An array bound into a scalar input would render as something odd rather than throwing, and would
+therefore be invisible. Checked over the same 2,231 bindings: **0 occurrences.** The collapse goes one
+way.
+
+## Does anything validate a bound value against the declared list flag?
+
+No — and this is the part worth arguing with, because the obvious durable fix does not work.
+
+A check at compose time, comparing each derived value against the input's `list` flag, **would have
+passed**: compose's value is a correct array. The corruption happens after compose hands it over. A
+check there would have reported healthy on all 34.
+
+The check has to be on the **bindings**, after the element is built. That is precisely the lesson
+`stripInventedBindings` already encodes, in its own words: "a check placed on an intermediate only
+covers the shapes that intermediate happens to carry". This is the same mistake available twice.
 
 ## Why it appeared now
 
@@ -81,15 +124,20 @@ report healthy section counts, text coverage and destination counts while servin
 
 ## Fix sketch (not implemented)
 
-Two layers, and both are worth having:
+Three, in order of how fundamental:
 
-1. **Do not write a scalar into a list input.** Find the writer and stop it. The manifest says
-   `list: true`; that is checkable at bind time, and a binding that violates it is a bug wherever it
-   comes from.
-2. **Do not let one component's failure destroy the page.** A component that throws should render as
-   an empty slot with the reason recorded, the way an unmigrated image or an invented destination is
-   recorded. A page that loses one section is a degraded migration; a page that 500s is no migration
-   at all, and the difference is an error boundary.
+1. **ElementFactory should bind a scalar list as a list.** It already handles object lists correctly,
+   so the shape it should produce is not in question — either an array on one binding, or element-wise
+   paths (`features/0`, `features/1`) the way object lists get them. This is the actual defect and it
+   affects every Website Builder consumer, not only migrations: any component with a `createTagsInput`
+   or a scalar list loses every item but the last.
+2. **Assert the binding against the declared list flag**, on the bindings rather than the inputs, for
+   the reason above. 34 violations would have been caught the moment they were written.
+3. **Do not let one component's failure destroy the page.** A component that throws should render as
+   an empty slot with the reason recorded, the way an unmigrated image or an invented destination is.
+   A page that loses one section is a degraded migration; a page that 500s is no migration at all,
+   and the difference is an error boundary.
 
-(2) belongs in the renderer rather than here, and would have turned this from five dead pages into
-five pages with one missing section and a line in the discard log.
+(1) is the fix. (2) is what makes the next one visible. (3) is what keeps a single bad component from
+costing a whole page, and would have turned this from five dead pages into five pages with one missing
+section and a line in the discard log.
