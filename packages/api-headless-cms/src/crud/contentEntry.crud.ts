@@ -17,7 +17,6 @@ import type {
 } from "~/types/index.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "~/features/contentEntry/CreateEntryRevisionFrom/abstractions.js";
-import { DuplicateEntryUseCase } from "~/features/contentEntry/DuplicateEntry/index.js";
 import { UpdateEntryUseCase } from "~/features/contentEntry/UpdateEntry/index.js";
 import { ValidateEntryUseCase } from "~/features/contentEntry/ValidateEntry/abstractions.js";
 import { MoveEntryUseCase } from "~/features/contentEntry/MoveEntry/abstractions.js";
@@ -79,22 +78,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         // Delegate to new CreateEntryRevisionFrom use case
         const useCase = context.container.resolve(CreateEntryRevisionFromUseCase);
         const result = await useCase.execute<T>(model, sourceId, rawInput, options);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    };
-
-    const duplicateEntry: CmsEntryContext["duplicateEntry"] = async <
-        T extends CmsEntryValues = CmsEntryValues
-    >(
-        model: CmsModel,
-        sourceId: string
-    ) => {
-        const useCase = context.container.resolve(DuplicateEntryUseCase);
-        const result = await useCase.execute<T>(model, sourceId);
 
         if (result.isFail()) {
             throw result.error;
@@ -536,17 +519,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 "headlessCms.crud.entries.createEntryRevisionFrom",
                 async () => {
                     return createEntryRevisionFrom<T>(model, sourceId, input, options);
-                }
-            );
-        },
-        async duplicateEntry<T extends CmsEntryValues = CmsEntryValues>(
-            model: CmsModel,
-            sourceId: string
-        ) {
-            return context.benchmark.measure(
-                "headlessCms.crud.entries.duplicateEntry",
-                async () => {
-                    return duplicateEntry<T>(model, sourceId);
                 }
             );
         },
