@@ -5,9 +5,8 @@ import {
     ListAllLockRecordsOutput
 } from "./abstractions.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
-import type { CmsModel } from "@webiny/api-headless-cms/types";
 import { CmsWhereMapper } from "@webiny/api-headless-cms";
-import { RecordLockingConfig, RecordLockingModel } from "~/domain/abstractions.js";
+import { RecordLockingConfig, RecordLockingModelProvider } from "~/domain/abstractions.js";
 import { LockRecordPersistenceError } from "~/domain/errors.js";
 import { convertWhereCondition } from "~/utils/convertWhereCondition.js";
 import { LockRecord } from "~/domain/LockRecord.js";
@@ -17,7 +16,7 @@ class ListAllLockRecordsRepositoryImpl implements RepositoryAbstraction.Interfac
     constructor(
         private config: RecordLockingConfig.Interface,
         private listEntries: ListLatestEntriesUseCase.Interface,
-        private model: CmsModel,
+        private modelProvider: RecordLockingModelProvider.Interface,
         private cmsWhereMapper: CmsWhereMapper.Interface
     ) {}
 
@@ -25,15 +24,17 @@ class ListAllLockRecordsRepositoryImpl implements RepositoryAbstraction.Interfac
         input?: ListAllLockRecordsInput
     ): Promise<Result<ListAllLockRecordsOutput, RepositoryAbstraction.Error>> {
         try {
+            const model = await this.modelProvider.get();
+
             const params = {
                 ...input,
                 where: this.cmsWhereMapper.map({
                     input: convertWhereCondition(input?.where),
-                    fields: this.model.fields
+                    fields: model.fields
                 })
             };
 
-            const result = await this.listEntries.execute<LockRecordValues>(this.model, params);
+            const result = await this.listEntries.execute<LockRecordValues>(model, params);
 
             if (result.isFail()) {
                 return Result.fail(new LockRecordPersistenceError(result.error));
@@ -58,7 +59,7 @@ export const ListAllLockRecordsRepository = RepositoryAbstraction.createImplemen
     dependencies: [
         RecordLockingConfig,
         ListLatestEntriesUseCase,
-        RecordLockingModel,
+        RecordLockingModelProvider,
         CmsWhereMapper
     ]
 });

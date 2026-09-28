@@ -4,7 +4,7 @@ import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEn
 import { Result } from "@webiny/feature/api";
 import { createIdentifier } from "@webiny/utils";
 import { UpdateEntryLockRepository as RepositoryAbstraction } from "./abstractions.js";
-import { RecordLockingConfig, RecordLockingModel } from "~/domain/abstractions.js";
+import { RecordLockingConfig, RecordLockingModelProvider } from "~/domain/abstractions.js";
 import type { ILockRecord } from "~/domain/LockRecord.js";
 import { LockRecord } from "~/domain/LockRecord.js";
 import type { LockRecordValues } from "~/domain/types.js";
@@ -13,7 +13,7 @@ import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId.js";
 
 class UpdateEntryLockRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private model: RecordLockingModel.Interface,
+        private modelProvider: RecordLockingModelProvider.Interface,
         private config: RecordLockingConfig.Interface,
         private identityContext: IdentityContext.Interface,
         private updateEntry: UpdateEntryUseCase.Interface,
@@ -25,6 +25,8 @@ class UpdateEntryLockRepositoryImpl implements RepositoryAbstraction.Interface {
         updateOwner: boolean
     ): Promise<Result<ILockRecord, RepositoryAbstraction.Error>> {
         try {
+            const model = await this.modelProvider.get();
+
             const entryId = createLockRecordDatabaseId(lockRecordId);
             const id = createIdentifier({
                 id: entryId,
@@ -46,14 +48,14 @@ class UpdateEntryLockRepositoryImpl implements RepositoryAbstraction.Interface {
                 updateData.savedBy = identity;
             }
 
-            const result = await this.updateEntry.execute(this.model, id, updateData);
+            const result = await this.updateEntry.execute(model, id, updateData);
 
             if (result.isFail()) {
                 return Result.fail(new LockRecordPersistenceError(result.error));
             }
 
             // Fetch the updated entry to return full lock record
-            const getResult = await this.getEntryById.execute<LockRecordValues>(this.model, id);
+            const getResult = await this.getEntryById.execute<LockRecordValues>(model, id);
 
             if (getResult.isFail()) {
                 return Result.fail(new LockRecordPersistenceError(getResult.error));
@@ -72,7 +74,7 @@ class UpdateEntryLockRepositoryImpl implements RepositoryAbstraction.Interface {
 export const UpdateEntryLockRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdateEntryLockRepositoryImpl,
     dependencies: [
-        RecordLockingModel,
+        RecordLockingModelProvider,
         RecordLockingConfig,
         IdentityContext,
         UpdateEntryUseCase,

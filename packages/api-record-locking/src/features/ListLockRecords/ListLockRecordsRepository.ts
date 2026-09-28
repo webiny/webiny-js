@@ -5,7 +5,7 @@ import {
     ListLockRecordsInput,
     ListLockRecordsOutput
 } from "./abstractions.js";
-import { RecordLockingConfig, RecordLockingModel } from "~/domain/abstractions.js";
+import { RecordLockingConfig, RecordLockingModelProvider } from "~/domain/abstractions.js";
 import { LockRecord } from "~/domain/LockRecord.js";
 import type { LockRecordValues } from "~/domain/types.js";
 import { LockRecordPersistenceError } from "~/domain/errors.js";
@@ -14,7 +14,7 @@ import { convertWhereCondition } from "~/utils/convertWhereCondition.js";
 
 class ListLockRecordsRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private model: RecordLockingModel.Interface,
+        private modelProvider: RecordLockingModelProvider.Interface,
         private config: RecordLockingConfig.Interface,
         private listEntries: ListLatestEntriesUseCase.Interface,
         private cmsWhereMapper: CmsWhereMapper.Interface
@@ -24,15 +24,17 @@ class ListLockRecordsRepositoryImpl implements RepositoryAbstraction.Interface {
         input?: ListLockRecordsInput
     ): Promise<Result<ListLockRecordsOutput, RepositoryAbstraction.Error>> {
         try {
+            const model = await this.modelProvider.get();
+
             const params = {
                 ...input,
                 where: this.cmsWhereMapper.map({
                     input: convertWhereCondition(input?.where),
-                    fields: this.model.fields
+                    fields: model.fields
                 })
             };
 
-            const result = await this.listEntries.execute<LockRecordValues>(this.model, params);
+            const result = await this.listEntries.execute<LockRecordValues>(model, params);
 
             if (result.isFail()) {
                 return Result.fail(new LockRecordPersistenceError(result.error));
@@ -55,7 +57,7 @@ class ListLockRecordsRepositoryImpl implements RepositoryAbstraction.Interface {
 export const ListLockRecordsRepository = RepositoryAbstraction.createImplementation({
     implementation: ListLockRecordsRepositoryImpl,
     dependencies: [
-        RecordLockingModel,
+        RecordLockingModelProvider,
         RecordLockingConfig,
         ListLatestEntriesUseCase,
         CmsWhereMapper

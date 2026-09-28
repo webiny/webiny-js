@@ -17,8 +17,17 @@ export namespace RecordLockingConfig {
     export type Interface = IRecordLockingConfig;
 }
 
-export const RecordLockingModel = createAbstraction<CmsModel>("RecordLockingModel");
+/**
+ * RecordLockingModelProvider - Fetches the private CMS model that stores lock records
+ */
+export interface IRecordLockingModelProvider {
+    get(): Promise<CmsModel>;
+}
 
-export namespace RecordLockingModel {
-    export type Interface = CmsModel;
+export const RecordLockingModelProvider = createAbstraction<IRecordLockingModelProvider>(
+    "RecordLockingModelProvider"
+);
+
+export namespace RecordLockingModelProvider {
+    export type Interface = IRecordLockingModelProvider;
 }
