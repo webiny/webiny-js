@@ -19,7 +19,8 @@ const SETTINGS_PATH = "Settings → AI Power-Ups";
  * themselves, so "which model runs this feature" had six answers that only happened to agree.
  *
  * Precedence: a capability's pinned connection+model, else its chosen role, else its declared
- * default role, else the `standard` role.
+ * default role, else the `standard` role. The last step does not apply to `vision`, which fails
+ * rather than sending images to a model that may not accept them.
  *
  * There is deliberately no environment-variable fallback. A project whose settings say one thing
  * and whose requests use another is the exact confusion this replaces.
@@ -163,12 +164,26 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
         }
 
         /*
-         * An unfilled role falls back to `standard` rather than failing. That is what keeps an
-         * upgrade quiet: migration fills only `standard`, and every feature that used to read
-         * `providers.presets[0]` keeps running on exactly the model it ran on before.
+         * `vision` never falls back. Work on this role sends images, and nothing guarantees the
+         * Standard model accepts them, so falling through would trade a clear "set a Vision model"
+         * for a provider error about image input, or a text-only model silently guessing.
          *
-         * It does mean an unfilled `vision` role sends images to whatever `standard` holds. Same
-         * as today's behaviour, and the settings screen says so next to the role.
+         * Upgrades are not broken by this: `ModelRolesHandler` seeds `vision` from the legacy
+         * preset alongside `standard`, so a project that ran image work on `providers.presets[0]`
+         * keeps running it there, with the choice visible on the settings screen. A capability can
+         * still be pointed at another role deliberately through its `roleId` override.
+         */
+        if (requestedRole === "vision") {
+            return Result.fail(
+                new Error(
+                    `No model is configured for the "vision" role, and image work does not fall back to Standard. Pick one under ${SETTINGS_PATH} → Model roles.`
+                )
+            );
+        }
+
+        /*
+         * Every other role falls back to `standard`. Running cheap work on a stronger model is
+         * always correct, only more expensive.
          */
         const standard = roles?.standard;
 
