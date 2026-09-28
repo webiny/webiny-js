@@ -1,11 +1,14 @@
 import { BeforeDeploy, LoggerService } from "@webiny/project/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
-import { STS } from "@webiny/aws-sdk/client-sts/index.js";
 
 class EnsureAwsCredentialsBeforeDeployImpl implements BeforeDeploy.Interface {
     constructor(private loggerService: LoggerService.Interface) {}
 
     async execute() {
+        // Loaded here rather than at the top of the file. Validating the project config imports this
+        // hook on every command, and only a deploy needs the STS client.
+        const { STS } = await import("@webiny/aws-sdk/client-sts/index.js");
+
         process.env.AWS_SDK_LOAD_CONFIG = "true";
         const sts = new STS({});
 
