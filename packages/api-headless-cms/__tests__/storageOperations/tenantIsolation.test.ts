@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Container } from "@webiny/di";
-import type { CmsEntry, CmsEntryStatus, CmsGroup, CmsIdentity, CmsModel } from "~/types";
+import type { CmsEntry, CmsEntryStatus, CmsGroup, CmsModel } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { createPersonModel } from "./helpers";
+import { createTestEntry } from "./entryFixtures";
 import { CreateModelStorageOperation } from "~/features/shared/storageOperations/model/CreateModelStorageOperation.js";
 import { GetModelStorageOperation } from "~/features/shared/storageOperations/model/GetModelStorageOperation.js";
 import { UpdateModelStorageOperation } from "~/features/shared/storageOperations/model/UpdateModelStorageOperation.js";
@@ -56,12 +57,6 @@ const createIsolationGroup = (tenant: string): CmsGroup => {
 
 const ISOLATION_ENTRY_ID = "isolationentry";
 
-const identity: CmsIdentity = {
-    id: "admin",
-    type: "admin",
-    displayName: "admin"
-};
-
 interface CreateIsolationEntryParams {
     model: CmsModel;
     version: number;
@@ -71,50 +66,15 @@ interface CreateIsolationEntryParams {
 
 const createIsolationEntry = (params: CreateIsolationEntryParams): CmsEntry => {
     const { model, version, status } = params;
-    const now = new Date().toISOString();
-    return {
-        id: createIdentifier({ id: ISOLATION_ENTRY_ID, version }),
+    return createTestEntry({
+        model,
         entryId: ISOLATION_ENTRY_ID,
-        tenant: model.tenant,
-        modelId: model.modelId,
         version,
-        locked: false,
         status,
         values: {
             name: params.name ?? `${model.tenant} v${version}`
-        },
-        createdOn: now,
-        savedOn: now,
-        modifiedOn: null,
-        deletedOn: null,
-        restoredOn: null,
-        firstPublishedOn: null,
-        lastPublishedOn: null,
-        createdBy: identity,
-        savedBy: identity,
-        modifiedBy: null,
-        deletedBy: null,
-        restoredBy: null,
-        firstPublishedBy: null,
-        lastPublishedBy: null,
-        revisionCreatedOn: now,
-        revisionSavedOn: now,
-        revisionModifiedOn: null,
-        revisionDeletedOn: null,
-        revisionRestoredOn: null,
-        revisionFirstPublishedOn: null,
-        revisionLastPublishedOn: null,
-        revisionCreatedBy: identity,
-        revisionSavedBy: identity,
-        revisionModifiedBy: null,
-        revisionDeletedBy: null,
-        revisionRestoredBy: null,
-        revisionFirstPublishedBy: null,
-        revisionLastPublishedBy: null,
-        live: null,
-        revisionDescription: undefined,
-        expiresAt: null
-    };
+        }
+    });
 };
 
 describe("Storage operations - tenant isolation", () => {
