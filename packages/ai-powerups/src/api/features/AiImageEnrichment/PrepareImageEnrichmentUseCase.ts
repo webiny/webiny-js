@@ -6,6 +6,7 @@ import {
     type IPreparedImageEnrichment
 } from "./abstractions.js";
 import {
+    AiCapabilityUnavailableError,
     ResolveAiCapabilityUseCase,
     withAdditionalInstructions
 } from "~/api/features/Capabilities/index.js";
@@ -14,7 +15,8 @@ import {
     EnrichmentFileContentsError,
     EnrichmentFileNotFoundError,
     EnrichmentNoProviderError,
-    EnrichmentNotAnImageError
+    EnrichmentNotAnImageError,
+    EnrichmentResolveError
 } from "./errors.js";
 import type { ImageEnrichmentError } from "./errors.js";
 
@@ -48,7 +50,11 @@ class PrepareImageEnrichmentUseCaseImpl implements UseCaseAbstraction.Interface 
 
         const resolved = await this.resolveCapability.execute(FM_IMAGE_ENRICHMENT_CAPABILITY);
         if (resolved.isFail()) {
-            return Result.fail(new EnrichmentNoProviderError(resolved.error.message));
+            // A setting stops this, or something actually broke. Only the second is a failure.
+            if (resolved.error instanceof AiCapabilityUnavailableError) {
+                return Result.fail(new EnrichmentNoProviderError(resolved.error.message));
+            }
+            return Result.fail(new EnrichmentResolveError(resolved.error.message));
         }
 
         const capability = resolved.value;

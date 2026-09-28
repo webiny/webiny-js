@@ -4,6 +4,7 @@ import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { sdkNameFromModel } from "~/api/features/shared/modelId.js";
 import { AiCapability, ResolveAiCapabilityUseCase } from "./abstractions.js";
 import type { IResolvedAiCapability } from "./abstractions.js";
+import { AiCapabilityUnavailableError } from "./errors.js";
 import { isCapabilityEnabled } from "./types.js";
 import type { AiCapabilityOverride } from "./types.js";
 import type { AiModelRoleId } from "~/api/features/ModelRoles/index.js";
@@ -63,7 +64,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
          */
         if (!isCapabilityEnabled(entry)) {
             return Result.fail(
-                new Error(
+                new AiCapabilityUnavailableError(
                     `"${capability.label}" is switched off. Turn it back on under ${SETTINGS_PATH} → Capabilities.`
                 )
             );
@@ -82,7 +83,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
 
         if (!connection) {
             return Result.fail(
-                new Error(
+                new AiCapabilityUnavailableError(
                     `"${capability.label}" points at a connection that no longer exists. Pick one under ${SETTINGS_PATH} → Model roles.`
                 )
             );
@@ -90,7 +91,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
 
         if (!connection.apiKeyEncrypted) {
             return Result.fail(
-                new Error(
+                new AiCapabilityUnavailableError(
                     `The connection "${connection.name}" has no API key. Add one under ${SETTINGS_PATH} → Connections.`
                 )
             );
@@ -104,7 +105,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
         const modelSdkName = sdkNameFromModel(model);
         if (modelSdkName && connection.sdkName && modelSdkName !== connection.sdkName) {
             return Result.fail(
-                new Error(
+                new AiCapabilityUnavailableError(
                     `The model "${model}" cannot run on the "${connection.name}" connection, which is a ${connection.sdkName} credential. Fix the pairing under ${SETTINGS_PATH} → Model roles.`
                 )
             );
@@ -175,7 +176,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
          */
         if (requestedRole === "vision") {
             return Result.fail(
-                new Error(
+                new AiCapabilityUnavailableError(
                     `No model is configured for the "vision" role, and image work does not fall back to Standard. Pick one under ${SETTINGS_PATH} → Model roles.`
                 )
             );
@@ -197,7 +198,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
         }
 
         return Result.fail(
-            new Error(
+            new AiCapabilityUnavailableError(
                 `No model is configured for the "${requestedRole}" role. Pick one under ${SETTINGS_PATH} → Model roles.`
             )
         );

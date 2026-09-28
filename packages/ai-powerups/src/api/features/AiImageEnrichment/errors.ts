@@ -27,12 +27,16 @@ export class EnrichmentFileContentsError extends Error {
     }
 }
 
+/**
+ * Capability resolution says image enrichment cannot run as configured: switched off, no model in
+ * the Vision role, a deleted connection, a missing key. A setting, not a fault, so the background
+ * task finishes rather than failing, and says why.
+ */
 export class EnrichmentNoProviderError extends Error {
     readonly code = "ENRICHMENT_NO_AI_PROVIDER" as const;
 
     /**
-     * The reason comes from capability resolution, which knows which of the several ways this can
-     * fail actually happened: no model in the Vision role, a deleted connection, a missing key.
+     * The reason comes from capability resolution, which knows which of those actually happened.
      * Passing it through beats replacing all of them with one generic sentence.
      */
     constructor(reason?: string) {
@@ -40,6 +44,18 @@ export class EnrichmentNoProviderError extends Error {
             reason ??
                 "No AI model is configured for image enrichment. Pick one under Settings → AI Power-Ups → Model roles."
         );
+    }
+}
+
+/**
+ * Capability resolution failed for a reason that is not a setting, such as an unregistered
+ * capability id. Unlike `EnrichmentNoProviderError` this is a fault, and the task fails on it.
+ */
+export class EnrichmentResolveError extends Error {
+    readonly code = "ENRICHMENT_RESOLVE_FAILED" as const;
+
+    constructor(reason: string) {
+        super(`Unable to resolve the AI model for image enrichment: ${reason}`);
     }
 }
 
@@ -56,4 +72,5 @@ export type ImageEnrichmentError =
     | EnrichmentNotAnImageError
     | EnrichmentFileContentsError
     | EnrichmentNoProviderError
+    | EnrichmentResolveError
     | EnrichmentPersistError;

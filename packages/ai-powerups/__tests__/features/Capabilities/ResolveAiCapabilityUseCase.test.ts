@@ -6,6 +6,7 @@ import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { AiCapability } from "~/api/features/Capabilities/abstractions.js";
 import { ResolveAiCapabilityUseCase } from "~/api/features/Capabilities/abstractions.js";
 import { ResolveAiCapabilityUseCaseImplementation } from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
+import { AiCapabilityUnavailableError } from "~/api/features/Capabilities/errors.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
 
 type Items = IAiPowerUpsSettings["capabilities"]["items"];
@@ -299,5 +300,41 @@ describe("ResolveAiCapabilityUseCase", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toContain("Unknown AI capability");
+    });
+});
+
+/*
+ * Callers tell "a setting stops this" from "something broke" by type, not by message. Background
+ * work skips the first and fails on the second, so every setting-shaped failure has to carry it and
+ * nothing else may.
+ */
+describe("ResolveAiCapabilityUseCase error types", () => {
+    const unavailable: Array<[string, IAiPowerUpsSettings, string]> = [
+        [
+            "switched off",
+            settings({ items: { "test.capability": { enabled: false, overrides: {} } } }),
+            "test.capability"
+        ],
+        ["no vision model", settings({}), "test.noGuidance"],
+        [
+            "no model at all",
+            settings({ roles: { standard: { connectionId: "", model: "" } } }),
+            "test.capability"
+        ],
+        ["deleted connection", settings({ connections: [] }), "test.capability"]
+    ];
+
+    it.each(unavailable)("reports %s as unavailable", async (_label, value, id) => {
+        const result = await resolver(value).execute(id);
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error).toBeInstanceOf(AiCapabilityUnavailableError);
+    });
+
+    it("reports an unregistered id as a fault, not a setting", async () => {
+        const result = await resolver(settings({})).execute("nope.notRegistered");
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error).not.toBeInstanceOf(AiCapabilityUnavailableError);
     });
 });

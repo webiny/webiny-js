@@ -6,4 +6,5 @@ export {
 export type { IAiCapability, IResolvedAiCapability, IAiCapabilitySummary } from "./abstractions.js";
 export { withAdditionalInstructions } from "./composeSystemPrompt.js";
 export type { AiCapabilityOverride, CapabilitiesSettings } from "./types.js";
+export { AiCapabilityUnavailableError } from "./errors.js";
 export { CapabilitiesFeature } from "./feature.js";

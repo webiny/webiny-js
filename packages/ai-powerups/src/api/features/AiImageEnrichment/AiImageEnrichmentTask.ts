@@ -3,8 +3,10 @@ import {
     TaskHandler
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { ApplyImageEnrichmentUseCase, PrepareImageEnrichmentUseCase } from "./abstractions.js";
 import { buildEnrichmentAiRequest } from "./buildEnrichmentAiRequest.js";
+import { EnrichmentNoProviderError } from "./errors.js";
 import { EnrichmentNotAnImageError } from "./errors.js";
 
 export const AI_IMAGE_ENRICHMENT_TASK_ID = "fmAiImageEnrichment";
@@ -22,7 +24,8 @@ class AiImageEnrichmentTaskHandlerImpl implements TaskHandler.Interface<IAiImage
     constructor(
         private prepare: PrepareImageEnrichmentUseCase.Interface,
         private apply: ApplyImageEnrichmentUseCase.Interface,
-        private ai: Ai.Interface
+        private ai: Ai.Interface,
+        private logger: Logger.Interface
     ) {}
 
     async run({
@@ -40,6 +43,19 @@ class AiImageEnrichmentTaskHandlerImpl implements TaskHandler.Interface<IAiImage
             const error = preparedResult.error;
             // A non-image isn't a failure — nothing to enrich, so the task is simply done.
             if (error instanceof EnrichmentNotAnImageError) {
+                return controller.response.done(error.message);
+            }
+            /*
+             * Nor is a setting that stops enrichment: switched off, no Vision model, a missing
+             * key. That repeats on every upload until someone changes the setting, so failing the
+             * task at ERROR would fill the log with the same line and suggest something broke. A
+             * warning with the reason, and a finished task, say what is actually going on.
+             */
+            if (error instanceof EnrichmentNoProviderError) {
+                this.logger.warn(
+                    { fileId: input.fileId, reason: error.message },
+                    "Skipping AI image enrichment."
+                );
                 return controller.response.done(error.message);
             }
             return controller.response.error({ message: error.message });
@@ -75,9 +91,9 @@ class AiImageEnrichmentTaskHandlerImpl implements TaskHandler.Interface<IAiImage
     }
 }
 
-const AiImageEnrichmentTaskHandler = TaskHandler.createImplementation({
+export const AiImageEnrichmentTaskHandler = TaskHandler.createImplementation({
     implementation: AiImageEnrichmentTaskHandlerImpl,
-    dependencies: [PrepareImageEnrichmentUseCase, ApplyImageEnrichmentUseCase, Ai]
+    dependencies: [PrepareImageEnrichmentUseCase, ApplyImageEnrichmentUseCase, Ai, Logger]
 });
 
 class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface {
