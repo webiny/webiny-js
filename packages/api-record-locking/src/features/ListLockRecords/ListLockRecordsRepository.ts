@@ -5,7 +5,8 @@ import {
     ListLockRecordsInput,
     ListLockRecordsOutput
 } from "./abstractions.js";
-import { RecordLockingConfig, RecordLockingModelProvider } from "~/domain/abstractions.js";
+import { RecordLockingConfig } from "~/domain/abstractions.js";
+import { RecordLockingModelProvider } from "~/domain/abstractions.js";
 import { LockRecord } from "~/domain/LockRecord.js";
 import type { LockRecordValues } from "~/domain/types.js";
 import { LockRecordPersistenceError } from "~/domain/errors.js";
