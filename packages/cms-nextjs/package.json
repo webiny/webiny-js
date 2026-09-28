@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/cms-sdk": "0.0.0",
-    "mobx-react-lite": "^5.0.3"
+    "mobx-react-lite": "^5.1.0"
   },
   "peerDependencies": {
     "next": ">=15.0.0 <16.0.0",
