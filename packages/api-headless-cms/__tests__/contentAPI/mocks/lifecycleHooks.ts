@@ -25,6 +25,10 @@ import {
     EntryRevisionAfterCreateEventHandler
 } from "~/features/contentEntry/CreateEntryRevisionFrom/events.js";
 import {
+    EntryBeforeDuplicateEventHandler,
+    EntryAfterDuplicateEventHandler
+} from "~/features/contentEntry/DuplicateEntry/events.js";
+import {
     EntryBeforeUpdateEventHandler,
     EntryAfterUpdateEventHandler
 } from "~/features/contentEntry/UpdateEntry/events.js";
@@ -47,8 +51,10 @@ import {
 
 class PubSubTracker {
     private _tracked: Record<string, number> = {};
+    private _order: string[] = [];
 
     public track(name: string): void {
+        this._order.push(name);
         if (!this._tracked[name]) {
             this._tracked[name] = 0;
         }
@@ -57,10 +63,15 @@ class PubSubTracker {
 
     public reset(): void {
         this._tracked = {};
+        this._order = [];
     }
 
     public isExecutedOnce(name: string): boolean {
         return this._tracked[name] === 1;
+    }
+
+    public getOrder(): string[] {
+        return [...this._order];
     }
 
     public getExecuted(name: string): number {
@@ -153,6 +164,18 @@ export const assignEntryEvents = () => {
         context.container.registerFactory(EntryRevisionAfterCreateEventHandler, () => ({
             async handle() {
                 pubSubTracker.track("contentEntry:afterCreateRevisionFrom");
+            }
+        }));
+
+        context.container.registerFactory(EntryBeforeDuplicateEventHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:beforeDuplicate");
+            }
+        }));
+
+        context.container.registerFactory(EntryAfterDuplicateEventHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:afterDuplicate");
             }
         }));
 

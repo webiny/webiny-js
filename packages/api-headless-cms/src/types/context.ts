@@ -107,6 +107,13 @@ export interface CmsEntryContext {
         options?: CreateRevisionCmsEntryOptionsInput
     ) => Promise<CmsEntry<T>>;
     /**
+     * Create a new entry (version 1, draft) by duplicating an existing entry revision.
+     */
+    duplicateEntry: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ) => Promise<CmsEntry<T>>;
+    /**
      * Update existing entry.
      */
     updateEntry: <TInput extends CmsEntryValues = CmsEntryValues>(

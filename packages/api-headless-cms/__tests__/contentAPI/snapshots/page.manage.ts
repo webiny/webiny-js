@@ -877,6 +877,8 @@ export default /* GraphQL */ `
             options: CreateRevisionCmsEntryOptionsInput
         ): PageModelApiNameResponse
 
+        duplicatePageModelApiName(revision: ID!): PageModelApiNameResponse
+
         updatePageModelApiName(
             revision: ID!
             data: PageModelApiNameInput!

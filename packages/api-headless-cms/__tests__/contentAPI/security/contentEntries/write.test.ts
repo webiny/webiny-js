@@ -116,4 +116,113 @@ describe("Write Permissions Checks", () => {
             error: null
         });
     });
+
+    it("should allow duplication of entries only with sufficient permission", async () => {
+        const { manage: manageApiA } = useTestModelHandler({ identity: identityA });
+        await manageApiA.setup();
+
+        const testEntry = await manageApiA.createTestEntry();
+
+        const permissions = new CmsTestPermissions({
+            groups: { rwd: "rwd" },
+            models: { rwd: "rwd" },
+            entries: { rwd: "r" }
+        });
+
+        const { manage: manageApiB } = useTestModelHandler({
+            identity: identityB,
+            permissions: permissions.getPermissions()
+        });
+
+        const failedDuplicateResponse = await manageApiB.duplicateTestEntry({
+            variables: {
+                revision: testEntry.data.id
+            }
+        });
+
+        expectNotAuthorized(failedDuplicateResponse, {
+            code: "Cms/Entry/NotAuthorized",
+            message: 'Not allowed to access "testModel" entries.'
+        });
+
+        permissions.setPermissions({
+            groups: { rwd: "rwd" },
+            models: { rwd: "rwd" },
+            entries: { rwd: "rw" }
+        });
+
+        const { manage: manageApiC } = useTestModelHandler({
+            identity: identityC,
+            permissions: permissions.getPermissions()
+        });
+
+        const duplicateResponse = await manageApiC.duplicateTestEntry({
+            variables: {
+                revision: testEntry.data.id
+            }
+        });
+
+        expect(duplicateResponse).toMatchObject({
+            data: {
+                createdBy: {
+                    id: identityC.id
+                },
+                meta: {
+                    version: 1,
+                    status: "draft"
+                }
+            },
+            error: null
+        });
+        expect(duplicateResponse.data.entryId).not.toEqual(testEntry.data.entryId);
+    });
+
+    it("should not allow duplication of entries owned by others with own-only permission", async () => {
+        const { manage: manageApiA } = useTestModelHandler({ identity: identityA });
+        await manageApiA.setup();
+
+        const testEntry = await manageApiA.createTestEntry();
+
+        const permissions = new CmsTestPermissions({
+            groups: { rwd: "rwd" },
+            models: { rwd: "rwd" },
+            entries: { rwd: "rwd", own: true }
+        });
+
+        const { manage: manageApiB } = useTestModelHandler({
+            identity: identityB,
+            permissions: permissions.getPermissions()
+        });
+
+        const failedDuplicateResponse = await manageApiB.duplicateTestEntry({
+            variables: {
+                revision: testEntry.data.id
+            }
+        });
+
+        expectNotAuthorized(failedDuplicateResponse, {
+            code: "Cms/Entry/NotAuthorized",
+            message: `Not allowed to access entry "${testEntry.data.entryId}".`
+        });
+
+        const ownEntry = await manageApiB.createTestEntry();
+        const duplicateOwnResponse = await manageApiB.duplicateTestEntry({
+            variables: {
+                revision: ownEntry.data.id
+            }
+        });
+
+        expect(duplicateOwnResponse).toMatchObject({
+            data: {
+                createdBy: {
+                    id: identityB.id
+                },
+                meta: {
+                    version: 1,
+                    status: "draft"
+                }
+            },
+            error: null
+        });
+    });
 });
