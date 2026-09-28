@@ -26,7 +26,7 @@ import { TestingRunTaskDefinition } from "./tasks/testingRunTask.js";
 import { BackgroundTaskPermissionsFeature } from "./features/BackgroundTaskPermissions/feature.js";
 import { GetBackgroundTaskSettingsFeature } from "./features/GetBackgroundTaskSettings/feature.js";
 import { UpdateBackgroundTaskSettingsFeature } from "./features/UpdateBackgroundTaskSettings/feature.js";
-import { BackgroundTasksContextualSchema } from "./graphql/BackgroundTasksContextualSchema.js";
+import { BackgroundTasksGraphQLSchema } from "./graphql/BackgroundTasksGraphQLSchema.js";
 
 export const BackgroundTasksFeature = createFeature({
     name: "BackgroundTasks",
@@ -80,7 +80,7 @@ export const BackgroundTasksFeature = createFeature({
         GetBackgroundTaskSettingsFeature.register(container);
         UpdateBackgroundTaskSettingsFeature.register(container);
 
-        // GraphQL schema — rendered per-request from the CMS task/log content models.
-        container.register(BackgroundTasksContextualSchema);
+        // GraphQL schema, rendered from the CMS task/log content models.
+        container.register(BackgroundTasksGraphQLSchema);
     }
 });
