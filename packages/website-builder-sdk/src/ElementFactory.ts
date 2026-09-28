@@ -12,6 +12,8 @@ import {
     type InputAstNode
 } from "./ComponentManifestToAstConverter.js";
 import { ComponentInputTraverser } from "./ComponentInputTraverser.js";
+import { assertBindingShapes } from "./assertBindingShapes.js";
+import { logger } from "./Logger.js";
 
 const defaultStyles = {
     display: "flex",
@@ -261,6 +263,39 @@ export class ElementFactory {
                 );
             }
         });
+
+        /*
+         * The bindings just written, checked against the shapes the inputs declare.
+         *
+         * Here rather than on `bindings.inputs`, because the defect this catches lived between the
+         * two: a correct array arrived and the traverser collapsed it while writing. A check on the
+         * inputs passed while every page built from them failed to render.
+         *
+         * Warns rather than throws: a page that renders most of itself beats a page that refuses to
+         * build, and the composition pipeline turns these into discard-log entries. See
+         * `assertBindingShapes` for why this and the list tolerance in `BindingsResolver` belong
+         * together.
+         */
+        const written: Record<string, unknown> = {};
+        for (const op of ops) {
+            const record = op as unknown as {
+                path?: string;
+                binding?: unknown;
+                elementId?: string;
+            };
+            if (
+                record.elementId === elementId &&
+                typeof record.path === "string" &&
+                record.binding
+            ) {
+                written[record.path] = record.binding;
+            }
+        }
+        for (const violation of assertBindingShapes({ inputs: written as never }, inputsAst)) {
+            logger.warn(
+                `Binding "${violation.path}" declares a ${violation.declared} and holds a ${violation.found}.`
+            );
+        }
 
         // Process styles
         for (const key in bindings.styles) {

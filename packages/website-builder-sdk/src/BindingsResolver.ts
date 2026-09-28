@@ -121,8 +121,32 @@ export class BindingsResolver {
                             return onResolved ? onResolved(value, node.input) : value;
                         });
                     } else {
-                        // If binding is a simple `children`, we simply assign the resolved value.
-                        target[node.name] = finalValue;
+                        /*
+                         * If binding is a simple `children`, we simply assign the resolved value —
+                         * but never a bare scalar where the input declares a list.
+                         *
+                         * A component reading a list does `value.map(...)`, so a scalar reaches it as
+                         * a crash, and during server rendering one component's crash is the whole
+                         * page. Stored documents carry that shape: until this was fixed,
+                         * `ComponentInputTraverser` wrote every item of a scalar list to one path, so
+                         * each overwrote the last and the binding kept a single string. Those
+                         * documents are not rewritten by fixing the writer, so they are repaired on
+                         * the way in.
+                         *
+                         * READ THIS WITH `assertBindingShapes`, and do not remove one without the
+                         * other. The tolerance here is recovery, and the assertion there is the alarm
+                         * that a bad write happened at all. Tolerance alone lets a broken writer live
+                         * indefinitely because nothing ever looks wrong; the assertion alone leaves
+                         * every already-stored page broken.
+                         */
+                        const isSlot = node.type === "slot";
+                        target[node.name] =
+                            isSlot ||
+                            finalValue === undefined ||
+                            finalValue === null ||
+                            Array.isArray(finalValue)
+                                ? finalValue
+                                : [finalValue];
                     }
                 } else if (finalValue !== undefined) {
                     target[node.name] = finalValue;

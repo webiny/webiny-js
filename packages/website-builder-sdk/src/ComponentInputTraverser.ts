@@ -48,8 +48,26 @@ export class ComponentInputTraverser {
                         const childPath = `${itemPath}/${child.name}`;
                         this.traverseNode(child, childValue, childPath, visitor);
                     }
-                } else {
+                } else if (node.type === "slot") {
+                    /*
+                     * A slot list keeps one path: the elements it holds are managed by `AddToParent`,
+                     * which maintains the static array itself. Indexing here would write past it.
+                     */
                     visitor(node, currentPath, item);
+                } else {
+                    /*
+                     * An indexed path per item, exactly as an object list gets above.
+                     *
+                     * This used to pass `currentPath` for every item, so a caller writing one binding
+                     * per visit wrote them all to the same path and each overwrote the last: a list of
+                     * five came out as the fifth item alone, a bare string on a binding still marked
+                     * `list: true`. Every component doing `items.map(...)` then threw, which on a
+                     * server-rendered page is a 500 for the whole page rather than one broken section.
+                     *
+                     * `BindingsResolver` reads a scalar list by collecting `name/0`, `name/1`, … so
+                     * the indexed path is also the shape the reader already looks for.
+                     */
+                    visitor(node, `${currentPath}/${index}`, item);
                 }
             });
         } else {

@@ -11,6 +11,7 @@ import { ElementSlot } from "./ElementSlot.js";
 import { useViewport } from "./useViewportInfo.js";
 import { useBindingsForElement } from "./useBindingsForElement.js";
 import { useDocumentState } from "./useDocumentState.js";
+import { ComponentErrorBoundary } from "./ComponentErrorBoundary.js";
 
 interface LiveElementRendererProps {
     element: DocumentElement;
@@ -73,7 +74,15 @@ export const LiveElementRenderer = observer(({ element }: LiveElementRendererPro
                 const props = { inputs, styles, element, breakpoint: viewport.breakpoint };
                 const autoApplyStyles = manifest.autoApplyStyles !== false;
 
-                const userElement = <Component key={element.id} {...props} />;
+                /*
+                 * Each instance is isolated: a component that throws costs its own section and
+                 * nothing else. Unwrapped, one failure is an HTTP 500 for the entire page.
+                 */
+                const userElement = (
+                    <ComponentErrorBoundary key={element.id} componentName={element.component.name}>
+                        <Component {...props} />
+                    </ComponentErrorBoundary>
+                );
 
                 if (!autoApplyStyles) {
                     return userElement;

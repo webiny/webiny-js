@@ -35,3 +35,4 @@ export * from "./ElementFactory.js";
 export * from "./ConstraintEvaluator.js";
 export * from "./generateElementId.js";
 export { StyleSettings } from "./constants.js";
+export * from "./assertBindingShapes.js";
