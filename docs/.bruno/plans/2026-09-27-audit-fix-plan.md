@@ -71,7 +71,7 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 | B3.5 | [api-headless-cms content entry](../../reports/level-06/api-headless-cms/content-entry.md): publish/republish/unpublish return the pre-storage-transform entry. | S | ☐ |
 | B3.6 | [cms-sdk](../../reports/level-01/cms-sdk.md): resolved references treated as unresolved on every patch. | M | ☐ |
 | B3.7 | [validation](../../reports/level-00/validation.md): `dateGte`/`dateLte` throw on bad config and CMS swallows the error. | S | ✅ |
-| B3.8 | [api-record-locking](../../reports/level-07/api-record-locking.md): no server-side enforcement of record locks on entry mutations (bug #2). Blocked by decision Q1. | M | ☐ |
+| B3.8 | [api-record-locking](../../reports/level-07/api-record-locking.md): no server-side enforcement of record locks on entry mutations (bug #2). Per Q1: a decorator on `UpdateEntryUseCase`/`PublishEntryUseCase`/`UnpublishEntryUseCase`/`DeleteEntryUseCase` rejects writes by a non-owner while an unexpired lock exists (`EntryLockedError`); system writes under `withoutAuthorization` (tasks, scheduler, bulk actions) pass; API keys are treated as non-owners; no full-access bypass (force-unlock exists); expired lock = unlocked; no check when the `recordLocking` flag is off. Tests cover each of these cases. | M | ☐ |
 
 ### B4. Website Builder
 
@@ -173,7 +173,7 @@ Confirm with CodeGraph/grep before deleting; small PRs.
 
 | ID | Question | Blocks |
 |---|---|---|
-| Q1 | Record locking: enforce locks server-side (reject updates to locked entries) or keep them advisory in the UI? | B3.8 |
+| Q1 | ✅ Decided 2026-09-28: enforce server-side (details in B3.8). | B3.8 |
 | Q2 | Mailer: fail loudly when SMTP is not configured, or keep the silent dummy transport? | B7.7 |
 | Q3 | website-builder-nuxt parity with the Next.js preview/draft and A/B-cookie middleware. | C6 |
 | Q4 | `webiny` meta package: re-export curated entry points and version them properly? | B7.11 |
