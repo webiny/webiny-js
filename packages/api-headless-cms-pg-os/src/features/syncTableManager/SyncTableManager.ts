@@ -52,14 +52,14 @@ class SyncTableManagerImpl implements SyncTableManagerAbstraction.Interface {
     private async createTable(): Promise<void> {
         try {
             await this.knex.client.schema.createTable(this.tableName, table => {
-                table.text("id").primary();
+                table.text("id").notNullable();
                 table.text("entryId").notNullable();
                 table.text("index").notNullable();
                 table.text("operation").notNullable();
                 table.text("data").notNullable();
                 table.text("tenant").notNullable();
 
-                table.index(["tenant"]);
+                table.primary(["tenant", "id"]);
             });
         } catch (err) {
             if (await this.knex.client.schema.hasTable(this.tableName)) {
