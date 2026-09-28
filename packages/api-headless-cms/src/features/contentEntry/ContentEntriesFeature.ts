@@ -1,6 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { CreateEntryFeature } from "./CreateEntry/feature.js";
 import { CreateEntryRevisionFromFeature } from "./CreateEntryRevisionFrom/feature.js";
+import { DuplicateEntryFeature } from "./DuplicateEntry/feature.js";
 import { UpdateEntryFeature } from "./UpdateEntry/feature.js";
 import { ValidateEntryFeature } from "./ValidateEntry/feature.js";
 import { MoveEntryFeature } from "./MoveEntry/feature.js";
@@ -58,6 +59,7 @@ export const ContentEntriesFeature = createFeature({
         // Command features
         CreateEntryFeature.register(container);
         CreateEntryRevisionFromFeature.register(container);
+        DuplicateEntryFeature.register(container);
         UpdateEntryFeature.register(container);
         UpdateRevisionDescriptionFeature.register(container);
         ValidateEntryFeature.register(container);
