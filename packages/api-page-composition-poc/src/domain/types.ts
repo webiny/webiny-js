@@ -65,6 +65,35 @@ export interface PageSignals {
      * invented by the model and emptied.
      */
     images?: PageMapImages;
+    /**
+     * Where this page's derived text came from — see `deriveInstanceProps`.
+     *
+     * The one signal that says which copy on the page is evidenced and which is a guess. It is
+     * separate from `textPresent` on purpose: a prop bound to the wrong slot is still text from this
+     * page, so it counts as present and always will. Only this can tell them apart.
+     */
+    textProps?: PageMapTextProps;
+}
+
+/** Derived-text provenance counters. `position` and `unmatched` are both guesses; see `PropSource`. */
+export interface PageMapTextProps {
+    /** Bound from the instance's own run playing that role. The evidenced case. */
+    role: number;
+    /** No run played that role, so the run at the same index was taken. */
+    position: number;
+    /** No run could be taken, so another page's sample stands. */
+    unmatched: number;
+    /**
+     * Placements carrying at least one `position` prop.
+     *
+     * Kept apart from the count below because the two fail differently to a reader. A `position`
+     * value is this page's own text in a slot nothing confirms, so it reads as correct and no other
+     * signal disputes it; an `unmatched` value is visibly another page's words. Merging them would
+     * hide the one that is hard to see behind the one that is not.
+     */
+    instancesAlignedByPosition: number;
+    /** Placements carrying at least one prop of either unevidenced kind. */
+    instancesWithGuesses: number;
 }
 
 /** Image counters, in the same shape as the link counters beside them. */
@@ -87,7 +116,9 @@ export interface DiscardEntry {
         | "link.invented"
         | "image.invented"
         | "image.unmigrated"
-        | "image.shape-unresolved";
+        | "image.shape-unresolved"
+        | "text.aligned-by-position"
+        | "text.unmatched";
     /** The migrated page the occurrence is on. */
     page: string;
     /** The source page it came from. */

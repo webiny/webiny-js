@@ -4,6 +4,10 @@
 > **Severity:** high — 29 of 134 component instances across the four sites carry at least one prop
 > whose value belongs to a different part of their own section. Visible on 24 of 31 composed pages.
 > Not a rendering fault: every one of these pages renders cleanly and reads plausibly.
+> **Status:** fixed in part. Role alignment is now the derivation — see _Fixed in part_ below. The
+> class that bound a prop to the wrong run is gone (12 → 0); the class where the section has no such
+> slot remains (43) and is now reported rather than silent. Everything above that heading describes
+> the state before the change and is kept as the record of what was measured.
 
 ## What happens
 
@@ -144,26 +148,103 @@ harness shows a page that looks right at a glance. A bound value that is real te
 page is invisible to every check that asks whether text survived, and none of them asks whether it
 landed where it belongs.
 
-## Fix directions (not decided)
+## Fixed in part — role alignment is now the derivation
 
-1. **Align by role, not by index.** The measurement above is a working implementation — LCS over run
-   roles. It is deterministic and explainable, which is what the positional approach was chosen for,
-   and it handles insertion and deletion. It does not fix a section that lacks the slot entirely.
-2. **Record which run a prop came from at Plan time**, removing the guess. The comment names this as
-   the root cause: _"nothing records which text run a given prop came from"_. Largest change, and the
-   only one that makes the link authoritative rather than reconstructed.
-3. **Implement the log the comment already promises, and widen it** — emit a discard entry when a
-   prop is derived from a section whose run sequence does not align cleanly, not only when it falls
-   back. That does not fix anything; it stops the demo claiming fidelity it does not have, which is
-   what the comment says was intended.
+Role alignment moved from the audit into `deriveInstanceProps` as the primary match; index matching
+survives only as the fallback where role alignment has nothing to offer. Every value that is not
+role-matched is now reported.
 
-Whatever is chosen, `DerivedProp.source` should either gain its consumer or go.
+Measured again on the same four sites, on the same population — props derived from the instance,
+which is what the 296 counted; cluster fallbacks were outside it then and are reported separately
+below.
 
-## Reproducing
+| site          | role | position | derived | instances with a positional prop | before: wrong / instances |
+| ------------- | ---- | -------- | ------- | -------------------------------- | ------------------------- |
+| parkcityplace | 40   | 14       | 54      | 8                                | 16 / 8                    |
+| 2424tulane    | 104  | 13       | 117     | 12                               | 15 / 14                   |
+| 71westland    | 92   | 11       | 103     | 6                                | 16 / 6                    |
+| freehill      | 18   | 5        | 23      | 1                                | 5 / 1                     |
+| **total**     | 254  | **43**   | **297** | **27**                           | **52 / 29**               |
 
-The numbers come from an instrumented composition (`alignmentAudit.ts`, removed after measurement):
-it ran both derivations for every placed instance and wrote the verdicts into the page map. A first
-version of that audit keyed on the full tag chain and over-reported — a home page's `h1` against an
-interior `h2` scored as a mis-alignment although the positional read had returned the right heading.
-The role collapse above is what separates a level difference from a role difference; any re-run
-should keep it.
+- **52 → 43 props**, **29 → 27 instances**.
+- The **12** props bound to a _different run than the one playing their part_ are **gone** — that
+  class cannot occur now, because the run playing the part is what gets bound.
+- The **40 → 43** with no run in that role remain, and were never fixable by alignment: the section
+  does not contain the slot. They are now `text.aligned-by-position` in the discard log, naming the
+  component, the input and the value.
+
+The named case, before and after, on parkcityplace `/apartments/ct/bridgeport/contact-us`:
+
+```
+privacyText        "Message (250 character limit)"  →  "By submitting this form, you agree to the ."
+requiredFieldNote  "privacy policy"                 →  "* Required Field"
+heading            "Contact Us"                     →  "Contact Us"   ← still, and now flagged
+```
+
+### Where it did not fall
+
+```
+  7  ParkcityPalace/Contact Form (3)                    {heading, privacyText}
+  7  ParkcityPalace/Accessibility Statement             {subheading, introText, complianceText, supportText}
+  7  2424Tulane/Intro/About with Stats                  {body, heading}
+  7  71WestlandApartments/Explore Fenway Forward Intro  {heading, description}
+  5  FreehillStreetLofts/Contact Form with Map View     {heading, requiredFieldNote, privacyDisclaimer, …}
+  4  71WestlandApartments/Hero Intro Section            {communityTitle, introLabel, unitTypes}
+  3  2424Tulane/Location Description                    {description, heading}
+  3  2424Tulane/Image Gallery Section                   {heading}
+```
+
+Every one is a component whose generated interface has slots the section on that page does not fill
+— a contact form asked for a heading where the page puts none, an intro asked for a label the
+interior pages drop. No alignment can invent those. They are a **Plan/Generate** question: the
+component was given inputs the cluster does not consistently supply. That is the next thing to look
+at, and it is a different defect from this one.
+
+### And the part that was never counted
+
+**81** props fall through to the cluster sample — openly another page's words, on 73 instances. They
+were invisible before this change and are now `text.unmatched`. They are not part of the 52 and
+never were; the audit excluded them because positional alignment had already claimed a value.
+
+## The mitigation, now wired
+
+`DerivedProp.source` has a consumer. Anything not `role` produces a discard entry naming component,
+input and value:
+
+```
+text.aligned-by-position  43
+text.unmatched            81
+```
+
+Two kinds rather than one, because they fail differently to a reader and merging them would hide the
+worse case behind the obvious one. A positional value is _this page's own text in a slot nothing
+confirms_ — it reads as correct, and no other signal disputes it. An unmatched value is visibly from
+elsewhere. Page-level counts sit on `PageSignals.textProps`, so an operator can see which pages carry
+guesses before opening the log.
+
+## Two corrections worth keeping
+
+**The first measurement over-reported.** It keyed on the full tag chain, so a home page's `h1`
+against an interior page's `h2` scored as a mis-alignment although the positional read had returned
+exactly the right heading. Caught on the anchor dump before reporting; the role collapse in
+`runRole` is what separates a level difference from a role difference. It took the count from 63 to
+52, and the same collapse is now load-bearing in production.
+
+**The visible symptom has two causes.** On 2424tulane's contact page:
+
+```
+2424Tulane/Image Gallery Section    heading = "Contact Us"      ← this defect
+2424Tulane/Location Description     heading = "Contact Us"      ← NOT this defect
+```
+
+`Location Description`'s section really does contain "Contact Us" as its own heading-role run,
+because its segment box overlaps the page `h1`. Role alignment agrees with the positional read there
+and binds the same value. **That page still says "Contact Us" twice, and that is the fix working
+correctly** — not a sign it failed. The remaining half is a segmentation question.
+
+## Still open
+
+**Record which run a prop came from at Plan time.** The original comment names the root cause —
+_"nothing records which text run a given prop came from"_ — and everything here reconstructs that
+link rather than reading it. Role alignment is a better reconstruction, not an authoritative one.
+That change makes the 43 and the 81 answerable instead of merely visible.

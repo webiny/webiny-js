@@ -32,12 +32,17 @@ import type {
     DiscardEntry,
     PageMapEntry,
     PageMapFailure,
+    PageMapTextProps,
     PageSignals,
     UnplacedInstance
 } from "~/domain/types.js";
 import { validateTextPreservation } from "@webiny/api-component-extraction/features/shared/validators.js";
 import { buildPageDocument, type ComponentPlacement } from "~/pages/buildPageDocument.js";
-import { collectSectionTexts } from "~/pages/collectSectionTexts.js";
+import {
+    collectSectionRuns,
+    collectSectionTexts,
+    type SectionRun
+} from "~/pages/collectSectionTexts.js";
 import { deriveInstanceProps } from "~/pages/deriveInstanceProps.js";
 import { deriveCompositeInputs } from "~/pages/deriveCompositeInputs.js";
 import { applyFormPreview } from "~/pages/applyFormPreview.js";
@@ -81,6 +86,10 @@ interface CreatedPage {
     imageSources: ImageSourceOutcome[];
     /** File inputs on this page's components whose shape could not be read — component and input. */
     shapeUnresolved: Array<{ component: string; input: string }>;
+    /** How much of this page's derived copy is evidenced against its own section, and how much is not. */
+    textProps: PageMapTextProps;
+    /** The unevidenced ones in full, for the discard log. */
+    guesses: PropGuess[];
     /** What composing this page covered and what it left behind — see `PageSignals`. */
     coverage: PageCoverage;
 }
@@ -122,7 +131,15 @@ interface PlaceableComponent {
     unresolvedFileInputs: string[];
     props: GeneratedComponent["props"];
     /** Text runs of the cluster's reference member, for per-instance alignment. */
-    representativeTexts: string[];
+    representativeRuns: SectionRun[];
+}
+
+/** One derived prop that could not be evidenced against its own section, for the discard log. */
+interface PropGuess {
+    component: string;
+    input: string;
+    source: "position" | "cluster";
+    value: string;
 }
 
 /** The host the run crawled, taken from the pages themselves rather than configured twice. */
@@ -291,6 +308,27 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 });
             }
 
+            /*
+             * Copy the page is showing without evidence that it belongs there.
+             *
+             * Two kinds, because they fail differently and an operator should not have to guess
+             * which: `aligned-by-position` is real text from this page in a slot nothing confirms,
+             * and it is the one that reads as correct — it was 52 wrong props across four sites while
+             * every other signal stayed green. `unmatched` is openly another page's words.
+             */
+            for (const item of page.guesses) {
+                discarded.push({
+                    kind:
+                        item.source === "position" ? "text.aligned-by-position" : "text.unmatched",
+                    page: page.entry.path,
+                    sourceUrl: page.entry.sourceUrl,
+                    detail:
+                        item.source === "position"
+                            ? `${item.component} input "${item.input}" shows "${item.value}": no run of this section plays that part, so the run at the same position was used`
+                            : `${item.component} input "${item.input}" shows "${item.value}": this section gave nothing to bind, so the cluster's sample from another page stands`
+                });
+            }
+
             for (const item of page.inventedImages) {
                 discarded.push({
                     kind: "image.invented",
@@ -328,6 +366,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 JSON.stringify(recovery.bindings)
             );
             page.entry.signals = {
+                textProps: page.textProps,
                 sourceSections: page.coverage.sourceSections,
                 assembledInstances: page.coverage.assembledInstances,
                 composedInstances: page.coverage.composedInstances,
@@ -461,7 +500,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 fileShapes: shapes,
                 unresolvedFileInputs: unresolvedFileInputs(shapes),
                 props: component.props,
-                representativeTexts: await this.referenceTexts(component, segmentByUrl, trees)
+                representativeRuns: await this.referenceRuns(component, segmentByUrl, trees)
             });
         }
 
@@ -503,11 +542,11 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
      * model saw, in which case alignment simply finds nothing and every prop falls back to the cluster
      * sample — visible in the map, never silent.
      */
-    private async referenceTexts(
+    private async referenceRuns(
         component: GeneratedComponent,
         segmentByUrl: Map<string, SegmentedPage>,
         trees: Map<string, CapturedNode>
-    ): Promise<string[]> {
+    ): Promise<SectionRun[]> {
         const reference = component.members[0];
         if (!reference) {
             return [];
@@ -519,7 +558,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             segmentByUrl,
             trees
         );
-        return node ? collectSectionTexts(node) : [];
+        return node ? collectSectionRuns(node) : [];
     }
 
     private async composePage(params: {
@@ -533,6 +572,10 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
 
         const placements: ComponentPlacement[] = [];
         const shapeUnresolved: Array<{ component: string; input: string }> = [];
+        const guesses: PropGuess[] = [];
+        let evidencedProps = 0;
+        let instancesWithGuesses = 0;
+        let instancesAlignedByPosition = 0;
         // Per placement, because the element each one becomes is only known once the document is
         // built, and both the destination check and the recovery pass work on specific elements.
         const capturedByPlacement: Set<string>[] = [];
@@ -568,6 +611,17 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
              */
             for (const input of component.unresolvedFileInputs) {
                 shapeUnresolved.push({ component: component.manifest.name, input });
+            }
+
+            // Per placement, because "which components on this page are showing guessed copy" is the
+            // question an operator asks, and a run-level total cannot answer it.
+            guesses.push(...derivedInputs.guesses);
+            evidencedProps += derivedInputs.evidenced;
+            if (derivedInputs.guesses.length > 0) {
+                instancesWithGuesses += 1;
+            }
+            if (derivedInputs.guesses.some(guess => guess.source === "position")) {
+                instancesAlignedByPosition += 1;
             }
 
             // The source copy this instance was built from, for the text-coverage check later. Only
@@ -682,6 +736,14 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             inventedImages,
             imageSources,
             shapeUnresolved,
+            textProps: {
+                role: evidencedProps,
+                position: guesses.filter(guess => guess.source === "position").length,
+                unmatched: guesses.filter(guess => guess.source === "cluster").length,
+                instancesAlignedByPosition,
+                instancesWithGuesses
+            },
+            guesses,
             coverage: {
                 sourceSections: segmentByUrl.get(page.url)?.sections.length ?? 0,
                 assembledInstances: page.instances.length,
@@ -710,16 +772,19 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         captured: Set<string>;
         capturedImages: Set<string>;
         texts: string[];
+        guesses: PropGuess[];
+        /** Bound props that were evidenced, counted so the page signal has a denominator. */
+        evidenced: number;
     }> {
         const { page, instance, component, segmentByUrl, trees } = params;
 
         const node = await this.sectionNode(page.url, instance.sectionIndex, segmentByUrl, trees);
-        const instanceTexts = node ? collectSectionTexts(node) : [];
+        const instanceRuns = node ? collectSectionRuns(node) : [];
 
         const derived = deriveInstanceProps({
             props: component.props,
-            representativeTexts: component.representativeTexts,
-            instanceTexts
+            representativeRuns: component.representativeRuns,
+            instanceRuns
         });
 
         /*
@@ -754,9 +819,29 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             );
         }
 
+        /*
+         * The consumer of `DerivedProp.source`, and the reason it exists.
+         *
+         * Only props that reach an input are carried out: a prop derived and never bound is not a
+         * claim about the page. Anything not evidenced against this section's own runs is a guess,
+         * and it is reported rather than blended in with the values that are — see `composePage`.
+         */
+        const guesses: PropGuess[] = [];
+        let evidenced = 0;
         for (const prop of derived) {
-            if (component.scalarInputs.has(prop.name)) {
-                inputs[prop.name] = prop.value;
+            if (!component.scalarInputs.has(prop.name)) {
+                continue;
+            }
+            inputs[prop.name] = prop.value;
+            if (prop.source === "role") {
+                evidenced += 1;
+            } else {
+                guesses.push({
+                    component: component.manifest.name,
+                    input: prop.name,
+                    source: prop.source,
+                    value: prop.value
+                });
             }
         }
 
@@ -786,7 +871,9 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             inputs: previewed,
             captured: new Set(captured),
             capturedImages: new Set(capturedImages),
-            texts
+            texts,
+            guesses,
+            evidenced
         };
     }
 
