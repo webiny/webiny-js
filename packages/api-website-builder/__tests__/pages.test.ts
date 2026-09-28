@@ -3,7 +3,11 @@ import { useHandler } from "./utils/useHandler.js";
 import { pageMocks } from "./mocks/page.mock.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { until } from "@webiny/project-utils/testing/helpers/until.js";
-import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
+import {
+    CreatePageUseCase,
+    PageAfterCreateEventHandler,
+    PageBeforeCreateEventHandler
+} from "~/features/pages/CreatePage/index.js";
 import { UpdatePageUseCase } from "~/features/pages/UpdatePage/index.js";
 import { UpdatePageRevisionDescriptionUseCase } from "~/features/pages/UpdatePageRevisionDescription/index.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
@@ -13,8 +17,16 @@ import { PublishPageUseCase } from "~/features/pages/PublishPage/index.js";
 import { UnpublishPageUseCase } from "~/features/pages/UnpublishPage/index.js";
 import {
     DuplicatePageUseCase,
-    DuplicatePageRepository
+    DuplicatePageRepository,
+    PageAfterDuplicateEventHandler,
+    PageBeforeDuplicateEventHandler
 } from "~/features/pages/DuplicatePage/index.js";
+import {
+    EntryAfterCreateEventHandler,
+    EntryBeforeCreateEventHandler
+} from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
+import { EntryBeforeUpdateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
+import { createContextPlugin } from "@webiny/api";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
 import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
@@ -247,6 +259,91 @@ describe("Pages Use Cases (Authorized)", () => {
         });
         expect(duplicatedPage.id).not.toBe(page.id);
         expect(duplicatedPage.entryId).not.toBe(page.entryId);
+    });
+
+    it("should duplicate a page through the create flow, with a single write", async () => {
+        const events: string[] = [];
+        const track = (name: string) => ({
+            async handle() {
+                events.push(name);
+            }
+        });
+
+        const handler = useHandler({
+            plugins: [
+                createContextPlugin(context => {
+                    context.container.registerFactory(PageBeforeDuplicateEventHandler, () =>
+                        track("page.beforeDuplicate")
+                    );
+                    context.container.registerFactory(PageBeforeCreateEventHandler, () =>
+                        track("page.beforeCreate")
+                    );
+                    context.container.registerFactory(EntryBeforeCreateEventHandler, () =>
+                        track("entry.beforeCreate")
+                    );
+                    context.container.registerFactory(EntryAfterCreateEventHandler, () =>
+                        track("entry.afterCreate")
+                    );
+                    context.container.registerFactory(EntryBeforeUpdateEventHandler, () =>
+                        track("entry.beforeUpdate")
+                    );
+                    context.container.registerFactory(PageAfterCreateEventHandler, () =>
+                        track("page.afterCreate")
+                    );
+                    context.container.registerFactory(PageAfterDuplicateEventHandler, () =>
+                        track("page.afterDuplicate")
+                    );
+                })
+            ]
+        });
+        const ctx = await handler.handler();
+
+        const createResult = await ctx.container.resolve(CreatePageUseCase).execute({
+            ...pageMocks.pageA,
+            elements: [{ id: "element-1", type: "text" }]
+        } as any);
+        if (createResult.isFail()) {
+            throw createResult.error;
+        }
+        const page = createResult.value;
+        const originalSnapshot = structuredClone(page);
+
+        events.length = 0;
+
+        const duplicateResult = await ctx.container
+            .resolve(DuplicatePageUseCase)
+            .execute({ id: page.id });
+        if (duplicateResult.isFail()) {
+            throw duplicateResult.error;
+        }
+        const duplicatedPage = duplicateResult.value;
+
+        /**
+         * Only the page-level events fire. The Pages model is a private model with
+         * `lifecycleEvents: false`, so the underlying CMS entry lifecycle events
+         * (entry.beforeCreate / entry.afterCreate) are suppressed.
+         */
+        expect(events).toEqual([
+            "page.beforeDuplicate",
+            "page.beforeCreate",
+            "page.afterCreate",
+            "page.afterDuplicate"
+        ]);
+
+        expect(duplicatedPage).toMatchObject({
+            version: 1,
+            status: "draft",
+            modifiedOn: null,
+            location: page.location,
+            elements: page.elements,
+            properties: {
+                title: "Copy of Page A",
+                path: "/page-a-copy"
+            }
+        });
+
+        // The original page data must not be touched by the duplication.
+        expect(page).toEqual(originalSnapshot);
     });
 
     it("should duplicate a page with callback that mutates page data", async () => {

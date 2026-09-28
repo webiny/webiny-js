@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import pick from "lodash/pick.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import {
@@ -8,6 +7,7 @@ import {
 } from "./abstractions.js";
 import { PageModel } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
+import { createDuplicatePageData } from "./createDuplicatePageData.js";
 import {
     PageNotFoundError,
     PagePersistenceError,
@@ -37,25 +37,7 @@ class DuplicatePageRepositoryImpl implements RepositoryAbstraction.Interface {
 
         const originalPage = EntryToPageMapper.toPage(getResult.value);
 
-        // Pick only the necessary data for duplication
-        const dataToDuplicate = pick(originalPage, [
-            "bindings",
-            "elements",
-            "location",
-            "properties",
-            "metadata",
-            "extensions"
-        ]);
-
-        // Create new page data with "Copy of" prefix
-        const newPageData = {
-            ...dataToDuplicate,
-            properties: {
-                ...dataToDuplicate.properties,
-                path: `${originalPage.properties.path}-copy`,
-                title: "Copy of " + originalPage.properties.title
-            }
-        };
+        const newPageData = createDuplicatePageData(originalPage);
 
         // Allow callers to mutate page data before creation
         if (callback) {

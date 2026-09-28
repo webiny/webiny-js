@@ -109,6 +109,54 @@ describe("contentEntryHooks", () => {
         expect(pubSubTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
     });
 
+    it("should execute hooks on duplicate", async () => {
+        const { createCategory, duplicateCategory } = useCategoryManageHandler({
+            ...manageOpts,
+            plugins: [assignEntryEvents()]
+        });
+
+        const [createResponse] = await createCategory({
+            variables: {
+                data: {
+                    values: {
+                        title: "category",
+                        slug: "category"
+                    }
+                }
+            }
+        });
+
+        const { id } = createResponse.data.createCategory.data!;
+
+        pubSubTracker.reset();
+
+        const [response] = await duplicateCategory({
+            variables: {
+                revision: id
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                duplicateCategory: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * Duplicate creates a brand-new entry through the regular create flow, with a single write:
+         * no update, revision or publish hooks are expected.
+         */
+        expect(pubSubTracker.getOrder()).toEqual([
+            "contentEntry:beforeDuplicate",
+            "contentEntry:beforeCreate",
+            "contentEntry:afterCreate",
+            "contentEntry:afterDuplicate"
+        ]);
+    });
+
     it("should execute hooks on update", async () => {
         const { createCategory, updateCategory } = useCategoryManageHandler({
             ...manageOpts,

@@ -23,6 +23,11 @@ import {
     EntryAfterDeleteEventHandler,
     EntryBeforeDeleteEventHandler
 } from "~/features/contentEntry/DeleteEntry/index.js";
+import {
+    DuplicateEntryUseCase,
+    EntryAfterDuplicateEventHandler,
+    EntryBeforeDuplicateEventHandler
+} from "~/features/contentEntry/DuplicateEntry/index.js";
 import { GetEntryByIdUseCase } from "~/features/contentEntry/GetEntryById/index.js";
 import { ContextPlugin } from "@webiny/api";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
@@ -70,7 +75,9 @@ const handlers = [
     EntryBeforePublishEventHandler,
     EntryAfterPublishEventHandler,
     EntryBeforeDeleteEventHandler,
-    EntryAfterDeleteEventHandler
+    EntryAfterDeleteEventHandler,
+    EntryBeforeDuplicateEventHandler,
+    EntryAfterDuplicateEventHandler
 ];
 
 describe("Private model lifecycle events", () => {
@@ -113,7 +120,7 @@ describe("Private model lifecycle events", () => {
     };
 
     /**
-     * Runs create -> update -> publish -> delete, and returns the entry ID.
+     * Runs create -> update -> publish -> duplicate -> delete, and returns the entry ID.
      */
     const runLifecycle = async (model: CmsModel) => {
         const { container } = context;
@@ -139,6 +146,11 @@ describe("Private model lifecycle events", () => {
                 .execute(model, created.value.id);
             expect(fetched.value.values.title).toBe("Entry updated");
             expect(fetched.value.status).toBe("published");
+
+            const duplicated = await container
+                .resolve(DuplicateEntryUseCase)
+                .execute(model, created.value.id);
+            expect(duplicated.isOk()).toBe(true);
 
             const deleted = await container
                 .resolve(DeleteEntryUseCase)
@@ -171,6 +183,12 @@ describe("Private model lifecycle events", () => {
             "Cms/Entry/AfterUpdate",
             "Cms/Entry/BeforePublish",
             "Cms/Entry/AfterPublish",
+            // Duplicating creates a brand-new draft entry through the regular create flow,
+            // so the create events fire (for the duplicate) in between the duplicate events.
+            "Cms/Entry/BeforeDuplicate",
+            "Cms/Entry/BeforeCreate",
+            "Cms/Entry/AfterCreate",
+            "Cms/Entry/AfterDuplicate",
             "Cms/Entry/BeforeDelete",
             "Cms/Entry/AfterDelete"
         ]);
@@ -187,6 +205,6 @@ describe("Private model lifecycle events", () => {
         const model = await getModel(PUBLIC_WITH_SETTING);
         await runLifecycle(model);
 
-        expect(events[PUBLIC_WITH_SETTING]).toHaveLength(8);
+        expect(events[PUBLIC_WITH_SETTING]).toHaveLength(12);
     });
 });
