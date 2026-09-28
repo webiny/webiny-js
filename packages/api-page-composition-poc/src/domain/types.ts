@@ -82,7 +82,12 @@ export interface PageMapFailure {
 
 /** One decision this PoC made by fiat, recorded rather than taken silently (W10.4). */
 export interface DiscardEntry {
-    kind: "link.unmigrated" | "link.invented" | "image.invented" | "image.unmigrated";
+    kind:
+        | "link.unmigrated"
+        | "link.invented"
+        | "image.invented"
+        | "image.unmigrated"
+        | "image.shape-unresolved";
     /** The migrated page the occurrence is on. */
     page: string;
     /** The source page it came from. */

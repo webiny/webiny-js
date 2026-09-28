@@ -54,7 +54,11 @@ import {
 } from "~/pages/rewriteDestinations.js";
 import { toPageIdentity } from "~/pages/toPageIdentity.js";
 import { scalarInputNames } from "~/pages/scalarInputNames.js";
-import { fileInputShapes, type FileInputShape } from "~/pages/fileInputShape.js";
+import {
+    fileInputShapes,
+    unresolvedFileInputs,
+    type FileInputShape
+} from "~/pages/fileInputShape.js";
 import {
     rewriteImageSources,
     tallyImageSources,
@@ -75,6 +79,8 @@ interface CreatedPage {
     inventedImages: PlacedInvention[];
     /** What happened to each image binding: repointed at File Manager, or left on its origin. */
     imageSources: ImageSourceOutcome[];
+    /** File inputs on this page's components whose shape could not be read — component and input. */
+    shapeUnresolved: Array<{ component: string; input: string }>;
     /** What composing this page covered and what it left behind — see `PageSignals`. */
     coverage: PageCoverage;
 }
@@ -105,6 +111,15 @@ interface PlaceableComponent {
     scalarInputs: Set<string>;
     /** How this component reads each of its file inputs — see `fileInputShape`. */
     fileShapes: ReadonlyMap<string, FileInputShape>;
+    /**
+     * File inputs whose shape could not be read from the component's source.
+     *
+     * They are bound with the object form, which is right for most, and recorded per page so the
+     * fallback is a reported condition rather than a silent guess. Measured across the corpus, 12% of
+     * file inputs land here and two of them are components that render a raw member access, which the
+     * object form breaks — naming them is the whole point.
+     */
+    unresolvedFileInputs: string[];
     props: GeneratedComponent["props"];
     /** Text runs of the cluster's reference member, for per-instance alignment. */
     representativeTexts: string[];
@@ -259,6 +274,20 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                     page: page.entry.path,
                     sourceUrl: page.entry.sourceUrl,
                     detail: `${item.url} left on its original host at ${item.path}: this migration has no copy of it`
+                });
+            }
+
+            /*
+             * A file input whose shape the source did not reveal. Bound with the object form, which is
+             * right for most components and wrong for the few that render a raw member access —
+             * recorded either way, because a guess nobody can see is the failure this log exists for.
+             */
+            for (const item of page.shapeUnresolved) {
+                discarded.push({
+                    kind: "image.shape-unresolved",
+                    page: page.entry.path,
+                    sourceUrl: page.entry.sourceUrl,
+                    detail: `${item.component} input "${item.input}": the component's source does not show how it reads the value, so the object form was assumed`
                 });
             }
 
@@ -418,6 +447,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             // rather than by two implementations happening to match.
             const promotedComponent = await this.promotedComponent(promoted.componentId);
             const manifest = promotedComponent?.manifest ?? null;
+            const shapes = fileInputShapes(promotedComponent?.source ?? "");
             if (!manifest) {
                 // A component whose manifest cannot be read cannot be placed; its instances will be
                 // reported per page rather than failing the whole run.
@@ -428,7 +458,8 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 manifest,
                 type: component.type,
                 scalarInputs: scalarInputNames(manifest),
-                fileShapes: fileInputShapes(promotedComponent?.source ?? ""),
+                fileShapes: shapes,
+                unresolvedFileInputs: unresolvedFileInputs(shapes),
                 props: component.props,
                 representativeTexts: await this.referenceTexts(component, segmentByUrl, trees)
             });
@@ -501,6 +532,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         const identity = toPageIdentity(page.url, page.title);
 
         const placements: ComponentPlacement[] = [];
+        const shapeUnresolved: Array<{ component: string; input: string }> = [];
         // Per placement, because the element each one becomes is only known once the document is
         // built, and both the destination check and the recovery pass work on specific elements.
         const capturedByPlacement: Set<string>[] = [];
@@ -528,6 +560,15 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             capturedByPlacement.push(derivedInputs.captured);
             capturedImagesByPlacement.push(derivedInputs.capturedImages);
             placements.push({ manifest: component.manifest, inputs: derivedInputs.inputs });
+
+            /*
+             * Recorded per placement, so the report says which pages carry a component whose file
+             * input shape had to be assumed. The fallback is usually right; the point is that it is
+             * visible when it is not.
+             */
+            for (const input of component.unresolvedFileInputs) {
+                shapeUnresolved.push({ component: component.manifest.name, input });
+            }
 
             // The source copy this instance was built from, for the text-coverage check later. Only
             // for placed instances: an unplaced one has no composed counterpart to look for it in,
@@ -640,6 +681,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             invented,
             inventedImages,
             imageSources,
+            shapeUnresolved,
             coverage: {
                 sourceSections: segmentByUrl.get(page.url)?.sections.length ?? 0,
                 assembledInstances: page.instances.length,

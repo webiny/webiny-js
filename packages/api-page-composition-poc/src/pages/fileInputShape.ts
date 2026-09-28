@@ -13,7 +13,7 @@
  * fix converges FUTURE components only: everything generated before it lands still needs this check,
  * so it earns its place permanently. Do not remove it as a stopgap.
  */
-export type FileInputShape = "object" | "string";
+export type FileInputShape = "object" | "string" | "unknown";
 
 /** `x.name.url` or `name.url` — the value is treated as an object carrying a url. */
 const readsUrl = (source: string, name: string): boolean =>
@@ -45,14 +45,45 @@ export const fileInputShapes = (source: string): Map<string, FileInputShape> => 
         /\{\s*name:\s*"([^"]+)",\s*factory:\s*"createFileInput"/g
     )) {
         const name = match[1];
-        shapes.set(
-            name,
-            !readsUrl(source, name) && passesValue(source, name) ? "string" : "object"
-        );
+        const url = readsUrl(source, name);
+        const passed = passesValue(source, name);
+
+        /*
+         * `unknown` is a real answer, not a gap to paper over.
+         *
+         * Neither direct form appears when a component assigns the value to a local first — measured,
+         * 18 of 147 file inputs across the corpus do that, and 16 of those pass it through a
+         * normaliser the model wrote itself (`resolveUrl`, `fileUrl`, `mediaUrl`) which accepts either
+         * shape. A local can contain arbitrary JavaScript, so scanning will never settle those; what
+         * it can do is decline to pretend it knows.
+         *
+         * A component doing BOTH is `object`: that is the shape the majority read and the one the
+         * SDK's own `normalizeToAsset` expects, so it is the side to be wrong on.
+         */
+        shapes.set(name, url ? "object" : passed ? "string" : "unknown");
     }
     return shapes;
 };
 
-/** The value to bind for one captured image, in the shape this component reads. */
+/** The inputs whose shape could not be read from the source, for reporting rather than guessing. */
+export const unresolvedFileInputs = (shapes: ReadonlyMap<string, FileInputShape>): string[] =>
+    [...shapes.entries()].filter(([, shape]) => shape === "unknown").map(([name]) => name);
+
+/**
+ * The value to bind for one captured image, in the shape this component reads.
+ *
+ * `unknown` binds the object form, and the choice is evidence-led rather than arbitrary: 66% of file
+ * inputs read `.url` directly, and the normalisers that most unresolved cases route through accept
+ * either shape. It is still a fallback, which is why every one is recorded in the discard log — the
+ * two measured cases it gets wrong are components that render a raw member access, and naming them is
+ * what turns a silent 12% misclassification into a reported condition.
+ *
+ * A value that satisfied both shapes at once was considered and rejected. A `String` object carrying a
+ * `url` property does satisfy every observed pattern, by exploiting coercion — and that is what makes
+ * it wrong: `typeof` would report "object", identity comparisons would differ, and any component doing
+ * `JSON.stringify`, `Object.keys` or a `typeof` check would behave in a way nobody predicted, with the
+ * symptom surfacing somewhere else entirely. A value whose shape is deliberately ambiguous is the
+ * problem this project keeps hitting, not the answer to it.
+ */
 export const fileInputValue = (src: string, shape: FileInputShape): string | { url: string } =>
     shape === "string" ? src : { url: src };

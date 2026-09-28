@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fileInputShapes, fileInputValue } from "./fileInputShape.js";
+import { fileInputShapes, fileInputValue, unresolvedFileInputs } from "./fileInputShape.js";
 
 /**
  * Both shapes are taken from real generated components: the corpus was produced under more than one
@@ -45,11 +45,37 @@ describe("fileInputShapes", () => {
         expect(fileInputShapes(both).get("hero")).toBe("object");
     });
 
-    it("defaults to object for an input the component never renders", () => {
+    it("reports unknown when the source does not show how the value is read", () => {
+        // Measured, 18 of 147 file inputs across the corpus assign to a local first, and 16 of those
+        // pass it through a normaliser the model wrote. A local can hold arbitrary JavaScript, so the
+        // honest answer is that scanning cannot settle it.
+        const aliased = `
+            const imageSrc = image && image.src ? image.src : "";
+            <img src={imageSrc} alt="" />
+            { name: "src", factory: "createFileInput", params: {} }
+        `;
+        expect(fileInputShapes(aliased).get("src")).toBe("unknown");
+    });
+
+    it("reports unknown for an input the component never renders", () => {
         const unused = `export const manifest = { inputs: [
             { name: "backgroundImage", factory: "createFileInput", params: {} }
         ] };`;
-        expect(fileInputShapes(unused).get("backgroundImage")).toBe("object");
+        expect(fileInputShapes(unused).get("backgroundImage")).toBe("unknown");
+    });
+
+    it("binds unknown as the object form, and says which inputs those were", () => {
+        const aliased = `
+            const logoSrc = resolveUrl(logo.src);
+            <img src={logoSrc} />
+            { name: "src", factory: "createFileInput", params: {} }
+        `;
+        const shapes = fileInputShapes(aliased);
+
+        expect(fileInputValue("https://cdn/x.jpg", shapes.get("src")!)).toEqual({
+            url: "https://cdn/x.jpg"
+        });
+        expect(unresolvedFileInputs(shapes)).toEqual(["src"]);
     });
 
     it("finds nothing when the component declares no file input", () => {
