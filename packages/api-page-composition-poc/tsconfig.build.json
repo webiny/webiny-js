@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api-component-extraction/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../api-file-manager/tsconfig.build.json" },
     { "path": "../api-graphql/tsconfig.build.json" },
     { "path": "../api-website-builder/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
@@ -22,6 +23,8 @@
       "@webiny/api-component-extraction": ["../api-component-extraction/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
+      "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/api-website-builder/*": ["../api-website-builder/src/*"],

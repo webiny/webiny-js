@@ -57,6 +57,21 @@ export interface PageSignals {
     textMissingSample: string[];
     /** This page's own destination outcome, from the same pass that produces the run totals. */
     links: PageMapLinks;
+    /**
+     * This page's own image outcome, read the same way as `links`.
+     *
+     * `rewritten` now points at File Manager; `unmigrated` still points at whatever host served it,
+     * which is the number that says the page will break when that host goes away; `dropped` was
+     * invented by the model and emptied.
+     */
+    images?: PageMapImages;
+}
+
+/** Image counters, in the same shape as the link counters beside them. */
+export interface PageMapImages {
+    rewritten: number;
+    unmigrated: number;
+    dropped: number;
 }
 
 /** A page Assemble listed that could not be created, kept so the report is honest about coverage. */
@@ -67,7 +82,7 @@ export interface PageMapFailure {
 
 /** One decision this PoC made by fiat, recorded rather than taken silently (W10.4). */
 export interface DiscardEntry {
-    kind: "link.unmigrated" | "link.invented" | "image.invented";
+    kind: "link.unmigrated" | "link.invented" | "image.invented" | "image.unmigrated";
     /** The migrated page the occurrence is on. */
     page: string;
     /** The source page it came from. */

@@ -3,6 +3,7 @@ import { ComposePagesService } from "~/features/ComposePagesService.js";
 import { ComposePagesTask } from "~/features/ComposePagesTask.js";
 import { PageMapStore } from "~/storage/PageMapStore.js";
 import { registerPageCompositionGraphQL } from "~/graphql/createGraphQL.js";
+import { AssetUrlResolverImplementation } from "~/features/AssetUrlResolver.js";
 
 /**
  * Page composition — THROWAWAY PROOF OF CONCEPT. See the package README before touching anything here.
@@ -13,6 +14,7 @@ import { registerPageCompositionGraphQL } from "~/graphql/createGraphQL.js";
 export const PageCompositionPocFeature = createFeature({
     name: "PageCompositionPoc",
     register(container: Container) {
+        container.register(AssetUrlResolverImplementation);
         container.register(PageMapStore);
         container.register(ComposePagesService);
         container.register(ComposePagesTask);

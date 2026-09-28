@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api-component-extraction" },
     { "path": "../api-core" },
+    { "path": "../api-file-manager" },
     { "path": "../api-graphql" },
     { "path": "../api-website-builder" },
     { "path": "../background-tasks" },
@@ -22,6 +23,8 @@
       "@webiny/api-component-extraction": ["../api-component-extraction/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
+      "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/api-website-builder/*": ["../api-website-builder/src/*"],

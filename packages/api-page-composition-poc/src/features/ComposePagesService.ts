@@ -55,6 +55,12 @@ import {
 import { toPageIdentity } from "~/pages/toPageIdentity.js";
 import { scalarInputNames } from "~/pages/scalarInputNames.js";
 import { fileInputShapes, type FileInputShape } from "~/pages/fileInputShape.js";
+import {
+    rewriteImageSources,
+    tallyImageSources,
+    type ImageSourceOutcome
+} from "~/pages/rewriteImageSources.js";
+import { AssetUrlResolver } from "~/features/AssetUrlResolver.js";
 
 /** How many of a page's missing text runs to keep. Enough to see the shape of the loss, not a log. */
 const MISSING_TEXT_SAMPLE = 12;
@@ -67,6 +73,8 @@ interface CreatedPage {
     invented: PlacedInvention[];
     /** Images the model invented on this page, emptied rather than rendered. */
     inventedImages: PlacedInvention[];
+    /** What happened to each image binding: repointed at File Manager, or left on its origin. */
+    imageSources: ImageSourceOutcome[];
     /** What composing this page covered and what it left behind — see `PageSignals`. */
     coverage: PageCoverage;
 }
@@ -111,6 +119,29 @@ const hostOf = (url: string): string => {
     }
 };
 
+/** Every url a page's file-typed bindings point at, for priming the asset map in one pass. */
+const imageUrlsIn = (bindings: Record<string, any>): string[] => {
+    const urls: string[] = [];
+    for (const element of Object.values(bindings)) {
+        for (const binding of Object.values(element?.inputs ?? {})) {
+            const entry = binding as { type?: unknown; static?: unknown };
+            if (entry?.type !== "file") {
+                continue;
+            }
+            const value = entry.static;
+            const url =
+                typeof value === "string"
+                    ? value
+                    : ((value as { url?: unknown; src?: unknown })?.url ??
+                      (value as { src?: unknown })?.src);
+            if (typeof url === "string" && url.trim()) {
+                urls.push(url);
+            }
+        }
+    }
+    return urls;
+};
+
 class ComposePagesServiceImpl implements Abstraction.Interface {
     constructor(
         private runs: RunRepository.Interface,
@@ -120,7 +151,8 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         private publishPage: PublishPageUseCase.Interface,
         private updatePage: UpdatePageUseCase.Interface,
         private pageMaps: PageMapStore.Interface,
-        private getComponent: GetRemoteComponentUseCase.Interface
+        private getComponent: GetRemoteComponentUseCase.Interface,
+        private assetUrls: AssetUrlResolver.Interface
     ) {}
 
     async execute(runId: string): Promise<Result<ComposePagesResult, PageCompositionError>> {
@@ -218,6 +250,18 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
              * equivalent for a photograph — nothing on this site can stand in for one, and
              * substituting anything would put a picture of somewhere else on the customer's page.
              */
+            for (const item of page.imageSources) {
+                if (item.kind !== "unmigrated") {
+                    continue;
+                }
+                discarded.push({
+                    kind: "image.unmigrated",
+                    page: page.entry.path,
+                    sourceUrl: page.entry.sourceUrl,
+                    detail: `${item.url} left on its original host at ${item.path}: this migration has no copy of it`
+                });
+            }
+
             for (const item of page.inventedImages) {
                 discarded.push({
                     kind: "image.invented",
@@ -272,6 +316,12 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                     unmigrated: pageCounts.unmigrated,
                     dropped: page.invented.length,
                     recovered: recovery.recovered.length
+                },
+                // Beside the links rather than anywhere else: the same question about a different
+                // kind of reference, so it reads the same way in the report.
+                images: {
+                    ...tallyImageSources(page.imageSources),
+                    dropped: page.inventedImages.length
                 }
             } satisfies PageSignals;
 
@@ -533,9 +583,26 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             contextByElement,
             sourceHost
         });
-        const bindings = stripped.bindings;
+        /*
+         * After the strip, not before: an invented image is emptied, and repointing it first would
+         * spend a lookup on a value about to go and count it as an image this migration carries.
+         */
+        /*
+         * Primed before the rewrite because the rewrite is synchronous, and synchronous is what keeps
+         * it a pure decision over bindings rather than a function that reaches for a store per value.
+         * The resolver caches across pages, so a logo on every page is looked up once for the run.
+         */
+        await this.assetUrls.prime(imageUrlsIn(stripped.bindings));
+
+        const repointed = rewriteImageSources({
+            bindings: stripped.bindings,
+            resolve: sourceUrl => this.assetUrls.resolve(sourceUrl)
+        });
+
+        const bindings = repointed.bindings;
         const invented = stripped.invented;
         const inventedImages = stripped.inventedImages;
+        const imageSources = repointed.outcomes;
 
         const createdPage = await this.createPage.execute({
             location: { folderId: ROOT_FOLDER },
@@ -572,6 +639,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             bindings,
             invented,
             inventedImages,
+            imageSources,
             coverage: {
                 sourceSections: segmentByUrl.get(page.url)?.sections.length ?? 0,
                 assembledInstances: page.instances.length,
@@ -774,6 +842,7 @@ export const ComposePagesService = Abstraction.createImplementation({
         PublishPageUseCase,
         UpdatePageUseCase,
         PageMapStore,
-        GetRemoteComponentUseCase
+        GetRemoteComponentUseCase,
+        AssetUrlResolver
     ]
 });
