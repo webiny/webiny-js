@@ -303,6 +303,28 @@ describe("Storage operations - tenant isolation", () => {
             expect(latestB?.values.name).toEqual("isolation-b v2");
 
             /**
+             * Create a published v3 in tenant A. Tenant B's revisions must keep their flags.
+             * Catches the id-only "unpublish previous" update in SqlCreateEntryRevisionFrom.
+             */
+            const publishedA3 = createIsolationEntry({
+                model: modelA,
+                version: 3,
+                status: "published"
+            });
+            await createRevisionFrom.execute(modelA, {
+                entry: publishedA3,
+                storageEntry: publishedA3
+            });
+
+            const publishedBAfterA3 = await getPublished.execute(modelB, {
+                id: ISOLATION_ENTRY_ID
+            });
+            const b2AfterA3 = await getRevisionById.execute(modelB, { id: id2 });
+            expect(publishedBAfterA3?.id).toEqual(id1);
+            expect(publishedBAfterA3?.status).toEqual("published");
+            expect(b2AfterA3?.status).toEqual("draft");
+
+            /**
              * Delete the whole entry in tenant A. Tenant B keeps both revisions.
              */
             await deleteEntry.execute(modelA, { entry: publishedA2 });
