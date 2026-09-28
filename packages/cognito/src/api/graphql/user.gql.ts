@@ -47,6 +47,7 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 lastName: String
                 password: String
                 avatar: JSON
+                dashboardLayout: JSON
             }
 
             extend type AdminUsersMutation {

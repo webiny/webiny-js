@@ -12,5 +12,13 @@ export const updateUserValidation = z.object({
         .optional()
         .nullable(),
     roles: z.array(z.string()).optional(),
-    teams: z.array(z.string()).optional()
+    teams: z.array(z.string()).optional(),
+    dashboardLayout: z
+        .object({
+            columns: z.array(z.array(z.string())),
+            hidden: z.array(z.string()),
+            columnCount: z.number().int().min(1).max(6)
+        })
+        .optional()
+        .nullable()
 });

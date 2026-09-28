@@ -1,4 +1,4 @@
-import type { AdminUser } from "~/types/users.js";
+import type { AdminUser, DashboardLayout } from "~/types/users.js";
 
 interface IdentityProfile {
     firstName: string;
@@ -10,6 +10,7 @@ interface IdentityProfile {
     } | null;
     external: boolean;
     createdOn: string;
+    dashboardLayout: DashboardLayout | null;
 }
 
 export class ProfileMapper {
@@ -20,7 +21,8 @@ export class ProfileMapper {
             email: user.email ?? null,
             avatar: user.avatar,
             external: user.external ?? false,
-            createdOn: user.createdOn
+            createdOn: user.createdOn,
+            dashboardLayout: user.dashboardLayout ?? null
         };
     }
 }
