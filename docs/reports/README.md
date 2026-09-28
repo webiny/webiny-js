@@ -6,6 +6,8 @@ Findings are produced by LLM agents (plus `jscpd` for copy-paste detection) and 
 
 Audited at commit `19c9ca1b91`.
 
+How to run the audit again: [package-audit-runbook.md](../.bruno/specs/package-audit-runbook.md).
+
 Security findings are not described in committed reports. Severities shown for `SEC-n` rows in this index are first-pass ratings; a later verification pass re-rated every finding, and those verified ratings are kept privately with the details. They are referenced by ID (`SEC-n`) and kept in `docs/.reports/security.md`, which is gitignored.
 
 ## Progress
