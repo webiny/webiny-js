@@ -1,11 +1,14 @@
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
-import { GetSettingsUseCase } from "@webiny/ai-powerups/exports/api/ai-powerups.js";
+import {
+    ResolveAiCapabilityUseCase,
+    withAdditionalInstructions
+} from "@webiny/ai-powerups/exports/api/ai-powerups.js";
 import { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsById/index.js";
 import { GenerateRemoteComponentUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { buildComponentPrompt } from "./buildComponentPrompt.js";
 import { parseGeneratedSource } from "./parseGeneratedSource.js";
+import { REMOTE_COMPONENT_CAPABILITY } from "~/api/capability.js";
 
 interface FilePart {
     type: "file";
@@ -23,41 +26,44 @@ type ContentPart = TextPart | FilePart;
 class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private ai: Ai.Interface,
-        private encryption: Encryption.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
-        private getFileContents: GetFileContentsByIdUseCase.Interface
+        private getFileContents: GetFileContentsByIdUseCase.Interface,
+        /*
+         * Optional because AI Power-Ups registers nothing at all when it is switched off, so the
+         * resolver is simply absent rather than failing on use. Handled below with a message that
+         * says why, instead of a DI error at resolution time.
+         */
+        private resolveCapability?: ResolveAiCapabilityUseCase.Interface
     ) {}
 
     async execute(
         input: UseCaseAbstraction.Input
     ): Promise<Result<UseCaseAbstraction.Output, Error>> {
-        const settingsResult = await this.getSettings.execute();
-        if (settingsResult.isFail()) {
-            return Result.fail(new Error("Failed to load AI settings."));
-        }
-
-        const settings = settingsResult.value as any;
-        const firstProvider = settings.providers?.presets?.[0];
-
-        if (!firstProvider) {
+        if (!this.resolveCapability) {
             return Result.fail(
-                new Error("No AI provider configured. Add a provider in AI Power Ups settings.")
+                new Error("Component generation needs AI Power-Ups, which is not enabled.")
             );
         }
 
-        const apiKey = await this.encryption.decrypt(firstProvider.apiKeyEncrypted);
-        const systemText = buildComponentPrompt();
+        /*
+         * The model comes from the capability, not from settings directly. That is what puts this
+         * feature on the model roles screen, lets a project point it at a different model, and
+         * makes its connection and API key someone else's problem. Every resolver failure names
+         * the setting to fix, so it is passed through as it is.
+         */
+        const resolution = await this.resolveCapability.execute(REMOTE_COMPONENT_CAPABILITY);
+        if (resolution.isFail()) {
+            return Result.fail(resolution.error);
+        }
+
+        const capability = resolution.value;
 
         try {
             const userContent = await this.buildUserContent(input);
 
             const aiResult = await this.ai.generateText({
-                model: firstProvider.model,
-                connection: {
-                    sdkName: firstProvider.model.split("/")[0],
-                    apiKey
-                },
-                system: systemText,
+                model: capability.model,
+                connection: capability.connection,
+                system: withAdditionalInstructions(capability, buildComponentPrompt()),
                 messages: [
                     {
                         role: "user" as const,
@@ -134,5 +140,5 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
 
 export const GenerateRemoteComponentUseCase = UseCaseAbstraction.createImplementation({
     implementation: GenerateRemoteComponentUseCaseImpl,
-    dependencies: [Ai, Encryption, GetSettingsUseCase, GetFileContentsByIdUseCase]
+    dependencies: [Ai, GetFileContentsByIdUseCase, [ResolveAiCapabilityUseCase, { optional: true }]]
 });

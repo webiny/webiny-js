@@ -1,6 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { WbyRemoteComponentModel } from "./domain/WbyRemoteComponentModel.js";
 import { RemoteComponentSchema } from "./graphql/RemoteComponentSchema.js";
+import { RemoteComponentCapability } from "./capability.js";
 import { CreateRemoteComponentFeature } from "./features/createComponent/feature.js";
 import { GetRemoteComponentFeature } from "./features/getComponent/feature.js";
 import { ListRemoteComponentsFeature } from "./features/listComponents/feature.js";
@@ -15,6 +16,13 @@ export const Extension = createFeature({
     register(container) {
         container.register(WbyRemoteComponentModel);
         container.register(RemoteComponentSchema);
+
+        /*
+         * Registering the capability is what gives component generation a row in Settings ->
+         * AI Power-Ups, so a project can choose its model. Harmless when AI Power-Ups is off:
+         * nothing lists capabilities then, and the use cases say so when called.
+         */
+        container.register(RemoteComponentCapability);
 
         CreateRemoteComponentFeature.register(container);
         GetRemoteComponentFeature.register(container);
