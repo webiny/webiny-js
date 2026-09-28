@@ -130,7 +130,7 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 | B7.8 | [sdk](../../reports/level-00/sdk.md): `createFiles` fail-fast leaves in-flight uploads creating records. | S | ☐ |
 | B7.9 | [api-graphql](../../reports/level-03/api-graphql.md): `RefInputScalar` throws `TypeError` on non-object input. | S | ✅ (agent repro) |
 | B7.10 | Smaller correctness issues: [plugins](../../reports/level-00/plugins.md) register misclassification; [mcp](../../reports/level-00/mcp.md) Copilot adapter + `serve` typo; [telemetry](../../reports/level-01/telemetry.md) opt-out event never sent; [api-event-handler-aws](../../reports/level-11/api-event-handler-aws.md) tenant header handling differs between API Gateway and Function URL paths; [event-handler-core](../../reports/level-01/event-handler-core.md) `Vary` overwrite. | S each | ☐ |
-| B7.11 | [webiny](../../reports/level-14/webiny.md): re-exports ~85 deep internal paths pinned `0.0.0`. Depends on decision Q4. | M | ☐ |
+| B7.11 | ~~[webiny](../../reports/level-14/webiny.md): re-exports ~85 deep internal paths pinned `0.0.0`.~~ Dropped per Q4: deep re-exports are by design; `0.0.0` is the monorepo convention (versions set at publish). | — | ❌ by design |
 
 ## Phase C — duplication to consolidate
 
@@ -177,7 +177,7 @@ Confirm with CodeGraph/grep before deleting; small PRs.
 | Q1 | ✅ Decided 2026-09-28: enforce server-side (details in B3.8). | B3.8 |
 | Q2 | ✅ Decided 2026-09-28: the dummy transport is intended; a send through it counts as sent. No change. | B7.7 (dropped) |
 | Q3 | ✅ Decided 2026-09-28: full parity — Nuxt gets its own middleware (B4.8). | B4.8, C6 |
-| Q4 | `webiny` meta package: re-export curated entry points and version them properly? | B7.11 |
+| Q4 | ✅ Decided 2026-09-28: `webiny` stays as is — it is the public contract and re-exports internal paths by design. | B7.11 (dropped) |
 | Q5 | Timezone: after fixing the scheduler path, change `DateTimePicker` globally? How to treat already-stored `dateTimeLocal` values? | B2.3b |
 | Q6 | Optimistic versioning for concurrent updates. | A2b |
 

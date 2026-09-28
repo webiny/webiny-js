@@ -25,6 +25,8 @@ Re-exporting other packages' *internal* module paths (`@webiny/api-core/features
 N/A — no logic to test; the package is exclusively re-export declarations. (There is no `__tests__` directory, which is expected for a pure barrel package.)
 
 ## Recommendations
+
+> Owner decision 2026-09-28 (plan Q4): deep re-exports are by design; no change planned.
 1. Where a dependency package's public entrypoint (`.`) already exports the symbol `webiny` needs, re-export from there instead of the deeper internal path — this removes the silent-breakage risk described above without changing the public subpath contract.
 2. Add a lightweight CI check (or a script) that verifies every `exports` map entry in `package.json` resolves to an existing built file, to catch drift between `src/*.ts` and the `exports` map automatically as new features are added.
 3. Look at the one jscpd-flagged clone between `admin/cms/lexical.ts` and `admin/website-builder/lexical.ts` to confirm whether one should simply re-export from the other instead of duplicating the same re-export list.
