@@ -234,11 +234,9 @@ describe("Storage operations - tenant isolation", () => {
             expect(b2AfterUpdate?.tenant).toEqual(TENANT_B);
             /**
              * An unscoped `.first()` may pick either tenant's v2 row, so check both v2 rows.
-             * Only `tenant` is checked for A2: DDB rewrites the latest revision with
-             * un-converted values when a non-latest revision is updated (DdbUpdateEntry),
-             * so A2's `values` are not reliable on DDB.
              */
             const a2AfterUpdate = await getRevisionById.execute(modelA, { id: id2 });
+            expect(a2AfterUpdate?.values.name).toEqual("isolation-a v2");
             expect(a2AfterUpdate?.tenant).toEqual(TENANT_A);
 
             /**

@@ -17,7 +17,7 @@ import {
     isEntryLevelEntryMetaField,
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants.js";
-import { convertFromStorageEntry, convertToStorageEntry } from "./storageEntryUtils.js";
+import { convertToStorageEntry } from "./storageEntryUtils.js";
 
 class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
     constructor(
@@ -36,14 +36,11 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
             model,
             ids: [params.id]
         });
-        const item = items.shift() || null;
-        if (!item) {
-            return null;
-        }
-        return convertFromStorageEntry({
-            storageEntry: item,
-            model
-        });
+        /**
+         * Keep the storage form: the result is written back to DynamoDB as the latest revision,
+         * so its values must stay keyed by storageId.
+         */
+        return items.shift() || null;
     }
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
