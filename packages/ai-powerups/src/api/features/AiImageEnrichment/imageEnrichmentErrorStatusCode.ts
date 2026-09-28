@@ -1,4 +1,8 @@
-import { EnrichmentFileNotFoundError, EnrichmentNotAnImageError } from "./errors.js";
+import {
+    EnrichmentCapabilityDisabledError,
+    EnrichmentFileNotFoundError,
+    EnrichmentNotAnImageError
+} from "./errors.js";
 import type { ImageEnrichmentError } from "./errors.js";
 
 /**
@@ -11,6 +15,13 @@ export function imageEnrichmentErrorStatusCode(error: ImageEnrichmentError): num
     }
     if (error instanceof EnrichmentNotAnImageError) {
         return 400;
+    }
+    /*
+     * The request is fine and the server is fine; the feature is switched off. A 500 would tell
+     * whoever called it that something broke, which is the one thing that did not happen.
+     */
+    if (error instanceof EnrichmentCapabilityDisabledError) {
+        return 409;
     }
     return 500;
 }

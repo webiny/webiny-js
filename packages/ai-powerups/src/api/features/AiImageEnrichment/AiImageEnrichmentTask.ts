@@ -5,7 +5,7 @@ import {
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { ApplyImageEnrichmentUseCase, PrepareImageEnrichmentUseCase } from "./abstractions.js";
 import { buildEnrichmentAiRequest } from "./buildEnrichmentAiRequest.js";
-import { EnrichmentNotAnImageError } from "./errors.js";
+import { EnrichmentCapabilityDisabledError, EnrichmentNotAnImageError } from "./errors.js";
 
 export const AI_IMAGE_ENRICHMENT_TASK_ID = "fmAiImageEnrichment";
 
@@ -38,8 +38,15 @@ class AiImageEnrichmentTaskHandlerImpl implements TaskHandler.Interface<IAiImage
         const preparedResult = await this.prepare.execute(input.fileId);
         if (preparedResult.isFail()) {
             const error = preparedResult.error;
-            // A non-image isn't a failure — nothing to enrich, so the task is simply done.
-            if (error instanceof EnrichmentNotAnImageError) {
+            /*
+             * Neither of these is a failure. A non-image has nothing to enrich, and a switched-off
+             * capability is a setting someone chose. Reporting either as an error would log one on
+             * every upload. A real misconfiguration still falls through to the error below.
+             */
+            if (
+                error instanceof EnrichmentNotAnImageError ||
+                error instanceof EnrichmentCapabilityDisabledError
+            ) {
                 return controller.response.done(error.message);
             }
             return controller.response.error({ message: error.message });

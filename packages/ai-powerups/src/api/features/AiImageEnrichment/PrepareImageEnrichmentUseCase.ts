@@ -6,11 +6,13 @@ import {
     type IPreparedImageEnrichment
 } from "./abstractions.js";
 import {
+    AiCapabilityDisabledError,
     ResolveAiCapabilityUseCase,
     withAdditionalInstructions
 } from "~/api/features/Capabilities/index.js";
 import { FM_IMAGE_ENRICHMENT_CAPABILITY } from "./capability.js";
 import {
+    EnrichmentCapabilityDisabledError,
     EnrichmentFileContentsError,
     EnrichmentFileNotFoundError,
     EnrichmentNoProviderError,
@@ -48,6 +50,11 @@ class PrepareImageEnrichmentUseCaseImpl implements UseCaseAbstraction.Interface 
 
         const resolved = await this.resolveCapability.execute(FM_IMAGE_ENRICHMENT_CAPABILITY);
         if (resolved.isFail()) {
+            // Switched off is a decision, not a missing model, so it must not become the error
+            // that callers treat as a misconfiguration.
+            if (resolved.error instanceof AiCapabilityDisabledError) {
+                return Result.fail(new EnrichmentCapabilityDisabledError(resolved.error.message));
+            }
             return Result.fail(new EnrichmentNoProviderError(resolved.error.message));
         }
 

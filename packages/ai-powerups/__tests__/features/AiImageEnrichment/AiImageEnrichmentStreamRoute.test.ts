@@ -14,6 +14,7 @@ import {
 } from "~/api/features/AiImageEnrichment/abstractions.js";
 import type { IPreparedImageEnrichment } from "~/api/features/AiImageEnrichment/abstractions.js";
 import {
+    EnrichmentCapabilityDisabledError,
     EnrichmentFileNotFoundError,
     EnrichmentNoProviderError,
     EnrichmentNotAnImageError
@@ -194,6 +195,17 @@ describe("AiImageEnrichmentStreamRoute", () => {
 
             expect(response.statusCode).toBe(500);
             expect(errorBody(response).code).toBe("ENRICHMENT_NO_AI_PROVIDER");
+        });
+
+        it("should answer 409, not 500, when image enrichment is switched off", async () => {
+            prepare.execute.mockResolvedValue(
+                Result.fail(new EnrichmentCapabilityDisabledError("switched off"))
+            );
+
+            const response = await invokeHttpRoute(route, request());
+
+            expect(response.statusCode).toBe(409);
+            expect(errorBody(response).code).toBe("ENRICHMENT_CAPABILITY_DISABLED");
         });
 
         it("should answer 400 when no file ID was matched", async () => {
