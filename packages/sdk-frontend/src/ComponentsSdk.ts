@@ -190,7 +190,26 @@ export class ComponentsSdk {
 
             return {
                 component: ScopedComponent,
-                manifest: component.manifest,
+                /*
+                 * `entry.name` is the component's IDENTITY, not a label — it is what a page element
+                 * records and what the registry is keyed by, so it is the name a component must be
+                 * registered under or no page can resolve it.
+                 *
+                 * The name inside the bundle is whatever the source declared, which for a generated
+                 * component is the model's invention and for any component survives a later rename.
+                 * Promote renames on collision ("Hero Banner (4)"), and the server already treats the
+                 * promoted name as authoritative: `buildComponentManifest` overrides the manifest name
+                 * with it when persisting, and both bundler and runtime scope CSS by it. Re-deriving
+                 * the manifest here and keeping the bundle's name was the single place that
+                 * disagreed, and it made every page render nothing — 199 of 199 components
+                 * unresolvable, silently, while every stage reported success.
+                 *
+                 * So the rest of the manifest comes from the bundle, which is the authority on inputs
+                 * and defaults, and the name comes from the entry, which is the authority on identity.
+                 * A caller synthesising an entry is therefore declaring an identity, not labelling
+                 * one.
+                 */
+                manifest: { ...component.manifest, name: entry.name },
                 css: entry.bundledCss ?? "",
                 scopeClassName: scopeClass
             };
