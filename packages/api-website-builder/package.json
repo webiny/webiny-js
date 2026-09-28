@@ -46,7 +46,7 @@
     "graphql": "^16.14.2",
     "rimraf": "^6.1.3",
     "typescript": "7.0.2",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.2"
   },
   "webiny": {
     "publishFrom": "dist"

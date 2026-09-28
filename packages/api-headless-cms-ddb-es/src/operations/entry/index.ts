@@ -1515,7 +1515,6 @@ export const createEntriesStorageOperations = (
          * TODO expect errors over hit properties is required due to opensearch library narrowing types too much because of the _source: false. At least what Claude says, didnt go into it too much.
          * Properties are there, but types are not correct.
          */
-        // @ts-expect-error
         const cursor = items.length > 0 ? encodeCursor(hits[items.length - 1].sort) || null : null;
         return {
             hasMoreItems,
@@ -2193,6 +2192,7 @@ export const createEntriesStorageOperations = (
             aggregations: {
                 getUniqueFieldValues: {
                     terms: {
+                        // @ts-expect-error opensearch 3.9 types omit `field` from TermsAggregationFields
                         field: `values.${field.storageId}.keyword`,
                         size: 1000000
                     }

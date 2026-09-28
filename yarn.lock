@@ -9742,9 +9742,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/coverage-v8@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@vitest/coverage-v8@npm:5.0.1"
+"@vitest/coverage-v8@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "@vitest/coverage-v8@npm:5.0.2"
   dependencies:
     "@bcoe/v8-coverage": "npm:^1.0.2"
     "@vitest/istanbul-lib-coverage": "npm:^1.0.0"
@@ -9755,12 +9755,12 @@ __metadata:
     std-env: "npm:^4.2.0"
     tinyrainbow: "npm:^3.1.1"
   peerDependencies:
-    "@vitest/browser": 5.0.1
-    vitest: 5.0.1
+    "@vitest/browser": 5.0.2
+    vitest: 5.0.2
   peerDependenciesMeta:
     "@vitest/browser":
       optional: true
-  checksum: 10/38f043fe3ce255ea42ad85c89ab58f27b393238b136c5e5048966c3a47b182645df904cf0e96aa4cf49727990048e8c855fca8cee58a3376e73b235dcc1c0197
+  checksum: 10/2d3a4f12f0dce6e65085a1eaaa688f19cb5b41f353756b41069089991edea3bfabdc41b9c0ee653cda79b47483146fbe2626b05eaaa7cdb16102af607cbaf5c6
   languageName: node
   linkType: hard
 
@@ -9793,12 +9793,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/mocker@npm:5.0.1":
-  version: 5.0.1
-  resolution: "@vitest/mocker@npm:5.0.1"
+"@vitest/mocker@npm:5.0.2":
+  version: 5.0.2
+  resolution: "@vitest/mocker@npm:5.0.2"
   dependencies:
     "@jridgewell/trace-mapping": "npm:0.3.31"
-    "@vitest/spy": "npm:5.0.1"
+    "@vitest/spy": "npm:5.0.2"
     estree-walker: "npm:^3.0.3"
     magic-string: "npm:^1.2.3"
   peerDependencies:
@@ -9809,7 +9809,7 @@ __metadata:
       optional: true
     vite:
       optional: true
-  checksum: 10/0afae20082a525eb8105ad9bf6534dbfd3aaec679b0258bfb33a89667a218a1e579dea2858dd47d798f086f4ae25915ddda73e4583304c5f505ac3d72b11566a
+  checksum: 10/005d6d0d56d2ebf4f5cf9ed9420b787fe52247409751d05f0bbc1b4e8aa9ad800207688d48d8f4e7e2d7d31148187f9a85e937948298b9e9308896a80786c84e
   languageName: node
   linkType: hard
 
@@ -9831,10 +9831,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/spy@npm:5.0.1":
-  version: 5.0.1
-  resolution: "@vitest/spy@npm:5.0.1"
-  checksum: 10/12f882632c0d7a0f2516a3580947dde5513007155fabadc231ec8076d6994cb515a8e6a62b72c74a90e64d9bb5055eced4f112d6ee1613be514b05376c4b14c2
+"@vitest/spy@npm:5.0.2":
+  version: 5.0.2
+  resolution: "@vitest/spy@npm:5.0.2"
+  checksum: 10/f8f8ea61fb366d7b159719d1cffaac396a0419a9c5f4048715e2de6e2251bfe6825389e6abdf7405fb9f936d260403d307c2c4e52e7e090b4374e92bad2c1e11
   languageName: node
   linkType: hard
 
@@ -10198,7 +10198,7 @@ __metadata:
     p-retry: "npm:^8.0.1"
     semver: "npm:^7.8.5"
     type-fest: "npm:^5.10.0"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     write-json-file: "npm:^7.0.0"
     yargs: "npm:^18.2.0"
   bin:
@@ -10260,7 +10260,7 @@ __metadata:
     tw-animate-css: "npm:^1.4.0"
     type-fest: "npm:^5.10.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10303,7 +10303,7 @@ __metadata:
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -10338,7 +10338,7 @@ __metadata:
     knex: "npm:^3.3.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10368,7 +10368,7 @@ __metadata:
     lodash: "npm:^4.18.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10432,7 +10432,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.14.2"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -10493,7 +10493,7 @@ __metadata:
     better-sqlite3: "npm:^13.0.3"
     knex: "npm:^3.3.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10529,7 +10529,7 @@ __metadata:
     pino-lambda: "npm:^4.4.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -10577,7 +10577,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     type-fest: "npm:^5.10.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10602,7 +10602,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.14.2"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10627,7 +10627,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     sharp: "npm:^0.35.4"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10651,7 +10651,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     sharp: "npm:^0.35.4"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10705,7 +10705,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.14.2"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10728,7 +10728,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.14.2"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10763,7 +10763,7 @@ __metadata:
     lodash: "npm:^4.18.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10790,7 +10790,7 @@ __metadata:
     dataloader: "npm:^2.2.3"
     jest-dynalite: "npm:^3.6.1"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10813,7 +10813,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10835,7 +10835,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10856,7 +10856,7 @@ __metadata:
     better-sqlite3: "npm:^13.0.3"
     knex: "npm:^3.3.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10875,7 +10875,7 @@ __metadata:
     dot-prop: "npm:^10.2.0"
     lodash: "npm:^4.18.1"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10913,7 +10913,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -10937,7 +10937,7 @@ __metadata:
     "@webiny/testing": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10978,7 +10978,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     slugify: "npm:^1.6.9"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     write-json-file: "npm:^7.0.0"
     zod: "npm:4.6.5"
   languageName: unknown
@@ -11005,7 +11005,7 @@ __metadata:
     nodemailer: "npm:^10.0.10"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -11026,7 +11026,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11051,7 +11051,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     type-fest: "npm:^5.10.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11077,7 +11077,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     aws-sdk-client-mock: "npm:^4.1.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -11095,7 +11095,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     bree: "npm:^9.2.9"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11114,7 +11114,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11142,7 +11142,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     semver: "npm:^7.8.5"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -11167,7 +11167,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11189,7 +11189,7 @@ __metadata:
     "@webiny/shared-aco": "npm:0.0.0"
     "@webiny/testing": "npm:0.0.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11220,7 +11220,7 @@ __metadata:
     graphql: "npm:^16.14.2"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11246,7 +11246,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     type-fest: "npm:^5.10.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -11264,7 +11264,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11283,7 +11283,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     ws: "npm:^8.21.3"
     zod: "npm:4.6.5"
   languageName: unknown
@@ -11305,7 +11305,7 @@ __metadata:
     knex: "npm:^3.3.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11330,7 +11330,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     type-fest: "npm:^5.10.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11352,7 +11352,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     type-fest: "npm:^5.10.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -11368,7 +11368,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11400,7 +11400,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     slugify: "npm:^1.6.9"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -11498,7 +11498,7 @@ __metadata:
     tinycolor2: "npm:^1.6.0"
     typescript: "npm:7.0.2"
     unicode-emoji-json: "npm:^0.9.0"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -11564,7 +11564,7 @@ __metadata:
     react-lazy-load: "npm:^4.0.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -11590,7 +11590,7 @@ __metadata:
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11713,7 +11713,7 @@ __metadata:
     slugify: "npm:^1.6.9"
     typescript: "npm:7.0.2"
     use-deep-compare-effect: "npm:^1.8.1"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -11957,7 +11957,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     slugify: "npm:^1.6.9"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -12040,7 +12040,7 @@ __metadata:
     ts-invariant: "npm:^0.10.3"
     type-fest: "npm:^5.10.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     warning: "npm:^4.0.3"
     zod: "npm:4.6.5"
   languageName: unknown
@@ -12149,7 +12149,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     type-fest: "npm:^5.10.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -12250,7 +12250,7 @@ __metadata:
     "@webiny/cms-sdk": "npm:0.0.0"
     mobx-react-lite: "npm:^5.1.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   peerDependencies:
     next: ">=15.0.0 <16.0.0"
     react: ">=19.0.0 <20.0.0"
@@ -12266,7 +12266,7 @@ __metadata:
     fast-json-patch: "npm:^3.1.1"
     mobx: "npm:^7.0.4"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -12299,7 +12299,7 @@ __metadata:
     mobx: "npm:^7.0.4"
     mobx-react-lite: "npm:^5.1.0"
     react: "npm:18.3.1"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -12366,7 +12366,7 @@ __metadata:
     lodash: "npm:^4.18.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -12381,7 +12381,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     fuse.js: "npm:7.5.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -12455,7 +12455,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     slugify: "npm:^1.6.9"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   peerDependencies:
     react: 18.3.1
   languageName: unknown
@@ -12508,7 +12508,7 @@ __metadata:
     pino-lambda: "npm:^4.4.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -12547,7 +12547,7 @@ __metadata:
     graphql-tag: "npm:^2.12.7"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -12567,7 +12567,7 @@ __metadata:
     fastify: "npm:5.12.5"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -12599,7 +12599,7 @@ __metadata:
     ohash: "npm:^2.0.12"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     yargs: "npm:^18.2.0"
   peerDependencies:
     react: 18.3.1
@@ -12640,7 +12640,7 @@ __metadata:
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -12655,7 +12655,7 @@ __metadata:
     cheerio: "npm:^1.2.0"
     jsdom: "npm:^30.1.1"
     lexical: "npm:^0.51.0"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -12837,7 +12837,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
     uniqid: "npm:^5.4.0"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -12928,7 +12928,7 @@ __metadata:
     replace-in-path: "npm:^1.1.0"
     ts-morph: "npm:^28.0.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -12945,7 +12945,7 @@ __metadata:
     lodash: "npm:^4.18.1"
     pino: "npm:^10.3.1"
     pino-pretty: "npm:^13.1.3"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     yargs: "npm:^18.2.0"
   peerDependencies:
     "@webiny/api": 0.0.0
@@ -13059,7 +13059,7 @@ __metadata:
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -13075,7 +13075,7 @@ __metadata:
     nanoid: "npm:^6.0.1"
     oxfmt: "npm:^0.70.0"
     react: "npm:18.3.1"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -13091,7 +13091,7 @@ __metadata:
     "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     react: "npm:18.3.1"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -13104,7 +13104,7 @@ __metadata:
     "@webiny/sdk": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -13117,7 +13117,7 @@ __metadata:
     "@webiny/sdk-frontend": "npm:0.0.0"
     "@webiny/website-builder-nextjs": "npm:0.0.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   peerDependencies:
     next: ">=15.0.0 <16.0.0"
     react: ">=19.0.0 <20.0.0"
@@ -13133,7 +13133,7 @@ __metadata:
     p-retry: "npm:^8.0.1"
     standardwebhooks: "npm:^1.1.1"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -13268,7 +13268,7 @@ __metadata:
     p-retry: "npm:^8.0.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -13282,7 +13282,7 @@ __metadata:
     lodash: "npm:^4.18.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -13325,7 +13325,7 @@ __metadata:
     react-dom: "npm:18.3.1"
     standardwebhooks: "npm:^1.1.1"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     zod: "npm:4.6.5"
   languageName: unknown
   linkType: soft
@@ -13340,7 +13340,7 @@ __metadata:
     postcss: "npm:^8.5.28"
     postcss-import: "npm:^17.0.0"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     webpack: "npm:^5.111.1"
   peerDependencies:
     next: ">=15.0.0 <16.0.0"
@@ -13379,7 +13379,7 @@ __metadata:
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -13405,7 +13405,7 @@ __metadata:
     pino: "npm:^10.3.1"
     pino-pretty: "npm:^13.1.3"
     typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
   languageName: unknown
   linkType: soft
 
@@ -15642,7 +15642,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     type-fest: "npm:^5.10.0"
     validate-npm-package-name: "npm:^8.0.0"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     write-json-file: "npm:^7.0.0"
     yargs: "npm:^18.2.0"
     yesno: "npm:^0.4.0"
@@ -23888,7 +23888,7 @@ __metadata:
     "@types/node": "npm:^24.13.6"
     "@types/react": "npm:18.3.31"
     "@types/react-dom": "npm:18.3.7"
-    "@vitest/coverage-v8": "npm:^5.0.1"
+    "@vitest/coverage-v8": "npm:^5.0.2"
     "@webiny/di": "npm:^1.1.0"
     "@webiny/stdlib": "npm:^0.0.19"
     adio: "npm:^3.0.1"
@@ -23923,7 +23923,7 @@ __metadata:
     typescript: "npm:7.0.2"
     validator: "npm:^13.15.35"
     verdaccio: "npm:^6.10.4"
-    vitest: "npm:^5.0.1"
+    vitest: "npm:^5.0.2"
     write-json-file: "npm:^7.0.0"
     yargs: "npm:^18.2.0"
   dependenciesMeta:
@@ -24717,13 +24717,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"siginfo@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "siginfo@npm:2.0.0"
-  checksum: 10/e93ff66c6531a079af8fb217240df01f980155b5dc408d2d7bebc398dd284e383eb318153bf8acd4db3c4fe799aa5b9a641e38b0ba3b1975700b1c89547ea4e7
-  languageName: node
-  linkType: hard
-
 "signal-exit@npm:^3.0.2, signal-exit@npm:^3.0.3":
   version: 3.0.7
   resolution: "signal-exit@npm:3.0.7"
@@ -25055,13 +25048,6 @@ __metadata:
   dependencies:
     minipass: "npm:^7.0.3"
   checksum: 10/ae560d0378d074006a71b06af71bfbe84a3fe1ac6e16c1f07575f69e670d40170507fe52b21bcc23399429bc6a15f4bc3ea8d9bc88e9dfd7e87de564e6da6a72
-  languageName: node
-  linkType: hard
-
-"stackback@npm:0.0.2":
-  version: 0.0.2
-  resolution: "stackback@npm:0.0.2"
-  checksum: 10/2d4dc4e64e2db796de4a3c856d5943daccdfa3dd092e452a1ce059c81e9a9c29e0b9badba91b43ef0d5ff5c04ee62feb3bcc559a804e16faf447bac2d883aa99
   languageName: node
   linkType: hard
 
@@ -25672,10 +25658,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinybench@npm:6.1.4":
-  version: 6.1.4
-  resolution: "tinybench@npm:6.1.4"
-  checksum: 10/dee4bb749b2cb3fa7ca093f8ee9576a58d07409268e4219a87565e28911f6310c72561650bc706676ee6c109dc28828ab27b813e78836467e481643e09f33535
+"tinybench@npm:^6.1.4":
+  version: 6.2.0
+  resolution: "tinybench@npm:6.2.0"
+  checksum: 10/b5b1dceddbd2a8cf3cad814c2b3305ff33656a531e67d87f2a4abbc75b8d4d630c5c3769bfa3a0051f1eacc2dc92fdd9af03f20cd68fcfe93a69bb136dc98bb0
   languageName: node
   linkType: hard
 
@@ -25686,14 +25672,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinyexec@npm:1.3.0":
-  version: 1.3.0
-  resolution: "tinyexec@npm:1.3.0"
-  checksum: 10/749a8c5aac2ffe3f04220b8966f414636c6c324d4ae88895dfffb2319db61cf1c01c5d7e8f0fb8ab747389ea0be1f0f80d850a9cce88a9d96cc5ebcb345db018
-  languageName: node
-  linkType: hard
-
-"tinyexec@npm:^1.0.0":
+"tinyexec@npm:^1.0.0, tinyexec@npm:^1.3.0":
   version: 1.3.1
   resolution: "tinyexec@npm:1.3.1"
   checksum: 10/9c7a8ce2633f76c776d9ff663531c7b34d605f41909c2f97a27397e8c12bcaf721dae7680b6683232ffe7a6d465090be9926d5ffd00b5d7be9336a43b45289b1
@@ -26338,9 +26317,9 @@ __metadata:
   linkType: hard
 
 "undici@npm:^6.25.0":
-  version: 6.28.1
-  resolution: "undici@npm:6.28.1"
-  checksum: 10/a64d5972054604918448ffa1bbaa867ecd1ae9ed5aa75344a794550cc048a79949fd95ca196b961463384c49d77e924adb3643758a2aa809e43db5377a390941
+  version: 6.29.0
+  resolution: "undici@npm:6.29.0"
+  checksum: 10/fd4969cfc846cb4da7f7b1b225536d629e17b17b4a1913287f1264f30c855b9eb65a6da6cde46ba1ddfe42f113a3969ab2697029c2b920401be2b7b3b40abef8
   languageName: node
   linkType: hard
 
@@ -26806,12 +26785,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "vitest@npm:5.0.1"
+"vitest@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "vitest@npm:5.0.2"
   dependencies:
     "@types/chai": "npm:^5.2.2"
-    "@vitest/mocker": "npm:5.0.1"
+    "@vitest/mocker": "npm:5.0.2"
     chai: "npm:^6.2.2"
     es-module-lexer: "npm:^2.3.2"
     expect-type: "npm:^1.4.0"
@@ -26819,20 +26798,20 @@ __metadata:
     obug: "npm:^2.1.4"
     picomatch: "npm:^4.0.7"
     std-env: "npm:^4.2.0"
-    tinybench: "npm:6.1.4"
-    tinyexec: "npm:1.3.0"
+    tinybench: "npm:^6.1.4"
+    tinyexec: "npm:^1.3.0"
     tinyglobby: "npm:^0.2.17"
-    why-is-node-running: "npm:^2.3.0"
+    why-is-node-running: "npm:^3.2.1"
   peerDependencies:
     "@edge-runtime/vm": "*"
     "@opentelemetry/api": ^1.9.0
     "@types/node": ^22.0.0 || >=24.0.0
-    "@vitest/browser-playwright": 5.0.1
-    "@vitest/browser-preview": 5.0.1
+    "@vitest/browser-playwright": 5.0.2
+    "@vitest/browser-preview": 5.0.2
     "@vitest/browser-webdriverio": ^5.0.0-beta.5 || >=5.0.0
-    "@vitest/coverage-istanbul": 5.0.1
-    "@vitest/coverage-v8": 5.0.1
-    "@vitest/ui": 5.0.1
+    "@vitest/coverage-istanbul": 5.0.2
+    "@vitest/coverage-v8": 5.0.2
+    "@vitest/ui": 5.0.2
     happy-dom: "*"
     jsdom: "*"
     vite: ^6.4.0 || ^7.0.0 || ^8.0.0
@@ -26863,7 +26842,7 @@ __metadata:
       optional: false
   bin:
     vitest: ./vitest.mjs
-  checksum: 10/c17cfa6c93426b3880b7c7067158093b6b5377b9cf38748ba7bf388c1b75eb41b213267aee3709ca77e39ed711c8acb696d69003e7b4c978fa8b4a54e6f0d950
+  checksum: 10/3c6048ac0e2c9e6bb7ebb5a5c84c647f1570fa99bb142133ac2f8ab299f52eac52e55355098ae15c34609a79034f3b56553e5a41f8cd34a48ce90f7879557e4f
   languageName: node
   linkType: hard
 
@@ -27173,15 +27152,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"why-is-node-running@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "why-is-node-running@npm:2.3.0"
-  dependencies:
-    siginfo: "npm:^2.0.0"
-    stackback: "npm:0.0.2"
+"why-is-node-running@npm:^3.2.1":
+  version: 3.2.2
+  resolution: "why-is-node-running@npm:3.2.2"
   bin:
     why-is-node-running: cli.js
-  checksum: 10/0de6e6cd8f2f94a8b5ca44e84cf1751eadcac3ebedcdc6e5fbbe6c8011904afcbc1a2777c53496ec02ced7b81f2e7eda61e76bf8262a8bc3ceaa1f6040508051
+  checksum: 10/b57146897f676cf01fe30ac415f66dd72b54218e6fee8eb4479251f72a2e064bc18ed7eaddac18513f978353ce2b758d16a4de126cd3e47e467631c1ec5a50af
   languageName: node
   linkType: hard
 

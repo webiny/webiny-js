@@ -44,7 +44,7 @@
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
     "typescript": "7.0.2",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.2"
   },
   "adio": {
     "ignoreDirs": [
