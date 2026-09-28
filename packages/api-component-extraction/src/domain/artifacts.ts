@@ -3,6 +3,8 @@
  * ledger); these are the shapes behind those keys. Kept in one place so every stage agrees on them.
  */
 
+import type { AssetTally } from "~/domain/assets.js";
+
 // ----- Discover ----------------------------------------------------------------------------------
 
 /**
@@ -235,6 +237,14 @@ export interface CaptureArtifact {
     pages: CapturedPage[];
     /** Pages that could not be captured — degraded, not fatal — each with its failure reason. */
     failed: CaptureFailure[];
+    /**
+     * What the run did with the images the pages loaded.
+     *
+     * Counts only. The per-image outcomes go to the blob store at `assetOutcomesRef`, because the
+     * list is unbounded in the page count and this artifact lives in DynamoDB — the shape that broke
+     * the Generate artifact against the 400 KB item limit.
+     */
+    assets?: AssetTally & { assetOutcomesRef: string };
 }
 
 // ----- Segment -----------------------------------------------------------------------------------

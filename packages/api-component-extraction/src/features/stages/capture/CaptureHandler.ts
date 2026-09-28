@@ -10,11 +10,23 @@ import type {
     DiscoverArtifact
 } from "~/domain/artifacts.js";
 import { captureEvaluator, type CaptureEvalResult } from "./captureEvaluator.js";
+import { ImageAssetService } from "~/features/shared/ImageAssetService.js";
+import { migrateImages } from "./migrateImages.js";
+import { tallyAssets, type AssetOutcome } from "~/domain/assets.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 const DESKTOP = { width: 1440, height: 900 };
 const NARROW = { width: 390, height: 844 };
 const PAGE_TIMEOUT_MS = 60_000;
+/**
+ * Per-page ceiling for collected image bytes.
+ *
+ * Measured, a whole demo site is about 2 MB, so this does not bind there. It exists for the site that
+ * behaves differently: it turns an image-heavy page into a recorded unmigrated image rather than a
+ * capture that dies of memory pressure, which is the difference between a reported gap and a lost run.
+ */
+const MAX_IMAGE_BYTES_PER_PAGE = 40 * 1024 * 1024;
+
 const MAX_NODES = 4000;
 // One page does a desktop + a narrow capture (each up to PAGE_TIMEOUT_MS) plus blob writes — up to ~130s.
 // The margin MUST exceed one page's worst case: the timeout is only checked between pages, so if a page
@@ -29,6 +41,14 @@ interface CaptureCheckpoint {
     nextIndex: number;
     pages: CapturedPage[];
     failed: CaptureFailure[];
+    /**
+     * What happened to each image, accumulated across pages.
+     *
+     * On the checkpoint rather than in a local: this stage pauses and resumes in a fresh invocation
+     * when it nears the timeout, and outcomes held in memory would be lost at exactly the point a
+     * long crawl needs them.
+     */
+    assetOutcomes?: AssetOutcome[];
 }
 // Full-page PNGs are bounded by height only, NOT longest edge: a full-page screenshot is much taller
 // than wide, so a longest-edge cap scales by the height and crushes the width — a 1440×5000 page would
@@ -85,7 +105,10 @@ const thumbnailPng = async (image: Uint8Array): Promise<Buffer> => {
 class CaptureHandlerImpl implements StageHandler.Interface {
     readonly stage = "capture" as const;
 
-    constructor(private browserProvider: BrowserProvider.Interface) {}
+    constructor(
+        private browserProvider: BrowserProvider.Interface,
+        private imageAssets: ImageAssetService.Interface
+    ) {}
 
     async execute(context: StageContext): Promise<Result<StageOutcome, ExtractionError>> {
         const discoverRef = context.upstream.urls;
@@ -117,7 +140,9 @@ class CaptureHandlerImpl implements StageHandler.Interface {
         const checkpoint: CaptureCheckpoint =
             previous && previous.nextIndex < total
                 ? previous
-                : { nextIndex: 0, pages: [], failed: [] };
+                : { nextIndex: 0, pages: [], failed: [], assetOutcomes: [] };
+        // A checkpoint written before this field existed resumes without it.
+        checkpoint.assetOutcomes ??= [];
 
         // An immediate line so the run view shows activity during the (slow) headless-browser launch,
         // before the first page completes.
@@ -133,7 +158,9 @@ class CaptureHandlerImpl implements StageHandler.Interface {
                 const index = checkpoint.nextIndex;
                 const { url } = discover.urls[index];
                 try {
-                    checkpoint.pages.push(await this.capturePage(context, session, url, index));
+                    const captured = await this.capturePage(context, session, url, index);
+                    checkpoint.pages.push(captured.page);
+                    checkpoint.assetOutcomes.push(...captured.assetOutcomes);
                     await context.progress({
                         message: `Captured ${url}`,
                         current: index + 1,
@@ -187,7 +214,21 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             );
         }
 
-        const artifact: CaptureArtifact = { pages: checkpoint.pages, failed: checkpoint.failed };
+        const assetOutcomes = checkpoint.assetOutcomes ?? [];
+        const outcomesStored = await context.blobs.put(
+            `${context.run.id}/capture/assets-v${context.stageVersion}.json`,
+            new TextEncoder().encode(JSON.stringify(assetOutcomes)),
+            "application/json"
+        );
+        if (outcomesStored.isFail()) {
+            return Result.fail(outcomesStored.error);
+        }
+
+        const artifact: CaptureArtifact = {
+            pages: checkpoint.pages,
+            failed: checkpoint.failed,
+            assets: { ...tallyAssets(assetOutcomes), assetOutcomesRef: outcomesStored.value }
+        };
         const key = context.artifactKey("pages");
         const written = await context.store.putJson(key, artifact);
         if (written.isFail()) {
@@ -206,7 +247,7 @@ class CaptureHandlerImpl implements StageHandler.Interface {
         session: BrowserProvider.Session,
         url: string,
         index: number
-    ): Promise<CapturedPage> {
+    ): Promise<{ page: CapturedPage; assetOutcomes: AssetOutcome[] }> {
         const base = `${context.run.id}/capture/page-${index}`;
         let screenshotRef = "";
         let narrowScreenshotRef = "";
@@ -219,6 +260,13 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             viewportHeight: DESKTOP.height,
             timeoutMs: PAGE_TIMEOUT_MS,
             evaluate: captureEvaluator({ maxNodes: MAX_NODES }),
+            /*
+             * Collected from the responses the browser already received, not re-requested later. A CDN
+             * can serve a different representation of one URL per request — Cloudinary's `f_auto`
+             * returns WebP to Chrome and PNG to a plain server-side fetch — so anything fetching these
+             * bytes afterwards would store an image the visitor never saw.
+             */
+            collectImages: { maxTotalBytes: MAX_IMAGE_BYTES_PER_PAGE, maxConcurrent: 4 },
             screenshots: {
                 requests: [{ label: "full-page", crop: "full-page" }],
                 write: async image => {
@@ -301,7 +349,44 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             }
         });
 
-        return {
+        /*
+         * Migrated here, per page, rather than once at the end of the stage: the bytes are in memory
+         * now and holding every page's images until the crawl finishes is the memory profile the
+         * per-page ceiling exists to avoid. Dedup is what keeps the repetition cheap — a logo on eight
+         * pages is uploaded once and referenced eight times.
+         */
+        const assetOutcomes = await migrateImages(
+            this.imageAssets.deps(async message => {
+                await context.log.info({ message });
+            }),
+            desktop.images
+        );
+
+        for (const skipped of desktop.skippedImages) {
+            /*
+             * Recorded, never dropped — but as what it is.
+             *
+             * A request the browser made as an image whose response is not an image is a beacon, not a
+             * picture: measured, 71westland's were Bing analytics endpoints answering 204 with no body
+             * and no content-type. There is nothing to migrate and nothing is lost, so they belong
+             * with the other third-party chrome the migration leaves alone. Counting them as
+             * unmigrated read as twelve lost photographs, which is the opposite of informative.
+             *
+             * A body over the page ceiling, or one that could not be read, IS content and its absence
+             * IS a gap. Those stay unmigrated.
+             */
+            const detail = `${skipped.reason}${skipped.detail ? `: ${skipped.detail}` : ""}${
+                skipped.status ? ` (HTTP ${skipped.status})` : ""
+            }`;
+
+            assetOutcomes.push(
+                skipped.reason === "not-an-image"
+                    ? { kind: "external", sourceUrl: skipped.url, reason: detail }
+                    : { kind: "unmigrated", sourceUrl: skipped.url, reason: detail }
+            );
+        }
+
+        const page: CapturedPage = {
             url,
             finalUrl: desktop.finalUrl,
             title: desktop.result.title,
@@ -333,10 +418,12 @@ class CaptureHandlerImpl implements StageHandler.Interface {
                 }
             }
         };
+
+        return { page, assetOutcomes };
     }
 }
 
 export const CaptureHandler = StageHandler.createImplementation({
     implementation: CaptureHandlerImpl,
-    dependencies: [BrowserProvider]
+    dependencies: [BrowserProvider, ImageAssetService]
 });

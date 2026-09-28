@@ -52,6 +52,7 @@ import { ComponentExtractionCapabilityImplementation } from "~/features/shared/c
 import { ChromiumBrowserProvider } from "@webiny/site-capture/browser/ChromiumBrowserProvider.js";
 import { RunImageRouteDefinition } from "~/rest/RunImageRoute.js";
 import { registerComponentExtractionGraphQL } from "~/graphql/createGraphQL.js";
+import { ImageAssetServiceImplementation } from "~/features/shared/ImageAssetService.js";
 
 /**
  * Component Extraction — the backend entities (phase 1, W2).
@@ -124,6 +125,9 @@ export const ComponentExtractionFeature = createFeature({
 
         // Stage handlers (W4). Registered as they land — a stage with no handler fails cleanly.
         container.register(DiscoverHandler);
+        // Registered before the handler that depends on it, for readability; the container resolves
+        // by name rather than by order.
+        container.register(ImageAssetServiceImplementation);
         container.register(CaptureHandler);
         container.register(SegmentHandler);
         container.register(ClusterHandler);

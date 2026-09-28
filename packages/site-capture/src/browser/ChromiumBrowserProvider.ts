@@ -14,6 +14,7 @@ import {
     type ScreenshotCrop
 } from "~/abstractions.js";
 import { clearOverlaysScript, type OverlayClearanceResult } from "./clearOverlays.js";
+import { createImageCollector } from "./collectPageImages.js";
 import { BotChallengeError, detectBotChallenge } from "./botChallenge.js";
 import {
     ChromiumNotFoundError,
@@ -255,6 +256,10 @@ class ChromiumSession implements IBrowserSession {
         params: CapturePageParams
     ): Promise<CaptureResult<TResult>> {
         const fonts = new Map<string, FontResource>();
+        // Only when the caller asked: a consumer that wants a screenshot pays none of this.
+        const imageCollector = params.collectImages
+            ? createImageCollector(params.collectImages)
+            : null;
 
         await page.setUserAgent(this.userAgent);
         await page.setViewport({
@@ -271,11 +276,23 @@ class ChromiumSession implements IBrowserSession {
         // whereas a response proves the browser actually chose and fetched that file.
         page.on("response", response => {
             try {
-                if (response.request().resourceType() === "font") {
+                const resourceType = response.request().resourceType();
+                if (resourceType === "font") {
                     const url = response.url();
                     if (!fonts.has(url)) {
                         fonts.set(url, { url });
                     }
+                    return;
+                }
+                if (imageCollector && resourceType === "image") {
+                    // A response from any frame but the page's own belongs to an embed.
+                    const embedded = response.frame() !== page.mainFrame();
+                    /*
+                     * Deliberately not awaited here. The handler is sync and a rejected promise from
+                     * it would be unhandled; the collector owns its own bounding and error capture,
+                     * and `drain()` below is what waits for the reads to finish.
+                     */
+                    void imageCollector.offer(response, { embedded }).catch(() => undefined);
                 }
             } catch {
                 // A response event that outlives its request must not take the page down.
@@ -349,6 +366,14 @@ class ChromiumSession implements IBrowserSession {
 
         const screenshots = await this.captureScreenshots(page, params);
 
+        /*
+         * After the screenshots, so a body is read while the page is still alive: a response buffer
+         * can be discarded once the page navigates or closes.
+         */
+        const collected = imageCollector
+            ? await imageCollector.drain()
+            : { images: [], skipped: [] };
+
         return {
             url: params.url,
             finalUrl: page.url(),
@@ -356,6 +381,8 @@ class ChromiumSession implements IBrowserSession {
             title,
             result,
             fontResources: [...fonts.values()],
+            images: collected.images,
+            skippedImages: collected.skipped,
             screenshots: screenshots.taken,
             failedScreenshots: screenshots.failed,
             // Returned rather than logged here: the caller has its own logger, and this belongs in the

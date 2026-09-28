@@ -18,6 +18,54 @@ export interface FontResource {
     style?: string;
 }
 
+/**
+ * One image the page actually loaded, with the bytes the browser received.
+ *
+ * Taken from the network rather than re-requested, and that is not merely an optimisation. A CDN can
+ * serve a different representation of the same URL depending on the request: Cloudinary's `f_auto`
+ * returns WebP to Chrome and PNG to a plain server-side fetch, byte-for-byte different images under
+ * one address. Whatever fetches these bytes later would store something the visitor never saw, with
+ * nothing in the result to say so.
+ *
+ * `sha256` is over the DECODED bytes, which is what `response.buffer()` returns — verified against a
+ * `content-encoding: br` response, where the decoded form is 10,751 bytes and the wire form 4,279.
+ * Hashing the wire form would make the hash depend on a CDN's compression choice.
+ */
+export interface CapturedImage {
+    url: string;
+    contentType: string;
+    /** sha256 of the decoded bytes. The identity used for deduplication. */
+    sha256: string;
+    bytes: Uint8Array;
+    size: number;
+    /**
+     * Loaded by a subframe rather than the page itself — so it belongs to an embedded third-party
+     * widget (a map, a reCAPTCHA, a video player) rather than to the page's own content.
+     *
+     * This is the "part of an embed" test, and it is deliberately not a hostname test: the images
+     * worth migrating on these sites are all on a third-party CDN, so judging by host would leave
+     * exactly the wrong set behind. Which frame requested it says whether the migration reproduces
+     * the thing that renders it.
+     */
+    embedded: boolean;
+}
+
+/**
+ * An image request the page made whose bytes were not collected, with the reason.
+ *
+ * The three reasons mean different things to a migration and must not be flattened. A response that
+ * is not an image at all is a beacon, not content — nothing to migrate and nothing lost. A body over
+ * the page ceiling or one that could not be read IS content, and its absence is a gap.
+ */
+export interface SkippedImage {
+    url: string;
+    reason: "page-byte-ceiling" | "unreadable" | "not-an-image";
+    /** What went wrong, when the reason alone does not say it. */
+    detail?: string;
+    /** The HTTP status, which is what makes a 204 beacon recognisable as such. */
+    status?: number;
+}
+
 export interface Screenshot {
     /** Where the bytes were written. Screenshots go to storage, never into a task payload. */
     key: string;
@@ -65,6 +113,22 @@ export interface CapturePageParams {
      * keep the browser from exhausting its sockets/handles — none of these affect the screenshot or DOM.
      */
     blockResourceTypes?: string[];
+    /**
+     * Collect the bytes of every image the page loads. Absent means collect nothing, so a caller that
+     * only wants a screenshot pays none of this cost.
+     *
+     * The ceiling is per page and exists so one image-heavy page cannot exhaust the Lambda's memory:
+     * images stream from the network into memory and out to the caller, never through `/tmp`, so
+     * memory is the only constraint that binds. An image that would cross the ceiling is reported in
+     * `skippedImages` rather than dropped, because an image nobody can account for is the failure
+     * this pipeline is trying to stop making.
+     */
+    collectImages?: {
+        /** Stop collecting once this page's collected bytes reach this total. */
+        maxTotalBytes: number;
+        /** How many response bodies to read at once. Defaults to a small number. */
+        maxConcurrent?: number;
+    };
     /**
      * The in-page script run after navigation, settle, the bot-wall check and consent dismissal, and
      * before screenshots. A string, exactly as `page.evaluate` accepts, so the provider hands it to any
@@ -129,6 +193,10 @@ export interface CaptureResult<TResult> {
     result: TResult;
     /** Font files the network log shows were really loaded, not merely declared in CSS. */
     fontResources: FontResource[];
+    /** Image bytes the page loaded, when `collectImages` asked for them. */
+    images: CapturedImage[];
+    /** Images the page loaded that were not collected, each with its reason. */
+    skippedImages: SkippedImage[];
     screenshots: Screenshot[];
     /** Labels of screenshots requested but not captured — a degraded result, reported not swallowed. */
     failedScreenshots: string[];
