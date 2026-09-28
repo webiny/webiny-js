@@ -1,4 +1,4 @@
-import type { IFeatureFlagsDto } from "./types.js";
+import type { IAiPowerupsOptions, IFeatureFlagsDto } from "./types.js";
 
 export class FeatureFlags {
     static fromDto(dto: IFeatureFlagsDto): FeatureFlags {
@@ -76,39 +76,39 @@ export class FeatureFlags {
     }
 
     isAiPowerupsEnabled(): boolean {
-        return this.flags.aiPowerups?.enabled !== false;
+        return this.flags.aiPowerups !== false;
     }
 
     isAiPageGenerationEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.websiteBuilder?.pageGeneration !== false;
+        return this.isAiPowerupEnabled(options => options.websiteBuilder?.pageGeneration);
     }
 
     isAiImageEnrichmentEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.fileManager?.imageEnrichment !== false;
+        return this.isAiPowerupEnabled(options => options.fileManager?.imageEnrichment);
     }
 
     isAiPageTranslationEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.websiteBuilder?.pageTranslation !== false;
+        return this.isAiPowerupEnabled(options => options.websiteBuilder?.pageTranslation);
     }
 
     isAiLexicalGenerationEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.lexicalGeneration !== false;
+        return this.isAiPowerupEnabled(options => options.lexicalGeneration);
     }
 
     isAiEntryGenerationEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.cms?.entryGeneration !== false;
+        return this.isAiPowerupEnabled(options => options.cms?.entryGeneration);
     }
 
     isAiEntryComparisonEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.cms?.entryComparison !== false;
+        return this.isAiPowerupEnabled(options => options.cms?.entryComparison);
     }
 
     isAiEntryTranslationEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.cms?.entryTranslation !== false;
+        return this.isAiPowerupEnabled(options => options.cms?.entryTranslation);
     }
 
     isAiRemoteComponentsEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.remoteComponents !== false;
+        return this.isAiPowerupEnabled(options => options.remoteComponents);
     }
 
     isAbTestingEnabled(): boolean {
@@ -135,6 +135,16 @@ export class FeatureFlags {
         }
         if (typeof this.flags.collaboration === "object") {
             return this.flags.collaboration.activityLog !== false;
+        }
+        return true;
+    }
+
+    private isAiPowerupEnabled(pick: (options: IAiPowerupsOptions) => boolean | undefined) {
+        if (this.flags.aiPowerups === false) {
+            return false;
+        }
+        if (typeof this.flags.aiPowerups === "object") {
+            return pick(this.flags.aiPowerups) !== false;
         }
         return true;
     }
