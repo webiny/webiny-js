@@ -9,37 +9,32 @@ export interface IFileManagerFeatureFlags {
     threatDetection?: boolean;
 }
 
-export interface IAiPowerupsWebsiteBuilderOptions {
+export interface IAiPowerupsWebsiteBuilderFeatureFlags {
     pageGeneration?: boolean;
     pageTranslation?: boolean;
 }
 
-export interface IAiPowerupsFileManagerOptions {
+export interface IAiPowerupsFileManagerFeatureFlags {
     imageEnrichment?: boolean;
 }
 
-export interface IAiPowerupsCmsOptions {
+export interface IAiPowerupsCmsFeatureFlags {
     entryGeneration?: boolean;
     entryComparison?: boolean;
     entryTranslation?: boolean;
 }
 
-export interface IAiPowerupsOptions {
-    websiteBuilder?: IAiPowerupsWebsiteBuilderOptions;
-    fileManager?: IAiPowerupsFileManagerOptions;
+export interface IAiPowerupsFeatureFlags {
+    websiteBuilder?: IAiPowerupsWebsiteBuilderFeatureFlags;
+    fileManager?: IAiPowerupsFileManagerFeatureFlags;
     lexicalGeneration?: boolean;
     remoteComponents?: boolean;
-    cms?: IAiPowerupsCmsOptions;
+    cms?: IAiPowerupsCmsFeatureFlags;
 }
 
 export interface ICollaborationFeatureFlags {
     comments?: boolean;
     activityLog?: boolean;
-}
-
-export interface IAiPowerupsFeatureFlags {
-    enabled?: boolean;
-    options?: IAiPowerupsOptions;
 }
 
 /**
@@ -55,7 +50,7 @@ export interface IFeatureFlagsDto {
     auditLogs?: boolean;
     recordLocking?: boolean;
     fileManager?: IFileManagerFeatureFlags;
-    aiPowerups?: IAiPowerupsFeatureFlags;
+    aiPowerups?: boolean | IAiPowerupsFeatureFlags;
     abTesting?: boolean;
     collaboration?: boolean | ICollaborationFeatureFlags;
 }
