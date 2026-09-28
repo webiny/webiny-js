@@ -78,3 +78,6 @@ tsconfig.build.tmp-*.json
 
 # Generated at build time from node_modules/esbuild-wasm/esbuild.wasm (see scripts/generateEsbuildWasmAsset.js).
 packages/remote-components/src/api/bundler/esbuild.wasm.gz
+
+# Local page-comparison output (screenshots; regenerate with the comparePages script).
+.page-comparison/
