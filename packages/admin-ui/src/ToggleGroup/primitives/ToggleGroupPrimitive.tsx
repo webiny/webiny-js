@@ -81,7 +81,8 @@ const toggleGroupItemVariants = cva(
 const toggleGroupVariants = cva("inline-flex items-center", {
     variants: {
         bordered: {
-            true: "rounded-md border-sm border-neutral-dimmed-darker p-[calc(var(--padding-xs)-(var(--border-width-sm)))]",
+            // Same border as outlined buttons (e.g. tertiary), so a toggle group sits evenly next to them.
+            true: "rounded-md border-sm border-neutral-muted p-[calc(var(--padding-xs)-(var(--border-width-sm)))]",
             false: ""
         },
         variant: {
