@@ -13,8 +13,8 @@ import {
     PrepareImageEnrichmentUseCase
 } from "~/api/features/AiImageEnrichment/abstractions.js";
 import type { IPreparedImageEnrichment } from "~/api/features/AiImageEnrichment/abstractions.js";
+import { EnrichmentCapabilityDisabledError } from "~/api/features/AiImageEnrichment/errors.js";
 import {
-    EnrichmentCapabilityDisabledError,
     EnrichmentFileNotFoundError,
     EnrichmentNoProviderError,
     EnrichmentNotAnImageError

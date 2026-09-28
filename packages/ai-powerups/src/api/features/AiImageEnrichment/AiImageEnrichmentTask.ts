@@ -5,7 +5,8 @@ import {
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { ApplyImageEnrichmentUseCase, PrepareImageEnrichmentUseCase } from "./abstractions.js";
 import { buildEnrichmentAiRequest } from "./buildEnrichmentAiRequest.js";
-import { EnrichmentCapabilityDisabledError, EnrichmentNotAnImageError } from "./errors.js";
+import { EnrichmentCapabilityDisabledError } from "./errors.js";
+import { EnrichmentNotAnImageError } from "./errors.js";
 
 export const AI_IMAGE_ENRICHMENT_TASK_ID = "fmAiImageEnrichment";
 

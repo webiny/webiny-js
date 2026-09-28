@@ -3,15 +3,11 @@ import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiImageEnrichmentTask } from "~/api/features/AiImageEnrichment/AiImageEnrichmentTask.js";
-import {
-    ApplyImageEnrichmentUseCase,
-    PrepareImageEnrichmentUseCase
-} from "~/api/features/AiImageEnrichment/abstractions.js";
-import {
-    EnrichmentCapabilityDisabledError,
-    EnrichmentNoProviderError,
-    EnrichmentNotAnImageError
-} from "~/api/features/AiImageEnrichment/errors.js";
+import { ApplyImageEnrichmentUseCase } from "~/api/features/AiImageEnrichment/abstractions.js";
+import { PrepareImageEnrichmentUseCase } from "~/api/features/AiImageEnrichment/abstractions.js";
+import { EnrichmentCapabilityDisabledError } from "~/api/features/AiImageEnrichment/errors.js";
+import { EnrichmentNoProviderError } from "~/api/features/AiImageEnrichment/errors.js";
+import { EnrichmentNotAnImageError } from "~/api/features/AiImageEnrichment/errors.js";
 
 /*
  * Records which ending the task chose. That is the whole behaviour under test: `done` finishes the

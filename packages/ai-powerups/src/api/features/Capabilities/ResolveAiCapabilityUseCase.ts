@@ -5,7 +5,7 @@ import { sdkNameFromModel } from "~/api/features/shared/modelId.js";
 import { AiCapability, ResolveAiCapabilityUseCase } from "./abstractions.js";
 import type { IResolvedAiCapability } from "./abstractions.js";
 import { isCapabilityEnabled } from "./types.js";
-import { AiCapabilityDisabledError } from "./errors.js";
+import { AiCapabilityDisabledError } from "./AiCapabilityDisabledError.js";
 import type { AiCapabilityOverride } from "./types.js";
 import type { AiModelRoleId } from "~/api/features/ModelRoles/index.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";

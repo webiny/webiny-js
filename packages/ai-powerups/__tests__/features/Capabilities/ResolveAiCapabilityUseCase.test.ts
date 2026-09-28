@@ -6,7 +6,7 @@ import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { AiCapability } from "~/api/features/Capabilities/abstractions.js";
 import { ResolveAiCapabilityUseCase } from "~/api/features/Capabilities/abstractions.js";
 import { ResolveAiCapabilityUseCaseImplementation } from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
-import { AiCapabilityDisabledError } from "~/api/features/Capabilities/errors.js";
+import { AiCapabilityDisabledError } from "~/api/features/Capabilities/AiCapabilityDisabledError.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
 
 type Items = IAiPowerUpsSettings["capabilities"]["items"];
@@ -266,8 +266,10 @@ describe("ResolveAiCapabilityUseCase", () => {
         ).execute("test.capability");
 
         expect(result.error).toBeInstanceOf(AiCapabilityDisabledError);
-        expect((result.error as AiCapabilityDisabledError).code).toBe("AI_CAPABILITY_DISABLED");
-        expect((result.error as AiCapabilityDisabledError).capabilityId).toBe("test.capability");
+
+        const error = result.error as AiCapabilityDisabledError;
+        expect(error.code).toBe("AI_CAPABILITY_DISABLED");
+        expect(error.capabilityId).toBe("test.capability");
     });
 
     /* Absent means enabled: a licence turns a capability on without anyone opting in. */

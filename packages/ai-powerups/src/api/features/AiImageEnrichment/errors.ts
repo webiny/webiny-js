@@ -1,3 +1,8 @@
+import type { EnrichmentCapabilityDisabledError } from "./EnrichmentCapabilityDisabledError.js";
+
+/* Its own file, one class per file, but re-exported so every caller imports errors from here. */
+export { EnrichmentCapabilityDisabledError } from "./EnrichmentCapabilityDisabledError.js";
+
 /**
  * Errors shared by every image-enrichment entry point (the background task and the streaming HTTP
  * route). Each carries a `code` so callers can map it to their own transport: the task turns them
@@ -40,19 +45,6 @@ export class EnrichmentNoProviderError extends Error {
             reason ??
                 "No AI model is configured for image enrichment. Pick one under Settings → AI Power-Ups → Model roles."
         );
-    }
-}
-
-/**
- * Image enrichment is switched off in settings. Not a failure: someone chose it, so the upload task
- * finishes as done, the same as for a file that is not an image. Kept apart from
- * `EnrichmentNoProviderError`, which is a real misconfiguration and should stay loud.
- */
-export class EnrichmentCapabilityDisabledError extends Error {
-    readonly code = "ENRICHMENT_CAPABILITY_DISABLED" as const;
-
-    constructor(reason: string) {
-        super(reason);
     }
 }
 

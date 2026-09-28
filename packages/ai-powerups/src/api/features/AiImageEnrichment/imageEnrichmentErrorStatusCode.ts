@@ -1,8 +1,5 @@
-import {
-    EnrichmentCapabilityDisabledError,
-    EnrichmentFileNotFoundError,
-    EnrichmentNotAnImageError
-} from "./errors.js";
+import { EnrichmentFileNotFoundError, EnrichmentNotAnImageError } from "./errors.js";
+import { EnrichmentCapabilityDisabledError } from "./errors.js";
 import type { ImageEnrichmentError } from "./errors.js";
 
 /**

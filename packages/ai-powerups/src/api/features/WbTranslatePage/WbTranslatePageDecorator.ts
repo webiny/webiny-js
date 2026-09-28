@@ -6,8 +6,8 @@ import { GetDefaultLanguageUseCase } from "@webiny/languages/exports/api/languag
 import { TranslatePageUseCase } from "@webiny/api-website-builder/features/pages/TranslatePage/index.js";
 import { UpdatePageRepository } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";
 import type { WbPage } from "@webiny/api-website-builder/domain/page/abstractions.js";
+import { AiCapabilityDisabledError } from "~/api/features/Capabilities/index.js";
 import {
-    AiCapabilityDisabledError,
     ResolveAiCapabilityUseCase,
     withAdditionalInstructions
 } from "~/api/features/Capabilities/index.js";
