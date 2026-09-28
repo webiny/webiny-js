@@ -125,7 +125,7 @@ Source: the repo-wide audit in `docs/reports/` (index: `docs/reports/README.md`)
 | B7.4 | [languages](../../reports/level-07/languages.md): `GetDefaultLanguage`/`GetLanguageByCode` return disabled languages. | S | ☐ |
 | B7.5 | [i18n](../../reports/level-00/i18n.md): locale-specific formats never apply. | S | ☐ |
 | B7.6 | [api-workflows](../../reports/level-07/api-workflows.md): reviewer e-mail notifications wired but never sent. | S | ☐ |
-| B7.7 | [api-mailer](../../reports/level-04/api-mailer.md): unconfigured SMTP silently uses a dummy transport. Depends on decision Q2. | S | ☐ |
+| B7.7 | ~~[api-mailer](../../reports/level-04/api-mailer.md): unconfigured SMTP silently uses a dummy transport.~~ Dropped per Q2: works as intended. | — | ❌ by design |
 | B7.8 | [sdk](../../reports/level-00/sdk.md): `createFiles` fail-fast leaves in-flight uploads creating records. | S | ☐ |
 | B7.9 | [api-graphql](../../reports/level-03/api-graphql.md): `RefInputScalar` throws `TypeError` on non-object input. | S | ✅ (agent repro) |
 | B7.10 | Smaller correctness issues: [plugins](../../reports/level-00/plugins.md) register misclassification; [mcp](../../reports/level-00/mcp.md) Copilot adapter + `serve` typo; [telemetry](../../reports/level-01/telemetry.md) opt-out event never sent; [api-event-handler-aws](../../reports/level-11/api-event-handler-aws.md) tenant header handling differs between API Gateway and Function URL paths; [event-handler-core](../../reports/level-01/event-handler-core.md) `Vary` overwrite. | S each | ☐ |
@@ -174,7 +174,7 @@ Confirm with CodeGraph/grep before deleting; small PRs.
 | ID | Question | Blocks |
 |---|---|---|
 | Q1 | ✅ Decided 2026-09-28: enforce server-side (details in B3.8). | B3.8 |
-| Q2 | Mailer: fail loudly when SMTP is not configured, or keep the silent dummy transport? | B7.7 |
+| Q2 | ✅ Decided 2026-09-28: the dummy transport is intended; a send through it counts as sent. No change. | B7.7 (dropped) |
 | Q3 | website-builder-nuxt parity with the Next.js preview/draft and A/B-cookie middleware. | C6 |
 | Q4 | `webiny` meta package: re-export curated entry points and version them properly? | B7.11 |
 | Q5 | Timezone: after fixing the scheduler path, change `DateTimePicker` globally? How to treat already-stored `dateTimeLocal` values? | B2.3b |
