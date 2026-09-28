@@ -1,7 +1,5 @@
-import {
-    SaveDashboardLayoutGateway,
-    SaveDashboardLayoutUseCase as UseCaseAbstraction
-} from "./abstractions.js";
+import { SaveDashboardLayoutGateway } from "./abstractions.js";
+import { SaveDashboardLayoutUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { DashboardLayoutData } from "../types.js";
 
 class SaveDashboardLayoutUseCaseImpl implements UseCaseAbstraction.Interface {

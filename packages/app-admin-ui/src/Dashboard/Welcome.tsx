@@ -1,8 +1,15 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React from "react";
+import { useEffect } from "react";
+import { useMemo } from "react";
+import { useState } from "react";
 import { autorun } from "mobx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { Button, Heading, IconButton, Text, Tooltip } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
+import { Heading } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
+import { Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as RestartAltIcon } from "@webiny/icons/restart_alt.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { useSecurity } from "@webiny/app-admin";
@@ -11,7 +18,8 @@ import { useDashboardLayoutPresenter } from "./dashboardLayout/presenter/useDash
 import { DashboardWidgetColumn } from "./components/dnd/DashboardWidgetColumn.js";
 import { DashboardDragLayer } from "./components/dnd/DashboardDragLayer.js";
 import { NewColumnDropZone } from "./components/dnd/NewColumnDropZone.js";
-import { AddWidgetDrawer, type DrawerWidget } from "./components/dnd/AddWidgetDrawer.js";
+import { AddWidgetDrawer } from "./components/dnd/AddWidgetDrawer.js";
+import type { DrawerWidget } from "./components/dnd/AddWidgetDrawer.js";
 import { ColumnCountControl } from "./components/dnd/ColumnCountControl.js";
 import { MIN_COLUMN_COUNT } from "./dashboardLayout/types.js";
 
@@ -45,9 +53,11 @@ const useContainerWidth = () => {
 /** Fold `columns` into `count` visual columns, contiguously, preserving reading order. */
 const collapseColumns = (columns: string[][], count: number): string[][] => {
     const result: string[][] = Array.from({ length: count }, () => []);
-    const groupSize = Math.max(1, Math.ceil(columns.length / count));
+    const perColumn = Math.ceil(columns.length / count);
+    const groupSize = Math.max(1, perColumn);
     columns.forEach((column, index) => {
-        const target = Math.min(Math.floor(index / groupSize), count - 1);
+        const group = Math.floor(index / groupSize);
+        const target = Math.min(group, count - 1);
         result[target].push(...column);
     });
     return result;
@@ -85,18 +95,16 @@ const Welcome = () => {
     // The saved layout arrives with the login profile — no extra round-trip.
     const savedLayout = identity?.profile?.dashboardLayout ?? null;
 
-    // Re-initialize the presenter only when the set of registered widgets changes.
+    // Re-initialize the presenter when the user or the set of registered widgets changes.
     const widgetsKey = widgets.map(w => `${w.name}:${toColumnIndex(w.column)}`).join("|");
     useEffect(() => {
-        presenter.init(
-            widgets.map(widget => ({
-                name: widget.name,
-                column: toColumnIndex(widget.column)
-            })),
-            savedLayout
-        );
+        const inputs = widgets.map(widget => ({
+            name: widget.name,
+            column: toColumnIndex(widget.column)
+        }));
+        presenter.init(identity!.id, inputs, savedLayout);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [widgetsKey]);
+    }, [identity?.id, widgetsKey]);
 
     const [vm, setVm] = useState(presenter.vm);
     useEffect(() => {
@@ -118,10 +126,62 @@ const Welcome = () => {
 
     // How many columns actually fit; below the chosen count we collapse (and go read-only).
     const { ref: containerRef, width } = useContainerWidth();
-    const fitCount = width > 0 ? Math.max(1, Math.floor(width / MIN_COLUMN_WIDTH)) : vm.columnCount;
+    let fitCount = vm.columnCount;
+    if (width > 0) {
+        const columnsThatFit = Math.floor(width / MIN_COLUMN_WIDTH);
+        fitCount = Math.max(1, columnsThatFit);
+    }
     const effectiveCount = Math.min(vm.columnCount, fitCount);
     const interactive = effectiveCount === vm.columnCount;
     const maxWidth = DASHBOARD_MAX_WIDTH;
+    const openDrawer = () => setDrawerOpen(true);
+
+    // Too narrow for the chosen count: fold the columns together and drop drag and drop.
+    let columns: React.ReactNode;
+    if (interactive) {
+        columns = (
+            <>
+                <DashboardDragLayer titles={titles} />
+                <div className={"flex"} style={{ maxWidth }}>
+                    <div className={"flex min-w-0 flex-1 gap-lg"}>
+                        {vm.columns.map((names, index) => (
+                            <DashboardWidgetColumn
+                                key={index}
+                                columnIndex={index}
+                                names={names}
+                                draggingName={vm.draggingName}
+                                dropTarget={vm.dropTarget}
+                                canRemoveColumn={vm.columnCount > MIN_COLUMN_COUNT}
+                                elements={elements}
+                                presenter={presenter}
+                                onBrowseWidgets={openDrawer}
+                            />
+                        ))}
+                    </div>
+                    {vm.canAddColumn && (
+                        <NewColumnDropZone
+                            visible={dragging}
+                            active={vm.dropNewColumn}
+                            presenter={presenter}
+                        />
+                    )}
+                </div>
+            </>
+        );
+    } else {
+        const collapsed = collapseColumns(vm.columns, effectiveCount);
+        columns = (
+            <div className={"flex gap-lg"} style={{ maxWidth }}>
+                {collapsed.map((names, index) => (
+                    <div key={index} className={"flex flex-1 flex-col gap-lg"}>
+                        {names.map(name => (
+                            <React.Fragment key={name}>{elements.get(name)}</React.Fragment>
+                        ))}
+                    </div>
+                ))}
+            </div>
+        );
+    }
 
     return (
         <DndProvider backend={HTML5Backend}>
@@ -160,49 +220,11 @@ const Welcome = () => {
                             variant={"primary"}
                             text={"Add widget"}
                             icon={<AddIcon />}
-                            onClick={() => setDrawerOpen(true)}
+                            onClick={openDrawer}
                         />
                     </div>
                 </div>
-                {interactive ? (
-                    <>
-                        <DashboardDragLayer titles={titles} />
-                        <div className={"flex"} style={{ maxWidth }}>
-                            <div className={"flex min-w-0 flex-1 gap-lg"}>
-                                {vm.columns.map((names, index) => (
-                                    <DashboardWidgetColumn
-                                        key={index}
-                                        columnIndex={index}
-                                        names={names}
-                                        draggingName={vm.draggingName}
-                                        dropTarget={vm.dropTarget}
-                                        canRemoveColumn={vm.columnCount > MIN_COLUMN_COUNT}
-                                        elements={elements}
-                                        presenter={presenter}
-                                        onBrowseWidgets={() => setDrawerOpen(true)}
-                                    />
-                                ))}
-                            </div>
-                            {vm.canAddColumn ? (
-                                <NewColumnDropZone
-                                    visible={dragging}
-                                    active={vm.dropNewColumn}
-                                    presenter={presenter}
-                                />
-                            ) : null}
-                        </div>
-                    </>
-                ) : (
-                    <div className={"flex gap-lg"} style={{ maxWidth }}>
-                        {collapseColumns(vm.columns, effectiveCount).map((names, index) => (
-                            <div key={index} className={"flex flex-1 flex-col gap-lg"}>
-                                {names.map(name => (
-                                    <React.Fragment key={name}>{elements.get(name)}</React.Fragment>
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                )}
+                {columns}
                 <AddWidgetDrawer
                     open={drawerOpen}
                     onOpenChange={setDrawerOpen}

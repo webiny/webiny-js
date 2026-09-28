@@ -1,14 +1,17 @@
-import React, { useRef } from "react";
+import React from "react";
+import { useRef } from "react";
 import { useDrop } from "react-dnd";
 import type { XYCoord } from "react-dnd";
-import { Button, Icon, Text } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { cn } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 import { ReactComponent as DashboardCustomizeIcon } from "@webiny/icons/dashboard_customize.svg";
-import { DASHBOARD_WIDGET_DND_TYPE, DashboardWidgetCard } from "./DashboardWidgetCard.js";
+import { DASHBOARD_WIDGET_DND_TYPE } from "./DashboardWidgetCard.js";
+import { DashboardWidgetCard } from "./DashboardWidgetCard.js";
 import { WidgetDropIndicator } from "./WidgetDropIndicator.js";
-import type {
-    DashboardDropTarget,
-    DashboardLayoutPresenter
-} from "../../dashboardLayout/presenter/abstractions.js";
+import type { DashboardDropTarget } from "../../dashboardLayout/presenter/abstractions.js";
+import type { DashboardLayoutPresenter } from "../../dashboardLayout/presenter/abstractions.js";
 
 interface DashboardWidgetColumnProps {
     columnIndex: number;
@@ -105,13 +108,13 @@ export const DashboardWidgetColumn = ({
                 );
             })}
             {showIndicatorBefore(null) ? <WidgetDropIndicator /> : null}
-            {names.length === 0 && !showIndicatorBefore(null) ? (
+            {names.length === 0 && !showIndicatorBefore(null) && (
                 <ColumnEmptyState
                     canRemove={canRemoveColumn}
                     onRemove={() => presenter.removeColumn(columnIndex)}
                     onBrowse={onBrowseWidgets}
                 />
-            ) : null}
+            )}
         </div>
     );
 };
@@ -125,11 +128,11 @@ interface ColumnEmptyStateProps {
 const ColumnEmptyState = ({ canRemove, onRemove, onBrowse }: ColumnEmptyStateProps) => {
     return (
         <div
-            className={
-                "flex min-h-[220px] flex-col items-center justify-center gap-sm rounded-lg " +
-                "border-sm border-dashed border-neutral-strong/40 bg-neutral-base/50 p-lg " +
+            className={cn(
+                "flex min-h-[220px] flex-col items-center justify-center gap-sm rounded-lg",
+                "border-sm border-dashed border-neutral-strong/40 bg-neutral-base/50 p-lg",
                 "transition-colors hover:border-neutral-strong/60 hover:bg-neutral-base"
-            }
+            )}
         >
             <span
                 className={"flex size-xl items-center justify-center rounded-md bg-neutral-dimmed"}
@@ -153,9 +156,9 @@ const ColumnEmptyState = ({ canRemove, onRemove, onBrowse }: ColumnEmptyStatePro
                     {"browse widgets"}
                 </button>
             </Text>
-            {canRemove ? (
+            {canRemove && (
                 <Button size={"sm"} variant={"ghost"} text={"Remove column"} onClick={onRemove} />
-            ) : null}
+            )}
         </div>
     );
 };

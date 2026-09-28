@@ -1,5 +1,6 @@
 import React from "react";
-import { Icon, ToggleGroup } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { ToggleGroup } from "@webiny/admin-ui";
 import { ReactComponent as TwoColumnsIcon } from "@webiny/icons/view_column_2.svg";
 import { ReactComponent as ThreeColumnsIcon } from "@webiny/icons/view_column.svg";
 import { ReactComponent as FourColumnsIcon } from "@webiny/icons/view_column_4.svg";

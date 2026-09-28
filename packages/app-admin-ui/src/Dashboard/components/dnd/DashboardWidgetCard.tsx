@@ -1,6 +1,10 @@
 import React from "react";
-import { useDrag, DragPreviewImage } from "react-dnd";
-import { DropdownMenu, IconButton, Tooltip, cn } from "@webiny/admin-ui";
+import { useDrag } from "react-dnd";
+import { DragPreviewImage } from "react-dnd";
+import { DropdownMenu } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
+import { Tooltip } from "@webiny/admin-ui";
+import { cn } from "@webiny/admin-ui";
 import { ReactComponent as DragIndicatorIcon } from "@webiny/icons/drag_indicator.svg";
 import { ReactComponent as MoreHorizIcon } from "@webiny/icons/more_horiz.svg";
 import type { DashboardLayoutPresenter } from "../../dashboardLayout/presenter/abstractions.js";
@@ -57,12 +61,12 @@ export const DashboardWidgetCard = ({
                     widgets put their own actions there (e.g. "View All").
                 */}
                 <div
-                    className={
-                        "absolute -top-md right-md z-10 flex gap-xxs rounded-md border-sm " +
-                        "border-neutral-dimmed bg-neutral-base p-xxs opacity-0 shadow-sm " +
-                        "transition-opacity group-hover:opacity-100 focus-within:opacity-100 " +
+                    className={cn(
+                        "absolute -top-md right-md z-10 flex gap-xxs rounded-md border-sm",
+                        "border-neutral-dimmed bg-neutral-base p-xxs opacity-0 shadow-sm",
+                        "transition-opacity group-hover:opacity-100 focus-within:opacity-100",
                         "has-[[data-state=open]]:opacity-100"
-                    }
+                    )}
                 >
                     <Tooltip
                         content={"Drag to move"}

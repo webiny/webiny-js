@@ -1,21 +1,19 @@
 import { makeAutoObservable } from "mobx";
 import { SaveDashboardLayoutUseCase } from "../saveLayout/abstractions.js";
-import {
-    DEFAULT_COLUMN_COUNT,
-    MAX_COLUMN_COUNT,
-    MIN_COLUMN_COUNT,
-    type DashboardLayoutData
-} from "../types.js";
-import {
-    DashboardLayoutPresenter as Abstraction,
-    type DashboardWidgetInput,
-    type IDashboardLayoutPresenter,
-    type IDashboardLayoutViewModel
-} from "./abstractions.js";
+import { DEFAULT_COLUMN_COUNT } from "../types.js";
+import { MAX_COLUMN_COUNT } from "../types.js";
+import { MIN_COLUMN_COUNT } from "../types.js";
+import type { DashboardLayoutData } from "../types.js";
+import { DashboardLayoutPresenter as Abstraction } from "./abstractions.js";
+import type { DashboardDropTarget } from "./abstractions.js";
+import type { DashboardWidgetInput } from "./abstractions.js";
+import type { IDashboardLayoutPresenter } from "./abstractions.js";
+import type { IDashboardLayoutViewModel } from "./abstractions.js";
 
 class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
     private _loading = true;
-    private _initialized = false;
+    // Whose layout this is. The presenter is a singleton, so a different user starts over.
+    private _userId: string | null = null;
     private _columns: string[][] = [];
     private _columnCount = DEFAULT_COLUMN_COUNT;
     private _hidden: string[] = [];
@@ -25,22 +23,32 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
     private _dropNewColumn = false;
     // Non-reactive: each registered widget's default column index, used when (re)adding a widget.
     private _defaultColumns = new Map<string, number>();
+    // Non-reactive: saves go out one at a time, and only the newest pending layout is kept.
+    private _saving = false;
+    private _pendingSave: DashboardLayoutData | null = null;
 
     constructor(private saveDashboardLayoutUseCase: SaveDashboardLayoutUseCase.Interface) {
         makeAutoObservable<
             DashboardLayoutPresenterImpl,
-            "saveDashboardLayoutUseCase" | "_defaultColumns"
+            | "saveDashboardLayoutUseCase"
+            | "_defaultColumns"
+            | "_saving"
+            | "_pendingSave"
+            | "flushSaves"
         >(this, {
             saveDashboardLayoutUseCase: false,
-            _defaultColumns: false
+            _defaultColumns: false,
+            _saving: false,
+            _pendingSave: false,
+            flushSaves: false
         });
     }
 
     get vm(): IDashboardLayoutViewModel {
-        const dropTarget =
-            this._dropColumn !== null
-                ? { column: this._dropColumn, beforeName: this._dropBeforeName }
-                : null;
+        let dropTarget: DashboardDropTarget | null = null;
+        if (this._dropColumn !== null) {
+            dropTarget = { column: this._dropColumn, beforeName: this._dropBeforeName };
+        }
 
         return {
             loading: this._loading,
@@ -54,10 +62,19 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
         };
     }
 
-    init(widgets: DashboardWidgetInput[], savedLayout: DashboardLayoutData | null): void {
-        if (!this._initialized) {
-            this._initialized = true;
-            this.applyOrder(widgets, normalizeLayout(savedLayout));
+    init(
+        userId: string,
+        widgets: DashboardWidgetInput[],
+        savedLayout: DashboardLayoutData | null
+    ): void {
+        if (this._userId !== userId) {
+            // New session or another user: load their saved layout, and drop any save still
+            // queued for the previous user so it can't land in this user's profile.
+            this._userId = userId;
+            this._pendingSave = null;
+            this.endDrag();
+            const layout = normalizeLayout(savedLayout);
+            this.applyOrder(widgets, layout);
             this._loading = false;
             return;
         }
@@ -213,14 +230,17 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
      * their default column.
      */
     private applyOrder(widgets: DashboardWidgetInput[], base: DashboardLayoutData): void {
-        const registered = new Set(widgets.map(w => w.name));
+        const names = widgets.map(w => w.name);
+        const registered = new Set(names);
         const placed = new Set<string>();
 
         const columnCount = clamp(base.columnCount, MIN_COLUMN_COUNT, MAX_COLUMN_COUNT);
         this._columnCount = columnCount;
-        this._defaultColumns = new Map(
-            widgets.map(w => [w.name, clamp(w.column, 0, columnCount - 1)])
-        );
+        const defaults: [string, number][] = widgets.map(w => [
+            w.name,
+            clamp(w.column, 0, columnCount - 1)
+        ]);
+        this._defaultColumns = new Map(defaults);
 
         const columns: string[][] = Array.from({ length: columnCount }, () => []);
 
@@ -283,16 +303,32 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
     }
 
     private persist(): void {
-        // Fire-and-forget: a failed save must not break the interaction.
-        this.saveDashboardLayoutUseCase
-            .execute({
-                columns: this._columns,
-                hidden: this._hidden,
-                columnCount: this._columnCount
-            })
-            .catch(() => {
-                // Ignore — the layout is still applied locally for this session.
-            });
+        this._pendingSave = {
+            columns: this._columns,
+            hidden: this._hidden,
+            columnCount: this._columnCount
+        };
+        if (!this._saving) {
+            void this.flushSaves();
+        }
+    }
+
+    /*
+     * Sends saves one after another. Parallel requests could finish out of order and leave an older
+     * layout on the server. A layout queued while a save is in flight replaces any older queued one.
+     */
+    private async flushSaves(): Promise<void> {
+        this._saving = true;
+        while (this._pendingSave) {
+            const layout = this._pendingSave;
+            this._pendingSave = null;
+            try {
+                await this.saveDashboardLayoutUseCase.execute(layout);
+            } catch {
+                // Ignore, a failed save must not break the interaction. The layout still applies locally.
+            }
+        }
+        this._saving = false;
     }
 }
 
@@ -327,22 +363,15 @@ function resizeColumns(columns: string[][], count: number): string[][] {
     return next;
 }
 
-/** Tolerate older saved layouts (pre-columns: `{ left, right }`, or missing fields). */
+/** Fill in defaults for a missing layout or missing fields. */
 function normalizeLayout(layout: DashboardLayoutData | null): DashboardLayoutData {
     if (!layout) {
         return { columns: [], hidden: [], columnCount: DEFAULT_COLUMN_COUNT };
     }
 
-    const legacy = layout as unknown as { left?: string[]; right?: string[] };
-    const columns = Array.isArray(layout.columns)
-        ? layout.columns
-        : [legacy.left ?? [], legacy.right ?? []];
-
-    const columnCount = clamp(
-        layout.columnCount ?? columns.length ?? DEFAULT_COLUMN_COUNT,
-        MIN_COLUMN_COUNT,
-        MAX_COLUMN_COUNT
-    );
+    const columns = layout.columns ?? [];
+    const requestedCount = layout.columnCount ?? columns.length;
+    const columnCount = clamp(requestedCount, MIN_COLUMN_COUNT, MAX_COLUMN_COUNT);
 
     return {
         columns,

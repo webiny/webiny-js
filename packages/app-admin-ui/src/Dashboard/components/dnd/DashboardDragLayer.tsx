@@ -2,6 +2,7 @@ import React from "react";
 import { useDragLayer } from "react-dnd";
 import type { XYCoord } from "react-dnd";
 import { Icon } from "@webiny/admin-ui";
+import { cn } from "@webiny/admin-ui";
 import { ReactComponent as DragIndicatorIcon } from "@webiny/icons/drag_indicator.svg";
 
 interface DragItem {
@@ -35,11 +36,11 @@ export const DashboardDragLayer = ({ titles }: DashboardDragLayerProps) => {
                 style={{
                     transform: `translate(${offset.x + 12}px, ${offset.y + 12}px) rotate(1.5deg)`
                 }}
-                className={
-                    "flex items-center gap-sm whitespace-nowrap rounded-lg border-sm " +
-                    "border-neutral-dimmed bg-neutral-base px-sm-extra py-sm-plus text-md " +
+                className={cn(
+                    "flex items-center gap-sm whitespace-nowrap rounded-lg border-sm",
+                    "border-neutral-dimmed bg-neutral-base px-sm-extra py-sm-plus text-md",
                     "font-semibold text-neutral-primary shadow-lg"
-                }
+                )}
             >
                 <Icon
                     icon={<DragIndicatorIcon />}

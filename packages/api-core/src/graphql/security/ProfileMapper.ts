@@ -1,4 +1,5 @@
-import type { AdminUser, DashboardLayout } from "~/types/users.js";
+import type { AdminUser } from "~/types/users.js";
+import type { DashboardLayout } from "~/types/users.js";
 
 interface IdentityProfile {
     firstName: string;

@@ -35,7 +35,11 @@ export interface IDashboardLayoutViewModel {
 
 export interface IDashboardLayoutPresenter {
     vm: IDashboardLayoutViewModel;
-    init(widgets: DashboardWidgetInput[], savedLayout: DashboardLayoutData | null): void;
+    init(
+        userId: string,
+        widgets: DashboardWidgetInput[],
+        savedLayout: DashboardLayoutData | null
+    ): void;
     beginDrag(name: string): void;
     hoverSlot(column: number, beforeName: string | null): void;
     hoverNewColumn(): void;

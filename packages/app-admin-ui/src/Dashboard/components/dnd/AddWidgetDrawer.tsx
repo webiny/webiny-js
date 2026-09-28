@@ -1,9 +1,18 @@
-import React, { useMemo, useState } from "react";
-import { useDrag, DragPreviewImage } from "react-dnd";
-import { Button, Drawer, Icon, Input, Text, cn } from "@webiny/admin-ui";
+import React from "react";
+import { useMemo } from "react";
+import { useState } from "react";
+import { useDrag } from "react-dnd";
+import { DragPreviewImage } from "react-dnd";
+import { Button } from "@webiny/admin-ui";
+import { Drawer } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { Input } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
+import { cn } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
-import { DASHBOARD_WIDGET_DND_TYPE, EMPTY_DRAG_IMAGE } from "./DashboardWidgetCard.js";
+import { DASHBOARD_WIDGET_DND_TYPE } from "./DashboardWidgetCard.js";
+import { EMPTY_DRAG_IMAGE } from "./DashboardWidgetCard.js";
 import type { DashboardLayoutPresenter } from "../../dashboardLayout/presenter/abstractions.js";
 
 export interface DrawerWidget {
@@ -53,21 +62,23 @@ export const AddWidgetDrawer = ({
         const byGroup = new Map<string, DrawerWidget[]>();
         for (const widget of matches) {
             const group = widget.group ?? DEFAULT_GROUP;
-            byGroup.set(group, [...(byGroup.get(group) ?? []), widget]);
+            const items = byGroup.get(group) ?? [];
+            byGroup.set(group, [...items, widget]);
         }
         return [...byGroup.entries()];
     }, [widgets, search]);
+
+    let description = "Add a widget to its default column.";
+    if (canDrag) {
+        description = "Drag a widget onto the dashboard, or add it to its default column.";
+    }
 
     return (
         <Drawer
             open={open}
             onOpenChange={onOpenChange}
             title={"Add widget"}
-            description={
-                canDrag
-                    ? "Drag a widget onto the dashboard, or add it to its default column."
-                    : "Add a widget to its default column."
-            }
+            description={description}
             width={400}
             headerSeparator={true}
             showCloseButton={true}
@@ -79,11 +90,11 @@ export const AddWidgetDrawer = ({
                 onChange={setSearch}
                 startIcon={<Icon label={"Search"} icon={<SearchIcon />} />}
             />
-            {groups.length === 0 ? (
+            {groups.length === 0 && (
                 <Text as={"div"} size={"sm"} className={"mt-lg text-neutral-strong"}>
                     {`No widgets match "${search}".`}
                 </Text>
-            ) : null}
+            )}
             {groups.map(([group, items]) => (
                 <div key={group} className={"mt-lg"}>
                     <Text
@@ -152,11 +163,11 @@ const DrawerWidgetRow = ({ widget, canDrag, presenter }: DrawerWidgetRowProps) =
                     <Text as={"div"} size={"md"} className={"font-semibold"}>
                         {widget.title}
                     </Text>
-                    {widget.description ? (
+                    {widget.description && (
                         <Text as={"div"} size={"sm"} className={"mt-xxs text-neutral-strong"}>
                             {widget.description}
                         </Text>
-                    ) : null}
+                    )}
                 </div>
                 <Button
                     size={"sm"}
@@ -176,10 +187,10 @@ const WidgetThumbnail = ({ added }: { added: boolean }) => {
     return (
         <div
             aria-hidden
-            className={
-                "flex h-[58px] w-[84px] flex-none flex-col gap-xxs overflow-hidden rounded-sm " +
+            className={cn(
+                "flex h-[58px] w-[84px] flex-none flex-col gap-xxs overflow-hidden rounded-sm",
                 "border-sm border-neutral-muted bg-neutral-light p-xs"
-            }
+            )}
         >
             <div className={"flex items-center gap-[3px]"}>
                 <span
