@@ -19,7 +19,8 @@ import { LockEntryUseCase } from "~/features/LockEntry/abstractions.js";
 import { UpdateEntryLockUseCase } from "~/features/UpdateEntryLock/abstractions.js";
 import { UnlockEntryUseCase } from "~/features/UnlockEntry/abstractions.js";
 import { UnlockEntryRequestUseCase } from "~/features/UnlockEntryRequest/abstractions.js";
-import { resolve, resolveList } from "./resolve.js";
+import { resolve } from "./resolve.js";
+import { resolveList } from "./resolve.js";
 import { checkPermissions } from "./checkPermissions.js";
 
 interface IEntryArgs {

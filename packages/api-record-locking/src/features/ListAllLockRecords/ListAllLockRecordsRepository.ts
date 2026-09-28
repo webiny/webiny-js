@@ -6,7 +6,8 @@ import {
 } from "./abstractions.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { CmsWhereMapper } from "@webiny/api-headless-cms";
-import { RecordLockingConfig, RecordLockingModelProvider } from "~/domain/abstractions.js";
+import { RecordLockingConfig } from "~/domain/abstractions.js";
+import { RecordLockingModelProvider } from "~/domain/abstractions.js";
 import { LockRecordPersistenceError } from "~/domain/errors.js";
 import { convertWhereCondition } from "~/utils/convertWhereCondition.js";
 import { LockRecord } from "~/domain/LockRecord.js";

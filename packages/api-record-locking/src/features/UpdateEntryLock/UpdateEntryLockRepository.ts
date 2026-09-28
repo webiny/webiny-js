@@ -4,7 +4,8 @@ import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEn
 import { Result } from "@webiny/feature/api";
 import { createIdentifier } from "@webiny/utils";
 import { UpdateEntryLockRepository as RepositoryAbstraction } from "./abstractions.js";
-import { RecordLockingConfig, RecordLockingModelProvider } from "~/domain/abstractions.js";
+import { RecordLockingConfig } from "~/domain/abstractions.js";
+import { RecordLockingModelProvider } from "~/domain/abstractions.js";
 import type { ILockRecord } from "~/domain/LockRecord.js";
 import { LockRecord } from "~/domain/LockRecord.js";
 import type { LockRecordValues } from "~/domain/types.js";

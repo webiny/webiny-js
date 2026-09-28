@@ -18,7 +18,7 @@ export namespace RecordLockingConfig {
 }
 
 /**
- * RecordLockingModelProvider - Fetches the private CMS model that stores lock records
+ * RecordLockingModelProvider - Fetches the private CMS model that stores lock records.
  */
 export interface IRecordLockingModelProvider {
     get(): Promise<CmsModel>;
