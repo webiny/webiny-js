@@ -171,8 +171,40 @@ export class ComponentsSdk {
                 return __remoteComponent__;
             `);
             const mod = fn();
+
+            /*
+             * Each way this can fail says which one it was.
+             *
+             * These used to be one silent `if (!component) return null`, and callers drop a null —
+             * the Next.js starter does `.filter(Boolean)` — so a component could vanish leaving no
+             * error, no warning and no count anywhere. The only visible symptom was an "Unknown
+             * component" warning later, from a different package, naming a component nothing had
+             * said had failed. Three different causes presented identically.
+             */
+            if (!mod) {
+                console.error(
+                    `[ComponentsSdk] "${entry.name}" defined no __remoteComponent__ — its bundle is not a component bundle.`
+                );
+                return null;
+            }
+            if (typeof mod.createComponent !== "function") {
+                console.error(
+                    `[ComponentsSdk] "${entry.name}" exports no createComponent — found: ${Object.keys(mod).join(", ") || "nothing"}.`
+                );
+                return null;
+            }
+
             const component = mod.createComponent(runtimeSdk);
             if (!component) {
+                console.error(
+                    `[ComponentsSdk] "${entry.name}" createComponent returned ${String(component)} — it builds nothing.`
+                );
+                return null;
+            }
+            if (!component.component) {
+                console.error(
+                    `[ComponentsSdk] "${entry.name}" createComponent returned no component — keys: ${Object.keys(component).join(", ") || "none"}.`
+                );
                 return null;
             }
 

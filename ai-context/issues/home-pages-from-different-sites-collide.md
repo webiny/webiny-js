@@ -26,6 +26,12 @@ that path returns one of them — the one composed last:
 So parkcityplace's, 2424tulane's and 71westland's home pages exist as records and are unreachable by
 path. **28 of 31 composed pages are uniquely addressable; 3 are not.**
 
+**Which three varies.** The winner is whichever run composed last, so re-composing in a different
+order changes which home pages are reachable: freehill held `/` on one pass and 71westland on the
+next, with nothing else about the runs changing. The defect is therefore not "three pages missing" —
+it is that the set of reachable pages depends on run sequencing rather than on anything about the
+sites. A report naming the missing pages is only true until the next compose.
+
 Every other page escapes this only by accident: these sites happen to use host-specific prefixes like
 `/apartments/la/new-orleans/…`, so their paths do not collide. A second site with `/contact` would
 collide exactly the same way.

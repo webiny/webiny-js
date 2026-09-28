@@ -86,3 +86,57 @@ describe("hydrateComponent — the name a component is registered under", () => 
         expect(hydrated?.scopeClassName).toBe("rc-2424tulane-faq-section");
     });
 });
+
+describe("hydrateComponent — saying why it failed", () => {
+    /*
+     * Each of these used to be the same silent `return null`. Callers drop a null, so a component
+     * vanished leaving no error, no warning and no count — and the only symptom was an "Unknown
+     * component" warning later, from a different package, naming a component nothing had said failed.
+     */
+    const failing = (bundle: string) => {
+        const messages: string[] = [];
+        const original = console.error;
+        console.error = (...args: unknown[]) => messages.push(args.map(String).join(" "));
+        try {
+            const result = sdk().hydrateComponent(entry("Site/Thing", bundle), dependencies);
+            return { result, messages };
+        } finally {
+            console.error = original;
+        }
+    };
+
+    it("says so when the bundle defines no component", () => {
+        const { result, messages } = failing("var x = 1;");
+
+        expect(result).toBeNull();
+        expect(messages.join(" ")).toContain("defined no __remoteComponent__");
+        expect(messages.join(" ")).toContain("Site/Thing");
+    });
+
+    it("says so when the bundle exports no createComponent", () => {
+        const { result, messages } = failing(`__remoteComponent__ = { somethingElse: 1 };`);
+
+        expect(result).toBeNull();
+        expect(messages.join(" ")).toContain("exports no createComponent");
+        expect(messages.join(" ")).toContain("somethingElse");
+    });
+
+    it("says so when the factory builds nothing", () => {
+        const { result, messages } = failing(
+            `__remoteComponent__ = { createComponent: function () { return null; } };`
+        );
+
+        expect(result).toBeNull();
+        expect(messages.join(" ")).toContain("builds nothing");
+    });
+
+    it("says so when the factory returns no component", () => {
+        const { result, messages } = failing(
+            `__remoteComponent__ = { createComponent: function () { return { manifest: { name: "x" } }; } };`
+        );
+
+        expect(result).toBeNull();
+        expect(messages.join(" ")).toContain("returned no component");
+        expect(messages.join(" ")).toContain("manifest");
+    });
+});

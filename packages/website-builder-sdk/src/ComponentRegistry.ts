@@ -49,6 +49,18 @@ export class ComponentRegistry {
         return this.registry.get(name);
     }
 
+    /**
+     * Every registered name.
+     *
+     * Exists so a failed lookup can say what it DOES have. "Unknown component: X" is the same message
+     * whether nothing registered at all, the component registered under a different name, or
+     * hydration dropped it — three different bugs with three different fixes, and one investigation
+     * had to separate them by hand because the message could not.
+     */
+    public names(): string[] {
+        return [...this.registry.keys()];
+    }
+
     /** subscribe to *all* registrations */
     public onRegister(fn: (reg: Registration) => void) {
         this.listeners.add(fn);

@@ -141,3 +141,14 @@ Three, in order of how fundamental:
 (1) is the fix. (2) is what makes the next one visible. (3) is what keeps a single bad component from
 costing a whole page, and would have turned this from five dead pages into five pages with one missing
 section and a line in the discard log.
+
+## A note on the fix's scope
+
+The first attempt indexed **every** list without children, and three existing tests failed
+immediately: a slot list keeps one path because `AddToParent` maintains its static array itself. The
+evidence — five broken pages — covered scalar data lists only, and the change had been scoped to the
+whole category.
+
+The repo defended an invariant that was invisible from the failing pages. Worth remembering as the
+argument for running a package's whole suite rather than the tests near the change: nothing about the
+symptom would have led anyone to slots.
