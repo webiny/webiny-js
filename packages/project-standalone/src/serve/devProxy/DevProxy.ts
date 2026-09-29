@@ -128,12 +128,9 @@ export class DevProxy {
     }
 
     private targetFor(url = "/"): ITarget {
-        // The prefix counts only as a whole path segment, and a query can follow it directly. The
-        // admin's own websocket connects to `/api?token=...&tenant=...`, and before the `?` case that
-        // upgrade went to admin, which never answers it, so the socket hung without an error.
-        const rest = url.startsWith(API_PREFIX) ? url.slice(API_PREFIX.length) : null;
+        const apiPath = toApiPath(url);
 
-        if (rest === null || !(rest === "" || rest.startsWith("/") || rest.startsWith("?"))) {
+        if (apiPath === null) {
             return { port: this.adminPort, path: url, name: "admin", prefix: undefined };
         }
 
@@ -142,7 +139,7 @@ export class DevProxy {
         // absolute URL for a client.
         return {
             port: this.apiPort,
-            path: rest.startsWith("/") ? rest : `/${rest}`,
+            path: apiPath,
             name: "api",
             prefix: API_PREFIX
         };
@@ -255,6 +252,38 @@ export class DevProxy {
         this.upgraded.add(socket);
         socket.once("close", () => this.upgraded.delete(socket));
     }
+}
+
+/**
+ * The path to send the api, or `null` when the URL belongs to admin.
+ *
+ *   /api                -> /
+ *   /api/graphql        -> /graphql
+ *   /api?token=abc      -> /?token=abc
+ *   /api-playground     -> null
+ *
+ * The `?` case is the admin's own websocket, which connects to `/api?token=...&tenant=...`. Without
+ * it that upgrade went to admin, which never answers it, so the socket hung without an error.
+ */
+function toApiPath(url: string): string | null {
+    if (!url.startsWith(API_PREFIX)) {
+        return null;
+    }
+
+    const rest = url.slice(API_PREFIX.length);
+
+    if (rest === "") {
+        return "/";
+    }
+    if (rest.startsWith("/")) {
+        return rest;
+    }
+    if (rest.startsWith("?")) {
+        return `/${rest}`;
+    }
+
+    // Only a name that happens to start with the same letters, like `/api-playground`.
+    return null;
 }
 
 /**
