@@ -2,8 +2,7 @@ import { NotFoundError, resolve, resolveList } from "@webiny/api-graphql";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { createZodError } from "@webiny/utils";
-import { AuditLogsContext } from "~/abstractions.js";
-import type { AuditLogsContextValue } from "~/types.js";
+import { AuditLogs } from "~/abstractions.js";
 import { getValidationSchema, listValidationSchema } from "./validation.js";
 
 interface IListAuditLogsWhere {
@@ -108,8 +107,8 @@ class AuditLogsGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<{ id: string }>({
             path: "AuditLogsQuery.getAuditLog",
-            dependencies: [AuditLogsContext],
-            resolver(auditLogs: AuditLogsContextValue) {
+            dependencies: [AuditLogs],
+            resolver(auditLogs: AuditLogs.Interface) {
                 return async ({ args }) => {
                     return resolve(async () => {
                         const validation = await getValidationSchema.safeParseAsync(args);
@@ -132,8 +131,8 @@ class AuditLogsGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<IListAuditLogsArgs>({
             path: "AuditLogsQuery.listAuditLogs",
-            dependencies: [AuditLogsContext],
-            resolver(auditLogs: AuditLogsContextValue) {
+            dependencies: [AuditLogs],
+            resolver(auditLogs: AuditLogs.Interface) {
                 return async ({ args }) => {
                     return resolveList(async () => {
                         const validation = await listValidationSchema.safeParseAsync(args);

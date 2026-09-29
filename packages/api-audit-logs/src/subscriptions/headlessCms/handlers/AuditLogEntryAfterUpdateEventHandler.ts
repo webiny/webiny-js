@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { EntryAfterUpdateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogEntryAfterUpdateEventHandlerImpl implements EntryAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: EntryAfterUpdateEventHandler.Event): Promise<void> {
         const { model, entry, original } = event.payload;
@@ -21,7 +21,7 @@ class AuditLogEntryAfterUpdateEventHandlerImpl implements EntryAfterUpdateEventH
                 "Entry revision updated",
                 { before: original, after: entry },
                 entry.id,
-                this.context
+                this.recorder
             );
         } catch (error) {
             throw WebinyError.from(error, {
@@ -35,5 +35,5 @@ class AuditLogEntryAfterUpdateEventHandlerImpl implements EntryAfterUpdateEventH
 export const AuditLogEntryAfterUpdateEventHandler =
     EntryAfterUpdateEventHandler.createImplementation({
         implementation: AuditLogEntryAfterUpdateEventHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [AuditLogRecorder]
     });

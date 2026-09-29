@@ -54,7 +54,7 @@ describe.skipIf(isSql)("create audit log", () => {
             evenMoreStringData: "abcdef"
         };
 
-        const result = await createAuditLog(message, data, entityId, context);
+        const result = await createAuditLog(message, data, entityId, context.recorder);
 
         expect(convertDates(result)).toMatchObject({
             id: expect.any(String),
@@ -109,7 +109,7 @@ describe.skipIf(isSql)("create audit log", () => {
             evenMoreStringData: "abcdef"
         };
 
-        await createAuditLog(message, data, entityId, context);
+        await createAuditLog(message, data, entityId, context.recorder);
 
         const { items } = await context.auditLogs.listAuditLogs({});
         expect(items).toHaveLength(1);

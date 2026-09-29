@@ -1,18 +1,18 @@
 import WebinyError from "@webiny/error";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { RoleAfterCreateEventHandler } from "@webiny/api-core/features/security/roles/CreateRole/index.js";
 
 class AuditLogRoleAfterCreateHandlerImpl implements RoleAfterCreateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: RoleAfterCreateEventHandler.Event): Promise<void> {
         try {
             const { role } = event.payload;
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.ROLE.CREATE);
 
-            await createAuditLog("Role created", role, role.id, this.context);
+            await createAuditLog("Role created", role, role.id, this.recorder);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogRoleAfterCreateHandler",
@@ -24,5 +24,5 @@ class AuditLogRoleAfterCreateHandlerImpl implements RoleAfterCreateEventHandler.
 
 export const AuditLogRoleAfterCreateHandler = RoleAfterCreateEventHandler.createImplementation({
     implementation: AuditLogRoleAfterCreateHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [AuditLogRecorder]
 });

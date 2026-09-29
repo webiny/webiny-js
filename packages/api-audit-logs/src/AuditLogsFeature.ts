@@ -1,11 +1,8 @@
 import { createFeature, type Container } from "@webiny/feature/api";
-import { GraphQLContextualSchema } from "@webiny/api-graphql";
-import { makeExecutableSchema } from "@graphql-tools/schema";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
-import { AuditLogsContext, AuditLogsStorage } from "./abstractions.js";
-import type { GraphQLSchema } from "graphql";
-import { createAuditLogsContextValue } from "./context/AuditLogsContextValue.js";
+import { AuditLogsConfig } from "./abstractions.js";
+import { AuditLogs } from "./features/AuditLogs.js";
+import { AuditLogRecorder } from "./features/AuditLogRecorder.js";
 import { createSubscriptionHooks } from "./subscriptions/index.js";
 import { AuditLogsGraphQLSchema } from "./graphql/AuditLogsGraphQLSchema.js";
 
@@ -26,39 +23,13 @@ export const AuditLogsFeature = createFeature({
             return;
         }
 
+        container.registerInstance(AuditLogsConfig, {
+            deleteLogsAfterDays: getDeleteLogsAfterDays(config.deleteLogsAfterDays)
+        });
+        container.register(AuditLogs);
+        container.register(AuditLogRecorder);
         container.register(AuditLogsGraphQLSchema);
 
-        let initialized = false;
-
-        const STUB_SCHEMA: GraphQLSchema = makeExecutableSchema({
-            typeDefs: "type Query\ntype Mutation",
-            assumeValidSDL: true
-        });
-
-        container.registerInstance(GraphQLContextualSchema, {
-            async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
-                if (initialized) {
-                    return STUB_SCHEMA;
-                }
-                initialized = true;
-
-                const storage = container.resolve(AuditLogsStorage);
-                const eventPublisher = container.resolve(EventPublisher);
-
-                ctx.auditLogs = createAuditLogsContextValue({
-                    getContext: () => ctx as any,
-                    deleteLogsAfterDays: getDeleteLogsAfterDays(config.deleteLogsAfterDays),
-                    storage,
-                    eventPublisher
-                });
-
-                // Handlers read `.auditLogs` and `.container` off this token, so it has to be the
-                // whole request context, not the `auditLogs` value on it.
-                container.registerInstance(AuditLogsContext, ctx as AuditLogsContext.Interface);
-                createSubscriptionHooks(ctx as any);
-
-                return STUB_SCHEMA;
-            }
-        });
+        createSubscriptionHooks(container);
     }
 });

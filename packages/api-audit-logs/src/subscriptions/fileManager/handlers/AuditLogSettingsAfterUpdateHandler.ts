@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { SettingsAfterUpdateEventHandler } from "@webiny/api-file-manager/features/settings/UpdateSettings/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogSettingsAfterUpdateHandlerImpl implements SettingsAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: SettingsAfterUpdateEventHandler.Event): Promise<void> {
         try {
@@ -16,7 +16,7 @@ class AuditLogSettingsAfterUpdateHandlerImpl implements SettingsAfterUpdateEvent
                 "Settings updated",
                 { before: original, after: settings },
                 "-",
-                this.context
+                this.recorder
             );
         } catch (error) {
             throw WebinyError.from(error, {
@@ -30,5 +30,5 @@ class AuditLogSettingsAfterUpdateHandlerImpl implements SettingsAfterUpdateEvent
 export const AuditLogSettingsAfterUpdateHandler =
     SettingsAfterUpdateEventHandler.createImplementation({
         implementation: AuditLogSettingsAfterUpdateHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [AuditLogRecorder]
     });
