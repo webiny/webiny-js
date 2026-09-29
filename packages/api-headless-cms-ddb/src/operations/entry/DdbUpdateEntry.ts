@@ -17,7 +17,11 @@ import {
     isEntryLevelEntryMetaField,
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants.js";
-import { convertFromStorageEntry, convertToStorageEntry } from "./storageEntryUtils.js";
+import { convertToStorageEntry } from "./storageEntryUtils.js";
+
+interface IGetLatestRevisionByEntryIdParams {
+    id: string;
+}
 
 class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
     constructor(
@@ -28,7 +32,7 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
 
     private async getLatestRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
         initialModel: CmsModel,
-        params: { id: string }
+        params: IGetLatestRevisionByEntryIdParams
     ) {
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
@@ -36,14 +40,7 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
             model,
             ids: [params.id]
         });
-        const item = items.shift() || null;
-        if (!item) {
-            return null;
-        }
-        return convertFromStorageEntry({
-            storageEntry: item,
-            model
-        });
+        return items.shift() || null;
     }
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(

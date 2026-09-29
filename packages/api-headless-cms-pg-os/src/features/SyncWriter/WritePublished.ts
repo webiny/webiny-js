@@ -11,7 +11,7 @@ class WritePublishedImpl implements Abstraction.Interface {
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(params: Abstraction.Params<T>) {
         const row = await this.buildSyncRecord.execute({ ...params, kind: "published" });
-        await this.syncRowQuery.create().insert(row).onConflict("id").merge();
+        await this.syncRowQuery.create().insert(row).onConflict(["tenant", "id"]).merge();
     }
 }
 

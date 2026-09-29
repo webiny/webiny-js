@@ -28,8 +28,8 @@ class SqlRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interface 
         await patchAllEntryRevisions(
             this.knex,
             this.entryTableManager.getTableName(),
+            model,
             params.entry.entryId,
-            model.tenant,
             parsed => {
                 const p = parsed as unknown as Record<string, unknown>;
                 p["wbyDeleted"] = false;
