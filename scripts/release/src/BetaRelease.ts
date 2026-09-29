@@ -1,5 +1,5 @@
 import semver from "semver";
-import { Release } from "./Release";
+import { Release } from "./Release.js";
 
 export class BetaRelease extends Release {
     // Name of the release, used for the default preid and error messages. Subclasses

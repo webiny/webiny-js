@@ -1,12 +1,15 @@
 import { execa } from "execa";
 import { Octokit } from "@octokit/rest";
-import { Changelog } from "./Changelog";
-import { GithubRelease } from "./GithubRelease";
-import { versionPackages } from "./versionPackages";
-import { publishPackages } from "./publishPackages";
-import { fetchNpmDistTags } from "./fetchNpmVersion";
+import { Changelog } from "./Changelog.js";
+import { GithubRelease } from "./GithubRelease.js";
+import { versionPackages } from "./versionPackages.js";
+import { publishPackages } from "./publishPackages.js";
+import { fetchNpmDistTags } from "./fetchNpmVersion.js";
 
 export class Release {
+    // Whether `--version` may contain a prerelease suffix (e.g. `6.4.0-beta.1`).
+    static allowPrereleaseVersion = false;
+
     distTag: string | undefined = undefined;
     version: string | undefined = undefined;
     preid: string | undefined = undefined;

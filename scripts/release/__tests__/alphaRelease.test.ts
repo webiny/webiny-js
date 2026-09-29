@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { AlphaRelease } from "../src/AlphaRelease";
+import { AlphaRelease } from "../src/AlphaRelease.js";
 
 const logger = {
     log: vi.fn(),

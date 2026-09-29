@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 vi.mock("execa", () => ({
     execa: vi.fn().mockResolvedValue({ stdout: "https://registry.npmjs.org/" })
 }));
 
-import { ANCHOR_PACKAGE, fetchNpmDistTags } from "../src/fetchNpmVersion";
+import { ANCHOR_PACKAGE, fetchNpmDistTags } from "../src/fetchNpmVersion.js";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 
