@@ -1,7 +1,8 @@
 import React from "react";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { EnvVar } from "@webiny/project/extensions/index.js";
-import { Api, Admin } from "@webiny/project-aws";
+import { Api } from "@webiny/project-aws/api.js";
+import { Admin } from "@webiny/project-aws/admin.js";
 import { z } from "zod";
 
 export const Okta = defineExtension({

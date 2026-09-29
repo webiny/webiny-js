@@ -6,6 +6,7 @@ import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { AiCapability } from "~/api/features/Capabilities/abstractions.js";
 import { ResolveAiCapabilityUseCase } from "~/api/features/Capabilities/abstractions.js";
 import { ResolveAiCapabilityUseCaseImplementation } from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
+import { AiCapabilityDisabledError } from "~/api/features/Capabilities/AiCapabilityDisabledError.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
 
 type Items = IAiPowerUpsSettings["capabilities"]["items"];
@@ -253,6 +254,22 @@ describe("ResolveAiCapabilityUseCase", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toContain("switched off");
+    });
+
+    /*
+     * Typed, so a caller that runs on its own (an upload, a page save) can skip instead of
+     * reporting a deliberate setting as a failure every time it fires.
+     */
+    it("reports switched off as its own error type", async () => {
+        const result = await resolver(
+            settings({ items: { "test.capability": { enabled: false, overrides: {} } } })
+        ).execute("test.capability");
+
+        expect(result.error).toBeInstanceOf(AiCapabilityDisabledError);
+
+        const error = result.error as AiCapabilityDisabledError;
+        expect(error.code).toBe("AI_CAPABILITY_DISABLED");
+        expect(error.capabilityId).toBe("test.capability");
     });
 
     /* Absent means enabled: a licence turns a capability on without anyone opting in. */
