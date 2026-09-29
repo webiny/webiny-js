@@ -15,6 +15,7 @@
  * The identity provider (e.g. `@webiny/self-hosted-auth`'s JWT IdP) must be registered by the variant
  * in `registerRootStorage`, so the RequestIdentityLoader driven by the identity decorator can resolve it.
  */
+import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import type { Container } from "@webiny/di";
 import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
@@ -75,6 +76,10 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // connection registry (ConnectionRegistry) is the storage variant's job (e.g. sql).
             rootContainer.register(ServerConnectionManager).inSingletonScope();
             rootContainer.register(NodeWsAdapter).inSingletonScope();
+
+            // ── GraphQL schema cache (root) ────────────────────────────
+            // Root, so a built schema outlives the request that built it.
+            GraphQLSchemaCacheFeature.register(rootContainer);
 
             // ── Background tasks (root) ────────────────────────────────
             // Mirrors the AWS handler registering its background-task transport at root. There is no

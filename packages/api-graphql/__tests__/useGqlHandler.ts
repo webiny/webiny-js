@@ -3,12 +3,13 @@ import { GraphQLEngineFeature } from "~/engine/index.js";
 import type { Container } from "@webiny/di";
 
 interface Params {
+    root?: (container: Container) => void;
     setup?: Array<(container: Container) => void>;
 }
 
-export default ({ setup = [] }: Params = {}) => {
+export default ({ root = () => {}, setup = [] }: Params = {}) => {
     const handler = createTestHttpHandler({
-        root: () => {},
+        root,
         child: async container => {
             // DI-native setup callbacks are plain `container => {}` functions (they register features /
             // request-context initializers / schema factories directly).
