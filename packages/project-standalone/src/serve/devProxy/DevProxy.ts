@@ -128,9 +128,12 @@ export class DevProxy {
     }
 
     private targetFor(url = "/"): ITarget {
-        const isApi = url === API_PREFIX || url.startsWith(`${API_PREFIX}/`);
+        // The prefix counts only as a whole path segment, and a query can follow it directly. The
+        // admin's own websocket connects to `/api?token=...&tenant=...`, and before the `?` case that
+        // upgrade went to admin, which never answers it, so the socket hung without an error.
+        const rest = url.startsWith(API_PREFIX) ? url.slice(API_PREFIX.length) : null;
 
-        if (!isApi) {
+        if (rest === null || !(rest === "" || rest.startsWith("/") || rest.startsWith("?"))) {
             return { port: this.adminPort, path: url, name: "admin", prefix: undefined };
         }
 
@@ -139,7 +142,7 @@ export class DevProxy {
         // absolute URL for a client.
         return {
             port: this.apiPort,
-            path: url.slice(API_PREFIX.length) || "/",
+            path: rest.startsWith("/") ? rest : `/${rest}`,
             name: "api",
             prefix: API_PREFIX
         };
