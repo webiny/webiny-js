@@ -74,6 +74,8 @@ import {
 } from "~/abstractions/index.js";
 import { getFeatureFlagsWithLicense } from "./decorators/index.js";
 import { traceAsync } from "./utils/trace/index.js";
+import { applyEnvVars } from "./services/InitProjectSdkService/applyEnvVars.js";
+import { applyWcpEnvVars } from "./services/InitProjectSdkService/applyWcpEnvVars.js";
 
 export const createProjectSdkContainer = async (
     params: Partial<ProjectSdkParamsService.Params>,
@@ -163,11 +165,37 @@ export const createProjectSdkContainer = async (
     logger.log("Initializing Project SDK container...");
 
     const projectConfigGetter = container.resolve(GetProjectConfig);
-    const projectExtensions = await traceAsync("get project extensions", () => {
+    const getProjectExtensions = () => {
         return projectConfigGetter.execute({
             tags: { runtimeContext: "project" }
         });
+    };
+
+    /*
+     * The WCP license is an input to the config render: license-gated feature flags decide which
+     * extensions the config contains. Fetching the license needs the WCP project ID, though, and
+     * unless `WEBINY_PROJECT_ID` is set, the ID comes from the config as well. So the config is read
+     * once to learn the project ID and the env vars it sets (a project can supply its WCP API key
+     * that way), the WCP env vars and license are fetched, and only then is the config read that
+     * every later step uses.
+     *
+     * The render cache is keyed on the license, so that second read renders again when a license
+     * arrived, and is a plain cache hit for a project that isn't linked to WCP.
+     */
+    const initialProjectExtensions = await traceAsync("read project ID and env vars", () => {
+        return getProjectExtensions();
     });
+    applyEnvVars(initialProjectExtensions);
+
+    await traceAsync("apply WCP env vars", () => applyWcpEnvVars(container));
+
+    const projectExtensions = await traceAsync("get project extensions", () => {
+        return getProjectExtensions();
+    });
+
+    // The licensed render can contain extensions the first one didn't, env vars among them.
+    // `applyEnvVars` never overwrites a variable that's already set, so running it again is safe.
+    applyEnvVars(projectExtensions);
 
     const projectConfigValidator = container.resolve(ValidateProjectConfig);
     await traceAsync("validate project extensions", () => {

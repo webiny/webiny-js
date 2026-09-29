@@ -17,6 +17,7 @@ import { ProjectConfigModel } from "~/models/ProjectConfigModel.js";
 import { toImportSpecifier } from "~/utils/index.js";
 import { traceAsync } from "~/utils/trace/index.js";
 import { renderConfig } from "./renderConfig.js";
+import { getRenderCacheKey } from "./getRenderCacheKey.js";
 
 export class DefaultGetProjectConfigService implements GetProjectConfigService.Interface {
     cachedRenderedConfigs: Record<string, IProjectConfigDto> = {};
@@ -32,7 +33,7 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
     ): Promise<GetProjectConfigService.Result> {
         const project = this.getProjectService.execute();
 
-        const cacheKey = JSON.stringify(params.renderArgs);
+        const cacheKey = getRenderCacheKey(params.renderArgs);
         if (!this.cachedRenderedConfigs[cacheKey]) {
             this.loggerService.info(
                 { renderArgs: params.renderArgs },
@@ -46,7 +47,6 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
                     () => {
                         return renderConfig({
                             project,
-                            args: params.renderArgs,
                             sdkParams: projectSdkParams
                         });
                     }
@@ -57,9 +57,20 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
                     `There was an error while rendering the project config. `
                 );
 
-                throw new Error(
-                    `An error occurred while rendering "webiny.config.tsx" config file:\n${err.message}`
-                );
+                const context = `An error occurred while rendering "webiny.config.tsx" config file:`;
+
+                /*
+                 * The original error is rethrown rather than wrapped, so its stack still points at
+                 * the line in the config that failed. Wrapping it in a new `Error` would replace
+                 * that stack with this one, and passing it as `cause` would not help either, since
+                 * the CLI unwraps `cause` and would report the inner message without this context.
+                 */
+                if (err instanceof Error) {
+                    err.message = `${context}\n${err.message}`;
+                    throw err;
+                }
+
+                throw new Error(`${context}\n${String(err)}`);
             }
         } else {
             this.loggerService.info(

@@ -180,8 +180,11 @@ export const createFolderTypeDefs = (params: CreateFolderTypeDefsParams): string
         
         extend type AcoFolder_Permissions {
              inheritedFrom: ID
+             # Set on permissions contributed from code, via an "FlpFactory". Read-only by design:
+             # deliberately absent from the input type below, so it cannot be assigned via the API.
+             plugin: Boolean
         }
-        
+
          extend input AcoFolder_PermissionsInput {
              inheritedFrom: ID
         }

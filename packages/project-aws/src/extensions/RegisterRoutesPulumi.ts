@@ -2,7 +2,6 @@ import { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
 import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
 import type { ApiPulumiApp } from "~/pulumi/apps/api/createApiPulumiApp.js";
 import { ApiRoute } from "./ApiRoute.js";
-import { ApiGraphql } from "~/pulumi/apps/api/ApiGraphql.js";
 import { deriveRouteName, toApiGatewayPath } from "./routePath.js";
 
 class RegisterRoutesPulumiImpl implements ApiPulumi.Interface {
@@ -16,6 +15,12 @@ class RegisterRoutesPulumiImpl implements ApiPulumi.Interface {
         if (!routeExtensions.length) {
             return;
         }
+
+        // Imported here rather than at the top of the file. Every CLI command imports this extension
+        // when the project SDK registers it, even `webiny --help`, and `ApiGraphql` pulls in all of
+        // Pulumi and the AWS SDK: about 2,700 modules. By the time `execute` runs we are inside a
+        // Pulumi program that has already loaded all of that, so importing it here costs nothing.
+        const { ApiGraphql } = await import("~/pulumi/apps/api/ApiGraphql.js");
 
         const graphqlModule = app.getModule(ApiGraphql);
 

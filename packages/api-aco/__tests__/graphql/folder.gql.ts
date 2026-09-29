@@ -11,6 +11,7 @@ const DATA_FIELD = (fields: string[] = []) => {
                 target
                 level
                 inheritedFrom
+                plugin
             }
             hasNonInheritedPermissions
             canManagePermissions

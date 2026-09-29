@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import isHotkey from "is-hotkey";
+import { isHotkey } from "is-hotkey";
 
 type HookProps = {
     disabled?: boolean;
