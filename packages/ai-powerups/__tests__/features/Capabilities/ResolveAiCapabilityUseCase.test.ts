@@ -158,14 +158,36 @@ describe("ResolveAiCapabilityUseCase", () => {
         expect(result.value.roleId).toBe("standard");
     });
 
-    it("falls back to standard when the requested role is empty, and says so", async () => {
-        // Reproduces an upgrade: migration fills only `standard`, so image work keeps running on
-        // the model it ran on before rather than failing.
-        const result = await resolver(settings({})).execute("test.noGuidance");
+    it("falls back to standard when an empty role is not vision, and says so", async () => {
+        const result = await resolver(
+            settings({ items: { "test.capability": { overrides: { roleId: "fast" } } } })
+        ).execute("test.capability");
 
         expect(result.value.model).toBe(MAIN);
         expect(result.value.roleId).toBe("standard");
         expect(result.value.fellBackToStandard).toBe(true);
+    });
+
+    /*
+     * Vision work sends images, and nothing guarantees Standard accepts them. A clear "set a
+     * Vision model" beats a provider error about image input, even though Standard is right there.
+     */
+    it("refuses an empty vision role rather than falling back to standard", async () => {
+        const result = await resolver(settings({})).execute("test.noGuidance");
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.message).toContain('"vision" role');
+        expect(result.error.message).toContain("does not fall back");
+    });
+
+    it("runs vision work on the vision role when it is set", async () => {
+        const result = await resolver(
+            settings({ roles: { vision: { connectionId: "conn-1", model: CHEAP } } })
+        ).execute("test.noGuidance");
+
+        expect(result.value.model).toBe(CHEAP);
+        expect(result.value.roleId).toBe("vision");
+        expect(result.value.fellBackToStandard).toBe(false);
     });
 
     it("fails with a message naming the settings screen when nothing is configured", async () => {
@@ -295,4 +317,31 @@ describe("ResolveAiCapabilityUseCase", () => {
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toContain("Unknown AI capability");
     });
+});
+
+/*
+ * The other half of typing "switched off": only that one is a decision, so only it may take the
+ * quiet path. Every misconfiguration has to stay a plain error, or background work would stop
+ * reporting it. The Vision rule added one more such failure, which is why it is listed.
+ */
+describe("ResolveAiCapabilityUseCase misconfigurations", () => {
+    const misconfigured: Array<[string, IAiPowerUpsSettings, string]> = [
+        ["no vision model", settings({}), "test.noGuidance"],
+        [
+            "no model at all",
+            settings({ roles: { standard: { connectionId: "", model: "" } } }),
+            "test.capability"
+        ],
+        ["deleted connection", settings({ connections: [] }), "test.capability"]
+    ];
+
+    it.each(misconfigured)(
+        "keeps %s out of the quiet, switched-off path",
+        async (_label, value, id) => {
+            const result = await resolver(value).execute(id);
+
+            expect(result.isFail()).toBe(true);
+            expect(result.error).not.toBeInstanceOf(AiCapabilityDisabledError);
+        }
+    );
 });
