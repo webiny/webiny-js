@@ -3,6 +3,7 @@ import { HttpRouteDefinition } from "~/features/http/abstractions.js";
 import type { IHttpRoute, IHttpRouteDefinition } from "~/features/http/abstractions.js";
 
 export interface ICreateHttpRouteDefinitionParams {
+    readonly name: string;
     readonly method: string;
     readonly path: string;
     readonly handler: Constructor<IHttpRoute>;
@@ -20,6 +21,7 @@ export function createHttpRouteDefinition(
     params: ICreateHttpRouteDefinitionParams
 ): Constructor<IHttpRouteDefinition> {
     class GeneratedHttpRouteDefinition implements HttpRouteDefinition.Interface {
+        readonly name = params.name;
         readonly method = params.method;
         readonly path = params.path;
         readonly handler = params.handler;

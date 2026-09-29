@@ -589,6 +589,7 @@ describe("content model test", () => {
             label: "Text field",
             help: "help text",
             list: false,
+            disabled: false,
             placeholder: "placeholder text",
             tags: [],
             predefinedValues: {
@@ -609,6 +610,7 @@ describe("content model test", () => {
             label: "Number field",
             help: "number help text",
             list: false,
+            disabled: false,
             placeholder: "number placeholder text",
             predefinedValues: {
                 enabled: false,

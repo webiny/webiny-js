@@ -98,6 +98,25 @@ export type {
     CommandPaletteViewModel
 } from "./presentation/commandPalette/index.js";
 
+// Admin assistant — the browser half. Holds the conversation the palette's AI mode renders and
+// talks to the api over HTTP; the assistant itself lives in @webiny/ai-powerups.
+export {
+    AdminAssistantGateway,
+    AdminAssistantFeature,
+    AdminAssistantPresenter
+} from "./features/adminAssistant/index.js";
+export type {
+    IAdminAssistantGateway,
+    AdminAssistantMessage,
+    AdminAssistantToolCall,
+    AdminAssistantPendingApproval,
+    AdminAssistantDecision,
+    AdminAssistantRequest,
+    AiTurnViewModel,
+    IAdminAssistantPresenter,
+    IAdminAssistantViewModel
+} from "./features/adminAssistant/index.js";
+
 // Breadcrumbs — pure-presentation trail via the React Config API. Drop a `<Breadcrumb>`
 // anywhere in a view; the header renders every mounted one as the trail.
 export { Breadcrumb } from "./config/AdminConfig/Breadcrumbs.js";

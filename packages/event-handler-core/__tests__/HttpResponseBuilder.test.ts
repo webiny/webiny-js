@@ -179,6 +179,17 @@ describe("HttpResponseBuilder.sse", () => {
         expect(headers["connection"]).toBe("keep-alive");
     });
 
+    /*
+     * Separate from the streaming headers above because it answers a different question. Every SSE
+     * response here carries per-identity output, and `no-cache` alone lets an intermediary keep a
+     * copy so long as it revalidates before reuse. Only `no-store` forbids the copy.
+     */
+    it("should forbid storing the response, not merely revalidating it", () => {
+        const headers = new HttpResponseBuilder().sse(source()).toResponse().headers!;
+
+        expect(headers["cache-control"]).toContain("no-store");
+    });
+
     it("should pass the source through untouched", async () => {
         const response = new HttpResponseBuilder().sse(source()).toResponse();
         const body = response.body as HttpStreamBody;

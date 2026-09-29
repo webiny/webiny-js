@@ -2,7 +2,7 @@
 
 ## What was done
 
-- Split `@webiny/background-tasks` into three packages: core (platform-agnostic), `@webiny/background-tasks-aws` (SFN/EventBridge/Lambda), `@webiny/background-tasks-server` (worker threads/HTTP route)
+- Split `@webiny/background-tasks` into three packages: core (platform-agnostic), `@webiny/background-tasks-aws` (SFN/EventBridge/Lambda), `@webiny/background-tasks-standalone` (worker threads/HTTP route)
 - Extracted `ITimer` from `@webiny/handler-aws` into core as `Timer` namespace pattern
 - Replaced `IStepFunctionServiceFetchResult` with generic `IServiceInfo` in core
 - Converted `TaskServicePlugin` (legacy plugin pattern) to proper DI `createAbstraction` pattern (`TaskService`)

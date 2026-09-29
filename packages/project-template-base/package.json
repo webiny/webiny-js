@@ -10,10 +10,11 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "Shared base config extensions for Webiny project templates (aws + server flavours).",
+  "description": "Shared base config extensions for Webiny project templates (aws + standalone flavours).",
   "license": "MIT",
   "dependencies": {
     "@webiny/ai-powerups": "0.0.0",
+    "@webiny/bug-reporter": "0.0.0",
     "@webiny/languages": "0.0.0",
     "@webiny/tenant-manager": "0.0.0",
     "react": "18.3.1"

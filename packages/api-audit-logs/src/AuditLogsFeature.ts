@@ -52,7 +52,9 @@ export const AuditLogsFeature = createFeature({
                     eventPublisher
                 });
 
-                container.registerInstance(AuditLogsContext, ctx.auditLogs);
+                // Handlers read `.auditLogs` and `.container` off this token, so it has to be the
+                // whole request context, not the `auditLogs` value on it.
+                container.registerInstance(AuditLogsContext, ctx as AuditLogsContext.Interface);
                 createSubscriptionHooks(ctx as any);
 
                 return STUB_SCHEMA;

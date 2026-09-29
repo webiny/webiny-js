@@ -12,6 +12,7 @@ import yargs from "yargs/yargs";
 import chalk from "chalk";
 import { Argv } from "yargs";
 import { GracefulError } from "@webiny/project";
+import { traceRecorder } from "@webiny/project/utils/trace/index.js";
 import { ManuallyReportedError } from "~/utils/ManuallyReportedError.js";
 
 const { blue, bgYellow, bold } = chalk;
@@ -129,14 +130,15 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
 
         const commands = this.commandsRegistryService.execute();
 
+        // Every registered command's definition is built on every run, no matter which command was
+        // actually invoked, so each one is timed separately.
         for (const command of commands) {
-            const {
-                name,
-                description,
-                params = [],
-                options = [],
-                handler
-            } = await command.execute();
+            const startedAt = performance.now();
+            const definition = await command.execute();
+
+            const { name, description, params = [], options = [], handler } = definition;
+
+            traceRecorder.record(`build "${name}" command`, startedAt, performance.now());
 
             let yargsCommand = name;
             const paramVersionExists = params.some(p => {

@@ -1,24 +1,18 @@
 import type { IDeleteModelTaskInput } from "./types.js";
 import type { IDeleteModelTaskOutput } from "./types.js";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { CmsContext } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { DELETE_MODEL_TASK } from "~/constants.js";
 
-type IRunParams = TaskDefinition.RunParams<IDeleteModelTaskInput, IDeleteModelTaskOutput>;
+type IRunParams = TaskHandler.RunParams<IDeleteModelTaskInput, IDeleteModelTaskOutput>;
 
-class DeleteModelTaskDefinition implements TaskDefinition.Interface<
+class DeleteModelTaskDefinitionHandlerImpl implements TaskHandler.Interface<
     IDeleteModelTaskInput,
     IDeleteModelTaskOutput
 > {
-    id = DELETE_MODEL_TASK;
-    title = "Delete model and all of the entries";
-    maxIterations = 50;
-    isPrivate = true;
-    databaseLogs = false;
-    description = "Delete a content model and all associated entries.";
-
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
-
     constructor(private context: CmsContext.Interface) {}
 
     async run(params: IRunParams) {
@@ -42,7 +36,25 @@ class DeleteModelTaskDefinition implements TaskDefinition.Interface<
     }
 }
 
+const DeleteModelTaskDefinitionHandler = TaskHandler.createImplementation({
+    implementation: DeleteModelTaskDefinitionHandlerImpl,
+    dependencies: [CmsContext]
+});
+
+class DeleteModelTaskDefinition implements TaskDefinition.Interface {
+    id = DELETE_MODEL_TASK;
+    title = "Delete model and all of the entries";
+    maxIterations = 50;
+    isPrivate = true;
+    databaseLogs = false;
+    description = "Delete a content model and all associated entries.";
+
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
+    handler = DeleteModelTaskDefinitionHandler;
+}
+
 export const DeleteModelTask = TaskDefinition.createImplementation({
     implementation: DeleteModelTaskDefinition,
-    dependencies: [CmsContext]
+    dependencies: []
 });

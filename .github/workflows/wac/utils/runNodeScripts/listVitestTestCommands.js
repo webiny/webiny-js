@@ -2,7 +2,9 @@ import fs from "fs";
 import path from "path";
 import { TestablePackage } from "./listVitestTestCommands/TestablePackage.js";
 
-export const listVitestPackages = (storageOps, whitelistedPackages = []) => {
+// `whitelistedPackages` omitted = test every package (push, slash commands).
+// An empty array = the PR changed no package, so there is nothing to test.
+export const listVitestPackages = (storageOps, whitelistedPackages) => {
     const projectFolderPath = path.join(import.meta.dirname, "../../../../..");
     const packagesFolderPath = path.join(projectFolderPath, "packages");
 
@@ -10,7 +12,7 @@ export const listVitestPackages = (storageOps, whitelistedPackages = []) => {
         .readdirSync(packagesFolderPath)
         .filter(name => !name.startsWith("."))
         .map(name => {
-            if (whitelistedPackages.length && !whitelistedPackages.includes(name)) {
+            if (whitelistedPackages && !whitelistedPackages.includes(name)) {
                 return null;
             }
 

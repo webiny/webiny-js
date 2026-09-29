@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../ai-powerups/tsconfig.build.json" },
+    { "path": "../bug-reporter/tsconfig.build.json" },
     { "path": "../languages/tsconfig.build.json" },
     { "path": "../tenant-manager/tsconfig.build.json" }
   ],
@@ -15,6 +16,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/ai-powerups/*": ["../ai-powerups/src/*"],
       "@webiny/ai-powerups": ["../ai-powerups/src"],
+      "@webiny/bug-reporter/*": ["../bug-reporter/src/*"],
+      "@webiny/bug-reporter": ["../bug-reporter/src"],
       "@webiny/languages/*": ["../languages/src/*"],
       "@webiny/languages": ["../languages/src"],
       "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],

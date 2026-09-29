@@ -8,8 +8,8 @@ export interface CliParams {
     /** Name of template to use (defaults to "aws") */
     template: string;
 
-    /** Hosting type: "aws" or "server" (self-hosted). Used in non-interactive mode. */
-    hostingType: "aws" | "server";
+    /** Hosting type: "aws" or "server" (standalone). Used in non-interactive mode. */
+    hostingType: "aws" | "standalone";
 
     /** JSON string with template-specific options */
     templateOptions: string | null;

@@ -4,7 +4,7 @@ import { ListAllPackageJsonFiles } from "./ListAllPackageJsonFiles.js";
 import { BuildDependencyTree } from "./BuildDependencyTree.js";
 import { IProjectModel } from "@webiny/project";
 
-export const createDependencyTree = (project: IProjectModel): IDependencyTree => {
+export const createDependencyTree = async (project: IProjectModel): Promise<IDependencyTree> => {
     const projectRoot = project.paths.rootFolder;
     const basePath = projectRoot.toString();
     const packagesFolderPath = projectRoot.join("packages").toString();
@@ -15,7 +15,7 @@ export const createDependencyTree = (project: IProjectModel): IDependencyTree =>
     const listAllPackageJsonFiles = new ListAllPackageJsonFiles();
     const buildDependencyTree = new BuildDependencyTree();
 
-    const allPackages = listAllPackages.list([packagesFolderPath, cypressFolderPath]);
+    const allPackages = await listAllPackages.list([packagesFolderPath, cypressFolderPath]);
 
     const allPackageJsonFiles = listAllPackageJsonFiles.list({
         targets: allPackages

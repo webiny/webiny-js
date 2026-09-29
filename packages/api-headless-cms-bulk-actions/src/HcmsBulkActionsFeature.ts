@@ -10,7 +10,7 @@ import { MoveToTrashBulkActionFeature } from "~/features/MoveToTrashBulkAction/f
 import { PublishEntriesBulkActionFeature } from "~/features/PublishEntriesBulkAction/feature.js";
 import { UnpublishEntriesBulkActionFeature } from "~/features/UnpublishEntriesBulkAction/feature.js";
 import { RestoreEntriesBulkActionFeature } from "~/features/RestoreEntriesBulkAction/feature.js";
-import { EmptyTrashBinTaskDefinition } from "~/tasks/EmptyTrashBinTaskDefinition.js";
+import { EmptyTrashBinTaskDefinition } from "~/tasks/EmptyTrashBinTask.js";
 import { BulkActionsGraphQLSchema } from "~/graphql/BulkActionsGraphQLSchema.js";
 
 export interface HcmsBulkActionsFeatureConfig {

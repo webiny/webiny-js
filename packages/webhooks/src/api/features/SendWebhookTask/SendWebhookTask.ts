@@ -1,5 +1,5 @@
 import "@webiny/background-tasks/api/types.js";
-import { TaskDefinition } from "@webiny/api-core/exports/api/tasks.js";
+import { TaskDefinition, TaskHandler } from "@webiny/api-core/exports/api/tasks.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
 import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
@@ -11,21 +11,12 @@ import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
 import type { ISendWebhookTaskInput, ISendWebhookTaskOutput, IWebhookPayload } from "./types.js";
 import type { IWebhookSignPayloadHeaders } from "@webiny/api-core/features/webhooks/WebhookSignPayload/abstractions.js";
 
-type IRunParams = TaskDefinition.RunParams<ISendWebhookTaskInput, ISendWebhookTaskOutput>;
+type IRunParams = TaskHandler.RunParams<ISendWebhookTaskInput, ISendWebhookTaskOutput>;
 
-class SendWebhookTaskDefinition implements TaskDefinition.Interface<
+class SendWebhookTaskHandlerImpl implements TaskHandler.Interface<
     ISendWebhookTaskInput,
     ISendWebhookTaskOutput
 > {
-    public readonly id = SEND_WEBHOOK_TASK;
-    public readonly title = "Send Webhook";
-    public readonly maxIterations = 1;
-    public readonly isPrivate = true;
-    public readonly databaseLogs = false;
-    public readonly description =
-        "POST a signed event payload to a webhook endpoint and log the delivery.";
-    public readonly selfCleanup = "always";
-
     public constructor(
         private readonly getWebhookRepository: GetWebhookRepository.Interface,
         private readonly getWebhookDeliveryRepository: GetWebhookDeliveryRepository.Interface,
@@ -112,8 +103,8 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
     }
 }
 
-export const SendWebhookTask = TaskDefinition.createImplementation({
-    implementation: SendWebhookTaskDefinition,
+const SendWebhookTaskHandler = TaskHandler.createImplementation({
+    implementation: SendWebhookTaskHandlerImpl,
     dependencies: [
         GetWebhookRepository,
         GetWebhookDeliveryRepository,
@@ -123,4 +114,22 @@ export const SendWebhookTask = TaskDefinition.createImplementation({
         GetWebhookSettingsRepository,
         WebhookDeliver
     ]
+});
+
+class SendWebhookTaskDefinition implements TaskDefinition.Interface {
+    public readonly id = SEND_WEBHOOK_TASK;
+    public readonly title = "Send Webhook";
+    public readonly maxIterations = 1;
+    public readonly isPrivate = true;
+    public readonly databaseLogs = false;
+    public readonly description =
+        "POST a signed event payload to a webhook endpoint and log the delivery.";
+    public readonly selfCleanup = "always";
+
+    handler = SendWebhookTaskHandler;
+}
+
+export const SendWebhookTask = TaskDefinition.createImplementation({
+    implementation: SendWebhookTaskDefinition,
+    dependencies: []
 });

@@ -40,6 +40,32 @@ describe("FetchApiStreamClient", () => {
         );
     });
 
+    /*
+     * CloudFront OAC signs the request but does not hash the body, so it takes the payload hash from
+     * this header. Omit it and a POST carrying a body is rejected with InvalidSignatureException while
+     * a bodyless one succeeds — a failure no existing route hit, because none sent a body.
+     */
+    it("should send the body's payload hash so OAC signing matches", async () => {
+        global.fetch = vi.fn().mockResolvedValue(okResponse());
+
+        await client.execute({ path: "/stream/ai/chat", body: { prompt: "hi" } });
+
+        const init = (global.fetch as any).mock.calls[0][1];
+        // sha256 of {"prompt":"hi"}
+        expect(init.headers["x-amz-content-sha256"]).toBe(
+            "14479f4e87d340fe0ca0d522d87a5b3a028ebb1af24fbb8d3ef4553044fc6db6"
+        );
+    });
+
+    it("should omit the payload hash when there is no body", async () => {
+        global.fetch = vi.fn().mockResolvedValue(okResponse());
+
+        await client.execute({ path: "/stream/fm/files/abc/enrich" });
+
+        const init = (global.fetch as any).mock.calls[0][1];
+        expect(init.headers).not.toHaveProperty("x-amz-content-sha256");
+    });
+
     it("should not produce a double slash when joining", async () => {
         global.fetch = vi.fn().mockResolvedValue(okResponse());
 

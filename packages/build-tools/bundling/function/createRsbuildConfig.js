@@ -13,8 +13,8 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
     // NOTE: dirty for now — sniffing the hosting type off an env var here. Ideally the build config
     // wouldn't know about hosting types at all: the caller (createBuildFunction, or the flavour's own
     // build layer) would pass in the externals policy + assetPrefix as options, keeping this file
-    // hosting-agnostic. Good enough while the server hosting type is ALPHA; revisit when it settles.
-    const isServer = process.env.WEBINY_HOSTING_TYPE === "server";
+    // hosting-agnostic. Good enough while the standalone hosting type is ALPHA; revisit when it settles.
+    const isStandalone = process.env.WEBINY_HOSTING_TYPE === "standalone";
 
     // Configurable via WEBINY_INFRA_API_MAX_BUNDLE_SIZE (bytes).
     // Only enforced during build — watch mode skips size checks.
@@ -31,7 +31,7 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
         // (handler.mjs) instead, so the chunk loads from build/. publicPath comes from
         // `output.assetPrefix` in production and `dev.assetPrefix` in development (watch runs
         // `rsbuild.build({ watch: true })` under NODE_ENV=development), so set BOTH. Not gated to the
-        // server hosting type: AWS has no worker chunks so it's a no-op there, and for any other
+        // standalone hosting type: AWS has no worker chunks so it's a no-op there, and for any other
         // (async import) chunks "auto" is at least as correct as "/" (Lambda runs from its own dir too).
         dev: { assetPrefix: "auto" },
         output: {
@@ -85,7 +85,7 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                 // one at runtime (e.g. better-sqlite3). AWS additionally externalizes aws-sdk (the
                 // Lambda runtime provides it). Server ships these in build/node_modules — the build's
                 // packaging step (CI/Linux) copies them, natives included.
-                externals: isServer
+                externals: isStandalone
                     ? [/^sharp$/, /^knex(\/|$)/]
                     : [/^@aws-sdk/, /^aws-sdk$/, /^sharp$/, /^knex(\/|$)/],
                 plugins: [

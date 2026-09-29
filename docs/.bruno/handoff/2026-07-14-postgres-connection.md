@@ -3,8 +3,8 @@
 ## What was done
 
 - Confirmed `api-headless-cms-sql` is fully Postgres-compatible (no SQLite-specific SQL anywhere)
-- Added `createPostgresConnection()` to `@webiny/api-event-handler-server-sql` with full env var support
-- Added `<Infra.Postgres>` config component to `@webiny/project-server` with all serializable pg options
+- Added `createPostgresConnection()` to `@webiny/api-event-handler-standalone-sql` with full env var support
+- Added `<Infra.Postgres>` config component to `@webiny/project-standalone` with all serializable pg options
 - Renamed `createSqliteApiHandler` to `createSqlApiHandler` (removed deprecated alias)
 - Updated server template to use new name
 - Added `pg` driver dependency

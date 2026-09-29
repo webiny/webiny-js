@@ -1,12 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import {
-    HttpRouteHandler,
-    HttpStreamBody,
-    buildHttpRoute,
-    invokeHttpRoute
-} from "@webiny/event-handler-core";
+import { HttpRouteHandler, HttpStreamBody, invokeHttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import {
@@ -18,6 +13,7 @@ import {
     PrepareImageEnrichmentUseCase
 } from "~/api/features/AiImageEnrichment/abstractions.js";
 import type { IPreparedImageEnrichment } from "~/api/features/AiImageEnrichment/abstractions.js";
+import { EnrichmentCapabilityDisabledError } from "~/api/features/AiImageEnrichment/errors.js";
 import {
     EnrichmentFileNotFoundError,
     EnrichmentNoProviderError,
@@ -29,6 +25,7 @@ const prepared: IPreparedImageEnrichment = {
     imageBase64: "aGVsbG8=",
     imageMediaType: "image/png",
     model: "anthropic/claude-sonnet-4-5",
+    prompt: "Describe this image.",
     connection: { sdkName: "anthropic", apiKey: "key" }
 };
 
@@ -92,7 +89,7 @@ describe("AiImageEnrichmentStreamRoute", () => {
         container.registerInstance(ApplyImageEnrichmentUseCase, apply as any);
         container.registerInstance(Ai, ai as any);
 
-        route = buildHttpRoute(container, AiImageEnrichmentStreamRoute);
+        route = container.resolveImplementation(AiImageEnrichmentStreamRoute);
     });
 
     it("should be a POST route with a file-scoped path", () => {
@@ -198,6 +195,17 @@ describe("AiImageEnrichmentStreamRoute", () => {
 
             expect(response.statusCode).toBe(500);
             expect(errorBody(response).code).toBe("ENRICHMENT_NO_AI_PROVIDER");
+        });
+
+        it("should answer 409, not 500, when image enrichment is switched off", async () => {
+            prepare.execute.mockResolvedValue(
+                Result.fail(new EnrichmentCapabilityDisabledError("switched off"))
+            );
+
+            const response = await invokeHttpRoute(route, request());
+
+            expect(response.statusCode).toBe(409);
+            expect(errorBody(response).code).toBe("ENRICHMENT_CAPABILITY_DISABLED");
         });
 
         it("should answer 400 when no file ID was matched", async () => {

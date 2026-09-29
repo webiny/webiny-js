@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { UnstableRelease } from "../src/UnstableRelease";
 
 vi.mock("execa", () => ({
-    default: vi.fn().mockResolvedValue({ stdout: "abc1234" })
+    execa: vi.fn().mockResolvedValue({ stdout: "abc1234" })
 }));
 
 const logger = {

@@ -6,7 +6,6 @@ import type { CmsContext } from "~/types";
 import { createRunner } from "@webiny/background-tasks/testing/index.js";
 import type { CreateIndexesRunner } from "@webiny/api-search-index-tasks";
 import { TenantIndexFactory } from "@webiny/api-search-index-tasks";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { createTestModelIndexName } from "@webiny/api-headless-cms-utils-os/testing/index.js";
 
 interface Context extends TasksContext, CmsContext {}
@@ -82,10 +81,10 @@ describe("Create index task", () => {
             }
         });
 
-        const taskDefinitions = context.container.resolveAll(TaskDefinition);
-        const createIndexesTask = taskDefinitions.find(
-            task => task.id === "elasticsearchCreateIndexes"
-        )!;
+        // `getDefinition` composes the definition's metadata with its handler's behaviour, which
+        // is what the runner receives. Resolving the raw TaskDefinition gives metadata only: the
+        // hooks live on the handler it names.
+        const createIndexesTask = context.tasks.getDefinition("elasticsearchCreateIndexes")!;
 
         const runner = createRunner({
             context,
@@ -99,7 +98,8 @@ describe("Create index task", () => {
                 },
                 name: createIndexesTask.title,
                 definitionId: createIndexesTask.id
-            }
+            },
+            definition: createIndexesTask
         });
 
         const result = await runner({

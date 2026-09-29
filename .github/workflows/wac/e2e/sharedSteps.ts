@@ -11,7 +11,7 @@ import { DIR_WEBINY_JS } from "./constants.js";
 export const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
 // Restore-only: the `/e2e` workflow is triggered by `issue_comment`, so its cache token cannot
 // write. These step groups are used by that workflow only - `push.yml` builds its own (savable)
-// ones and imports just `createServerProjectParts` from here.
+// ones and imports just `createStandaloneProjectParts` from here.
 export const yarnCacheSteps = createYarnCacheSteps({
     workingDirectory: DIR_WEBINY_JS,
     restoreOnly: true

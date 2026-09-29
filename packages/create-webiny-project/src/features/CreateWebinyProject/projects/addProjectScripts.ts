@@ -5,7 +5,7 @@ import path from "path";
  * Merges hosting-specific npm scripts into the generated project's `package.json`.
  *
  * The base template ships an empty `scripts` block because the useful shortcuts differ per hosting
- * type — e.g. self-hosted can watch everything with a single command, while AWS watches each app
+ * type — e.g. standalone can watch everything with a single command, while AWS watches each app
  * against its own cloud environment.
  */
 export const addProjectScripts = (

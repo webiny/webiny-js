@@ -1,6 +1,6 @@
 import os from "os";
 import path from "path";
-import { uuid as uuidv4 } from "@webiny/stdlib";
+import { randomUUID } from "crypto";
 import { loadJsonFileSync } from "load-json-file";
 import { writeJsonFileSync } from "write-json-file";
 import { isCI } from "ci-info";
@@ -20,7 +20,9 @@ export const globalConfig = {
         } catch {
             // A new config file is written if it doesn't exist or is invalid.
             this.__globalConfig = {
-                id: uuidv4(),
+                // Node's own v4 UUID. This used to come from `@webiny/stdlib`, whose root entry is
+                // about 30 modules, loaded on every CLI command just to generate this one ID.
+                id: randomUUID(),
                 telemetry: true,
 
                 // This flag is set to `false` the moment user successfully
@@ -29,6 +31,17 @@ export const globalConfig = {
                 // Also, in CI environments, we always set this to `false`.
                 newUser: isCI ? false : true
             };
+            writeJsonFileSync(GLOBAL_CONFIG_PATH, this.__globalConfig);
+        }
+
+        // Backfill `newUser` on configs that predate it, or that were written by something
+        // that didn't set it. Absent is not the same as `false`: the only thing that writes
+        // `false` is the first successful deploy, so a missing key means that never happened
+        // and the user is still new. Reading it as `Boolean(undefined)` reported every one of
+        // them as returning. Persisted so the state stops being ambiguous, and so every reader
+        // agrees without repeating this rule.
+        if (!("newUser" in this.__globalConfig)) {
+            this.__globalConfig.newUser = isCI ? false : true;
             writeJsonFileSync(GLOBAL_CONFIG_PATH, this.__globalConfig);
         }
 

@@ -1,3 +1,8 @@
+import type { EnrichmentCapabilityDisabledError } from "./EnrichmentCapabilityDisabledError.js";
+
+/* Its own file, one class per file, but re-exported so every caller imports errors from here. */
+export { EnrichmentCapabilityDisabledError } from "./EnrichmentCapabilityDisabledError.js";
+
 /**
  * Errors shared by every image-enrichment entry point (the background task and the streaming HTTP
  * route). Each carries a `code` so callers can map it to their own transport: the task turns them
@@ -30,8 +35,16 @@ export class EnrichmentFileContentsError extends Error {
 export class EnrichmentNoProviderError extends Error {
     readonly code = "ENRICHMENT_NO_AI_PROVIDER" as const;
 
-    constructor() {
-        super("No AI provider configured. Add a provider in AI Power Ups settings.");
+    /**
+     * The reason comes from capability resolution, which knows which of the several ways this can
+     * fail actually happened: no model in the Vision role, a deleted connection, a missing key.
+     * Passing it through beats replacing all of them with one generic sentence.
+     */
+    constructor(reason?: string) {
+        super(
+            reason ??
+                "No AI model is configured for image enrichment. Pick one under Settings → AI Power-Ups → Model roles."
+        );
     }
 }
 
@@ -48,4 +61,5 @@ export type ImageEnrichmentError =
     | EnrichmentNotAnImageError
     | EnrichmentFileContentsError
     | EnrichmentNoProviderError
+    | EnrichmentCapabilityDisabledError
     | EnrichmentPersistError;

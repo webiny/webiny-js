@@ -84,11 +84,25 @@ export class ValidateWebinyPkg {
 
         const issues: string[] = [];
 
-        // Check for expected files that don't exist
-        for (const relPath of expectedPaths) {
-            const fullPath = path.join(webinySrcPath, relPath);
+        // Check for expected files that are missing, or whose content drifted from
+        // what generation would produce. The content check catches hand-edits made
+        // directly in the generated `webiny` package (instead of a source package's
+        // `src/exports` folder) — such edits don't change the inputs hash and would
+        // otherwise pass silently, only to be wiped on the next generation.
+        //
+        // Comparison is whitespace-normalized: the committed files are `oxfmt`-formatted
+        // (multi-line, wrapped at print width) while `computeGenerationResult()` returns
+        // raw, unformatted merge output. Normalizing collapses that cosmetic difference
+        // while still catching any added/removed/renamed export or changed module path.
+        const normalize = (s: string) => s.replace(/\s+/g, " ").trim();
+        for (const { relativePath, content } of expected.files) {
+            const fullPath = path.join(webinySrcPath, relativePath);
             if (!fs.existsSync(fullPath)) {
-                issues.push(relPath);
+                issues.push(relativePath);
+                continue;
+            }
+            if (normalize(fs.readFileSync(fullPath, "utf-8")) !== normalize(content)) {
+                issues.push(`${relativePath} (content drift)`);
             }
         }
 

@@ -153,6 +153,10 @@ export class WcpContextImpl implements WcpContext.Interface {
         return this.license.canUseAiLexicalGeneration();
     }
 
+    canUseAiAdminAssistant(): boolean {
+        return this.license.canUseAiAdminAssistant();
+    }
+
     canUseAiEntryGeneration(): boolean {
         return this.license.canUseAiEntryGeneration();
     }
@@ -165,12 +169,28 @@ export class WcpContextImpl implements WcpContext.Interface {
         return this.license.canUseAiEntryTranslation();
     }
 
+    canUseAiPowerups(): boolean {
+        return this.license.canUseAiPowerups();
+    }
+
     canUseAbTesting(): boolean {
         return this.license.canUseAbTesting();
     }
 
     canUseRemoteComponents(): boolean {
         return this.license.canUseRemoteComponents();
+    }
+
+    canUseCollaboration(): boolean {
+        return this.license.canUseCollaboration();
+    }
+
+    canUseComments(): boolean {
+        return this.license.canUseComments();
+    }
+
+    canUseActivityLog(): boolean {
+        return this.license.canUseActivityLog();
     }
 
     ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL): void {

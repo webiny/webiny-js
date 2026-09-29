@@ -46,7 +46,9 @@ describe("SecureHeadersDecorator", () => {
             "authorization",
             "x-webiny-authorization",
             "x-tenant",
-            "content-type"
+            "content-type",
+            // Sent by a streaming client whenever its request carries a body.
+            "x-amz-content-sha256"
         ]) {
             expect(allowed).toContain(header);
         }

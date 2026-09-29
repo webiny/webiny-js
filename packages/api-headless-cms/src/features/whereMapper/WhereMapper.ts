@@ -32,13 +32,17 @@ class WhereMapperImpl implements CmsWhereMapper.Interface {
             return undefined;
         }
 
-        const fields = modelFields.map(field => {
-            return field.fieldId;
-        });
+        /*
+         * Longest fieldId first, so a key is attributed to the longest field it could belong to.
+         * Taking the segment before the first `_` misreads any fieldId that contains one:
+         * `on_sale_contains` resolves to a field named `on`, which does not exist, so the filter
+         * silently stays at the top level and the CMS rejects it. Longest-first also keeps a model
+         * with both `price` and `price_range` from being mis-routed.
+         */
+        const fields = modelFields.map(field => field.fieldId).sort((a, b) => b.length - a.length);
 
         const isField = (key: string): boolean => {
-            const field = key.split("_")[0];
-            return fields.includes(field);
+            return fields.some(fieldId => key === fieldId || key.startsWith(`${fieldId}_`));
         };
 
         return this.mapWhere({
@@ -68,6 +72,17 @@ class WhereMapperImpl implements CmsWhereMapper.Interface {
                         });
                     });
                 }
+                continue;
+            } else if (key === "values" && isPlainObject(value)) {
+                /*
+                 * A caller that already nested its model fields is taken at its word. Merged rather
+                 * than assigned, so an explicit `values` object and flat field keys can coexist:
+                 * assigning would drop whichever of the two arrived first.
+                 */
+                if (!out.values) {
+                    out.values = {};
+                }
+                Object.assign(out.values, value);
                 continue;
             } else if (isField(key)) {
                 if (!out.values) {

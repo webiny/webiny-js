@@ -1,11 +1,11 @@
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import { createCheckoutPrSteps } from "./steps/index.js";
 import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
-import type { ServerStorageOps } from "./e2e/index.js";
+import type { StandaloneStorageOps } from "./e2e/index.js";
 import {
     createAwsJobs,
-    createServerJobs,
-    serverVariantCommentRow,
+    createStandaloneJobs,
+    standaloneVariantCommentRow,
     DIR_WEBINY_JS,
     globalBuildCacheSteps,
     installBuildSteps,
@@ -13,9 +13,9 @@ import {
     yarnCacheSteps
 } from "./e2e/index.js";
 
-// The self-hosted variants that actually run. Drives both the PR status comment and the job list,
+// The standalone variants that actually run. Drives both the PR status comment and the job list,
 // so the two cannot drift apart.
-const SERVER_VARIANTS: ServerStorageOps[] = ["sqlite", "postgres"];
+const SERVER_VARIANTS: StandaloneStorageOps[] = ["sqlite", "postgres"];
 
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     command: "e2e",
@@ -27,7 +27,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         "| --- | --- | --- |",
         "| DDB | 🔄 Deploying... | - |",
         "| DDB+OS | 🔄 Deploying... | - |",
-        ...SERVER_VARIANTS.map(serverVariantCommentRow)
+        ...SERVER_VARIANTS.map(standaloneVariantCommentRow)
     ].join("\n"),
     captureCommentId: true,
     workflow: {
@@ -95,7 +95,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         ...createAwsJobs("ddb"),
         ...createAwsJobs("ddb-os"),
         ...SERVER_VARIANTS.reduce(
-            (jobs, storageOps) => ({ ...jobs, ...createServerJobs(storageOps) }),
+            (jobs, storageOps) => ({ ...jobs, ...createStandaloneJobs(storageOps) }),
             {}
         )
     }

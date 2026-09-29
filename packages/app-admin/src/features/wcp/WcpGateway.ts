@@ -44,6 +44,10 @@ const GET_WCP_PROJECT = /* GraphQL */ `
                             abTesting {
                                 enabled
                             }
+                            collaboration {
+                                enabled
+                                options
+                            }
                         }
                     }
                 }

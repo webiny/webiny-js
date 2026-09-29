@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
 import { compress } from "@webiny/utils/features/compression/legacy/gzip.js";
 import { WbGeneratePageContentUseCase } from "~/api/features/WbGeneratePageContent/index.js";
@@ -18,14 +21,7 @@ export interface IWbGeneratePageContentTaskInput {
     additionalFileIds?: string[] | null;
 }
 
-class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGeneratePageContentTaskInput> {
-    id = WB_GENERATE_PAGE_CONTENT_TASK_ID;
-    title = "AI Power-Ups - Generate Page Content";
-    description = "Generates page content using AI based on a user prompt.";
-    maxIterations = 1;
-    isPrivate = true;
-    databaseLogs = false;
-
+class WbGeneratePageContentTaskHandlerImpl implements TaskHandler.Interface<IWbGeneratePageContentTaskInput> {
     constructor(
         private identityContext: IdentityContext.Interface,
         private generatePageContent: WbGeneratePageContentUseCase.Interface,
@@ -35,7 +31,7 @@ class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGener
     async run({
         input,
         controller
-    }: TaskDefinition.RunParams<IWbGeneratePageContentTaskInput>): Promise<
+    }: TaskHandler.RunParams<IWbGeneratePageContentTaskInput>): Promise<
         TaskDefinition.Result<IWbGeneratePageContentTaskInput>
     > {
         if (controller.runtime.isAborted()) {
@@ -109,7 +105,23 @@ class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGener
     }
 }
 
+const WbGeneratePageContentTaskHandler = TaskHandler.createImplementation({
+    implementation: WbGeneratePageContentTaskHandlerImpl,
+    dependencies: [IdentityContext, WbGeneratePageContentUseCase, WebsocketsSendToIdentityUseCase]
+});
+
+class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface {
+    id = WB_GENERATE_PAGE_CONTENT_TASK_ID;
+    title = "AI Power-Ups - Generate Page Content";
+    description = "Generates page content using AI based on a user prompt.";
+    maxIterations = 1;
+    isPrivate = true;
+    databaseLogs = false;
+
+    handler = WbGeneratePageContentTaskHandler;
+}
+
 export const WbGeneratePageContentTask = TaskDefinition.createImplementation({
     implementation: WbGeneratePageContentTaskImpl,
-    dependencies: [IdentityContext, WbGeneratePageContentUseCase, WebsocketsSendToIdentityUseCase]
+    dependencies: []
 });

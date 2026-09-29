@@ -1,5 +1,8 @@
 import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface DeleteS3FolderInput {
     /**
@@ -20,19 +23,11 @@ export interface DeleteS3FolderInput {
     continuationToken?: string;
 }
 
-class DeleteS3FolderTask implements TaskDefinition.Interface<DeleteS3FolderInput> {
-    id = "fileManagerFolderDelete";
-    title = "Delete folder and all of its contents from the bucket.";
-    description = "A task to delete all files from a given folder.";
-    maxIterations = 5;
-    isPrivate = true;
-
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
-
+class DeleteS3FolderTaskHandlerImpl implements TaskHandler.Interface<DeleteS3FolderInput> {
     public async run({
         input,
         controller
-    }: TaskDefinition.RunParams<DeleteS3FolderInput>): Promise<
+    }: TaskHandler.RunParams<DeleteS3FolderInput>): Promise<
         TaskDefinition.Result<DeleteS3FolderInput>
     > {
         if (controller.runtime.isAborted()) {
@@ -78,6 +73,22 @@ class DeleteS3FolderTask implements TaskDefinition.Interface<DeleteS3FolderInput
 
         return controller.response.done();
     }
+}
+
+const DeleteS3FolderTaskHandler = TaskHandler.createImplementation({
+    implementation: DeleteS3FolderTaskHandlerImpl,
+    dependencies: []
+});
+
+class DeleteS3FolderTask implements TaskDefinition.Interface {
+    id = "fileManagerFolderDelete";
+    title = "Delete folder and all of its contents from the bucket.";
+    description = "A task to delete all files from a given folder.";
+    maxIterations = 5;
+    isPrivate = true;
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
+    handler = DeleteS3FolderTaskHandler;
 }
 
 export const DeleteS3FolderTaskDefinition = TaskDefinition.createImplementation({

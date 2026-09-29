@@ -4,7 +4,7 @@ let shown = false;
 
 /**
  * The "restart the watch command" notice is wired per app (`ApiBeforeWatch` + `AdminBeforeWatch`), but a
- * single `webiny watch` can now cover several apps in one process — self-hosted watches api and admin
+ * single `webiny watch` can now cover several apps in one process — standalone watches api and admin
  * together. The message is identical either way, so print it once per process instead of once per app.
  */
 export const showConfigChangeNotice = (ui: UiService.Interface) => {

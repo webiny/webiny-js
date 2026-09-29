@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { ListTasksUseCase, TriggerTaskUseCase, TasksCrud } from "@webiny/background-tasks/api";
 import type {
@@ -15,6 +18,7 @@ import { ProcessTask } from "./internals/ProcessTask.js";
 import { CreateTasksByModel } from "./internals/CreateTasksByModel.js";
 import { ProcessTasksByModel } from "./internals/ProcessTasksByModel.js";
 import type { Container } from "@webiny/di";
+import { RequestContainer } from "@webiny/event-handler-core";
 
 export const BULK_ACTION_LIST_TASK_ID = "hcmsBulkListEntries";
 export const BULK_ACTION_PROCESS_TASK_ID = "hcmsBulkProcessEntries";
@@ -28,17 +32,10 @@ const resolveBulkAction = (container: Container, actionName: string) => {
     return action;
 };
 
-class BulkActionListTask implements TaskDefinition.Interface<
+class BulkActionListTaskHandlerImpl implements TaskHandler.Interface<
     IBulkActionOperationByModelInput,
     IBulkActionOperationByModelOutput
 > {
-    public readonly id = BULK_ACTION_LIST_TASK_ID;
-    public readonly title = "Headless CMS: list entries for bulk action";
-    public readonly maxIterations = 500;
-    public readonly databaseLogs = false;
-    public readonly isPrivate = true;
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
-
     constructor(
         private readonly container: Container,
         private readonly getModel: GetModelUseCase.Interface,
@@ -50,11 +47,9 @@ class BulkActionListTask implements TaskDefinition.Interface<
 
     async run({
         input,
-        controller
-    }: TaskDefinition.RunParams<
-        IBulkActionOperationByModelInput,
-        IBulkActionOperationByModelOutput
-    >) {
+        controller,
+        definition
+    }: TaskHandler.RunParams<IBulkActionOperationByModelInput, IBulkActionOperationByModelOutput>) {
         try {
             if (!input.modelId) {
                 return controller.response.error(`Missing "modelId" in the input.`);
@@ -73,7 +68,7 @@ class BulkActionListTask implements TaskDefinition.Interface<
                         this.listTasks,
                         BULK_ACTION_PROCESS_TASK_ID
                     );
-                    return await processTasks.execute({ input, controller });
+                    return await processTasks.execute({ input, controller, definition });
                 }
                 case BulkActionOperationByModelAction.CREATE_SUBTASKS:
                 case BulkActionOperationByModelAction.CHECK_MORE_SUBTASKS: {
@@ -84,7 +79,7 @@ class BulkActionListTask implements TaskDefinition.Interface<
                         BULK_ACTION_PROCESS_TASK_ID,
                         batchSize
                     );
-                    return await createTasks.execute({ input, controller });
+                    return await createTasks.execute({ input, controller, definition });
                 }
                 case BulkActionOperationByModelAction.END_TASK: {
                     return controller.response.done(
@@ -101,19 +96,19 @@ class BulkActionListTask implements TaskDefinition.Interface<
         }
     }
 
-    async onDone({ task }: TaskDefinition.LifecycleHookParams): Promise<void> {
+    async onDone({ task }: TaskHandler.LifecycleHookParams): Promise<void> {
         await this.cleanup(task);
     }
 
-    async onError({ task }: TaskDefinition.LifecycleHookParams) {
+    async onError({ task }: TaskHandler.LifecycleHookParams) {
         await this.cleanup(task);
     }
 
-    async onAbort({ task }: TaskDefinition.LifecycleHookParams) {
+    async onAbort({ task }: TaskHandler.LifecycleHookParams) {
         await this.cleanup(task);
     }
 
-    async onMaxIterations({ task }: TaskDefinition.LifecycleHookParams) {
+    async onMaxIterations({ task }: TaskHandler.LifecycleHookParams) {
         await this.cleanup(task);
     }
 
@@ -127,46 +122,8 @@ class BulkActionListTask implements TaskDefinition.Interface<
     }
 }
 
-class BulkActionProcessTask implements TaskDefinition.Interface<
-    IBulkActionOperationInput,
-    IBulkActionOperationOutput
-> {
-    public readonly id = BULK_ACTION_PROCESS_TASK_ID;
-    public readonly title = "Headless CMS: process entries for bulk action";
-    public readonly maxIterations = 2;
-    public readonly databaseLogs = false;
-    public readonly isPrivate = true;
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
-
-    constructor(
-        private readonly container: Container,
-        private readonly getModel: GetModelUseCase.Interface
-    ) {}
-
-    async run({
-        input,
-        controller
-    }: TaskDefinition.RunParams<IBulkActionOperationInput, IBulkActionOperationOutput>) {
-        try {
-            if (!input.actionName) {
-                return controller.response.error(`Missing "actionName" in the input.`);
-            }
-
-            const bulkAction = resolveBulkAction(this.container, input.actionName);
-            const processTask = new ProcessTask(bulkAction, this.getModel);
-            return await processTask.execute({ input, controller });
-        } catch (ex) {
-            return controller.response.error(
-                ex.message ?? "Error while executing bulk action process task"
-            );
-        }
-    }
-}
-
-import { RequestContainer } from "@webiny/event-handler-core";
-
-export const BulkActionListTaskDefinition = TaskDefinition.createImplementation({
-    implementation: BulkActionListTask,
+const BulkActionListTaskHandler = TaskHandler.createImplementation({
+    implementation: BulkActionListTaskHandlerImpl,
     dependencies: [
         RequestContainer,
         GetModelUseCase,
@@ -177,7 +134,69 @@ export const BulkActionListTaskDefinition = TaskDefinition.createImplementation(
     ]
 });
 
+class BulkActionListTask implements TaskDefinition.Interface {
+    public readonly id = BULK_ACTION_LIST_TASK_ID;
+    public readonly title = "Headless CMS: list entries for bulk action";
+    public readonly maxIterations = 500;
+    public readonly databaseLogs = false;
+    public readonly isPrivate = true;
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
+    handler = BulkActionListTaskHandler;
+}
+
+class BulkActionProcessTaskHandlerImpl implements TaskHandler.Interface<
+    IBulkActionOperationInput,
+    IBulkActionOperationOutput
+> {
+    constructor(
+        private readonly container: Container,
+        private readonly getModel: GetModelUseCase.Interface
+    ) {}
+
+    async run({
+        input,
+        controller,
+        definition
+    }: TaskHandler.RunParams<IBulkActionOperationInput, IBulkActionOperationOutput>) {
+        try {
+            if (!input.actionName) {
+                return controller.response.error(`Missing "actionName" in the input.`);
+            }
+
+            const bulkAction = resolveBulkAction(this.container, input.actionName);
+            const processTask = new ProcessTask(bulkAction, this.getModel);
+            return await processTask.execute({ input, controller, definition });
+        } catch (ex) {
+            return controller.response.error(
+                ex.message ?? "Error while executing bulk action process task"
+            );
+        }
+    }
+}
+
+const BulkActionProcessTaskHandler = TaskHandler.createImplementation({
+    implementation: BulkActionProcessTaskHandlerImpl,
+    dependencies: [RequestContainer, GetModelUseCase]
+});
+
+class BulkActionProcessTask implements TaskDefinition.Interface {
+    public readonly id = BULK_ACTION_PROCESS_TASK_ID;
+    public readonly title = "Headless CMS: process entries for bulk action";
+    public readonly maxIterations = 2;
+    public readonly databaseLogs = false;
+    public readonly isPrivate = true;
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
+    handler = BulkActionProcessTaskHandler;
+}
+
+export const BulkActionListTaskDefinition = TaskDefinition.createImplementation({
+    implementation: BulkActionListTask,
+    dependencies: []
+});
+
 export const BulkActionProcessTaskDefinition = TaskDefinition.createImplementation({
     implementation: BulkActionProcessTask,
-    dependencies: [RequestContainer, GetModelUseCase]
+    dependencies: []
 });

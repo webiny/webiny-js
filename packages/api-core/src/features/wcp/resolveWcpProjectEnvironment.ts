@@ -4,7 +4,7 @@ import type { WcpProjectEnvironment } from "@webiny/wcp/types.js";
 /**
  * Resolve the WCP project environment used to fetch the license. Prefer the CLI-computed
  * WCP_PROJECT_ENVIRONMENT blob (set by `applyWcpEnvVars` during `webiny serve` and the AWS deploy).
- * When it's absent — a CLI-less self-hosted deploy that boots the built handler directly (e.g.
+ * When it's absent — a CLI-less standalone deploy that boots the built handler directly (e.g.
  * `node start.mjs`) — derive the same org, project and api key straight from the runtime env, so a
  * fresh license can still be fetched.
  */

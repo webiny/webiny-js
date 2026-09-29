@@ -4,7 +4,12 @@ import type { ZodType } from "zod";
 export interface IAiPowerUpsSettingsGroupHandler {
     readonly name: string;
     readonly inputSchema: ZodType<unknown>;
-    mapFromStorage(persisted: unknown): unknown;
+    /**
+     * `all` is the entire persisted settings blob. A group only needs it to read a section it does
+     * not own, which in practice means migrating away from one: `connections` and `modelRoles` both
+     * derive their defaults from the legacy `providers` section the first time they load.
+     */
+    mapFromStorage(persisted: unknown, all?: Record<string, unknown>): unknown;
     mapToStorage(internal: unknown, existing: unknown | null): Promise<unknown>;
 }
 

@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import type { JwtPayload } from "jsonwebtoken";
 import { createAbstraction, createFeature } from "@webiny/feature/api";
 import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
+import { SIGNING_SECRET_BUILD_PARAM } from "~/shared/buildParams.js";
+import { TOKEN_EXPIRES_IN_BUILD_PARAM } from "~/shared/buildParams.js";
 
 /**
  * The `iss` claim stamped onto every token we mint. The self-hosted
@@ -50,7 +52,7 @@ class JwtTokenIssuer implements ITokenIssuer {
      * here). Swap for an RS256 keypair if you ever want the verifier to hold only the public key.
      */
     constructor(buildParams: BuildParams.Interface) {
-        const secret = buildParams.get<string>("SelfHostedAuthSigningSecret");
+        const secret = buildParams.get<string>(SIGNING_SECRET_BUILD_PARAM);
         if (!secret) {
             throw new Error(
                 "Self-hosted auth requires a JWT signing secret. Configure it via " +
@@ -61,7 +63,7 @@ class JwtTokenIssuer implements ITokenIssuer {
 
         // Optional token lifetime override (seconds), configured via
         // `<SelfHostedAuth tokenExpiresIn={...}>`. Defaults to 12 hours.
-        const expiresIn = buildParams.get<number | string>("SelfHostedAuthTokenExpiresIn");
+        const expiresIn = buildParams.get<number | string>(TOKEN_EXPIRES_IN_BUILD_PARAM);
         this.expiresIn = expiresIn ? Number(expiresIn) : DEFAULT_EXPIRES_IN;
     }
 

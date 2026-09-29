@@ -21,3 +21,22 @@ export function toRouterPath(path: string): string {
         return `:${name}`;
     });
 }
+
+/**
+ * `/asd/{id}/xs` + POST → `asd-xs-post`. Handles either parameter syntax.
+ *
+ * Used for BOTH the Pulumi resource name and the route's DI name, so the name a decorator matches
+ * on is the same one that shows up in infrastructure.
+ */
+export function deriveRouteName(routePath: string, method: string): string {
+    // /asd/{id}/xs + POST → asd-xs-post. Strips parameters in either syntax.
+    const pathPart = routePath
+        .replace(/^\//, "")
+        .replace(/\{[^}]*\}/g, "")
+        .replace(/(^|\/):[^/]+/g, "$1")
+        .replace(/\/+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .toLowerCase();
+
+    return `${pathPart}-${method.toLowerCase()}`;
+}

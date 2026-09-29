@@ -62,9 +62,9 @@ This document provides the correct import paths and type definitions for commonl
 
 ### TaskDefinition
 
-- **Import:** `import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js"`
+- **Import:** `import { TaskDefinition, TaskHandler } from "@webiny/api-core/features/task/TaskDefinition/index.js"`
 - **Interface Type:** See `packages/api-core/src/features/task/TaskDefinition/abstractions.ts`
-- **Usage:** Define background tasks. Use `TaskDefinition.createImplementation({ implementation, dependencies })`. Register with `context.container.register(MyTask)`. The `run` method receives `{ input, controller }` where controller provides `response.done/error/aborted/continue` and `runtime.isAborted/isCloseToTimeout`.
+- **Usage:** Define background tasks as a PAIR, in one file. A `TaskHandler` implementation holds `run`, the lifecycle hooks and all the dependencies; a `TaskDefinition` implementation holds the metadata (`id`, `title`, `maxIterations`, `selfCleanup`, …), declares NO dependencies, and names the handler via `handler`. Only the definition is registered: `container.register(MyTaskDefinition)`. Looking a task up by id builds every registered definition, so keeping them dependency-free is the point; the runner resolves the one handler it needs. `run` receives `{ input, controller, definition }`, where `controller` provides `response.done/error/aborted/continue` and `runtime.isAborted/isCloseToTimeout`, and `definition` is the task's own metadata (useful in a `TaskHandler` decorator, which wraps every task).
 
 ### TaskService (high-level — trigger/abort)
 
@@ -76,7 +76,7 @@ This document provides the correct import paths and type definitions for commonl
 
 - **Import:** `import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js"`
 - **Interface Type:** See `packages/background-tasks/src/api/domain/TaskService.ts`
-- **Usage:** Low-level transport abstraction (`send` + `fetch`). Implemented by `StepFunctionService` (AWS) and `WorkerService` (server). Registered by `BackgroundTasksAwsFeature` or `BackgroundTasksServerFeature`. Namespace types: `TaskService.Interface`, `.SendTaskParams`, `.Task`.
+- **Usage:** Low-level transport abstraction (`send` + `fetch`). Implemented by `StepFunctionService` (AWS) and `WorkerService` (server). Registered by `BackgroundTasksAwsFeature` or `BackgroundTasksStandaloneFeature`. Namespace types: `TaskService.Interface`, `.SendTaskParams`, `.Task`.
 
 ### Timer
 
@@ -90,11 +90,11 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/background-tasks-aws/src/BackgroundTasksAwsFeature.ts`
 - **Usage:** Registers AWS background task transport (Step Functions + Lambda handler). Call `BackgroundTasksAwsFeature.register(container)` alongside `BackgroundTasksFeature`.
 
-### BackgroundTasksServerFeature
+### BackgroundTasksStandaloneFeature
 
-- **Import:** `import { BackgroundTasksServerFeature } from "@webiny/background-tasks-server"`
-- **Interface Type:** See `packages/background-tasks-server/src/BackgroundTasksServerFeature.ts`
-- **Usage:** Registers Node server background task transport (worker thread orchestrator + HTTP route). Call `BackgroundTasksServerFeature.register(container)` alongside `BackgroundTasksFeature`. Uses runtime-generated token for route auth (single-process only).
+- **Import:** `import { BackgroundTasksStandaloneFeature } from "@webiny/background-tasks-standalone"`
+- **Interface Type:** See `packages/background-tasks-standalone/src/BackgroundTasksStandaloneFeature.ts`
+- **Usage:** Registers Node server background task transport (worker thread orchestrator + HTTP route). Call `BackgroundTasksStandaloneFeature.register(container)` alongside `BackgroundTasksFeature`. Uses runtime-generated token for route auth (single-process only).
 
 ### ConnectionRegistry
 
@@ -152,25 +152,25 @@ This document provides the correct import paths and type definitions for commonl
 
 ### WebsocketsServerAdapter
 
-- **Import:** `import { WebsocketsServerAdapter } from "@webiny/api-websockets-server"`
-- **Interface Type:** See `packages/api-websockets-server/src/abstractions.ts`
+- **Import:** `import { WebsocketsServerAdapter } from "@webiny/api-websockets-standalone"`
+- **Interface Type:** See `packages/api-websockets-standalone/src/abstractions.ts`
 - **Usage:** DI abstraction wrapping the WebSocket library. Default implementation uses Node built-in `ws`. Namespace types: `WebsocketsServerAdapter.Interface<TSocket>`. Swap to use a different WS library (uWebSockets, etc.) via `WebsocketsServerAdapter.createImplementation(...)`.
 
 ### WebsocketsUpgradeHandler
 
-- **Import:** `import { WebsocketsUpgradeHandler } from "@webiny/api-websockets-server"`
-- **Interface Type:** See `packages/api-websockets-server/src/abstractions.ts`
+- **Import:** `import { WebsocketsUpgradeHandler } from "@webiny/api-websockets-standalone"`
+- **Interface Type:** See `packages/api-websockets-standalone/src/abstractions.ts`
 - **Usage:** Pre-connection filtering during HTTP upgrade (CORS, rate limiting, IP allowlists). Default accepts all. Namespace types: `WebsocketsUpgradeHandler.Interface`, `.Decision`. Swap via `WebsocketsUpgradeHandler.createImplementation(...)`.
 
 ### WebsocketsConnectionManager
 
-- **Import:** `import { WebsocketsConnectionManager } from "@webiny/api-websockets-server"`
-- **Interface Type:** See `packages/api-websockets-server/src/abstractions.ts`
+- **Import:** `import { WebsocketsConnectionManager } from "@webiny/api-websockets-standalone"`
+- **Interface Type:** See `packages/api-websockets-standalone/src/abstractions.ts`
 - **Usage:** Manages local socket map, syncs with SQL connection registry, handles heartbeat/TTL updates. Namespace types: `WebsocketsConnectionManager.Interface<TSocket>`, `.AddParams<TSocket>`, `.ConnectionMetadata`.
 
 ### Server Factory Functions
 
-- **Import:** `import { createWebsocketsServer, attachWebsocketsServer } from "@webiny/api-websockets-server"`
+- **Import:** `import { createWebsocketsServer, attachWebsocketsServer } from "@webiny/api-websockets-standalone"`
 - **Usage:** `createWebsocketsServer({ port, host, plugins, heartbeatInterval })` for standalone mode (creates HTTP+WS server). `attachWebsocketsServer({ server, plugins, heartbeatInterval })` for attach mode (uses existing HTTP server). Both return `IWebsocketsServer` with `start()`/`stop()`/`port()`.
 
 ### FileAfterCreateEventHandler (File Manager)

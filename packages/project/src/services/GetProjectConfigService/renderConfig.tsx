@@ -1,79 +1,34 @@
-import { fork } from "child_process";
-import path from "path";
-import { deserializeError } from "serialize-error";
-import {
-    type IProjectConfigDto,
-    type IProjectModel,
-    type IProjectModelDto
-} from "~/abstractions/models/index.js";
+import { type IProjectConfigDto } from "~/abstractions/models/index.js";
+import { type IProjectModel } from "~/abstractions/models/index.js";
 import { type ProjectSdkParamsService } from "~/abstractions/index.js";
-import { serializeProjectSdkContext, WBY_PROJECT_SDK_CONTEXT } from "~/utils/index.js";
+import { toImportSpecifier } from "~/utils/index.js";
+import { renderExtensions } from "./renderExtensions.js";
 
 export interface RenderConfigParams {
     project: IProjectModel;
-    args?: Record<string, any>;
     sdkParams: ProjectSdkParamsService.Params;
 }
 
-export interface RenderConfigParamsDto {
-    project: IProjectModelDto;
-    args?: Record<string, any>;
-}
+/*
+ * Renders `webiny.config.tsx` into the plain object the rest of the SDK works with.
+ *
+ * This used to happen in a forked child process, to work around the `Properties` context not being
+ * available in the main process. That no longer reproduces, and the fork was expensive and awkward:
+ * a second Node process booting and re-importing the whole of `@webiny/project`, anything the config
+ * logged swallowed along with its stdout, and errors flattened through a serialise and deserialise
+ * round trip that lost the stack pointing into the user's config.
+ *
+ * There is no `args` here any more. The child process put `{ project, args }` into its `process.argv`
+ * and read the project back out; the args half was never read by anything, and reproducing it would
+ * now mean rewriting the CLI's own `process.argv` mid-run. `renderArgs` still does its real job in
+ * `GetProjectConfigService`, where it keys the render cache so that build and watch get their own
+ * configs. If an extension ever needs those values, a context is the shape to give them.
+ */
+export const renderConfig = async (params: RenderConfigParams): Promise<IProjectConfigDto> => {
+    const configPath = params.project.paths.webinyConfigBaseFile.toString();
+    const configSpecifier = toImportSpecifier(configPath);
 
-export interface RenderConfigWorkerMessageDto {
-    type: "error" | "success";
-    error: Record<string, any> | null;
-    data: IProjectConfigDto | null;
-}
+    const { Extensions } = await import(configSpecifier);
 
-const getWorkerPath = () => {
-    // TODO: I have no idea why import.meta.dirname is sometimes undefined.
-    // TODO: Would be nice to further investigate this, but don't have time right now.
-    return path.join(import.meta.dirname || __dirname, "renderConfigWorker.js");
+    return renderExtensions({ Extensions, sdkParams: params.sdkParams });
 };
-
-export async function renderConfig(params: RenderConfigParams) {
-    // Initially, I did the reading of config in this file directly. But then I started
-    // bumping into an issue, where for some reason, the `Properties` context would not work.
-    // Basically, `useProperties` would throw an error message, saying that the `Properties`
-    // context is not available. So, I decided to move the reading of config into a separate
-    // worker file, which is then executed in a child process.
-    // This works. Why the context is not available in the main process, I have no idea.
-    // I tried multiple things, but nothing worked. Lost more than a day on this.
-    // Decided to move on, as this works and I don't have time to investigate this further.
-    return new Promise<IProjectConfigDto>((resolve, reject) => {
-        const workerPath = getWorkerPath();
-
-        const args = [
-            JSON.stringify({
-                project: params.project.toDto(),
-                args: params.args || {}
-            })
-        ];
-
-        const env = {
-            ...process.env,
-            [WBY_PROJECT_SDK_CONTEXT]: serializeProjectSdkContext(params.sdkParams)
-        };
-
-        const childProcess = fork(workerPath, args, {
-            stdio: ["pipe", "pipe", "pipe", "ipc"],
-            env
-        });
-
-        // Uncomment to forward the worker's console output to the parent process (useful for
-        // debugging the config render — e.g. feature flag resolution, extension registration).
-        // childProcess.stdout?.pipe(process.stdout);
-        // childProcess.stderr?.pipe(process.stderr);
-
-        // The only message we expect to receive is the parsed project config.
-        childProcess.on("message", (message: RenderConfigWorkerMessageDto) => {
-            if (message.type === "error") {
-                const error = deserializeError(message.error);
-                return reject(error);
-            }
-
-            return resolve(message.data!);
-        });
-    });
-}

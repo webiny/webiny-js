@@ -50,12 +50,12 @@ Register it:
 
 ## Props reference
 
-| Prop        | Type     | Required | Description                                                              |
-| ----------- | -------- | -------- | ------------------------------------------------------------------------ |
-| `path`      | `string` | Yes      | Route path — must start with `/`                                         |
-| `method`    | `string` | Yes      | HTTP method (see below)                                                  |
-| `src`       | `string` | Yes      | Path to the handler file (must include `.ts`)                            |
-| `routeName` | `string` | No       | Pulumi resource name (kebab-case). Derived from path + method if omitted |
+| Prop        | Type     | Required | Description                                                                                                                           |
+| ----------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `path`      | `string` | Yes      | Route path — must start with `/`                                                                                                      |
+| `method`    | `string` | Yes      | HTTP method (see below)                                                                                                               |
+| `src`       | `string` | Yes      | Path to the handler file (must include `.ts`)                                                                                         |
+| `routeName` | `string` | No       | Route name (kebab-case). Derived from path + method if omitted. Doubles as the Pulumi resource name and the id a decorator matches on |
 
 Methods: `DELETE`, `GET`, `HEAD`, `PATCH`, `POST`, `PUT`, `OPTIONS`, `ANY`. Use `ANY` to match every
 method on a path.
@@ -104,8 +104,14 @@ interface Request {
   query: Record<string, string>;
   pathParameters: Record<string, string>;
   body: any;
+  /** Which route matched — `{ name, method, path }`. */
+  route: MatchedRouteDefinition;
 }
 ```
+
+`route` is what makes a decorator able to act on one route (see below), and lets a handler read its
+own identity. `method`/`path` on it are the route's PATTERN (`/orders/:orderId`), where the
+top-level `method`/`path` are the request's actual values (`/orders/abc123`).
 
 ## Response
 
@@ -148,6 +154,73 @@ milliseconds.
 At request time the router matches the definition (cheap — it holds only `method`, `path` and the
 handler class) and builds your handler only then, with its dependencies injected. A route your
 request didn't match is never constructed.
+
+## Decorating a route
+
+Two hooks, both ordinary DI decorators.
+
+### Change what a route DOES
+
+Decorate `HttpRouteHandler`. It applies to every route, and `request.route.name` picks the one you
+mean:
+
+```typescript
+import { HttpRouteHandler } from "webiny/api";
+
+export default HttpRouteHandler.createDecorator({
+  decorator: class implements HttpRouteHandler.Interface {
+    constructor(private decoratee: HttpRouteHandler.Interface) {}
+
+    async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
+      if (request.route.name !== "my-route-get") {
+        return this.decoratee.handle(request, response);
+      }
+
+      if (request.headers["x-api-key"] !== "expected") {
+        return response.status(401).json({ message: "Not authorized." });
+      }
+
+      return this.decoratee.handle(request, response);
+    }
+  },
+  dependencies: []
+});
+```
+
+Drop the `name` check and it wraps every route, which is what you want for timing or logging.
+
+`request.route` is `{ name, method, path }` of the matched route. `name` is `routeName`, or the
+value derived from path and method (`/my-route` + `GET` → `my-route-get`). A route can read it to
+find out its own identity too.
+
+### Change what a route IS
+
+Decorate `HttpRouteDefinition` when you need to alter the route itself — point it at a different
+handler, or move its path:
+
+```typescript
+import { HttpRouteDefinition } from "webiny/api";
+
+export default HttpRouteDefinition.createDecorator({
+  decorator: class implements HttpRouteDefinition.Interface {
+    readonly name: string;
+    readonly method: string;
+    readonly path: string;
+    readonly handler: HttpRouteDefinition.Interface["handler"];
+
+    constructor(decoratee: HttpRouteDefinition.Interface) {
+      this.name = decoratee.name;
+      this.method = decoratee.method;
+      this.path = decoratee.name === "my-route-get" ? "/moved" : decoratee.path;
+      this.handler = decoratee.handler;
+    }
+  },
+  dependencies: []
+});
+```
+
+A decorator exposes the same properties as what it wraps, so it copies through the ones it doesn't
+change. Getters work too if you prefer them — these are plain properties, not methods.
 
 ## Key rules
 

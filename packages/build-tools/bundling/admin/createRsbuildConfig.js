@@ -31,6 +31,9 @@ export const createRsbuildConfig = ({ cwd }) => {
                     createInjectTailwindSourcePlugin(
                         path.join(paths.projectRootFolder, "extensions")
                     ),
+                    createExcludeNonCodeFromTailwindScanPlugin(
+                        getTailwindBasePath(paths.projectRootFolder)
+                    ),
                     tailwindcss({
                         base: getTailwindBasePath(paths.projectRootFolder)
                     }),
@@ -47,8 +50,14 @@ export const createRsbuildConfig = ({ cwd }) => {
         },
         // Port precedence matches the served admin app (`webiny serve admin`): an explicit
         // WEBINY_ADMIN_PORT wins, then a PORT injected by the environment, then the 3001 default.
+        //
+        // An explicit port is strict, same rule the api runner follows. Auto-advancing off a busy
+        // port is a reasonable default, but it's the wrong answer when something was pointed at the
+        // port that was asked for: the dev proxy forwards to WEBINY_ADMIN_PORT, and a dev server that
+        // quietly moved one along would just leave it forwarding into nothing.
         server: {
             port: process.env.WEBINY_ADMIN_PORT || process.env.PORT || 3001,
+            strictPort: Boolean(process.env.WEBINY_ADMIN_PORT),
             host: "0.0.0.0"
         },
         html: {
@@ -122,6 +131,28 @@ const createInjectTailwindSourcePlugin = sourcePath => ({
     postcssPlugin: "inject-tailwind-source",
     Once(root) {
         root.prepend(`@source "${sourcePath}";`);
+    }
+});
+
+/*
+    Keeps files that can't hold a class name the app uses out of Tailwind's scan of the Webiny
+    packages. Tailwind reads every file under `base` looking for class names, then registers each
+    one as a build dependency. In a project that's `node_modules/@webiny`, about 38,000 files, and
+    two thirds of them are type declarations, source maps, icons and docs. Skipping them cuts the
+    scan to about 14,000 files.
+
+    The generated CSS loses only classes that appeared in those files alone, such as the examples
+    in a bundled agent skill's Markdown or in a type declaration. Code that uses a class has it in a
+    `.js` file, which is still scanned, and the project's own extensions are scanned separately.
+*/
+const NON_CODE_FILES = ["**/*.d.ts", "**/*.map", "**/*.svg", "**/*.md", "**/*.mdx"];
+
+const createExcludeNonCodeFromTailwindScanPlugin = basePath => ({
+    postcssPlugin: "exclude-non-code-from-tailwind-scan",
+    Once(root) {
+        for (const pattern of NON_CODE_FILES) {
+            root.prepend(`@source not "${path.join(basePath, pattern)}";`);
+        }
     }
 });
 

@@ -48,6 +48,8 @@ export const FeatureFlags = defineExtension({
                             })
                             .optional(),
                         lexicalGeneration: z.boolean().optional(),
+                        adminAssistant: z.boolean().optional(),
+                        remoteComponents: z.boolean().optional(),
                         cms: z
                             .object({
                                 entryGeneration: z.boolean().optional(),
@@ -59,7 +61,15 @@ export const FeatureFlags = defineExtension({
                 ])
                 .optional(),
             abTesting: z.boolean().optional(),
-            remoteComponents: z.boolean().optional()
+            collaboration: z
+                .union([
+                    z.boolean(),
+                    z.object({
+                        comments: z.boolean().optional(),
+                        activityLog: z.boolean().optional()
+                    })
+                ])
+                .optional()
         })
     }),
     render: ({ features = {} }) => {

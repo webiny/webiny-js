@@ -334,6 +334,18 @@ export class DataFieldBuilder<TType extends string = string> extends BaseFieldBu
         return this as this;
     }
 
+    /**
+     * Renders the field in the admin app, but doesn't let anyone edit its value.
+     * Handy for values your own code owns, like an external ID or a generated slug.
+     *
+     * Only the admin app honours this. The API doesn't check it, so the field can
+     * still be written to over GraphQL.
+     */
+    disabled(value = true): this {
+        this.config.disabled = value;
+        return this;
+    }
+
     tags(tags: string[]): this {
         this.config.tags = tags;
         return this;
@@ -430,6 +442,7 @@ export class DataFieldBuilder<TType extends string = string> extends BaseFieldBu
                 validation: this.config.validation || [],
                 listValidation: this.config.listValidation || [],
                 list: this.config.list || false,
+                disabled: this.config.disabled || false,
                 predefinedValues: this.config.predefinedValues || {
                     enabled: false,
                     values: []

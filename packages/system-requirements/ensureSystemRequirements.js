@@ -32,7 +32,7 @@ export const ensureSystemRequirements = () => {
     const IS_INVALID_TEXT = `${chalk.red("\u2717")} No`;
 
     // Define the rows
-    const { node, npm, npx, yarn } = systemRequirements;
+    const { node, yarn } = systemRequirements;
 
     const rows = [
         [
@@ -42,22 +42,6 @@ export const ensureSystemRequirements = () => {
             node.valid ? IS_VALID_TEXT : IS_INVALID_TEXT
         ].map(v => {
             return node.valid ? v : chalk.red(v);
-        }),
-        [
-            "NPM",
-            npm.currentVersion,
-            npm.requiredVersion,
-            npm.valid ? IS_VALID_TEXT : IS_INVALID_TEXT
-        ].map(v => {
-            return npm.valid ? v : chalk.red(v);
-        }),
-        [
-            "NPX",
-            npx.currentVersion,
-            npx.requiredVersion,
-            npx.valid ? IS_VALID_TEXT : IS_INVALID_TEXT
-        ].map(v => {
-            return npx.valid ? v : chalk.red(v);
         }),
         [
             "Yarn",

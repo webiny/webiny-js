@@ -29,7 +29,7 @@
     "@webiny/api-core": "0.0.0",
     "@webiny/api-core-testing": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
-    "@webiny/di": "^1.0.2",
+    "@webiny/di": "^1.1.0",
     "@webiny/error": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
