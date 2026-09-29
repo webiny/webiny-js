@@ -28,11 +28,8 @@ export type FieldRendererName<
       }[keyof IFieldRendererRegistry] &
           string;
 
-// A registry entry without a `settings` key means the renderer takes no settings.
-type RendererSettingsOf<T> = "settings" extends keyof T ? T["settings" & keyof T] : undefined;
-
 export type FieldRendererSettings<TName extends string> = TName extends keyof IFieldRendererRegistry
-    ? RendererSettingsOf<IFieldRendererRegistry[TName]>
+    ? IFieldRendererRegistry[TName]["settings"]
     : Record<string, unknown> | undefined;
 
 // ---------------------------------------------------------------------------
