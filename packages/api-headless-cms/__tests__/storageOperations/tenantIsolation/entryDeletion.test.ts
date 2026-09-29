@@ -51,14 +51,16 @@ describe("Tenant isolation - entry deletion", () => {
         expect(latestB?.id).toEqual(createRevisionId(2));
     });
 
-    it("deleteMultiple should leave the other tenant's entry intact", async () => {
+    it("deleteMultiple should delete only the tenant's entry", async () => {
         const container = getContainer();
         const deleteMultiple = container.resolve(DeleteMultipleEntriesStorageOperation);
         const getRevisions = container.resolve(GetRevisionsStorageOperation);
 
         await deleteMultiple.execute(modelA, { entries: [ISOLATION_ENTRY_ID] });
 
+        const revisionsA = await getRevisions.execute(modelA, { id: ISOLATION_ENTRY_ID });
         const revisionsB = await getRevisions.execute(modelB, { id: ISOLATION_ENTRY_ID });
+        expect(revisionsA).toHaveLength(0);
         expect(revisionsB.map(item => item.tenant)).toEqual([TENANT_B, TENANT_B]);
     });
 });
