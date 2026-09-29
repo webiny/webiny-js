@@ -89,6 +89,10 @@ class DdbEsDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOper
 
         await entityBatch.execute();
         await elasticsearchEntityBatch.execute();
+
+        this.dataLoaders.clearAll({
+            tenant: model.tenant
+        });
     }
 }
 

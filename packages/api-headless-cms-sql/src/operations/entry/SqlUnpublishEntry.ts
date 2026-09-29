@@ -10,7 +10,7 @@ import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
 import type { IEntryRow } from "./types.js";
 import { entryToRow } from "./mappers.js";
-import { createEntryQuery, syncEntryToLatest } from "./queryHelpers.js";
+import { createModelEntryQuery, syncEntryToLatest } from "./queryHelpers.js";
 
 class SqlUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface {
     private readonly knex: Knex;
@@ -22,8 +22,8 @@ class SqlUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
         this.knex = knexClient.client;
     }
 
-    private query(): Knex.QueryBuilder<IEntryRow> {
-        return createEntryQuery(this.knex, this.entryTableManager.getTableName());
+    private modelQuery(model: CmsModel): Knex.QueryBuilder<IEntryRow> {
+        return createModelEntryQuery(this.knex, this.entryTableManager.getTableName(), model);
     }
 
     async execute<T extends CmsEntryValues>(
@@ -32,7 +32,9 @@ class SqlUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
     ) {
         await this.entryTableManager.ensureTable();
 
-        const existing = await this.query().where("id", params.storageEntry.id).first();
+        const existing = await this.modelQuery(model)
+            .andWhere("id", params.storageEntry.id)
+            .first();
         const se = params.storageEntry as CmsStorageEntry;
         se.isLatest = existing?.isLatest ?? se.isLatest;
         se.isPublished = false;
@@ -40,14 +42,19 @@ class SqlUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
         const row = entryToRow(se);
         const { isLatest: _il, ...rowWithoutIsLatest } = row;
 
-        await this.query()
-            .where("tenant", model.tenant)
+        await this.modelQuery(model)
             .andWhere("id", params.storageEntry.id)
             .update(rowWithoutIsLatest);
 
-        await syncEntryToLatest(this.knex, this.entryTableManager.getTableName(), se, latest => {
-            latest.live = null;
-        });
+        await syncEntryToLatest(
+            this.knex,
+            this.entryTableManager.getTableName(),
+            model,
+            se,
+            latest => {
+                latest.live = null;
+            }
+        );
 
         return params.entry;
     }
