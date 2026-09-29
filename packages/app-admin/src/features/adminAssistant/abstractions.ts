@@ -93,6 +93,11 @@ export interface AiTurnViewModel {
     completed: string[];
     /** Tools that threw. Settles the chip as a failure; the run continues. */
     failed: string[];
+    /**
+     * Calls the user rejected at approval. The run still reports them back, so without this a call
+     * that never happened would read as one that ran.
+     */
+    rejected: string[];
     /** Set while a tool is running and no answer text has arrived yet. */
     running: boolean;
     pendingApprovals: AdminAssistantPendingApproval[];

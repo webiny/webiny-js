@@ -10,39 +10,12 @@ import {
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
 import { Icon } from "@webiny/admin-ui";
-import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
-import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
-import { ReactComponent as ArrowUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
-import { ReactComponent as ArrowDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 import { NAVIGATION_GROUP } from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
-import {
-    CommandDetail,
-    CommandItemRow,
-    GroupHeading,
-    HintIcon,
-    Kbd,
-    NoResults,
-    PaletteFooter,
-    type Hint
-} from "./components/index.js";
-import { createAiMode } from "./modes/index.js";
+import { CommandDetail, Kbd, PaletteFooter } from "./components/index.js";
+import { createAiMode, createCommandMode } from "./modes/index.js";
 import { usePaletteHotkeys } from "./usePaletteHotkeys.js";
-
-const COMMAND_HINTS: Hint[] = [
-    {
-        keys: (
-            <>
-                <HintIcon element={<ArrowUpIcon />} />
-                <HintIcon element={<ArrowDownIcon />} />
-            </>
-        ),
-        label: "Navigate"
-    },
-    { keys: <HintIcon element={<ReturnIcon />} />, label: "Select" },
-    { keys: "space", label: "Ask AI" }
-];
 
 const CommandPaletteBase = () => {
     const { presenter } = useFeature(CommandPaletteFeature);
@@ -53,9 +26,9 @@ const CommandPaletteBase = () => {
     const { vm } = presenter;
 
     /*
-     * One mode today. The palette talks to it only through `PaletteMode`, so everything the
-     * assistant needs lives in `createAiMode` rather than here. A second mode turns this into a
-     * registry; nothing above this line has to change for that.
+     * The palette talks to its modes only through `PaletteMode`: the command list lives in
+     * `createCommandMode` and the assistant in `createAiMode`, and nothing below branches on which
+     * one is showing. A third mode turns the pick further down into a registry.
      */
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
     const aiMode = useMemo(() => createAiMode(assistant), [assistant]);
@@ -125,6 +98,14 @@ const CommandPaletteBase = () => {
             return;
         }
         aiMode.afterRender?.(scrollRef.current);
+
+        /*
+         * A clicked suggestion or a Run button unmounts as soon as it is used, and focus falls to the
+         * page. Take it back, so the next question or Enter lands in the input without a click.
+         */
+        if (document.activeElement === document.body) {
+            inputRef.current?.focus();
+        }
     });
 
     if (!vm.isOpen) {
@@ -133,17 +114,19 @@ const CommandPaletteBase = () => {
 
     const active = vm.activeCommand;
 
-    /* The one seeded entry: a search that found nothing becomes the question as-is. */
-    const askAiFromQuery = () => {
-        // Read before entering, because entering clears the query.
-        const seed = vm.query;
+    // The seed is read before entering, because entering clears the query.
+    const askAi = (seed?: string) => {
         presenter.enterAiMode();
         aiMode.enter(seed);
     };
 
-    /* Null while the command list is showing, which is what every `appearance ?` below tests for. */
-    const appearance = vm.aiModeActive ? aiMode.appearance : null;
-    const placeholder = appearance ? appearance.placeholder : "Search for pages and actions…";
+    const commandMode = createCommandMode({
+        groups,
+        query: vm.query,
+        askAi: aiEnabled ? askAi : undefined
+    });
+    const mode = vm.aiModeActive ? aiMode : commandMode;
+    const { appearance } = mode;
 
     const onKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Escape") {
@@ -158,22 +141,12 @@ const CommandPaletteBase = () => {
             return;
         }
 
-        if (vm.aiModeActive) {
-            // The mode decides what its keys mean; anything it declines is simply ignored here.
-            aiMode.handleKey(e, {
-                query: vm.query,
-                setQuery: q => presenter.setQuery(q),
-                exit: exitAiMode
-            });
-            return;
-        }
-
-        // Space on an EMPTY query enters the aiMode. Gated on `query === ""` so space stays an ordinary
-        // character the moment there is anything to search — "new entry" must keep working.
-        if (e.key === " " && vm.query === "" && aiEnabled) {
-            e.preventDefault();
-            presenter.enterAiMode();
-        }
+        // The mode decides what its keys mean; anything it declines is left to cmdk.
+        mode.handleKey(e, {
+            query: vm.query,
+            setQuery: q => presenter.setQuery(q),
+            exit: exitAiMode
+        });
     };
 
     return (
@@ -186,11 +159,12 @@ const CommandPaletteBase = () => {
             <div
                 onClick={e => e.stopPropagation()}
                 onKeyDown={onKeyDown}
-                className="flex w-full animate-in flex-col overflow-hidden rounded-lg border border-neutral-dimmed bg-neutral-base shadow-xxl duration-150 zoom-in-95 slide-in-from-top-2"
+                className="flex w-full animate-in flex-col overflow-hidden border border-neutral-dimmed bg-neutral-base shadow-xxl duration-150 zoom-in-95 slide-in-from-top-2"
                 style={{
                     maxWidth: 680,
                     maxHeight: "70vh",
-                    height: appearance?.tall ? "70vh" : "45vh"
+                    height: appearance.tall ? "70vh" : "45vh",
+                    borderRadius: 14
                 }}
             >
                 {active ? (
@@ -202,26 +176,25 @@ const CommandPaletteBase = () => {
                 ) : (
                     <Command
                         label="Command palette"
-                        // cmdk filtering is for the command list; a mode renders its own body.
-                        shouldFilter={!appearance}
+                        shouldFilter={appearance.filterable === true}
                         style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
                     >
                         {/* Input row — the same slot in every mode, so switching never moves it. */}
-                        <div className="flex flex-none items-center gap-sm border-b border-neutral-subtle px-md py-sm-plus">
+                        <div className="flex flex-none items-center gap-sm-plus border-b border-neutral-subtle px-md py-md">
                             <Icon
-                                icon={appearance ? appearance.icon : <SearchIcon />}
-                                color={appearance ? appearance.iconColor : "neutral-light"}
+                                icon={appearance.icon}
+                                color={appearance.iconColor}
                                 size={"md"}
-                                label={appearance ? appearance.iconLabel : "Search"}
+                                label={appearance.iconLabel}
                             />
-                            {appearance?.badge ?? null}
+                            {appearance.badge ?? null}
                             <Command.Input
                                 ref={inputRef}
                                 autoFocus
                                 value={vm.query}
                                 onValueChange={q => presenter.setQuery(q)}
                                 spellCheck={false}
-                                placeholder={placeholder}
+                                placeholder={appearance.placeholder}
                                 className="min-w-0 flex-1 border-0 bg-transparent text-lg text-neutral-primary outline-none"
                             />
                             <Kbd>esc</Kbd>
@@ -232,35 +205,10 @@ const CommandPaletteBase = () => {
                             className="p-xs-plus"
                             style={{ flex: 1, minHeight: 0, overflowY: "auto" }}
                         >
-                            {appearance ? (
-                                aiMode.body
-                            ) : (
-                                <Command.List>
-                                    <Command.Empty>
-                                        <NoResults
-                                            query={vm.query}
-                                            onAskAi={aiEnabled ? askAiFromQuery : undefined}
-                                        />
-                                    </Command.Empty>
-
-                                    {groups.map(group => (
-                                        <Command.Group
-                                            key={group.title}
-                                            heading={<GroupHeading title={group.title} />}
-                                        >
-                                            {group.rows.map(row => (
-                                                <CommandItemRow key={row.key} row={row} />
-                                            ))}
-                                        </Command.Group>
-                                    ))}
-                                </Command.List>
-                            )}
+                            {mode.body}
                         </div>
 
-                        <PaletteFooter
-                            label={appearance ? appearance.footerLabel : "Webiny command palette"}
-                            hints={appearance ? appearance.hints : COMMAND_HINTS}
-                        />
+                        <PaletteFooter label={appearance.footerLabel} hints={appearance.hints} />
                     </Command>
                 )}
             </div>

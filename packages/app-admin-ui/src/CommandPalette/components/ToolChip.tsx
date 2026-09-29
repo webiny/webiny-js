@@ -5,11 +5,16 @@ import { Text } from "@webiny/admin-ui";
 import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 import { ReactComponent as SpinnerIcon } from "@webiny/icons/autorenew.svg";
 import { ReactComponent as ErrorIcon } from "@webiny/icons/error.svg";
+import { ReactComponent as BlockIcon } from "@webiny/icons/block.svg";
+import type { ToolState } from "./toolState.js";
 
 export interface ToolChipProps {
     name: string;
-    /** Done chips read as confirmed work, failed ones as a call the model has to recover from. */
-    state: "running" | "done" | "failed";
+    /**
+     * Done chips read as confirmed work, failed ones as a call the model has to recover from, and
+     * rejected ones as a call that never ran.
+     */
+    state: ToolState;
 }
 
 /**
@@ -31,6 +36,10 @@ const toolIcon = (state: ToolChipProps["state"]) => {
         return <ErrorIcon />;
     }
 
+    if (state === "rejected") {
+        return <BlockIcon />;
+    }
+
     return <SpinnerIcon />;
 };
 
@@ -43,6 +52,8 @@ export const ToolChip = ({ name, state }: ToolChipProps) => {
         tone = "border-success-subtle bg-success-subtle text-success";
     } else if (failed) {
         tone = "border-destructive-subtle bg-destructive-subtle text-destructive-primary";
+    } else if (state === "rejected") {
+        tone = "border-neutral-dimmed bg-neutral-subtle text-neutral-muted line-through";
     }
 
     return (

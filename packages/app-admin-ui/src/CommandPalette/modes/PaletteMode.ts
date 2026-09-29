@@ -31,6 +31,11 @@ export interface PaletteModeAppearance {
      * stretched to full height looks broken when it holds three items.
      */
     tall: boolean;
+    /**
+     * Let cmdk filter the body's items against the query. Only a mode that renders a `Command.List`
+     * wants this; any other mode treats the query as its own input.
+     */
+    filterable?: boolean;
 }
 
 /**
@@ -38,15 +43,15 @@ export interface PaletteModeAppearance {
  *
  * A mode supplies its body, its keys and how the palette should look while it is active; the palette
  * owns the shell, the query and the input. The point of the split is that adding a mode does not
- * mean editing the palette: everything AI lives in `createAiMode`, and the palette only knows this
- * interface.
+ * mean editing the palette: the command list lives in `createCommandMode`, everything AI lives in
+ * `createAiMode`, and the palette only knows this interface.
  *
  * `appearance` and `body` are read during render, so an implementation can serve them from getters
  * over observable state and let a reactive palette re-render on its own.
  */
 export interface PaletteMode {
     appearance: PaletteModeAppearance;
-    /** Rendered in the palette's scroll area, in place of the command list. */
+    /** Rendered in the palette's scroll area. */
     body: React.ReactNode;
     /**
      * Enter the mode, optionally carrying what the user had already typed.
