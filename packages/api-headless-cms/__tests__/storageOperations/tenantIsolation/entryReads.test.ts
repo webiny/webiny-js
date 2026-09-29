@@ -12,9 +12,9 @@ import {
     createIsolationModel,
     createRevisionId,
     ISOLATION_ENTRY_ID,
-    TENANT_A,
-    useStorageContainer
+    TENANT_A
 } from "./helpers";
+import { useStorageContainer } from "../useStorageContainer";
 
 vi.setConfig({
     testTimeout: 100_000

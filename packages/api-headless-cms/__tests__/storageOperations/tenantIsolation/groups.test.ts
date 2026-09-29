@@ -4,13 +4,8 @@ import { GetGroupStorageOperation } from "~/features/shared/storageOperations/gr
 import { UpdateGroupStorageOperation } from "~/features/shared/storageOperations/group/UpdateGroupStorageOperation.js";
 import { DeleteGroupStorageOperation } from "~/features/shared/storageOperations/group/DeleteGroupStorageOperation.js";
 import { ListGroupsStorageOperation } from "~/features/shared/storageOperations/group/ListGroupsStorageOperation.js";
-import {
-    createIsolationGroup,
-    ISOLATION_GROUP_ID,
-    TENANT_A,
-    TENANT_B,
-    useStorageContainer
-} from "./helpers";
+import { createIsolationGroup, ISOLATION_GROUP_ID, TENANT_A, TENANT_B } from "./helpers";
+import { useStorageContainer } from "../useStorageContainer";
 
 vi.setConfig({
     testTimeout: 100_000

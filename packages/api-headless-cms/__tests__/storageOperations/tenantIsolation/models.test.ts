@@ -4,13 +4,8 @@ import { GetModelStorageOperation } from "~/features/shared/storageOperations/mo
 import { UpdateModelStorageOperation } from "~/features/shared/storageOperations/model/UpdateModelStorageOperation.js";
 import { DeleteModelStorageOperation } from "~/features/shared/storageOperations/model/DeleteModelStorageOperation.js";
 import { ListModelsStorageOperation } from "~/features/shared/storageOperations/model/ListModelsStorageOperation.js";
-import {
-    createIsolationModel,
-    ISOLATION_MODEL_ID,
-    TENANT_A,
-    TENANT_B,
-    useStorageContainer
-} from "./helpers";
+import { createIsolationModel, ISOLATION_MODEL_ID, TENANT_A, TENANT_B } from "./helpers";
+import { useStorageContainer } from "../useStorageContainer";
 
 vi.setConfig({
     testTimeout: 100_000

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { CmsModel } from "~/types";
 import { createPersonModel } from "./helpers";
 import { createTestEntry } from "./entryFixtures";
-import { useStorageContainer } from "./tenantIsolation/helpers";
+import { useStorageContainer } from "./useStorageContainer";
 import { CreateEntryStorageOperation } from "~/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
 import { CreateEntryRevisionFromStorageOperation } from "~/features/shared/storageOperations/entry/CreateEntryRevisionFromStorageOperation.js";
 import { PublishEntryStorageOperation } from "~/features/shared/storageOperations/entry/PublishEntryStorageOperation.js";
