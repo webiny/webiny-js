@@ -22,7 +22,7 @@
     "@webiny/stdlib": "^0.0.19",
     "graphql": "^16.14.2",
     "graphql-language-service": "^5.7.0",
-    "mobx": "^7.0.4",
+    "mobx": "^7.0.5",
     "mobx-react-lite": "^5.1.0",
     "monaco-editor": "0.53.0",
     "react": "18.3.1",

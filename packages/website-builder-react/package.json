@@ -20,7 +20,7 @@
     "@webiny/cms-sdk": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0",
     "deep-equal": "^2.2.3",
-    "mobx": "^7.0.4",
+    "mobx": "^7.0.5",
     "mobx-react-lite": "^5.1.0",
     "react": "18.3.1",
     "react-dom": "18.3.1"
