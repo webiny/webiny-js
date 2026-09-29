@@ -229,6 +229,28 @@ describe("AiImageEnrichmentStreamRoute", () => {
             expect(apply.execute).not.toHaveBeenCalled();
         });
 
+        /*
+         * What the AI SDK actually does. `streamText` never rejects on a provider error: it hands
+         * the error to `onError` and ends the stream. Mocking a rejection, as the test above does,
+         * hid that the route turned an overloaded provider into a `done` with nothing in it.
+         */
+        it("should emit an error event when the provider fails mid-stream", async () => {
+            ai.streamText.mockImplementation(async (params: any) => ({
+                partialOutputStream: (async function* () {
+                    yield { tags: [] };
+                    params.onError({ error: new Error("Overloaded") });
+                })()
+            }));
+
+            const events = await collectEvents(await invokeHttpRoute(route, request()));
+
+            expect(events.at(-1)).toEqual({
+                type: "error",
+                message: "AI enrichment failed: Overloaded"
+            });
+            expect(events.some(e => e.type === "done")).toBe(false);
+        });
+
         it("should emit no done event after an error", async () => {
             ai.streamText.mockRejectedValue(new Error("boom"));
 

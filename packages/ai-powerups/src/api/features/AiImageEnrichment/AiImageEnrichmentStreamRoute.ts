@@ -52,13 +52,29 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRouteHandler.Interface {
 
         let output = { tags: [] as string[], description: "" };
 
+        /*
+         * `streamText` never throws a provider error. It hands it to `onError` and ends the stream,
+         * so without this an overloaded or rejected request drained the loop below with nothing in
+         * it and came back as a `done` with empty tags and description.
+         */
+        let failure: unknown;
+
         try {
             const request = buildEnrichmentAiRequest(prepared);
-            const stream = await this.ai.streamText(request);
+            const stream = await this.ai.streamText({
+                ...request,
+                onError: ({ error }) => {
+                    failure ??= error;
+                }
+            });
 
             for await (const partial of stream.partialOutputStream) {
                 output = readEnrichmentPartial(partial);
                 yield toSseFrame({ type: "partial", ...output });
+            }
+
+            if (failure !== undefined) {
+                throw failure;
             }
         } catch (error) {
             yield toSseFrame({

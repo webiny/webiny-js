@@ -3,12 +3,16 @@ import {
     TaskHandler
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
 import { ApplyImageEnrichmentUseCase, PrepareImageEnrichmentUseCase } from "./abstractions.js";
 import { buildEnrichmentAiRequest } from "./buildEnrichmentAiRequest.js";
 import { EnrichmentCapabilityDisabledError } from "./errors.js";
 import { EnrichmentNotAnImageError } from "./errors.js";
 
 export const AI_IMAGE_ENRICHMENT_TASK_ID = "fmAiImageEnrichment";
+
+export const FILE_ENRICHMENT_FAILED_WEBSOCKET_ACTION = "fm.file.enrichment.failed";
 
 export interface IAiImageEnrichmentTaskInput {
     fileId: string;
@@ -23,7 +27,9 @@ class AiImageEnrichmentTaskHandlerImpl implements TaskHandler.Interface<IAiImage
     constructor(
         private prepare: PrepareImageEnrichmentUseCase.Interface,
         private apply: ApplyImageEnrichmentUseCase.Interface,
-        private ai: Ai.Interface
+        private ai: Ai.Interface,
+        private identityContext: IdentityContext.Interface,
+        private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
     ) {}
 
     async run({
@@ -50,7 +56,7 @@ class AiImageEnrichmentTaskHandlerImpl implements TaskHandler.Interface<IAiImage
             ) {
                 return controller.response.done(error.message);
             }
-            return controller.response.error({ message: error.message });
+            return this.fail(controller, input.fileId, error.message);
         }
 
         const prepared = preparedResult.value;
@@ -64,9 +70,11 @@ class AiImageEnrichmentTaskHandlerImpl implements TaskHandler.Interface<IAiImage
             tags = aiResult.output.tags;
             description = aiResult.output.description;
         } catch (error) {
-            return controller.response.error({
-                message: `AI enrichment failed: ${error instanceof Error ? error.message : String(error)}`
-            });
+            return this.fail(
+                controller,
+                input.fileId,
+                `AI enrichment failed: ${error instanceof Error ? error.message : String(error)}`
+            );
         }
 
         const appliedResult = await this.apply.execute({
@@ -76,16 +84,53 @@ class AiImageEnrichmentTaskHandlerImpl implements TaskHandler.Interface<IAiImage
         });
 
         if (appliedResult.isFail()) {
-            return controller.response.error({ message: appliedResult.error.message });
+            return this.fail(controller, input.fileId, appliedResult.error.message);
         }
 
         return controller.response.done("AI image enrichment completed successfully.");
+    }
+
+    /*
+     * Fails the task AND tells the uploader. A failed task on its own only reaches the API log, so
+     * a missing Vision model or an overloaded provider looked, from the File Manager, exactly like
+     * enrichment never having run. Success already reaches the uploader the same way, from
+     * `ApplyImageEnrichmentUseCase`.
+     */
+    private async fail(
+        controller: TaskHandler.RunParams<IAiImageEnrichmentTaskInput>["controller"],
+        fileId: string,
+        message: string
+    ): Promise<TaskDefinition.Result<IAiImageEnrichmentTaskInput>> {
+        const identity = this.identityContext.getIdentity();
+
+        // A notification is a courtesy; failing to send one must not replace the real error.
+        if (identity?.id) {
+            try {
+                await this.sendToIdentity.execute(
+                    { id: identity.id },
+                    {
+                        action: FILE_ENRICHMENT_FAILED_WEBSOCKET_ACTION,
+                        data: { id: fileId, message }
+                    }
+                );
+            } catch {
+                // Deliberately ignored, see above.
+            }
+        }
+
+        return controller.response.error({ message });
     }
 }
 
 const AiImageEnrichmentTaskHandler = TaskHandler.createImplementation({
     implementation: AiImageEnrichmentTaskHandlerImpl,
-    dependencies: [PrepareImageEnrichmentUseCase, ApplyImageEnrichmentUseCase, Ai]
+    dependencies: [
+        PrepareImageEnrichmentUseCase,
+        ApplyImageEnrichmentUseCase,
+        Ai,
+        IdentityContext,
+        WebsocketsSendToIdentityUseCase
+    ]
 });
 
 class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface {
