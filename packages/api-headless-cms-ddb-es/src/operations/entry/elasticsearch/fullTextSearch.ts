@@ -14,6 +14,11 @@ const defaultFullTextSearch: CmsEntryOpenSearchFullTextSearch.Interface = {
         query.must.push({
             query_string: {
                 allow_leading_wildcard: true,
+                /**
+                 * Searchable JSON fields are dynamically mapped, so their subfields can be of any type (date, number, boolean...).
+                 * Wildcard queries are not allowed on those types, so we need to ignore them instead of failing the whole query.
+                 */
+                lenient: true,
                 fields: Object.values(fields).map(createFieldPath),
                 query: `*${prepareTerm(term)}*`,
                 default_operator: "and"
