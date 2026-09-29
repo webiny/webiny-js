@@ -19,6 +19,7 @@ interface TemplateBuilderInternal extends ITemplateBuilder {
 
 export function createTemplateBuilder(): TemplateBuilderInternal {
     let label = "";
+    let description: string | undefined;
     let icon: ITemplateIcon | undefined;
     let fieldsFactory:
         | ((registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>)
@@ -28,6 +29,10 @@ export function createTemplateBuilder(): TemplateBuilderInternal {
     const builder: TemplateBuilderInternal = {
         label(text: string) {
             label = text;
+            return builder;
+        },
+        description(text: string) {
+            description = text;
             return builder;
         },
         icon(i: ITemplateIcon) {
@@ -55,7 +60,7 @@ export function createTemplateBuilder(): TemplateBuilderInternal {
                     builder.build(fieldName);
                 }
             }
-            return { id, label, icon, childBuilders, visible: visibleFn };
+            return { id, label, description, icon, childBuilders, visible: visibleFn };
         }
     };
     return builder;

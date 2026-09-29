@@ -2108,10 +2108,12 @@ describe("FormModel", () => {
                         .object()
                         .label("Content")
                         .template("hero", t => {
-                            t.label("Hero Banner").fields(f => ({
-                                heading: f.text().label("Heading").required("Required"),
-                                image: f.text().label("Image")
-                            }));
+                            t.label("Hero Banner")
+                                .description("Large heading with an image")
+                                .fields(f => ({
+                                    heading: f.text().label("Heading").required("Required"),
+                                    image: f.text().label("Image")
+                                }));
                         })
                         .template("text", t => {
                             t.label("Rich Text").fields(f => ({
@@ -2136,7 +2138,11 @@ describe("FormModel", () => {
                 const vm = form.field("content").vm as IObjectFieldVM;
                 expect(vm.isTemplated).toBe(true);
                 expect(vm.availableTemplates).toEqual([
-                    { id: "hero", label: "Hero Banner" },
+                    {
+                        id: "hero",
+                        label: "Hero Banner",
+                        description: "Large heading with an image"
+                    },
                     { id: "text", label: "Rich Text" }
                 ]);
                 expect(vm.activeTemplateId).toBeNull();

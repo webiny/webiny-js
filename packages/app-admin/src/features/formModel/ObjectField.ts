@@ -351,7 +351,12 @@ export class ObjectField implements IObjectField {
                     continue;
                 }
             }
-            result.push({ id: template.id, label: template.label, icon: template.icon });
+            result.push({
+                id: template.id,
+                label: template.label,
+                description: template.description,
+                icon: template.icon
+            });
         }
         return result;
     }
