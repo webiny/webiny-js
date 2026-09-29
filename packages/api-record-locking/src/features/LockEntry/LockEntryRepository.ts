@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import { LockEntryInput, LockEntryRepository as RepositoryAbstraction } from "./abstractions.js";
-import { RecordLockingConfig, RecordLockingModel } from "~/domain/abstractions.js";
+import { RecordLockingConfig, RecordLockingModelProvider } from "~/domain/abstractions.js";
 import type { ILockRecord } from "~/domain/LockRecord.js";
 import { LockRecord } from "~/domain/LockRecord.js";
 import type { LockRecordValues } from "~/domain/types.js";
@@ -11,13 +11,15 @@ import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId.js";
 
 class LockEntryRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private model: RecordLockingModel.Interface,
+        private modelProvider: RecordLockingModelProvider.Interface,
         private config: RecordLockingConfig.Interface,
         private createEntry: CreateEntryUseCase.Interface
     ) {}
 
     async create(input: LockEntryInput): Promise<Result<ILockRecord, RepositoryAbstraction.Error>> {
         try {
+            const model = await this.modelProvider.get();
+
             const id = createLockRecordDatabaseId(input.id);
 
             const values: LockRecordValues = {
@@ -26,7 +28,7 @@ class LockEntryRepositoryImpl implements RepositoryAbstraction.Interface {
                 actions: []
             };
 
-            const result = await this.createEntry.execute(this.model, {
+            const result = await this.createEntry.execute(model, {
                 id,
                 values
             });
@@ -47,5 +49,5 @@ class LockEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const LockEntryRepository = RepositoryAbstraction.createImplementation({
     implementation: LockEntryRepositoryImpl,
-    dependencies: [RecordLockingModel, RecordLockingConfig, CreateEntryUseCase]
+    dependencies: [RecordLockingModelProvider, RecordLockingConfig, CreateEntryUseCase]
 });

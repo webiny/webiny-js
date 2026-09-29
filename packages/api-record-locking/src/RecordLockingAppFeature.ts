@@ -1,9 +1,9 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { RecordLockingModel } from "~/domain/RecordLockingModel.js";
-import { RecordLockingAppConfig } from "~/domain/RecordLockingAppConfig.js";
+import { RecordLockingFeature } from "~/features/RecordLockingFeature.js";
+import { RecordLockingGraphQLSchema } from "~/graphql/RecordLockingGraphQLSchema.js";
 import { getTimeout } from "~/utils/getTimeout.js";
-import { RecordLockingContextualSchema } from "~/graphql/RecordLockingContextualSchema.js";
 
 export interface IRecordLockingAppFeatureParams {
     /**
@@ -22,9 +22,9 @@ export const RecordLockingAppFeature = createFeature<IRecordLockingAppFeaturePar
         }
 
         container.register(RecordLockingModel);
-        container.registerInstance(RecordLockingAppConfig, {
+        RecordLockingFeature.register(container, {
             timeout: getTimeout(params?.timeout)
         });
-        container.register(RecordLockingContextualSchema);
+        container.register(RecordLockingGraphQLSchema);
     }
 });
