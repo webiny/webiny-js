@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, DelayedOnChange, Dialog, Icon, Input, Text, ToggleGroup } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
+import { DelayedOnChange } from "@webiny/admin-ui";
+import { Dialog } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { Input } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
+import { ToggleGroup } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as PlusIcon } from "@webiny/icons/add_circle_outline.svg";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
@@ -15,6 +21,21 @@ const normalizeIcon = (icon: ITemplateIcon | undefined): IconProp | undefined =>
     }
     return icon.name.split("/") as IconProp;
 };
+
+/**
+ * Templates are picked by clicking a card or a row. Enter and Space do the same for keyboard users,
+ * and go through `click()` so `Dialog.Close` closes the dialog too.
+ */
+const selectOnEnterOrSpace = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+        return;
+    }
+    event.preventDefault();
+    event.currentTarget.click();
+};
+
+const TEMPLATE_FOCUS_CLASSES =
+    "focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed";
 
 export interface AddTemplateButtonProps {
     templates: ITemplateVM[];
@@ -93,24 +114,34 @@ const TemplateGallery = ({ templates, onSelect }: TemplateGalleryProps) => {
                     />
                 </div>
             </div>
-            {viewMode === "grid" ? (
-                <div className={"gap-md flex flex-wrap p-xs mb-xs"}>
-                    {filteredTemplates.map(template => (
-                        <TemplateCard key={template.id} template={template} onSelect={onSelect} />
-                    ))}
-                </div>
-            ) : (
-                <div className={"flex flex-col gap-y-sm mb-xs"}>
-                    {filteredTemplates.map(template => (
-                        <TemplateListItem
-                            key={template.id}
-                            template={template}
-                            onSelect={onSelect}
-                        />
-                    ))}
-                </div>
-            )}
+            <TemplateList viewMode={viewMode} templates={filteredTemplates} onSelect={onSelect} />
         </>
+    );
+};
+
+interface TemplateListProps {
+    viewMode: ViewMode;
+    templates: ITemplateVM[];
+    onSelect: (template: ITemplateVM) => void;
+}
+
+const TemplateList = ({ viewMode, templates, onSelect }: TemplateListProps) => {
+    if (viewMode === "list") {
+        return (
+            <div className={"flex flex-col gap-y-sm mb-xs"}>
+                {templates.map(template => (
+                    <TemplateListItem key={template.id} template={template} onSelect={onSelect} />
+                ))}
+            </div>
+        );
+    }
+
+    return (
+        <div className={"gap-md flex flex-wrap p-xs mb-xs"}>
+            {templates.map(template => (
+                <TemplateCard key={template.id} template={template} onSelect={onSelect} />
+            ))}
+        </div>
     );
 };
 
@@ -120,54 +151,61 @@ interface TemplateCardProps {
 }
 
 const TemplateCard = ({ template, onSelect }: TemplateCardProps) => {
-    const [isHovered, setIsHovered] = useState(false);
     const icon = normalizeIcon(template.icon);
 
     return (
-        <div
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            className={
-                "flex flex-col justify-between bg-neutral-base overflow-hidden rounded-lg w-[173px] relative shadow-sm"
-            }
-        >
-            <div>
-                <div className={"flex items-center justify-center py-xxl w-full bg-neutral-dimmed"}>
-                    {icon ? (
-                        <FontAwesomeIcon
-                            className={"text-neutral-xstrong"}
-                            icon={icon}
-                            style={{ width: 40, height: 40 }}
-                        />
-                    ) : null}
-                </div>
-                <div className={"py-sm-extra px-md"}>
-                    <Text size={"md"} className={"mb-xs text-neutral-primary font-semibold"}>
-                        {template.label}
-                    </Text>
-                    {template.description && (
-                        <Text size={"sm"} as={"div"} className={"text-neutral-muted"}>
-                            {template.description}
-                        </Text>
-                    )}
-                </div>
-            </div>
-
-            {isHovered && (
-                <Dialog.Close asChild>
+        <Dialog.Close asChild>
+            <div
+                role={"button"}
+                tabIndex={0}
+                aria-label={`Insert ${template.label}`}
+                onClick={() => onSelect(template)}
+                onKeyDown={selectOnEnterOrSpace}
+                className={`group flex flex-col justify-between bg-neutral-base overflow-hidden rounded-lg w-[173px] relative shadow-sm cursor-pointer ${TEMPLATE_FOCUS_CLASSES}`}
+            >
+                <div>
                     <div
                         className={
-                            "absolute inset-0 flex items-center justify-center bg-white/80 cursor-pointer"
+                            "flex items-center justify-center py-xxl w-full bg-neutral-dimmed"
                         }
-                        onClick={() => onSelect(template)}
                     >
-                        <Button size={"lg"} variant={"primary"} icon={<PlusIcon />}>
-                            Insert
-                        </Button>
+                        {icon && (
+                            <FontAwesomeIcon
+                                className={"text-neutral-xstrong"}
+                                icon={icon}
+                                style={{ width: 40, height: 40 }}
+                            />
+                        )}
                     </div>
-                </Dialog.Close>
-            )}
-        </div>
+                    <div className={"py-sm-extra px-md"}>
+                        <Text size={"md"} className={"mb-xs text-neutral-primary font-semibold"}>
+                            {template.label}
+                        </Text>
+                        {template.description && (
+                            <Text size={"sm"} as={"div"} className={"text-neutral-muted"}>
+                                {template.description}
+                            </Text>
+                        )}
+                    </div>
+                </div>
+
+                <div
+                    className={
+                        "absolute inset-0 hidden items-center justify-center bg-white/80 group-hover:flex group-focus-visible:flex"
+                    }
+                >
+                    <Button
+                        size={"lg"}
+                        variant={"primary"}
+                        icon={<PlusIcon />}
+                        tabIndex={-1}
+                        aria-hidden={true}
+                    >
+                        Insert
+                    </Button>
+                </div>
+            </div>
+        </Dialog.Close>
     );
 };
 
@@ -183,19 +221,21 @@ const TemplateListItem = ({ template, onSelect }: TemplateListItemProps) => {
     return (
         <Dialog.Close asChild>
             <div
+                role={"button"}
+                tabIndex={0}
+                aria-label={`Insert ${template.label}`}
                 onClick={() => onSelect(template)}
-                className={
-                    "group flex items-center gap-y-md py-sm-extra px-md rounded-lg bg-neutral-light hover:bg-[#f1f2f4] cursor-pointer"
-                }
+                onKeyDown={selectOnEnterOrSpace}
+                className={`group flex items-center py-sm-extra px-md rounded-lg bg-neutral-light hover:bg-[#f1f2f4] cursor-pointer ${TEMPLATE_FOCUS_CLASSES}`}
             >
                 <div className={"flex items-center justify-center shrink-0 pr-md"}>
-                    {icon ? (
+                    {icon && (
                         <FontAwesomeIcon
                             className={"text-neutral-xstrong"}
                             icon={icon}
                             style={{ width: 24, height: 24 }}
                         />
-                    ) : null}
+                    )}
                 </div>
                 <div className={"flex-1 min-w-0"}>
                     <Text size={"md"} className={"text-neutral-primary font-semibold truncate"}>
@@ -207,8 +247,14 @@ const TemplateListItem = ({ template, onSelect }: TemplateListItemProps) => {
                         </Text>
                     )}
                 </div>
-                <div className={"hidden group-hover:block"}>
-                    <Button size={"md"} variant={"primary"} icon={<PlusIcon />}>
+                <div className={"hidden group-hover:block group-focus-visible:block"}>
+                    <Button
+                        size={"md"}
+                        variant={"primary"}
+                        icon={<PlusIcon />}
+                        tabIndex={-1}
+                        aria-hidden={true}
+                    >
                         Insert
                     </Button>
                 </div>
