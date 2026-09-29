@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { Button } from "@webiny/admin-ui";
 import { Drawer } from "@webiny/admin-ui";
+import { DropdownMenu } from "@webiny/admin-ui";
 import { EmptyState } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
 import { Input } from "@webiny/admin-ui";
@@ -9,7 +10,7 @@ import { Tabs } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
-import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+import { ReactComponent as ExpandMoreIcon } from "@webiny/icons/expand_more.svg";
 import type { DashboardLayoutPresenter } from "../../dashboardLayout/presenter/abstractions.js";
 
 export interface DrawerWidget {
@@ -20,12 +21,15 @@ export interface DrawerWidget {
     icon?: React.ReactNode;
     // Already on the dashboard, so it can't be added again.
     added: boolean;
+    // Zero-based column the widget registered with, already within the current column count.
+    defaultColumn: number;
 }
 
 interface AddWidgetDrawerProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     widgets: DrawerWidget[];
+    columnCount: number;
     presenter: DashboardLayoutPresenter.Interface;
 }
 
@@ -53,6 +57,7 @@ export const AddWidgetDrawer = ({
     open,
     onOpenChange,
     widgets,
+    columnCount,
     presenter
 }: AddWidgetDrawerProps) => {
     const [search, setSearch] = useState("");
@@ -81,6 +86,7 @@ export const AddWidgetDrawer = ({
             onSearch={setSearch}
             emptyTitle={emptyTitle}
             emptyDescription={emptyDescription}
+            columnCount={columnCount}
             presenter={presenter}
         />
     );
@@ -91,7 +97,7 @@ export const AddWidgetDrawer = ({
             onOpenChange={changeOpen}
             modal={true}
             title={"Add widget"}
-            description={"New widgets go to their default column. Drag them anywhere after."}
+            description={"Pick a column when you add a widget. You can drag it anywhere after."}
             width={400}
             bodyPadding={false}
             headerSeparator={false}
@@ -144,6 +150,7 @@ interface WidgetTabContentProps {
     onSearch: (value: string) => void;
     emptyTitle: string;
     emptyDescription: string;
+    columnCount: number;
     presenter: DashboardLayoutPresenter.Interface;
 }
 
@@ -153,6 +160,7 @@ const WidgetTabContent = ({
     onSearch,
     emptyTitle,
     emptyDescription,
+    columnCount,
     presenter
 }: WidgetTabContentProps) => {
     const query = search.trim().toLowerCase();
@@ -207,6 +215,7 @@ const WidgetTabContent = ({
                             <DrawerWidgetRow
                                 key={widget.name}
                                 widget={widget}
+                                columnCount={columnCount}
                                 presenter={presenter}
                             />
                         ))}
@@ -219,10 +228,11 @@ const WidgetTabContent = ({
 
 interface DrawerWidgetRowProps {
     widget: DrawerWidget;
+    columnCount: number;
     presenter: DashboardLayoutPresenter.Interface;
 }
 
-const DrawerWidgetRow = ({ widget, presenter }: DrawerWidgetRowProps) => {
+const DrawerWidgetRow = ({ widget, columnCount, presenter }: DrawerWidgetRowProps) => {
     return (
         <div
             className={
@@ -240,15 +250,52 @@ const DrawerWidgetRow = ({ widget, presenter }: DrawerWidgetRowProps) => {
                     </Text>
                 )}
             </div>
-            <Button
-                size={"sm"}
-                variant={"tertiary"}
-                text={widget.added ? "Added" : "Add"}
-                icon={widget.added ? undefined : <AddIcon />}
-                disabled={widget.added}
-                onClick={() => presenter.addWidget(widget.name)}
-            />
+            {widget.added ? (
+                <Button size={"sm"} variant={"tertiary"} text={"Added"} disabled={true} />
+            ) : (
+                <AddToColumnMenu widget={widget} columnCount={columnCount} presenter={presenter} />
+            )}
         </div>
+    );
+};
+
+interface AddToColumnMenuProps {
+    widget: DrawerWidget;
+    columnCount: number;
+    presenter: DashboardLayoutPresenter.Interface;
+}
+
+// One item per current column; the widget lands at the bottom of the chosen one.
+const AddToColumnMenu = ({ widget, columnCount, presenter }: AddToColumnMenuProps) => {
+    const columns = Array.from({ length: columnCount }, (_, index) => index);
+
+    return (
+        <DropdownMenu
+            trigger={
+                <Button
+                    size={"sm"}
+                    variant={"tertiary"}
+                    text={"Add"}
+                    icon={<ExpandMoreIcon />}
+                    iconPosition={"end"}
+                />
+            }
+        >
+            <DropdownMenu.Label text={"Add to"} />
+            {columns.map(index => {
+                let text = `Column ${index + 1}`;
+                if (index === widget.defaultColumn) {
+                    text = `${text} (default)`;
+                }
+                return (
+                    <DropdownMenu.Item
+                        key={index}
+                        text={text}
+                        onClick={() => presenter.addWidget(widget.name, index)}
+                    />
+                );
+            })}
+        </DropdownMenu>
     );
 };
 

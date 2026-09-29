@@ -165,16 +165,21 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
         this.persist();
     };
 
-    addWidget = (name: string): void => {
+    addWidget = (name: string, column?: number): void => {
         if (!this._hidden.includes(name)) {
             return;
         }
         this._hidden = this._hidden.filter(n => n !== name);
 
-        const target = this.clampColumn(this._defaultColumns.get(name) ?? 0);
-        this._columns = this._columns.map((column, index) =>
-            index === target && !column.includes(name) ? [...column, name] : column
-        );
+        // Without a column, the widget goes to the column it registered with.
+        const requested = column ?? this._defaultColumns.get(name) ?? 0;
+        const target = this.clampColumn(requested);
+        this._columns = this._columns.map((names, index) => {
+            if (index !== target || names.includes(name)) {
+                return names;
+            }
+            return [...names, name];
+        });
         this.persist();
     };
 

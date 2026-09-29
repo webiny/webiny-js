@@ -114,14 +114,19 @@ const Welcome = () => {
     }, [presenter]);
 
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const drawerWidgets: DrawerWidget[] = widgets.map(widget => ({
-        name: widget.name,
-        title: widget.title ?? widget.name,
-        description: widget.description,
-        group: widget.group,
-        icon: widget.icon,
-        added: !vm.hidden.includes(widget.name)
-    }));
+    const drawerWidgets: DrawerWidget[] = widgets.map(widget => {
+        // Same clamping the presenter applies, so "(default)" marks the column it would pick.
+        const registeredColumn = toColumnIndex(widget.column);
+        return {
+            name: widget.name,
+            title: widget.title ?? widget.name,
+            description: widget.description,
+            group: widget.group,
+            icon: widget.icon,
+            added: !vm.hidden.includes(widget.name),
+            defaultColumn: Math.min(registeredColumn, vm.columnCount - 1)
+        };
+    });
     const dragging = vm.draggingName !== null;
 
     // How many columns actually fit; below the chosen count we collapse (and go read-only).
@@ -229,6 +234,7 @@ const Welcome = () => {
                     open={drawerOpen}
                     onOpenChange={setDrawerOpen}
                     widgets={drawerWidgets}
+                    columnCount={vm.columnCount}
                     presenter={presenter}
                 />
             </div>

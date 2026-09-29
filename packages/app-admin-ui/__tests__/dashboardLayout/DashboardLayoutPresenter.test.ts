@@ -94,6 +94,27 @@ describe("DashboardLayoutPresenter", () => {
         expect(saves.calls).toHaveLength(1);
     });
 
+    it("adds a widget to the column the user picks", () => {
+        const { presenter } = setup();
+        presenter.init("user-1", WIDGETS, null);
+        presenter.removeWidget("a");
+
+        presenter.addWidget("a", 1);
+
+        expect(presenter.vm.hidden).toEqual([]);
+        expect(presenter.vm.columns).toEqual([["b"], ["c", "a"]]);
+    });
+
+    it("adds a widget to its default column when no column is given", () => {
+        const { presenter } = setup();
+        presenter.init("user-1", WIDGETS, null);
+        presenter.removeWidget("c");
+
+        presenter.addWidget("c");
+
+        expect(presenter.vm.columns).toEqual([["a", "b"], ["c"]]);
+    });
+
     it("keeps the current layout when the same user's widgets are re-registered", () => {
         const { presenter } = setup();
         presenter.init("user-1", WIDGETS, null);

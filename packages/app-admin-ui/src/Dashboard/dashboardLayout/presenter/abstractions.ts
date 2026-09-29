@@ -46,7 +46,8 @@ export interface IDashboardLayoutPresenter {
     drop(): void;
     endDrag(): void;
     removeWidget(name: string): void;
-    addWidget(name: string): void;
+    // Appends the widget to `column`, or to its default column when none is given.
+    addWidget(name: string, column?: number): void;
     setColumnCount(count: number): void;
     removeColumn(index: number): void;
     resetToDefault(): void;
