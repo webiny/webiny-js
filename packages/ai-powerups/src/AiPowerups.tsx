@@ -4,12 +4,12 @@ import { Wcp } from "@webiny/project";
 
 export const AiPowerups = () => {
     return (
-        <Wcp.CanUseMultiTenancy>
+        <Wcp.CanUseAiPowerups>
             {/* Api extensions */}
             <Api.Extension src={import.meta.dirname + "/api/Extension.js"} />
 
             {/* Admin extensions */}
             <Admin.Extension src={import.meta.dirname + "/admin/Extension.js"} />
-        </Wcp.CanUseMultiTenancy>
+        </Wcp.CanUseAiPowerups>
     );
 };

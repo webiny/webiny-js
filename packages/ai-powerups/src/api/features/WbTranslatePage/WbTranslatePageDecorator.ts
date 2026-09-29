@@ -6,6 +6,7 @@ import { GetDefaultLanguageUseCase } from "@webiny/languages/exports/api/languag
 import { TranslatePageUseCase } from "@webiny/api-website-builder/features/pages/TranslatePage/index.js";
 import { UpdatePageRepository } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";
 import type { WbPage } from "@webiny/api-website-builder/domain/page/abstractions.js";
+import { AiCapabilityDisabledError } from "~/api/features/Capabilities/index.js";
 import {
     ResolveAiCapabilityUseCase,
     withAdditionalInstructions
@@ -95,9 +96,14 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         if (resolved.isFail()) {
             /*
              * Translation is a decorator on top of a successful page save, so it stays non-fatal:
-             * the page is already created, just untranslated. It does get logged now, because a
-             * silently skipped translation was indistinguishable from a misconfigured one.
+             * the page is already created, just untranslated. A misconfiguration is logged as a
+             * warning, because a silently skipped translation was indistinguishable from a broken
+             * one. Switched off is not a problem, so it is only noted.
              */
+            if (resolved.error instanceof AiCapabilityDisabledError) {
+                this.logger.info("AI page translation is switched off; skipping.");
+                return null;
+            }
             this.logger.warn({ reason: resolved.error.message }, "Skipping AI page translation.");
             return null;
         }

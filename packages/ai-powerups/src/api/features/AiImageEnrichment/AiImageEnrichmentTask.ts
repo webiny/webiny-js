@@ -2,12 +2,12 @@ import { Output } from "ai";
 import { z } from "zod";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { GetSettingsUseCase as FmGetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import { AiCapabilityDisabledError } from "~/api/features/Capabilities/index.js";
 import {
     ResolveAiCapabilityUseCase,
     withAdditionalInstructions
@@ -43,7 +43,6 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
         private updateFile: UpdateFileUseCase.Interface,
         private ai: Ai.Interface,
         private resolveCapability: ResolveAiCapabilityUseCase.Interface,
-        private logger: Logger.Interface,
         private identityContext: IdentityContext.Interface,
         private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
     ) {}
@@ -79,16 +78,16 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
 
         if (resolved.isFail()) {
             /*
-             * A skip, not a failure. This feature is not licence-gated on this branch, so every
-             * project that uploads an image without AI configured would otherwise get a failed task
-             * on every upload. Today's behaviour for an unconfigured provider is the same soft
-             * done; the log is new, because a skip and a misconfiguration used to look identical.
+             * Switched off is a setting someone chose, so the task finishes quietly: reporting it as
+             * an error would log one on every upload. Every other failure (no Vision model, a
+             * deleted connection, a missing key) is a misconfiguration someone needs to hear about,
+             * so it fails the task. That is only safe because enrichment is licence-gated in
+             * `api/Extension.ts`: a project without it never registers this task at all.
              */
-            this.logger.warn(
-                { fileId: input.fileId, reason: resolved.error.message },
-                "Skipping AI image enrichment."
-            );
-            return controller.response.done(resolved.error.message);
+            if (resolved.error instanceof AiCapabilityDisabledError) {
+                return controller.response.done(resolved.error.message);
+            }
+            return controller.response.error({ message: resolved.error.message });
         }
 
         const capability = resolved.value;
@@ -165,7 +164,6 @@ export const AiImageEnrichmentTask = TaskDefinition.createImplementation({
         UpdateFileUseCase,
         Ai,
         ResolveAiCapabilityUseCase,
-        Logger,
         IdentityContext,
         WebsocketsSendToIdentityUseCase
     ]

@@ -145,6 +145,25 @@ export class License implements ILicense {
         return this.license.package.features.aiPowerups?.options?.cms?.entryTranslation === true;
     }
 
+    /*
+     * Derived, not read off `aiPowerups.enabled`. The individual capabilities above already ignore
+     * that parent, and WCP has projects carrying capabilities under a parent that reads false, so
+     * anything else would switch off capabilities customers are currently using. Same rule as on
+     * `next`.
+     */
+    canUseAiPowerups(): boolean {
+        return (
+            this.canUseAiImageEnrichment() ||
+            this.canUseAiPageGeneration() ||
+            this.canUseAiPageTranslation() ||
+            this.canUseAiLexicalGeneration() ||
+            this.canUseAiEntryGeneration() ||
+            this.canUseAiEntryComparison() ||
+            this.canUseAiEntryTranslation() ||
+            this.canUseRemoteComponents()
+        );
+    }
+
     canUseRemoteComponents(): boolean {
         return this.license.package.features.aiPowerups?.options?.remoteComponents === true;
     }
