@@ -24,7 +24,8 @@ class SqlUpdateModelImpl implements UpdateModelStorageOperation.Interface {
         await this.modelSchemaManager.ensure(this.tableName);
         await this.knex
             .client<IModelRow>(this.tableName)
-            .where("modelId", model.modelId)
+            .where("tenant", model.tenant)
+            .andWhere("modelId", model.modelId)
             .update(row);
 
         return model;

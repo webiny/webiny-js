@@ -8,7 +8,7 @@ import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
 import { parseIdentifier } from "@webiny/utils";
 import type { IEntryRow } from "./types.js";
-import { createEntryQuery } from "./queryHelpers.js";
+import { createModelEntryQuery } from "./queryHelpers.js";
 
 class SqlDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperation.Interface {
     private readonly knex: Knex;
@@ -20,8 +20,8 @@ class SqlDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperat
         this.knex = knexClient.client;
     }
 
-    private query(): Knex.QueryBuilder<IEntryRow> {
-        return createEntryQuery(this.knex, this.entryTableManager.getTableName());
+    private modelQuery(model: CmsModel): Knex.QueryBuilder<IEntryRow> {
+        return createModelEntryQuery(this.knex, this.entryTableManager.getTableName(), model);
     }
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsDeleteEntriesParams) {
@@ -29,7 +29,7 @@ class SqlDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperat
 
         const entryIds = params.entries.map(id => parseIdentifier(id).id);
 
-        await this.query().where("tenant", model.tenant).whereIn("entryId", entryIds).delete();
+        await this.modelQuery(model).whereIn("entryId", entryIds).delete();
     }
 }
 

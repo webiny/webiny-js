@@ -10,7 +10,7 @@ import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
 import type { IEntryRow } from "./types.js";
 import { entryToRow } from "./mappers.js";
-import { createEntryQuery } from "./queryHelpers.js";
+import { createEntryQuery, createModelEntryQuery } from "./queryHelpers.js";
 
 class SqlCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOperation.Interface {
     private readonly knex: Knex;
@@ -26,6 +26,10 @@ class SqlCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
         return createEntryQuery(this.knex, this.entryTableManager.getTableName());
     }
 
+    private modelQuery(model: CmsModel): Knex.QueryBuilder<IEntryRow> {
+        return createModelEntryQuery(this.knex, this.entryTableManager.getTableName(), model);
+    }
+
     async execute<T extends CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
@@ -34,8 +38,7 @@ class SqlCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
 
         const isPublished = params.entry.status === "published";
 
-        const oldLatestRows = await this.query()
-            .where("tenant", model.tenant)
+        const oldLatestRows = await this.modelQuery(model)
             .andWhere("entryId", params.entry.entryId)
             .andWhere("isLatest", true);
 
@@ -43,14 +46,13 @@ class SqlCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
             const parsed = JSON.parse(row.data);
             parsed.isLatest = false;
 
-            await this.query()
-                .where("id", row.id)
+            await this.modelQuery(model)
+                .andWhere("id", row.id)
                 .update({ isLatest: false, data: JSON.stringify(parsed) });
         }
 
         if (isPublished) {
-            const oldPublishedRows = await this.query()
-                .where("tenant", model.tenant)
+            const oldPublishedRows = await this.modelQuery(model)
                 .andWhere("entryId", params.entry.entryId)
                 .andWhere("isPublished", true);
 
@@ -59,8 +61,8 @@ class SqlCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
                 parsed.isPublished = false;
                 parsed.status = "unpublished";
 
-                await this.query()
-                    .where("id", row.id)
+                await this.modelQuery(model)
+                    .andWhere("id", row.id)
                     .update({ isPublished: false, data: JSON.stringify(parsed) });
             }
         }
