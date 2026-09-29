@@ -546,7 +546,6 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
-      OPENSEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
       WEBINY_STORAGE: ddb-os,ddb
     if: >-
       needs.vitest-ddb-os-constants.outputs.vitest-test-commands != '[]' &&
@@ -605,8 +604,18 @@ jobs:
           minutes."
 
           exit 1
+      - name: List OpenSearch indices (before tests)
+        if: always()
+        run: >-
+          curl -s
+          "http://localhost:9200/_cat/indices?v&expand_wildcards=all&s=index"
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}
+      - name: List OpenSearch indices (after tests)
+        if: always()
+        run: >-
+          curl -s
+          "http://localhost:9200/_cat/indices?v&expand_wildcards=all&s=index"
     permissions:
       id-token: write

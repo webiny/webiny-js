@@ -7,7 +7,8 @@ import {
     OPENSEARCH_SERVICE,
     runNodeScript,
     addToOutputs,
-    createWaitForOpenSearchStep
+    createWaitForOpenSearchStep,
+    createListOpenSearchIndicesStep
 } from "./utils/index.js";
 import {
     createGlobalBuildCacheSteps,
@@ -67,12 +68,9 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     const env: Record<string, string> = { AWS_REGION };
 
-    // The container needs no endpoint and no credentials. The index prefix stays - see
-    // `utils/openSearch.ts` for why.
+    // The container needs no configuration at all - see `utils/openSearch.ts` for why there is no
+    // endpoint, no credentials and no index prefix here.
     const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
-    if (needsOpenSearch) {
-        env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
-    }
 
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
@@ -99,12 +97,15 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             ...yarnCacheSteps,
             ...runBuildCacheSteps,
             ...installBuildSteps,
-            ...(needsOpenSearch ? [createWaitForOpenSearchStep()] : []),
+            ...(needsOpenSearch
+                ? [createWaitForOpenSearchStep(), createListOpenSearchIndicesStep("before tests")]
+                : []),
             {
                 name: "Run tests",
                 run: "${{ matrix.testCommand.cmd }}",
                 "working-directory": DIR_WEBINY_JS
-            }
+            },
+            ...(needsOpenSearch ? [createListOpenSearchIndicesStep("after tests")] : [])
         ]
     });
 

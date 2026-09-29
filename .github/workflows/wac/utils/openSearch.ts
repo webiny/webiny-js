@@ -13,11 +13,11 @@
 // switches to a remote cluster when `OPENSEARCH_ENDPOINT` is set. So a job that wants the container
 // simply leaves `OPENSEARCH_ENDPOINT`, `OPENSEARCH_USERNAME` and `OPENSEARCH_PASSWORD` unset.
 //
-// `OPENSEARCH_INDEX_PREFIX` stays on this branch, even though a cluster per leg means legs can no
-// longer collide. `IndexManager` in `api-elasticsearch-tasks` lists every index that matches the
-// prefix and skips only names starting with ".". Without a prefix it also picks up indexes the test
-// did not create, and the data synchronization tests fail sorting one of them on `id.keyword`.
-// `next` could drop the prefix because it no longer has those tests.
+// `OPENSEARCH_INDEX_PREFIX` is gone for the same reason. It existed to keep matrix legs from
+// colliding in the one shared cluster; a cluster per leg makes that impossible by construction.
+// `getOpenSearchIndexPrefix()` falls back to `""`, and the packages that want a namespace of their
+// own still set one (`api-sync-ddb-to-opensearch-`, `api-headless-cms-env-`), which is exactly how
+// `yarn test:os` has always run locally.
 
 // Matches `OS_ENGINE_VERSION` in `packages/project-aws/src/pulumi/apps/core/CoreOpenSearch.ts`
 // (OpenSearch_3.3), so CI runs against the version users deploy.
@@ -61,4 +61,12 @@ export const createWaitForOpenSearchStep = () => ({
         'echo "::error::OpenSearch did not answer on localhost:9200 within 5 minutes."',
         "exit 1"
     ].join("\n")
+});
+
+// TEMPORARY: prints every index in the container, hidden ones included, to find out which index the
+// `api-elasticsearch-tasks` data synchronization tests trip over when there is no index prefix.
+export const createListOpenSearchIndicesStep = (when: string) => ({
+    name: `List OpenSearch indices (${when})`,
+    if: "always()",
+    run: 'curl -s "http://localhost:9200/_cat/indices?v&expand_wildcards=all&s=index"'
 });

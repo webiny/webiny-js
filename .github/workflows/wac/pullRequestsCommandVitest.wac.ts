@@ -47,12 +47,9 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     const env: Record<string, string> = { AWS_REGION };
 
-    // The container needs no endpoint and no credentials. The index prefix stays - see
-    // `utils/openSearch.ts` for why.
+    // The container needs no configuration at all - see `utils/openSearch.ts` for why there is no
+    // endpoint, no credentials and no index prefix here.
     const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
-    if (needsOpenSearch) {
-        env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
-    }
 
     const testCommands = [] as any[];
 
