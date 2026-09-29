@@ -53,7 +53,7 @@ export const DashboardWidgetCard = ({
                 ref={node => registerRef(name, node)}
                 className={cn(
                     "group relative rounded-lg transition-opacity",
-                    isDragging && "opacity-50 outline-dashed outline-2 outline-neutral-strong/40"
+                    isDragging && "opacity-50"
                 )}
             >
                 {/*

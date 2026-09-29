@@ -34,7 +34,7 @@ export const DashboardDragLayer = ({ titles }: DashboardDragLayerProps) => {
         <div className={"pointer-events-none fixed left-0 top-0 z-[9999]"}>
             <div
                 style={{
-                    transform: `translate(${offset.x + 12}px, ${offset.y + 12}px) rotate(1.5deg)`
+                    transform: `translate(${offset.x + 12}px, ${offset.y + 12}px)`
                 }}
                 className={cn(
                     "flex items-center gap-sm whitespace-nowrap rounded-lg border-sm",
