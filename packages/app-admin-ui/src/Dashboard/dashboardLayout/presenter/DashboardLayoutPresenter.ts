@@ -133,7 +133,6 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
                     this._dropColumn,
                     this._dropBeforeName
                 );
-                this.unhide(this._draggingName);
                 this.persist();
             }
         }
@@ -155,15 +154,7 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
         columns.push([name]);
         this._columns = columns;
         this._columnCount = columns.length;
-        this.unhide(name);
         this.persist();
-    }
-
-    // A widget dragged in from the "Add widget" drawer was hidden until it landed.
-    private unhide(name: string): void {
-        if (this._hidden.includes(name)) {
-            this._hidden = this._hidden.filter(n => n !== name);
-        }
     }
 
     removeWidget = (name: string): void => {

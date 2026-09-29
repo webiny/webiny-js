@@ -229,8 +229,6 @@ const Welcome = () => {
                     open={drawerOpen}
                     onOpenChange={setDrawerOpen}
                     widgets={drawerWidgets}
-                    canDrag={interactive}
-                    dragging={dragging}
                     presenter={presenter}
                 />
             </div>

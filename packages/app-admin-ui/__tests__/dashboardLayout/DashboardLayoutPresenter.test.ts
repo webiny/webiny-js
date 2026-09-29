@@ -103,17 +103,4 @@ describe("DashboardLayoutPresenter", () => {
 
         expect(presenter.vm.hidden).toEqual(["a"]);
     });
-
-    it("un-hides a widget dropped in from the Add widget drawer", () => {
-        const { presenter } = setup();
-        presenter.init("user-1", WIDGETS, null);
-        presenter.removeWidget("c");
-
-        presenter.beginDrag("c");
-        presenter.hoverSlot(0, "a");
-        presenter.drop();
-
-        expect(presenter.vm.hidden).toEqual([]);
-        expect(presenter.vm.columns[0]).toEqual(["c", "a", "b"]);
-    });
 });

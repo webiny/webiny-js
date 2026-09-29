@@ -16,7 +16,7 @@ interface DragItem {
 }
 
 // Transparent 1px gif. Hides the browser's drag preview so DashboardDragLayer's card is the only one.
-export const EMPTY_DRAG_IMAGE =
+const EMPTY_DRAG_IMAGE =
     "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
 interface DashboardWidgetCardProps {

@@ -1,18 +1,15 @@
 import React from "react";
-import { useMemo } from "react";
 import { useState } from "react";
-import { useDrag } from "react-dnd";
-import { DragPreviewImage } from "react-dnd";
 import { Button } from "@webiny/admin-ui";
 import { Drawer } from "@webiny/admin-ui";
+import { EmptyState } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
 import { Input } from "@webiny/admin-ui";
+import { Tabs } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
-import { DASHBOARD_WIDGET_DND_TYPE } from "./DashboardWidgetCard.js";
-import { EMPTY_DRAG_IMAGE } from "./DashboardWidgetCard.js";
 import type { DashboardLayoutPresenter } from "../../dashboardLayout/presenter/abstractions.js";
 
 export interface DrawerWidget {
@@ -29,73 +26,172 @@ interface AddWidgetDrawerProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     widgets: DrawerWidget[];
-    // False when the dashboard is collapsed to fewer columns and doesn't accept drops.
-    canDrag: boolean;
-    // True while any widget is being dragged; the drawer steps aside so the columns are reachable.
-    dragging: boolean;
     presenter: DashboardLayoutPresenter.Interface;
 }
 
 const DEFAULT_GROUP = "Other";
 
+const matchesSearch = (widget: DrawerWidget, query: string): boolean => {
+    if (!query) {
+        return true;
+    }
+    const fields = [widget.title, widget.description, widget.group];
+    return fields.some(value => value?.toLowerCase().includes(query));
+};
+
+const groupWidgets = (widgets: DrawerWidget[]): [string, DrawerWidget[]][] => {
+    const byGroup = new Map<string, DrawerWidget[]>();
+    for (const widget of widgets) {
+        const group = widget.group ?? DEFAULT_GROUP;
+        const items = byGroup.get(group) ?? [];
+        byGroup.set(group, [...items, widget]);
+    }
+    return [...byGroup.entries()];
+};
+
 export const AddWidgetDrawer = ({
     open,
     onOpenChange,
     widgets,
-    canDrag,
-    dragging,
     presenter
 }: AddWidgetDrawerProps) => {
     const [search, setSearch] = useState("");
 
-    const groups = useMemo(() => {
-        const query = search.trim().toLowerCase();
-        const matches = widgets.filter(widget => {
-            if (!query) {
-                return true;
-            }
-            return [widget.title, widget.description, widget.group].some(value =>
-                value?.toLowerCase().includes(query)
-            );
-        });
-
-        const byGroup = new Map<string, DrawerWidget[]>();
-        for (const widget of matches) {
-            const group = widget.group ?? DEFAULT_GROUP;
-            const items = byGroup.get(group) ?? [];
-            byGroup.set(group, [...items, widget]);
+    const changeOpen = (next: boolean) => {
+        // Every visit starts with an empty search.
+        if (!next) {
+            setSearch("");
         }
-        return [...byGroup.entries()];
-    }, [widgets, search]);
+        onOpenChange(next);
+    };
 
-    let description = "Add a widget to its default column.";
-    if (canDrag) {
-        description = "Drag a widget onto the dashboard, or add it to its default column.";
+    const onDashboard = widgets.filter(widget => widget.added);
+    const notAdded = widgets.filter(widget => !widget.added);
+
+    // Open where the user can act. When everything is added already, show the whole list.
+    let defaultTab = "all";
+    if (notAdded.length > 0) {
+        defaultTab = "notAdded";
     }
+
+    const renderTab = (items: DrawerWidget[], emptyTitle: string, emptyDescription: string) => (
+        <WidgetTabContent
+            items={items}
+            search={search}
+            onSearch={setSearch}
+            emptyTitle={emptyTitle}
+            emptyDescription={emptyDescription}
+            presenter={presenter}
+        />
+    );
 
     return (
         <Drawer
             open={open}
-            onOpenChange={onOpenChange}
+            onOpenChange={changeOpen}
+            modal={true}
             title={"Add widget"}
-            description={description}
+            description={"New widgets go to their default column. Drag them anywhere after."}
             width={400}
-            headerSeparator={true}
+            bodyPadding={false}
+            headerSeparator={false}
             showCloseButton={true}
-            className={cn("transition-opacity", dragging && "pointer-events-none opacity-0")}
         >
-            <Input
-                placeholder={"Search widgets"}
-                value={search}
-                onChange={setSearch}
-                startIcon={<Icon label={"Search"} icon={<SearchIcon />} />}
+            <Tabs
+                separator={true}
+                spacing={"lg"}
+                defaultValue={defaultTab}
+                tabs={[
+                    <Tabs.Tab
+                        key={"notAdded"}
+                        value={"notAdded"}
+                        trigger={`Not added (${notAdded.length})`}
+                        content={renderTab(
+                            notAdded,
+                            "All widgets are on your dashboard",
+                            "Remove a widget from its menu and it shows up here."
+                        )}
+                    />,
+                    <Tabs.Tab
+                        key={"onDashboard"}
+                        value={"onDashboard"}
+                        trigger={`On dashboard (${onDashboard.length})`}
+                        content={renderTab(
+                            onDashboard,
+                            "Your dashboard is empty",
+                            "Add a widget from the Not added tab."
+                        )}
+                    />,
+                    <Tabs.Tab
+                        key={"all"}
+                        value={"all"}
+                        trigger={`All (${widgets.length})`}
+                        content={renderTab(
+                            widgets,
+                            "No widgets available",
+                            "No app has registered a dashboard widget."
+                        )}
+                    />
+                ]}
             />
-            {groups.length === 0 && (
-                <Text as={"div"} size={"sm"} className={"mt-lg text-neutral-strong"}>
-                    {`No widgets match "${search}".`}
-                </Text>
+        </Drawer>
+    );
+};
+
+interface WidgetTabContentProps {
+    items: DrawerWidget[];
+    search: string;
+    onSearch: (value: string) => void;
+    emptyTitle: string;
+    emptyDescription: string;
+    presenter: DashboardLayoutPresenter.Interface;
+}
+
+const WidgetTabContent = ({
+    items,
+    search,
+    onSearch,
+    emptyTitle,
+    emptyDescription,
+    presenter
+}: WidgetTabContentProps) => {
+    const query = search.trim().toLowerCase();
+    const matches = items.filter(widget => matchesSearch(widget, query));
+    const groups = groupWidgets(matches);
+
+    let emptyState: React.ReactNode = null;
+    if (items.length === 0) {
+        emptyState = (
+            <EmptyState
+                size={"sm"}
+                type={"layout"}
+                title={emptyTitle}
+                description={emptyDescription}
+            />
+        );
+    } else if (matches.length === 0) {
+        emptyState = (
+            <EmptyState
+                size={"sm"}
+                type={"select"}
+                title={`No widgets match "${search}"`}
+                description={"Try a different search."}
+            />
+        );
+    }
+
+    return (
+        <div className={"pb-lg"}>
+            {items.length > 0 && (
+                <Input
+                    placeholder={"Search widgets"}
+                    value={search}
+                    onChange={onSearch}
+                    startIcon={<Icon label={"Search"} icon={<SearchIcon />} />}
+                />
             )}
-            {groups.map(([group, items]) => (
+            {emptyState && <div className={"mt-lg"}>{emptyState}</div>}
+            {groups.map(([group, groupItems]) => (
                 <div key={group} className={"mt-lg"}>
                     <Text
                         as={"div"}
@@ -107,78 +203,52 @@ export const AddWidgetDrawer = ({
                         {group}
                     </Text>
                     <div className={"flex flex-col gap-sm"}>
-                        {items.map(widget => (
+                        {groupItems.map(widget => (
                             <DrawerWidgetRow
                                 key={widget.name}
                                 widget={widget}
-                                canDrag={canDrag}
                                 presenter={presenter}
                             />
                         ))}
                     </div>
                 </div>
             ))}
-        </Drawer>
+        </div>
     );
 };
 
 interface DrawerWidgetRowProps {
     widget: DrawerWidget;
-    canDrag: boolean;
     presenter: DashboardLayoutPresenter.Interface;
 }
 
-const DrawerWidgetRow = ({ widget, canDrag, presenter }: DrawerWidgetRowProps) => {
-    const draggable = canDrag && !widget.added;
-
-    const [, drag, preview] = useDrag(
-        {
-            type: DASHBOARD_WIDGET_DND_TYPE,
-            canDrag: () => draggable,
-            item: () => {
-                presenter.beginDrag(widget.name);
-                return { name: widget.name };
-            },
-            end: () => {
-                presenter.endDrag();
-            }
-        },
-        [draggable, widget.name]
-    );
-
+const DrawerWidgetRow = ({ widget, presenter }: DrawerWidgetRowProps) => {
     return (
-        <>
-            <DragPreviewImage connect={preview} src={EMPTY_DRAG_IMAGE} />
-            <div
-                ref={node => {
-                    drag(node);
-                }}
-                className={cn(
-                    "flex items-start gap-md rounded-md border-sm border-neutral-muted p-sm-extra",
-                    draggable && "cursor-grab hover:border-neutral-strong hover:bg-neutral-light"
-                )}
-            >
-                <WidgetThumbnail added={widget.added} />
-                <div className={"min-w-0 flex-1"}>
-                    <Text as={"div"} size={"md"} className={"font-semibold"}>
-                        {widget.title}
+        <div
+            className={
+                "flex items-start gap-md rounded-md border-sm border-neutral-muted p-sm-extra"
+            }
+        >
+            <WidgetThumbnail added={widget.added} />
+            <div className={"min-w-0 flex-1"}>
+                <Text as={"div"} size={"md"} className={"font-semibold"}>
+                    {widget.title}
+                </Text>
+                {widget.description && (
+                    <Text as={"div"} size={"sm"} className={"mt-xxs text-neutral-strong"}>
+                        {widget.description}
                     </Text>
-                    {widget.description && (
-                        <Text as={"div"} size={"sm"} className={"mt-xxs text-neutral-strong"}>
-                            {widget.description}
-                        </Text>
-                    )}
-                </div>
-                <Button
-                    size={"sm"}
-                    variant={"tertiary"}
-                    text={widget.added ? "Added" : "Add"}
-                    icon={widget.added ? undefined : <AddIcon />}
-                    disabled={widget.added}
-                    onClick={() => presenter.addWidget(widget.name)}
-                />
+                )}
             </div>
-        </>
+            <Button
+                size={"sm"}
+                variant={"tertiary"}
+                text={widget.added ? "Added" : "Add"}
+                icon={widget.added ? undefined : <AddIcon />}
+                disabled={widget.added}
+                onClick={() => presenter.addWidget(widget.name)}
+            />
+        </div>
     );
 };
 
