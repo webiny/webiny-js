@@ -34,7 +34,7 @@ const ScrollOnFocus = observer(
 export function createFieldRenderer<TName extends string = string>(
     render: FieldRendererFn<TName>
 ): React.ComponentType<{ field: IFieldVM }> {
-    const Inner = observer(render as FieldRendererFn<string>) as unknown as React.ComponentType<{
+    const Inner = observer(render) as unknown as React.ComponentType<{
         field: IFieldVM;
     }>;
 
