@@ -90,7 +90,13 @@ export const applyFullTextSearch = (params: Params): void => {
             } else if (field.systemField) {
                 return field.path || field.field.storageId;
             }
-            const path = `values.${field.path || field.field.storageId}`;
+            /**
+             * Fields can live inside object fields, so we need to prepend the storage ids of all the parents.
+             * Root fields have the `values` parent only.
+             */
+            const parents =
+                field.parents.length > 0 ? field.parents.map(p => p.storageId) : ["values"];
+            const path = [...parents, field.path || field.field.storageId].join(".");
             /**
              * Searchable JSON fields are indexed as objects, so the actual searchable values
              * live on the nested keys. Target them all via a wildcard.
