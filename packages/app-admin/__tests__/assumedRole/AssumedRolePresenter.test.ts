@@ -20,11 +20,21 @@ interface SetupOptions {
     teamsEnabled?: boolean;
     ownRoleIds?: string[];
     ownTeamIds?: string[];
+    ownPermissions?: Array<{ name: string }>;
+    assumeError?: Error;
 }
 
 const setup = (options: SetupOptions) => {
-    const { dto, teamsEnabled = true, ownRoleIds = [], ownTeamIds = [] } = options;
+    const {
+        dto,
+        teamsEnabled = true,
+        ownRoleIds = [],
+        ownTeamIds = [],
+        ownPermissions = [{ name: "*" }],
+        assumeError
+    } = options;
     const calls: Array<{ includeTeams: boolean }> = [];
+    const assumed: Array<AssumeRoleUseCase.Target | null> = [];
     const container = new Container();
 
     container.register(IdentityContextImpl).inSingletonScope();
@@ -34,7 +44,7 @@ const setup = (options: SetupOptions) => {
         type: "admin",
         roles: ownRoleIds.map(id => ({ id, slug: id, name: id })),
         teams: ownTeamIds.map(id => ({ id, slug: id, name: id })),
-        permissions: [{ name: "*" }],
+        permissions: ownPermissions,
         profile: { external: false },
         currentTenant: { id: "root", name: "Root" },
         defaultTenant: { id: "root", name: "Root" }
@@ -46,7 +56,14 @@ const setup = (options: SetupOptions) => {
         get: () => null,
         set: () => undefined
     });
-    container.registerInstance(AssumeRoleUseCase, { execute: async () => undefined });
+    container.registerInstance(AssumeRoleUseCase, {
+        execute: async (target: AssumeRoleUseCase.Target | null) => {
+            assumed.push(target);
+            if (assumeError) {
+                throw assumeError;
+            }
+        }
+    });
     container.registerInstance(FeatureFlagsService, {
         getFlags: () => ({ isEnabled: () => teamsEnabled }),
         isLoaded: () => true,
@@ -61,7 +78,7 @@ const setup = (options: SetupOptions) => {
     container.register(ListAssumableRolesUseCase);
     container.register(AssumedRolePresenter).inSingletonScope();
 
-    return { presenter: container.resolve(PresenterAbstraction), calls };
+    return { presenter: container.resolve(PresenterAbstraction), calls, assumed };
 };
 
 const role = (id: string, permissions: Array<{ name: string; [key: string]: unknown }>) => ({
@@ -179,5 +196,55 @@ describe("AssumedRolePresenter", () => {
         await presenter.load();
 
         expect(calls).toEqual([{ includeTeams: false }]);
+    });
+
+    describe("can assume", () => {
+        it("allows a caller with full access", () => {
+            const { presenter } = setup({ dto: { roles: [], teams: [] } });
+
+            expect(presenter.vm.canAssume).toBe(true);
+        });
+
+        /*
+         * The API ignores the header for anyone without full access, so offering them the action
+         * would start a preview that changes nothing while the banner says it did.
+         */
+        it("refuses a caller without full access", () => {
+            const { presenter } = setup({
+                dto: { roles: [], teams: [] },
+                ownPermissions: [{ name: "security.role" }]
+            });
+
+            expect(presenter.vm.canAssume).toBe(false);
+        });
+    });
+
+    describe("assume target", () => {
+        /*
+         * Success reloads the page, so these go through the failure path. It still proves the
+         * target reaches the use case, without the role list having been loaded first.
+         */
+        it("passes the target straight to the use case", async () => {
+            const { presenter, assumed } = setup({
+                dto: { roles: [], teams: [] },
+                assumeError: new Error("Nope.")
+            });
+
+            await presenter.assumeTarget({ type: "team", id: "editorial", name: "Editorial" });
+
+            expect(assumed).toEqual([{ type: "team", id: "editorial", name: "Editorial" }]);
+        });
+
+        it("surfaces a failure and stops switching", async () => {
+            const { presenter } = setup({
+                dto: { roles: [], teams: [] },
+                assumeError: new Error(`"Editor" grants no permissions on this tenant.`)
+            });
+
+            await presenter.assumeTarget({ type: "role", id: "editor", name: "Editor" });
+
+            expect(presenter.vm.error).toBe(`"Editor" grants no permissions on this tenant.`);
+            expect(presenter.vm.switching).toBe(false);
+        });
     });
 });

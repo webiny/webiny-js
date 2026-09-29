@@ -19,7 +19,6 @@ import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
 import { ReactComponent as NoMatchIcon } from "@webiny/icons/person_search.svg";
 import { useAdminConfig } from "~/config/AdminConfig.js";
 import type { PermissionRendererConfig } from "~/permissions/types.js";
-import { useIdentity } from "~/presentation/security/hooks/useIdentity.js";
 import { AssumedRolePresenterFeature } from "~/presentation/assumedRole/feature.js";
 import type { AssumedRolePresenter } from "~/presentation/assumedRole/abstractions.js";
 import { Command } from "../abstractions.js";
@@ -364,24 +363,12 @@ const Footer = () => (
  */
 const ViewAsDetailView = observer(({ onBack }: Command.DetailProps) => {
     const { presenter } = useFeature(AssumedRolePresenterFeature);
-    const { identity } = useIdentity();
     const { permissionRenderers } = useAdminConfig();
     const vm = presenter.vm;
 
     const apps = toApps(permissionRenderers);
     const options = [...vm.roleOptions, ...vm.teamOptions];
-
-    /*
-     * The same rule the API enforces in AssumedRolePermissions: only a caller with full access can
-     * preview. The API doesn't refuse anyone else, it quietly keeps their own permissions, so a
-     * looser check here would let someone start a "preview" whose banner is a lie.
-     *
-     * While a preview is active the identity carries the previewed role's permissions instead.
-     * Whoever started it already passed this check, and the picker's own query runs as them, so an
-     * active preview is enough.
-     */
-    const hasFullAccess = identity.getPermission("*", true) !== null;
-    const canPick = vm.assumedRole !== null || hasFullAccess;
+    const canPick = vm.canAssume;
 
     useEffect(() => {
         if (canPick) {

@@ -142,12 +142,24 @@ class AssumedRolePresenterImpl implements Abstraction.Interface {
             return toOption(team, isCurrent);
         });
 
+        /*
+         * The same rule the API enforces in AssumedRolePermissions: only a caller with full access can
+         * preview. The API doesn't refuse anyone else, it quietly keeps their own permissions, so a
+         * looser check here would let someone start a "preview" whose banner is a lie.
+         *
+         * While a preview is active the identity carries the previewed role's permissions instead.
+         * Whoever started it already passed this check, so an active preview is enough.
+         */
+        const hasFullAccess = identity.getPermission("*", true) !== null;
+        const canAssume = this.loadedAssumedRole !== null || hasFullAccess;
+
         return {
             loading: this.loading,
             switching: this.switching,
             roleOptions,
             teamOptions,
             assumedRole: this.loadedAssumedRole,
+            canAssume,
             error: this.error
         };
     }
@@ -186,6 +198,10 @@ class AssumedRolePresenterImpl implements Abstraction.Interface {
         }
 
         await this.switchTo({ type: entry.type, id: entry.id, name: entry.name });
+    }
+
+    async assumeTarget(target: AssumeRoleUseCase.Target): Promise<void> {
+        await this.switchTo(target);
     }
 
     async exit(): Promise<void> {

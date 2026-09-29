@@ -36,6 +36,8 @@ import { TeamsPresenterFeature } from "../feature.js";
 import { Routes } from "../../routes.js";
 import type { Team } from "~/features/accessManagement/types.js";
 import { FormErrors } from "~/index.js";
+import { ViewAsButton } from "~/presentation/assumedRole/components/ViewAsButton.js";
+import type { AssumedRolePresenter } from "~/presentation/assumedRole/abstractions.js";
 
 const SORTERS = [
     { label: "Newest to oldest", sorter: "createdOn_DESC" },
@@ -48,6 +50,18 @@ const deserializeSorters = (data: string): [string, "asc" | "desc"] => {
     const [field, order] = data.split("_");
     return [field, order.toLowerCase() === "asc" ? "asc" : "desc"];
 };
+
+/*
+ * Only a saved team can be previewed. While the form loads, `selectedTeam` can still be the team
+ * that was open before, so there is no target until loading is done.
+ */
+function toViewAsTarget(team: Team | null, loading: boolean): AssumedRolePresenter.Target | null {
+    if (!team || loading) {
+        return null;
+    }
+
+    return { type: "team", id: team.id, name: team.name };
+}
 
 const TeamsDataList = observer(({ activeId }: { activeId: string | undefined }) => {
     const { presenter } = useFeature(TeamsPresenterFeature);
@@ -224,12 +238,18 @@ const TeamsForm = observer(({ newEntry, id }: { newEntry: boolean; id: string | 
         );
     }
 
+    const viewAsTarget = toViewAsTarget(vm.selectedTeam, vm.loading);
+
     return (
         <SimpleForm>
             {vm.loading || vm.saving ? <OverlayLoader /> : null}
             <SimpleFormHeader
                 title={vm.selectedTeam ? vm.selectedTeam.name || "Untitled" : "Untitled"}
-            />
+            >
+                <div className={"flex items-center justify-end"}>
+                    <ViewAsButton target={viewAsTarget} />
+                </div>
+            </SimpleFormHeader>
             <SimpleFormContent>
                 {vm.selectedTeam && vm.selectedTeam.system ? (
                     <Alert type={"info"} title={"Permissions are locked"}>

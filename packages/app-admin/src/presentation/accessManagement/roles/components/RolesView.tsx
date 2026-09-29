@@ -38,6 +38,8 @@ import { RolesPresenterFeature } from "../feature.js";
 import { Routes } from "../../routes.js";
 import type { Role } from "~/features/accessManagement/types.js";
 import { FormErrors } from "~/index.js";
+import { ViewAsButton } from "~/presentation/assumedRole/components/ViewAsButton.js";
+import type { AssumedRolePresenter } from "~/presentation/assumedRole/abstractions.js";
 
 const SORTERS = [
     { label: "Newest to oldest", sorter: "createdOn_DESC" },
@@ -50,6 +52,18 @@ const deserializeSorters = (data: string): [string, "asc" | "desc"] => {
     const [field, order] = data.split("_");
     return [field, order.toLowerCase() === "asc" ? "asc" : "desc"];
 };
+
+/*
+ * Only a saved role can be previewed. While the form loads, `selectedRole` can still be the role
+ * that was open before, so there is no target until loading is done.
+ */
+function toViewAsTarget(role: Role | null, loading: boolean): AssumedRolePresenter.Target | null {
+    if (!role || loading) {
+        return null;
+    }
+
+    return { type: "role", id: role.id, name: role.name };
+}
 
 const RolesDataList = observer(({ activeId }: { activeId: string | undefined }) => {
     const { presenter } = useFeature(RolesPresenterFeature);
@@ -226,13 +240,16 @@ const RolesForm = observer(({ newEntry, id }: { newEntry: boolean; id: string | 
         );
     }
 
+    const viewAsTarget = toViewAsTarget(vm.selectedRole, vm.loading);
+
     return (
         <SimpleForm size={"lg"}>
             {vm.loading || vm.saving ? <OverlayLoader /> : null}
             <SimpleFormHeader
                 title={vm.selectedRole ? vm.selectedRole.name || "Untitled" : "Untitled"}
             >
-                <div className={"flex justify-end"}>
+                <div className={"flex items-center justify-end gap-xxs"}>
+                    <ViewAsButton target={viewAsTarget} />
                     <Tooltip
                         content="Copy permissions as JSON"
                         trigger={
