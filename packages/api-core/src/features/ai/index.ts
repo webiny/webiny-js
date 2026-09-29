@@ -9,14 +9,13 @@ export {
     AiSdkTools
 } from "./abstractions.js";
 export type { IAiConnection, IAiConnectionInline, AiModel, IAiSdkModel } from "./abstractions.js";
+/*
+ * Abstractions are exported by their own name only. Their interfaces are reached through the
+ * namespace, as `AiOutputTool.Interface` or `TextExtractor.Result`, not re-exported as `I`-prefixed
+ * names alongside them.
+ */
 export { AiOutputTool, AiOutputToolRegistry, AiToolPipelineRunner } from "./toolPipeline/index.js";
-export type {
-    IAiOutputTool,
-    IAiOutputToolRegistry,
-    IAiToolPipelineRunner
-} from "./toolPipeline/index.js";
 export { TextExtractor, DefaultTextExtractor } from "./TextExtractor/index.js";
-export type { ITextExtractor, TextExtractorResult } from "./TextExtractor/index.js";
 export {
     AiBeforeGenerateTextEvent,
     AiBeforeGenerateTextEventHandler,
