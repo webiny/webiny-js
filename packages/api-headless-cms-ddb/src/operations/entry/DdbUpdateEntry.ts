@@ -17,7 +17,7 @@ import {
     isEntryLevelEntryMetaField,
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants.js";
-import { convertToStorageEntry } from "./storageEntryUtils.js";
+import { convertFromStorageEntry, convertToStorageEntry } from "./storageEntryUtils.js";
 
 class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
     constructor(
@@ -36,11 +36,14 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
             model,
             ids: [params.id]
         });
-        /**
-         * Keep the storage form: the result is written back to DynamoDB as the latest revision,
-         * so its values must stay keyed by storageId.
-         */
-        return items.shift() || null;
+        const item = items.shift() || null;
+        if (!item) {
+            return null;
+        }
+        return convertFromStorageEntry({
+            storageEntry: item,
+            model
+        });
     }
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -111,22 +114,31 @@ class DdbUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
                 );
 
                 /**
+                 * The latest revision was loaded with values keyed by fieldId.
+                 * Convert it back to storage keys before writing it.
+                 */
+                const latestEntryForStorage = convertToStorageEntry({
+                    model,
+                    storageEntry: latestStorageEntry
+                });
+
+                /**
                  * First we update the regular DynamoDB table. Two updates are needed:
                  * - one for the actual revision record
                  * - one for the latest record
                  */
                 entityBatch.put({
-                    ...createEntryRevisionKeys(latestStorageEntry),
+                    ...createEntryRevisionKeys(latestEntryForStorage),
                     data: {
-                        ...latestStorageEntry,
+                        ...latestEntryForStorage,
                         ...updatedEntryLevelMetaFields
                     }
                 });
 
                 entityBatch.put({
-                    ...createEntryLatestKeys(latestStorageEntry),
+                    ...createEntryLatestKeys(latestEntryForStorage),
                     data: {
-                        ...latestStorageEntry,
+                        ...latestEntryForStorage,
                         ...updatedEntryLevelMetaFields
                     }
                 });
