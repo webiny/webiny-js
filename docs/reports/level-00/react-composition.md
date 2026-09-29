@@ -1,0 +1,52 @@
+# @webiny/react-composition
+
+> Level 0 · commit 19c9ca1b91 · audited 2026-09-26
+
+## Summary
+
+`react-composition` is Webiny's low-level React "decoration" framework: it lets any package register components/hooks as decoratable (`makeDecoratable`), and lets unrelated packages wrap those components with higher-order decorators (`Compose`, `createDecorator`, `withDecoratorFactory`/`createDecoratorFactory`) without importing each other. A single mutable `CompositionStore` (per `CompositionProvider`) holds the registered HOC chains, keyed by component and by string "scope" (`CompositionScope`/`useCompositionScope`), and notifies subscribers via `useSyncExternalStore`. It is heavily used (80 files import it, `makeDecoratable` is called ~297 times, `CompositionProvider`/`CompositionScope` each show up in ~20 files), so it is genuinely foundational — any higher-level package doing "wrap/replace a component" or "register a plugin at runtime" should reuse `Compose`/`makeDecoratable` rather than reinventing a context+registry. Overall the core store logic (idempotency, atomic swap to avoid double-registration under StrictMode) is careful and well-commented, but the ergonomics of the decorator-factory API (`createDecoratorFactory`/`withDecoratorFactory`, and the very similar pattern in `app-admin`'s `createAdminConfig`) create fresh HOC closures on every render, which the store's reference-equality-based diffing treats as "new" decorators — see Bugs below.
+
+## Public API
+
+- `makeDecoratable(name, Component)` / `makeDecoratable(hook)` (`src/makeDecoratable.tsx`) — the main entry point for making something decoratable; ~297 call sites across the monorepo (admin UI, page builder, CMS, etc.).
+- `Compose` (`src/Compose.tsx`) — the component used to register a decorator against a decoratable target; used internally by every helper below plus directly by feature packages (e.g. `packages/app-admin/src/config/createAdminConfig.tsx`).
+- `createDecorator` / `createDecoratorFactory` / `withDecoratorFactory` / `withHookDecoratorFactory` (`src/createDecorator.tsx`, `src/decorators.tsx`) — ergonomic wrappers over `Compose`; `.createDecorator()` is attached to every component returned by `makeDecoratable`.
+- `CompositionProvider`, `useCompositionStore`, `useOptionalCompositionStore`, `useComponent` (`src/Context.tsx`) — provider and low-level hooks; `CompositionProvider` is rendered in ~22 places (typically once per app root).
+- `CompositionScope`, `useCompositionScope` (`src/CompositionScope.tsx`) — scoping mechanism so decorators can target a subtree instead of globally; used in ~19 files.
+- `CompositionStore` (`src/domain/CompositionStore.ts`) — the underlying registry class, exported for advanced/test usage.
+- Legacy/deprecated: `useComposition`, `useOptionalComposition`, `HigherOrderComponent`, `ComposableFC`, `makeComposable` — kept "for external consumers" but no in-repo consumer was found (see Dead code).
+
+## Bugs
+
+| # | Severity | Location (file:line) | Problem | Failure scenario | Confidence |
+|---|----------|----------------------|---------|-------------------|------------|
+| 1 | high | `packages/react-composition/src/decorators.tsx:61-68` (also `:51-58`) and `packages/react-composition/src/Compose.tsx:39-47`, `packages/react-composition/src/domain/CompositionStore.ts:20-80` | `createDecoratorFactory()`'s `DecoratorPlugin` calls `memoizedComponent(decorator)` (no-`shouldDecorate` branch) or `createConditionalDecorator(...)` (`shouldDecorate` branch) **inline in its render body**, producing a brand-new HOC function reference on every render of the decorator component. `Compose` then wraps that in a fresh one-element array (`decorators.tsx` isn't memoized, `Compose.tsx:39` `[props.with]` is a new array too) and passes it to `CompositionStore.register` with the previous array as `replaces`. `register` (`CompositionStore.ts:35` `hocs.filter(hoc => !recipe.hocs.includes(hoc))`) uses **reference equality**, so it always sees the new closure as a genuinely different HOC, recomputes `compose(...)(component)` (`CompositionStore.ts:63`), and stores a brand-new composed-component identity. `Compose.tsx`'s effect (`:96-112`) then calls `store.notify()` whenever `decorators !== prev.decorators`, which is true on essentially every re-render. | Any decorator created via `SomeComponent.createDecorator(fn)` (the API attached to every `makeDecoratable`-produced component) re-renders with a new element `type` each time its own React tree re-renders for an unrelated reason (parent state change, context update, etc.), because `useComponent`'s consumer renders `<ComposedComponent {...props}>` where `ComposedComponent`'s identity just changed. React unmounts/remounts the whole decorated subtree, discarding any local component state inside it (focus, form input, open/closed UI state, scroll position). The exact same pattern (calling a HOC-constructor fresh inside a component body and passing it straight to `<Compose with={...}>`) is also used in production code outside this package, e.g. `packages/app-admin/src/config/createAdminConfig.tsx`'s `PublicConfig`/`ProtectedConfig` components call `createHOC(children)` inline on every render and feed it to `Compose`, so the same remount risk applies to the whole admin-config composition mechanism, not just this package's own factory helpers. | high |
+
+## Duplication
+
+- `packages/react-composition/src/Context.tsx:114-125` (`useComposition`) and `:130-144` (`useOptionalComposition`) are near-identical (jscpd: 9-line clone, `Context.tsx` lines 117-125 vs 136-144). Both build the same `{ composeComponent, getComponent }` object around `store.register`/`store.getComponent`; the only difference is the `!store` early-return in the optional variant. This is flagged by jscpd and also happens to be dead code (see below), so the recommended fix is removal rather than de-duplication.
+- No cross-package duplication of this package's logic (`compose`, HOC registry, scope resolution) was found elsewhere in the monorepo; it is the canonical implementation.
+
+## Dead code
+
+- `useComposition` / `useOptionalComposition` (`Context.tsx:114`, `:130`) — exported from the barrel (`index.ts:1`), documented as "Legacy compatibility — kept for any external consumers," but `grep -rn "useComposition\b"` / `"useOptionalComposition\b"` across `packages/` and `apps/` finds zero call sites outside this package's own source.
+- `makeComposable` (`src/makeComposable.tsx:13`) — deprecated wrapper around `makeDecoratable`; zero call sites found via `grep -rn "makeComposable("` outside the package. Its file also declares a second, unused, module-local `ComposableContext = createContext<string[]>([])` (`makeComposable.tsx:5-6`) that is never read or provided anywhere in the file — a leftover from before the logic moved to `makeDecoratable.tsx` (which has its own, actually-used, `ComposableContext`).
+- `HigherOrderComponent` interface (`Context.tsx:26`) and `ComposableFC` type (`types.ts:21`) — both `@deprecated`, re-exported through app-level barrels (`packages/app/src/index.ts`, `packages/app-admin/src/index.ts`, `packages/app-serverless-cms/src/index.tsx`) but never actually used as a type anywhere else in the repo.
+
+## Convention issues
+
+- Inline prop type instead of a named interface: `packages/react-composition/src/Compose.tsx:69-76` — `ComposeEffects`'s parameter is typed with an inline object literal (`{ store: ...; target: any; decorators: ...; scope: string; inherit: boolean }`) rather than an extracted named interface, unlike the rest of the file which uses `ComposeProps`/`CompositionProviderProps`-style named interfaces.
+- The barrel (`src/index.ts`) re-exports everything (`export * from "./Context.js"`, etc.) with no filtering, so the deprecated/dead exports listed above (`useComposition`, `useOptionalComposition`, `HigherOrderComponent`, `ComposableFC`, `makeComposable`) are part of the public surface with no way for consumers to tell they're unused; this isn't a "minimal barrel" in the sense the project convention intends.
+
+## Test gaps
+
+- No test exercises the re-render/remount-identity path described in Bug #1 — both existing tests (`__tests__/composition.test.tsx`, `__tests__/decorators.test.tsx`) create decorators once and render them once; none re-renders a `DecoratorPlugin` with the same logical decorator to check that the underlying composed component's identity (and therefore any local state in the decorated subtree) is preserved.
+- `CompositionScope` / `useCompositionScope` (`src/CompositionScope.tsx`) and the `inherit` flag on `CompositionStore.register` (`CompositionStore.ts:47-58`) have no dedicated tests at all in this package — scoped decoration and scope-inheritance are core, documented features but untested here.
+- `CompositionStore` (`src/domain/CompositionStore.ts`) has no direct unit tests; its idempotency-under-StrictMode handling (`register`'s `newHocs`/`replaces` logic, `unregister`, `notify`) is only exercised indirectly through component-level tests, so regressions in the store's diffing (such as Bug #1) aren't caught.
+- No test verifies `unregister` behavior on unmount (decorator cleanup removing the HOC from the store) or conditional decorators reacting to `componentProps` changing while `decoratorProps` stays the same.
+
+## Recommendations
+
+1. Fix the HOC-identity churn in `createDecoratorFactory`/`withDecoratorFactory` (`decorators.tsx:44-72`) by memoizing the produced HOC (e.g., compute `memoizedComponent(decorator)` once outside the render function, or wrap in `useMemo` keyed on stable inputs) so `Compose` receives a stable reference across re-renders; then check/fix the same pattern in downstream consumers such as `createAdminConfig.tsx`, since they follow the same "construct HOC inline in render" shape.
+2. Add a regression test that renders a decorator component twice with an unrelated prop/state change and asserts the decorated component's DOM node (and any local state, e.g. via a stateful child) survives the re-render, plus basic `CompositionScope`/`inherit` coverage.
+3. Remove the dead legacy surface (`useComposition`, `useOptionalComposition`, `makeComposable` and its stray unused `ComposableContext`, and the deprecated `HigherOrderComponent`/`ComposableFC` types) or, if kept intentionally for external plugin authors, document that explicitly and stop re-exporting it silently through the barrel.

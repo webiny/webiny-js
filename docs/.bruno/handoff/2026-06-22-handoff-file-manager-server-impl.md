@@ -21,7 +21,7 @@
 - `object-hash` kept as dependency (used by asset delivery transformation/utils.ts)
 - `FlushCache` handlers are noop but correctly wired to `FileAfterDeleteEvent` + `FileBeforeUpdateEvent`
 - `LocalOutputStrategy` always streams (no presigned URL redirect — no CDN in local mode)
-- DI features that read server-generated data (KV store metadata, mdbid IDs) don't add path traversal checks (same pattern as S3 package)
+- See private notes (SEC-51) before changing how DI features read server-generated data.
 
 ## Current state
 
