@@ -6,6 +6,7 @@ import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { AiCapability } from "~/api/features/Capabilities/abstractions.js";
 import { ResolveAiCapabilityUseCase } from "~/api/features/Capabilities/abstractions.js";
 import { ResolveAiCapabilityUseCaseImplementation } from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
+import { AiCapabilityDisabledError } from "~/api/features/Capabilities/AiCapabilityDisabledError.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
 
 type Items = IAiPowerUpsSettings["capabilities"]["items"];
@@ -294,10 +295,53 @@ describe("ResolveAiCapabilityUseCase", () => {
         expect(result.isOk()).toBe(true);
     });
 
+    /*
+     * Typed, so a caller that runs on its own (an upload, a page save) can skip instead of
+     * reporting a deliberate setting as a failure every time it fires.
+     */
+    it("reports switched off as its own error type", async () => {
+        const result = await resolver(
+            settings({ items: { "test.capability": { enabled: false, overrides: {} } } })
+        ).execute("test.capability");
+
+        expect(result.error).toBeInstanceOf(AiCapabilityDisabledError);
+
+        const error = result.error as AiCapabilityDisabledError;
+        expect(error.code).toBe("AI_CAPABILITY_DISABLED");
+        expect(error.capabilityId).toBe("test.capability");
+    });
+
     it("fails loudly on an unregistered capability id", async () => {
         const result = await resolver(settings({})).execute("nope.notRegistered");
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toContain("Unknown AI capability");
     });
+});
+
+/*
+ * The other half of typing "switched off": only that one is a decision, so only it may take the
+ * quiet path. Every misconfiguration has to stay a plain error, or background work would stop
+ * reporting it. The Vision rule added one more such failure, which is why it is listed.
+ */
+describe("ResolveAiCapabilityUseCase misconfigurations", () => {
+    const misconfigured: Array<[string, IAiPowerUpsSettings, string]> = [
+        ["no vision model", settings({}), "test.noGuidance"],
+        [
+            "no model at all",
+            settings({ roles: { standard: { connectionId: "", model: "" } } }),
+            "test.capability"
+        ],
+        ["deleted connection", settings({ connections: [] }), "test.capability"]
+    ];
+
+    it.each(misconfigured)(
+        "keeps %s out of the quiet, switched-off path",
+        async (_label, value, id) => {
+            const result = await resolver(value).execute(id);
+
+            expect(result.isFail()).toBe(true);
+            expect(result.error).not.toBeInstanceOf(AiCapabilityDisabledError);
+        }
+    );
 });

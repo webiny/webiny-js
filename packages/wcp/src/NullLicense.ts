@@ -87,6 +87,10 @@ export class NullLicense implements ILicense {
         return false;
     }
 
+    canUseAiPowerups(): boolean {
+        return false;
+    }
+
     canUseRemoteComponents(): boolean {
         return false;
     }

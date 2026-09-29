@@ -41,11 +41,23 @@ function CanUseHcmsFieldPermissions({ children }: ChildrenProps) {
     return wcp.canUseHcmsFieldPermissions() ? <>{children}</> : null;
 }
 
+/*
+ * Any AI capability on the licence, derived the same way as `License.canUseAiPowerups`. Not
+ * `CanUseMultiTenancy`, which AI Power-Ups was gated on originally: at this level that one only
+ * checks that the project has a licence at all.
+ */
+function CanUseAiPowerups({ children }: ChildrenProps) {
+    const wcp = useWcpProjectLicense();
+
+    return wcp.canUseAiPowerups() ? <>{children}</> : null;
+}
+
 export const Wcp = {
     CanUseMultiTenancy,
     CanUseTeams,
     CanUsePrivateFiles,
     CanUseFileManagerThreatDetection,
     CanUseWorkflows,
-    CanUseHcmsFieldPermissions
+    CanUseHcmsFieldPermissions,
+    CanUseAiPowerups
 };
