@@ -531,21 +531,21 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
-      WEBINY_STORAGE: ddb-os,ddb
-      AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.OPENSEARCH_DOMAIN_NAME }}
-      OPENSEARCH_ENDPOINT: ${{ secrets.OPENSEARCH_ENDPOINT }}
-      OPENSEARCH_USERNAME: ${{ secrets.OPENSEARCH_USERNAME }}
-      OPENSEARCH_PASSWORD: ${{ secrets.OPENSEARCH_PASSWORD }}
       OPENSEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
+      WEBINY_STORAGE: ddb-os,ddb
+    services:
+      opensearch:
+        image: opensearchproject/opensearch:3.3.2
+        env:
+          discovery.type: single-node
+          DISABLE_SECURITY_PLUGIN: 'true'
+          OPENSEARCH_JAVA_OPTS: '-Xms512m -Xmx512m'
+        ports:
+          - '9200:9200'
     steps:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6.0.0
-        with:
-          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
-          aws-region: eu-central-1
       - uses: actions/checkout@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -568,11 +568,28 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Wait for OpenSearch
+        run: >-
+          set -euo pipefail
+
+
+          for i in $(seq 1 60); do
+            if curl -sf "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s" > /dev/null; then
+              echo "OpenSearch is up:"
+              curl -s http://localhost:9200
+              exit 0
+            fi
+            sleep 5
+          done
+
+
+          echo "::error::OpenSearch did not answer on localhost:9200 within 5
+          minutes."
+
+          exit 1
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-    permissions:
-      id-token: write
   vitest-sql-constants:
     needs:
       - build

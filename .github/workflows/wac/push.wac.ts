@@ -1,5 +1,12 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_VERSION, runNodeScript } from "./utils/index.js";
+import {
+    AWS_REGION,
+    BUILD_PACKAGES_RUNNER,
+    createWaitForOpenSearchStep,
+    NODE_VERSION,
+    OPENSEARCH_SERVICE,
+    runNodeScript
+} from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
 import {
     createDeployWebinySteps,
@@ -265,16 +272,15 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     const env: Record<string, string> = { AWS_REGION };
 
+    // The container needs no endpoint and no credentials. The index prefix stays - see
+    // `utils/openSearch.ts` for why.
+    const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
+    if (needsOpenSearch) {
+        env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
+    }
+
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
-
-        if (storageOps.id === "ddb-os,ddb") {
-            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
-            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
-            env["OPENSEARCH_USERNAME"] = "${{ secrets.OPENSEARCH_USERNAME }}";
-            env["OPENSEARCH_PASSWORD"] = "${{ secrets.OPENSEARCH_PASSWORD }}";
-            env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
-        }
     }
 
     return {
@@ -311,11 +317,13 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             "runs-on": "${{ matrix.os }}",
             env,
             awsAuth: !!storageOps,
+            ...(needsOpenSearch ? { services: OPENSEARCH_SERVICE } : {}),
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
                 ...installBuildSteps,
+                ...(needsOpenSearch ? [createWaitForOpenSearchStep()] : []),
                 {
                     name: "Run tests",
                     run: "${{ matrix.testCommand.cmd }}",
