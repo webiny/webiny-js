@@ -100,22 +100,13 @@ export class TaskOrchestrator {
             const url = new URL(this.serverUrl);
             const body = JSON.stringify(payload);
 
-            /*
-             * The server answers only once the iteration finishes, so this is how long one iteration
-             * may take. It used to be a fixed 60s, well short of the task's own budget: an AI call
-             * that retried through a provider overload failed the task for running a little over a
-             * minute. Bounded by what is left of the budget instead. Never 0, which Node reads as
-             * "no timeout".
-             */
-            const timeout = Math.max(1, this.timer.getRemainingMilliseconds());
-
             const req = http.request(
                 {
                     hostname: url.hostname,
                     port: url.port,
                     path: url.pathname,
                     method: "POST",
-                    timeout,
+                    timeout: 60_000,
                     headers: {
                         "content-type": "application/json",
                         "content-length": Buffer.byteLength(body),
@@ -142,7 +133,7 @@ export class TaskOrchestrator {
             );
 
             req.on("timeout", () => {
-                req.destroy(new Error("Task exceeded maximum duration."));
+                req.destroy(new Error("Request timed out after 60s."));
             });
             req.on("error", reject);
             req.write(body);

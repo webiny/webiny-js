@@ -42,10 +42,7 @@ const makeStartMessage = (port: number, overrides?: Partial<StartMessage>): Star
             webinyTaskId: "task-1",
             webinyTaskDefinitionId: "testDef",
             tenant: "root",
-            delay: 0,
-            endpoint: `http://127.0.0.1:${port}/background-task`,
-            executionName: "task-1",
-            stateMachineId: ""
+            delay: 0
         },
         serverUrl: `http://127.0.0.1:${port}/background-task`,
         maxDurationMs: 10_000,
@@ -274,53 +271,6 @@ describe("TaskOrchestrator", () => {
         const errorMsg = messages.find(m => m.type === "error");
         expect(errorMsg).toBeDefined();
         expect((errorMsg as any).error).toContain("maximum duration");
-    });
-
-    /*
-     * One iteration is one request, answered only when the iteration finishes. Its time limit is the
-     * task's remaining budget, not a fixed figure: a fixed 60s failed AI work that merely retried
-     * through a provider overload, while the task was allowed to run for hours.
-     */
-    it("should give a slow iteration the task's budget, and no more", async () => {
-        const slowServer = (delayMs: number) =>
-            new Promise<{ port: number; server: http.Server }>(resolve => {
-                const created = http.createServer((req, res) => {
-                    req.resume();
-                    req.on("end", () => {
-                        setTimeout(() => {
-                            res.writeHead(200, { "content-type": "application/json" });
-                            res.end(JSON.stringify({ status: "done" }));
-                        }, delayMs);
-                    });
-                });
-                created.listen(0, "127.0.0.1", () => {
-                    resolve({
-                        port: (created.address() as { port: number }).port,
-                        server: created
-                    });
-                });
-            });
-
-        const withinBudget = await slowServer(300);
-        server = withinBudget.server;
-        const finished: WorkerToParentMessage[] = [];
-        await new TaskOrchestrator(
-            makeStartMessage(withinBudget.port, { maxDurationMs: 5_000 }),
-            msg => finished.push(msg)
-        ).run();
-        expect(finished.map(m => m.type)).toEqual(["done"]);
-        server.close();
-
-        const pastBudget = await slowServer(2_000);
-        server = pastBudget.server;
-        const cutOff: WorkerToParentMessage[] = [];
-        const started = Date.now();
-        await new TaskOrchestrator(makeStartMessage(pastBudget.port, { maxDurationMs: 300 }), msg =>
-            cutOff.push(msg)
-        ).run();
-        expect(Date.now() - started).toBeLessThan(1_500);
-        expect(cutOff).toHaveLength(1);
-        expect((cutOff[0] as any).error).toContain("maximum duration");
     });
 
     it("should report error when server is unreachable", async () => {
