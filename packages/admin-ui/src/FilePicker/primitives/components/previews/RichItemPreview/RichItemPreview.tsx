@@ -1,8 +1,12 @@
 import React from "react";
+import bytes from "bytes";
 import { cn, makeDecoratable } from "~/utils.js";
+import { Text } from "~/Text/index.js";
 import { RichItemThumbnail } from "./RichItemThumbnail.js";
+import { ThumbnailActions } from "./ThumbnailActions.js";
 import { ItemDescription } from "../ItemDescription.js";
 import { ItemActions } from "~/FilePicker/primitives/components/previews/ItemActions.js";
+import { TruncatedFileName } from "../TruncatedFileName.js";
 import { previewVariants } from "../variants.js";
 import type { FilePreviewDefaultProps } from "../../types.js";
 
@@ -24,36 +28,79 @@ const DecoratableRichItemPreview = ({
     renderImage,
     ...props
 }: RichItemPreviewProps) => {
+    const actions = { onRemoveItem, onReplaceItem, onEditItem, disabled };
+
+    const formattedSize = value.size
+        ? bytes.format(value.size, { unitSeparator: " ", decimalPlaces: 0 })
+        : "";
+    const details = [value.mimeType, formattedSize].filter(Boolean).join(" - ");
+
     return (
         <div
             data-testid="image-preview"
-            className={cn("w-full rounded-md", previewVariants({ variant, disabled }), className)}
+            className={cn(
+                "w-full rounded-md @container",
+                previewVariants({ variant, disabled }),
+                className
+            )}
             {...props}
         >
+            {/* Stacked layout for narrow containers (below 280px). */}
+            <div data-role="select-image" className={"@min-[280px]:hidden"}>
+                <div className={"flex flex-col gap-xs p-xs"}>
+                    <div className={"group relative cursor-pointer"} onClick={onReplaceItem}>
+                        <RichItemThumbnail
+                            {...value}
+                            variant={"banner"}
+                            disabled={disabled}
+                            preview={preview}
+                            renderImage={renderImage}
+                        />
+                        <ThumbnailActions {...actions} />
+                    </div>
+
+                    <div className={"flex flex-col gap-xxs min-w-0 px-xxs pb-xxs"}>
+                        <TruncatedFileName
+                            name={value.name}
+                            className={disabled ? "text-neutral-disabled" : "text-neutral-primary"}
+                        />
+                        {details ? (
+                            <Text
+                                size="sm"
+                                className={cn(
+                                    "truncate",
+                                    disabled ? "text-neutral-disabled" : "text-neutral-muted"
+                                )}
+                            >
+                                {details}
+                            </Text>
+                        ) : null}
+                    </div>
+                </div>
+            </div>
+
+            {/* Side-by-side layout for wider containers (280px+). */}
             <div
                 data-role="select-image"
-                className="flex items-center justify-between gap-sm-extra min-w-0"
+                className={"hidden @min-[280px]:flex items-center gap-sm-extra min-w-0"}
             >
-                <div
-                    className="flex items-center justify-between flex-1 cursor-pointer gap-sm-extra self-stretch min-w-0"
-                    onClick={onReplaceItem}
-                >
+                <div className={"shrink-0 cursor-pointer"} onClick={onReplaceItem}>
                     <RichItemThumbnail
                         {...value}
                         disabled={disabled}
                         preview={preview}
                         renderImage={renderImage}
                     />
-                    <ItemDescription item={value} disabled={disabled} />
                 </div>
 
-                <ItemActions
-                    onRemoveItem={onRemoveItem}
-                    onReplaceItem={onReplaceItem}
-                    onEditItem={onEditItem}
+                <ItemDescription
+                    item={value}
                     disabled={disabled}
-                    className={"pr-sm-extra"}
+                    onClick={onReplaceItem}
+                    className={"grow basis-0 cursor-pointer"}
                 />
+
+                <ItemActions {...actions} className={"ml-auto pr-sm-extra"} />
             </div>
         </div>
     );

@@ -4,7 +4,7 @@ import { Changelog } from "./Changelog.js";
 import { GithubRelease } from "./GithubRelease.js";
 import { versionPackages } from "./versionPackages.js";
 import { publishPackages } from "./publishPackages.js";
-import { fetchNpmDistTags } from "./fetchNpmVersion.js";
+import { fetchNpmDistTags, fetchNpmVersions } from "./fetchNpmVersion.js";
 
 export class Release {
     // Whether `--version` may contain a prerelease suffix (e.g. `6.4.0-beta.1`).
@@ -146,6 +146,10 @@ export class Release {
 
     protected async fetchDistTags(): Promise<Record<string, string>> {
         return fetchNpmDistTags();
+    }
+
+    protected async fetchPublishedVersions(): Promise<string[]> {
+        return fetchNpmVersions();
     }
 
     private async createRelease(version: string, previousLatest: string | undefined) {

@@ -15,15 +15,49 @@ import { execa } from "execa";
  */
 export const ANCHOR_PACKAGE = "webiny";
 
+interface RetryOptions {
+    retries?: number;
+    minTimeout?: number;
+}
+
+interface Packument {
+    "dist-tags"?: Record<string, string>;
+    versions?: Record<string, unknown>;
+}
+
 export async function fetchNpmDistTags(
-    retryOptions: { retries?: number; minTimeout?: number } = {}
+    retryOptions: RetryOptions = {}
 ): Promise<Record<string, string>> {
+    const json = await fetchPackument(retryOptions);
+    const distTags = json["dist-tags"];
+
+    if (!distTags) {
+        throw Error(`Registry returned no "dist-tags" for "${ANCHOR_PACKAGE}".`);
+    }
+
+    return distTags;
+}
+
+/**
+ * Every version of the anchor package on the registry. Dist-tags only point at the newest
+ * release under each tag, so this is what tells a release which prerelease numbers are taken.
+ */
+export async function fetchNpmVersions(retryOptions: RetryOptions = {}): Promise<string[]> {
+    const json = await fetchPackument(retryOptions);
+    return Object.keys(json.versions || {});
+}
+
+async function fetchPackument(retryOptions: RetryOptions): Promise<Packument> {
     const { stdout: npmRegistry } = await execa("npm", ["config", "get", "registry"]);
     const registryUrl = npmRegistry.replace(/\/$/, "");
     const url = `${registryUrl}/${ANCHOR_PACKAGE}`;
 
-    const getDistTags = async () => {
-        const res = await fetch(url);
+    const getPackument = async () => {
+        // The abbreviated document still has "dist-tags" and "versions", without the full
+        // manifest of every version ever published.
+        const res = await fetch(url, {
+            headers: { accept: "application/vnd.npm.install-v1+json" }
+        });
 
         // An unpublished anchor is the failure mode this function exists to catch, and no amount
         // of retrying will fix it. Say so instead of burning five attempts on a 404.
@@ -40,15 +74,8 @@ export async function fetchNpmDistTags(
             throw Error(`Registry answered ${res.status} ${res.statusText} for ${url}.`);
         }
 
-        const json = (await res.json()) as { "dist-tags"?: Record<string, string> };
-        const distTags = json["dist-tags"];
-
-        if (!distTags) {
-            throw Error(`Registry returned no "dist-tags" for "${ANCHOR_PACKAGE}".`);
-        }
-
-        return distTags;
+        return (await res.json()) as Packument;
     };
 
-    return pRetry(getDistTags, { retries: 5, ...retryOptions });
+    return pRetry(getPackument, { retries: 5, ...retryOptions });
 }

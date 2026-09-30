@@ -10,9 +10,10 @@ const logger = {
     error: vi.fn()
 };
 
-function createRelease(npmDistTags: Record<string, string> = {}) {
+function createRelease(npmDistTags: Record<string, string> = {}, publishedVersions: string[] = []) {
     const release = new BetaRelease(logger);
     vi.spyOn(release as any, "fetchDistTags").mockResolvedValue(npmDistTags);
+    vi.spyOn(release as any, "fetchPublishedVersions").mockResolvedValue(publishedVersions);
     return release;
 }
 
@@ -55,6 +56,26 @@ describe("BetaRelease.computeVersion", () => {
         });
         release.version = "6.4.12";
         expect(await release.computeVersion()).toBe("6.4.12-beta.7");
+    });
+
+    it("should continue from published versions when the version's tag doesn't exist yet", async () => {
+        // 6.5.0-beta.0 to .4 went out under the old shared "beta" tag, before "beta-6.5.0" existed.
+        const release = createRelease({ beta: "6.5.0-beta.4" }, [
+            "6.4.11",
+            "6.5.0-beta.0",
+            "6.5.0-beta.3",
+            "6.5.0-beta.4",
+            "6.6.0-alpha.8"
+        ]);
+        release.version = "6.5.0";
+        expect(await release.computeVersion()).toBe("6.5.0-beta.5");
+        expect(release.distTag).toBe("beta-6.5.0");
+    });
+
+    it("should only count published prereleases with the same preid", async () => {
+        const release = createRelease({}, ["6.5.0-rc.9", "6.5.0-beta.2"]);
+        release.version = "6.5.0";
+        expect(await release.computeVersion()).toBe("6.5.0-beta.3");
     });
 
     it("should name the default dist-tag after --preid", async () => {

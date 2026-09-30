@@ -11,6 +11,14 @@ const isEmpty = (value: unknown): boolean => {
     return false;
 };
 
+// Loose equality coerces booleans to numbers ("" == false, 0 == false), so compare them strictly.
+const isEqual = (value: unknown, ruleValue: unknown): boolean => {
+    if (typeof value === "boolean" || typeof ruleValue === "boolean") {
+        return value === ruleValue;
+    }
+    return value == ruleValue;
+};
+
 export class ConditionRuleEvaluatorImpl implements RuleEvaluator.Interface {
     canEvaluate(rule: RuleEvaluator.Rule): boolean {
         return rule.type === "condition";
@@ -21,14 +29,28 @@ export class ConditionRuleEvaluatorImpl implements RuleEvaluator.Interface {
         const value = field?.getValue() ?? null;
 
         switch (rule.operator) {
+            case "==":
+            case "eq":
+                return isEqual(value, rule.value);
+            case "!=":
+            case "neq":
+                return !isEqual(value, rule.value);
+            case ">":
+            case "gt":
+                return Number(value) > Number(rule.value);
+            case "<":
+            case "lt":
+                return Number(value) < Number(rule.value);
+            case ">=":
+            case "gte":
+                return Number(value) >= Number(rule.value);
+            case "<=":
+            case "lte":
+                return Number(value) <= Number(rule.value);
             case "isEmpty":
                 return isEmpty(value);
             case "isNotEmpty":
                 return !isEmpty(value);
-            case "eq":
-                return value === rule.value;
-            case "neq":
-                return value !== rule.value;
             case "isTruthy":
                 return !!value;
             case "isFalsy":
@@ -38,6 +60,18 @@ export class ConditionRuleEvaluatorImpl implements RuleEvaluator.Interface {
                     return false;
                 }
                 return value === rule.value;
+            case "contains":
+                return String(value ?? "").includes(String(rule.value ?? ""));
+            case "notContains":
+                return !String(value ?? "").includes(String(rule.value ?? ""));
+            case "startsWith":
+                return String(value ?? "").startsWith(String(rule.value ?? ""));
+            case "notStartsWith":
+                return !String(value ?? "").startsWith(String(rule.value ?? ""));
+            case "endsWith":
+                return String(value ?? "").endsWith(String(rule.value ?? ""));
+            case "notEndsWith":
+                return !String(value ?? "").endsWith(String(rule.value ?? ""));
             default:
                 if (process.env.NODE_ENV === "development") {
                     console.warn(
