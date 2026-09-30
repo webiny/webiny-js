@@ -57,6 +57,7 @@ export const addIdentitySchema = (builder: IGraphQLSchemaBuilder): void => {
             avatar: JSON
             external: Boolean!
             createdOn: DateTime!
+            dashboardLayout: JSON
         }
 
         type SecurityIdentity {

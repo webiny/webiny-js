@@ -4,6 +4,15 @@ export interface CreatedBy {
     type: string;
 }
 
+/**
+ * Per-user admin dashboard widget layout: an ordered list of widget names per column.
+ */
+export interface DashboardLayout {
+    columns: string[][];
+    hidden: string[];
+    columnCount: number;
+}
+
 export interface BaseUserAttributes {
     // Required fields.
     id: string;
@@ -27,6 +36,9 @@ export interface BaseUserAttributes {
 
     // Tells us if the entry has been created based on an identity coming from an external IdP.
     external?: boolean;
+
+    // The user's personal admin dashboard widget layout.
+    dashboardLayout?: DashboardLayout | null;
 }
 
 export interface CreateUserInput extends Omit<BaseUserAttributes, "id" | "displayName"> {

@@ -24,6 +24,7 @@ export const createLoginMutation = () => {
                             avatar
                             external
                             createdOn
+                            dashboardLayout
                         }
                         currentTenant {
                             id

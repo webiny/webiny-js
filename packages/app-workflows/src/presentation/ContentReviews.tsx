@@ -31,11 +31,17 @@ export const ContentReviews = () => {
 
             <AdminConfig.Dashboard.Widget
                 name="workflows.requested"
+                title="Content Reviews assigned to me"
+                description="Entries waiting on your approval."
+                group="Workflows"
                 column="right"
                 element={<WorkflowStatesRequestedWidget />}
             />
             <AdminConfig.Dashboard.Widget
                 name="workflows.own"
+                title="Content Reviews assigned by me"
+                description="Entries you sent for review."
+                group="Workflows"
                 column="right"
                 element={<WorkflowStatesOwnWidget />}
             />

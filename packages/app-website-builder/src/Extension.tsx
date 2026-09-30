@@ -114,7 +114,14 @@ export const Extension = () => {
                             />
                         }
                     />
-                    <Dashboard.Widget name="wb.pages" column={"left"} element={<PagesWidget />} />
+                    <Dashboard.Widget
+                        name="wb.pages"
+                        title="Website Builder"
+                        description="Start a new page in one click."
+                        group="Website Builder"
+                        column={"left"}
+                        element={<PagesWidget />}
+                    />
                     <NavigationExtension />
                 </HasPermission>
 

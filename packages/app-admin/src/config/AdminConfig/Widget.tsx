@@ -8,6 +8,14 @@ export interface WidgetConfig {
     element: React.ReactElement;
     column?: WidgetColumn;
     pin?: "first" | "last";
+    // Human-readable label, shown e.g. in the "Add widget" drawer when the widget is hidden.
+    title?: string;
+    // Optional icon, shown alongside the title in the "Add widget" drawer.
+    icon?: React.ReactNode;
+    // One-line summary, shown under the title in the "Add widget" drawer.
+    description?: string;
+    // Heading the widget is listed under in the "Add widget" drawer, usually the app name.
+    group?: string;
 }
 
 export interface WidgetProps {
@@ -15,9 +23,22 @@ export interface WidgetProps {
     element: React.ReactElement;
     column?: WidgetColumn;
     pin?: "first" | "last";
+    title?: string;
+    icon?: React.ReactNode;
+    description?: string;
+    group?: string;
 }
 
-export const Widget = ({ name, element, column = "left", pin }: WidgetProps) => {
+export const Widget = ({
+    name,
+    element,
+    column = "left",
+    pin,
+    title,
+    icon,
+    description,
+    group
+}: WidgetProps) => {
     const getId = useIdGenerator("DashboardWidget");
 
     let placeAfter: string | undefined;
@@ -39,7 +60,7 @@ export const Widget = ({ name, element, column = "left", pin }: WidgetProps) => 
                 array={true}
                 before={placeBefore}
                 after={placeAfter}
-                value={{ name, element, column, pin }}
+                value={{ name, element, column, pin, title, icon, description, group }}
             />
         </ConnectToProperties>
     );

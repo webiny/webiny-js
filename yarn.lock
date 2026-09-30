@@ -11673,13 +11673,19 @@ __metadata:
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.1.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     cmdk: "npm:^1.1.1"
+    mobx: "npm:^7.0.3"
     react: "npm:18.3.1"
+    react-dnd: "npm:^16.0.1"
+    react-dnd-html5-backend: "npm:^16.0.1"
     react-dom: "npm:18.3.1"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.11"
   languageName: unknown
   linkType: soft
 
