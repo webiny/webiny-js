@@ -14,6 +14,7 @@ import {
     type PageCapture
 } from "./captureState.js";
 import { harnessCommand } from "./harnessCommand.js";
+import { pageEditorUrl } from "./pageEditorUrl.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
@@ -202,6 +203,21 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                                         size="sm"
                                         text="Compare"
                                         onClick={() => onCompare(true, page.path)}
+                                    />
+                                    <Button
+                                        variant="tertiary"
+                                        size="sm"
+                                        text="Edit"
+                                        onClick={() =>
+                                            // A new tab, like Open beside it: editing a page is a
+                                            // different task from reviewing the migration, and
+                                            // navigating away would drop the comparison being read.
+                                            window.open(
+                                                pageEditorUrl(page.pageId),
+                                                "_blank",
+                                                "noopener"
+                                            )
+                                        }
                                     />
                                     <Button
                                         variant="tertiary"
