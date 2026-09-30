@@ -1,5 +1,5 @@
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsContentEntry, CmsErrorResponse, CmsModel, CmsModelField } from "~/types.js";
+import type { CmsContentEntry, CmsErrorResponse, CmsModel } from "~/types.js";
 import { EntryGraphQLFields } from "../abstractions.js";
 import {
     CreateRevisionFromGateway as GatewayAbstraction,
@@ -36,7 +36,7 @@ class CreateRevisionFromGatewayImpl implements GatewayAbstraction.Interface {
     ) {}
 
     async execute({ model, revisionId, data, options }: ICreateRevisionFromParams) {
-        const preparedData = data ? this.prepareData(data, model.fields) : data;
+        const preparedData = data ? this.preparer.prepareEntryData(data, model.fields) : data;
 
         const response = await this.client.execute<CreateRevisionFromResponse>({
             query: createMutation(model, this.fields),
@@ -50,20 +50,6 @@ class CreateRevisionFromGatewayImpl implements GatewayAbstraction.Interface {
         }
 
         return entry;
-    }
-
-    private prepareData(
-        data: Record<string, unknown>,
-        fields: CmsModelField[]
-    ): Record<string, unknown> {
-        const values = data.values;
-        if (!values || typeof values !== "object") {
-            return data;
-        }
-        return {
-            ...data,
-            values: this.preparer.prepare(values as Record<string, unknown>, fields)
-        };
     }
 }
 
