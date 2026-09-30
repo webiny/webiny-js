@@ -4,7 +4,7 @@ import { DragPreviewImage } from "react-dnd";
 import { IconButton } from "@webiny/admin-ui";
 import { Tooltip } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
-import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
+import { ReactComponent as RemoveIcon } from "@webiny/icons/delete.svg";
 import type { DashboardLayoutPresenter } from "../../dashboardLayout/presenter/abstractions.js";
 
 export const DASHBOARD_WIDGET_DND_TYPE = "dashboard-widget";
@@ -55,7 +55,10 @@ export const DashboardWidgetCard = ({
             <DragPreviewImage connect={preview} src={EMPTY_DRAG_IMAGE} />
             <div
                 ref={node => registerRef(name, node)}
-                className={cn("relative rounded-xl transition-opacity", isDragging && "opacity-50")}
+                className={cn(
+                    "group relative rounded-xl transition-opacity",
+                    isDragging && "opacity-50"
+                )}
             >
                 {/*
                     `inert` keeps the widget out of the tab order and away from clicks. It's set
@@ -78,15 +81,24 @@ export const DashboardWidgetCard = ({
                         "hover:bg-primary/5 hover:ring-primary/60"
                     )}
                 />
-                {/* On the corner, half outside the card, so it never covers the widget's own actions. */}
-                <div className={"absolute -right-sm -top-sm z-20"}>
+                {/*
+                    On the corner, half outside the card, so it never covers the widget's own
+                    actions. Only the card under the pointer (or with focus) shows it, so six cards
+                    don't mean six buttons.
+                */}
+                <div
+                    className={cn(
+                        "absolute -right-sm -top-sm z-20 opacity-0 transition-opacity",
+                        "group-hover:opacity-100 focus-within:opacity-100"
+                    )}
+                >
                     <Tooltip
                         content={"Remove from dashboard"}
                         trigger={
                             <IconButton
                                 variant={"tertiary"}
                                 size={"sm"}
-                                icon={<CloseIcon />}
+                                icon={<RemoveIcon />}
                                 aria-label={`Remove ${title} from the dashboard`}
                                 onClick={() => presenter.removeWidget(name)}
                             />
