@@ -126,7 +126,7 @@ jobs:
       - prBranch
       - constants
       - build
-    name: NPM release ("beta" tag)
+    name: NPM release (beta)
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -165,12 +165,12 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
-      - name: Version and publish "beta" tag to NPM
+      - name: Version and publish beta to NPM
         id: release
         run: >-
           set -o pipefail
 
-          yarn release --type=beta --tag=beta --version=${{
+          yarn release --type=beta --version=${{
           needs.prBranch.outputs.release-version }} 2>&1 | tee
           /tmp/release-output.txt
 
