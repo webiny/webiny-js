@@ -107,7 +107,8 @@ export class TaskOrchestrator {
              * minute. Bounded by what is left of the budget instead. Never 0, which Node reads as
              * "no timeout".
              */
-            const timeout = Math.max(1, this.timer.getRemainingMilliseconds());
+            const remaining = this.timer.getRemainingMilliseconds();
+            const timeout = Math.max(1, remaining);
 
             const req = http.request(
                 {
@@ -142,7 +143,8 @@ export class TaskOrchestrator {
             );
 
             req.on("timeout", () => {
-                req.destroy(new Error("Task exceeded maximum duration."));
+                const exceeded = new Error("Task exceeded maximum duration.");
+                req.destroy(exceeded);
             });
             req.on("error", reject);
             req.write(body);

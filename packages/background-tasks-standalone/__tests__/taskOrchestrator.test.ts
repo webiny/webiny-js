@@ -1,4 +1,5 @@
 import http from "node:http";
+import type { AddressInfo } from "node:net";
 import { afterEach, describe, expect, it } from "vitest";
 import { TaskOrchestrator } from "~/worker/TaskOrchestrator.js";
 import type { StartMessage, WorkerToParentMessage } from "~/worker/TaskOrchestratorMessage.js";
@@ -31,6 +32,28 @@ const createTestServer = (
                 throw new Error("Failed to get server address.");
             }
             resolve({ port: addr.port, server });
+        });
+    });
+};
+
+/** Answers `done`, but only `delayMs` after the request has arrived: a slow iteration. */
+const createSlowServer = (delayMs: number): Promise<{ port: number; server: http.Server }> => {
+    return new Promise(resolve => {
+        const body = JSON.stringify({ status: "done" });
+
+        const created = http.createServer((req, res) => {
+            req.resume();
+            req.on("end", () => {
+                setTimeout(() => {
+                    res.writeHead(200, { "content-type": "application/json" });
+                    res.end(body);
+                }, delayMs);
+            });
+        });
+
+        created.listen(0, "127.0.0.1", () => {
+            const address = created.address() as AddressInfo;
+            resolve({ port: address.port, server: created });
         });
     });
 };
@@ -282,45 +305,34 @@ describe("TaskOrchestrator", () => {
      * through a provider overload, while the task was allowed to run for hours.
      */
     it("should give a slow iteration the task's budget, and no more", async () => {
-        const slowServer = (delayMs: number) =>
-            new Promise<{ port: number; server: http.Server }>(resolve => {
-                const created = http.createServer((req, res) => {
-                    req.resume();
-                    req.on("end", () => {
-                        setTimeout(() => {
-                            res.writeHead(200, { "content-type": "application/json" });
-                            res.end(JSON.stringify({ status: "done" }));
-                        }, delayMs);
-                    });
-                });
-                created.listen(0, "127.0.0.1", () => {
-                    resolve({
-                        port: (created.address() as { port: number }).port,
-                        server: created
-                    });
-                });
-            });
-
-        const withinBudget = await slowServer(300);
+        const withinBudget = await createSlowServer(300);
         server = withinBudget.server;
+
         const finished: WorkerToParentMessage[] = [];
-        await new TaskOrchestrator(
-            makeStartMessage(withinBudget.port, { maxDurationMs: 5_000 }),
-            msg => finished.push(msg)
-        ).run();
-        expect(finished.map(m => m.type)).toEqual(["done"]);
+        const generousStart = makeStartMessage(withinBudget.port, { maxDurationMs: 5_000 });
+        const generous = new TaskOrchestrator(generousStart, msg => finished.push(msg));
+        await generous.run();
+
+        const finishedTypes = finished.map(m => m.type);
+        expect(finishedTypes).toEqual(["done"]);
         server.close();
 
-        const pastBudget = await slowServer(2_000);
+        const pastBudget = await createSlowServer(2_000);
         server = pastBudget.server;
+
         const cutOff: WorkerToParentMessage[] = [];
+        const tightStart = makeStartMessage(pastBudget.port, { maxDurationMs: 300 });
+        const tight = new TaskOrchestrator(tightStart, msg => cutOff.push(msg));
         const started = Date.now();
-        await new TaskOrchestrator(makeStartMessage(pastBudget.port, { maxDurationMs: 300 }), msg =>
-            cutOff.push(msg)
-        ).run();
-        expect(Date.now() - started).toBeLessThan(1_500);
+        await tight.run();
+        const elapsed = Date.now() - started;
+
+        expect(elapsed).toBeLessThan(1_500);
         expect(cutOff).toHaveLength(1);
-        expect((cutOff[0] as any).error).toContain("maximum duration");
+
+        const [message] = cutOff;
+        expect(message.type).toBe("error");
+        expect(message).toMatchObject({ error: expect.stringContaining("maximum duration") });
     });
 
     it("should report error when server is unreachable", async () => {
