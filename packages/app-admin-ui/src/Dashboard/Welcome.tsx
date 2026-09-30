@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect } from "react";
 import { useMemo } from "react";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { autorun } from "mobx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -22,6 +23,8 @@ import { DashboardDragLayer } from "./components/dnd/DashboardDragLayer.js";
 import { AddWidgetDrawer } from "./components/dnd/AddWidgetDrawer.js";
 import type { DrawerWidget } from "./components/dnd/AddWidgetDrawer.js";
 import { ColumnCountControl } from "./components/dnd/ColumnCountControl.js";
+import { WidgetSlot } from "./components/dnd/WidgetSlot.js";
+import { useWidgetHosts } from "./components/dnd/useWidgetHosts.js";
 import { MIN_COLUMN_COUNT } from "./dashboardLayout/types.js";
 
 // One width for every column count, so switching columns doesn't move the toolbar or the cards.
@@ -142,6 +145,22 @@ const Welcome = () => {
     const maxWidth = DASHBOARD_MAX_WIDTH;
     const openDrawer = () => setDrawerOpen(true);
 
+    // Every widget on the dashboard renders once, into its own container, and each layout below
+    // only places a slot for it. See `useWidgetHosts`: moving a widget never remounts it.
+    const getHost = useWidgetHosts();
+    const placed = vm.columns.flat();
+    const slots = new Map<string, React.ReactElement>();
+    const portals: React.ReactNode[] = [];
+    for (const name of placed) {
+        const element = elements.get(name);
+        if (!element) {
+            continue;
+        }
+        const host = getHost(name);
+        slots.set(name, <WidgetSlot host={host} />);
+        portals.push(createPortal(element, host, name));
+    }
+
     // Customize mode needs every chosen column on screen; too narrow, and it isn't offered.
     const editing = vm.editing && interactive;
 
@@ -161,7 +180,7 @@ const Welcome = () => {
                             draggingName={vm.draggingName}
                             dropTarget={vm.dropTarget}
                             canRemoveColumn={vm.columnCount > MIN_COLUMN_COUNT}
-                            elements={elements}
+                            elements={slots}
                             titles={titles}
                             presenter={presenter}
                             onBrowseWidgets={openDrawer}
@@ -177,7 +196,7 @@ const Welcome = () => {
                 {collapsed.map((names, index) => (
                     <div key={index} className={"flex flex-1 flex-col gap-lg"}>
                         {names.map(name => (
-                            <React.Fragment key={name}>{elements.get(name)}</React.Fragment>
+                            <React.Fragment key={name}>{slots.get(name)}</React.Fragment>
                         ))}
                     </div>
                 ))}
@@ -246,6 +265,7 @@ const Welcome = () => {
     return (
         <DndProvider backend={HTML5Backend}>
             <div className={"my-xxl"} ref={containerRef}>
+                {portals}
                 <div
                     className={"mb-xl flex items-center justify-between gap-lg"}
                     style={{ maxWidth }}
