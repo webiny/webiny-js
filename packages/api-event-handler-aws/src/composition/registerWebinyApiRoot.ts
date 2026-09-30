@@ -1,6 +1,7 @@
 import type { Container } from "@webiny/di";
 import type { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
+import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 // CognitoIdpFeature must be in the root container so the request auth step
 // (identity loader decorator → RequestIdentityLoader) sees CognitoIdentityProvider when it is first
 // instantiated. Extensions register in the child/request container — too late.
@@ -23,6 +24,11 @@ export async function registerWebinyApiRoot(
     // Must be in root so the request auth step can authenticate requests before the GraphQL engine
     // runs.
     CognitoIdpFeature.register(container);
+
+    // ── GraphQL schema cache ───────────────────────────────────
+    // Root, so a built schema outlives the request that built it: one build per Lambda instance
+    // instead of one per request.
+    GraphQLSchemaCacheFeature.register(container);
 
     // ── Storage (variant-specific: CMS storage ops, DDB registries, OpenSearch core) ──
     await config.registerRootStorage(container, { documentClient });
