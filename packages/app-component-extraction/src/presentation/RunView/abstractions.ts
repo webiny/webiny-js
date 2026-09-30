@@ -86,6 +86,12 @@ export interface IRunViewVm {
      * failed. See `ComposedCaptureDto`.
      */
     composedCapture: ComposedCaptureDto | null;
+    /**
+     * Where the migrated site is served from — Website Builder's preview domain, loaded with the map.
+     *
+     * Null when it is unset, and the view says so rather than opening a URL built on an empty string.
+     */
+    websiteDomain: string | null;
     /** The composed page the comparison is open on, by its Website Builder path. */
     comparedPath: string | null;
     /** This run's override reattachment outcomes (W8.7). */

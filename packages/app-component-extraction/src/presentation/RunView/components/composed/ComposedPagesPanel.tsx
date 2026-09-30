@@ -15,6 +15,7 @@ import {
 } from "./captureState.js";
 import { harnessCommand } from "./harnessCommand.js";
 import { pageEditorUrl } from "./pageEditorUrl.js";
+import { websiteUrl } from "./websiteUrl.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
@@ -147,6 +148,7 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                         const tag = STATUS_TAG[status];
                         const signals = page.signals;
                         const composed = pageCapture(capture, page.path);
+                        const liveUrl = websiteUrl(vm.websiteDomain, page.path);
                         return (
                             <div
                                 key={page.path}
@@ -223,12 +225,21 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                                         variant="tertiary"
                                         size="sm"
                                         text="Open"
+                                        /*
+                                         * The migrated page as a visitor gets it.
+                                         *
+                                         * It used to open /website-builder/pages?id=…, which is the
+                                         * pages LIST — that route declares only folderId and search,
+                                         * so the id was dropped and the button never opened the page
+                                         * it sat beside.
+                                         */
+                                        disabled={!liveUrl}
+                                        title={
+                                            liveUrl ??
+                                            "Website Builder has no preview domain set, so there is no address to open this page at."
+                                        }
                                         onClick={() =>
-                                            window.open(
-                                                `/website-builder/pages?id=${encodeURIComponent(page.pageId)}`,
-                                                "_blank",
-                                                "noopener"
-                                            )
+                                            liveUrl && window.open(liveUrl, "_blank", "noopener")
                                         }
                                     />
                                 </div>

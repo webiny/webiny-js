@@ -30,6 +30,7 @@ import {
     GET_STAGE_ARTIFACT,
     GET_GENERATED_COMPONENT,
     GET_STAGE_TASK,
+    GET_WEBSITE_DOMAIN,
     LIST_JOBS,
     LIST_LIBRARY_NAMES,
     LIST_MODEL_CALLS,
@@ -235,6 +236,17 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: GET_COMPOSED_CAPTURE, variables: { runId } });
 
         return unwrap(response.pageCompositionPocComposedCapture) ?? null;
+    }
+
+    async getWebsiteDomain(): Promise<string | null> {
+        const response = await this.client.execute<{
+            websiteBuilder: { getSettings: GqlEnvelope<{ previewDomain: string } | null> };
+        }>({ query: GET_WEBSITE_DOMAIN });
+
+        // Trailing slashes removed here, where the value is read, so joining it with a page path
+        // (which always starts with "/") can never produce a double slash.
+        const domain = unwrap(response.websiteBuilder.getSettings)?.previewDomain ?? "";
+        return domain.replace(/\/+$/, "") || null;
     }
 
     async setOverride(

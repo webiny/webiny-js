@@ -73,6 +73,8 @@ export interface IComponentExtractionGateway {
     getPageMap(runId: string): Promise<PageMapDto | null>;
     /** Screenshots of the composed pages, or null when nobody has run the local harness for it. */
     getComposedCapture(runId: string): Promise<ComposedCaptureDto | null>;
+    /** Where the migrated site is served from — Website Builder's preview domain. Null if unset. */
+    getWebsiteDomain(): Promise<string | null>;
     /** Set (upsert) an override from a run, re-applying in place and marking downstream stale (W8.1). */
     setOverride(
         runId: string,

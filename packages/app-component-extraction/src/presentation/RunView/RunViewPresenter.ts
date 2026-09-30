@@ -60,6 +60,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         pageMapLoading: false,
         composedAssemble: null,
         composedCapture: null,
+        websiteDomain: null,
         comparedPath: null,
         reattachments: [],
         promoteComponents: [],
@@ -574,15 +575,18 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
              * The capture is null for almost every run, which is the resting state rather than a
              * failure: nothing here can photograph a composed page on its own.
              */
-            const [pageMap, assemble, composedCapture] = await Promise.all([
+            const [pageMap, assemble, composedCapture, websiteDomain] = await Promise.all([
                 this.gateway.getPageMap(run.id),
                 this.gateway.getStageArtifact(run.id, "assemble"),
-                this.gateway.getComposedCapture(run.id)
+                this.gateway.getComposedCapture(run.id),
+                // Where the composed pages are actually served, so the panel can link to one.
+                this.gateway.getWebsiteDomain().catch(() => null)
             ]);
             runInAction(() => {
                 this.vm.pageMap = pageMap;
                 this.vm.composedAssemble = (assemble as AssembleArtifactDto | null) ?? null;
                 this.vm.composedCapture = composedCapture;
+                this.vm.websiteDomain = websiteDomain;
                 this.vm.pageMapLoading = false;
             });
         } catch (error) {

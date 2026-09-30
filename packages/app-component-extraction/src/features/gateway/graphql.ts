@@ -424,6 +424,28 @@ export const GET_PAGE_MAP = /* GraphQL */ `
  * `null` for almost every run, and that is the resting state rather than a failure — see
  * `ComposedCaptureDto`.
  */
+/**
+ * The domain the migrated site is served from.
+ *
+ * Website Builder's own setting, read rather than configured a second time here — it is what the
+ * editor points its preview canvas at, so a composed page opened from this app and the same page
+ * previewed from the editor resolve to one place by construction.
+ */
+export const GET_WEBSITE_DOMAIN = /* GraphQL */ `
+    query GetWebsiteBuilderPreviewDomain {
+        websiteBuilder {
+            getSettings {
+                data {
+                    previewDomain
+                }
+                error {
+                    message
+                }
+            }
+        }
+    }
+`;
+
 export const GET_COMPOSED_CAPTURE = /* GraphQL */ `
     query GetComposedCapture($runId: ID!) {
         pageCompositionPocComposedCapture(runId: $runId) {
