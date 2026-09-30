@@ -9,7 +9,6 @@ import { logger } from "./Logger.js";
 import type { OnResolved } from "./BindingsResolver.js";
 import { BindingsResolver } from "./BindingsResolver.js";
 import { ComponentManifestToAstConverter } from "~/ComponentManifestToAstConverter.js";
-
 export type ResolveElementParams = {
     element: DocumentElement;
     elementBindings: DocumentElementBindings;
