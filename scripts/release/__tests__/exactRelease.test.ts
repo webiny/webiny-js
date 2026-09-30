@@ -42,9 +42,16 @@ describe("ExactRelease", () => {
         expect(await release.computeVersion()).toBe("6.4.12");
     });
 
-    it("should require --tag", async () => {
+    it("should default a prerelease to its version's own dist-tag", async () => {
         const release = new ExactRelease(logger);
         release.setVersion("6.4.12-beta.6");
+        await release.computeVersion();
+        expect(release.distTag).toBe("beta-6.4.12");
+    });
+
+    it("should require --tag for a clean version", async () => {
+        const release = new ExactRelease(logger);
+        release.setVersion("6.4.12");
         await expect(release.execute()).rejects.toThrow('"--tag" is required for exact releases.');
     });
 

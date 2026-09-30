@@ -1,5 +1,6 @@
 import semver from "semver";
 import { Release } from "./Release";
+import { highestPrereleaseNumber, prereleaseDistTag } from "./prereleaseDistTag";
 
 export class BetaRelease extends Release {
     constructor(logger: any) {
@@ -14,27 +15,32 @@ export class BetaRelease extends Release {
 
         const preid = this.preid || this.distTag || "beta";
 
-        // Without an explicit `--tag`, every prerelease of a version shares a dist-tag named after
-        // that version (`6.4.12-beta.6` goes under `beta-6.4.12`), so prereleases of two versions
-        // built in parallel never move each other's tag. NPM rejects tags that parse as a semver
-        // range, which is why the tag can't be a bare `6.4.12`.
         if (!this.distTag) {
-            this.setTag(`${preid}-${this.version}`);
+            this.setTag(prereleaseDistTag(preid, this.version));
         }
 
-        const distTags = await this.fetchDistTags();
-        const tagVersion = distTags[this.distTag!];
+        const [distTags, publishedVersions] = await Promise.all([
+            this.fetchDistTags(),
+            this.fetchPublishedVersions()
+        ]);
 
+        // The dist-tag alone isn't enough: a version's own tag is missing for the first release
+        // under it, even when earlier prereleases of that version went out under an older tag.
+        // Counting from the tag would restart at .0 and collide with what's already on NPM.
+        let suffix = highestPrereleaseNumber(publishedVersions, this.version, preid);
+
+        const tagVersion = distTags[this.distTag!];
         if (tagVersion) {
             const currentBase = `${semver.major(tagVersion)}.${semver.minor(tagVersion)}.${semver.patch(tagVersion)}`;
 
             if (currentBase === this.version) {
                 const prerelease = semver.prerelease(tagVersion);
-                const suffix = prerelease && typeof prerelease[1] === "number" ? prerelease[1] : -1;
-                return `${this.version}-${preid}.${suffix + 1}`;
+                if (prerelease && typeof prerelease[1] === "number") {
+                    suffix = Math.max(suffix, prerelease[1]);
+                }
             }
         }
 
-        return `${this.version}-${preid}.0`;
+        return `${this.version}-${preid}.${suffix + 1}`;
     }
 }

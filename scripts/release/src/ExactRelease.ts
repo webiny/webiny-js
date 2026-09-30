@@ -1,9 +1,11 @@
 import semver from "semver";
 import { Release } from "./Release";
+import { prereleaseDistTag } from "./prereleaseDistTag";
 
 /**
- * A release where everything is specified explicitly: the exact `--version` (prereleases
- * included, e.g. `6.4.12-beta.6`) and the NPM `--tag`. Nothing is computed or defaulted.
+ * A release where the exact `--version` is specified (prereleases included, e.g.
+ * `6.4.12-beta.6`). Without `--tag`, a prerelease goes under its version's own dist-tag, the
+ * same one beta and alpha releases use (`beta-6.4.12`). A clean version needs an explicit `--tag`.
  */
 export class ExactRelease extends Release {
     static override allowPrereleaseVersion = true;
@@ -20,6 +22,12 @@ export class ExactRelease extends Release {
 
         if (!semver.valid(this.version)) {
             throw Error(`"--version" must be a valid semver string.`);
+        }
+
+        const [preid] = semver.prerelease(this.version) || [];
+        if (!this.distTag && typeof preid === "string") {
+            const base = `${semver.major(this.version)}.${semver.minor(this.version)}.${semver.patch(this.version)}`;
+            this.setTag(prereleaseDistTag(preid, base));
         }
 
         return this.version;
