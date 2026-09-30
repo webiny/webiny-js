@@ -17,7 +17,7 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@rsbuild/core": "^2.2.9",
+    "@rsbuild/core": "^2.2.10",
     "@rsbuild/plugin-react": "^2.1.0",
     "@rsbuild/plugin-sass": "^2.0.1",
     "@rsbuild/plugin-svgr": "^2.0.5",
@@ -25,9 +25,9 @@
     "@rsdoctor/rspack-plugin": "^1.6.4",
     "@rslib/core": "^1.0.2",
     "@rspack/core": "^2.2.7",
-    "@swc/plugin-emotion": "^16.0.0",
+    "@swc/plugin-emotion": "^17.0.0",
     "@tailwindcss/postcss": "^4.3.3",
-    "chalk": "^6.0.0",
+    "chalk": "^6.0.1",
     "css-loader": "^7.1.5",
     "fast-glob": "^3.3.3",
     "find-up": "^8.0.0",

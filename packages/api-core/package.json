@@ -28,7 +28,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "ai": "^7.0.116",
+    "ai": "^7.0.118",
     "dataloader": "^2.2.3",
     "jose": "^6.2.12",
     "jsonwebtoken": "^9.0.3",
