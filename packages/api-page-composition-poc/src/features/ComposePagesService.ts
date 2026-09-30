@@ -23,6 +23,7 @@ import { GetRemoteComponentUseCase } from "@webiny/remote-components/api/feature
 import { CreatePageUseCase } from "@webiny/api-website-builder/features/pages/CreatePage/abstractions.js";
 import { PublishPageUseCase } from "@webiny/api-website-builder/features/pages/PublishPage/abstractions.js";
 import { UnpublishPageUseCase } from "@webiny/api-website-builder/features/pages/UnpublishPage/abstractions.js";
+import { GetPageByPathUseCase } from "@webiny/api-website-builder/features/pages/GetPageByPath/abstractions.js";
 import { UpdatePageUseCase } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";
 import { ROOT_FOLDER } from "@webiny/api-website-builder/constants.js";
 import type { ComponentManifest } from "@webiny/website-builder-sdk";
@@ -183,6 +184,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         private createPage: CreatePageUseCase.Interface,
         private publishPage: PublishPageUseCase.Interface,
         private unpublishPage: UnpublishPageUseCase.Interface,
+        private getPageByPath: GetPageByPathUseCase.Interface,
         private updatePage: UpdatePageUseCase.Interface,
         private pageMaps: PageMapStore.Interface,
         private getComponent: GetRemoteComponentUseCase.Interface,
@@ -465,21 +467,77 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
          * than to cause.
          */
         const retired: string[] = [];
-        if (previous.isOk() && previous.value) {
-            const replaced = new Set(created.map(page => page.entry.pageId));
-            for (const page of previous.value.pages) {
-                if (!page.pageId || replaced.has(page.pageId)) {
+        const live = new Set(created.map(page => page.entry.pageId));
+
+        /*
+         * Superseded pages come from two places, and missing either one leaves a path ambiguous.
+         *
+         * This run's own previous composition — the obvious one — and the OTHER RUNS OF THE SAME JOB.
+         * A job is a site, its runs all compose the same paths, and only one composition of a site
+         * can be live at a time. Retiring only this run's history left four runs of one job with four
+         * published pages on every path, which is how a URL came to answer with a different page
+         * depending on what had been published most recently.
+         */
+        const superseded: PageMapEntry[] = [
+            ...(previous.isOk() ? (previous.value?.pages ?? []) : [])
+        ];
+
+        const siblings = await this.runs.listByJob(run.jobId);
+        if (siblings.isOk()) {
+            for (const sibling of siblings.value.runs) {
+                if (sibling.id === runId) {
                     continue;
                 }
-                const unpublished = await this.unpublishPage.execute({ id: page.pageId });
-                if (unpublished.isFail()) {
-                    failed.push({
-                        sourceUrl: page.sourceUrl,
-                        reason: `Composed again, but the previous composition's page at ${page.path} could not be unpublished and still answers that path: ${unpublished.error.message}`
-                    });
-                    continue;
+                const map = await this.pageMaps.get(sibling.id);
+                if (map.isOk() && map.value) {
+                    superseded.push(...map.value.pages);
                 }
+            }
+        }
+
+        for (const page of superseded) {
+            if (!page.pageId || live.has(page.pageId) || retired.includes(page.pageId)) {
+                continue;
+            }
+            /*
+             * Failures are deliberately not recorded here.
+             *
+             * A page that is already unpublished — or already gone — fails this call, and that is the
+             * state being asked for, so reporting it would file 22 failures for a composition that
+             * did exactly what it should. What matters is not whether each attempt succeeded but
+             * whether the path ends up answering with this composition's page, and that is asserted
+             * below where it can be stated once and exactly.
+             */
+            const unpublished = await this.unpublishPage.execute({ id: page.pageId });
+            if (unpublished.isOk()) {
                 retired.push(page.pageId);
+            }
+        }
+
+        /*
+         * The invariant this composition exists to establish: each of its paths answers with its own
+         * page.
+         *
+         * Asserted rather than assumed, because every way of getting it wrong so far has been
+         * invisible — a path with several published claimants looks identical to one with a single
+         * claimant until someone loads it twice. A page named here is one a visitor will not see, and
+         * saying which page answers instead is the difference between a report someone can act on and
+         * a number they can only worry about.
+         */
+        for (const page of created) {
+            const resolved = await this.getPageByPath.execute(page.entry.path);
+            if (resolved.isFail()) {
+                failed.push({
+                    sourceUrl: page.entry.sourceUrl,
+                    reason: `Composed and published, but ${page.entry.path} resolves to no page: ${resolved.error.message}`
+                });
+                continue;
+            }
+            if (resolved.value.id !== page.entry.pageId) {
+                failed.push({
+                    sourceUrl: page.entry.sourceUrl,
+                    reason: `Composed and published, but ${page.entry.path} still answers with a different page (${resolved.value.id}) — another published page claims this path and this composition's page is not the one a visitor reaches`
+                });
             }
         }
 
@@ -1023,6 +1081,7 @@ export const ComposePagesService = Abstraction.createImplementation({
         CreatePageUseCase,
         PublishPageUseCase,
         UnpublishPageUseCase,
+        GetPageByPathUseCase,
         UpdatePageUseCase,
         PageMapStore,
         GetRemoteComponentUseCase,
