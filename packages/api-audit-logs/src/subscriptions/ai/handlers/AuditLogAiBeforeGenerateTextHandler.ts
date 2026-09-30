@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
 import { AiBeforeGenerateTextEventHandler } from "@webiny/api-core/features/ai/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogAiBeforeGenerateTextHandlerImpl
     implements AiBeforeGenerateTextEventHandler.Interface
 {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: AiBeforeGenerateTextEventHandler.Event): Promise<void> {
         try {
@@ -25,7 +25,7 @@ class AuditLogAiBeforeGenerateTextHandlerImpl
                     }
                 },
                 requestId,
-                this.context
+                this.recorder
             );
         } catch (error) {
             throw WebinyError.from(error, {
@@ -39,5 +39,5 @@ class AuditLogAiBeforeGenerateTextHandlerImpl
 export const AuditLogAiBeforeGenerateTextHandler =
     AiBeforeGenerateTextEventHandler.createImplementation({
         implementation: AuditLogAiBeforeGenerateTextHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [AuditLogRecorder]
     });

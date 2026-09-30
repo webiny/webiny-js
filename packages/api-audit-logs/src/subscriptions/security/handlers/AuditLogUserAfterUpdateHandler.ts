@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { UserAfterUpdateEventHandler } from "@webiny/api-core/features/users/UpdateUser/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogUserAfterUpdateHandlerImpl implements UserAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: UserAfterUpdateEventHandler.Event): Promise<void> {
         try {
@@ -16,7 +16,7 @@ class AuditLogUserAfterUpdateHandlerImpl implements UserAfterUpdateEventHandler.
                 "User updated",
                 { before: originalUser, after: updatedUser },
                 updatedUser.id,
-                this.context
+                this.recorder
             );
         } catch (error) {
             throw WebinyError.from(error, {
@@ -29,5 +29,5 @@ class AuditLogUserAfterUpdateHandlerImpl implements UserAfterUpdateEventHandler.
 
 export const AuditLogUserAfterUpdateHandler = UserAfterUpdateEventHandler.createImplementation({
     implementation: AuditLogUserAfterUpdateHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [AuditLogRecorder]
 });

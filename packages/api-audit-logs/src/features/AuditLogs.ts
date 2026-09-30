@@ -1,48 +1,34 @@
-import type {
-    AuditLogPayload,
-    AuditLogsContext,
-    AuditLogsContextValue,
-    IListAuditLogsParams,
-    IListAuditLogsResult
-} from "~/types.js";
-import { convertExpiresAtDaysToDate } from "~/utils/expiresAt.js";
-import type { IAuditLog, IAuditLogCreatedBy } from "~/storage/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
-import type { IStorage, IStorageListParams } from "~/storage/abstractions/Storage.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import type { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import {
-    AuditLogBeforeCreateEvent,
-    AuditLogAfterCreateEvent,
-    AuditLogBeforeUpdateEvent,
-    AuditLogAfterUpdateEvent
-} from "~/events/index.js";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { AuditLogs as Abstraction } from "~/abstractions.js";
+import { AuditLogsConfig } from "~/abstractions.js";
+import { AuditLogsStorage } from "~/abstractions.js";
+import type { AuditLogPayload } from "~/types.js";
+import type { IListAuditLogsParams } from "~/types.js";
+import type { IListAuditLogsResult } from "~/types.js";
+import type { IAuditLog } from "~/storage/types.js";
+import type { IAuditLogCreatedBy } from "~/storage/types.js";
+import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
+import { convertExpiresAtDaysToDate } from "~/utils/expiresAt.js";
+import { AuditLogBeforeCreateEvent } from "~/events/index.js";
+import { AuditLogAfterCreateEvent } from "~/events/index.js";
+import { AuditLogBeforeUpdateEvent } from "~/events/index.js";
+import { AuditLogAfterUpdateEvent } from "~/events/index.js";
 
-export interface IAuditLogsContextValueParams {
-    getContext: () => AuditLogsContext;
-    deleteLogsAfterDays: number;
-    storage: IStorage;
-    eventPublisher: EventPublisher.Interface;
-}
-
-class AuditLogsContextValueImpl implements AuditLogsContextValue {
-    private readonly getContext;
-    public readonly deleteLogsAfterDays;
-    private readonly storage: IStorage;
-    private readonly eventPublisher: EventPublisher.Interface;
-
-    public constructor(params: IAuditLogsContextValueParams) {
-        this.getContext = params.getContext;
-        this.deleteLogsAfterDays = params.deleteLogsAfterDays;
-        this.storage = params.storage;
-        this.eventPublisher = params.eventPublisher;
-    }
+class AuditLogsImpl implements Abstraction.Interface {
+    public constructor(
+        private readonly storage: AuditLogsStorage.Interface,
+        private readonly eventPublisher: EventPublisher.Interface,
+        private readonly identityContext: IdentityContext.Interface,
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly config: AuditLogsConfig.Interface
+    ) {}
 
     public async createAuditLog(payload: AuditLogPayload): Promise<IAuditLog> {
-        const context = this.getContext();
-        const expiresAt = convertExpiresAtDaysToDate(this.deleteLogsAfterDays);
+        const expiresAt = convertExpiresAtDaysToDate(this.config.deleteLogsAfterDays);
 
         const auditLog: IAuditLog = {
             id: mdbid(),
@@ -57,7 +43,6 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
 
         const beforeCreateEvent = new AuditLogBeforeCreateEvent({
             auditLog: auditLog,
-            context,
             setAuditLog(input) {
                 Object.assign(auditLog, input);
             }
@@ -69,8 +54,7 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
         });
         if (result.success) {
             const afterCreateEvent = new AuditLogAfterCreateEvent({
-                auditLog: auditLog,
-                context
+                auditLog: auditLog
             });
             await this.eventPublisher.publish(afterCreateEvent);
             return result.data;
@@ -82,7 +66,6 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
         original: IAuditLog,
         payload: Partial<AuditLogPayload>
     ): Promise<IAuditLog> {
-        const context = this.getContext();
         const auditLog: IAuditLog = {
             ...original,
             ...payload,
@@ -93,7 +76,6 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
         const beforeUpdateEvent = new AuditLogBeforeUpdateEvent({
             original,
             auditLog,
-            context,
             setAuditLog(input) {
                 Object.assign(auditLog, input);
             }
@@ -106,8 +88,7 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
         if (result.success) {
             const afterUpdateEvent = new AuditLogAfterUpdateEvent({
                 original: original,
-                auditLog: auditLog,
-                context
+                auditLog: auditLog
             });
             await this.eventPublisher.publish(afterUpdateEvent);
             return result.data;
@@ -148,9 +129,7 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
         if (!auditLog.action) {
             throw new Error("Audit log action is not defined. Cannot check permissions.");
         }
-        const permissions = await this.getContext()
-            .container.resolve(IdentityContext)
-            .getPermissions("al.*");
+        const permissions = await this.identityContext.getPermissions("al.*");
         for (const permission of permissions) {
             if (permission.name === "*") {
                 return;
@@ -168,11 +147,11 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
     }
 
     private getTenantId(): string {
-        return this.getContext().container.resolve(TenantContext).getTenant().id;
+        return this.tenantContext.getTenant().id;
     }
 
     private getIdentity(): IAuditLogCreatedBy {
-        const identity = this.getContext().container.resolve(IdentityContext).getIdentity();
+        const identity = this.identityContext.getIdentity();
         return {
             id: identity.id,
             type: identity.type,
@@ -181,8 +160,13 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
     }
 }
 
-export const createAuditLogsContextValue = (
-    params: IAuditLogsContextValueParams
-): AuditLogsContextValue => {
-    return new AuditLogsContextValueImpl(params);
-};
+export const AuditLogs = Abstraction.createImplementation({
+    implementation: AuditLogsImpl,
+    dependencies: [
+        AuditLogsStorage,
+        EventPublisher,
+        IdentityContext,
+        TenantContext,
+        AuditLogsConfig
+    ]
+});

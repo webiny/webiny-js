@@ -2,10 +2,10 @@ import WebinyError from "@webiny/error";
 import { GroupAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModelGroup/DeleteGroup/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 
 class AuditLogGroupAfterDeleteHandlerEventImpl implements GroupAfterDeleteEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: GroupAfterDeleteEventHandler.Event): Promise<void> {
         const { group } = event.payload;
@@ -13,7 +13,7 @@ class AuditLogGroupAfterDeleteHandlerEventImpl implements GroupAfterDeleteEventH
         try {
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.GROUP.DELETE);
 
-            await createAuditLog("Group deleted", group, group.id, this.context);
+            await createAuditLog("Group deleted", group, group.id, this.recorder);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogGroupAfterDeleteHandlerEvent",
@@ -26,5 +26,5 @@ class AuditLogGroupAfterDeleteHandlerEventImpl implements GroupAfterDeleteEventH
 export const AuditLogGroupAfterDeleteEventHandler =
     GroupAfterDeleteEventHandler.createImplementation({
         implementation: AuditLogGroupAfterDeleteHandlerEventImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [AuditLogRecorder]
     });

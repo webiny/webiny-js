@@ -2,10 +2,10 @@ import WebinyError from "@webiny/error";
 import { ModelAfterUpdateEventHandler } from "@webiny/api-headless-cms/features/contentModel/UpdateModel/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 
 class AuditLogModelAfterUpdateEventHandlerImpl implements ModelAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: ModelAfterUpdateEventHandler.Event): Promise<void> {
         const { model, original } = event.payload;
@@ -17,7 +17,7 @@ class AuditLogModelAfterUpdateEventHandlerImpl implements ModelAfterUpdateEventH
                 "Model updated",
                 { before: original, after: model },
                 model.modelId,
-                this.context
+                this.recorder
             );
         } catch (error) {
             throw WebinyError.from(error, {
@@ -31,5 +31,5 @@ class AuditLogModelAfterUpdateEventHandlerImpl implements ModelAfterUpdateEventH
 export const AuditLogModelAfterUpdateEventHandler =
     ModelAfterUpdateEventHandler.createImplementation({
         implementation: AuditLogModelAfterUpdateEventHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [AuditLogRecorder]
     });
