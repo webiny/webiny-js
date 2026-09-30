@@ -19,7 +19,7 @@ export const AuditLogsDdbFeature = createFeature({
             const compressionHandler = container.resolve(CompressionHandler);
             return createStorage({
                 client: db.client,
-                tableName: config.tableName ?? process.env.DB_TABLE,
+                tableName: config.tableName ?? process.env.DB_TABLE_AUDIT_LOGS,
                 compressionHandler
             });
         });
