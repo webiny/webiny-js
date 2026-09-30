@@ -115,13 +115,13 @@ const ContentModelsDataList = observer(
                 (async () => {
                     try {
                         const data = await presenter.exportModels(modelIds);
-                        if (!data || !data.models || data.models.length === 0) {
+                        if (!data?.models?.length) {
                             showSnackbar("No data returned from the export query.");
                             return;
                         }
                         download(data);
-                    } catch (e: any) {
-                        showSnackbar(e.message);
+                    } catch (ex: any) {
+                        showSnackbar(ex.message);
                     }
                 })();
             },
