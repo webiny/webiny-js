@@ -1,11 +1,11 @@
 import { WebinyError } from "@webiny/error";
 import { PageAfterUpdateEventHandler } from "@webiny/api-website-builder/features/pages/UpdatePage/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AUDIT } from "~/config.js";
 
 class PageAfterUpdateHandlerImpl implements PageAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: PageAfterUpdateEventHandler.Event): Promise<void> {
         try {
@@ -15,7 +15,7 @@ class PageAfterUpdateHandlerImpl implements PageAfterUpdateEventHandler.Interfac
                 "Website Page Updated",
                 { before: original, after: page },
                 page.id,
-                this.context
+                this.recorder
             );
         } catch (error) {
             throw WebinyError.from(error, {
@@ -28,5 +28,5 @@ class PageAfterUpdateHandlerImpl implements PageAfterUpdateEventHandler.Interfac
 
 export const PageAfterUpdateAuditHandler = PageAfterUpdateEventHandler.createImplementation({
     implementation: PageAfterUpdateHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [AuditLogRecorder]
 });

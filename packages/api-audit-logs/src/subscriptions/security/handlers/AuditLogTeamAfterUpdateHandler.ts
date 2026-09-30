@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { TeamAfterUpdateEventHandler } from "@webiny/api-core/features/security/teams/UpdateTeam/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogTeamAfterUpdateHandlerImpl implements TeamAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: TeamAfterUpdateEventHandler.Event): Promise<void> {
         try {
@@ -16,7 +16,7 @@ class AuditLogTeamAfterUpdateHandlerImpl implements TeamAfterUpdateEventHandler.
                 "Team updated",
                 { before: original, after: updated },
                 updated.id,
-                this.context
+                this.recorder
             );
         } catch (error) {
             throw WebinyError.from(error, {
@@ -29,5 +29,5 @@ class AuditLogTeamAfterUpdateHandlerImpl implements TeamAfterUpdateEventHandler.
 
 export const AuditLogTeamAfterUpdateHandler = TeamAfterUpdateEventHandler.createImplementation({
     implementation: AuditLogTeamAfterUpdateHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [AuditLogRecorder]
 });

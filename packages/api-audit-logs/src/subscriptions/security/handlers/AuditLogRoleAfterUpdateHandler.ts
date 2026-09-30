@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { RoleAfterUpdateEventHandler } from "@webiny/api-core/features/security/roles/UpdateRole/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogRoleAfterUpdateHandlerImpl implements RoleAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: RoleAfterUpdateEventHandler.Event): Promise<void> {
         try {
@@ -16,7 +16,7 @@ class AuditLogRoleAfterUpdateHandlerImpl implements RoleAfterUpdateEventHandler.
                 "Role updated",
                 { before: original, after: updated },
                 updated.id,
-                this.context
+                this.recorder
             );
         } catch (error) {
             throw WebinyError.from(error, {
@@ -29,5 +29,5 @@ class AuditLogRoleAfterUpdateHandlerImpl implements RoleAfterUpdateEventHandler.
 
 export const AuditLogRoleAfterUpdateHandler = RoleAfterUpdateEventHandler.createImplementation({
     implementation: AuditLogRoleAfterUpdateHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [AuditLogRecorder]
 });

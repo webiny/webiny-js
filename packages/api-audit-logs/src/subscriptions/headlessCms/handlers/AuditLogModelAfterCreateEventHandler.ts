@@ -2,10 +2,10 @@ import WebinyError from "@webiny/error";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 
 class AuditLogModelAfterCreateEventHandlerImpl implements ModelAfterCreateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: ModelAfterCreateEventHandler.Event): Promise<void> {
         const { model } = event.payload;
@@ -13,7 +13,7 @@ class AuditLogModelAfterCreateEventHandlerImpl implements ModelAfterCreateEventH
         try {
             const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL.CREATE);
 
-            await createAuditLog("Model created", model, model.modelId, this.context);
+            await createAuditLog("Model created", model, model.modelId, this.recorder);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogModelAfterCreateEventHandler",
@@ -26,5 +26,5 @@ class AuditLogModelAfterCreateEventHandlerImpl implements ModelAfterCreateEventH
 export const AuditLogModelAfterCreateEventHandler =
     ModelAfterCreateEventHandler.createImplementation({
         implementation: AuditLogModelAfterCreateEventHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [AuditLogRecorder]
     });

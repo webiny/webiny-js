@@ -1,17 +1,17 @@
 import { WebinyError } from "@webiny/error";
 import { RedirectAfterDeleteEventHandler } from "@webiny/api-website-builder/features/redirects/DeleteRedirect/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AUDIT } from "~/config.js";
 
 class RedirectAfterDeleteHandlerImpl implements RedirectAfterDeleteEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: RedirectAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { redirect } = event.payload;
             const createAuditLog = getAuditConfig(AUDIT.WEBSITE_BUILDER.REDIRECT.DELETE);
-            await createAuditLog("Website Redirect Deleted", redirect, redirect.id, this.context);
+            await createAuditLog("Website Redirect Deleted", redirect, redirect.id, this.recorder);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing RedirectAfterDeleteEventHandler",
@@ -24,6 +24,6 @@ class RedirectAfterDeleteHandlerImpl implements RedirectAfterDeleteEventHandler.
 export const RedirectAfterDeleteAuditHandler = RedirectAfterDeleteEventHandler.createImplementation(
     {
         implementation: RedirectAfterDeleteHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [AuditLogRecorder]
     }
 );

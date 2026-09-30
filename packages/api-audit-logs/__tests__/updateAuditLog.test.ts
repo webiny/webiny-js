@@ -29,7 +29,12 @@ describe("update existing audit log", () => {
             evenMoreStringData: "abcdef"
         };
 
-        const createdResult = (await createAuditLog(message, data, entityId, context)) as IAuditLog;
+        const createdResult = (await createAuditLog(
+            message,
+            data,
+            entityId,
+            context.recorder
+        )) as IAuditLog;
 
         expect(createdResult).toMatchObject({
             entityId,
@@ -53,7 +58,7 @@ describe("update existing audit log", () => {
             updatedMessage,
             updatedData,
             entityId,
-            context
+            context.recorder
         )) as IAuditLog;
 
         expect(updatedResult).toMatchObject({

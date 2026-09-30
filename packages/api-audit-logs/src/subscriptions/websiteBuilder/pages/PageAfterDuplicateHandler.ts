@@ -1,11 +1,11 @@
 import { WebinyError } from "@webiny/error";
 import { PageAfterDuplicateEventHandler } from "@webiny/api-website-builder/features/pages/DuplicatePage/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AUDIT } from "~/config.js";
 
 class PageAfterDuplicateHandlerImpl implements PageAfterDuplicateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: PageAfterDuplicateEventHandler.Event): Promise<void> {
         try {
@@ -15,7 +15,7 @@ class PageAfterDuplicateHandlerImpl implements PageAfterDuplicateEventHandler.In
                 "Website Page Duplicate",
                 { original, page },
                 original.id,
-                this.context
+                this.recorder
             );
         } catch (error) {
             throw WebinyError.from(error, {
@@ -28,5 +28,5 @@ class PageAfterDuplicateHandlerImpl implements PageAfterDuplicateEventHandler.In
 
 export const PageAfterDuplicateAuditHandler = PageAfterDuplicateEventHandler.createImplementation({
     implementation: PageAfterDuplicateHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [AuditLogRecorder]
 });
