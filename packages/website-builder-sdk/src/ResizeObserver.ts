@@ -12,7 +12,7 @@ const flushResizeQueue = () => {
 
 let observer: any;
 
-if (typeof window === "undefined") {
+if (typeof ResizeObserver === "undefined") {
     observer = {
         observe: () => {},
         unobserve: () => {}

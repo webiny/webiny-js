@@ -12579,8 +12579,8 @@ __metadata:
     typescript: "npm:7.0.2"
     vitest: "npm:^4.1.11"
   peerDependencies:
-    next: ">=15"
-    react: ">=19"
+    next: ">=15.0.0 <16.0.0"
+    react: ">=19.0.0 <20.0.0"
   languageName: unknown
   linkType: soft
 
@@ -13403,8 +13403,8 @@ __metadata:
     typescript: "npm:7.0.2"
     vitest: "npm:^4.1.11"
   peerDependencies:
-    next: ">=15"
-    react: ">=19"
+    next: ">=15.0.0 <16.0.0"
+    react: ">=19.0.0 <20.0.0"
   languageName: unknown
   linkType: soft
 
@@ -13641,7 +13641,7 @@ __metadata:
     vitest: "npm:^4.1.11"
     webpack: "npm:^5.109.2"
   peerDependencies:
-    next: ">=15"
+    next: ">=15.0.0 <16.0.0"
   languageName: unknown
   linkType: soft
 

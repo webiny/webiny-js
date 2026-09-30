@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 vi.mock("execa", () => ({
     execa: vi.fn().mockResolvedValue({ stdout: "https://registry.npmjs.org/" })
 }));
 
-import { ANCHOR_PACKAGE, fetchNpmDistTags } from "../src/fetchNpmVersion";
+import { ANCHOR_PACKAGE, fetchNpmDistTags, fetchNpmVersions } from "../src/fetchNpmVersion.js";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 
@@ -55,7 +55,12 @@ describe("fetchNpmDistTags", () => {
         });
 
         expect(await fetchNpmDistTags()).toEqual(distTags);
-        expect(mockedFetch).toHaveBeenCalledWith("https://registry.npmjs.org/webiny");
+        expect(mockedFetch).toHaveBeenCalledWith(
+            "https://registry.npmjs.org/webiny",
+            expect.objectContaining({
+                headers: { accept: "application/vnd.npm.install-v1+json" }
+            })
+        );
     });
 
     it("should not retry when the anchor package is not published", async () => {
@@ -85,5 +90,26 @@ describe("fetchNpmDistTags", () => {
 
         expect(await fetchNpmDistTags({ minTimeout: 0 })).toEqual(distTags);
         expect(mockedFetch).toHaveBeenCalledTimes(2);
+    });
+});
+
+describe("fetchNpmVersions", () => {
+    it("should return every published version of the anchor package", async () => {
+        mockRegistry({
+            ok: true,
+            status: 200,
+            json: async () => ({
+                "dist-tags": { latest: "6.4.11" },
+                versions: { "6.4.11": {}, "6.5.0-beta.4": {} }
+            })
+        });
+
+        expect(await fetchNpmVersions()).toEqual(["6.4.11", "6.5.0-beta.4"]);
+    });
+
+    it("should return an empty list when the registry lists no versions", async () => {
+        mockRegistry({ ok: true, status: 200, json: async () => ({ "dist-tags": {} }) });
+
+        expect(await fetchNpmVersions()).toEqual([]);
     });
 });

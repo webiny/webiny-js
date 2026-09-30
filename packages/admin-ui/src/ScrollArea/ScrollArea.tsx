@@ -19,6 +19,16 @@ interface ScrollAreaProps extends Omit<
 > {
     onScrollPositionChange?: (position: ScrollPosition) => void;
     onScroll?: (position: ScrollPosition) => void;
+    /**
+     * Classes for the scrolling element itself. Put the height limit here when the area has to grow
+     * with its content up to a maximum, instead of filling a parent of a known height.
+     */
+    viewportClassName?: string;
+    /**
+     * Native scroll handler for the scrolling element, for callers that need the event itself.
+     * `onScroll` reports positions instead.
+     */
+    onViewportScroll?: React.UIEventHandler<HTMLDivElement>;
 }
 
 function ScrollArea({
@@ -26,6 +36,8 @@ function ScrollArea({
     children,
     onScrollPositionChange,
     onScroll,
+    viewportClassName,
+    onViewportScroll,
     ...props
 }: ScrollAreaProps) {
     const viewportRef = React.useRef<HTMLDivElement>(null);
@@ -72,7 +84,11 @@ function ScrollArea({
             <ScrollAreaPrimitive.Viewport
                 ref={viewportRef}
                 data-slot="scroll-area-viewport"
-                className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
+                onScroll={onViewportScroll}
+                className={cn(
+                    "focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1",
+                    viewportClassName
+                )}
             >
                 {children}
             </ScrollAreaPrimitive.Viewport>
@@ -85,12 +101,24 @@ function ScrollArea({
 function ScrollBar({
     className,
     orientation = "vertical",
+    onMouseDown,
     ...props
 }: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>) {
+    const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+        onMouseDown?.(event);
+
+        /*
+         * Grabbing a scrollbar must not move focus. An autocomplete closes its list the moment its
+         * input blurs, so without this, dragging the thumb dismisses the list under the pointer.
+         */
+        event.preventDefault();
+    };
+
     return (
         <ScrollAreaPrimitive.ScrollAreaScrollbar
             data-slot="scroll-area-scrollbar"
             orientation={orientation}
+            onMouseDown={handleMouseDown}
             className={cn(
                 "flex touch-none transition-colors select-none",
                 orientation === "vertical" && "h-full w-[8px] border-l border-l-transparent",

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { AlphaRelease } from "../src/AlphaRelease";
+import { AlphaRelease } from "../src/AlphaRelease.js";
 
 const logger = {
     log: vi.fn(),
@@ -10,9 +10,10 @@ const logger = {
     error: vi.fn()
 };
 
-function createRelease(npmDistTags: Record<string, string> = {}) {
+function createRelease(npmDistTags: Record<string, string> = {}, publishedVersions: string[] = []) {
     const release = new AlphaRelease(logger);
     vi.spyOn(release as any, "fetchDistTags").mockResolvedValue(npmDistTags);
+    vi.spyOn(release as any, "fetchPublishedVersions").mockResolvedValue(publishedVersions);
     return release;
 }
 
@@ -21,9 +22,21 @@ describe("AlphaRelease", () => {
         vi.clearAllMocks();
     });
 
-    it("should default to the 'alpha' dist-tag", () => {
-        const release = new AlphaRelease(logger);
-        expect(release.distTag).toBe("alpha");
+    it("should default the dist-tag to one named after the version", async () => {
+        const release = createRelease({});
+        release.version = "6.6.0";
+        await release.computeVersion();
+        expect(release.distTag).toBe("alpha-6.6.0");
+    });
+
+    it("should continue from published versions when the version's tag doesn't exist yet", async () => {
+        const release = createRelease({ alpha: "6.6.0-alpha.8" }, [
+            "6.6.0-alpha.7",
+            "6.6.0-alpha.8"
+        ]);
+        release.version = "6.6.0";
+        expect(await release.computeVersion()).toBe("6.6.0-alpha.9");
+        expect(release.distTag).toBe("alpha-6.6.0");
     });
 
     it("should throw when --version is not set", async () => {
@@ -40,7 +53,7 @@ describe("AlphaRelease", () => {
     });
 
     it("should increment suffix when base version matches NPM", async () => {
-        const release = createRelease({ alpha: "6.6.0-alpha.3" });
+        const release = createRelease({ "alpha-6.6.0": "6.6.0-alpha.3" });
         release.version = "6.6.0";
         expect(await release.computeVersion()).toBe("6.6.0-alpha.4");
     });
@@ -48,6 +61,7 @@ describe("AlphaRelease", () => {
     it("should start at .0 when base version differs from NPM", async () => {
         const release = createRelease({ alpha: "6.5.0-alpha.5" });
         release.version = "6.6.0";
+        release.setTag("alpha");
         expect(await release.computeVersion()).toBe("6.6.0-alpha.0");
     });
 

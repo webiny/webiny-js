@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { VerdaccioRelease } from "../src/VerdaccioRelease";
+import { VerdaccioRelease } from "../src/VerdaccioRelease.js";
 
 vi.mock("execa", () => ({
     execa: vi.fn().mockResolvedValue({ stdout: "def5678" })
