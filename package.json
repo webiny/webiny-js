@@ -135,7 +135,7 @@
     "test:pg": "WEBINY_STORAGE=sql,ddb WEBINY_SQL_CLIENT=pg vitest --config testing/vitest.config.ts --run",
     "test:pglite": "WEBINY_STORAGE=sql,ddb WEBINY_SQL_CLIENT=pglite vitest --config testing/vitest.config.ts --run",
     "test:pg:os": "WEBINY_STORAGE=pg-os vitest --config testing/vitest.config.ts --run",
-    "trigger-release": "node ./scripts/release/triggerRelease.js",
+    "trigger-release": "tsx ./scripts/release/src/triggerRelease.ts",
     "tsc": "tsc",
     "update-packages": "tsx ./scripts/updatePackages.ts",
     "validate-packages": "node scripts/validatePackages.js",

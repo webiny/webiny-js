@@ -1,3 +1,8 @@
+import type { EnrichmentCapabilityDisabledError } from "./EnrichmentCapabilityDisabledError.js";
+
+/* Its own file, one class per file, but re-exported so every caller imports errors from here. */
+export { EnrichmentCapabilityDisabledError } from "./EnrichmentCapabilityDisabledError.js";
+
 /**
  * Errors shared by every image-enrichment entry point (the background task and the streaming HTTP
  * route). Each carries a `code` so callers can map it to their own transport: the task turns them
@@ -56,4 +61,5 @@ export type ImageEnrichmentError =
     | EnrichmentNotAnImageError
     | EnrichmentFileContentsError
     | EnrichmentNoProviderError
+    | EnrichmentCapabilityDisabledError
     | EnrichmentPersistError;

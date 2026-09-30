@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
-import type { CmsModel } from "@webiny/api-headless-cms/types";
-import { RecordLockingConfig, RecordLockingModel } from "~/domain/abstractions.js";
+import { RecordLockingConfig } from "~/domain/abstractions.js";
+import { RecordLockingModelProvider } from "./RecordLockingModelProvider.js";
 import { GetLockRecordFeature } from "./GetLockRecord/feature.js";
 import { GetLockedEntryLockRecordFeature } from "./GetLockedEntryLockRecord/feature.js";
 import { KickOutCurrentUserFeature } from "./KickOutCurrentUser/feature.js";
@@ -17,10 +17,6 @@ export interface RecordLockingParams {
      * Timeout in milliseconds after which a lock expires
      */
     timeout: number;
-    /**
-     * The CMS model for storing lock records
-     */
-    model: CmsModel;
 }
 
 export const RecordLockingFeature = createFeature<RecordLockingParams>({
@@ -28,7 +24,7 @@ export const RecordLockingFeature = createFeature<RecordLockingParams>({
     register(container, params) {
         // Register domain abstractions
         container.registerInstance(RecordLockingConfig, { timeout: params.timeout });
-        container.registerInstance(RecordLockingModel, params.model);
+        container.register(RecordLockingModelProvider);
 
         // Register all sub-features
         GetLockRecordFeature.register(container);
