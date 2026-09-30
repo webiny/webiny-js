@@ -58,6 +58,37 @@ const createSlowServer = (delayMs: number): Promise<{ port: number; server: http
     });
 };
 
+/*
+ * Answers `done` after `durationMs`, sending a whitespace chunk every 100ms until then. The chunks
+ * keep the socket busy, which is what an inactivity timeout would have mistaken for progress.
+ */
+const createTricklingServer = (
+    durationMs: number
+): Promise<{ port: number; server: http.Server }> => {
+    return new Promise(resolve => {
+        const body = JSON.stringify({ status: "done" });
+
+        const created = http.createServer((req, res) => {
+            req.resume();
+            req.on("end", () => {
+                res.writeHead(200, { "content-type": "application/json" });
+
+                const trickle = setInterval(() => res.write(" "), 100);
+
+                setTimeout(() => {
+                    clearInterval(trickle);
+                    res.end(body);
+                }, durationMs);
+            });
+        });
+
+        created.listen(0, "127.0.0.1", () => {
+            const address = created.address() as AddressInfo;
+            resolve({ port: address.port, server: created });
+        });
+    });
+};
+
 const makeStartMessage = (port: number, overrides?: Partial<StartMessage>): StartMessage => {
     return {
         type: "start",
@@ -333,6 +364,27 @@ describe("TaskOrchestrator", () => {
         const [message] = cutOff;
         expect(message.type).toBe("error");
         expect(message).toMatchObject({ error: expect.stringContaining("maximum duration") });
+    });
+
+    it("should cut off a response that keeps trickling in past the budget", async () => {
+        const trickling = await createTricklingServer(2_000);
+        server = trickling.server;
+
+        const messages: WorkerToParentMessage[] = [];
+        const start = makeStartMessage(trickling.port, { maxDurationMs: 300 });
+        const orchestrator = new TaskOrchestrator(start, msg => messages.push(msg));
+        const started = Date.now();
+        await orchestrator.run();
+        const elapsed = Date.now() - started;
+
+        expect(elapsed).toBeLessThan(1_500);
+        expect(messages).toHaveLength(1);
+
+        const [message] = messages;
+        expect(message).toMatchObject({
+            type: "error",
+            error: expect.stringContaining("maximum duration")
+        });
     });
 
     it("should report error when server is unreachable", async () => {
