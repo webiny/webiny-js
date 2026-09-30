@@ -35,7 +35,7 @@ export interface GqlListResponse<TData = Record<string, any>, TMeta = Record<str
 }
 
 export const createGqlClient = (gqlClientOptions: CreateGqlClientParams = {}) => {
-    const gqlClient = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"));
+    const gqlClient = new GraphQLClient(Cypress.expose("GRAPHQL_API_URL"));
 
     const request = <TResponse = Record<string, any>>({
         query,

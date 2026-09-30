@@ -1,4 +1,3 @@
-import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { TaskDataStatus } from "@webiny/background-tasks/api";
 import type {
     IMockDataManagerInput,
@@ -51,14 +50,16 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
             /**
              * If there are no running tasks, we can enable indexing and finish the manager task.
              */
-            await enableIndexing({
-                client: this.openSearchClient.use(),
-                model: {
-                    modelId: input.modelId,
-                    tenant: "root"
-                } as StorageCmsModel,
-                indexProvider: this.indexProvider
-            });
+            const model = (await this.context.cms.listModels()).find(
+                m => m.modelId === input.modelId
+            );
+            if (model) {
+                await enableIndexing({
+                    client: this.openSearchClient.use(),
+                    model,
+                    indexProvider: this.indexProvider
+                });
+            }
             return controller.response.done();
         }
 

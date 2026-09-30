@@ -7,6 +7,9 @@ import { publishPackages } from "./publishPackages";
 import { fetchNpmDistTags, fetchNpmVersions } from "./fetchNpmVersion";
 
 export class Release {
+    // Whether `--version` may contain a prerelease suffix (e.g. `6.4.0-beta.1`).
+    static allowPrereleaseVersion = false;
+
     distTag: string | undefined = undefined;
     version: string | undefined = undefined;
     preid: string | undefined = undefined;

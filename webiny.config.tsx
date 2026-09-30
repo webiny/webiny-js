@@ -40,7 +40,7 @@ export const Extensions = () => {
             <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
             {/*<Infra.Admin.Pulumi src={"/extensions/adminCustomDomains/AdminCustomDomains.ts"} />*/}
             <Infra.Vpc enabled={false} />
-            <Infra.OpenSearch enabled={false} />
+            <Infra.OpenSearch enabled={process.env.WEBINY_OPENSEARCH === "true" ? true : false} />
 
             <Infra.Encryption passphrase={"my-passphrase"} />
             <Infra.Api.MaxBundleSize size={6291456} />

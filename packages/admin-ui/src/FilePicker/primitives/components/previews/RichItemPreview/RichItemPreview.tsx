@@ -30,6 +30,8 @@ const DecoratableRichItemPreview = ({
 }: RichItemPreviewProps) => {
     const actions = { onRemoveItem, onReplaceItem, onEditItem, disabled };
 
+    // Type and size share a line of their own beneath the name, so the name gets the full width
+    // and the two secondary facts read as one group rather than crowding it.
     const formattedSize = value.size
         ? bytes.format(value.size, { unitSeparator: " ", decimalPlaces: 0 })
         : "";
@@ -45,7 +47,11 @@ const DecoratableRichItemPreview = ({
             )}
             {...props}
         >
-            {/* Stacked layout for narrow containers (below 280px). */}
+            {/* Two layouts, chosen by the preview's own width rather than the viewport's, because
+                the same component renders in a ~200px sidebar and in a wide form field. Below
+                280px a side-by-side row cannot give the file name a readable share of the width,
+                so the thumbnail goes full width with the name and details beneath it, and the
+                actions move onto the thumbnail rather than costing a row of their own. */}
             <div data-role="select-image" className={"@min-[280px]:hidden"}>
                 <div className={"flex flex-col gap-xs p-xs"}>
                     <div className={"group relative cursor-pointer"} onClick={onReplaceItem}>

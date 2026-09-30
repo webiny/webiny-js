@@ -20,7 +20,7 @@ context("Admin Installation", () => {
         () => {
             cy.clearLocalStorage();
 
-            cy.visit(Cypress.env("ADMIN_URL"));
+            cy.visit(Cypress.expose("ADMIN_URL"));
             cy.findByText("Let's get started").click();
 
             cy.findByLabelText("Project name").type("Webiny (Cypress Test)");
@@ -34,10 +34,10 @@ context("Admin Installation", () => {
 
             cy.findByText("Next step").click();
 
-            const firstName = Cypress.env("DEFAULT_ADMIN_USER_FIRST_NAME");
-            const lastName = Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME");
-            const username = Cypress.env("DEFAULT_ADMIN_USER_USERNAME");
-            const password = Cypress.env("DEFAULT_ADMIN_USER_PASSWORD");
+            const firstName = Cypress.expose("DEFAULT_ADMIN_USER_FIRST_NAME");
+            const lastName = Cypress.expose("DEFAULT_ADMIN_USER_LAST_NAME");
+            const username = Cypress.expose("DEFAULT_ADMIN_USER_USERNAME");
+            const password = Cypress.expose("DEFAULT_ADMIN_USER_PASSWORD");
 
             cy.findByLabelText("First name").type(firstName);
             cy.findByLabelText("Last name").type(lastName);

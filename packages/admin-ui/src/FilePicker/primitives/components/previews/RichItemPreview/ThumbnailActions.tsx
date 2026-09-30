@@ -16,6 +16,8 @@ interface ActionProps {
 const Action = ({ icon, label, onAction, disabled }: ActionProps) => {
     const onClick = useCallback(
         (event: React.MouseEvent<HTMLButtonElement>) => {
+            // The thumbnail behind these opens the file manager when clicked, so without this a
+            // click on Remove would replace the file as well as remove it.
             event.stopPropagation();
             onAction();
         },
@@ -46,6 +48,11 @@ interface ThumbnailActionsProps {
     className?: string;
 }
 
+/**
+ * The file's actions laid over its thumbnail and revealed on hover, mirroring the File Manager's
+ * grid so a file offers the same affordances wherever it is shown. Requires `group` and
+ * `relative` on the element wrapping the thumbnail.
+ */
 const ThumbnailActions = ({
     className,
     disabled,

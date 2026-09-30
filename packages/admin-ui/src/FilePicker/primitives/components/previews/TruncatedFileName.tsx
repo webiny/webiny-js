@@ -8,6 +8,10 @@ interface TruncatedFileNameProps {
     className?: string;
 }
 
+/**
+ * A file name that truncates in the middle, keeping the extension (and a little of the stem)
+ * visible: "tide-cc-statuses-v2.png" becomes "tide-cc-statu…-v2.png".
+ */
 const TruncatedFileName = ({ name, className }: TruncatedFileNameProps) => {
     const { head, tail } = splitFileName(name);
 
