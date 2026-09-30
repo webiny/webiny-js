@@ -72,12 +72,11 @@ export class Release {
         const versionedPackages = versionPackages(version);
         this.logger.info("Versioned %s packages", versionedPackages.length);
 
-        // Fetch the current latest version BEFORE publishing, so the changelog
-        // can diff against the previous release (not the one we're about to push).
+        // Find the previous release BEFORE publishing, so the changelog
+        // can diff against it (not the one we're about to push).
         let previousLatest: string | undefined;
         try {
-            const distTags = await this.fetchDistTags();
-            previousLatest = distTags["latest"];
+            previousLatest = await this.findPreviousRelease();
         } catch (err: any) {
             this.logger.warning("Could not fetch dist-tags: %s", err.message);
         }
@@ -138,6 +137,12 @@ export class Release {
         if (!this.distTag) {
             throw Error("Dist-tag is not configured. Use setTag() to configure.");
         }
+    }
+
+    // The release the changelog diffs against: whatever `latest` points at on NPM.
+    protected async findPreviousRelease(): Promise<string | undefined> {
+        const distTags = await this.fetchDistTags();
+        return distTags["latest"];
     }
 
     protected async fetchDistTags(): Promise<Record<string, string>> {
