@@ -74,7 +74,18 @@ export const ApiRoute = defineExtension({
 
         // Ensure createRegisterExtensionPlugin import exists.
         const registerExtensionPluginPath = "@webiny/handler/plugins/RegisterExtensionPlugin.js";
-        if (!source.getImportDeclaration(registerExtensionPluginPath)) {
+        const existingRegisterExtensionPluginImport = source.getImportDeclaration(
+            registerExtensionPluginPath
+        );
+        if (
+            existingRegisterExtensionPluginImport &&
+            !existingRegisterExtensionPluginImport
+                .getNamedImports()
+                .some(i => i.getName() === "createRegisterExtensionPlugin")
+        ) {
+            // BuildParam imports `createRegisterBuildParamPlugin` from the same path.
+            existingRegisterExtensionPluginImport.addNamedImport("createRegisterExtensionPlugin");
+        } else if (!existingRegisterExtensionPluginImport) {
             const lastIdx =
                 source
                     .getImportDeclarations()
