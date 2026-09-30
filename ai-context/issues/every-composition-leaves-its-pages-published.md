@@ -96,6 +96,31 @@ paths whose URL serves this run's page:  7 of 8
 Seven of eight are right at this moment. That is the current ordering being kind, not the harness
 knowing.
 
+## The backlog was far larger than the page maps showed
+
+The counts above came from the page maps, which hold only the LATEST composition of each run — so
+every composition before that was invisible to them. Listing published pages directly:
+
+```
+published pages                                      728
+paths a current composition claims                    38
+pages those compositions keep                         89
+orphans at those paths                               639
+```
+
+87 of those orphans were at `/` alone. So the per-composition retirement below is necessary and was
+not sufficient: it reaches back exactly one composition, and every composition older than that was
+already orphaned before it shipped. Those ids are in no page map, so nothing in the code can find
+them — a one-time pass was the only way.
+
+Cleared in one pass, scoped to paths a current composition claims and, at those paths, to pages no
+current map names. A page at a path no composition owns is never touched, because nothing here can
+tell it from somebody's hand-written page. 639 unpublished, 728 published pages down to 89, zero
+orphans left, and the reported page returns the same id on ten consecutive loads.
+
+The lesson for the numbers in this file: counting through the page maps undercounted the problem by
+7x, because the maps are overwritten and only ever describe the present.
+
 ## The fix, in two halves
 
 **Composition should not leave its previous pages behind.** Either unpublish the pages of the
