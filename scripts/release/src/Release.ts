@@ -4,7 +4,7 @@ import { Changelog } from "./Changelog";
 import { GithubRelease } from "./GithubRelease";
 import { versionPackages } from "./versionPackages";
 import { publishPackages } from "./publishPackages";
-import { fetchNpmDistTags } from "./fetchNpmVersion";
+import { fetchNpmDistTags, fetchNpmVersions } from "./fetchNpmVersion";
 
 export class Release {
     distTag: string | undefined = undefined;
@@ -142,6 +142,10 @@ export class Release {
 
     protected async fetchDistTags(): Promise<Record<string, string>> {
         return fetchNpmDistTags();
+    }
+
+    protected async fetchPublishedVersions(): Promise<string[]> {
+        return fetchNpmVersions();
     }
 
     private async createRelease(version: string, previousLatest: string | undefined) {
