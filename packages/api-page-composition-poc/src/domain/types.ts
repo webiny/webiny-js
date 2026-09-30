@@ -154,10 +154,58 @@ export interface PageMapLinks {
 export interface PageMap {
     runId: string;
     composedOn: string;
+    /**
+     * Incremented on every composition of this run, the way a stage version is.
+     *
+     * It exists so a composed screenshot can say which composition it photographed. Without it a
+     * recompose leaves last time's images looking current, which is the worst state for a comparison
+     * tool to be in — not wrong enough to disbelieve. Absent on maps composed before it shipped;
+     * read those as 0.
+     */
+    composeVersion: number;
     pages: PageMapEntry[];
     failed: PageMapFailure[];
     links: PageMapLinks;
     discarded: DiscardEntry[];
+}
+
+/**
+ * Screenshots of a run's composed pages, and where they came from.
+ *
+ * **Produced by a local script, not by the pipeline**, and the type says so rather than leaving the
+ * admin to imply it. The website app that renders these pages links the Webiny SDK from this
+ * monorepo's own working copy, which is not published, so it cannot be deployed and no Lambda can
+ * reach a rendering of a composed page. A developer runs the harness by hand; until someone does,
+ * there is no capture, and a missing comparison must read as "nobody has run it" rather than as a
+ * migration failure.
+ *
+ * Nothing here assumes the local origin. When the SDK ships and the website app is deployed, the
+ * capture moves into a task and only `source` changes.
+ */
+export interface ComposedCapture {
+    runId: string;
+    /** The `PageMap.composeVersion` these screenshots photographed. Older than the map's ⇒ stale. */
+    composeVersion: number;
+    /** When the capture ran — the local clock of whoever ran it. */
+    capturedAt: string;
+    /** The viewport width every captured page was rendered at, matched to the source capture. */
+    viewportWidth: number;
+    /** How the screenshots were produced, so provenance is data rather than an assumption in the UI. */
+    source: "local-harness";
+    pages: ComposedCapturePage[];
+}
+
+/** One page's outcome. A page the harness could not render is recorded, never omitted. */
+export interface ComposedCapturePage {
+    /** The Website Builder path, matching `PageMapEntry.path`. */
+    path: string;
+    status: "captured" | "skipped";
+    /** The screenshot's blob ref. Present only when `status` is `captured`. */
+    screenshotRef?: string;
+    /** Why this page has no screenshot, in the harness's own words. */
+    reason?: string;
+    /** Set only where this page was rendered at something other than the run-level width. */
+    viewportWidth?: number;
 }
 
 export interface ComposePagesResult {

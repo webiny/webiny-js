@@ -1,6 +1,7 @@
 /**
  * Renders each composed page against the LOCAL website app, screenshots it beside the source
- * screenshot the pipeline already captured, and writes the pairs out for review.
+ * screenshot the pipeline already captured, writes the pairs out for review, and uploads the
+ * composed half so the admin can show the comparison.
  *
  * **A local script, not a pipeline stage, and deliberately so.** A Lambda cannot reach the developer's
  * machine. In a `webiny watch` session the handler runs locally, so a fetch to localhost would resolve
@@ -19,6 +20,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { readinessScript } from "./readiness.js";
 import { buildReport, concern } from "./report.js";
+import { uploadComposedCapture } from "./upload.js";
 
 const API = process.env.WEBINY_API_URL ?? "https://d1mp23blxyssy7.cloudfront.net/graphql";
 const TOKEN = process.env.WEBINY_API_TOKEN ?? "wat_12345678";
@@ -149,6 +151,7 @@ const main = async () => {
 
                 const width = source?.viewport?.width ?? 1440;
                 const height = source?.viewport?.height ?? 900;
+                record.viewportWidth = width;
 
                 let result;
                 try {
@@ -163,8 +166,12 @@ const main = async () => {
                             requests: [{ label: "full-page", crop: "full-page" }],
                             write: async image => {
                                 const file = `${slug(entry.path)}-migrated.png`;
-                                await writeFile(path.join(outDir, file), Buffer.from(image));
+                                const bytes = Buffer.from(image);
+                                await writeFile(path.join(outDir, file), bytes);
                                 record.composedImage = file;
+                                // Held for the upload below and dropped once the site is done, so
+                                // the run's peak memory is one site's screenshots rather than four.
+                                record.composedBytes = bytes;
                                 return file;
                             }
                         }
@@ -187,6 +194,9 @@ const main = async () => {
                     record.status = "unreachable";
                     record.reason = `this path serves "${result.result.title}" — another run's page claims it, and the winner is whichever composed last`;
                     record.composedImage = undefined;
+                    // The bytes are a photograph of a different run's page. Uploading them would put
+                    // a confident, wrong image in the admin, which is worse than an absent one.
+                    record.composedBytes = undefined;
                 }
 
                 pages.push(record);
@@ -204,10 +214,53 @@ const main = async () => {
             });
             await writeFile(path.join(outDir, "index.html"), html);
 
+            /*
+             * The viewport every page was rendered at. Taken from the pages themselves rather than
+             * from a constant: the harness matches each page to the width its source was captured at,
+             * so a mismatch here would mean the two halves of a comparison were photographed
+             * differently, and that belongs in the record rather than in a comment.
+             */
+            const widths = [...new Set(pages.map(p => p.viewportWidth).filter(Boolean))];
+            const viewportWidth = widths[0] ?? 1440;
+
+            let upload;
+            try {
+                upload = await uploadComposedCapture({
+                    gql,
+                    runId,
+                    pages,
+                    viewportWidth
+                });
+            } catch (error) {
+                upload = { error: String(error.message).slice(0, 160) };
+            }
+
+            // Dropped as soon as the site is uploaded; otherwise four sites of full-page screenshots
+            // accumulate for the length of the run.
+            for (const page of pages) {
+                page.composedBytes = undefined;
+            }
+
             const compared = pages.filter(p => p.status === "compared").length;
-            summary.push({ site, total: pages.length, compared, dir: outDir, pages });
+            summary.push({
+                site,
+                total: pages.length,
+                compared,
+                dir: outDir,
+                pages,
+                upload,
+                widths
+            });
             console.log(
                 `${site.padEnd(16)} ${compared}/${pages.length} compared  ->  ${path.join(outDir, "index.html")}`
+            );
+            console.log(
+                upload.error
+                    ? `${"".padEnd(16)} upload FAILED: ${upload.error}`
+                    : `${"".padEnd(16)} uploaded ${upload.uploaded}, skipped ${upload.skipped}, against compose version ${upload.composeVersion}` +
+                          (widths.length > 1
+                              ? `  (mixed viewport widths: ${widths.join(", ")})`
+                              : "")
             );
         }
     } finally {

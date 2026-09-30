@@ -8,6 +8,7 @@
     { "path": "../api-graphql/tsconfig.build.json" },
     { "path": "../api-website-builder/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
+    { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../remote-components/tsconfig.build.json" },
     { "path": "../website-builder-sdk/tsconfig.build.json" }
@@ -31,6 +32,8 @@
       "@webiny/api-website-builder": ["../api-website-builder/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/remote-components/*": ["../remote-components/src/*"],

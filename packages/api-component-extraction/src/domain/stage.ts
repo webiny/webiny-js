@@ -64,6 +64,20 @@ export interface IBlobStore {
         ref: string,
         expiresInSeconds: number
     ): Promise<Result<{ url: string; contentType: string }, ExtractionError>>;
+    /**
+     * A short-lived URL a caller can PUT bytes to, so an upload never passes through the function.
+     *
+     * The mirror of `signedUrl`, and for the same reason: a Lambda request payload is capped at 6MB
+     * and arrives base64-encoded, so a full-page screenshot could not be posted to a route at all.
+     * The caller must send the returned `contentType` as its `Content-Type` header — it is signed
+     * into the URL, so S3 rejects an upload that claims anything else, and the recorded type and the
+     * stored type cannot drift apart. `ref` is the key to record: the same one `signedUrl` reads by.
+     */
+    signedUploadUrl(
+        key: string,
+        contentType: string,
+        expiresInSeconds: number
+    ): Promise<Result<{ url: string; ref: string; contentType: string }, ExtractionError>>;
     /** Remove every blob written under a run's prefix, when the run's working data is no longer needed. */
     deleteAll(runId: string): Promise<Result<void, ExtractionError>>;
 }

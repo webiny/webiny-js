@@ -130,6 +130,34 @@ class S3BlobStoreImpl implements BlobStoreAbstraction.Interface {
         }
     }
 
+    async signedUploadUrl(
+        key: string,
+        contentType: string,
+        expiresInSeconds: number
+    ): Promise<Result<{ url: string; ref: string; contentType: string }, ExtractionError>> {
+        const objectKey = `${BLOB_KEY_PREFIX}/${key}`;
+        try {
+            const s3 = createS3();
+            const url = await getSignedUrl(
+                s3,
+                new PutObjectCommand({
+                    Bucket: bucket(),
+                    Key: objectKey,
+                    ContentType: contentType
+                }),
+                { expiresIn: expiresInSeconds }
+            );
+            return Result.ok({ url, ref: objectKey, contentType });
+        } catch (error) {
+            return Result.fail(
+                new ExtractionStorageError(
+                    "sign a blob upload URL",
+                    error instanceof Error ? error.message : String(error)
+                )
+            );
+        }
+    }
+
     async deleteAll(runId: string): Promise<Result<void, ExtractionError>> {
         try {
             const s3 = createS3();

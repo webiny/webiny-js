@@ -4,8 +4,10 @@ import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js
 import { RunRepository } from "@webiny/api-component-extraction/domain/abstractions.js";
 import { ComponentExtractionPermissions } from "@webiny/api-component-extraction/features/permissions.js";
 import { stageEntry } from "@webiny/api-component-extraction/domain/ledger.js";
-import { PageMapStore } from "~/domain/abstractions.js";
-import { COMPOSE_PAGES_TASK_ID } from "~/constants.js";
+import { BlobStore } from "@webiny/api-component-extraction/domain/stage.js";
+import { ComposedCaptureStore, PageMapStore } from "~/domain/abstractions.js";
+import { COMPOSE_PAGES_TASK_ID, composedScreenshotKey, UPLOAD_URL_SECONDS } from "~/constants.js";
+import type { ComposedCapture, ComposedCapturePage } from "~/domain/types.js";
 import { pageCompositionTypeDefs } from "./typeDefs.js";
 import type { ComposePagesTaskInput } from "~/features/ComposePagesTask.js";
 
@@ -87,6 +89,163 @@ export const addPageCompositionSchema = (builder: IGraphQLSchemaBuilder): void =
                         throw result.error;
                     }
                     return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.pageCompositionPocComposedCapture",
+        dependencies: [ComponentExtractionPermissions, ComposedCaptureStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            captures: ComposedCaptureStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to read component extraction.");
+                    }
+
+                    const result = await captures.get(args.runId);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.pageCompositionPocComposedUploadTargets",
+        dependencies: [ComponentExtractionPermissions, RunRepository, PageMapStore, BlobStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            pageMaps: PageMapStore.Interface,
+            blobs: BlobStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string; paths: string[] } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+
+                    // Resolved through the tenant-scoped repository, so a caller cannot obtain an
+                    // upload URL under another tenant's run prefix.
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+
+                    const mapResult = await pageMaps.get(args.runId);
+                    if (mapResult.isFail()) {
+                        throw mapResult.error;
+                    }
+                    const map = mapResult.value;
+                    if (!map) {
+                        throw new Error(
+                            "This run has not been composed, so there are no pages to photograph."
+                        );
+                    }
+
+                    /*
+                     * Keys are derived from the page's index in the map, not from the order the
+                     * caller asked in. The index is what makes a slug collision impossible, and a
+                     * caller that renamed or reordered its list must not be able to move a
+                     * screenshot onto another page's key.
+                     */
+                    const indexByPath = new Map(map.pages.map((page, index) => [page.path, index]));
+
+                    const targets = [];
+                    for (const path of args.paths) {
+                        const index = indexByPath.get(path);
+                        if (index === undefined) {
+                            throw new Error(`${path} is not a composed page of this run.`);
+                        }
+
+                        const signed = await blobs.signedUploadUrl(
+                            composedScreenshotKey({
+                                runId: args.runId,
+                                composeVersion: map.composeVersion ?? 0,
+                                index,
+                                path
+                            }),
+                            "image/png",
+                            UPLOAD_URL_SECONDS
+                        );
+                        if (signed.isFail()) {
+                            throw signed.error;
+                        }
+                        targets.push({
+                            path,
+                            ref: signed.value.ref,
+                            uploadUrl: signed.value.url,
+                            contentType: signed.value.contentType
+                        });
+                    }
+
+                    return { composeVersion: map.composeVersion ?? 0, targets };
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.pageCompositionPocRecordComposedCapture",
+        dependencies: [ComponentExtractionPermissions, RunRepository, ComposedCaptureStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            captures: ComposedCaptureStore.Interface
+        ) {
+            return ({
+                args
+            }: {
+                args: {
+                    runId: string;
+                    data: {
+                        composeVersion: number;
+                        capturedAt: string;
+                        viewportWidth: number;
+                        pages: ComposedCapturePage[];
+                    };
+                };
+            }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+
+                    const capture: ComposedCapture = {
+                        runId: args.runId,
+                        composeVersion: args.data.composeVersion,
+                        capturedAt: args.data.capturedAt,
+                        viewportWidth: args.data.viewportWidth,
+                        /*
+                         * Not taken from the caller. Every path that can write this record today is
+                         * a developer running a script, and a field the caller could set would
+                         * eventually claim otherwise. When a deployed capture exists it will set
+                         * this itself, and that change should be visible in this file.
+                         */
+                        source: "local-harness",
+                        pages: args.data.pages.map(page => ({
+                            path: page.path,
+                            status: page.status === "captured" ? "captured" : "skipped",
+                            screenshotRef: page.screenshotRef || undefined,
+                            reason: page.reason || undefined,
+                            viewportWidth: page.viewportWidth ?? undefined
+                        }))
+                    };
+
+                    const stored = await captures.set(capture);
+                    if (stored.isFail()) {
+                        throw stored.error;
+                    }
+                    return capture;
                 });
         }
     });

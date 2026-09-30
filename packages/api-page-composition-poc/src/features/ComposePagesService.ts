@@ -431,8 +431,21 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             recovered: recovered.length
         };
 
+        /*
+         * Read before write, to advance the version rather than restate it.
+         *
+         * A composed screenshot records the version it photographed, so this counter is the only
+         * thing that lets the admin tell a current comparison from one taken before a recompose. A
+         * map written before the counter existed reads as 0, so the first composition after this
+         * change is version 1 whatever came before — the screenshots taken against those earlier
+         * compositions carry no version and will read as stale, which is the honest answer.
+         */
+        const previous = await this.pageMaps.get(runId);
+        const composeVersion = (previous.isOk() ? (previous.value?.composeVersion ?? 0) : 0) + 1;
+
         const stored = await this.pageMaps.set({
             runId,
+            composeVersion,
             composedOn: new Date().toISOString(),
             pages: created.map(page => page.entry),
             failed,

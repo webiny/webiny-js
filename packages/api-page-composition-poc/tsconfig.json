@@ -8,6 +8,7 @@
     { "path": "../api-graphql" },
     { "path": "../api-website-builder" },
     { "path": "../background-tasks" },
+    { "path": "../event-handler-core" },
     { "path": "../feature" },
     { "path": "../remote-components" },
     { "path": "../website-builder-sdk" }
@@ -31,6 +32,8 @@
       "@webiny/api-website-builder": ["../api-website-builder/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/remote-components/*": ["../remote-components/src/*"],
