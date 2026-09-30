@@ -15,8 +15,8 @@
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "jsdom": "^29.1.1",
-    "vitest": "^4.1.10"
+    "jsdom": "^30.1.0",
+    "vitest": "^5.0.1"
   },
   "publishConfig": {
     "access": "public"

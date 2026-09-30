@@ -22,7 +22,8 @@ export const ApiCloudfront = createAppModule({
             "Accept",
             "Accept-Language",
             "X-Tenant",
-            "X-Webiny-Sdk"
+            "X-Webiny-Sdk",
+            "X-Webiny-Debug"
         ];
 
         return app.addResource(aws.cloudfront.Distribution, {

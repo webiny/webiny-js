@@ -18,9 +18,9 @@ export interface HandlerParams extends HandlerFactoryParams {
 }
 
 export enum WebsocketsEventRoute {
-    "connect" = "$connect",
-    "disconnect" = "$disconnect",
-    "default" = "$default"
+    connect = "$connect",
+    disconnect = "$disconnect",
+    default = "$default"
 }
 
 export interface IWebsocketsEventData {
@@ -32,9 +32,9 @@ export interface IWebsocketsEventData {
 }
 
 export enum WebsocketsEventRequestContextEventType {
-    "message" = "MESSAGE",
-    "connect" = "CONNECT",
-    "disconnect" = "DISCONNECT"
+    message = "MESSAGE",
+    connect = "CONNECT",
+    disconnect = "DISCONNECT"
 }
 
 export interface IWebsocketsEventRequestContext {

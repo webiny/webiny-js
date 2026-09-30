@@ -38,6 +38,7 @@ import {
     CmsEntryOpenSearchFieldIndexFeature,
     CmsEntryOpenSearchFieldIndexRegistry
 } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
+import { Debugger } from "@webiny/api-core/features/debugger/index.js";
 import {
     CmsEntryOpenSearchFilterFeature,
     CmsEntryOpenSearchFilterRegistry
@@ -136,7 +137,8 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         valueSearchRegistry,
         fullTextSearches,
         valuesModifiers,
-        filterRegistry
+        filterRegistry,
+        debuggerService: container.resolve(Debugger)
     });
 
     return {

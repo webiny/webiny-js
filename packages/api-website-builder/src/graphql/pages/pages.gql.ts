@@ -18,6 +18,7 @@ import { ListPagesUseCase } from "~/features/pages/ListPages/index.js";
 import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
 import { UpdatePageUseCase } from "~/features/pages/UpdatePage/index.js";
 import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
+import { DeletePageRevisionUseCase } from "~/features/pages/DeletePageRevision/index.js";
 import { PublishPageUseCase } from "~/features/pages/PublishPage/index.js";
 import { UnpublishPageUseCase } from "~/features/pages/UnpublishPage/index.js";
 import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
@@ -308,6 +309,22 @@ export const createPagesSchema = () => {
                             permanently ? DeletePageUseCase : TrashPageUseCase
                         );
                         const result = await deletePage.execute({
+                            id
+                        });
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        return true;
+                    });
+                },
+                deletePageRevision: async (_, { id }, context) => {
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        const deletePageRevision =
+                            context.container.resolve(DeletePageRevisionUseCase);
+                        const result = await deletePageRevision.execute({
                             id
                         });
 

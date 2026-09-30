@@ -4,8 +4,8 @@ import * as AmazonCognitoIdentity from "amazon-cognito-identity-js";
 global.fetch = fetch;
 
 const AWS_COGNITO = {
-    USER_POOL_ID: Cypress.env("AWS_COGNITO_USER_POOL_ID"),
-    CLIENT_ID: Cypress.env("AWS_COGNITO_CLIENT_ID")
+    USER_POOL_ID: Cypress.expose("AWS_COGNITO_USER_POOL_ID"),
+    CLIENT_ID: Cypress.expose("AWS_COGNITO_CLIENT_ID")
 };
 
 const userPool = new AmazonCognitoIdentity.CognitoUserPool({

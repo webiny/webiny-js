@@ -2,13 +2,18 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { WbPageStatus } from "~/constants.js";
 import { Page, pageListCache, fullPageCache } from "~/domain/Page/index.js";
+import { pageRevisionsCacheFactory } from "~/domain/PageRevision/index.js";
 import {
     UnpublishPageUseCase as UseCaseAbstraction,
     UnpublishPageGateway as GatewayAbstraction
 } from "./abstractions.js";
 import { UnpublishPageUseCase } from "./UnpublishPageUseCase.js";
 import { UnpublishPageRepository } from "./UnpublishPageRepository.js";
-import { PageListCache, FullPageCache } from "~/features/pages/shared/abstractions.js";
+import {
+    PageListCache,
+    FullPageCache,
+    PageRevisionsCache
+} from "~/features/pages/shared/abstractions.js";
 
 describe("UnpublishPage", () => {
     const gateway = {
@@ -91,6 +96,7 @@ describe("UnpublishPage", () => {
         const container = new Container();
         container.registerInstance(PageListCache, pagesCache);
         container.registerInstance(FullPageCache, detailsCache);
+        container.registerInstance(PageRevisionsCache, pageRevisionsCacheFactory.getCache());
         container.registerInstance(GatewayAbstraction, gateway);
         container.register(UnpublishPageRepository).inSingletonScope();
         container.register(UnpublishPageUseCase);
@@ -128,6 +134,7 @@ describe("UnpublishPage", () => {
         const container = new Container();
         container.registerInstance(PageListCache, pagesCache);
         container.registerInstance(FullPageCache, detailsCache);
+        container.registerInstance(PageRevisionsCache, pageRevisionsCacheFactory.getCache());
         container.registerInstance(GatewayAbstraction, gateway);
         container.register(UnpublishPageRepository).inSingletonScope();
         container.register(UnpublishPageUseCase);
