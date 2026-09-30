@@ -33,10 +33,9 @@ export class LatestRelease extends Release {
             throw Error(`"--version" is required for latest releases.`);
         }
 
-        const [distTags, publishedVersions] = await Promise.all([
-            this.fetchDistTags(),
-            this.fetchPublishedVersions()
-        ]);
+        // No try/catch on purpose: without the current `latest` there's no telling whether this
+        // release would move it backwards, so the release stops instead of guessing.
+        const distTags = await this.fetchDistTags();
 
         // `latest` must stay on the newest version. A patch for an older line (6.4.13 after 6.5.0
         // is out) goes under that line's own tag instead, so `@latest-6.4` still gets the newest
@@ -50,6 +49,9 @@ export class LatestRelease extends Release {
                 this.setCreateGithubRelease(true);
             }
 
+            // Only an older-line patch needs the version list, so a regular release doesn't
+            // depend on it.
+            const publishedVersions = await this.fetchPublishedVersions();
             this.previousRelease =
                 semver.maxSatisfying(publishedVersions, `>=${line}.0 <${this.version}`) ??
                 undefined;
