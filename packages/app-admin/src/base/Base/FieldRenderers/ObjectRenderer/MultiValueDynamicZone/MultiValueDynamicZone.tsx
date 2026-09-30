@@ -15,7 +15,7 @@ import { TEMPLATE_DISCRIMINATOR } from "~/features/formModel/ObjectField.js";
 import { ClipboardFeature } from "~/features/clipboard/feature.js";
 import { useConfirmationDialog } from "~/hooks/useConfirmationDialog.js";
 import { NestedLayout } from "../ObjectFieldComponents.js";
-import { AddTemplateButton } from "../TemplatePicker.js";
+import { AddTemplateButton } from "../TemplatePicker/index.js";
 import {
     MultiValueDynamicZonePresenter,
     type IMultiValueDynamicZonePresenter
