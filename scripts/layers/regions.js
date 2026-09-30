@@ -1,4 +1,4 @@
-module.exports = [
+export default [
     "us-east-1", // Done
     "us-east-2", // Done
     "us-west-1", // Done
