@@ -11,14 +11,30 @@ import { AuthenticationContext } from "@webiny/app-admin/features/security/Authe
  */
 const cache = new Map<string, Promise<string>>();
 
+/**
+ * Which gated route serves the image.
+ *
+ * `extraction` is the pipeline's own derived images. `composed` is a screenshot of a migrated page,
+ * which a separate route serves because it is stored by a separate package with its own allowlist —
+ * two routes, one set of rules about who may read them. The caller names the source rather than the
+ * URL so both stay in one place.
+ */
+export type RunImageSource = "extraction" | "composed";
+
+const ROUTE: Record<RunImageSource, string> = {
+    extraction: "component-extraction",
+    composed: "page-composition-poc"
+};
+
 const loadObjectUrl = async (
     apiUrl: string,
     token: string,
     runId: string,
-    ref: string
+    ref: string,
+    source: RunImageSource
 ): Promise<string> => {
     const base = apiUrl.replace(/\/+$/, "");
-    const url = `${base}/_webiny/component-extraction/run/${encodeURIComponent(runId)}/image?ref=${encodeURIComponent(ref)}`;
+    const url = `${base}/_webiny/${ROUTE[source]}/run/${encodeURIComponent(runId)}/image?ref=${encodeURIComponent(ref)}`;
     const existing = cache.get(url);
     if (existing) {
         return existing;
@@ -60,7 +76,11 @@ export interface RunImageState {
     error: string | null;
 }
 
-export function useRunImage(runId: string, imageRef: string | null | undefined): RunImageState {
+export function useRunImage(
+    runId: string,
+    imageRef: string | null | undefined,
+    source: RunImageSource = "extraction"
+): RunImageState {
     const container = useContainer();
     const [state, setState] = useState<RunImageState>({
         src: null,
@@ -80,7 +100,7 @@ export function useRunImage(runId: string, imageRef: string | null | undefined):
             try {
                 const apiUrl = container.resolve(EnvConfig).get("apiUrl");
                 const token = (await container.resolve(AuthenticationContext).getIdToken()) ?? "";
-                const src = await loadObjectUrl(apiUrl, token, runId, imageRef);
+                const src = await loadObjectUrl(apiUrl, token, runId, imageRef, source);
                 if (!cancelled) {
                     setState({ src, loading: false, failed: false, error: null });
                 }
@@ -98,7 +118,7 @@ export function useRunImage(runId: string, imageRef: string | null | undefined):
         return () => {
             cancelled = true;
         };
-    }, [container, runId, imageRef]);
+    }, [container, runId, imageRef, source]);
 
     return state;
 }

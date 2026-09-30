@@ -1,11 +1,13 @@
 import React from "react";
-import { useRunImage } from "./useRunImage.js";
+import { useRunImage, type RunImageSource } from "./useRunImage.js";
 
 interface Props {
     runId: string;
     imageRef: string | null | undefined;
     alt: string;
     className?: string;
+    /** Which gated route serves it — see `RunImageSource`. Defaults to the pipeline's own images. */
+    source?: RunImageSource;
     /** Called when the image is available, so a tile can offer "open full size". */
     onOpen?: (src: string) => void;
 }
@@ -19,8 +21,8 @@ interface Props {
  * segmentation having produced nothing. Saying which it is costs a line and makes the next occurrence
  * legible instead of mysterious.
  */
-export const RunImage = ({ runId, imageRef, alt, className, onOpen }: Props) => {
-    const { src, loading, failed, error } = useRunImage(runId, imageRef);
+export const RunImage = ({ runId, imageRef, alt, className, source, onOpen }: Props) => {
+    const { src, loading, failed, error } = useRunImage(runId, imageRef, source);
 
     if (loading) {
         return <div className={`${className ?? ""} bg-neutral-light animate-pulse`} />;

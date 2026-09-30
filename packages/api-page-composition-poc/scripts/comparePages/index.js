@@ -21,6 +21,7 @@ import path from "node:path";
 import { readinessScript } from "./readiness.js";
 import { buildReport, concern } from "./report.js";
 import { uploadComposedCapture } from "./upload.js";
+import { assertWebsiteServesRun } from "./preflight.js";
 
 const API = process.env.WEBINY_API_URL ?? "https://d1mp23blxyssy7.cloudfront.net/graphql";
 const TOKEN = process.env.WEBINY_API_TOKEN ?? "wat_12345678";
@@ -98,6 +99,9 @@ const main = async () => {
     const session = await provider.open();
     const summary = [];
 
+    // Named up front, because the screenshots are only evidence about the app they came from.
+    console.log(`comparing against ${WEBSITE}\n`);
+
     try {
         for (const [site, runId] of RUNS) {
             const outDir = path.join(OUT_DIR, site);
@@ -109,6 +113,11 @@ const main = async () => {
                 }).then(d => d.pageCompositionPocPageMap?.data),
                 artifact(runId, "capture")
             ]);
+
+            const preflight = await assertWebsiteServesRun({ website: WEBSITE, site, map });
+            if (!preflight.checked) {
+                console.log(`${site.padEnd(16)} not preflighted: ${preflight.note}`);
+            }
 
             const screenshotByUrl = new Map(
                 (capture?.pages ?? []).map(page => [

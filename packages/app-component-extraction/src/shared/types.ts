@@ -549,8 +549,37 @@ export interface ComposedDiscardDto {
 export interface PageMapDto {
     runId: string;
     composedOn: string;
+    /** Which composition this is. Absent on maps written before the counter existed — read as 0. */
+    composeVersion?: number;
     pages: ComposedPageDto[];
     failed: ComposedPageFailureDto[];
     links: PageLinksDto;
     discarded: ComposedDiscardDto[];
+}
+
+/**
+ * Screenshots of a run's composed pages, produced by a developer running the local harness.
+ *
+ * Null is the normal answer, not an error: nothing in this project can photograph a composed page
+ * automatically, because the website app that renders them links an unpublished SDK and cannot be
+ * deployed. Until someone runs the harness, a run has no composed capture, and the view must say
+ * that rather than imply the migration failed.
+ */
+export interface ComposedCaptureDto {
+    runId: string;
+    /** The `PageMapDto.composeVersion` these photographed. Behind the map's ⇒ the pair is stale. */
+    composeVersion: number;
+    capturedAt: string;
+    viewportWidth: number;
+    source: string;
+    pages: ComposedCapturePageDto[];
+}
+
+export interface ComposedCapturePageDto {
+    path: string;
+    status: "captured" | "skipped";
+    screenshotRef?: string;
+    /** Why this page has no screenshot, in the harness's own words. */
+    reason?: string;
+    viewportWidth?: number;
 }

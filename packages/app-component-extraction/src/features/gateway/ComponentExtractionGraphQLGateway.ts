@@ -4,6 +4,7 @@ import type {
     CreateJobData,
     JobDto,
     JobListItemDto,
+    ComposedCaptureDto,
     OverrideDto,
     PageMapDto,
     ReachabilityDto,
@@ -20,6 +21,7 @@ import {
     CREATE_RUN,
     EXCLUDE_CAPTURED_PAGES,
     GET_DECISIONS,
+    GET_COMPOSED_CAPTURE,
     GET_JOB,
     GET_PAGE_MAP,
     GET_REATTACHMENTS,
@@ -225,6 +227,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: GET_PAGE_MAP, variables: { runId } });
 
         return unwrap(response.pageCompositionPocPageMap) ?? null;
+    }
+
+    async getComposedCapture(runId: string): Promise<ComposedCaptureDto | null> {
+        const response = await this.client.execute<{
+            pageCompositionPocComposedCapture: GqlEnvelope<ComposedCaptureDto | null>;
+        }>({ query: GET_COMPOSED_CAPTURE, variables: { runId } });
+
+        return unwrap(response.pageCompositionPocComposedCapture) ?? null;
     }
 
     async setOverride(

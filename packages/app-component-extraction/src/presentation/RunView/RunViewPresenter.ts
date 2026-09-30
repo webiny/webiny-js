@@ -59,6 +59,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         pageMap: null,
         pageMapLoading: false,
         composedAssemble: null,
+        composedCapture: null,
         comparedPath: null,
         reattachments: [],
         promoteComponents: [],
@@ -563,17 +564,23 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         });
         try {
             /*
-             * Both together: the map says what was composed, Assemble says what each page was
-             * composed from — its source screenshot and its instances. The comparison needs both, and
-             * loading them separately would show half a comparison while the other half arrives.
+             * All three together: the map says what was composed, Assemble says what each page was
+             * composed from — its source screenshot and its instances — and the capture says whether
+             * anyone has photographed the result. The comparison needs all of them, and loading them
+             * separately would show half a comparison while the other half arrives.
+             *
+             * The capture is null for almost every run, which is the resting state rather than a
+             * failure: nothing here can photograph a composed page on its own.
              */
-            const [pageMap, assemble] = await Promise.all([
+            const [pageMap, assemble, composedCapture] = await Promise.all([
                 this.gateway.getPageMap(run.id),
-                this.gateway.getStageArtifact(run.id, "assemble")
+                this.gateway.getStageArtifact(run.id, "assemble"),
+                this.gateway.getComposedCapture(run.id)
             ]);
             runInAction(() => {
                 this.vm.pageMap = pageMap;
                 this.vm.composedAssemble = (assemble as AssembleArtifactDto | null) ?? null;
+                this.vm.composedCapture = composedCapture;
                 this.vm.pageMapLoading = false;
             });
         } catch (error) {

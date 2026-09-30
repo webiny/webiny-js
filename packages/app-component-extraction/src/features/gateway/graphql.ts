@@ -417,3 +417,20 @@ export const GET_PAGE_MAP = /* GraphQL */ `
         }
     }
 `;
+
+/**
+ * Screenshots of the run's composed pages, from a local harness run.
+ *
+ * `null` for almost every run, and that is the resting state rather than a failure — see
+ * `ComposedCaptureDto`.
+ */
+export const GET_COMPOSED_CAPTURE = /* GraphQL */ `
+    query GetComposedCapture($runId: ID!) {
+        pageCompositionPocComposedCapture(runId: $runId) {
+            data
+            error {
+                message
+            }
+        }
+    }
+`;

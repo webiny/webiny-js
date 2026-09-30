@@ -4,6 +4,7 @@ import type {
     JobDto,
     JobListItemDto,
     OverrideDto,
+    ComposedCaptureDto,
     PageMapDto,
     ReachabilityDto,
     ReattachmentDto,
@@ -70,6 +71,8 @@ export interface IComponentExtractionGateway {
     getReattachments(runId: string): Promise<ReattachmentDto[]>;
     /** The run's composed pages, or null when composition has not been run for it. */
     getPageMap(runId: string): Promise<PageMapDto | null>;
+    /** Screenshots of the composed pages, or null when nobody has run the local harness for it. */
+    getComposedCapture(runId: string): Promise<ComposedCaptureDto | null>;
     /** Set (upsert) an override from a run, re-applying in place and marking downstream stale (W8.1). */
     setOverride(
         runId: string,

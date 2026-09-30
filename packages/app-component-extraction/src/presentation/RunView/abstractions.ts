@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type {
     AssembleArtifactDto,
+    ComposedCaptureDto,
     PageMapDto,
     ComponentDecisionDto,
     GeneratedComponentDto,
@@ -76,6 +77,15 @@ export interface IRunViewVm {
      * screenshot and its instance list, which is both halves of the comparison below the images.
      */
     composedAssemble: AssembleArtifactDto | null;
+    /**
+     * Screenshots of the composed pages, or null when nobody has run the local harness for this run.
+     *
+     * Null is the normal state and the view says so plainly. Nothing in this project can photograph a
+     * composed page by itself — the website app that renders them links an unpublished SDK and cannot
+     * be deployed — so a missing composed half means nobody has run the step, not that the migration
+     * failed. See `ComposedCaptureDto`.
+     */
+    composedCapture: ComposedCaptureDto | null;
     /** The composed page the comparison is open on, by its Website Builder path. */
     comparedPath: string | null;
     /** This run's override reattachment outcomes (W8.7). */
