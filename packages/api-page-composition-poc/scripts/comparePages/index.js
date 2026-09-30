@@ -12,9 +12,16 @@
  *
  * Usage, with the website app running:
  *
+ *     # the four demo runs
  *     node packages/api-page-composition-poc/scripts/comparePages/index.js
  *
- * Environment: WEBINY_API_URL, WEBINY_API_TOKEN, WEBSITE_URL, CHROME_PATH, OUT_DIR.
+ *     # one run, or several, by id
+ *     node packages/api-page-composition-poc/scripts/comparePages/index.js '<runId>' '<runId>'
+ *     RUNS='<runId>,<runId>' node packages/api-page-composition-poc/scripts/comparePages/index.js
+ *
+ * Quote the run id: it contains a `#`, which a shell treats as the start of a comment.
+ *
+ * Environment: WEBINY_API_URL, WEBINY_API_TOKEN, WEBSITE_URL, CHROME_PATH, OUT_DIR, RUNS.
  */
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -30,12 +37,31 @@ const CHROME =
     process.env.CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const OUT_DIR = process.env.OUT_DIR ?? path.resolve(process.cwd(), ".page-comparison");
 
-const RUNS = [
-    ["parkcityplace", "6ab548f77c4ab700023c79c3#0001"],
-    ["2424tulane", "6ab5426e7c4ab700023c79b8#0001"],
-    ["71westland", "6ab255401109a6000220f2ad#0001"],
-    ["freehill", "6ab2635e514c4400024a20b3#0001"]
+/**
+ * The demo collection, used when no run is named.
+ *
+ * Kept as the default because comparing all four is the common case, but it is only a default: pass
+ * run ids as arguments, or in RUNS, to compare any other run. A harness that could only ever look at
+ * four hardcoded runs would be a demo script rather than a tool.
+ */
+const DEFAULT_RUNS = [
+    "6ab548f77c4ab700023c79c3#0001",
+    "6ab5426e7c4ab700023c79b8#0001",
+    "6ab255401109a6000220f2ad#0001",
+    "6ab2635e514c4400024a20b3#0001"
 ];
+
+const REQUESTED_RUNS = (() => {
+    const fromArgs = process.argv.slice(2).filter(value => !value.startsWith("-"));
+    if (fromArgs.length > 0) {
+        return fromArgs;
+    }
+    const fromEnv = (process.env.RUNS ?? "")
+        .split(",")
+        .map(value => value.trim())
+        .filter(Boolean);
+    return fromEnv.length > 0 ? fromEnv : DEFAULT_RUNS;
+})();
 
 const REPO = path.resolve(import.meta.dirname, "../../../..");
 
@@ -50,6 +76,36 @@ const gql = async (query, variables) => {
         throw new Error(JSON.stringify(json.errors).slice(0, 300));
     }
     return json.data;
+};
+
+/**
+ * A short label for a run, for the output directory and the console.
+ *
+ * Resolved from the job name rather than written beside the run id, so naming a run on the command
+ * line needs nothing but the id. Falls back to the id: a label is a convenience, and failing to get
+ * one must not stop the comparison.
+ */
+const runLabel = async runId => {
+    try {
+        const run = await gql(
+            `query ($runId: ID!) {
+                componentExtractionGetRun(runId: $runId) { data { jobId runNumber } error { message } }
+            }`,
+            { runId }
+        );
+        const jobId = run.componentExtractionGetRun?.data?.jobId;
+        if (!jobId) {
+            return runId;
+        }
+        const job = await gql(
+            `query ($jobId: ID!) { componentExtractionGetJob(jobId: $jobId) { data { name } } }`,
+            { jobId }
+        );
+        const name = job.componentExtractionGetJob?.data?.name;
+        return name ? slug(name) : runId;
+    } catch {
+        return runId;
+    }
 };
 
 const artifact = async (runId, stage) => {
@@ -100,10 +156,19 @@ const main = async () => {
     const summary = [];
 
     // Named up front, because the screenshots are only evidence about the app they came from.
-    console.log(`comparing against ${WEBSITE}\n`);
+    console.log(
+        `comparing ${REQUESTED_RUNS.length} run(s) against ${WEBSITE}\n` +
+            REQUESTED_RUNS.map(runId => `   ${runId}`).join("\n") +
+            "\n"
+    );
 
     try {
-        for (const [site, runId] of RUNS) {
+        const runs = [];
+        for (const runId of REQUESTED_RUNS) {
+            runs.push([await runLabel(runId), runId]);
+        }
+
+        for (const [site, runId] of runs) {
             const outDir = path.join(OUT_DIR, site);
             await mkdir(outDir, { recursive: true });
 
