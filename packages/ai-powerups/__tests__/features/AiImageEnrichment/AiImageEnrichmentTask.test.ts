@@ -2,7 +2,10 @@ import { describe, it, expect, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
 import { AiImageEnrichmentTask } from "~/api/features/AiImageEnrichment/AiImageEnrichmentTask.js";
+import { FILE_ENRICHMENT_FAILED_WEBSOCKET_ACTION } from "~/api/features/AiImageEnrichment/AiImageEnrichmentTask.js";
 import { ApplyImageEnrichmentUseCase } from "~/api/features/AiImageEnrichment/abstractions.js";
 import { PrepareImageEnrichmentUseCase } from "~/api/features/AiImageEnrichment/abstractions.js";
 import { EnrichmentCapabilityDisabledError } from "~/api/features/AiImageEnrichment/errors.js";
@@ -36,13 +39,53 @@ const controller = () => {
     };
 };
 
-const runWith = async (prepareFailure: Error) => {
+const prepared = {
+    fileId: "file-1",
+    imageBase64: "aGVsbG8=",
+    imageMediaType: "image/png",
+    model: "anthropic/claude-sonnet-4-5",
+    prompt: "Describe this image.",
+    connection: { sdkName: "anthropic", apiKey: "key" }
+};
+
+interface IRunOptions {
+    prepareFailure?: Error;
+    aiFailure?: Error;
+    sendFailure?: Error;
+}
+
+const prepareResult = (options: IRunOptions) => {
+    if (options.prepareFailure) {
+        return Result.fail(options.prepareFailure);
+    }
+    return Result.ok(prepared);
+};
+
+const run = async (options: IRunOptions) => {
     const container = new Container();
-    container.registerInstance(PrepareImageEnrichmentUseCase, {
-        execute: vi.fn().mockResolvedValue(Result.fail(prepareFailure))
+
+    const prepare = vi.fn();
+    const preparedOrFailed = prepareResult(options);
+    prepare.mockResolvedValue(preparedOrFailed);
+    container.registerInstance(PrepareImageEnrichmentUseCase, { execute: prepare } as any);
+
+    const apply = vi.fn();
+    container.registerInstance(ApplyImageEnrichmentUseCase, { execute: apply } as any);
+
+    const generateText = vi.fn();
+    const aiFailure = options.aiFailure ?? new Error("unexpected");
+    generateText.mockRejectedValue(aiFailure);
+    container.registerInstance(Ai, { generateText } as any);
+
+    container.registerInstance(IdentityContext, {
+        getIdentity: () => ({ id: "uploader-1" })
     } as any);
-    container.registerInstance(ApplyImageEnrichmentUseCase, { execute: vi.fn() } as any);
-    container.registerInstance(Ai, { generateText: vi.fn() } as any);
+
+    const send = vi.fn();
+    if (options.sendFailure) {
+        send.mockRejectedValue(options.sendFailure);
+    }
+    container.registerInstance(WebsocketsSendToIdentityUseCase, { execute: send } as any);
 
     const definition = container.resolveImplementation(AiImageEnrichmentTask);
     const handler = container.resolveImplementation(definition.handler);
@@ -50,7 +93,12 @@ const runWith = async (prepareFailure: Error) => {
     const ctrl = controller();
     await handler.run({ input: { fileId: "file-1" }, controller: ctrl } as any);
 
-    return ctrl.calls;
+    return { calls: ctrl.calls, sent: send.mock.calls };
+};
+
+const runWith = async (prepareFailure: Error) => {
+    const result = await run({ prepareFailure });
+    return result.calls;
 };
 
 describe("AiImageEnrichmentTask", () => {
@@ -82,5 +130,54 @@ describe("AiImageEnrichmentTask", () => {
         );
 
         expect(calls).toEqual([{ kind: "error", message: expect.stringContaining("vision") }]);
+    });
+});
+
+/*
+ * A failed task only reaches the API log, so without a message the uploader could not tell a
+ * missing Vision model or an overloaded provider from enrichment never having run.
+ */
+describe("AiImageEnrichmentTask failure notifications", () => {
+    const failedMessage = (message: string) => [
+        { id: "uploader-1" },
+        {
+            action: FILE_ENRICHMENT_FAILED_WEBSOCKET_ACTION,
+            data: { id: "file-1", message: expect.stringContaining(message) }
+        }
+    ];
+
+    it("tells the uploader about a misconfiguration", async () => {
+        const { sent } = await run({
+            prepareFailure: new EnrichmentNoProviderError('No model is configured for "vision".')
+        });
+
+        const expected = failedMessage("vision");
+
+        expect(sent).toEqual([expected]);
+    });
+
+    it("tells the uploader when the AI call fails", async () => {
+        const { calls, sent } = await run({ aiFailure: new Error("Overloaded") });
+        const kinds = calls.map(call => call.kind);
+        const expected = failedMessage("AI enrichment failed: Overloaded");
+
+        expect(kinds).toEqual(["error"]);
+        expect(sent).toEqual([expected]);
+    });
+
+    it("says nothing for the quiet endings", async () => {
+        const off = await run({ prepareFailure: new EnrichmentCapabilityDisabledError("off") });
+        const pdf = await run({ prepareFailure: new EnrichmentNotAnImageError("application/pdf") });
+
+        expect([...off.sent, ...pdf.sent]).toEqual([]);
+    });
+
+    it("still fails with the real error when the notification cannot be sent", async () => {
+        const { calls } = await run({
+            aiFailure: new Error("Overloaded"),
+            sendFailure: new Error("no sockets")
+        });
+
+        expect(calls).toEqual([{ kind: "error", message: "AI enrichment failed: Overloaded" }]);
     });
 });

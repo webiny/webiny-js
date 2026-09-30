@@ -9,7 +9,7 @@ import {
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
-import { Icon } from "@webiny/admin-ui";
+import { Icon, ScrollArea } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
@@ -247,10 +247,14 @@ const CommandPaletteBase = () => {
                             <Kbd>esc</Kbd>
                         </div>
 
-                        <div
-                            ref={scrollRef}
-                            className="p-xs-plus"
-                            style={{ flex: 1, minHeight: 0, overflowY: "auto" }}
+                        {/*
+                         * The body scrolls inside a `ScrollArea`, so it shows the same scrollbar as
+                         * the rest of the admin instead of the operating system's.
+                         */}
+                        <ScrollArea
+                            className="min-h-0 flex-1"
+                            viewportClassName="p-xs-plus"
+                            viewportRef={scrollRef}
                         >
                             {appearance ? (
                                 aiMode.body
@@ -275,7 +279,7 @@ const CommandPaletteBase = () => {
                                     ))}
                                 </Command.List>
                             )}
-                        </div>
+                        </ScrollArea>
 
                         <PaletteFooter
                             label={appearance ? appearance.footerLabel : "Webiny command palette"}
