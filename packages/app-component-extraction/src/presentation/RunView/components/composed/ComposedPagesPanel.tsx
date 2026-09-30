@@ -1,6 +1,6 @@
 import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Button, Loader, Scrollbar, Tag, Text } from "@webiny/admin-ui";
+import { Button, CopyButton, Loader, Scrollbar, Tag, Text, useToast } from "@webiny/admin-ui";
 import { RunImage } from "~/presentation/runImage/RunImage.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type { AssembledPageDto, ComposedPageDto } from "~/shared/types.js";
@@ -13,6 +13,7 @@ import {
     type CaptureState,
     type PageCapture
 } from "./captureState.js";
+import { harnessCommand } from "./harnessCommand.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
@@ -136,7 +137,7 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                 </div>
             ) : null}
 
-            <CaptureBanner state={state} />
+            <CaptureBanner state={state} runId={runId} />
 
             <Scrollbar>
                 <div className="flex flex-col gap-xs p-md">
@@ -244,7 +245,7 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
  * Said at the top rather than only per page, because "nobody has run the harness" is a fact about the
  * run and repeating it on every row would read as ten separate faults.
  */
-const CaptureBanner = ({ state }: { state: CaptureState }) => {
+const CaptureBanner = ({ state, runId }: { state: CaptureState; runId: string }) => {
     if (state.kind === "absent") {
         return (
             <div className="flex flex-col gap-xxs border-b border-neutral-dimmed bg-neutral-light px-md py-sm">
@@ -256,6 +257,10 @@ const CaptureBanner = ({ state }: { state: CaptureState }) => {
                     need one. Photographing a composed page needs a browser rendering the migrated
                     site, which is a local step until the website app can be deployed.
                 </Text>
+                <HarnessCommand
+                    runId={runId}
+                    label="Run this from the repo root, with the website app running:"
+                />
             </div>
         );
     }
@@ -275,15 +280,51 @@ const CaptureBanner = ({ state }: { state: CaptureState }) => {
                     of the previous composition is evidence about a page that has since been rebuilt
                     — not the same thing as having none.
                 </Text>
+                <HarnessCommand runId={runId} label="Refresh them with:" />
             </div>
         );
     }
 
     return (
-        <div className="border-b border-neutral-dimmed px-md py-xs">
+        <div className="flex flex-col gap-xs border-b border-neutral-dimmed px-md py-sm">
             <Text size="sm" className="text-neutral-strong">
                 {provenance(state.capture)}
             </Text>
+            <HarnessCommand runId={runId} label="Take them again with:" />
+        </div>
+    );
+};
+
+/**
+ * The command that photographs this run, shown and copyable.
+ *
+ * Shown as well as copyable on purpose: someone reading "nobody has run the harness" needs to know
+ * what running it means, and a bare copy button asks them to paste something they have not seen.
+ */
+const HarnessCommand = ({ runId, label }: { runId: string; label: string }) => {
+    const { showToast } = useToast();
+    const command = harnessCommand(runId);
+
+    return (
+        <div className="flex flex-col gap-xxs">
+            <Text size="sm" className="text-neutral-strong">
+                {label}
+            </Text>
+            <div className="flex items-center gap-xs rounded-sm border border-neutral-dimmed bg-neutral-base px-sm py-xxs">
+                <Text
+                    size="sm"
+                    className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono"
+                    title={command}
+                >
+                    {command}
+                </Text>
+                <CopyButton
+                    size="sm"
+                    variant="ghost"
+                    value={command}
+                    onCopy={() => showToast({ title: "Harness command copied to clipboard!" })}
+                />
+            </div>
         </div>
     );
 };
