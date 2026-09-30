@@ -4,7 +4,6 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as LinkIcon } from "@webiny/icons/link.svg";
 import { Button, DropdownMenu, Text, Icon } from "@webiny/admin-ui";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { normalizeIcon } from "~/utils/normalizeIcon.js";
 import { observer } from "mobx-react-lite";
 
@@ -18,9 +17,10 @@ const ModelListItem = ({ model, onClick: originalOnClick }: ModelListItemProps) 
         originalOnClick(model.modelId);
     }, [originalOnClick]);
 
-    const icon = model.icon ? (
+    const faIcon = normalizeIcon(model.icon);
+    const icon = faIcon ? (
         <Icon
-            icon={<FontAwesomeIcon icon={normalizeIcon(model.icon) as IconProp} />}
+            icon={<FontAwesomeIcon icon={faIcon} />}
             label={"Model icon"}
             size={"lg"}
             className={"text-neutral-strong"}
