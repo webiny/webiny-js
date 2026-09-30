@@ -55,9 +55,11 @@ export class Release {
     }
 
     async execute() {
+        // Version first: a release type may derive its dist-tag from the version it computes.
+        const version = await this.computeVersion();
+
         this.validateConfig();
 
-        const version = await this.computeVersion();
         this.logger.info("Computed version: %s", version);
         this.logger.info("Dist-tag: %s", this.distTag);
 
