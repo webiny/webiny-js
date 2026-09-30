@@ -1,11 +1,11 @@
 import type { Asset, AssetCategory, AssetImage } from "./types.js";
 
-export function getAssetCategory(type?: string | null): AssetCategory {
-    if (typeof type === "string") {
-        if (type.startsWith("image/")) {
+export function getAssetCategory(mimeType?: string | null): AssetCategory {
+    if (typeof mimeType === "string") {
+        if (mimeType.startsWith("image/")) {
             return "image";
         }
-        if (type.startsWith("video/")) {
+        if (mimeType.startsWith("video/")) {
             return "video";
         }
     }
@@ -106,16 +106,33 @@ const normalizeAssetImage = (raw: unknown): AssetImage | undefined => {
     return Object.keys(image).length > 0 ? image : undefined;
 };
 
-const buildBase = (raw: Record<string, unknown>, type: string): Asset => {
+const buildBase = (raw: Record<string, unknown>, mimeType: string): Asset => {
     const src = asString(raw.src) ?? "";
     return {
         id: asString(raw.id) ?? "",
         src,
         url: asString(raw.url) ?? src,
         name: asString(raw.name) ?? "",
-        type,
+        mimeType,
         size: asNumber(raw.size) ?? 0
     };
+};
+
+/**
+ * Keeps the image dimensions in both places: `image.width`/`image.height` for current code,
+ * and the root `width`/`height` that 6.4 frontends read.
+ */
+const syncImageDimensions = (asset: Asset): Asset => {
+    if (!asset.image) {
+        return asset;
+    }
+    if (asset.image.width !== undefined) {
+        asset.width = asset.image.width;
+    }
+    if (asset.image.height !== undefined) {
+        asset.height = asset.image.height;
+    }
+    return asset;
 };
 
 export function normalizeToAsset(input: unknown): Asset | null {
@@ -126,10 +143,12 @@ export function normalizeToAsset(input: unknown): Asset | null {
     const hasTypedSubObject =
         isObject(input.image) || isObject(input.document) || isObject(input.video);
 
+    const mimeType = asString(input.mimeType) ?? "";
+    const asset = buildBase(input, mimeType);
+    const category = getAssetCategory(mimeType);
+
     if (!hasTypedSubObject) {
-        const type = asString(input.mimeType) ?? asString(input.type) ?? "";
-        const asset = buildBase(input, type);
-        if (getAssetCategory(type) === "image") {
+        if (category === "image") {
             const image = assetImageFromLegacyEdit(input.edit as LegacyImageEdit | undefined, {
                 width: asNumber(input.width),
                 height: asNumber(input.height)
@@ -138,12 +157,9 @@ export function normalizeToAsset(input: unknown): Asset | null {
                 asset.image = image;
             }
         }
-        return asset;
+        return syncImageDimensions(asset);
     }
 
-    const type = asString(input.type) ?? asString(input.mimeType) ?? "";
-    const asset = buildBase(input, type);
-    const category = getAssetCategory(type);
     if (category === "image") {
         const image = normalizeAssetImage(input.image);
         if (image) {
@@ -160,5 +176,5 @@ export function normalizeToAsset(input: unknown): Asset | null {
     } else if (isObject(input.document)) {
         asset.document = { pages: asNumber(input.document.pages) };
     }
-    return asset;
+    return syncImageDimensions(asset);
 }

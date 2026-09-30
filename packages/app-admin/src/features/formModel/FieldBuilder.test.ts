@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { z } from "zod";
 import { Container } from "@webiny/di";
 import { FormModelFeature } from "./feature.js";
+import { IdentityContextFeature } from "~/features/security/IdentityContext/feature.js";
 import { FieldBuilderRegistry, type IFieldBuilderRegistry } from "./abstractions.js";
 import { TextFieldBuilder } from "./fieldTypes/TextFieldType.js";
 import { NumberFieldBuilder } from "./fieldTypes/NumberFieldType.js";
@@ -10,6 +11,7 @@ import { DateTimeFieldBuilder } from "./fieldTypes/DateTimeFieldType.js";
 
 function createRegistry(): IFieldBuilderRegistry {
     const container = new Container();
+    IdentityContextFeature.register(container);
     FormModelFeature.register(container);
     return container.resolve(FieldBuilderRegistry);
 }

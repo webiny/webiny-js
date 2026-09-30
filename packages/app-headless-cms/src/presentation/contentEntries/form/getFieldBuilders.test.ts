@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.js";
+import { IdentityContextFeature } from "@webiny/app-admin/features/security/IdentityContext/feature.js";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { CmsFormModelBuilder } from "~/features/formModel/abstractions.js";
 import { CmsFormModelFeature } from "~/features/formModel/feature.js";
@@ -121,6 +122,7 @@ const model = {
 
 function createCmsForm() {
     const container = new Container();
+    IdentityContextFeature.register(container);
     FormModelFeature.register(container);
     CmsFormModelFeature.register(container);
 
