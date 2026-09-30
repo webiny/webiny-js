@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { UnstableRelease } from "../src/UnstableRelease";
+import { UnstableRelease } from "../src/UnstableRelease.js";
 
 vi.mock("execa", () => ({
     execa: vi.fn().mockResolvedValue({ stdout: "abc1234" })

@@ -1,4 +1,4 @@
-import { BetaRelease } from "./BetaRelease";
+import { BetaRelease } from "./BetaRelease.js";
 
 /**
  * An alpha release works exactly like a beta release (a prerelease published under
