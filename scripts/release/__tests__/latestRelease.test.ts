@@ -64,6 +64,23 @@ describe("LatestRelease.computeVersion", () => {
         expect(await (release as any).findPreviousRelease()).toBe("6.4.12");
     });
 
+    it("should not fetch published versions for a regular release", async () => {
+        const release = createRelease({ latest: "6.4.11" });
+        const fetchPublishedVersions = vi
+            .spyOn(release as any, "fetchPublishedVersions")
+            .mockRejectedValue(new Error("registry down"));
+        release.version = "6.5.0";
+        expect(await release.computeVersion()).toBe("6.5.0");
+        expect(fetchPublishedVersions).not.toHaveBeenCalled();
+    });
+
+    it("should stop when the current latest can't be read", async () => {
+        const release = new LatestRelease(logger);
+        vi.spyOn(release as any, "fetchDistTags").mockRejectedValue(new Error("registry down"));
+        release.version = "6.5.0";
+        await expect(release.computeVersion()).rejects.toThrow("registry down");
+    });
+
     it("should diff a regular release against the current latest", async () => {
         const release = createRelease({ latest: "6.4.11" }, ["6.4.11"]);
         release.version = "6.5.0";
