@@ -86,7 +86,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
         }),
         npmReleaseBeta: createJob({
             needs: ["prBranch", "build"],
-            name: 'NPM release ("beta" tag)',
+            name: "NPM release (beta)",
             env: {
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}",
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
@@ -112,11 +112,11 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                             run: 'git config --global user.name "webiny-bot"'
                         },
                         {
-                            name: 'Version and publish "beta" tag to NPM',
+                            name: "Version and publish beta to NPM",
                             id: "release",
                             run: [
                                 "set -o pipefail",
-                                `yarn release --type=beta --tag=beta --version=${RELEASE_VERSION} 2>&1 | tee /tmp/release-output.txt`,
+                                `yarn release --type=beta --version=${RELEASE_VERSION} 2>&1 | tee /tmp/release-output.txt`,
                                 "BETA_VERSION=$(grep -oE '[0-9]+\\.[0-9]+\\.[0-9]+-beta\\.[0-9]+' /tmp/release-output.txt | tail -1)",
                                 'echo "beta-version=$BETA_VERSION" >> $GITHUB_OUTPUT'
                             ].join("\n")
