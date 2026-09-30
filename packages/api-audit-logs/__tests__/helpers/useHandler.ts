@@ -48,6 +48,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
     return {
         identity: inner.identity,
         tenant: inner.tenant,
+        invoke: inner.invoke,
         handler: () => inner.getContext<AuditLogsContext>()
     };
 };
