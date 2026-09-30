@@ -124,7 +124,7 @@ const ParametersCard = ({
 const RunViewInner = createReactiveComponent(function RunViewInner() {
     const { presenter } = useFeature(RunViewFeature);
     const { goToRoute } = useRouter();
-    const { route } = useRoute(Routes.Run);
+    const { route, setRouteParams } = useRoute(Routes.Run);
     const websockets = useWebsockets();
     const toast = useToast();
 
@@ -135,6 +135,47 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
             presenter.init(runId);
         }
     }, [presenter, runId]);
+
+    /*
+     * The route drives the composed-pages panel, in this one direction only.
+     *
+     * Every way of opening the panel — the button, the Compare button inside it, a pasted link, the
+     * back button, a reload — ends up writing the route, and this brings the view model in line. One
+     * writer and one reader, so the URL and what is on screen cannot disagree; a comparison that
+     * says one page in the address bar and shows another would defeat the reason this is linkable.
+     */
+    const composedOpen = Boolean(route?.params.composed);
+    const comparedPage = route?.params.page ?? null;
+
+    useEffect(() => {
+        presenter.openComposed(composedOpen, comparedPage);
+    }, [presenter, composedOpen, comparedPage]);
+
+    /*
+     * `composed` is removed rather than set to false. The route layer coerces params, and
+     * `z.coerce.boolean()` reads the string "false" as `true` because a non-empty string is truthy —
+     * so writing `false` would leave the panel stuck open. `RouteUrl` drops undefined values from the
+     * query string, which also keeps a closed panel out of the URL entirely.
+     */
+    const openComposedRoute = (open: boolean, page: string | null) => {
+        // Writing the route pushes a history entry, so a write that changes nothing would add a step
+        // the back button has to walk through for no reason.
+        if (open === composedOpen && (open ? page : null) === comparedPage) {
+            return;
+        }
+        setRouteParams((params: Record<string, unknown>) => ({
+            ...params,
+            composed: open ? true : undefined,
+            page: open && page ? page : undefined
+        }));
+    };
+
+    /*
+     * Opening another panel clears these. Overrides and Token usage keep no route state of their own
+     * — they are a developer's own session, not something anyone links to — but leaving `composed` in
+     * the URL while a different panel is on screen would make the link lie about what it opens.
+     */
+    const closeComposedRoute = () => openComposedRoute(false, null);
 
     useEffect(() => {
         const onEvent = (event: StageEvent) => {
@@ -254,19 +295,25 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                         variant={vm.showOverrides ? "primary" : "secondary"}
                         size="sm"
                         text="Overrides"
-                        onClick={() => presenter.toggleOverrides()}
+                        onClick={() => {
+                            presenter.toggleOverrides();
+                            closeComposedRoute();
+                        }}
                     />
                     <Button
                         variant={vm.showTokens ? "primary" : "secondary"}
                         size="sm"
                         text="Token usage"
-                        onClick={() => presenter.toggleTokens()}
+                        onClick={() => {
+                            presenter.toggleTokens();
+                            closeComposedRoute();
+                        }}
                     />
                     <Button
                         variant={vm.showComposed ? "primary" : "secondary"}
                         size="sm"
                         text="Composed pages"
-                        onClick={() => presenter.toggleComposed()}
+                        onClick={() => openComposedRoute(!composedOpen, null)}
                     />
                 </div>
             </div>
@@ -305,7 +352,7 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                     ) : vm.showOverrides ? (
                         <OverridesPanel presenter={presenter} />
                     ) : vm.showComposed ? (
-                        <ComposedPagesPanel presenter={presenter} />
+                        <ComposedPagesPanel presenter={presenter} onCompare={openComposedRoute} />
                     ) : (
                         <div className="flex min-h-0 flex-1 flex-col">
                             <div className="flex flex-col gap-sm border-b border-neutral-dimmed px-md py-sm">

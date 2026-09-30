@@ -127,9 +127,13 @@ export interface IRunViewPresenter {
     toggleTokens(): void;
     /** Toggle the overrides panel; loads the job's overrides + this run's reattachments (W8.7). */
     toggleOverrides(): void;
-    toggleComposed(): void;
-    /** Open the side-by-side comparison for one composed page, or close it with null. */
-    comparePage(path: string | null): void;
+    /**
+     * Open or close the composed-pages panel, and with it one page's comparison.
+     *
+     * A setter, not a toggle, because the route owns this panel's state — see the implementation.
+     * The view calls it from an effect on the route params; nothing else should call it.
+     */
+    openComposed(open: boolean, comparedPath: string | null): void;
     /** Toggle a cluster's selection for a bulk correction (W8.3). */
     toggleClusterSelection(signature: string): void;
     /** Clear the cluster selection (W8.3). */

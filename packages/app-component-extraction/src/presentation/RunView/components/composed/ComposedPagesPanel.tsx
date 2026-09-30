@@ -16,6 +16,11 @@ import {
 
 interface Props {
     presenter: RunViewPresenter.Interface;
+    /**
+     * Write the panel's route state. Navigation goes through the URL rather than the view model, so
+     * a comparison can be linked — see `Routes.Run`.
+     */
+    onCompare: (open: boolean, page: string | null) => void;
 }
 
 const STATUS_TAG: Record<ComposedStatus, { content: string; variant: string }> = {
@@ -45,7 +50,8 @@ const pathOf = (url: string): string => {
  * absent or out-of-date composed half read as a migration failure.
  */
 export const ComposedPagesPanel = createReactiveComponent(function ComposedPagesPanel({
-    presenter
+    presenter,
+    onCompare
 }: Props) {
     const { vm } = presenter;
     const runId = vm.run?.id ?? "";
@@ -85,10 +91,21 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                 page={compared}
                 assembled={assembledByUrl.get(compared.sourceUrl)}
                 state={state}
-                onBack={() => presenter.comparePage(null)}
+                onBack={() => onCompare(true, null)}
             />
         );
     }
+
+    /*
+     * A link asking for a page this composition does not have.
+     *
+     * The whole point of putting the page in the URL is that the link travels, and a link that has
+     * travelled can outlive the composition it was made against — the run gets recomposed, paths
+     * change, a page stops being produced. Falling through to the list silently would leave whoever
+     * followed the link thinking they were looking at what they were sent, so the list says what was
+     * asked for and that it is not here.
+     */
+    const unresolved = vm.comparedPath && !compared ? vm.comparedPath : null;
 
     return (
         <div className="flex h-full min-h-0 flex-col">
@@ -101,6 +118,23 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                     composed {new Date(map.composedOn).toLocaleString()}
                 </Text>
             </div>
+
+            {unresolved ? (
+                <div className="flex flex-col gap-xxs border-b border-warning bg-warning-subtle px-md py-sm">
+                    <div className="flex items-center gap-sm">
+                        <Tag variant="warning" content="link no longer resolves" />
+                        <Text size="sm" className="font-medium">
+                            This link asked for <span className="font-mono">{unresolved}</span>,
+                            which is not a page of this run&apos;s composition.
+                        </Text>
+                    </div>
+                    <Text size="sm" className="text-neutral-strong">
+                        The run has most likely been composed again since the link was made, and
+                        that path is no longer produced. The composed pages of the current
+                        composition are below.
+                    </Text>
+                </div>
+            ) : null}
 
             <CaptureBanner state={state} />
 
@@ -166,7 +200,7 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                                         variant="secondary"
                                         size="sm"
                                         text="Compare"
-                                        onClick={() => presenter.comparePage(page.path)}
+                                        onClick={() => onCompare(true, page.path)}
                                     />
                                     <Button
                                         variant="tertiary"

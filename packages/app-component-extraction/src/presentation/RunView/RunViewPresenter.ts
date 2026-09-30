@@ -534,27 +534,29 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
      * The composed-pages panel. Composition runs outside the nine stages and has no ledger entry, so
      * it is a panel beside the stage views rather than a tenth stage — the same place Overrides and
      * Token usage sit, for the same reason.
+     *
+     * Unlike those two, this panel's open state lives in the route, so this is a SETTER rather than a
+     * toggle: the URL decides, and the view calls this to bring the view model in line with it. A
+     * toggle here would make the route and the view model two sources of truth that drift — the URL
+     * saying one page and the panel showing another, which for a view whose purpose is linking to a
+     * specific page would be the one defect that matters. Idempotent, because the effect that calls
+     * it re-runs whenever the route changes for any reason.
      */
-    toggleComposed(): void {
-        const opening = !this.vm.showComposed;
+    openComposed(open: boolean, comparedPath: string | null): void {
+        if (this.vm.showComposed === open && this.vm.comparedPath === comparedPath) {
+            return;
+        }
         runInAction(() => {
-            this.vm.showComposed = opening;
-            this.vm.showTokens = false;
-            this.vm.showOverrides = false;
-            // Closing drops the open comparison: reopening the panel should start at the list.
-            if (!opening) {
-                this.vm.comparedPath = null;
+            this.vm.showComposed = open;
+            this.vm.comparedPath = open ? comparedPath : null;
+            if (open) {
+                this.vm.showTokens = false;
+                this.vm.showOverrides = false;
             }
         });
-        if (opening && this.vm.run && this.vm.pageMap === null) {
+        if (open && this.vm.run && this.vm.pageMap === null) {
             void this.loadPageMap(this.vm.run);
         }
-    }
-
-    comparePage(path: string | null): void {
-        runInAction(() => {
-            this.vm.comparedPath = path;
-        });
     }
 
     /** The run's composed pages. Absent is a normal answer — most runs are never composed. */
