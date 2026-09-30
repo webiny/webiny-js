@@ -4,7 +4,7 @@ import { Changelog } from "./Changelog";
 import { GithubRelease } from "./GithubRelease";
 import { versionPackages } from "./versionPackages";
 import { publishPackages } from "./publishPackages";
-import { fetchNpmDistTags } from "./fetchNpmVersion";
+import { fetchNpmDistTags, fetchNpmVersions } from "./fetchNpmVersion";
 
 export class Release {
     // Whether `--version` may contain a prerelease suffix (e.g. `6.4.0-beta.1`).
@@ -58,9 +58,11 @@ export class Release {
     }
 
     async execute() {
+        // Version first: a release type may derive its dist-tag from the version it computes.
+        const version = await this.computeVersion();
+
         this.validateConfig();
 
-        const version = await this.computeVersion();
         this.logger.info("Computed version: %s", version);
         this.logger.info("Dist-tag: %s", this.distTag);
 
@@ -135,6 +137,10 @@ export class Release {
 
     protected async fetchDistTags(): Promise<Record<string, string>> {
         return fetchNpmDistTags();
+    }
+
+    protected async fetchPublishedVersions(): Promise<string[]> {
+        return fetchNpmVersions();
     }
 
     private async createRelease(version: string) {
