@@ -5,7 +5,11 @@
 > **Severity:** high — 89 published pages across 38 paths; 18 paths are claimed by more than one, and
 > `/` by eleven. Which page a URL serves is unspecified, so the same URL can render a different
 > composition's components with no edit in between.
-> **Status:** open. Distinct from [four sites' home pages all compose to
+> **Status:** fixed. Composition now unpublishes the pages it replaces, and `GetPageByPath` sorts by
+> `lastPublishedOn_DESC` so one path is answered by one page deterministically. After recomposing all
+> four sites, 28 of 31 paths serve their own composition; the 3 that do not are all `/`, which is the
+> separate cross-site collision below. The harness preflight now checks the page id rather than the
+> title, which is the check that can see this. Distinct from [four sites' home pages all compose to
 > `/`](./home-pages-from-different-sites-collide.md), which is `toPageIdentity` folding the host —
 > one path derived from many sources. This is one source deriving one path many times.
 

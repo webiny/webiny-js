@@ -22,6 +22,7 @@ import type { Run } from "@webiny/api-component-extraction/domain/types.js";
 import { GetRemoteComponentUseCase } from "@webiny/remote-components/api/features/getComponent/abstractions.js";
 import { CreatePageUseCase } from "@webiny/api-website-builder/features/pages/CreatePage/abstractions.js";
 import { PublishPageUseCase } from "@webiny/api-website-builder/features/pages/PublishPage/abstractions.js";
+import { UnpublishPageUseCase } from "@webiny/api-website-builder/features/pages/UnpublishPage/abstractions.js";
 import { UpdatePageUseCase } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";
 import { ROOT_FOLDER } from "@webiny/api-website-builder/constants.js";
 import type { ComponentManifest } from "@webiny/website-builder-sdk";
@@ -181,6 +182,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         private blobs: BlobStore.Interface,
         private createPage: CreatePageUseCase.Interface,
         private publishPage: PublishPageUseCase.Interface,
+        private unpublishPage: UnpublishPageUseCase.Interface,
         private updatePage: UpdatePageUseCase.Interface,
         private pageMaps: PageMapStore.Interface,
         private getComponent: GetRemoteComponentUseCase.Interface,
@@ -442,6 +444,44 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
          */
         const previous = await this.pageMaps.get(runId);
         const composeVersion = (previous.isOk() ? (previous.value?.composeVersion ?? 0) : 0) + 1;
+
+        /*
+         * Retire the pages this composition replaces.
+         *
+         * Composing produces a whole new set of pages, so without this the previous composition's
+         * pages stay published at the same paths and the path stops identifying one page. Measured
+         * before this existed: 89 published pages over 38 paths, 18 paths with more than one
+         * claimant, and one page serving a different composition's components from one load to the
+         * next.
+         *
+         * After publishing, not before, so a path is never briefly served by nothing. That leaves a
+         * window of seconds where both are live and either could answer — shorter than the window
+         * this replaces, which was forever.
+         *
+         * Unpublished rather than deleted. It is enough — a path resolves over published pages only
+         * — and it is reversible, which matters for a step that runs against whatever a previous
+         * composition produced. A failure here is recorded and does not fail the composition: the
+         * new pages are already live, and a stale page left published is a worse outcome to report
+         * than to cause.
+         */
+        const retired: string[] = [];
+        if (previous.isOk() && previous.value) {
+            const replaced = new Set(created.map(page => page.entry.pageId));
+            for (const page of previous.value.pages) {
+                if (!page.pageId || replaced.has(page.pageId)) {
+                    continue;
+                }
+                const unpublished = await this.unpublishPage.execute({ id: page.pageId });
+                if (unpublished.isFail()) {
+                    failed.push({
+                        sourceUrl: page.sourceUrl,
+                        reason: `Composed again, but the previous composition's page at ${page.path} could not be unpublished and still answers that path: ${unpublished.error.message}`
+                    });
+                    continue;
+                }
+                retired.push(page.pageId);
+            }
+        }
 
         const stored = await this.pageMaps.set({
             runId,
@@ -982,6 +1022,7 @@ export const ComposePagesService = Abstraction.createImplementation({
         BlobStore,
         CreatePageUseCase,
         PublishPageUseCase,
+        UnpublishPageUseCase,
         UpdatePageUseCase,
         PageMapStore,
         GetRemoteComponentUseCase,
