@@ -5,6 +5,7 @@ interface ShowDialogParams {
     folder: FolderDto;
     targetFolder: FolderDto;
     onAccept: (folder: FolderDto, targetFolder: FolderDto) => Promise<void>;
+    onClose?: () => void;
 }
 
 interface UseConfirmMoveFolderDialogResponse {
@@ -14,14 +15,15 @@ interface UseConfirmMoveFolderDialogResponse {
 export const useConfirmMoveFolderDialog = (): UseConfirmMoveFolderDialogResponse => {
     const dialogs = useDialogs();
 
-    const showDialog = ({ folder, targetFolder, onAccept }: ShowDialogParams) => {
+    const showDialog = ({ folder, targetFolder, onAccept, onClose }: ShowDialogParams) => {
         dialogs.showDialog({
             title: "Move folder",
             content: `You are about to move the folder "${folder.title}" into "${targetFolder.title}"! Are you sure you want to continue?`,
             acceptLabel: "Move folder",
             cancelLabel: "Cancel",
             loadingLabel: "Moving folder...",
-            onAccept: () => onAccept(folder, targetFolder)
+            onAccept: () => onAccept(folder, targetFolder),
+            onClose
         });
     };
 
