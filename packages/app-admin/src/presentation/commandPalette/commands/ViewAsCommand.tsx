@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Command as CommandPrimitive } from "cmdk";
 import { useCommandState } from "cmdk";
-import { observer } from "mobx-react-lite";
+import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 import { useFeature } from "@webiny/app";
 import { Alert } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
@@ -194,17 +194,17 @@ const RoleRow = ({
                     <Text as="div" size="md" className="truncate font-medium text-neutral-primary">
                         {option.label}
                     </Text>
-                    {option.isCurrent ? (
+                    {option.isCurrent && (
                         <span className="shrink-0 rounded-sm bg-neutral-dimmed px-xs text-xs font-semibold text-neutral-strong">
                             {`Your ${option.type}`}
                         </span>
-                    ) : null}
+                    )}
                 </div>
-                {option.description ? (
+                {option.description && (
                     <Text as="div" size="sm" className="truncate text-neutral-muted">
                         {option.description}
                     </Text>
-                ) : null}
+                )}
             </div>
             {selected ? <EnterPill verb={"View as"} /> : null}
         </CommandPrimitive.Item>
@@ -256,7 +256,7 @@ const Chip = ({
                 tone
             )}
         >
-            {icon ? (
+            {icon && (
                 <Icon
                     icon={icon}
                     size={"xs"}
@@ -264,7 +264,7 @@ const Chip = ({
                     className={warning ? "fill-warning" : undefined}
                     label={""}
                 />
-            ) : null}
+            )}
             {label}
         </span>
     );
@@ -361,7 +361,7 @@ const Footer = () => (
  * Lives in the palette rather than in the header. Previewing a role is something you reach for
  * while setting up permissions, not on a normal day, so it does not earn permanent chrome.
  */
-const ViewAsDetailView = observer(({ onBack }: Command.DetailProps) => {
+const ViewAsDetailView = createReactiveComponent(({ onBack }: Command.DetailProps) => {
     const { presenter } = useFeature(AssumedRolePresenterFeature);
     const { permissionRenderers } = useAdminConfig();
     const vm = presenter.vm;
@@ -436,55 +436,56 @@ const ViewAsDetailView = observer(({ onBack }: Command.DetailProps) => {
                 className="p-xs-plus"
                 style={{ flex: 1, minHeight: 0, overflowY: "auto" }}
             >
-                {!canPick ? (
+                {!canPick && (
                     <div className="p-sm">
                         <Alert type={"info"} variant={"subtle"}>
                             {"Previewing a role needs full access."}
                         </Alert>
                     </div>
-                ) : null}
+                )}
 
-                {vm.error ? (
+                {vm.error && (
                     <div className="p-sm">
                         <Alert type={"danger"} variant={"subtle"}>
                             {vm.error}
                         </Alert>
                     </div>
-                ) : null}
+                )}
 
-                {vm.loading || vm.switching ? (
-                    <CommandPrimitive.Loading className="px-sm py-xs text-md text-neutral-muted">
-                        {vm.switching ? "Switching…" : "Loading roles…"}
-                    </CommandPrimitive.Loading>
-                ) : null}
+                {vm.loading ||
+                    (vm.switching && (
+                        <CommandPrimitive.Loading className="px-sm py-xs text-md text-neutral-muted">
+                            {vm.switching ? "Switching…" : "Loading roles…"}
+                        </CommandPrimitive.Loading>
+                    ))}
 
-                {canPick && !vm.loading ? (
+                {canPick && !vm.loading && (
                     <CommandPrimitive.Empty>
                         <NoMatch />
                     </CommandPrimitive.Empty>
-                ) : null}
+                )}
 
-                {vm.assumedRole ? (
+                {vm.assumedRole && (
                     <CommandPrimitive.Group heading={<GroupHeading title={"Preview"} />}>
                         <ExitRow name={vm.assumedRole.name} onExit={exit} />
                     </CommandPrimitive.Group>
-                ) : null}
+                )}
 
-                {vm.roleOptions.length > 0 ? (
+                {vm.roleOptions.length > 0 && (
                     <CommandPrimitive.Group heading={<GroupHeading title={"Roles"} />}>
                         {vm.roleOptions.map(option => (
                             <RoleRow key={option.value} option={option} apps={apps} onPick={pick} />
                         ))}
                     </CommandPrimitive.Group>
-                ) : null}
+                )}
 
-                {vm.teamOptions.length > 0 ? (
+                {vm.teamOptions.length > 0 && (
                     <CommandPrimitive.Group heading={<GroupHeading title={"Teams"} />}>
                         {vm.teamOptions.map(option => (
                             <RoleRow key={option.value} option={option} apps={apps} onPick={pick} />
                         ))}
                     </CommandPrimitive.Group>
-                ) : null}
+                )}
             </CommandPrimitive.List>
 
             <CanAccess options={options} apps={apps} />

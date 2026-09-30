@@ -1,5 +1,5 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
+import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 import { useFeature } from "@webiny/app";
 import { Alert } from "@webiny/admin-ui";
 import { AssumedRoleBanner as BaseAssumedRoleBanner } from "~/base/ui/AssumedRoleBanner.js";
@@ -12,7 +12,7 @@ import { AssumedRolePresenterFeature } from "../feature.js";
  * Rendered outside every permission gate, because the previewed role usually cannot see the menu
  * the preview was started from. Leaving it behind a gate would strand the user.
  */
-const AssumedRoleBannerView = observer(() => {
+const AssumedRoleBannerView = createReactiveComponent(() => {
     const { presenter } = useFeature(AssumedRolePresenterFeature);
     const vm = presenter.vm;
 

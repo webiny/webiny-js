@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { observer } from "mobx-react-lite";
+import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 import { useFeature } from "@webiny/app";
 import { DropdownMenu } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
@@ -41,7 +41,7 @@ const renderGroup = (
  * The options are already loaded by the time this can be opened: the presenter preloads them on
  * page load, but only when the page loaded into a preview.
  */
-const AssumedRoleSelectorView = observer(() => {
+const AssumedRoleSelectorView = createReactiveComponent(() => {
     const { presenter } = useFeature(AssumedRolePresenterFeature);
     const toast = useToast();
     const vm = presenter.vm;

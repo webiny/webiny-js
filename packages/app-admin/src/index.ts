@@ -23,7 +23,7 @@ export * from "./base/ui/CenteredView.js";
 export * from "./base/ui/Dashboard.js";
 export * from "./base/ui/NotFound.js";
 
-export { observer as createReactiveComponent } from "mobx-react-lite";
+export { createReactiveComponent } from "./presentation/createReactiveComponent.js";
 
 // Base admin app
 export { Admin } from "./base/Admin.js";

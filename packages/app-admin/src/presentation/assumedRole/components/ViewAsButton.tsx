@@ -2,7 +2,7 @@ import React from "react";
 import { useFeature } from "@webiny/app";
 import { Button } from "@webiny/admin-ui";
 import { ReactComponent as VisibilityIcon } from "@webiny/icons/visibility.svg";
-import { createReactiveComponent } from "~/index.js";
+import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 import { useSnackbar } from "~/hooks/useSnackbar.js";
 import { AssumedRolePresenterFeature } from "../feature.js";
 import type { AssumedRolePresenter } from "../abstractions.js";
