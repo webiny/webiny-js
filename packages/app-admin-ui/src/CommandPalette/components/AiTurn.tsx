@@ -5,27 +5,9 @@ import type { AiTurnViewModel } from "@webiny/app-admin";
 import { ToolChip } from "./ToolChip.js";
 import { AnswerSkeleton } from "./AnswerSkeleton.js";
 import { ApprovalPlan } from "./ApprovalPlan.js";
-
-/**
- * Settled only once the tool actually returned or threw. A call awaiting approval still arrives as a
- * `tool-call`, so keying off position would show a write as completed when it has only been proposed.
- *
- * Outcomes are counted together, because a tool called twice can succeed once and fail once and the
- * chips are told apart only by their order.
- */
-const toolState = (turn: AiTurnViewModel, index: number): "running" | "done" | "failed" => {
-    const name = turn.tools[index];
-    const callsSoFar = turn.tools.slice(0, index + 1).filter(tool => tool === name).length;
-    const resultsSoFar = turn.completed.filter(tool => tool === name).length;
-    const failuresSoFar = turn.failed.filter(tool => tool === name).length;
-
-    if (resultsSoFar + failuresSoFar < callsSoFar) {
-        return "running";
-    }
-
-    // The failures land last, so a call beyond the successful ones is one of them.
-    return callsSoFar > resultsSoFar ? "failed" : "done";
-};
+import { ToolTrace } from "./ToolTrace.js";
+import { UserInitials } from "./UserInitials.js";
+import { toolState } from "./toolState.js";
 
 /**
  * One of four things fills the answer slot, in priority order: the failure, the skeleton, the answer,
@@ -40,7 +22,7 @@ const toolState = (turn: AiTurnViewModel, index: number): "running" | "done" | "
 const renderAnswer = (turn: AiTurnViewModel) => {
     if (turn.error) {
         return (
-            <Text as="div" size="sm" className="text-destructive-primary">
+            <Text as="div" size="md" className="text-destructive-primary">
                 {turn.error}
             </Text>
         );
@@ -52,7 +34,7 @@ const renderAnswer = (turn: AiTurnViewModel) => {
 
     if (turn.text) {
         return (
-            <Markdown size="sm" className="text-neutral-strong">
+            <Markdown size="md" className="mb-sm text-neutral-strong">
                 {turn.text}
             </Markdown>
         );
@@ -63,7 +45,7 @@ const renderAnswer = (turn: AiTurnViewModel) => {
     }
 
     return (
-        <Text as="div" size="sm" className="text-neutral-muted">
+        <Text as="div" size="md" className="text-neutral-muted">
             No answer returned.
         </Text>
     );
@@ -71,30 +53,35 @@ const renderAnswer = (turn: AiTurnViewModel) => {
 
 export interface AiTurnProps {
     turn: AiTurnViewModel;
-    /** Initials of the signed-in user, shown against their question. */
-    initials: string;
     busy: boolean;
     onApprove: () => void;
     onReject: () => void;
 }
 
-export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProps) => {
+/**
+ * One question and what came back.
+ *
+ * While the turn is working, its tool calls show as live chips above the answer, so there is
+ * something moving before the first token. Once it settles they collapse into a quiet "Ran" line
+ * under the answer: still there to check, no longer competing with it. A turn waiting on approval
+ * shows neither, because the plan card is the thing to read.
+ */
+export const AiTurn = ({ turn, busy, onApprove, onReject }: AiTurnProps) => {
+    const awaitingApproval = turn.pendingApprovals.length > 0;
+    const working = !turn.settled && !awaitingApproval;
+
     return (
-        <div className="mb-md">
+        <div className="border-b border-neutral-subtle px-xxs pb-md pt-sm-plus last:border-b-0">
             <div className="flex items-start gap-sm px-sm pb-sm">
-                <span className="mt-xxs grid size-md shrink-0 place-items-center rounded-xl bg-neutral-dimmed">
-                    <Text size="sm" className="text-xs font-bold text-neutral-strong">
-                        {initials}
-                    </Text>
-                </span>
+                <UserInitials />
                 <Text as="div" size="md" className="font-semibold text-neutral-primary">
                     {turn.question}
                 </Text>
             </div>
 
             <div className="px-sm">
-                {turn.tools.length > 0 ? (
-                    <div className="mb-sm flex flex-wrap items-center gap-xs">
+                {working && turn.tools.length > 0 ? (
+                    <div className="mb-sm-plus flex flex-wrap items-center gap-xs">
                         {turn.tools.map((name, index) => (
                             <ToolChip
                                 key={`${name}-${index}`}
@@ -107,7 +94,7 @@ export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProp
 
                 {renderAnswer(turn)}
 
-                {turn.pendingApprovals.length > 0 ? (
+                {awaitingApproval ? (
                     <ApprovalPlan
                         approvals={turn.pendingApprovals}
                         busy={busy}
@@ -115,6 +102,8 @@ export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProp
                         onReject={onReject}
                     />
                 ) : null}
+
+                {turn.settled && !awaitingApproval ? <ToolTrace turn={turn} /> : null}
             </div>
         </div>
     );

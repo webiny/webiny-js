@@ -31,7 +31,9 @@ export const createAiMode = (presenter: AdminAssistantPresenter.Interface): Pale
             iconColor: "accent" as const,
             iconLabel: "Ask AI",
             badge: <AiModeBadge />,
-            placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
+            placeholder: started
+                ? "Ask a follow-up…"
+                : "Ask about your content, or describe an action…",
             footerLabel: "Webiny AI",
             hints: HINTS,
             tall: true
@@ -45,16 +47,18 @@ export const createAiMode = (presenter: AdminAssistantPresenter.Interface): Pale
             return <AiSuggestions onAsk={question => presenter.ask(question)} />;
         }
 
-        return turns.map((turn, index) => (
-            <AiTurn
-                key={index}
-                turn={turn}
-                initials="You"
-                busy={busy}
-                onApprove={() => presenter.decide(index, true)}
-                onReject={() => presenter.decide(index, false)}
-            />
-        ));
+        // Newest first, so the latest answer sits right under the input it was asked from.
+        return turns
+            .map((turn, index) => (
+                <AiTurn
+                    key={index}
+                    turn={turn}
+                    busy={busy}
+                    onApprove={() => presenter.decide(index, true)}
+                    onReject={() => presenter.decide(index, false)}
+                />
+            ))
+            .reverse();
     },
 
     // A seed only arrives from the no-results "Ask AI" button; see `PaletteMode.enter`.
@@ -71,6 +75,17 @@ export const createAiMode = (presenter: AdminAssistantPresenter.Interface): Pale
     handleKey(event: React.KeyboardEvent, context: PaletteModeKeyContext) {
         if (event.key === "Enter") {
             event.preventDefault();
+            /*
+             * Enter on an empty input runs the plan the newest turn is waiting on, which is what the
+             * "Run ↵" button advertises. Only the newest: an older plan is off-screen, and running
+             * something the user cannot see is exactly what the approval gate is for.
+             */
+            const { turns, busy } = presenter.vm;
+            const newest = turns.length - 1;
+            if (context.query.trim() === "" && !busy && turns[newest]?.pendingApprovals.length) {
+                presenter.decide(newest, true);
+                return true;
+            }
             presenter.ask(context.query);
             context.setQuery("");
             return true;
@@ -86,8 +101,8 @@ export const createAiMode = (presenter: AdminAssistantPresenter.Interface): Pale
         return false;
     },
 
-    // Answers are long enough to push earlier turns off-screen, so keep the newest one visible.
+    // The newest turn is on top and grows as it streams, so keep the top in view.
     afterRender(container: HTMLElement) {
-        container.scrollTo({ top: container.scrollHeight });
+        container.scrollTo({ top: 0 });
     }
 });

@@ -19,6 +19,7 @@ const emptyTurn = (question: string): Turn => ({
     tools: [],
     completed: [],
     failed: [],
+    rejected: [],
     running: false,
     pendingApprovals: [],
     messages: [],
@@ -52,6 +53,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
                 tools: turn.tools,
                 completed: turn.completed,
                 failed: turn.failed,
+                rejected: turn.rejected,
                 running: turn.running,
                 pendingApprovals: turn.pendingApprovals,
                 settled: turn.settled,
@@ -98,7 +100,14 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         ];
 
         // Clear the block immediately so the plan cannot be submitted twice.
-        this.patch(turnIndex, { pendingApprovals: [], settled: false, running: true });
+        this.patch(turnIndex, {
+            pendingApprovals: [],
+            rejected: approved
+                ? turn.rejected
+                : [...turn.rejected, ...turn.pendingApprovals.map(approval => approval.toolName)],
+            settled: false,
+            running: true
+        });
 
         void this.run(turnIndex, { messages, approvals }, true);
     }
@@ -149,14 +158,28 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             const failed: string[] = existing ? [...existing.failed] : [];
             const priorMessages: AdminAssistantMessage[] = existing ? [...existing.messages] : [];
 
+            /*
+             * Text arrives from every step of the agent loop into one string. A model that says "I'll
+             * look up the content models first." before its tool calls and then answers after them
+             * would otherwise read as "...first.None of the products...", so a tool call between two
+             * pieces of text starts a new paragraph. A resumed turn counts as one too: the approved
+             * call ran between the text before the pause and whatever comes after it.
+             */
+            let steppedSinceText = resuming;
+
             for await (const event of this.gateway.stream(request, controller.signal)) {
                 if (event.type === "text") {
+                    if (steppedSinceText && text) {
+                        text += "\n\n";
+                    }
+                    steppedSinceText = false;
                     text += event.text;
                     this.patch(index, { text, running: false });
                     continue;
                 }
 
                 if (event.type === "tool-call") {
+                    steppedSinceText = true;
                     tools.push(event.name);
                     this.patch(index, { tools: [...tools], running: true });
                     continue;
