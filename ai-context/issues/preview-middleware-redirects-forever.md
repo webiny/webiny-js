@@ -5,8 +5,10 @@
 > **Severity:** high — every preview/editing request loops until the browser gives up, so the Website
 > Builder editor's canvas never loads. Not specific to migrated pages; any page previewed through
 > this middleware does it.
-> **Status:** open. Diagnosed, not fixed — the fix touches the website app, which is outside this
-> worktree.
+> **Status:** fixed. The package middleware in `93f`-series commit below; the demo website app's
+> copy changed in its own repo and left uncommitted there, as that repo is outside this worktree.
+> The mixed-content wall recorded at the end is NOT fixed and is the reason a canvas may still not
+> appear from the deployed admin.
 
 ## What happens
 
@@ -69,6 +71,25 @@ Identical. Middleware cannot see draft mode whether the cookie is there or not, 
 the loop unconditional rather than intermittent.
 
 Next 15.5.14; the package declares `"next": ">=15"`.
+
+## Verified after the fix
+
+Against the running app, all four paths through the middleware:
+
+```
+editing flag, no cookie      307 -> /api/preview   hands off once, no longer loops
+editing flag, with cookie    200                   passes through
+full chain, cookie store     200 after 2 redirects  "Apply Now | Park City Place"
+cookie, no editing flag      307 + cookie cleared, settles at 200 after 1 redirect
+```
+
+The gate still gates: a preview request without the cookie is still sent to the draft-mode route, so
+the fix did not simply remove the check.
+
+Two of the measurements here were artefacts before they were right, both from curl rather than the
+code. curl will not store a `Secure` cookie over `http` where Chrome will on localhost, so the first
+"no cookies at all" reading was wrong; and forcing `-H Cookie` re-sends it on every redirect, which
+made the exit-preview branch look like it looped when a real cookie store settles it in one hop.
 
 ## The fix
 

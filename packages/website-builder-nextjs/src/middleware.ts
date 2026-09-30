@@ -15,6 +15,20 @@
  */
 
 const DEFAULT_PREVIEW_ROUTE = "/api/preview";
+
+/**
+ * The cookie Next.js carries draft mode in.
+ *
+ * Read directly, because `draftMode()` does not report enabled state in middleware — it is for
+ * Server Components and Route Handlers. Asking it here returns `isEnabled: false` whether the cookie
+ * is present or not, which made the hand-off below unconditional: every preview request redirected
+ * to the draft-mode route, which enabled draft mode and redirected back, forever. Measured at 50
+ * redirects before the client gave up.
+ *
+ * The name is Next's internal one and is the price of doing this in middleware at all. If a future
+ * Next supports `draftMode()` here, this goes back to asking.
+ */
+const DRAFT_MODE_COOKIE = "__prerender_bypass";
 const DEFAULT_VISITOR_COOKIE = "wb_ab_vid";
 const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 
@@ -43,8 +57,6 @@ export function createWebsiteBuilderMiddleware(options: WebsiteBuilderMiddleware
     return async function middleware(request: MiddlewareRequest) {
         // @ts-ignore Peer dependency, resolved from the host app.
         const { NextResponse } = await import("next/server");
-        // @ts-ignore Peer dependency, resolved from the host app.
-        const { draftMode } = await import("next/headers");
 
         const { searchParams } = request.nextUrl;
         const previewRequested =
@@ -54,10 +66,10 @@ export function createWebsiteBuilderMiddleware(options: WebsiteBuilderMiddleware
         const requestHeaders = new Headers(request.headers);
         requestHeaders.set("X-Tenant", searchParams.get("wb.tenant") ?? "root");
 
-        const previewMode = await draftMode();
+        const previewEnabled = Boolean(request.cookies.get(DRAFT_MODE_COOKIE));
 
         if (previewRequested) {
-            if (previewMode.isEnabled) {
+            if (previewEnabled) {
                 // Already in draft mode — pass the preview params through and disable caching.
                 const response = NextResponse.next({ request: { headers: requestHeaders } });
                 response.headers.set("X-Preview-Params", searchParams.toString());
@@ -75,10 +87,18 @@ export function createWebsiteBuilderMiddleware(options: WebsiteBuilderMiddleware
             return NextResponse.redirect(url);
         }
 
-        if (previewMode.isEnabled) {
-            // Preview flag gone but draft mode still on — exit preview.
-            previewMode.disable();
-            return NextResponse.redirect(request.url);
+        if (previewEnabled) {
+            /*
+             * Preview flag gone but draft mode still on — exit preview.
+             *
+             * By clearing the cookie on the response rather than calling `previewMode.disable()`,
+             * which is unavailable here for the same reason `isEnabled` is. Clearing it before the
+             * redirect matters: the redirected request must not arrive still carrying it, or this
+             * branch fires again and becomes its own loop.
+             */
+            const response = NextResponse.redirect(request.url);
+            response.cookies.delete(DRAFT_MODE_COOKIE);
+            return response;
         }
 
         const response = NextResponse.next({ request: { headers: requestHeaders } });
