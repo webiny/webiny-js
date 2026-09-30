@@ -24,7 +24,7 @@ export const TemplateListItem = ({ template, onSelect }: TemplateItemProps) => {
                     {template.label}
                 </Text>
                 {template.description && (
-                    <Text size={"sm"} as={"div"} className={"text-neutral-muted truncate"}>
+                    <Text size={"sm"} as={"div"} className={"text-neutral-muted"}>
                         {template.description}
                     </Text>
                 )}

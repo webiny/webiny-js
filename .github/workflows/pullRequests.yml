@@ -622,6 +622,25 @@ jobs:
       - name: Build packages
         run: yarn build --rebuild-dependents
         working-directory: ${{ github.base_ref }}
+      - name: Wait for OpenSearch
+        run: >-
+          set -euo pipefail
+
+
+          for i in $(seq 1 60); do
+            if curl -sf "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s" > /dev/null; then
+              echo "OpenSearch is up:"
+              curl -s http://localhost:9200
+              exit 0
+            fi
+            sleep 5
+          done
+
+
+          echo "::error::OpenSearch did not answer on localhost:9200 within 5
+          minutes."
+
+          exit 1
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}

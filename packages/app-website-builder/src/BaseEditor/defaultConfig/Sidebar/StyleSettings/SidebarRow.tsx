@@ -35,7 +35,10 @@ export const SidebarRow = ({ label, tooltip, children }: SidebarRowProps) => {
                     <div className={"w-xs shrink-0"} />
                 )}
             </div>
-            <div className={"flex-1"}>{children}</div>
+            {/* min-w-0 lets the cell shrink below its content's intrinsic width, so long
+                unbroken values (e.g. a hashed file name) truncate instead of widening the
+                row and pushing controls past the sidebar edge. */}
+            <div className={"flex-1 min-w-0"}>{children}</div>
         </div>
     );
 };

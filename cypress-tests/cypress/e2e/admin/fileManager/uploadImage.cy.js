@@ -178,7 +178,7 @@ context("File Manager View - CRUD", () => {
 
         cy.findByText("File details").should("be.visible");
 
-        const tagName = `tag-${Cypress.env("TEST_RUN_ID")}`;
+        const tagName = `tag-${Cypress.expose("TEST_RUN_ID")}`;
 
         // Edit file
         cy.findByTestId("fm.tags.add").click();

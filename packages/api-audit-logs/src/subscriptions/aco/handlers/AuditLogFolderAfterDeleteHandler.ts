@@ -10,14 +10,17 @@ class AuditLogFolderAfterDeleteHandlerImpl implements FolderAfterDeleteEventHand
     async handle(event: FolderAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { folder } = event.payload;
-            if (folder.type === "PbPage") {
-                const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_FOLDER.DELETE);
-                await createAuditLog("Folder deleted", folder, folder.id, this.context);
-            } else if (folder.type === "FmFile") {
+            if (folder.type === "FmFile") {
                 const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE_FOLDER.DELETE);
                 await createAuditLog("Folder deleted", folder, folder.id, this.context);
             } else if (folder.type.startsWith("cms:")) {
                 const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL_FOLDER.DELETE);
+                await createAuditLog("Folder deleted", folder, folder.id, this.context);
+            } else if (folder.type === "wb:page") {
+                const createAuditLog = getAuditConfig(AUDIT.WEBSITE_BUILDER.PAGE_FOLDER.DELETE);
+                await createAuditLog("Folder deleted", folder, folder.id, this.context);
+            } else if (folder.type === "wb:redirect") {
+                const createAuditLog = getAuditConfig(AUDIT.WEBSITE_BUILDER.REDIRECT_FOLDER.DELETE);
                 await createAuditLog("Folder deleted", folder, folder.id, this.context);
             }
         } catch (error) {

@@ -1,4 +1,3 @@
-import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { Context } from "~/types.js";
 import type {
     IMockDataManagerInput,
@@ -49,26 +48,31 @@ class MockDataManagerTask implements TaskDefinition.Interface<
             return params.controller.response.error(ex);
         }
     }
+
+    private async findModel() {
+        return (await this.context.cms.listModels()).find(m => m.modelId === CARS_MODEL_ID);
+    }
+
     async onError() {
-        await enableIndexing({
-            client: this.openSearchClient.use(),
-            model: {
-                modelId: CARS_MODEL_ID,
-                tenant: "root"
-            } as StorageCmsModel,
-            indexProvider: this.indexProvider
-        });
+        const model = await this.findModel();
+        if (model) {
+            await enableIndexing({
+                client: this.openSearchClient.use(),
+                model,
+                indexProvider: this.indexProvider
+            });
+        }
     }
 
     async onAbort() {
-        await enableIndexing({
-            client: this.openSearchClient.use(),
-            model: {
-                modelId: CARS_MODEL_ID,
-                tenant: "root"
-            } as StorageCmsModel,
-            indexProvider: this.indexProvider
-        });
+        const model = await this.findModel();
+        if (model) {
+            await enableIndexing({
+                client: this.openSearchClient.use(),
+                model,
+                indexProvider: this.indexProvider
+            });
+        }
     }
 }
 

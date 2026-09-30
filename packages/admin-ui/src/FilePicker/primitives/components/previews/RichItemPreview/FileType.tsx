@@ -14,6 +14,10 @@ import xlsxThumb from "../assets/xlsx.svg";
 
 type FileTypeProps = Pick<FileItemFormatted, "mimeType" | "name">;
 
+/**
+ * The stand-in for a file that cannot be shown as a picture: an icon of its format, falling back
+ * to a generic one for anything unrecognised.
+ */
 const FileType = ({ mimeType = "", name }: FileTypeProps) => {
     const getMimeTypeSrc = (mimeType: string) => {
         switch (mimeType) {
