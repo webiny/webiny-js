@@ -12242,6 +12242,7 @@ __metadata:
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.11"
   languageName: unknown
   linkType: soft
 

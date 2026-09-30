@@ -5,6 +5,7 @@ import AiPowerUpsSettingsGraphQLMapperImpl from "./graphql/AiPowerUpsSettingsGra
 import { AiPowerUpsSettingsCache } from "./features/shared/SettingsCache.js";
 import { GetSettingsFeature } from "./features/GetSettings/feature.js";
 import { UpdateSettingsFeature } from "./features/UpdateSettings/feature.js";
+import { AiPowerUpsPermissionsFeature } from "./features/AiPowerUpsPermissions/feature.js";
 import { WbGeneratePageContentFeature } from "./features/WbGeneratePageContent/feature.js";
 import { ProvidersFeature } from "./features/Providers/feature.js";
 import { ConnectionsFeature } from "./features/Connections/feature.js";
@@ -47,6 +48,7 @@ export const Extension = createFeature({
 
         container.register(AiPowerUpsSettingsCache).inSingletonScope();
 
+        AiPowerUpsPermissionsFeature.register(container);
         GetSettingsFeature.register(container);
         UpdateSettingsFeature.register(container);
         /*

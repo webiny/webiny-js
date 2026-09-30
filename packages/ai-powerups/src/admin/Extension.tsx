@@ -14,35 +14,52 @@ import { CmsEntryWizardExtension } from "~/admin/presentation/CmsEntryWizard/Ext
 import { CmsCompareEntryRevisions } from "~/admin/presentation/CmsCompareEntryRevisions/Extension.js";
 import { AiPowerUpsHeadlessFeatures } from "~/admin/features/feature.js";
 import { AiPromptFormFeature } from "~/admin/presentation/AiPromptFormFactory/feature.js";
+import { AiPowerUpsPermissionsFeature } from "~/admin/features/permissions/feature.js";
+import { HasPermission } from "~/admin/presentation/security/HasPermission.js";
+import { AI_POWER_UPS_PERMISSIONS_SCHEMA } from "~/admin/permissions.js";
+import { ReactComponent as AiPowerUpsIcon } from "@webiny/icons/auto_fix_high.svg";
 import { Routes } from "./routes.js";
 
-const { Menu, Route } = AdminConfig;
+const { Menu, Route, Security } = AdminConfig;
 
 const AiPowerUpsSettings = () => {
     const { getLink } = useRouter();
 
+    /*
+     * Only the settings screen is gated. The AI buttons elsewhere in the Admin stay available to
+     * everyone, since the features behind them are not what this permission controls.
+     */
     return (
         <AdminConfig>
-            <Route
-                route={Routes.Settings}
-                element={
-                    <AdminLayout title={"AI Power-Ups"}>
-                        <AdminConfig.Breadcrumb name={"ai-powerups"} label={"AI Power-Ups"} />
-                        <AiPowerUpsSettingsPage />
-                    </AdminLayout>
-                }
-            />
-            <Menu
-                parent={"settings.system"}
+            <HasPermission entity={"settings"}>
+                <Route
+                    route={Routes.Settings}
+                    element={
+                        <AdminLayout title={"AI Power-Ups"}>
+                            <AdminConfig.Breadcrumb name={"ai-powerups"} label={"AI Power-Ups"} />
+                            <AiPowerUpsSettingsPage />
+                        </AdminLayout>
+                    }
+                />
+                <Menu
+                    parent={"settings.system"}
+                    name={"aiPowerUps"}
+                    element={
+                        <Menu.Link
+                            text={"AI Power-Ups"}
+                            badge={<Menu.Link.Badge text="BETA" />}
+                            to={getLink(Routes.Settings)}
+                            pinnable={true}
+                        />
+                    }
+                />
+            </HasPermission>
+            <Security.Permissions
                 name={"aiPowerUps"}
-                element={
-                    <Menu.Link
-                        text={"AI Power-Ups"}
-                        badge={<Menu.Link.Badge text="BETA" />}
-                        to={getLink(Routes.Settings)}
-                        pinnable={true}
-                    />
-                }
+                title={"AI Power-Ups"}
+                description={"Manage AI Power-Ups settings."}
+                icon={<AiPowerUpsIcon />}
+                schema={AI_POWER_UPS_PERMISSIONS_SCHEMA}
             />
         </AdminConfig>
     );
@@ -66,6 +83,7 @@ export const Extension = () => {
             <RegisterFeature feature={AiPromptFormFeature} />
             <RegisterFeature feature={AiPowerUpsHeadlessFeatures} />
             <RegisterFeature feature={AiPowerUpsSettingsFeature} />
+            <RegisterFeature feature={AiPowerUpsPermissionsFeature} />
             <AiPowerUpsSettings />
             {/* Website Builder Extension */}
             <WbContentGeneration />
