@@ -1,24 +1,24 @@
 import WebinyError from "@webiny/error";
 import { FolderAfterDeleteEventHandler } from "@webiny/api-aco/features/folder/DeleteFolder/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogFolderAfterDeleteHandlerImpl implements FolderAfterDeleteEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: FolderAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { folder } = event.payload;
             if (folder.type === "PbPage") {
                 const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_FOLDER.DELETE);
-                await createAuditLog("Folder deleted", folder, folder.id, this.context);
+                await createAuditLog("Folder deleted", folder, folder.id, this.recorder);
             } else if (folder.type === "FmFile") {
                 const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE_FOLDER.DELETE);
-                await createAuditLog("Folder deleted", folder, folder.id, this.context);
+                await createAuditLog("Folder deleted", folder, folder.id, this.recorder);
             } else if (folder.type.startsWith("cms:")) {
                 const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL_FOLDER.DELETE);
-                await createAuditLog("Folder deleted", folder, folder.id, this.context);
+                await createAuditLog("Folder deleted", folder, folder.id, this.recorder);
             }
         } catch (error) {
             throw WebinyError.from(error, {
@@ -31,5 +31,5 @@ class AuditLogFolderAfterDeleteHandlerImpl implements FolderAfterDeleteEventHand
 
 export const AuditLogFolderAfterDeleteHandler = FolderAfterDeleteEventHandler.createImplementation({
     implementation: AuditLogFolderAfterDeleteHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [AuditLogRecorder]
 });

@@ -1,17 +1,17 @@
 import { WebinyError } from "@webiny/error";
 import { PageAfterDeleteEventHandler } from "@webiny/api-website-builder/features/pages/DeletePage/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AUDIT } from "~/config.js";
 
 class PageAfterDeleteHandlerImpl implements PageAfterDeleteEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: PageAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { page } = event.payload;
             const createAuditLog = getAuditConfig(AUDIT.WEBSITE_BUILDER.PAGE.DELETE);
-            await createAuditLog("Website Page Delete", page, page.id, this.context);
+            await createAuditLog("Website Page Delete", page, page.id, this.recorder);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing PageAfterDeleteEventHandler",
@@ -23,5 +23,5 @@ class PageAfterDeleteHandlerImpl implements PageAfterDeleteEventHandler.Interfac
 
 export const PageAfterDeleteAuditHandler = PageAfterDeleteEventHandler.createImplementation({
     implementation: PageAfterDeleteHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [AuditLogRecorder]
 });

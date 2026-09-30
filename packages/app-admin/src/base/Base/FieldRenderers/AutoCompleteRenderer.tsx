@@ -25,6 +25,8 @@ export const AutoCompleteRenderer = createFieldRenderer(({ field }) => {
                 field.onBlur();
             }}
             required={field.required}
+            // Clearing a required field can only leave it invalid, so it gets no reset action.
+            displayResetAction={!field.required}
             disabled={field.disabled}
             validation={field.validation}
             options={options.map(opt => ({

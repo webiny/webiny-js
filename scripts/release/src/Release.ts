@@ -4,7 +4,7 @@ import { Changelog } from "./Changelog.js";
 import { GithubRelease } from "./GithubRelease.js";
 import { versionPackages } from "./versionPackages.js";
 import { publishPackages } from "./publishPackages.js";
-import { fetchNpmDistTags } from "./fetchNpmVersion.js";
+import { fetchNpmDistTags, fetchNpmVersions } from "./fetchNpmVersion.js";
 
 export class Release {
     // Whether `--version` may contain a prerelease suffix (e.g. `6.4.0-beta.1`).
@@ -58,9 +58,11 @@ export class Release {
     }
 
     async execute() {
+        // Version first: a release type may derive its dist-tag from the version it computes.
+        const version = await this.computeVersion();
+
         this.validateConfig();
 
-        const version = await this.computeVersion();
         this.logger.info("Computed version: %s", version);
         this.logger.info("Dist-tag: %s", this.distTag);
 
@@ -73,12 +75,11 @@ export class Release {
         const versionedPackages = versionPackages(version);
         this.logger.info("Versioned %s packages", versionedPackages.length);
 
-        // Fetch the current latest version BEFORE publishing, so the changelog
-        // can diff against the previous release (not the one we're about to push).
+        // Find the previous release BEFORE publishing, so the changelog
+        // can diff against it (not the one we're about to push).
         let previousLatest: string | undefined;
         try {
-            const distTags = await this.fetchDistTags();
-            previousLatest = distTags["latest"];
+            previousLatest = await this.findPreviousRelease();
         } catch (err: any) {
             this.logger.warning("Could not fetch dist-tags: %s", err.message);
         }
@@ -142,8 +143,18 @@ export class Release {
         }
     }
 
+    // The release the changelog diffs against: whatever `latest` points at on NPM.
+    protected async findPreviousRelease(): Promise<string | undefined> {
+        const distTags = await this.fetchDistTags();
+        return distTags["latest"];
+    }
+
     protected async fetchDistTags(): Promise<Record<string, string>> {
         return fetchNpmDistTags();
+    }
+
+    protected async fetchPublishedVersions(): Promise<string[]> {
+        return fetchNpmVersions();
     }
 
     private async createRelease(version: string, previousLatest: string | undefined) {

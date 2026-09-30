@@ -7,7 +7,6 @@ import {
 } from "@webiny/cli-core/abstractions/index.js";
 import { measureDuration } from "@webiny/cli-core/features/utils/index.js";
 import { createBaseAppOptions } from "@webiny/cli-core/features/common/index.js";
-import { PulumiError } from "@webiny/pulumi-sdk";
 import { AppName } from "@webiny/project";
 
 export interface IDestroyNoAppParams {
@@ -83,6 +82,9 @@ export class DestroyCommand implements CliCommandFactory.Interface<IDestroyComma
 
             ui.success(`Destroyed in ${getDestroyDuration()}.`);
         } catch (e) {
+            // Imported here so that loading the destroy command doesn't load the Pulumi SDK. By
+            // the time a destroy fails, the SDK is loaded anyway, since it started the process.
+            const { PulumiError } = await import("@webiny/pulumi-sdk");
             if (e instanceof PulumiError) {
                 ui.error("Destroy failed, please check the details above.");
             } else {

@@ -1,6 +1,5 @@
 import { measureDuration } from "@webiny/cli-core/features/utils/index.js";
 import { BaseDeployOutput } from "./BaseDeployOutput.js";
-import { PulumiError } from "@webiny/pulumi-sdk";
 
 export class WithDeploymentLogsDeployOutput extends BaseDeployOutput {
     public override async output() {
@@ -32,6 +31,9 @@ export class WithDeploymentLogsDeployOutput extends BaseDeployOutput {
                 ui.success(`Deployed in ${getDeploymentDuration()}.`);
             }
         } catch (e) {
+            // Imported here so that loading the deploy command doesn't load the Pulumi SDK. By
+            // the time a deployment fails, the SDK is loaded anyway, since it started the process.
+            const { PulumiError } = await import("@webiny/pulumi-sdk");
             if (e instanceof PulumiError) {
                 // Pulumi already printed the error.
             } else {

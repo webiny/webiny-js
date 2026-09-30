@@ -1,11 +1,11 @@
 import { WebinyError } from "@webiny/error";
 import { RedirectAfterUpdateEventHandler } from "@webiny/api-website-builder/features/redirects/UpdateRedirect/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AUDIT } from "~/config.js";
 
 class RedirectAfterUpdateHandlerImpl implements RedirectAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: RedirectAfterUpdateEventHandler.Event): Promise<void> {
         try {
@@ -15,7 +15,7 @@ class RedirectAfterUpdateHandlerImpl implements RedirectAfterUpdateEventHandler.
                 "Website Redirect Updated",
                 { before: original, after: redirect },
                 redirect.id,
-                this.context
+                this.recorder
             );
         } catch (error) {
             throw WebinyError.from(error, {
@@ -29,6 +29,6 @@ class RedirectAfterUpdateHandlerImpl implements RedirectAfterUpdateEventHandler.
 export const RedirectAfterUpdateAuditHandler = RedirectAfterUpdateEventHandler.createImplementation(
     {
         implementation: RedirectAfterUpdateHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [AuditLogRecorder]
     }
 );

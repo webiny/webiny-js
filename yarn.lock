@@ -10363,7 +10363,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-audit-logs@workspace:packages/api-audit-logs"
   dependencies:
-    "@graphql-tools/schema": "npm:10.1.0"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
@@ -12573,8 +12572,8 @@ __metadata:
     typescript: "npm:7.0.2"
     vitest: "npm:^4.1.11"
   peerDependencies:
-    next: ">=15"
-    react: ">=19"
+    next: ">=15.0.0 <16.0.0"
+    react: ">=19.0.0 <20.0.0"
   languageName: unknown
   linkType: soft
 
@@ -13397,8 +13396,8 @@ __metadata:
     typescript: "npm:7.0.2"
     vitest: "npm:^4.1.11"
   peerDependencies:
-    next: ">=15"
-    react: ">=19"
+    next: ">=15.0.0 <16.0.0"
+    react: ">=19.0.0 <20.0.0"
   languageName: unknown
   linkType: soft
 
@@ -13635,7 +13634,7 @@ __metadata:
     vitest: "npm:^4.1.11"
     webpack: "npm:^5.109.2"
   peerDependencies:
-    next: ">=15"
+    next: ">=15.0.0 <16.0.0"
   languageName: unknown
   linkType: soft
 

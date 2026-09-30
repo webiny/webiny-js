@@ -1,11 +1,11 @@
 import WebinyError from "@webiny/error";
 import { FolderAfterUpdateEventHandler } from "@webiny/api-aco/features/folder/UpdateFolder/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogFolderAfterUpdateHandlerImpl implements FolderAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: FolderAfterUpdateEventHandler.Event): Promise<void> {
         try {
@@ -16,7 +16,7 @@ class AuditLogFolderAfterUpdateHandlerImpl implements FolderAfterUpdateEventHand
                     "Folder updated",
                     { before: original, after: folder },
                     folder.id,
-                    this.context
+                    this.recorder
                 );
             } else if (folder.type.startsWith("cms:")) {
                 const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL_FOLDER.UPDATE);
@@ -24,7 +24,7 @@ class AuditLogFolderAfterUpdateHandlerImpl implements FolderAfterUpdateEventHand
                     "Folder updated",
                     { before: original, after: folder },
                     folder.id,
-                    this.context
+                    this.recorder
                 );
             }
         } catch (error) {
@@ -38,5 +38,5 @@ class AuditLogFolderAfterUpdateHandlerImpl implements FolderAfterUpdateEventHand
 
 export const AuditLogFolderAfterUpdateHandler = FolderAfterUpdateEventHandler.createImplementation({
     implementation: AuditLogFolderAfterUpdateHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [AuditLogRecorder]
 });

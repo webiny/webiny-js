@@ -2,10 +2,10 @@ import WebinyError from "@webiny/error";
 import { GroupAfterUpdateEventHandler } from "@webiny/api-headless-cms/features/contentModelGroup/UpdateGroup/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 
 class AuditLogGroupAfterUpdateEventHandlerImpl implements GroupAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: GroupAfterUpdateEventHandler.Event): Promise<void> {
         const { group, original } = event.payload;
@@ -17,7 +17,7 @@ class AuditLogGroupAfterUpdateEventHandlerImpl implements GroupAfterUpdateEventH
                 "Group updated",
                 { before: original, after: group },
                 group.id,
-                this.context
+                this.recorder
             );
         } catch (error) {
             throw WebinyError.from(error, {
@@ -31,5 +31,5 @@ class AuditLogGroupAfterUpdateEventHandlerImpl implements GroupAfterUpdateEventH
 export const AuditLogGroupAfterUpdateEventHandler =
     GroupAfterUpdateEventHandler.createImplementation({
         implementation: AuditLogGroupAfterUpdateEventHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [AuditLogRecorder]
     });

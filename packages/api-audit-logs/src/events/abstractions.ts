@@ -1,7 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { IAuditLog } from "~/storage/types.js";
-import type { AuditLogsContext } from "~/types.js";
 
 // ============================================================================
 // AuditLogBeforeCreate Event
@@ -9,7 +8,6 @@ import type { AuditLogsContext } from "~/types.js";
 
 export interface AuditLogBeforeCreatePayload {
     auditLog: IAuditLog;
-    context: AuditLogsContext;
     setAuditLog(auditLog: Partial<IAuditLog>): void;
 }
 
@@ -28,7 +26,6 @@ export namespace AuditLogBeforeCreateHandler {
 
 export interface AuditLogAfterCreatePayload {
     auditLog: IAuditLog;
-    context: AuditLogsContext;
 }
 
 export const AuditLogAfterCreateHandler = createAbstraction<
@@ -47,7 +44,6 @@ export namespace AuditLogAfterCreateHandler {
 export interface AuditLogBeforeUpdatePayload {
     auditLog: IAuditLog;
     original: IAuditLog;
-    context: AuditLogsContext;
     setAuditLog(auditLog: Partial<IAuditLog>): void;
 }
 
@@ -67,7 +63,6 @@ export namespace AuditLogBeforeUpdateHandler {
 export interface AuditLogAfterUpdatePayload {
     auditLog: IAuditLog;
     original: IAuditLog;
-    context: AuditLogsContext;
 }
 
 export const AuditLogAfterUpdateHandler = createAbstraction<

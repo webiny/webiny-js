@@ -24,7 +24,7 @@ describe.skipIf(isSql)("Audit Logs Tenant Index", () => {
                 "API key created 1",
                 { name: "Test API Key 1" },
                 "apiKey1#0001",
-                context
+                context.recorder
             )
         );
 
@@ -33,7 +33,7 @@ describe.skipIf(isSql)("Audit Logs Tenant Index", () => {
                 "API key created 2",
                 { name: "Test API Key 2" },
                 "apiKey2#0003",
-                context
+                context.recorder
             )
         );
 
@@ -42,7 +42,7 @@ describe.skipIf(isSql)("Audit Logs Tenant Index", () => {
                 "API key created 3",
                 { name: "Test API Key 3" },
                 "apiKey3#0003",
-                context
+                context.recorder
             )
         );
 

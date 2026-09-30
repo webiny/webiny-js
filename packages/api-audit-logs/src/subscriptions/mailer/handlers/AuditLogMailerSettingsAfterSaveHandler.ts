@@ -1,20 +1,20 @@
 import WebinyError from "@webiny/error";
 import { MailerSettingsAfterSaveEventHandler } from "@webiny/api-mailer/features/SaveSettings/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogMailerSettingsAfterSaveHandlerImpl
     implements MailerSettingsAfterSaveEventHandler.Interface
 {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: MailerSettingsAfterSaveEventHandler.Event): Promise<void> {
         try {
             const { settings } = event.payload;
             const createAuditLog = getAuditConfig(AUDIT.MAILER.SETTINGS.UPDATE);
 
-            await createAuditLog("Settings updated", { after: settings }, "-", this.context);
+            await createAuditLog("Settings updated", { after: settings }, "-", this.recorder);
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogMailerSettingsAfterSaveHandler",
@@ -27,5 +27,5 @@ class AuditLogMailerSettingsAfterSaveHandlerImpl
 export const AuditLogMailerSettingsAfterSaveHandler =
     MailerSettingsAfterSaveEventHandler.createImplementation({
         implementation: AuditLogMailerSettingsAfterSaveHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [AuditLogRecorder]
     });
