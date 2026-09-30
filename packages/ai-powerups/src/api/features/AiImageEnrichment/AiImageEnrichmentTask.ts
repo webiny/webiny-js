@@ -70,11 +70,9 @@ class AiImageEnrichmentTaskHandlerImpl implements TaskHandler.Interface<IAiImage
             tags = aiResult.output.tags;
             description = aiResult.output.description;
         } catch (error) {
-            return this.fail(
-                controller,
-                input.fileId,
-                `AI enrichment failed: ${error instanceof Error ? error.message : String(error)}`
-            );
+            const reason = error instanceof Error ? error.message : String(error);
+
+            return this.fail(controller, input.fileId, `AI enrichment failed: ${reason}`);
         }
 
         const appliedResult = await this.apply.execute({

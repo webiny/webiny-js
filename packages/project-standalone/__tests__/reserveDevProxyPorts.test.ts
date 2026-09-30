@@ -134,8 +134,11 @@ describe("reserveDevProxyPorts", () => {
         it("steps over a proxy port another project already holds", async () => {
             const squatter = await occupy(3001);
             try {
+                const urls = await prepare();
+
                 // Read off the URL: there is no `port` field, and asserting on one passed vacuously.
-                const { port } = new URL((await prepare())!.url);
+                const { port } = new URL(urls!.url);
+
                 expect(port).not.toBe("");
                 expect(port).not.toBe("3001");
             } finally {

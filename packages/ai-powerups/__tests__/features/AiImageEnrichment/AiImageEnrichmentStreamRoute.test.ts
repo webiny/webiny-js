@@ -235,20 +235,27 @@ describe("AiImageEnrichmentStreamRoute", () => {
          * hid that the route turned an overloaded provider into a `done` with nothing in it.
          */
         it("should emit an error event when the provider fails mid-stream", async () => {
-            ai.streamText.mockImplementation(async (params: any) => ({
-                partialOutputStream: (async function* () {
+            ai.streamText.mockImplementation(async (params: any) => {
+                const overloaded = new Error("Overloaded");
+
+                async function* failingStream() {
                     yield { tags: [] };
-                    params.onError({ error: new Error("Overloaded") });
-                })()
-            }));
+                    params.onError({ error: overloaded });
+                }
 
-            const events = await collectEvents(await invokeHttpRoute(route, request()));
+                return { partialOutputStream: failingStream() };
+            });
 
-            expect(events.at(-1)).toEqual({
+            const response = await invokeHttpRoute(route, request());
+            const events = await collectEvents(response);
+            const last = events.at(-1);
+            const sentDone = events.some(e => e.type === "done");
+
+            expect(last).toEqual({
                 type: "error",
                 message: "AI enrichment failed: Overloaded"
             });
-            expect(events.some(e => e.type === "done")).toBe(false);
+            expect(sentDone).toBe(false);
         });
 
         it("should emit no done event after an error", async () => {

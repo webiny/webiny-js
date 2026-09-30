@@ -24,7 +24,8 @@ class AiImageEnrichmentFailedEventHandlerImpl implements WebsocketEventHandler.I
             return;
         }
 
-        const { message } = (event.payload as unknown as { data: FileEnrichmentFailedData }).data;
+        const payload = event.payload as unknown as { data: FileEnrichmentFailedData };
+        const { message } = payload.data;
 
         this.notifications.warning({
             title: "Image enrichment failed",
