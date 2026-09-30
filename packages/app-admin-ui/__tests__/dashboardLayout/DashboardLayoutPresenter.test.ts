@@ -115,6 +115,30 @@ describe("DashboardLayoutPresenter", () => {
         expect(presenter.vm.columns).toEqual([["a", "b"], ["c"]]);
     });
 
+    it("turns Customize mode on and off, and ends a drag when it turns off", () => {
+        const { presenter } = setup();
+        presenter.init("user-1", WIDGETS, null);
+        expect(presenter.vm.editing).toBe(false);
+
+        presenter.startEditing();
+        presenter.beginDrag("a");
+        expect(presenter.vm.editing).toBe(true);
+
+        presenter.stopEditing();
+        expect(presenter.vm.editing).toBe(false);
+        expect(presenter.vm.draggingName).toBeNull();
+    });
+
+    it("leaves Customize mode when a different user signs in", () => {
+        const { presenter } = setup();
+        presenter.init("user-1", WIDGETS, null);
+        presenter.startEditing();
+
+        presenter.init("user-2", WIDGETS, null);
+
+        expect(presenter.vm.editing).toBe(false);
+    });
+
     it("keeps the current layout when the same user's widgets are re-registered", () => {
         const { presenter } = setup();
         presenter.init("user-1", WIDGETS, null);

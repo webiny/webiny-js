@@ -21,6 +21,7 @@ interface DashboardWidgetColumnProps {
     dropTarget: DashboardDropTarget | null;
     canRemoveColumn: boolean;
     elements: Map<string, React.ReactElement>;
+    titles: Map<string, { title: string }>;
     presenter: DashboardLayoutPresenter.Interface;
     onBrowseWidgets: () => void;
 }
@@ -32,6 +33,7 @@ export const DashboardWidgetColumn = ({
     dropTarget,
     canRemoveColumn,
     elements,
+    titles,
     presenter,
     onBrowseWidgets
 }: DashboardWidgetColumnProps) => {
@@ -98,6 +100,7 @@ export const DashboardWidgetColumn = ({
                         {showIndicatorBefore(name) ? <WidgetDropIndicator /> : null}
                         <DashboardWidgetCard
                             name={name}
+                            title={titles.get(name)?.title ?? name}
                             isDragging={name === draggingName}
                             presenter={presenter}
                             registerRef={registerRef}

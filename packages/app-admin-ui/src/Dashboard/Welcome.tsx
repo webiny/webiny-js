@@ -12,12 +12,13 @@ import { Text } from "@webiny/admin-ui";
 import { Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as RestartAltIcon } from "@webiny/icons/restart_alt.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+import { ReactComponent as DashboardCustomizeIcon } from "@webiny/icons/dashboard_customize.svg";
+import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 import { useSecurity } from "@webiny/app-admin";
 import { useAdminConfig } from "@webiny/app-admin";
 import { useDashboardLayoutPresenter } from "./dashboardLayout/presenter/useDashboardLayoutPresenter.js";
 import { DashboardWidgetColumn } from "./components/dnd/DashboardWidgetColumn.js";
 import { DashboardDragLayer } from "./components/dnd/DashboardDragLayer.js";
-import { NewColumnDropZone } from "./components/dnd/NewColumnDropZone.js";
 import { AddWidgetDrawer } from "./components/dnd/AddWidgetDrawer.js";
 import type { DrawerWidget } from "./components/dnd/AddWidgetDrawer.js";
 import { ColumnCountControl } from "./components/dnd/ColumnCountControl.js";
@@ -141,35 +142,31 @@ const Welcome = () => {
     const maxWidth = DASHBOARD_MAX_WIDTH;
     const openDrawer = () => setDrawerOpen(true);
 
-    // Too narrow for the chosen count: fold the columns together and drop drag and drop.
+    // Customize mode needs every chosen column on screen; too narrow, and it isn't offered.
+    const editing = vm.editing && interactive;
+
+    // Outside Customize mode the widgets are just laid out. Too narrow for the chosen count,
+    // the columns fold together.
     let columns: React.ReactNode;
-    if (interactive) {
+    if (editing) {
         columns = (
             <>
                 <DashboardDragLayer titles={titles} />
-                <div className={"flex"} style={{ maxWidth }}>
-                    <div className={"flex min-w-0 flex-1 gap-lg"}>
-                        {vm.columns.map((names, index) => (
-                            <DashboardWidgetColumn
-                                key={index}
-                                columnIndex={index}
-                                names={names}
-                                draggingName={vm.draggingName}
-                                dropTarget={vm.dropTarget}
-                                canRemoveColumn={vm.columnCount > MIN_COLUMN_COUNT}
-                                elements={elements}
-                                presenter={presenter}
-                                onBrowseWidgets={openDrawer}
-                            />
-                        ))}
-                    </div>
-                    {vm.canAddColumn && (
-                        <NewColumnDropZone
-                            visible={dragging}
-                            active={vm.dropNewColumn}
+                <div className={"flex gap-lg"} style={{ maxWidth }}>
+                    {vm.columns.map((names, index) => (
+                        <DashboardWidgetColumn
+                            key={index}
+                            columnIndex={index}
+                            names={names}
+                            draggingName={vm.draggingName}
+                            dropTarget={vm.dropTarget}
+                            canRemoveColumn={vm.columnCount > MIN_COLUMN_COUNT}
+                            elements={elements}
+                            titles={titles}
                             presenter={presenter}
+                            onBrowseWidgets={openDrawer}
                         />
-                    )}
+                    ))}
                 </div>
             </>
         );
@@ -188,6 +185,64 @@ const Welcome = () => {
         );
     }
 
+    let subtitle = "Your dashboard. Arrange the widgets however you work best.";
+    let toolbar: React.ReactNode;
+    if (editing) {
+        subtitle = "Drag widgets to rearrange them, and click Done when you're finished.";
+        toolbar = (
+            <>
+                <ColumnCountControl
+                    columnCount={vm.columnCount}
+                    disabled={dragging}
+                    presenter={presenter}
+                />
+                <Tooltip
+                    content={"Reset to default layout"}
+                    trigger={
+                        <IconButton
+                            variant={"tertiary"}
+                            size={"md"}
+                            icon={<RestartAltIcon />}
+                            aria-label={"Reset to default layout"}
+                            onClick={() => presenter.resetToDefault()}
+                        />
+                    }
+                />
+                <Button
+                    variant={"tertiary"}
+                    text={"Add widget"}
+                    icon={<AddIcon />}
+                    onClick={openDrawer}
+                />
+                <Button
+                    variant={"primary"}
+                    text={"Done"}
+                    icon={<CheckIcon />}
+                    onClick={() => presenter.stopEditing()}
+                />
+            </>
+        );
+    } else {
+        let customizeHint = "Rearrange, add or remove widgets";
+        if (!interactive) {
+            customizeHint = "Make the window wider to customize the dashboard";
+        }
+        toolbar = (
+            <Tooltip
+                content={customizeHint}
+                trigger={
+                    <Button
+                        variant={"tertiary"}
+                        text={"Customize"}
+                        icon={<DashboardCustomizeIcon />}
+                        disabled={!interactive}
+                        onClick={() => presenter.startEditing()}
+                    />
+                }
+            />
+        );
+    }
+
     return (
         <DndProvider backend={HTML5Backend}>
             <div className={"my-xxl"} ref={containerRef}>
@@ -200,34 +255,10 @@ const Welcome = () => {
                             level={3}
                         >{`Hi ${identity!.displayName}, what are we doing today?`}</Heading>
                         <Text as={"div"} size={"md"} className={"mt-xs text-neutral-strong"}>
-                            {"Your dashboard. Arrange the widgets however you work best."}
+                            {subtitle}
                         </Text>
                     </div>
-                    <div className={"flex flex-none items-center gap-sm"}>
-                        <ColumnCountControl
-                            columnCount={vm.columnCount}
-                            disabled={dragging}
-                            presenter={presenter}
-                        />
-                        <Tooltip
-                            content={"Reset to default layout"}
-                            trigger={
-                                <IconButton
-                                    variant={"tertiary"}
-                                    size={"md"}
-                                    icon={<RestartAltIcon />}
-                                    aria-label={"Reset to default layout"}
-                                    onClick={() => presenter.resetToDefault()}
-                                />
-                            }
-                        />
-                        <Button
-                            variant={"primary"}
-                            text={"Add widget"}
-                            icon={<AddIcon />}
-                            onClick={openDrawer}
-                        />
-                    </div>
+                    <div className={"flex flex-none items-center gap-sm"}>{toolbar}</div>
                 </div>
                 {columns}
                 <AddWidgetDrawer

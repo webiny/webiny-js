@@ -27,10 +27,8 @@ export interface IDashboardLayoutViewModel {
     hidden: string[];
     draggingName: string | null;
     dropTarget: DashboardDropTarget | null;
-    // True while the pointer is over the "drop here to create a new column" zone.
-    dropNewColumn: boolean;
-    // Whether a new column can still be created (below the max).
-    canAddColumn: boolean;
+    // Customize mode: widgets can be moved, added and removed only while this is on.
+    editing: boolean;
 }
 
 export interface IDashboardLayoutPresenter {
@@ -42,7 +40,6 @@ export interface IDashboardLayoutPresenter {
     ): void;
     beginDrag(name: string): void;
     hoverSlot(column: number, beforeName: string | null): void;
-    hoverNewColumn(): void;
     drop(): void;
     endDrag(): void;
     removeWidget(name: string): void;
@@ -51,6 +48,8 @@ export interface IDashboardLayoutPresenter {
     setColumnCount(count: number): void;
     removeColumn(index: number): void;
     resetToDefault(): void;
+    startEditing(): void;
+    stopEditing(): void;
 }
 
 export const DashboardLayoutPresenter = createAbstraction<IDashboardLayoutPresenter>(

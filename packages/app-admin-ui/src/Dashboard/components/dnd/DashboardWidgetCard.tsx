@@ -1,12 +1,10 @@
 import React from "react";
 import { useDrag } from "react-dnd";
 import { DragPreviewImage } from "react-dnd";
-import { DropdownMenu } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
 import { Tooltip } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
-import { ReactComponent as DragIndicatorIcon } from "@webiny/icons/drag_indicator.svg";
-import { ReactComponent as MoreHorizIcon } from "@webiny/icons/more_horiz.svg";
+import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import type { DashboardLayoutPresenter } from "../../dashboardLayout/presenter/abstractions.js";
 
 export const DASHBOARD_WIDGET_DND_TYPE = "dashboard-widget";
@@ -21,6 +19,7 @@ const EMPTY_DRAG_IMAGE =
 
 interface DashboardWidgetCardProps {
     name: string;
+    title: string;
     isDragging: boolean;
     presenter: DashboardLayoutPresenter.Interface;
     /** Reports the card's DOM node to the column so it can measure drop slots. */
@@ -28,8 +27,13 @@ interface DashboardWidgetCardProps {
     children: React.ReactNode;
 }
 
+/*
+ * A widget in Customize mode. The whole card is the drag target: an overlay covers the widget, so
+ * its own links and buttons can't catch the pointer, and a remove button sits in the corner.
+ */
 export const DashboardWidgetCard = ({
     name,
+    title,
     isDragging,
     presenter,
     registerRef,
@@ -51,58 +55,44 @@ export const DashboardWidgetCard = ({
             <DragPreviewImage connect={preview} src={EMPTY_DRAG_IMAGE} />
             <div
                 ref={node => registerRef(name, node)}
-                className={cn(
-                    "group relative rounded-lg transition-opacity",
-                    isDragging && "opacity-50"
-                )}
+                className={cn("relative rounded-xl transition-opacity", isDragging && "opacity-50")}
             >
                 {/*
-                    Straddles the card's top edge instead of sitting in its header row, because
-                    widgets put their own actions there (e.g. "View All").
+                    `inert` keeps the widget out of the tab order and away from clicks. It's set
+                    through a ref because React 18's types don't know the attribute yet.
                 */}
+                <div ref={node => node?.setAttribute("inert", "")} className={"select-none"}>
+                    {children}
+                </div>
                 <div
+                    ref={node => {
+                        drag(node);
+                    }}
+                    role={"button"}
+                    aria-label={`Drag ${title} to move it`}
+                    data-testid={`dashboard-card-${name}`}
                     className={cn(
-                        "absolute -top-md right-md z-10 flex gap-xxs rounded-md border-sm",
-                        "border-neutral-dimmed bg-neutral-base p-xxs opacity-0 shadow-sm",
-                        "transition-opacity group-hover:opacity-100 focus-within:opacity-100",
-                        "has-[[data-state=open]]:opacity-100"
+                        // `rounded-xl` matches the DS Widget, so the outline follows its corners.
+                        "absolute inset-0 z-10 cursor-grab rounded-xl active:cursor-grabbing",
+                        "ring-2 ring-inset ring-primary/30 transition-colors",
+                        "hover:bg-primary/5 hover:ring-primary/60"
                     )}
-                >
+                />
+                {/* On the corner, half outside the card, so it never covers the widget's own actions. */}
+                <div className={"absolute -right-sm -top-sm z-20"}>
                     <Tooltip
-                        content={"Drag to move"}
-                        trigger={
-                            <span
-                                ref={node => {
-                                    drag(node);
-                                }}
-                                className={"cursor-grab active:cursor-grabbing"}
-                            >
-                                <IconButton
-                                    variant={"ghost"}
-                                    size={"xs"}
-                                    icon={<DragIndicatorIcon />}
-                                    aria-label={`Drag ${name}`}
-                                />
-                            </span>
-                        }
-                    />
-                    <DropdownMenu
+                        content={"Remove from dashboard"}
                         trigger={
                             <IconButton
-                                variant={"ghost"}
-                                size={"xs"}
-                                icon={<MoreHorizIcon />}
-                                aria-label={"More"}
+                                variant={"tertiary"}
+                                size={"sm"}
+                                icon={<CloseIcon />}
+                                aria-label={`Remove ${title} from the dashboard`}
+                                onClick={() => presenter.removeWidget(name)}
                             />
                         }
-                    >
-                        <DropdownMenu.Item
-                            text={"Remove from dashboard"}
-                            onClick={() => presenter.removeWidget(name)}
-                        />
-                    </DropdownMenu>
+                    />
                 </div>
-                {children}
             </div>
         </>
     );

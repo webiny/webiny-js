@@ -20,7 +20,7 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
     private _draggingName: string | null = null;
     private _dropColumn: number | null = null;
     private _dropBeforeName: string | null = null;
-    private _dropNewColumn = false;
+    private _editing = false;
     // Non-reactive: each registered widget's default column index, used when (re)adding a widget.
     private _defaultColumns = new Map<string, number>();
     // Non-reactive: saves go out one at a time, and only the newest pending layout is kept.
@@ -57,8 +57,7 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
             hidden: [...this._hidden],
             draggingName: this._draggingName,
             dropTarget,
-            dropNewColumn: this._dropNewColumn,
-            canAddColumn: this._columnCount < MAX_COLUMN_COUNT
+            editing: this._editing
         };
     }
 
@@ -72,6 +71,7 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
             // queued for the previous user so it can't land in this user's profile.
             this._userId = userId;
             this._pendingSave = null;
+            this._editing = false;
             this.endDrag();
             const layout = normalizeLayout(savedLayout);
             this.applyOrder(widgets, layout);
@@ -95,8 +95,6 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
         if (this._draggingName === null) {
             return;
         }
-        this._dropNewColumn = false;
-
         // Suppress no-op slots (dropping where the widget already is) — no indicator, no move.
         const moved = this.computeMove(this._draggingName, column, beforeName);
         if (columnsEqual(moved, this._columns)) {
@@ -114,27 +112,14 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
         this._dropBeforeName = beforeName;
     };
 
-    hoverNewColumn = (): void => {
-        if (this._draggingName === null || this._columnCount >= MAX_COLUMN_COUNT) {
-            return;
-        }
-        this._dropColumn = null;
-        this._dropBeforeName = null;
-        this._dropNewColumn = true;
-    };
-
     drop = (): void => {
-        if (this._draggingName !== null) {
-            if (this._dropNewColumn) {
-                this.moveToNewColumn(this._draggingName);
-            } else if (this._dropColumn !== null) {
-                this._columns = this.computeMove(
-                    this._draggingName,
-                    this._dropColumn,
-                    this._dropBeforeName
-                );
-                this.persist();
-            }
+        if (this._draggingName !== null && this._dropColumn !== null) {
+            this._columns = this.computeMove(
+                this._draggingName,
+                this._dropColumn,
+                this._dropBeforeName
+            );
+            this.persist();
         }
         this.endDrag();
     };
@@ -143,19 +128,7 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
         this._draggingName = null;
         this._dropColumn = null;
         this._dropBeforeName = null;
-        this._dropNewColumn = false;
     };
-
-    private moveToNewColumn(name: string): void {
-        if (this._columnCount >= MAX_COLUMN_COUNT) {
-            return;
-        }
-        const columns = this._columns.map(c => c.filter(n => n !== name));
-        columns.push([name]);
-        this._columns = columns;
-        this._columnCount = columns.length;
-        this.persist();
-    }
 
     removeWidget = (name: string): void => {
         this._columns = this._columns.map(column => column.filter(n => n !== name));
@@ -207,6 +180,15 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
         this._columns = columns;
         this._columnCount = columns.length;
         this.persist();
+    };
+
+    startEditing = (): void => {
+        this._editing = true;
+    };
+
+    stopEditing = (): void => {
+        this._editing = false;
+        this.endDrag();
     };
 
     resetToDefault = (): void => {
