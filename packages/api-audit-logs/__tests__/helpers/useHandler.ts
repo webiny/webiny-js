@@ -7,9 +7,17 @@ import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
 import { AcoFeature } from "@webiny/api-aco";
 import { AuditLogsFeature } from "~/index";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import type { AuditLogsContext } from "~/types";
+import type { Container } from "@webiny/di";
+import { AuditLogs } from "~/abstractions";
+import { AuditLogRecorder } from "~/abstractions";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+
+export interface AuditLogsTestContext {
+    container: Container;
+    auditLogs: AuditLogs.Interface;
+    recorder: AuditLogRecorder.Interface;
+}
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
@@ -48,6 +56,14 @@ export const useHandler = (params: UseHandlerParams = {}) => {
     return {
         identity: inner.identity,
         tenant: inner.tenant,
-        handler: () => inner.getContext<AuditLogsContext>()
+        invoke: inner.invoke,
+        handler: async (): Promise<AuditLogsTestContext> => {
+            const { container } = await inner.getContext<{ container: Container }>();
+            return {
+                container,
+                auditLogs: container.resolve(AuditLogs),
+                recorder: container.resolve(AuditLogRecorder)
+            };
+        }
     };
 };

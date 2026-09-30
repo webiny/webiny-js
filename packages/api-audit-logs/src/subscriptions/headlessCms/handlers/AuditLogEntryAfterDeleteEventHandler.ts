@@ -2,10 +2,10 @@ import WebinyError from "@webiny/error";
 import { EntryAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { AuditLogRecorder } from "~/abstractions.js";
 
 class AuditLogEntryAfterDeleteHandlerImpl implements EntryAfterDeleteEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recorder: AuditLogRecorder.Interface) {}
 
     async handle(event: EntryAfterDeleteEventHandler.Event): Promise<void> {
         const { model, entry, permanent } = event.payload;
@@ -17,10 +17,10 @@ class AuditLogEntryAfterDeleteHandlerImpl implements EntryAfterDeleteEventHandle
         try {
             if (permanent) {
                 const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.DELETE);
-                await createAuditLog("Entry deleted", entry, entry.entryId, this.context);
+                await createAuditLog("Entry deleted", entry, entry.entryId, this.recorder);
             } else {
                 const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.MOVE_TO_TRASH);
-                await createAuditLog("Entry moved to trash", entry, entry.entryId, this.context);
+                await createAuditLog("Entry moved to trash", entry, entry.entryId, this.recorder);
             }
         } catch (error) {
             throw WebinyError.from(error, {
@@ -34,5 +34,5 @@ class AuditLogEntryAfterDeleteHandlerImpl implements EntryAfterDeleteEventHandle
 export const AuditLogEntryAfterDeleteEventHandler =
     EntryAfterDeleteEventHandler.createImplementation({
         implementation: AuditLogEntryAfterDeleteHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [AuditLogRecorder]
     });

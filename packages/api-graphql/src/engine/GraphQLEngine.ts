@@ -4,23 +4,48 @@ import { mergeResolvers } from "@graphql-tools/merge";
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { GraphQLEngine as GraphQLEngineAbstraction } from "./abstractions.js";
+import { GraphQLSchemaCache } from "./abstractions.js";
+import { createSchemaCacheKey } from "./createSchemaCacheKey.js";
 import { GraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
 import { GraphQLContextualSchema } from "./GraphQLContextualSchema.js";
 import { GraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 import { ResolverDecoration } from "~/ResolverDecoration.js";
 import { createRequestBody } from "~/createRequestBody.js";
 import type { IGraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
+import type { IGraphQLSchema } from "~/graphql/abstractions.public.js";
 import type { IGraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
 import type { IGraphQLContextualSchema } from "./GraphQLContextualSchema.js";
 import type { GraphQLRequestBody } from "~/types.js";
 import type { GraphQLSchema } from "graphql";
+
+const buildStaticSchema = (schemaConfig: IGraphQLSchema): GraphQLSchema => {
+    const resolverDecoration = new ResolverDecoration();
+    if (schemaConfig.resolverDecorators) {
+        resolverDecoration.addDecorators(schemaConfig.resolverDecorators);
+    }
+
+    // Always provide base root types so that `extend type Query/Mutation` works without
+    // requiring callers to define them. With assumeValidSDL:true, empty base types are
+    // allowed at build time; graphql() then returns schema-validation errors at execution
+    // time (e.g. "Type Query must define one or more fields.") when no fields are registered.
+    const typeDefs = `type Query\ntype Mutation\n${schemaConfig.typeDefs ?? ""}`;
+    const resolvers = mergeResolvers([schemaConfig.resolvers ?? {}]);
+
+    return makeExecutableSchema({
+        typeDefs,
+        resolvers: resolverDecoration.decorateResolvers(resolvers),
+        assumeValidSDL: true,
+        inheritResolversFromInterfaces: true
+    });
+};
 
 class GraphQLEngineImpl implements GraphQLEngineAbstraction.Interface {
     constructor(
         private composer: IGraphQLSchemaComposer,
         private container: Container,
         private enhancers: IGraphQLContextEnhancer[],
-        private contextualSchemas: IGraphQLContextualSchema[]
+        private contextualSchemas: IGraphQLContextualSchema[],
+        private schemaCache: GraphQLSchemaCache.Interface | undefined
     ) {}
 
     async execute(body: any): Promise<any> {
@@ -33,26 +58,7 @@ class GraphQLEngineImpl implements GraphQLEngineAbstraction.Interface {
 
         const schemaConfig = await this.composer.build(ctx);
 
-        const resolverDecoration = new ResolverDecoration();
-        if (schemaConfig.resolverDecorators) {
-            resolverDecoration.addDecorators(schemaConfig.resolverDecorators);
-        }
-
-        // Always provide base root types so that `extend type Query/Mutation` works without
-        // requiring callers to define them. With assumeValidSDL:true, empty base types are
-        // allowed at build time; graphql() then returns schema-validation errors at execution
-        // time (e.g. "Type Query must define one or more fields.") when no fields are registered.
-        const typeDefs = `type Query\ntype Mutation\n${schemaConfig.typeDefs ?? ""}`;
-        const staticSchema = makeExecutableSchema({
-            typeDefs,
-            resolvers: resolverDecoration.decorateResolvers(
-                mergeResolvers([schemaConfig.resolvers ?? {}])
-            ),
-            assumeValidSDL: true,
-            inheritResolversFromInterfaces: true
-        });
-
-        const schema = await this.buildSchema(staticSchema, extraSchemas);
+        const schema = await this.resolveSchema(schemaConfig, extraSchemas);
         const parsed = createRequestBody(body);
 
         if (!Array.isArray(parsed)) {
@@ -64,6 +70,24 @@ class GraphQLEngineImpl implements GraphQLEngineAbstraction.Interface {
             results.push(await this.executeOne(b, schema, ctx));
         }
         return results;
+    }
+
+    /**
+     * A contextual schema is built per request and merged in, so a schema that includes one can't be
+     * reused. Everything else comes from the composer, and the same composer output always builds
+     * the same executable schema, so it's built once and cached.
+     */
+    private async resolveSchema(
+        schemaConfig: IGraphQLSchema,
+        extraSchemas: GraphQLSchema[]
+    ): Promise<GraphQLSchema> {
+        if (extraSchemas.length > 0 || !this.schemaCache) {
+            const staticSchema = buildStaticSchema(schemaConfig);
+            return this.buildSchema(staticSchema, extraSchemas);
+        }
+
+        const key = createSchemaCacheKey(schemaConfig);
+        return this.schemaCache.getOrBuild(key, () => buildStaticSchema(schemaConfig));
     }
 
     private async buildContext(): Promise<Record<string, any>> {
@@ -120,6 +144,7 @@ export const GraphQLEngine = GraphQLEngineAbstraction.createImplementation({
         GraphQLSchemaComposer,
         RequestContainer,
         [GraphQLContextEnhancer, { multiple: true }],
-        [GraphQLContextualSchema, { multiple: true }]
+        [GraphQLContextualSchema, { multiple: true }],
+        [GraphQLSchemaCache, { optional: true }]
     ]
 });

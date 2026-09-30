@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { useHandler } from "~tests/helpers/useHandler.js";
+import type { AuditLogsTestContext } from "~tests/helpers/useHandler.js";
 import { AUDIT } from "~/config.js";
-import type { AuditLogsContext } from "~/types.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { IAuditLog } from "~/storage/types.js";
 
@@ -17,7 +17,7 @@ const createCmsEntryDeleteAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.DEL
 const createApiKeyCreateAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.CREATE);
 
 interface ICreateMockAuditLogsParams {
-    context: AuditLogsContext;
+    context: AuditLogsTestContext;
     activateSleep?: boolean;
 }
 
@@ -43,7 +43,7 @@ const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<
             "File created",
             { fileName: "test.jpg" },
             "file#0001",
-            context
+            context.recorder
         )
     );
     await sleep(100);
@@ -52,7 +52,7 @@ const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<
             "Entry created",
             { title: "Test Entry" },
             "cmsEntry#0001",
-            context
+            context.recorder
         )
     );
     await sleep(200);
@@ -61,7 +61,7 @@ const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<
             "Entry updated",
             { title: "Test Entry Updated" },
             "cmsEntry#0002",
-            context
+            context.recorder
         )
     );
     await sleep(300);
@@ -70,7 +70,7 @@ const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<
             "API key created",
             { name: "Test API Key" },
             "apiKey#0003",
-            context
+            context.recorder
         )
     );
     await sleep(400);
@@ -82,7 +82,7 @@ const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<
                 after: { fileName: "test-updated.jpg" }
             },
             "file#0001",
-            context
+            context.recorder
         )
     );
     await sleep(500);
@@ -91,7 +91,7 @@ const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<
             "Entry deleted",
             { title: "Test Entry Updated" },
             "cmsEntry#0002",
-            context
+            context.recorder
         )
     );
     return results as IAuditLog[];

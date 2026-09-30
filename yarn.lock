@@ -10363,7 +10363,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-audit-logs@workspace:packages/api-audit-logs"
   dependencies:
-    "@graphql-tools/schema": "npm:10.1.0"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
@@ -10524,6 +10523,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-event-handler-core": "npm:0.0.0"
     "@webiny/api-file-manager-s3": "npm:0.0.0"
+    "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms-bulk-actions-aws": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/api-scheduler-aws": "npm:0.0.0"
