@@ -19,7 +19,6 @@ const input = { title: "Drafts", slug: "drafts", type: "FmFile" };
 
 const resolveTool = (options: {
     createResult?: ReturnType<typeof Result.fail>;
-    withWebsockets?: boolean;
     sendResult?: ReturnType<typeof Result.fail>;
 }) => {
     const sent: Sent[] = [];
@@ -41,14 +40,12 @@ const resolveTool = (options: {
         getIdentity: () => ({ id: "user-1" })
     } as unknown as IdentityContext.Interface);
 
-    if (options.withWebsockets !== false) {
-        container.registerInstance(WebsocketsSendToIdentityUseCase, {
-            execute: async (identity: { id: string }, data: Sent["data"]) => {
-                sent.push({ identityId: identity.id, data });
-                return options.sendResult ?? Result.ok();
-            }
-        } as unknown as WebsocketsSendToIdentityUseCase.Interface);
-    }
+    container.registerInstance(WebsocketsSendToIdentityUseCase, {
+        execute: async (identity: { id: string }, data: Sent["data"]) => {
+            sent.push({ identityId: identity.id, data });
+            return options.sendResult ?? Result.ok();
+        }
+    } as unknown as WebsocketsSendToIdentityUseCase.Interface);
 
     container.register(CreateFolderTool);
 
@@ -83,12 +80,6 @@ describe("createFolder tool", () => {
 
     it("still reports the folder when the message could not be sent", async () => {
         const { handler } = resolveTool({ sendResult: Result.fail(new Error("No sockets.")) });
-
-        await expect(handler.execute(input)).resolves.toMatchObject({ id: "folder-1" });
-    });
-
-    it("works without websockets registered", async () => {
-        const { handler } = resolveTool({ withWebsockets: false });
 
         await expect(handler.execute(input)).resolves.toMatchObject({ id: "folder-1" });
     });

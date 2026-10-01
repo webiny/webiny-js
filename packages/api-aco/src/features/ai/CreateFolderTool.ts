@@ -41,7 +41,7 @@ class CreateFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(
         private createFolder: CreateFolderUseCase.Interface,
         private identityContext: IdentityContext.Interface,
-        private sendToIdentity?: WebsocketsSendToIdentityUseCase.Interface
+        private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
     ) {}
 
     async execute(input: Input): Promise<CreatedFolder> {
@@ -85,10 +85,6 @@ class CreateFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
      * result. When it fails, the admin shows the folder after its next reload, as it did before.
      */
     private async notifyCreated(id: string) {
-        if (!this.sendToIdentity) {
-            return;
-        }
-
         const identity = this.identityContext.getIdentity();
         await this.sendToIdentity.execute(
             { id: identity.id },
@@ -99,12 +95,7 @@ class CreateFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
 
 const CreateFolderToolHandler = AiSdkToolHandler.createImplementation({
     implementation: CreateFolderToolHandlerImpl,
-    dependencies: [
-        CreateFolderUseCase,
-        IdentityContext,
-        // Optional, so a setup without websockets still gets a working tool, just no live refresh.
-        [WebsocketsSendToIdentityUseCase, { optional: true }]
-    ]
+    dependencies: [CreateFolderUseCase, IdentityContext, WebsocketsSendToIdentityUseCase]
 });
 
 /**
