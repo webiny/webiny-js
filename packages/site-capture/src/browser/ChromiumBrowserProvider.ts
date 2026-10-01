@@ -32,6 +32,9 @@ import { withTimeout, withTimeoutOrDefault } from "./withTimeout.js";
 
 // A page in an error loop can log thousands of lines; enough to diagnose, not enough to drown a
 // task log. Each message is truncated too — a stack trace is rarely informative past its first line.
+// A component taller than this is a page, not a component; the cap keeps one runaway render from
+// producing an image nothing can open.
+const MAX_RENDER_HEIGHT = 20000;
 const MAX_PAGE_ERRORS = 20;
 const PAGE_ERROR_MAX_CHARS = 300;
 
@@ -271,12 +274,33 @@ class ChromiumSession implements IBrowserSession {
         // A short settle so late fonts/images paint.
         await new Promise(resolve => setTimeout(resolve, params.settleMs ?? 400));
 
+        const documentHeight = await this.documentHeight(page);
+
+        /*
+         * Shrink the viewport to the content before shooting.
+         *
+         * A rendered component is as tall as it is — a navigation header is 78px — but a full-page
+         * screenshot is never shorter than the viewport, so it came back 1440x900 with the component
+         * in the top sliver and the rest white. Scaled into a preview tile that reads as an empty
+         * box, which is how a working render still looked broken. The source crop it sits beside is
+         * sized to its content, so matching that is also what makes the two comparable.
+         *
+         * Height only. Width drives layout and must stay at the capture width or the component would
+         * be screenshotted at a size it was never designed against.
+         */
+        if (documentHeight > 0 && documentHeight !== params.viewportHeight) {
+            await page.setViewport({
+                width: params.viewportWidth,
+                height: Math.min(documentHeight, MAX_RENDER_HEIGHT),
+                deviceScaleFactor: 1
+            });
+            // A beat for the resize to settle before the shot; sticky and viewport-relative styles
+            // reflow on it.
+            await new Promise(resolve => setTimeout(resolve, 150));
+        }
+
         const image = await page.screenshot({ type: "png", fullPage: true });
         const bytes = image instanceof Uint8Array ? image : new Uint8Array();
-
-        // Only when there is nothing to see: a blank render is the case that needs explaining, and
-        // carrying the markup of a good one would be noise on every success.
-        const documentHeight = await this.documentHeight(page);
         const bodyPreview =
             documentHeight === 0
                 ? await page
