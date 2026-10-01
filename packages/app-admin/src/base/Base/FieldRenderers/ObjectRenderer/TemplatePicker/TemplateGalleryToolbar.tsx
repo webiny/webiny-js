@@ -44,8 +44,16 @@ export const TemplateGalleryToolbar = ({
                     value={viewMode}
                     onChange={value => onViewMode(value as ViewMode)}
                     items={[
-                        { id: "grid", value: "grid", icon: <GridIcon /> },
-                        { id: "list", value: "list", icon: <ListIcon /> }
+                        {
+                            id: "grid",
+                            value: "grid",
+                            icon: <Icon icon={<GridIcon />} label={"Grid view"} />
+                        },
+                        {
+                            id: "list",
+                            value: "list",
+                            icon: <Icon icon={<ListIcon />} label={"List view"} />
+                        }
                     ]}
                     variant="ghost"
                 />
