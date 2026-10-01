@@ -181,6 +181,15 @@ export interface RenderResult {
     image: Uint8Array;
     width: number;
     height: number;
+    /**
+     * Errors the page itself reported — `console.error` and uncaught exceptions — oldest first.
+     *
+     * Carried out because the render host reports its own failures this way and nothing was reading
+     * them: a component whose bundle would not hydrate logged exactly why, in a console that was
+     * discarded, and the render was recorded as a success with a blank screenshot. Capped, since a
+     * page in a loop can produce thousands.
+     */
+    pageErrors: string[];
 }
 
 export interface CaptureResult<TResult> {

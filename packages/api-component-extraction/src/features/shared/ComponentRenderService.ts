@@ -18,10 +18,51 @@ const RENDER_SETTLE_MS = 800;
 // the shot is deterministic against the (light) source capture.
 const SANDBOX_PATH =
     "/sandbox/component?wb.editing=true&wb.type=page&wb.id=sandbox&wb.path=/sandbox/component";
-// The mode message sets this attribute on <html>; its presence is our "the sandbox handled our messages
-// and re-rendered" signal — independent of the component's own markup, which we can't predict.
-const RENDER_READY = `document.documentElement.getAttribute('data-wby-theme-mode') === 'light'`;
+/**
+ * The sandbox has handled our messages AND has something on screen.
+ *
+ * The attribute alone is set by the theme-mode message, which the sandbox handles whether or not the
+ * bundle mounts — and `processBundle` returns silently when hydration fails. So a component that could
+ * not hydrate satisfied this, screenshotted a blank page, and was recorded as a successful render: the
+ * worst of the three outcomes, because it is the only one that looks like evidence.
+ *
+ * The second clause is deliberately about ANY rendered element rather than the component's own markup,
+ * which cannot be predicted — styles and scripts are excluded because the sandbox emits those even
+ * with nothing mounted.
+ */
+const RENDER_READY = `(function () {
+    if (document.documentElement.getAttribute('data-wby-theme-mode') !== 'light') {
+        return false;
+    }
+    if (!document.body) {
+        return false;
+    }
+    var ignored = ['STYLE', 'SCRIPT', 'TEMPLATE', 'NEXT-ROUTE-ANNOUNCER'];
+    return Array.prototype.some.call(document.body.querySelectorAll('*'), function (el) {
+        return ignored.indexOf(el.tagName) === -1;
+    });
+})()`;
 
+// How long the inject keeps re-announcing itself, and how often. Comfortably longer than hydration on
+// a cold Next.js route, and well inside the render timeout so a real failure still reports as one.
+const INJECT_RETRY_MS = 250;
+const INJECT_RETRY_LIMIT = 80;
+
+/**
+ * Pushes the bundle and theme into the sandbox, and keeps pushing until it answers.
+ *
+ * `postMessage` has no delivery guarantee to a listener that does not exist yet: it goes to whoever is
+ * listening at that moment and is otherwise dropped. The browser injects this straight after
+ * `domcontentloaded`, which on a Next.js route is before hydration — so the sandbox's message listener
+ * attaches a beat later and the first announcement lands on nothing. Every component then failed with
+ * `Waiting failed: 30000ms exceeded`, which reads like the component being at fault rather than the
+ * handshake never completing.
+ *
+ * Retrying rather than waiting for a hydration signal, because there is no such signal here that does
+ * not belong to the host app. The loop stops as soon as the sandbox sets the attribute the render is
+ * already waiting on, so a first announcement that lands costs one extra attribute read. Re-announcing
+ * is safe: the three messages are a complete description of what to show, not a diff.
+ */
 const buildInject = (
     bundle: { name: string; bundledJs: string; bundledCss: string },
     themeCss: string
@@ -29,9 +70,20 @@ const buildInject = (
     `(() => {
         var bundle = ${JSON.stringify(bundle)};
         var themeCss = ${JSON.stringify(themeCss)};
-        window.postMessage({ type: "wb.editor.sandbox.theme.css", payload: { css: themeCss } }, "*");
-        window.postMessage({ type: "wb.editor.sandbox.theme.mode", payload: { mode: "light" } }, "*");
-        window.postMessage({ type: "wb.editor.sandbox.component.bundle", payload: bundle }, "*");
+        var announce = function () {
+            window.postMessage({ type: "wb.editor.sandbox.theme.css", payload: { css: themeCss } }, "*");
+            window.postMessage({ type: "wb.editor.sandbox.theme.mode", payload: { mode: "light" } }, "*");
+            window.postMessage({ type: "wb.editor.sandbox.component.bundle", payload: bundle }, "*");
+        };
+        announce();
+        var attempts = 0;
+        var timer = setInterval(function () {
+            if (${RENDER_READY} || ++attempts > ${INJECT_RETRY_LIMIT}) {
+                clearInterval(timer);
+                return;
+            }
+            announce();
+        }, ${INJECT_RETRY_MS});
     })()`;
 
 const slug = (signature: string): string => signature.replace(/[^a-zA-Z0-9_-]/g, "-");

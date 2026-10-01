@@ -30,6 +30,11 @@ import {
 } from "./launchConfig.js";
 import { withTimeout, withTimeoutOrDefault } from "./withTimeout.js";
 
+// A page in an error loop can log thousands of lines; enough to diagnose, not enough to drown a
+// task log. Each message is truncated too — a stack trace is rarely informative past its first line.
+const MAX_PAGE_ERRORS = 20;
+const PAGE_ERROR_MAX_CHARS = 300;
+
 /**
  * Headless Chromium, driven by puppeteer-core against the `chromium` Lambda layer.
  *
@@ -221,6 +226,23 @@ class ChromiumSession implements IBrowserSession {
             deviceScaleFactor: 1
         });
 
+        /*
+         * What the page says about itself, kept so a failure can be explained rather than guessed at.
+         * Attached before navigating so nothing said during load is missed.
+         */
+        const pageErrors: string[] = [];
+        const noteError = (message: string) => {
+            if (pageErrors.length < MAX_PAGE_ERRORS) {
+                pageErrors.push(message.slice(0, PAGE_ERROR_MAX_CHARS));
+            }
+        };
+        page.on("pageerror", error => noteError(error.message));
+        page.on("console", message => {
+            if (message.type() === "error") {
+                noteError(message.text());
+            }
+        });
+
         await withTimeout(`navigate to ${params.url}`, DEFAULT_TIMEOUTS.navigationMs, () =>
             page.goto(params.url, { waitUntil: "domcontentloaded" })
         );
@@ -232,10 +254,19 @@ class ChromiumSession implements IBrowserSession {
 
         // Wait until the injected content has actually mounted before shooting — the host renders
         // asynchronously after receiving the bundle, so a screenshot taken now would be blank.
-        await page.waitForFunction(params.waitFor, {
-            timeout: DEFAULT_TIMEOUTS.navigationMs,
-            polling: 100
-        });
+        try {
+            await page.waitForFunction(params.waitFor, {
+                timeout: DEFAULT_TIMEOUTS.navigationMs,
+                polling: 100
+            });
+        } catch (error) {
+            // The page's own errors are the useful part of this failure — a bare "waiting failed"
+            // says the render host never signalled, not why, and the why was already on the page.
+            const detail = pageErrors.length
+                ? ` The page reported: ${pageErrors.join(" | ")}`
+                : " The page reported no errors, so it loaded but never signalled ready.";
+            throw new Error(`${error instanceof Error ? error.message : String(error)}.${detail}`);
+        }
 
         // A short settle so late fonts/images paint.
         await new Promise(resolve => setTimeout(resolve, params.settleMs ?? 400));
@@ -247,7 +278,8 @@ class ChromiumSession implements IBrowserSession {
             finalUrl: page.url(),
             image: bytes,
             width: params.viewportWidth,
-            height: await this.documentHeight(page)
+            height: await this.documentHeight(page),
+            pageErrors
         };
     }
 
