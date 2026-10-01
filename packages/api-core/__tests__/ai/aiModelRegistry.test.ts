@@ -45,7 +45,7 @@ const catalog = {
                     id: "claude-remote",
                     name: "Claude Remote",
                     api: "chat",
-                    supports: { tools: true }
+                    supports: { tools: true, temperature: true, streaming: true }
                 }
             ]
         },
@@ -121,7 +121,9 @@ describe("AiModelRegistry", () => {
                 modelId: "claude-remote",
                 modelName: "Claude Remote",
                 deprecated: undefined,
-                endOfLife: undefined
+                endOfLife: undefined,
+                // Known capabilities are kept, unknown ones (`streaming`) dropped.
+                supports: { tools: true, temperature: true }
             },
             {
                 providerId: "openai",
