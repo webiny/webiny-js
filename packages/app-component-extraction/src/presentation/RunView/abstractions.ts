@@ -92,6 +92,14 @@ export interface IRunViewVm {
      * Null when it is unset, and the view says so rather than opening a URL built on an empty string.
      */
     websiteDomain: string | null;
+    /**
+     * The page each composed path actually resolves to, keyed by path.
+     *
+     * A run's page map says which page it created for a path; this says which page a visitor reaches
+     * there. They differ whenever another composition has claimed the path, and the panel must say so
+     * — otherwise Open and Edit on one row lead to two different pages with nothing explaining it.
+     */
+    livePageByPath: Record<string, string | null>;
     /** The composed page the comparison is open on, by its Website Builder path. */
     comparedPath: string | null;
     /** This run's override reattachment outcomes (W8.7). */

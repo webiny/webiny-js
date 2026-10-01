@@ -3,7 +3,7 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { Button, CopyButton, Loader, Scrollbar, Tag, Text, useToast } from "@webiny/admin-ui";
 import { RunImage } from "~/presentation/runImage/RunImage.js";
 import type { RunViewPresenter } from "../../abstractions.js";
-import type { AssembledPageDto, ComposedPageDto } from "~/shared/types.js";
+import type { AssembledPageDto, ComposedPageDto, PageMapDto } from "~/shared/types.js";
 import { PageSignals } from "./PageSignals.js";
 import { composedStatus, type ComposedStatus } from "./pageStatus.js";
 import {
@@ -139,6 +139,8 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                 </div>
             ) : null}
 
+            <SupersededNotice map={map} live={vm.livePageByPath} />
+
             <CaptureBanner state={state} runId={runId} />
 
             <Scrollbar>
@@ -149,6 +151,10 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                         const signals = page.signals;
                         const composed = pageCapture(capture, page.path);
                         const liveUrl = websiteUrl(vm.websiteDomain, page.path);
+                        const live = vm.livePageByPath[page.path];
+                        // Undefined means the check has not answered yet; null or a different id
+                        // means this row's page is not the one the path serves.
+                        const superseded = live !== undefined && live !== page.pageId;
                         return (
                             <div
                                 key={page.path}
@@ -196,7 +202,14 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                                 </div>
 
                                 <div className="w-[9rem] flex-shrink-0">
-                                    <ScreenshotIndicator state={state} composed={composed} />
+                                    {superseded ? (
+                                        <Tag
+                                            variant={"warning" as never}
+                                            content="not the live page"
+                                        />
+                                    ) : (
+                                        <ScreenshotIndicator state={state} composed={composed} />
+                                    )}
                                 </div>
 
                                 <div className="flex flex-shrink-0 items-center gap-xs">
@@ -265,6 +278,50 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
         </div>
     );
 });
+
+/**
+ * When this run's pages are no longer the ones its paths serve.
+ *
+ * Composing a run makes it the live composition of its job and retires the others, so an older run's
+ * panel still lists pages that exist and are editable but that no visitor reaches. Without this, Open
+ * and Edit on the same row lead to two different pages — Open follows the path to whatever is live,
+ * Edit opens the page this run made — and nothing on screen explains the difference. That is the
+ * exact confusion this notice exists to prevent, and it is worth the extra query to be able to say it.
+ */
+const SupersededNotice = ({
+    map,
+    live
+}: {
+    map: PageMapDto;
+    live: Record<string, string | null>;
+}) => {
+    const checked = map.pages.filter(page => live[page.path] !== undefined);
+    const stale = checked.filter(page => live[page.path] !== page.pageId);
+    if (checked.length === 0 || stale.length === 0) {
+        return null;
+    }
+
+    const all = stale.length === checked.length;
+    return (
+        <div className="flex flex-col gap-xxs border-b border-warning bg-warning-subtle px-md py-sm">
+            <div className="flex items-center gap-sm">
+                <Tag variant="warning" content={all ? "superseded run" : "partly superseded"} />
+                <Text size="sm" className="font-medium">
+                    {all
+                        ? "None of this run's pages are the ones its paths serve."
+                        : `${stale.length} of ${checked.length} of this run's pages are not the ones their paths serve.`}
+                </Text>
+            </div>
+            <Text size="sm" className="text-neutral-strong">
+                Another composition has claimed {all ? "these paths" : "those paths"} — composing a
+                run makes it the live composition of its job and retires the rest. Edit still opens
+                the page this run made, Open follows the path to whatever is live, so on an affected
+                row they lead to two different pages. Compose this run again to make it the live
+                one.
+            </Text>
+        </div>
+    );
+};
 
 /**
  * Whether the run has composed screenshots at all, stated once above the list.

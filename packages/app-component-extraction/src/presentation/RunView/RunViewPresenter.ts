@@ -61,6 +61,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         composedAssemble: null,
         composedCapture: null,
         websiteDomain: null,
+        livePageByPath: {},
         comparedPath: null,
         reattachments: [],
         promoteComponents: [],
@@ -544,18 +545,28 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
      * it re-runs whenever the route changes for any reason.
      */
     openComposed(open: boolean, comparedPath: string | null): void {
-        if (this.vm.showComposed === open && this.vm.comparedPath === comparedPath) {
-            return;
+        if (this.vm.showComposed !== open || this.vm.comparedPath !== comparedPath) {
+            runInAction(() => {
+                this.vm.showComposed = open;
+                this.vm.comparedPath = open ? comparedPath : null;
+                if (open) {
+                    this.vm.showTokens = false;
+                    this.vm.showOverrides = false;
+                }
+            });
         }
-        runInAction(() => {
-            this.vm.showComposed = open;
-            this.vm.comparedPath = open ? comparedPath : null;
-            if (open) {
-                this.vm.showTokens = false;
-                this.vm.showOverrides = false;
-            }
-        });
-        if (open && this.vm.run && this.vm.pageMap === null) {
+
+        /*
+         * Loading is checked on every call, not only when the state changed.
+         *
+         * A link carrying `?composed=true` opens the panel during the first render, before `init`
+         * has resolved the run — so this runs once with no run to load for, and the state is already
+         * correct by the time the run arrives. Tying the load to the state change meant the panel
+         * reported "This run has not been composed" for a run that had been, with the query never
+         * sent. The caller re-invokes when the run id appears; this has to be ready for that call to
+         * change nothing except start the fetch.
+         */
+        if (open && this.vm.run && this.vm.pageMap === null && !this.vm.pageMapLoading) {
             void this.loadPageMap(this.vm.run);
         }
     }
@@ -589,6 +600,20 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 this.vm.websiteDomain = websiteDomain;
                 this.vm.pageMapLoading = false;
             });
+
+            /*
+             * Which page each path actually serves — fetched after the map, because it needs the
+             * paths, and separately because the panel is useful without it. A failure here leaves the
+             * liveness unknown rather than blocking the pages themselves.
+             */
+            if (pageMap) {
+                const live = await this.gateway
+                    .getLivePageIds(pageMap.pages.map(page => page.path))
+                    .catch(() => ({}));
+                runInAction(() => {
+                    this.vm.livePageByPath = live;
+                });
+            }
         } catch (error) {
             runInAction(() => {
                 this.vm.pageMapLoading = false;

@@ -147,9 +147,16 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
     const composedOpen = Boolean(route?.params.composed);
     const comparedPage = route?.params.page ?? null;
 
+    /*
+     * `loadedRunId` is in the deps because the route can open this panel before the run exists. A
+     * link lands, the effect runs with `vm.run` still null, and without re-running when the run
+     * arrives the panel would sit on "This run has not been composed" having never asked.
+     */
+    const loadedRunId = presenter.vm.run?.id ?? null;
+
     useEffect(() => {
         presenter.openComposed(composedOpen, comparedPage);
-    }, [presenter, composedOpen, comparedPage]);
+    }, [presenter, composedOpen, comparedPage, loadedRunId]);
 
     /*
      * `composed` is removed rather than set to false. The route layer coerces params, and

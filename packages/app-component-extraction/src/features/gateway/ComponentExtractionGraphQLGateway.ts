@@ -238,6 +238,40 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         return unwrap(response.pageCompositionPocComposedCapture) ?? null;
     }
 
+    async getLivePageIds(paths: string[]): Promise<Record<string, string | null>> {
+        if (paths.length === 0) {
+            return {};
+        }
+
+        /*
+         * One aliased document rather than a request per path.
+         *
+         * A composed page is only what a visitor sees if its path resolves to it, and nothing else
+         * can answer that — several published pages can claim one path, so the map naming a page is
+         * not the same as that page being live. Asked in one round trip because the panel needs it
+         * for every row before it can render any of them honestly.
+         */
+        const fields = paths
+            .map(
+                (path, index) =>
+                    `p${index}: getPageByPath(path: ${JSON.stringify(path)}) { data { id } error { message } }`
+            )
+            .join("\n");
+
+        const response = await this.client.execute<{
+            websiteBuilder: Record<string, GqlEnvelope<{ id: string } | null>>;
+        }>({ query: `query GetLivePages { websiteBuilder { ${fields} } }` });
+
+        const live: Record<string, string | null> = {};
+        paths.forEach((path, index) => {
+            const entry = response.websiteBuilder?.[`p${index}`];
+            // A path that resolves to nothing is a real answer — the page is published but something
+            // else is wrong — so it is recorded as null rather than skipped.
+            live[path] = entry?.error ? null : (entry?.data?.id ?? null);
+        });
+        return live;
+    }
+
     async getWebsiteDomain(): Promise<string | null> {
         const response = await this.client.execute<{
             websiteBuilder: { getSettings: GqlEnvelope<{ previewDomain: string } | null> };

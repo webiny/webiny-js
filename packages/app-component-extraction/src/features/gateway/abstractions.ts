@@ -75,6 +75,13 @@ export interface IComponentExtractionGateway {
     getComposedCapture(runId: string): Promise<ComposedCaptureDto | null>;
     /** Where the migrated site is served from — Website Builder's preview domain. Null if unset. */
     getWebsiteDomain(): Promise<string | null>;
+    /**
+     * The page each path actually resolves to, keyed by path.
+     *
+     * A composed page is only what a visitor sees if its path resolves to it, and the page map alone
+     * cannot say — several published pages can claim one path.
+     */
+    getLivePageIds(paths: string[]): Promise<Record<string, string | null>>;
     /** Set (upsert) an override from a run, re-applying in place and marking downstream stale (W8.1). */
     setOverride(
         runId: string,
