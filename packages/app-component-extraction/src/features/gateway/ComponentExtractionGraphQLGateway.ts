@@ -183,10 +183,10 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         return unwrap(response.componentExtractionExcludeCapturedPages);
     }
 
-    async renderComponents(runId: string): Promise<StageTriggerResult> {
+    async renderComponents(runId: string, signature?: string): Promise<StageTriggerResult> {
         const response = await this.client.execute<{
             componentExtractionRenderComponents: GqlEnvelope<StageTriggerResult>;
-        }>({ query: RENDER_COMPONENTS, variables: { runId } });
+        }>({ query: RENDER_COMPONENTS, variables: { runId, signature } });
 
         return unwrap(response.componentExtractionRenderComponents);
     }

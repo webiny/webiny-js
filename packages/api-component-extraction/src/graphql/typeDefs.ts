@@ -172,8 +172,11 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             runId: ID!
             urls: [String!]!
         ): ComponentExtractionRunResponse!
-        "Render the run's generated components to screenshots for the Generate view (W7.7). Requires Generate to be done."
-        componentExtractionRenderComponents(runId: ID!): ComponentExtractionTaskResponse!
+        "Render the run's generated components to screenshots for the Generate view (W7.7). Requires Generate to be done. Pass a signature to re-render just that one component; the others keep their current screenshots."
+        componentExtractionRenderComponents(
+            runId: ID!
+            signature: String
+        ): ComponentExtractionTaskResponse!
         "Set the accept/reject decision on a generated component (W7.8), or 'none' to clear it. Returns the updated decision map."
         componentExtractionSetComponentDecision(
             runId: ID!

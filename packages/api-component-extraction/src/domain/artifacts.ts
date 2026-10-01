@@ -600,6 +600,15 @@ export interface RenderRecord {
      */
     similarity: number | null;
     /**
+     * What the page reported while rendering this component, successfully or not.
+     *
+     * A render can complete and still be wrong — a bundle that fails to hydrate leaves the sandbox
+     * with nothing to show and screenshots blank — and the reason only ever appears in the page's own
+     * console. Kept here so the view can say "rendered, but the page complained" instead of showing
+     * a white rectangle.
+     */
+    pageErrors?: string[];
+    /**
      * Why this component did not render, when it did not.
      *
      * On the record rather than only in the task log, because the task log keeps the last item and

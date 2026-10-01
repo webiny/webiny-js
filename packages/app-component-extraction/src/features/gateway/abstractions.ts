@@ -42,7 +42,11 @@ export interface IComponentExtractionGateway {
     /** Drop captured/failed pages from a run; returns the run with Segment+downstream marked stale. */
     excludeCapturedPages(runId: string, urls: string[]): Promise<RunDto>;
     /** Trigger the render task that screenshots the run's generated components (W7.7). */
-    renderComponents(runId: string): Promise<StageTriggerResult>;
+    /**
+     * Trigger the rendered-component screenshot pass. With a signature, re-renders just that one
+     * component and leaves the other results untouched.
+     */
+    renderComponents(runId: string, signature?: string): Promise<StageTriggerResult>;
     /** The rendered-component screenshots for a run, or null if none produced yet. */
     getRenders(runId: string): Promise<unknown>;
     /** The operator's accept/reject decisions for a run's generated components (W7.8). */

@@ -41,6 +41,8 @@ export interface IRunViewVm {
     renders: RenderRecordDto[] | null;
     /** A render pass has been triggered and its screenshots are not in yet. */
     rendering: boolean;
+    /** Signatures whose single-component re-render is in flight, so each card can show its own state. */
+    renderingSignatures: string[];
     /** Accept/reject decisions per component signature (W7.8). */
     decisions: Record<string, ComponentDecisionDto>;
     /** Source section crop ref per component signature, from the Plan artifact. */
@@ -131,8 +133,8 @@ export interface IRunViewPresenter {
     addDiscoverUrl(url: string): Promise<void>;
     /** Drop captured/failed pages, then refresh the run and the open artifact. */
     excludeCapturedPages(urls: string[]): Promise<void>;
-    /** Trigger the rendered-component screenshot pass for this run (W7.7). */
-    renderComponents(): Promise<void>;
+    /** Trigger the rendered-component screenshot pass. With a signature, re-renders just that one. */
+    renderComponents(signature?: string): Promise<void>;
     /** Set (or clear, with "none") a generated component's accept/reject decision (W7.8). */
     setDecision(signature: string, decision: string): Promise<void>;
     /** Accept every listed component (the validation-passing ones) in one action. */

@@ -30,6 +30,14 @@ export interface RenderTaskInput {
      * failures and reports success. Pressing the button did nothing, visibly.
      */
     attempt?: string;
+    /**
+     * Render only these components, instead of all of them.
+     *
+     * Re-rendering one component after an edit cost a pass over every component in the run, which at
+     * ~45s each is the difference between a usable loop and one nobody uses. Results are merged into
+     * the existing artifact rather than replacing it, so narrowing the pass does not erase the others.
+     */
+    signatures?: string[];
 }
 
 export interface RenderTaskProgress {
@@ -117,7 +125,10 @@ class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
         if (resolved.isFail()) {
             return controller.response.error(resolved.error.message);
         }
-        const components = resolved.value;
+        const requested = input.signatures?.length ? new Set(input.signatures) : null;
+        const components = requested
+            ? resolved.value.filter(component => requested.has(component.signature))
+            : resolved.value;
         const total = components.length;
 
         // The source section crop per component, for the visual-similarity indicator — read from the
@@ -135,8 +146,26 @@ class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
         }
 
         const rendersKey = stageArtifactKey(run.id, "generate", generateVersion, "renders");
+
+        /*
+         * What this pass is NOT re-rendering. A narrowed pass must leave the other components' results
+         * exactly as they were — replacing the artifact with only the one just rendered would quietly
+         * delete the rest, which is the kind of loss that looks like a render regression.
+         */
+        const keepExisting = async (): Promise<RenderRecord[]> => {
+            if (!requested) {
+                return [];
+            }
+            const existing = await this.artifactStore.getJson<RenderArtifact>(rendersKey);
+            if (existing.isFail() || !existing.value) {
+                return [];
+            }
+            return existing.value.renders.filter(record => !requested.has(record.signature));
+        };
         if (total === 0) {
-            const empty: RenderArtifact = { renders: [] };
+            // Nothing matched. For a narrowed pass that means the signature is unknown, and wiping the
+            // artifact would turn a bad argument into lost results.
+            const empty: RenderArtifact = { renders: await keepExisting() };
             await this.artifactStore.putJson(rendersKey, empty);
             return controller.response.done({});
         }
@@ -202,7 +231,10 @@ class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
                         width: result.value.width,
                         height: result.value.height,
                         ok: true,
-                        similarity: result.value.similarity
+                        similarity: result.value.similarity,
+                        pageErrors: result.value.pageErrors.length
+                            ? result.value.pageErrors
+                            : undefined
                     });
                 } else {
                     // One component failing to render must not lose the rest — record and continue.
@@ -246,7 +278,9 @@ class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
             await session.close();
         }
 
-        const artifact: RenderArtifact = { renders: checkpoint.renders };
+        const artifact: RenderArtifact = {
+            renders: [...(await keepExisting()), ...checkpoint.renders]
+        };
         const written = await this.artifactStore.putJson(rendersKey, artifact);
         if (written.isFail()) {
             return controller.response.error(written.error.message);

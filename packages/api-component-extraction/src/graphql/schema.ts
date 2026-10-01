@@ -1078,7 +1078,7 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
             runRepository: RunRepository.Interface,
             taskService: TaskService.Interface
         ) {
-            return ({ args }: { args: { runId: string } }) =>
+            return ({ args }: { args: { runId: string; signature?: string } }) =>
                 resolve(async () => {
                     if (!(await permissions.canCreate("componentExtraction"))) {
                         throw new Error("You do not have permission to run component extraction.");

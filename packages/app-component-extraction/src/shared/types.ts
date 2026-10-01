@@ -475,6 +475,8 @@ export interface RenderRecordDto {
     similarity: number | null;
     /** Why this component did not render, when it did not. */
     error?: string;
+    /** What the page reported while rendering — present even when the render completed. */
+    pageErrors?: string[];
 }
 
 export interface RenderArtifactDto {

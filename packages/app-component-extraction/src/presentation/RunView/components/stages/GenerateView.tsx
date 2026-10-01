@@ -110,6 +110,7 @@ const GenerateCard = ({
     sourceCropRef,
     decision,
     regenerating,
+    renderingThis,
     runId,
     onViewCode
 }: {
@@ -119,6 +120,7 @@ const GenerateCard = ({
     sourceCropRef: string | undefined;
     decision: ComponentDecisionDto | undefined;
     regenerating: boolean;
+    renderingThis: boolean;
     runId: string;
     onViewCode: () => void;
 }) => {
@@ -221,10 +223,30 @@ const GenerateCard = ({
                                     </div>
                                 )}
                             </div>
-                            <figcaption>
+                            <figcaption className="flex items-center justify-between gap-xs">
                                 <Text size="sm" className="text-neutral-strong">
                                     Rendered
                                 </Text>
+                                {/*
+                                 * Per component, because a whole-run pass costs roughly 45 seconds a
+                                 * component and most of the time only one has changed.
+                                 */}
+                                <Button
+                                    variant="tertiary"
+                                    size="sm"
+                                    text={
+                                        renderingThis
+                                            ? "Rendering…"
+                                            : render
+                                              ? "Re-render"
+                                              : "Render"
+                                    }
+                                    disabled={renderingThis}
+                                    title="Render just this component. The others keep their current screenshots."
+                                    onClick={() =>
+                                        void presenter.renderComponents(component.signature)
+                                    }
+                                />
                             </figcaption>
                         </figure>
                     </div>
@@ -413,6 +435,9 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
                             sourceCropRef={vm.sourceCrops[component.signature]}
                             decision={vm.decisions[component.signature]}
                             regenerating={vm.regenerating.includes(component.signature)}
+                            renderingThis={
+                                vm.rendering || vm.renderingSignatures.includes(component.signature)
+                            }
                             runId={runId}
                             onViewCode={() => viewCode(component.signature)}
                         />

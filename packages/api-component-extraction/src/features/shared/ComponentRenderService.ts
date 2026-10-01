@@ -140,6 +140,15 @@ export interface RenderedComponent {
     width: number;
     height: number;
     similarity: number | null;
+    /**
+     * What the page reported while rendering, even though the render completed.
+     *
+     * Carried on success, not only on failure, because the failure that matters here does not fail:
+     * the sandbox swallows a hydration error, renders nothing, and the screenshot is a blank page that
+     * every check calls a success. The page said why on the way past, and this is the only thing
+     * listening.
+     */
+    pageErrors: string[];
 }
 
 /**
@@ -224,6 +233,7 @@ class ComponentRenderServiceImpl implements IComponentRenderService {
         }
 
         return Result.ok({
+            pageErrors: rendered.pageErrors ?? [],
             renderRef: stored.value,
             width: rendered.width,
             height: rendered.height,

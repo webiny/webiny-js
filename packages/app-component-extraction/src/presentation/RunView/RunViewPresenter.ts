@@ -41,6 +41,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         artifactLoading: false,
         renders: null,
         rendering: false,
+        renderingSignatures: [],
         decisions: {},
         sourceCrops: {},
         regenerating: [],
@@ -331,20 +332,42 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
-    async renderComponents(): Promise<void> {
+    /**
+     * Trigger a render pass, for everything or for one component.
+     *
+     * The busy state is per component when a signature is given, so re-rendering one card does not
+     * grey out the rest — at roughly 45 seconds a component, a whole-run pass to see one edit is the
+     * difference between a loop someone uses and one they avoid.
+     *
+     * Completion is detected by the renders artifact changing, which `refresh` already polls; this
+     * only clears its own flag if the trigger itself fails.
+     */
+    async renderComponents(signature?: string): Promise<void> {
         const runId = this.vm.run?.id;
         if (!runId) {
             return;
         }
         runInAction(() => {
-            this.vm.rendering = true;
+            if (signature) {
+                if (!this.vm.renderingSignatures.includes(signature)) {
+                    this.vm.renderingSignatures.push(signature);
+                }
+            } else {
+                this.vm.rendering = true;
+            }
             this.vm.error = null;
         });
         try {
-            await this.gateway.renderComponents(runId);
+            await this.gateway.renderComponents(runId, signature);
         } catch (error) {
             runInAction(() => {
-                this.vm.rendering = false;
+                if (signature) {
+                    this.vm.renderingSignatures = this.vm.renderingSignatures.filter(
+                        item => item !== signature
+                    );
+                } else {
+                    this.vm.rendering = false;
+                }
                 this.vm.error = (error as Error).message;
             });
         }
@@ -1102,6 +1125,12 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 // The artifact is written when the pass completes, so its arrival clears "rendering".
                 if (artifact?.renders) {
                     this.vm.rendering = false;
+                    // A single-component pass clears only the components it actually produced, so two
+                    // re-renders in flight do not clear each other.
+                    const produced = new Set(artifact.renders.map(record => record.signature));
+                    this.vm.renderingSignatures = this.vm.renderingSignatures.filter(
+                        signature => !produced.has(signature)
+                    );
                 }
             });
         } catch {
