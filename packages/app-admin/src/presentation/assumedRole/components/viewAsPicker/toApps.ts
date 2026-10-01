@@ -1,13 +1,5 @@
-import type React from "react";
 import type { PermissionRendererConfig } from "~/permissions/types.js";
-import type { AssumedRolePresenter } from "~/presentation/assumedRole/abstractions.js";
-
-export interface AppAccess {
-    name: string;
-    title: string;
-    icon: React.ReactElement | undefined;
-    prefix: string;
-}
+import type { AppAccess } from "./types.js";
 
 /*
  * The apps a role can reach, named the way the role editor names them. Built from the same
@@ -34,12 +26,4 @@ export function toApps(renderers: PermissionRendererConfig[]): AppAccess[] {
     }
 
     return apps;
-}
-
-export function grantedApps(option: AssumedRolePresenter.Option, apps: AppAccess[]): AppAccess[] {
-    return apps.filter(app => {
-        return option.permissionNames.some(name => {
-            return name === `${app.prefix}.*` || name.startsWith(`${app.prefix}.`);
-        });
-    });
 }

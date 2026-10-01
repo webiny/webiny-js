@@ -7,8 +7,8 @@ import { ReactComponent as FullAccessIcon } from "@webiny/icons/admin_panel_sett
 import { ReactComponent as TeamIcon } from "@webiny/icons/groups.svg";
 import { ReactComponent as RoleIcon } from "@webiny/icons/badge.svg";
 import type { AssumedRolePresenter } from "~/presentation/assumedRole/abstractions.js";
-import { grantedApps } from "./appAccess.js";
-import type { AppAccess } from "./appAccess.js";
+import { grantedApps } from "./grantedApps.js";
+import type { AppAccess } from "./types.js";
 import { EnterPill } from "./EnterPill.js";
 import { ROW_CLASS_NAME } from "./rowClassName.js";
 import { Tile } from "./Tile.js";

@@ -6,8 +6,8 @@ import { Text } from "@webiny/admin-ui";
 import { ReactComponent as FullAccessIcon } from "@webiny/icons/admin_panel_settings.svg";
 import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
 import type { AssumedRolePresenter } from "~/presentation/assumedRole/abstractions.js";
-import { grantedApps } from "./appAccess.js";
-import type { AppAccess } from "./appAccess.js";
+import { grantedApps } from "./grantedApps.js";
+import type { AppAccess } from "./types.js";
 
 interface ChipProps {
     icon?: React.ReactElement;

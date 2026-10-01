@@ -13,7 +13,7 @@ import { useAdminConfig } from "~/config/AdminConfig.js";
 import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 import { AssumedRolePresenterFeature } from "~/presentation/assumedRole/feature.js";
 import type { Command } from "~/presentation/commandPalette/abstractions.js";
-import { toApps } from "./appAccess.js";
+import { toApps } from "./toApps.js";
 import { CanAccess } from "./CanAccess.js";
 import { ExitRow } from "./ExitRow.js";
 import { Kbd } from "./Kbd.js";
