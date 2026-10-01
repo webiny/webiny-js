@@ -425,6 +425,27 @@ export const GET_PAGE_MAP = /* GraphQL */ `
  * `ComposedCaptureDto`.
  */
 /**
+ * Compose this run's assembled pages into published Website Builder pages.
+ *
+ * Returns a task id and runs in the background, like a stage. Composition is not a stage — it has no
+ * ledger entry — so the only way to know it finished is that the page map changes.
+ */
+export const COMPOSE_PAGES = /* GraphQL */ `
+    mutation ComposePages($runId: ID!) {
+        pageCompositionPocComposePages(runId: $runId) {
+            data {
+                taskId
+                runId
+            }
+            error {
+                message
+                code
+            }
+        }
+    }
+`;
+
+/**
  * The domain the migrated site is served from.
  *
  * Website Builder's own setting, read rather than configured a second time here — it is what the

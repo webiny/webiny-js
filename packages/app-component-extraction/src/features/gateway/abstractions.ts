@@ -73,6 +73,8 @@ export interface IComponentExtractionGateway {
     getPageMap(runId: string): Promise<PageMapDto | null>;
     /** Screenshots of the composed pages, or null when nobody has run the local harness for it. */
     getComposedCapture(runId: string): Promise<ComposedCaptureDto | null>;
+    /** Compose this run's pages. Background task; the page map changing is how it reports done. */
+    composePages(runId: string): Promise<{ taskId: string; runId: string }>;
     /** Where the migrated site is served from — Website Builder's preview domain. Null if unset. */
     getWebsiteDomain(): Promise<string | null>;
     /**

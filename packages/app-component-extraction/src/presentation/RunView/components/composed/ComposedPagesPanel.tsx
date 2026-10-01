@@ -3,7 +3,7 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { Button, CopyButton, Loader, Scrollbar, Tag, Text, useToast } from "@webiny/admin-ui";
 import { RunImage } from "~/presentation/runImage/RunImage.js";
 import type { RunViewPresenter } from "../../abstractions.js";
-import type { AssembledPageDto, ComposedPageDto, PageMapDto } from "~/shared/types.js";
+import type { AssembledPageDto, ComposedPageDto, PageMapDto, RunDto } from "~/shared/types.js";
 import { PageSignals } from "./PageSignals.js";
 import { composedStatus, type ComposedStatus } from "./pageStatus.js";
 import {
@@ -31,6 +31,28 @@ const STATUS_TAG: Record<ComposedStatus, { content: string; variant: string }> =
     caveat: { content: "composed, with a caveat", variant: "warning" },
     failed: { content: "failed", variant: "destructive" },
     unknown: { content: "composed, unmeasured", variant: "neutral-light" }
+};
+
+/**
+ * Why composition cannot run yet, or null when it can.
+ *
+ * The same two conditions the API enforces, stated here so the button can explain itself instead of
+ * failing on click. Promote matters for a reason worth repeating: a composed page addresses a
+ * component by the name it was promoted under, so composing before Promote produces pages that
+ * reference components that do not exist.
+ */
+const composeBlockedBecause = (run: RunDto | null): string | null => {
+    if (!run) {
+        return "The run is still loading.";
+    }
+    const status = (stage: string) => run.stages.find(entry => entry.stage === stage)?.status;
+    if (status("assemble") !== "done") {
+        return "Assemble must be done first — composition builds pages from what Assemble laid out.";
+    }
+    if (status("promote") !== "done") {
+        return "Promote must be done first — a composed page addresses a component by the name it was promoted under.";
+    }
+    return null;
 };
 
 const pathOf = (url: string): string => {
@@ -70,11 +92,12 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
 
     if (!map) {
         return (
-            <div className="p-md">
+            <div className="flex flex-col items-start gap-sm p-md">
                 <Text className="text-neutral-strong">
                     This run has not been composed. Composition is a separate step from the pipeline
                     — run it to produce Website Builder pages from this run&apos;s components.
                 </Text>
+                <ComposeButton presenter={presenter} />
             </div>
         );
     }
@@ -117,9 +140,12 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                     {map.pages.length} composed · {map.failed.length} failed · {map.links.rewritten}{" "}
                     destinations rewritten · {map.links.dropped} dropped
                 </Text>
-                <Text size="sm" className="text-neutral-strong">
-                    composed {new Date(map.composedOn).toLocaleString()}
-                </Text>
+                <div className="flex items-center gap-sm">
+                    <Text size="sm" className="text-neutral-strong">
+                        composed {new Date(map.composedOn).toLocaleString()}
+                    </Text>
+                    <ComposeButton presenter={presenter} again />
+                </div>
             </div>
 
             {unresolved ? (
@@ -278,6 +304,41 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
         </div>
     );
 });
+
+/**
+ * Runs the composition, and says why it cannot when it cannot.
+ *
+ * Disabled with the reason in its tooltip rather than hidden: a step you cannot see is harder to
+ * reason about than one you can see is unavailable, and the reason is the useful part — it names the
+ * stage to finish.
+ */
+const ComposeButton = ({
+    presenter,
+    again
+}: {
+    presenter: RunViewPresenter.Interface;
+    again?: boolean;
+}) => {
+    const { vm } = presenter;
+    const blocked = composeBlockedBecause(vm.run);
+    const busy = vm.composing;
+
+    return (
+        <Button
+            variant={again ? "secondary" : "primary"}
+            size="sm"
+            text={busy ? "Composing…" : again ? "Compose again" : "Compose pages"}
+            disabled={Boolean(blocked) || busy}
+            title={
+                blocked ??
+                (again
+                    ? "Compose this run again. It becomes the live composition of its job, and the other runs' pages are retired."
+                    : "Build published Website Builder pages from this run's components.")
+            }
+            onClick={() => void presenter.composePages()}
+        />
+    );
+};
 
 /**
  * When this run's pages are no longer the ones its paths serve.

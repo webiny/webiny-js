@@ -17,6 +17,7 @@ import type {
 import {
     CHECK_REACHABILITY,
     CLEAR_OVERRIDE,
+    COMPOSE_PAGES,
     CREATE_JOB,
     CREATE_RUN,
     EXCLUDE_CAPTURED_PAGES,
@@ -236,6 +237,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: GET_COMPOSED_CAPTURE, variables: { runId } });
 
         return unwrap(response.pageCompositionPocComposedCapture) ?? null;
+    }
+
+    async composePages(runId: string): Promise<{ taskId: string; runId: string }> {
+        const response = await this.client.execute<{
+            pageCompositionPocComposePages: GqlEnvelope<{ taskId: string; runId: string }>;
+        }>({ query: COMPOSE_PAGES, variables: { runId } });
+
+        return unwrap(response.pageCompositionPocComposePages);
     }
 
     async getLivePageIds(paths: string[]): Promise<Record<string, string | null>> {

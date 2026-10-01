@@ -62,6 +62,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         composedCapture: null,
         websiteDomain: null,
         livePageByPath: {},
+        composing: false,
         comparedPath: null,
         reattachments: [],
         promoteComponents: [],
@@ -569,6 +570,68 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         if (open && this.vm.run && this.vm.pageMap === null && !this.vm.pageMapLoading) {
             void this.loadPageMap(this.vm.run);
         }
+    }
+
+    /**
+     * Compose this run's pages.
+     *
+     * Composition is not a pipeline stage: no ledger entry, no stage version, no websocket event. So
+     * there is nothing to subscribe to and the only evidence it finished is the page map changing —
+     * which is what this waits for, rather than guessing at a duration.
+     *
+     * Composing also makes this run the live composition of its job and retires the other runs', so
+     * the map is reloaded in full afterwards: the liveness of every path can change, not just this
+     * run's own pages.
+     */
+    async composePages(): Promise<void> {
+        const run = this.vm.run;
+        if (!run || this.vm.composing) {
+            return;
+        }
+
+        const before = this.vm.pageMap?.composeVersion ?? 0;
+        runInAction(() => {
+            this.vm.composing = true;
+            this.vm.error = null;
+        });
+
+        try {
+            await this.gateway.composePages(run.id);
+        } catch (error) {
+            runInAction(() => {
+                this.vm.composing = false;
+                this.vm.error = (error as Error).message;
+            });
+            return;
+        }
+
+        // Polled rather than timed. A two-page site finishes in seconds and an eleven-page one takes
+        // over a minute, so any fixed wait is wrong for one of them.
+        for (let attempt = 0; attempt < 60; attempt++) {
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            let map;
+            try {
+                map = await this.gateway.getPageMap(run.id);
+            } catch {
+                continue;
+            }
+            if (map && (map.composeVersion ?? 0) > before) {
+                runInAction(() => {
+                    this.vm.composing = false;
+                    // Dropped so the reload below refetches everything, liveness included.
+                    this.vm.pageMap = null;
+                    this.vm.livePageByPath = {};
+                });
+                await this.loadPageMap(run);
+                return;
+            }
+        }
+
+        runInAction(() => {
+            this.vm.composing = false;
+            this.vm.error =
+                "The composition was started but has not reported a result after three minutes. It may still be running — reopen this panel to check.";
+        });
     }
 
     /** The run's composed pages. Absent is a normal answer — most runs are never composed. */

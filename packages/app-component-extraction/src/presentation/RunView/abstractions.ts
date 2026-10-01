@@ -100,6 +100,13 @@ export interface IRunViewVm {
      * — otherwise Open and Edit on one row lead to two different pages with nothing explaining it.
      */
     livePageByPath: Record<string, string | null>;
+    /**
+     * A composition is running and its result is not in yet.
+     *
+     * Composition is not a stage, so there is no ledger entry to watch and no websocket event. The
+     * page map changing is the only thing that says it finished, which is what the presenter polls.
+     */
+    composing: boolean;
     /** The composed page the comparison is open on, by its Website Builder path. */
     comparedPath: string | null;
     /** This run's override reattachment outcomes (W8.7). */
@@ -148,6 +155,8 @@ export interface IRunViewPresenter {
      * The view calls it from an effect on the route params; nothing else should call it.
      */
     openComposed(open: boolean, comparedPath: string | null): void;
+    /** Compose this run's pages, then reload the map. Gated on Assemble and Promote being done. */
+    composePages(): Promise<void>;
     /** Toggle a cluster's selection for a bulk correction (W8.3). */
     toggleClusterSelection(signature: string): void;
     /** Clear the cluster selection (W8.3). */
