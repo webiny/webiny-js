@@ -1,20 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { getAuditConfig } from "~/utils/getAuditConfig";
 import { useHandler } from "./helpers/useHandler";
 import { auditAction } from "~tests/mocks/auditAction.js";
 import { generateAlphaNumericId } from "@webiny/utils/generateId.js";
 import type { IAuditLog } from "~/storage/types.js";
+import { UpdateAuditLogUseCase } from "~/features/UpdateAuditLog/abstractions.js";
 
 describe("update existing audit log", () => {
     it("should update existing log if still in delay period", async () => {
-        const createAuditLog = getAuditConfig({
-            ...auditAction,
-            action: {
-                ...auditAction.action,
-                newEntryDelay: 30
-            }
-        });
-
         const { handler } = useHandler({});
 
         const context = await handler();
@@ -29,19 +21,25 @@ describe("update existing audit log", () => {
             evenMoreStringData: "abcdef"
         };
 
-        const createdResult = (await createAuditLog(
-            message,
-            data,
-            entityId,
-            context.recorder
-        )) as IAuditLog;
+        const createdResult = (await context.recordAuditLog({
+            audit: {
+                ...auditAction,
+                action: {
+                    ...auditAction.action,
+                    newEntryDelay: 30
+                }
+            },
+            message: message,
+            content: data,
+            entityId: entityId
+        })) as IAuditLog;
 
         expect(createdResult).toMatchObject({
             entityId,
             content: JSON.stringify(data)
         });
 
-        const listResult = await context.auditLogs.listAuditLogs({});
+        const listResult = await context.listAuditLogs({});
         expect(listResult.items).toHaveLength(1);
         expect(listResult.items?.[0]).toMatchObject({
             entityId,
@@ -54,18 +52,65 @@ describe("update existing audit log", () => {
             someMoreData: true
         };
         const updatedMessage = "Updated audit log";
-        const updatedResult = (await createAuditLog(
-            updatedMessage,
-            updatedData,
-            entityId,
-            context.recorder
-        )) as IAuditLog;
+        const updatedResult = (await context.recordAuditLog({
+            audit: {
+                ...auditAction,
+                action: {
+                    ...auditAction.action,
+                    newEntryDelay: 30
+                }
+            },
+            message: updatedMessage,
+            content: updatedData,
+            entityId: entityId
+        })) as IAuditLog;
 
         expect(updatedResult).toMatchObject({
             id: createdResult.id,
             entityId,
             message: updatedMessage,
             content: JSON.stringify(updatedData)
+        });
+    });
+
+    it("should keep the existing log's tags when merging into it", async () => {
+        const { handler } = useHandler({});
+        const context = await handler();
+
+        const audit = {
+            ...auditAction,
+            action: {
+                ...auditAction.action,
+                newEntryDelay: 30
+            }
+        };
+        const entityId = `${generateAlphaNumericId()}#0001`;
+
+        const created = (await context.recordAuditLog({
+            audit,
+            message: "Created",
+            content: { before: { title: "A" }, after: { title: "B" } },
+            entityId
+        })) as IAuditLog;
+
+        // Something tags the log after it was created, for example a subscriber or an admin.
+        const tagResult = await context.container
+            .resolve(UpdateAuditLogUseCase)
+            .execute(created, { tags: ["important"] });
+        expect(tagResult.isOk()).toBe(true);
+
+        const merged = (await context.recordAuditLog({
+            audit,
+            message: "Updated",
+            content: { before: { title: "B" }, after: { title: "C" } },
+            entityId
+        })) as IAuditLog;
+
+        expect(merged).toMatchObject({
+            id: created.id,
+            message: "Updated",
+            tags: ["important"],
+            content: JSON.stringify({ before: { title: "A" }, after: { title: "C" } })
         });
     });
 });

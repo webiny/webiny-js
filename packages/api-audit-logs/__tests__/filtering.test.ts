@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { useHandler } from "~tests/helpers/useHandler.js";
 import type { AuditLogsTestContext } from "~tests/helpers/useHandler.js";
 import { AUDIT } from "~/config.js";
@@ -7,14 +6,8 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import type { IAuditLog } from "~/storage/types.js";
 
 // FM
-const createFileCreateAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE.CREATE);
-const createFileUpdateAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE.UPDATE);
 // CMS Entry
-const createCmsEntryCreateAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.CREATE);
-const createCmsEntryUpdateAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.UPDATE);
-const createCmsEntryDeleteAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.DELETE);
 // Security Api Key
-const createApiKeyCreateAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.CREATE);
 
 interface ICreateMockAuditLogsParams {
     context: AuditLogsTestContext;
@@ -39,60 +32,60 @@ const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<
 
     const sleep = createSleep(activateSleep);
     results.push(
-        await createFileCreateAuditLog(
-            "File created",
-            { fileName: "test.jpg" },
-            "file#0001",
-            context.recorder
-        )
+        await context.recordAuditLog({
+            audit: AUDIT.FILE_MANAGER.FILE.CREATE,
+            message: "File created",
+            content: { fileName: "test.jpg" },
+            entityId: "file#0001"
+        })
     );
     await sleep(100);
     results.push(
-        await createCmsEntryCreateAuditLog(
-            "Entry created",
-            { title: "Test Entry" },
-            "cmsEntry#0001",
-            context.recorder
-        )
+        await context.recordAuditLog({
+            audit: AUDIT.HEADLESS_CMS.ENTRY.CREATE,
+            message: "Entry created",
+            content: { title: "Test Entry" },
+            entityId: "cmsEntry#0001"
+        })
     );
     await sleep(200);
     results.push(
-        await createCmsEntryUpdateAuditLog(
-            "Entry updated",
-            { title: "Test Entry Updated" },
-            "cmsEntry#0002",
-            context.recorder
-        )
+        await context.recordAuditLog({
+            audit: AUDIT.HEADLESS_CMS.ENTRY_REVISION.UPDATE,
+            message: "Entry updated",
+            content: { title: "Test Entry Updated" },
+            entityId: "cmsEntry#0002"
+        })
     );
     await sleep(300);
     results.push(
-        await createApiKeyCreateAuditLog(
-            "API key created",
-            { name: "Test API Key" },
-            "apiKey#0003",
-            context.recorder
-        )
+        await context.recordAuditLog({
+            audit: AUDIT.SECURITY.API_KEY.CREATE,
+            message: "API key created",
+            content: { name: "Test API Key" },
+            entityId: "apiKey#0003"
+        })
     );
     await sleep(400);
     results.push(
-        await createFileUpdateAuditLog(
-            "File updated",
-            {
+        await context.recordAuditLog({
+            audit: AUDIT.FILE_MANAGER.FILE.UPDATE,
+            message: "File updated",
+            content: {
                 before: { fileName: "test.jpg" },
                 after: { fileName: "test-updated.jpg" }
             },
-            "file#0001",
-            context.recorder
-        )
+            entityId: "file#0001"
+        })
     );
     await sleep(500);
     results.push(
-        await createCmsEntryDeleteAuditLog(
-            "Entry deleted",
-            { title: "Test Entry Updated" },
-            "cmsEntry#0002",
-            context.recorder
-        )
+        await context.recordAuditLog({
+            audit: AUDIT.HEADLESS_CMS.ENTRY.DELETE,
+            message: "Entry deleted",
+            content: { title: "Test Entry Updated" },
+            entityId: "cmsEntry#0002"
+        })
     );
     return results as IAuditLog[];
 };
@@ -145,7 +138,7 @@ describe("audit logs filtering", () => {
             context
         });
 
-        const result = await context.auditLogs.listAuditLogs({});
+        const result = await context.listAuditLogs({});
         expect(result.items).toHaveLength(6);
         expect(result.items).toMatchObject([...createdAuditLogs]);
     });
@@ -156,7 +149,7 @@ describe("audit logs filtering", () => {
             context
         });
 
-        const cmsResult = await context.auditLogs.listAuditLogs({
+        const cmsResult = await context.listAuditLogs({
             app: "HEADLESS_CMS"
         });
         expect(cmsResult.items).toMatchObject([
@@ -166,13 +159,13 @@ describe("audit logs filtering", () => {
         ]);
         expect(cmsResult.items).toHaveLength(3);
 
-        const fileManagerResult = await context.auditLogs.listAuditLogs({
+        const fileManagerResult = await context.listAuditLogs({
             app: "FILE_MANAGER"
         });
         expect(fileManagerResult.items).toMatchObject([createdAuditLogs[0], createdAuditLogs[4]]);
         expect(fileManagerResult.items).toHaveLength(2);
 
-        const securityResult = await context.auditLogs.listAuditLogs({
+        const securityResult = await context.listAuditLogs({
             app: "SECURITY"
         });
         expect(securityResult.items).toMatchObject([createdAuditLogs[3]]);
@@ -185,13 +178,13 @@ describe("audit logs filtering", () => {
             context
         });
 
-        const foundResult = await context.auditLogs.listAuditLogs({
+        const foundResult = await context.listAuditLogs({
             createdBy: context.container.resolve(IdentityContext).getIdentity().id
         });
         expect(foundResult.items).toHaveLength(6);
         expect(foundResult.items).toMatchObject([...createdAuditLogs]);
 
-        const notFoundResult = await context.auditLogs.listAuditLogs({
+        const notFoundResult = await context.listAuditLogs({
             createdBy: "unknown"
         });
         expect(notFoundResult.items).toHaveLength(0);
@@ -207,7 +200,7 @@ describe("audit logs filtering", () => {
         const from1 = logs[1].createdOn;
         const to4 = logs[4].createdOn;
 
-        const resultFrom1To4 = await context.auditLogs.listAuditLogs({
+        const resultFrom1To4 = await context.listAuditLogs({
             createdOn_gte: from1,
             createdOn_lte: to4
         });
@@ -223,7 +216,7 @@ describe("audit logs filtering", () => {
         const from2 = logs[2].createdOn;
         const to3 = logs[3].createdOn;
 
-        const resultFrom2To3 = await context.auditLogs.listAuditLogs({
+        const resultFrom2To3 = await context.listAuditLogs({
             createdOn_gte: from2,
             createdOn_lte: to3
         });
@@ -238,7 +231,7 @@ describe("audit logs filtering", () => {
             context
         });
 
-        const fileManagerUpdateResult = await context.auditLogs.listAuditLogs({
+        const fileManagerUpdateResult = await context.listAuditLogs({
             app: "FILE_MANAGER",
             entity: "FILE",
             action: "UPDATE"
@@ -246,7 +239,7 @@ describe("audit logs filtering", () => {
         expect(fileManagerUpdateResult.items).toMatchObject([createdAuditLogs[4]]);
         expect(fileManagerUpdateResult.items).toHaveLength(1);
 
-        const cmsCreateResult = await context.auditLogs.listAuditLogs({
+        const cmsCreateResult = await context.listAuditLogs({
             app: "HEADLESS_CMS",
             entity: "ENTRY",
             action: "CREATE"
@@ -261,7 +254,7 @@ describe("audit logs filtering", () => {
             context
         });
 
-        const cmsEntryAllResult = await context.auditLogs.listAuditLogs({
+        const cmsEntryAllResult = await context.listAuditLogs({
             entityId: "cmsEntry"
         });
 
@@ -272,7 +265,7 @@ describe("audit logs filtering", () => {
             createdAuditLogs[5]
         ]);
 
-        const cmsEntryExactResult = await context.auditLogs.listAuditLogs({
+        const cmsEntryExactResult = await context.listAuditLogs({
             entityId: "cmsEntry#0001"
         });
 
@@ -283,7 +276,7 @@ describe("audit logs filtering", () => {
             createdAuditLogs[5]
         ]);
 
-        const fileResult = await context.auditLogs.listAuditLogs({
+        const fileResult = await context.listAuditLogs({
             app: "FILE_MANAGER",
             entityId: "file#0001"
         });

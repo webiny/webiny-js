@@ -1,13 +1,12 @@
 import WebinyError from "@webiny/error";
 import { EntryRevisionAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/index.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import { AuditLogRecorder } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 
 class AuditLogEntryRevisionAfterDeleteEventHandlerImpl
     implements EntryRevisionAfterDeleteEventHandler.Interface
 {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: EntryRevisionAfterDeleteEventHandler.Event): Promise<void> {
         const { model, entry } = event.payload;
@@ -17,9 +16,15 @@ class AuditLogEntryRevisionAfterDeleteEventHandlerImpl
         }
 
         try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.DELETE);
-
-            await createAuditLog("Entry revision deleted", entry, entry.id, this.recorder);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.HEADLESS_CMS.ENTRY_REVISION.DELETE,
+                message: "Entry revision deleted",
+                content: entry,
+                entityId: entry.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogEntryRevisionAfterDeleteEventHandler",
@@ -32,5 +37,5 @@ class AuditLogEntryRevisionAfterDeleteEventHandlerImpl
 export const AuditLogEntryRevisionAfterDeleteEventHandler =
     EntryRevisionAfterDeleteEventHandler.createImplementation({
         implementation: AuditLogEntryRevisionAfterDeleteEventHandlerImpl,
-        dependencies: [AuditLogRecorder]
+        dependencies: [RecordAuditLogUseCase]
     });
