@@ -102,3 +102,123 @@ A component being too tall because its proportions are wrong (see
 `nothing-tells-the-model-how-big-anything-is`). That is a separate defect and a smaller one. Fixing
 proportion without fixing this yields well-proportioned components that still contain four other
 sections.
+
+---
+
+## Was the cluster over-merged? (the threshold question, measured before fixing)
+
+Before narrowing, the alternative was to split the clusters instead — if members whose text diverges
+by 30x are not really one component, the similarity threshold is the lever. Measured:
+
+**2424 Tulane was clustered at threshold 1.0** — exact structural match under `sectionSimilarity` —
+and carries the 25.5x, 15.5x and 6.0x cases. Those members are structurally identical; there is no
+threshold above 1.0 to raise. For them the threshold is not a lever at all, and the divergence is
+purely content.
+
+For the other three sites (threshold 0.85), the stored threshold curve says how many clusters exact
+matching would produce:
+
+| site             | clusters at 0.85 | at 1.0 | extra splits available |
+| ---------------- | ---------------- | ------ | ---------------------- |
+| Park city Palace | 7                | 10     | 3                      |
+| 71 Westland      | 8                | 10     | 2                      |
+| Freehill         | 6                | 7      | 1                      |
+
+Those three sites have 8 over-emitting components between them and at most 6 splits available, so
+even if every split landed on an offender, **at least 2 would remain** — and with 2424 Tulane's 4,
+**at least 6 of the 11 are structurally tight**. Raising the threshold cannot address them, and the
+cost of doing so is 7 more near-duplicate components across three sites.
+
+So narrowing the text had to happen regardless. Whether a threshold pass is also worth making for the
+up-to-6 loose clusters is a separate question this does not settle.
+
+**Limitation:** per-cluster tightness could not be measured directly. The cluster artifact keeps each
+member's `digest` but not its `SectionShape`, the `structure` digest field is far too coarse to
+substitute (every member of the worst cluster reads `div>div>div`), and the run-image route serves
+images only, so the captured node trees are not reachable over HTTP. The bound above is what the
+stored curves support.
+
+## Fixed
+
+`sourceTexts` is now the reference member's own text, so the prompt and the text-preservation
+validator narrowed together. The union is retained as `clusterTexts`, and `coverMemberTexts` checks
+at Plan time that the contract's props can hold every member's text — the guarantee the union used to
+provide, moved to the interface where it belongs.
+
+Re-ran Plan → Generate → render on all four sites and recomputed the height table:
+
+| band (render height ÷ section height) | before | after |
+| ------------------------------------- | ------ | ----- |
+| **too tall** (>1.5x)                  | **9**  | **2** |
+| too short (<0.67x)                    | 4      | 6     |
+| in band                               | 21     | 26    |
+
+The nine too-tall components, which were the whole of the evidence:
+
+| site             | component                       | before | after     |               |
+| ---------------- | ------------------------------- | ------ | --------- | ------------- |
+| 71 Westland      | Explore Fenway Forward Intro    | 8.14x  | **1.64x** | still tall    |
+| 71 Westland      | Accessibility Statement         | 4.55x  | **1.19x** | in band       |
+| Park city Palace | Property Description            | 4.13x  | **1.25x** | in band       |
+| 2424 Tulane      | Image Gallery Section           | 3.99x  | **1.40x** | in band       |
+| 2424 Tulane      | Intro/About with Stats          | 3.73x  | **1.30x** | in band       |
+| 2424 Tulane      | Location Description            | 2.91x  | **0.62x** | now too short |
+| Park city Palace | Accessibility Statement         | 2.83x  | **1.03x** | in band       |
+| 71 Westland      | Hero Intro Section              | 2.08x  | **1.72x** | still tall    |
+| 2424 Tulane      | Neighborhood/Location Highlight | 1.56x  | **0.94x** | in band       |
+
+Six moved into band, one overshot into too-short, and the two that are still tall are no longer tall
+for this reason: 71 Westland's _Explore Fenway Forward Intro_ now renders exactly its section — title,
+rule, two lines of body, and none of the property chooser, filter bar, floor-plan block or contact
+form it used to append. Its remaining 1.64x is vertical padding and a narrower text column wrapping
+the body onto three lines instead of two, which is
+`nothing-tells-the-model-how-big-anything-is`, not this.
+
+### What moved that should not have
+
+17 of the 23 components whose union already equalled their representative moved by more than 5% in
+height. **For those the prompt is byte-identical before and after** — union equals representative, so
+nothing changed — which makes them a clean read of Generate's own run-to-run variance rather than an
+effect of this change. Most moved by under 0.1x of ratio. Three crossed a band boundary:
+
+- Park city Palace _Site Navigation Header_ 0.84x → 0.64x (in band → too short)
+- 2424 Tulane _Specials Section_ 1.00x → 0.00x — the zero-height fixed-position tab of
+  `a-section-crop-can-show-something-other-than-the-component`, not a new fault
+- 71 Westland _Site Navigation Header_ 0.66x → 0.87x (too short → in band), in the other direction
+
+That variance is the noise floor to judge the table against: the two largest intended moves are 2.9x
+and 1.8x of ratio, roughly twenty times it.
+
+### The cost, stated
+
+Narrowing removed **312 texts** from what Generate is told to preserve, across the four sites. Of
+those:
+
+|                                                                                                        | count   |
+| ------------------------------------------------------------------------------------------------------ | ------- |
+| held by a prop in the contract                                                                         | 79      |
+| **not held by any prop**                                                                               | **233** |
+| — of which the component has an empty list/non-scalar prop (`Image`, `Link`, `FormField[]`, `Point[]`) | 120     |
+| — of which the component has no candidate prop at all                                                  | 113     |
+
+The 120 are the same defect as `image-values-are-captured-and-never-derived`: only string props ever
+receive observed values, so a nav's `navLinks: Link[]` holds every label it is given and the check
+cannot see that it would. 92 of the 382 props across the four sites are list or non-scalar props with
+no observed value. Deriving those would reclaim most of the 120 and is already filed.
+
+The 113 are the real cost: content the cluster contains and the contract does not describe.
+
+For context, the same check reports 323 uncovered texts in total, of which **41 belong to
+single-member clusters** — Freehill _Privacy Policy_ (29) and 2424 Tulane _Floor Plan Filter_ (12) —
+where there is no union at all. That is a pre-existing contract gap this check now surfaces, not a
+cost of this change.
+
+### Where the new failure mode shows up
+
+Not in the composition derivation log. That log iterates `page.guesses` — props that exist and whose
+value could not be evidenced — so text with no prop never reaches it and cannot appear as
+`text.aligned-by-position` or `text.unmatched`.
+
+It surfaces in two places instead: `PlannedComponent.textCoverage` at Plan time, which is new, and
+the per-page `textPresent` / `textTotal` signal with its `textMissingSample`, which already existed
+and is where a composed page reports source runs it does not carry.
