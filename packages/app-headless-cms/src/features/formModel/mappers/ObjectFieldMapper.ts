@@ -6,6 +6,7 @@ import type {
 } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { CmsModelField } from "~/types.js";
 import { applyFieldProps } from "./applyFieldProps.js";
+import { mapCmsNestedLayout } from "../CmsLayoutMapper.js";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils/generateId";
 
 export class ObjectFieldMapper implements ICmsFieldTypeMapper {
@@ -32,6 +33,11 @@ export class ObjectFieldMapper implements ICmsFieldTypeMapper {
                 }
                 return result;
             });
+
+            const layout = mapCmsNestedLayout(field.settings?.layout, childFields);
+            if (layout) {
+                builder.layout(layout);
+            }
         }
 
         return applyFieldProps(builder, field, context.rendererMap);
