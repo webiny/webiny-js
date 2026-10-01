@@ -5,9 +5,7 @@ import { CreateModelUseCase } from "@webiny/api-headless-cms/features/contentMod
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 
-const isSql = process.env.WEBINY_STORAGE?.includes("sql");
-
-describe.skipIf(isSql)("headless cms audit logs", () => {
+describe("headless cms audit logs", () => {
     it("should store audit logs when an entry is created and updated", async () => {
         const { handler } = useHandler();
         const context = await handler();

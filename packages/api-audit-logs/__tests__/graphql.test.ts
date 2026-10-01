@@ -40,9 +40,7 @@ const GET_AUDIT_LOG = /* GraphQL */ `
     }
 `;
 
-const isSql = process.env.WEBINY_STORAGE?.includes("sql");
-
-describe.skipIf(isSql)("audit logs GraphQL API", () => {
+describe("audit logs GraphQL API", () => {
     it("should list and get audit logs", async () => {
         const { handler, invoke } = useHandler();
         const context = await handler();
