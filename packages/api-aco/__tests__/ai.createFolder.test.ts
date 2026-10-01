@@ -5,10 +5,9 @@ import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
-import {
-    CreateFolderTool,
-    FOLDER_CREATED_WEBSOCKET_ACTION
-} from "~/features/ai/CreateFolderTool.js";
+import { CreateFolderTool } from "~/features/ai/CreateFolderTool.js";
+import { FOLDER_CREATED_WEBSOCKET_ACTION } from "~/features/ai/NotifyFolderChange/index.js";
+import { NotifyFolderChangeUseCase } from "~/features/ai/NotifyFolderChange/NotifyFolderChangeUseCase.js";
 
 interface Sent {
     identityId: string;
@@ -47,6 +46,7 @@ const resolveTool = (options: {
         }
     } as unknown as WebsocketsSendToIdentityUseCase.Interface);
 
+    container.register(NotifyFolderChangeUseCase);
     container.register(CreateFolderTool);
 
     const tool = container.resolveAll(AiSdkToolDefinition)[0];
