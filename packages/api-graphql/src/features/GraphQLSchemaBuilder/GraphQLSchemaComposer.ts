@@ -8,15 +8,14 @@ import type { IGraphQLSchema } from "~/graphql/abstractions.public.js";
 class GraphQLSchemaComposerImpl implements Abstraction.Interface {
     constructor(private container: Container) {}
 
-    async build(ctx?: Record<string, any>): Promise<IGraphQLSchema> {
+    async build(): Promise<IGraphQLSchema> {
         const builder = new GraphQLSchemaBuilder();
 
-        // Resolve lazily so factories registered during enhance() (e.g. by extensions) are included.
         const coreSchemas = this.container.resolveAll(CoreGraphQLSchemaFactory);
         const userSchemas = this.container.resolveAll(GraphQLSchemaFactory);
 
         for (const factory of coreSchemas) {
-            await factory.execute(builder, ctx);
+            await factory.execute(builder);
         }
 
         for (const factory of userSchemas) {

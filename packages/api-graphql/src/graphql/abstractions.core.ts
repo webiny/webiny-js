@@ -4,16 +4,8 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { GraphQLSchemaBuilder } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 
-/**
- * Internal — ctx is a legacy bridge, not exposed to public implementors.
- * TODO: remove ctx? once all registerLegacyPluginsViaGqlContextEnhancer callers are migrated —
- * at that point GraphQLSchemaComposer no longer needs to thread ctx through to schema factories.
- */
 export interface ICoreGraphQLSchemaFactory {
-    execute(
-        builder: GraphQLSchemaBuilder.Interface,
-        ctx?: Record<string, any>
-    ): Promise<GraphQLSchemaBuilder.Interface>;
+    execute(builder: GraphQLSchemaBuilder.Interface): Promise<GraphQLSchemaBuilder.Interface>;
 }
 
 export const CoreGraphQLSchemaFactory = createAbstraction<ICoreGraphQLSchemaFactory>(

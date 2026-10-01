@@ -10776,7 +10776,6 @@ __metadata:
     "@webiny/error": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     graphql: "npm:^16.14.2"
@@ -12367,7 +12366,6 @@ __metadata:
   resolution: "@webiny/background-tasks-aws@workspace:packages/background-tasks-aws"
   dependencies:
     "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -12387,7 +12385,6 @@ __metadata:
   resolution: "@webiny/background-tasks-standalone@workspace:packages/background-tasks-standalone"
   dependencies:
     "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.1.0"

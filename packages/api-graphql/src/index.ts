@@ -1,5 +1,4 @@
 export * from "./errors.js";
-export { registerLegacyPluginsViaGqlContextEnhancer } from "./registerLegacyPluginsViaGqlContextEnhancer.js";
 export * from "./responses.js";
 export * from "./utils/index.js";
 export * from "./plugins/index.js";
