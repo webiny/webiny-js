@@ -2,6 +2,7 @@ import { createFeature } from "@webiny/feature/admin";
 import { GetFolderGqlGateway } from "~/features/folders/getFolder/GetFolderGqlGateway.js";
 import { FolderModelProviderFeature } from "~/features/folders/folderModelProvider/feature.js";
 import { AddCreatedFolderToCache } from "./AddCreatedFolderToCache.js";
+import { RefreshUpdatedFolderInCache } from "./RefreshUpdatedFolderInCache.js";
 import { FolderWebsocketMessages } from "./FolderWebsocketMessages.js";
 
 /**
@@ -18,6 +19,7 @@ export const FolderEventsFeature = createFeature({
         FolderModelProviderFeature.register(container);
         container.register(GetFolderGqlGateway);
         container.register(AddCreatedFolderToCache);
+        container.register(RefreshUpdatedFolderInCache);
         container.register(FolderWebsocketMessages);
     }
 });

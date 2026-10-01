@@ -8,6 +8,8 @@ import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { Result } from "@webiny/feature/api";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -18,6 +20,12 @@ import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import type { AcoContext } from "~/types";
+
+export interface SentWebsocketMessage {
+    identityId: string;
+    action: string;
+    data: unknown;
+}
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
@@ -33,6 +41,10 @@ export const useHandler = (params: UseHandlerParams = {}) => {
     const resolvedIdentity = createIdentity();
     const resolvedPermissions = permissions;
 
+    // What the code under test sent to users' open tabs. There is no socket server in tests, so the
+    // send is recorded instead of delivered.
+    const websocketMessages: SentWebsocketMessage[] = [];
+
     // Root container is created once; child containers are per-call (mirrors createHandler).
     let rootContainer: Container | null = null;
 
@@ -43,6 +55,16 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             rootContainer.registerInstance(TestPermissions, { list: resolvedPermissions });
             rootContainer.register(TestAuthenticator);
             rootContainer.register(TestAuthorizer);
+            rootContainer.registerInstance(WebsocketsSendToIdentityUseCase, {
+                execute: async (identity, data) => {
+                    websocketMessages.push({
+                        identityId: identity.id,
+                        action: data.action,
+                        data: data.data
+                    });
+                    return Result.ok();
+                }
+            });
         }
 
         const container = rootContainer.createChildContainer();
@@ -99,6 +121,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
     };
 
     return {
-        handler: buildContext
+        handler: buildContext,
+        websocketMessages
     };
 };

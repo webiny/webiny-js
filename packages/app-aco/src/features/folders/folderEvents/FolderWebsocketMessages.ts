@@ -1,9 +1,15 @@
 import { WebsocketEventHandler } from "@webiny/app-websockets/events/abstractions.js";
 import { EventPublisher } from "@webiny/app/features/eventPublisher/index.js";
-import { FolderCreatedEvent, type FolderCreatedPayload } from "./FolderCreatedEvent.js";
+import { FolderCreatedEvent } from "./FolderCreatedEvent.js";
+import { FolderUpdatedEvent } from "./FolderUpdatedEvent.js";
 
-// Sent by the api when the assistant creates a folder; see `CreateFolderTool` in @webiny/api-aco.
+// Sent by the api when an AI tool changes a folder; see `NotifyFolderChangeUseCase` in @webiny/api-aco.
 const FOLDER_CREATED_ACTION = "aco.folder.created";
+const FOLDER_UPDATED_ACTION = "aco.folder.updated";
+
+interface FolderMessageData {
+    id: string;
+}
 
 /**
  * Turns the folder messages the api sends over the websocket into folder events. The handlers that
@@ -13,12 +19,19 @@ class FolderWebsocketMessagesImpl implements WebsocketEventHandler.Interface {
     constructor(private eventPublisher: EventPublisher.Interface) {}
 
     async handle(event: WebsocketEventHandler.Event): Promise<void> {
-        if (event.payload.action !== FOLDER_CREATED_ACTION) {
+        const { action } = event.payload;
+        if (action !== FOLDER_CREATED_ACTION && action !== FOLDER_UPDATED_ACTION) {
             return;
         }
 
-        const { data } = event.payload as unknown as { data: FolderCreatedPayload };
-        await this.eventPublisher.publish(new FolderCreatedEvent({ id: data.id }));
+        const { data } = event.payload as unknown as { data: FolderMessageData };
+
+        if (action === FOLDER_CREATED_ACTION) {
+            await this.eventPublisher.publish(new FolderCreatedEvent({ id: data.id }));
+            return;
+        }
+
+        await this.eventPublisher.publish(new FolderUpdatedEvent({ id: data.id }));
     }
 }
 

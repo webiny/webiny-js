@@ -9,7 +9,10 @@ import { WebsocketEvent } from "@webiny/app-websockets/events/WebsocketEvent.js"
 import { GetFolderGateway } from "~/features/folders/getFolder/abstractions.js";
 import { folderCacheFactory } from "~/features/folders/cache/index.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import type { FolderPermission } from "~/types.js";
+import { Folder } from "~/domain/folder/Folder.js";
 import { AddCreatedFolderToCache } from "./AddCreatedFolderToCache.js";
+import { RefreshUpdatedFolderInCache } from "./RefreshUpdatedFolderInCache.js";
 import { FolderWebsocketMessages } from "./FolderWebsocketMessages.js";
 
 const folderDto = (overrides: Partial<FolderDto> = {}) =>
@@ -44,6 +47,7 @@ const setup = (folder: FolderDto) => {
         }
     });
     container.register(AddCreatedFolderToCache);
+    container.register(RefreshUpdatedFolderInCache);
     container.register(FolderWebsocketMessages);
 
     const receive = (payload: { action: string; data: unknown }) =>
@@ -94,5 +98,61 @@ describe("folder events", () => {
 
         expect(fetched).toEqual([]);
         expect(folderCacheFactory.getCache("FmFile").hasItems()).toBe(false);
+    });
+
+    describe("updates", () => {
+        const viewer: FolderPermission = { target: "admin:1", level: "viewer" };
+        const cache = () => folderCacheFactory.getCache("FmFile");
+        const child = () => cache().getItem(f => f.id === "child-1");
+
+        const seed = (
+            parentPermissions: FolderDto["permissions"],
+            childPermissions: FolderDto["permissions"]
+        ) => {
+            cache().addItems([
+                Folder.create(folderDto({ permissions: parentPermissions })),
+                Folder.create(
+                    folderDto({
+                        id: "child-1",
+                        slug: "child",
+                        path: "drafts/child",
+                        parentId: "folder-1",
+                        permissions: childPermissions
+                    })
+                )
+            ]);
+        };
+
+        it("replaces the cached folder with the one the server has now", async () => {
+            seed([], []);
+            const { receive, fetched } = setup(
+                folderDto({ title: "Renamed", permissions: [viewer] })
+            );
+
+            await receive({ action: "aco.folder.updated", data: { id: "folder-1" } });
+
+            expect(fetched).toEqual(["folder-1"]);
+            const updated = cache().getItem(f => f.id === "folder-1");
+            expect(updated?.title).toBe("Renamed");
+            expect(updated?.permissions).toEqual([viewer]);
+        });
+
+        it("passes access granted on a parent down to its cached children", async () => {
+            seed([], []);
+            const { receive } = setup(folderDto({ permissions: [viewer] }));
+
+            await receive({ action: "aco.folder.updated", data: { id: "folder-1" } });
+
+            expect(child()?.permissions).toEqual([{ ...viewer, inheritedFrom: "parent:folder-1" }]);
+        });
+
+        it("takes access revoked on a parent away from its cached children", async () => {
+            seed([viewer], [{ ...viewer, inheritedFrom: "parent:folder-1" }]);
+            const { receive } = setup(folderDto({ permissions: [] }));
+
+            await receive({ action: "aco.folder.updated", data: { id: "folder-1" } });
+
+            expect(child()?.permissions).toEqual([]);
+        });
     });
 });

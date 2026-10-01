@@ -5,6 +5,7 @@ import { useHandler } from "~tests/utils/useHandler";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
 import { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
+import { FOLDER_UPDATED_WEBSOCKET_ACTION } from "~/features/ai/NotifyFolderChange/index.js";
 
 interface AccessResult {
     folderId: string;
@@ -44,7 +45,78 @@ const getTool = (container: Container, name: string) => {
 };
 
 describe("Folder access AI tools", () => {
-    const { handler } = useHandler();
+    const { handler, websocketMessages } = useHandler();
+
+    const createRootFolder = async (container: Container, slug: string) => {
+        const created = await container.resolve(CreateFolderUseCase).execute({
+            title: slug,
+            type: "type1",
+            slug,
+            parentId: null
+        });
+
+        return created.value;
+    };
+
+    /*
+     * The admin caches folders, and a change made by a tool never passes through that cache, so each
+     * write tells the user's open tabs which folder to read back.
+     */
+    describe("admin notifications", () => {
+        it("should tell the user's tabs which folder a grant changed", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "notify-grant");
+            websocketMessages.length = 0;
+
+            await getTool(context.container, "grantFolderAccess").execute({
+                folderId: folder.id,
+                target: "admin:1234",
+                level: "viewer"
+            });
+
+            expect(websocketMessages).toEqual([
+                expect.objectContaining({
+                    action: FOLDER_UPDATED_WEBSOCKET_ACTION,
+                    data: { id: folder.id }
+                })
+            ]);
+        });
+
+        it("should tell the user's tabs which folder a revoke changed", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "notify-revoke");
+            const grant = getTool(context.container, "grantFolderAccess");
+            await grant.execute({ folderId: folder.id, target: "admin:1234", level: "viewer" });
+            websocketMessages.length = 0;
+
+            await getTool(context.container, "revokeFolderAccess").execute({
+                folderId: folder.id,
+                target: "admin:1234"
+            });
+
+            expect(websocketMessages).toEqual([
+                expect.objectContaining({
+                    action: FOLDER_UPDATED_WEBSOCKET_ACTION,
+                    data: { id: folder.id }
+                })
+            ]);
+        });
+
+        it("should send nothing when the change is refused", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "notify-refused");
+            websocketMessages.length = 0;
+
+            await expect(
+                getTool(context.container, "revokeFolderAccess").execute({
+                    folderId: folder.id,
+                    target: "admin:1234"
+                })
+            ).rejects.toThrow(/nothing to revoke/);
+
+            expect(websocketMessages).toEqual([]);
+        });
+    });
 
     describe("grantFolderAccess", () => {
         it("should grant access and project it onto the FLP record", async () => {
