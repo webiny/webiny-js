@@ -7,11 +7,22 @@ import type { FlexibleSchema, ToolSet } from "ai";
 
 // AiSdk
 
+/**
+ * What a model accepts, as published in the model catalog. A capability that isn't listed is unknown,
+ * and unknown is treated as unsupported: a parameter the model may reject is not sent.
+ */
+export interface IAiModelSupports {
+    tools?: boolean;
+    vision?: boolean;
+    temperature?: boolean;
+}
+
 export interface IAiSdkModel {
     id: string; // raw model id, e.g. "claude-sonnet-4-5"
     name: string; // human-friendly name, e.g. "Claude Sonnet 4.5"
     deprecated?: Date;
     endOfLife?: Date;
+    supports?: IAiModelSupports;
 }
 
 export interface IAiSdk {
@@ -86,6 +97,7 @@ export interface AiModel {
     modelName: string; // e.g. "Claude Sonnet 4.5"
     deprecated: Date | undefined;
     endOfLife: Date | undefined;
+    supports: IAiModelSupports | undefined;
 }
 
 export interface IAi {

@@ -15,7 +15,7 @@ The catalog is cached for an hour per process. A failed load is retried after a 
 
 So adding or deprecating a model for an existing provider is a catalog change and needs no release. The `*_MODELS` arrays below are the offline fallback; keep them roughly in sync.
 
-The catalog response looks like this. Dates are ISO strings, and fields the schema doesn't know (`api`, `supports`, ...) are dropped:
+The catalog response looks like this. Dates are ISO strings. `supports` is kept (`tools`, `vision`, `temperature`), and fields the schema doesn't know (`api`, other `supports` keys, ...) are dropped:
 
 ```json
 {
@@ -24,7 +24,13 @@ The catalog response looks like this. Dates are ISO strings, and fields the sche
       "id": "openai",
       "name": "OpenAI",
       "models": [
-        { "id": "o3", "name": "o3", "deprecated": "2026-06-11", "endOfLife": "2026-12-11" }
+        {
+          "id": "o3",
+          "name": "o3",
+          "deprecated": "2026-06-11",
+          "endOfLife": "2026-12-11",
+          "supports": { "tools": true, "vision": true, "temperature": false }
+        }
       ]
     }
   ]
@@ -32,6 +38,8 @@ The catalog response looks like this. Dates are ISO strings, and fields the sche
 ```
 
 A response that doesn't match the schema counts as a failed load, so one bad entry drops the whole catalog and every factory falls back to its own list.
+
+`Ai.generateText()` and `Ai.streamText()` send `temperature` only to a model whose `supports.temperature` is `true`. A model that says `false`, or says nothing (no `supports`, or a factory's fallback list), gets the call without it. Several current models reject `temperature` with a 400, so callers can always pass it and leave the decision to `Ai`.
 
 ## Selection criteria
 

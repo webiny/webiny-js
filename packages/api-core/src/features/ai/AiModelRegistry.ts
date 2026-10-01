@@ -28,7 +28,8 @@ class AiModelRegistryImpl implements AiModelRegistryAbstraction.Interface {
                 modelId: m.id,
                 modelName: m.name,
                 deprecated: m.deprecated,
-                endOfLife: m.endOfLife
+                endOfLife: m.endOfLife,
+                supports: m.supports
             }));
         });
     }
