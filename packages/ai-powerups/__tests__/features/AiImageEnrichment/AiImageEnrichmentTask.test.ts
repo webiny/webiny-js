@@ -67,7 +67,7 @@ describe("AiImageEnrichmentTask", () => {
     it("finishes quietly when image enrichment is switched off", async () => {
         const calls = await runWith(
             new AiCapabilityDisabledError(
-                "fm.imageEnrichment",
+                "fmImageEnrichment",
                 "Image enrichment",
                 "Settings → AI Power-Ups"
             )

@@ -1,6 +1,6 @@
 import { AiCapability } from "~/api/features/Capabilities/index.js";
 
-export const FM_IMAGE_ENRICHMENT_CAPABILITY = "fm.imageEnrichment";
+export const FM_IMAGE_ENRICHMENT_CAPABILITY = "fmImageEnrichment";
 
 /**
  * The prompt lives here rather than in the task now, because it is the capability's, and the
