@@ -23,15 +23,15 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { RolesPresenterFeature } from "../feature.js";
 import { Routes } from "../../routes.js";
 import type { Role } from "~/features/accessManagement/types.js";
-import { ViewAsButton } from "~/presentation/assumedRole/components/ViewAsButton.js";
-import type { AssumedRolePresenter } from "~/presentation/assumedRole/abstractions.js";
+import { ViewAsButton } from "~/presentation/previewAs/components/ViewAsButton.js";
+import type { PreviewPresenter } from "~/presentation/previewAs/abstractions.js";
 import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 
 /*
  * Only a saved role can be previewed. While the form loads, `selectedRole` can still be the role
  * that was open before, so there is no target until loading is done.
  */
-function toViewAsTarget(role: Role | null, loading: boolean): AssumedRolePresenter.Target | null {
+function toViewAsTarget(role: Role | null, loading: boolean): PreviewPresenter.Target | null {
     if (!role || loading) {
         return null;
     }

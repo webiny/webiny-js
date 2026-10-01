@@ -50,7 +50,7 @@ describe("SecureHeadersDecorator", () => {
             // Sent by a streaming client whenever its request carries a body.
             "x-amz-content-sha256",
             // Sent on every request while the Admin previews a role.
-            "x-webiny-assume-role"
+            "x-webiny-preview-as"
         ]) {
             expect(allowed).toContain(header);
         }

@@ -1,10 +1,10 @@
 export {
     RawTenantId,
     RawAuthToken,
-    RawAssumedRole,
+    RawPreviewTarget,
     RequestIdentityLoader,
     RequestTenantLoader
 } from "./abstractions.js";
 export { RequestContextFeature } from "./feature.js";
-export { ASSUME_ROLE_HEADER } from "./extractAssumedRole.js";
-export { extractAssumedRole } from "./extractAssumedRole.js";
+export { PREVIEW_AS_HEADER } from "./extractPreviewTarget.js";
+export { extractPreviewTarget } from "./extractPreviewTarget.js";

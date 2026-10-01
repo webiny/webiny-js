@@ -19,15 +19,15 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { TeamsPresenterFeature } from "../feature.js";
 import { Routes } from "../../routes.js";
 import type { Team } from "~/features/accessManagement/types.js";
-import { ViewAsButton } from "~/presentation/assumedRole/components/ViewAsButton.js";
-import type { AssumedRolePresenter } from "~/presentation/assumedRole/abstractions.js";
+import { ViewAsButton } from "~/presentation/previewAs/components/ViewAsButton.js";
+import type { PreviewPresenter } from "~/presentation/previewAs/abstractions.js";
 import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 
 /*
  * Only a saved team can be previewed. While the form loads, `selectedTeam` can still be the team
  * that was open before, so there is no target until loading is done.
  */
-function toViewAsTarget(team: Team | null, loading: boolean): AssumedRolePresenter.Target | null {
+function toViewAsTarget(team: Team | null, loading: boolean): PreviewPresenter.Target | null {
     if (!team || loading) {
         return null;
     }

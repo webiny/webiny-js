@@ -18,10 +18,10 @@ const ALLOWED_HEADERS = [
     "x-amz-content-sha256",
     /*
      * The role or team the Admin is previewing. Sent on every request while a preview is active,
-     * so omitting it would fail the preflight for all of them the moment a role is assumed, on any
+     * so omitting it would fail the preflight for all of them the moment a preview starts, on any
      * deploy where the Admin and the API are on different origins.
      */
-    "x-webiny-assume-role"
+    "x-webiny-preview-as"
 ].join(", ");
 
 class SecureHeadersDecoratorImpl implements IHttpRouter {

@@ -14,7 +14,7 @@ import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createLambdaHandler, ApiGatewayFeature } from "@webiny/event-handler-aws";
 import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
 import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
-import { ApiGatewayAssumedRoleDecorator } from "~/handlers/ApiGatewayAssumedRoleDecorator.js";
+import { ApiGatewayPreviewTargetDecorator } from "~/handlers/ApiGatewayPreviewTargetDecorator.js";
 import {
     registerInboundEventTypes,
     registerWebinyApiChild,
@@ -46,12 +46,12 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             container.registerDecorator(ApiGatewayTenantLoaderDecorator);
 
             /*
-             * Assume-role preview. Outermost, so the header lands in RawAssumedRole before anything
+             * Preview-as. Outermost, so the header lands in RawPreviewTarget before anything
              * can ask for permissions. Order is not load-bearing beyond that: the holder is read
-             * lazily, and AssumedRolePermissions checks the caller's real permissions before it
+             * lazily, and PreviewPermissions checks the caller's real permissions before it
              * honours the header.
              */
-            container.registerDecorator(ApiGatewayAssumedRoleDecorator);
+            container.registerDecorator(ApiGatewayPreviewTargetDecorator);
 
             // Every non-HTTP invocation shape (background tasks, EventBridge, scheduled actions,
             // WebSockets) with its handler. Kept in one function so the set is testable and an

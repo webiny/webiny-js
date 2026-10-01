@@ -2,13 +2,13 @@ import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
 import { RawTenantId } from "./RawTenantId.js";
 import { RawAuthToken } from "./RawAuthToken.js";
-import { RawAssumedRole } from "./RawAssumedRole.js";
+import { RawPreviewTarget } from "./RawPreviewTarget.js";
 import { RequestIdentityLoader } from "./RequestIdentityLoader.js";
 import { RequestTenantLoader } from "./RequestTenantLoader.js";
 
 /**
  * Registers the request-context pieces:
- * - RawTenantId / RawAuthToken / RawAssumedRole: per-request holders that the transport's EXTRACT
+ * - RawTenantId / RawAuthToken / RawPreviewTarget: per-request holders that the transport's EXTRACT
  *   step writes to.
  * - RequestIdentityLoader / RequestTenantLoader: transport-agnostic LOAD steps that read
  *   the holders and set IdentityContext / TenantContext.
@@ -21,7 +21,7 @@ export const RequestContextFeature = createFeature({
         // singleton *within the request container* — a fresh holder per request.
         container.register(RawTenantId).inSingletonScope();
         container.register(RawAuthToken).inSingletonScope();
-        container.register(RawAssumedRole).inSingletonScope();
+        container.register(RawPreviewTarget).inSingletonScope();
         container.register(RequestIdentityLoader);
         container.register(RequestTenantLoader);
     }
