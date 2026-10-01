@@ -234,7 +234,8 @@ class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
                         similarity: result.value.similarity,
                         pageErrors: result.value.pageErrors.length
                             ? result.value.pageErrors
-                            : undefined
+                            : undefined,
+                        bodyPreview: result.value.bodyPreview
                     });
                 } else {
                     // One component failing to render must not lose the rest — record and continue.

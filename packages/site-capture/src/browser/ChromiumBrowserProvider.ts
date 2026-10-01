@@ -274,12 +274,26 @@ class ChromiumSession implements IBrowserSession {
         const image = await page.screenshot({ type: "png", fullPage: true });
         const bytes = image instanceof Uint8Array ? image : new Uint8Array();
 
+        // Only when there is nothing to see: a blank render is the case that needs explaining, and
+        // carrying the markup of a good one would be noise on every success.
+        const documentHeight = await this.documentHeight(page);
+        const bodyPreview =
+            documentHeight === 0
+                ? await page
+                      .evaluate(
+                          `document.body ? document.body.innerHTML.slice(0, 1200) : "(no body)"`
+                      )
+                      .then(value => String(value))
+                      .catch(() => undefined)
+                : undefined;
+
         return {
             finalUrl: page.url(),
             image: bytes,
             width: params.viewportWidth,
-            height: await this.documentHeight(page),
-            pageErrors
+            height: documentHeight,
+            pageErrors,
+            bodyPreview
         };
     }
 

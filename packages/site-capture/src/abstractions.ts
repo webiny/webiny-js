@@ -190,6 +190,16 @@ export interface RenderResult {
      * page in a loop can produce thousands.
      */
     pageErrors: string[];
+    /**
+     * A truncated look at what was actually in `<body>`, captured only when the document had no
+     * height.
+     *
+     * A render that completes with a zero-height document has produced a blank screenshot, and
+     * nothing else in the result distinguishes that from a component that genuinely draws nothing.
+     * The markup says which — empty wrappers, a mounted root with no children, an error boundary —
+     * and it is the one question the existing signals cannot answer.
+     */
+    bodyPreview?: string;
 }
 
 export interface CaptureResult<TResult> {

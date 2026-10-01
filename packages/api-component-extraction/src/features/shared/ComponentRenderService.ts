@@ -149,6 +149,8 @@ export interface RenderedComponent {
      * listening.
      */
     pageErrors: string[];
+    /** The sandbox's markup, present only when the render produced a zero-height document. */
+    bodyPreview?: string;
 }
 
 /**
@@ -234,6 +236,7 @@ class ComponentRenderServiceImpl implements IComponentRenderService {
 
         return Result.ok({
             pageErrors: rendered.pageErrors ?? [],
+            bodyPreview: rendered.bodyPreview,
             renderRef: stored.value,
             width: rendered.width,
             height: rendered.height,

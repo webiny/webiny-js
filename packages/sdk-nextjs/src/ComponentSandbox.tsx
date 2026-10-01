@@ -3,7 +3,12 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import dynamic from "next/dynamic";
 import * as sdkNextjs from "./index.js";
 import { sdk, type HydratedComponent } from "@webiny/sdk-frontend";
-import { contentSdk, type Component, type Document } from "@webiny/website-builder-sdk";
+import {
+    contentSdk,
+    ElementFactory,
+    type Component,
+    type Document
+} from "@webiny/website-builder-sdk";
 import { ensureThemeTokenLink } from "./themeTokenLink.js";
 
 const DocumentRenderer = dynamic(
@@ -15,6 +20,14 @@ export interface ComponentSandboxProps {
     components?: Component[];
 }
 
+/**
+ * The empty page a previewed component is placed into.
+ *
+ * Registering a component does not display it: the renderer draws a DOCUMENT, and this one held only
+ * a root with no children — so a pushed bundle hydrated, its CSS was injected, and nothing appeared.
+ * A screenshot of this route came back blank and every signal called it a success, because the markup
+ * was the one thing nobody was looking at. `documentWith` below puts the component in the page.
+ */
 const SANDBOX_DOCUMENT: Document = {
     id: "sandbox-placeholder",
     version: 1,
@@ -27,6 +40,39 @@ const SANDBOX_DOCUMENT: Document = {
         root: { type: "Webiny/Element", id: "root", component: { name: "Webiny/Root" } }
     }
 };
+
+/**
+ * The sandbox page with one component placed in its root.
+ *
+ * Built through `ElementFactory` rather than by hand so the element carries the manifest's default
+ * input bindings — a component previewed with no inputs at all renders its empty state, which is a
+ * misleading thing to screenshot and compare against a real section.
+ */
+function documentWith(component: Component): Document {
+    const document: Document = {
+        ...SANDBOX_DOCUMENT,
+        bindings: {},
+        elements: { ...SANDBOX_DOCUMENT.elements }
+    };
+
+    try {
+        const factory = new ElementFactory({ [component.manifest.name]: component.manifest });
+        const { operations } = factory.createElementFromComponent({
+            componentName: component.manifest.name,
+            parentId: "root",
+            slot: "children"
+        });
+        for (const operation of operations) {
+            operation.apply(document);
+        }
+    } catch {
+        // A manifest the factory cannot place leaves the empty page, which is what this rendered
+        // before — no worse, and the blank result is now a known state rather than a mystery.
+        return SANDBOX_DOCUMENT;
+    }
+
+    return document;
+}
 
 function getParentOrigin(): string {
     try {
@@ -249,6 +295,12 @@ export const ComponentSandbox = ({ components = [] }: ComponentSandboxProps) => 
 
     const css = liveCss || current?.hydrated.css || "";
 
+    // Rebuilt only when the previewed component changes; placing is cheap but not free.
+    const sandboxDocument = useMemo(
+        () => (current ? documentWith(current.wrapped) : SANDBOX_DOCUMENT),
+        [current]
+    );
+
     return (
         <>
             {/* The chosen theme's tokens, pushed by the admin. In the document after the active-theme
@@ -260,7 +312,7 @@ export const ComponentSandbox = ({ components = [] }: ComponentSandboxProps) => 
                 />
             ) : null}
             {css ? <style dangerouslySetInnerHTML={{ __html: css }} /> : null}
-            <DocumentRenderer document={SANDBOX_DOCUMENT} components={allComponents} />
+            <DocumentRenderer document={sandboxDocument} components={allComponents} />
         </>
     );
 };

@@ -608,6 +608,8 @@ export interface RenderRecord {
      * a white rectangle.
      */
     pageErrors?: string[];
+    /** The sandbox's markup, kept only when the render came back with no height — i.e. came back blank. */
+    bodyPreview?: string;
     /**
      * Why this component did not render, when it did not.
      *
