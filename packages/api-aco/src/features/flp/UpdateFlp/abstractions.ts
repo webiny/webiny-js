@@ -7,9 +7,9 @@ export interface UpdateFlpParams {
      * Folders whose whole subtree an earlier run of the same update already wrote. Passed back
      * through `handleTimeout`, so a continued run skips them.
      */
-    queued?: string[];
+    completed?: string[];
     isCloseToTimeout?: () => boolean;
-    handleTimeout?: (queued: string[]) => void;
+    handleTimeout?: (completed: string[]) => void;
 }
 
 // Use Case Abstraction

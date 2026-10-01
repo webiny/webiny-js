@@ -24,10 +24,10 @@ class UpdateFlpTaskHandlerImpl implements TaskHandler.Interface<IUpdateFlpTaskIn
 
             await this.updateFlp.execute({
                 folder: input.folder,
-                queued: input.queued,
+                completed: input.completed,
                 isCloseToTimeout: controller.runtime.isCloseToTimeout,
-                handleTimeout: queued => {
-                    continuation = controller.response.continue({ ...input, queued });
+                handleTimeout: completed => {
+                    continuation = controller.response.continue({ ...input, completed });
                 }
             });
 

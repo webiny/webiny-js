@@ -22,7 +22,7 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
     private handleTimeout?: (updated: string[]) => void;
 
     /*
-     * Folders whose whole subtree has been written, carried across task runs as `queued` so a
+     * Folders whose whole subtree has been written, carried across task runs as `completed` so a
      * continued run skips them. A folder is added only after all of its descendants are written: one
      * entered but not finished when time ran out has to be walked again, or the rest of its subtree
      * would never be updated.
@@ -43,8 +43,8 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
         this.isCloseToTimeout = params.isCloseToTimeout;
         this.handleTimeout = params.handleTimeout;
 
-        if (params.queued) {
-            params.queued.forEach(id => this.completed.add(id));
+        if (params.completed) {
+            params.completed.forEach(id => this.completed.add(id));
         }
 
         try {

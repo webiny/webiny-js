@@ -58,7 +58,7 @@ describe("Update FLP across task runs", () => {
          * Every run gets the same small budget, so each one stops partway. The update only finishes
          * if a continued run picks up where the last one stopped rather than starting over.
          */
-        let queued: string[] | undefined;
+        let completed: string[] | undefined;
         let runs = 0;
         let finished = false;
 
@@ -69,7 +69,7 @@ describe("Update FLP across task runs", () => {
             // A fresh use case per run, the way a continued task gets one.
             await context.container.resolve(UpdateFlpUseCase).execute({
                 folder,
-                queued,
+                completed,
                 isCloseToTimeout: timeoutAfter(3),
                 handleTimeout: next => {
                     continueWith = next;
@@ -77,7 +77,7 @@ describe("Update FLP across task runs", () => {
             });
 
             finished = continueWith === undefined;
-            queued = continueWith;
+            completed = continueWith;
         }
 
         expect(finished).toBe(true);
