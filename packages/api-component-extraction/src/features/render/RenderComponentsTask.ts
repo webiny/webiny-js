@@ -20,6 +20,16 @@ import { PreviewDomainResolver } from "~/features/shared/previewDomain.js";
 
 export interface RenderTaskInput {
     runId: string;
+    /**
+     * Identifies one press of "Render previews", so a retry can tell itself from a continuation.
+     *
+     * The checkpoint below exists so a task that runs out of Lambda time resumes where it stopped. A
+     * continuation carries the same input, so the same `attempt`; a new press mints a new one. Without
+     * this the two are indistinguishable, and a completed pass — including one where every component
+     * failed — short-circuits every later press: the loop sees `nextIndex === total`, rewrites the same
+     * failures and reports success. Pressing the button did nothing, visibly.
+     */
+    attempt?: string;
 }
 
 export interface RenderTaskProgress {
@@ -36,6 +46,8 @@ export interface RenderTaskOutput {
 interface RenderCheckpoint {
     nextIndex: number;
     renders: RenderRecord[];
+    /** The `attempt` this checkpoint belongs to — see `RenderTaskInput`. */
+    attempt?: string;
 }
 
 // One component's render can take up to ~45s; the margin must exceed that, since the timeout is only
@@ -154,7 +166,15 @@ class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
         if (loaded.isFail()) {
             return controller.response.error(loaded.error.message);
         }
-        const checkpoint: RenderCheckpoint = loaded.value ?? { nextIndex: 0, renders: [] };
+        /*
+         * A checkpoint from a different attempt is history, not progress. Resuming it would make the
+         * retry a no-op, which is the opposite of what pressing the button means.
+         */
+        const previous = loaded.value;
+        const resumable = previous && previous.attempt === input.attempt;
+        const checkpoint: RenderCheckpoint = resumable
+            ? previous
+            : { nextIndex: 0, renders: [], attempt: input.attempt };
 
         const session = await this.browserProvider.open();
         try {
@@ -192,7 +212,10 @@ class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
                         width: 0,
                         height: 0,
                         ok: false,
-                        similarity: null
+                        similarity: null,
+                        // Kept on the artifact as well as logged: the task log retains only its last
+                        // entry, so logging alone loses every failure but one.
+                        error: result.error.message
                     });
                     await log.error({
                         message: `Could not render "${component.name}": ${result.error.message}`

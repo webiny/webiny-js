@@ -1094,11 +1094,18 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         throw new Error("Render requires Generate to be done.");
                     }
 
-                    const triggered = await taskService.trigger<{ runId: string }>({
-                        definition: RENDER_COMPONENTS_TASK_ID,
-                        name: `Component extraction — render (run ${run.runNumber})`,
-                        input: { runId: run.id }
-                    });
+                    const triggered = await taskService.trigger<{ runId: string; attempt: string }>(
+                        {
+                            definition: RENDER_COMPONENTS_TASK_ID,
+                            name: `Component extraction — render (run ${run.runNumber})`,
+                            input: {
+                                // Stamps this press, so a retry restarts rather than
+                                // resuming a finished attempt — see `RenderTaskInput.attempt`.
+                                attempt: new Date().toISOString(),
+                                runId: run.id
+                            }
+                        }
+                    );
                     if (triggered.isFail()) {
                         throw triggered.error;
                     }

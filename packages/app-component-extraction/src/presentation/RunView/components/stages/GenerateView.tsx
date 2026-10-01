@@ -202,9 +202,23 @@ const GenerateCard = ({
                                         className="h-full w-full object-contain object-top"
                                     />
                                 ) : (
-                                    <Text size="sm" className="text-neutral-strong">
-                                        {render && !render.ok ? "render failed" : "not rendered"}
-                                    </Text>
+                                    // "render failed" on its own was indistinguishable from "never
+                                    // run", and said nothing about which of the two to go and fix.
+                                    <div className="flex flex-col items-center gap-xxs p-sm text-center">
+                                        <Text size="sm" className="text-neutral-strong">
+                                            {render && !render.ok
+                                                ? "render failed"
+                                                : "not rendered"}
+                                        </Text>
+                                        {render?.error ? (
+                                            <Text
+                                                size="sm"
+                                                className="break-words text-destructive-primary"
+                                            >
+                                                {render.error}
+                                            </Text>
+                                        ) : null}
+                                    </div>
                                 )}
                             </div>
                             <figcaption>

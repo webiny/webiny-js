@@ -599,6 +599,14 @@ export interface RenderRecord {
      * structural-similarity score; null when either image was unavailable.
      */
     similarity: number | null;
+    /**
+     * Why this component did not render, when it did not.
+     *
+     * On the record rather than only in the task log, because the task log keeps the last item and
+     * drops the rest — so a pass where every component failed reported seven failures and no reason
+     * for any of them, which is indistinguishable from a pass that was never run properly.
+     */
+    error?: string;
 }
 
 /**

@@ -473,6 +473,8 @@ export interface RenderRecordDto {
     ok: boolean;
     /** Rough visual-similarity indicator in [0,1] (1 = closest), or null if not computed. */
     similarity: number | null;
+    /** Why this component did not render, when it did not. */
+    error?: string;
 }
 
 export interface RenderArtifactDto {
