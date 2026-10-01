@@ -14,6 +14,11 @@ export class FoldersCacheFactory {
         return this.cache.get(cacheKey) as ListCache<Folder>;
     }
 
+    /** Every folder type's cache created so far. */
+    getCaches() {
+        return [...this.cache.values()];
+    }
+
     private getCacheKey(namespace: string) {
         return namespace;
     }

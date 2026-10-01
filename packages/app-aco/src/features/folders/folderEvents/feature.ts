@@ -3,6 +3,7 @@ import { GetFolderGqlGateway } from "~/features/folders/getFolder/GetFolderGqlGa
 import { FolderModelProviderFeature } from "~/features/folders/folderModelProvider/feature.js";
 import { AddCreatedFolderToCache } from "./AddCreatedFolderToCache.js";
 import { RefreshUpdatedFolderInCache } from "./RefreshUpdatedFolderInCache.js";
+import { RemoveDeletedFolderFromCache } from "./RemoveDeletedFolderFromCache.js";
 import { FolderWebsocketMessages } from "./FolderWebsocketMessages.js";
 
 /**
@@ -20,6 +21,7 @@ export const FolderEventsFeature = createFeature({
         container.register(GetFolderGqlGateway);
         container.register(AddCreatedFolderToCache);
         container.register(RefreshUpdatedFolderInCache);
+        container.register(RemoveDeletedFolderFromCache);
         container.register(FolderWebsocketMessages);
     }
 });

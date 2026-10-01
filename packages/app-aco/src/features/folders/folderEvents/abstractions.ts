@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { IEventHandler } from "@webiny/app/features/eventPublisher/index.js";
 import type { FolderCreatedEvent } from "./FolderCreatedEvent.js";
 import type { FolderUpdatedEvent } from "./FolderUpdatedEvent.js";
+import type { FolderDeletedEvent } from "./FolderDeletedEvent.js";
 
 /**
  * Reacts to a folder created somewhere the admin did not see: by the assistant, a background task,
@@ -27,4 +28,14 @@ export const FolderUpdatedEventHandler = createAbstraction<IEventHandler<FolderU
 export namespace FolderUpdatedEventHandler {
     export type Interface = IEventHandler<FolderUpdatedEvent>;
     export type Event = FolderUpdatedEvent;
+}
+
+/** Reacts to a folder deleted somewhere the admin did not see, such as by the assistant. */
+export const FolderDeletedEventHandler = createAbstraction<IEventHandler<FolderDeletedEvent>>(
+    "Aco/FolderDeletedEventHandler"
+);
+
+export namespace FolderDeletedEventHandler {
+    export type Interface = IEventHandler<FolderDeletedEvent>;
+    export type Event = FolderDeletedEvent;
 }
