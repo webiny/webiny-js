@@ -45,7 +45,7 @@ export const CommandItemRow = ({ row }: { row: CommandRow }) => {
                         <Icon icon={<ReturnIcon />} color={"neutral-base"} size={"xs"} label={""} />
                     </span>
                 ) : null}
-                {row.drillsIn && (
+                {row.ownsPanel && (
                     <Icon icon={<ChevronIcon />} color={"neutral-strong"} size={"sm"} label={""} />
                 )}
             </div>

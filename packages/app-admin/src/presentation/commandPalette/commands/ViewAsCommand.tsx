@@ -503,6 +503,7 @@ class ViewAsCommandImpl implements Command.Interface {
     icon = <Icon icon={<VisibilityIcon />} size="sm" color="neutral-strong" label="" />;
     detailView = ViewAsDetailView;
     detailViewOwnsPanel = true;
+    verb = "Choose";
 }
 
 export const ViewAsCommand = Command.createImplementation({
