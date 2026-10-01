@@ -84,17 +84,26 @@ export const coverMemberTexts = (
             }
             seen.add(key);
 
-            let rest = key;
-            for (const value of values) {
-                if (rest.length === 0) {
-                    break;
+            // A text the page showed as its own run is often a fragment of a longer observed value —
+            // "Copyright ©" against an observed "Copyright © 2026 Park City Place". The prop plainly
+            // holds it, so containment counts in both directions, not only the one the
+            // text-preservation validator needs.
+            let held = values.some(value => value.includes(key));
+
+            if (!held) {
+                let rest = key;
+                for (const value of values) {
+                    if (rest.length === 0) {
+                        break;
+                    }
+                    if (rest.includes(value)) {
+                        rest = rest.replace(value, "");
+                    }
                 }
-                if (rest.includes(value)) {
-                    rest = rest.replace(value, "");
-                }
+                held = rest.length === 0;
             }
 
-            if (rest.length === 0) {
+            if (held) {
                 covered++;
             } else {
                 uncoveredCount++;

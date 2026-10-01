@@ -79,3 +79,14 @@ describe("coverMemberTexts", () => {
         expect(notCovered.uncovered).toEqual(["Studio, 1 and 2 Bedroom Apartments"]);
     });
 });
+
+describe("coverMemberTexts — fragments of a longer value", () => {
+    it("counts a text the page showed as its own run but a prop holds inside a longer value", () => {
+        const result = coverMemberTexts(
+            [member(["Copyright ©", "2026"])],
+            [prop("copyright", ["Copyright © 2026 Park City Place"])]
+        );
+        expect(result.uncoveredCount).toBe(0);
+        expect(result.covered).toBe(2);
+    });
+});
