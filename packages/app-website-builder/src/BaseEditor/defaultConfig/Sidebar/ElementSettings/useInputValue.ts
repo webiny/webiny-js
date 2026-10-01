@@ -22,6 +22,7 @@ import {
     type IMetadata
 } from "~/BaseEditor/metadata/index.js";
 import { useElementFactory } from "./useElementFactory.js";
+import { PreviewedBindings } from "./PreviewedBindings.js";
 
 export type OnChangeParams = {
     value: InputValueObject;
@@ -137,6 +138,9 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
 
     const [localState, setLocalValue] = useState<ValueBinding>();
 
+    // See PreviewedBindings: preview patches are diffed against what the preview shows.
+    const previewedBindings = useMemo(() => new PreviewedBindings(), [elementId]);
+
     const onChange = useCallback(
         withTimeout((cb: (params: OnChangeParams) => void) => {
             const deepInputs = inputsProcessor.toDeepInputs(resolvedBindings.inputs);
@@ -245,11 +249,12 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
             setLocalValue({ static: valueObject.get() });
 
             const updatedInputs = inputsProcessor.createUpdate(devFriendlyInputs, breakpoint.name);
-            const patch = updatedInputs.createJsonPatch(rawBindings);
+
+            const patch = previewedBindings.createPatch(updatedInputs, rawBindings);
 
             editor.executeCommand(Commands.PreviewPatchElement, { elementId, patch });
         },
-        [elementId, rawBindings, localState]
+        [elementId, rawBindings, localState, previewedBindings]
     );
 
     const setBindingType = useCallback(

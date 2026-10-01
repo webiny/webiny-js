@@ -20,6 +20,23 @@ import {
     AiBeforeStreamTextEvent
 } from "./events.js";
 
+/**
+ * Drops call options the model doesn't accept. Several current models reject `temperature` outright
+ * (a 400, not a warning), so it is only sent when the catalog says the model supports it. No
+ * information counts as unsupported: leaving it out costs some determinism, sending it can fail the
+ * whole request.
+ */
+const withSupportedOptions = <T extends { temperature?: number }>(
+    options: T,
+    model: AiModel
+): T => {
+    if (options.temperature === undefined || model.supports?.temperature === true) {
+        return options;
+    }
+    const { temperature: _temperature, ...rest } = options;
+    return rest as T;
+};
+
 class AiImpl implements AiAbstraction.Interface {
     private sdkCache = new Map<string, IAiSdk>();
     private resolvedConnections: IAiConnection[] | null = null;
@@ -32,8 +49,10 @@ class AiImpl implements AiAbstraction.Interface {
     ) {}
 
     async generateText(params: AiGenerateTextParams): ReturnType<typeof generateText> {
-        const { model, connection, ...rest } = params;
-        const resolvedModel = await this.resolveLanguageModel(model, connection);
+        const { model, connection, ...options } = params;
+        const { languageModel: resolvedModel, model: catalogModel } =
+            await this.resolveLanguageModel(model, connection);
+        const rest = withSupportedOptions(options, catalogModel);
         const requestId = mdbid();
 
         await this.eventPublisher.publish(new AiBeforeGenerateTextEvent({ requestId, params }));
@@ -65,8 +84,10 @@ class AiImpl implements AiAbstraction.Interface {
     }
 
     async streamText(params: AiStreamTextParams): Promise<ReturnType<typeof streamText>> {
-        const { model, connection, ...rest } = params;
-        const resolvedModel = await this.resolveLanguageModel(model, connection);
+        const { model, connection, ...options } = params;
+        const { languageModel: resolvedModel, model: catalogModel } =
+            await this.resolveLanguageModel(model, connection);
+        const rest = withSupportedOptions(options, catalogModel);
 
         await this.eventPublisher.publish(new AiBeforeStreamTextEvent({ params }));
 
@@ -98,7 +119,7 @@ class AiImpl implements AiAbstraction.Interface {
     private async resolveLanguageModel(
         modelId: string,
         connection?: string | IAiConnectionInline
-    ): Promise<LanguageModel> {
+    ): Promise<{ languageModel: LanguageModel; model: AiModel }> {
         const slashIndex = modelId.indexOf("/");
         if (slashIndex === -1) {
             throw new Error(
@@ -110,7 +131,7 @@ class AiImpl implements AiAbstraction.Interface {
         const rawModelId = modelId.slice(slashIndex + 1);
 
         const models = await this.modelRegistry.listModels();
-        const found = models.some(m => m.providerId === providerId && m.modelId === rawModelId);
+        const found = models.find(m => m.providerId === providerId && m.modelId === rawModelId);
         if (!found) {
             throw new Error(
                 `Model "${modelId}" is not available. Use listModels() to see available models.`
@@ -119,7 +140,7 @@ class AiImpl implements AiAbstraction.Interface {
 
         const conn = await this.resolveConnection(providerId, connection);
         const sdk = await this.getSdk(conn);
-        return sdk.languageModel(rawModelId);
+        return { languageModel: sdk.languageModel(rawModelId), model: found };
     }
 
     private async getConnections(): Promise<IAiConnection[]> {

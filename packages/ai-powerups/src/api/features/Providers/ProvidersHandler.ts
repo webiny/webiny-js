@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { Masker } from "@webiny/api-core/features/masker/index.js";
-import { AiModelRegistry } from "@webiny/api-core/features/ai/index.js";
 import { AiPowerUpsSettingsGroupHandler } from "~/api/features/shared/index.js";
 import type { PersistedProviderPreset, PersistedProviders, ProvidersSettings } from "./types.js";
 
@@ -23,8 +22,7 @@ class ProvidersHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interface {
 
     constructor(
         private encryption: Encryption.Interface,
-        private masker: Masker.Interface,
-        private modelRegistry: AiModelRegistry.Interface
+        private masker: Masker.Interface
     ) {}
 
     mapFromStorage(persisted: unknown): ProvidersSettings {
@@ -50,29 +48,13 @@ class ProvidersHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interface {
         const existingData = existing as ProvidersSettings | null;
         const existingPresets = existingData?.presets ?? [];
 
-        const availableModels = await this.modelRegistry.listModels();
-        for (const preset of input.presets) {
-            if (!preset.model) {
-                continue;
-            }
-            const slashIndex = preset.model.indexOf("/");
-            if (slashIndex === -1) {
-                throw new Error(
-                    `Invalid model ID "${preset.model}" in preset "${preset.name}". Expected format: "<providerId>/<modelId>".`
-                );
-            }
-            const providerId = preset.model.slice(0, slashIndex);
-            const modelId = preset.model.slice(slashIndex + 1);
-            const found = availableModels.some(
-                m => m.providerId === providerId && m.modelId === modelId
-            );
-            if (!found) {
-                throw new Error(
-                    `Model "${preset.model}" in preset "${preset.name}" is not available. Use listModels() to see available models.`
-                );
-            }
-        }
-
+        /*
+         * No model check here. This section is legacy: the form no longer edits it, and every save
+         * carries it forward unchanged from storage. Rejecting a model that has since left the
+         * catalog (e.g. a shut-down `openai/gpt-5.3-chat-latest`) blocked every settings save with
+         * an error the user had no field to fix. The model a feature uses comes from `modelRoles` and
+         * capability overrides, and `Ai` rejects one that isn't available when it's called.
+         */
         const presets: PersistedProviderPreset[] = await Promise.all(
             input.presets.map(async preset => {
                 const existingMatch = existingPresets.find(ep => ep.id === preset.id);
@@ -107,5 +89,5 @@ class ProvidersHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interface {
 
 export default AiPowerUpsSettingsGroupHandler.createImplementation({
     implementation: ProvidersHandlerImpl,
-    dependencies: [Encryption, Masker, AiModelRegistry]
+    dependencies: [Encryption, Masker]
 });

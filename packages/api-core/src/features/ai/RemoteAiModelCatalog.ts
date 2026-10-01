@@ -22,7 +22,15 @@ const catalogSchema = z.object({
                     id: z.string(),
                     name: z.string(),
                     deprecated: optionalDate,
-                    endOfLife: optionalDate
+                    endOfLife: optionalDate,
+                    // Capabilities the catalog adds later are dropped here, not rejected.
+                    supports: z
+                        .object({
+                            tools: z.boolean().optional(),
+                            vision: z.boolean().optional(),
+                            temperature: z.boolean().optional()
+                        })
+                        .optional()
                 })
             )
         })
