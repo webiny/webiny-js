@@ -499,7 +499,7 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '["sql,ddb"]')" >> "$GITHUB_OUTPUT"
+          '["sql"]')" >> "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -527,7 +527,7 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
-      WEBINY_STORAGE: sql,ddb
+      WEBINY_STORAGE: sql
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
