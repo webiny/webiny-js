@@ -23,6 +23,9 @@ export class DynamicZoneFieldMapper implements ICmsFieldTypeMapper {
             for (const template of templates) {
                 builder.template(template.id, t => {
                     t.label(template.name);
+                    if (template.description) {
+                        t.description(template.description);
+                    }
                     if (template.icon) {
                         const icon = template.icon;
                         if (typeof icon === "object" && "name" in icon) {

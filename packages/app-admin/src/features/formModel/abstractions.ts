@@ -245,6 +245,7 @@ export interface ITemplateIcon {
 export interface ITemplateVM {
     id: string;
     label: string;
+    description?: string;
     icon?: ITemplateIcon;
 }
 
@@ -340,6 +341,7 @@ export interface IObjectFieldConfig extends IFieldConfig {
 
 export interface ITemplateBuilder {
     label(text: string): this;
+    description(text: string): this;
     icon(icon: ITemplateIcon): this;
     fields(factory: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this;
     visible(predicate: (form: IFormModel) => boolean): this;
@@ -348,6 +350,7 @@ export interface ITemplateBuilder {
 export interface ITemplateConfig {
     id: string;
     label: string;
+    description?: string;
     icon?: ITemplateIcon;
     childBuilders: Record<string, IFieldBuilder>;
     visible?: (form: IFormModel) => boolean;

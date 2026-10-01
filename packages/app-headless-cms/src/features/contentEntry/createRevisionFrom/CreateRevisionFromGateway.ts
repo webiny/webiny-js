@@ -5,6 +5,7 @@ import {
     CreateRevisionFromGateway as GatewayAbstraction,
     type ICreateRevisionFromParams
 } from "./abstractions.js";
+import { EntryDataPreparer } from "~/features/contentEntry/valueTransformers/EntryDataPreparer.js";
 
 interface CreateRevisionFromResponse {
     content: {
@@ -29,13 +30,16 @@ function createMutation(model: CmsModel, fields: EntryGraphQLFields.Interface) {
 class CreateRevisionFromGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
         private client: CmsGraphQLClient.Interface,
+        private preparer: EntryDataPreparer.Interface,
         private fields: EntryGraphQLFields.Interface
     ) {}
 
     async execute({ model, revisionId, data, options }: ICreateRevisionFromParams) {
+        const preparedData = data ? this.preparer.prepareEntryData(data, model.fields) : data;
+
         const response = await this.client.execute<CreateRevisionFromResponse>({
             query: createMutation(model, this.fields),
-            variables: { revision: revisionId, data, options }
+            variables: { revision: revisionId, data: preparedData, options }
         });
 
         const { data: entry, error } = response.content;
@@ -50,5 +54,5 @@ class CreateRevisionFromGatewayImpl implements GatewayAbstraction.Interface {
 
 export const CreateRevisionFromGateway = GatewayAbstraction.createImplementation({
     implementation: CreateRevisionFromGatewayImpl,
-    dependencies: [CmsGraphQLClient, EntryGraphQLFields]
+    dependencies: [CmsGraphQLClient, EntryDataPreparer, EntryGraphQLFields]
 });
