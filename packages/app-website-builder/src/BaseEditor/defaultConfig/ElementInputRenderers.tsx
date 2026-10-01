@@ -13,6 +13,7 @@ import { FileInputRenderer } from "~/inputRenderers/FileInput.js";
 import { FragmentSelectorInputRenderer } from "~/inputRenderers/FragmentSelectorInput.js";
 import { ObjectInputRenderer } from "~/inputRenderers/ObjectInput/ObjectInputRenderer.js";
 import { ColorPickerInputRenderer } from "~/inputRenderers/ColorPickerInput.js";
+import { ContentEntryInputRenderer } from "~/inputRenderers/ContentEntryInput.js";
 
 export const ElementInputRenderers = () => {
     return (
@@ -66,6 +67,10 @@ export const ElementInputRenderers = () => {
             <EditorConfig.ElementInput.Renderer
                 name={"Webiny/ColorPicker"}
                 component={ColorPickerInputRenderer}
+            />
+            <EditorConfig.ElementInput.Renderer
+                name={"Webiny/ContentEntry"}
+                component={ContentEntryInputRenderer}
             />
         </>
     );
