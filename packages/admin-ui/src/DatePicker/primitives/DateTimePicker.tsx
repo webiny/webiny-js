@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { format } from "date-fns";
 import { UTC_TIMEZONES } from "@webiny/utils";
 import { Calendar } from "~/Calendar/index.js";
 import { PopoverPrimitive } from "~/Popover/index.js";
@@ -10,9 +9,10 @@ import {
     formatDateForDisplay,
     formatTimeValue,
     getLocalTimezone,
-    parseTimeValue
+    parseTimeValue,
+    toIsoWithTz
 } from "../utils/dateHelpers.js";
-import { naiveDateToUtcIso, parseToDate, utcToTimezoneDate } from "../utils/timezoneHelpers.js";
+import { parseToDate, utcToTimezoneDate } from "../utils/timezoneHelpers.js";
 import { DatePickerTrigger } from "./components/DatePickerTrigger.js";
 import { TimePicker } from "./components/TimePicker.js";
 
@@ -41,7 +41,9 @@ const DateTimePicker = ({
     const [open, setOpen] = useState(false);
 
     const existingTz = withTimezone && value ? extractTimezone(value) : undefined;
-    const [timezone, setTimezone] = useState(existingTz || getLocalTimezone());
+    const [selectedTimezone, setSelectedTimezone] = useState(getLocalTimezone());
+    // The value carries its own offset; the selected one applies only until a value exists.
+    const timezone = existingTz || selectedTimezone;
 
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
@@ -57,11 +59,7 @@ const DateTimePicker = ({
 
     const displayValue = withTimezone
         ? displayDate
-            ? formatDateForDisplay(
-                  format(displayDate, "yyyy-MM-dd'T'HH:mm:ss") + timezone,
-                  "dateTimeTz",
-                  displayFormat
-              )
+            ? formatDateForDisplay(toIsoWithTz(displayDate, timezone), "dateTimeTz", displayFormat)
             : undefined
         : formatDateForDisplay(value, "dateTimeLocal", displayFormat);
 
@@ -72,9 +70,11 @@ const DateTimePicker = ({
             return;
         }
         if (withTimezone) {
-            onChange(naiveDateToUtcIso(date, tz || timezone));
+            // Wall time of `date` is the time in the selected timezone: "2026-05-01T14:30:00+02:00".
+            onChange(toIsoWithTz(date, tz || timezone));
         } else {
-            onChange(format(date, "yyyy-MM-dd'T'HH:mm:ss") + ".000Z");
+            // Absolute instant: "2026-05-01T12:30:00.000Z".
+            onChange(date.toISOString());
         }
     };
 
@@ -102,7 +102,11 @@ const DateTimePicker = ({
     };
 
     const handleTimezoneChange = (tz: string) => {
-        setTimezone(tz);
+        setSelectedTimezone(tz);
+        // Keep the picked wall time, re-label it with the new offset.
+        if (displayDate) {
+            emitChange(displayDate, tz);
+        }
     };
 
     return (
