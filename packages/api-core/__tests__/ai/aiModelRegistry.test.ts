@@ -11,6 +11,7 @@ import { RemoteAiModelCatalog } from "~/features/ai/RemoteAiModelCatalog.js";
 import { AiSdkFactory } from "~/features/ai/abstractions.js";
 import type { IAiSdk } from "~/features/ai/abstractions.js";
 import { Logger } from "~/features/logger/index.js";
+import { HttpClient } from "~/features/httpClient/HttpClient.js";
 
 class TestSdkFactory implements AiSdkFactory.Interface {
     constructor(
@@ -82,6 +83,7 @@ const createRegistry = () => {
     container.registerInstance(AiSdkFactory, anthropic);
     container.registerInstance(AiSdkFactory, openAi);
     container.registerInstance(AiSdkFactory, custom);
+    container.register(HttpClient);
     container.register(RemoteAiModelCatalog);
     container.register(AiModelRegistry);
     return container.resolve(AiModelRegistryAbstraction);
