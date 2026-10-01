@@ -131,7 +131,7 @@ class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
             : resolved.value;
         const total = components.length;
 
-        // The source section crop per component, for the visual-similarity indicator — read from the
+        // The source section crop per component, whose size is recorded beside the render — read from the
         // Plan artifact (which carries each component's representative crop). Best-effort: a missing plan
         // just leaves the indicators null.
         const cropBySignature = new Map<string, string>();
@@ -231,7 +231,8 @@ class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
                         width: result.value.width,
                         height: result.value.height,
                         ok: true,
-                        similarity: result.value.similarity,
+                        sourceWidth: result.value.sourceWidth,
+                        sourceHeight: result.value.sourceHeight,
                         pageErrors: result.value.pageErrors.length
                             ? result.value.pageErrors
                             : undefined,
@@ -245,7 +246,8 @@ class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
                         width: 0,
                         height: 0,
                         ok: false,
-                        similarity: null,
+                        sourceWidth: null,
+                        sourceHeight: null,
                         // Kept on the artifact as well as logged: the task log retains only its last
                         // entry, so logging alone loses every failure but one.
                         error: result.error.message

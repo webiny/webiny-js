@@ -471,8 +471,9 @@ export interface RenderRecordDto {
     width: number;
     height: number;
     ok: boolean;
-    /** Rough visual-similarity indicator in [0,1] (1 = closest), or null if not computed. */
-    similarity: number | null;
+    /** The source section crop's size, stated beside the render's rather than reduced to a score. */
+    sourceWidth: number | null;
+    sourceHeight: number | null;
     /** Why this component did not render, when it did not. */
     error?: string;
     /** What the page reported while rendering — present even when the render completed. */

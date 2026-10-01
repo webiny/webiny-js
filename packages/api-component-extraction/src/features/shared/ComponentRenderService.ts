@@ -88,35 +88,23 @@ const buildInject = (
 
 const slug = (signature: string): string => signature.replace(/[^a-zA-Z0-9_-]/g, "-");
 
-// Both images are reduced to this greyscale grid before differencing — small enough that aspect-ratio
-// and layout differences wash out, leaving a coarse "do these look alike" signal (W7.8's indicator).
-const SIMILARITY_EDGE = 64;
-
 /**
- * A rough visual-similarity indicator in [0,1] between two PNGs: downscale both to a fixed greyscale
- * grid and take the normalised mean absolute pixel difference (1 - diff). Deliberately crude — labelled
- * an indicator, never a structural-similarity score. Returns null if either image can't be read.
+ * The source section crop's own dimensions, for the Generate view to show beside the render's.
+ *
+ * This replaced a visual-similarity indicator: a 64x64 greyscale mean-absolute-difference that was
+ * measured, across 34 components on four sites, to track average brightness and nothing else. It
+ * scored 0.97 for a component rendered 8.1x taller than its section, 0.97 for a footer that had lost
+ * every image, and 0.80 for the most faithful component in the set — and it was drawn next to the
+ * three real assertions, in green above 0.85, so it certified exactly the failures a reviewer most
+ * needed to see. Two measured heights say less and mislead nobody.
  */
-const computeSimilarity = async (a: Uint8Array, b: Uint8Array): Promise<number | null> => {
+const cropDimensions = async (
+    bytes: Uint8Array
+): Promise<{ width: number; height: number } | null> => {
     try {
         const sharp = (await import("sharp")).default;
-        const toGrid = (bytes: Uint8Array): Promise<Buffer> =>
-            sharp(bytes)
-                .resize(SIMILARITY_EDGE, SIMILARITY_EDGE, { fit: "fill" })
-                .greyscale()
-                .raw()
-                .toBuffer();
-        const [gridA, gridB] = await Promise.all([toGrid(a), toGrid(b)]);
-        const length = Math.min(gridA.length, gridB.length);
-        if (length === 0) {
-            return null;
-        }
-        let total = 0;
-        for (let i = 0; i < length; i++) {
-            total += Math.abs(gridA[i] - gridB[i]);
-        }
-        const diff = total / (length * 255);
-        return Math.max(0, Math.min(1, 1 - diff));
+        const meta = await sharp(bytes).metadata();
+        return meta.width && meta.height ? { width: meta.width, height: meta.height } : null;
     } catch {
         return null;
     }
@@ -131,7 +119,7 @@ export interface RenderComponentInput {
     /** The pinned theme's `--wby-*` token CSS, or "" to fall back to the site's active theme. */
     themeCss: string;
     component: { signature: string; name: string; source: string; css: string };
-    /** Blob key of the source section crop, for the visual-similarity indicator. Optional. */
+    /** Blob key of the source section crop, whose dimensions are recorded beside the render. Optional. */
     sourceCropRef?: string;
 }
 
@@ -139,7 +127,9 @@ export interface RenderedComponent {
     renderRef: string;
     width: number;
     height: number;
-    similarity: number | null;
+    /** The source section crop's size, so the view can state both and let the reader compare. */
+    sourceWidth: number | null;
+    sourceHeight: number | null;
     /**
      * What the page reported while rendering, even though the render completed.
      *
@@ -225,12 +215,12 @@ class ComponentRenderServiceImpl implements IComponentRenderService {
             return Result.fail(stored.error);
         }
 
-        // Best-effort similarity against the source crop — a missing crop just yields a null indicator.
-        let similarity: number | null = null;
+        // Best-effort: a missing crop just leaves the source size unstated.
+        let source: { width: number; height: number } | null = null;
         if (input.sourceCropRef) {
             const crop = await this.blobStore.get(input.sourceCropRef);
             if (crop.isOk()) {
-                similarity = await computeSimilarity(rendered.image, crop.value);
+                source = await cropDimensions(crop.value);
             }
         }
 
@@ -240,7 +230,8 @@ class ComponentRenderServiceImpl implements IComponentRenderService {
             renderRef: stored.value,
             width: rendered.width,
             height: rendered.height,
-            similarity
+            sourceWidth: source?.width ?? null,
+            sourceHeight: source?.height ?? null
         });
     }
 }

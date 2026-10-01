@@ -594,11 +594,15 @@ export interface RenderRecord {
     height: number;
     ok: boolean;
     /**
-     * A rough visual-similarity indicator in [0,1] (1 = closest) between the rendered component and its
-     * source section crop — greyscale, downscaled, normalised pixel difference. An indicator, not a
-     * structural-similarity score; null when either image was unavailable.
+     * The source section crop's own size, so a reader can compare it with the render's.
+     *
+     * Not a score. A single visual-similarity number stood here and was measured, across 34
+     * components on four sites, to track average brightness: it rewarded a blank render and a
+     * brightness match, and ranked the worst structural failures above the most faithful component.
+     * Null when the crop was unavailable.
      */
-    similarity: number | null;
+    sourceWidth: number | null;
+    sourceHeight: number | null;
     /**
      * What the page reported while rendering this component, successfully or not.
      *

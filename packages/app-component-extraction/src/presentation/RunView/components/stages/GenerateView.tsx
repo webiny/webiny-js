@@ -73,32 +73,60 @@ const AssertionPill = ({ label, result }: { label: string; result: ValidationRes
     </div>
 );
 
-/** The visual-similarity score block (spec §6.7): a large mono number and a threshold-colored bar. */
-const ScoreBlock = ({ value }: { value: number | null | undefined }) => {
-    const has = value !== null && value !== undefined;
-    const tone = !has
-        ? { bar: "bg-neutral-muted", text: "text-neutral-strong" }
-        : value >= 0.85
-          ? { bar: "bg-success-strong", text: "text-success-strong" }
-          : value >= 0.75
-            ? { bar: "bg-warning-strong", text: "text-warning-strong" }
-            : { bar: "bg-destructive-strong", text: "text-destructive-strong" };
+/**
+ * The render's size against its source section's.
+ *
+ * This replaced a visual-similarity score. The score was a 64x64 greyscale mean-absolute-difference,
+ * and measured across 34 components on four sites it tracked average brightness and nothing else: it
+ * gave 0.97 to a component rendered 8.1x taller than its section, 0.97 to a footer that had lost
+ * every image, and 0.80 to the most faithful component in the set. Drawn here, beneath the three real
+ * assertions and coloured green above 0.85, it certified the exact failures a reviewer needed to
+ * find.
+ *
+ * What is left is measured rather than derived: two heights, and the ratio stated in words when they
+ * diverge. No bar, no threshold colour — a reviewer who wants a verdict has the two images above, and
+ * nothing here should let them skip looking.
+ */
+const SizeBlock = ({ render }: { render: RenderRecordDto | undefined }) => {
+    const sourceHeight = render?.sourceHeight ?? null;
+    const renderHeight = render?.height ?? null;
+    const ratio = sourceHeight && renderHeight ? renderHeight / sourceHeight : null;
+    // Outside this band the component is not the shape of its section, which is the single thing the
+    // old number was worst at telling anyone.
+    const diverges = ratio !== null && (ratio > 1.5 || ratio < 0.67);
+    const widthMismatch =
+        render?.sourceWidth != null && render.width > 0 && render.sourceWidth !== render.width;
+
     return (
         <div className="flex flex-col gap-xs rounded-sm border border-neutral-dimmed p-sm">
             <div className="flex items-center justify-between gap-sm">
                 <Text size="sm" className="text-neutral-strong">
-                    Visual similarity
+                    Section height
                 </Text>
-                <Text className={cn("font-mono text-xl leading-none", tone.text)}>
-                    {has ? value.toFixed(2) : "—"}
+                <Text className="font-mono text-sm leading-none text-neutral-primary">
+                    {sourceHeight === null ? "—" : `${sourceHeight}px`}
                 </Text>
             </div>
-            <div className="h-[4px] w-full overflow-hidden rounded-full bg-neutral-light">
-                <div
-                    className={cn("h-full rounded-full", tone.bar)}
-                    style={{ width: `${has ? Math.round(value * 100) : 0}%` }}
-                />
+            <div className="flex items-center justify-between gap-sm">
+                <Text size="sm" className="text-neutral-strong">
+                    Render height
+                </Text>
+                <Text className="font-mono text-sm leading-none text-neutral-primary">
+                    {renderHeight === null ? "—" : `${renderHeight}px`}
+                </Text>
             </div>
+            {diverges && ratio !== null ? (
+                <Text size="sm" className="text-neutral-strong">
+                    {ratio > 1
+                        ? `${ratio.toFixed(1)}x taller than its section`
+                        : `${(1 / ratio).toFixed(1)}x shorter than its section`}
+                </Text>
+            ) : null}
+            {widthMismatch ? (
+                <Text size="sm" className="text-neutral-strong">
+                    {`Rendered at ${render?.width}px against a ${render?.sourceWidth}px crop — the two are different layout widths.`}
+                </Text>
+            ) : null}
         </div>
     );
 };
@@ -273,7 +301,7 @@ const GenerateCard = ({
                         label="Token binding"
                         result={component.validation.tokenBinding}
                     />
-                    <ScoreBlock value={render?.similarity} />
+                    <SizeBlock render={render} />
                 </div>
             </div>
 
@@ -331,8 +359,8 @@ const GenerateCard = ({
 
 /**
  * The Generate view (spec §6.7). One card per component, most-used first: the source section beside the
- * rendered component, the validators kept visually distinct as green/red assertion pills plus a bordered
- * visual-similarity score block, and an accept/reject decision that gates Promotion. The summary reports
+ * rendered component, the validators kept visually distinct as green/red assertion pills plus the
+ * render's size against its section's, and an accept/reject decision that gates Promotion. The summary reports
  * the decision state (accepted / rejected / undecided). "View code" shows the generated source; renders
  * are triggered from here; regenerate-with-instruction is tracked separately.
  */
