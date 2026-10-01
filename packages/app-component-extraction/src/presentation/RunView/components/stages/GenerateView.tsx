@@ -172,15 +172,23 @@ const GenerateCard = ({
                         ) : null}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-sm">
+                    {/*
+                     * The tiles follow their image rather than holding a fixed 4:3 shape. A section
+                     * is whatever height it is — a navigation header is 84px against a 2642px feature
+                     * block — and forcing both into one box turned the short ones into a thin strip
+                     * floating in white, which reads as an empty preview rather than a small one.
+                     * Capped so a tall component cannot push the card off the screen, and floored so a
+                     * very short one still has somewhere to sit.
+                     */}
+                    <div className="grid grid-cols-2 items-start gap-sm">
                         <figure className="m-0 flex flex-col gap-xxs">
-                            <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-sm bg-neutral-subtle">
+                            <div className="flex max-h-64 min-h-16 items-center justify-center overflow-hidden rounded-sm bg-neutral-subtle">
                                 {sourceCropRef ? (
                                     <RunImage
                                         runId={runId}
                                         imageRef={sourceCropRef}
                                         alt="source section"
-                                        className="h-full w-full object-contain object-top"
+                                        className="h-auto w-full object-contain object-top"
                                     />
                                 ) : (
                                     <Text size="sm" className="text-neutral-strong">
@@ -195,13 +203,13 @@ const GenerateCard = ({
                             </figcaption>
                         </figure>
                         <figure className="m-0 flex flex-col gap-xxs">
-                            <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-sm border border-neutral-dimmed bg-neutral-base">
+                            <div className="flex max-h-64 min-h-16 items-center justify-center overflow-hidden rounded-sm border border-neutral-dimmed bg-neutral-base">
                                 {render && render.ok && render.renderRef ? (
                                     <RunImage
                                         runId={runId}
                                         imageRef={render.renderRef}
                                         alt="generated component"
-                                        className="h-full w-full object-contain object-top"
+                                        className="h-auto w-full object-contain object-top"
                                     />
                                 ) : (
                                     // "render failed" on its own was indistinguishable from "never
