@@ -3440,6 +3440,19 @@ describe("FormModel", () => {
             expect(vm.availableTemplates.map(t => t.id)).toEqual(["hero", "text"]);
         });
 
+        it("templates.add keeps the layout declared on the added template", () => {
+            const form = createSingleTemplatedForm();
+            const field = form.field("content").as("object");
+            field.templates.add("cta", t => {
+                t.label("CTA")
+                    .fields(f => ({ text: f.text(), url: f.text() }))
+                    .layout(l => [l.row("text", "url")]);
+            });
+            (form.field("content") as any).setTemplate("cta");
+            const vm = form.field("content").vm as IObjectFieldVM;
+            expect(asRow(vm.layout[0]).fields.map(f => f.name)).toEqual(["text", "url"]);
+        });
+
         it("templates.add throws on duplicate id", () => {
             const form = createSingleTemplatedForm();
             const field = form.field("content").as("object");

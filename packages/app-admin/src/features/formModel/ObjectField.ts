@@ -408,7 +408,11 @@ export class ObjectField implements IObjectField {
         }
         const tb = createTemplateBuilder();
         configure(tb);
-        this._templates.push(tb._build(id, this._form!.registry));
+        const template = tb._build(id, this._form!.registry);
+        this._templates.push(template);
+        if (template.layout && !this._templateLayouts[id]) {
+            this._templateLayouts[id] = template.layout;
+        }
     }
 
     private _removeTemplate(templateId: string): void {
