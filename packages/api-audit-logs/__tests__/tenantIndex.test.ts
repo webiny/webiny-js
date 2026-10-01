@@ -4,12 +4,11 @@ import { AUDIT } from "~/config.js";
 import { useHandler } from "~tests/helpers/useHandler.js";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { usesDynamoDb } from "./helpers/usesDynamoDb";
 
 const createApiKeyCreateAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.CREATE);
 
-const isSql = process.env.WEBINY_STORAGE?.includes("sql");
-
-describe.skipIf(isSql)("Audit Logs Tenant Index", () => {
+describe.runIf(usesDynamoDb)("Audit Logs Tenant Index in DynamoDB", () => {
     const { handler } = useHandler();
 
     it("should have LastEvaluatedKey in the result and it should be the result", async () => {
