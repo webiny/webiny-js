@@ -1,13 +1,21 @@
 import { Result } from "@webiny/feature/api";
 import type { ThemeManifest } from "@webiny/theme-common";
 import { StageHandler, type StageContext, type StageOutcome } from "~/domain/stage.js";
-import type { ClassifyArtifact, PlanArtifact, PlannedComponent } from "~/domain/artifacts.js";
+import type {
+    CapturedNode,
+    ClassifyArtifact,
+    PlanArtifact,
+    PlannedComponent,
+    SegmentArtifact
+} from "~/domain/artifacts.js";
 import { ComponentExtractionAi } from "~/features/shared/ai.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import { hasNothingToGenerate } from "./hasNothingToGenerate.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 import { PLAN_SYSTEM, buildPlanPrompt, parsePlanContract } from "./planContract.js";
 import { coverMemberTexts } from "./textCoverage.js";
+import { bindObservedValues } from "./bindObservedValues.js";
+import { findNodeByBox } from "../cluster/sectionNode.js";
 
 // One model call per cluster. The margin MUST exceed one call's worst case: the timeout is checked only
 // between clusters, so too small a margin lets a call start without runway and the Lambda is hard-killed
@@ -64,6 +72,49 @@ class PlanHandlerImpl implements StageHandler.Interface {
         if (!classify) {
             return Result.fail(new ExtractionValidationError("the classify artifact is empty"));
         }
+
+        /*
+         * The sections, so a component's non-text props can be filled from the section its reference
+         * image was cropped from. Optional on purpose: without it Plan still produces a contract, just
+         * one whose image and link props arrive empty — which is what it did before. A missing segment
+         * artifact should not fail a stage that can still do most of its job.
+         */
+        const segmentRef = context.upstream.sections;
+        let segment: SegmentArtifact | null = null;
+        if (segmentRef) {
+            const segmentResult = await context.store.getJson<SegmentArtifact>(segmentRef);
+            if (segmentResult.isOk()) {
+                segment = segmentResult.value;
+            }
+        }
+        const segmentByUrl = new Map((segment?.pages ?? []).map(page => [page.url, page]));
+        // One page tree is read per cluster at most, and reference sections often share a page.
+        const treeCache = new Map<string, CapturedNode | null>();
+
+        const referenceSection = async (
+            url: string,
+            sectionIndex: number
+        ): Promise<CapturedNode | null> => {
+            const page = segmentByUrl.get(url);
+            const section = page?.sections.find(candidate => candidate.index === sectionIndex);
+            if (!page || !section) {
+                return null;
+            }
+            if (!treeCache.has(page.treeRef)) {
+                const blob = await context.blobs.get(page.treeRef);
+                let tree: CapturedNode | null = null;
+                if (blob.isOk()) {
+                    try {
+                        tree = JSON.parse(new TextDecoder().decode(blob.value)) as CapturedNode;
+                    } catch {
+                        tree = null;
+                    }
+                }
+                treeCache.set(page.treeRef, tree);
+            }
+            const tree = treeCache.get(page.treeRef) ?? null;
+            return tree ? findNodeByBox(tree, section.box) : null;
+        };
 
         let manifest: ThemeManifest | null = null;
         const manifestResult = await this.manifestResolver.resolve(
@@ -128,6 +179,30 @@ class PlanHandlerImpl implements StageHandler.Interface {
                         message: `Plan returned no usable contract for "${cluster.name}".`
                     });
                 } else {
+                    /*
+                     * Fill the non-text props from the reference section before anything reads the
+                     * contract. Ordering matters twice: the coverage check below counts a member text
+                     * as held only if some prop observed it, and a link label only becomes an observed
+                     * value here; and Generate is handed these values so it has something real to put
+                     * in the component's defaults instead of inventing a stock photograph.
+                     */
+                    const node = await referenceSection(
+                        cluster.cluster.representative.url,
+                        cluster.cluster.representative.sectionIndex
+                    );
+                    if (node) {
+                        const bound = bindObservedValues(node, contract.props);
+                        if (bound.propsBound > 0) {
+                            await context.log.info({
+                                message: `Filled ${bound.propsBound} non-text prop(s) of "${cluster.name}" from its reference section: ${bound.mediaBound} image(s), ${bound.linksBound} link(s), ${bound.itemsBound} list item(s).`
+                            });
+                        }
+                    } else if (segment) {
+                        await context.log.info({
+                            message: `No reference section node for "${cluster.name}"; its image and link props stay empty.`
+                        });
+                    }
+
                     checkpoint.components.push({
                         signature: cluster.cluster.signature,
                         name: cluster.name,

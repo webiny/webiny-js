@@ -85,6 +85,39 @@ const buildPrompt = (
         const children = (prop.fields ?? []).flatMap(field => propLines(field, `  ${indent}`));
         return [line, ...children];
     };
+
+    /*
+     * The values the section actually used, as the defaults this prop should ship with.
+     *
+     * Without them the model has a picture of a photograph and no photograph, and it does the only
+     * thing it can: it writes a plausible stock URL into `defaults.inputs`. Measured before this
+     * existed, 12 of 34 components across four sites shipped hardcoded `images.unsplash.com` URLs, and
+     * Promote put them in the customer's Library — 49 of its 212 components carry them today.
+     */
+    const structuredLines = (prop: PlannedComponent["props"][number], indent: string): string[] => {
+        const lines: string[] = [];
+        for (const value of prop.observedStructured ?? []) {
+            if (value.kind === "media") {
+                lines.push(
+                    `${indent}${prop.name}: ${value.src}${value.alt ? ` (alt: "${value.alt}")` : ""}`
+                );
+            } else if (value.kind === "link") {
+                lines.push(`${indent}${prop.name}: "${value.label}" -> ${value.href}`);
+            } else {
+                const fields = Object.entries(value.fields)
+                    .map(([name, field]) =>
+                        typeof field === "string"
+                            ? `${name}: "${field}"`
+                            : "label" in field
+                              ? `${name}: "${field.label}" -> ${field.href}`
+                              : `${name}: ${field.src}`
+                    )
+                    .join(", ");
+                lines.push(`${indent}${prop.name}[]: { ${fields} }`);
+            }
+        }
+        return [...lines, ...(prop.fields ?? []).flatMap(field => structuredLines(field, indent))];
+    };
     const props = component.props.flatMap(prop => propLines(prop, "- "));
     // Resolve each planned binding's slot path to the theme's real css variable name(s) — the model must
     // reference these exact names, not a name derived from the slot path.
@@ -118,6 +151,19 @@ const buildPrompt = (
         "Preserve this text content exactly:",
         ...component.sourceTexts.slice(0, PRESERVED_TEXT_LIMIT).map(text => `- ${text}`)
     ];
+
+    const observed = component.props.flatMap(prop => structuredLines(prop, "- "));
+    if (observed.length > 0) {
+        lines.push(
+            "",
+            "These are the images and destinations the section itself used. Put them in the manifest's",
+            "`defaults` as the default values for those inputs, exactly as given:",
+            ...observed,
+            "",
+            "Do NOT invent image URLs. No stock photography, no placeholder services, no URL that is",
+            "not in the list above — a component that ships one puts it in the customer's library."
+        );
+    }
     // On a retry, tell the model precisely what the previous attempt got wrong so it can fix that rather
     // than re-rolling blindly — the single biggest lever on both pass rate and wasted attempts.
     if (feedback.length > 0) {

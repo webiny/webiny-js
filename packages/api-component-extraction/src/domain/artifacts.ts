@@ -437,10 +437,54 @@ export interface ComponentProp {
     array?: boolean;
     /** Sub-fields for composite props (object, Link/Image/Point, array-of-object). Recursive, depth-capped. */
     fields?: ComponentProp[];
-    /** Sample values observed across the cluster's members. */
+    /**
+     * Sample TEXT values observed across the cluster's members.
+     *
+     * Stays `string[]`. Seven places read it on the assumption that its elements are strings, one of
+     * them in another package — `@webiny/remote-components`' `renderComponentText` calls `.trim()` on
+     * each — so widening the element type would have moved the problem rather than solved it. A link's
+     * label and a list item's text are strings and belong here, which is also what lets text coverage
+     * and the text-preservation validator see them without changing either.
+     */
     observedValues: string[];
+    /**
+     * Values observed in the section that are not text: media sources and destinations.
+     *
+     * Carried beside `observedValues` rather than inside it, for the reason above. Shape-neutral on
+     * purpose — whether a file input wants `"url"` or `{ url }` is decided by reading the component's
+     * own source, and at Plan time no component has been generated yet.
+     */
+    observedStructured?: ObservedStructuredValue[];
     observation?: PropObservation;
 }
+
+/** An image the section showed: the absolute source the browser resolved, and its alt where it had one. */
+export interface ObservedMedia {
+    kind: "media";
+    src: string;
+    alt?: string;
+}
+
+/** A destination the section showed, with the label the page put on it. */
+export interface ObservedLink {
+    kind: "link";
+    label: string;
+    href: string;
+}
+
+/**
+ * One repeated item of a list prop, with its fields filled from a single subtree.
+ *
+ * Per item rather than per field, because a card's image, heading and link only belong together if
+ * they came from the same node — pairing them across a row is how a label from one card lands beside
+ * another card's destination.
+ */
+export interface ObservedItem {
+    kind: "item";
+    fields: Record<string, string | Omit<ObservedMedia, "kind"> | Omit<ObservedLink, "kind">>;
+}
+
+export type ObservedStructuredValue = ObservedMedia | ObservedLink | ObservedItem;
 
 export interface TokenBinding {
     /** Which prop or element the binding applies to (free-form; the model proposes it). */
