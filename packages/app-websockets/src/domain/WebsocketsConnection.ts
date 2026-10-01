@@ -75,6 +75,13 @@ export class WebsocketsConnection implements IWebsocketsConnection {
     private reconnectAttempt = 0;
     private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
     private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+    /**
+     * Opening a socket waits for a token first. `connecting` lets concurrent callers (a reconnect
+     * timer, the window-focus handler, `send()`) share that one attempt instead of each creating a
+     * socket, and `generation` lets `close()` invalidate an attempt that is already waiting.
+     */
+    private connecting: Promise<WebSocket | null> | null = null;
+    private generation = 0;
 
     public constructor(params: IWebsocketsConnectionParams) {
         this.url = params.url;
@@ -96,6 +103,8 @@ export class WebsocketsConnection implements IWebsocketsConnection {
     }
 
     public async close(code: WebsocketsCloseCode, reason: string): Promise<boolean> {
+        this.generation++;
+        this.connecting = null;
         this.stopHeartbeat();
         this.cancelReconnect();
         if (
@@ -118,7 +127,7 @@ export class WebsocketsConnection implements IWebsocketsConnection {
 
     public async send<T extends IGenericData = IGenericData>(data: T): Promise<void> {
         const connection = await this.getConnection();
-        if (connection.readyState !== WebsocketsReadyState.OPEN) {
+        if (!connection || connection.readyState !== WebsocketsReadyState.OPEN) {
             console.info("Websocket connection is not open, cannot send any data.", data);
             return;
         }
@@ -145,14 +154,38 @@ export class WebsocketsConnection implements IWebsocketsConnection {
         };
     }
 
-    private async getConnection(): Promise<WebSocket> {
-        if (connectionCache.ws?.readyState === WebsocketsReadyState.OPEN) {
-            return connectionCache.ws;
-        } else if (connectionCache.ws?.readyState === WebsocketsReadyState.CONNECTING) {
-            return connectionCache.ws;
+    private getConnection(): Promise<WebSocket | null> {
+        const cached = connectionCache.ws;
+        if (
+            cached?.readyState === WebsocketsReadyState.OPEN ||
+            cached?.readyState === WebsocketsReadyState.CONNECTING
+        ) {
+            return Promise.resolve(cached);
         }
 
+        if (!this.connecting) {
+            const attempt = this.openConnection();
+            const clear = () => {
+                if (this.connecting === attempt) {
+                    this.connecting = null;
+                }
+            };
+            attempt.then(clear, clear);
+            this.connecting = attempt;
+        }
+        return this.connecting;
+    }
+
+    /**
+     * Resolves to `null` when `close()` ran while the token was being fetched: the attempt is
+     * abandoned rather than opening a socket nobody asked for any more.
+     */
+    private async openConnection(): Promise<WebSocket | null> {
+        const generation = this.generation;
         const result = await this.createUrl();
+        if (generation !== this.generation) {
+            return null;
+        }
         if (!result) {
             throw new Error(`Missing URL for WebSocket to connect to.`);
         }
@@ -191,30 +224,25 @@ export class WebsocketsConnection implements IWebsocketsConnection {
             }
             return this.subscriptionManager.triggerOnClose(event);
         });
-        connectionCache.ws.addEventListener("error", event => {
+        ws.addEventListener("error", event => {
             console.info(`Error in the Websocket connection.`, event);
             /**
-             * Let's close it if possible.
-             * It will reopen automatically.
+             * Close this socket (not whatever is cached by now); the close handler reconnects if
+             * it is still the current one.
              */
-            if (connectionCache.ws?.close) {
-                try {
-                    connectionCache.ws.close();
-                } catch (ex) {
-                    console.error(ex);
-                }
+            try {
+                ws.close();
+            } catch (ex) {
+                console.error(ex);
             }
             return this.subscriptionManager.triggerOnError(event);
         });
 
-        connectionCache.ws.addEventListener(
-            "message",
-            (event: IWebsocketsManagerMessageEvent<string>) => {
-                return this.subscriptionManager.triggerOnMessage(event);
-            }
-        );
+        ws.addEventListener("message", (event: IWebsocketsManagerMessageEvent<string>) => {
+            return this.subscriptionManager.triggerOnMessage(event);
+        });
 
-        return connectionCache.ws;
+        return ws;
     }
 
     private scheduleReconnect(): void {
@@ -225,11 +253,16 @@ export class WebsocketsConnection implements IWebsocketsConnection {
         this.reconnectAttempt++;
         console.log(`Websockets reconnecting in ${delay}ms (attempt ${this.reconnectAttempt}).`);
 
+        const generation = this.generation;
         this.reconnectTimer = setTimeout(async () => {
             this.reconnectTimer = null;
             try {
                 await this.connect();
             } catch (ex) {
+                if (generation !== this.generation) {
+                    // close() ran while this attempt was in flight: it was meant to stop here.
+                    return;
+                }
                 // No token yet (e.g. mid-refresh) or the socket could not be created: try again.
                 console.error("Websockets reconnect failed.", ex);
                 this.scheduleReconnect();

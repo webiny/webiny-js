@@ -37,12 +37,12 @@ class FakeSocket extends EventTarget {
 
 const HEARTBEAT = 1000;
 
-const setup = () => {
+const setup = (getToken: () => Promise<string | undefined> = async () => "token") => {
     const sockets: FakeSocket[] = [];
     const connection = createWebsocketsConnection({
         url: "wss://example.com/dev",
         tenant: "root",
-        getToken: async () => "token",
+        getToken,
         subscriptionManager: createWebsocketsSubscriptionManager(),
         factory: url => {
             const socket = new FakeSocket(url);
@@ -127,6 +127,76 @@ describe("WebsocketsConnection", () => {
         await connection.close(WebsocketsCloseCode.NORMAL, "Changing tenant.");
         await vi.advanceTimersByTimeAsync(60_000);
 
+        expect(sockets).toHaveLength(1);
+    });
+
+    it("opens one socket when connect() is called again while the token is still pending", async () => {
+        const pendingTokens: Array<(token: string) => void> = [];
+        const { connection, sockets } = setup(
+            () => new Promise<string>(resolve => pendingTokens.push(resolve))
+        );
+
+        // E.g. the reconnect timer and the window-focus handler firing together.
+        const first = connection.connect();
+        const second = connection.connect();
+        pendingTokens.forEach(resolve => resolve("token"));
+        await Promise.all([first, second]);
+
+        expect(pendingTokens).toHaveLength(1);
+        expect(sockets).toHaveLength(1);
+    });
+
+    it("does not open a socket when close() runs while a reconnect waits for its token", async () => {
+        let resolveToken: (token: string) => void = () => {};
+        let pending = false;
+        const { connection, sockets } = setup(() => {
+            if (!pending) {
+                return Promise.resolve("token");
+            }
+            return new Promise<string>(resolve => (resolveToken = resolve));
+        });
+        await connection.connect();
+        sockets[0].open();
+
+        // The next token request (the reconnect's) stays pending until we resolve it.
+        pending = true;
+        sockets[0].drop();
+        await vi.advanceTimersByTimeAsync(100);
+
+        // E.g. a tenant change closes the connection mid-attempt.
+        await connection.close(WebsocketsCloseCode.NORMAL, "Changing tenant.");
+        resolveToken("token");
+        await vi.advanceTimersByTimeAsync(60_000);
+
+        expect(sockets).toHaveLength(1);
+    });
+
+    it("stops retrying when close() runs while a failing reconnect is in flight", async () => {
+        let rejectToken: (error: Error) => void = () => {};
+        let pending = false;
+        const { connection, sockets } = setup(() => {
+            if (!pending) {
+                return Promise.resolve("token");
+            }
+            return new Promise<string>((_, reject) => (rejectToken = reject));
+        });
+        vi.spyOn(console, "error").mockImplementation(() => {});
+        await connection.connect();
+        sockets[0].open();
+
+        pending = true;
+        sockets[0].drop();
+        await vi.advanceTimersByTimeAsync(100);
+
+        await connection.close(WebsocketsCloseCode.NORMAL, "Changing tenant.");
+        rejectToken(new Error("Token refresh failed."));
+        await vi.advanceTimersByTimeAsync(60_000);
+
+        // Without the generation check the failed attempt scheduled another retry here.
+        expect(console.error).not.toHaveBeenCalledWith(
+            "Websockets reconnect failed.",
+            expect.anything()
+        );
         expect(sockets).toHaveLength(1);
     });
 
