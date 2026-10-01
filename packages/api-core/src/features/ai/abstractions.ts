@@ -118,6 +118,26 @@ export namespace AiModelRegistry {
     export type Interface = IAiModelRegistry;
 }
 
+// AiModelCatalog
+
+export interface AiCatalogProvider {
+    id: string; // Matches `AiSdkFactory.id`, e.g. "anthropic".
+    name: string; // Human-friendly name, e.g. "Anthropic".
+    models: IAiSdkModel[];
+}
+
+export interface IAiModelCatalog {
+    /** Returns `undefined` when the catalog can't be loaded. */
+    listProviders(): Promise<AiCatalogProvider[] | undefined>;
+}
+
+/** The published list of providers and models Webiny supports. SDK factories still gate what is offered. */
+export const AiModelCatalog = createAbstraction<IAiModelCatalog>("AiModelCatalog");
+
+export namespace AiModelCatalog {
+    export type Interface = IAiModelCatalog;
+}
+
 // AiSdkToolDefinition
 
 /**
