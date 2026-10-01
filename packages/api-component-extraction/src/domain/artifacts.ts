@@ -461,8 +461,36 @@ export interface PlannedComponent {
     members: ClusterMember[];
     /** Where Generate crops the reference image. */
     representativeCrop: RepresentativeCrop;
-    /** The section's text, for Generate's text-preservation validator. */
+    /**
+     * The **reference member's** text — what Generate must reproduce, and what its text-preservation
+     * validator checks.
+     *
+     * This was the union of every cluster member's text, while the reference image Generate is given
+     * shows one member. The prompt therefore asked for two incompatible things — "reproduce the
+     * section shown in the reference image" and "preserve exactly" a superset of it — and only the
+     * second was enforced, so the model emitted the other members' sections into this one. Narrowed
+     * to the member the picture came from, the contract asks for one thing.
+     */
     sourceTexts: string[];
+    /**
+     * Every member's text, deduped — what `sourceTexts` used to be.
+     *
+     * Retained because the interface still has to serve all of them: it is what the contract is
+     * checked against by `coverMemberTexts`, and what a reader needs to see why a component has a
+     * prop the reference section does not use.
+     */
+    clusterTexts: string[];
+    /**
+     * Whether the props can hold every member's text.
+     *
+     * The guarantee the union used to provide, moved to where it belongs. Absent on plans made
+     * before the check existed.
+     */
+    textCoverage?: {
+        covered: number;
+        uncovered: string[];
+        uncoveredCount: number;
+    };
     /**
      * The operator's running list of "Regenerate props" instructions for this component, oldest first.
      * Fed back on every regenerate so the model keeps cumulative intent (e.g. a field the operator had

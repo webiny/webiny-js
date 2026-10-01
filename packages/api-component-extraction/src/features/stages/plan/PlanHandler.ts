@@ -7,11 +7,29 @@ import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import { hasNothingToGenerate } from "./hasNothingToGenerate.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 import { PLAN_SYSTEM, buildPlanPrompt, parsePlanContract } from "./planContract.js";
+import { coverMemberTexts } from "./textCoverage.js";
 
 // One model call per cluster. The margin MUST exceed one call's worst case: the timeout is checked only
 // between clusters, so too small a margin lets a call start without runway and the Lambda is hard-killed
 // mid-call, leaving the stage stuck "running".
 const PLAN_SAFETY_MARGIN_SECONDS = 180;
+
+/**
+ * The reference member's own text, in document order.
+ *
+ * Falls back to the cluster union when the representative has no digest texts — a section whose text
+ * all sits on descendants the digest did not record. Emitting nothing there would tell the model to
+ * reproduce a picture with no text at all, which is a worse instruction than the one being replaced.
+ */
+const representativeTexts = (cluster: {
+    representative: { digest?: { texts?: string[] } };
+    observedTexts: string[];
+}): string[] => {
+    const texts = (cluster.representative.digest?.texts ?? []).filter(
+        (text): text is string => typeof text === "string"
+    );
+    return texts.length > 0 ? texts : cluster.observedTexts;
+};
 
 /** Resumable checkpoint: how far through the clusters we are, and the planned components so far. */
 interface PlanCheckpoint {
@@ -119,7 +137,12 @@ class PlanHandlerImpl implements StageHandler.Interface {
                         representative: cluster.cluster.representative,
                         members: cluster.cluster.members,
                         representativeCrop: cluster.cluster.representativeCrop,
-                        sourceTexts: cluster.cluster.observedTexts
+                        // What Generate must reproduce: the text of the member its reference image
+                        // shows, not the union over the cluster. The union is kept beside it, and the
+                        // obligation it used to carry is now checked against the props instead.
+                        sourceTexts: representativeTexts(cluster.cluster),
+                        clusterTexts: cluster.cluster.observedTexts,
+                        textCoverage: coverMemberTexts(cluster.cluster.members, contract.props)
                     });
                 }
             }
