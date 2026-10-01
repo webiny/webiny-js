@@ -50,6 +50,8 @@ export interface IDashboardLayoutPresenter {
     resetToDefault(): void;
     startEditing(): void;
     stopEditing(): void;
+    // Called when the dashboard unmounts. Resets per-visit state such as Customize mode.
+    dispose(): void;
 }
 
 export const DashboardLayoutPresenter = createAbstraction<IDashboardLayoutPresenter>(

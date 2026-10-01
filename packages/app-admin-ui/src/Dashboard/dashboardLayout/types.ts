@@ -1,5 +1,3 @@
-export type DashboardWidgetColumn = "left" | "right";
-
 /** Default column count when a user hasn't customized their dashboard. */
 export const DEFAULT_COLUMN_COUNT = 2;
 

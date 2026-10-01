@@ -10,8 +10,6 @@ export interface WidgetConfig {
     pin?: "first" | "last";
     // Human-readable label, shown e.g. in the "Add widget" drawer when the widget is hidden.
     title?: string;
-    // Optional icon, shown alongside the title in the "Add widget" drawer.
-    icon?: React.ReactNode;
     // One-line summary, shown under the title in the "Add widget" drawer.
     description?: string;
     // Heading the widget is listed under in the "Add widget" drawer, usually the app name.
@@ -24,7 +22,6 @@ export interface WidgetProps {
     column?: WidgetColumn;
     pin?: "first" | "last";
     title?: string;
-    icon?: React.ReactNode;
     description?: string;
     group?: string;
 }
@@ -35,7 +32,6 @@ export const Widget = ({
     column = "left",
     pin,
     title,
-    icon,
     description,
     group
 }: WidgetProps) => {
@@ -60,7 +56,7 @@ export const Widget = ({
                 array={true}
                 before={placeBefore}
                 after={placeAfter}
-                value={{ name, element, column, pin, title, icon, description, group }}
+                value={{ name, element, column, pin, title, description, group }}
             />
         </ConnectToProperties>
     );

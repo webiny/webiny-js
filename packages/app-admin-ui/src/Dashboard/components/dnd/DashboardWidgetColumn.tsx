@@ -1,7 +1,6 @@
 import React from "react";
 import { useRef } from "react";
 import { useDrop } from "react-dnd";
-import type { XYCoord } from "react-dnd";
 import { Button } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
@@ -53,7 +52,7 @@ export const DashboardWidgetColumn = ({
     const [, drop] = useDrop({
         accept: DASHBOARD_WIDGET_DND_TYPE,
         hover: (_item, monitor) => {
-            const pointer = monitor.getClientOffset() as XYCoord | null;
+            const pointer = monitor.getClientOffset();
             if (!pointer) {
                 return;
             }

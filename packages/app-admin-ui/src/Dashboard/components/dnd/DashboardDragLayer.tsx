@@ -9,6 +9,12 @@ interface DragItem {
     name: string;
 }
 
+interface DragLayerState {
+    isDragging: boolean;
+    item: DragItem | null;
+    offset: XYCoord | null;
+}
+
 interface DashboardDragLayerProps {
     titles: Map<string, { title: string }>;
 }
@@ -18,10 +24,10 @@ interface DashboardDragLayerProps {
  * (see DashboardWidgetCard), so this chip is the only thing the user sees moving.
  */
 export const DashboardDragLayer = ({ titles }: DashboardDragLayerProps) => {
-    const { isDragging, item, offset } = useDragLayer(monitor => ({
+    const { isDragging, item, offset } = useDragLayer<DragLayerState, DragItem | null>(monitor => ({
         isDragging: monitor.isDragging(),
-        item: monitor.getItem() as DragItem | null,
-        offset: monitor.getClientOffset() as XYCoord | null
+        item: monitor.getItem(),
+        offset: monitor.getClientOffset()
     }));
 
     if (!isDragging || !item || !offset) {

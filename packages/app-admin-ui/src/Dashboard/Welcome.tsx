@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useMemo } from "react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { autorun } from "mobx";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Button } from "@webiny/admin-ui";
@@ -17,6 +16,7 @@ import { ReactComponent as DashboardCustomizeIcon } from "@webiny/icons/dashboar
 import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 import { useSecurity } from "@webiny/app-admin";
 import { useAdminConfig } from "@webiny/app-admin";
+import { createReactiveComponent } from "@webiny/app-admin";
 import { useDashboardLayoutPresenter } from "./dashboardLayout/presenter/useDashboardLayoutPresenter.js";
 import { DashboardWidgetColumn } from "./components/dnd/DashboardWidgetColumn.js";
 import { DashboardDragLayer } from "./components/dnd/DashboardDragLayer.js";
@@ -75,7 +75,7 @@ const toColumnIndex = (column: string | number | undefined): number => {
     return column === "right" ? 1 : 0;
 };
 
-const Welcome = () => {
+const WelcomeBase = () => {
     const { identity } = useSecurity();
     const { widgets } = useAdminConfig();
     const presenter = useDashboardLayoutPresenter();
@@ -87,12 +87,10 @@ const Welcome = () => {
         return map;
     }, [widgets]);
 
-    // Display metadata (title/icon) for the "Add widget" drawer and drag preview.
+    // Widget titles, for the "Add widget" drawer and the drag preview.
     const titles = useMemo(() => {
-        const map = new Map<string, { title: string; icon?: React.ReactNode }>();
-        widgets.forEach(widget =>
-            map.set(widget.name, { title: widget.title ?? widget.name, icon: widget.icon })
-        );
+        const map = new Map<string, { title: string }>();
+        widgets.forEach(widget => map.set(widget.name, { title: widget.title ?? widget.name }));
         return map;
     }, [widgets]);
 
@@ -110,12 +108,13 @@ const Welcome = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [identity?.id, widgetsKey]);
 
-    const [vm, setVm] = useState(presenter.vm);
+    // The presenter is a singleton; leaving the dashboard resets per-visit state like Customize mode.
     useEffect(() => {
-        return autorun(() => {
-            setVm(presenter.vm);
-        });
+        return () => presenter.dispose();
     }, [presenter]);
+
+    // A reactive component re-renders when anything it reads from `vm` changes.
+    const { vm } = presenter;
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const drawerWidgets: DrawerWidget[] = widgets.map(widget => {
@@ -126,7 +125,6 @@ const Welcome = () => {
             title: widget.title ?? widget.name,
             description: widget.description,
             group: widget.group,
-            icon: widget.icon,
             added: !vm.hidden.includes(widget.name),
             defaultColumn: Math.min(registeredColumn, vm.columnCount - 1)
         };
@@ -158,7 +156,8 @@ const Welcome = () => {
         }
         const host = getHost(name);
         slots.set(name, <WidgetSlot host={host} />);
-        portals.push(createPortal(element, host, name));
+        const portal = createPortal(element, host, name);
+        portals.push(portal);
     }
 
     // Customize mode needs every chosen column on screen; too narrow, and it isn't offered.
@@ -292,5 +291,7 @@ const Welcome = () => {
         </DndProvider>
     );
 };
+
+const Welcome = createReactiveComponent(WelcomeBase);
 
 export default Welcome;

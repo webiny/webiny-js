@@ -1,4 +1,5 @@
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
+import { useRef } from "react";
 
 /*
  * One detached container per widget, created once and kept for the life of the dashboard.

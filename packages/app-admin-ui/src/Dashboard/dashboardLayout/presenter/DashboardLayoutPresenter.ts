@@ -7,10 +7,8 @@ import type { DashboardLayoutData } from "../types.js";
 import { DashboardLayoutPresenter as Abstraction } from "./abstractions.js";
 import type { DashboardDropTarget } from "./abstractions.js";
 import type { DashboardWidgetInput } from "./abstractions.js";
-import type { IDashboardLayoutPresenter } from "./abstractions.js";
-import type { IDashboardLayoutViewModel } from "./abstractions.js";
 
-class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
+class DashboardLayoutPresenterImpl implements Abstraction.Interface {
     private _loading = true;
     // Whose layout this is. The presenter is a singleton, so a different user starts over.
     private _userId: string | null = null;
@@ -44,7 +42,7 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
         });
     }
 
-    get vm(): IDashboardLayoutViewModel {
+    get vm(): Abstraction.ViewModel {
         let dropTarget: DashboardDropTarget | null = null;
         if (this._dropColumn !== null) {
             dropTarget = { column: this._dropColumn, beforeName: this._dropBeforeName };
@@ -191,6 +189,13 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
         this.endDrag();
     };
 
+    // The presenter is a singleton that outlives the dashboard, so leaving the page resets what's
+    // tied to that visit: the next visit opens out of Customize mode, with no drag in progress.
+    // The layout stays, and so does any save still in flight.
+    dispose = (): void => {
+        this.stopEditing();
+    };
+
     resetToDefault = (): void => {
         this._columnCount = DEFAULT_COLUMN_COUNT;
         const columns: string[][] = Array.from({ length: this._columnCount }, () => []);
@@ -311,7 +316,8 @@ class DashboardLayoutPresenterImpl implements IDashboardLayoutPresenter {
 }
 
 function clamp(value: number, min: number, max: number): number {
-    return Math.max(min, Math.min(value, max));
+    const upperBounded = Math.min(value, max);
+    return Math.max(min, upperBounded);
 }
 
 function columnsEqual(a: string[][], b: string[][]): boolean {

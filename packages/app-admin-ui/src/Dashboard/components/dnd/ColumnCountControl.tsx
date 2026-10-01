@@ -49,7 +49,8 @@ export const ColumnCountControl = ({
             onChange={value => {
                 // Clicking the active option would clear it; a count is always required.
                 if (value) {
-                    presenter.setColumnCount(Number(value));
+                    const count = Number(value);
+                    presenter.setColumnCount(count);
                 }
             }}
         />

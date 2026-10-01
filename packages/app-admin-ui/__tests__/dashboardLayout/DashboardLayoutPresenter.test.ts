@@ -12,27 +12,29 @@ const WIDGETS = [
 ];
 
 // Records every save and lets the test decide when each one finishes.
-class ControlledSaves {
-    public calls: DashboardLayoutData[] = [];
-    private resolvers: (() => void)[] = [];
+function createControlledSaves() {
+    const calls: DashboardLayoutData[] = [];
+    const resolvers: (() => void)[] = [];
 
-    execute = (layout: DashboardLayoutData): Promise<void> => {
-        this.calls.push(layout);
+    const execute = (layout: DashboardLayoutData): Promise<void> => {
+        calls.push(layout);
         return new Promise(resolve => {
-            this.resolvers.push(resolve);
+            resolvers.push(resolve);
         });
     };
 
-    async finishNext(): Promise<void> {
-        const resolve = this.resolvers.shift();
+    const finishNext = async (): Promise<void> => {
+        const resolve = resolvers.shift();
         resolve?.();
         // Let the presenter's queue pick up the next save.
         await new Promise(resolve => setTimeout(resolve, 0));
-    }
+    };
+
+    return { calls, execute, finishNext };
 }
 
 function setup() {
-    const saves = new ControlledSaves();
+    const saves = createControlledSaves();
 
     class FakeSaveDashboardLayoutUseCase implements SaveDashboardLayoutUseCase.Interface {
         execute = saves.execute;
@@ -127,6 +129,21 @@ describe("DashboardLayoutPresenter", () => {
         presenter.stopEditing();
         expect(presenter.vm.editing).toBe(false);
         expect(presenter.vm.draggingName).toBeNull();
+    });
+
+    it("resets Customize mode on dispose, so the next visit opens normally", () => {
+        const { presenter } = setup();
+        presenter.init("user-1", WIDGETS, null);
+        presenter.removeWidget("a");
+        presenter.startEditing();
+        presenter.beginDrag("b");
+
+        presenter.dispose();
+
+        expect(presenter.vm.editing).toBe(false);
+        expect(presenter.vm.draggingName).toBeNull();
+        // The layout itself survives.
+        expect(presenter.vm.hidden).toEqual(["a"]);
     });
 
     it("leaves Customize mode when a different user signs in", () => {

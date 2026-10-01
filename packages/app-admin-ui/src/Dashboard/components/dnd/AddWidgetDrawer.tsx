@@ -18,7 +18,6 @@ export interface DrawerWidget {
     title: string;
     description?: string;
     group?: string;
-    icon?: React.ReactNode;
     // Already on the dashboard, so it can't be added again.
     added: boolean;
     // Zero-based column the widget registered with, already within the current column count.
@@ -233,6 +232,13 @@ interface DrawerWidgetRowProps {
 }
 
 const DrawerWidgetRow = ({ widget, columnCount, presenter }: DrawerWidgetRowProps) => {
+    let action = (
+        <AddToColumnMenu widget={widget} columnCount={columnCount} presenter={presenter} />
+    );
+    if (widget.added) {
+        action = <Button size={"sm"} variant={"tertiary"} text={"Added"} disabled={true} />;
+    }
+
     return (
         <div
             className={
@@ -250,11 +256,7 @@ const DrawerWidgetRow = ({ widget, columnCount, presenter }: DrawerWidgetRowProp
                     </Text>
                 )}
             </div>
-            {widget.added ? (
-                <Button size={"sm"} variant={"tertiary"} text={"Added"} disabled={true} />
-            ) : (
-                <AddToColumnMenu widget={widget} columnCount={columnCount} presenter={presenter} />
-            )}
+            {action}
         </div>
     );
 };
