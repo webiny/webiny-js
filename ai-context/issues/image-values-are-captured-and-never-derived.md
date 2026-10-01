@@ -84,3 +84,55 @@ site (see `the-similarity-score-rewarded-the-failures-it-should-have-caught`).
 
 The data exists at capture and is dropped before Plan. This is a pipeline gap, not a model one — the
 fix is derivation, not prompting.
+
+---
+
+## Scope, settled by measurement
+
+The fix covers **images, links and list items in one traversal**, not images alone. The measurement
+that decided it:
+
+**An images-only fix reclaims zero of the 120 texts** that the union-text narrowing left without a
+prop (`a-component-must-contain-every-section-it-clusters-with`). `sectionDigest` builds a member's
+`texts` from `textRuns`/`text` only — **`alt` is an attribute and never enters the digest** — so no
+amount of image-value derivation can put a text into a prop. Images are not where the text is.
+
+Links are. The 92 empty list/non-scalar props across the four sites:
+
+| type                                                                                                        | count  |
+| ----------------------------------------------------------------------------------------------------------- | ------ |
+| `Link` 27 + `Link[]` 14                                                                                     | **41** |
+| `image` 18 + `Image` 9 + `Image[]` 6                                                                        | 33     |
+| `Point` 3 + `Point[]` 7                                                                                     | 10     |
+| `FormField[]`, `FilterField[]`, `FaqItem[]`, `Block[]`, `FeatureSection[]`, `FloorPlanResult[]`, `object[]` | 8      |
+
+Links outnumber images and carry labels, which is text. Splitting the work by value type would mean
+two passes over one traversal and would leave the larger half undone.
+
+### A correction worth recognising as its own class
+
+The first version of this scoping said 23 of the 120 sat behind image-typed props and could be
+reclaimed by fixing images. **The 23 was accurate and the implication was false.** Those texts are in
+components whose only _empty_ props happen to be image-typed; the texts themselves are ordinary copy
+that image derivation cannot touch. The number was right, the causal relationship it suggested was
+not there.
+
+That is a harder failure to catch than a wrong number, because checking the arithmetic confirms it.
+It was caught by asking what an image prop can actually hold, which is a question about the mechanism
+rather than the count. The same shape is worth watching for wherever a measurement is grouped by one
+attribute and then read as if that attribute caused the grouping.
+
+## Sequencing against file migration
+
+Deriving the real URLs and migrating the files are **sequential, not alternatives**.
+
+This pass derives the values the page actually used, which stops the model inventing stock
+photography. Those values are the source site's own URLs — and per `page-images-are-never-migrated`,
+**72% of file-typed bindings point at the previous marketing vendor's Cloudinary**, not at the
+customer's own infrastructure. So a component with derived values is strictly better than one with
+Unsplash defaults (it shows the right photograph) and still leaves the migrated site depending on
+infrastructure the customer is leaving.
+
+Migration is filed separately, and its own sequencing note already says binding comes first:
+migrating assets perfectly while images bind in a shape that does not render would change nothing a
+visitor sees.
