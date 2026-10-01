@@ -1,6 +1,6 @@
 import { AiCapability } from "webiny/api/ai-powerups";
 
-export const BUG_REPORT_DRAFT_CAPABILITY = "bugReporter.draftIssue";
+export const BUG_REPORT_DRAFT_CAPABILITY = "bugReporterDraftIssue";
 
 /*
  * Fixed instructions a project can append to, not replace. The output contract lives here too:
