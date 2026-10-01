@@ -15,12 +15,25 @@ class UpdateFlpTaskHandlerImpl implements TaskHandler.Interface<IUpdateFlpTaskIn
                 return controller.response.aborted();
             }
 
+            /*
+             * `response.continue()` only builds the result; it does nothing until the task returns
+             * it. Returning `done` regardless used to drop the continuation, leaving the rest of a
+             * large subtree with its old permissions.
+             */
+            let continuation: ReturnType<typeof controller.response.continue> | undefined;
+
             await this.updateFlp.execute({
                 folder: input.folder,
                 queued: input.queued,
                 isCloseToTimeout: controller.runtime.isCloseToTimeout,
-                handleTimeout: queued => controller.response.continue({ ...input, queued })
+                handleTimeout: queued => {
+                    continuation = controller.response.continue({ ...input, queued });
+                }
             });
+
+            if (continuation) {
+                return continuation;
+            }
 
             return controller.response.done("Task done: FLP record updated.");
         } catch (error) {

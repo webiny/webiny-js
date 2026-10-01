@@ -21,8 +21,15 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
     private isCloseToTimeout?: () => boolean;
     private handleTimeout?: (updated: string[]) => void;
 
-    private readonly queued: Set<string> = new Set();
+    /*
+     * Folders whose whole subtree has been written, carried across task runs as `queued` so a
+     * continued run skips them. A folder is added only after all of its descendants are written: one
+     * entered but not finished when time ran out has to be walked again, or the rest of its subtree
+     * would never be updated.
+     */
+    private readonly completed: Set<string> = new Set();
     private readonly flpsToUpdate: Map<string, FlpUpdateData> = new Map();
+    private timedOut = false;
 
     constructor(
         private flpCrud: AcoFlpCrud.Interface,
@@ -37,7 +44,7 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
         this.handleTimeout = params.handleTimeout;
 
         if (params.queued) {
-            params.queued.forEach(id => this.queued.add(id));
+            params.queued.forEach(id => this.completed.add(id));
         }
 
         try {
@@ -62,19 +69,14 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
                 permissions: Permissions.create(folder.permissions, parentFlp)
             });
 
-            // Let's set the FLP as in queue
-            this.setQueued(flp.id);
-
             // Get direct children and process each branch completely
             const directChildren = await this.listDirectChildren(flp);
 
             for (const child of directChildren) {
-                if (this.isCloseToTimeout?.()) {
-                    await this.executeBatchUpdate();
-                    this.handleTimeout?.(this.getQueuedList());
+                await this.collectBranchForUpdate(child, flp);
+                if (this.timedOut) {
                     return;
                 }
-                await this.collectBranchForUpdate(child, flp);
             }
 
             // Execute batch update
@@ -82,7 +84,7 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
         } catch (error) {
             // Clear the update collection in case of error
             this.flpsToUpdate.clear();
-            this.queued.clear();
+            this.completed.clear();
             throw WebinyError.from(error, {
                 message: "Error while updating FLP",
                 code: "ERROR_UPDATING_FLP_USE_CASE"
@@ -94,7 +96,12 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
         flp: FolderLevelPermission,
         parentFlp: FolderLevelPermission
     ): Promise<void> {
-        if (this.isQueued(flp.id)) {
+        if (this.completed.has(flp.id)) {
+            return;
+        }
+
+        if (this.isCloseToTimeout?.()) {
+            await this.stopForTimeout();
             return;
         }
 
@@ -113,21 +120,29 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
             permissions: Permissions.create(flp.permissions, currentParentFlp)
         });
 
-        // Add the FLP to the queue list so we don't fetch it again
-        this.setQueued(flp.id);
-
         // Process all children of this folder before moving to siblings
         const children = await this.listDirectChildren(flp);
 
         for (const child of children) {
-            if (this.isCloseToTimeout?.()) {
-                await this.executeBatchUpdate();
-                this.handleTimeout?.(this.getQueuedList());
-                return;
-            }
             // Pass the current FLP as the parent for the child
             await this.collectBranchForUpdate(child, flp);
+            if (this.timedOut) {
+                return;
+            }
         }
+
+        // Only now is everything below this folder collected.
+        this.completed.add(flp.id);
+    }
+
+    /*
+     * Writes what has been collected and hands over to a continued run. Every level of the walk
+     * checks `timedOut` and stops, rather than carrying on with its remaining children.
+     */
+    private async stopForTimeout(): Promise<void> {
+        this.timedOut = true;
+        await this.executeBatchUpdate();
+        this.handleTimeout?.(Array.from(this.completed));
     }
 
     private async executeBatchUpdate(): Promise<void> {
@@ -172,28 +187,10 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
                 }
             });
         } finally {
-            // Clear the update collection after the batch update
+            // Clear the update collection after the batch update. `completed` is kept: it is what a
+            // continued run needs to know.
             this.flpsToUpdate.clear();
-
-            //Let's remove all the updated FLPs ids from the queue cache
-            this.clearQueuedList();
         }
-    }
-
-    private getQueuedList(): string[] {
-        return Array.from(this.queued);
-    }
-
-    private setQueued(id: string): void {
-        this.queued.add(id);
-    }
-
-    private isQueued(id: string): boolean {
-        return this.queued.has(id);
-    }
-
-    private clearQueuedList(): void {
-        this.queued.clear();
     }
 
     private async listDirectChildren(flp: FolderLevelPermission): Promise<FolderLevelPermission[]> {
