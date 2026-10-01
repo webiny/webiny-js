@@ -191,27 +191,50 @@ and 1.8x of ratio, roughly twenty times it.
 
 ### The cost, stated
 
+**The cost of this change is 113 texts with no candidate prop.**
+
 Narrowing removed **312 texts** from what Generate is told to preserve, across the four sites. Of
 those:
 
-|                                                                                                        | count   |
-| ------------------------------------------------------------------------------------------------------ | ------- |
-| held by a prop in the contract                                                                         | 79      |
-| **not held by any prop**                                                                               | **233** |
-| — of which the component has an empty list/non-scalar prop (`Image`, `Link`, `FormField[]`, `Point[]`) | 120     |
-| — of which the component has no candidate prop at all                                                  | 113     |
+|                                                                                                  | count   |
+| ------------------------------------------------------------------------------------------------ | ------- |
+| held by a prop in the contract                                                                   | 79      |
+| **not held by any prop, and the component has no candidate prop — the cost of this change**      | **113** |
+| not held by any prop, but the component has an empty `Image`/`Link`/`FormField[]`/`Point[]` prop | 120     |
 
-The 120 are the same defect as `image-values-are-captured-and-never-derived`: only string props ever
-receive observed values, so a nav's `navLinks: Link[]` holds every label it is given and the check
-cannot see that it would. 92 of the 382 props across the four sites are list or non-scalar props with
-no observed value. Deriving those would reclaim most of the 120 and is already filed.
+The 233 total is not the cost and should not be quoted as one. The 120 are
+`image-values-are-captured-and-never-derived` wearing another hat: only string props ever receive
+observed values, so a nav's `navLinks: Link[]` holds every label it is given and this check cannot
+see that it would. 92 of the 382 props across the four sites are list or non-scalar with no observed
+value. That defect predates this change, was not caused by it, and the fix for it is expected to
+reclaim most of the 120 — so judging this change by 233 charges it for a defect it did not cause.
 
 The 113 are the real cost: content the cluster contains and the contract does not describe.
+
+Per site, removed from the prompt → not held by any prop: Park city Palace 63 → 41, 2424 Tulane
+129 → 100, 71 Westland 108 → 80, Freehill 12 → 12.
 
 For context, the same check reports 323 uncovered texts in total, of which **41 belong to
 single-member clusters** — Freehill _Privacy Policy_ (29) and 2424 Tulane _Floor Plan Filter_ (12) —
 where there is no union at all. That is a pre-existing contract gap this check now surfaces, not a
 cost of this change.
+
+### The measurement was corrected before it was reported
+
+The first version of `coverMemberTexts` checked containment in one direction only — whether an
+observed value fitted inside the member text. That is the direction the text-preservation validator
+needs, because it is hunting for a source fragment inside rendered output. Coverage asks the opposite
+question: whether a prop can hold this text. A run the page showed on its own is frequently part of a
+longer observed value, so `"Copyright ©"` was reported as having nowhere to go while the contract
+observed `"Copyright © 2026 Park City Place"`.
+
+Uncorrected it would have put the raw uncovered total at 359 instead of 323 — **inflating the cost of
+this change by about a third**, in the direction that would have argued against making it. It was
+caught by reading the uncovered samples before quoting the number, not by the number looking wrong.
+
+Containment now counts in both directions, with a test for the fragment case
+(`textCoverage.test.ts`). The stored `textCoverage` on plans made before that fix carries the
+pre-correction figures and will agree on the next Plan run.
 
 ### Where the new failure mode shows up
 

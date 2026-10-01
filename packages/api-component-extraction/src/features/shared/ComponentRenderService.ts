@@ -204,8 +204,19 @@ class ComponentRenderServiceImpl implements IComponentRenderService {
             });
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
+            /*
+             * A wait timeout almost never means the component is at fault, and read as if it did it
+             * has cost hours twice: the sandbox is served by a local dev app behind an ephemeral
+             * tunnel, and when either is down every component fails here, identically. So the error
+             * names the host it could not get an answer from.
+             */
+            const unreachable = /Waiting failed|timeout|net::ERR/i.test(message)
+                ? ` — the sandbox at ${input.previewDomain} never signalled that it mounted, which usually means that host is unreachable rather than that the component is broken; check it before reading anything into this`
+                : "";
             return Result.fail(
-                new ExtractionValidationError(`could not render "${component.name}": ${message}`)
+                new ExtractionValidationError(
+                    `could not render "${component.name}": ${message}${unreachable}`
+                )
             );
         }
 
