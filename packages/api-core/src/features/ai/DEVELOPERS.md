@@ -11,13 +11,31 @@ This directory contains the AI SDK factory implementations that serve the models
 - A factory the catalog doesn't know (a custom SDK) keeps its own `models`.
 - If the catalog can't be loaded (timeout, error status, invalid body), every factory falls back to its own `models`.
 
-The catalog is cached for an hour per process. A failed load is retried after a minute.
+The catalog is cached for an hour per process. A failed load is retried after a minute. The first AI call on a cold Lambda waits for the fetch. If the catalog doesn't answer within 3 seconds, the fetch is aborted and the factories' own lists are used.
 
 So adding or deprecating a model for an existing provider is a catalog change and needs no release. The `*_MODELS` arrays below are the offline fallback; keep them roughly in sync.
 
+The catalog response looks like this. Dates are ISO strings, and fields the schema doesn't know (`api`, `supports`, ...) are dropped:
+
+```json
+{
+  "providers": [
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "models": [
+        { "id": "o3", "name": "o3", "deprecated": "2026-06-11", "endOfLife": "2026-12-11" }
+      ]
+    }
+  ]
+}
+```
+
+A response that doesn't match the schema counts as a failed load, so one bad entry drops the whole catalog and every factory falls back to its own list.
+
 ## Selection criteria
 
-Every model listed in a factory **must** support:
+Every model in the catalog or in a factory **must** support:
 
 - **Tool/function calling** — AI Powerups relies on tools for structured output (content generation, entry comparison, image enrichment, etc.). Models without tool support will break these features at runtime.
 - **Chat/text generation** — only conversational models are listed; embedding, image-generation, TTS, and other specialized models are excluded.
@@ -34,7 +52,7 @@ Each model entry in `IAiSdkModel` supports two optional `Date` fields:
 
 Set these fields when the provider announces deprecation or end-of-life dates. The UI can use them to warn users about upcoming shutdowns or steer them toward replacements.
 
-When a model reaches its `endOfLife` date, remove it from the factory in the next release — keeping it would cause runtime failures.
+When a model reaches its `endOfLife` date, remove it from the catalog, which takes effect within an hour. Remove it from the factory in the next release too, or deployments that can't reach the catalog will keep offering a model that no longer works.
 
 ## Providers
 
@@ -118,23 +136,26 @@ Source: https://ai.google.dev/gemini-api/docs/deprecations
 1. Verify the model supports tool/function calling.
 2. Add it to the catalog at `https://api.webiny.com/ai/models`. That is what users see.
 3. Add an entry to the `*_MODELS` array in the corresponding factory file. The `id` must match the provider's API model ID exactly.
-4. If the model has known deprecation or end-of-life dates, set `deprecated` and/or `endOfLife` as `new Date("YYYY-MM-DD")`.
+4. If the model has known deprecation or end-of-life dates, set `deprecated` and/or `endOfLife`: ISO strings (`"YYYY-MM-DD"`) in the catalog, `new Date("YYYY-MM-DD")` in the factory.
 5. Update the table in this file.
 
 ## Adding a new provider
 
-1. Create a new `<Provider>SdkFactory.ts` implementing `AiSdkFactory`.
+A new provider needs a release, because the catalog can only offer providers that have an SDK factory.
+
+1. Create a new `<Provider>SdkFactory.ts` implementing `AiSdkFactory`. Its `id` is the key the catalog matches on.
 2. Add the `@ai-sdk/<provider>` dependency via `yarn add` in `packages/api-core`.
 3. Register the factory in `feature.ts`.
-4. Update this file.
+4. Add the provider to the catalog under the same `id`. Until you do, the factory's own `models` are used.
+5. Update this file.
 
 ## Updating models
 
-Check the provider docs periodically and update the lists:
+Check the provider docs periodically and update the catalog first, then the factory lists:
 
 - **New models**: add to the top of the active section.
 - **Deprecated models**: set `deprecated` and `endOfLife` dates, move to the bottom of the array.
-- **End-of-life reached**: remove from the factory. Keeping a dead model causes runtime failures.
-- **Never remove a model before its end-of-life date** — users may have presets referencing it, and removing it breaks `ProvidersHandler` validation on save.
+- **End-of-life reached**: remove from the catalog and the factory. Keeping a dead model causes runtime failures.
+- **Never remove a model before its end-of-life date** — users may have presets referencing it, and removing it breaks `ProvidersHandler` validation on save. This matters more for the catalog than for the factory: `Ai` rejects any model the registry doesn't list, so dropping a model from the catalog breaks calls that use it in every deployment within the hour.
 
-Last updated: September 2026.
+Last updated: October 2026.
