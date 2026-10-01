@@ -1,6 +1,19 @@
 # AI Models
 
-This directory contains the AI SDK factory implementations that define which models are available in Webiny's AI Powerups.
+This directory contains the AI SDK factory implementations that serve the models available in Webiny's AI Powerups.
+
+## Where the model list comes from
+
+`AiModelRegistry` takes the published catalog at `https://api.webiny.com/ai/models` (`RemoteAiModelCatalog`, overridable through `WCP_API_URL`) and intersects it with the registered SDK factories:
+
+- A catalog provider with no SDK factory is not offered. The SDK factory is the last gate.
+- For a provider that has a factory, the catalog's models and names replace the factory's own list.
+- A factory the catalog doesn't know (a custom SDK) keeps its own `models`.
+- If the catalog can't be loaded (timeout, error status, invalid body), every factory falls back to its own `models`.
+
+The catalog is cached for an hour per process. A failed load is retried after a minute.
+
+So adding or deprecating a model for an existing provider is a catalog change and needs no release. The `*_MODELS` arrays below are the offline fallback; keep them roughly in sync.
 
 ## Selection criteria
 
@@ -103,9 +116,10 @@ Source: https://ai.google.dev/gemini-api/docs/deprecations
 ## Adding a new model
 
 1. Verify the model supports tool/function calling.
-2. Add an entry to the `*_MODELS` array in the corresponding factory file. The `id` must match the provider's API model ID exactly.
-3. If the model has known deprecation or end-of-life dates, set `deprecated` and/or `endOfLife` as `new Date("YYYY-MM-DD")`.
-4. Update the table in this file.
+2. Add it to the catalog at `https://api.webiny.com/ai/models`. That is what users see.
+3. Add an entry to the `*_MODELS` array in the corresponding factory file. The `id` must match the provider's API model ID exactly.
+4. If the model has known deprecation or end-of-life dates, set `deprecated` and/or `endOfLife` as `new Date("YYYY-MM-DD")`.
+5. Update the table in this file.
 
 ## Adding a new provider
 
