@@ -154,12 +154,17 @@ export class ObjectField implements IObjectField {
         });
         this._templates = config.templates ?? [];
         this._isTemplated = this._templates.length > 0;
+        this._ownLayout = config.layout ?? null;
+        this._templateLayouts = this._declaredTemplateLayouts();
 
         if (this._isTemplated) {
             // Templated mode: children populated per-item (list) or when a template is picked (single).
             this._children = new Map();
         } else {
             this._children = createChildFields(config.childBuilders, null);
+            if (this._ownLayout) {
+                this._applyNestedObjectLayouts(this._ownLayout, this._children);
+            }
         }
 
         makeAutoObservable<this, "_childScope" | "_itemScope">(this, {
@@ -167,6 +172,17 @@ export class ObjectField implements IObjectField {
             _childScope: false,
             _itemScope: false
         });
+    }
+
+    /** Layouts declared on the templates themselves via `template.layout()`. */
+    private _declaredTemplateLayouts(): Record<string, LayoutNode[]> {
+        const layouts: Record<string, LayoutNode[]> = {};
+        for (const template of this._templates) {
+            if (template.layout) {
+                layouts[template.id] = template.layout;
+            }
+        }
+        return layouts;
     }
 
     private _findTemplate(id: string): ITemplateConfig | undefined {
@@ -439,7 +455,8 @@ export class ObjectField implements IObjectField {
                 `Object field "${this.config.name}" is not templated; layout.object() must pass a single LayoutNode[], not a per-template map.`
             );
         }
-        this._templateLayouts = layout;
+        // Templates the override doesn't mention keep the layout they declared.
+        this._templateLayouts = { ...this._declaredTemplateLayouts(), ...layout };
         this._ownLayout = null;
         // Apply nested object layouts to currently-active templated children
         // (templated single with active template + templated list items).

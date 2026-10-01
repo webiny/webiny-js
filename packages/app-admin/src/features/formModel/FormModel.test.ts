@@ -2973,6 +2973,166 @@ describe("FormModel", () => {
         });
     });
 
+    describe("inner layouts declared on the field builder", () => {
+        it("lays out a single object's children with .layout()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    address: fields
+                        .object()
+                        .fields(f => ({
+                            street: f.text().label("Street"),
+                            city: f.text().label("City"),
+                            zip: f.text().label("Zip")
+                        }))
+                        .layout(l => [l.row("street"), l.row("city", "zip")])
+                })
+            });
+            const vm = form.field("address").vm as IObjectFieldVM;
+            expect(vm.layout.map(node => asRow(node).fields.map(f => f.name))).toEqual([
+                ["street"],
+                ["city", "zip"]
+            ]);
+        });
+
+        it("applies .layout() to every list item", () => {
+            const form = createForm({
+                fields: fields => ({
+                    stats: fields
+                        .object()
+                        .list()
+                        .fields(f => ({
+                            value: f.number().label("Value"),
+                            label: f.text().label("Label")
+                        }))
+                        .layout(l => [l.row("value", "label")])
+                })
+            });
+            form.setData({
+                stats: [
+                    { value: 1, label: "A" },
+                    { value: 2, label: "B" }
+                ]
+            });
+            const vm = form.field("stats").vm as IObjectFieldVM;
+            expect(vm.items).toHaveLength(2);
+            for (const item of vm.items) {
+                expect(item.layout.map(node => asRow(node).fields.map(f => f.name))).toEqual([
+                    ["value", "label"]
+                ]);
+            }
+        });
+
+        it("lays out an object nested in another object with its own .layout()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    subMenu: fields
+                        .object()
+                        .fields(f => ({
+                            climbing: f
+                                .object()
+                                .list()
+                                .fields(c => ({
+                                    label: c.text().label("Label"),
+                                    url: c.text().label("URL")
+                                }))
+                                .layout(l => [l.row("label", "url")]),
+                            yoga: f.text().label("Yoga")
+                        }))
+                        .layout(l => [l.row("climbing", "yoga")])
+                })
+            });
+            form.setData({ subMenu: { climbing: [{ label: "Classes", url: "/c" }], yoga: "" } });
+
+            const outer = form.field("subMenu").vm as IObjectFieldVM;
+            expect(asRow(outer.layout[0]).fields.map(f => f.name)).toEqual(["climbing", "yoga"]);
+
+            const inner = form.field("subMenu.climbing").vm as IObjectFieldVM;
+            expect(asRow(inner.items[0].layout[0]).fields.map(f => f.name)).toEqual([
+                "label",
+                "url"
+            ]);
+        });
+
+        it("lets a layout.object() node override the field's .layout()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    meta: fields
+                        .object()
+                        .fields(f => ({
+                            a: f.text().label("A"),
+                            b: f.text().label("B")
+                        }))
+                        .layout(l => [l.row("a", "b")])
+                }),
+                layout: layout => [layout.object("meta", l => [l.row("b"), l.row("a")])]
+            });
+            const vm = form.field("meta").vm as IObjectFieldVM;
+            expect(vm.layout.map(node => asRow(node).fields.map(f => f.name))).toEqual([
+                ["b"],
+                ["a"]
+            ]);
+        });
+
+        it("uses the layout declared on each template", () => {
+            const form = createForm({
+                fields: fields => ({
+                    content: fields
+                        .object()
+                        .template("hero", t => {
+                            t.label("Hero")
+                                .fields(f => ({
+                                    heading: f.text().label("Heading"),
+                                    subheading: f.text().label("Subheading")
+                                }))
+                                .layout(l => [l.row("heading", "subheading")]);
+                        })
+                        .template("cta", t => {
+                            t.label("CTA")
+                                .fields(f => ({
+                                    text: f.text().label("Text"),
+                                    url: f.text().label("URL")
+                                }))
+                                .layout(l => [l.row("url", "text")]);
+                        })
+                }),
+                layout: layout => [
+                    layout.object("content", { hero: l => [l.row("subheading"), l.row("heading")] })
+                ]
+            });
+            const field = form.field("content") as any;
+
+            // "hero" is overridden by the layout.object() node.
+            field.setTemplate("hero");
+            let vm = form.field("content").vm as IObjectFieldVM;
+            expect(vm.layout.map(node => asRow(node).fields.map(f => f.name))).toEqual([
+                ["subheading"],
+                ["heading"]
+            ]);
+
+            // "cta" isn't mentioned by the override, so it keeps its declared layout.
+            field.setTemplate("cta");
+            vm = form.field("content").vm as IObjectFieldVM;
+            expect(vm.layout.map(node => asRow(node).fields.map(f => f.name))).toEqual([
+                ["url", "text"]
+            ]);
+        });
+
+        it("throws when an object has both .layout() and .template()", () => {
+            expect(() =>
+                createForm({
+                    fields: fields => ({
+                        content: fields
+                            .object()
+                            .template("hero", t => {
+                                t.fields(f => ({ heading: f.text() }));
+                            })
+                            .layout(l => [l.row("heading")])
+                    })
+                })
+            ).toThrow(/both .layout\(\) and .template\(\)/);
+        });
+    });
+
     describe("nested object layouts (Phase 8c.1)", () => {
         it("registers layout.object() nested inside another object's inner layout (non-templated)", () => {
             const form = createForm({

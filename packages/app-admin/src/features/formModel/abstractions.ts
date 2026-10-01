@@ -343,6 +343,11 @@ export interface IObjectFieldConfig extends IFieldConfig {
     isList: boolean;
     listSchema?: z.ZodTypeAny;
     templates?: ITemplateConfig[];
+    /**
+     * Inner layout declared on the field itself via `.layout()`. A `layout.object()`
+     * node in the parent layout takes precedence over it.
+     */
+    layout?: LayoutNode[];
 }
 
 export interface ITemplateBuilder {
@@ -350,6 +355,7 @@ export interface ITemplateBuilder {
     description(text: string): this;
     icon(icon: ITemplateIcon): this;
     fields(factory: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this;
+    layout(factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]): this;
     visible(predicate: (form: IFormModel) => boolean): this;
 }
 
@@ -359,6 +365,7 @@ export interface ITemplateConfig {
     description?: string;
     icon?: ITemplateIcon;
     childBuilders: Record<string, IFieldBuilder>;
+    layout?: LayoutNode[];
     visible?: (form: IFormModel) => boolean;
 }
 
@@ -977,6 +984,12 @@ export interface IObjectFieldBuilder extends IFieldBuilder<
     list(): this;
     listSchema(schema: z.ZodTypeAny): this;
     template(id: string, configure: (t: ITemplateBuilder) => void): this;
+    /**
+     * Lay out the object's children: rows of child field names, plus separators, alerts
+     * and tabs. Applies to the single object and to every list item. Templated objects
+     * declare their layouts per template instead.
+     */
+    layout(factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]): this;
 }
 
 export interface IFieldBuilderRegistry {}

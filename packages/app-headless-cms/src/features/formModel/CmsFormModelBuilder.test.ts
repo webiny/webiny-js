@@ -94,3 +94,96 @@ describe("CmsFormModelBuilder renderer cardinality", () => {
         expect(item.children.get("openTime").vm.renderer).toBe("dateTimeInput");
     });
 });
+
+const rowNames = (layout: any[]) => layout.map(row => row.fields.map((f: any) => f.name));
+
+describe("CmsFormModelBuilder nested layouts", () => {
+    it("lays out a single object with the layout stored on the field", () => {
+        const form = createCmsForm([
+            field("address", "object", false, "object-accordion", {
+                settings: {
+                    fields: [
+                        field("street", "text", false, "text-input"),
+                        // Fields created in the model editor have an `id` that differs from `fieldId`.
+                        field("city", "text", false, "text-input", { id: "c1ty" }),
+                        field("zipCode", "text", false, "text-input")
+                    ],
+                    layout: [["street"], ["c1ty", "zipCode"]]
+                }
+            })
+        ]);
+
+        expect(rowNames((form.field("address").vm as any).layout)).toEqual([
+            ["street"],
+            ["city", "zipCode"]
+        ]);
+    });
+
+    it("lays out every item of an object list", () => {
+        const form = createCmsForm([
+            field("facilityStats", "object", true, "objects-accordion", {
+                settings: {
+                    fields: [
+                        field("statValue", "text", false, "text-input"),
+                        field("statLabel", "text", false, "text-input")
+                    ],
+                    layout: [["statValue", "statLabel"]]
+                }
+            })
+        ]);
+
+        form.setData({ facilityStats: [{ statValue: "1", statLabel: "a" }] });
+        const vm = form.field("facilityStats").vm as any;
+
+        expect(rowNames(vm.items[0].layout)).toEqual([["statValue", "statLabel"]]);
+    });
+
+    it("gives children missing from the stored layout a row of their own", () => {
+        const form = createCmsForm([
+            field("address", "object", false, "object-accordion", {
+                settings: {
+                    fields: [
+                        field("street", "text", false, "text-input"),
+                        field("city", "text", false, "text-input"),
+                        field("state", "text", false, "text-input")
+                    ],
+                    layout: [["street", "city"]]
+                }
+            })
+        ]);
+
+        expect(rowNames((form.field("address").vm as any).layout)).toEqual([
+            ["street", "city"],
+            ["state"]
+        ]);
+    });
+
+    it("lays out a dynamic zone template with the template's layout", () => {
+        const form = createCmsForm([
+            field("blocks", "dynamicZone", true, "dynamicZone", {
+                settings: {
+                    templates: [
+                        {
+                            id: "hero",
+                            name: "Hero",
+                            gqlTypeName: "Hero",
+                            description: "",
+                            icon: null,
+                            fields: [
+                                field("title", "text", false, "text-input"),
+                                field("subtitle", "text", false, "text-input")
+                            ],
+                            layout: [["title", "subtitle"]],
+                            validation: []
+                        }
+                    ]
+                }
+            })
+        ]);
+
+        form.setData({ blocks: [{ _templateId: "hero", title: "T", subtitle: "S" }] });
+        const vm = form.field("blocks").vm as any;
+
+        expect(rowNames(vm.items[0].layout)).toEqual([["title", "subtitle"]]);
+    });
+});
