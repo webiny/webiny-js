@@ -40,7 +40,34 @@ const servesPageId = (html, pageId) => (html ?? "").includes(pageId);
  */
 const witness = map => (map?.pages ?? []).find(page => page.path !== "/" && page.pageId) ?? null;
 
-export const assertWebsiteServesRun = async ({ website, site, map }) => {
+/** The page a path actually resolves to, or null. */
+const livePageId = async (gql, path) => {
+    try {
+        const d = await gql(
+            `query ($p: String!) { websiteBuilder { getPageByPath(path: $p) { data { id } error { message } } } }`,
+            { p: path }
+        );
+        return d.websiteBuilder?.getPageByPath?.data?.id ?? null;
+    } catch {
+        return null;
+    }
+};
+
+/** Whether a page is still published. A superseded run's pages are not. */
+const isPublished = async (gql, pageId) => {
+    try {
+        const d = await gql(
+            `query ($id: ID!) { websiteBuilder { listPages(where: { published: true, id: $id }, limit: 1) { data { id } } } }`,
+            { id: pageId }
+        );
+        return (d.websiteBuilder?.listPages?.data ?? []).length > 0;
+    } catch {
+        // Unknown, so say nothing about it rather than claim it is unpublished.
+        return true;
+    }
+};
+
+export const assertWebsiteServesRun = async ({ website, site, map, gql }) => {
     const page = witness(map);
     if (!page) {
         // Nothing to check against. Said out loud rather than passed over, because an unchecked run
@@ -70,17 +97,47 @@ export const assertWebsiteServesRun = async ({ website, site, map }) => {
     }
 
     const html = await response.text();
-    if (!servesPageId(html, page.pageId)) {
+    if (servesPageId(html, page.pageId)) {
+        return { checked: true, url: website, witness: page.path };
+    }
+
+    /*
+     * The path is answering with a different page, and WHICH case this is decides what to do about
+     * it — so it is diagnosed rather than guessed at.
+     *
+     * Superseded: composing a run makes it the live composition of its job and unpublishes the
+     * others, so an older run's pages are deliberately not served. Nothing is broken and the remedy
+     * is a choice, not a repair.
+     *
+     * Contested: this run's page is still published and something else answers the path anyway —
+     * two live pages claim it, which is the collision worth chasing.
+     *
+     * An earlier version of this message asserted the second without checking, and said it in terms
+     * of a defect that had since been fixed. A guard that stops you is only as useful as its reason.
+     */
+    const live = await livePageId(gql, page.path);
+    const published = await isPublished(gql, page.pageId);
+
+    const served = `"${titleOf(html) || "(no title)"}"`;
+    const head =
+        `${site}: the app at ${website} is not serving this run's composition.\n` +
+        `  ${page.path}\n` +
+        `    this run's page:  ${page.pageId}${published ? "" : "   (no longer published)"}\n` +
+        `    the path serves:  ${live ?? "nothing"}  ${served}\n`;
+
+    if (!published) {
         throw new Error(
-            `${site}: the app at ${website} is not serving this run's composition.\n` +
-                `  ${page.path}\n` +
-                `    the page map says page id: ${page.pageId}\n` +
-                `    the app served the page:   "${titleOf(html) || "(no title)"}", which does not carry that id\n` +
-                `  Several published pages can claim one path — every composition of a run creates a\n` +
-                `  new set and the previous set stays published — so the path is answering with a\n` +
-                `  different page. Comparing against it would photograph the wrong composition.`
+            head +
+                `  This run has been superseded. A later composition of the same job took these paths\n` +
+                `  and this run's pages were unpublished, so the site does not serve them — nothing is\n` +
+                `  broken. Compare the run that is live, or compose this one again to make it live:\n` +
+                `    pageCompositionPocComposePages(runId: "${map.runId}")`
         );
     }
 
-    return { checked: true, url: website, witness: page.path };
+    throw new Error(
+        head +
+            `  This run's page is still published, so two live pages claim this path and the other one\n` +
+            `  is answering. Comparing against it would photograph the wrong composition.`
+    );
 };

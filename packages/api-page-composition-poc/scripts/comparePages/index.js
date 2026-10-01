@@ -179,7 +179,7 @@ const main = async () => {
                 artifact(runId, "capture")
             ]);
 
-            const preflight = await assertWebsiteServesRun({ website: WEBSITE, site, map });
+            const preflight = await assertWebsiteServesRun({ website: WEBSITE, site, map, gql });
             if (!preflight.checked) {
                 console.log(`${site.padEnd(16)} not preflighted: ${preflight.note}`);
             }
