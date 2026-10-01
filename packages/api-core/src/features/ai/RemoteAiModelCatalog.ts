@@ -4,6 +4,7 @@ import { getWcpApiUrl } from "@webiny/wcp";
 import { AiModelCatalog as AiModelCatalogAbstraction } from "./abstractions.js";
 import type { AiCatalogProvider } from "./abstractions.js";
 import { Logger } from "~/features/logger/index.js";
+import { HttpClient } from "~/features/httpClient/index.js";
 
 const FETCH_TIMEOUT_MS = 3000;
 const SUCCESS_TTL_MS = 60 * 60 * 1000;
@@ -40,7 +41,10 @@ interface CachedCatalog {
 let cached: CachedCatalog | undefined;
 
 class RemoteAiModelCatalogImpl implements AiModelCatalogAbstraction.Interface {
-    constructor(private readonly logger: Logger.Interface) {}
+    constructor(
+        private readonly httpClient: HttpClient.Interface,
+        private readonly logger: Logger.Interface
+    ) {}
 
     listProviders(): Promise<AiCatalogProvider[] | undefined> {
         if (cached && cached.expiresAt > Date.now()) {
@@ -64,31 +68,24 @@ class RemoteAiModelCatalogImpl implements AiModelCatalogAbstraction.Interface {
     private async fetchProviders(): Promise<AiCatalogProvider[] | undefined> {
         const url = getWcpApiUrl("/ai/models");
 
-        try {
-            const signal = AbortSignal.timeout(FETCH_TIMEOUT_MS);
-            const response = await fetch(url, { signal });
-            if (!response.ok) {
-                this.logger.warn({ url, status: response.status }, "Failed to load AI models.");
-                return undefined;
-            }
-
-            const body: unknown = await response.json();
-            const result = catalogSchema.safeParse(body);
-            if (!result.success) {
-                this.logger.warn({ url, error: result.error }, "Received invalid AI models.");
-                return undefined;
-            }
-
-            return result.data.providers;
-        } catch (error) {
-            this.logger.warn({ url, error }, "Failed to load AI models.");
+        const response = await this.httpClient.requestJson({ url, timeoutMs: FETCH_TIMEOUT_MS });
+        if (response.isFail()) {
+            this.logger.warn({ url, error: response.error }, "Failed to load AI models.");
             return undefined;
         }
+
+        const result = catalogSchema.safeParse(response.value);
+        if (!result.success) {
+            this.logger.warn({ url, error: result.error }, "Received invalid AI models.");
+            return undefined;
+        }
+
+        return result.data.providers;
     }
 }
 
 export const RemoteAiModelCatalog = createImplementation({
     abstraction: AiModelCatalogAbstraction,
     implementation: RemoteAiModelCatalogImpl,
-    dependencies: [Logger]
+    dependencies: [HttpClient, Logger]
 });
