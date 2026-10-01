@@ -6,6 +6,7 @@ import type {
 } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { CmsModelField, CmsDynamicZoneTemplate } from "~/types.js";
 import { applyFieldProps } from "./applyFieldProps.js";
+import { mapCmsNestedLayout } from "../CmsLayoutMapper.js";
 import type { ITemplateIcon } from "@webiny/app-admin/features/formModel/index.js";
 
 export class DynamicZoneFieldMapper implements ICmsFieldTypeMapper {
@@ -42,6 +43,10 @@ export class DynamicZoneFieldMapper implements ICmsFieldTypeMapper {
                             }
                             return result;
                         });
+                    }
+                    const layout = mapCmsNestedLayout(template.layout, template.fields ?? []);
+                    if (layout) {
+                        t.layout(layout);
                     }
                 });
             }

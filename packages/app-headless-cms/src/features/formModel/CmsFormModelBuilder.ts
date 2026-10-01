@@ -3,12 +3,7 @@ import type {
     IFieldBuilderRegistry,
     IFormModelConfig
 } from "@webiny/app-admin/features/formModel/abstractions.js";
-import {
-    isLayoutField,
-    type CmsEditorFieldsLayout,
-    type CmsModel,
-    type CmsModelField
-} from "~/types.js";
+import type { CmsModel, CmsModelField } from "~/types.js";
 import type {
     ICmsFieldTypeMapper,
     ICmsFieldMapperContext,
@@ -18,7 +13,7 @@ import { CmsFormModelBuilder as BuilderAbstraction } from "./abstractions.js";
 import { CmsFieldTypeMapper } from "./abstractions.js";
 import { CmsFieldRenderer } from "~/presentation/fieldRenderers/abstractions.js";
 import type { ICmsFieldRenderer } from "~/presentation/fieldRenderers/abstractions.js";
-import { mapCmsLayout } from "./CmsLayoutMapper.js";
+import { collectFieldIds, mapCmsLayout } from "./CmsLayoutMapper.js";
 import { createBuiltInMappers } from "./mappers/index.js";
 import { applyFieldProps } from "./mappers/applyFieldProps.js";
 
@@ -129,30 +124,3 @@ export const CmsFormModelBuilder = BuilderAbstraction.createImplementation({
         [CmsFieldRenderer, { multiple: true, optional: true }]
     ]
 });
-
-function collectFieldIds(
-    layout: CmsEditorFieldsLayout,
-    idToFieldId: Map<string, string>
-): Set<string> {
-    const fieldIds = new Set<string>();
-
-    for (const row of layout) {
-        for (const cell of row) {
-            if (typeof cell === "string") {
-                const fieldId = idToFieldId.get(cell);
-                if (fieldId) {
-                    fieldIds.add(fieldId);
-                }
-            } else if (isLayoutField(cell) && cell.type === "tabs") {
-                const tabsField = cell as { tabs: Array<{ layout: CmsEditorFieldsLayout }> };
-                for (const tab of tabsField.tabs) {
-                    for (const id of collectFieldIds(tab.layout, idToFieldId)) {
-                        fieldIds.add(id);
-                    }
-                }
-            }
-        }
-    }
-
-    return fieldIds;
-}
