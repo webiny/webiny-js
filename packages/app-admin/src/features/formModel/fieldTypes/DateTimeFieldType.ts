@@ -315,6 +315,12 @@ function normalizeDateTimeWithTimezone(value: string): string {
         return value;
     }
 
+    const match = rest.match(/^(.+?)(Z|[+-]\d{2}:\d{2})$/);
+    if (!match) {
+        return value;
+    }
+    const [, timePart, zone] = match;
+
     let date: string;
     try {
         date = new Date(initialDate).toISOString().slice(0, 10);
@@ -322,11 +328,10 @@ function normalizeDateTimeWithTimezone(value: string): string {
         return value;
     }
 
-    const sign = rest.includes("+") ? "+" : "-";
-    const [timePart, tz] = rest.split(sign);
-    const time = normalizeTime(timePart);
+    // A UTC value is valid; express it with the explicit offset the API expects.
+    const tz = zone === "Z" ? "+00:00" : zone;
 
-    return `${date}T${time}${sign}${tz}`;
+    return `${date}T${normalizeTime(timePart)}${tz}`;
 }
 
 function normalizeMonth(value: string): string {
