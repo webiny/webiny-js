@@ -56,7 +56,9 @@ export const DashboardWidgetCard = ({
             <div
                 ref={node => registerRef(name, node)}
                 className={cn(
-                    "group relative rounded-xl transition-opacity",
+                    // A named group: a plain `group` here would also trigger `group-hover:` styles inside the
+                    // widget (e.g. every Tabs trigger at once), since those match any `.group` ancestor.
+                    "group/card relative rounded-xl transition-opacity",
                     isDragging && "opacity-50"
                 )}
             >
@@ -89,7 +91,7 @@ export const DashboardWidgetCard = ({
                 <div
                     className={cn(
                         "absolute -right-sm -top-sm z-20 opacity-0 transition-opacity",
-                        "group-hover:opacity-100 focus-within:opacity-100"
+                        "group-hover/card:opacity-100 focus-within:opacity-100"
                     )}
                 >
                     <Tooltip
