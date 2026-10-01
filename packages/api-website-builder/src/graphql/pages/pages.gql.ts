@@ -1,6 +1,7 @@
 import { ErrorResponse, ListResponse, NotFoundError, Response } from "@webiny/api-graphql";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
+import { ensurePermission } from "~/utils/ensurePermission.js";
 import { resolve } from "~/utils/resolve.js";
 import { WEBSITE_BUILDER_INTEGRATIONS, WEBSITE_BUILDER_SETTINGS } from "~/constants.js";
 import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
@@ -422,7 +423,8 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
         resolver(keyValueStore) {
             return ({ args, context }) =>
                 resolve(async () => {
-                    ensureAuthentication(context, { permission: "wb.settings" });
+                    ensureAuthentication(context);
+                    await ensurePermission(context, "wb.settings");
                     await keyValueStore.set(WEBSITE_BUILDER_SETTINGS, args.data);
 
                     return true;
@@ -436,7 +438,8 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
         resolver(keyValueStore) {
             return ({ args, context }) =>
                 resolve(async () => {
-                    ensureAuthentication(context, { permission: "wb.settings" });
+                    ensureAuthentication(context);
+                    await ensurePermission(context, "wb.settings");
                     await keyValueStore.set(WEBSITE_BUILDER_INTEGRATIONS, args.data);
 
                     return true;
