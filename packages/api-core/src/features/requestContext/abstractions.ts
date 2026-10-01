@@ -47,6 +47,10 @@ export namespace RawAuthToken {
  * Note: only the HTTP transports set this. S3 and background tasks have no caller to preview as.
  */
 export interface IAssumedRoleRequest {
+    /*
+     * "Role" in the feature's name covers both. A team is a set of roles, and assuming one means
+     * assuming the union of its roles' permissions, so the API resolves a team to its roles.
+     */
     type: "role" | "team";
     id: string;
 }
