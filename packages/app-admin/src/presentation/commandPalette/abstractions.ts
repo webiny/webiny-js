@@ -27,20 +27,6 @@ export interface ICommand {
     /* Optional React view rendered inside the palette when the command is selected. */
     detailView?: React.ComponentType<CommandDetailProps>;
     /*
-     * The word in the pill on the highlighted row, saying what enter does, e.g. "Choose" for a
-     * command that opens a list to pick from. Without it the row reads "Open" when there is a
-     * detail view and "Run" when there isn't.
-     */
-    verb?: string;
-    /*
-     * The detail view renders the whole panel (its own input row, body and footer) instead of
-     * sitting under the palette's back-button header. For a view that is really a second list
-     * (type to filter, arrows, enter) and should read as the palette itself rather than as a form
-     * placed inside it. The panel also sizes to its content instead of a fixed height, so a short
-     * list doesn't float in empty space.
-     */
-    detailViewOwnsPanel?: boolean;
-    /*
      * Selecting this command switches the palette into AI mode rather than doing something. A mode
      * needs the shared input row, so the palette stays open and `execute` is never called.
      *
@@ -66,10 +52,6 @@ export interface CommandItemVm {
     keywords?: string[];
     shortcut?: string;
     hasDetailView: boolean;
-    // The command's own pill verb, if it declares one.
-    verb?: string;
-    // Selecting this replaces the whole palette panel with the command's detail view.
-    ownsPanel: boolean;
     /** Selecting this switches the palette into AI mode. Lets a caller hide it when AI is off. */
     entersAiMode: boolean;
 }

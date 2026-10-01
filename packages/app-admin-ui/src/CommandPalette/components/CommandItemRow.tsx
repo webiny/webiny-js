@@ -4,7 +4,6 @@ import { cn } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
-import { ReactComponent as ChevronIcon } from "@webiny/icons/chevron_right.svg";
 import type { CommandRow } from "../types.js";
 import { Kbd } from "./Kbd.js";
 
@@ -45,9 +44,6 @@ export const CommandItemRow = ({ row }: { row: CommandRow }) => {
                         <Icon icon={<ReturnIcon />} color={"neutral-base"} size={"xs"} label={""} />
                     </span>
                 ) : null}
-                {row.ownsPanel && (
-                    <Icon icon={<ChevronIcon />} color={"neutral-strong"} size={"sm"} label={""} />
-                )}
             </div>
         </Command.Item>
     );

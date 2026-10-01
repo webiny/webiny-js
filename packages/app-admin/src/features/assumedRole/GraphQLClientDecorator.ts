@@ -20,7 +20,7 @@ class GraphQLClientWithAssumedRole implements GraphQLClient.Interface {
         const assumedRole = this.context.get();
 
         /*
-         * A caller that set the header itself keeps its value. The role picker sends it empty, so
+         * A caller that set the header itself keeps its value. The role list query sends it empty, so
          * its own lists come back as the signed-in user rather than as the role being previewed.
          */
         if (assumedRole && !(ASSUME_ROLE_HEADER in headers)) {

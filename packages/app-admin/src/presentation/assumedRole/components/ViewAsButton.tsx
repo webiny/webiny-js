@@ -13,9 +13,9 @@ interface ViewAsButtonProps {
 }
 
 /**
- * "View as this role" in the role and team forms, so the preview can be found where permissions are
- * edited rather than only in the command palette. Success reloads the page, so the only outcome
- * this has to show is a failure.
+ * "View as this role" in the role and team forms. This is where a preview starts: next to where the
+ * permissions are edited. Success reloads the page, so the only outcome this has to show is a
+ * failure.
  */
 export const ViewAsButton = createReactiveComponent(({ target }: ViewAsButtonProps) => {
     const { presenter } = useFeature(AssumedRolePresenterFeature);

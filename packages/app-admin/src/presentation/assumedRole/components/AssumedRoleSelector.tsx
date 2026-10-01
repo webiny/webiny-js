@@ -34,9 +34,9 @@ const renderGroup = (
 
 /**
  * Shown only while a preview is active, so that comparing two roles is one click rather than
- * exit-reopen-search. When nothing is being previewed this renders nothing and the palette is the
- * only way in, which is what keeps a feature used on setup days out of the header on every other
- * day.
+ * exiting and opening the next role's form. When nothing is being previewed this renders nothing
+ * and the role and team forms are the way in, which keeps a feature used on setup days out of the
+ * header on every other day.
  *
  * The options are already loaded by the time this can be opened: the presenter preloads them on
  * page load, but only when the page loaded into a preview.

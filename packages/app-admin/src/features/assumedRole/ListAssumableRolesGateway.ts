@@ -7,8 +7,6 @@ const ROLES_FIELD = /* GraphQL */ `
         data {
             id
             name
-            description
-            permissions
         }
         error {
             message
@@ -21,10 +19,6 @@ const TEAMS_FIELD = /* GraphQL */ `
         data {
             id
             name
-            description
-            roles {
-                id
-            }
         }
         error {
             message

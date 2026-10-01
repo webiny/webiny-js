@@ -43,36 +43,24 @@ export namespace AssumeRoleUseCase {
 }
 
 /**
- * A role or team that can be previewed, with its effective permissions resolved. For a team those
- * are the union of its roles' permissions, which is what the API grants a member of it.
+ * A role or team that can be previewed. The API works out what it grants, so the Admin only needs
+ * enough to list it and to send it back in the assume-role header.
  */
 export interface IAssumableRole {
     type: "role" | "team";
     id: string;
     name: string;
-    description: string;
-    permissions: Array<{ name: string; [key: string]: unknown }>;
 }
 
 export interface IAssumableRolesDto {
-    roles: Array<{
-        id: string;
-        name: string;
-        description: string | null;
-        permissions: Array<{ name: string; [key: string]: unknown }>;
-    }>;
-    teams: Array<{
-        id: string;
-        name: string;
-        description: string | null;
-        roles?: Array<{ id: string }>;
-    }>;
+    roles: Array<{ id: string; name: string }>;
+    teams: Array<{ id: string; name: string }>;
 }
 
 /**
  * Fetches the roles and teams on offer AS THE SIGNED-IN USER, never as the role being previewed.
  * Every other request carries the assume-role header while a preview is active, and the previewed
- * role usually cannot list roles, so without the opt-out the picker would come up empty exactly
+ * role usually cannot list roles, so without the opt-out the header control would come up empty exactly
  * when someone is trying to switch from one role to the next.
  */
 export interface IListAssumableRolesGateway {

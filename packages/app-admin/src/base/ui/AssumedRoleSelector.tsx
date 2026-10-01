@@ -7,8 +7,8 @@ import { makeDecoratable } from "@webiny/app";
  * a placeholder rather than the component itself.
  *
  * Unlike the banner, this one renders nothing unless a preview is already active. Entering a
- * preview happens through the command palette. It exists so that someone comparing roles can jump
- * straight from one to the next instead of exiting and reopening the palette each time.
+ * preview happens from the role and team forms. It exists so that someone comparing roles can jump
+ * straight from one to the next instead of exiting and opening the next form each time.
  */
 export const AssumedRoleSelector = makeDecoratable("AssumedRoleSelector", () => {
     return <AssumedRoleSelectorRenderer />;

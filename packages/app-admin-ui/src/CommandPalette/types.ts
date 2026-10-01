@@ -10,8 +10,6 @@ export interface CommandRow {
     shortcut?: string[];
     /* Verb shown in the "run" pill on the selected row, e.g. "Open" / "Run". */
     verb: string;
-    // Opens a view that takes over the whole panel, so the row carries a chevron.
-    ownsPanel?: boolean;
     onRun: () => void;
 }
 

@@ -5,15 +5,7 @@ import type { AssumeRoleUseCase } from "~/features/assumedRole/abstractions.js";
 export interface IAssumedRoleOption {
     // `${type}:${id}`, so a single string identifies an option across both lists.
     value: string;
-    type: "role" | "team";
     label: string;
-    description: string;
-    // The signed-in user's own role or team. Their real one, which login reports even mid-preview.
-    isCurrent: boolean;
-    fullAccess: boolean;
-    readOnly: boolean;
-    // Names only. The view matches them against each app's permission prefix for "Can access".
-    permissionNames: string[];
 }
 
 export interface IAssumedRoleViewModel {

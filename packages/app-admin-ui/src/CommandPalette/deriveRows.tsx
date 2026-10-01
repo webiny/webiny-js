@@ -129,24 +129,10 @@ export const deriveNavigationRows = (
     return rows;
 };
 
-/*
- * The pill says what enter will do next. A command can name it itself; otherwise it is "Open" for
- * one with a detail view and "Run" for one that simply acts.
- */
-function commandVerb(command: CommandItemVm): string {
-    if (command.verb) {
-        return command.verb;
-    }
-    if (command.hasDetailView) {
-        return "Open";
-    }
-    return "Run";
-}
-
 /**
  * Group DI commands (from the presenter view model) by their `category` (default
- * "Actions"), preserving order. Each row's verb comes from `commandVerb`: the command's own
- * `verb` if it sets one, otherwise "Open" for one with a detail view and "Run" for the rest.
+ * "Actions"), preserving order. Commands with a detail view show "Open" (the palette
+ * stays open on a sub-view); the rest show "Run".
  */
 export const commandVmsToGroups = (
     commands: CommandItemVm[],
@@ -163,8 +149,7 @@ export const commandVmsToGroups = (
             sub: command.description,
             icon: command.icon,
             shortcut: formatShortcut(command.shortcut),
-            verb: commandVerb(command),
-            ownsPanel: command.ownsPanel,
+            verb: command.hasDetailView ? "Open" : "Run",
             onRun: () => runCommand(command.name)
         });
         groups.set(category, rows);

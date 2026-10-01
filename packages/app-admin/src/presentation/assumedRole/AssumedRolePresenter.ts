@@ -7,76 +7,13 @@ import { ListAssumableRolesUseCase } from "~/features/assumedRole/abstractions.j
 import { AssumedRolePresenter as Abstraction } from "./abstractions.js";
 
 type AssumableRole = ListAssumableRolesUseCase.Role;
-type Permission = AssumableRole["permissions"][number];
 
 function optionValue(entry: { type: string; id: string }): string {
     return `${entry.type}:${entry.id}`;
 }
 
-function grantsFullAccess(permissions: Permission[]): boolean {
-    return permissions.some(permission => permission.name === "*");
-}
-
-/*
- * Bare permissions known to only gate access. `cms.endpoint.*` decides which CMS GraphQL endpoint a
- * request may reach (see checkEndpointAccess in api-headless-cms); what can be done there is up to
- * the other CMS permissions, so it cannot write by itself.
- */
-function isAccessGate(name: string): boolean {
-    return name.startsWith("cms.endpoint.");
-}
-
-function grantsWrite(permission: Permission): boolean {
-    if (permission.name === "*") {
-        return true;
-    }
-
-    if (typeof permission.pw === "string" && permission.pw !== "") {
-        return true;
-    }
-
-    // "Own records" scoping still lets the holder edit what they created.
-    if (permission.own === true) {
-        return true;
-    }
-
-    if (typeof permission.rwd === "string") {
-        return permission.rwd.includes("w") || permission.rwd.includes("d");
-    }
-
-    /*
-     * No rwd means the API only checks that the permission exists, and for most of them that is
-     * full control. `security.role` alone lets its holder create and delete roles. So a bare
-     * permission counts as writing unless it is a known access gate.
-     */
-    return !isAccessGate(permission.name);
-}
-
-/*
- * Conservative on purpose: a role only counts as read-only when it reads something and nothing in
- * it could write. A wrong "Read-only" chip would tell someone a role is harmless when it is not.
- */
-function isReadOnly(permissions: Permission[]): boolean {
-    if (permissions.some(grantsWrite)) {
-        return false;
-    }
-
-    return permissions.some(permission => {
-        return typeof permission.rwd === "string" && permission.rwd.includes("r");
-    });
-}
-
-function toOption(entry: AssumableRole, isCurrent: boolean): Abstraction.Option {
-    return {
-        value: optionValue(entry),
-        type: entry.type,
-        label: entry.name,
-        description: entry.description,
-        isCurrent,
-        fullAccess: grantsFullAccess(entry.permissions),
-        readOnly: isReadOnly(entry.permissions),
-        permissionNames: entry.permissions.map(permission => permission.name)
-    };
+function toOption(entry: AssumableRole): Abstraction.Option {
+    return { value: optionValue(entry), label: entry.name };
 }
 
 function reloadPage(): void {
@@ -128,19 +65,8 @@ class AssumedRolePresenterImpl implements Abstraction.Interface {
 
     get vm(): Abstraction.ViewModel {
         const identity = this.identityContext.getIdentity();
-        const roleIds = identity.roles.map(role => role.id);
-        const teamIds = identity.teams.map(team => team.id);
-        const ownRoleIds = new Set(roleIds);
-        const ownTeamIds = new Set(teamIds);
-
-        const roleOptions = this.roles.map(role => {
-            const isCurrent = ownRoleIds.has(role.id);
-            return toOption(role, isCurrent);
-        });
-        const teamOptions = this.teams.map(team => {
-            const isCurrent = ownTeamIds.has(team.id);
-            return toOption(team, isCurrent);
-        });
+        const roleOptions = this.roles.map(toOption);
+        const teamOptions = this.teams.map(toOption);
 
         /*
          * The same rule the API enforces in AssumedRolePermissions: only a caller with full access can

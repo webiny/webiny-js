@@ -18,21 +18,12 @@ type Dto = ListAssumableRolesGateway.Dto;
 interface SetupOptions {
     dto: Dto;
     teamsEnabled?: boolean;
-    ownRoleIds?: string[];
-    ownTeamIds?: string[];
     ownPermissions?: Array<{ name: string }>;
     assumeError?: Error;
 }
 
 const setup = (options: SetupOptions) => {
-    const {
-        dto,
-        teamsEnabled = true,
-        ownRoleIds = [],
-        ownTeamIds = [],
-        ownPermissions = [{ name: "*" }],
-        assumeError
-    } = options;
+    const { dto, teamsEnabled = true, ownPermissions = [{ name: "*" }], assumeError } = options;
     const calls: Array<{ includeTeams: boolean }> = [];
     const assumed: Array<AssumeRoleUseCase.Target | null> = [];
     const container = new Container();
@@ -42,8 +33,8 @@ const setup = (options: SetupOptions) => {
         id: "u1",
         displayName: "Admin",
         type: "admin",
-        roles: ownRoleIds.map(id => ({ id, slug: id, name: id })),
-        teams: ownTeamIds.map(id => ({ id, slug: id, name: id })),
+        roles: [],
+        teams: [],
         permissions: ownPermissions,
         profile: { external: false },
         currentTenant: { id: "root", name: "Root" },
@@ -81,110 +72,35 @@ const setup = (options: SetupOptions) => {
     return { presenter: container.resolve(PresenterAbstraction), calls, assumed };
 };
 
-const role = (id: string, permissions: Array<{ name: string; [key: string]: unknown }>) => ({
-    id,
-    name: id,
-    description: null,
-    permissions
-});
-
-const optionFor = async (permissions: Array<{ name: string; [key: string]: unknown }>) => {
-    const { presenter } = setup({ dto: { roles: [role("r", permissions)], teams: [] } });
-    await presenter.load();
-    return presenter.vm.roleOptions[0];
-};
-
 describe("AssumedRolePresenter", () => {
-    describe("read-only label", () => {
-        /*
-         * The label tells someone a role is harmless, so every way a permission can write has to
-         * rule it out. A false "Read-only" is worse than a missing one.
-         */
-        it("marks a role that only reads", async () => {
-            const option = await optionFor([
-                { name: "cms.endpoint.manage" },
-                { name: "cms.contentModel", rwd: "r" },
-                { name: "cms.contentEntry", rwd: "r" }
-            ]);
-
-            expect(option.readOnly).toBe(true);
-        });
-
-        it.each([
-            ["write access", { name: "cms.contentEntry", rwd: "rw" }],
-            ["delete access", { name: "cms.contentEntry", rwd: "rd" }],
-            ["publishing", { name: "cms.contentEntry", rwd: "r", pw: "p" }],
-            ["own-record scoping", { name: "cms.contentEntry", rwd: "r", own: true }],
-            ["an app-wide grant", { name: "cms.*" }],
-            ["full access", { name: "*" }],
-            // Checked for existence alone by the API, which is full control over roles.
-            ["a bare security permission", { name: "security.role" }],
-            // Not a known access gate, so it can't be assumed harmless.
-            ["an unrecognised bare permission", { name: "content.i18n" }]
-        ])("does not mark a role that has %s", async (_label, permission) => {
-            const option = await optionFor([{ name: "cms.contentModel", rwd: "r" }, permission]);
-
-            expect(option.readOnly).toBe(false);
-        });
-
-        it("does not mark a role that grants nothing readable", async () => {
-            const option = await optionFor([{ name: "cms.endpoint.read" }]);
-
-            expect(option.readOnly).toBe(false);
-        });
-    });
-
-    it("flags full access", async () => {
-        const option = await optionFor([{ name: "*" }]);
-
-        expect(option.fullAccess).toBe(true);
-    });
-
-    it("marks the signed-in user's own role and team", async () => {
+    it("lists roles and teams by name, keyed by type and id", async () => {
         const { presenter } = setup({
             dto: {
-                roles: [role("editor", []), role("admin", [{ name: "*" }])],
-                teams: [{ id: "marketing", name: "Marketing", description: null, roles: [] }]
-            },
-            ownRoleIds: ["admin"],
-            ownTeamIds: ["marketing"]
-        });
-
-        await presenter.load();
-
-        const current = presenter.vm.roleOptions.map(option => [option.label, option.isCurrent]);
-        expect(current).toEqual([
-            ["editor", false],
-            ["admin", true]
-        ]);
-        expect(presenter.vm.teamOptions[0].isCurrent).toBe(true);
-    });
-
-    it("gives a team the union of its roles' permissions", async () => {
-        const { presenter } = setup({
-            dto: {
-                roles: [
-                    role("reader", [{ name: "cms.contentEntry", rwd: "r" }]),
-                    role("writer", [{ name: "wb.page", rwd: "rw" }]),
-                    role("unrelated", [{ name: "fm.file", rwd: "rwd" }])
-                ],
-                teams: [
-                    {
-                        id: "editorial",
-                        name: "Editorial",
-                        description: null,
-                        roles: [{ id: "reader" }, { id: "writer" }]
-                    }
-                ]
+                roles: [{ id: "r1", name: "Editor" }],
+                teams: [{ id: "t1", name: "Marketing" }]
             }
         });
 
         await presenter.load();
 
-        const team = presenter.vm.teamOptions[0];
-        expect(team.permissionNames).toEqual(["cms.contentEntry", "wb.page"]);
-        // The writer role's permission is enough to rule out read-only.
-        expect(team.readOnly).toBe(false);
+        expect(presenter.vm.roleOptions).toEqual([{ value: "role:r1", label: "Editor" }]);
+        expect(presenter.vm.teamOptions).toEqual([{ value: "team:t1", label: "Marketing" }]);
+    });
+
+    /*
+     * The header control picks by option value. Success reloads the page, so this goes through
+     * the failure path to see what reached the use case.
+     */
+    it("assumes the option picked by value", async () => {
+        const { presenter, assumed } = setup({
+            dto: { roles: [], teams: [{ id: "t1", name: "Marketing" }] },
+            assumeError: new Error("Nope.")
+        });
+
+        await presenter.load();
+        await presenter.assume("team:t1");
+
+        expect(assumed).toEqual([{ type: "team", id: "t1", name: "Marketing" }]);
     });
 
     it("does not ask for teams when teams are disabled", async () => {
