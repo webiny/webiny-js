@@ -16,6 +16,7 @@ import { PLAN_SYSTEM, buildPlanPrompt, parsePlanContract } from "./planContract.
 import { coverMemberTexts } from "./textCoverage.js";
 import { bindObservedValues } from "./bindObservedValues.js";
 import { findNodeByBox } from "../cluster/sectionNode.js";
+import { stageEntry } from "~/domain/ledger.js";
 
 // One model call per cluster. The margin MUST exceed one call's worst case: the timeout is checked only
 // between clusters, so too small a margin lets a call start without runway and the Lambda is hard-killed
@@ -79,13 +80,26 @@ class PlanHandlerImpl implements StageHandler.Interface {
          * one whose image and link props arrive empty — which is what it did before. A missing segment
          * artifact should not fail a stage that can still do most of its job.
          */
-        const segmentRef = context.upstream.sections;
+        /*
+         * Read from the run's ledger, not from `context.upstream`: that holds only the IMMEDIATELY
+         * previous stage's artifacts, so for Plan it is Classify's and `upstream.sections` is always
+         * undefined. The first version of this used it, found nothing, and — being written to carry on
+         * without the sections — bound nothing at all while reporting success.
+         */
+        const segmentRef = stageEntry(context.run.stages, "segment")?.artifacts?.sections;
         let segment: SegmentArtifact | null = null;
         if (segmentRef) {
             const segmentResult = await context.store.getJson<SegmentArtifact>(segmentRef);
             if (segmentResult.isOk()) {
                 segment = segmentResult.value;
             }
+        }
+        if (!segment) {
+            // Said out loud. A silent skip here is what hid the defect above.
+            await context.log.error({
+                message:
+                    "No segment artifact reachable from the ledger: image, link and list props will be planned with no observed values."
+            });
         }
         const segmentByUrl = new Map((segment?.pages ?? []).map(page => [page.url, page]));
         // One page tree is read per cluster at most, and reference sections often share a page.
@@ -197,9 +211,9 @@ class PlanHandlerImpl implements StageHandler.Interface {
                                 message: `Filled ${bound.propsBound} non-text prop(s) of "${cluster.name}" from its reference section: ${bound.mediaBound} image(s), ${bound.linksBound} link(s), ${bound.itemsBound} list item(s).`
                             });
                         }
-                    } else if (segment) {
-                        await context.log.info({
-                            message: `No reference section node for "${cluster.name}"; its image and link props stay empty.`
+                    } else {
+                        await context.log.error({
+                            message: `No reference section node for "${cluster.name}" (${cluster.cluster.representative.url} section ${cluster.cluster.representative.sectionIndex}); its image and link props stay empty.`
                         });
                     }
 
