@@ -3,6 +3,7 @@ import { createCheckoutPrSteps } from "./steps/index.js";
 import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
 import type { StandaloneStorageOps } from "./e2e/index.js";
 import {
+    AI_E2E_COMMENT_ROW,
     createAiE2eStandaloneJobs,
     createAwsJobs,
     createStandaloneJobs,
@@ -28,7 +29,9 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         "| --- | --- | --- |",
         "| DDB | 🔄 Deploying... | - |",
         "| DDB+OS | 🔄 Deploying... | - |",
-        ...SERVER_VARIANTS.map(standaloneVariantCommentRow)
+        ...SERVER_VARIANTS.map(standaloneVariantCommentRow),
+        // Must stay last, see AI_E2E_COMMENT_ROW.
+        AI_E2E_COMMENT_ROW
     ].join("\n"),
     captureCommentId: true,
     workflow: {
