@@ -39,6 +39,9 @@ function parseDataUrl(dataUrl: string): IReportedScreenshot | null {
     return { mediaType, base64 };
 }
 
+// Long enough to notice, short enough that the link is back before anyone reaches for it again.
+const COPIED_FOR_MS = 2000;
+
 class ReportBugPresenterImpl implements Abstraction.Interface {
     private isOpen = false;
     private description = "";
@@ -50,7 +53,9 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
     private error: string | null = null;
     private outcome: Abstraction.Outcome | null = null;
     private composeUrl: string | null = null;
+    private copied = false;
     private controller: AbortController | null = null;
+    private copiedTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(
         private recorder: ActionRecorder.Interface,
@@ -58,16 +63,20 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         private notifications: Notifications.Interface,
         private buildParams: BuildParams.Interface | undefined
     ) {
-        // `controller` is machinery, not state anything renders, so it stays out of the map.
+        /*
+         * `controller` and `copiedTimer` are machinery, not state anything renders, so they stay
+         * out of the map.
+         */
         makeAutoObservable<
             ReportBugPresenterImpl,
-            "recorder" | "gateway" | "notifications" | "buildParams" | "controller"
+            "recorder" | "gateway" | "notifications" | "buildParams" | "controller" | "copiedTimer"
         >(this, {
             recorder: false,
             gateway: false,
             notifications: false,
             buildParams: false,
-            controller: false
+            controller: false,
+            copiedTimer: false
         });
     }
 
@@ -83,6 +92,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             error: this.error,
             outcome: this.outcome,
             composeUrl: this.composeUrl,
+            copied: this.copied,
             // Nothing typed is still a report: the timeline and environment are already captured.
             canSubmit: this.status === null
         };
@@ -95,6 +105,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
     close(): void {
         this.abort();
+        this.clearCopied();
         this.isOpen = false;
     }
 
@@ -122,7 +133,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
         try {
             await writeReportToClipboard(payload);
-            this.notifications.success({ title: "Bug report copied to clipboard" });
+            this.markCopied();
         } catch (error) {
             this.notifications.warning({
                 title: "Could not copy the bug report",
@@ -269,6 +280,24 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         }
         this.controller.abort();
         this.controller = null;
+    }
+
+    /*
+     * The link says "Copied" for a moment and then goes back, so a second click reads as a second
+     * copy. Clicking again restarts the timer rather than stacking another one.
+     */
+    private markCopied(): void {
+        this.clearCopied();
+        this.copied = true;
+        this.copiedTimer = setTimeout(() => this.clearCopied(), COPIED_FOR_MS);
+    }
+
+    private clearCopied(): void {
+        if (this.copiedTimer) {
+            clearTimeout(this.copiedTimer);
+            this.copiedTimer = null;
+        }
+        this.copied = false;
     }
 
     private reset(): void {

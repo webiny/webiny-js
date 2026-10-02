@@ -7,6 +7,7 @@ import { Dialog } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { Textarea } from "@webiny/admin-ui";
+import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
 import { readPastedImage } from "../../capture/readPastedImage.js";
@@ -59,8 +60,8 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
                 <Button
                     variant={"link"}
                     size={"sm"}
-                    icon={<CopyIcon />}
-                    text={"Copy to clipboard"}
+                    icon={vm.copied ? <CheckIcon /> : <CopyIcon />}
+                    text={vm.copied ? "Copied" : "Copy to clipboard"}
                     disabled={!vm.canSubmit}
                     onClick={() => void report.copy()}
                 />
