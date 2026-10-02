@@ -128,3 +128,23 @@ reproduce all 30 of its content texts, and previously two of its thirty slots we
 the validator ignored anyway, so it was being graded on 28. Whether to raise `PRESERVED_TEXT_LIMIT`
 so the cap stops being the binding constraint on large components is a separate decision, and is not
 taken here.
+
+---
+
+## The limit is marginal, not deterministic
+
+New information on the `PRESERVED_TEXT_LIMIT` decision this issue left open.
+
+Two components sit above the 30-text limit, and they are the same two that carried ligatures:
+2424 Tulane's _Floor Plan Filter_ (35 texts) and Freehill's _Contact Form with Map View_ (38). On the
+run that first surfaced this, Floor Plan Filter failed to generate and Contact Form passed. On the
+type-scale run two passes later, **they swapped**: Floor Plan Filter generated and was measured, and
+Contact Form with Map View did not generate.
+
+So the limit is not a wall that one specific component cannot clear. It is a boundary two components
+sit on, and which of them clears it varies between runs of a non-deterministic stage. Each run loses
+one of the two, not reliably the same one.
+
+That changes what raising the limit would buy: not "recover Floor Plan Filter", but "stop losing one
+of these two at random". It also means a single run's component count is not stable evidence about
+either of them — the denominator held at 33 across both runs while its composition changed.
