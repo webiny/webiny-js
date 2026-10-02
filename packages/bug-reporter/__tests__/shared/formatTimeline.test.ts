@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatTimeline } from "~/api/formatTimeline.js";
+import { formatTimeline } from "~/shared/formatTimeline.js";
 import type { IReportedEvent } from "~/shared/types.js";
 
 const REPORTED_AT = 1_000_000;

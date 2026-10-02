@@ -1,5 +1,5 @@
-import { formatTimeline } from "./formatTimeline.js";
-import { composeIssueBody } from "./composeIssueBody.js";
+import { formatTimeline } from "../shared/formatTimeline.js";
+import { composeIssueBody } from "../shared/composeIssueBody.js";
 import { IssueDrafter } from "./drafter/abstractions.js";
 import type { IBugReportPayload } from "../shared/types.js";
 

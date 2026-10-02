@@ -3,8 +3,8 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { BugReportConfig } from "../config/abstractions.js";
 import { IssueDrafter } from "../drafter/abstractions.js";
 import { GitHubIssueGateway } from "../github/abstractions.js";
-import { formatTimeline } from "../formatTimeline.js";
-import { composeIssueBody } from "../composeIssueBody.js";
+import { formatTimeline } from "../../shared/formatTimeline.js";
+import { composeIssueBody } from "../../shared/composeIssueBody.js";
 import { buildComposeUrl } from "../buildComposeUrl.js";
 import { SubmitBugReportUseCase as Abstraction } from "./abstractions.js";
 import { BugReportEmptyError } from "./errors.js";

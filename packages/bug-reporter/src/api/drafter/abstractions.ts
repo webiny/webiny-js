@@ -1,13 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { IBugReportPayload } from "../../shared/types.js";
-
-export interface IIssueDraft {
-    title: string;
-    summary: string;
-    stepsToReproduce: string[];
-    expected: string;
-    actual: string;
-}
+import type { IIssueDraft } from "../../shared/types.js";
 
 export interface IIssueDrafter {
     /*

@@ -1,8 +1,8 @@
-import type { IReportedEnvironment } from "../shared/types.js";
-import { IssueDrafter } from "./drafter/abstractions.js";
+import type { IIssueDraft } from "./types.js";
+import type { IReportedEnvironment } from "./types.js";
 
 export interface IComposeIssueBodyInput {
-    draft: IssueDrafter.Draft;
+    draft: IIssueDraft;
     description: string;
     environment: IReportedEnvironment;
     timeline: string;

@@ -1,4 +1,4 @@
-import type { IReportedEvent } from "../shared/types.js";
+import type { IReportedEvent } from "./types.js";
 
 const KIND_LABEL: Record<string, string> = {
     route: "nav",

@@ -58,6 +58,12 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
                 <>
                     <Button variant={"ghost"} text={"Cancel"} onClick={() => report.close()} />
                     <Button
+                        variant={"secondary"}
+                        text={vm.copied ? "Copied" : "Copy report"}
+                        disabled={!vm.canSubmit}
+                        onClick={() => void report.copy()}
+                    />
+                    <Button
                         variant={"primary"}
                         text={"File the issue"}
                         disabled={!vm.canSubmit}
@@ -128,7 +134,9 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
                  * Named before the report is sent, not after. With no configuration this is our own
                  * repository, and a reporter should not find that out by landing on it.
                  */}
-                <Text size={"sm"}>{`Goes to ${vm.targetRepository} on GitHub.`}</Text>
+                <Text size={"sm"}>
+                    {`Goes to ${vm.targetRepository} on GitHub, or copy it to send another way.`}
+                </Text>
 
                 {vm.statusLabel ? <Text size={"sm"}>{vm.statusLabel}</Text> : null}
             </div>

@@ -5,7 +5,9 @@ import { SubmitBugReportGateway } from "../../gateway/abstractions.js";
 import { BuildParams } from "@webiny/app-admin/features/buildParams/abstractions.js";
 import { readTargetRepository } from "../../capture/readTargetRepository.js";
 import { REPOSITORY_PARAM } from "../../../shared/repository.js";
+import { composeClipboardReport } from "../../clipboard/composeClipboardReport.js";
 import { ReportBugPresenter as Abstraction } from "./abstractions.js";
+import type { IBugReportPayload } from "../../../shared/types.js";
 import type { IReportedEnvironment } from "../../../shared/types.js";
 import type { IReportedScreenshot } from "../../../shared/types.js";
 
@@ -47,6 +49,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
     private error: string | null = null;
     private outcome: Abstraction.Outcome | null = null;
     private composeUrl: string | null = null;
+    private copied = false;
     private controller: AbortController | null = null;
 
     constructor(
@@ -78,6 +81,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             error: this.error,
             outcome: this.outcome,
             composeUrl: this.composeUrl,
+            copied: this.copied,
             // A screenshot on its own is a report: the error text is often in the image.
             canSubmit: this.status === null && !this.isEmpty()
         };
@@ -95,41 +99,49 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
     describe(description: string): void {
         this.description = description;
+        this.copied = false;
     }
 
     attachScreenshot(dataUrl: string): void {
         this.screenshots = [...this.screenshots, dataUrl];
+        this.copied = false;
     }
 
     removeScreenshot(index: number): void {
         this.screenshots = this.screenshots.filter((_, position) => position !== index);
+        this.copied = false;
+    }
+
+    /*
+     * Same report, no GitHub: for reporters who would rather send it by mail or chat, or who have
+     * no GitHub account to file it under. Stays open afterwards, so they can still file it too.
+     */
+    async copy(): Promise<void> {
+        const payload = this.buildPayload();
+        if (!payload) {
+            return;
+        }
+
+        const text = composeClipboardReport(payload);
+
+        try {
+            await navigator.clipboard.writeText(text);
+            this.markCopied();
+        } catch (error) {
+            this.markFailed(describeFailure(error));
+        }
     }
 
     async submit(): Promise<void> {
-        if (!this.environment) {
+        const payload = this.buildPayload();
+        if (!payload) {
             return;
         }
 
         this.beginSubmission();
 
-        const screenshots: IReportedScreenshot[] = [];
-        for (const dataUrl of this.screenshots) {
-            const screenshot = parseDataUrl(dataUrl);
-            if (screenshot) {
-                screenshots.push(screenshot);
-            }
-        }
-
         const controller = new AbortController();
         this.controller = controller;
-
-        const payload = {
-            description: this.description.trim(),
-            reportedAt: this.capturedAt,
-            events: this.events,
-            environment: this.environment,
-            screenshots
-        };
 
         try {
             for await (const event of this.gateway.execute(payload, controller.signal)) {
@@ -226,6 +238,28 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         return readTargetRepository(this.buildParams.get(REPOSITORY_PARAM));
     }
 
+    private buildPayload(): IBugReportPayload | null {
+        if (!this.environment) {
+            return null;
+        }
+
+        const screenshots: IReportedScreenshot[] = [];
+        for (const dataUrl of this.screenshots) {
+            const screenshot = parseDataUrl(dataUrl);
+            if (screenshot) {
+                screenshots.push(screenshot);
+            }
+        }
+
+        return {
+            description: this.description.trim(),
+            reportedAt: this.capturedAt,
+            events: this.events,
+            environment: this.environment,
+            screenshots
+        };
+    }
+
     private setStatus(status: string): void {
         this.status = status;
     }
@@ -244,6 +278,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.error = null;
         this.outcome = null;
         this.composeUrl = null;
+        this.copied = false;
         this.status = null;
         this.capturedAt = Date.now();
         this.events = this.recorder.getEvents();
@@ -272,6 +307,11 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
     private markBlocked(url: string): void {
         this.status = null;
         this.composeUrl = url;
+    }
+
+    private markCopied(): void {
+        this.error = null;
+        this.copied = true;
     }
 
     private markFailed(message: string): void {
