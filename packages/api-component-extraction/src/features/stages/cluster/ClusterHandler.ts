@@ -15,6 +15,7 @@ import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import { OverrideRepository } from "~/domain/abstractions.js";
 import { effectiveClusterThreshold } from "~/domain/overrides.js";
 import { findNodeByBox } from "./sectionNode.js";
+import { resolveSectionColours } from "./resolvedColours.js";
 import { structuralSignature } from "./signature.js";
 import { buildTokenLookup, sectionShape, type TokenLookup } from "./sectionShape.js";
 import { sectionDigest } from "./digest.js";
@@ -132,7 +133,16 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                     // Carried per member so a W8 split/move override can promote it to a representative.
                     digest,
                     screenshotRef: page.screenshotRef,
-                    box: section.box
+                    box: section.box,
+                    /*
+                     * The same resolution `sectionShape` performs for the clustering signature, kept
+                     * this time. It was computed on every section of every run and discarded, which is
+                     * why Plan proposes colour bindings having never seen a colour.
+                     */
+                    resolvedColours: resolveSectionColours(
+                        node,
+                        manifest.isOk() ? manifest.value : null
+                    )
                 };
                 entries.push({
                     member,

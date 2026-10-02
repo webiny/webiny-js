@@ -52,6 +52,35 @@ const schemaLines = (instances: number): string[] => [
     '  "tokenBindings": [ { "target": "<prop or element>", "token": "<slot path>" } ] }'
 ];
 
+/**
+ * The section's own colours, for the model that has to bind tokens to them.
+ *
+ * This prompt has no image and had no colours, so its `tokenBindings` were proposed from the section's
+ * name and structure alone — `header.background -> color.surface.raised` because the thing is called a
+ * header. Measured, 14 of 34 rendered components ended up with a background colour the section does
+ * not have, while only 1 dominant colour in 204 was invented: the model was obeying a binding chosen
+ * blind.
+ *
+ * Slot paths rather than CSS variables, because this model answers in slot paths. A colour with no
+ * token near it is still listed: omitting it would leave the model to invent a binding for the colour
+ * it cannot see, which is the problem this is fixing.
+ */
+const colourLines = (cluster: ClassifiedCluster): string[] => {
+    const colours = cluster.cluster.representative.resolvedColours ?? [];
+    if (colours.length === 0) {
+        return [];
+    }
+    return [
+        "",
+        "The colours this section uses, largest area first — bind visual props to these:",
+        ...colours.map(colour =>
+            colour.token
+                ? `- ${colour.role} ${colour.hex} -> ${colour.token.path}`
+                : `- ${colour.role} ${colour.hex} -> no theme token matches this colour`
+        )
+    ];
+};
+
 export const buildPlanPrompt = (
     cluster: ClassifiedCluster,
     manifest: ThemeManifest | null,
@@ -72,6 +101,7 @@ export const buildPlanPrompt = (
         "",
         "Available theme tokens (bind visual props to these slot paths):",
         slotLines(manifest),
+        ...colourLines(cluster),
         ...guidance,
         "",
         ...schemaLines(instances)

@@ -313,6 +313,23 @@ export interface SegmentArtifact {
 
 // ----- Cluster (output) --------------------------------------------------------------------------
 
+/**
+ * One colour a section uses, and the theme token that expresses it.
+ *
+ * `token` is null when no colour in the pinned theme is near this one. That is reported rather than
+ * rounded away: forcing a measured colour onto the nearest token is the defect being fixed, and a
+ * colour the theme cannot express is a gap in theme extraction worth seeing.
+ */
+export interface ResolvedColour {
+    /** Which property it came from — merging the three is what made the flat token set unreadable. */
+    role: "background" | "text" | "border";
+    /** What the section measured, as lowercase hex. */
+    hex: string;
+    /** How much of the section this colour covers, which separates a background from a swatch. */
+    area: number;
+    token: { path: string; cssVariable: string; hex: string } | null;
+}
+
 export interface ClusterMember {
     url: string;
     /** Index of the section on its page (into the content root's children). */
@@ -328,6 +345,14 @@ export interface ClusterMember {
     digest?: SectionDigest;
     screenshotRef?: string;
     box?: Box;
+    /**
+     * The colours this section uses, with the theme token expressing each, largest area first.
+     *
+     * On the member rather than the cluster because members genuinely differ in colour — the same
+     * layout in a light and a dark variant is a normal pattern on these sites. Absent on artifacts
+     * written before this was carried.
+     */
+    resolvedColours?: ResolvedColour[];
 }
 
 /**

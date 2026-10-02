@@ -108,6 +108,38 @@ const typeScaleLines = (component: PlannedComponent): string[] => {
     ];
 };
 
+/**
+ * The section's measured colours, with the theme variable expressing each.
+ *
+ * Generate sees the crop, so it can see the hues — but not which of the fifty-odd allowed variables is
+ * this section's background. And the bindings it is handed rarely say: of 73 on one site, 15 named a
+ * background or surface at all, so the most dominant colour in a section is usually unbound and the
+ * model picks a plausible surface token itself. Divergence barely moved with more bindings — 60% at a
+ * handful, 36% at a dozen — which is why this goes to Generate as well as to Plan.
+ *
+ * The hex is given as the identity of the colour and the variable as the way to write it. A colour the
+ * theme cannot express says so, because omitting it would leave the model to guess exactly the colour
+ * this is meant to pin down.
+ */
+const colourLines = (component: PlannedComponent): string[] => {
+    const colours = component.representative?.resolvedColours ?? [];
+    if (colours.length === 0) {
+        return [];
+    }
+    return [
+        "",
+        "The colours this section measured, largest area first. Use the variable given for each:",
+        ...colours.map(colour =>
+            colour.token
+                ? `- ${colour.role} ${colour.hex} — use var(${colour.token.cssVariable})`
+                : `- ${colour.role} ${colour.hex} — no theme variable is near this colour, use ${colour.hex} directly`
+        ),
+        "",
+        "Do not substitute a different theme colour for one listed here, and do not write a hex value",
+        "where a variable is given — a hardcoded colour survives no theme change."
+    ];
+};
+
 const buildPrompt = (
     component: PlannedComponent,
     slotVariables: Map<string, string[]>,
@@ -184,6 +216,7 @@ const buildPrompt = (
                       .join(", ")
               ]
             : []),
+        ...colourLines(component),
         ...typeScaleLines(component),
         "",
         "Preserve this text content exactly:",
