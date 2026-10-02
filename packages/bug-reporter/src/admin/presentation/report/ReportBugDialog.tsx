@@ -4,6 +4,7 @@ import { useFeature } from "@webiny/app/shared/di/useFeature.js";
 import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { Textarea } from "@webiny/admin-ui";
@@ -45,6 +46,33 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
         };
     }, [vm.open, report]);
 
+    /*
+     * After a copy the link gives way to plain green text for a moment: a confirmation, not
+     * something to click again. `role="status"` has screen readers announce it.
+     */
+    let copyAction = (
+        <Button
+            variant={"link"}
+            size={"sm"}
+            icon={<CopyIcon />}
+            text={"Copy to clipboard"}
+            disabled={!vm.canSubmit}
+            onClick={() => void report.copy()}
+        />
+    );
+    if (vm.copied) {
+        copyAction = (
+            <Text
+                size={"sm"}
+                role={"status"}
+                className={"flex items-center gap-xs text-success-primary fill-success"}
+            >
+                <Icon size={"sm"} label={""} icon={<CheckIcon />} />
+                {"Copied"}
+            </Text>
+        );
+    }
+
     if (vm.outcome) {
         return <OutcomeDialog outcome={vm.outcome} open={vm.open} onClose={() => report.close()} />;
     }
@@ -56,16 +84,7 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
             title={"Report a bug"}
             description={"Say what went wrong, paste a screenshot. The rest is already captured."}
             loading={vm.busy}
-            info={
-                <Button
-                    variant={"link"}
-                    size={"sm"}
-                    icon={vm.copied ? <CheckIcon /> : <CopyIcon />}
-                    text={vm.copied ? "Copied" : "Copy to clipboard"}
-                    disabled={!vm.canSubmit}
-                    onClick={() => void report.copy()}
-                />
-            }
+            info={copyAction}
             actions={
                 <>
                     <Button variant={"ghost"} text={"Cancel"} onClick={() => report.close()} />
