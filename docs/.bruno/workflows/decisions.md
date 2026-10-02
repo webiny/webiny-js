@@ -213,7 +213,7 @@ Anyone who can request a review can read exclusions (user, reason, `endsOn`) thr
 
 | Event | Recipients |
 |---|---|
-| Step reached, manual | Members of the step's candidate teams |
+| Step reached, pool | Members of the step's candidate teams |
 | Step started by routing, editor pick or reassign | Owner |
 | Reassign | Old and new owner |
 | Review approved, review rejected, step failed | Requester |
