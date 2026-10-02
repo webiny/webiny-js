@@ -3,6 +3,8 @@ import type { Result } from "@webiny/feature/api";
 import type { IListAuditLogsParams } from "~/types.js";
 import type { IListAuditLogsResultMeta } from "~/types.js";
 import type { IAuditLog } from "~/storage/types.js";
+import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
+import type { IStorageListSuccessResultMeta } from "~/storage/abstractions/Storage.js";
 import type { AuditLogPersistenceError } from "~/domain/errors.js";
 
 export interface ListAuditLogsOutput {
@@ -41,4 +43,24 @@ export const ListAuditLogsRepository =
 
 export namespace ListAuditLogsRepository {
     export type Interface = IListAuditLogsRepository;
+}
+
+export interface ListAuditLogsGatewayOutput {
+    items: IAuditLog[];
+    meta: IStorageListSuccessResultMeta;
+}
+
+/**
+ * ListAuditLogsGateway - Lists audit logs from the audit logs storage.
+ */
+export interface IListAuditLogsGateway {
+    list(params: IStorageListParams): Promise<ListAuditLogsGatewayOutput>;
+}
+
+export const ListAuditLogsGateway =
+    createAbstraction<IListAuditLogsGateway>("ListAuditLogsGateway");
+
+export namespace ListAuditLogsGateway {
+    export type Interface = IListAuditLogsGateway;
+    export type Output = ListAuditLogsGatewayOutput;
 }

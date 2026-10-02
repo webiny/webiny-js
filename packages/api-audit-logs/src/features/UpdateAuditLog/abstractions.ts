@@ -44,3 +44,17 @@ export const UpdateAuditLogRepository = createAbstraction<IUpdateAuditLogReposit
 export namespace UpdateAuditLogRepository {
     export type Interface = IUpdateAuditLogRepository;
 }
+
+/**
+ * UpdateAuditLogGateway - Writes an updated audit log to the audit logs storage.
+ */
+export interface IUpdateAuditLogGateway {
+    update(auditLog: IAuditLog): Promise<IAuditLog>;
+}
+
+export const UpdateAuditLogGateway =
+    createAbstraction<IUpdateAuditLogGateway>("UpdateAuditLogGateway");
+
+export namespace UpdateAuditLogGateway {
+    export type Interface = IUpdateAuditLogGateway;
+}

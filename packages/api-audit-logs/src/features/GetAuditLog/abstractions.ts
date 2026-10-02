@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import type { IAuditLog } from "~/storage/types.js";
+import type { IStorageFetchParams } from "~/storage/abstractions/Storage.js";
 import type { AuditLogPersistenceError } from "~/domain/errors.js";
 
 /**
@@ -37,4 +38,17 @@ export const GetAuditLogRepository =
 
 export namespace GetAuditLogRepository {
     export type Interface = IGetAuditLogRepository;
+}
+
+/**
+ * GetAuditLogGateway - Reads an audit log from the audit logs storage.
+ */
+export interface IGetAuditLogGateway {
+    get(params: IStorageFetchParams): Promise<IAuditLog>;
+}
+
+export const GetAuditLogGateway = createAbstraction<IGetAuditLogGateway>("GetAuditLogGateway");
+
+export namespace GetAuditLogGateway {
+    export type Interface = IGetAuditLogGateway;
 }
