@@ -56,11 +56,12 @@ class AiImpl implements AiAbstraction.Interface {
 
         await this.eventPublisher.publish(new AiBeforeGenerateTextEvent({ requestId, params }));
 
-        // The AI SDK is loaded on first use, so it isn't part of every cold start.
-        const { generateText } = await import("ai");
         const start = performance.now();
 
         try {
+            // The AI SDK is loaded on first use, so it isn't part of every cold start. Inside the
+            // try, so a failed load is reported through the error event like any other failure.
+            const { generateText } = await import("ai");
             const result = await generateText({ model: resolvedModel, ...rest } as Parameters<
                 typeof AiSdk.generateText
             >[0]);

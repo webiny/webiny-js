@@ -116,13 +116,14 @@ class BugReportDrafterDecoratorImpl implements IssueDrafter.Interface {
         const capability = resolved.value;
         const prompt = buildPrompt(payload, timeline);
 
-        // Loaded on first use, so the AI SDK isn't part of every cold start.
-        const { Output } = await import("ai");
-        const output = Output.object({ schema: issueDraftSchema });
         const system = withAdditionalInstructions(capability);
         const content = buildContent(payload, prompt);
 
         try {
+            // Loaded on first use, so the AI SDK isn't part of every cold start. Inside the try,
+            // so a failed load falls back to the verbatim draft like any other failure.
+            const { Output } = await import("ai");
+            const output = Output.object({ schema: issueDraftSchema });
             const result = await this.ai.generateText({
                 model: capability.model,
                 connection: capability.connection,

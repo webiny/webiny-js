@@ -100,10 +100,9 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
             }
         };
 
-        // Loaded on first use, so the AI SDK isn't part of every cold start.
-        const { stepCountIs } = await import("ai");
-
         try {
+            // Loaded on first use, so the AI SDK isn't part of every cold start.
+            const { stepCountIs } = await import("ai");
             const aiResult = await this.ai.generateText({
                 model: capability.model,
                 connection: capability.connection,
