@@ -52,6 +52,9 @@ const PAGE_ERROR_MAX_CHARS = 300;
  */
 
 /** Fraction of the viewport to scroll for the mid-page crop. */
+// Above this the grown-viewport surface is a memory risk on a 2 GB Lambda, so the full-page shot
+// falls back to `fullPage: true` — a mispainted header beats an OOM kill that loses the crawl.
+const MAX_GROWN_VIEWPORT_HEIGHT = 16000;
 const MID_PAGE_SCROLL_FACTOR = 1.5;
 
 const CROP_LABELS: Record<ScreenshotCrop, string> = {
@@ -527,10 +530,10 @@ class ChromiumSession implements IBrowserSession {
                 async () => {
                     await this.scrollForCrop(page, request.crop, params.viewportHeight);
 
-                    const image = await page.screenshot({
-                        type: "png",
-                        fullPage: request.crop === "full-page"
-                    });
+                    const image =
+                        request.crop === "full-page"
+                            ? await this.fullPageScreenshot(page, params.viewportWidth)
+                            : await page.screenshot({ type: "png" });
 
                     const bytes = image instanceof Uint8Array ? image : new Uint8Array();
                     const key = await capture.write(bytes, request.label);
@@ -557,6 +560,45 @@ class ChromiumSession implements IBrowserSession {
         }
 
         return { taken, failed };
+    }
+
+    /**
+     * A full-page screenshot taken by growing the viewport, not by `fullPage: true`.
+     *
+     * `fullPage` captures beyond the viewport without changing the layout viewport, and Chrome paints
+     * some positioned elements wrongly in that pass. Measured on parkcityplace.org: the site's header
+     * is `position: absolute`, and a `fullPage` shot painted its background and dropped its logo and
+     * every nav item, keeping only an open dropdown — on 6 of 8 captured pages. The DOM was complete
+     * and correct at the time; only the picture was wrong, so nothing downstream could detect it. The
+     * same page, same browser, same moment, shot at viewport size or with the viewport grown to the
+     * document height, renders the header in full.
+     *
+     * Growing the viewport is what `fullPage` is approximating anyway, and it puts the page in a state
+     * it would really be in. The cost is memory: the surface is width x document height, so a very
+     * tall page is bounded and falls back to `fullPage` rather than risking an OOM kill that loses the
+     * whole crawl — a mispainted header on a 20,000px page is the better failure.
+     */
+    private async fullPageScreenshot(page: Page, width: number): Promise<Uint8Array> {
+        const previous = page.viewport();
+        const height = await this.documentHeight(page);
+
+        if (!height || height > MAX_GROWN_VIEWPORT_HEIGHT) {
+            const image = await page.screenshot({ type: "png", fullPage: true });
+            return image instanceof Uint8Array ? image : new Uint8Array();
+        }
+
+        try {
+            await page.setViewport({ width, height, deviceScaleFactor: 1 });
+            // The resize is a layout change; give the page the same beat the scroll helper gives it,
+            // so anything that reflows on resize has settled before the shot.
+            await new Promise(resolve => setTimeout(resolve, 400));
+            const image = await page.screenshot({ type: "png" });
+            return image instanceof Uint8Array ? image : new Uint8Array();
+        } finally {
+            if (previous) {
+                await page.setViewport(previous);
+            }
+        }
     }
 
     private async scrollForCrop(
