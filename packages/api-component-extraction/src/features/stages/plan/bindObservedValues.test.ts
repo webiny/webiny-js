@@ -27,7 +27,7 @@ describe("bindObservedValues", () => {
         });
         const props = [prop("logo", "Image")];
 
-        bindObservedValues(section, props);
+        bindObservedValues([section], props);
 
         expect(props[0].observedStructured).toEqual([
             { kind: "media", src: "https://cdn.example/one.jpg", alt: "One" }
@@ -40,7 +40,7 @@ describe("bindObservedValues", () => {
         });
         const props = [prop("cta", "Link")];
 
-        bindObservedValues(section, props);
+        bindObservedValues([section], props);
 
         expect(props[0].observedStructured).toEqual([
             { kind: "link", label: "Schedule a Tour", href: "https://example.com/tour" }
@@ -76,7 +76,7 @@ describe("bindObservedValues", () => {
             })
         ];
 
-        bindObservedValues(section, props);
+        bindObservedValues([section], props);
 
         expect(props[0].observedStructured).toEqual([
             {
@@ -116,7 +116,7 @@ describe("bindObservedValues", () => {
         });
         const props = [prop("links", "object", { array: true, fields: [prop("link", "Link")] })];
 
-        bindObservedValues(section, props);
+        bindObservedValues([section], props);
 
         const items = props[0].observedStructured ?? [];
         expect(items).toHaveLength(2);
@@ -146,7 +146,7 @@ describe("bindObservedValues", () => {
             prop("cta", "Link")
         ];
 
-        bindObservedValues(section, props);
+        bindObservedValues([section], props);
 
         expect(props[0].observedStructured).toHaveLength(2);
         // Every link in the section belongs to the list, so the trailing scalar has nothing left.
@@ -157,7 +157,7 @@ describe("bindObservedValues", () => {
         const section = node("div", { children: [node("h1", { text: "Welcome" })] });
         const props = [prop("heading", "string")];
 
-        bindObservedValues(section, props);
+        bindObservedValues([section], props);
 
         expect(props[0].observedStructured).toBeUndefined();
         expect(props[0].observedValues).toEqual([]);
@@ -172,11 +172,47 @@ describe("bindObservedValues", () => {
         });
         const props = [prop("image", "Image"), prop("cta", "Link")];
 
-        expect(bindObservedValues(section, props)).toEqual({
+        expect(bindObservedValues([section], props)).toEqual({
             propsBound: 2,
             mediaBound: 1,
             linksBound: 1,
             itemsBound: 0
         });
+    });
+});
+
+describe("bindObservedValues across members", () => {
+    const nav = (label: string, href: string): CapturedNode =>
+        node("nav", { children: [node("a", { href, text: label })] });
+
+    it("observes values from every member, not just the first", () => {
+        // The case the single-section version could not serve: the texts a prop most needs to hold
+        // are the ones the reference section does not contain.
+        const props = [prop("navLinks", "Link", { array: true })];
+
+        bindObservedValues([nav("Home", "/"), nav("Contact", "/contact")], props);
+
+        expect(props[0].observedStructured).toEqual([
+            { kind: "link", label: "Home", href: "/" },
+            { kind: "link", label: "Contact", href: "/contact" }
+        ]);
+        expect(props[0].observedValues).toEqual(["Home", "Contact"]);
+    });
+
+    it("observes a value shared by every member once", () => {
+        const props = [prop("logo", "Image")];
+        const withLogo = () =>
+            node("div", { children: [node("img", { src: "https://cdn.example/logo.svg" })] });
+
+        bindObservedValues([withLogo(), withLogo(), withLogo()], props);
+
+        expect(props[0].observedStructured).toEqual([
+            { kind: "media", src: "https://cdn.example/logo.svg" }
+        ]);
+    });
+
+    it("counts a prop bound by several members once", () => {
+        const props = [prop("navLinks", "Link", { array: true })];
+        expect(bindObservedValues([nav("A", "/a"), nav("B", "/b")], props).propsBound).toBe(1);
     });
 });

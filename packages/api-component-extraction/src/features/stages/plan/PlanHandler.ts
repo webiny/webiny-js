@@ -23,6 +23,12 @@ import { stageEntry } from "~/domain/ledger.js";
 // mid-call, leaving the stage stuck "running".
 const PLAN_SAFETY_MARGIN_SECONDS = 180;
 
+/*
+ * How many of a cluster's sections are read for their non-text values. Bounded because a navigation
+ * cluster can carry one member per page; past a dozen the values repeat and only the artifact grows.
+ */
+const MAX_MEMBERS_HARVESTED = 12;
+
 /**
  * The reference member's own text, in document order.
  *
@@ -200,20 +206,42 @@ class PlanHandlerImpl implements StageHandler.Interface {
                      * value here; and Generate is handed these values so it has something real to put
                      * in the component's defaults instead of inventing a stock photograph.
                      */
-                    const node = await referenceSection(
-                        cluster.cluster.representative.url,
-                        cluster.cluster.representative.sectionIndex
-                    );
-                    if (node) {
-                        const bound = bindObservedValues(node, contract.props);
+                    /*
+                     * Every member's section, representative first.
+                     *
+                     * `observedValues` means "observed across the cluster's members", and the texts a
+                     * prop most needs to hold are the ones the representative does not have — another
+                     * page's navigation labels are not in this page's navigation. Representative first
+                     * so the positional rule gives the section the reference image shows the first
+                     * claim on each prop.
+                     */
+                    const members = [
+                        cluster.cluster.representative,
+                        ...cluster.cluster.members.filter(
+                            member =>
+                                member.url !== cluster.cluster.representative.url ||
+                                member.sectionIndex !== cluster.cluster.representative.sectionIndex
+                        )
+                    ].slice(0, MAX_MEMBERS_HARVESTED);
+
+                    const nodes: CapturedNode[] = [];
+                    for (const member of members) {
+                        const resolved = await referenceSection(member.url, member.sectionIndex);
+                        if (resolved) {
+                            nodes.push(resolved);
+                        }
+                    }
+
+                    if (nodes.length > 0) {
+                        const bound = bindObservedValues(nodes, contract.props);
                         if (bound.propsBound > 0) {
                             await context.log.info({
-                                message: `Filled ${bound.propsBound} non-text prop(s) of "${cluster.name}" from its reference section: ${bound.mediaBound} image(s), ${bound.linksBound} link(s), ${bound.itemsBound} list item(s).`
+                                message: `Filled ${bound.propsBound} non-text prop(s) of "${cluster.name}" from ${nodes.length} member section(s): ${bound.mediaBound} image(s), ${bound.linksBound} link(s), ${bound.itemsBound} list item(s).`
                             });
                         }
                     } else {
                         await context.log.error({
-                            message: `No reference section node for "${cluster.name}" (${cluster.cluster.representative.url} section ${cluster.cluster.representative.sectionIndex}); its image and link props stay empty.`
+                            message: `No member section node resolved for "${cluster.name}" (${cluster.cluster.representative.url} section ${cluster.cluster.representative.sectionIndex}); its image and link props stay empty.`
                         });
                     }
 

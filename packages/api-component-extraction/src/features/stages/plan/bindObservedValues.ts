@@ -29,6 +29,8 @@ import {
 /** Bounded so one pathological section cannot inflate the Plan artifact. */
 const MAX_VALUES_PER_PROP = 10;
 const MAX_ITEMS_PER_LIST = 12;
+/** Across every member, since a cluster can have a dozen of them. */
+const MAX_VALUES_TOTAL = 40;
 
 const isMediaType = (type: string): boolean => /^(image|media|photo|picture|file)$/i.test(type);
 const isLinkType = (type: string): boolean => /^(link|url|cta|button)$/i.test(type);
@@ -131,9 +133,38 @@ export interface BindSummary {
     itemsBound: number;
 }
 
-export const bindObservedValues = (node: CapturedNode, props: ComponentProp[]): BindSummary => {
+/**
+ * Binds across EVERY member's section, not just the one the reference image came from.
+ *
+ * `observedValues` has always been "sample values observed across the cluster's members", and the
+ * first version of this bound the representative's section alone. Measured, that reclaimed 28 of the
+ * 233 texts the union-text narrowing had left without a prop — and it could not have done better,
+ * because those 233 are by definition the texts that are NOT in the representative. Another page's
+ * navigation labels are not in this page's navigation, so a prop filled from one section cannot hold
+ * them.
+ *
+ * Each section is bound with its own claim set — taking is a within-section question — and the values
+ * are merged, deduped, across members.
+ */
+export const bindObservedValues = (
+    sections: CapturedNode[],
+    props: ComponentProp[]
+): BindSummary => {
     const summary: BindSummary = { propsBound: 0, mediaBound: 0, linksBound: 0, itemsBound: 0 };
+    const bound = new Set<ComponentProp>();
+    for (const section of sections) {
+        bindOneSection(section, props, summary, bound);
+    }
+    summary.propsBound = bound.size;
+    return summary;
+};
 
+const bindOneSection = (
+    node: CapturedNode,
+    props: ComponentProp[],
+    summary: BindSummary,
+    bound: Set<ComponentProp>
+): void => {
     /*
      * Nodes some prop has taken. Every read goes through this, scalars included — an earlier version
      * collected the section's images and links once up front and indexed into those lists, so a scalar
@@ -205,8 +236,19 @@ export const bindObservedValues = (node: CapturedNode, props: ComponentProp[]): 
         }
 
         if (values.length > 0) {
-            prop.observedStructured = values;
-            summary.propsBound++;
+            // Merge with what earlier members contributed. Deduped on the value's own identity — the
+            // same logo appears on every page and should be observed once.
+            const existingStructured = prop.observedStructured ?? [];
+            const seenValues = new Set(existingStructured.map(value => JSON.stringify(value)));
+            for (const value of values) {
+                const key = JSON.stringify(value);
+                if (!seenValues.has(key) && existingStructured.length < MAX_VALUES_TOTAL) {
+                    seenValues.add(key);
+                    existingStructured.push(value);
+                }
+            }
+            prop.observedStructured = existingStructured;
+            bound.add(prop);
 
             // The text these values carry joins the existing string path, deduped against what is
             // already there — the model's own proposal may already have named the same label.
@@ -230,6 +272,4 @@ export const bindObservedValues = (node: CapturedNode, props: ComponentProp[]): 
     for (const prop of props) {
         bind(prop);
     }
-
-    return summary;
 };
