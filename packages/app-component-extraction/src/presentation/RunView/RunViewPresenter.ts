@@ -23,6 +23,9 @@ import type {
 // running within a few seconds of its task starting; if the ledger hasn't reflected the trigger by now
 // the task did not take (e.g. it never ran), so drop the indication and show the real status rather than
 // hang on "starting" forever.
+// A component render is ~45s; five minutes covers a slow one plus a continuation, and bounds the
+// wait on a task that failed before it could write a record.
+const RENDER_STALL_TIMEOUT_MS = 5 * 60 * 1000;
 const STARTING_TIMEOUT_MS = 30000;
 
 class RunViewPresenterImpl implements PresenterAbstraction.Interface {
@@ -130,6 +133,13 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
+    /**
+     * Each in-flight per-component render, and the screenshot it had when the button was pressed.
+     *
+     * Not on the view model: nothing renders it, and it must survive the poll that reads it.
+     */
+    private readonly renderRefAtTrigger = new Map<string, { ref: string | null; since: number }>();
+
     async refresh() {
         const runId = this.vm.run?.id;
         if (!runId) {
@@ -184,9 +194,20 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                         await this.loadArtifact(run, stage);
                     }
                 }
-                // While a render pass is in flight, poll its results so thumbnails appear when ready.
-                if (stage === "generate" && this.vm.rendering) {
+                /*
+                 * While a render pass is in flight, poll its results so thumbnails appear when ready.
+                 *
+                 * Both flags, not just the whole-run one. A single-component pass sets
+                 * `renderingSignatures` and nothing else, and it was missing from this condition — so
+                 * the artifact was never re-read, `loadRenders` never ran, and the card's spinner ran
+                 * for ever while the render had in fact completed seconds earlier.
+                 */
+                if (
+                    stage === "generate" &&
+                    (this.vm.rendering || this.vm.renderingSignatures.length > 0)
+                ) {
                     await this.loadRenders(run);
+                    this.giveUpOnStalledRenders();
                 }
                 // While a regenerate is in flight, poll the artifact so the refined component lands.
                 if (stage === "generate" && this.vm.regenerating.length > 0) {
@@ -422,6 +443,14 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
         runInAction(() => {
             if (signature) {
+                // What this component's screenshot is NOW, so the poll can tell a new one from it.
+                const current = (this.vm.renders ?? []).find(
+                    record => record.signature === signature
+                );
+                this.renderRefAtTrigger.set(signature, {
+                    ref: current?.renderRef ?? null,
+                    since: Date.now()
+                });
                 if (!this.vm.renderingSignatures.includes(signature)) {
                     this.vm.renderingSignatures.push(signature);
                 }
@@ -1189,6 +1218,34 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
+    /**
+     * Stop waiting on a render that is never going to report.
+     *
+     * A render task that fails before it writes anything — the sandbox host unreachable, the browser
+     * unable to start — leaves no record at all, and "done when the record changes" waits for a record
+     * that will never arrive. That is the same stuck spinner in another guise, so the wait is bounded
+     * and says what happened rather than sitting there.
+     */
+    private giveUpOnStalledRenders(): void {
+        const stalled = this.vm.renderingSignatures.filter(signature => {
+            const started = this.renderRefAtTrigger.get(signature)?.since;
+            return started !== undefined && Date.now() - started > RENDER_STALL_TIMEOUT_MS;
+        });
+        if (stalled.length === 0) {
+            return;
+        }
+        runInAction(() => {
+            this.vm.renderingSignatures = this.vm.renderingSignatures.filter(
+                signature => !stalled.includes(signature)
+            );
+            this.vm.error =
+                "A render was started but reported nothing for five minutes. It may have failed before it could record anything — check the task's logs, and that the website app and its tunnel are up.";
+        });
+        for (const signature of stalled) {
+            this.renderRefAtTrigger.delete(signature);
+        }
+    }
+
     /** Load the run's rendered-component screenshots, if the render pass has produced them. */
     private async loadRenders(run: RunDto): Promise<void> {
         try {
@@ -1198,12 +1255,32 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 // The artifact is written when the pass completes, so its arrival clears "rendering".
                 if (artifact?.renders) {
                     this.vm.rendering = false;
-                    // A single-component pass clears only the components it actually produced, so two
-                    // re-renders in flight do not clear each other.
-                    const produced = new Set(artifact.renders.map(record => record.signature));
-                    this.vm.renderingSignatures = this.vm.renderingSignatures.filter(
-                        signature => !produced.has(signature)
+                    /*
+                     * A component is done when its render has CHANGED, not when one is present. A
+                     * re-render of a component that already had a screenshot would otherwise clear
+                     * instantly against the picture it is replacing, and the card would show the old
+                     * image looking settled. The ref recorded when the button was pressed is the
+                     * baseline; an error clears too, so a failure stops the spinner and shows itself.
+                     */
+                    const bySignature = new Map(
+                        artifact.renders.map(record => [record.signature, record])
                     );
+                    this.vm.renderingSignatures = this.vm.renderingSignatures.filter(signature => {
+                        const record = bySignature.get(signature);
+                        if (!record) {
+                            return true;
+                        }
+                        if (record.error) {
+                            this.renderRefAtTrigger.delete(signature);
+                            return false;
+                        }
+                        const before = this.renderRefAtTrigger.get(signature);
+                        const changed = (record.renderRef ?? null) !== (before?.ref ?? null);
+                        if (changed) {
+                            this.renderRefAtTrigger.delete(signature);
+                        }
+                        return !changed;
+                    });
                 }
             });
         } catch {
