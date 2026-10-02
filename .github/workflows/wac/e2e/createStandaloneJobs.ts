@@ -17,7 +17,7 @@ import {
 } from "./constants.js";
 import { installBuildSteps, runBuildCacheDownloadSteps, yarnCacheSteps } from "./sharedSteps.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
-import { AI_E2E_LICENSE_ENV, createAiE2eSteps } from "./aiE2e.js";
+import { AI_E2E_JOB_IF, AI_E2E_LICENSE_ENV, createAiE2eSteps } from "./aiE2e.js";
 
 // The storage backends the standalone hosting type supports. Mirrors `StorageOps` in
 // create-webiny-project's standalone project setup.
@@ -64,8 +64,8 @@ interface StandaloneProjectPartsParams {
     // When set, the variant reports its result into the PR status comment under this label. `push`
     // has no PR to report into, so it omits this.
     statusLabel?: string;
-    // Also run the experimental AI tests in `e2e/` (see aiE2e.ts). Only `/e2e` sets this, and the
-    // steps themselves are further gated on who posted the comment.
+    // Build with a WCP license and also run the experimental AI tests in `e2e/` (see aiE2e.ts).
+    // Only the dedicated AI job sets this; the regular variants stay unlicensed.
     aiE2e?: boolean;
 }
 
@@ -82,6 +82,9 @@ export const createStandaloneProjectParts = (
 ) => {
     const isPostgres = storageOps === "postgres";
     const licenseEnv = aiE2e ? AI_E2E_LICENSE_ENV : {};
+    // Artifact names must be unique within a run, and the AI job shares a storage backend with a
+    // regular variant.
+    const artifactSuffix = aiE2e ? `${storageOps}-ai` : storageOps;
 
     // Postgres runs as a service container; SQLite needs nothing (the template writes a file).
     const services: NormalJob["services"] = isPostgres
@@ -258,11 +261,10 @@ export const createStandaloneProjectParts = (
                 run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
             },
             ...(statusLabel ? createStatusRowUpdateSteps({ label: statusLabel }) : []),
-            // After the status row, so the row keeps reporting the Cypress smoke test alone.
             ...(aiE2e
                 ? createAiE2eSteps({
                       workingDirectory,
-                      artifactName: `ai-e2e-results-standalone-${storageOps}`
+                      artifactName: `ai-e2e-results-standalone-${artifactSuffix}`
                   })
                 : []),
             {
@@ -278,7 +280,7 @@ export const createStandaloneProjectParts = (
                 if: "failure()",
                 uses: ACTION.uploadArtifactV6,
                 with: {
-                    name: `cypress-screenshots-standalone-${storageOps}`,
+                    name: `cypress-screenshots-standalone-${artifactSuffix}`,
                     "retention-days": 1,
                     "if-no-files-found": "ignore",
                     path: `${workingDirectory}/cypress-tests/cypress/screenshots`
@@ -296,24 +298,51 @@ export const createStandaloneJobs = (storageOps: StandaloneStorageOps) => {
     const label = standaloneVariantLabel(storageOps);
     const parts = createStandaloneProjectParts(storageOps, {
         workingDirectory: DIR_WEBINY_JS,
-        statusLabel: label,
-        // One variant is enough while the AI tests are experimental.
-        aiE2e: storageOps === "sqlite"
+        statusLabel: label
     });
 
     return {
-        [`e2e-standalone-${storageOps}`]: createJob({
-            needs: ["baseBranch", "constants", "build", "checkComment"],
-            name: `E2E - ${label}`,
-            checkout: { path: DIR_WEBINY_JS },
-            ...(parts.services ? { services: parts.services } : {}),
-            steps: [
-                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
-                ...yarnCacheSteps,
-                ...runBuildCacheDownloadSteps,
-                ...installBuildSteps,
-                ...parts.steps
-            ]
-        })
+        [`e2e-standalone-${storageOps}`]: createPrStandaloneJob(`E2E - ${label}`, parts)
     };
 };
+
+/**
+ * A licensed SQLite project running the Cypress smoke test plus the AI tests in `e2e/`. A job of
+ * its own rather than a license on the regular SQLite job, so `/e2e` still covers an unlicensed
+ * project for everyone, the AI users included. No row in the status comment: the comment is the
+ * same for everyone, and this job only runs for some.
+ */
+export const createAiE2eStandaloneJobs = () => {
+    const parts = createStandaloneProjectParts("sqlite", {
+        workingDirectory: DIR_WEBINY_JS,
+        aiE2e: true
+    });
+
+    return {
+        "e2e-standalone-sqlite-ai": {
+            ...createPrStandaloneJob(
+                `E2E - ${standaloneVariantLabel("sqlite")}, licensed, AI`,
+                parts
+            ),
+            if: AI_E2E_JOB_IF
+        }
+    };
+};
+
+const createPrStandaloneJob = (
+    name: string,
+    parts: ReturnType<typeof createStandaloneProjectParts>
+) =>
+    createJob({
+        needs: ["baseBranch", "constants", "build", "checkComment"],
+        name,
+        checkout: { path: DIR_WEBINY_JS },
+        ...(parts.services ? { services: parts.services } : {}),
+        steps: [
+            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...yarnCacheSteps,
+            ...runBuildCacheDownloadSteps,
+            ...installBuildSteps,
+            ...parts.steps
+        ]
+    });

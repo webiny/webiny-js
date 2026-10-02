@@ -2,22 +2,24 @@ import type { NormalJob } from "github-actions-wac";
 import { ACTION } from "../utils/index.js";
 import { STANDALONE_ADMIN_URL } from "./constants.js";
 
-// Experimental: the AI-driven tests in `e2e/` (TesterArmy's e2e framework). They run only when one
-// of these people posts the `/e2e` comment, so nobody else's run changes while the suite settles.
+// Experimental: the AI-driven tests in `e2e/` (TesterArmy's e2e framework). Their job only runs when
+// one of these people posts the `/e2e` comment, so nobody else's run changes while the suite settles.
 const AI_E2E_USERS = ["adrians5j"];
 
-// Expression body, without `${{ }}`, so it can be combined with status functions like `always()`.
-const IS_AI_E2E_RUN = `contains(fromJSON('${JSON.stringify(AI_E2E_USERS)}'), github.event.comment.user.login)`;
+export const AI_E2E_JOB_IF = `\${{ contains(fromJSON('${JSON.stringify(AI_E2E_USERS)}'), github.event.comment.user.login) }}`;
 
 /**
  * The AI tests need AI Power-Ups, which is license-gated: without a WCP license the settings screen
  * is never registered. The CLI fetches the license from these two at build time, and the API, which
  * is started directly with `node start.mjs`, derives it from the same pair at runtime. Hence both
- * the build step and the start step get them. Empty for everyone else, so their runs stay unlicensed.
+ * the build step and the start step get them.
+ *
+ * Only the dedicated AI job gets these. The regular standalone jobs stay unlicensed, so `/e2e` keeps
+ * covering a project without WCP.
  */
 export const AI_E2E_LICENSE_ENV: Record<string, string> = {
-    WEBINY_PROJECT_ID: `\${{ ${IS_AI_E2E_RUN} && secrets.E2E_WEBINY_PROJECT_ID || '' }}`,
-    WEBINY_PROJECT_API_KEY: `\${{ ${IS_AI_E2E_RUN} && secrets.E2E_WEBINY_PROJECT_API_KEY || '' }}`
+    WEBINY_PROJECT_ID: "${{ secrets.E2E_WEBINY_PROJECT_ID }}",
+    WEBINY_PROJECT_API_KEY: "${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}"
 };
 
 interface CreateAiE2eStepsParams {
@@ -35,7 +37,6 @@ export const createAiE2eSteps = ({
 }: CreateAiE2eStepsParams): NonNullable<NormalJob["steps"]> => [
     {
         name: "AI E2E - run tests",
-        if: `\${{ ${IS_AI_E2E_RUN} }}`,
         "working-directory": workingDirectory,
         env: {
             ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}",
@@ -56,7 +57,7 @@ export const createAiE2eSteps = ({
     {
         // Report, screenshots and traces, pass or fail.
         name: "AI E2E - upload results",
-        if: `\${{ always() && ${IS_AI_E2E_RUN} }}`,
+        if: "always()",
         uses: ACTION.uploadArtifactV6,
         with: {
             name: artifactName,
