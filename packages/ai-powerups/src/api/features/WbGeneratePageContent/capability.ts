@@ -1,6 +1,6 @@
 import { AiCapability } from "~/api/features/Capabilities/index.js";
 
-export const WB_GENERATE_PAGE_CAPABILITY = "wb.generatePage";
+export const WB_GENERATE_PAGE_CAPABILITY = "wbGeneratePage";
 
 /**
  * No `guidance`, for the same reason as CMS entry generation: the prompt carries the component

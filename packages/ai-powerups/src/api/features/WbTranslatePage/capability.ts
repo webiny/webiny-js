@@ -1,6 +1,6 @@
 import { AiCapability } from "~/api/features/Capabilities/index.js";
 
-export const WB_TRANSLATE_PAGE_CAPABILITY = "wb.translatePage";
+export const WB_TRANSLATE_PAGE_CAPABILITY = "wbTranslatePage";
 
 /**
  * The target language used to be interpolated into this sentence. It moved to the user prompt so
