@@ -248,6 +248,36 @@ export function transformManifestSource(source: string): string {
     return transformManifestInputs(fixed, findManifestExport(ast).objectNode);
 }
 
+/**
+ * Every top-level statement of the component source except the `manifest` export, with `export`
+ * keywords stripped, so it can be inlined into the `createComponent` factory. Keeping all of them
+ * (not just the default-exported function) keeps helpers the component relies on in scope, e.g. a
+ * `function CheckIcon() {}` declared above the component.
+ */
+export function extractComponentBody(source: string, ast: any = parseSource(source)): string {
+    const statements: string[] = [];
+
+    for (const node of ast.body) {
+        if (node.type === "ExportDefaultDeclaration" || node.type === "ExportNamedDeclaration") {
+            if (!node.declaration) {
+                continue;
+            }
+            const isManifest =
+                node.declaration.type === "VariableDeclaration" &&
+                node.declaration.declarations.some((decl: any) => decl.id.name === "manifest");
+            if (isManifest) {
+                continue;
+            }
+            statements.push(source.slice(node.declaration.start, node.declaration.end));
+            continue;
+        }
+
+        statements.push(source.slice(node.start, node.end));
+    }
+
+    return statements.join("\n\n");
+}
+
 function scopeClassName(componentName: string): string {
     return `rc-${componentName.replace(/\//g, "-").toLowerCase()}`;
 }
@@ -301,9 +331,7 @@ export async function bundleComponentInBrowser(
     const manifestExport = findManifestExport(ast);
     const inputFactories = collectInputFactories(manifestExport.objectNode);
 
-    const componentBody = source
-        .slice(exportDefault.start, exportDefault.end)
-        .replace(/export\s+default\s+function/, "function");
+    const componentBody = extractComponentBody(source, ast);
 
     const transformedManifest = transformManifestInputs(source, manifestExport.objectNode);
 
