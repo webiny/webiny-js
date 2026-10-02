@@ -41,7 +41,8 @@ function formatEvents(rows: IEventRow[]): string {
     }
 
     // Numbered, so someone reading the report can point at "step 34".
-    return `<ol>${items.join("")}</ol>`;
+    const list = items.join("");
+    return `<ol>${list}</ol>`;
 }
 
 /*
@@ -69,7 +70,8 @@ export function composeHtmlReport(payload: IBugReportPayload): string {
     for (const [label, value] of toEnvironmentRows(payload.environment)) {
         environment.push(`<strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}`);
     }
-    sections.push(environment.join("<br>"));
+    const environmentLines = environment.join("<br>");
+    sections.push(environmentLines);
 
     const eventRows = toEventRows(payload.events, payload.reportedAt);
     const events = formatEvents(eventRows);

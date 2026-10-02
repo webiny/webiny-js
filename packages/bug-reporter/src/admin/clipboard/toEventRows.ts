@@ -10,7 +10,7 @@ const KIND_LABEL: Record<string, string> = {
 };
 
 export interface IEventRow {
-    /* Seconds before the report, e.g. "-14.3s". */
+    // Seconds before the report, e.g. "-14.3s".
     offset: string;
     label: string;
     summary: string;

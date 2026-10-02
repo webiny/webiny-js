@@ -53,14 +53,16 @@ export function composePlainReport(payload: IBugReportPayload): string {
     }
 
     if (payload.screenshots.length > 0) {
-        sections.push(screenshotNote(payload.screenshots.length));
+        const note = screenshotNote(payload.screenshots.length);
+        sections.push(note);
     }
 
     const environment: string[] = [];
     for (const [label, value] of toEnvironmentRows(payload.environment)) {
         environment.push(`${label}: ${value}`);
     }
-    sections.push(`Environment\n${environment.join("\n")}`);
+    const environmentLines = environment.join("\n");
+    sections.push(`Environment\n${environmentLines}`);
 
     const eventRows = toEventRows(payload.events, payload.reportedAt);
     const events = formatEvents(eventRows);

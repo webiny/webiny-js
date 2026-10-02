@@ -1,11 +1,14 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { composeHtmlReport } from "~/admin/clipboard/composeHtmlReport.js";
 import { buildPayload } from "./buildPayload.js";
 import { REPORTED_AT } from "./buildPayload.js";
 
 describe("composeHtmlReport", () => {
     it("carries the description, environment and timeline", () => {
-        const html = composeHtmlReport(buildPayload());
+        const payload = buildPayload();
+        const html = composeHtmlReport(payload);
 
         expect(
             html.startsWith("<strong>Description:</strong> Publishing a page does nothing.")
@@ -15,7 +18,8 @@ describe("composeHtmlReport", () => {
     });
 
     it("keeps line breaks in the description", () => {
-        const html = composeHtmlReport(buildPayload({ description: "it broke\nagain" }));
+        const payload = buildPayload({ description: "it broke\nagain" });
+        const html = composeHtmlReport(payload);
 
         expect(html).toContain("<strong>Description:</strong> it broke<br>again");
     });
@@ -30,7 +34,9 @@ describe("composeHtmlReport", () => {
             }
         ];
 
-        const html = composeHtmlReport(buildPayload({ description: "<b>bold</b>", events }));
+        const payload = buildPayload({ description: "<b>bold</b>", events });
+
+        const html = composeHtmlReport(payload);
 
         expect(html).not.toContain("<img");
         expect(html).not.toContain("<b>");
@@ -39,7 +45,8 @@ describe("composeHtmlReport", () => {
     });
 
     it("uses line breaks rather than paragraphs, headings or tables, which Slack flattens", () => {
-        const html = composeHtmlReport(buildPayload());
+        const payload = buildPayload();
+        const html = composeHtmlReport(payload);
 
         expect(html).not.toContain("<p>");
         expect(html).not.toContain("<h3>");
@@ -47,20 +54,23 @@ describe("composeHtmlReport", () => {
     });
 
     it("leaves a blank line between sections", () => {
-        const html = composeHtmlReport(buildPayload());
+        const payload = buildPayload();
+        const html = composeHtmlReport(payload);
 
         expect(html).toContain("does nothing.<br><br><strong>Environment</strong><br>");
         expect(html).toContain("<br><br><strong>What the reporter did</strong><ol>");
     });
 
     it("starts with the environment when nothing was typed", () => {
-        const html = composeHtmlReport(buildPayload({ description: "" }));
+        const payload = buildPayload({ description: "" });
+        const html = composeHtmlReport(payload);
 
         expect(html.startsWith("<strong>Environment</strong>")).toBe(true);
     });
 
     it("says so when nothing was recorded", () => {
-        const html = composeHtmlReport(buildPayload({ events: [] }));
+        const payload = buildPayload({ events: [] });
+        const html = composeHtmlReport(payload);
 
         expect(html).toContain(
             "<strong>What the reporter did</strong><br><em>Nothing was recorded.</em>"
@@ -71,7 +81,13 @@ describe("composeHtmlReport", () => {
     it("mentions screenshots only when some were attached", () => {
         const screenshots = [{ mediaType: "image/png", base64: "AAAA" }];
 
-        expect(composeHtmlReport(buildPayload({ screenshots }))).toContain("1 screenshot(s)");
-        expect(composeHtmlReport(buildPayload())).not.toContain("screenshot");
+        const withScreenshots = buildPayload({ screenshots });
+        const withoutScreenshots = buildPayload();
+
+        const htmlWith = composeHtmlReport(withScreenshots);
+        const htmlWithout = composeHtmlReport(withoutScreenshots);
+
+        expect(htmlWith).toContain("1 screenshot(s)");
+        expect(htmlWithout).not.toContain("screenshot");
     });
 });

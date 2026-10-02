@@ -45,7 +45,8 @@ describe("composeIssueBody", () => {
     it("opens on the environment when the reporter typed nothing", () => {
         const draft = { ...buildInput().draft, summary: "" };
 
-        const body = composeIssueBody(buildInput({ draft }));
+        const input = buildInput({ draft });
+        const body = composeIssueBody(input);
 
         expect(body.startsWith("### Environment")).toBe(true);
     });
