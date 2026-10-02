@@ -15,6 +15,7 @@ import { ExtractionValidationError, type ExtractionError } from "~/domain/errors
 import { PLAN_SYSTEM, buildPlanPrompt, parsePlanContract } from "./planContract.js";
 import { coverMemberTexts } from "./textCoverage.js";
 import { bindObservedValues } from "./bindObservedValues.js";
+import { sectionTypeScale } from "./sectionTypeScale.js";
 import { findNodeByBox } from "../cluster/sectionNode.js";
 import { stageEntry } from "~/domain/ledger.js";
 
@@ -232,6 +233,19 @@ class PlanHandlerImpl implements StageHandler.Interface {
                         }
                     }
 
+                    /*
+                     * The reference section's type scale — the first node, which is the
+                     * representative. Taken here because the node is already resolved and walked for
+                     * the value binding, so this costs one more pass over a subtree rather than
+                     * another tree read.
+                     */
+                    const typeScale = nodes[0] ? sectionTypeScale(nodes[0], manifest) : [];
+                    if (typeScale.length === 0 && nodes[0]) {
+                        await context.log.info({
+                            message: `No type scale read for "${cluster.name}": its reference section has no text-bearing elements.`
+                        });
+                    }
+
                     if (nodes.length > 0) {
                         const bound = bindObservedValues(nodes, contract.props);
                         if (bound.propsBound > 0) {
@@ -259,6 +273,7 @@ class PlanHandlerImpl implements StageHandler.Interface {
                         // obligation it used to carry is now checked against the props instead.
                         sourceTexts: representativeTexts(cluster.cluster),
                         clusterTexts: cluster.cluster.observedTexts,
+                        typeScale,
                         textCoverage: coverMemberTexts(cluster.cluster.members, contract.props)
                     });
                 }

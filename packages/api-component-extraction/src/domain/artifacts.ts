@@ -460,6 +460,21 @@ export interface ComponentProp {
 
 /** An image the section showed: the absolute source the browser resolved, and its alt where it had one. */
 /**
+ * One step of a section's measured type scale, and how the theme expresses it.
+ *
+ * `token` is null when no typography role in the pinned theme is near this size. That is worth
+ * reading on its own: these are migrations onto the site's OWN extracted theme, so a size the theme
+ * cannot express is a gap in theme extraction rather than a conflict with it.
+ */
+export interface TypeScaleEntry {
+    fontSize: number;
+    lineHeight: number | null;
+    /** How many text-bearing elements of the section use this size. */
+    elements: number;
+    token: { path: string; cssVariable: string; fontSize: number } | null;
+}
+
+/**
  * What a section or a rendered component measures, for comparing proportion.
  *
  * Absolute within the 1440px capture canvas, which both sides share. Both sides must be derived the
@@ -543,6 +558,15 @@ export interface PlannedComponent {
      * prop the reference section does not use.
      */
     clusterTexts: string[];
+    /**
+     * The type scale the reference section used, largest first.
+     *
+     * Generate is given this because nothing ever told it what size anything was: measured on both
+     * sides, 13 of 31 rendered components put their largest type at exactly 33px behind source
+     * headings from 31px to 60px. Taken from the representative member only — the prompt shows one
+     * picture, so the numbers should describe that picture.
+     */
+    typeScale?: TypeScaleEntry[];
     /**
      * Whether the props can hold every member's text.
      *

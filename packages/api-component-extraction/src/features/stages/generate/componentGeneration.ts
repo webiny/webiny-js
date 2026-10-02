@@ -72,6 +72,42 @@ export interface GenerationInput {
     beat: (message: string) => Promise<void>;
 }
 
+/**
+ * The section's measured type scale, as numbers.
+ *
+ * Measured on both sides, the generated component's type is not scaled from the section's — it is a
+ * house size written regardless of it: 13 of 31 renders put their largest type at exactly 33px behind
+ * source headings from 31px to 60px. Prose cannot fix that. "Match the section's proportions" pushes
+ * the half that is already too large further out, because the same default is too small for a 60px
+ * heading and too large for 14px body text. The model needs the numbers.
+ *
+ * The theme is the vocabulary: these are migrations onto the site's own extracted theme, so a size it
+ * measured should have a role, and the variable is given where one is near. Where none is, the plain
+ * value is what the contract already permits for anything without a suitable variable — and a run
+ * with many of those is saying theme extraction missed the site's type scale.
+ */
+const typeScaleLines = (component: PlannedComponent): string[] => {
+    const scale = component.typeScale ?? [];
+    if (scale.length === 0) {
+        return [];
+    }
+    const lines = scale.map(entry => {
+        const line = entry.lineHeight ? `, line height ${entry.lineHeight}px` : "";
+        const used = `${entry.elements} element${entry.elements === 1 ? "" : "s"}`;
+        const how = entry.token
+            ? `use var(${entry.token.cssVariable})`
+            : `no theme variable is near this size — use ${entry.fontSize}px directly`;
+        return `- ${entry.fontSize}px${line} (${used}) — ${how}`;
+    });
+    return [
+        "",
+        "The type sizes this section measured, largest first. Match them:",
+        ...lines,
+        "",
+        `The largest is the section's heading at ${scale[0].fontSize}px. Do not substitute a default heading size for it.`
+    ];
+};
+
 const buildPrompt = (
     component: PlannedComponent,
     slotVariables: Map<string, string[]>,
@@ -148,6 +184,7 @@ const buildPrompt = (
                       .join(", ")
               ]
             : []),
+        ...typeScaleLines(component),
         "",
         "Preserve this text content exactly:",
         ...textsToPreserve(component.sourceTexts)
