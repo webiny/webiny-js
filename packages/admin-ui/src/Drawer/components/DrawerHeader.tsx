@@ -10,7 +10,7 @@ import { useMemo } from "react";
 import { Separator } from "~/Separator/index.js";
 
 export type DrawerHeaderProps = Omit<React.HTMLAttributes<HTMLDivElement>, "title"> &
-    Pick<DrawerProps, "title" | "icon" | "description" | "showCloseButton"> & {
+    Pick<DrawerProps, "title" | "icon" | "description" | "showCloseButton" | "headerActions"> & {
         separator?: DrawerProps["headerSeparator"];
     };
 
@@ -19,13 +19,14 @@ export const DrawerHeader = ({
     icon,
     description,
     showCloseButton,
+    headerActions,
     separator,
     className,
     ...props
 }: DrawerHeaderProps) => {
     const nothingToRender = useMemo(() => {
-        return !title && !description && !icon && !showCloseButton;
-    }, [title, description, icon, showCloseButton]);
+        return !title && !description && !icon && !showCloseButton && !headerActions;
+    }, [title, description, icon, showCloseButton, headerActions]);
 
     if (nothingToRender) {
         return null;
@@ -41,21 +42,24 @@ export const DrawerHeader = ({
                 )}
             >
                 <DrawerTitle className={"flex justify-between"}>
-                    <div className={"flex gap-xs"}>
+                    <div className={"flex items-center gap-xs"}>
                         {icon}
                         {title}
                     </div>
 
-                    {showCloseButton !== false && (
-                        <DrawerPrimitive.Close asChild>
-                            <IconButton
-                                size="md"
-                                iconSize="lg"
-                                variant={"ghost"}
-                                icon={<XIcon />}
-                            />
-                        </DrawerPrimitive.Close>
-                    )}
+                    <div className={"flex items-center gap-xs"}>
+                        {headerActions}
+                        {showCloseButton !== false && (
+                            <DrawerPrimitive.Close asChild>
+                                <IconButton
+                                    size="md"
+                                    iconSize="lg"
+                                    variant={"ghost"}
+                                    icon={<XIcon />}
+                                />
+                            </DrawerPrimitive.Close>
+                        )}
+                    </div>
                 </DrawerTitle>
                 {description && <DrawerDescription>{description}</DrawerDescription>}
             </div>

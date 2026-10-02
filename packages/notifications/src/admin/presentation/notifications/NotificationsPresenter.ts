@@ -37,13 +37,24 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
             return;
         }
         this.loaded = true;
+        // Nothing pushes new notifications to the browser, so catch up when the user comes back.
+        if (typeof window !== "undefined") {
+            window.addEventListener("focus", this.onWindowFocus);
+        }
         await this.refreshCounts();
     }
 
     openPanel() {
         this.open = true;
-        void this.reload();
+        void this.refresh();
     }
+
+    private onWindowFocus = () => {
+        void this.refreshCounts();
+        if (this.open) {
+            void this.loadItems({ showLoading: false });
+        }
+    };
 
     closePanel() {
         this.open = false;
@@ -64,8 +75,18 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
     }
 
     async reload() {
+        await this.loadItems({ showLoading: true });
+    }
+
+    /**
+     * Re-fetches after mark read / archive keep the list on screen; only explicit loads
+     * (opening the panel, switching tabs or filters, refreshing) show the loading state.
+     */
+    private async loadItems({ showLoading }: { showLoading: boolean }) {
         runInAction(() => {
-            this.loading = true;
+            if (showLoading) {
+                this.loading = true;
+            }
             this.error = null;
         });
         try {
@@ -92,12 +113,12 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
 
     async markRead(id: string) {
         await this.api.markRead(id);
-        await Promise.all([this.reload(), this.refreshCounts()]);
+        await Promise.all([this.loadItems({ showLoading: false }), this.refreshCounts()]);
     }
 
     async markAllRead() {
         await this.api.markAllRead();
-        await Promise.all([this.reload(), this.refreshCounts()]);
+        await Promise.all([this.loadItems({ showLoading: false }), this.refreshCounts()]);
     }
 
     async archive(id: string) {
@@ -107,7 +128,7 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
         } else {
             await this.api.archive(id);
         }
-        await Promise.all([this.reload(), this.refreshCounts()]);
+        await Promise.all([this.loadItems({ showLoading: false }), this.refreshCounts()]);
     }
 
     private async refreshCounts() {
