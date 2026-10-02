@@ -11,7 +11,7 @@ const json = (statusCode: number, body: unknown): IHttpResponse => ({
     body: JSON.stringify(body)
 });
 
-const notFound = json(404, { message: "Image not found." });
+const notFound = json(404, { message: "Not found." });
 
 /*
  * Long enough for a browser to follow the redirect and finish the transfer on a slow connection,
@@ -50,7 +50,7 @@ export const serveRunBlob = async (params: {
     const { container, runId, ref, allowlist } = params;
 
     if (!ref) {
-        return json(400, { message: "Missing image reference." });
+        return json(400, { message: "Missing blob reference." });
     }
     if (!runId) {
         return notFound;

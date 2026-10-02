@@ -459,6 +459,25 @@ export interface ComponentProp {
 }
 
 /** An image the section showed: the absolute source the browser resolved, and its alt where it had one. */
+/**
+ * What a section or a rendered component measures, for comparing proportion.
+ *
+ * Absolute within the 1440px capture canvas, which both sides share. Both sides must be derived the
+ * same way for the comparison to mean anything: text-bearing elements only — an element with a direct
+ * non-empty text child and a non-zero box — because a wrapper has no size of its own worth comparing
+ * and counting one moves the inset to wherever the outermost div starts.
+ */
+export interface SectionGeometry {
+    /** Leftmost edge of any text, from the canvas's left edge. */
+    contentLeft: number;
+    contentRight: number;
+    /** The largest type on the section — in practice its heading. */
+    maxFontSize: number;
+    medianFontSize: number;
+    medianLineHeight: number | null;
+    textElements: number;
+}
+
 export interface ObservedMedia {
     kind: "media";
     src: string;
@@ -675,6 +694,14 @@ export interface RenderRecord {
      */
     sourceWidth: number | null;
     sourceHeight: number | null;
+    /**
+     * What the rendered component measured.
+     *
+     * The render's half of the proportion comparison, which did not exist: a screenshot shows whether
+     * a component looks right and cannot say what size its type is or where its content starts. Null
+     * when the component drew no text; absent on renders made before this was recorded.
+     */
+    geometry?: SectionGeometry | null;
     /**
      * What the page reported while rendering this component, successfully or not.
      *

@@ -51,6 +51,7 @@ import { ComponentExtractionAiService } from "~/features/shared/ai.js";
 import { ComponentExtractionCapabilityImplementation } from "~/features/shared/capability.js";
 import { ChromiumBrowserProvider } from "@webiny/site-capture/browser/ChromiumBrowserProvider.js";
 import { RunImageRouteDefinition } from "~/rest/RunImageRoute.js";
+import { RunTreeRouteDefinition } from "~/rest/RunTreeRoute.js";
 import { registerComponentExtractionGraphQL } from "~/graphql/createGraphQL.js";
 import { ImageAssetServiceImplementation } from "~/features/shared/ImageAssetService.js";
 
@@ -141,5 +142,6 @@ export const ComponentExtractionFeature = createFeature({
 
         // The auth-gated run-image delivery route (W7.2), serving derived images for the visibility screens.
         container.register(RunImageRouteDefinition);
+        container.register(RunTreeRouteDefinition);
     }
 });

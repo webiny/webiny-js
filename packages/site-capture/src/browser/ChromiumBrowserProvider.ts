@@ -299,6 +299,19 @@ class ChromiumSession implements IBrowserSession {
             await new Promise(resolve => setTimeout(resolve, 150));
         }
 
+        /*
+         * Measured before the screenshot, from the same painted page the screenshot will show, so the
+         * numbers and the picture cannot disagree. A measure that throws is not a render failure:
+         * the component is on screen either way, and losing the shot over a measurement would trade
+         * the primary evidence for the secondary.
+         */
+        const measurement = params.measure
+            ? await page
+                  .evaluate(params.measure)
+                  .then(value => value as unknown)
+                  .catch(() => undefined)
+            : undefined;
+
         const image = await page.screenshot({ type: "png", fullPage: true });
         const bytes = image instanceof Uint8Array ? image : new Uint8Array();
         const bodyPreview =
@@ -317,7 +330,8 @@ class ChromiumSession implements IBrowserSession {
             width: params.viewportWidth,
             height: documentHeight,
             pageErrors,
-            bodyPreview
+            bodyPreview,
+            measurement
         };
     }
 

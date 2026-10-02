@@ -172,6 +172,17 @@ export interface RenderPageParams {
     waitFor: string;
     /** Extra settle after `waitFor` succeeds, for fonts/images to paint. Defaults to a small value. */
     settleMs?: number;
+    /**
+     * In-page script run after `waitFor` and the settle, just before the screenshot. Its return value
+     * becomes `RenderResult.measurement`.
+     *
+     * The same seam `capture` has as `evaluate`, for the same reason: what a caller wants to know
+     * about the page it rendered is the caller's business, and the browser layer should not grow a
+     * field per question. A screenshot answers "does it look right" and nothing else — it cannot say
+     * what size the type is or where the content starts, which is what comparing a generated
+     * component against its source section needs.
+     */
+    measure?: string;
 }
 
 export interface RenderResult {
@@ -200,6 +211,8 @@ export interface RenderResult {
      * and it is the one question the existing signals cannot answer.
      */
     bodyPreview?: string;
+    /** Whatever `measure` returned, or undefined when none was supplied or it threw. */
+    measurement?: unknown;
 }
 
 export interface CaptureResult<TResult> {

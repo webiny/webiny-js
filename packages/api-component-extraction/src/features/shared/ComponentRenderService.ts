@@ -1,6 +1,7 @@
 import { createAbstraction, createImplementation, Result } from "@webiny/feature/api";
 import type { BrowserProvider } from "@webiny/site-capture";
 import { BlobStore } from "~/domain/stage.js";
+import type { SectionGeometry } from "~/domain/artifacts.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 // The screenshot is taken at the desktop capture width so the rendered image lines up with the source
@@ -86,6 +87,55 @@ const buildInject = (
         }, ${INJECT_RETRY_MS});
     })()`;
 
+/**
+ * What the rendered component measures, read from the painted page.
+ *
+ * Symmetric with what a captured section can give, because the comparison is only worth making if
+ * both sides are measured the same way. Every quantity is absolute within the 1440px canvas, which
+ * both sides share, so neither needs a notion of "the component's own box" — a section's box and a
+ * sandbox body are not the same kind of thing and trying to equate them is where this gets subtle.
+ *
+ * Text-bearing elements only: an element with a direct non-empty text child and a non-zero rect.
+ * Wrappers have no size of their own worth comparing, and counting them would move the inset to
+ * wherever the outermost div happens to start, which is usually 0 on both sides and says nothing.
+ */
+const MEASURE_GEOMETRY = `(function () {
+    var IGNORED = { STYLE: 1, SCRIPT: 1, TEMPLATE: 1, "NEXT-ROUTE-ANNOUNCER": 1, HEAD: 1 };
+    var texts = [];
+    var all = document.body ? document.body.querySelectorAll("*") : [];
+    for (var i = 0; i < all.length; i++) {
+        var el = all[i];
+        if (IGNORED[el.tagName]) { continue; }
+        var direct = "";
+        for (var n = 0; n < el.childNodes.length; n++) {
+            if (el.childNodes[n].nodeType === 3) { direct += el.childNodes[n].nodeValue; }
+        }
+        if (!direct.replace(/\\s+/g, " ").trim()) { continue; }
+        var rect = el.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) { continue; }
+        var cs = window.getComputedStyle(el);
+        texts.push({
+            left: rect.left + window.scrollX,
+            right: rect.right + window.scrollX,
+            fontSize: parseFloat(cs.fontSize) || 0,
+            lineHeight: parseFloat(cs.lineHeight) || 0
+        });
+    }
+    if (!texts.length) { return null; }
+    var sizes = texts.map(function (t) { return t.fontSize; }).sort(function (a, b) { return a - b; });
+    var lines = texts.map(function (t) { return t.lineHeight; }).filter(function (v) { return v > 0; }).sort(function (a, b) { return a - b; });
+    var left = Math.min.apply(null, texts.map(function (t) { return t.left; }));
+    var right = Math.max.apply(null, texts.map(function (t) { return t.right; }));
+    return {
+        contentLeft: Math.round(left),
+        contentRight: Math.round(right),
+        maxFontSize: sizes[sizes.length - 1],
+        medianFontSize: sizes[Math.floor(sizes.length / 2)],
+        medianLineHeight: lines.length ? lines[Math.floor(lines.length / 2)] : null,
+        textElements: texts.length
+    };
+})()`;
+
 const slug = (signature: string): string => signature.replace(/[^a-zA-Z0-9_-]/g, "-");
 
 /**
@@ -141,6 +191,8 @@ export interface RenderedComponent {
     pageErrors: string[];
     /** The sandbox's markup, present only when the render produced a zero-height document. */
     bodyPreview?: string;
+    /** What the painted component measured — see `MEASURE_GEOMETRY`. Null when it drew no text. */
+    geometry?: SectionGeometry | null;
 }
 
 /**
@@ -200,7 +252,8 @@ class ComponentRenderServiceImpl implements IComponentRenderService {
                 timeoutMs: RENDER_TIMEOUT_MS,
                 inject,
                 waitFor: RENDER_READY,
-                settleMs: RENDER_SETTLE_MS
+                settleMs: RENDER_SETTLE_MS,
+                measure: MEASURE_GEOMETRY
             });
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
@@ -238,6 +291,7 @@ class ComponentRenderServiceImpl implements IComponentRenderService {
         return Result.ok({
             pageErrors: rendered.pageErrors ?? [],
             bodyPreview: rendered.bodyPreview,
+            geometry: (rendered.measurement as SectionGeometry | null) ?? null,
             renderRef: stored.value,
             width: rendered.width,
             height: rendered.height,

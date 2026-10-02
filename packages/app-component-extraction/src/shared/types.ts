@@ -474,6 +474,15 @@ export interface RenderRecordDto {
     /** The source section crop's size, stated beside the render's rather than reduced to a score. */
     sourceWidth: number | null;
     sourceHeight: number | null;
+    /** What the rendered component measured — content inset and type sizes. */
+    geometry?: {
+        contentLeft: number;
+        contentRight: number;
+        maxFontSize: number;
+        medianFontSize: number;
+        medianLineHeight: number | null;
+        textElements: number;
+    } | null;
     /** Why this component did not render, when it did not. */
     error?: string;
     /** What the page reported while rendering — present even when the render completed. */

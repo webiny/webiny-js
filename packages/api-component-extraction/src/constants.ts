@@ -58,6 +58,7 @@ export const MAX_PAGE_CAP = 150;
 // thumbnails) from raw S3 for the visibility screens, gated on the feature permission and scoped to a
 // tenant's run. `:ref` is passed as a query parameter (`?ref=`) because blob keys contain slashes.
 export const RUN_IMAGE_ROUTE = "/_webiny/component-extraction/run/:runId/image";
+export const RUN_TREE_ROUTE = "/_webiny/component-extraction/run/:runId/tree";
 // Derived-image keys include the stage version, so a stored object never changes under the same key.
 export const IMMUTABLE_CACHE_CONTROL = "public, max-age=31536000, immutable";
 

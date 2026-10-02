@@ -231,6 +231,7 @@ class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
                         width: result.value.width,
                         height: result.value.height,
                         ok: true,
+                        geometry: result.value.geometry ?? null,
                         sourceWidth: result.value.sourceWidth,
                         sourceHeight: result.value.sourceHeight,
                         pageErrors: result.value.pageErrors.length
