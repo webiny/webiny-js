@@ -20,20 +20,6 @@ export interface IListAuditLogsResultMeta {
     hasMoreItems: boolean;
 }
 
-export interface IListAuditLogsSuccessResult {
-    items: IAuditLog[];
-    meta: IListAuditLogsResultMeta;
-    error?: never;
-}
-
-export interface IListAuditLogsErrorResult {
-    items?: never;
-    meta?: never;
-    error: Error;
-}
-
-export type IListAuditLogsResult = IListAuditLogsSuccessResult | IListAuditLogsErrorResult;
-
 export interface AuditObject {
     [app: string]: EntityObject;
 }

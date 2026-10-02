@@ -6,6 +6,7 @@ import {
     type ICreateRevisionFromParams
 } from "./abstractions.js";
 import { EntryDataPreparer } from "~/features/contentEntry/valueTransformers/EntryDataPreparer.js";
+import { CmsEntryError } from "~/features/contentEntry/CmsEntryError.js";
 
 interface CreateRevisionFromResponse {
     content: {
@@ -45,7 +46,7 @@ class CreateRevisionFromGatewayImpl implements GatewayAbstraction.Interface {
         const { data: entry, error } = response.content;
 
         if (!entry) {
-            throw new Error(error?.message || "Could not create revision");
+            throw new CmsEntryError(error, "Could not create revision");
         }
 
         return entry;
