@@ -1,17 +1,23 @@
 import { WebinyError } from "@webiny/error";
 import { PageAfterDeleteEventHandler } from "@webiny/api-website-builder/features/pages/DeletePage/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
 
 class PageAfterDeleteHandlerImpl implements PageAfterDeleteEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: PageAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { page } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.WEBSITE_BUILDER.PAGE.DELETE);
-            await createAuditLog("Website Page Delete", page, page.id, this.context);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.WEBSITE_BUILDER.PAGE.DELETE,
+                message: "Website Page Delete",
+                content: page,
+                entityId: page.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing PageAfterDeleteEventHandler",
@@ -23,5 +29,5 @@ class PageAfterDeleteHandlerImpl implements PageAfterDeleteEventHandler.Interfac
 
 export const PageAfterDeleteAuditHandler = PageAfterDeleteEventHandler.createImplementation({
     implementation: PageAfterDeleteHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [RecordAuditLogUseCase]
 });

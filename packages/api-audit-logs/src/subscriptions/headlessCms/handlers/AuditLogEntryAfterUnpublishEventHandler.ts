@@ -1,13 +1,12 @@
 import WebinyError from "@webiny/error";
 import { EntryAfterUnpublishEventHandler } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/index.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 
 class AuditLogEntryAfterUnpublishEventHandlerImpl
     implements EntryAfterUnpublishEventHandler.Interface
 {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: EntryAfterUnpublishEventHandler.Event): Promise<void> {
         const { model, entry } = event.payload;
@@ -17,9 +16,15 @@ class AuditLogEntryAfterUnpublishEventHandlerImpl
         }
 
         try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.UNPUBLISH);
-
-            await createAuditLog("Entry revision unpublished", entry, entry.id, this.context);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.HEADLESS_CMS.ENTRY_REVISION.UNPUBLISH,
+                message: "Entry revision unpublished",
+                content: entry,
+                entityId: entry.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogEntryAfterUnpublishEventHandler",
@@ -32,5 +37,5 @@ class AuditLogEntryAfterUnpublishEventHandlerImpl
 export const AuditLogEntryAfterUnpublishEventHandler =
     EntryAfterUnpublishEventHandler.createImplementation({
         implementation: AuditLogEntryAfterUnpublishEventHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [RecordAuditLogUseCase]
     });

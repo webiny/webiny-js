@@ -1,11 +1,10 @@
 import WebinyError from "@webiny/error";
 import { EntryAfterUpdateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogEntryAfterUpdateEventHandlerImpl implements EntryAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: EntryAfterUpdateEventHandler.Event): Promise<void> {
         const { model, entry, original } = event.payload;
@@ -15,14 +14,15 @@ class AuditLogEntryAfterUpdateEventHandlerImpl implements EntryAfterUpdateEventH
         }
 
         try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.UPDATE);
-
-            await createAuditLog(
-                "Entry revision updated",
-                { before: original, after: entry },
-                entry.id,
-                this.context
-            );
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.HEADLESS_CMS.ENTRY_REVISION.UPDATE,
+                message: "Entry revision updated",
+                content: { before: original, after: entry },
+                entityId: entry.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogEntryAfterUpdateEventHandler",
@@ -35,5 +35,5 @@ class AuditLogEntryAfterUpdateEventHandlerImpl implements EntryAfterUpdateEventH
 export const AuditLogEntryAfterUpdateEventHandler =
     EntryAfterUpdateEventHandler.createImplementation({
         implementation: AuditLogEntryAfterUpdateEventHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [RecordAuditLogUseCase]
     });

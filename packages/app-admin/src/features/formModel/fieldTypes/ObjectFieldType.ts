@@ -4,14 +4,24 @@ import {
     type IFieldTypeFactory,
     type IFieldBuilder,
     type IFieldBuilderRegistry,
+    type ILayoutBuilder,
+    type ILayoutNodeBuilder,
     type IObjectFieldBuilder,
     type IObjectFieldConfig,
     type ITemplateBuilder,
     type ITemplateConfig,
-    type ITemplateIcon
+    type ITemplateIcon,
+    type LayoutNode
 } from "../abstractions.js";
 import type { IFormModel } from "../abstractions.js";
 import { FieldBuilder } from "../FieldBuilder.js";
+import { LayoutBuilderFactory } from "../LayoutBuilderFactory.js";
+
+function resolveInnerLayout(
+    factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]
+): LayoutNode[] {
+    return LayoutBuilderFactory.resolveObjectInner(factory) as LayoutNode[];
+}
 
 interface TemplateBuilderInternal extends ITemplateBuilder {
     _build(id: string, registry: IFieldBuilderRegistry): ITemplateConfig;
@@ -19,15 +29,21 @@ interface TemplateBuilderInternal extends ITemplateBuilder {
 
 export function createTemplateBuilder(): TemplateBuilderInternal {
     let label = "";
+    let description: string | undefined;
     let icon: ITemplateIcon | undefined;
     let fieldsFactory:
         | ((registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>)
         | undefined;
+    let layout: LayoutNode[] | undefined;
     let visibleFn: ((form: IFormModel) => boolean) | undefined;
 
     const builder: TemplateBuilderInternal = {
         label(text: string) {
             label = text;
+            return builder;
+        },
+        description(text: string) {
+            description = text;
             return builder;
         },
         icon(i: ITemplateIcon) {
@@ -36,6 +52,10 @@ export function createTemplateBuilder(): TemplateBuilderInternal {
         },
         fields(factory) {
             fieldsFactory = factory;
+            return builder;
+        },
+        layout(factory) {
+            layout = resolveInnerLayout(factory);
             return builder;
         },
         visible(predicate) {
@@ -55,7 +75,7 @@ export function createTemplateBuilder(): TemplateBuilderInternal {
                     builder.build(fieldName);
                 }
             }
-            return { id, label, icon, childBuilders, visible: visibleFn };
+            return { id, label, description, icon, childBuilders, layout, visible: visibleFn };
         }
     };
     return builder;
@@ -67,6 +87,7 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
     private _listSchema?: z.ZodTypeAny;
     private _templates?: ITemplateConfig[];
     private _templateIds = new Set<string>();
+    private _layout?: LayoutNode[];
     private _registry: IFieldBuilderRegistry;
 
     constructor(registry: IFieldBuilderRegistry) {
@@ -120,6 +141,11 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
         return this;
     }
 
+    layout(factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]): this {
+        this._layout = resolveInnerLayout(factory);
+        return this;
+    }
+
     override build(name: string): IObjectFieldConfig {
         this._config.name = name;
 
@@ -130,12 +156,20 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
             );
         }
 
+        if (this._templates && this._layout) {
+            throw new Error(
+                `Object field "${name}" has both .layout() and .template() defined. ` +
+                    `Templated objects declare their layouts per template.`
+            );
+        }
+
         return {
             ...this._config,
             childBuilders: this._childBuilders,
             isList: this._isList,
             listSchema: this._listSchema,
-            templates: this._templates
+            templates: this._templates,
+            layout: this._layout
         };
     }
 }

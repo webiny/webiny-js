@@ -1,13 +1,14 @@
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { Result } from "@webiny/feature/api";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -18,6 +19,12 @@ import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import type { AcoContext } from "~/types";
+
+export interface SentWebsocketMessage {
+    identityId: string;
+    action: string;
+    data: unknown;
+}
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
@@ -33,6 +40,10 @@ export const useHandler = (params: UseHandlerParams = {}) => {
     const resolvedIdentity = createIdentity();
     const resolvedPermissions = permissions;
 
+    // What the code under test sent to users' open tabs. There is no socket server in tests, so the
+    // send is recorded instead of delivered.
+    const websocketMessages: SentWebsocketMessage[] = [];
+
     // Root container is created once; child containers are per-call (mirrors createHandler).
     let rootContainer: Container | null = null;
 
@@ -43,6 +54,16 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             rootContainer.registerInstance(TestPermissions, { list: resolvedPermissions });
             rootContainer.register(TestAuthenticator);
             rootContainer.register(TestAuthorizer);
+            rootContainer.registerInstance(WebsocketsSendToIdentityUseCase, {
+                execute: async (identity, data) => {
+                    websocketMessages.push({
+                        identityId: identity.id,
+                        action: data.action,
+                        data: data.data
+                    });
+                    return Result.ok();
+                }
+            });
         }
 
         const container = rootContainer.createChildContainer();
@@ -83,22 +104,12 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         const identity = await authCtx.authenticate("");
         identityCtx.setIdentity(identity);
 
-        // Build context by running all GraphQL context enhancers, then contextual schemas
-        // (replicates GraphQLEngineImpl.buildContext + CmsGraphQLRoute.handle order).
-        const enhancers = container.resolveAll(GraphQLContextEnhancer);
-        const contextualSchemas = container.resolveAll(GraphQLContextualSchema);
         const ctx: Record<string, any> = { container };
-        for (const enhancer of enhancers) {
-            await enhancer.enhance(ctx);
-        }
-        for (const schema of contextualSchemas) {
-            await schema.build(ctx);
-        }
-
         return ctx as AcoContext;
     };
 
     return {
-        handler: buildContext
+        handler: buildContext,
+        websocketMessages
     };
 };

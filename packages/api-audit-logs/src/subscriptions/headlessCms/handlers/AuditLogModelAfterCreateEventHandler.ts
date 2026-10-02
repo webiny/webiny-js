@@ -1,19 +1,24 @@
 import WebinyError from "@webiny/error";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 
 class AuditLogModelAfterCreateEventHandlerImpl implements ModelAfterCreateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: ModelAfterCreateEventHandler.Event): Promise<void> {
         const { model } = event.payload;
 
         try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL.CREATE);
-
-            await createAuditLog("Model created", model, model.modelId, this.context);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.HEADLESS_CMS.MODEL.CREATE,
+                message: "Model created",
+                content: model,
+                entityId: model.modelId
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogModelAfterCreateEventHandler",
@@ -26,5 +31,5 @@ class AuditLogModelAfterCreateEventHandlerImpl implements ModelAfterCreateEventH
 export const AuditLogModelAfterCreateEventHandler =
     ModelAfterCreateEventHandler.createImplementation({
         implementation: AuditLogModelAfterCreateEventHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [RecordAuditLogUseCase]
     });

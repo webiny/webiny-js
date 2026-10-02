@@ -245,6 +245,7 @@ export interface ITemplateIcon {
 export interface ITemplateVM {
     id: string;
     label: string;
+    description?: string;
     icon?: ITemplateIcon;
 }
 
@@ -260,7 +261,13 @@ export interface IField {
     setValueSilent(value: unknown): void;
     setDisabled(value: boolean): void;
     setVisible(value: boolean): void;
-    setForm(form: IFormModel, parentPath?: string): void;
+    /**
+     * `parentPath` is the parent's qualified name. `scopePath` returns a path that
+     * `form.field()` resolves to the parent itself; it differs from `parentPath` for
+     * list item children, where it includes the item index (`blocks.2`). `$.` rule
+     * targets and `field.parent()` resolve against it. Defaults to `parentPath`.
+     */
+    setForm(form: IFormModel, parentPath?: string, scopePath?: () => string): void;
     setAncestorRules(rules: IRule[]): void;
     setValidation(validation: IFieldValidation): void;
     resetValidation(): void;
@@ -336,20 +343,29 @@ export interface IObjectFieldConfig extends IFieldConfig {
     isList: boolean;
     listSchema?: z.ZodTypeAny;
     templates?: ITemplateConfig[];
+    /**
+     * Inner layout declared on the field itself via `.layout()`. A `layout.object()`
+     * node in the parent layout takes precedence over it.
+     */
+    layout?: LayoutNode[];
 }
 
 export interface ITemplateBuilder {
     label(text: string): this;
+    description(text: string): this;
     icon(icon: ITemplateIcon): this;
     fields(factory: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this;
+    layout(factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]): this;
     visible(predicate: (form: IFormModel) => boolean): this;
 }
 
 export interface ITemplateConfig {
     id: string;
     label: string;
+    description?: string;
     icon?: ITemplateIcon;
     childBuilders: Record<string, IFieldBuilder>;
+    layout?: LayoutNode[];
     visible?: (form: IFormModel) => boolean;
 }
 
@@ -760,6 +776,13 @@ export interface IFormModel<T = Record<string, any>> {
     setData(data: T, options?: { dirty?: boolean }): void;
     reset(): void;
     validate(): Promise<boolean>;
+    /**
+     * Assign errors from outside the form, e.g. a rejected save. Errors whose `path`
+     * resolves to a visible field become that field's validation error; the rest are
+     * form-level. The form is marked as submitted so `FormErrors` renders them. They are
+     * cleared by the next `validate()`, `setData()` or `reset()`.
+     */
+    setErrors(errors: IFormError[]): void;
     submit<T = Record<string, unknown>>(options?: { skipValidation?: boolean }): Promise<T | false>;
     evaluateRules(rules: IRule[] | undefined): { visible: boolean; disabled: boolean };
     focusField(name: string): void;
@@ -962,6 +985,12 @@ export interface IObjectFieldBuilder extends IFieldBuilder<
     list(): this;
     listSchema(schema: z.ZodTypeAny): this;
     template(id: string, configure: (t: ITemplateBuilder) => void): this;
+    /**
+     * Lay out the object's children: rows of child field names, plus separators, alerts
+     * and tabs. Applies to the single object and to every list item. Templated objects
+     * declare their layouts per template instead.
+     */
+    layout(factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]): this;
 }
 
 export interface IFieldBuilderRegistry {}

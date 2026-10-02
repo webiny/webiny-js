@@ -1,23 +1,24 @@
 import WebinyError from "@webiny/error";
 import { FileAfterUpdateEventHandler } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogFileAfterUpdateHandlerImpl implements FileAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: FileAfterUpdateEventHandler.Event): Promise<void> {
         try {
             const { file, original } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE.UPDATE);
 
-            await createAuditLog(
-                "File updated",
-                { before: original, after: file },
-                file.id,
-                this.context
-            );
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.FILE_MANAGER.FILE.UPDATE,
+                message: "File updated",
+                content: { before: original, after: file },
+                entityId: file.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogFileAfterUpdateHandler",
@@ -29,5 +30,5 @@ class AuditLogFileAfterUpdateHandlerImpl implements FileAfterUpdateEventHandler.
 
 export const AuditLogFileAfterUpdateHandler = FileAfterUpdateEventHandler.createImplementation({
     implementation: AuditLogFileAfterUpdateHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [RecordAuditLogUseCase]
 });

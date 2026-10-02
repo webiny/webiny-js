@@ -1,8 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 import { BenchmarkAbstraction } from "@webiny/api";
-import { GraphQLContextualSchema } from "@webiny/api-graphql";
-import { buildSchema } from "graphql";
 import type { Container } from "@webiny/di";
 import { createIcon } from "~tests/__helpers/icon.js";
 
@@ -11,27 +9,16 @@ describe("benchmark points", () => {
 
     const { createContentModelGroupMutation } = useGraphQLHandler({
         path: "manage",
-        topPlugins: [
-            (container: Container) => {
-                // Benchmark moved from `context.benchmark` to the DI container during the DI
-                // migration; resolve the same instance createCmsRoute flushes per request. It's
-                // registered by HeadlessCmsFeature — AFTER this plugins loop — so enable it from
-                // GraphQLContextualSchema, the per-request hook createCmsRoute runs before the
-                // resolvers. The route ignores the returned schema, hence the empty stub.
-                container.registerInstance(GraphQLContextualSchema, {
-                    async build(ctx: Record<string, any>) {
-                        const benchmark = ctx.container.resolve(BenchmarkAbstraction);
-                        benchmark.enable();
+        // The benchmark is registered by HeadlessCmsFeature, so enable it once the CMS is set up.
+        // It's the same instance createCmsRoute flushes at the end of the request.
+        afterSetup: (container: Container) => {
+            const benchmark = container.resolve(BenchmarkAbstraction);
+            benchmark.enable();
 
-                        benchmark.onOutput(async ({ benchmark }: any) => {
-                            elapsed = benchmark.elapsed;
-                        });
-
-                        return buildSchema("type Query { _empty: String }");
-                    }
-                });
-            }
-        ]
+            benchmark.onOutput(async ({ benchmark }: any) => {
+                elapsed = benchmark.elapsed;
+            });
+        }
     });
     beforeEach(async () => {
         elapsed = 0;

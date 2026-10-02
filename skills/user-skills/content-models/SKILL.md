@@ -10,6 +10,7 @@ description: >
   or work with the ModelFactory builder API. Also covers field types
   (text, longText, number, boolean, datetime, asset, file, ref, object, richText, dynamicZone),
   list (array) fields via .list() and the singular-vs-plural renderer rule,
+  the mandatory datetime subtype (dateOnly/timeOnly/withTimezone/withoutTimezone),
   validation (required, unique, email, pattern, minLength, maxLength, gte, predefinedValues),
   single-entry (singleton) models via .singleEntry(), model/field tags via .tags(),
   and field rules via .rules() for access-control and conditional visibility/editability.
@@ -324,6 +325,43 @@ The same rule applies to every field type that has both variants:
 For `ref()` fields the pluralization rule is the same but the singular/multiple renderers
 have distinct names (e.g. `refDialogSingle` → `refDialogMultiple`) — see the table.
 
+The reverse is just as wrong: a plural renderer **without** `.list()` receives a single
+value where it expects an array (e.g. `.datetime().renderer("dateTimeInputs")` on a
+non-list field crashes the form with `t.map is not a function`).
+
+### Datetime fields require a subtype
+
+Every `fields.datetime()` **MUST** chain exactly one subtype method. The subtype decides
+the value format, the GraphQL scalar, how the value is stored, and which picker the Admin
+UI shows — there is no sensible "plain datetime".
+
+| Subtype method       | Stored value example          | Use for                                          |
+| -------------------- | ----------------------------- | ------------------------------------------------ |
+| `.dateOnly()`        | `"2026-04-30"`                | Birthdays, holidays, due dates                   |
+| `.timeOnly()`        | `"19:35"`                     | Opening hours, time of day                       |
+| `.withTimezone()`    | `"2026-04-29T13:25:00+02:00"` | Events and moments tied to a location's timezone |
+| `.withoutTimezone()` | `"2026-04-30T13:25:00.000Z"`  | Timestamps stored in UTC                         |
+
+**Correct:**
+
+```typescript
+openTime: fields.datetime().timeOnly().renderer("dateTimeInput").label("Open Time");
+
+closedDates: fields.datetime().dateOnly().list().renderer("dateTimeInputs").label("Closed Dates");
+```
+
+**Wrong** — no subtype:
+
+```typescript
+openTime: fields
+  .datetime() // WRONG: pick .dateOnly(), .timeOnly(), .withTimezone() or .withoutTimezone()
+  .renderer("dateTimeInput")
+  .label("Open Time");
+```
+
+If no subtype is chained, the builder falls back to `.withTimezone()`. Treat that as a
+safety net, not a choice: always state the subtype explicitly.
+
 ## Layout Fields
 
 Layout fields are UI-only elements that do not store data. They decorate the editor
@@ -552,6 +590,7 @@ seoDescription: fields
 ```typescript
 publishDate: fields
   .datetime()
+  .dateOnly()
   .renderer("dateTimeInput")
   .label("Publish Date")
   .rules([
