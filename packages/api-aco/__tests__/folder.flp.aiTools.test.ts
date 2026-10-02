@@ -5,7 +5,11 @@ import { useHandler } from "~tests/utils/useHandler";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
 import { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
-import { FOLDER_UPDATED_WEBSOCKET_ACTION } from "~/features/ai/NotifyFolderChange/index.js";
+import {
+    FOLDER_DELETED_WEBSOCKET_ACTION,
+    FOLDER_UPDATED_WEBSOCKET_ACTION
+} from "~/features/ai/NotifyFolderChange/index.js";
+import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 
 interface AccessResult {
     folderId: string;
@@ -113,6 +117,69 @@ describe("Folder access AI tools", () => {
                     target: "admin:1234"
                 })
             ).rejects.toThrow(/nothing to revoke/);
+
+            expect(websocketMessages).toEqual([]);
+        });
+    });
+
+    describe("deleteFolder", () => {
+        it("should delete an empty folder and tell the user's tabs", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "delete-1");
+            websocketMessages.length = 0;
+
+            await expect(
+                getTool(context.container, "deleteFolder").execute({
+                    folderId: folder.id,
+                    title: folder.title
+                })
+            ).resolves.toMatchObject({ id: folder.id, title: folder.title });
+
+            const found = await context.container.resolve(GetFolderUseCase).execute(folder.id);
+            expect(found.isFail()).toBe(true);
+            expect(websocketMessages).toEqual([
+                expect.objectContaining({
+                    action: FOLDER_DELETED_WEBSOCKET_ACTION,
+                    data: { id: folder.id }
+                })
+            ]);
+        });
+
+        it("should refuse when the title does not match the folder", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "delete-2");
+            websocketMessages.length = 0;
+
+            // The title is what the user approves by, so a mismatch means they approved another folder.
+            await expect(
+                getTool(context.container, "deleteFolder").execute({
+                    folderId: folder.id,
+                    title: "Something else"
+                })
+            ).rejects.toThrow(/nothing was deleted/);
+
+            const found = await context.container.resolve(GetFolderUseCase).execute(folder.id);
+            expect(found.isOk()).toBe(true);
+            expect(websocketMessages).toEqual([]);
+        });
+
+        it("should refuse a folder that still has subfolders", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "delete-3");
+            await context.container.resolve(CreateFolderUseCase).execute({
+                title: "delete-3-child",
+                type: "type1",
+                slug: "delete-3-child",
+                parentId: folder.id
+            });
+            websocketMessages.length = 0;
+
+            await expect(
+                getTool(context.container, "deleteFolder").execute({
+                    folderId: folder.id,
+                    title: folder.title
+                })
+            ).rejects.toThrow(/Could not delete the folder/);
 
             expect(websocketMessages).toEqual([]);
         });

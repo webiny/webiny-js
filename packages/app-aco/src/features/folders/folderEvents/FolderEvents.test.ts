@@ -13,6 +13,7 @@ import type { FolderPermission } from "~/types.js";
 import { Folder } from "~/domain/folder/Folder.js";
 import { AddCreatedFolderToCache } from "./AddCreatedFolderToCache.js";
 import { RefreshUpdatedFolderInCache } from "./RefreshUpdatedFolderInCache.js";
+import { RemoveDeletedFolderFromCache } from "./RemoveDeletedFolderFromCache.js";
 import { FolderWebsocketMessages } from "./FolderWebsocketMessages.js";
 
 const folderDto = (overrides: Partial<FolderDto> = {}) =>
@@ -48,6 +49,7 @@ const setup = (folder: FolderDto) => {
     });
     container.register(AddCreatedFolderToCache);
     container.register(RefreshUpdatedFolderInCache);
+    container.register(RemoveDeletedFolderFromCache);
     container.register(FolderWebsocketMessages);
 
     const receive = (payload: { action: string; data: unknown }) =>
@@ -154,5 +156,45 @@ describe("folder events", () => {
 
             expect(child()?.permissions).toEqual([]);
         });
+    });
+
+    describe("deletes", () => {
+        it("removes a deleted folder from the cache it was in", async () => {
+            folderCacheFactory
+                .getCache("cms:article")
+                .addItems([
+                    Folder.create(folderDto({ type: "cms:article" })),
+                    Folder.create(folderDto({ id: "folder-2", type: "cms:article" }))
+                ]);
+            const { receive, fetched } = setup(folderDto());
+
+            await receive({ action: "aco.folder.deleted", data: { id: "folder-1" } });
+
+            // A deleted folder cannot be read back, so nothing is fetched.
+            expect(fetched).toEqual([]);
+            expect(
+                folderCacheFactory
+                    .getCache("cms:article")
+                    .getItems()
+                    .map(f => f.id)
+            ).toEqual(["folder-2"]);
+        });
+
+        it("ignores a folder the cache never held", async () => {
+            folderCacheFactory.getCache("FmFile").addItems([Folder.create(folderDto())]);
+            const { receive } = setup(folderDto());
+
+            await receive({ action: "aco.folder.deleted", data: { id: "unknown" } });
+
+            expect(folderCacheFactory.getCache("FmFile").count()).toBe(1);
+        });
+    });
+
+    it("ignores an action that only looks like a known key", async () => {
+        const { receive, fetched } = setup(folderDto());
+
+        await receive({ action: "toString", data: { id: "folder-1" } });
+
+        expect(fetched).toEqual([]);
     });
 });
