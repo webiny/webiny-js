@@ -208,3 +208,101 @@ would push the already-too-large half further out. The distribution says the mod
 and are dropped.
 
 No prompt change is made here. The proposal follows this measurement.
+
+---
+
+## Fixed, and measured against the real distribution
+
+The four demo themes were published first — they were drafts, so no manifest resolved and there was
+no vocabulary (`every-run-generated-against-no-theme-manifest`). Then Plan → Generate → render across
+all four sites.
+
+### Baseline, before attributing anything to the type scale
+
+With the manifest now resolving, the components generated **before** this change were checked against
+their own theme's variables: **0 of 33 reference a variable their theme does not define.** The model
+had been inventing `--wby-*` names unconstrained for every run, and every name it invented was real.
+89 distinct variables across the four sites, none of them a ramp primitive — all in the semantic
+families (`border`, `color`, `radius`, `shadow`, `space`, `text`, `type`), so the bound is tight
+rather than an artefact of `tokens.css` being a superset of the bindable slots.
+
+No pre-existing token failures, so nothing in what follows is inherited.
+
+### The type scale
+
+| ratio render / source              | before   | after       | target      |
+| ---------------------------------- | -------- | ----------- | ----------- |
+| **max font size** median           | 0.77     | **1.00**    | 0.95–1.05 ✓ |
+| max font size, smaller than source | 21 of 31 | **2 of 31** | ≤ 8 ✓       |
+| max font size, within 10%          | 6        | **28**      | —           |
+| **median font size** median        | 0.80     | **1.00**    | 0.95–1.05 ✓ |
+| median line height                 | 0.74     | **1.00**    | —           |
+
+**26 of 31 components now match their section's largest type exactly.** The absolute error across all
+31: −13, −6, −4, −1, −1, then twenty-five zeros, +1, +24.
+
+### The convergence is gone
+
+|                                        | before             | after                  |
+| -------------------------------------- | ------------------ | ---------------------- |
+| renders with max type **exactly 33px** | **13**             | **0**                  |
+| renders with max type 31–34px          | 15                 | 7                      |
+| source ≥ 40px: mean source → render    | 50px → 33px (0.66) | 51px → **49px (0.98)** |
+| source ≤ 20px: mean source → render    | 17px → 21px (1.25) | 16px → 20px (1.22)     |
+
+The 31–34px count missed its ≤4 target and the target was the wrong thing to count: all seven now
+have sources of 31–32px, so they are at 31–32px because that is what their sections measured. The
+number that meant something — thirteen components landing on the same 33px behind sources from 31px
+to 60px — is zero. Rendered sizes now run 15, 16, 16, 16, 17, 20, 31×6, 32, 39, 40, 43×5, 45×3, 52×2,
+53, 60×3, 72, which is the shape of the sources.
+
+### The theme as vocabulary
+
+- **Plan token bindings: 0 → 338.**
+- **Token binding validator: 33 of 33 checked and passed** — it had never executed on any component.
+- **Plain-value fallback: 10 of 86 measured sizes (12%).**
+
+The fallbacks are not scattered. Nine of the ten are **headings larger than the theme's largest
+typography role**:
+
+| theme            | its type scale tops out at | sizes it cannot express |
+| ---------------- | -------------------------- | ----------------------- |
+| Park city Palace | 45px                       | 60, 52, 52              |
+| 2424 Tulane      | 45px                       | 72, 60, 60, 40, 38.7    |
+| 71 Westland      | 43px                       | — none                  |
+| Freehill         | 45px                       | 52.5                    |
+
+That is the signal this measurement was added for, and it says something specific: **theme extraction
+captured a scale that stops short of the sites' display headings.** Every theme tops out at 43–45px
+while three of the four sites set headings at 52–72px. The tenth fallback is a 12px caption on 2424
+Tulane, below the smallest role.
+
+### Where it did not hold
+
+Reported rather than buried, since the regression thresholds were set in advance.
+
+**Content width within 10%: 14 of 31 → 13 of 31.** A marginal miss against the "must stay ≥ 14"
+guard. Median moved 1.01 → 1.03, "larger" 11 → 12.
+
+**Height band, too tall: 2 of 33 → 5 of 33.** This breaches the guard and **I cannot attribute it to
+this change.** The mechanism does not line up: the five are Image Gallery Section (type 31→31), Hero
+Banner (31→31), Hero Intro Section (47→43), Explore Fenway Forward Intro (20→20) and Image Panel (no
+text at all), none of which had its type grow. The three components whose type grew most — Park city
+Palace's Hero Banner (33→60), Amenities List (28→72) and Location Description (33→60) — are in band,
+in band and too short respectively. The variance control measured earlier on components with
+byte-identical prompts showed band crossings between runs, which is the more likely explanation. A
+repeat run would separate it.
+
+The coherent worry remains worth stating: matching type while deliberately not matching spacing can
+make a component taller, because correct 60px headings sit in default padding. That is the argument
+for the spacing pass, not evidence that it has happened.
+
+### Denominator
+
+**33 generated, 31 measured, ceiling 32.** The composition shifted rather than the count: 2424
+Tulane's _Floor Plan Filter_ generated this time and is measured, and Freehill's _Contact Form with
+Map View_ (38 source texts) did not generate — the same `PRESERVED_TEXT_LIMIT` boundary, which now
+looks marginal rather than deterministic since the two components have swapped places between runs.
+
+Not measured: Freehill _Site Header_ (source section has no text), Freehill _Image Panel_ (render drew
+no text), Freehill _Contact Form with Map View_ (did not generate).
