@@ -1,7 +1,7 @@
 import type { Container } from "@webiny/di";
 import type { Book } from "~tests/types";
 import { CoreGraphQLSchemaFactory } from "~/graphql/abstractions.js";
-import { GraphQLContextEnhancer } from "~/engine/GraphQLContextEnhancer.js";
+import { createAbstraction } from "@webiny/feature/api";
 import type { GraphQLSchemaBuilder } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 
 export const books: Book[] = [
@@ -12,6 +12,12 @@ export const books: Book[] = [
         name: "Book 2"
     }
 ];
+
+interface IBooksCrud {
+    getBooks(): Promise<Book[]>;
+}
+
+const BooksCrud = createAbstraction<IBooksCrud>("Tests/BooksCrud");
 
 class BooksSchema implements CoreGraphQLSchemaFactory.Interface {
     async execute(
@@ -34,11 +40,11 @@ class BooksSchema implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "Query.books",
-            dependencies: [],
-            resolver: () => {
-                return async ({ context }) => {
+            dependencies: [BooksCrud],
+            resolver: (booksCrud: IBooksCrud) => {
+                return async () => {
                     console.group("books resolver");
-                    const books = await context.getBooks();
+                    const books = await booksCrud.getBooks();
                     console.groupEnd();
                     return books;
                 };
@@ -91,16 +97,14 @@ export const BooksSchemaImpl = CoreGraphQLSchemaFactory.createImplementation({
     dependencies: []
 });
 
-// Augments the resolver context with `getBooks` (the Query.books resolver reads it).
+// Provides the books the Query.books resolver reads.
 export const booksCrudPlugin = (container: Container) => {
-    container.registerInstance(GraphQLContextEnhancer, {
-        async enhance(context: Record<string, any>) {
-            context.getBooks = async () => {
-                console.log("getBooks");
-                console.table(books);
-                console.warn("Your store is quite empty!");
-                return books;
-            };
+    container.registerInstance(BooksCrud, {
+        async getBooks() {
+            console.log("getBooks");
+            console.table(books);
+            console.warn("Your store is quite empty!");
+            return books;
         }
     });
 };
