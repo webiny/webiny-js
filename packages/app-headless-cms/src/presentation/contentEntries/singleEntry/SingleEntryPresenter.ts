@@ -11,6 +11,7 @@ import {
     type ISingleEntryPresenter,
     type ISingleEntryViewModel
 } from "./abstractions.js";
+import { toFormErrors } from "~/presentation/contentEntries/form/toFormErrors.js";
 
 class SingleEntryPresenterImpl implements ISingleEntryPresenter {
     private entry: CmsContentEntry | null = null;
@@ -82,7 +83,8 @@ class SingleEntryPresenterImpl implements ISingleEntryPresenter {
             });
 
             return true;
-        } catch {
+        } catch (error) {
+            this.form.setErrors(toFormErrors(error, this.model));
             return false;
         } finally {
             runInAction(() => {

@@ -17,6 +17,7 @@ import {
 } from "./abstractions.js";
 import { TRASH_ENTRY_DIALOG } from "~/presentation/contentEntries/list/ContentEntriesPresenter.js";
 import { CreateRevisionFromUseCase } from "~/features/contentEntry/createRevisionFrom/abstractions.js";
+import { toFormErrors } from "./toFormErrors.js";
 
 interface PublishEntryDialogData {
     revisionDescription: string;
@@ -169,7 +170,8 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             }
 
             return true;
-        } catch {
+        } catch (error) {
+            this.form.setErrors(toFormErrors(error, this.model));
             return false;
         } finally {
             runInAction(() => {

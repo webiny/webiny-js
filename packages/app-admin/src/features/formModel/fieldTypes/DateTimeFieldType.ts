@@ -29,6 +29,11 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
         return this;
     }
 
+    /** Subtype methods reset the renderer; a list field keeps the list renderer. */
+    private _defaultRenderer(): "dateTimeInput" | "dateTimeInputs" {
+        return this._config.isList ? "dateTimeInputs" : "dateTimeInput";
+    }
+
     /**
      * Calendar date only.
      * @example datetime().dateOnly()
@@ -37,7 +42,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     dateOnly(): this {
         this._subtype = "date";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = { ...this._config.rendererSettings, type: "date" };
         return this;
     }
@@ -50,7 +55,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     timeOnly(): this {
         this._subtype = "time";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = { ...this._config.rendererSettings, type: "time" };
         return this;
     }
@@ -63,7 +68,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     withTimezone(): this {
         this._subtype = "dateTimeWithTimezone";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "dateTimeWithTimezone"
@@ -79,7 +84,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     withoutTimezone(): this {
         this._subtype = "dateTimeWithoutTimezone";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "dateTimeWithoutTimezone"
@@ -95,7 +100,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     monthOnly(): this {
         this._subtype = "month";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = { ...this._config.rendererSettings, type: "month" };
         return this;
     }
@@ -110,7 +115,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     weekOnly(options?: { startsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6 }): this {
         this._subtype = "week";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "week",
@@ -129,7 +134,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     yearOnly(options?: { range?: [number, number] }): this {
         this._subtype = "year";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "year",
@@ -146,7 +151,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     dateRange(): this {
         this._subtype = "dateRange";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = { ...this._config.rendererSettings, type: "dateRange" };
         return this;
     }
@@ -159,7 +164,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     multipleDates(): this {
         this._subtype = "multipleDates";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "multipleDates"
@@ -175,7 +180,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     multipleMonths(): this {
         this._subtype = "multipleMonths";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "multipleMonths"
@@ -193,7 +198,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     multipleYears(options?: { range?: [number, number] }): this {
         this._subtype = "multipleYears";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "multipleYears",
