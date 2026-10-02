@@ -5275,5 +5275,30 @@ describe("FormModel", () => {
             expect(form.errors).toEqual([]);
             expect(form.vm.hasErrors).toBe(false);
         });
+
+        it("clears the field errors of the previous call when given an empty set", () => {
+            const form = createProductForm();
+            form.setErrors([{ path: "sku", message: "Value must be unique." }]);
+
+            form.setErrors([]);
+
+            expect(form.field("sku").vm.validation.isValid).not.toBe(false);
+            expect(form.errors).toEqual([]);
+            expect(form.isValid).toBe(true);
+            expect(form.vm.hasErrors).toBe(false);
+        });
+
+        it("keeps only the errors of the latest rejected save", () => {
+            const form = createProductForm();
+            form.setData({ variants: [{ code: "a" }] });
+            form.setErrors([{ path: "sku", message: "Value must be unique." }]);
+
+            form.setErrors([{ path: "variants.0.code", message: "Invalid code." }]);
+
+            expect(form.field("sku").vm.validation.isValid).not.toBe(false);
+            expect(form.errors).toEqual([
+                expect.objectContaining({ path: "variants.0.code", message: "Invalid code." })
+            ]);
+        });
     });
 });
