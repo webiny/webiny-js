@@ -41,7 +41,7 @@ export function composePlainReport(payload: IBugReportPayload): string {
     const sections: string[] = [];
 
     if (payload.description !== "") {
-        sections.push(payload.description);
+        sections.push(`Description: ${payload.description}`);
     }
 
     if (payload.screenshots.length > 0) {

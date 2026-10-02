@@ -7,7 +7,7 @@ describe("composePlainReport", () => {
     it("carries the description, environment and timeline", () => {
         const text = composePlainReport(buildPayload());
 
-        expect(text.startsWith("Publishing a page does nothing.")).toBe(true);
+        expect(text.startsWith("Description: Publishing a page does nothing.")).toBe(true);
         expect(text).toContain("Page: Pages");
         expect(text).toContain("-2.0s  click  Publish");
     });

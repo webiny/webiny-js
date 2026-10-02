@@ -1,6 +1,7 @@
 import { toEnvironmentRows } from "./toEnvironmentRows.js";
 import { toEventRows } from "./toEventRows.js";
 import { screenshotNote } from "./screenshotNote.js";
+import type { IEventRow } from "./toEventRows.js";
 import type { IBugReportPayload } from "../../shared/types.js";
 
 /*
@@ -16,56 +17,62 @@ function escapeHtml(value: string): string {
         .replaceAll("'", "&#39;");
 }
 
-function toParagraph(text: string): string {
+function toLines(text: string): string {
     const lines = text.split("\n").map(escapeHtml);
-    return `<p>${lines.join("<br>")}</p>`;
+    return lines.join("<br>");
+}
+
+function formatEvents(rows: IEventRow[]): string {
+    if (rows.length === 0) {
+        // A `<ul>` breaks the line by itself, so only this case needs its own `<br>`.
+        return "<br><em>Nothing was recorded.</em>";
+    }
+
+    const items: string[] = [];
+    for (const row of rows) {
+        const line = `<code>${escapeHtml(row.offset)}</code> <strong>${escapeHtml(row.label)}</strong> ${escapeHtml(row.summary)}`;
+
+        if (row.detail) {
+            items.push(`<li>${line}<br><code>${escapeHtml(row.detail)}</code></li>`);
+            continue;
+        }
+
+        items.push(`<li>${line}</li>`);
+    }
+
+    return `<ul>${items.join("")}</ul>`;
 }
 
 /*
  * The rich half of the clipboard copy, which mail clients, Slack, Notion and docs editors paste as
  * formatted text.
  *
- * The environment is label and value lines rather than a table. Slack and several chat apps drop
- * table structure on paste and run the cells together, while a line break survives everywhere.
+ * Laid out with bold labels and line breaks only, no paragraphs, headings or tables. Slack drops the
+ * spacing of `<p>` and `<h3>` on paste and runs table cells together, so each of those turned the
+ * report into one block. A `<br>` survives everywhere, and a blank line between sections is two.
  */
 export function composeHtmlReport(payload: IBugReportPayload): string {
     const sections: string[] = [];
 
     if (payload.description !== "") {
-        sections.push(toParagraph(payload.description));
+        const description = toLines(payload.description);
+        sections.push(`<strong>Description:</strong> ${description}`);
     }
 
     if (payload.screenshots.length > 0) {
         const note = screenshotNote(payload.screenshots.length);
-        sections.push(`<p><em>${escapeHtml(note)}</em></p>`);
+        sections.push(`<em>${escapeHtml(note)}</em>`);
     }
 
-    const environment: string[] = [];
+    const environment: string[] = ["<strong>Environment</strong>"];
     for (const [label, value] of toEnvironmentRows(payload.environment)) {
         environment.push(`<strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}`);
     }
-    sections.push("<h3>Environment</h3>");
-    sections.push(`<p>${environment.join("<br>")}</p>`);
-
-    sections.push("<h3>What the reporter did</h3>");
+    sections.push(environment.join("<br>"));
 
     const eventRows = toEventRows(payload.events, payload.reportedAt);
-    if (eventRows.length === 0) {
-        sections.push("<p><em>Nothing was recorded.</em></p>");
-    } else {
-        const items: string[] = [];
-        for (const row of eventRows) {
-            const line = `<code>${escapeHtml(row.offset)}</code> <strong>${escapeHtml(row.label)}</strong> ${escapeHtml(row.summary)}`;
+    const events = formatEvents(eventRows);
+    sections.push(`<strong>What the reporter did</strong>${events}`);
 
-            if (row.detail) {
-                items.push(`<li>${line}<br><code>${escapeHtml(row.detail)}</code></li>`);
-                continue;
-            }
-
-            items.push(`<li>${line}</li>`);
-        }
-        sections.push(`<ul>${items.join("")}</ul>`);
-    }
-
-    return sections.join("");
+    return sections.join("<br><br>");
 }

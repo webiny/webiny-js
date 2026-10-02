@@ -7,7 +7,9 @@ describe("composeHtmlReport", () => {
     it("carries the description, environment and timeline", () => {
         const html = composeHtmlReport(buildPayload());
 
-        expect(html.startsWith("<p>Publishing a page does nothing.</p>")).toBe(true);
+        expect(
+            html.startsWith("<strong>Description:</strong> Publishing a page does nothing.")
+        ).toBe(true);
         expect(html).toContain("<strong>Page:</strong> Pages");
         expect(html).toContain("<li><code>-2.0s</code> <strong>click</strong> Publish</li>");
     });
@@ -15,7 +17,7 @@ describe("composeHtmlReport", () => {
     it("keeps line breaks in the description", () => {
         const html = composeHtmlReport(buildPayload({ description: "it broke\nagain" }));
 
-        expect(html).toContain("<p>it broke<br>again</p>");
+        expect(html).toContain("<strong>Description:</strong> it broke<br>again");
     });
 
     it("escapes captured text so it cannot become markup", () => {
@@ -36,14 +38,33 @@ describe("composeHtmlReport", () => {
         expect(html).toContain("<br><code>a &amp; b</code>");
     });
 
-    it("lists the environment as lines, not a table", () => {
-        expect(composeHtmlReport(buildPayload())).not.toContain("<table");
+    it("uses line breaks rather than paragraphs, headings or tables, which Slack flattens", () => {
+        const html = composeHtmlReport(buildPayload());
+
+        expect(html).not.toContain("<p>");
+        expect(html).not.toContain("<h3>");
+        expect(html).not.toContain("<table");
+    });
+
+    it("leaves a blank line between sections", () => {
+        const html = composeHtmlReport(buildPayload());
+
+        expect(html).toContain("does nothing.<br><br><strong>Environment</strong><br>");
+        expect(html).toContain("<br><br><strong>What the reporter did</strong><ul>");
+    });
+
+    it("starts with the environment when nothing was typed", () => {
+        const html = composeHtmlReport(buildPayload({ description: "" }));
+
+        expect(html.startsWith("<strong>Environment</strong>")).toBe(true);
     });
 
     it("says so when nothing was recorded", () => {
         const html = composeHtmlReport(buildPayload({ events: [] }));
 
-        expect(html).toContain("<p><em>Nothing was recorded.</em></p>");
+        expect(html).toContain(
+            "<strong>What the reporter did</strong><br><em>Nothing was recorded.</em>"
+        );
         expect(html).not.toContain("<ul>");
     });
 
