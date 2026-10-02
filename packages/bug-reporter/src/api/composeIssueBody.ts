@@ -43,7 +43,12 @@ function buildEnvironmentTable(environment: IReportedEnvironment): string {
  * exactly what was recorded and not a paraphrase of it.
  */
 export function composeIssueBody(input: IComposeIssueBodyInput): string {
-    const sections: string[] = [input.draft.summary];
+    const sections: string[] = [];
+
+    // Empty when the reporter typed nothing, and a blank first section would open the issue on a gap.
+    if (input.draft.summary !== "") {
+        sections.push(input.draft.summary);
+    }
 
     if (input.draft.stepsToReproduce.length > 0) {
         sections.push("### Steps to reproduce");

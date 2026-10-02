@@ -13,7 +13,7 @@ import { readPastedImage } from "../../capture/readPastedImage.js";
 import { BugReportFeature } from "../../feature.js";
 import { OutcomeDialog } from "./OutcomeDialog.js";
 
-const PLACEHOLDER = "Hey, this isn't working...";
+const PLACEHOLDER = "Hey, this isn't working... (optional)";
 
 export const ReportBugDialog = createReactiveComponent(function ReportBugDialog() {
     const { report } = useFeature(BugReportFeature);

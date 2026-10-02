@@ -83,8 +83,8 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             error: this.error,
             outcome: this.outcome,
             composeUrl: this.composeUrl,
-            // A screenshot on its own is a report: the error text is often in the image.
-            canSubmit: this.status === null && !this.isEmpty()
+            // Nothing typed is still a report: the timeline and environment are already captured.
+            canSubmit: this.status === null
         };
     }
 
@@ -281,13 +281,6 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.capturedAt = Date.now();
         this.events = this.recorder.getEvents();
         this.environment = collectEnvironment();
-    }
-
-    private isEmpty(): boolean {
-        if (this.description.trim() !== "") {
-            return false;
-        }
-        return this.screenshots.length === 0;
     }
 
     private beginSubmission(): void {
