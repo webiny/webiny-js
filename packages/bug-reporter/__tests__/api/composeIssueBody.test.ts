@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { composeIssueBody } from "~/shared/composeIssueBody.js";
-import type { IComposeIssueBodyInput } from "~/shared/composeIssueBody.js";
+import { composeIssueBody } from "~/api/composeIssueBody.js";
+import type { IComposeIssueBodyInput } from "~/api/composeIssueBody.js";
 import type { IReportedEnvironment } from "~/shared/types.js";
 
 const ENVIRONMENT: IReportedEnvironment = {

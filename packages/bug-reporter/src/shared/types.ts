@@ -37,18 +37,6 @@ export interface IBugReportPayload {
     screenshots: IReportedScreenshot[];
 }
 
-/*
- * What a drafter hands back. Lives here rather than beside the drafter because the dialog builds
- * the same report body for "copy to clipboard", using the reporter's own words as the draft.
- */
-export interface IIssueDraft {
-    title: string;
-    summary: string;
-    stepsToReproduce: string[];
-    expected: string;
-    actual: string;
-}
-
 export interface IFiledIssue {
     number: number;
     url: string;

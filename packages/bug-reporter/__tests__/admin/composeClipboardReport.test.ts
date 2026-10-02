@@ -28,8 +28,33 @@ describe("composeClipboardReport", () => {
         const text = composeClipboardReport(buildPayload());
 
         expect(text.startsWith("Publishing a page does nothing.")).toBe(true);
-        expect(text).toContain("| Page | Pages |");
-        expect(text).toContain("- `-2.0s` **click** Publish");
+        expect(text).toContain("Page: Pages");
+        expect(text).toContain("-2.0s  click  Publish");
+    });
+
+    it("leaves out the markdown only GitHub renders", () => {
+        const text = composeClipboardReport(buildPayload());
+
+        expect(text).not.toContain("|");
+        expect(text).not.toContain("<details>");
+        expect(text).not.toContain("**");
+        expect(text).not.toContain("Reported verbatim");
+    });
+
+    it("puts an event's detail on its own line", () => {
+        const events = [
+            { at: REPORTED_AT, kind: "exception", summary: "TypeError", detail: "at render" }
+        ];
+
+        const text = composeClipboardReport(buildPayload({ events }));
+
+        expect(text).toContain("-0.0s  error  TypeError\n    at render");
+    });
+
+    it("starts with the environment when nothing was typed", () => {
+        const text = composeClipboardReport(buildPayload({ description: "" }));
+
+        expect(text.startsWith("Environment\n")).toBe(true);
     });
 
     it("keeps every recorded event, since nothing has to fit in a URL", () => {
@@ -48,11 +73,11 @@ describe("composeClipboardReport", () => {
 
         const text = composeClipboardReport(buildPayload({ screenshots }));
 
-        expect(text.startsWith("> [!IMPORTANT]")).toBe(true);
+        expect(text).toContain("1 screenshot(s) attached in the dialog.");
         expect(text).not.toContain("AAAA");
     });
 
     it("says nothing about screenshots when there are none", () => {
-        expect(composeClipboardReport(buildPayload())).not.toContain("[!IMPORTANT]");
+        expect(composeClipboardReport(buildPayload())).not.toContain("screenshot");
     });
 });
