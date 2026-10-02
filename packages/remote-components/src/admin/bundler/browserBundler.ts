@@ -253,29 +253,52 @@ export function transformManifestSource(source: string): string {
  * keywords stripped, so it can be inlined into the `createComponent` factory. Keeping all of them
  * (not just the default-exported function) keeps helpers the component relies on in scope, e.g. a
  * `function CheckIcon() {}` declared above the component.
+ *
+ * Imports are dropped: they can't appear inside a function, and remote components get all their
+ * dependencies from the runtime SDK.
  */
 export function extractComponentBody(source: string, ast: any = parseSource(source)): string {
     const statements: string[] = [];
 
     for (const node of ast.body) {
+        if (node.type === "ImportDeclaration" || node.type === "ExportAllDeclaration") {
+            continue;
+        }
+
         if (node.type === "ExportDefaultDeclaration" || node.type === "ExportNamedDeclaration") {
             if (!node.declaration) {
                 continue;
             }
-            const isManifest =
-                node.declaration.type === "VariableDeclaration" &&
-                node.declaration.declarations.some((decl: any) => decl.id.name === "manifest");
-            if (isManifest) {
-                continue;
-            }
-            statements.push(source.slice(node.declaration.start, node.declaration.end));
+            statements.push(withoutManifestDeclarator(source, node.declaration));
             continue;
         }
 
         statements.push(source.slice(node.start, node.end));
     }
 
-    return statements.join("\n\n");
+    return statements.filter(Boolean).join("\n\n");
+}
+
+/**
+ * The exported statement's source, minus a `manifest` declarator if it declares one. Other declarators of
+ * the same statement (e.g. `SIZE` in `const manifest = {...}, SIZE = 20;`) are kept.
+ */
+function withoutManifestDeclarator(source: string, node: any): string {
+    const statement = source.slice(node.start, node.end);
+    if (node.type !== "VariableDeclaration") {
+        return statement;
+    }
+
+    const declarators = node.declarations.filter((decl: any) => decl.id.name !== "manifest");
+    if (declarators.length === node.declarations.length) {
+        return statement;
+    }
+    if (declarators.length === 0) {
+        return "";
+    }
+
+    const declarations = declarators.map((decl: any) => source.slice(decl.start, decl.end));
+    return `${node.kind} ${declarations.join(", ")};`;
 }
 
 function scopeClassName(componentName: string): string {

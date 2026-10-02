@@ -47,4 +47,33 @@ describe("extractComponentBody", () => {
 
         expect(PricingPlans({ inputs: { features: ["a", "b"] } })).toBe("check-20:a,check-20:b");
     });
+
+    it("keeps other declarators of the manifest export", () => {
+        const body = extractComponentBody(`
+export const manifest = { name: "Custom/Badge", inputs: [] }, SIZE = 20;
+
+export default function Badge() {
+    return SIZE;
+}
+`);
+
+        expect(body).not.toContain("manifest");
+        expect(new Function(`${body}\nreturn Badge;`)()()).toBe(20);
+    });
+
+    it("drops import statements, which can't be inlined into a function", () => {
+        const body = extractComponentBody(`
+import React from "react";
+import { useState } from "react";
+
+export default function Badge() {
+    return "badge";
+}
+
+export const manifest = { name: "Custom/Badge", inputs: [] };
+`);
+
+        expect(body).not.toMatch(/\bimport\b/);
+        expect(new Function(`${body}\nreturn Badge;`)()()).toBe("badge");
+    });
 });
