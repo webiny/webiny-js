@@ -1,4 +1,3 @@
-import { Output } from "ai";
 import type { Ai } from "@webiny/api-core/features/ai/index.js";
 import { aiEnrichmentSchema } from "./abstractions.js";
 import type { IPreparedImageEnrichment } from "./abstractions.js";
@@ -12,9 +11,12 @@ import type { IPreparedImageEnrichment } from "./abstractions.js";
  * SDK's `Output` type can't be named in emitted declarations (TS4023), so it has to be built inside a
  * function body, not held on an exported interface.
  */
-export function buildEnrichmentAiRequest(
+export async function buildEnrichmentAiRequest(
     prepared: IPreparedImageEnrichment
-): Ai.GenerateTextParams {
+): Promise<Ai.GenerateTextParams> {
+    // Loaded on first use, so the AI SDK isn't part of every cold start.
+    const { Output } = await import("ai");
+
     return {
         model: prepared.model,
         output: Output.object({ schema: aiEnrichmentSchema }),

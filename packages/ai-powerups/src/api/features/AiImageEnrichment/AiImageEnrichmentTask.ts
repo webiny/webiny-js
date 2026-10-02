@@ -64,7 +64,7 @@ class AiImageEnrichmentTaskHandlerImpl implements TaskHandler.Interface<IAiImage
         let tags: string[];
         let description: string;
         try {
-            const request = buildEnrichmentAiRequest(prepared);
+            const request = await buildEnrichmentAiRequest(prepared);
             const aiResult = await this.ai.generateText(request);
 
             tags = aiResult.output.tags;
