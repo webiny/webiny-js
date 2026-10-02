@@ -17,12 +17,7 @@ import {
 } from "./constants.js";
 import { installBuildSteps, runBuildCacheDownloadSteps, yarnCacheSteps } from "./sharedSteps.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
-import {
-    AI_E2E_JOB_IF,
-    AI_E2E_LICENSE_ENV,
-    AI_E2E_VARIANT_LABEL,
-    createAiE2eSteps
-} from "./aiE2e.js";
+import { AI_E2E_JOB_IF, AI_E2E_LICENSE_ENV, aiE2eCommentRow, createAiE2eSteps } from "./aiE2e.js";
 
 // The storage backends the standalone hosting type supports. Mirrors `StorageOps` in
 // create-webiny-project's standalone project setup.
@@ -37,6 +32,14 @@ const STORAGE_DISPLAY_NAME: Record<StandaloneStorageOps, string> = {
 // job seds on exactly this string, so deriving both from one place keeps them from drifting.
 export const standaloneVariantLabel = (storageOps: StandaloneStorageOps) =>
     `Standalone (${STORAGE_DISPLAY_NAME[storageOps]})`;
+
+// The same for a WCP variant: a project connected to WCP, which these jobs always are, with the
+// full license.
+export const wcpVariantLabel = (storageOps: StandaloneStorageOps) =>
+    `Standalone (${STORAGE_DISPLAY_NAME[storageOps]}, WCP)`;
+
+export const wcpVariantCommentRow = (storageOps: StandaloneStorageOps) =>
+    aiE2eCommentRow(wcpVariantLabel(storageOps));
 
 // A standalone project runs on the runner, so there is no Admin URL anyone outside the job could
 // open - hence "-" in that column, unlike the AWS rows.
@@ -89,7 +92,7 @@ export const createStandaloneProjectParts = (
     const licenseEnv = aiE2e ? AI_E2E_LICENSE_ENV : {};
     // Artifact names must be unique within a run, and the AI job shares a storage backend with a
     // regular variant.
-    const artifactSuffix = aiE2e ? `${storageOps}-ai` : storageOps;
+    const artifactSuffix = aiE2e ? `${storageOps}-wcp` : storageOps;
 
     // Postgres runs as a service container; SQLite needs nothing (the template writes a file).
     const services: NormalJob["services"] = isPostgres
@@ -313,21 +316,22 @@ export const createStandaloneJobs = (storageOps: StandaloneStorageOps) => {
 };
 
 /**
- * A licensed SQLite project running the Cypress smoke test plus the AI tests in `e2e/`. A job of
- * its own rather than a license on the regular SQLite job, so `/e2e` still covers an unlicensed
- * project for everyone, the AI users included. Its status comment row (AI_E2E_COMMENT_ROW) only
- * appears on the runs it takes part in.
+ * A licensed project running the Cypress smoke test plus the AI tests in `e2e/`. A job of its own
+ * rather than a license on the regular job, so `/e2e` still covers an unlicensed project for
+ * everyone, the AI users included. Its status comment row (wcpVariantCommentRow) only appears on
+ * the runs it takes part in.
  */
-export const createAiE2eStandaloneJobs = () => {
-    const parts = createStandaloneProjectParts("sqlite", {
+export const createWcpStandaloneJobs = (storageOps: StandaloneStorageOps) => {
+    const label = wcpVariantLabel(storageOps);
+    const parts = createStandaloneProjectParts(storageOps, {
         workingDirectory: DIR_WEBINY_JS,
-        statusLabel: AI_E2E_VARIANT_LABEL,
+        statusLabel: label,
         aiE2e: true
     });
 
     return {
-        "e2e-standalone-sqlite-ai": {
-            ...createPrStandaloneJob(`E2E - ${AI_E2E_VARIANT_LABEL}`, parts),
+        [`e2e-standalone-${storageOps}-wcp`]: {
+            ...createPrStandaloneJob(`E2E - ${label}`, parts),
             if: AI_E2E_JOB_IF
         }
     };
