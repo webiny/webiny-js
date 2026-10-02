@@ -185,3 +185,82 @@ one stage, dropped before the stage that needs it. Images, type sizes, link valu
 generally — and now colour resolution and layout. In the colour case the pipeline goes further than
 before: it does the work of resolving the section's colours to theme tokens, and then throws the
 answer away.
+
+---
+
+## Where the bindings actually point
+
+Looking at what Plan proposes, with Park city Palace as the example: **73 token bindings, of which 15
+name a background or surface at all.**
+
+```
+Site Navigation Header   header.background      -> color.surface.raised
+                         navLinks.color         -> color.text.primary
+Hero Banner              eyebrowText            -> color.text.secondary
+                         cta                    -> color.action.primary.background
+                         (no background binding)
+Property Description     heading                -> type.heading.2
+                         body                   -> color.text.primary
+                         (no background binding)
+```
+
+They are semantically plausible and chosen without sight of the section. The section's **background**
+— the most visually dominant colour it has, and the one this divergence is measured on — is usually
+not bound at all, so Generate picks a surface token from the allowed list on its own.
+
+And more bindings do not rescue it:
+
+| token bindings on the contract | components | background diverges |
+| ------------------------------ | ---------: | ------------------: |
+| 1–5                            |          5 |             3 (60%) |
+| 6–10                           |         15 |             6 (40%) |
+| 11+                            |         14 |             5 (36%) |
+
+Divergence falls only from 60% to 36% as bindings go from a handful to a dozen. Having bindings is not
+the problem; having the right ones is, and having none for the background is most of it.
+
+## The hypothesis that was wrong
+
+The brief expected background images to be most hero sections and therefore the largest of the three
+concerns. **Measured, it is 4 of 34 sections and 0 of 7 heroes, and it is the smallest.** The heroes
+use `<img>` elements, not CSS backgrounds, so they were already covered by the image derivation. Said
+plainly because the expectation was reasonable and the measurement contradicted it.
+
+## Order by value
+
+They do not correlate, so they can be taken in any order, and this is the order worth taking:
+
+1. **Colour.** The largest, and the fix persists something the pipeline already computes rather than
+   capturing anything new.
+2. **Placement.** Captured and read by nothing. The six column collapses are the signal; the raw 13 is
+   not, because the measure counts any full-height gap.
+3. **Background images.** The smallest. The URL alone covers every observed case, since all four are
+   `cover / 50% 50% / no-repeat`.
+
+## Method caveats
+
+Both are kept because each would have produced a confident wrong number.
+
+**The live-site probe matched sections by exact box first, and located 21 of 34.** Nearly all of 2424
+Tulane failed. The pages were captured days earlier and the live DOM has drifted, so a 4px tolerance
+was measuring layout drift while appearing to measure section backgrounds — and would have reported
+"2 of 34 sections have a background image" with a third of the sample silently missing. Matching by
+best overlap instead, with the capture's own overlay clearance mirrored, located 33 of 34. The one
+that still fails is 2424 Tulane's _Site Header Navigation_ at 27% overlap, reported rather than
+counted.
+
+**The column measure counts any full-height gap**, so a navigation bar's inter-item gaps register as
+columns. `5->7` and `2->4` are its noise floor, not findings. The signal is the six collapses to a
+single column, where a multi-column section became a stack. The raw 13 must not be read as 13 real
+divergences.
+
+## The pattern, at its starkest
+
+Colour is the fifth instance of measured-then-dropped in this project, and the most pointed. The
+others lost a value that was captured. This one loses a value that was captured **and then computed
+with**: `collectColors` resolves the section's colours against the theme to produce exactly the
+mapping Plan needs, uses it to build a clustering signature, and discards it.
+
+So the model that picks the tokens cannot see the colours, and the model that can see them receives
+those picks as instructions. 37% wrong token against 1 invented is what obeying the wrong instruction
+looks like.
