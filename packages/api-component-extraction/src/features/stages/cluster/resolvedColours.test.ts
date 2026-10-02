@@ -118,3 +118,33 @@ describe("themeColourRoles", () => {
         expect(themeColourRoles(mixed).map(r => r.path)).toEqual(["color.surface.inverse"]);
     });
 });
+
+describe("role-aware token matching", () => {
+    const SHARED_WHITE = theme([
+        ["color.surface.page", "--wby-color-surface-page", "#ffffff"],
+        ["color.text.on-inverse", "--wby-color-text-on-inverse", "#ffffff"]
+    ]);
+
+    it("prefers a token whose family matches the role", () => {
+        // Both slots are #ffffff; white TEXT must not resolve to a surface token just because it came
+        // first in the palette.
+        const section = node({ color: "rgb(255, 255, 255)" }, { text: "Hello" });
+        expect(resolveSectionColours(section, SHARED_WHITE)[0].token?.path).toBe(
+            "color.text.on-inverse"
+        );
+
+        const surface = node({ backgroundColor: "rgb(255, 255, 255)" });
+        expect(resolveSectionColours(surface, SHARED_WHITE)[0].token?.path).toBe(
+            "color.surface.page"
+        );
+    });
+
+    it("falls back to another family rather than to a hardcoded hex", () => {
+        // A token of the wrong family at the right colour still survives a theme change; a hex does not.
+        const onlySurface = theme([["color.surface.page", "--wby-color-surface-page", "#ffffff"]]);
+        const section = node({ color: "rgb(255, 255, 255)" }, { text: "Hello" });
+        expect(resolveSectionColours(section, onlySurface)[0].token?.path).toBe(
+            "color.surface.page"
+        );
+    });
+});

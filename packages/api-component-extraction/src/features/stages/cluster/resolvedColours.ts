@@ -77,18 +77,59 @@ export const themeColourRoles = (manifest: ThemeManifest): ThemeColour[] => {
     return roles;
 };
 
-const nearest = (hex: string, roles: ThemeColour[]): ThemeColour | null => {
-    const target = toRgb(hex);
+/**
+ * Which token families can express which role.
+ *
+ * Nearest-by-colour alone is not enough: a theme uses one `#ffffff` for several slots, so the first
+ * match wins and white TEXT resolved to `color.surface.page`. The colour would render correctly and
+ * the instruction would be nonsense in the theme's own vocabulary — and it would break the moment
+ * `surface.page` changes for a surface reason.
+ */
+const FAMILY = {
+    text: /(^|\.)text(\.|$)|foreground/i,
+    background: /surface|background/i,
+    border: /(^|\.)border(\.|$)/i
+} as const;
+
+const closest = (target: [number, number, number], candidates: ThemeColour[]) => {
     let best: ThemeColour | null = null;
     let bestDistance = Infinity;
-    for (const role of roles) {
-        const d = distance(target, toRgb(role.hex));
+    for (const candidate of candidates) {
+        const d = distance(target, toRgb(candidate.hex));
         if (d < bestDistance) {
             bestDistance = d;
-            best = role;
+            best = candidate;
         }
     }
-    return best && bestDistance <= NEAR_COLOUR ? best : null;
+    return { best, bestDistance };
+};
+
+/**
+ * The token that expresses this colour, preferring one whose family matches the role.
+ *
+ * A same-family token at the same colour is the right answer. Failing that, a token of another family
+ * at the right colour is still better than a hardcoded hex — it survives a theme change, which a hex
+ * does not — so it is used rather than discarded, and only a colour the theme cannot express at all
+ * comes back null.
+ */
+const nearest = (
+    hex: string,
+    role: ResolvedColour["role"],
+    roles: ThemeColour[]
+): ThemeColour | null => {
+    const target = toRgb(hex);
+    const family = FAMILY[role];
+
+    const preferred = closest(
+        target,
+        roles.filter(candidate => family.test(candidate.path))
+    );
+    if (preferred.best && preferred.bestDistance <= NEAR_COLOUR) {
+        return preferred.best;
+    }
+
+    const any = closest(target, roles);
+    return any.best && any.bestDistance <= NEAR_COLOUR ? any.best : null;
 };
 
 /** Bounded so a gradient-heavy section cannot inflate every member of a cluster. */
@@ -161,7 +202,7 @@ export const resolveSectionColours = (
         .sort((a, b) => b.area - a.area)
         .slice(0, MAX_COLOURS)
         .map(entry => {
-            const token = nearest(entry.hex, roles);
+            const token = nearest(entry.hex, entry.role, roles);
             return {
                 role: entry.role,
                 hex: entry.hex,
