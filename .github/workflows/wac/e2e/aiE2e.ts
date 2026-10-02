@@ -10,16 +10,14 @@ const IS_AI_E2E_RUN = `contains(fromJSON('${JSON.stringify(AI_E2E_USERS)}'), git
 
 export const AI_E2E_JOB_IF = `\${{ ${IS_AI_E2E_RUN} }}`;
 
-// "WCP" for a project connected to WCP, which this job always is, with the full license.
-export const AI_E2E_VARIANT_LABEL = "Standalone (SQLite, WCP)";
-
 /**
- * The job's row in the `/e2e` status comment, present only on runs the job actually takes part in.
- * The comment body is an action input, so GitHub evaluates this before posting. It must be the
- * table's LAST row: for everyone else it renders as an empty line, which ends the table, so any row
- * after it would fall out.
+ * A WCP job's row in the `/e2e` status comment, present only on runs the job actually takes part
+ * in. The comment body is an action input, so GitHub evaluates this before posting. These rows must
+ * be the table's LAST rows: for everyone else each renders as an empty line, which ends the table,
+ * so any regular row after them would fall out.
  */
-export const AI_E2E_COMMENT_ROW = `\${{ ${IS_AI_E2E_RUN} && '| ${AI_E2E_VARIANT_LABEL} | 🔄 Running... | - |' || '' }}`;
+export const aiE2eCommentRow = (label: string) =>
+    `\${{ ${IS_AI_E2E_RUN} && '| ${label} | 🔄 Running... | - |' || '' }}`;
 
 /**
  * The AI tests need AI Power-Ups, which is license-gated: without a WCP license the settings screen
