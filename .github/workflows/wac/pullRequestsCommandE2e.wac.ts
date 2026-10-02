@@ -3,6 +3,7 @@ import { createCheckoutPrSteps } from "./steps/index.js";
 import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
 import type { StandaloneStorageOps } from "./e2e/index.js";
 import {
+    createAiE2eStandaloneJobs,
     createAwsJobs,
     createStandaloneJobs,
     standaloneVariantCommentRow,
@@ -97,6 +98,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         ...SERVER_VARIANTS.reduce(
             (jobs, storageOps) => ({ ...jobs, ...createStandaloneJobs(storageOps) }),
             {}
-        )
+        ),
+        ...createAiE2eStandaloneJobs()
     }
 });
