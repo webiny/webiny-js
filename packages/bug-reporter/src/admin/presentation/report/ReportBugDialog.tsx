@@ -3,11 +3,8 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app/shared/di/useFeature.js";
 import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
-import { cn } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
-import { Icon } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
-import { linkVariants } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { Textarea } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
@@ -59,23 +56,14 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
             description={"Say what went wrong, paste a screenshot. The rest is already captured."}
             loading={vm.busy}
             info={
-                /*
-                 * A button dressed as a link: it acts on the page rather than going anywhere, so
-                 * the `Link` component, which needs a `to`, is the wrong element for it.
-                 */
-                <button
-                    type={"button"}
+                <Button
+                    variant={"link"}
+                    size={"sm"}
+                    icon={<CopyIcon />}
+                    text={"Copy to clipboard"}
                     disabled={!vm.canSubmit}
-                    className={cn(
-                        linkVariants({ size: "sm" }),
-                        "flex items-center gap-xs fill-current",
-                        "disabled:text-neutral-disabled disabled:no-underline"
-                    )}
                     onClick={() => void report.copy()}
-                >
-                    <Icon size={"xs"} label={""} icon={<CopyIcon />} />
-                    {"Copy to clipboard"}
-                </button>
+                />
             }
             actions={
                 <>

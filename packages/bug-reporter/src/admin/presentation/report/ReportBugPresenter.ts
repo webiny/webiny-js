@@ -6,7 +6,7 @@ import { BuildParams } from "@webiny/app-admin/features/buildParams/abstractions
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { readTargetRepository } from "../../capture/readTargetRepository.js";
 import { REPOSITORY_PARAM } from "../../../shared/repository.js";
-import { composeClipboardReport } from "../../clipboard/composeClipboardReport.js";
+import { writeReportToClipboard } from "../../clipboard/writeReportToClipboard.js";
 import { ReportBugPresenter as Abstraction } from "./abstractions.js";
 import type { IBugReportPayload } from "../../../shared/types.js";
 import type { IReportedEnvironment } from "../../../shared/types.js";
@@ -120,10 +120,8 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             return;
         }
 
-        const text = composeClipboardReport(payload);
-
         try {
-            await navigator.clipboard.writeText(text);
+            await writeReportToClipboard(payload);
             this.notifications.success({ title: "Bug report copied to clipboard" });
         } catch (error) {
             this.notifications.warning({

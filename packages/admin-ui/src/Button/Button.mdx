@@ -95,6 +95,19 @@ import { Button } from "@webiny/admin-ui";
 ` } }
 />
 
+### Link
+
+For an action that should read as a link, without navigating anywhere. Use the `Link` component when it does navigate.
+
+<Canvas of={ButtonStories.Link}
+        source={ { code:
+                `// Code for a Link button
+        \n import { Button } from '@webiny/admin-ui';
+        \n <Button variant="link" text={"Button"}></Button>
+
+` } }
+/>
+
 ### With Icon
 
 <Canvas of={ButtonStories.WithIcon} story={ {inline: false}}

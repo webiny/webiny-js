@@ -1,31 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { composeClipboardReport } from "~/admin/clipboard/composeClipboardReport.js";
-import type { IBugReportPayload } from "~/shared/types.js";
+import { composePlainReport } from "~/admin/clipboard/composePlainReport.js";
+import { buildPayload } from "./buildPayload.js";
+import { REPORTED_AT } from "./buildPayload.js";
 
-const REPORTED_AT = 1_000_000;
-
-function buildPayload(overrides: Partial<IBugReportPayload> = {}): IBugReportPayload {
-    return {
-        description: "Publishing a page does nothing.",
-        reportedAt: REPORTED_AT,
-        events: [{ at: REPORTED_AT - 2000, kind: "click", summary: "Publish" }],
-        environment: {
-            url: "https://admin.example.com/pages",
-            page: "Pages",
-            userAgent: "Mozilla/5.0",
-            viewport: "1440x900",
-            language: "en-US",
-            timezone: "Europe/Zagreb",
-            capturedAt: "2026-09-18T10:00:00.000Z"
-        },
-        screenshots: [],
-        ...overrides
-    };
-}
-
-describe("composeClipboardReport", () => {
+describe("composePlainReport", () => {
     it("carries the description, environment and timeline", () => {
-        const text = composeClipboardReport(buildPayload());
+        const text = composePlainReport(buildPayload());
 
         expect(text.startsWith("Publishing a page does nothing.")).toBe(true);
         expect(text).toContain("Page: Pages");
@@ -33,7 +13,7 @@ describe("composeClipboardReport", () => {
     });
 
     it("leaves out the markdown only GitHub renders", () => {
-        const text = composeClipboardReport(buildPayload());
+        const text = composePlainReport(buildPayload());
 
         expect(text).not.toContain("|");
         expect(text).not.toContain("<details>");
@@ -46,13 +26,24 @@ describe("composeClipboardReport", () => {
             { at: REPORTED_AT, kind: "exception", summary: "TypeError", detail: "at render" }
         ];
 
-        const text = composeClipboardReport(buildPayload({ events }));
+        const text = composePlainReport(buildPayload({ events }));
 
         expect(text).toContain("-0.0s  error  TypeError\n    at render");
     });
 
+    it("pads offsets so the labels line up", () => {
+        const events = [
+            { at: REPORTED_AT - 14_300, kind: "route", summary: "Opened /" },
+            { at: REPORTED_AT - 6_600, kind: "click", summary: "Submit" }
+        ];
+
+        const text = composePlainReport(buildPayload({ events }));
+
+        expect(text).toContain("-14.3s  nav    Opened /\n -6.6s  click  Submit");
+    });
+
     it("starts with the environment when nothing was typed", () => {
-        const text = composeClipboardReport(buildPayload({ description: "" }));
+        const text = composePlainReport(buildPayload({ description: "" }));
 
         expect(text.startsWith("Environment\n")).toBe(true);
     });
@@ -62,7 +53,7 @@ describe("composeClipboardReport", () => {
             return { at: REPORTED_AT - index, kind: "click", summary: `button ${index}` };
         });
 
-        const text = composeClipboardReport(buildPayload({ events }));
+        const text = composePlainReport(buildPayload({ events }));
 
         expect(text).toContain("button 0");
         expect(text).toContain("button 99");
@@ -71,13 +62,13 @@ describe("composeClipboardReport", () => {
     it("asks for the screenshots to be pasted when some were attached", () => {
         const screenshots = [{ mediaType: "image/png", base64: "AAAA" }];
 
-        const text = composeClipboardReport(buildPayload({ screenshots }));
+        const text = composePlainReport(buildPayload({ screenshots }));
 
         expect(text).toContain("1 screenshot(s) attached in the dialog.");
         expect(text).not.toContain("AAAA");
     });
 
     it("says nothing about screenshots when there are none", () => {
-        expect(composeClipboardReport(buildPayload())).not.toContain("screenshot");
+        expect(composePlainReport(buildPayload())).not.toContain("screenshot");
     });
 });
