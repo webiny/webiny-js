@@ -136,3 +136,65 @@ infrastructure the customer is leaving.
 Migration is filed separately, and its own sequencing note already says binding comes first:
 migrating assets perfectly while images bind in a shape that does not render would change nothing a
 visitor sees.
+
+---
+
+## Fixed
+
+One traversal of each member's section now fills the non-text props: a list prop takes one repeated
+subtree per item, a scalar prop takes the next value of its kind in document order, and values are
+merged and deduped across members. `observedValues` stays `string[]` and whatever a bound value
+carries as text joins it, so the prompt, the text-preservation validator and the coverage check all
+see these values without learning a new type. Generate is given the values and told to use them as
+the manifest defaults.
+
+Re-ran Plan → Generate → render on all four sites.
+
+|                                                | before       | after        |
+| ---------------------------------------------- | ------------ | ------------ |
+| image props carrying a value                   | **0 of 36**  | **21 of 36** |
+| empty list/non-scalar props                    | 92           | 41           |
+| **components shipping invented Unsplash URLs** | **12 of 34** | **0 of 34**  |
+| invented URLs in generated source              | 27           | **0**        |
+
+Freehill's hero now renders the property's own building — a different slide of the site's own
+carousel, because the binder observed all four — where before it rendered a stock villa.
+
+What was derived: 204 list items carrying 214 text fields, 47 link fields and 29 media fields, plus
+21 scalar link values and 30 scalar media values.
+
+### Reclaim of the union-text cost, split
+
+Of the 312 texts the union-text narrowing removed from the prompt, 162 are now held by a prop, up
+from 79 — **83 reclaimed**, leaving 150 not held (from 233).
+
+| what holds it                       | count |
+| ----------------------------------- | ----- |
+| list items                          | 105   |
+| image alt                           | 7     |
+| link values                         | 2     |
+| not attributable to a derived value | 48    |
+
+**Links against list items is not the clean split it looked like.** `Link[]` is the commonest prop
+type bound as a list (12 of the list-bound props), so a list of links is counted under list items —
+the 47 link fields inside those items are link work appearing in the other column. The 48
+unattributable are the honest residue: Plan is model-backed, and a re-plan can cover a text by
+proposing a different prop, which is not this change's doing.
+
+Per site, removed → still not held: Park city Palace 63 → 38, 2424 Tulane 129 → 61, 71 Westland
+108 → 49, Freehill 12 → 2.
+
+### Two faults found on the way, both of which reported success
+
+**The first version bound nothing at all.** It read the segment artifact from `context.upstream`,
+which holds only the IMMEDIATELY previous stage's artifacts — for Plan that is Classify's, so
+`upstream.sections` was always undefined. The handler was written to carry on without the sections so
+a missing artifact would not fail a stage that can still produce a contract; that is the right
+behaviour and it was set to the wrong volume, so a complete no-op passed as a success. Measured 0 of
+11 image props bound on the first site before anyone looked. Both the missing artifact and an
+unresolvable section node are now logged as errors.
+
+**The second version bound only the reference section**, and reclaimed 28 of the 233 — close to its
+ceiling, because those 233 are by definition the texts that are NOT in the representative. Another
+page's navigation labels are not in this page's navigation. `observedValues` has always meant "values
+observed across the cluster's members", and the binding now matches the field's own definition.
