@@ -268,3 +268,11 @@ Team member lookup needs a `teams_in` filter on users storage in api-core, or in
 - Routed: assigned by a rule or a strategy.
 
 "Manual" is not used for assignment.
+
+## D50. Code checks for D24, D26, D48
+
+Verified against code (2026-10-02).
+
+- D24 (WB new revision): possible. `CreatePageRevisionFromUseCase` has no status check (`api-website-builder/src/features/pages/CreatePageRevisionFrom/CreatePageRevisionFromUseCase.ts:24-43`). The UI offers "New revision from current" for every revision in the revisions list (`app-website-builder/.../PageEditor/Revisions/RevisionListItem.tsx:119-125`), but the editor top-bar `NewRevisionButton` shows only in read-only (non-draft) mode (`DefaultPageEditorConfig.tsx:30-34`). The new revision copies `system` unchanged (`api-headless-cms/.../entryDataFactories/system.ts:11-18`), so `system.workflow` carries over; nothing resets it. Work: a revision-create handler clears `system.workflow` (CMS and WB); the WB workflow bar on a rejected draft offers "create new revision" and navigates to it.
+- D26 (task identity): background tasks store the triggering user as task `createdBy` and restore it via `IdentityContext.setIdentity` before running (`background-tasks/src/api/runner/TaskControl.ts:75-85`); `definition.run` runs inside `withoutAuthorization` (`TaskManager.ts:117-125`). Same for AWS and standalone. D26 holds without extra work. For D30: when a step is reached by an AI or automation approval inside a task, the next task would inherit the previous task's identity; the framework must explicitly trigger it as the requester.
+- D48 (team filter): users are a custom DDB entity (`api-core-ddb/src/adminUsers/index.ts:109-131`) or a SQL table with a JSON blob (`api-core-sql/src/adminUsers/index.ts:92-112`); no CMS model, no OpenSearch index. Both backends load all tenant users and filter in memory, so a `teams_in` filter is a small addition to `ListUsersInput` and both `listUsers` implementations. Full tenant scan, acceptable for typical user counts.

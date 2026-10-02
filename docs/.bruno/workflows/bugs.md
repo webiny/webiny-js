@@ -15,3 +15,9 @@ Bugs found during discovery that get fixed separately, before or alongside the r
 - API: `registerApiRequestStack.ts:127` and `CmsWorkflowsFeature.ts:20`. Effects: notification types listed twice, workflow models listed twice in `ModelsProvider`, SDL composed twice.
 - Admin: `WorkflowsAdminApp` and `app-headless-cms-workflows/src/presentation/feature.ts:12-13` both register `WorkflowsFeature` and `WorkflowStatePresenterFeature`.
 - Fix first, per D18.
+
+## B3. DDB listUsers ignores id_in
+
+- `packages/api-core-ddb/src/adminUsers/index.ts:109-131` queries all tenant users and never applies `where.id_in`, so it returns every user. SQL applies it in memory (`api-core-sql/src/adminUsers/index.ts:92-112`).
+- Callers mostly re-find by id (`loaders.ts:45`), which hides the bug.
+- Fix: apply `id_in` in the DDB implementation, together with the new `teams_in` filter (D48, D50).
