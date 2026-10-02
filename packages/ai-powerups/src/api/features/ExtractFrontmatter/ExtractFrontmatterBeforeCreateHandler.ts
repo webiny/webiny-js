@@ -1,4 +1,3 @@
-import frontmatter from "front-matter";
 import { FileBeforeCreateEventHandler } from "@webiny/api-file-manager/features/file/CreateFile/events.js";
 import { GetFileContentsByKeyUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsByKey/index.js";
 
@@ -30,6 +29,8 @@ class ExtractFrontmatterBeforeCreateHandlerImpl implements FileBeforeCreateEvent
         const content = result.value.buffer.toString("utf-8");
 
         try {
+            // Loaded on first use, so front-matter and js-yaml aren't part of every cold start.
+            const { default: frontmatter } = await import("front-matter");
             const parsed = frontmatter<Frontmatter>(content);
             // Description takes precedence over title.
             if (parsed.attributes.description) {

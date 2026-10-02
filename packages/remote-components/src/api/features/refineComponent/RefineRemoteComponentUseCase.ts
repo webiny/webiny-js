@@ -81,7 +81,7 @@ class RefineRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
                 return Result.fail(new Error("AI returned an empty response."));
             }
 
-            const parsed = parseGeneratedSource(text);
+            const parsed = await parseGeneratedSource(text);
             return Result.ok({ source: parsed.source, css: parsed.css });
         } catch (error) {
             return Result.fail(error as Error);

@@ -1,5 +1,3 @@
-import frontmatter from "front-matter";
-
 export interface ParsedGeneratedSource {
     source: string;
     css: string;
@@ -16,7 +14,9 @@ interface FrontmatterAttributes {
     aiContext?: string;
 }
 
-export function parseGeneratedSource(text: string): ParsedGeneratedSource {
+export async function parseGeneratedSource(text: string): Promise<ParsedGeneratedSource> {
+    // Loaded on first use, so front-matter and js-yaml aren't part of every cold start.
+    const { default: frontmatter } = await import("front-matter");
     const fm = frontmatter<FrontmatterAttributes>(text);
 
     const body = fm.body;
