@@ -20,6 +20,7 @@ import { GetFileByUrlUseCase } from "~/features/file/GetFileByUrl/abstractions.j
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { FileUrlGenerator } from "~/features/file/FileUrlGenerator/abstractions.js";
+import { initFileUrlGenerator } from "~/features/file/FileUrlGenerator/initFileUrlGenerator.js";
 import { FileModelProvider } from "~/domain/file/abstractions.js";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 
@@ -45,17 +46,12 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
         private readonly identityContext: IdentityContext.Interface,
         private readonly listModelsUseCase: ListModelsUseCase.Interface,
         private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface,
-        private readonly fileModelProvider: FileModelProvider.Interface,
-        private readonly fileUrlGenerator: FileUrlGenerator.Interface
+        private readonly fileModelProvider: FileModelProvider.Interface
     ) {}
 
     public async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
-        if (this.fileUrlGenerator.init) {
-            await this.fileUrlGenerator.init();
-        }
-
         this.addBaseTypeDefs(builder);
         await this.addFileTypeDefs(builder);
         this.addSettingsResolvers(builder);
@@ -363,7 +359,8 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
             path: "FmFile.src",
             dependencies: [FileUrlGenerator],
             resolver: (urlGenerator: FileUrlGenerator.Interface) => {
-                return ({ parent }) => {
+                return async ({ parent }) => {
+                    await initFileUrlGenerator(urlGenerator);
                     return urlGenerator.generateUrl(parent);
                 };
             }
@@ -535,7 +532,6 @@ export const FmGraphQLSchema = GraphQLSchemaFactory.createImplementation({
         IdentityContext,
         ListModelsUseCase,
         CmsModelFieldToGraphQLRegistry,
-        FileModelProvider,
-        FileUrlGenerator
+        FileModelProvider
     ]
 });
