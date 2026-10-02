@@ -35,7 +35,7 @@ const role = (id: string, permissions: Array<{ name: string }>): Role => {
 interface SetupOptions {
     // What the caller's own roles grant. `null` means "no roles found at all".
     own: Array<{ name: string }> | null;
-    previewing?: RawAssumePermissions.Request | null;
+    previewing?: RawAssumePermissions.Target | null;
     roles?: Role[];
     teams?: Team[];
     teamsEnabled?: boolean;

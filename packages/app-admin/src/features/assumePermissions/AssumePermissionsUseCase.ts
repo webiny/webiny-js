@@ -17,7 +17,7 @@ function hasUsablePermissions(identity: Identity): boolean {
 
 /**
  * Switches the Admin into (or out of) previewing a role. The permissions themselves come from the
- * API: once the context holds a role, every request carries the preview-as header, so the login
+ * API: once the context holds a role, every request carries the assume-permissions header, so the login
  * query returns the identity as that role sees it. Nothing about the permission set is decided on
  * the client.
  *

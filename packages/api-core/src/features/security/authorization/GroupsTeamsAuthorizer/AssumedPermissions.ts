@@ -57,7 +57,7 @@ class AssumedPermissionsImpl implements PermissionsProcessor.Interface {
         return getPermissionsFromRoles(roles);
     }
 
-    private async loadAssumedRoles(target: RawAssumePermissions.Request): Promise<SecurityRole[]> {
+    private async loadAssumedRoles(target: RawAssumePermissions.Target): Promise<SecurityRole[]> {
         if (target.type === "role") {
             return this.loadRoles([target.id]);
         }

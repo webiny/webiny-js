@@ -27,7 +27,7 @@ const TEAMS_FIELD = /* GraphQL */ `
 `;
 
 const LIST_ROLES = /* GraphQL */ `
-    query ListAssumableTargets {
+    query ListAssumableRoles {
         security {
             ${ROLES_FIELD}
         }
@@ -35,7 +35,7 @@ const LIST_ROLES = /* GraphQL */ `
 `;
 
 const LIST_ROLES_AND_TEAMS = /* GraphQL */ `
-    query ListAssumableTargetsAndTeams {
+    query ListAssumableRolesAndTeams {
         security {
             ${ROLES_FIELD}
             ${TEAMS_FIELD}
@@ -74,7 +74,7 @@ class ListAssumableTargetsGatewayImpl implements Abstraction.Interface {
         const query = params.includeTeams ? LIST_ROLES_AND_TEAMS : LIST_ROLES;
 
         /*
-         * An explicit, empty preview-as header. The client decorator leaves a header the caller
+         * An explicit, empty assume-permissions header. The client decorator leaves a header the caller
          * set alone, and the API reads an empty value as "no preview", so this one request
          * runs as the signed-in user even while the rest of the Admin runs as the previewed role.
          */

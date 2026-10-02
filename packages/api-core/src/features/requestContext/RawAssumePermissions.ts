@@ -5,13 +5,13 @@ import { RawAssumePermissions as Abstraction } from "./abstractions.js";
  * fresh instance holds the value for the current request only.
  */
 class RawAssumePermissionsImpl implements Abstraction.Interface {
-    private value: Abstraction.Request | null = null;
+    private value: Abstraction.Target | null = null;
 
-    get(): Abstraction.Request | null {
+    get(): Abstraction.Target | null {
         return this.value;
     }
 
-    set(value: Abstraction.Request | null): void {
+    set(value: Abstraction.Target | null): void {
         this.value = value;
     }
 }

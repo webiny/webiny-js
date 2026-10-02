@@ -46,7 +46,7 @@ export namespace RawAuthToken {
  *
  * Note: only the HTTP transports set this. S3 and background tasks have no caller to preview as.
  */
-export interface IAssumePermissionsRequest {
+export interface IAssumePermissionsTarget {
     /*
      * Whose permissions to assume. A team is a set of roles, so assuming one means the union of its
      * roles' permissions. Assuming a user's permissions would be another type here, resolved to
@@ -57,8 +57,8 @@ export interface IAssumePermissionsRequest {
 }
 
 export interface IRawAssumePermissions {
-    get(): IAssumePermissionsRequest | null;
-    set(value: IAssumePermissionsRequest | null): void;
+    get(): IAssumePermissionsTarget | null;
+    set(value: IAssumePermissionsTarget | null): void;
 }
 
 export const RawAssumePermissions = createAbstraction<IRawAssumePermissions>(
@@ -67,7 +67,7 @@ export const RawAssumePermissions = createAbstraction<IRawAssumePermissions>(
 
 export namespace RawAssumePermissions {
     export type Interface = IRawAssumePermissions;
-    export type Request = IAssumePermissionsRequest;
+    export type Target = IAssumePermissionsTarget;
 }
 
 /**

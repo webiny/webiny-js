@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 
 /**
- * The role or team to preview. `name` is carried alongside the id purely so the banner can say
+ * The role or team whose permissions to assume. `name` is carried alongside the id purely so the banner can say
  * whose permissions are in effect without a second query.
  */
 export interface IAssumePermissionsTarget {
@@ -11,7 +11,7 @@ export interface IAssumePermissionsTarget {
 }
 
 /**
- * A preview as stored. `startedBy` is the id of the identity that started it: the selection
+ * The assumed permissions as stored. `startedBy` is the id of the identity that started it: the selection
  * outlives a reload by design, so it is also there for whoever signs in next on this browser, and
  * the id is how their login tells it isn't theirs.
  */
@@ -46,16 +46,6 @@ export namespace AssumePermissionsUseCase {
     export type Target = IAssumePermissionsTarget;
 }
 
-/**
- * A role or team that can be previewed. The API works out what it grants, so the Admin only needs
- * enough to list it and to send it back in the preview-as header.
- */
-export interface IAssumableTarget {
-    type: "role" | "team";
-    id: string;
-    name: string;
-}
-
 export interface IAssumableTargetsDto {
     roles: Array<{ id: string; name: string }>;
     teams: Array<{ id: string; name: string }>;
@@ -63,7 +53,7 @@ export interface IAssumableTargetsDto {
 
 /**
  * Fetches the roles and teams on offer AS THE SIGNED-IN USER, never as the role being previewed.
- * Every other request carries the preview-as header while a preview is active, and the previewed
+ * Every other request carries the assume-permissions header while a preview is active, and the previewed
  * role usually cannot list roles, so without the opt-out the header control would come up empty exactly
  * when someone is trying to switch from one role to the next.
  */
@@ -82,8 +72,8 @@ export namespace ListAssumableTargetsGateway {
 
 export interface IListAssumableTargetsUseCase {
     execute(params: { includeTeams: boolean }): Promise<{
-        roles: IAssumableTarget[];
-        teams: IAssumableTarget[];
+        roles: IAssumePermissionsTarget[];
+        teams: IAssumePermissionsTarget[];
     }>;
 }
 
@@ -93,5 +83,5 @@ export const ListAssumableTargetsUseCase = createAbstraction<IListAssumableTarge
 
 export namespace ListAssumableTargetsUseCase {
     export type Interface = IListAssumableTargetsUseCase;
-    export type Target = IAssumableTarget;
+    export type Target = IAssumePermissionsTarget;
 }

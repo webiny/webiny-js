@@ -39,7 +39,7 @@ function readHeader(headers: Headers, name: string): string | null {
  * api-core rather than in a transport package so the HTTP transports cannot drift on the format or
  * on header casing.
  */
-export function extractAssumePermissions(headers: Headers): RawAssumePermissions.Request | null {
+export function extractAssumePermissions(headers: Headers): RawAssumePermissions.Target | null {
     const value = readHeader(headers, ASSUME_PERMISSIONS_HEADER);
     if (!value) {
         return null;
