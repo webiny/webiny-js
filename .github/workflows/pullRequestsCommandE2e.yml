@@ -824,6 +824,14 @@ jobs:
           WEBINY_API_URL: http://localhost:3002
           BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
           BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+          WEBINY_PROJECT_ID: >-
+            ${{ contains(fromJSON('["adrians5j"]'),
+            github.event.comment.user.login) && secrets.E2E_WEBINY_PROJECT_ID ||
+            '' }}
+          WEBINY_PROJECT_API_KEY: >-
+            ${{ contains(fromJSON('["adrians5j"]'),
+            github.event.comment.user.login) &&
+            secrets.E2E_WEBINY_PROJECT_API_KEY || '' }}
         run: yarn webiny build api && yarn webiny build admin
       - name: Start API
         env:
@@ -834,6 +842,14 @@ jobs:
           WEBINY_LOCAL_STORAGE_PATH: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_PROJECT_ID: >-
+            ${{ contains(fromJSON('["adrians5j"]'),
+            github.event.comment.user.login) && secrets.E2E_WEBINY_PROJECT_ID ||
+            '' }}
+          WEBINY_PROJECT_API_KEY: >-
+            ${{ contains(fromJSON('["adrians5j"]'),
+            github.event.comment.user.login) &&
+            secrets.E2E_WEBINY_PROJECT_API_KEY || '' }}
         run: >-
           mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
 
@@ -922,6 +938,33 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
+      - name: AI E2E - run tests
+        if: >-
+          ${{ contains(fromJSON('["adrians5j"]'),
+          github.event.comment.user.login) }}
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          if [ ! -f e2e/e2e.config.ts ]; then
+            echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."
+            exit 0
+          fi
+          yarn workspace e2e-tests playwright install --with-deps chromium
+          yarn e2e
+      - name: AI E2E - upload results
+        if: >-
+          ${{ always() && contains(fromJSON('["adrians5j"]'),
+          github.event.comment.user.login) }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: ai-e2e-results-standalone-sqlite
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: Print server logs
         if: failure()
         run: >-

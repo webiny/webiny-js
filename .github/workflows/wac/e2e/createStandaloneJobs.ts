@@ -17,6 +17,7 @@ import {
 } from "./constants.js";
 import { installBuildSteps, runBuildCacheDownloadSteps, yarnCacheSteps } from "./sharedSteps.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
+import { AI_E2E_LICENSE_ENV, createAiE2eSteps } from "./aiE2e.js";
 
 // The storage backends the standalone hosting type supports. Mirrors `StorageOps` in
 // create-webiny-project's standalone project setup.
@@ -63,6 +64,9 @@ interface StandaloneProjectPartsParams {
     // When set, the variant reports its result into the PR status comment under this label. `push`
     // has no PR to report into, so it omits this.
     statusLabel?: string;
+    // Also run the experimental AI tests in `e2e/` (see aiE2e.ts). Only `/e2e` sets this, and the
+    // steps themselves are further gated on who posted the comment.
+    aiE2e?: boolean;
 }
 
 /**
@@ -74,9 +78,10 @@ interface StandaloneProjectPartsParams {
  */
 export const createStandaloneProjectParts = (
     storageOps: StandaloneStorageOps,
-    { workingDirectory, statusLabel }: StandaloneProjectPartsParams
+    { workingDirectory, statusLabel, aiE2e }: StandaloneProjectPartsParams
 ) => {
     const isPostgres = storageOps === "postgres";
+    const licenseEnv = aiE2e ? AI_E2E_LICENSE_ENV : {};
 
     // Postgres runs as a service container; SQLite needs nothing (the template writes a file).
     const services: NormalJob["services"] = isPostgres
@@ -176,7 +181,8 @@ export const createStandaloneProjectParts = (
                      * `<Project.BugReporter>` reads these while the API bundle is built, so they
                      * belong on this step rather than at runtime on "Start API".
                      */
-                    ...BUG_REPORTER_ENV
+                    ...BUG_REPORTER_ENV,
+                    ...licenseEnv
                 },
                 run: "yarn webiny build api && yarn webiny build admin"
             },
@@ -184,7 +190,7 @@ export const createStandaloneProjectParts = (
                 // Backgrounded so the job can continue; the process lives for the rest of the
                 // job. Logs go to a file so the failure handler below can surface them.
                 name: "Start API",
-                env: { PORT: `${STANDALONE_API_PORT}`, ...runtimeEnv },
+                env: { PORT: `${STANDALONE_API_PORT}`, ...runtimeEnv, ...licenseEnv },
                 run: [
                     // SQLite will not create missing parent directories for its file, and the
                     // local file storage folder does not exist until something writes to it.
@@ -252,6 +258,13 @@ export const createStandaloneProjectParts = (
                 run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
             },
             ...(statusLabel ? createStatusRowUpdateSteps({ label: statusLabel }) : []),
+            // After the status row, so the row keeps reporting the Cypress smoke test alone.
+            ...(aiE2e
+                ? createAiE2eSteps({
+                      workingDirectory,
+                      artifactName: `ai-e2e-results-standalone-${storageOps}`
+                  })
+                : []),
             {
                 name: "Print server logs",
                 if: "failure()",
@@ -283,7 +296,9 @@ export const createStandaloneJobs = (storageOps: StandaloneStorageOps) => {
     const label = standaloneVariantLabel(storageOps);
     const parts = createStandaloneProjectParts(storageOps, {
         workingDirectory: DIR_WEBINY_JS,
-        statusLabel: label
+        statusLabel: label,
+        // One variant is enough while the AI tests are experimental.
+        aiE2e: storageOps === "sqlite"
     });
 
     return {
