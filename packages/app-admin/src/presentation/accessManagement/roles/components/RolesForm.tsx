@@ -27,6 +27,13 @@ import { AssumePermissionsButton } from "~/presentation/assumePermissions/compon
 import type { AssumePermissionsPresenter } from "~/presentation/assumePermissions/abstractions.js";
 import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 
+function formTitle(record: Role | null): string {
+    if (!record || !record.name) {
+        return "Untitled";
+    }
+    return record.name;
+}
+
 /*
  * Only a saved role can be previewed. While the form loads, `selectedRole` can still be the role
  * that was open before, so there is no target until loading is done.
@@ -90,14 +97,19 @@ export const RolesForm = createReactiveComponent(
             );
         }
 
+        const copyPermissions = () => {
+            const permissions = vm.selectedRole?.permissions ?? [];
+            const json = JSON.stringify(permissions, null, 2);
+            navigator.clipboard.writeText(json);
+            showSnackbar("JSON data copied to clipboard.");
+        };
+
         const viewAsTarget = toViewAsTarget(vm.selectedRole, vm.loading);
 
         return (
             <SimpleForm size={"lg"}>
                 {vm.loading || vm.saving ? <OverlayLoader /> : null}
-                <SimpleFormHeader
-                    title={vm.selectedRole ? vm.selectedRole.name || "Untitled" : "Untitled"}
-                >
+                <SimpleFormHeader title={formTitle(vm.selectedRole)}>
                     <div className={"flex items-center justify-end gap-xxs"}>
                         <AssumePermissionsButton target={viewAsTarget} />
                         <Tooltip
@@ -106,15 +118,7 @@ export const RolesForm = createReactiveComponent(
                                 <IconButton
                                     variant={"ghost"}
                                     icon={<CopyIcon />}
-                                    onClick={() => {
-                                        const permissions = vm.selectedRole
-                                            ? vm.selectedRole.permissions
-                                            : [];
-                                        navigator.clipboard.writeText(
-                                            JSON.stringify(permissions, null, 2)
-                                        );
-                                        showSnackbar("JSON data copied to clipboard.");
-                                    }}
+                                    onClick={copyPermissions}
                                 />
                             }
                         />

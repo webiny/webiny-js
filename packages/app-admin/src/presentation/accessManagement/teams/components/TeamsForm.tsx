@@ -23,6 +23,13 @@ import { AssumePermissionsButton } from "~/presentation/assumePermissions/compon
 import type { AssumePermissionsPresenter } from "~/presentation/assumePermissions/abstractions.js";
 import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 
+function formTitle(record: Team | null): string {
+    if (!record || !record.name) {
+        return "Untitled";
+    }
+    return record.name;
+}
+
 /*
  * Only a saved team can be previewed. While the form loads, `selectedTeam` can still be the team
  * that was open before, so there is no target until loading is done.
@@ -91,9 +98,7 @@ export const TeamsForm = createReactiveComponent(
         return (
             <SimpleForm>
                 {vm.loading || vm.saving ? <OverlayLoader /> : null}
-                <SimpleFormHeader
-                    title={vm.selectedTeam ? vm.selectedTeam.name || "Untitled" : "Untitled"}
-                >
+                <SimpleFormHeader title={formTitle(vm.selectedTeam)}>
                     <div className={"flex items-center justify-end"}>
                         <AssumePermissionsButton target={viewAsTarget} />
                     </div>

@@ -32,6 +32,12 @@ const role = (id: string, permissions: Array<{ name: string }>): Role => {
     };
 };
 
+// The repository's error type is not exported, so the test widens a plain Error to fit.
+function teamNotFound() {
+    const error = new Error("Team not found.") as never;
+    return Result.fail(error);
+}
+
 interface SetupOptions {
     // What the caller's own roles grant. `null` means "no roles found at all".
     own: Array<{ name: string }> | null;
@@ -75,7 +81,7 @@ const processorFor = (options: SetupOptions) => {
         get: async (params: { id?: string }) => {
             const found = teams.find(item => item.id === params.id);
             if (!found) {
-                return Result.fail(new Error("Team not found.") as never);
+                return teamNotFound();
             }
             return Result.ok(found);
         }
@@ -201,12 +207,13 @@ describe("AssumedPermissions", () => {
             list: async (params: { where?: { id_in?: string[] } }) => {
                 const requested = params.where?.id_in ?? [];
                 const all = [role("admin", [{ name: "*" }]), role("editor", [{ name: "cms.*" }])];
-                return Result.ok(all.filter(item => requested.includes(item.id)));
+                const found = all.filter(item => requested.includes(item.id));
+                return Result.ok(found);
             }
         } as never);
 
         container.registerInstance(TeamsRepository, {
-            get: async () => Result.fail(new Error("Team not found.") as never)
+            get: async () => teamNotFound()
         } as never);
 
         const rawAssumePermissions = container.resolve(RawAssumePermissions);

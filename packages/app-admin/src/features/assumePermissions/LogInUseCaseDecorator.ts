@@ -14,6 +14,11 @@ import { AssumePermissionsContext } from "./abstractions.js";
  *   would be stuck on that error screen, because the selection survives a reload.
  * - It was started by someone else. A session can end without going through log out, so the next
  *   person on the browser would otherwise inherit whatever the last one was previewing.
+ *
+ * Any login failure drops the preview, not only the one a bad preview causes. The login path throws
+ * plain errors, so there is nothing to tell "no permissions" from a network error by. That errs on
+ * the safe side: a transient failure costs the preview and one retry, and the user is back on
+ * their own permissions. Narrowing it needs a typed error from LogInUseCase.
  */
 class LogInUseCaseDecoratorImpl implements LogInUseCase.Interface {
     constructor(

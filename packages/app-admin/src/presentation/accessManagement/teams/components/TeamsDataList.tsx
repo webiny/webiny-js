@@ -34,6 +34,17 @@ const deserializeSorters = (data: string): [string, "asc" | "desc"] => {
     return [field, order.toLowerCase() === "asc" ? "asc" : "desc"];
 };
 
+// Why a team can't be deleted, or null when it can.
+function lockedReason(item: Team): string | null {
+    if (item.system) {
+        return "Cannot delete system teams.";
+    }
+    if (item.plugin) {
+        return "Cannot delete teams registered via extensions.";
+    }
+    return null;
+}
+
 export const TeamsDataList = createReactiveComponent(
     ({ activeId }: { activeId: string | undefined }) => {
         const { presenter } = useFeature(TeamsPresenterFeature);
@@ -133,32 +144,31 @@ export const TeamsDataList = createReactiveComponent(
             >
                 {({ data }: { data: Team[] }) => (
                     <List data-testid="default-data-list">
-                        {data.map(item => (
-                            <List.Item
-                                key={item.id}
-                                selected={item.id === activeId}
-                                title={item.name}
-                                description={item.description}
-                                onClick={() => goToRoute(Routes.Teams.List, { id: item.id })}
-                                actions={
-                                    item.system || item.plugin ? (
-                                        <Tooltip
-                                            content={
-                                                item.system
-                                                    ? "Cannot delete system teams."
-                                                    : "Cannot delete teams registered via extensions."
-                                            }
-                                            trigger={<DeleteIcon disabled />}
-                                        />
-                                    ) : (
-                                        <DeleteIcon
-                                            onClick={() => deleteItem(item)}
-                                            data-testid={"default-data-list.delete"}
-                                        />
-                                    )
-                                }
-                            />
-                        ))}
+                        {data.map(item => {
+                            const locked = lockedReason(item);
+                            let actions = (
+                                <DeleteIcon
+                                    onClick={() => deleteItem(item)}
+                                    data-testid={"default-data-list.delete"}
+                                />
+                            );
+                            if (locked) {
+                                actions = (
+                                    <Tooltip content={locked} trigger={<DeleteIcon disabled />} />
+                                );
+                            }
+
+                            return (
+                                <List.Item
+                                    key={item.id}
+                                    selected={item.id === activeId}
+                                    title={item.name}
+                                    description={item.description}
+                                    onClick={() => goToRoute(Routes.Teams.List, { id: item.id })}
+                                    actions={actions}
+                                />
+                            );
+                        })}
                     </List>
                 )}
             </DataList>
