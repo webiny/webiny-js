@@ -24,7 +24,7 @@ function toLines(text: string): string {
 
 function formatEvents(rows: IEventRow[]): string {
     if (rows.length === 0) {
-        // A `<ul>` breaks the line by itself, so only this case needs its own `<br>`.
+        // An `<ol>` breaks the line by itself, so only this case needs its own `<br>`.
         return "<br><em>Nothing was recorded.</em>";
     }
 
@@ -40,7 +40,8 @@ function formatEvents(rows: IEventRow[]): string {
         items.push(`<li>${line}</li>`);
     }
 
-    return `<ul>${items.join("")}</ul>`;
+    // Numbered, so someone reading the report can point at "step 34".
+    return `<ol>${items.join("")}</ol>`;
 }
 
 /*

@@ -18,17 +18,25 @@ function formatEvents(rows: IEventRow[]): string {
         offsetWidth = Math.max(offsetWidth, row.offset.length);
     }
 
+    /*
+     * Numbered, so someone reading the report can point at "step 34". Padded so "9." and "10."
+     * still line up, and a detail line indents to sit under its offset.
+     */
+    const numberWidth = String(rows.length).length;
+    const detailIndent = " ".repeat(numberWidth + 2);
+
     const lines: string[] = [];
 
-    for (const row of rows) {
+    rows.forEach((row, index) => {
+        const number = String(index + 1).padStart(numberWidth);
         const offset = row.offset.padStart(offsetWidth);
         const label = row.label.padEnd(LABEL_WIDTH);
-        lines.push(`${offset}  ${label}  ${row.summary}`);
+        lines.push(`${number}. ${offset}  ${label}  ${row.summary}`);
 
         if (row.detail) {
-            lines.push(`    ${row.detail}`);
+            lines.push(`${detailIndent}${row.detail}`);
         }
-    }
+    });
 
     return lines.join("\n");
 }

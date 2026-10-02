@@ -9,7 +9,7 @@ describe("composePlainReport", () => {
 
         expect(text.startsWith("Description: Publishing a page does nothing.")).toBe(true);
         expect(text).toContain("Page: Pages");
-        expect(text).toContain("-2.0s  click  Publish");
+        expect(text).toContain("1. -2.0s  click  Publish");
     });
 
     it("leaves out the markdown only GitHub renders", () => {
@@ -28,7 +28,7 @@ describe("composePlainReport", () => {
 
         const text = composePlainReport(buildPayload({ events }));
 
-        expect(text).toContain("-0.0s  error  TypeError\n    at render");
+        expect(text).toContain("1. -0.0s  error  TypeError\n   at render");
     });
 
     it("pads offsets so the labels line up", () => {
@@ -39,7 +39,17 @@ describe("composePlainReport", () => {
 
         const text = composePlainReport(buildPayload({ events }));
 
-        expect(text).toContain("-14.3s  nav    Opened /\n -6.6s  click  Submit");
+        expect(text).toContain("1. -14.3s  nav    Opened /\n2.  -6.6s  click  Submit");
+    });
+
+    it("pads step numbers so 9 and 10 line up", () => {
+        const events = Array.from({ length: 10 }, (_, index) => {
+            return { at: REPORTED_AT, kind: "click", summary: `button ${index + 1}` };
+        });
+
+        const text = composePlainReport(buildPayload({ events }));
+
+        expect(text).toContain(" 9. -0.0s  click  button 9\n10. -0.0s  click  button 10");
     });
 
     it("starts with the environment when nothing was typed", () => {

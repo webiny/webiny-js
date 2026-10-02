@@ -50,7 +50,7 @@ describe("composeHtmlReport", () => {
         const html = composeHtmlReport(buildPayload());
 
         expect(html).toContain("does nothing.<br><br><strong>Environment</strong><br>");
-        expect(html).toContain("<br><br><strong>What the reporter did</strong><ul>");
+        expect(html).toContain("<br><br><strong>What the reporter did</strong><ol>");
     });
 
     it("starts with the environment when nothing was typed", () => {
@@ -65,7 +65,7 @@ describe("composeHtmlReport", () => {
         expect(html).toContain(
             "<strong>What the reporter did</strong><br><em>Nothing was recorded.</em>"
         );
-        expect(html).not.toContain("<ul>");
+        expect(html).not.toContain("<ol>");
     });
 
     it("mentions screenshots only when some were attached", () => {
