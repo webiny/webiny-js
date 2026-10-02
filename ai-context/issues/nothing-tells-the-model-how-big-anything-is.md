@@ -306,3 +306,46 @@ looks marginal rather than deterministic since the two components have swapped p
 
 Not measured: Freehill _Site Header_ (source section has no text), Freehill _Image Panel_ (render drew
 no text), Freehill _Contact Form with Map View_ (did not generate).
+
+### The repeat run
+
+Plan held constant, Generate and render re-run on all four sites, so only generation variance could
+move the numbers. 34 components rendered this time (Freehill generated all six).
+
+**The type result holds and tightens.**
+
+|                                          | first run    | repeat         |
+| ---------------------------------------- | ------------ | -------------- |
+| max font size, within 10%                | 28 of 31     | **31 of 32**   |
+| max font size, smaller / larger          | 2 / 1        | **1 / 0**      |
+| max font size median                     | 1.00         | 1.00           |
+| components matching largest type exactly | 26           | **28 of 32**   |
+| worst absolute error                     | −13px, +24px | **−4px, +2px** |
+| median font size, within 10%             | 24           | 27 of 32       |
+
+**Content width recovered.** Within 10% went 13 → **14 of 32**, back above the guard. The first run's
+marginal miss did not reproduce, so it was noise.
+
+**The too-tall breach did not.** Five again — and **the same five components, both runs**:
+
+| component                                  | first run | repeat |
+| ------------------------------------------ | --------- | ------ |
+| 2424 Tulane · Image Gallery Section        | 1.75x     | 2.53x  |
+| 2424 Tulane · Hero Banner                  | 1.93x     | 1.93x  |
+| 71 Westland · Hero Intro Section           | 2.14x     | 2.02x  |
+| 71 Westland · Explore Fenway Forward Intro | 1.77x     | 1.83x  |
+| Freehill · Image Panel                     | 1.80x     | 1.80x  |
+
+**That falsifies the variance explanation I gave.** The same five, twice, with the same plan is not
+band-crossing noise. Two of them — Explore Fenway Forward Intro and Hero Intro Section — were already
+the too-tall pair before this change. Three are new since it: Image Gallery Section, Hero Banner and
+Image Panel.
+
+Attribution is still open, and the mechanism still does not fit. None of the three new ones had its
+type grow: Image Gallery 31px → 31px, Hero Banner 31px → 31px, and Image Panel contains no text at
+all, so it receives no type scale in its prompt. A component with no text whose height moved 335 →
+603px cannot have been moved by a type instruction it was never given.
+
+What the repeat does establish is that it is **reproducible and therefore worth chasing**, and that
+chasing it belongs to the spacing pass rather than here — a component with correct type sitting in
+default padding is the coherent mechanism, and it is the one this pass deliberately did not address.
