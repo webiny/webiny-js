@@ -1,14 +1,17 @@
-import { createHtmlToLexicalParser } from "@webiny/lexical-converter";
 import { LexicalParser as Abstraction } from "./abstractions/LexicalParser.js";
 
-const parser = createHtmlToLexicalParser();
+type HtmlToLexicalParser = ReturnType<
+    typeof import("@webiny/lexical-converter").createHtmlToLexicalParser
+>;
 
 class LexicalParserImpl implements Abstraction.Interface {
     private WindowClass: typeof import("happy-dom").Window | null = null;
+    private parser: HtmlToLexicalParser | null = null;
 
     async parse(html: string): Promise<Record<string, unknown> | null> {
         try {
             const Window = await this.loadWindow();
+            const parser = await this.loadParser();
             const window = new Window();
             const document = window.document;
             document.body.innerHTML = html;
@@ -28,6 +31,16 @@ class LexicalParserImpl implements Abstraction.Interface {
             this.WindowClass = Window;
         }
         return this.WindowClass;
+    }
+
+    // The converter brings in lexical, cheerio and undici, so it's loaded on first use instead of
+    // on every cold start. Importing undici also swaps the dispatcher behind the global fetch.
+    private async loadParser() {
+        if (!this.parser) {
+            const { createHtmlToLexicalParser } = await import("@webiny/lexical-converter");
+            this.parser = createHtmlToLexicalParser();
+        }
+        return this.parser;
     }
 }
 

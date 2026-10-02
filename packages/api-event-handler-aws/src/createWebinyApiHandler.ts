@@ -20,13 +20,14 @@ import {
     registerWebinyApiRoot
 } from "~/composition/index.js";
 import type { WebinyApiCompositionConfig } from "~/composition/index.js";
+import { withWarmUp } from "~/warmUp.js";
 
 export type { RegisterRootStorageContext } from "~/composition/index.js";
 
 export type CreateWebinyApiHandlerConfig = WebinyApiCompositionConfig;
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
-    return createLambdaHandler({
+    const handler = createLambdaHandler({
         root: async container => {
             // ── Transport ──────────────────────────────────────────────
             // ApiGatewayFeature registers the HTTP transport (event type + router + HttpFeature).
@@ -63,4 +64,6 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             await registerWebinyApiChild(container, config);
         }
     });
+
+    return withWarmUp(handler);
 }
