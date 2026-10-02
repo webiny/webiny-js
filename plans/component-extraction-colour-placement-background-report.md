@@ -264,3 +264,148 @@ mapping Plan needs, uses it to build a clustering signature, and discards it.
 So the model that picks the tokens cannot see the colours, and the model that can see them receives
 those picks as instructions. 37% wrong token against 1 invented is what obeying the wrong instruction
 looks like.
+
+---
+
+# Acceptance: the colour fix
+
+Built as proposed. Cluster resolves each section's colours to the theme token expressing them and
+persists them on the member; Plan carries them into the contract in slot paths; Generate names each
+one with its `var()`. Re-run from Cluster through Generate on all four sites, then rendered.
+
+Commits: `7c21719376` (carry the colours), `1e154d49fd` (match a colour to a token of its own family).
+
+## The denominator changed, so component counts are not like-for-like
+
+Publishing the four themes — done for the type-scale acceptance, before this fix — turned on the
+token term in clustering. While the manifest failed to resolve, every section's token set was empty,
+and `setJaccard([], [])` returns 1, so that term contributed the same constant to every pair and did
+nothing. With the themes published it discriminates, and the clusters split:
+
+| site      | before | after |
+| --------- | -----: | ----: |
+| Park city |      7 |    10 |
+| Tulane    |     13 |    22 |
+| Westland  |      8 |     9 |
+| Freehill  |      6 |     7 |
+| **total** | **34** | **48** |
+
+This is not caused by the colour change. **Aggregate shares remain comparable; per-component
+before/after does not.**
+
+## Background colour
+
+| site          | matches the section | a theme colour it does not have | in neither |
+| ------------- | ------------------: | ------------------------------: | ---------: |
+| Park city     |                   8 |                               2 |          0 |
+| Tulane        |                  16 |                               6 |          0 |
+| Westland      |                   8 |                               0 |          0 |
+| Freehill      |                   4 |                               3 |          0 |
+| **total**     |              **36** |                          **11** |      **0** |
+| _before_      |                _20_ |                            _14_ |        _0_ |
+
+**59% → 77% match. Theme-not-section 41% → 23%.** Nothing lands in neither, before or after.
+
+Across every dominant colour in every render:
+
+|                                     | before       | after        |
+| ----------------------------------- | ------------ | ------------ |
+| also in the source section          | 62%          | **84%**      |
+| in the theme but not in the section | 37%          | **14%**      |
+| in neither                          | 0.4% (1/204) | 2.2% (6/272) |
+
+## The invented-colour guard, per site
+
+This is the guard that mattered most, and it needed measuring twice.
+
+**The first measure was wrong.** Counting every `#hex` in the generated code gave 300 hexes against
+0 `var()` uses, which reads as the fix having traded tokens for hardcoded colours. The model actually
+writes `background: var(--wby-color-surface-page, #ffffff)` — a variable with a fallback. The regex
+required `)` straight after the variable name, so it matched none of them and counted every fallback
+as a hardcoded colour. A hex inside a `var()` survives a theme change; only a **bare** hex does not.
+
+| site          | components | colour `var()` | hex as a fallback | **bare hex** | bare per component |
+| ------------- | ---------: | -------------: | ----------------: | -----------: | -----------------: |
+| Park city     |         10 |            112 |               111 |            4 |                0.4 |
+| Tulane        |         22 |            163 |               162 |           23 |                1.0 |
+| Westland      |          9 |             95 |                95 |            2 |                0.2 |
+| Freehill      |          7 |             72 |                70 |            9 |                1.3 |
+| **total**     |     **48** |        **442** |           **438** |       **38** |            **0.8** |
+
+**The pre-colour baseline for the same measure is 0.8 bare hexes per component** — Freehill's Generate
+artifact, captured while the re-run was still on Westland and confirmed pre-colour by the absence of
+`resolvedColours`: 6 components, 72 colour `var()`, 65 fallbacks, 5 bare. The rate is unchanged.
+
+What each bare hex is, measured against what the prompt told the model:
+
+| site          | against a variable it was given | sanctioned — no token, use the hex | unlisted |
+| ------------- | ------------------------------: | ---------------------------------: | -------: |
+| Park city     |                               3 |                                  0 |        1 |
+| Tulane        |                               1 |                                 19 |        3 |
+| Westland      |                               2 |                                  0 |        0 |
+| Freehill      |                               2 |                                  7 |        0 |
+| **total**     |                           **8** |                             **26** |    **4** |
+
+**8 of 48 components wrote a hex where a variable was given.** All eight are `#ffffff`, `#000000` or
+`#333333` — the colours a model reaches for without thinking. The other 30 are the prompt working as
+instructed or the model's own choice on a colour the section never measured.
+
+Freehill's rate rose, 0.8 → 1.3 per component, and **7 of its 9 bare hexes are sanctioned**: its
+theme has no token near `#000000`. The rise is the null-token branch, not disobedience.
+
+## The gap this exposes: themes that cannot express their own site
+
+| site      | measured colours with no theme token near them |
+| --------- | ---------------------------------------------: |
+| Park city |                                    0 of 42 (0%) |
+| Tulane    |                                 17 of 100 (17%) |
+| Westland  |                                   2 of 39 (5%)  |
+| Freehill  |                                  7 of 25 (28%)  |
+
+Tulane's greens and pinks — `#366748`, `#e0e299`, `#e08b81` — and Freehill's near-black are colours
+their sites use and their extracted themes do not carry. This is the same family of finding as the
+type scale stopping short of a site's display headings, and it belongs to theme extraction. The
+colour fix did not create it; it made it countable.
+
+## Regression guards
+
+| guard                         | before     | after      |
+| ----------------------------- | ---------- | ---------- |
+| max font size within 10%      | 31 of 32   | **44 of 45** |
+| height — too tall             | 5          | **3**      |
+| height — too short            | 6          | **4**      |
+| height — in band              | 23         | **39**     |
+
+Both hold. The too-tall breach that the type-scale repeat showed to be reproducible rather than
+variance is 3 of 46 here; it is still unattributed and still belongs to the spacing pass.
+
+**47 of 48 components bundled.** Westland's _Welcome Hero Banner_ failed after three attempts with
+"Source must have a default export function". That is a malformed generation, not a colour failure,
+and it cannot be attributed to this change because Westland's cluster set also changed (8 → 9).
+
+## What the six "invented" pixel colours actually are
+
+Checked one by one, because the share moved off near-zero and a share is not a cause:
+
+- **Four** are Tulane _Specials Section_: `#e8e898`, `#d8e898`, `#e8e8a8`, `#c8c888` — all quantised
+  shades of `#e0e299`, which is the section's own measured background and has **no theme token**. The
+  prompt told the model to use the hex, and it did. Not invented.
+- **One** is Park city _Hero Banner_ at 4% of the render: photograph content, in a section whose crop
+  and render are both dominated by a building photo.
+- **One** is genuinely the model's own: Tulane _Neighborhood/Location Highlight_ writes
+  `background: #e3e39a`, a yellow-green the section does not measure anywhere.
+
+So one colour in 272 is a colour nobody specified, against one in 204 before.
+
+## A caveat the pixel measure needs
+
+Tulane _Specials Section_ reads as "a theme colour the section does not have" at a distance of 268,
+and the reason is not colour. Its crop is the full 1440×900 homepage hero — a building photograph —
+while Classify scoped the component to the yellow SPECIALS tab inside it. The render is that tab,
+correctly, in the section's own `#e0e299`. The hero's own background is an `<img>`, so it has no
+`backgroundColor` to measure and `resolveSectionColours` reports the tab's colour as the section's
+only painted background, which is literally true.
+
+**Where a component is scoped narrower than the section its crop shows, the background verdict
+measures the scoping, not the colour.** Both the "theme, not section" count and the invented count
+carry some of this.
