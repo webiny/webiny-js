@@ -7,6 +7,14 @@ import { AuditLogPermissions as Abstraction } from "./abstractions.js";
 class AuditLogPermissionsImpl implements Abstraction.Interface {
     public constructor(private readonly identityContext: IdentityContext.Interface) {}
 
+    public async canAccessAll(): Promise<boolean> {
+        const permissions = await this.identityContext.getPermissions("al.*");
+
+        return permissions.some(permission => {
+            return permission.name === "*" || permission.name === "al.*";
+        });
+    }
+
     public async canAccess(action: string): Promise<boolean> {
         const permissions = await this.identityContext.getPermissions("al.*");
 

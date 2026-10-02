@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
+import type { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import type { IListAuditLogsParams } from "~/types.js";
 import type { IListAuditLogsResultMeta } from "~/types.js";
 import type { IAuditLog } from "~/storage/types.js";
@@ -13,13 +14,18 @@ export interface ListAuditLogsOutput {
 }
 
 /**
- * ListAuditLogs Use Case - Lists audit logs of the current tenant.
+ * ListAuditLogs Use Case - Lists audit logs of the current tenant. Needs access to all audit logs.
  */
 export interface IListAuditLogsUseCase {
-    execute(
-        params: IListAuditLogsParams
-    ): Promise<Result<ListAuditLogsOutput, AuditLogPersistenceError>>;
+    execute(params: IListAuditLogsParams): Promise<Result<ListAuditLogsOutput, UseCaseError>>;
 }
+
+export interface IListAuditLogsUseCaseErrors {
+    notAuthorized: NotAuthorizedError;
+    persistence: AuditLogPersistenceError;
+}
+
+type UseCaseError = IListAuditLogsUseCaseErrors[keyof IListAuditLogsUseCaseErrors];
 
 export const ListAuditLogsUseCase =
     createAbstraction<IListAuditLogsUseCase>("ListAuditLogsUseCase");
@@ -27,6 +33,7 @@ export const ListAuditLogsUseCase =
 export namespace ListAuditLogsUseCase {
     export type Interface = IListAuditLogsUseCase;
     export type Output = ListAuditLogsOutput;
+    export type Error = UseCaseError;
 }
 
 /**
