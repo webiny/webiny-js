@@ -46,7 +46,7 @@ function settings(params: {
 
 /** `standard` and `fast` differ, so which role answered is visible in the model alone. */
 class TestCapability implements AiCapability.Interface {
-    readonly id = "test.capability";
+    readonly id = "testCapability";
     readonly label = "Test capability";
     readonly description = "For tests.";
     readonly defaultRole = "standard" as const;
@@ -54,7 +54,7 @@ class TestCapability implements AiCapability.Interface {
 }
 
 class RolelessCapability implements AiCapability.Interface {
-    readonly id = "test.noGuidance";
+    readonly id = "testNoGuidance";
     readonly label = "No guidance";
     readonly description = "Prompt is assembled per request.";
     readonly defaultRole = "vision" as const;
@@ -105,7 +105,7 @@ function resolver(value: IAiPowerUpsSettings) {
 
 describe("ResolveAiCapabilityUseCase", () => {
     it("uses the capability's default role", async () => {
-        const result = await resolver(settings({})).execute("test.capability");
+        const result = await resolver(settings({})).execute("testCapability");
 
         expect(result.isOk()).toBe(true);
         expect(result.value.model).toBe(MAIN);
@@ -117,7 +117,7 @@ describe("ResolveAiCapabilityUseCase", () => {
     });
 
     it("decrypts the key rather than handing back what is stored", async () => {
-        const result = await resolver(settings({})).execute("test.capability");
+        const result = await resolver(settings({})).execute("testCapability");
 
         expect(result.value.connection.apiKey).not.toBe("encrypted-1");
     });
@@ -126,9 +126,9 @@ describe("ResolveAiCapabilityUseCase", () => {
         const result = await resolver(
             settings({
                 roles: { fast: { connectionId: "conn-1", model: CHEAP } },
-                items: { "test.capability": { overrides: { roleId: "fast" } } }
+                items: { testCapability: { overrides: { roleId: "fast" } } }
             })
-        ).execute("test.capability");
+        ).execute("testCapability");
 
         expect(result.value.model).toBe(CHEAP);
         expect(result.value.roleId).toBe("fast");
@@ -138,12 +138,12 @@ describe("ResolveAiCapabilityUseCase", () => {
         const result = await resolver(
             settings({
                 items: {
-                    "test.capability": {
+                    testCapability: {
                         overrides: { roleId: "fast", connectionId: "conn-1", model: CHEAP }
                     }
                 }
             })
-        ).execute("test.capability");
+        ).execute("testCapability");
 
         expect(result.value.model).toBe(CHEAP);
         expect(result.value.roleId).toBeNull();
@@ -151,8 +151,8 @@ describe("ResolveAiCapabilityUseCase", () => {
 
     it("ignores a half-finished pin, because guessing the other half is worse", async () => {
         const result = await resolver(
-            settings({ items: { "test.capability": { overrides: { model: CHEAP } } } })
-        ).execute("test.capability");
+            settings({ items: { testCapability: { overrides: { model: CHEAP } } } })
+        ).execute("testCapability");
 
         expect(result.value.model).toBe(MAIN);
         expect(result.value.roleId).toBe("standard");
@@ -160,8 +160,8 @@ describe("ResolveAiCapabilityUseCase", () => {
 
     it("falls back to standard when an empty role is not vision, and says so", async () => {
         const result = await resolver(
-            settings({ items: { "test.capability": { overrides: { roleId: "fast" } } } })
-        ).execute("test.capability");
+            settings({ items: { testCapability: { overrides: { roleId: "fast" } } } })
+        ).execute("testCapability");
 
         expect(result.value.model).toBe(MAIN);
         expect(result.value.roleId).toBe("standard");
@@ -173,7 +173,7 @@ describe("ResolveAiCapabilityUseCase", () => {
      * Vision model" beats a provider error about image input, even though Standard is right there.
      */
     it("refuses an empty vision role rather than falling back to standard", async () => {
-        const result = await resolver(settings({})).execute("test.noGuidance");
+        const result = await resolver(settings({})).execute("testNoGuidance");
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toContain('"vision" role');
@@ -183,7 +183,7 @@ describe("ResolveAiCapabilityUseCase", () => {
     it("runs vision work on the vision role when it is set", async () => {
         const result = await resolver(
             settings({ roles: { vision: { connectionId: "conn-1", model: CHEAP } } })
-        ).execute("test.noGuidance");
+        ).execute("testNoGuidance");
 
         expect(result.value.model).toBe(CHEAP);
         expect(result.value.roleId).toBe("vision");
@@ -193,14 +193,14 @@ describe("ResolveAiCapabilityUseCase", () => {
     it("fails with a message naming the settings screen when nothing is configured", async () => {
         const result = await resolver(
             settings({ roles: { standard: { connectionId: "", model: "" } } })
-        ).execute("test.capability");
+        ).execute("testCapability");
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toContain("Model roles");
     });
 
     it("fails when the role names a connection that has been deleted", async () => {
-        const result = await resolver(settings({ connections: [] })).execute("test.capability");
+        const result = await resolver(settings({ connections: [] })).execute("testCapability");
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toContain("no longer exists");
@@ -219,7 +219,7 @@ describe("ResolveAiCapabilityUseCase", () => {
                     }
                 ]
             })
-        ).execute("test.capability");
+        ).execute("testCapability");
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toContain("no API key");
@@ -228,14 +228,14 @@ describe("ResolveAiCapabilityUseCase", () => {
     it("rejects a model paired with another vendor's credential", async () => {
         const result = await resolver(
             settings({ roles: { standard: { connectionId: "conn-1", model: "openai/gpt-5" } } })
-        ).execute("test.capability");
+        ).execute("testCapability");
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toContain("cannot run on");
     });
 
     it("returns the capability's own guidance by default", async () => {
-        const result = await resolver(settings({})).execute("test.capability");
+        const result = await resolver(settings({})).execute("testCapability");
 
         expect(result.value.guidance).toBe("Webiny guidance.");
         expect(result.value.additionalInstructions).toBe("");
@@ -245,10 +245,10 @@ describe("ResolveAiCapabilityUseCase", () => {
         const result = await resolver(
             settings({
                 items: {
-                    "test.capability": { overrides: { guidance: "Mine now." } } as Items[string]
+                    testCapability: { overrides: { guidance: "Mine now." } } as Items[string]
                 }
             })
-        ).execute("test.capability");
+        ).execute("testCapability");
 
         expect(result.value.guidance).toBe("Webiny guidance.");
     });
@@ -257,10 +257,10 @@ describe("ResolveAiCapabilityUseCase", () => {
         const result = await resolver(
             settings({
                 items: {
-                    "test.capability": { overrides: { additionalInstructions: "  Be brief.  " } }
+                    testCapability: { overrides: { additionalInstructions: "  Be brief.  " } }
                 }
             })
-        ).execute("test.capability");
+        ).execute("testCapability");
 
         expect(result.value.additionalInstructions).toBe("Be brief.");
     });
@@ -271,8 +271,8 @@ describe("ResolveAiCapabilityUseCase", () => {
      */
     it("refuses a capability that was switched off", async () => {
         const result = await resolver(
-            settings({ items: { "test.capability": { enabled: false, overrides: {} } } })
-        ).execute("test.capability");
+            settings({ items: { testCapability: { enabled: false, overrides: {} } } })
+        ).execute("testCapability");
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toContain("switched off");
@@ -284,19 +284,19 @@ describe("ResolveAiCapabilityUseCase", () => {
      */
     it("reports switched off as its own error type", async () => {
         const result = await resolver(
-            settings({ items: { "test.capability": { enabled: false, overrides: {} } } })
-        ).execute("test.capability");
+            settings({ items: { testCapability: { enabled: false, overrides: {} } } })
+        ).execute("testCapability");
 
         expect(result.error).toBeInstanceOf(AiCapabilityDisabledError);
 
         const error = result.error as AiCapabilityDisabledError;
         expect(error.code).toBe("AI_CAPABILITY_DISABLED");
-        expect(error.capabilityId).toBe("test.capability");
+        expect(error.capabilityId).toBe("testCapability");
     });
 
     /* Absent means enabled: a licence turns a capability on without anyone opting in. */
     it("runs a capability nobody has an entry for", async () => {
-        const result = await resolver(settings({})).execute("test.capability");
+        const result = await resolver(settings({})).execute("testCapability");
 
         expect(result.isOk()).toBe(true);
     });
@@ -304,9 +304,9 @@ describe("ResolveAiCapabilityUseCase", () => {
     it("runs a capability whose entry only carries overrides", async () => {
         const result = await resolver(
             settings({
-                items: { "test.capability": { overrides: { additionalInstructions: "Hi." } } }
+                items: { testCapability: { overrides: { additionalInstructions: "Hi." } } }
             })
-        ).execute("test.capability");
+        ).execute("testCapability");
 
         expect(result.isOk()).toBe(true);
     });
@@ -326,13 +326,13 @@ describe("ResolveAiCapabilityUseCase", () => {
  */
 describe("ResolveAiCapabilityUseCase misconfigurations", () => {
     const misconfigured: Array<[string, IAiPowerUpsSettings, string]> = [
-        ["no vision model", settings({}), "test.noGuidance"],
+        ["no vision model", settings({}), "testNoGuidance"],
         [
             "no model at all",
             settings({ roles: { standard: { connectionId: "", model: "" } } }),
-            "test.capability"
+            "testCapability"
         ],
-        ["deleted connection", settings({ connections: [] }), "test.capability"]
+        ["deleted connection", settings({ connections: [] }), "testCapability"]
     ];
 
     it.each(misconfigured)(

@@ -1,6 +1,6 @@
 import { AiCapability } from "@webiny/ai-powerups/exports/api/ai-powerups.js";
 
-export const REMOTE_COMPONENT_CAPABILITY = "wb.generateComponent";
+export const REMOTE_COMPONENT_CAPABILITY = "wbGenerateComponent";
 
 /**
  * Generating and refining a component, as one capability.
