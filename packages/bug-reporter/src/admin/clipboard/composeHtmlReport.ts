@@ -1,6 +1,7 @@
 import { toEnvironmentRows } from "./toEnvironmentRows.js";
 import { toEventRows } from "./toEventRows.js";
 import { screenshotNote } from "./screenshotNote.js";
+import { severityMarker } from "./severityMarker.js";
 import type { IEventRow } from "./toEventRows.js";
 import type { IBugReportPayload } from "../../shared/types.js";
 
@@ -30,7 +31,12 @@ function formatEvents(rows: IEventRow[]): string {
 
     const items: string[] = [];
     for (const row of rows) {
-        const line = `<code>${escapeHtml(row.offset)}</code> <strong>${escapeHtml(row.label)}</strong> ${escapeHtml(row.summary)}`;
+        let marker = "";
+        if (row.severity) {
+            marker = `${severityMarker(row.severity)} `;
+        }
+
+        const line = `${marker}<code>${escapeHtml(row.offset)}</code> <strong>${escapeHtml(row.label)}</strong> ${escapeHtml(row.summary)}`;
 
         if (row.detail) {
             items.push(`<li>${line}<br><code>${escapeHtml(row.detail)}</code></li>`);

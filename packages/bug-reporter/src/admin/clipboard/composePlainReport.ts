@@ -1,6 +1,7 @@
 import { toEnvironmentRows } from "./toEnvironmentRows.js";
 import { toEventRows } from "./toEventRows.js";
 import { screenshotNote } from "./screenshotNote.js";
+import { severityMarker } from "./severityMarker.js";
 import type { IEventRow } from "./toEventRows.js";
 import type { IBugReportPayload } from "../../shared/types.js";
 
@@ -23,7 +24,18 @@ function formatEvents(rows: IEventRow[]): string {
      * still line up, and a detail line indents to sit under its offset.
      */
     const numberWidth = String(rows.length).length;
-    const detailIndent = " ".repeat(numberWidth + 2);
+
+    /*
+     * Errors and warnings get a marker in front. When any row has one, the rest get the same width
+     * of blank space so the numbers still line up; a timeline with none stays as it was.
+     */
+    const hasMarkers = rows.some(row => row.severity !== null);
+    let blankMarker = "";
+    if (hasMarkers) {
+        blankMarker = "   ";
+    }
+
+    const detailIndent = " ".repeat(blankMarker.length + numberWidth + 2);
 
     const lines: string[] = [];
 
@@ -31,7 +43,13 @@ function formatEvents(rows: IEventRow[]): string {
         const number = String(index + 1).padStart(numberWidth);
         const offset = row.offset.padStart(offsetWidth);
         const label = row.label.padEnd(LABEL_WIDTH);
-        lines.push(`${number}. ${offset}  ${label}  ${row.summary}`);
+
+        let marker = blankMarker;
+        if (row.severity) {
+            marker = `${severityMarker(row.severity)} `;
+        }
+
+        lines.push(`${marker}${number}. ${offset}  ${label}  ${row.summary}`);
 
         if (row.detail) {
             lines.push(`${detailIndent}${row.detail}`);

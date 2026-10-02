@@ -78,6 +78,21 @@ describe("composeHtmlReport", () => {
         expect(html).not.toContain("<ol>");
     });
 
+    it("marks errors and warnings in front of their offset", () => {
+        const events = [
+            { at: REPORTED_AT, kind: "console", summary: "console.warn: careful" },
+            { at: REPORTED_AT, kind: "network", summary: "POST Login → 500 (41ms)" },
+            { at: REPORTED_AT, kind: "click", summary: "Clicked main" }
+        ];
+
+        const payload = buildPayload({ events });
+        const html = composeHtmlReport(payload);
+
+        expect(html).toContain("<li>🟡 <code>-0.0s</code> <strong>log</strong>");
+        expect(html).toContain("<li>🔴 <code>-0.0s</code> <strong>net</strong>");
+        expect(html).toContain("<li><code>-0.0s</code> <strong>click</strong> Clicked main</li>");
+    });
+
     it("mentions screenshots only when some were attached", () => {
         const screenshots = [{ mediaType: "image/png", base64: "AAAA" }];
 

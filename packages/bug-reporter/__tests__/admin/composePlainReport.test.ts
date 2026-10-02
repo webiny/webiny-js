@@ -34,7 +34,7 @@ describe("composePlainReport", () => {
 
         const text = composePlainReport(payload);
 
-        expect(text).toContain("1. -0.0s  error  TypeError\n   at render");
+        expect(text).toContain("🔴 1. -0.0s  error  TypeError\n      at render");
     });
 
     it("pads offsets so the labels line up", () => {
@@ -60,6 +60,33 @@ describe("composePlainReport", () => {
         const text = composePlainReport(payload);
 
         expect(text).toContain(" 9. -0.0s  click  button 9\n10. -0.0s  click  button 10");
+    });
+
+    it("marks errors and warnings, keeping the other rows aligned", () => {
+        const events = [
+            { at: REPORTED_AT, kind: "route", summary: "Opened /" },
+            { at: REPORTED_AT, kind: "console", summary: "console.warn: careful" },
+            { at: REPORTED_AT, kind: "exception", summary: "TypeError", detail: "at render" }
+        ];
+
+        const payload = buildPayload({ events });
+        const text = composePlainReport(payload);
+
+        expect(text).toContain(
+            [
+                "   1. -0.0s  nav    Opened /",
+                "🟡 2. -0.0s  log    console.warn: careful",
+                "🔴 3. -0.0s  error  TypeError",
+                "      at render"
+            ].join("\n")
+        );
+    });
+
+    it("adds no marker column when nothing went wrong", () => {
+        const payload = buildPayload();
+        const text = composePlainReport(payload);
+
+        expect(text).toContain("\n1. -2.0s  click  Publish");
     });
 
     it("starts with the environment when nothing was typed", () => {
