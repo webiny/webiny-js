@@ -23,8 +23,6 @@ export interface IReportBugViewModel {
     outcome: IReportBugOutcomeVm | null;
     /* Set only when a pop-up blocker refused the composer, so it can be offered as a link. */
     composeUrl: string | null;
-    /* True once the report is on the clipboard, until it is edited again. */
-    copied: boolean;
     canSubmit: boolean;
 }
 

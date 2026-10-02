@@ -3,6 +3,7 @@ import { ActionRecorder } from "../../recording/abstractions.js";
 import { collectEnvironment } from "../../capture/collectEnvironment.js";
 import { SubmitBugReportGateway } from "../../gateway/abstractions.js";
 import { BuildParams } from "@webiny/app-admin/features/buildParams/abstractions.js";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { readTargetRepository } from "../../capture/readTargetRepository.js";
 import { REPOSITORY_PARAM } from "../../../shared/repository.js";
 import { composeClipboardReport } from "../../clipboard/composeClipboardReport.js";
@@ -49,21 +50,22 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
     private error: string | null = null;
     private outcome: Abstraction.Outcome | null = null;
     private composeUrl: string | null = null;
-    private copied = false;
     private controller: AbortController | null = null;
 
     constructor(
         private recorder: ActionRecorder.Interface,
         private gateway: SubmitBugReportGateway.Interface,
+        private notifications: Notifications.Interface,
         private buildParams: BuildParams.Interface | undefined
     ) {
         // `controller` is machinery, not state anything renders, so it stays out of the map.
         makeAutoObservable<
             ReportBugPresenterImpl,
-            "recorder" | "gateway" | "buildParams" | "controller"
+            "recorder" | "gateway" | "notifications" | "buildParams" | "controller"
         >(this, {
             recorder: false,
             gateway: false,
+            notifications: false,
             buildParams: false,
             controller: false
         });
@@ -81,7 +83,6 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             error: this.error,
             outcome: this.outcome,
             composeUrl: this.composeUrl,
-            copied: this.copied,
             // A screenshot on its own is a report: the error text is often in the image.
             canSubmit: this.status === null && !this.isEmpty()
         };
@@ -99,17 +100,14 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
     describe(description: string): void {
         this.description = description;
-        this.copied = false;
     }
 
     attachScreenshot(dataUrl: string): void {
         this.screenshots = [...this.screenshots, dataUrl];
-        this.copied = false;
     }
 
     removeScreenshot(index: number): void {
         this.screenshots = this.screenshots.filter((_, position) => position !== index);
-        this.copied = false;
     }
 
     /*
@@ -126,9 +124,12 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
         try {
             await navigator.clipboard.writeText(text);
-            this.markCopied();
+            this.notifications.success({ title: "Bug report copied to clipboard" });
         } catch (error) {
-            this.markFailed(describeFailure(error));
+            this.notifications.warning({
+                title: "Could not copy the bug report",
+                description: describeFailure(error)
+            });
         }
     }
 
@@ -278,7 +279,6 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.error = null;
         this.outcome = null;
         this.composeUrl = null;
-        this.copied = false;
         this.status = null;
         this.capturedAt = Date.now();
         this.events = this.recorder.getEvents();
@@ -309,11 +309,6 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.composeUrl = url;
     }
 
-    private markCopied(): void {
-        this.error = null;
-        this.copied = true;
-    }
-
     private markFailed(message: string): void {
         this.status = null;
         this.error = message;
@@ -322,5 +317,10 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
 export const ReportBugPresenter = Abstraction.createImplementation({
     implementation: ReportBugPresenterImpl,
-    dependencies: [ActionRecorder, SubmitBugReportGateway, [BuildParams, { optional: true }]]
+    dependencies: [
+        ActionRecorder,
+        SubmitBugReportGateway,
+        Notifications,
+        [BuildParams, { optional: true }]
+    ]
 });
