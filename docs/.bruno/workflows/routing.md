@@ -22,10 +22,9 @@ The client driving this has the third problem most acutely. They need certain co
 
 Workflow administrators configure steps and will now configure how assignment happens. They are the ones who need to be able to reason about why a given reviewer was chosen.
 
-Editors request reviews. Most of the time assignment should be invisible to them. Sometimes they know who should look at something and want to say so.
-
+Editors request reviews. Most of the time assignment should be invisible to them. Sometimes they know who should look at something and want to say soy
 Reviewers receive work. The change they feel is going from a shared pool to something that arrives with their name on it.
-
+š
 ## What changes
 
 Each manual step gains an assignment configuration with an automatic strategy, an ordered list of routing rules, and a setting controlling whether the editor can choose a reviewer at submit time. Separately, the tenant gains a list of users who should be skipped by automatic assignment.
