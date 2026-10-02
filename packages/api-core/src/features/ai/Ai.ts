@@ -1,6 +1,5 @@
 import { createImplementation } from "@webiny/feature/api";
-import { generateText } from "ai";
-import { streamText } from "ai";
+import type * as AiSdk from "ai";
 import { Ai as AiAbstraction } from "./abstractions.js";
 import { AiSdkFactory } from "./abstractions.js";
 import { AiConnectionFactory } from "./abstractions.js";
@@ -48,7 +47,7 @@ class AiImpl implements AiAbstraction.Interface {
         private readonly modelRegistry: AiModelRegistry.Interface
     ) {}
 
-    async generateText(params: AiGenerateTextParams): ReturnType<typeof generateText> {
+    async generateText(params: AiGenerateTextParams): ReturnType<typeof AiSdk.generateText> {
         const { model, connection, ...options } = params;
         const { languageModel: resolvedModel, model: catalogModel } =
             await this.resolveLanguageModel(model, connection);
@@ -57,11 +56,13 @@ class AiImpl implements AiAbstraction.Interface {
 
         await this.eventPublisher.publish(new AiBeforeGenerateTextEvent({ requestId, params }));
 
+        // The AI SDK is loaded on first use, so it isn't part of every cold start.
+        const { generateText } = await import("ai");
         const start = performance.now();
 
         try {
             const result = await generateText({ model: resolvedModel, ...rest } as Parameters<
-                typeof generateText
+                typeof AiSdk.generateText
             >[0]);
 
             const duration = performance.now() - start;
@@ -83,7 +84,7 @@ class AiImpl implements AiAbstraction.Interface {
         }
     }
 
-    async streamText(params: AiStreamTextParams): Promise<ReturnType<typeof streamText>> {
+    async streamText(params: AiStreamTextParams): Promise<ReturnType<typeof AiSdk.streamText>> {
         const { model, connection, ...options } = params;
         const { languageModel: resolvedModel, model: catalogModel } =
             await this.resolveLanguageModel(model, connection);
@@ -91,8 +92,12 @@ class AiImpl implements AiAbstraction.Interface {
 
         await this.eventPublisher.publish(new AiBeforeStreamTextEvent({ params }));
 
+        const { streamText } = await import("ai");
+
         // Cast required: spreading the discriminated Prompt union loses its narrowing.
-        return streamText({ model: resolvedModel, ...rest } as Parameters<typeof streamText>[0]);
+        return streamText({ model: resolvedModel, ...rest } as Parameters<
+            typeof AiSdk.streamText
+        >[0]);
     }
 
     listModels(): Promise<AiModel[]> {

@@ -1,4 +1,3 @@
-import { stepCountIs } from "ai";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
@@ -83,6 +82,9 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
                 }
             }
         };
+
+        // Loaded on first use, so the AI SDK isn't part of every cold start.
+        const { stepCountIs } = await import("ai");
 
         try {
             const aiResult = await this.ai.generateText({

@@ -1,4 +1,3 @@
-import { Output } from "ai";
 import { z } from "zod";
 import { Ai } from "webiny/api";
 import { Logger } from "webiny/api";
@@ -117,6 +116,8 @@ class BugReportDrafterDecoratorImpl implements IssueDrafter.Interface {
         const capability = resolved.value;
         const prompt = buildPrompt(payload, timeline);
 
+        // Loaded on first use, so the AI SDK isn't part of every cold start.
+        const { Output } = await import("ai");
         const output = Output.object({ schema: issueDraftSchema });
         const system = withAdditionalInstructions(capability);
         const content = buildContent(payload, prompt);

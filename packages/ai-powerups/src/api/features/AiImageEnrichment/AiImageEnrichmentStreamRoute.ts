@@ -60,7 +60,7 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRouteHandler.Interface {
         let failure: unknown;
 
         try {
-            const request = buildEnrichmentAiRequest(prepared);
+            const request = await buildEnrichmentAiRequest(prepared);
             const stream = await this.ai.streamText({
                 ...request,
                 onError: ({ error }) => {

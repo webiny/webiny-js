@@ -1,4 +1,3 @@
-import { stepCountIs } from "ai";
 import type { ModelMessage } from "ai";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
@@ -232,6 +231,8 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         }
 
         const capability = resolution.value;
+        // Loaded on first use, so the AI SDK isn't part of every cold start.
+        const { stepCountIs } = await import("ai");
 
         const request: Ai.GenerateTextParams = {
             model: capability.model,
