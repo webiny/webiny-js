@@ -1,21 +1,19 @@
 import type { Transporter } from "nodemailer";
-import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
 import { MailTransport } from "~/domain/MailTransport/abstractions.js";
 
 export class SmtpMailTransport implements MailTransport.Interface {
     public readonly name = "Mailer/SmtpTransport";
-    private readonly transporter: Transporter<SMTPTransport.SentMessageInfo>;
+    private transporter: Promise<Transporter<SMTPTransport.SentMessageInfo>> | null = null;
 
-    constructor(config: SMTPTransport.Options) {
-        this.transporter = nodemailer.createTransport(config);
-    }
+    constructor(private readonly config: SMTPTransport.Options) {}
 
     async send(params: MailTransport.SendParams) {
         const { replyTo, text, html, to, bcc, cc, from, subject } = params;
 
         try {
-            const result = await this.transporter.sendMail({
+            const transporter = await this.getTransporter();
+            const result = await transporter.sendMail({
                 replyTo,
                 bcc,
                 cc,
@@ -63,5 +61,15 @@ export class SmtpMailTransport implements MailTransport.Interface {
                 }
             };
         }
+    }
+
+    // nodemailer is loaded when the first email is sent, so it isn't part of every cold start.
+    private getTransporter(): Promise<Transporter<SMTPTransport.SentMessageInfo>> {
+        if (!this.transporter) {
+            this.transporter = import("nodemailer").then(({ default: nodemailer }) => {
+                return nodemailer.createTransport(this.config);
+            });
+        }
+        return this.transporter;
     }
 }
