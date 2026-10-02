@@ -41,11 +41,12 @@ export const DrawerHeader = ({
                     className
                 )}
             >
-                <DrawerTitle className={"flex justify-between"}>
-                    <div className={"flex items-center gap-xs"}>
+                {/* Buttons stay outside the title, so they don't become part of the dialog's name. */}
+                <div className={"flex items-center justify-between gap-sm"}>
+                    <DrawerTitle className={"items-center gap-xs"}>
                         {icon}
                         {title}
-                    </div>
+                    </DrawerTitle>
 
                     <div className={"flex items-center gap-xs"}>
                         {headerActions}
@@ -60,7 +61,7 @@ export const DrawerHeader = ({
                             </DrawerPrimitive.Close>
                         )}
                     </div>
-                </DrawerTitle>
+                </div>
                 {description && <DrawerDescription>{description}</DrawerDescription>}
             </div>
             {separator && <Separator />}

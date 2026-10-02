@@ -15,9 +15,13 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
     private counts: NotificationCounts = EMPTY_COUNTS;
     private items: Notification[] = [];
     private loaded = false;
+    private latestRequestId = 0;
 
     constructor(private api: NotificationsApi.Interface) {
-        makeAutoObservable<NotificationsPresenterImpl, "api">(this, { api: false });
+        makeAutoObservable<NotificationsPresenterImpl, "api" | "latestRequestId">(this, {
+            api: false,
+            latestRequestId: false
+        });
     }
 
     get vm(): PresenterAbstraction.ViewModel {
@@ -83,6 +87,9 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
      * (opening the panel, switching tabs or filters, refreshing) show the loading state.
      */
     private async loadItems({ showLoading }: { showLoading: boolean }) {
+        // Switching tabs or filters quickly can leave an older request still in flight; only the
+        // latest one may write the list.
+        const requestId = ++this.latestRequestId;
         runInAction(() => {
             if (showLoading) {
                 this.loading = true;
@@ -95,11 +102,17 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
                 read: this.unreadOnly ? false : undefined,
                 limit: 50
             });
+            if (requestId !== this.latestRequestId) {
+                return;
+            }
             runInAction(() => {
                 this.items = result.items;
                 this.loading = false;
             });
         } catch (err) {
+            if (requestId !== this.latestRequestId) {
+                return;
+            }
             runInAction(() => {
                 this.error = (err as Error).message;
                 this.loading = false;

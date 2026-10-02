@@ -53,7 +53,7 @@ export const NotificationsPanel = createReactiveComponent(({ presenter }: Props)
             width={440}
             bodyPadding={false}
             headerSeparator={false}
-            icon={<Drawer.Icon icon={<InboxIcon />} label={"Inbox"} />}
+            icon={<Drawer.Icon icon={<InboxIcon />} label={""} />}
             title={
                 <>
                     Inbox
