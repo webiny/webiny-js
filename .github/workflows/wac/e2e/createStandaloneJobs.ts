@@ -17,7 +17,12 @@ import {
 } from "./constants.js";
 import { installBuildSteps, runBuildCacheDownloadSteps, yarnCacheSteps } from "./sharedSteps.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
-import { AI_E2E_JOB_IF, AI_E2E_LICENSE_ENV, createAiE2eSteps } from "./aiE2e.js";
+import {
+    AI_E2E_JOB_IF,
+    AI_E2E_LICENSE_ENV,
+    AI_E2E_VARIANT_LABEL,
+    createAiE2eSteps
+} from "./aiE2e.js";
 
 // The storage backends the standalone hosting type supports. Mirrors `StorageOps` in
 // create-webiny-project's standalone project setup.
@@ -260,13 +265,14 @@ export const createStandaloneProjectParts = (
                 "working-directory": workingDirectory,
                 run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
             },
-            ...(statusLabel ? createStatusRowUpdateSteps({ label: statusLabel }) : []),
             ...(aiE2e
                 ? createAiE2eSteps({
                       workingDirectory,
                       artifactName: `ai-e2e-results-standalone-${artifactSuffix}`
                   })
                 : []),
+            // After the AI tests, so the AI job's row reports them too.
+            ...(statusLabel ? createStatusRowUpdateSteps({ label: statusLabel }) : []),
             {
                 name: "Print server logs",
                 if: "failure()",
@@ -309,19 +315,19 @@ export const createStandaloneJobs = (storageOps: StandaloneStorageOps) => {
 /**
  * A licensed SQLite project running the Cypress smoke test plus the AI tests in `e2e/`. A job of
  * its own rather than a license on the regular SQLite job, so `/e2e` still covers an unlicensed
- * project for everyone, the AI users included. No row in the status comment: the comment is the
- * same for everyone, and this job only runs for some.
+ * project for everyone, the AI users included. Its status comment row (AI_E2E_COMMENT_ROW) only
+ * appears on the runs it takes part in.
  */
 export const createAiE2eStandaloneJobs = () => {
     const parts = createStandaloneProjectParts("sqlite", {
         workingDirectory: DIR_WEBINY_JS,
+        statusLabel: AI_E2E_VARIANT_LABEL,
         aiE2e: true
     });
 
     return {
         "e2e-standalone-sqlite-ai": {
-            // "WCP" for a project connected to WCP, which this job always is, with the full license.
-            ...createPrStandaloneJob("E2E - Standalone (SQLite, WCP)", parts),
+            ...createPrStandaloneJob(`E2E - ${AI_E2E_VARIANT_LABEL}`, parts),
             if: AI_E2E_JOB_IF
         }
     };

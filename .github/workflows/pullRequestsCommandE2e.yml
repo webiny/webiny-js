@@ -65,6 +65,10 @@ jobs:
             | Standalone (SQLite) | 🔄 Running... | - |
 
             | Standalone (Postgres) | 🔄 Running... | - |
+
+            ${{ contains(fromJSON('["adrians5j"]'),
+            github.event.comment.user.login) && '| Standalone (SQLite, WCP) | 🔄
+            Running... | - |' || '' }}
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -1372,6 +1376,34 @@ jobs:
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: Update PR comment - Standalone (SQLite, WCP) passed
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@| Standalone (SQLite,
+          WCP) | ✅ Passed | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Update PR comment - Standalone (SQLite, WCP) failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@| Standalone (SQLite,
+          WCP) | ❌ Failed | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
       - name: Print server logs
         if: failure()
         run: >-
