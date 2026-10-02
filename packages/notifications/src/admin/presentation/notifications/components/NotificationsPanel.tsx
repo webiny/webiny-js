@@ -2,6 +2,7 @@ import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { Checkbox, Drawer, EmptyState, IconButton, Tabs, Tag } from "@webiny/admin-ui";
 import { ReactComponent as DoneAllIcon } from "@webiny/icons/done_all.svg";
+import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { ReactComponent as InboxIcon } from "@webiny/icons/inbox.svg";
 import type { NotificationsPresenter, NotificationsTab } from "../abstractions.js";
 import { groupByTime } from "../styles.js";
@@ -63,16 +64,28 @@ export const NotificationsPanel = createReactiveComponent(({ presenter }: Props)
                 </>
             }
             headerActions={
-                <IconButton
-                    variant="ghost"
-                    size="md"
-                    iconSize="lg"
-                    title="Mark all as read"
-                    aria-label="Mark all as read"
-                    disabled={vm.counts.unread === 0}
-                    onClick={() => presenter.markAllRead()}
-                    icon={<DoneAllIcon />}
-                />
+                <>
+                    <IconButton
+                        variant="ghost"
+                        size="md"
+                        iconSize="lg"
+                        title="Mark all as read"
+                        aria-label="Mark all as read"
+                        disabled={vm.counts.unread === 0}
+                        onClick={() => presenter.markAllRead()}
+                        icon={<DoneAllIcon />}
+                    />
+                    <IconButton
+                        variant="ghost"
+                        size="md"
+                        iconSize="lg"
+                        title="Reload"
+                        aria-label="Reload"
+                        disabled={vm.loading}
+                        onClick={() => void presenter.refresh()}
+                        icon={<RefreshIcon />}
+                    />
+                </>
             }
         >
             <Tabs
