@@ -73,8 +73,17 @@ export const themeTypeRoles = (manifest: ThemeManifest): ThemeTypeRole[] => {
         if (size === null) {
             continue;
         }
+        /*
+         * The variable carrying the SIZE, not the first one the slot contributes.
+         *
+         * A typography role emits one variable per sub-property, family first — this theme names them
+         * `--wby-type-heading-1-family`, `-size`, `-line-height`, `-weight`. Matching only
+         * `font-size` found none of them and fell back to `variables[0]`, so the first run told the
+         * model to set a font size to `var(--wby-type-heading-6-family)`. A fallback that picks the
+         * wrong variable is worse than no token, because the CSS it produces looks deliberate.
+         */
         const variables = slot.cssVariables ?? [];
-        const sized = variables.find(name => /font-?size/i.test(name)) ?? variables[0];
+        const sized = variables.find(name => /(^|-)(font-?size|size)$/i.test(name));
         if (!sized) {
             continue;
         }

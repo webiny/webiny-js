@@ -96,7 +96,24 @@ describe("sectionTypeScale", () => {
 });
 
 describe("themeTypeRoles", () => {
-    it("reads a role's size through rem and prefers the font-size variable", () => {
+    it("takes the size variable, not the first the role contributes", () => {
+        // A role emits family, size, line-height and weight; family comes first. Binding a font size
+        // to the family variable produces CSS that looks deliberate and is wrong.
+        const role = manifest([["type.heading.1", "--wby-type-heading-1-family", "3.75rem"]]);
+        (role as unknown as { slots: { cssVariables: string[] }[] }).slots[0].cssVariables = [
+            "--wby-type-heading-1-family",
+            "--wby-type-heading-1-size",
+            "--wby-type-heading-1-line-height"
+        ];
+        expect(themeTypeRoles(role)[0].cssVariable).toBe("--wby-type-heading-1-size");
+    });
+
+    it("skips a role that contributes no size variable", () => {
+        const role = manifest([["type.body", "--wby-type-body-family", "1rem"]]);
+        expect(themeTypeRoles(role)).toEqual([]);
+    });
+
+    it("reads a role's size through rem", () => {
         expect(themeTypeRoles(THEME)).toEqual([
             { path: "type.h1", cssVariable: "--wby-type-h1-font-size", fontSize: 60 },
             { path: "type.body", cssVariable: "--wby-type-body-font-size", fontSize: 16 }
