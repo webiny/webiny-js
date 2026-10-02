@@ -5,6 +5,7 @@
     "packages": [
       "packages/*",
       "cypress-tests",
+      "e2e",
       "extensions/theme",
       "scripts/buildPackages",
       "scripts/prepublishOnly",
