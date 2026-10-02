@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
     validateContractConformance,
     validateTextPreservation,
-    validateTokenBinding
+    validateTokenBinding,
+    textsToPreserve
 } from "./validators.js";
 
 describe("validateTextPreservation", () => {
@@ -93,5 +94,35 @@ describe("validateTokenBinding", () => {
         const result = validateTokenBinding(css, valid);
         expect(result.passed).toBe(false);
         expect(result.failures).toEqual(["unknown token variable: --wby-color-made-up"]);
+    });
+});
+
+describe("textsToPreserve", () => {
+    it("drops icon ligatures and bare punctuation", () => {
+        expect(
+            textsToPreserve([
+                "Bedrooms",
+                "keyboard_arrow_down",
+                "attach_money",
+                ".",
+                ",",
+                "Reset Filters"
+            ])
+        ).toEqual(["Bedrooms", "Reset Filters"]);
+    });
+
+    it("keeps content that merely looks terse", () => {
+        // The narrow rule matters: these were measured as content across the five sites.
+        expect(textsToPreserve(["70119", "02115", "2026", "578", "downtown"])).toEqual([
+            "70119",
+            "02115",
+            "2026",
+            "578",
+            "downtown"
+        ]);
+    });
+
+    it("drops a non-string the artifact round-tripped to null", () => {
+        expect(textsToPreserve(["Apply Now", null as unknown as string])).toEqual(["Apply Now"]);
     });
 });

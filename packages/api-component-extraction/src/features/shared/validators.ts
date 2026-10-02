@@ -98,6 +98,22 @@ const renderableSource = (source: string): string =>
             .replace(/aiContext:\s*"(?:[^"\\]|\\.)*"/g, " ")
     );
 
+/**
+ * The texts a component is actually asked to reproduce.
+ *
+ * `isNonContentText` was written to keep icon ligatures and bare punctuation out of the text
+ * **check**, with the comment explaining that requiring them "measures nothing about fidelity". The
+ * exclusion was never applied to the **prompt**, so the model was still told to preserve them exactly
+ * — and, being unchecked, never told it was wrong to. Measured across the four demo sites, 16 of 34
+ * components carried such strings and they render as literal words: 71 Westland's filter bar read
+ * "Bedrooms keyboard_arrow_down" and "Bathrooms attach_money".
+ *
+ * Filtering here rather than at each call site, so the prompt and the check cannot drift apart again.
+ * It also stops the preserved-text limit being spent on a comma.
+ */
+export const textsToPreserve = (texts: string[]): string[] =>
+    texts.filter((text): text is string => typeof text === "string" && !isNonContentText(text));
+
 export const validateTextPreservation = (
     sourceTexts: string[],
     renderedText: string,

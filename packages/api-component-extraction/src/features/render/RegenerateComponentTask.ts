@@ -27,7 +27,8 @@ import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import {
     validateContractConformance,
     validateTextPreservation,
-    validateTokenBinding
+    validateTokenBinding,
+    textsToPreserve
 } from "~/features/shared/validators.js";
 
 export interface RegenerateTaskInput {
@@ -161,7 +162,7 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
         const validation = {
             bundling,
             textPreservation: validateTextPreservation(
-                sourceTexts.slice(0, PRESERVED_TEXT_LIMIT),
+                textsToPreserve(sourceTexts).slice(0, PRESERVED_TEXT_LIMIT),
                 renderedText,
                 renderedValues,
                 source

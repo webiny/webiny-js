@@ -18,7 +18,8 @@ import { stageArtifactKey } from "~/constants.js";
 import {
     validateContractConformance,
     validateTextPreservation,
-    validateTokenBinding
+    validateTokenBinding,
+    textsToPreserve
 } from "~/features/shared/validators.js";
 
 const MAX_ATTEMPTS = 3;
@@ -149,7 +150,9 @@ const buildPrompt = (
             : []),
         "",
         "Preserve this text content exactly:",
-        ...component.sourceTexts.slice(0, PRESERVED_TEXT_LIMIT).map(text => `- ${text}`)
+        ...textsToPreserve(component.sourceTexts)
+            .slice(0, PRESERVED_TEXT_LIMIT)
+            .map(text => `- ${text}`)
     ];
 
     const observed = component.props.flatMap(prop => structuredLines(prop, "- "));
@@ -373,7 +376,7 @@ export const generateComponentAttempts = async (
         const validation = {
             bundling,
             textPreservation: validateTextPreservation(
-                planned.sourceTexts.slice(0, PRESERVED_TEXT_LIMIT),
+                textsToPreserve(planned.sourceTexts).slice(0, PRESERVED_TEXT_LIMIT),
                 renderedText,
                 renderedValues,
                 output.source
