@@ -17,9 +17,9 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 export interface AuditLogsTestContext {
     container: Container;
-    /** Records an audit log through RecordAuditLogUseCase, throwing if it fails. */
+    // Records an audit log through RecordAuditLogUseCase, throwing if it fails.
     recordAuditLog(input: RecordAuditLogUseCase.Input): Promise<IAuditLog | null>;
-    /** Lists audit logs through ListAuditLogsUseCase, throwing if it fails. */
+    // Lists audit logs through ListAuditLogsUseCase, throwing if it fails.
     listAuditLogs(params: IListAuditLogsParams): Promise<ListAuditLogsUseCase.Output>;
 }
 
