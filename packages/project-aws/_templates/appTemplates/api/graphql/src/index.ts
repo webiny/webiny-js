@@ -13,10 +13,15 @@
  */
 import {
     createAwsDdbApiHandler,
-    createAwsDdbStreamApiHandler
+    createAwsDdbStreamApiHandler,
+    warmUpLambdaHandler
 } from "@webiny/api-event-handler-aws-ddb";
 import { extensions } from "./extensions";
 
 export const handler = createAwsDdbApiHandler({ extensions });
 
 export const streamHandler = createAwsDdbStreamApiHandler({ extensions });
+
+// Lambda gives the init phase more CPU than it gives a request, so the work a cold start's first
+// request would do (containers, license, database connection, GraphQL schema) is done here instead.
+await warmUpLambdaHandler({ handler, streamHandler });
