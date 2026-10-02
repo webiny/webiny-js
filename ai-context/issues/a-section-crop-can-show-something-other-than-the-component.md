@@ -39,3 +39,20 @@ Two things to separate when this is fixed:
 1. A fixed or sticky element should not become a section whose box is the viewport behind it.
 2. A render whose document height is 0 should not be recorded as a success. The `bodyPreview` field
    exists for exactly this case and currently only informs a reader who goes looking for it.
+
+## It also corrupts the colour measures (added from the colour-fix acceptance)
+
+The same component is the largest single contributor to both colour numbers in the acceptance run,
+and in neither case is colour the cause:
+
+- It reads as "a theme colour the section does not have" at a background distance of 268. The render
+  is the yellow SPECIALS tab in the section's own `#e0e299`; the crop is the building photograph.
+- It contributes **four of the six "invented" dominant colours**, all quantised shades of that same
+  `#e0e299`.
+
+Because the hero's background is an `<img>`, it has no `backgroundColor` to measure, so
+`resolveSectionColours` correctly reports the tab's colour as the section's only painted background.
+Every stage is doing the right thing with the boundary it was given.
+
+**Any measure that compares a render against its section crop inherits this.** Where a component is
+scoped narrower than the section its crop shows, the comparison measures the scoping.
