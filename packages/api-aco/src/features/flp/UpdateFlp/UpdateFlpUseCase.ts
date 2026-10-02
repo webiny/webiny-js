@@ -26,10 +26,17 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
      * continued run skips them. A folder is added only after all of its descendants are written: one
      * entered but not finished when time ran out has to be walked again, or the rest of its subtree
      * would never be updated.
+     *
+     * Only the topmost finished folders are kept. When a folder completes, its children leave the
+     * set, since skipping the folder already skips them. The set travels in the task input on every
+     * continuation, and listing every finished folder would outgrow it on exactly the large trees
+     * that need continuing.
      */
     private readonly completed: Set<string> = new Set();
     private readonly flpsToUpdate: Map<string, FlpUpdateData> = new Map();
     private timedOut = false;
+    // How many folders this run finished, so a run that finished none can refuse to hand over.
+    private completedThisRun = 0;
 
     constructor(
         private flpCrud: AcoFlpCrud.Interface,
@@ -42,6 +49,11 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
     async execute(params: UpdateFlpParams): Promise<void> {
         this.isCloseToTimeout = params.isCloseToTimeout;
         this.handleTimeout = params.handleTimeout;
+
+        // Fresh per run, so an instance that ever gets reused does not carry the last run's state.
+        this.completed.clear();
+        this.timedOut = false;
+        this.completedThisRun = 0;
 
         if (params.completed) {
             params.completed.forEach(id => this.completed.add(id));
@@ -132,17 +144,33 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
         }
 
         // Only now is everything below this folder collected.
+        for (const child of children) {
+            this.completed.delete(child.id);
+        }
         this.completed.add(flp.id);
+        this.completedThisRun++;
     }
 
     /*
      * Writes what has been collected and hands over to a continued run. Every level of the walk
      * checks `timedOut` and stops, rather than carrying on with its remaining children.
+     *
+     * A run that finished no folder would hand the next run the same input, which would do the same
+     * work and hand over again, forever. That fails the task instead.
      */
     private async stopForTimeout(): Promise<void> {
         this.timedOut = true;
         await this.executeBatchUpdate();
-        this.handleTimeout?.(Array.from(this.completed));
+
+        if (this.completedThisRun === 0) {
+            throw new WebinyError(
+                "The FLP update ran out of time before finishing any folder, so continuing would repeat the same work.",
+                "UPDATE_FLP_NO_PROGRESS"
+            );
+        }
+
+        const completed = Array.from(this.completed);
+        this.handleTimeout?.(completed);
     }
 
     private async executeBatchUpdate(): Promise<void> {
@@ -187,8 +215,10 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
                 }
             });
         } finally {
-            // Clear the update collection after the batch update. `completed` is kept: it is what a
-            // continued run needs to know.
+            /*
+             * Clear the update collection after the batch update. `completed` is kept: it is what a
+             * continued run needs to know.
+             */
             this.flpsToUpdate.clear();
         }
     }

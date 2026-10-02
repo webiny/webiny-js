@@ -85,8 +85,53 @@ describe("Update FLP across task runs", () => {
         expect(runs).toBeGreaterThan(1);
 
         for (const descendant of [tree.b, tree.b1, tree.b2, tree.c, tree.c1]) {
-            await expect(inheritsViewer(context.container, descendant)).resolves.toBe(true);
+            const inherits = await inheritsViewer(context.container, descendant);
+            expect(inherits).toBe(true);
         }
+    });
+
+    it("should hand over only the topmost finished folders", async () => {
+        const context = await handler();
+        const tree = await createTree(context.container);
+        const parentOf = new Map(
+            [tree.b, tree.b1, tree.b2, tree.c, tree.c1].map(folder => [folder.id, folder.parentId])
+        );
+        const folder = { ...tree.a, permissions: [viewer] };
+
+        // Stops inside `c`'s branch, after `b` and everything under it is finished.
+        let handedOver: string[] = [];
+        await context.container.resolve(UpdateFlpUseCase).execute({
+            folder,
+            isCloseToTimeout: timeoutAfter(5),
+            handleTimeout: completed => {
+                handedOver = completed;
+            }
+        });
+
+        // A finished `b` already covers `b1` and `b2`, so listing them too would only grow the input.
+        expect(handedOver).toEqual([tree.b.id]);
+        for (const id of handedOver) {
+            const parentId = parentOf.get(id);
+            expect(handedOver).not.toContain(parentId);
+        }
+    });
+
+    it("should fail rather than hand over a run that finished no folder", async () => {
+        const context = await handler();
+        const tree = await createTree(context.container);
+
+        let handovers = 0;
+        const run = context.container.resolve(UpdateFlpUseCase).execute({
+            folder: { ...tree.a, permissions: [viewer] },
+            // Out of time from the very first folder, so nothing can finish.
+            isCloseToTimeout: () => true,
+            handleTimeout: () => {
+                handovers++;
+            }
+        });
+
+        await expect(run).rejects.toThrow();
+        expect(handovers).toBe(0);
     });
 
     it("should hand over at most once per run", async () => {
@@ -96,7 +141,7 @@ describe("Update FLP across task runs", () => {
         let handovers = 0;
         await context.container.resolve(UpdateFlpUseCase).execute({
             folder: { ...tree.a, permissions: [viewer] },
-            isCloseToTimeout: timeoutAfter(2),
+            isCloseToTimeout: timeoutAfter(3),
             handleTimeout: () => {
                 handovers++;
             }
@@ -119,7 +164,7 @@ describe("Update FLP across task runs", () => {
             input,
             definition,
             controller: {
-                runtime: { isAborted: () => false, isCloseToTimeout: timeoutAfter(2) },
+                runtime: { isAborted: () => false, isCloseToTimeout: timeoutAfter(3) },
                 response: {
                     continue: (data: unknown) => ({ status: "continue", input: data }),
                     done: (message: string) => ({ status: "done", message }),
