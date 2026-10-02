@@ -3,8 +3,10 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app/shared/di/useFeature.js";
 import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
+import { cn } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
+import { linkVariants } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { Textarea } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
@@ -54,15 +56,26 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
             title={"Report a bug"}
             description={"Say what went wrong, paste a screenshot. The rest is already captured."}
             loading={vm.busy}
+            info={
+                /*
+                 * A button dressed as a link: it acts on the page rather than going anywhere, so
+                 * the `Link` component, which needs a `to`, is the wrong element for it.
+                 */
+                <button
+                    type={"button"}
+                    disabled={!vm.canSubmit}
+                    className={cn(
+                        linkVariants({ size: "sm" }),
+                        "disabled:text-neutral-disabled disabled:no-underline"
+                    )}
+                    onClick={() => void report.copy()}
+                >
+                    {vm.copied ? "Copied" : "Copy to clipboard"}
+                </button>
+            }
             actions={
                 <>
                     <Button variant={"ghost"} text={"Cancel"} onClick={() => report.close()} />
-                    <Button
-                        variant={"secondary"}
-                        text={vm.copied ? "Copied" : "Copy report"}
-                        disabled={!vm.canSubmit}
-                        onClick={() => void report.copy()}
-                    />
                     <Button
                         variant={"primary"}
                         text={"File the issue"}
