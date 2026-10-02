@@ -80,8 +80,13 @@ class GraphQLClientImpl implements GraphQLClient.Interface {
             throw { message: json.message, code: json.code };
         }
 
-        // Check for GraphQL errors
-        if (json.errors && json.errors.length > 0) {
+        /**
+         * A GraphQL response can carry BOTH `data` and `errors` (partial success): a non-nullable
+         * field error nulls that field and bubbles up to the nearest nullable ancestor, while the
+         * rest of `data` stays valid and usable. We only treat errors as fatal when there is no
+         * data to return — otherwise callers are free to consume the partial payload.
+         */
+        if (json.errors && json.errors.length > 0 && !json.data) {
             throw new Error(`GraphQL errors`, { cause: json.errors });
         }
         return { data: json.data as TResult, extensions: json.extensions };

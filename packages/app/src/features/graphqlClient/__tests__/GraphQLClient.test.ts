@@ -143,6 +143,26 @@ describe("GraphQLClient Feature", () => {
             ).rejects.toThrow("GraphQL errors");
         });
 
+        it("should return partial data when the response carries both data and errors", async () => {
+            const mockResponse = {
+                data: { content: { data: [{ id: "1" }, { id: "2" }] } },
+                errors: [{ message: "Cannot return null for non-nullable field RefField.id." }]
+            };
+
+            global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
+                json: async () => mockResponse
+            });
+
+            const client = container.resolve(GraphQLClient);
+            const result = await client.execute({
+                endpoint: "https://api.example.com/graphql",
+                query: "query { content { data { id } } }"
+            });
+
+            expect(result).toEqual(mockResponse.data);
+        });
+
         it("should throw on invalid JSON response", async () => {
             global.fetch = vi.fn().mockResolvedValue({
                 json: async () => {
@@ -295,6 +315,36 @@ describe("GraphQLClient Feature", () => {
             ];
 
             await expect(Promise.all(promises)).rejects.toThrow("GraphQL errors in operation 1");
+        });
+
+        it("should return partial data for a batched operation that has data and errors", async () => {
+            const mockResponse = [
+                { data: { user: { id: "1" } } },
+                {
+                    data: { content: { data: [{ id: "2" }] } },
+                    errors: [{ message: "Cannot return null for non-nullable field RefField.id." }]
+                }
+            ];
+
+            global.fetch = vi.fn().mockResolvedValue({
+                json: async () => mockResponse
+            });
+
+            const client = container.resolve(GraphQLClient);
+
+            const [result1, result2] = await Promise.all([
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { user { id } }"
+                }),
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { content { data { id } } }"
+                })
+            ]);
+
+            expect(result1).toEqual(mockResponse[0].data);
+            expect(result2).toEqual(mockResponse[1].data);
         });
     });
 
