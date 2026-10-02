@@ -41,7 +41,7 @@ export namespace UpdateGroupUseCase {
  * UpdateGroupRepository - Persists group updates to storage.
  */
 export interface IUpdateGroupRepository {
-    execute(group: CmsGroup): Promise<Result<void, RepositoryError>>;
+    execute(group: CmsGroup): Promise<Result<CmsGroup, RepositoryError>>;
 }
 
 export interface IUpdateGroupRepositoryErrors {

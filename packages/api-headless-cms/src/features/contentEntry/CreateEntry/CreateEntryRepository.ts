@@ -4,6 +4,7 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
 import { CreateEntryStorageOperation } from "~/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * CreateEntryRepository - Handles persistence of new entries.
@@ -12,13 +13,17 @@ import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 class CreateEntryRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
-        private createEntryStorage: CreateEntryStorageOperation.Interface
+        private createEntryStorage: CreateEntryStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     public async execute(
-        model: CmsModel,
-        entry: CmsEntry
+        initialModel: CmsModel,
+        initialEntry: CmsEntry
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+        const entry = this.runtimeTenant.assign(initialEntry);
+
         try {
             // Transform domain entry to storage format
             const storageEntry = await this.entryToStorageTransform(model, entry);
@@ -38,5 +43,5 @@ class CreateEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const CreateEntryRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateEntryRepositoryImpl,
-    dependencies: [EntryToStorageTransform, CreateEntryStorageOperation]
+    dependencies: [EntryToStorageTransform, CreateEntryStorageOperation, RuntimeTenant]
 });
