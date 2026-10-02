@@ -37,6 +37,8 @@ export class FormModel implements IFormModel {
     private _validateOnChange = false;
     private _isValid: boolean | null = null;
     private _formRuleErrors: IFormError[] = [];
+    // Fields that the last `setErrors()` call marked invalid. The next call replaces them.
+    private _externalErrorFields = new Set<IField>();
     private _activeTabs = observable.map<string, string>();
     private _ruleEvaluators: IRuleEvaluator[] = [];
     private _warnedRuleTypes = new Set<string>();
@@ -269,6 +271,7 @@ export class FormModel implements IFormModel {
         this._submitCount = 0;
         this._isValid = null;
         this._formRuleErrors = [];
+        this._externalErrorFields.clear();
     }
 
     reset(): void {
@@ -281,6 +284,7 @@ export class FormModel implements IFormModel {
         this._submitCount = 0;
         this._isValid = null;
         this._formRuleErrors = [];
+        this._externalErrorFields.clear();
     }
 
     get isDirty(): boolean {
@@ -379,6 +383,8 @@ export class FormModel implements IFormModel {
     }
 
     async validate(): Promise<boolean> {
+        // Validation recomputes every field, so errors from an earlier `setErrors()` go too.
+        this._externalErrorFields.clear();
         let allFieldsValid = true;
 
         for (const [, field] of this._fields) {
@@ -415,11 +421,19 @@ export class FormModel implements IFormModel {
     setErrors(errors: IFormError[]): void {
         const formErrors: IFormError[] = [];
         runInAction(() => {
+            // A new set of errors replaces the previous one, so a field that was rejected last
+            // time and isn't this time goes back to valid.
+            for (const field of this._externalErrorFields) {
+                field.resetValidation();
+            }
+            this._externalErrorFields.clear();
+
             for (const error of errors) {
                 const field = error.path ? this._tryGetField(error.path) : undefined;
                 if (field?.visible) {
                     // Collected by `errors` from the field, with its label and breadcrumb.
                     field.setValidation({ isValid: false, message: error.message });
+                    this._externalErrorFields.add(field);
                 } else {
                     formErrors.push(error);
                 }

@@ -122,8 +122,16 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             return false;
         }
 
+        /*
+         * Saving is async, and the form can be reset or replaced by another entry before it
+         * finishes. Keep hold of the form and model being saved, and only write the result back
+         * while that form is still the one on screen.
+         */
+        const form = this.form;
+        const model = this.model;
+
         const skipValidation = options?.skipValidation ?? true;
-        const data = await this.form.submit({ skipValidation });
+        const data = await form.submit({ skipValidation });
 
         if (!data) {
             return false;
@@ -146,9 +154,12 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
                 });
 
                 runInAction(() => {
+                    if (this.form !== form) {
+                        return;
+                    }
                     this.entry = entry;
-                    this.form!.setData(entry.values);
-                    this.form!.reset();
+                    form.setData(entry.values);
+                    form.reset();
                 });
             } else {
                 const createData: Record<string, unknown> = { values: data };
@@ -163,15 +174,20 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
                 });
 
                 runInAction(() => {
+                    if (this.form !== form) {
+                        return;
+                    }
                     this.entry = entry;
-                    this.form!.setData(entry.values);
-                    this.form!.reset();
+                    form.setData(entry.values);
+                    form.reset();
                 });
             }
 
             return true;
         } catch (error) {
-            this.form.setErrors(toFormErrors(error, this.model));
+            if (this.form === form) {
+                form.setErrors(toFormErrors(error, model));
+            }
             return false;
         } finally {
             runInAction(() => {
