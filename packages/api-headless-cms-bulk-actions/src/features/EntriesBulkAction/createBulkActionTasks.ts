@@ -12,6 +12,7 @@ import type {
 } from "~/types.js";
 import { BulkActionOperationByModelAction } from "~/types.js";
 import { EntriesBulkAction, EntriesBulkActionConfig } from "./abstractions.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { BulkActionName } from "~/domain/BulkActionName.js";
 import { ChildTasksCleanup } from "./internals/ChildTasksCleanup.js";
 import { ProcessTask } from "./internals/ProcessTask.js";
@@ -42,7 +43,8 @@ class BulkActionListTaskHandlerImpl implements TaskHandler.Interface<
         private readonly listTasks: ListTasksUseCase.Interface,
         private readonly triggerTask: TriggerTaskUseCase.Interface,
         private readonly tasksCrud: TasksCrud.Interface,
-        private readonly bulkActionsConfig: EntriesBulkActionConfig.Interface
+        private readonly bulkActionsConfig: EntriesBulkActionConfig.Interface,
+        private readonly logger: Logger.Interface
     ) {}
 
     async run({
@@ -77,7 +79,8 @@ class BulkActionListTaskHandlerImpl implements TaskHandler.Interface<
                         this.triggerTask,
                         bulkAction,
                         BULK_ACTION_PROCESS_TASK_ID,
-                        batchSize
+                        batchSize,
+                        this.logger
                     );
                     return await createTasks.execute({ input, controller, definition });
                 }
@@ -117,7 +120,7 @@ class BulkActionListTaskHandlerImpl implements TaskHandler.Interface<
         try {
             await childTasksCleanup.execute({ tasksCrud: this.tasksCrud, task });
         } catch (ex) {
-            console.error(`Error while cleaning bulk action list child tasks.`, ex);
+            this.logger.error({ error: ex, task: task.id }, "Failed to clean up child tasks.");
         }
     }
 }
@@ -130,7 +133,8 @@ const BulkActionListTaskHandler = TaskHandler.createImplementation({
         ListTasksUseCase,
         TriggerTaskUseCase,
         TasksCrud,
-        EntriesBulkActionConfig
+        EntriesBulkActionConfig,
+        Logger
     ]
 });
 
