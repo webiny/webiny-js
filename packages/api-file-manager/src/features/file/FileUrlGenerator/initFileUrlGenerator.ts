@@ -14,7 +14,12 @@ export const initFileUrlGenerator = (generator: FileUrlGenerator.Interface): Pro
 
     let initialization = initializations.get(generator);
     if (!initialization) {
-        initialization = generator.init();
+        // A failed init() is forgotten, so the next URL in the same request (a batched request runs
+        // several operations against one generator) tries again instead of reusing the failure.
+        initialization = generator.init().catch(error => {
+            initializations.delete(generator);
+            throw error;
+        });
         initializations.set(generator, initialization);
     }
 

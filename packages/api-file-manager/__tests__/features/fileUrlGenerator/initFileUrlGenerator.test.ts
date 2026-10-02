@@ -27,6 +27,22 @@ describe("initFileUrlGenerator", () => {
         expect(second.init).toHaveBeenCalledTimes(1);
     });
 
+    it("should try init() again after it failed", async () => {
+        const init = vi
+            .fn<() => Promise<void>>()
+            .mockRejectedValueOnce(new Error("Could not load the settings."))
+            .mockResolvedValueOnce(undefined);
+        const generator: FileUrlGenerator.Interface = { init, generateUrl: () => "" };
+
+        await expect(initFileUrlGenerator(generator)).rejects.toThrow(
+            "Could not load the settings."
+        );
+        await expect(initFileUrlGenerator(generator)).resolves.toBeUndefined();
+        await initFileUrlGenerator(generator);
+
+        expect(init).toHaveBeenCalledTimes(2);
+    });
+
     it("should accept generators without init()", async () => {
         const generator: FileUrlGenerator.Interface = { generateUrl: () => "" };
 
