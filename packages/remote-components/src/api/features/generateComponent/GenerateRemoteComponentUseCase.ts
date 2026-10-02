@@ -80,7 +80,7 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
                 return Result.fail(new Error("AI returned an empty response."));
             }
 
-            const parsed = parseGeneratedSource(text);
+            const parsed = await parseGeneratedSource(text);
             return Result.ok(parsed);
         } catch (error) {
             return Result.fail(error as Error);
