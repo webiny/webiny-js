@@ -56,20 +56,24 @@ const createWarmUpContext = () => {
 };
 
 const warmUpHandler = async (handler: LambdaHandler): Promise<void> => {
+    // The timer stays referenced: if the request stalls with nothing else keeping the event loop
+    // alive, an unreferenced timer would let Node exit on an unsettled top-level await instead.
     let timer: NodeJS.Timeout | undefined;
     const timeout = new Promise<void>(resolve => {
         timer = setTimeout(resolve, WARM_UP_TIMEOUT_MS);
-        timer.unref();
     });
 
     const event = createWarmUpEvent();
     const context = createWarmUpContext();
-    const request = handler(event, context).then(
-        () => undefined,
-        // A failed warm-up must never fail init. A fresh install, for example, has no tenant yet.
-        // The first real request goes through the same code and reports the error properly.
-        () => undefined
-    );
+    // Started inside the chain so a handler that throws synchronously is caught too.
+    const request = Promise.resolve()
+        .then(() => handler(event, context))
+        .then(
+            () => undefined,
+            // A failed warm-up must never fail init. A fresh install, for example, has no tenant
+            // yet. The first real request goes through the same code and reports the error properly.
+            () => undefined
+        );
 
     try {
         await Promise.race([request, timeout]);

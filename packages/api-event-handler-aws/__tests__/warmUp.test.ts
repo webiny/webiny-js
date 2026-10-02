@@ -69,6 +69,16 @@ describe("warmUpLambdaHandler", () => {
         await expect(warmUpLambdaHandler({ handler: withWarmUp(handle) })).resolves.toBeUndefined();
     });
 
+    it("should not throw when the handler throws synchronously", async () => {
+        process.env._HANDLER = "handler.handler";
+        const handle = vi.fn((): Promise<unknown> => {
+            throw new Error("Thrown before a promise was returned.");
+        });
+
+        await expect(warmUpLambdaHandler({ handler: withWarmUp(handle) })).resolves.toBeUndefined();
+        expect(handle).toHaveBeenCalledTimes(1);
+    });
+
     it("should stop waiting for a warm-up request that hangs", async () => {
         vi.useFakeTimers();
         process.env._HANDLER = "handler.handler";
