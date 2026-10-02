@@ -1,23 +1,24 @@
 import WebinyError from "@webiny/error";
 import { TeamAfterUpdateEventHandler } from "@webiny/api-core/features/security/teams/UpdateTeam/index.js";
-import { AuditLogRecorder } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogTeamAfterUpdateHandlerImpl implements TeamAfterUpdateEventHandler.Interface {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: TeamAfterUpdateEventHandler.Event): Promise<void> {
         try {
             const { updated, original } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.SECURITY.TEAM.UPDATE);
 
-            await createAuditLog(
-                "Team updated",
-                { before: original, after: updated },
-                updated.id,
-                this.recorder
-            );
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.SECURITY.TEAM.UPDATE,
+                message: "Team updated",
+                content: { before: original, after: updated },
+                entityId: updated.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogTeamAfterUpdateHandler",
@@ -29,5 +30,5 @@ class AuditLogTeamAfterUpdateHandlerImpl implements TeamAfterUpdateEventHandler.
 
 export const AuditLogTeamAfterUpdateHandler = TeamAfterUpdateEventHandler.createImplementation({
     implementation: AuditLogTeamAfterUpdateHandlerImpl,
-    dependencies: [AuditLogRecorder]
+    dependencies: [RecordAuditLogUseCase]
 });

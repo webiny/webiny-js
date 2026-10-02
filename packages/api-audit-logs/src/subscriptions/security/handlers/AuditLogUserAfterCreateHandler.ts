@@ -1,18 +1,24 @@
 import WebinyError from "@webiny/error";
 import { UserAfterCreateEventHandler } from "@webiny/api-core/features/users/CreateUser/index.js";
-import { AuditLogRecorder } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogUserAfterCreateHandlerImpl implements UserAfterCreateEventHandler.Interface {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: UserAfterCreateEventHandler.Event): Promise<void> {
         try {
             const { user } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.SECURITY.USER.CREATE);
 
-            await createAuditLog("User created", user, user.id, this.recorder);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.SECURITY.USER.CREATE,
+                message: "User created",
+                content: user,
+                entityId: user.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogUserAfterCreateHandler",
@@ -24,5 +30,5 @@ class AuditLogUserAfterCreateHandlerImpl implements UserAfterCreateEventHandler.
 
 export const AuditLogUserAfterCreateHandler = UserAfterCreateEventHandler.createImplementation({
     implementation: AuditLogUserAfterCreateHandlerImpl,
-    dependencies: [AuditLogRecorder]
+    dependencies: [RecordAuditLogUseCase]
 });

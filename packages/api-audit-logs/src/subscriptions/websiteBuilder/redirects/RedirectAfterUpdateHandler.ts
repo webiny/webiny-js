@@ -1,22 +1,23 @@
 import { WebinyError } from "@webiny/error";
 import { RedirectAfterUpdateEventHandler } from "@webiny/api-website-builder/features/redirects/UpdateRedirect/index.js";
-import { AuditLogRecorder } from "~/abstractions.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
 
 class RedirectAfterUpdateHandlerImpl implements RedirectAfterUpdateEventHandler.Interface {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: RedirectAfterUpdateEventHandler.Event): Promise<void> {
         try {
             const { redirect, original } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.WEBSITE_BUILDER.REDIRECT.UPDATE);
-            await createAuditLog(
-                "Website Redirect Updated",
-                { before: original, after: redirect },
-                redirect.id,
-                this.recorder
-            );
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.WEBSITE_BUILDER.REDIRECT.UPDATE,
+                message: "Website Redirect Updated",
+                content: { before: original, after: redirect },
+                entityId: redirect.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing RedirectAfterUpdateEventHandler",
@@ -29,6 +30,6 @@ class RedirectAfterUpdateHandlerImpl implements RedirectAfterUpdateEventHandler.
 export const RedirectAfterUpdateAuditHandler = RedirectAfterUpdateEventHandler.createImplementation(
     {
         implementation: RedirectAfterUpdateHandlerImpl,
-        dependencies: [AuditLogRecorder]
+        dependencies: [RecordAuditLogUseCase]
     }
 );
