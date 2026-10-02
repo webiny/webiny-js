@@ -29,7 +29,7 @@ export default {
         {
             name: "admin",
             engine: web(),
-            app: { url: process.env.E2E_ADMIN_URL || "http://localhost:3001" }
+            app: { url: process.env.E2E_ADMIN_URL || "https://wby3.localhost" }
         }
     ],
     agents: {
