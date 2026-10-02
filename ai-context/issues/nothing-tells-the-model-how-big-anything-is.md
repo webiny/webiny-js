@@ -145,3 +145,66 @@ nine that describe proportion — and none of them, nor any box, reaches the gen
 So the answer to "what do the prompt and the contract tell the model about measurements" is: nothing,
 and not because the measurements were never taken. They are captured on every node of every page and
 dropped one stage later.
+
+---
+
+## The real distribution, measured on both sides
+
+The proxy above answered the direction question wrongly, and the correction is the reason for
+measuring properly rather than better. Both sides are now measured the same way — text-bearing
+elements only, absolute within the 1440px canvas — the source from its captured node tree (served by
+the new `…/run/:runId/tree` route) and the render from the painted sandbox page (`MEASURE_GEOMETRY`,
+taken just before the screenshot).
+
+**31 of 34 components measured.** The three that are not:
+
+| component                       | why                                                                                                                    |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 2424 Tulane · Floor Plan Filter | no successful render — it stopped generating, see `non-content-strings-are-excluded-from-the-check-and-not-the-prompt` |
+| Freehill · Site Header          | the source section contains no text at all, so there is no type to compare                                             |
+| Freehill · Image Panel          | same                                                                                                                   |
+
+The five the proxy could not reach are all measured now.
+
+| ratio render / source  | n   | median   | p10  | p90  | smaller | within 10% | larger |
+| ---------------------- | --- | -------- | ---- | ---- | ------- | ---------- | ------ |
+| **max font size**      | 31  | **0.77** | 0.55 | 1.13 | **21**  | 6          | 4      |
+| **median font size**   | 31  | **0.80** | 0.55 | 1.00 | **20**  | 9          | 2      |
+| **median line height** | 31  | **0.74** | 0.48 | 1.16 | 18      | 6          | 7      |
+| content width          | 31  | 1.01     | 0.82 | 1.41 | 6       | **14**     | 11     |
+| content inset          | 30  | 1.00     | 0.19 | 2.85 | 13      | 5          | 12     |
+
+**Type is systematically small and the layout is not.** Content width is within 10% on 14 of 31 and
+has no direction; type is smaller on 21 of 31, and the absolute error on headings reaches −44px,
+−31px and −27px.
+
+**Read the inset row as "not measured", not as "no direction".** It is defined over text-bearing
+elements, so a section whose leftmost element is a logo image reports the inset of its right-hand
+menu instead — 71 Westland's navigation reads a source inset of 1124px for that reason. The number is
+real and it is not answering the question anyone would ask of it.
+
+### It is not scaling at all, it is reaching for a default
+
+|                    | n   | source    | render        | ratio |
+| ------------------ | --- | --------- | ------------- | ----- |
+| source type ≥ 40px | 17  | mean 50px | mean **33px** | 0.66  |
+| source type ≤ 20px | 8   | mean 17px | mean **21px** | 1.25  |
+
+**15 of 31 renders have their largest type between 31px and 34px, and 13 of those are exactly 33px.**
+The source sizes behind that cluster run from 31px to 60px.
+
+So the model is not shrinking the section's type by some factor. It is ignoring the section's type
+and writing a house heading size of about 2rem, which is too small for every large heading and too
+large for small text. That is what "no measurements in the prompt" produces, and it is why the
+earlier reading of the symptom as "type a size small" was half right: large type is pulled down,
+small type is pushed up, and both land on the same default.
+
+### What this says about the fix
+
+A prompt instruction phrased as prose — "match the section's proportions", "use larger headings" —
+would push the already-too-large half further out. The distribution says the model needs the
+**numbers**, not a description of them, which is the same shape as
+`image-values-are-captured-and-never-derived`: the values exist on every node, are carried one stage,
+and are dropped.
+
+No prompt change is made here. The proposal follows this measurement.
