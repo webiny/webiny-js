@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { useHandler } from "./helpers/useHandler";
 import { auditAction } from "~tests/mocks/auditAction.js";
 import { generateAlphaNumericId } from "@webiny/utils/generateId.js";
-import type { IAuditLog } from "~/storage/types.js";
 import { UpdateAuditLogUseCase } from "~/features/UpdateAuditLog/abstractions.js";
 
 describe("update existing audit log", () => {
@@ -21,7 +20,7 @@ describe("update existing audit log", () => {
             evenMoreStringData: "abcdef"
         };
 
-        const createdResult = (await context.recordAuditLog({
+        const createdResult = await context.recordAuditLog({
             audit: {
                 ...auditAction,
                 action: {
@@ -32,7 +31,10 @@ describe("update existing audit log", () => {
             message: message,
             content: data,
             entityId: entityId
-        })) as IAuditLog;
+        });
+        if (!createdResult) {
+            throw new Error("Expected the audit log to be recorded.");
+        }
 
         expect(createdResult).toMatchObject({
             entityId,
@@ -52,7 +54,7 @@ describe("update existing audit log", () => {
             someMoreData: true
         };
         const updatedMessage = "Updated audit log";
-        const updatedResult = (await context.recordAuditLog({
+        const updatedResult = await context.recordAuditLog({
             audit: {
                 ...auditAction,
                 action: {
@@ -63,7 +65,7 @@ describe("update existing audit log", () => {
             message: updatedMessage,
             content: updatedData,
             entityId: entityId
-        })) as IAuditLog;
+        });
 
         expect(updatedResult).toMatchObject({
             id: createdResult.id,
@@ -86,12 +88,15 @@ describe("update existing audit log", () => {
         };
         const entityId = `${generateAlphaNumericId()}#0001`;
 
-        const created = (await context.recordAuditLog({
+        const created = await context.recordAuditLog({
             audit,
             message: "Created",
             content: { before: { title: "A" }, after: { title: "B" } },
             entityId
-        })) as IAuditLog;
+        });
+        if (!created) {
+            throw new Error("Expected the audit log to be recorded.");
+        }
 
         // Something tags the log after it was created, for example a subscriber or an admin.
         const tagResult = await context.container
@@ -99,12 +104,12 @@ describe("update existing audit log", () => {
             .execute(created, { tags: ["important"] });
         expect(tagResult.isOk()).toBe(true);
 
-        const merged = (await context.recordAuditLog({
+        const merged = await context.recordAuditLog({
             audit,
             message: "Updated",
             content: { before: { title: "B" }, after: { title: "C" } },
             entityId
-        })) as IAuditLog;
+        });
 
         expect(merged).toMatchObject({
             id: created.id,
