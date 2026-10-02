@@ -23,15 +23,18 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { RolesPresenterFeature } from "../feature.js";
 import { Routes } from "../../routes.js";
 import type { Role } from "~/features/accessManagement/types.js";
-import { ViewAsButton } from "~/presentation/previewAs/components/ViewAsButton.js";
-import type { PreviewPresenter } from "~/presentation/previewAs/abstractions.js";
+import { AssumePermissionsButton } from "~/presentation/assumePermissions/components/AssumePermissionsButton.js";
+import type { AssumePermissionsPresenter } from "~/presentation/assumePermissions/abstractions.js";
 import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 
 /*
  * Only a saved role can be previewed. While the form loads, `selectedRole` can still be the role
  * that was open before, so there is no target until loading is done.
  */
-function toViewAsTarget(role: Role | null, loading: boolean): PreviewPresenter.Target | null {
+function toViewAsTarget(
+    role: Role | null,
+    loading: boolean
+): AssumePermissionsPresenter.Target | null {
     if (!role || loading) {
         return null;
     }
@@ -96,7 +99,7 @@ export const RolesForm = createReactiveComponent(
                     title={vm.selectedRole ? vm.selectedRole.name || "Untitled" : "Untitled"}
                 >
                     <div className={"flex items-center justify-end gap-xxs"}>
-                        <ViewAsButton target={viewAsTarget} />
+                        <AssumePermissionsButton target={viewAsTarget} />
                         <Tooltip
                             content="Copy permissions as JSON"
                             trigger={

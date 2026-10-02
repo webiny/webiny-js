@@ -19,15 +19,18 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { TeamsPresenterFeature } from "../feature.js";
 import { Routes } from "../../routes.js";
 import type { Team } from "~/features/accessManagement/types.js";
-import { ViewAsButton } from "~/presentation/previewAs/components/ViewAsButton.js";
-import type { PreviewPresenter } from "~/presentation/previewAs/abstractions.js";
+import { AssumePermissionsButton } from "~/presentation/assumePermissions/components/AssumePermissionsButton.js";
+import type { AssumePermissionsPresenter } from "~/presentation/assumePermissions/abstractions.js";
 import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 
 /*
  * Only a saved team can be previewed. While the form loads, `selectedTeam` can still be the team
  * that was open before, so there is no target until loading is done.
  */
-function toViewAsTarget(team: Team | null, loading: boolean): PreviewPresenter.Target | null {
+function toViewAsTarget(
+    team: Team | null,
+    loading: boolean
+): AssumePermissionsPresenter.Target | null {
     if (!team || loading) {
         return null;
     }
@@ -92,7 +95,7 @@ export const TeamsForm = createReactiveComponent(
                     title={vm.selectedTeam ? vm.selectedTeam.name || "Untitled" : "Untitled"}
                 >
                     <div className={"flex items-center justify-end"}>
-                        <ViewAsButton target={viewAsTarget} />
+                        <AssumePermissionsButton target={viewAsTarget} />
                     </div>
                 </SimpleFormHeader>
                 <SimpleFormContent>

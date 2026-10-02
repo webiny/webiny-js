@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import Helmet from "react-helmet";
 import type { LayoutProps } from "@webiny/app-admin";
-import { PreviewBanner } from "@webiny/app-admin";
-import { PreviewSelector } from "@webiny/app-admin";
+import { AssumedPermissionsBanner } from "@webiny/app-admin";
+import { AssumedPermissionsSelector } from "@webiny/app-admin";
 import { LayoutRenderer } from "@webiny/app-admin";
 import { Navigation } from "@webiny/app-admin";
 import { TenantSelector } from "@webiny/app-admin";
@@ -58,7 +58,7 @@ const LayoutContent = ({
                     hideNavigation ? undefined : widthClassNames
                 )}
             >
-                <PreviewBanner />
+                <AssumedPermissionsBanner />
                 <HeaderBar
                     start={
                         <div className="flex items-center gap-sm">
@@ -69,7 +69,7 @@ const LayoutContent = ({
                     end={
                         <div className={"flex gap-x-sm items-center justify-end"}>
                             <TenantSelector />
-                            <PreviewSelector />
+                            <AssumedPermissionsSelector />
                             <UserMenu />
                         </div>
                     }

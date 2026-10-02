@@ -39,35 +39,35 @@ export namespace RawAuthToken {
 
 /**
  * Per-request holder for the role or team the caller asked to be evaluated as, EXTRACTED by the
- * transport from the `x-webiny-preview-as` header. This is a preview mechanism: it can only ever
- * narrow what a caller may do, never widen it. PreviewPermissions reads this holder and
+ * transport from the `x-webiny-assume-permissions` header. This is a preview mechanism: it can only ever
+ * narrow what a caller may do, never widen it. AssumedPermissions reads this holder and
  * substitutes the permission set, but only after confirming the caller's own permissions grant
  * full access.
  *
  * Note: only the HTTP transports set this. S3 and background tasks have no caller to preview as.
  */
-export interface IPreviewTargetRequest {
+export interface IAssumePermissionsRequest {
     /*
-     * What to preview as. A team is a set of roles, so previewing one means the union of its roles'
-     * permissions. Previewing as a user would be another type here, resolved to that user's roles
-     * and teams the same way.
+     * Whose permissions to assume. A team is a set of roles, so assuming one means the union of its
+     * roles' permissions. Assuming a user's permissions would be another type here, resolved to
+     * that user's roles and teams the same way.
      */
     type: "role" | "team";
     id: string;
 }
 
-export interface IRawPreviewTarget {
-    get(): IPreviewTargetRequest | null;
-    set(value: IPreviewTargetRequest | null): void;
+export interface IRawAssumePermissions {
+    get(): IAssumePermissionsRequest | null;
+    set(value: IAssumePermissionsRequest | null): void;
 }
 
-export const RawPreviewTarget = createAbstraction<IRawPreviewTarget>(
-    "RequestContext/RawPreviewTarget"
+export const RawAssumePermissions = createAbstraction<IRawAssumePermissions>(
+    "RequestContext/RawAssumePermissions"
 );
 
-export namespace RawPreviewTarget {
-    export type Interface = IRawPreviewTarget;
-    export type Request = IPreviewTargetRequest;
+export namespace RawAssumePermissions {
+    export type Interface = IRawAssumePermissions;
+    export type Request = IAssumePermissionsRequest;
 }
 
 /**

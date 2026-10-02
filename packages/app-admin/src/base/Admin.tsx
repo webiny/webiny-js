@@ -14,8 +14,8 @@ import { FeatureFlagsProvider } from "~/presentation/featureFlags/FeatureFlagsPr
 import { createTenancyProvider } from "~/presentation/tenancy/createTenancyProvider.js";
 import { TelemetryAdminAppStart } from "./TelemetryAdminAppStart.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
-import { PreviewAsFeature } from "~/features/previewAs/index.js";
-import { PreviewPresenterFeature } from "~/presentation/previewAs/feature.js";
+import { AssumePermissionsFeature } from "~/features/assumePermissions/index.js";
+import { AssumePermissionsPresenterFeature } from "~/presentation/assumePermissions/feature.js";
 import { FormModelFeature } from "~/features/formModel/feature.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import { AdminConfigPlugin, AdminConfigProvider } from "~/config/AdminConfig.js";
@@ -45,7 +45,7 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
 
     SecurityFeature.register(container);
     // After SecurityFeature: the use case re-runs the login query through its LogInRepository.
-    PreviewAsFeature.register(container);
+    AssumePermissionsFeature.register(container);
     /*
      * The banner and header control render from the Layout, which mounts before the Admin config
      * tree, so their presenter cannot be registered through RegisterFeature down there: a
@@ -53,7 +53,7 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
      * registration arrives. Registering here also keeps the features layer from importing the
      * presentation layer.
      */
-    PreviewPresenterFeature.register(container);
+    AssumePermissionsPresenterFeature.register(container);
     DateFormatterFeature.register(container);
     StringFormatterFeature.register(container);
     FormModelFeature.register(container);

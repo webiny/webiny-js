@@ -21,7 +21,7 @@ const ALLOWED_HEADERS = [
      * so omitting it would fail the preflight for all of them the moment a preview starts, on any
      * deploy where the Admin and the API are on different origins.
      */
-    "x-webiny-preview-as"
+    "x-webiny-assume-permissions"
 ].join(", ");
 
 class SecureHeadersDecoratorImpl implements IHttpRouter {

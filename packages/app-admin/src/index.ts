@@ -11,8 +11,8 @@ export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/
 export * from "./base/ui/Tags.js";
 export * from "./base/ui/Layout.js";
 export * from "./base/ui/TenantSelector.js";
-export * from "./base/ui/PreviewBanner.js";
-export * from "./base/ui/PreviewSelector.js";
+export * from "./base/ui/AssumedPermissionsBanner.js";
+export * from "./base/ui/AssumedPermissionsSelector.js";
 export type { LayoutProps } from "./base/ui/Layout.js";
 export * from "./base/ui/Navigation.js";
 export * from "./base/ui/Brand.js";
