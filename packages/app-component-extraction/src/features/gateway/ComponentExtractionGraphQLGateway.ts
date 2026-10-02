@@ -41,6 +41,7 @@ import {
     PROJECT_PLAN_COST,
     REGENERATE_COMPONENT,
     REGENERATE_PLAN,
+    RECAPTURE_PAGES,
     RENDER_COMPONENTS,
     RUN_STAGE,
     SET_COMPONENT_DECISION,
@@ -189,6 +190,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: RENDER_COMPONENTS, variables: { runId, signature } });
 
         return unwrap(response.componentExtractionRenderComponents);
+    }
+
+    async recapturePages(runId: string, urls: string[]): Promise<StageTriggerResult> {
+        const response = await this.client.execute<{
+            componentExtractionRecapturePages: GqlEnvelope<StageTriggerResult>;
+        }>({ query: RECAPTURE_PAGES, variables: { runId, urls } });
+
+        return unwrap(response.componentExtractionRecapturePages);
     }
 
     async getRenders(runId: string): Promise<unknown> {

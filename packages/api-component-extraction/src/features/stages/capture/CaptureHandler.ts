@@ -7,7 +7,7 @@ import type {
     CaptureFailure,
     DiscoverArtifact
 } from "~/domain/artifacts.js";
-import { PageCaptureService, DESKTOP } from "./PageCaptureService.js";
+import { PageCaptureService } from "./PageCaptureService.js";
 import { tallyAssets, type AssetOutcome } from "~/domain/assets.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 

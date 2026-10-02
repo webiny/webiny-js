@@ -76,6 +76,7 @@ export const stageTaskId = (stage: Stage): string => `componentExtraction${capit
  * renders standalone so the Generate view can compare it against its source section.
  */
 export const RENDER_COMPONENTS_TASK_ID = "componentExtractionRenderComponents";
+export const RECAPTURE_PAGES_TASK_ID = "componentExtractionRecapturePages";
 
 /**
  * The background-task id for regenerating a single generated component (W7.8) via the refine path —

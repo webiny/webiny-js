@@ -148,6 +148,18 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
         setExcluding(false);
     };
 
+    /*
+     * Re-capture reads the selected pages again and replaces them where they are, which is a different
+     * remedy from exclude and belongs beside it: exclude is for a page that should not be in the run at
+     * all, this is for one that should be, photographed badly. It is destructive to everything
+     * downstream — the sections and components below were derived from the screenshots it replaces —
+     * so the button says so rather than discovering it afterwards.
+     */
+    const recapture = async () => {
+        await presenter.recapturePages([...selected]);
+        setSelected(new Set());
+    };
+
     return (
         <div className="flex flex-col h-full min-h-0">
             <div className="flex items-center justify-between gap-sm px-md py-sm border-b border-neutral-dimmed">
@@ -156,13 +168,26 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
                     {overlaysRemoved > 0 ? ` · ${overlaysRemoved} overlays removed` : ""}
                 </Text>
                 {selected.size > 0 ? (
-                    <Button
-                        variant="secondary"
-                        size="sm"
-                        text={excluding ? "Excluding…" : `Exclude ${selected.size} selected`}
-                        disabled={excluding}
-                        onClick={() => void exclude()}
-                    />
+                    <div className="flex items-center gap-sm">
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            text={
+                                vm.recapturing
+                                    ? "Re-capturing…"
+                                    : `Re-capture ${selected.size} selected`
+                            }
+                            disabled={vm.recapturing || excluding}
+                            onClick={() => void recapture()}
+                        />
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            text={excluding ? "Excluding…" : `Exclude ${selected.size} selected`}
+                            disabled={excluding || vm.recapturing}
+                            onClick={() => void exclude()}
+                        />
+                    </div>
                 ) : null}
             </div>
 

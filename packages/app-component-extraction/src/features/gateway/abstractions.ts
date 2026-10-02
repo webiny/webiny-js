@@ -47,6 +47,8 @@ export interface IComponentExtractionGateway {
      * component and leaves the other results untouched.
      */
     renderComponents(runId: string, signature?: string): Promise<StageTriggerResult>;
+    /** Read selected captured pages again, replacing them in place. Returns the background task. */
+    recapturePages(runId: string, urls: string[]): Promise<StageTriggerResult>;
     /** The rendered-component screenshots for a run, or null if none produced yet. */
     getRenders(runId: string): Promise<unknown>;
     /** The operator's accept/reject decisions for a run's generated components (W7.8). */

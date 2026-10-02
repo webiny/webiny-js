@@ -55,6 +55,7 @@ import { RunTreeRouteDefinition } from "~/rest/RunTreeRoute.js";
 import { registerComponentExtractionGraphQL } from "~/graphql/createGraphQL.js";
 import { ImageAssetServiceImplementation } from "~/features/shared/ImageAssetService.js";
 import { PageCaptureServiceImplementation } from "~/features/stages/capture/PageCaptureService.js";
+import { RecapturePagesTask } from "~/features/stages/capture/RecapturePagesTask.js";
 
 /**
  * Component Extraction — the backend entities (phase 1, W2).
@@ -131,6 +132,7 @@ export const ComponentExtractionFeature = createFeature({
         // by name rather than by order.
         container.register(ImageAssetServiceImplementation);
         container.register(PageCaptureServiceImplementation);
+        container.register(RecapturePagesTask);
         container.register(CaptureHandler);
         container.register(SegmentHandler);
         container.register(ClusterHandler);

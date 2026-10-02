@@ -145,8 +145,8 @@ export const REGENERATE_PLAN = /* GraphQL */ `
 `;
 
 export const RENDER_COMPONENTS = /* GraphQL */ `
-    mutation RenderComponentExtractionComponents($runId: ID!) {
-        componentExtractionRenderComponents(runId: $runId) {
+    mutation RenderComponentExtractionComponents($runId: ID!, $signature: String) {
+        componentExtractionRenderComponents(runId: $runId, signature: $signature) {
             data {
                 taskId
                 runId
@@ -176,6 +176,22 @@ export const GET_STAGE_ARTIFACT = /* GraphQL */ `
     query GetComponentExtractionStageArtifact($runId: ID!, $stage: String!, $machine: Boolean) {
         componentExtractionGetStageArtifact(runId: $runId, stage: $stage, machine: $machine) {
             data
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
+export const RECAPTURE_PAGES = /* GraphQL */ `
+    mutation RecaptureComponentExtractionPages($runId: ID!, $urls: [String!]!) {
+        componentExtractionRecapturePages(runId: $runId, urls: $urls) {
+            data {
+                taskId
+                runId
+                stage
+            }
             error {
                 code
                 message

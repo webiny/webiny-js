@@ -167,6 +167,18 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         to free.
         """
         componentExtractionCancelRun(runId: ID!): ComponentExtractionRunResponse!
+        """
+        Read selected pages again and replace them in the capture artifact.
+
+        For the capture that went wrong one page at a time — an overlay that survived the clearance
+        pass, a page that timed out, a hero that had not finished loading. Re-running the whole stage
+        was the only remedy and costs a pass over every discovered page. A page that fails to re-read
+        keeps the capture it already had. Marks Segment and everything downstream stale.
+        """
+        componentExtractionRecapturePages(
+            runId: ID!
+            urls: [String!]!
+        ): ComponentExtractionTaskResponse!
         "Drop captured (or failed) pages from a run so they don't flow into Segment. Marks Segment and everything downstream stale."
         componentExtractionExcludeCapturedPages(
             runId: ID!

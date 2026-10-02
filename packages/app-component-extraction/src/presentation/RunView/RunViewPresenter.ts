@@ -15,7 +15,8 @@ import type {
     ReattachmentDto,
     RenderArtifactDto,
     RunDto,
-    StageProgress
+    StageProgress,
+    CaptureArtifactDto
 } from "~/shared/types.js";
 
 // How long to hold the optimistic "starting" indication before giving up on it. A stage marks itself
@@ -64,6 +65,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         websiteDomain: null,
         livePageByPath: {},
         composing: false,
+        recapturing: false,
         comparedPath: null,
         reattachments: [],
         promoteComponents: [],
@@ -312,6 +314,77 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 }),
             { signature, kind: "discover.url" }
         );
+    }
+
+    /**
+     * Read the selected pages again, replacing them in place.
+     *
+     * Polled rather than timed, like the composition: one page is a desktop plus a narrow capture and
+     * takes the better part of a minute, so a fixed wait is wrong for any selection but the one it was
+     * tuned for. The screenshot refs are what is watched — the task writes new blob keys for a
+     * re-capture precisely so the admin's per-session image cache cannot serve the picture being
+     * replaced.
+     */
+    async recapturePages(urls: string[]): Promise<void> {
+        const run = this.vm.run;
+        if (!run || urls.length === 0 || this.vm.recapturing) {
+            return;
+        }
+
+        // The Capture view is what triggers this, so the capture artifact is the one on screen.
+        const current =
+            this.vm.artifactStage === "capture"
+                ? (this.vm.artifact as CaptureArtifactDto | null)
+                : null;
+        const before = new Set(
+            (current?.pages ?? [])
+                .filter(page => urls.includes(page.url))
+                .map(page => page.screenshotRef)
+        );
+
+        runInAction(() => {
+            this.vm.recapturing = true;
+            this.vm.error = null;
+        });
+
+        try {
+            await this.gateway.recapturePages(run.id, urls);
+        } catch (error) {
+            runInAction(() => {
+                this.vm.recapturing = false;
+                this.vm.error = (error as Error).message;
+            });
+            return;
+        }
+
+        for (let attempt = 0; attempt < 80; attempt++) {
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            let latest;
+            try {
+                latest = (await this.gateway.getStageArtifact(run.id, "capture")) as
+                    | CaptureArtifactDto
+                    | undefined;
+            } catch {
+                continue;
+            }
+            const changed = (latest?.pages ?? []).some(
+                page => urls.includes(page.url) && !before.has(page.screenshotRef)
+            );
+            if (changed) {
+                runInAction(() => {
+                    this.vm.recapturing = false;
+                });
+                await this.loadArtifact(run, "capture");
+                await this.refresh();
+                return;
+            }
+        }
+
+        runInAction(() => {
+            this.vm.recapturing = false;
+            this.vm.error =
+                "The re-capture was started but has not reported a result after four minutes. It may still be running — reopen the Capture step to check.";
+        });
     }
 
     async excludeCapturedPages(urls: string[]): Promise<void> {

@@ -109,6 +109,8 @@ export interface IRunViewVm {
      * page map changing is the only thing that says it finished, which is what the presenter polls.
      */
     composing: boolean;
+    /** A re-capture of selected pages is in flight. */
+    recapturing: boolean;
     /** The composed page the comparison is open on, by its Website Builder path. */
     comparedPath: string | null;
     /** This run's override reattachment outcomes (W8.7). */
@@ -133,6 +135,8 @@ export interface IRunViewPresenter {
     addDiscoverUrl(url: string): Promise<void>;
     /** Drop captured/failed pages, then refresh the run and the open artifact. */
     excludeCapturedPages(urls: string[]): Promise<void>;
+    /** Read the selected captured pages again, replacing them in place. */
+    recapturePages(urls: string[]): Promise<void>;
     /** Trigger the rendered-component screenshot pass. With a signature, re-renders just that one. */
     renderComponents(signature?: string): Promise<void>;
     /** Set (or clear, with "none") a generated component's accept/reject decision (W7.8). */

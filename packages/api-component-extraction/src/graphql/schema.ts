@@ -36,6 +36,7 @@ import {
     previousStage,
     REGENERATE_COMPONENT_TASK_ID,
     REGENERATE_PLAN_TASK_ID,
+    RECAPTURE_PAGES_TASK_ID,
     RENDER_COMPONENTS_TASK_ID,
     runReattachmentsKey,
     stageArtifactKey,
@@ -867,6 +868,57 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
     });
 
     builder.addResolver({
+        path: "Mutation.componentExtractionRecapturePages",
+        dependencies: [ComponentExtractionPermissions, RunRepository, TaskService],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            taskService: TaskService.Interface
+        ) {
+            return ({ args }: { args: { runId: string; urls: string[] } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+
+                    const capture = stageEntry(run.stages, "capture");
+                    if (!capture || (capture.status !== "done" && capture.status !== "stale")) {
+                        throw new Error("Capture has not produced pages to re-capture.");
+                    }
+                    if (args.urls.length === 0) {
+                        throw new Error("Select at least one page to re-capture.");
+                    }
+
+                    const triggered = await taskService.trigger<{
+                        runId: string;
+                        urls: string[];
+                        attempt: string;
+                    }>({
+                        definition: RECAPTURE_PAGES_TASK_ID,
+                        name: `Component extraction — re-capture ${args.urls.length} page(s) (run ${run.runNumber})`,
+                        input: {
+                            // Stamps this press, so a second press restarts rather than resuming a
+                            // finished attempt — see `RecaptureTaskInput.attempt`.
+                            attempt: new Date().toISOString(),
+                            runId: run.id,
+                            urls: args.urls
+                        }
+                    });
+                    if (triggered.isFail()) {
+                        throw triggered.error;
+                    }
+
+                    return { taskId: triggered.value.id, runId: run.id, stage: "capture" };
+                });
+        }
+    });
+
+    builder.addResolver({
         path: "Mutation.componentExtractionExcludeCapturedPages",
         dependencies: [
             ComponentExtractionPermissions,
@@ -1094,18 +1146,27 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         throw new Error("Render requires Generate to be done.");
                     }
 
-                    const triggered = await taskService.trigger<{ runId: string; attempt: string }>(
-                        {
-                            definition: RENDER_COMPONENTS_TASK_ID,
-                            name: `Component extraction — render (run ${run.runNumber})`,
-                            input: {
-                                // Stamps this press, so a retry restarts rather than
-                                // resuming a finished attempt — see `RenderTaskInput.attempt`.
-                                attempt: new Date().toISOString(),
-                                runId: run.id
-                            }
+                    const triggered = await taskService.trigger<{
+                        runId: string;
+                        attempt: string;
+                        signatures?: string[];
+                    }>({
+                        definition: RENDER_COMPONENTS_TASK_ID,
+                        name: `Component extraction — render (run ${run.runNumber})`,
+                        input: {
+                            // Stamps this press, so a retry restarts rather than
+                            // resuming a finished attempt — see `RenderTaskInput.attempt`.
+                            attempt: new Date().toISOString(),
+                            runId: run.id,
+                            /*
+                             * The one component, when one was asked for. The argument was accepted and
+                             * dropped here, so "Re-render" on a single card re-rendered the whole run
+                             * — correct output at many times the cost, which is the kind of defect
+                             * nothing reports because nothing is wrong with the result.
+                             */
+                            ...(args.signature ? { signatures: [args.signature] } : {})
                         }
-                    );
+                    });
                     if (triggered.isFail()) {
                         throw triggered.error;
                     }
