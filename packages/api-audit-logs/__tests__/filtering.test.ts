@@ -5,10 +5,6 @@ import { AUDIT } from "~/config.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { IAuditLog } from "~/storage/types.js";
 
-// FM
-// CMS Entry
-// Security Api Key
-
 interface ICreateMockAuditLogsParams {
     context: AuditLogsTestContext;
     activateSleep?: boolean;
