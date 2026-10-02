@@ -130,10 +130,12 @@ class UpdateModelUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(result.error);
         }
 
-        // Publish after event
-        await this.eventPublisher.publish(new ModelAfterUpdateEvent({ model, original }));
+        // The repository stamps the current tenant, so publish and return what it stored.
+        await this.eventPublisher.publish(
+            new ModelAfterUpdateEvent({ model: result.value, original })
+        );
 
-        return Result.ok(model);
+        return Result.ok(result.value);
     }
 }
 
