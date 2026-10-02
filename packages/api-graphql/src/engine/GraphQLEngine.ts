@@ -31,7 +31,11 @@ const buildStaticSchema = (schemaConfig: IGraphQLSchema): GraphQLSchema => {
         typeDefs,
         resolvers: resolverDecoration.decorateResolvers(resolvers),
         assumeValidSDL: true,
-        inheritResolversFromInterfaces: true
+        inheritResolversFromInterfaces: true,
+        // The schema built from typeDefs above is new and nothing else holds it, so resolvers go
+        // onto it directly. Without this, graphql-tools rebuilds the whole schema to attach them,
+        // which was about half of the schema build on a cold Lambda.
+        updateResolversInPlace: true
     });
 };
 
