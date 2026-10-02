@@ -320,10 +320,8 @@ export const createAiE2eStandaloneJobs = () => {
 
     return {
         "e2e-standalone-sqlite-ai": {
-            ...createPrStandaloneJob(
-                `E2E - ${standaloneVariantLabel("sqlite")}, licensed, AI`,
-                parts
-            ),
+            // "WCP" for a project connected to WCP, which this job always is, with the full license.
+            ...createPrStandaloneJob("E2E - Standalone (SQLite, WCP)", parts),
             if: AI_E2E_JOB_IF
         }
     };

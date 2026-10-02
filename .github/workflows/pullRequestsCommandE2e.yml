@@ -1186,7 +1186,7 @@ jobs:
       - constants
       - build
       - checkComment
-    name: E2E - Standalone (SQLite), licensed, AI
+    name: E2E - Standalone (SQLite, WCP)
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
