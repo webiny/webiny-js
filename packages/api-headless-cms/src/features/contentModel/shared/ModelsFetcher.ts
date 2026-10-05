@@ -15,11 +15,12 @@ import { ModelFieldCompression } from "~/features/contentModel/ModelFieldCompres
 /**
  * ModelsFetcherImpl - Implementation with multi-level caching.
  *
- * Caching strategy:
- * 1. Plugin models are cached per tenant (with access control applied by PluginModelsProvider)
- * 2. Database models are cached per tenant (raw from DB)
- * 3. Filtered database models are cached per tenant + identity (with access control applied)
- * 4. Final merged list is cached per tenant + identity
+ * Caching strategy (per request, see ModelCache):
+ * 1. Database models are cached per tenant (raw from DB)
+ * 2. The merged list of plugin and database models is cached per tenant
+ *
+ * Neither list is filtered by access control, so the cache is the same whoever reads it first.
+ * GetModelUseCase and ListModelsUseCase apply access control to what they return.
  */
 class ModelsFetcherImpl implements FetcherAbstraction.Interface {
     public constructor(
@@ -34,7 +35,6 @@ class ModelsFetcherImpl implements FetcherAbstraction.Interface {
         try {
             const tenant = this.tenantContext.getTenant();
 
-            // Create a cache key based on tenant + identity
             const cacheKey = createCacheKey({
                 tenant: tenant.id
             });
