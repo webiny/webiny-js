@@ -228,3 +228,114 @@ Both say the same thing, and it is the conclusion the proportion pass already re
 measure arrangement.** The render side needs measured geometry from the rendered DOM, the way
 `SectionGeometry` already carries `contentLeft`, `contentRight` and the font sizes. Until it does, any
 arrangement number carries a 14-of-47 blind spot.
+
+---
+
+# Acceptance: the alignment fix
+
+Plan derives `textAlignments` from the node it already resolves for value binding; Generate names it.
+The contract and the Plan prompt are untouched. Re-run from Plan on all four sites, then rendered —
+no re-clustering, so the component set is the same 50 and this comparison is like-for-like.
+
+Commit: `4d59f8e12d`.
+
+## The mirror guard, per site
+
+The guard that mattered: of the sections whose source centres its text, how many stop declaring
+centre. Before the fix all 16 such sections declared centre, so any movement here is the fix trading
+one defect for its mirror.
+
+| site      | source-centred | still centre | now left/right | now undeclared |
+| --------- | -------------: | -----------: | -------------: | -------------: |
+| Park city |              2 |            2 |              0 |              0 |
+| Tulane    |              9 |            8 |              0 |              1 |
+| Westland  |              5 |            5 |              0 |              0 |
+| Freehill  |              2 |            1 |              1 |              0 |
+| **total** |         **18** |       **16** |          **1** |          **1** |
+
+**Two sections moved off centre.** Both are near-ties rather than reflexes:
+
+- Freehill _Contact Form with Map View_ — measured `center 22, left 21`. A one-element margin.
+- 2424 Tulane _Floor Plan Filter_ — measured `center 15, left 26, right 4`; it declared nothing.
+
+The guard moved, and it moved by two. That is the cost, stated before the benefit.
+
+## The primary numbers, on the identical 45 sections
+
+The diagnosis could measure 45 sections; the acceptance can measure 48, because three components that
+had no successful render then have one now. Restricted to the same 45:
+
+| | before | after |
+| --- | ---: | ---: |
+| source and CSS agree | 17 | **39** |
+| disagree | 9 | **6** |
+| CSS declares nothing | 19 | **0** |
+| **was wrong, now right** | — | **7** |
+| **was right, now wrong** | — | **2** |
+
+**Defect, counting every disagreement plus the silently-left: 11 → 6.**
+
+Note that this is a wider definition than the one registered before the run. That one — "centred
+against the source, or silently left" — gives 9 → 4 and 2 → 1, but it no longer covers everything:
+before the fix every disagreement ran toward centre, and now two run toward left. A definition that
+only counts centring would score the fix better by ignoring the two sections it broke.
+
+## Where the remaining defect lives, exactly
+
+| | sections | wrong |
+| --- | ---: | ---: |
+| declaring **one** alignment | 25 | **0** |
+| declaring **two or more** | 23 | **7** |
+
+**Every section with a single measured alignment is correct. Every remaining failure is a section
+with more than one.** The seven, with what the prompt showed each:
+
+```
+Park city  Site Footer                right  -> left     right 5, center 7, left 2  of 14
+Tulane     Footer with address        right  -> center   right 10, center 7, left 4 of 21
+Tulane     Site Footer with Contact   right  -> center   right 10, center 7, left 4 of 21
+Tulane     Floor Plan Filter          center -> nothing  center 15, left 26, right 4 of 45
+Westland   Site Header Navigation     right  -> center   right 8, center 3          of 11
+Westland   Hero Intro                 left   -> center   left 3, center 2           of 5
+Freehill   Contact Form with Map View center -> left     center 22, left 21         of 43
+```
+
+Two mechanisms, and they are different:
+
+**The list contradicts itself in two of the seven.** The lines are ordered by text *area* and labelled
+with element *counts*, so Park city's _Site Footer_ leads with `right 5` above `center 7`, and _Floor
+Plan Filter_ leads with `center 15` above `left 26`. The order says one thing, the number beside it
+says another. Those are the two sections the fix broke and the one it left undeclared.
+
+**The other four are the original reflex, surviving in mixed sections.** Tulane's two footers lead with
+`right 10` — first by area *and* by count, unambiguous — and the model still wrote centre. Same for
+Westland's header and hero intro. The prompt tells the model what the distribution is and not what to
+do with one: "set text-align explicitly to match" is a clear instruction for a single value and silent
+for three.
+
+## Regression guards
+
+| guard | before | after |
+| --- | --- | --- |
+| components planned | 50 | 50 |
+| bundled | 49 of 50 | **50 of 50** |
+| max font size within 10% | 44 of 45 | **42 of 47** |
+| height — tall / short / in band | 3 / 4 / 39 | **6 / 4 / 39** |
+| bare hex per component | 0.8 | **1.0** |
+
+Bundling improved and every component now renders. **Three guards moved adversely**: the type ratio
+from 98% to 89%, the too-tall band from 3 to 6, and the bare-hex rate from 0.8 to 1.0. Two of the
+three have larger denominators than before, because two previously-unrenderable components are now
+measurable, but that does not account for the too-tall doubling.
+
+**This is not attributed.** The alignment lines are the only input change, and a prompt that adds
+three lines can shift unrelated output; equally, the type-scale work established that these bands move
+run to run. The repeat run is what separates variance from effect, and it is the precedent this
+project already set when my variance explanation for the too-tall breach was falsified by one.
+
+## The honest summary
+
+The fix removes the whole of the single-alignment defect — 25 of 25 — and clears 7 of the 11 known
+failures, at a cost of 2 sections it broke and 2 that moved off centre. It does not solve mixed
+sections, which is where all 7 remaining failures sit, and one contributing cause is in the prompt
+lines themselves rather than in the model.
