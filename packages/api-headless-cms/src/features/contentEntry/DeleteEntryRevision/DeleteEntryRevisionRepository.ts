@@ -34,6 +34,7 @@ class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interfa
 
             let storageLatestEntry = null;
             if (latestEntry) {
+                // Pick entry-level meta fields from the deleted entry to update the new latest
                 const pickedEntryLevelMetaFields = pickEntryMetaFields(
                     entry,
                     isEntryLevelEntryMetaField
