@@ -14,7 +14,11 @@ export namespace SchedulerPermissions {
 }
 
 export interface ISchedulerPermissionsResolver {
-    forNamespace(namespace: string): ISchedulerPermissions | undefined;
+    /**
+     * The permissions of the app that owns `namespace`. When no app claims the namespace, or there is
+     * no namespace at all, the result only lets full-access identities through.
+     */
+    forNamespace(namespace: string | undefined): ISchedulerPermissions;
 }
 
 export const SchedulerPermissionsResolver = createAbstraction<ISchedulerPermissionsResolver>(

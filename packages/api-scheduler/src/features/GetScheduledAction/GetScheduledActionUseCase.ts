@@ -27,11 +27,8 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
         const { id, namespace } = params;
         const permissions = this.permissionsResolver.forNamespace(namespace);
-        if (permissions) {
-            const hasPermission = await permissions.canRead();
-            if (!hasPermission) {
-                return Result.fail(new NotAuthorizedError());
-            }
+        if (!(await permissions.canRead())) {
+            return Result.fail(new NotAuthorizedError());
         }
         const scheduleId = ScheduledActionIdWithVersion.from(id);
         const entryResult = await this.getEntryByIdUseCase.execute<IScheduledActionEntryValues<T>>(
@@ -47,7 +44,7 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new ScheduledActionPersistenceError(entryResult.error));
         }
 
-        const ownRecordsOnly = permissions ? await permissions.onlyOwnRecords() : false;
+        const ownRecordsOnly = await permissions.onlyOwnRecords();
         if (ownRecordsOnly) {
             if (entryResult.value.createdBy.id !== this.identityContext.getIdentity().id) {
                 return Result.fail(new NotAuthorizedError());
