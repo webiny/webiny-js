@@ -377,3 +377,101 @@ describe("detectSections — the boundaries it declined to take", () => {
         expect(sections.every(s => s.candidates.length === 0)).toBe(true);
     });
 });
+
+/*
+ * A utility band — a short full-width strip that paints its own background and carries text.
+ *
+ * Measured on one eight-page run: the same 57px green `475-334-1114 | 1070 Main St Bridgeport` bar
+ * was absorbed into the block beneath it on three pages and dropped into no section at all on the
+ * other five, depending only on whether its parent cleared `maxSectionHeight`.
+ */
+const band = (y: number, height: number, text: string, background = "rgb(108, 115, 61)"): CapturedNode => ({
+    tag: "div",
+    box: { x: 0, y, width: 1440, height },
+    styles: { backgroundColor: background },
+    text,
+    children: []
+});
+
+describe("detectSections — utility bands", () => {
+    it("takes a short full-width band with its own background as a section of its own", () => {
+        // The reported failure: the bar and the block below it share one <section>, and the parent is
+        // under maxSectionHeight, so the page came back with the bar glued to the top of the block.
+        const section = block(100, 627, [band(100, 57, "475-334-1114 | 1070 Main St"), block(157, 570)]);
+        const root = block(0, 1187, [section]);
+
+        const sections = detectSections(root, OPTIONS);
+
+        expect(boxes(sections).map(b => ({ y: b.y, height: b.height }))).toEqual([
+            { y: 100, height: 57 },
+            { y: 157, height: 570 }
+        ]);
+    });
+
+    it("takes the band when its parent does split, instead of dropping it", () => {
+        // The other half of the same defect. A tall parent splits into its children, and a band that
+        // is not a candidate is simply not among them — so it lands in no section and leaves no trace.
+        const wrapper = block(0, 2000, [band(0, 57, "475-334-1114"), block(57, 943), block(1000, 1000)]);
+        const root = block(0, 2000, [wrapper]);
+
+        const sections = detectSections(root, OPTIONS);
+
+        expect(boxes(sections).map(b => b.y)).toEqual([0, 57, 1000]);
+    });
+
+    it("does not take a thin divider, which has a background and no text", () => {
+        const section = block(100, 627, [band(100, 4, ""), block(104, 523)]);
+        const root = block(0, 727, [section]);
+
+        expect(boxes(detectSections(root, OPTIONS)).map(b => b.height)).toEqual([627]);
+    });
+
+    it("does not take a spacer row, which has text nowhere and no background", () => {
+        const spacer: CapturedNode = {
+            tag: "div",
+            box: { x: 0, y: 100, width: 1440, height: 40 },
+            styles: { backgroundColor: "rgba(0, 0, 0, 0)" },
+            children: []
+        };
+        const root = block(0, 727, [block(100, 627, [spacer, block(140, 487)])]);
+
+        expect(boxes(detectSections(root, OPTIONS)).map(b => b.height)).toEqual([627]);
+    });
+
+    it("does not take a narrow control, however loudly it is coloured", () => {
+        const chip: CapturedNode = {
+            tag: "div",
+            box: { x: 0, y: 100, width: 200, height: 40 },
+            styles: { backgroundColor: "rgb(255, 0, 0)" },
+            text: "Sale",
+            children: []
+        };
+        const root = block(0, 727, [block(100, 627, [chip, block(140, 487)])]);
+
+        expect(boxes(detectSections(root, OPTIONS)).map(b => b.height)).toEqual([627]);
+    });
+
+    it("does not lower the container threshold for a section with no band in it", () => {
+        // The relaxation must only fire on a parent holding a SHORT band. An earlier version omitted
+        // the height condition, so any full-width coloured child counted and a 715px section with a
+        // coloured hero split into two sections that were right as one.
+        const hero = block(171, 308);
+        hero.styles = { backgroundColor: "rgb(20, 30, 40)" };
+        hero.text = "Residents";
+        const section = block(171, 715, [hero, block(479, 407)]);
+        const root = block(0, 886, [section]);
+
+        expect(boxes(detectSections(root, OPTIONS)).map(b => b.height)).toEqual([715]);
+    });
+
+    it("records a band as a taken boundary rather than as too-short", () => {
+        // The rejection reasons are read by the split-correction UI, so they have to agree with what
+        // the detector actually does.
+        const section = block(100, 627, [band(100, 57, "475-334-1114"), block(157, 570)]);
+        const root = block(0, 1187, [section]);
+
+        const sections = detectSections(root, OPTIONS);
+
+        expect(sections.flatMap(s => s.candidates.map(c => c.rejection))).not.toContain("too-short");
+    });
+});

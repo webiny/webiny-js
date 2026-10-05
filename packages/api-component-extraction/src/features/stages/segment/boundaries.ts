@@ -95,15 +95,53 @@ export const findContentRoot = (node: CapturedNode): CapturedNode => {
  */
 const LANDMARK_TAGS = new Set(["header", "nav", "footer"]);
 
+/** A background that paints nothing — `transparent`, or any colour at zero alpha. */
+const isTransparent = (value: string | undefined): boolean =>
+    !value || value === "transparent" || /rgba\([^)]*,\s*0(\.0+)?\s*\)/i.test(value);
+
+const hasText = (node: CapturedNode): boolean => {
+    const own = (node.textRuns ?? (node.text ? [node.text] : [])).join("").trim();
+    return own.length > 0 || (node.children ?? []).some(hasText);
+};
+
 /**
- * A node big enough to be a section rather than a control: near-full-width, and either tall enough
- * or a landmark.
+ * A utility band: a strip that declares itself a distinct block by painting its own background.
+ *
+ * The same argument as `LANDMARK_TAGS`, by a different signal. A site's phone/address bar is 31–57px
+ * and the height floor is 120, so it is never a section — and the consequence is not that it is
+ * merged tidily into its neighbour. Measured on one eight-page run, the same green
+ * `475-334-1114 | 1070 Main St Bridgeport` bar was **absorbed into the block below it on three pages
+ * and dropped into no section at all on the other five**, because that depended only on whether its
+ * parent happened to clear `maxSectionHeight`. A dropped band leaves no trace: candidates are
+ * recorded only for sections kept whole, so five pages lost their contact bar with nothing in the
+ * artifact to say so.
+ *
+ * Three conditions together, because each one alone admits noise. Full width without a background is
+ * a spacer row; a background without text is a divider or a rule; text without full width is a
+ * control. All three is a page-level band.
+ *
+ * Shortness is part of the definition, not an accident of where it is used. This is an exemption from
+ * the height floor, so it must only describe nodes the floor would otherwise reject — without that,
+ * the container relaxation below fires on ordinary tall sections and splits pages that were right.
+ */
+const isDeclaredBand = (node: CapturedNode, options: SegmentOptions): boolean =>
+    node.box.height < options.minHeight &&
+    !LANDMARK_TAGS.has(node.tag) &&
+    !isTransparent(node.styles?.backgroundColor) &&
+    node.box.width >= options.minWidthRatio * options.viewportWidth &&
+    hasText(node);
+
+/**
+ * A node big enough to be a section rather than a control: near-full-width, and either tall enough,
+ * a landmark, or a band that declares itself one.
  *
  * The width requirement still applies to landmarks, so a narrow in-page `<nav>` (a table of
  * contents, a breadcrumb rail in a sidebar) is not promoted to a section.
  */
 const isSectionCandidate = (node: CapturedNode, options: SegmentOptions): boolean =>
-    (node.box.height >= options.minHeight || LANDMARK_TAGS.has(node.tag)) &&
+    (node.box.height >= options.minHeight ||
+        LANDMARK_TAGS.has(node.tag) ||
+        isDeclaredBand(node, options)) &&
     node.box.width >= options.minWidthRatio * options.viewportWidth;
 
 /**
@@ -162,7 +200,11 @@ const rejectedCandidates = (
 ): SectionCandidate[] =>
     inner.children.map((child, index) => {
         const tooNarrow = child.box.width < options.minWidthRatio * options.viewportWidth;
-        const tooShort = !(child.box.height >= options.minHeight || LANDMARK_TAGS.has(child.tag));
+        const tooShort = !(
+            child.box.height >= options.minHeight ||
+            LANDMARK_TAGS.has(child.tag) ||
+            isDeclaredBand(child, options)
+        );
         /*
          * An overlay says so for itself, so a section kept whole records which child was set aside
          * from the stack decision — a later collapse of this shape reads its cause off the artifact
@@ -231,7 +273,17 @@ const collectSections = (
     const stackable = children.filter(child => !isPositionedOverlay(child) && !child.boxDerived);
     const stacked = areVerticallyStacked(stackable);
     const enoughChildren = children.length >= options.minChildrenToSplit;
-    const tallEnough = inner.box.height > options.maxSectionHeight;
+    /*
+     * `maxSectionHeight` asks "is this block big enough to be a container rather than a section", and
+     * height is a poor proxy when one of the children is a band. A 627px block made of a 57px contact
+     * bar above a 570px content block is a container, and its height does not say so — measured, that
+     * exact block was emitted as one section with the bar glued to the top of the portal beneath it.
+     *
+     * A band among the children settles it directly: a block holding something that declares itself a
+     * separate band is holding at least two things.
+     */
+    const holdsBand = children.some(child => isDeclaredBand(child, options));
+    const tallEnough = inner.box.height > options.maxSectionHeight || holdsBand;
 
     if (enoughChildren && tallEnough && stacked) {
         for (const child of children) {
