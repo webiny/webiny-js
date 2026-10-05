@@ -15,6 +15,7 @@ import { ExtractionValidationError, type ExtractionError } from "~/domain/errors
 import { PLAN_SYSTEM, buildPlanPrompt, parsePlanContract } from "./planContract.js";
 import { coverMemberTexts } from "./textCoverage.js";
 import { bindObservedValues } from "./bindObservedValues.js";
+import { sectionTextAlignment } from "./sectionTextAlignment.js";
 import { sectionTypeScale } from "./sectionTypeScale.js";
 import { findNodeByBox } from "../cluster/sectionNode.js";
 import { stageEntry } from "~/domain/ledger.js";
@@ -246,6 +247,14 @@ class PlanHandlerImpl implements StageHandler.Interface {
                         });
                     }
 
+                    /* Same node, same pass, same reason: measured during capture and read by nothing. */
+                    const textAlignments = nodes[0] ? sectionTextAlignment(nodes[0]) : [];
+                    if (textAlignments.length === 0 && nodes[0]) {
+                        await context.log.info({
+                            message: `No text alignment read for "${cluster.name}": no text-bearing element of its reference section records one.`
+                        });
+                    }
+
                     if (nodes.length > 0) {
                         const bound = bindObservedValues(nodes, contract.props);
                         if (bound.propsBound > 0) {
@@ -274,6 +283,7 @@ class PlanHandlerImpl implements StageHandler.Interface {
                         sourceTexts: representativeTexts(cluster.cluster),
                         clusterTexts: cluster.cluster.observedTexts,
                         typeScale,
+                        textAlignments,
                         textCoverage: coverMemberTexts(cluster.cluster.members, contract.props)
                     });
                 }

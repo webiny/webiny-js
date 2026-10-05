@@ -109,6 +109,36 @@ const typeScaleLines = (component: PlannedComponent): string[] => {
 };
 
 /**
+ * The alignments the section's text uses.
+ *
+ * Measured across the four demo sites: 9 of 26 comparable sections centre text their source does not
+ * centre, and every single difference goes that way — four right-aligned footers, three left-aligned
+ * bodies, a CTA and a hero intro. Two more render left because the CSS declares no alignment and the
+ * source is not left. Centre is the default a model reaches for when nothing says otherwise, and
+ * until now nothing did: neither prompt contained the word.
+ *
+ * The last line is aimed at the measured direction rather than at alignment in general. It has to be,
+ * because the sources are left 23, centre 16, right 6 — centring is right about a third of the time,
+ * so an instruction that merely discouraged centring would break the sections that should be centred.
+ */
+const alignmentLines = (component: PlannedComponent): string[] => {
+    const alignments = component.textAlignments ?? [];
+    if (alignments.length === 0) {
+        return [];
+    }
+    const total = alignments.reduce((sum, entry) => sum + entry.elements, 0);
+    return [
+        "",
+        "The text alignment this section measured, most text first:",
+        ...alignments.map(
+            entry => `- ${entry.align} — ${entry.elements} of ${total} text elements`
+        ),
+        "",
+        "Set text-align explicitly to match. Do not centre text this section does not centre."
+    ];
+};
+
+/**
  * The section's measured colours, with the theme variable expressing each.
  *
  * Generate sees the crop, so it can see the hues — but not which of the fifty-odd allowed variables is
@@ -218,6 +248,7 @@ const buildPrompt = (
             : []),
         ...colourLines(component),
         ...typeScaleLines(component),
+        ...alignmentLines(component),
         "",
         "Preserve this text content exactly:",
         ...textsToPreserve(component.sourceTexts)

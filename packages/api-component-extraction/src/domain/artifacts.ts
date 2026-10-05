@@ -491,6 +491,21 @@ export interface ComponentProp {
  * reading on its own: these are migrations onto the site's OWN extracted theme, so a size the theme
  * cannot express is a gap in theme extraction rather than a conflict with it.
  */
+/**
+ * One alignment the section's text uses, and how much of its text uses it.
+ *
+ * A distribution rather than a single dominant value, because a footer legitimately has a left column
+ * and a right column: telling the model "right" for a section that is two-thirds left would
+ * manufacture the mirror of the defect being fixed.
+ */
+export interface TextAlignment {
+    /** `start` and `end` are normalised to `left` and `right`; the capture records both forms. */
+    align: "left" | "center" | "right" | "justify";
+    /** Text-bearing elements using it, and their share of the section's text area. */
+    elements: number;
+    areaShare: number;
+}
+
 export interface TypeScaleEntry {
     fontSize: number;
     lineHeight: number | null;
@@ -592,6 +607,20 @@ export interface PlannedComponent {
      * picture, so the numbers should describe that picture.
      */
     typeScale?: TypeScaleEntry[];
+    /**
+     * The alignments the reference section's text uses, most text first.
+     *
+     * `textAlign` is captured on every node and read by nothing. Measured across the four demo sites,
+     * 9 of 26 comparable sections centre text their source does not centre — every difference in that
+     * direction, four of them right-aligned footers — and 2 more render left because the generated CSS
+     * declares no alignment and the source is not left. Centre is what a model writes when nothing
+     * tells it otherwise, and nothing did.
+     *
+     * Unlike the colours, this changes no contract and no Plan prompt: an alignment is a measured
+     * fact with nothing for Plan's model to choose, so only the derivation and the Generate prompt
+     * need it.
+     */
+    textAlignments?: TextAlignment[];
     /**
      * Whether the props can hold every member's text.
      *
