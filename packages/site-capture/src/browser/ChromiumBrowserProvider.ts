@@ -55,6 +55,8 @@ const PAGE_ERROR_MAX_CHARS = 300;
 // Above this the grown-viewport surface is a memory risk on a 2 GB Lambda, so the full-page shot
 // falls back to `fullPage: true` — a mispainted header beats an OOM kill that loses the crawl.
 const MAX_GROWN_VIEWPORT_HEIGHT = 16000;
+/** Bounded like `pageErrors`: a gallery of broken images should not fill the record. */
+const MAX_FAILED_IMAGE_REQUESTS = 10;
 const MID_PAGE_SCROLL_FACTOR = 1.5;
 
 const CROP_LABELS: Record<ScreenshotCrop, string> = {
@@ -309,6 +311,40 @@ class ChromiumSession implements IBrowserSession {
             }
         });
 
+        /*
+         * Image requests that never arrived.
+         *
+         * A generated component can read a file input's value bare — the value is `{ url }`, so
+         * `url(${img.src})` becomes `url([object Object])` — and the browser then requests a URL that
+         * cannot resolve. Nothing else notices: the bundle builds, the text is all present, the props
+         * conform and the colours are variables, so every validator passes and the render is recorded
+         * `ok`. The only witness is the browser, which asked for the image and got nothing.
+         *
+         * Collected from the driver rather than from the page because a CSS background image leaves no
+         * element to interrogate — `naturalWidth` answers for `<img>` and says nothing about a
+         * `background-image` that 404'd.
+         */
+        const failedImageRequests: string[] = [];
+        const noteFailedRequest = (url: string, resourceType: string) => {
+            if (resourceType !== "image" && resourceType !== "stylesheet") {
+                return;
+            }
+            if (resourceType === "stylesheet") {
+                return;
+            }
+            if (failedImageRequests.length < MAX_FAILED_IMAGE_REQUESTS) {
+                failedImageRequests.push(url.slice(0, PAGE_ERROR_MAX_CHARS));
+            }
+        };
+        page.on("requestfailed", request => {
+            noteFailedRequest(request.url(), request.resourceType());
+        });
+        page.on("response", response => {
+            if (response.status() >= 400) {
+                noteFailedRequest(response.url(), response.request().resourceType());
+            }
+        });
+
         await withTimeout(`navigate to ${params.url}`, DEFAULT_TIMEOUTS.navigationMs, () =>
             page.goto(params.url, { waitUntil: "domcontentloaded" })
         );
@@ -393,6 +429,7 @@ class ChromiumSession implements IBrowserSession {
             width: params.viewportWidth,
             height: documentHeight,
             pageErrors,
+            failedImageRequests,
             bodyPreview,
             measurement
         };

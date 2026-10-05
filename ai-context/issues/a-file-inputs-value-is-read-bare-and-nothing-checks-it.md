@@ -61,11 +61,52 @@ because each produced a confident wrong number first.
 1. **Classifying by field name.** A `createFileInput` with `list: true` yields an array of file
    objects, so the correct read is `item.url`, not `items.FIELD.url`. Tulane's _Social Media Links_
    maps `socialIcons` and reads `icon.url` correctly; the name-based check filed it as "never read".
-2. **Classifying by the consuming line alone.** Most components bind the URL first — `const imageUrl
+2. **Matching every `url:` in the defaults.** A Link's default is also `{ url }`, so the
+   declared-but-unused reading first flagged three components whose only unused URLs were navigation
+   destinations — Contact Bar's "contact-us", the footer's Google Maps link. Scoping the scan to
+   fields declared `createFileInput` removed all three and left the two real cases.
+3. **Classifying by the consuming line alone.** Most components bind the URL first — `const imageUrl
    = image.src.url` — and use the local in the JSX. Checking only the consuming line called every one
    of those broken and reported 17. One hop of variable resolution brought it to 10, and reading the
    last two showed both were sound: one reads `backgroundImage.url` directly, the other resolves the
    shape inside a helper function the hop could not follow.
+
+## The check as built — a report, not a gate
+
+`RenderRecord.imageCheck` carries three readings, surfaced on the Generate card as a dashed warning
+strip that is deliberately **not** an `AssertionPill`.
+
+**It cannot fail anything.** The three pills are gates: they run inside Generate and a failure costs
+the component a retry. This runs afterwards, in the render, which Generate does not wait on. Making
+it a gate means changing when Generate finishes — a decision about Generate's shape, to be taken
+deliberately rather than inherited from adding a check.
+
+1. **`stringifiedValues`** — "[object Object]" in an `<img src>` or a computed `background-image`.
+   Catches the cause directly and needs no network.
+2. **`failedRequests`** — image URLs the browser asked for and did not get, collected from the driver
+   (`requestfailed` plus any 4xx/5xx), so a CSS background that 404s is covered.
+3. **`declaredButUnused`** — URLs the component ships as file-input defaults that the rendered page
+   never used.
+
+### Why the third reading had to be added
+
+**Neither of the first two can see the case that started this.** `background-image:
+url([object Object])` is a CSS *parse error* — an unquoted url token containing a space — so Chrome
+drops the declaration, computes `none` and requests nothing. Verified in a browser:
+
+```
+background-image: url([object Object])   via attribute → computed "none"
+                                         via CSSOM     → computed "none"
+<img src={obj}>                          → src stays "[object Object]"
+```
+
+So the `<img>` form leaves a marker and the CSS form leaves nothing at all: no string in the DOM, no
+failed request, just an element with no background — indistinguishable from one never given an image.
+That is precisely the Hero Banner that renders flat navy. Only "declared and never used" sees it.
+
+Verified on Park city: *Hero Banner #1* reports `declaredButUnused: 3` and nothing else, *Neighborhood
+/Location Highlight* reports both a stringified `<img src>` and one unused URL, and the other six
+components report nothing — matching the static analysis exactly.
 
 ## What a validator would take
 

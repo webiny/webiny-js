@@ -202,6 +202,20 @@ export interface RenderResult {
      */
     pageErrors: string[];
     /**
+     * Image URLs the browser asked for and did not get — a failed request, or a 4xx/5xx response.
+     *
+     * The witness for a defect nothing else sees. A generated component can read a file input's
+     * value bare — the value is `{ url }` — so the browser requests `url([object Object])` and the
+     * background colour beneath shows through. The bundle builds, the text is preserved, the props
+     * conform and the colours are variables, so every validator passes and the render is recorded
+     * `ok` with a picture that is simply missing its photograph.
+     *
+     * From the driver rather than the page, because a CSS background image leaves no element to
+     * interrogate: `naturalWidth` answers for `<img>` and says nothing about a `background-image`
+     * that never arrived. Capped like `pageErrors`.
+     */
+    failedImageRequests: string[];
+    /**
      * A truncated look at what was actually in `<body>`, captured only when the document had no
      * height.
      *

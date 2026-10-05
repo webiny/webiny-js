@@ -483,6 +483,15 @@ export interface RenderRecordDto {
     /** The source section crop's size, stated beside the render's rather than reduced to a score. */
     sourceWidth: number | null;
     sourceHeight: number | null;
+    /**
+     * What the render observed about the component's images. A report, not a gate — it is produced
+     * after Generate has accepted the component, so it fails nothing.
+     */
+    imageCheck?: {
+        stringifiedValues: string[];
+        failedRequests: string[];
+        declaredButUnused: string[];
+    };
     /** What the rendered component measured — content inset and type sizes. */
     geometry?: {
         contentLeft: number;

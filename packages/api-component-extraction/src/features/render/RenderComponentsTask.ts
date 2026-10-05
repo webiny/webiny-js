@@ -232,6 +232,12 @@ class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
                         height: result.value.height,
                         ok: true,
                         geometry: result.value.geometry ?? null,
+                        /*
+                         * A report, not a gate: the render runs after Generate has accepted the
+                         * component, so this cannot fail an attempt or cause a retry. Carried on the
+                         * record so the Generate card can state it beside the validators.
+                         */
+                        imageCheck: result.value.imageCheck,
                         sourceWidth: result.value.sourceWidth,
                         sourceHeight: result.value.sourceHeight,
                         pageErrors: result.value.pageErrors.length

@@ -1,7 +1,7 @@
 import { createAbstraction, createImplementation, Result } from "@webiny/feature/api";
 import type { BrowserProvider } from "@webiny/site-capture";
 import { BlobStore } from "~/domain/stage.js";
-import type { SectionGeometry } from "~/domain/artifacts.js";
+import type { ImageCheck, SectionGeometry } from "~/domain/artifacts.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 // The screenshot is taken at the desktop capture width so the rendered image lines up with the source
@@ -136,6 +136,108 @@ const MEASURE_GEOMETRY = `(function () {
     };
 })()`;
 
+/**
+ * Whether the painted component asked for an image it could not get, and whether it stringified an
+ * object into a URL.
+ *
+ * Two readings of the same defect, because each sees what the other cannot. The driver's failed
+ * requests catch any image that did not arrive, including a CSS background; this catches the cause
+ * directly — "[object Object]" in a URL is unambiguous and needs no network at all. A component can
+ * also stringify an object into a src that the browser never requests, which only this sees.
+ *
+ * The string is the whole test. A `createFileInput` value is `{ url }`, and reading it bare puts
+ * exactly that text where a URL belongs. Measured across five sites, 8 of the 35 components that
+ * declare a file input do it — with all four validators green, because a broken image is invisible
+ * to bundling, text preservation, contract conformance and token binding alike.
+ */
+const AUDIT_IMAGES = `(function () {
+    /*
+     * Both spellings. An \`<img src>\` keeps the attribute verbatim, but a CSS \`url()\` is resolved
+     * against the document and comes back from getComputedStyle percent-encoded, so the literal
+     * string is "[object%20Object]" there. Matching only the readable form found the <img> case and
+     * missed the background-image case in the same run — which is the half that produced a flat navy
+     * hero.
+     */
+    var MARKERS = ["[object Object]", "[object%20Object]"];
+    var marked = function (value) {
+        for (var k = 0; k < MARKERS.length; k++) { if (value.indexOf(MARKERS[k]) >= 0) { return true; } }
+        return false;
+    };
+    var stringified = [];
+    var broken = [];
+    var images = document.body ? document.body.querySelectorAll("img") : [];
+    for (var i = 0; i < images.length; i++) {
+        var src = images[i].getAttribute("src") || "";
+        if (marked(src)) { stringified.push("img src: " + src.slice(0, 200)); }
+        else if (src && images[i].complete && images[i].naturalWidth === 0) { broken.push(src.slice(0, 200)); }
+    }
+    var all = document.body ? document.body.querySelectorAll("*") : [];
+    for (var j = 0; j < all.length && stringified.length < 10; j++) {
+        var background = "";
+        try { background = window.getComputedStyle(all[j]).backgroundImage || ""; } catch (e) {}
+        if (marked(background)) {
+            stringified.push("background-image: " + background.slice(0, 200));
+        }
+    }
+    var used = [];
+    for (var k = 0; k < images.length; k++) {
+        var resolved = images[k].currentSrc || images[k].src || "";
+        if (resolved) { used.push(resolved); }
+    }
+    for (var m = 0; m < all.length; m++) {
+        var bg = "";
+        try { bg = window.getComputedStyle(all[m]).backgroundImage || ""; } catch (e) {}
+        var match = /url\\(["']?([^"')]+)/.exec(bg);
+        if (match && match[1]) { used.push(match[1]); }
+    }
+    return { stringified: stringified.slice(0, 10), broken: broken.slice(0, 10), used: used.slice(0, 200) };
+})()`;
+
+/**
+ * The image URLs a component ships as defaults, read from its own source.
+ *
+ * The third reading, and the only one that sees the case that started this. `background-image:
+ * url([object Object])` is a CSS parse ERROR — an unquoted url token containing a space — so Chrome
+ * drops the declaration, computes `none`, and requests nothing. Verified in a browser: both the
+ * attribute and the CSSOM form compute to "none". There is therefore no marker in the DOM and no
+ * failed request; the element simply has no background, which is indistinguishable from a component
+ * that was never given one.
+ *
+ * So neither of the other two readings can catch it. What can: the component declares these URLs as
+ * defaults and the render then uses none of them.
+ */
+const declaredImageUrls = (source: string): string[] => {
+    /*
+     * Scoped to the fields declared `createFileInput`, because a Link's default is also `{ url }`.
+     * Matching every `url: "https://…"` in the source flagged three components whose only unused
+     * URLs were navigation destinations — Contact Bar's "contact-us", the footer's Google Maps link —
+     * which is the measure describing the file rather than the defect.
+     */
+    const fields = new Set<string>();
+    for (const match of source.matchAll(/name:\s*"([A-Za-z0-9_]+)"\s*,\s*factory:\s*"createFileInput"/g)) {
+        fields.add(match[1]);
+    }
+    if (fields.size === 0) {
+        return [];
+    }
+    const urls = new Set<string>();
+    for (const field of fields) {
+        /* `field: { url: "…" }` — the object form a file input's value takes. */
+        const nested = new RegExp(`\\b${field}\\s*:\\s*\\{[^{}]*url:\\s*"(https?://[^"]+)"`, "g");
+        for (const match of source.matchAll(nested)) {
+            urls.add(match[1]);
+        }
+        /* `field: [ { url: "…" }, … ]` — a list file input, whose items are the file objects. */
+        const listed = new RegExp(`\\b${field}\\s*:\\s*\\[([\\s\\S]{0,4000}?)\\]`, "g");
+        for (const match of source.matchAll(listed)) {
+            for (const inner of match[1].matchAll(/url:\s*"(https?:\/\/[^"]+)"/g)) {
+                urls.add(inner[1]);
+            }
+        }
+    }
+    return [...urls];
+};
+
 const slug = (signature: string): string => signature.replace(/[^a-zA-Z0-9_-]/g, "-");
 
 /**
@@ -193,6 +295,8 @@ export interface RenderedComponent {
     bodyPreview?: string;
     /** What the painted component measured — see `MEASURE_GEOMETRY`. Null when it drew no text. */
     geometry?: SectionGeometry | null;
+    /** What the render observed about the component's images — see `AUDIT_IMAGES`. A report, not a gate. */
+    imageCheck?: ImageCheck;
 }
 
 /**
@@ -253,7 +357,7 @@ class ComponentRenderServiceImpl implements IComponentRenderService {
                 inject,
                 waitFor: RENDER_READY,
                 settleMs: RENDER_SETTLE_MS,
-                measure: MEASURE_GEOMETRY
+                measure: `(function () { return { geometry: ${MEASURE_GEOMETRY}, images: ${AUDIT_IMAGES} }; })()`
             });
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
@@ -288,10 +392,38 @@ class ComponentRenderServiceImpl implements IComponentRenderService {
             }
         }
 
+        /*
+         * One in-page pass returns both: the geometry the proportion work added, and the image audit.
+         * Split here so `geometry` keeps the shape every existing reader expects.
+         */
+        const measured = rendered.measurement as {
+            geometry: SectionGeometry | null;
+            images: { stringified: string[]; broken: string[]; used: string[] };
+        } | null;
+
+        /*
+         * A default the component ships and the page never used. Compared on the path and filename
+         * rather than the whole URL, since a CDN may serve a different query string than the one in
+         * the source.
+         */
+        const tail = (url: string) => url.split("?")[0].split("/").slice(-2).join("/");
+        const used = new Set((measured?.images?.used ?? []).map(tail));
+        const declaredButUnused = declaredImageUrls(component.source).filter(
+            url => !used.has(tail(url))
+        );
+
         return Result.ok({
             pageErrors: rendered.pageErrors ?? [],
             bodyPreview: rendered.bodyPreview,
-            geometry: (rendered.measurement as SectionGeometry | null) ?? null,
+            geometry: measured?.geometry ?? null,
+            imageCheck: {
+                stringifiedValues: measured?.images?.stringified ?? [],
+                failedRequests: [
+                    ...(rendered.failedImageRequests ?? []),
+                    ...(measured?.images?.broken ?? [])
+                ].slice(0, 10),
+                declaredButUnused: declaredButUnused.slice(0, 10)
+            },
             renderRef: stored.value,
             width: rendered.width,
             height: rendered.height,

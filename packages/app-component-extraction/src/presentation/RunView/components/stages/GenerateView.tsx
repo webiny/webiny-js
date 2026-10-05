@@ -41,6 +41,52 @@ const retryLine = (component: GeneratedComponentDto): string => {
 };
 
 /** An assertion pill (spec §6.7): a green/red glyph chip; a failed one lists its actionable detail. */
+/**
+ * What the render observed about the component's images.
+ *
+ * Deliberately NOT an AssertionPill. The three pills are gates: they run inside Generate and a
+ * failure costs the component a retry. This runs afterwards, in the render, which Generate does not
+ * wait on — so it cannot fail anything, and dressing it as a fourth pill would say it could. Making
+ * it a gate means changing when Generate finishes, which is a decision about Generate's shape rather
+ * than a consequence of adding a check.
+ *
+ * It exists because a broken image is invisible to all three: the bundle builds, the text is
+ * preserved, the props conform and the colours are variables. Measured across five sites, 8 of the
+ * 35 components that declare a file input emit a URL that cannot load, every one of them with three
+ * green pills.
+ */
+const ImageFinding = ({ render }: { render: RenderRecordDto | undefined }) => {
+    const check = render?.imageCheck;
+    const stringified = check?.stringifiedValues ?? [];
+    const failed = check?.failedRequests ?? [];
+    const unused = check?.declaredButUnused ?? [];
+    if (stringified.length === 0 && failed.length === 0 && unused.length === 0) {
+        return null;
+    }
+    const headline =
+        stringified.length > 0
+            ? `${stringified.length} image value${stringified.length === 1 ? "" : "s"} stringified into a URL`
+            : failed.length > 0
+              ? `${failed.length} image${failed.length === 1 ? "" : "s"} failed to load`
+              : `${unused.length} image${unused.length === 1 ? "" : "s"} shipped as a default and never shown`;
+    return (
+        <div className="mt-sm flex flex-col gap-xxs rounded-sm border border-dashed border-warning-default bg-warning-subtle px-sm py-xs">
+            <Text size="sm" className="font-medium text-warning-strong">
+                {`Render finding — ${headline}`}
+            </Text>
+            <Text size="sm" className="text-neutral-strong">
+                Observed after generation, so it failed nothing above. A file input&apos;s value is an
+                object; reading it bare puts &quot;[object Object]&quot; where a URL belongs.
+            </Text>
+            {[...stringified, ...failed, ...unused].slice(0, 3).map((line, index) => (
+                <Text key={index} size="sm" className="truncate font-mono text-neutral-strong">
+                    {line}
+                </Text>
+            ))}
+        </div>
+    );
+};
+
 const AssertionPill = ({ label, result }: { label: string; result: ValidationResultDto }) => (
     <div className="flex flex-col gap-xxs">
         <div
@@ -329,6 +375,7 @@ const GenerateCard = ({
                     />
                     <SizeBlock render={render} />
                 </div>
+                <ImageFinding render={render} />
             </div>
 
             <div className="flex flex-col gap-sm border-t border-neutral-dimmed px-md py-sm">

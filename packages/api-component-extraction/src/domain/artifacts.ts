@@ -793,6 +793,22 @@ export interface GenerateArtifact {
 // ----- Render (rendered-component screenshots, W7.7) ---------------------------------------------
 
 /** One generated component's rendered-screenshot result, keyed to its cluster signature. */
+/** What the render observed about the component's images. Reported beside the validators, not with them. */
+export interface ImageCheck {
+    /** URLs containing "[object Object]" — a file input's value read bare. */
+    stringifiedValues: string[];
+    /** Image URLs the browser asked for and did not get. */
+    failedRequests: string[];
+    /**
+     * URLs the component ships as defaults that the rendered page never used.
+     *
+     * The only reading that sees a bare file value in a CSS background: `url([object Object])` is a
+     * parse error, so the declaration is dropped, nothing is requested and no marker survives — the
+     * element merely has no background. Verified in a browser.
+     */
+    declaredButUnused: string[];
+}
+
 export interface RenderRecord {
     signature: string;
     /** Blob key of the rendered PNG, or "" when the render failed. */
@@ -818,6 +834,23 @@ export interface RenderRecord {
      * when the component drew no text; absent on renders made before this was recorded.
      */
     geometry?: SectionGeometry | null;
+    /**
+     * Whether the painted component asked for an image it could not get.
+     *
+     * **A report, not a gate.** It is produced by the render, which runs after Generate has finished
+     * and accepted the component, so it cannot fail a generation attempt or trigger a retry. Making
+     * it do so would mean Generate waiting on a render it does not currently wait on — a change to
+     * Generate's shape, and a decision to take deliberately rather than inherit from adding a check.
+     *
+     * Two readings, because each sees what the other cannot. `stringifiedValues` catches the cause:
+     * a `createFileInput` value is `{ url }`, and reading it bare puts "[object Object]" where a URL
+     * belongs — unambiguous, and visible without any network. `failedRequests` catches the symptom
+     * for anything else, including a CSS background image that leaves no element to interrogate.
+     *
+     * Measured across five sites before this existed: 8 of the 35 components declaring a file input
+     * emit a URL that cannot load, every one of them with all four validators green.
+     */
+    imageCheck?: ImageCheck;
     /**
      * What the page reported while rendering this component, successfully or not.
      *
