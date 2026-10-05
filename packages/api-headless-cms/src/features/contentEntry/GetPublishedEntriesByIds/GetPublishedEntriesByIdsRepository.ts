@@ -4,6 +4,7 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { GetPublishedEntriesByIdsStorageOperation } from "~/features/shared/storageOperations/entry/GetPublishedEntriesByIdsStorageOperation.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * GetPublishedEntriesByIdsRepository - Fetches published entries by entry IDs from storage.
@@ -12,13 +13,16 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 class GetPublishedEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private getPublishedEntriesByIdsStorage: GetPublishedEntriesByIdsStorageOperation.Interface
+        private getPublishedEntriesByIdsStorage: GetPublishedEntriesByIdsStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues>(
-        model: CmsModel,
+        initialModel: CmsModel,
         ids: string[]
     ): Promise<Result<CmsEntry<T>[], RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+
         try {
             const result = await this.getPublishedEntriesByIdsStorage.execute<T>(model, {
                 ids
@@ -40,5 +44,9 @@ class GetPublishedEntriesByIdsRepositoryImpl implements RepositoryAbstraction.In
 
 export const GetPublishedEntriesByIdsRepository = RepositoryAbstraction.createImplementation({
     implementation: GetPublishedEntriesByIdsRepositoryImpl,
-    dependencies: [EntryFromStorageTransform, GetPublishedEntriesByIdsStorageOperation]
+    dependencies: [
+        EntryFromStorageTransform,
+        GetPublishedEntriesByIdsStorageOperation,
+        RuntimeTenant
+    ]
 });

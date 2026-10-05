@@ -120,19 +120,22 @@ export const graphQLInputValues = {
     blocks: [
         {
             PageHeroBlock: {
+                _id: "hero-1",
                 title: "Sunnyvale",
-                customUrls: [{ ctaUrl: "/memberships-passes/" }]
+                customUrls: [{ _id: "url-1", ctaUrl: "/memberships-passes/" }]
             }
         },
         {
             PageGalleryBlock: {
+                _id: "gallery-1",
                 header: "Gallery",
-                gallery: [{ image: "https://example.com/1.jpg" }]
+                gallery: [{ _id: "image-1", image: "https://example.com/1.jpg" }]
             }
         }
     ],
     featuredBlock: {
         PageHeroBlock: {
+            _id: "featured-1",
             title: "Featured",
             customUrls: []
         }

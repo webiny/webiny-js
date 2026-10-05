@@ -8,6 +8,7 @@ import {
     NumberScalar,
     AnyScalar,
     DateTimeScalar,
+    DateTimeZScalar,
     DateScalar,
     TimeScalar
 } from "@webiny/api-graphql/builtInTypes/index.js";
@@ -23,6 +24,7 @@ const BASE_TYPES = `
     scalar Any
     scalar Date
     scalar DateTime
+    scalar DateTimeZ
     scalar Time
 
     type Error {
@@ -46,6 +48,7 @@ const SCALAR_RESOLVERS: Record<string, any> = {
     Number: NumberScalar,
     Any: AnyScalar,
     DateTime: DateTimeScalar,
+    DateTimeZ: DateTimeZScalar,
     Date: DateScalar,
     Time: TimeScalar
 };

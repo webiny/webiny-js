@@ -6,16 +6,20 @@ import {
 import { GetUniqueFieldValuesStorageOperation } from "~/features/shared/storageOperations/entry/GetUniqueFieldValuesStorageOperation.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsModel, CmsEntryUniqueValue } from "~/types/index.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 class GetUniqueFieldValuesRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
-        private getUniqueFieldValuesStorage: GetUniqueFieldValuesStorageOperation.Interface
+        private getUniqueFieldValuesStorage: GetUniqueFieldValuesStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     async execute(
-        model: CmsModel,
+        initialModel: CmsModel,
         params: GetUniqueFieldValuesParams
     ): Promise<Result<CmsEntryUniqueValue[], RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+
         const { where, fieldId } = params;
 
         try {
@@ -33,5 +37,5 @@ class GetUniqueFieldValuesRepositoryImpl implements RepositoryAbstraction.Interf
 
 export const GetUniqueFieldValuesRepository = RepositoryAbstraction.createImplementation({
     implementation: GetUniqueFieldValuesRepositoryImpl,
-    dependencies: [GetUniqueFieldValuesStorageOperation]
+    dependencies: [GetUniqueFieldValuesStorageOperation, RuntimeTenant]
 });

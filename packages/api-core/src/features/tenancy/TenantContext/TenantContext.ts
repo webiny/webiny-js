@@ -61,9 +61,12 @@ class TenantContextImpl implements Abstraction.Interface {
     ): Promise<TReturn> {
         const initialTenant = this.getTenant();
         this.setTenant(tenant);
-        const result = await cb(tenant);
-        this.setTenant(initialTenant);
-        return result;
+        try {
+            return await cb(tenant);
+        } finally {
+            // Make sure that, whatever happens in the callback, the tenant is set back to the initial one.
+            this.setTenant(initialTenant);
+        }
     }
 }
 

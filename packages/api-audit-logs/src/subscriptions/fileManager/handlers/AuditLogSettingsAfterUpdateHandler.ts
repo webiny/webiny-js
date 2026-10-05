@@ -1,23 +1,24 @@
 import WebinyError from "@webiny/error";
 import { SettingsAfterUpdateEventHandler } from "@webiny/api-file-manager/features/settings/UpdateSettings/index.js";
-import { AuditLogRecorder } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogSettingsAfterUpdateHandlerImpl implements SettingsAfterUpdateEventHandler.Interface {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: SettingsAfterUpdateEventHandler.Event): Promise<void> {
         try {
             const { settings, original } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.SETTINGS.UPDATE);
 
-            await createAuditLog(
-                "Settings updated",
-                { before: original, after: settings },
-                "-",
-                this.recorder
-            );
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.FILE_MANAGER.SETTINGS.UPDATE,
+                message: "Settings updated",
+                content: { before: original, after: settings },
+                entityId: "-"
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogSettingsAfterUpdateHandler",
@@ -30,5 +31,5 @@ class AuditLogSettingsAfterUpdateHandlerImpl implements SettingsAfterUpdateEvent
 export const AuditLogSettingsAfterUpdateHandler =
     SettingsAfterUpdateEventHandler.createImplementation({
         implementation: AuditLogSettingsAfterUpdateHandlerImpl,
-        dependencies: [AuditLogRecorder]
+        dependencies: [RecordAuditLogUseCase]
     });

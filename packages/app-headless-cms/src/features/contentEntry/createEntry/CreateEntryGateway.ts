@@ -6,6 +6,7 @@ import {
     type ICreateEntryGatewayParams
 } from "./abstractions.js";
 import { EntryDataPreparer } from "~/features/contentEntry/valueTransformers/EntryDataPreparer.js";
+import { CmsEntryError } from "~/features/contentEntry/CmsEntryError.js";
 
 interface CreateEntryResponse {
     content: {
@@ -46,7 +47,7 @@ class CreateEntryGatewayImpl implements GatewayAbstraction.Interface {
         const { data: entry, error } = response.content;
 
         if (!entry) {
-            throw new Error(error?.message || "Could not create entry");
+            throw new CmsEntryError(error, "Could not create entry");
         }
 
         return entry;

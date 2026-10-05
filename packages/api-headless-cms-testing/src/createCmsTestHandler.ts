@@ -2,6 +2,7 @@ import { createTestHttpHandler } from "@webiny/event-handler-core/features/testi
 import type { Container } from "@webiny/di";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
+import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
@@ -82,6 +83,8 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
         container.registerDecorator(RootTenantInitializer);
         // Same as the real handlers, so every request after the first reuses the built schema.
         GraphQLSchemaCacheFeature.register(container);
+        // Same as the real handlers, so the encryption key is derived once, not per request.
+        EncryptionKeyCacheFeature.register(container);
     };
 
     // Everything up to (but not including) the GraphQL engine — shared by the HTTP handler and the

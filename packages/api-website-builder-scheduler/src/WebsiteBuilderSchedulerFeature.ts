@@ -1,5 +1,6 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { CancelScheduledActionOnChangeFeature } from "~/features/CancelScheduledActionOnChange/feature.js";
+import { WbSchedulerPermissions } from "~/features/permissions/WbSchedulerPermissions.js";
 import { PageNamespaceHandler } from "~/features/NamespaceHandler/PageNamespaceHandler.js";
 import { RedirectNamespaceHandler } from "~/features/NamespaceHandler/RedirectNamespaceHandler.js";
 import { PublishPageActionHandler } from "~/features/PublishActionHandler/PublishPageActionHandler.js";
@@ -27,5 +28,6 @@ export const WebsiteBuilderSchedulerFeature = createFeature({
         container.register(ScheduleUnpublishRedirectUseCase);
 
         CancelScheduledActionOnChangeFeature.register(container);
+        container.register(WbSchedulerPermissions);
     }
 });

@@ -6,7 +6,9 @@ import type {
 } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { CmsModelField, CmsDynamicZoneTemplate } from "~/types.js";
 import { applyFieldProps } from "./applyFieldProps.js";
+import { mapCmsNestedLayout } from "../CmsLayoutMapper.js";
 import type { ITemplateIcon } from "@webiny/app-admin/features/formModel/index.js";
+import { generateAlphaNumericLowerCaseId } from "@webiny/utils/generateId";
 
 export class DynamicZoneFieldMapper implements ICmsFieldTypeMapper {
     readonly type = "dynamicZone";
@@ -34,14 +36,23 @@ export class DynamicZoneFieldMapper implements ICmsFieldTypeMapper {
                             t.icon({ type: "icon", name: icon });
                         }
                     }
-                    if (template.fields && template.fields.length > 0) {
-                        t.fields(childRegistry => {
-                            const result: Record<string, IFieldBuilder> = {};
+                    t.fields(childRegistry => {
+                        const result: Record<string, IFieldBuilder> = {};
+                        result["_id"] = childRegistry
+                            .text()
+                            .hidden()
+                            .defaultValue(() => generateAlphaNumericLowerCaseId(12))
+                            .cloneValue(() => generateAlphaNumericLowerCaseId(12));
+                        if (template.fields && template.fields.length > 0) {
                             for (const child of template.fields) {
                                 result[child.fieldId] = context.mapField(child, childRegistry);
                             }
-                            return result;
-                        });
+                        }
+                        return result;
+                    });
+                    const layout = mapCmsNestedLayout(template.layout, template.fields ?? []);
+                    if (layout) {
+                        t.layout(layout);
                     }
                 });
             }

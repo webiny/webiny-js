@@ -283,4 +283,77 @@ describe("ElementFactory", () => {
         )!;
         expect(stepsBinding?.static).toEqual([step1.id, step2.id]);
     });
+    it("should keep every item of a primitive list (tags) from the component defaults", () => {
+        const pricing: ComponentManifest = {
+            name: "Custom/PricingPlans",
+            label: "Pricing Plans",
+            tags: [],
+            inputs: [
+                {
+                    type: "text",
+                    list: true,
+                    renderer: "Webiny/Tags",
+                    name: "highlights",
+                    defaultValue: ["Default"]
+                },
+                {
+                    type: "object",
+                    list: true,
+                    renderer: "Webiny/Object",
+                    name: "plans",
+                    fields: [
+                        { type: "text", renderer: "Webiny/Input", name: "name" },
+                        {
+                            type: "text",
+                            list: true,
+                            renderer: "Webiny/Tags",
+                            name: "features",
+                            defaultValue: ["Feature one", "Feature two"]
+                        }
+                    ]
+                }
+            ],
+            defaults: {
+                inputs: {
+                    highlights: ["Fast", "Cheap"],
+                    plans: [
+                        { name: "Hobby", features: ["Autocomplete", "Limited AI integration"] },
+                        { name: "Enterprise", features: ["Everything in Hobby", "24/7 Support"] }
+                    ]
+                }
+            }
+        };
+
+        const factory = new ElementFactory({ ...components, [pricing.name]: pricing });
+        const result = factory.createElementFromComponent({
+            componentName: pricing.name,
+            parentId: "root",
+            slot: "children"
+        });
+
+        const document = {
+            state: {},
+            elements: {
+                root: {
+                    type: "Webiny/Element",
+                    id: "root",
+                    component: { name: "Webiny/Root" }
+                }
+            },
+            bindings: {}
+        } as unknown as Document;
+
+        for (const op of result.operations) {
+            op.apply(document);
+        }
+
+        const inputs = document.bindings[result.element.id]!.inputs!;
+        expect(inputs["highlights"]?.static).toEqual(["Fast", "Cheap"]);
+        expect(inputs["plans/0/name"]?.static).toBe("Hobby");
+        expect(inputs["plans/0/features"]?.static).toEqual([
+            "Autocomplete",
+            "Limited AI integration"
+        ]);
+        expect(inputs["plans/1/features"]?.static).toEqual(["Everything in Hobby", "24/7 Support"]);
+    });
 });

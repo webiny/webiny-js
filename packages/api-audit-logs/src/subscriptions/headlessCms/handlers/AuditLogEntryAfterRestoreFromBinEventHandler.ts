@@ -1,13 +1,12 @@
 import WebinyError from "@webiny/error";
 import { EntryAfterRestoreFromBinEventHandler } from "@webiny/api-headless-cms/features/contentEntry/RestoreEntryFromBin/index.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import { AuditLogRecorder } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 
 class AuditLogEntryAfterRestoreFromBinEventHandlerImpl
     implements EntryAfterRestoreFromBinEventHandler.Interface
 {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: EntryAfterRestoreFromBinEventHandler.Event): Promise<void> {
         const { model, entry } = event.payload;
@@ -17,8 +16,15 @@ class AuditLogEntryAfterRestoreFromBinEventHandlerImpl
         }
 
         try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.RESTORE_FROM_TRASH);
-            await createAuditLog("Entry restored from trash", entry, entry.entryId, this.recorder);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.HEADLESS_CMS.ENTRY.RESTORE_FROM_TRASH,
+                message: "Entry restored from trash",
+                content: entry,
+                entityId: entry.entryId
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogEntryAfterRestoreFromBinEventHandler",
@@ -31,5 +37,5 @@ class AuditLogEntryAfterRestoreFromBinEventHandlerImpl
 export const AuditLogEntryAfterRestoreFromBinEventHandler =
     EntryAfterRestoreFromBinEventHandler.createImplementation({
         implementation: AuditLogEntryAfterRestoreFromBinEventHandlerImpl,
-        dependencies: [AuditLogRecorder]
+        dependencies: [RecordAuditLogUseCase]
     });
