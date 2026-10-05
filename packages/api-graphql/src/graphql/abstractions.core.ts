@@ -6,6 +6,13 @@ import type { GraphQLSchemaBuilder } from "~/features/GraphQLSchemaBuilder/abstr
 
 export interface ICoreGraphQLSchemaFactory {
     execute(builder: GraphQLSchemaBuilder.Interface): Promise<GraphQLSchemaBuilder.Interface>;
+    /**
+     * Returns what this factory's type definitions and resolver paths depend on: the same key must
+     * always mean the same output. When every factory has one, the GraphQL engine runs the factories
+     * only if no schema is cached under the combined key yet. Leave it out and the factories run on
+     * every request. Use `staticSchemaKey()` for a factory whose output never changes.
+     */
+    getSchemaKey?(): string | Promise<string>;
 }
 
 export const CoreGraphQLSchemaFactory = createAbstraction<ICoreGraphQLSchemaFactory>(
