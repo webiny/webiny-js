@@ -339,3 +339,121 @@ The fix removes the whole of the single-alignment defect — 25 of 25 — and cl
 failures, at a cost of 2 sections it broke and 2 that moved off centre. It does not solve mixed
 sections, which is where all 7 remaining failures sit, and one contributing cause is in the prompt
 lines themselves rather than in the model.
+
+---
+
+# Correction: the alignment acceptance above is unverifiable
+
+The measure used throughout the alignment acceptance was wrong, and the artifacts needed to redo it
+are gone. This section states what can and cannot be stood behind, because the numbers above will
+otherwise be cited as if they had been measured properly.
+
+## What the measure did wrong
+
+It took the dominant `text-align` over a generated component's **whole** stylesheet, counting
+`@media (max-width: 768px)` rules alongside the base ones. Park city's _Site Footer_ declares `right`
+four times at desktop — contact, legal row, copyright, handicap label — and then centres everything
+inside a mobile block. Seven mobile overrides outvoted four desktop rules, so a component whose
+desktop alignment matches its source scored `center` against a `right` source.
+
+The sections were captured at 1440px. Only the base rules are comparable. A measure that does not say
+which breakpoint it means is measuring all of them.
+
+## How far it reaches, with exposure as the denominator
+
+Only a component that declares `text-align` **inside** a media query can differ; the rest cannot, by
+construction. That is the denominator.
+
+| | components | exposed | verdict changes |
+| --- | ---: | ---: | ---: |
+| Park city, Tulane, Freehill (re-run) | 41 | 8 | **2** |
+| 71 Westland (still at v1) | 9 | 1 | 0 |
+| **total** | **50** | **9** | **2** |
+
+The two that change are **Park city _Site Footer_** (all-rules `center` → base `right`) and **Freehill
+_Property Contact & Office Hours_** (all-rules `center` → base `left`). Both were named in the
+acceptance above — one as a section the fix broke, one as a section the fix repaired.
+
+An earlier version of this check reported "0 of 9 changed on Westland" as evidence the defect was not
+systemic. **Eight of those nine declare no `text-align` inside a media query at all and could not have
+differed.** The evidence was one observation, not nine.
+
+## What cannot be settled, and will not be guessed
+
+The Generate artifacts for Park city, Tulane and Freehill have been overwritten twice — once by the
+alignment fix, once by the ordering-key correction. Only 71 Westland still holds a v1 artifact, and
+**no site holds a v0 artifact at all.**
+
+- **Park city _Site Footer_** — correct at desktop now. Whether v1 genuinely broke it, or whether the
+  measure misread a correct component, cannot be determined. It is one of the two exposed components
+  that change verdict, so both readings are live.
+- **Freehill _Contact Form with Map View_** — the other section reported as broken by v1. Same
+  position.
+- **Freehill _Property Contact & Office Hours_** — reported as one of the seven the fix repaired. It
+  is exposed and changes verdict, so that repair is equally unsettleable.
+- **The whole v0 baseline.** `17 agree / 9 differ / 19 declares nothing` was measured on the flawed
+  definition, and the artifacts that would allow it to be re-derived are gone.
+
+**So "defect 11 → 6" cannot be re-established in either direction, and neither can "the fix broke two
+sections".** Both are marked unverifiable rather than carried forward. If Park city's _Site Footer_
+was never broken, the mirror guard moved by one rather than two — but that is a conditional, not a
+finding.
+
+**One v1 claim survives cleanly, for a specific reason.** 2424 Tulane's _Floor Plan Filter_ was
+reported as declaring nothing. A mobile-only declaration would have registered as a *value* under the
+old measure, not as nothing, so "nothing" cannot be a media-query artefact. It declares no
+`text-align` anywhere, base or media, in v2 either.
+
+## A second correction, to my own characterisation
+
+The two sections that moved off centre were described above as "near-ties rather than reflexes", with
+Freehill's _Contact Form with Map View_ given as `center 22, left 21` — a one-element margin. **By text
+area, which is what ranks the list, it is `center 70%, left 30%`.** That is not a near-tie. The
+description was reading element counts, which is the exact confusion the ordering-key fix removed.
+
+## The targeted run: the prediction did not hold
+
+The ordering-key contradiction was real — the list was ranked by text area and labelled with element
+counts, so the first line could carry the smaller number — and fixing it was right on its own terms.
+**It was not the cause of these failures.**
+
+| section | before fix | v1 | v2 (ordering fixed) | |
+| --- | --- | --- | --- | --- |
+| Park city _Site Footer_ | right | left | **right** | correct, but v1 unsettleable |
+| Tulane _Floor Plan Filter_ | — | nothing | **nothing** | unchanged, prediction fails |
+| Freehill _Contact Form with Map View_ | center | left | **nothing** | still wrong, prediction fails |
+
+Two of the three are clean observations and both failed. The commit stands as a correctness fix to the
+prompt, not as a validated remedy.
+
+## What the remaining defect actually is
+
+Current state on the three re-run sites, base rules, 39 sections with a measured source alignment:
+
+| | sections | wrong |
+| --- | ---: | ---: |
+| **one** measured alignment | 21 | **0** |
+| **two or more** | 18 | **5** |
+
+```
+Tulane    Footer with address, office hours  right  -> center    right 48%, center 38%, left 13%
+Tulane    Site Footer with Contact Info      right  -> left      right 48%, center 38%, left 13%
+Tulane    Floor Plan Filter                  center -> nothing   center 51%, left 38%, right 11%
+Freehill  Contact Form with Map View         center -> nothing   center 70%, left 30%
+Freehill  Property Contact & Office Hours    right  -> left      right 48%, center 44%, left 8%
+```
+
+**Every section with a single measured alignment is correct, and every failure has two or more.** In
+each of the five, the first line is dominant by area — three of them by a clear margin — and the model
+either picked a different one or declared nothing.
+
+That is a single identifiable gap, not a mix of causes: **the prompt states the distribution and never
+says what to do with a mixed one.** "Set text-align explicitly to match" is unambiguous for one value
+and silent for three. That is the next change, and it is deliberately not started in this pass.
+
+## What is not in doubt
+
+The mechanism. The fix passes a real measured alignment to a model that was previously given none,
+which is the same mechanism that worked for the type scale and for colour. The five remaining
+failures are independently observed on the current artifacts, and the 21-of-21 single-alignment result
+is measured on base rules with no inference. None of that depends on the lost baseline.
