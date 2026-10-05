@@ -47,9 +47,53 @@ The common thread is that the information was never missing. It was measured, co
 carried. The stage downstream then does the only thing it can — guess — and a guess is indistinguishable
 from a derivation in the output.
 
+## The same failure without persistence
+
+Persistence is one way the input goes missing. It is not the only one, and the sixth instance is not
+a dropped value at all.
+
+Clustering scores a pair of sections on several terms, one of which is the Jaccard overlap of the
+theme tokens each resolves to. While the theme manifest failed to resolve, every section's token set
+was **empty** — and `setJaccard([], [])` returns 1. So the term contributed the same constant to
+every pair in every run, and clustering ran on fewer dimensions than it declared, reporting a
+similarity it had not measured. Publishing the four themes turned the term on and the clusters split
+immediately: 34 components became 48 across the same four sites, with no change to the threshold.
+
+```ts
+// Bad — the comment says it does not discriminate; the value says the two sections are identical.
+/** Jaccard of two token sets; two token-less sections don't discriminate, so they score 1. */
+const setJaccard = (a: string[], b: string[]): number => {
+    if (a.length === 0 && b.length === 0) {
+        return 1;
+    }
+    …
+};
+return TREE_WEIGHT * treeSim + GEOMETRY_WEIGHT * geometrySim + TOKEN_WEIGHT * tokenSim;
+
+// Good — an absent input has no opinion, and the score renormalises over the terms that do.
+const setJaccard = (a: string[], b: string[]): number | null => {
+    if (a.length === 0 && b.length === 0) {
+        return null;
+    }
+    …
+};
+```
+
+"Scores 1" is not "does not discriminate". 1 is the maximum, so an absent term adds `TOKEN_WEIGHT`
+to **every** pair, which lowers the effective threshold for all of them.
+
 ## The test that follows from it
 
 When a stage computes something from the capture, ask: _does any later stage need this, and can it
 recompute it?_ If a later stage needs it and cannot recompute it — because the tree, the theme or the
 browser is no longer in reach — it goes on the artifact. "It is used right here" is about this stage,
 not about the pipeline.
+
+And the general form, which covers both halves: **a derivation whose input is missing does not fail.
+It returns a neutral value, and a neutral value is indistinguishable from a measured one.** Dropping
+a value before the stage that needs it is one way the input goes missing; an unresolved theme, an
+empty set, an upstream artifact that was never written are others. Ask of every derived term: _what
+does this return when its input is absent, and can a reader tell that apart from a real answer?_
+
+Related: `an-absent-input-is-an-error-not-an-empty-result.md`, which is the logging half of the same
+rule.
