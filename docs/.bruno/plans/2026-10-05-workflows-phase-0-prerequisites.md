@@ -1384,5 +1384,5 @@ Use `fix(api-aco): keep the not-empty error code when deleting folders` as the s
 
 ## Not in this phase
 
-- `TaskService.trigger` identity (D58): `IdentityContext.withIdentity` already exists, so phase 5 wraps `trigger` instead of changing api-core. See the roadmap note.
+- Task identity (D87): phase 5 wraps `TaskService.trigger` in `IdentityContext.withIdentity`; api-core does not change.
 - Any change to the workflows domain, GraphQL, admin UI or target adapters (phases 1-9).

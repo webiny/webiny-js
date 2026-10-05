@@ -456,3 +456,7 @@ Publishing does not change `system.workflow`; the published revision keeps `revi
 ## D86. v1 built-in automation; public abstractions
 
 v1 ships one built-in automation: "Send webhook" (POST to a URL with a secret signing key, read back `{ approved, comment }`). Other built-ins (pull image, create records) come later. The automation definition abstraction, its outcome types and the step-type extension point are exported publicly from api-workflows (and the editor-side counterparts from app-workflows) so developers and later built-ins can register multiple automations.
+
+## D87. Run tasks as the requester via withIdentity
+
+Supersedes D58's mechanism (the `TaskService.trigger` `identity` parameter). Workflows triggers AI and automation tasks inside `IdentityContext.withIdentity(requesterIdentity, () => taskService.trigger(...))`, so the task's `createdBy` (and the identity restored at run time) is the requester. `TaskService.trigger` keeps its current interface; api-core does not change. The interface shape is not changed just to pass a different identity.

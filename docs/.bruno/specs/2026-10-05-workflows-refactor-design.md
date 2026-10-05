@@ -280,7 +280,7 @@ Rule targets are also validated when the workflow is saved: user targets must be
 ### 7.4 Task execution [D6, D7, D27, D28, D57, D58]
 
 - One background task per AI or automation step run. The step stores the task id; it doubles as the run id.
-- The task always runs as the requester, including restarts, so records it creates or changes are attributed to the requester. `TaskService.trigger` in api-core gains an optional `identity`, stored as task `createdBy`.
+- The task always runs as the requester, including restarts, so records it creates or changes are attributed to the requester. Workflows triggers the task inside `IdentityContext.withIdentity(requester, ...)`; `TaskService.trigger` is unchanged [D87].
 - Stale-result guard: on finish the task reloads the review and applies its result only if the review is still active, the step is still current, and the step's task id matches. The same guard applies to failure writes (`onError`, `onMaxIterations`) and to stuck detection, so a late hook from an old task cannot fail a restarted step. The narrow write race is accepted.
 - `onError` and `onMaxIterations` set the step `failed` with the reason; the write is idempotent.
 - Stuck detection on read: only on single-review reads (`getReview`, `getTargetReview`), not in lists. If the task is done, failed or aborted while the step is still `inReview`, the step is set `failed` ("task ended without result").
@@ -343,7 +343,6 @@ One adapter per namespace (`cms.*` for CMS entries, `wb.page` for WB pages), rep
 
 ### 9.4 api-core
 
-- `TaskService.trigger` optional `identity` [D58].
 - `ListUsersInput.where.teams_in`, applied in the DDB and SQL `listUsers` (both filter in memory). Fix the DDB implementation ignoring `id_in` at the same time (bug B3) [D48, D50].
 
 ### 9.5 Audit logs [D65]

@@ -20,7 +20,7 @@ The spec spans ten subsystems (platform changes in api-core and api-headless-cms
 | 2. Target adapters and CMS hooks | `cms.*` and `wb.page` adapters (typed `TargetContext`, `system.workflow` sync via `UpdateEntrySystemUseCase`, publish rule D79, move rule D84, delete); single CMS handlers: revision-create null (D59), save block (D62, D80), model delete decorator (D64); delete the old duplicated CMS/WB handlers | 1a | 4.5, 9.2, 9.3 |
 | 3. GraphQL and lists | New GraphQL schema (section 10), four review lists with folder filter and rewritten pagination (D47, D76), query permissions (D78), error shape with `code` and `data`; delete the old GraphQL schema | 1b, 2 | 10, 11 |
 | 4. Routing | Exclusion settings; candidate resolution; rules; round-robin and least-loaded; picks; reassign; assignment log; rule inspector; `listUsers`, `listStepCandidates`, `folderExists` | 3 | 6 |
-| 5. Step types, automation, tasks | `StepType` extension point; automation definitions (public abstractions, D86); task runner as requester, stale guard, stuck detection, restart with `runs`; secret settings; "Send webhook" built-in | 3 | 7.1, 7.2, 7.4, 9.4 |
+| 5. Step types, automation, tasks | `StepType` extension point; automation definitions (public abstractions, D86); task runner as requester, stale guard, stuck detection, restart with `runs`; secret settings; "Send webhook" built-in | 3 | 7.1, 7.2, 7.4 |
 | 6. AI step | Workflow AI tool registry with `readTarget` / `updateTargetFields` per adapter; AI step type registered by ai-powerups; "Workflow review" capability; structured output | 2, 5 | 7.3 |
 | 7. Notifications | Recipient rules (D44); step transports (e-mail); websocket messages (D60) | 3 | 12 |
 | 8a. Admin: review experience for review steps | Gateways keep error code/data; per-view presenters; review bar, tooltip and dialogs (start, take over, approve, reject, cancel, reassign); request dialog with picks; four lists; dashboard widgets; WB "create new revision" on rejected draft; content list selectability on `reviewState`; delete the old admin review UI | 3, 4 | 13.1, 13.3-13.5 |
@@ -42,6 +42,6 @@ The rewrite replaces code in place on this branch; nothing is released between p
 - Workflows assume OpenSearch storage (D63); tests for workflows-related storage behaviour run with `yarn test:os` in addition to the default.
 - Never push. Never amend.
 
-## Open: D58 mechanism
+## D58 mechanism (decided, D87)
 
-Research for phase 0 found `IdentityContext.withIdentity(identity, cb)` in api-core (`packages/api-core/src/features/security/IdentityContext/abstractions.ts:9`). Wrapping `TaskService.trigger` in `withIdentity(requester, ...)` makes the task's `createdBy` the requester without changing the `TaskService.trigger` signature. Pending a decision: if accepted, record it as a new decision superseding D58's mechanism and update spec 7.4 / 9.4; phase 5 then implements it. Until decided, spec 9.4's `TaskService.trigger` change belongs to phase 5, not phase 0.
+Tasks run as the requester by wrapping `TaskService.trigger` in `IdentityContext.withIdentity(requester, ...)` (`packages/api-core/src/features/security/IdentityContext/abstractions.ts:9`). `TaskService.trigger` keeps its interface. Implemented in phase 5.
