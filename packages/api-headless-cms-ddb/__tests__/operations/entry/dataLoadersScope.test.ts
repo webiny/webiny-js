@@ -1,8 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { Container } from "@webiny/feature/api";
 import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
-import { HeadlessCmsDdbFeature, HeadlessCmsDdbRequestFeature } from "~/index.js";
+import { HeadlessCmsDdbFeature } from "~/index.js";
+import { HeadlessCmsDdbRequestFeature } from "~/index.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 
 /**
@@ -11,7 +14,8 @@ import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
  */
 const createRoot = () => {
     const root = new Container();
-    DynamoDBCoreFeature.register(root, { documentClient: getDocumentClient() });
+    const documentClient = getDocumentClient();
+    DynamoDBCoreFeature.register(root, { documentClient });
     HeadlessCmsDdbFeature.register(root);
     return root;
 };
@@ -35,8 +39,10 @@ describe("entry DataLoaders scope", () => {
         const second = createRequest(root);
 
         const firstLoaders = first.resolve(CmsDdbDataLoaders);
+        const firstLoadersAgain = first.resolve(CmsDdbDataLoaders);
+        const secondLoaders = second.resolve(CmsDdbDataLoaders);
 
-        expect(first.resolve(CmsDdbDataLoaders)).toBe(firstLoaders);
-        expect(second.resolve(CmsDdbDataLoaders)).not.toBe(firstLoaders);
+        expect(firstLoadersAgain).toBe(firstLoaders);
+        expect(secondLoaders).not.toBe(firstLoaders);
     });
 });

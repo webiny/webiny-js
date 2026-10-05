@@ -13,7 +13,8 @@ import {
     type CreateWebinyApiHandlerConfig as BaseConfig
 } from "@webiny/api-event-handler-aws";
 import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
-import { HeadlessCmsDdbFeature, HeadlessCmsDdbRequestFeature } from "@webiny/api-headless-cms-ddb";
+import { HeadlessCmsDdbFeature } from "@webiny/api-headless-cms-ddb";
+import { HeadlessCmsDdbRequestFeature } from "@webiny/api-headless-cms-ddb";
 import { AuditLogsDdbFeature } from "@webiny/api-audit-logs-ddb";
 import { AcoDdbFeature } from "@webiny/api-aco-ddb";
 import { WebsocketsDdbFeature } from "@webiny/api-websockets-aws";
