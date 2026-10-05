@@ -1,31 +1,34 @@
 import WebinyError from "@webiny/error";
 import { FolderAfterUpdateEventHandler } from "@webiny/api-aco/features/folder/UpdateFolder/index.js";
-import { AuditLogRecorder } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogFolderAfterUpdateHandlerImpl implements FolderAfterUpdateEventHandler.Interface {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: FolderAfterUpdateEventHandler.Event): Promise<void> {
         try {
             const { folder, original } = event.payload;
             if (folder.type === "FmFile") {
-                const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE_FOLDER.UPDATE);
-                await createAuditLog(
-                    "Folder updated",
-                    { before: original, after: folder },
-                    folder.id,
-                    this.recorder
-                );
+                const recordResult = await this.recordAuditLog.execute({
+                    audit: AUDIT.FILE_MANAGER.FILE_FOLDER.UPDATE,
+                    message: "Folder updated",
+                    content: { before: original, after: folder },
+                    entityId: folder.id
+                });
+                if (recordResult.isFail()) {
+                    throw recordResult.error;
+                }
             } else if (folder.type.startsWith("cms:")) {
-                const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL_FOLDER.UPDATE);
-                await createAuditLog(
-                    "Folder updated",
-                    { before: original, after: folder },
-                    folder.id,
-                    this.recorder
-                );
+                const recordResult = await this.recordAuditLog.execute({
+                    audit: AUDIT.HEADLESS_CMS.MODEL_FOLDER.UPDATE,
+                    message: "Folder updated",
+                    content: { before: original, after: folder },
+                    entityId: folder.id
+                });
+                if (recordResult.isFail()) {
+                    throw recordResult.error;
+                }
             }
         } catch (error) {
             throw WebinyError.from(error, {
@@ -38,5 +41,5 @@ class AuditLogFolderAfterUpdateHandlerImpl implements FolderAfterUpdateEventHand
 
 export const AuditLogFolderAfterUpdateHandler = FolderAfterUpdateEventHandler.createImplementation({
     implementation: AuditLogFolderAfterUpdateHandlerImpl,
-    dependencies: [AuditLogRecorder]
+    dependencies: [RecordAuditLogUseCase]
 });

@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { createImplementation } from "@webiny/feature/api";
 import { Encryption as EncryptionAbstraction } from "./abstractions.js";
+import { EncryptionKeyCache } from "./abstractions.js";
 import { BuildParams } from "../buildParams/abstractions.js";
 
 const DEFAULT_ALGORITHM = "aes-256-gcm";
@@ -18,7 +19,12 @@ export class EncryptionImpl implements EncryptionAbstraction.Interface {
     private key: Buffer | null;
     private algorithm: string;
 
-    constructor(buildParams: BuildParams.Interface) {
+    constructor(
+        buildParams: BuildParams.Interface,
+        // Registered in the root container, so the derived key outlives the request. Without it (in
+        // tests, for example) the key is derived for every instance.
+        keyCache: EncryptionKeyCache.Interface | undefined
+    ) {
         const passphrase = buildParams.get<string>("EncryptionPassphrase");
 
         if (passphrase) {
@@ -27,7 +33,11 @@ export class EncryptionImpl implements EncryptionAbstraction.Interface {
             const salt = buildParams.get<string>("EncryptionSalt") ?? "";
             this.algorithm = buildParams.get<string>("EncryptionAlgorithm") ?? DEFAULT_ALGORITHM;
             const keyLength = keyLengthForAlgorithm(this.algorithm);
-            this.key = crypto.scryptSync(passphrase, salt, keyLength);
+            if (keyCache) {
+                this.key = keyCache.getOrDerive(passphrase, salt, keyLength);
+            } else {
+                this.key = crypto.scryptSync(passphrase, salt, keyLength);
+            }
         } else {
             this.key = null;
             this.algorithm = DEFAULT_ALGORITHM;
@@ -62,5 +72,5 @@ export class EncryptionImpl implements EncryptionAbstraction.Interface {
 export const Encryption = createImplementation({
     abstraction: EncryptionAbstraction,
     implementation: EncryptionImpl,
-    dependencies: [BuildParams]
+    dependencies: [BuildParams, [EncryptionKeyCache, { optional: true }]]
 });

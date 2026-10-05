@@ -1,7 +1,6 @@
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { getAuditConfig } from "~/utils/getAuditConfig";
 import { useHandler } from "./helpers/useHandler";
 import { ActionType } from "@webiny/common-audit-logs";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
@@ -38,8 +37,6 @@ const getIdentitySnapshot = (identity: SecurityIdentity) => {
 
 describe("create audit log", () => {
     it("should create a new audit log", async () => {
-        const createAuditLog = getAuditConfig(auditAction);
-
         const { handler } = useHandler();
         const context = await handler();
 
@@ -53,7 +50,12 @@ describe("create audit log", () => {
             evenMoreStringData: "abcdef"
         };
 
-        const result = await createAuditLog(message, data, entityId, context.recorder);
+        const result = await context.recordAuditLog({
+            audit: auditAction,
+            message: message,
+            content: data,
+            entityId: entityId
+        });
 
         expect(convertDates(result)).toMatchObject({
             id: expect.any(String),
@@ -74,8 +76,6 @@ describe("create audit log", () => {
     });
 
     it("should list created logs", async () => {
-        const createAuditLog = getAuditConfig(auditAction);
-
         const { handler } = useHandler();
         const context = await handler();
 
@@ -89,9 +89,14 @@ describe("create audit log", () => {
             evenMoreStringData: "abcdef"
         };
 
-        await createAuditLog(message, data, entityId, context.recorder);
+        await context.recordAuditLog({
+            audit: auditAction,
+            message: message,
+            content: data,
+            entityId: entityId
+        });
 
-        const { items } = await context.auditLogs.listAuditLogs({});
+        const { items } = await context.listAuditLogs({});
         expect(items).toHaveLength(1);
 
         const result = items![0];
@@ -118,17 +123,15 @@ describe.runIf(usesDynamoDb)("create audit log in DynamoDB", () => {
     const client = getDocumentClient();
 
     it("should store the audit log under the tenant partition, with compressed content", async () => {
-        const createAuditLog = getAuditConfig(auditAction);
-
         const { handler } = useHandler();
         const context = await handler();
 
-        const result = await createAuditLog(
-            "Some Meaningful Message.",
-            { someData: true },
-            "abcdefgh0001",
-            context.recorder
-        );
+        const result = await context.recordAuditLog({
+            audit: auditAction,
+            message: "Some Meaningful Message.",
+            content: { someData: true },
+            entityId: "abcdefgh0001"
+        });
 
         const partitionKey = `T#root#AUDIT_LOG`;
         const sortKey = `${result!.id}`;

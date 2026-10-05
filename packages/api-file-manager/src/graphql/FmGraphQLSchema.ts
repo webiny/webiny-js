@@ -45,17 +45,12 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
         private readonly identityContext: IdentityContext.Interface,
         private readonly listModelsUseCase: ListModelsUseCase.Interface,
         private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface,
-        private readonly fileModelProvider: FileModelProvider.Interface,
-        private readonly fileUrlGenerator: FileUrlGenerator.Interface
+        private readonly fileModelProvider: FileModelProvider.Interface
     ) {}
 
     public async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
-        if (this.fileUrlGenerator.init) {
-            await this.fileUrlGenerator.init();
-        }
-
         this.addBaseTypeDefs(builder);
         await this.addFileTypeDefs(builder);
         this.addSettingsResolvers(builder);
@@ -535,7 +530,6 @@ export const FmGraphQLSchema = GraphQLSchemaFactory.createImplementation({
         IdentityContext,
         ListModelsUseCase,
         CmsModelFieldToGraphQLRegistry,
-        FileModelProvider,
-        FileUrlGenerator
+        FileModelProvider
     ]
 });

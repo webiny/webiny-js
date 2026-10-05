@@ -110,15 +110,15 @@ class UpdateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
                 return Result.fail(result.error);
             }
 
-            // Publish after event
+            // The repository stamps the current tenant, so publish and return what it stored.
             await this.eventPublisher.publish(
                 new GroupAfterUpdateEvent({
                     original,
-                    group
+                    group: result.value
                 })
             );
 
-            return Result.ok(group);
+            return Result.ok(result.value);
         } catch (error) {
             // Publish error event for unexpected errors
             await this.eventPublisher.publish(

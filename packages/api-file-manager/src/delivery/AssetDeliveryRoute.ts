@@ -4,12 +4,16 @@ import {
     RequestContainer
 } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
 import {
     AssetRequestResolver,
     AssetResolver,
     AssetProcessor,
     AssetOutputStrategy
 } from "~/features/assetDelivery/abstractions.js";
+import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
+import type { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
 
 const NO_CACHE = "no-cache, no-store, must-revalidate";
 
@@ -25,8 +29,8 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
         // requests (e.g. /graphql) don't trigger that chain before it is registered.
         const requestResolver = this.container.resolve(AssetRequestResolver);
         const assetResolver = this.container.resolve(AssetResolver);
-        const assetProcessor = this.container.resolve(AssetProcessor);
-        const outputStrategy = this.container.resolve(AssetOutputStrategy);
+        const tenantContext = this.container.resolve(TenantContext);
+        const getTenantById = this.container.resolve(GetTenantByIdUseCase);
 
         // Reconstruct a minimal request object compatible with IAssetRequestResolver
         const fakeRequest = {
@@ -51,6 +55,31 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
                 .header("cache-control", NO_CACHE)
                 .json({ error: "Asset not found!" });
         }
+
+        // Delivery requests carry no tenant header, so up to this point the request runs in the
+        // root tenant. Now that we know which tenant owns the asset, switch to it for the rest of
+        // the request, so processors, authorizers and output strategies (e.g. the private files
+        // check, which loads the tenant-scoped file entry) all run in the asset's tenant.
+        const tenantResult = await getTenantById.execute(resolvedAsset.getTenant());
+        if (tenantResult.isFail()) {
+            return response
+                .status(404)
+                .header("cache-control", NO_CACHE)
+                .json({ error: "Asset not found!" });
+        }
+
+        return tenantContext.withTenant(tenantResult.value, () =>
+            this.deliver(resolvedRequest, resolvedAsset, response)
+        );
+    }
+
+    private async deliver(
+        resolvedRequest: AssetRequest,
+        resolvedAsset: Asset,
+        response: HttpRouteHandler.Response
+    ) {
+        const assetProcessor = this.container.resolve(AssetProcessor);
+        const outputStrategy = this.container.resolve(AssetOutputStrategy);
 
         resolvedAsset.setOutputStrategy(outputStrategy);
 

@@ -4,6 +4,7 @@ import { RestoreFromBinStorageOperation } from "~/features/shared/storageOperati
 import { EntryFromStorageTransform, EntryToStorageTransform } from "~/legacy/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * RestoreEntryFromBinRepository - Handles storage operations for restoring entries from bin.
@@ -18,13 +19,17 @@ class RestoreEntryFromBinRepositoryImpl implements RepositoryAbstraction.Interfa
     public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private restoreFromBinStorage: RestoreFromBinStorageOperation.Interface
+        private restoreFromBinStorage: RestoreFromBinStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        entry: CmsEntry<T>
+        initialModel: CmsModel,
+        initialEntry: CmsEntry<T>
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+        const entry = this.runtimeTenant.assign(initialEntry);
+
         try {
             // Transform entry to storage format
             const storageEntry = await this.entryToStorageTransform<T>(model, entry);
@@ -50,6 +55,7 @@ export const RestoreEntryFromBinRepository = RepositoryAbstraction.createImpleme
     dependencies: [
         EntryToStorageTransform,
         EntryFromStorageTransform,
-        RestoreFromBinStorageOperation
+        RestoreFromBinStorageOperation,
+        RuntimeTenant
     ]
 });

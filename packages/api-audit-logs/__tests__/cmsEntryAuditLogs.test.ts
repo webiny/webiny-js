@@ -49,7 +49,7 @@ describe("headless cms audit logs", () => {
             .execute(model.value, entry.value.id, { values: { title: "Second" } } as any);
         expect(updated.isOk()).toBe(true);
 
-        const logs = await context.auditLogs.listAuditLogs({
+        const logs = await context.listAuditLogs({
             app: "HEADLESS_CMS",
             entityId: entry.value.id,
             limit: 10

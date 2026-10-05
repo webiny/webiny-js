@@ -21,7 +21,7 @@ class CmsResolveImageToolImpl implements AiOutputTool.Interface {
             return null;
         }
 
-        return this.urlGenerator.generateUrl(result.value);
+        return await this.urlGenerator.generateUrl(result.value);
     }
 }
 
