@@ -12,17 +12,11 @@ for (const file of [join(import.meta.dirname, ".env"), join(import.meta.dirname,
     }
 }
 
-const required = (name: string): string => {
-    const value = process.env[name];
-    if (!value) {
-        throw new Error(`Missing ${name}. Set it in e2e/.env (see e2e/example.env).`);
-    }
-    return value;
-};
-
-// One key drives both sides: the agent steps here, and the Anthropic connection the test saves
-// into AI Power-Ups settings.
-const ANTHROPIC_API_KEY = required("ANTHROPIC_API_KEY");
+// One key drives both sides: the agent steps here, and the Anthropic connection the enrichment test
+// saves into AI Power-Ups settings. Optional, so tests without agent steps (the login test) run
+// without one. With no key there is no model, and the first agent step stops the run with
+// MODEL_UNAVAILABLE, so leave those tests out (`--exclude-tag wcp` does today).
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
 export default {
     targets: [
@@ -34,7 +28,9 @@ export default {
     ],
     agents: {
         default: {
-            model: anthropic(process.env.E2E_AGENT_MODEL || "claude-sonnet-5-5"),
+            model: ANTHROPIC_API_KEY
+                ? anthropic(process.env.E2E_AGENT_MODEL || "claude-sonnet-5-5")
+                : undefined,
             context: [
                 "This is the Webiny admin app.",
                 "Settings screens are forms with vertical tabs on the left.",
@@ -50,9 +46,8 @@ export default {
             password: process.env.E2E_ADMIN_PASSWORD || "12345678"
         }
     },
-    secrets: {
-        "anthropic-api-key": ANTHROPIC_API_KEY
-    },
+    // Only with a key: an empty secret is rejected when the config loads.
+    secrets: ANTHROPIC_API_KEY ? { "anthropic-api-key": ANTHROPIC_API_KEY } : {},
     // AI enrichment runs as a background task after upload, so tests here wait on real model calls.
     timeout: 300_000,
     assertionTimeout: 10_000
