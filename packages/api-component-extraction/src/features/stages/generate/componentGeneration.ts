@@ -120,18 +120,25 @@ const typeScaleLines = (component: PlannedComponent): string[] => {
  * The last line is aimed at the measured direction rather than at alignment in general. It has to be,
  * because the sources are left 23, centre 16, right 6 — centring is right about a third of the time,
  * so an instruction that merely discouraged centring would break the sections that should be centred.
+ *
+ * **The number quoted is the one the order is by.** The first version ordered the lines by text area
+ * and labelled them with element counts, so the two disagreed whenever a section's largest text was
+ * not its most frequent: Park city's footer led with `right 5` above `center 7`, and Tulane's floor
+ * plan filter led with `center 15` above `left 26`. The list told the model two different things, and
+ * those are precisely the sections where the first version of this fix broke a correct alignment or
+ * left one undeclared. A reader cannot tell which key ranks a list unless the list shows that key.
  */
 const alignmentLines = (component: PlannedComponent): string[] => {
     const alignments = component.textAlignments ?? [];
     if (alignments.length === 0) {
         return [];
     }
-    const total = alignments.reduce((sum, entry) => sum + entry.elements, 0);
     return [
         "",
-        "The text alignment this section measured, most text first:",
+        "The text alignment this section measured, by how much of its text each covers:",
         ...alignments.map(
-            entry => `- ${entry.align} — ${entry.elements} of ${total} text elements`
+            entry =>
+                `- ${entry.align} — ${Math.round(entry.areaShare * 100)}% of the text (${entry.elements} element${entry.elements === 1 ? "" : "s"})`
         ),
         "",
         "Set text-align explicitly to match. Do not centre text this section does not centre."
