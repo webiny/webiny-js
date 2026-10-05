@@ -176,6 +176,7 @@ system.workflow = { workflowId, reviewState, stepId, stepName, stepState } | nul
 - Written only through the new `UpdateEntrySystemUseCase` (section 9.1) [D52].
 - Filterable fields registered in DDB and OpenSearch: `workflowId`, `reviewState`, `stepId`, `stepState` [D53]. The legacy `state` system field is untouched.
 - Nulled on every new revision by one `EntryRevisionBeforeCreate` handler [D59].
+- Publishing does not change it; the published revision keeps `reviewState: approved` (today's CMS clearing on publish is removed) [D85].
 
 ## 5. Lifecycle
 
@@ -257,7 +258,8 @@ Rule targets are also validated when the workflow is saved: user targets must be
 
 ### 7.2 Automation steps [D14, D35, D36, D37, D38]
 
-- Defined in code. Webiny ships built-ins (send a webhook, pull an image from a URL, create records); developers register their own.
+- Defined in code. v1 ships one built-in, "Send webhook" (POST to a URL with a secret signing key, reads back `{ approved, comment }`); more built-ins (pull image, create records) come later. Developers register their own [D86].
+- The automation definition abstraction, outcome types and the step-type extension point are public exports of api-workflows (editor-side counterparts from app-workflows) [D86].
 - A definition declares: id, name, scope `models` (`["*"]`, `["cms.*"]`, or specific namespace ids), a zod settings schema, and a handler that returns an outcome (`approved` / `rejected` with comment). It may set `maxIterations` and wait times [D57].
 - The background task wrapping is framework-owned; implementers write only logic.
 - The step editor offers a definition only if its scope covers every model in the workflow.
@@ -464,6 +466,4 @@ See `docs/.bruno/workflows/bugs.md`:
 
 ## 16. Open items for the plan
 
-- Publish of an approved review: whether `system.workflow` is cleared on publish (today CMS clears it) or kept with `reviewState: approved`.
 - Exact GraphQL names and the model id for the renamed review model.
-- Which built-in automation definitions ship in v1.

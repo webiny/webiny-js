@@ -448,3 +448,11 @@ Kept as written in the spec: step timestamps `reachedOn` / `startedOn` / `finish
 ## D84. Move rule
 
 Moving the target to another folder is blocked only while its review is `inProgress`. Allowed when the review is approved, rejected or cancelled (rejected reviews stay active forever, D23; a move does not change content). Resolves S11.
+
+## D85. Publish keeps system.workflow
+
+Publishing does not change `system.workflow`; the published revision keeps `reviewState: approved`. Today's CMS clearing on publish is removed. The next revision starts clean (D59).
+
+## D86. v1 built-in automation; public abstractions
+
+v1 ships one built-in automation: "Send webhook" (POST to a URL with a secret signing key, read back `{ approved, comment }`). Other built-ins (pull image, create records) come later. The automation definition abstraction, its outcome types and the step-type extension point are exported publicly from api-workflows (and the editor-side counterparts from app-workflows) so developers and later built-ins can register multiple automations.
