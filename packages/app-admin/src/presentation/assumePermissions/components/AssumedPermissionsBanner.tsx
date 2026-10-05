@@ -1,7 +1,8 @@
 import React from "react";
 import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 import { useFeature } from "@webiny/app";
-import { Alert } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 import { AssumedPermissionsBanner as BaseAssumedPermissionsBanner } from "~/base/ui/AssumedPermissionsBanner.js";
 import { AssumePermissionsPresenterFeature } from "../feature.js";
 
@@ -23,23 +24,31 @@ const AssumedPermissionsBannerView = createReactiveComponent(() => {
     const kind = vm.assumed.type === "team" ? "team" : "role";
 
     /*
-     * The name goes in the body rather than in Alert's `title`: that prop is not rendered, it
-     * falls through to the root div and ends up as an HTML tooltip. Children run through
-     * compileMarkdown, so the emphasis below survives.
+     * A slim bar across the content column, text centred and the action at the far right. Three
+     * grid columns rather than an absolutely placed button, so a long role name wraps instead of
+     * running under it.
      */
     return (
-        <Alert
-            type={"warning"}
-            actions={
-                <Alert.Action
+        <div
+            className={"grid grid-cols-[1fr_auto_1fr] items-center gap-sm bg-warning px-sm py-xxs"}
+            data-testid={"assumed-permissions-banner"}
+        >
+            <span />
+            <Text size={"sm"} className={"text-center text-neutral-primary"}>
+                {"Viewing the Admin as the "}
+                <strong>{vm.assumed.name}</strong>
+                {` ${kind}. Permissions are enforced as this ${kind}, so anything you are not allowed to do will fail.`}
+            </Text>
+            <div className={"justify-self-end"}>
+                <Button
+                    variant={"ghost"}
+                    size={"sm"}
                     text={"Exit preview"}
                     disabled={vm.switching}
                     onClick={() => presenter.exit()}
                 />
-            }
-        >
-            {`Viewing the Admin as the **${vm.assumed.name}** ${kind}. Permissions are enforced as this ${kind}, so anything you are not allowed to do will fail.`}
-        </Alert>
+            </div>
+        </div>
     );
 });
 
