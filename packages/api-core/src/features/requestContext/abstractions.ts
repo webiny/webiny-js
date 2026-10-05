@@ -39,8 +39,8 @@ export namespace RawAuthToken {
 
 /**
  * Per-request holder for the role or team the caller asked to be evaluated as, EXTRACTED by the
- * transport from the `x-webiny-assume-permissions` header. This is a preview mechanism: it can only ever
- * narrow what a caller may do, never widen it. AssumedPermissions reads this holder and
+ * transport from the `x-webiny-assume-permissions` header. This is a preview mechanism: it can
+ * only ever narrow what a caller may do, never widen it. AssumedPermissions reads this holder and
  * substitutes the permission set, but only after confirming the caller's own permissions grant
  * full access.
  *

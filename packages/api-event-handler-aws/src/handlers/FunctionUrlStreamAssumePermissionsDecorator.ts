@@ -6,8 +6,8 @@ import type { NextFunction } from "@webiny/event-handler-core";
 import { headersFromFunctionUrlEvent } from "./extractRequestAuth.js";
 
 /**
- * EXTRACT (transport-specific): reads the `x-webiny-assume-permissions` header of a Function URL event
- * into RawAssumePermissions. Function URL mirror of ApiGatewayAssumePermissionsDecorator.
+ * EXTRACT (transport-specific): reads the `x-webiny-assume-permissions` header of a Function URL
+ * event into RawAssumePermissions. Function URL mirror of ApiGatewayAssumePermissionsDecorator.
  */
 class FunctionUrlStreamAssumePermissionsDecoratorImpl
     implements FunctionUrlStreamEventHandler.Interface

@@ -3,8 +3,8 @@ import { createVoidComponent } from "@webiny/app";
 import { makeDecoratable } from "@webiny/app";
 
 /**
- * Placeholder for the "view as" header control. See AssumedPermissionsBanner for why the Layout renders
- * a placeholder rather than the component itself.
+ * Placeholder for the "view as" header control. See AssumedPermissionsBanner for why the Layout
+ * renders a placeholder rather than the component itself.
  *
  * Unlike the banner, this one renders nothing unless a preview is already active. Entering a
  * preview happens from the role and team forms. It exists so that someone comparing roles can jump

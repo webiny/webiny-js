@@ -8,8 +8,8 @@ import { RequestTenantLoader } from "./RequestTenantLoader.js";
 
 /**
  * Registers the request-context pieces:
- * - RawTenantId / RawAuthToken / RawAssumePermissions: per-request holders that the transport's EXTRACT
- *   step writes to.
+ * - RawTenantId / RawAuthToken / RawAssumePermissions: per-request holders that the transport's
+ *   EXTRACT step writes to.
  * - RequestIdentityLoader / RequestTenantLoader: transport-agnostic LOAD steps that read
  *   the holders and set IdentityContext / TenantContext.
  */

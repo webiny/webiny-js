@@ -34,7 +34,7 @@ function formTitle(record: Team | null): string {
  * Only a saved team can be previewed. While the form loads, `selectedTeam` can still be the team
  * that was open before, so there is no target until loading is done.
  */
-function toViewAsTarget(
+function toAssumeTarget(
     team: Team | null,
     loading: boolean
 ): AssumePermissionsPresenter.Target | null {
@@ -93,14 +93,14 @@ export const TeamsForm = createReactiveComponent(
             );
         }
 
-        const viewAsTarget = toViewAsTarget(vm.selectedTeam, vm.loading);
+        const assumeTarget = toAssumeTarget(vm.selectedTeam, vm.loading);
 
         return (
             <SimpleForm>
                 {vm.loading || vm.saving ? <OverlayLoader /> : null}
                 <SimpleFormHeader title={formTitle(vm.selectedTeam)}>
                     <div className={"flex items-center justify-end"}>
-                        <AssumePermissionsButton target={viewAsTarget} />
+                        <AssumePermissionsButton target={assumeTarget} />
                     </div>
                 </SimpleFormHeader>
                 <SimpleFormContent>

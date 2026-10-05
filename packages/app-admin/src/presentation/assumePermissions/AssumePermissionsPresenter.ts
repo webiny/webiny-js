@@ -36,9 +36,9 @@ class AssumePermissionsPresenterImpl implements Abstraction.Interface {
     private error: string | null = null;
     /*
      * The role this page was LOADED with, captured once. The banner renders from this rather than
-     * from the live context so it doesn't flicker during a switch: starting a preview would otherwise
-     * pop the banner up a moment before the reload, and exiting would drop it a moment before,
-     * both of which read as a glitch. Since every switch reloads, the snapshot and the live value
+     * from the live context so it doesn't flicker during a switch: starting a preview would
+     * otherwise pop the banner up a moment before the reload, and exiting would drop it a moment
+     * before, both of which read as a glitch. Since every switch reloads, the snapshot and the live value
      * only ever differ inside that window.
      */
     private readonly loadedAssumed: AssumePermissionsContext.Value | null;

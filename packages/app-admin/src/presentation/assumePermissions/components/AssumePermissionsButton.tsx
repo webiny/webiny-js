@@ -29,13 +29,13 @@ export const AssumePermissionsButton = createReactiveComponent(
 
         const isAssumed = vm.assumed?.type === target.type && vm.assumed.id === target.id;
 
-        // Already previewing this one: say so, rather than leave a dead button that doesn't explain itself.
+        // Already previewing this one: say so, rather than leave a dead button with no reason.
         let text = `View as this ${target.type}`;
         if (isAssumed) {
             text = `Viewing as this ${target.type}`;
         }
 
-        const viewAs = async () => {
+        const assume = async () => {
             await presenter.assumeTarget(target);
 
             if (presenter.vm.error) {
@@ -50,7 +50,7 @@ export const AssumePermissionsButton = createReactiveComponent(
                 icon={<VisibilityIcon />}
                 text={text}
                 disabled={vm.switching || isAssumed}
-                onClick={viewAs}
+                onClick={assume}
                 data-testid={"admin.am.view-as"}
             />
         );

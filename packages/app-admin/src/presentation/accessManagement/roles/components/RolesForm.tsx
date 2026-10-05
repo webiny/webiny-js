@@ -38,7 +38,7 @@ function formTitle(record: Role | null): string {
  * Only a saved role can be previewed. While the form loads, `selectedRole` can still be the role
  * that was open before, so there is no target until loading is done.
  */
-function toViewAsTarget(
+function toAssumeTarget(
     role: Role | null,
     loading: boolean
 ): AssumePermissionsPresenter.Target | null {
@@ -104,14 +104,14 @@ export const RolesForm = createReactiveComponent(
             showSnackbar("JSON data copied to clipboard.");
         };
 
-        const viewAsTarget = toViewAsTarget(vm.selectedRole, vm.loading);
+        const assumeTarget = toAssumeTarget(vm.selectedRole, vm.loading);
 
         return (
             <SimpleForm size={"lg"}>
                 {vm.loading || vm.saving ? <OverlayLoader /> : null}
                 <SimpleFormHeader title={formTitle(vm.selectedRole)}>
                     <div className={"flex items-center justify-end gap-xxs"}>
-                        <AssumePermissionsButton target={viewAsTarget} />
+                        <AssumePermissionsButton target={assumeTarget} />
                         <Tooltip
                             content="Copy permissions as JSON"
                             trigger={

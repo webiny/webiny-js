@@ -32,8 +32,8 @@ function readHeader(headers: Headers, name: string): string | null {
 }
 
 /**
- * Reads the `x-webiny-assume-permissions` header and parses it into the role or team whose permissions
- * should be previewed. The value is `role:<id>` or `team:<id>`.
+ * Reads the `x-webiny-assume-permissions` header and parses it into the role or team whose
+ * permissions should be previewed. The value is `role:<id>` or `team:<id>`.
  *
  * Anything else parses to null, which leaves the caller's own permissions untouched. Lives in
  * api-core rather than in a transport package so the HTTP transports cannot drift on the format or

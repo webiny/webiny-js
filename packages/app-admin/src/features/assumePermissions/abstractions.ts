@@ -1,8 +1,8 @@
 import { createAbstraction } from "@webiny/feature/admin";
 
 /**
- * The role or team whose permissions to assume. `name` is carried alongside the id purely so the banner can say
- * whose permissions are in effect without a second query.
+ * The role or team whose permissions to assume. `name` is carried alongside the id purely so the
+ * banner can say whose permissions are in effect without a second query.
  */
 export interface IAssumePermissionsTarget {
     type: "role" | "team";
@@ -11,9 +11,9 @@ export interface IAssumePermissionsTarget {
 }
 
 /**
- * The assumed permissions as stored. `startedBy` is the id of the identity that started it: the selection
- * outlives a reload by design, so it is also there for whoever signs in next on this browser, and
- * the id is how their login tells it isn't theirs.
+ * The assumed permissions as stored. `startedBy` is the id of the identity that started it: the
+ * selection outlives a reload by design, so it is also there for whoever signs in next on this
+ * browser, and the id is how their login tells it isn't theirs.
  */
 export interface IAssumedPermissions extends IAssumePermissionsTarget {
     startedBy: string;
@@ -53,9 +53,9 @@ export interface IAssumableTargetsDto {
 
 /**
  * Fetches the roles and teams on offer AS THE SIGNED-IN USER, never as the role being previewed.
- * Every other request carries the assume-permissions header while a preview is active, and the previewed
- * role usually cannot list roles, so without the opt-out the header control would come up empty exactly
- * when someone is trying to switch from one role to the next.
+ * Every other request carries the assume-permissions header while a preview is active, and the
+ * previewed role usually cannot list roles, so without the opt-out the header control would come
+ * up empty exactly when someone is trying to switch from one role to the next.
  */
 export interface IListAssumableTargetsGateway {
     execute(params: { includeTeams: boolean }): Promise<IAssumableTargetsDto>;

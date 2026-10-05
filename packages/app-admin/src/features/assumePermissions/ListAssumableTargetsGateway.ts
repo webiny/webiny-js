@@ -74,8 +74,8 @@ class ListAssumableTargetsGatewayImpl implements Abstraction.Interface {
         const query = params.includeTeams ? LIST_ROLES_AND_TEAMS : LIST_ROLES;
 
         /*
-         * An explicit, empty assume-permissions header. The client decorator leaves a header the caller
-         * set alone, and the API reads an empty value as "no preview", so this one request
+         * An explicit, empty assume-permissions header. The client decorator leaves a header the
+         * caller set alone, and the API reads an empty value as "no preview", so this one request
          * runs as the signed-in user even while the rest of the Admin runs as the previewed role.
          */
         const response = await this.client.execute<Response>({

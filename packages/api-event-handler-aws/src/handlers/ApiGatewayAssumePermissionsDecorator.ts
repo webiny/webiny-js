@@ -6,10 +6,10 @@ import type { EventContext } from "@webiny/event-handler-core";
 import type { NextFunction } from "@webiny/event-handler-core";
 
 /**
- * EXTRACT (transport-specific): reads the `x-webiny-assume-permissions` header of an API Gateway event
- * into RawAssumePermissions, so AssumedPermissions can evaluate the request against that role
- * instead of the caller's own. There is no LOAD step: the holder is read lazily, the first time
- * something asks for permissions.
+ * EXTRACT (transport-specific): reads the `x-webiny-assume-permissions` header of an API Gateway
+ * event into RawAssumePermissions, so AssumedPermissions can evaluate the request against that
+ * role instead of the caller's own. There is no LOAD step: the holder is read lazily, the first
+ * time something asks for permissions.
  *
  * A missing header leaves RawAssumePermissions null, which is the normal case.
  */
