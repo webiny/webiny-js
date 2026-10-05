@@ -35,6 +35,17 @@ const nonOwnerIdentity = {
     type: "user"
 };
 
+/**
+ * Object values written through Headless CMS come back with a generated `_id`, so
+ * identities read off a workflow state step carry one as well.
+ */
+const storedIdentity = (identity: Record<string, string>) => {
+    return {
+        ...identity,
+        _id: expect.any(String)
+    };
+};
+
 describe("Workflow State Use Cases", () => {
     const targetTitle = "App: Some Record Title";
 
@@ -147,6 +158,7 @@ describe("Workflow State Use Cases", () => {
         expect(state.steps).toEqual([
             ...workflow.steps.map(step => {
                 return {
+                    _id: expect.any(String),
                     canReview: false,
                     isOwner: false,
                     canTakeOver: false,
@@ -313,6 +325,7 @@ describe("Workflow State Use Cases", () => {
         expect(stateAfterApprove.state).toEqual(WorkflowStateRecordState.pending);
 
         expect(stateAfterApprove.steps[0]).toEqual({
+            _id: expect.any(String),
             id: "step-1",
             canReview: true,
             canTakeOver: false,
@@ -324,10 +337,11 @@ describe("Workflow State Use Cases", () => {
             teams: state.steps[0].teams,
             state: WorkflowStateRecordState.approved,
             comment: "First step should be approved.",
-            savedBy: reviewerIdentity
+            savedBy: storedIdentity(reviewerIdentity)
         });
 
         expect(stateAfterApprove.steps[1]).toEqual({
+            _id: expect.any(String),
             id: "step-2",
             canReview: true,
             canTakeOver: false,
@@ -373,6 +387,7 @@ describe("Workflow State Use Cases", () => {
         // Verify second step approval
         const stateAfterApproveStep2 = secondApproveResult.value!;
         expect(stateAfterApproveStep2.steps[1]).toEqual({
+            _id: expect.any(String),
             id: "step-2",
             canReview: true,
             canTakeOver: false,
@@ -384,7 +399,7 @@ describe("Workflow State Use Cases", () => {
             notifications: state.steps[1].notifications,
             state: WorkflowStateRecordState.approved,
             comment: "Second step should be approved.",
-            savedBy: reviewerIdentity
+            savedBy: storedIdentity(reviewerIdentity)
         });
 
         // Verify entire workflow is now approved and done
@@ -595,6 +610,7 @@ describe("Workflow State Use Cases", () => {
         // Verify takeover was successful and new reviewer owns the step
         expect(takeOverStateStepResult.steps).toEqual([
             {
+                _id: expect.any(String),
                 canReview: true,
                 canTakeOver: false,
                 color: "blue",
@@ -604,23 +620,22 @@ describe("Workflow State Use Cases", () => {
                 isOwner: true,
                 notifications: [
                     {
+                        _id: expect.any(String),
                         id: "notif-1"
                     }
                 ],
-                savedBy: {
-                    displayName: "Takeover Identity",
-                    id: "takeOver-identity-id",
-                    type: "user"
-                },
+                savedBy: storedIdentity(takeOverIdentity),
                 state: "inReview",
                 teams: [
                     {
+                        _id: expect.any(String),
                         id: "full-access-team"
                     }
                 ],
                 title: "Step 1"
             },
             {
+                _id: expect.any(String),
                 canReview: true,
                 canTakeOver: false,
                 color: "green",
@@ -630,6 +645,7 @@ describe("Workflow State Use Cases", () => {
                 isOwner: false,
                 notifications: [
                     {
+                        _id: expect.any(String),
                         id: "notif-2"
                     }
                 ],
@@ -637,6 +653,7 @@ describe("Workflow State Use Cases", () => {
                 state: "pending",
                 teams: [
                     {
+                        _id: expect.any(String),
                         id: "full-access-team"
                     }
                 ],
