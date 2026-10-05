@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type {
+    ComponentPromptDto,
     AssembleArtifactDto,
     ComposedCaptureDto,
     PageMapDto,
@@ -151,6 +152,7 @@ export interface IRunViewPresenter {
         runId: string,
         signature: string
     ): Promise<GeneratedComponentDetailDto | null>;
+    loadComponentPrompt(runId: string, signature: string): Promise<ComponentPromptDto | null>;
     toggleTokens(): void;
     /** Toggle the overrides panel; loads the job's overrides + this run's reattachments (W8.7). */
     toggleOverrides(): void;

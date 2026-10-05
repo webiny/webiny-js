@@ -39,6 +39,7 @@ export interface IComponentExtractionGateway {
      * carrying them, so the list is served without their source and a view that opens one asks for it.
      */
     getGeneratedComponent(runId: string, signature: string): Promise<unknown>;
+    getComponentPrompt(runId: string, signature: string): Promise<unknown>;
     /** Drop captured/failed pages from a run; returns the run with Segment+downstream marked stale. */
     excludeCapturedPages(runId: string, urls: string[]): Promise<RunDto>;
     /** Trigger the render task that screenshots the run's generated components (W7.7). */

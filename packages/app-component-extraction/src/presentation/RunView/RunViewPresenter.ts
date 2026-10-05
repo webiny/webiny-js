@@ -4,6 +4,7 @@ import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
 import { stageEntry } from "~/shared/ledger.js";
 import { normalizeUrl } from "~/shared/url.js";
 import type {
+    ComponentPromptDto,
     AssembleArtifactDto,
     DecisionsDto,
     GenerateArtifactDto,
@@ -641,6 +642,23 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         try {
             const detail = await this.gateway.getGeneratedComponent(runId, signature);
             return (detail as GeneratedComponentDetailDto | null) ?? null;
+        } catch {
+            return null;
+        }
+    }
+
+    /**
+     * The prompt this component would be generated from, built fresh from the current plan and theme.
+     *
+     * Not stored with the component: it answers "what would the next run send", which is the question
+     * asked while looking at a render that came out wrong. Every generation defect this project has
+     * fixed was fixed by changing what the model is told, and each was first seen in a picture and
+     * only then traced back to a line that was missing from the prompt.
+     */
+    async loadComponentPrompt(runId: string, signature: string): Promise<ComponentPromptDto | null> {
+        try {
+            const prompt = await this.gateway.getComponentPrompt(runId, signature);
+            return (prompt as ComponentPromptDto | null) ?? null;
         } catch {
             return null;
         }

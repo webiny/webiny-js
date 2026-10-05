@@ -209,6 +209,25 @@ const colourLines = (component: PlannedComponent): string[] => {
     ];
 };
 
+/**
+ * The prompt a component is generated from.
+ *
+ * Exported so the Generate screen can show it. Everything this project has fixed in generation was
+ * fixed by changing what the model is told — image values, type sizes, colours, alignment, background
+ * images — and each defect was first seen in a render and only then traced back to an absent line.
+ * Reading the prompt is the shortest path from "this component is wrong" to "it was never told", and
+ * it had to be reconstructed by hand every time.
+ *
+ * It is built, not recorded: the same function the stage calls, over the current plan artifact and the
+ * current theme. So it shows what the next generation would send rather than what some earlier one
+ * did, which is the question an operator is actually asking before pressing the button again.
+ */
+export const buildComponentPrompt = (
+    component: PlannedComponent,
+    slotVariables: Map<string, string[]>,
+    feedback: string[] = []
+): string => buildPrompt(component, slotVariables, feedback);
+
 const buildPrompt = (
     component: PlannedComponent,
     slotVariables: Map<string, string[]>,

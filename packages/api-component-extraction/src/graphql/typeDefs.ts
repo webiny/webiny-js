@@ -125,6 +125,16 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             runId: ID!
             signature: String!
         ): ComponentExtractionArtifactResponse!
+        """
+        The prompt this component would be generated from, built from the current plan and theme.
+
+        Built rather than recorded, so it answers "what would the next run send" rather than "what did
+        some earlier run send" — which is the question asked before pressing generate again.
+        """
+        componentExtractionGetComponentPrompt(
+            runId: ID!
+            signature: String!
+        ): ComponentExtractionArtifactResponse!
         "The structured artifact a stage produced, for the visibility screens. Image refs are served by the run-image route. Pass machine:true for the un-overridden (machine) artifact (W8)."
         componentExtractionGetStageArtifact(
             runId: ID!

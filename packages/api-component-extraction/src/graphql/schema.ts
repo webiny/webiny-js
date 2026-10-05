@@ -29,6 +29,8 @@ import type {
     PlanArtifact
 } from "~/domain/artifacts.js";
 import { readComponent } from "~/domain/generatedComponents.js";
+import { buildComponentPrompt } from "~/features/stages/generate/componentGeneration.js";
+import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import type { Correction, Run } from "~/domain/types.js";
 import {
     DEFAULT_PAGE_CAP,
@@ -602,6 +604,83 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     // artifact written before the aggregate referenced its components still reads.
                     const component = await readComponent(store, entry);
                     return component.isOk() ? component.value : null;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionGetComponentPrompt",
+        dependencies: [
+            ComponentExtractionPermissions,
+            RunRepository,
+            JobRepository,
+            StageArtifactStore,
+            ThemeManifestResolver
+        ],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            jobRepository: JobRepository.Interface,
+            store: StageArtifactStore.Interface,
+            manifestResolver: ThemeManifestResolver.Interface
+        ) {
+            return ({ args }: { args: { runId: string; signature: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+                    const planKey = stageEntry(run.stages, "plan")?.artifacts.plan;
+                    if (!planKey) {
+                        return null;
+                    }
+                    const plan = await store.getJson<PlanArtifact>(planKey);
+                    if (plan.isFail() || !plan.value) {
+                        return null;
+                    }
+                    const planned = plan.value.components.find(
+                        component => component.signature === args.signature
+                    );
+                    if (!planned) {
+                        return null;
+                    }
+
+                    /*
+                     * The same inputs `GenerateComponentTask` assembles. An unresolved theme is not an
+                     * error here — the stage generates without token-binding validation in that case,
+                     * so the prompt it would send is the one built from an empty variable map, and
+                     * showing it is more useful than showing nothing.
+                     */
+                    const slotVariables = new Map<string, string[]>();
+                    let themeError: string | null = null;
+                    const job = await jobRepository.get(run.jobId);
+                    if (job.isOk()) {
+                        const manifest = await manifestResolver.resolve(
+                            job.value.themeEntryId,
+                            job.value.themeVersion
+                        );
+                        if (manifest.isOk()) {
+                            for (const slot of manifest.value.slots) {
+                                slotVariables.set(String(slot.path), slot.cssVariables);
+                            }
+                        } else {
+                            themeError = manifest.error.message;
+                        }
+                    } else {
+                        themeError = job.error.message;
+                    }
+
+                    return {
+                        signature: args.signature,
+                        name: planned.name,
+                        prompt: buildComponentPrompt(planned, slotVariables),
+                        /** Null unless the theme could not be resolved, in which case the prompt has no variables. */
+                        themeError
+                    };
                 });
         }
     });

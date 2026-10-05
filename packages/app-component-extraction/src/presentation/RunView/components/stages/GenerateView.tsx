@@ -7,6 +7,7 @@ import { RunImage } from "~/presentation/runImage/RunImage.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type {
     ComponentDecisionDto,
+    ComponentPromptDto,
     GenerateArtifactDto,
     GeneratedComponentDto,
     GeneratedComponentDetailDto,
@@ -155,6 +156,31 @@ const GenerateCard = ({
     const pageCount = pageCountOf(component);
     const [showInstruction, setShowInstruction] = useState(false);
     const [instruction, setInstruction] = useState("");
+    /*
+     * The prompt is fetched on open rather than carried with the list: it is rebuilt from the current
+     * plan and theme, so it answers what the NEXT generation would send. Carrying it would show what
+     * some earlier one did, which is the wrong question while looking at a render that came out wrong.
+     */
+    const [prompt, setPrompt] = useState<ComponentPromptDto | null>(null);
+    const [promptOpen, setPromptOpen] = useState(false);
+    const [promptLoading, setPromptLoading] = useState(false);
+
+    const togglePrompt = async () => {
+        if (promptOpen) {
+            setPromptOpen(false);
+            return;
+        }
+        setPromptOpen(true);
+        if (prompt || promptLoading) {
+            return;
+        }
+        setPromptLoading(true);
+        try {
+            setPrompt(await presenter.loadComponentPrompt(runId, component.signature));
+        } finally {
+            setPromptLoading(false);
+        }
+    };
 
     const submitRegenerate = () => {
         const text = instruction.trim();
@@ -320,6 +346,12 @@ const GenerateCard = ({
                         onClick={() => toggle("rejected")}
                     />
                     <Button variant="tertiary" size="sm" text="View code" onClick={onViewCode} />
+                    <Button
+                        variant="tertiary"
+                        size="sm"
+                        text={promptOpen ? "Hide prompt" : "View prompt"}
+                        onClick={() => void togglePrompt()}
+                    />
                     <div className="flex-1" />
                     <Button
                         variant="tertiary"
@@ -335,6 +367,32 @@ const GenerateCard = ({
                         onClick={() => setShowInstruction(open => !open)}
                     />
                 </div>
+                {promptOpen ? (
+                    <div className="flex flex-col gap-xs">
+                        {promptLoading ? (
+                            <Text className="text-neutral-strong">Building the prompt…</Text>
+                        ) : prompt ? (
+                            <>
+                                {prompt.themeError ? (
+                                    <Text className="text-destructive-primary">
+                                        {`The theme could not be resolved (${prompt.themeError}), so this prompt names no theme variables — which is also what Generate would send.`}
+                                    </Text>
+                                ) : null}
+                                <pre className="max-h-[32rem] overflow-auto rounded-sm bg-neutral-dimmed p-sm text-sm whitespace-pre-wrap">
+                                    {prompt.prompt}
+                                </pre>
+                                <Text className="text-neutral-strong">
+                                    {`${prompt.prompt.length.toLocaleString()} characters — built from the current plan and theme, so this is what the next generation would send.`}
+                                </Text>
+                            </>
+                        ) : (
+                            <Text className="text-neutral-strong">
+                                No prompt: this component is not in the current plan. Re-run Plan to
+                                see what Generate would send.
+                            </Text>
+                        )}
+                    </div>
+                ) : null}
                 {showInstruction && !regenerating ? (
                     <div className="flex items-center gap-sm">
                         <Input

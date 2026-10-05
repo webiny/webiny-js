@@ -380,6 +380,15 @@ export interface GeneratedComponentDto {
 }
 
 /** One component in full, from `componentExtractionGetGeneratedComponent`. */
+/** The prompt a component would be generated from, built from the current plan and theme. */
+export interface ComponentPromptDto {
+    signature: string;
+    name: string;
+    prompt: string;
+    /** Set only when the theme could not be resolved, in which case the prompt names no variables. */
+    themeError: string | null;
+}
+
 export interface GeneratedComponentDetailDto {
     signature: string;
     name: string;

@@ -29,6 +29,7 @@ import {
     GET_RENDERS,
     GET_RUN,
     GET_STAGE_ARTIFACT,
+    GET_COMPONENT_PROMPT,
     GET_GENERATED_COMPONENT,
     GET_STAGE_TASK,
     GET_WEBSITE_DOMAIN,
@@ -174,6 +175,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: GET_GENERATED_COMPONENT, variables: { runId, signature } });
 
         return unwrap(response.componentExtractionGetGeneratedComponent);
+    }
+
+    async getComponentPrompt(runId: string, signature: string): Promise<unknown> {
+        const response = await this.client.execute<{
+            componentExtractionGetComponentPrompt: GqlEnvelope<unknown>;
+        }>({ query: GET_COMPONENT_PROMPT, variables: { runId, signature } });
+
+        return unwrap(response.componentExtractionGetComponentPrompt);
     }
 
     async excludeCapturedPages(runId: string, urls: string[]): Promise<RunDto> {

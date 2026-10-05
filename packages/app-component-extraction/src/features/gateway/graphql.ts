@@ -160,6 +160,18 @@ export const RENDER_COMPONENTS = /* GraphQL */ `
     }
 `;
 
+export const GET_COMPONENT_PROMPT = /* GraphQL */ `
+    query GetComponentPrompt($runId: ID!, $signature: String!) {
+        componentExtractionGetComponentPrompt(runId: $runId, signature: $signature) {
+            data
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
 export const GET_GENERATED_COMPONENT = /* GraphQL */ `
     query GetGeneratedComponent($runId: ID!, $signature: String!) {
         componentExtractionGetGeneratedComponent(runId: $runId, signature: $signature) {
