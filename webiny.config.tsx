@@ -1,5 +1,6 @@
 import React from "react";
 import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
+import { Wcp } from "@webiny/project";
 import { Cognito } from "@webiny/cognito";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { ApplyDiscountExtension } from "@/extensions/bulkActions/applyDiscount/ApplyDiscountExtension.js";
@@ -27,7 +28,9 @@ export const Extensions = () => {
             {/* Bulk actions demo: "Apply Discount" bulk action on Products (API + Admin) */}
             <ApplyDiscountExtension />
             {/* Bulk actions demo: "Generate AI summary" bulk action on Products (API + Admin) */}
-            <AiContentExtension />
+            <Wcp.CanUseAiPowerups>
+                <AiContentExtension />
+            </Wcp.CanUseAiPowerups>
             <Admin.Extension src={"@/extensions/folderDropConfirmation/index.tsx"} />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
