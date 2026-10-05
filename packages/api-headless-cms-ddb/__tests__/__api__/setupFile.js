@@ -1,6 +1,6 @@
 import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
 import { registerDynamoDBCore } from "@webiny/db-dynamodb";
-import { HeadlessCmsDdbFeature } from "../../src";
+import { HeadlessCmsDdbFeature, HeadlessCmsDdbRequestFeature } from "../../src";
 import { FieldSortingRegistry } from "@webiny/api-headless-cms-storage";
 import { setStorageOps } from "@webiny/api-core/testing/environment.js";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
@@ -13,7 +13,10 @@ setStorageOps("cms", () => {
         registerDynamoDBCore({
             documentClient
         }),
-        createRegisterExtensionPlugin(context => HeadlessCmsDdbFeature.register(context.container)),
+        createRegisterExtensionPlugin(context => {
+            HeadlessCmsDdbFeature.register(context.container);
+            HeadlessCmsDdbRequestFeature.register(context.container);
+        }),
         /**
          * TODO remove when all apps are created with their own storage operations factory and drivers.
          */

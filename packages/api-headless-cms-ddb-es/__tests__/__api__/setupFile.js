@@ -3,7 +3,7 @@ import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
 import { registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { simulateStream } from "@webiny/api-opensearch-aws/testing/simulateStream.js";
-import { HeadlessCmsDdbEsFeature } from "../../src/index";
+import { HeadlessCmsDdbEsFeature, HeadlessCmsDdbEsRequestFeature } from "../../src/index";
 import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { setStorageOps } from "@webiny/api-core/testing/environment.js";
@@ -93,9 +93,10 @@ setStorageOps("cms", () => {
                 documentClient
             }),
             registerOpenSearchCoreForTests(),
-            createRegisterExtensionPlugin(context =>
-                HeadlessCmsDdbEsFeature.register(context.container)
-            ),
+            createRegisterExtensionPlugin(context => {
+                HeadlessCmsDdbEsFeature.register(context.container);
+                HeadlessCmsDdbEsRequestFeature.register(context.container);
+            }),
             ...initializedDbPlugins,
             createOrRefreshIndexSubscription,
             fruitModifierPlugin

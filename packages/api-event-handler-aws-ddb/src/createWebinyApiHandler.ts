@@ -13,7 +13,7 @@ import {
     type CreateWebinyApiHandlerConfig as BaseConfig
 } from "@webiny/api-event-handler-aws";
 import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
-import { HeadlessCmsDdbFeature } from "@webiny/api-headless-cms-ddb";
+import { HeadlessCmsDdbFeature, HeadlessCmsDdbRequestFeature } from "@webiny/api-headless-cms-ddb";
 import { AuditLogsDdbFeature } from "@webiny/api-audit-logs-ddb";
 import { AcoDdbFeature } from "@webiny/api-aco-ddb";
 import { WebsocketsDdbFeature } from "@webiny/api-websockets-aws";
@@ -28,8 +28,13 @@ const registerRootStorage: BaseConfig["registerRootStorage"] = (container, { doc
     WebsocketsDdbFeature.register(container);
 };
 
+const registerRequestStorage: BaseConfig["registerRequestStorage"] = container => {
+    // The CMS entry DataLoader caches reads, so it must be fresh for every request.
+    HeadlessCmsDdbRequestFeature.register(container);
+};
+
 export function createAwsDdbApiHandler(config: CreateAwsDdbApiHandlerConfig) {
-    return createBaseHandler({ ...config, registerRootStorage });
+    return createBaseHandler({ ...config, registerRootStorage, registerRequestStorage });
 }
 
 /**
@@ -37,5 +42,5 @@ export function createAwsDdbApiHandler(config: CreateAwsDdbApiHandlerConfig) {
  * `InvokeMode: RESPONSE_STREAM`. Identical storage; only the transport differs.
  */
 export function createAwsDdbStreamApiHandler(config: CreateAwsDdbApiHandlerConfig) {
-    return createBaseStreamHandler({ ...config, registerRootStorage });
+    return createBaseStreamHandler({ ...config, registerRootStorage, registerRequestStorage });
 }

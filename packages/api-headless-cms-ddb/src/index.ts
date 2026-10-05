@@ -15,6 +15,8 @@ import { DdbGroupStorageOpsFeature } from "~/operations/group/feature.js";
 import { DdbModelStorageOpsFeature } from "~/operations/model/feature.js";
 import { DdbEntryStorageOpsFeature } from "~/operations/entry/feature.js";
 
+export { HeadlessCmsDdbRequestFeature } from "~/operations/entry/requestFeature.js";
+
 /**
  * DI-native feature — registers the DynamoDB CMS storage operations directly via the DI container.
  * Requires DynamoDBClient to be registered in the container first (via DbFeature).
@@ -22,7 +24,9 @@ import { DdbEntryStorageOpsFeature } from "~/operations/entry/feature.js";
  * Usage:
  *   DbFeature.register(container, { documentClient, table });
  *   HeadlessCmsDdbFeature.register(container);
- *   // then in request: HeadlessCmsFeature.register(container, { type: "manage" });
+ *   // then in request:
+ *   HeadlessCmsDdbRequestFeature.register(requestContainer);
+ *   HeadlessCmsFeature.register(requestContainer, { type: "manage" });
  */
 export const HeadlessCmsDdbFeature = createFeature({
     name: "cms.storageOperations.ddb",

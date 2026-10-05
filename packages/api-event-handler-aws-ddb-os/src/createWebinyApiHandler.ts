@@ -13,7 +13,10 @@ import {
     type CreateWebinyApiHandlerConfig as BaseConfig
 } from "@webiny/api-event-handler-aws";
 import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
-import { HeadlessCmsDdbEsFeature } from "@webiny/api-headless-cms-ddb-es";
+import {
+    HeadlessCmsDdbEsFeature,
+    HeadlessCmsDdbEsRequestFeature
+} from "@webiny/api-headless-cms-ddb-es";
 import { AuditLogsDdbFeature } from "@webiny/api-audit-logs-ddb";
 import { AcoDdbFeature } from "@webiny/api-aco-ddb";
 import { WebsocketsDdbFeature } from "@webiny/api-websockets-aws";
@@ -91,6 +94,8 @@ function storageConfig(
             // DbRegistry holds the DDB entities the DDB+ES CMS storage stages for OpenSearch sync
             // (its beforeInit registers into it). Must be registered before HeadlessCmsFeature builds.
             DbRegistryFeature.register(container);
+            // The CMS entry DataLoader caches reads, so it must be fresh for every request.
+            HeadlessCmsDdbEsRequestFeature.register(container);
         }
     };
 }
