@@ -174,7 +174,7 @@ system.workflow = { workflowId, reviewState, stepId, stepName, stepState } | nul
 ```
 
 - Written only through the new `UpdateEntrySystemUseCase` (section 9.1) [D52].
-- Filterable fields registered in DDB and OpenSearch: `workflowId`, `reviewState`, `stepId`, `stepState` [D53]. The legacy `state` system field is untouched.
+- Filterable fields registered in DDB and OpenSearch (SQL reuses the DDB field registry): `workflowId`, `reviewState`, `stepId`, `stepState` [D53]. The legacy `state` system field is untouched.
 - Nulled on every new revision by one `EntryRevisionBeforeCreate` handler [D59].
 - Publishing does not change it; the published revision keeps `reviewState: approved` (today's CMS clearing on publish is removed) [D85].
 
