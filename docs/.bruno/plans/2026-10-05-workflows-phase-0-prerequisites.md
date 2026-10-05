@@ -4,7 +4,7 @@
 
 **Goal:** Fix the bugs and add the platform pieces outside the workflows packages that later phases of the workflows refactor depend on.
 
-**Architecture:** Seven independent, small changes across api-headless-cms-workflows, api-workflows, app-headless-cms-workflows, api-core (+ DDB/SQL storage), api-website-builder, api-headless-cms (+ storage filter registries) and common-audit-logs. Each task is self-contained and ends with passing tests and a commit. No workflows domain code is rewritten here.
+**Architecture:** Eight independent, small changes across api-headless-cms-workflows, api-workflows, app-headless-cms-workflows, api-core (+ DDB/SQL storage), api-website-builder, api-headless-cms (+ storage filter registries) and common-audit-logs. Each task is self-contained and ends with passing tests and a commit. No workflows domain code is rewritten here.
 
 **Tech Stack:** TypeScript, `@webiny/feature` DI (`createFeature`, `createAbstraction`, `createImplementation`), `@webiny/di` container, vitest, `@webiny/api-headless-cms-testing` (`createCmsTestHandler`).
 
@@ -13,21 +13,21 @@
 ## Global Constraints
 
 - DI conventions: one abstraction or implementation per file; implementation file named after its class (no `implementation.ts`); export name matches the abstraction; types via namespace (`X.Interface`); no inline object types (extract named interfaces); minimal barrel exports (only what external consumers need).
-- Before every commit, run from the repo root, in order: `git add .`, `yarn > /dev/null 2>&1`, `node scripts/generateTsConfigsInPackages.js`, `yarn adio`, `yarn format:fix > /dev/null 2>&1`, `yarn lint:fix`, `yarn webiny sync-dependencies`, build the changed packages (`yarn build -p <package> 2>&1 | tail -30`), `git add .`. If any step changes something or fails and you fix it, rerun the chain from the start.
+- Before every commit, run from the repo root, in order: `git add .`, `yarn > /dev/null 2>&1`, `node scripts/generateTsConfigsInPackages.js`, `yarn adio`, `yarn check-ts-configs`, `yarn format:fix > /dev/null 2>&1`, `yarn lint:fix`, `yarn webiny sync-dependencies`, build the changed packages (`yarn build -p <package> 2>&1 | tail -30`), `git add .`. If any step changes something or fails and you fix it, rerun the chain from the start.
 - Commit messages use Conventional Commits and end with:
   ```
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
   Claude-Session: https://claude.ai/code/session_01Vm4YZF3PH1u3WJMtFK5BRw
   ```
 - Never push, never amend.
-- Test commands (from repo root): `yarn test <path>` (default storage), `yarn test:ddb <path>`, `yarn test:os <path>`, `yarn test:sql <path>`. Cap output with `2>&1 | tail -50`.
+- Test commands (from repo root): `yarn test <path>` (default storage), `yarn test:ddb <path>`, `yarn test:os <path>`, `yarn test:sql <path>`, `yarn test:pg:os <path>`. Cap output with `2>&1 | tail -50`. Run every storage the package's `ci.config.json` lists.
 - Use CodeGraph (`codegraph explore "<symbols>"`) before reading files to confirm symbols and import paths.
 
 ## Review Focus
 
 1. Storage variance: `teams_in` / `id_in` must behave the same on DDB and SQL. Both are tested under `yarn test:ddb` and `yarn test:sql` in Task 3.
 2. Folder delete error code: the WB guard must surface `Aco/Folder/NotEmpty` (so `DeleteFolderUseCase` returns `FolderNotEmptyError`), not a generic error mapped to "not authorized". Task 4 asserts the code.
-3. Hidden pages: a page the deleting user cannot read must still block the folder delete. Task 4 runs the content check under `withoutAuthorization`; the test deletes as a user without page permissions.
+3. Hidden pages: ACO's `EnsureFolderIsEmpty` already re-runs the content check without authorization when folder-level permissions are on and returns `FolderNotAuthorizedError` for content the user cannot see. Task 4 relies on that flow (same as the CMS and File Manager guards) and does not wrap its own check.
 4. `UpdateEntrySystemUseCase` must not touch meta (`savedOn`, `modifiedOn`, `modifiedBy`) and must not fire `EntryAfterUpdate`. Task 5 asserts unchanged `savedOn` and that an `EntryAfterUpdate` handler is not called.
 5. `system.workflow` filtering must work on OpenSearch, the target storage for workflows. Task 6 runs under `yarn test:os` as well as `yarn test:ddb`.
 
@@ -94,7 +94,9 @@ In `packages/api-headless-cms-workflows/src/CmsWorkflowsFeature.ts` delete the i
 - [ ] **Step 5: Run the CMS workflows suite**
 
 Run: `yarn test packages/api-headless-cms-workflows 2>&1 | tail -50`
-Expected: PASS (all existing tests plus the new one).
+Expected: PASS (all existing tests plus the new one, including `__tests__/entrySystemSchema.test.ts`, which registers only `CmsWorkflowsFeature` and must still pass).
+Run: `yarn test:os packages/api-headless-cms-workflows 2>&1 | tail -50`
+Expected: PASS.
 
 - [ ] **Step 6: Write the failing test for `StoreWorkflowFeature` re-registration**
 
@@ -141,6 +143,8 @@ export const StoreWorkflowFeature = createFeature({
 - [ ] **Step 9: Run the api-workflows suite**
 
 Run: `yarn test packages/api-workflows 2>&1 | tail -50`
+Expected: PASS.
+Run: `yarn test:os packages/api-workflows 2>&1 | tail -50`
 Expected: PASS.
 
 - [ ] **Step 10: Commit**
@@ -269,8 +273,6 @@ Append inside the `describe("Users", ...)` block in `packages/api-core/__tests__
     });
 ```
 
-If `CreateUserInput` in `~/types/users.js` does not accept `teams`, confirm with `codegraph explore "CreateUserInput"` (the create schema at `packages/api-core/src/features/users/CreateUser/schema.ts:22` accepts `teams`) and add `teams?: string[]` to that input type.
-
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `yarn test:ddb packages/api-core/__tests__/users/users.test.ts 2>&1 | tail -50`
@@ -301,14 +303,11 @@ export interface StorageOperationsListUsersParams {
 }
 ```
 
-In `packages/api-core/src/types/users.ts`, change `ListUsersParams` to:
+In `packages/api-core/src/types/users.ts`, change `ListUsersParams` to reuse the named where type (import `ListUsersWhere` from `~/features/users/shared/types.js`):
 
 ```ts
 export interface ListUsersParams {
-    where?: {
-        id_in?: string[];
-        teams_in?: string[];
-    };
+    where?: ListUsersWhere;
     sort?: string[];
 }
 ```
@@ -395,20 +394,24 @@ Claude-Session: https://claude.ai/code/session_01Vm4YZF3PH1u3WJMtFK5BRw"
 - Create: `packages/api-website-builder/src/features/folders/EnsurePageFolderIsEmptyOnDelete/EnsurePageFolderIsEmptyOnDelete.ts`
 - Create: `packages/api-website-builder/src/features/folders/EnsurePageFolderIsEmptyOnDelete/feature.ts`
 - Modify: `packages/api-website-builder/src/WebsiteBuilderFeature.ts` (register the feature)
-- Modify: `packages/api-website-builder/package.json` (add `@webiny/api-aco` dependency via `yarn adio`)
+- Modify: `packages/api-website-builder/package.json` (add `@webiny/api-aco` dependency by hand; `yarn adio` only checks)
 - Test: `packages/api-website-builder/__tests__/pageFolderDelete.test.ts`
 
 **Interfaces:**
-- Consumes: `FolderBeforeDeleteEventHandler` (`@webiny/api-aco/features/folder/DeleteFolder/index.js`), `EnsureFolderIsEmpty` (`@webiny/api-aco/features/folder/EnsureFolderIsEmpty/index.js`), `ListPagesUseCase` (`~/features/pages/ListPages/index.js`), `IdentityContext` (`@webiny/api-core/features/security/IdentityContext/index.js`).
+- Consumes: `FolderBeforeDeleteEventHandler` (`@webiny/api-aco/features/folder/DeleteFolder/index.js`), `EnsureFolderIsEmpty` (`@webiny/api-aco/features/folder/EnsureFolderIsEmpty/index.js`), `ListPagesUseCase` (`~/features/pages/ListPages/index.js`). `ListPagesRepository` uses `ListLatestEntriesUseCase`, which already adds `latest: true` and `wbyDeleted_not: true`, so trashed pages do not block the delete (intended: trash is restorable to a folder chosen at restore time).
 - Produces: a `FolderBeforeDelete` handler that throws the `EnsureFolderIsEmpty` failure for `wb:page` folders containing pages, so `DeleteFolderUseCase` returns `FolderNotEmptyError` (code `Aco/Folder/NotEmpty`, mapped at `packages/api-aco/src/features/folder/DeleteFolder/DeleteFolderUseCase.ts:39-43`).
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Add the `@webiny/api-aco` dependency**
+
+In `packages/api-website-builder/package.json`, add `"@webiny/api-aco": "0.0.0"` to `dependencies` (alphabetical order). Then run `yarn > /dev/null 2>&1` and `node scripts/generateTsConfigsInPackages.js` so the tsconfig paths include api-aco. Without this the test fails on module resolution, not for the intended reason.
+
+- [ ] **Step 2: Write the failing test**
 
 Create `packages/api-website-builder/__tests__/pageFolderDelete.test.ts`:
 
 ```ts
 import { describe, expect, it } from "vitest";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
+import type { Container } from "@webiny/di";
 import { AcoFeature } from "@webiny/api-aco";
 import { NoopFolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import { CreateFolderUseCase } from "@webiny/api-aco/features/folder/CreateFolder/index.js";
@@ -417,10 +420,11 @@ import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
 import { useHandler } from "./utils/useHandler.js";
 import { pageMocks } from "./mocks/page.mock.js";
 
-const registerAco = createRegisterExtensionPlugin(context => {
-    AcoFeature.register(context.container);
-    context.container.register(NoopFolderLevelPermissions);
-});
+// Plain container function: runs after setup, like api-aco/__tests__/utils/useHandler.ts.
+const registerAco = (container: Container) => {
+    AcoFeature.register(container);
+    container.register(NoopFolderLevelPermissions);
+};
 
 const createFolder = async (context: Awaited<ReturnType<ReturnType<typeof useHandler>["handler"]>>) => {
     const create = context.container.resolve(CreateFolderUseCase);
@@ -469,21 +473,20 @@ describe("Deleting Website Builder page folders", () => {
 });
 ```
 
-If `useHandler`'s `legacyPlugins` does not accept a `createRegisterExtensionPlugin` value, follow the pattern in `packages/api-headless-cms-workflows/__tests__/__handler/context.ts` (it passes `registerNoopFlp` the same way). If `AcoFeature` needs `AcoHcmsFeature` too, check with `codegraph explore "AcoHcmsFeature"` and register it in the same plugin.
+If `AcoFeature` needs `AcoHcmsFeature` too, check with `codegraph explore "AcoHcmsFeature"` and register it in the same function.
 
-- [ ] **Step 2: Run it to verify it fails**
+- [ ] **Step 3: Run it to verify it fails**
 
 Run: `yarn test packages/api-website-builder/__tests__/pageFolderDelete.test.ts 2>&1 | tail -50`
 Expected: the first test FAILS (`result.isFail()` is false: the folder is deleted). The second passes.
 
-- [ ] **Step 3: Write the handler**
+- [ ] **Step 4: Write the handler**
 
 Create `packages/api-website-builder/src/features/folders/EnsurePageFolderIsEmptyOnDelete/EnsurePageFolderIsEmptyOnDelete.ts`:
 
 ```ts
 import { FolderBeforeDeleteEventHandler } from "@webiny/api-aco/features/folder/DeleteFolder/index.js";
 import { EnsureFolderIsEmpty } from "@webiny/api-aco/features/folder/EnsureFolderIsEmpty/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListPagesUseCase } from "~/features/pages/ListPages/index.js";
 
 const WB_PAGE_FOLDER_TYPE = "wb:page";
@@ -491,8 +494,7 @@ const WB_PAGE_FOLDER_TYPE = "wb:page";
 class EnsurePageFolderIsEmptyOnDeleteImpl implements FolderBeforeDeleteEventHandler.Interface {
     constructor(
         private ensureFolderIsEmpty: EnsureFolderIsEmpty.Interface,
-        private listPages: ListPagesUseCase.Interface,
-        private identityContext: IdentityContext.Interface
+        private listPages: ListPagesUseCase.Interface
     ) {}
 
     async handle(event: FolderBeforeDeleteEventHandler.Event): Promise<void> {
@@ -502,15 +504,14 @@ class EnsurePageFolderIsEmptyOnDeleteImpl implements FolderBeforeDeleteEventHand
             return;
         }
 
+        // EnsureFolderIsEmpty re-runs this check without authorization when folder-level
+        // permissions are on, and reports hidden content as FolderNotAuthorizedError.
         const result = await this.ensureFolderIsEmpty.execute(type, id, async () => {
-            // Pages hidden from the current user must still block the delete.
-            const listResult = await this.identityContext.withoutAuthorization(() => {
-                return this.listPages.execute({
-                    where: { latest: true, location: { folderId: id } },
-                    sort: ["createdOn_DESC"],
-                    limit: 1,
-                    after: null
-                });
+            const listResult = await this.listPages.execute({
+                where: { location: { folderId: id } },
+                sort: ["createdOn_DESC"],
+                limit: 1,
+                after: null
             });
 
             if (listResult.isFail()) {
@@ -530,13 +531,11 @@ class EnsurePageFolderIsEmptyOnDeleteImpl implements FolderBeforeDeleteEventHand
 
 export const EnsurePageFolderIsEmptyOnDelete = FolderBeforeDeleteEventHandler.createImplementation({
     implementation: EnsurePageFolderIsEmptyOnDeleteImpl,
-    dependencies: [EnsureFolderIsEmpty, ListPagesUseCase, IdentityContext]
+    dependencies: [EnsureFolderIsEmpty, ListPagesUseCase]
 });
 ```
 
-If `ListPagesUseCase` already adds `latest: true`, drop it from `where` (confirm with `codegraph explore "ListPagesUseCase"`).
-
-- [ ] **Step 4: Write the feature and register it**
+- [ ] **Step 5: Write the feature and register it**
 
 Create `packages/api-website-builder/src/features/folders/EnsurePageFolderIsEmptyOnDelete/feature.ts`:
 
@@ -553,10 +552,6 @@ export const EnsurePageFolderIsEmptyOnDeleteFeature = createFeature({
 ```
 
 In `packages/api-website-builder/src/WebsiteBuilderFeature.ts`, import it and call `EnsurePageFolderIsEmptyOnDeleteFeature.register(container);` next to the other page feature registrations.
-
-- [ ] **Step 5: Add the dependency**
-
-Run: `yarn adio` (adds `@webiny/api-aco` to `packages/api-website-builder/package.json` dependencies), then `yarn > /dev/null 2>&1`.
 
 - [ ] **Step 6: Run the tests**
 
@@ -614,7 +609,10 @@ import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 import { EntryAfterUpdateEventHandler } from "~/features/contentEntry/UpdateEntry/index.js";
-import { UpdateEntrySystemUseCase } from "~/features/contentEntry/UpdateEntrySystem/index.js";
+import {
+    EntryAfterUpdateSystemEventHandler,
+    UpdateEntrySystemUseCase
+} from "~/features/contentEntry/UpdateEntrySystem/index.js";
 import type { ICmsEntrySystem } from "~/types/index.js";
 
 interface ITestSystem {
@@ -681,15 +679,21 @@ describe("UpdateEntrySystemUseCase", () => {
         expect((stored.value.system as ITestSystem).testFlag).toBeNull();
     });
 
-    it("does not publish EntryAfterUpdate", async () => {
+    it("publishes its own event and not EntryAfterUpdate", async () => {
         const { context, model, entry } = await setup();
-        const handle = vi.fn();
-        context.container.registerInstance(EntryAfterUpdateEventHandler, { handle });
+        const afterUpdate = vi.fn();
+        const afterUpdateSystem = vi.fn();
+        context.container.registerInstance(EntryAfterUpdateEventHandler, { handle: afterUpdate });
+        context.container.registerInstance(EntryAfterUpdateSystemEventHandler, {
+            handle: afterUpdateSystem
+        });
         const updateSystem = context.container.resolve(UpdateEntrySystemUseCase);
 
         await updateSystem.execute(model, entry.id, toSystem({ testFlag: { value: "on" } }));
 
-        expect(handle).not.toHaveBeenCalled();
+        // Positive control: proves registerInstance handlers are picked up by EventPublisher.
+        expect(afterUpdateSystem).toHaveBeenCalledTimes(1);
+        expect(afterUpdate).not.toHaveBeenCalled();
     });
 
     it("fails for an unknown revision", async () => {
@@ -703,7 +707,7 @@ describe("UpdateEntrySystemUseCase", () => {
 });
 ```
 
-Confirm the `EntryAfterUpdateEventHandler` export path and `GetRevisionByIdUseCase` path with codegraph before running. If `registerInstance` of an event handler abstraction is not picked up by `EventPublisher` (it resolves handlers with `resolveAll`), register a class handler with `container.register(...)` instead, following any existing handler in `packages/api-headless-cms/src/features/`.
+Confirm the `EntryAfterUpdateEventHandler` export path and `GetRevisionByIdUseCase` path with codegraph before running. If the positive control fails because `registerInstance` handlers are not picked up by `EventPublisher` (it resolves handlers with `resolveAll`), register class handlers with `container.register(...)` instead, following any existing handler in `packages/api-headless-cms/src/features/`.
 
 - [ ] **Step 2: Run it to verify it fails**
 
@@ -857,6 +861,15 @@ class UpdateEntrySystemUseCaseImpl implements UseCaseAbstraction.Interface {
                 }
             };
 
+            const canAccessEntry = await this.accessControl.canAccessEntry({
+                model,
+                entry,
+                rwd: "w"
+            });
+            if (!canAccessEntry) {
+                return Result.fail(EntryNotAuthorizedError.fromModel(model));
+            }
+
             await this.eventPublisher.publish(
                 new EntryBeforeUpdateSystemEvent({ entry, original, system, model })
             );
@@ -919,8 +932,16 @@ Run: `yarn test:ddb packages/api-headless-cms/__tests__/contentAPI/updateEntrySy
 Expected: PASS.
 Run: `yarn test:os packages/api-headless-cms/__tests__/contentAPI/updateEntrySystem.test.ts 2>&1 | tail -50`
 Expected: PASS.
+Run: `yarn test:sql packages/api-headless-cms/__tests__/contentAPI/updateEntrySystem.test.ts 2>&1 | tail -50`
+Expected: PASS.
+Run: `yarn test:pg:os packages/api-headless-cms/__tests__/contentAPI/updateEntrySystem.test.ts 2>&1 | tail -50`
+Expected: PASS (needs a local Postgres; if unavailable, note it in the commit body and rely on CI).
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 8: Decide public export**
+
+`UpdateRevisionDescription` is re-exported from `packages/api-headless-cms/src/exports/api/cms/entry.ts:87-91`. Add `UpdateEntrySystemUseCase` there only if workflows packages import from `@webiny/api-headless-cms/exports/...`; check how `packages/api-headless-cms-workflows/src` imports CMS use cases today (`grep -rn "api-headless-cms/" packages/api-headless-cms-workflows/src | head`) and follow that path. Minimal exports: do not add the event handlers to the public export.
+
+- [ ] **Step 9: Commit**
 
 Run the Global Constraints chain (build `@webiny/api-headless-cms`), then:
 
@@ -936,15 +957,16 @@ Claude-Session: https://claude.ai/code/session_01Vm4YZF3PH1u3WJMtFK5BRw"
 ### Task 6: Filterable `system.workflow` fields (D53)
 
 **Files:**
+- Modify: `packages/api-headless-cms/src/types/types.ts` (typed `system.workflow` in `CmsEntryListWhere`)
 - Modify: `packages/api-headless-cms-storage/src/filtering/fields/systemFields.ts` (add `system` object field)
 - Create: `packages/api-headless-cms-utils-os/src/operations/entry/elasticsearch/fields/system.ts`
 - Modify: `packages/api-headless-cms-utils-os/src/operations/entry/elasticsearch/fields.ts` (spread `systemFields`)
-- Modify (if the snapshot fails): `packages/api-headless-cms-ddb/__tests__/operations/entry/filtering/mocks/expectedSystemFields.ts`
+- Modify: `packages/api-headless-cms-ddb/__tests__/operations/entry/filtering/mocks/expectedSystemFields.ts` (snapshot of system fields; `createFields.test.ts:46-50` requires every key)
 - Test: `packages/api-headless-cms/__tests__/contentAPI/filterSystemWorkflow.test.ts`
 
 **Interfaces:**
 - Consumes: `UpdateEntrySystemUseCase` (Task 5), `ListLatestEntriesUseCase` (confirm name with `codegraph explore "ListLatestEntriesUseCase"`).
-- Produces: list `where` accepts `system: { workflow: { workflowId?, reviewState?, stepId?, stepState? } }` with text operators (`reviewState`, `reviewState_in`, …) on DDB, OpenSearch and SQL storage. The legacy `state` field stays untouched. Storage ids are raw (`system`, `workflow`, `reviewState`, …), like the `live` field, because `system` is stored as-is on the entry.
+- Produces: `CmsEntryListWhere.system?: CmsEntryListWhereSystem` (typed), accepting `{ workflow: { workflowId?, reviewState?, stepId?, stepState? } }` with text operators (`reviewState`, `reviewState_in`, …) on DDB, OpenSearch and SQL storage (SQL reuses `createFields`, `api-headless-cms-sql/src/operations/entry/queryHelpers.ts:193`). The legacy `state` field stays untouched. Storage ids are raw (`system`, `workflow`, `reviewState`, …), like the `live` field, because `system` is stored as-is on the entry.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -959,7 +981,7 @@ import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
 import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
 import { UpdateEntrySystemUseCase } from "~/features/contentEntry/UpdateEntrySystem/index.js";
-import type { CmsEntryListWhere, ICmsEntrySystem } from "~/types/index.js";
+import type { ICmsEntrySystem } from "~/types/index.js";
 
 interface ITestWorkflow {
     workflowId: string;
@@ -1021,17 +1043,17 @@ describe("filtering by system.workflow", () => {
         const list = context.container.resolve(ListLatestEntriesUseCase);
 
         const byReview = await list.execute(model, {
-            where: { system: { workflow: { reviewState: "approved" } } } as CmsEntryListWhere
+            where: { system: { workflow: { reviewState: "approved" } } }
         });
         expect(byReview.value.entries.map(e => e.id)).toEqual([approved.id]);
 
         const byStep = await list.execute(model, {
-            where: { system: { workflow: { stepState_in: ["inReview"] } } } as CmsEntryListWhere
+            where: { system: { workflow: { stepState_in: ["inReview"] } } }
         });
         expect(byStep.value.entries.map(e => e.id)).toEqual([inProgress.id]);
 
         const byWorkflow = await list.execute(model, {
-            where: { system: { workflow: { workflowId: "wf1" } } } as CmsEntryListWhere,
+            where: { system: { workflow: { workflowId: "wf1" } } },
             sort: ["createdOn_ASC"]
         });
         expect(byWorkflow.value.entries.map(e => e.id)).toEqual([approved.id, inProgress.id]);
@@ -1046,7 +1068,30 @@ On OpenSearch, entries are indexed asynchronously in some test setups; if the li
 Run: `yarn test:ddb packages/api-headless-cms/__tests__/contentAPI/filterSystemWorkflow.test.ts 2>&1 | tail -50`
 Expected: FAIL with an error like `There is no field with the field path "system..."` or an empty result.
 
-- [ ] **Step 3: Add the storage filter field (DDB and SQL)**
+- [ ] **Step 3: Type the where input**
+
+In `packages/api-headless-cms/src/types/types.ts`, next to `CmsEntryListWhere` (around lines 542-617), add named interfaces and a `system` key:
+
+```ts
+export interface CmsEntryListWhereSystemWorkflow {
+    workflowId?: string;
+    workflowId_in?: string[];
+    reviewState?: string;
+    reviewState_in?: string[];
+    stepId?: string;
+    stepId_in?: string[];
+    stepState?: string;
+    stepState_in?: string[];
+}
+
+export interface CmsEntryListWhereSystem {
+    workflow?: CmsEntryListWhereSystemWorkflow;
+}
+```
+
+and inside `CmsEntryListWhere` add `system?: CmsEntryListWhereSystem;`.
+
+- [ ] **Step 4: Add the storage filter field (DDB and SQL)**
 
 In `packages/api-headless-cms-storage/src/filtering/fields/systemFields.ts`, add this entry to the returned array, after the `live` field:
 
@@ -1083,14 +1128,14 @@ In `packages/api-headless-cms-storage/src/filtering/fields/systemFields.ts`, add
         }),
 ```
 
-- [ ] **Step 4: Run DDB and SQL**
+- [ ] **Step 5: Run DDB and SQL**
 
 Run: `yarn test:ddb packages/api-headless-cms/__tests__/contentAPI/filterSystemWorkflow.test.ts 2>&1 | tail -50`
 Expected: PASS.
 Run: `yarn test:sql packages/api-headless-cms/__tests__/contentAPI/filterSystemWorkflow.test.ts 2>&1 | tail -50`
 Expected: PASS. If SQL fails because it maps nested object paths differently, trace `createSystemFields` usage in `packages/api-headless-cms-sql/src/operations/entry/queryHelpers.ts` with codegraph and adjust there.
 
-- [ ] **Step 5: Add the OpenSearch fields**
+- [ ] **Step 6: Add the OpenSearch fields**
 
 Create `packages/api-headless-cms-utils-os/src/operations/entry/elasticsearch/fields/system.ts`, mirroring `live.ts`:
 
@@ -1134,6 +1179,21 @@ export const systemFields: ModelFields = {
         }),
         parents: []
     },
+    // ObjectFilter resolves one level at a time, so the intermediate object needs its own entry.
+    "system.workflow": {
+        type: "object",
+        systemField: true,
+        searchable: true,
+        sortable: false,
+        parents: [{ fieldId: "system", type: "object", storageId: "system" }],
+        field: createSystemField({
+            id: "workflow",
+            fieldId: "workflow",
+            storageId: "workflow",
+            type: "object",
+            settings: { fields: WORKFLOW_TEXT_FIELDS.map(createWorkflowTextField) }
+        })
+    },
     ...Object.fromEntries(
         WORKFLOW_TEXT_FIELDS.map(fieldId => [
             `system.workflow.${fieldId}`,
@@ -1158,18 +1218,24 @@ export const systemFields: ModelFields = {
 
 Compare the shape of `parents` and `createSystemField` params with `live.ts` / `state.ts` in the same folder and adjust names if they differ. In `packages/api-headless-cms-utils-os/src/operations/entry/elasticsearch/fields.ts`, import `systemFields` from `./fields/system.js` and add `...systemFields` next to `...stateFields` and `...liveFields`.
 
-- [ ] **Step 6: Run OpenSearch and the filtering snapshot suites**
+- [ ] **Step 7: Update the DDB system-fields snapshot**
+
+`packages/api-headless-cms-ddb/__tests__/operations/entry/filtering/createFields.test.ts:46-50` requires every created field key to be in `mocks/expectedSystemFields.ts`. Add the six new keys there, following the shape of the existing `live` / `live.version` entries: `system`, `system.workflow`, `system.workflow.workflowId`, `system.workflow.reviewState`, `system.workflow.stepId`, `system.workflow.stepState`.
+
+- [ ] **Step 8: Run OpenSearch and storage suites**
 
 Run: `yarn test:os packages/api-headless-cms/__tests__/contentAPI/filterSystemWorkflow.test.ts 2>&1 | tail -50`
 Expected: PASS.
+Run: `yarn test:pg:os packages/api-headless-cms/__tests__/contentAPI/filterSystemWorkflow.test.ts 2>&1 | tail -50`
+Expected: PASS (needs local Postgres; if unavailable, note it and rely on CI).
 Run: `yarn test packages/api-headless-cms-ddb/__tests__/operations/entry/filtering 2>&1 | tail -50`
-Expected: PASS, or a snapshot diff in `expectedSystemFields.ts` that only adds the new `system` field. If so, update `packages/api-headless-cms-ddb/__tests__/operations/entry/filtering/mocks/expectedSystemFields.ts` to include it and rerun.
-Run: `yarn test:os packages/api-headless-cms-utils-os 2>&1 | tail -50`
-Expected: PASS (update any field-list snapshot the same way).
+Expected: PASS.
+Run: `yarn test:os packages/api-headless-cms-ddb-es 2>&1 | tail -50`
+Expected: PASS (OpenSearch storage tests live here; `api-headless-cms-utils-os` has no test files).
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 9: Commit**
 
-Run the Global Constraints chain (build `@webiny/api-headless-cms-storage`, `@webiny/api-headless-cms-utils-os`), then:
+Run the Global Constraints chain (build `@webiny/api-headless-cms`, `@webiny/api-headless-cms-storage`, `@webiny/api-headless-cms-utils-os`), then:
 
 ```bash
 git commit -m "feat(api-headless-cms-storage): make system.workflow fields filterable
@@ -1215,6 +1281,104 @@ git commit -m "chore(common-audit-logs): remove the v5 APW audit app
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01Vm4YZF3PH1u3WJMtFK5BRw"
 ```
+
+---
+
+### Task 8: Verify and fix the CMS folder guard error code (B4)
+
+**Files:**
+- Test: `packages/api-aco/__tests__/folder.hcms.notEmpty.test.ts`
+- Modify (only if the test fails): `packages/api-aco/src/features/folder/EnsureHcmsFolderIsEmptyOnDelete/ModelFolderBeforeDeleteHandler.ts`
+- Modify (only if the same pattern fails for files): `packages/api-file-manager-aco/src/features/EnsureFolderIsEmptyBeforeDelete/EnsureFolderIsEmptyBeforeDelete.ts`
+
+**Interfaces:**
+- Consumes: `useGraphQlHandler` (`packages/api-aco/__tests__/utils/useGraphQlHandler`), GraphQL helpers `aco.createFolder`, `aco.deleteFolder`, `cms.createTestModelGroup`, `cms.createBasicModel`, `cms.createEntry` (as used in `packages/api-aco/__tests__/flp.cms.test.ts:97-135`).
+- Produces: deleting a CMS folder that contains an entry and no child folders returns `code: "Aco/Folder/NotEmpty"`. Existing tests only cover the child-folder path (`flp.cms.test.ts:715-750` has a child folder), so the CMS content path is untested today.
+
+- [ ] **Step 1: Write the test**
+
+Create `packages/api-aco/__tests__/folder.hcms.notEmpty.test.ts`:
+
+```ts
+import { describe, expect, test } from "vitest";
+import { useGraphQlHandler } from "./utils/useGraphQlHandler";
+import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
+
+const identityA = new AuthenticatedIdentity({ id: "1", type: "admin", displayName: "A" });
+
+describe("Deleting a CMS folder with entries", () => {
+    test("returns Aco/Folder/NotEmpty when the folder holds an entry and no child folders", async () => {
+        const gql = useGraphQlHandler({ identity: identityA });
+        const modelGroup = await gql.cms.createTestModelGroup();
+        const model = await gql.cms.createBasicModel({ modelGroup: modelGroup.id });
+
+        const folder = await gql.aco
+            .createFolder({
+                data: { title: "Folder A", slug: "folder-a", type: `cms:${model.modelId}` }
+            })
+            .then(([response]) => response.data.aco.createFolder.data);
+
+        await gql.cms.createEntry(model, {
+            data: { values: { title: "Test" }, wbyAco_location: { folderId: folder.id } }
+        });
+
+        await expect(
+            gql.aco.deleteFolder({ id: folder.id }).then(([response]) => response.data.aco.deleteFolder)
+        ).resolves.toMatchObject({
+            data: null,
+            error: { code: "Aco/Folder/NotEmpty", message: "Folder is not empty." }
+        });
+    });
+});
+```
+
+- [ ] **Step 2: Run it on all ACO storages**
+
+Run: `yarn test:ddb packages/api-aco/__tests__/folder.hcms.notEmpty.test.ts 2>&1 | tail -50`
+Run: `yarn test:os packages/api-aco/__tests__/folder.hcms.notEmpty.test.ts 2>&1 | tail -50`
+Run: `yarn test:sql packages/api-aco/__tests__/folder.hcms.notEmpty.test.ts 2>&1 | tail -50`
+Expected: either PASS everywhere (B4 is not a bug; go to Step 4) or FAIL with code `Aco/Folder/NotAuthorized` (B4 confirmed; go to Step 3).
+
+- [ ] **Step 3: Fix (only if Step 2 failed)**
+
+In `ModelFolderBeforeDeleteHandler.ts`, replace
+
+```ts
+        if (result.isFail()) {
+            throw WebinyError.from(result.error, {
+                message: "Error while ensuring HCMS folder is empty before delete.",
+                code: "ACO_BEFORE_FOLDER_DELETE_HCMS_HANDLER"
+            });
+        }
+```
+
+with
+
+```ts
+        if (result.isFail()) {
+            // Throw the original error: DeleteFolderUseCase maps "Aco/Folder/NotEmpty" by code.
+            throw result.error;
+        }
+```
+
+and remove the now unused `WebinyError` import. Apply the same change to `EnsureFolderIsEmptyBeforeDelete.ts` in api-file-manager-aco, and run `yarn test packages/api-file-manager-aco 2>&1 | tail -50`. Rerun Step 2; expected PASS.
+
+- [ ] **Step 4: Record the outcome**
+
+In `docs/.bruno/workflows/bugs.md`, under B4, append either `- Verified: not a bug (Phase 0 Task 8).` or `- Confirmed and fixed in Phase 0 Task 8.`
+
+- [ ] **Step 5: Commit**
+
+Run the Global Constraints chain, then:
+
+```bash
+git commit -m "test(api-aco): cover deleting a CMS folder that holds entries
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Vm4YZF3PH1u3WJMtFK5BRw"
+```
+
+Use `fix(api-aco): keep the not-empty error code when deleting folders` as the subject if Step 3 changed code.
 
 ---
 
