@@ -280,3 +280,123 @@ Verified against code (2026-10-02).
 ## D51. Null system.workflow on new revision (CMS and WB)
 
 Creating a new revision nulls `system.workflow` on the new revision, for CMS entries and WB pages. Checked 2026-10-02: CMS does not do this today. `getSystem` copies `original.system` when the input has no `system` (`api-headless-cms/src/features/contentEntry/entryDataFactories/system.ts:11-18`), no workflow handler listens to revision-create, and the CMS "Create New Revision" button just calls `revisionsPresenter.createRevision` (`app-headless-cms-workflows/src/Components/ContentEntryForm/CmsEntryFormCreateNewRevisionButton.tsx:23-39`). CMS only clears the field on publish of a done review. Implement as an `EntryRevisionBeforeCreate` handler in the CMS target adapter and the equivalent page revision handler in the WB adapter (D42).
+
+## D52. UpdateEntrySystemUseCase for system.workflow sync
+
+New `UpdateEntrySystemUseCase` in api-headless-cms, modelled on `UpdateRevisionDescription` (`api-headless-cms/src/features/contentEntry/UpdateRevisionDescription/`): load revision via `GetRevisionByIdUseCase`, change only `system.*` keys, persist via `UpdateEntryRepository`, publish its own narrow events (not `EntryAfterUpdate`). No meta rebuild (`savedOn`, `modifiedBy` untouched), so no `entry.updated` / `page.updated` webhooks and no content-edit audit. Workflows calls it under `withoutAuthorization` for every `system.workflow` write; WB uses it too (pages are CMS model `wbyWbPage`). Resolves P2.
+
+## D53. Filterable system.workflow fields
+
+Register `system.workflow.workflowId`, `reviewState`, `stepId`, `stepState` as filterable system fields in the DDB and OpenSearch filter registries (`api-headless-cms-storage/src/filtering/fields/systemFields.ts`, `api-headless-cms-utils-os/.../fields/`). The legacy `state` system field stays untouched. CMS and WB lists can then filter by review status (also covers A10). Resolves P1.
+
+## D54. Permission model
+
+One `workflows` permission with custom boolean actions:
+
+- `editor`: configure workflows, tenant workflow settings (exclusions), `workflows.listUsers`.
+- `reassign`: reassign, restart, and cancel reviews requested by others (refines D25: cancel by requester or `reassign`).
+
+Security UI gets a "custom" access level with these checkboxes. One shared permission checker in api-workflows treats `*` and `workflows.*` as full access and replaces the four copied `ensureManageAccess` functions. Viewer flags (`canCancel`, `canReassign`, `canRestart`, `canPick`) are computed on the server (covers A9). Resolves P3, A1.
+
+## D55. Workflow AI tool registry
+
+Refines D39. Separate registry in api-workflows (`WorkflowAiTool` abstraction); the AI step allowlist offers only tools from it, never the global `AiSdkTools` registry. Built-ins: `readTarget` and `updateTargetFields(fieldPath → value)`, always scoped to the revision under review and implemented per target adapter (CMS, WB). Developers register their own. Admin gets a list query (name, title, description). Resolves P5, A2.
+
+## D56. Step-type extension point; ai-powerups owns the AI step
+
+api-workflows and app-workflows define a step-type extension point (`StepType`: config schema, editor fields, runner). Review and automation step types are built in. ai-powerups registers the AI step type (capability, runner, editor fields); dependency direction is ai-powerups → workflows packages, never the reverse. No new licence option: the AI step needs both `advancedPublishingWorkflow` and `aiPowerups`. Resolves P6, A5.
+
+## D57. Task id on step, stuck detection
+
+Refines D7 and D28.
+
+- The step stores the background task id; it is the run id for the stale-result guard and the id for `TaskService.abort` (covers P14 abort part).
+- On review read, the server checks the task status. If the task is done, failed or aborted while the step is still `inReview`, the step is set `failed` ("task ended without result") and restart is offered.
+- Definitions can set `maxIterations` and wait times (default 50 iterations is too low for long polling).
+- The `failed` write is idempotent (`onMaxIterations` and `onError` can both fire).
+
+Resolves P7.
+
+## D58. AI and automation steps run as the requester
+
+Supersedes the AI/automation owner shapes in D30 and the attribution rules in D26 and D30.
+
+- AI and automation steps, and every task they trigger (including restarts), always run as the requester. Records they create, update or delete are attributed to the requester.
+- Step owner for these steps: `{ type: "ai" | "automation", id: requester.id, displayName: requester.displayName }`. Which AI or automation ran is taken from the step config (capability id or definition id).
+- Human owner stays `{ type: "user", id, displayName }`.
+- `TaskService.trigger` in api-core gets an optional `identity`, stored as task `createdBy`, so the task runs as the requester even when another user's action reached the step. Resolves P14.
+
+## D59. Single handler nulls system.workflow on new revision
+
+Refines D51. One handler on the CMS `EntryRevisionBeforeCreate` event (create-revision-from) sets `system.workflow = null`. It covers CMS entries, WB pages (created through CMS `CreateEntryRevisionFromUseCase`) and any future app built on CMS entries. No per-adapter revision handlers. Resolves P8 (revision part). Separately, adapters handling other CMS events must still match their namespace and model explicitly, since WB page operations also fire CMS entry events.
+
+## D60. Websocket messages, no inbox
+
+No stored inbox; D47 lists serve that role. Workflows only sends websocket messages (`WebsocketsSendToIdentityUseCase`); the websockets layer decides delivery for live or non-live connections. On the client, every workflow websocket message also fires `WorkflowStateChangedEvent`, so the open bar, lists and editor refetch (editor reloads the entry if content changed). Resolves P9, A7.
+
+## D61. Candidates must be able to read the target
+
+During resolution (routing, strategy, pick, reassign), candidates without read access to the target (folder access and model read) are dropped; the reason is logged in the assignment log (D20). The rule editor and rule inspector warn when a target user lacks access. Resolves P10.
+
+## D62. Server-side save block
+
+One CMS handler on `EntryBeforeUpdate` (covers CMS entries and WB pages) rejects updates to a revision whose review is active and not done. Exempt: `system.workflow` sync via `UpdateEntrySystemUseCase` (D52, does not fire `EntryBeforeUpdate`), and automation / AI tool writes, which run inside a workflow bypass context (D36). Resolves P11.
+
+## D63. OpenSearch is the target storage; least-loaded query
+
+Workflows is an enterprise feature; deployments are expected to run OpenSearch. DDB-only performance is not a design constraint. Least-loaded uses one query (`currentOwnerId_in: candidates`, `currentStepState: inReview`, active) grouped by owner in memory. Assignment records are deleted with their review; no time-based retention. Resolves P12.
+
+## D64. Model delete block via use-case decorator
+
+Refines D41. Instead of a throwing `ModelBeforeDelete` handler, a `DeleteModelUseCase` decorator in the CMS workflows package returns a typed `Workflows/Model/BoundToWorkflow` error listing the bound workflows, following `DeleteModelWithEntryCleanup.ts:95-107`. Resolves P13.
+
+## D65. Audit logs planned, not built
+
+Design for audit logs now, implement later. Planned: a "Workflows" app in `common-audit-logs` with entities workflow and review; actions workflow create/update/delete and review request, start, take over, approve, reject, cancel, reassign, restart, step failed; handlers in api-audit-logs subscribing to workflow events. Domain events must carry enough data for this. In this refactor, only remove the old v5 "APW" entry from `common-audit-logs/src/apps.ts:43-79`. Until audit logs land, the assignment log (D20) is the only record of reassignments (refines D33). Resolves P4.
+
+## D66. Step editor on FormModel, JSON-schema adapter
+
+- New JSON-schema → FormModel adapter (`app-admin/src/features/formModel`); UI hints (user, team, secret, textarea) carried in zod `.meta()`.
+- Step editor rebuilt on FormModel: dynamic zone per step type, `ObjectAccordionMultipleRenderer` for the reorderable rule list.
+- Client rebuilds the validator with `z.fromJSONSchema` (zod 4) to flag invalid stored config (D37).
+
+Resolves A3.
+
+## D67. Secret config fields
+
+Config fields marked `.meta({ secret: true })` are stored encrypted (`Encryption` service, as ai-powerups `apiKeyEncrypted`) and are write-only in the API: never returned, the editor shows "set" / "replace". The review snapshot keeps the encrypted value; review read responses strip secret fields. The task decrypts at run time only. Resolves A4.
+
+## D68. Collaboration integration deferred
+
+D31 stays as intent only. Collaboration is not in `next`; the integration (thread target, permissions, posting as actor, field-anchored AI issues) is designed against the merged collaboration API later. v1 uses step comments only, with no collaboration-specific work. Resolves A6.
+
+## D69. Folder picking in rules
+
+Refines D46: folder condition is `folder?: { id, type, includeDescendants }`; `type` stored from v1.
+
+- Picker is the standard `FolderPicker`, filtered by folder-level permissions; editors pick only folders they can access.
+- A rule referencing a folder the current editor cannot see shows as "restricted folder" (no name) and is preserved unchanged on save.
+- Dangling-folder check runs server-side without authorization and returns only `exists: boolean`, never folder data.
+
+Resolves A8.
+
+## D70. Content lists: rename only
+
+Row selectability in CMS and WB lists switches from `system.workflow.state` to `system.workflow.reviewState`. Nothing else: no new status column or filter in content lists. (D53 still registers the filterable fields.) Resolves A10.
+
+## D71. Dashboard widgets
+
+Two widgets: "For me to review" (tabs: Assigned to me, Pool) and "My requests". "View all" opens the matching D47 list. "Team in review" is only on the list page. Each widget gets its own presenter instance (no shared singleton). Resolves A11.
+
+## D72. Workflow pickers
+
+Two custom FormModel field types (like `RolesMultiSelectFieldType`):
+
+- `WorkflowUserPicker`: async search over `workflows.listUsers` (rule editor) or `workflows.listStepCandidates` (request dialog); excluded users shown disabled with reason (AutoComplete disabled items).
+- `WorkflowTeamPicker`: options limited to the step's configured teams (rule team targets).
+
+Resolves A12.
+
+## D73. endsOn conversion
+
+Keep D43: a helper in the exclusions settings presenter converts the picked date to end of that day in the user's timezone, stored as UTC ISO datetime. Resolves A13.
