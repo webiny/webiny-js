@@ -146,6 +146,38 @@ const alignmentLines = (component: PlannedComponent): string[] => {
 };
 
 /**
+ * The background images the section paints.
+ *
+ * A hero whose photograph is a CSS background had nothing in the prompt describing it, and the
+ * element beneath the photo still carries a `background-color` — so the largest measured colour in
+ * Park city's hero was the terracotta fallback behind a dark blue city photograph, and the component
+ * rendered as a flat terracotta block. `resolveSectionColours` no longer reports a colour an image
+ * covers; this is the other half, and without it the hero would merely lose its wrong colour rather
+ * than gain its right one.
+ *
+ * The URL is given as the page's own, exactly as the observed `<img>` values are, and with the same
+ * instruction not to substitute anything else.
+ */
+const backgroundImageLines = (component: PlannedComponent): string[] => {
+    const images = component.backgroundImages ?? [];
+    if (images.length === 0) {
+        return [];
+    }
+    return [
+        "",
+        "This section's background is painted with an image, not a colour. Set it as a CSS",
+        "background-image on the section, with the sizing given:",
+        ...images.map(image => {
+            const how = [image.size, image.position, image.repeat].filter(Boolean).join(" / ");
+            return `- ${image.url}${how ? ` — ${how}` : ""}`;
+        }),
+        "",
+        "Use these URLs exactly as given. Do not substitute a stock photograph, and do not replace the",
+        "image with a flat background colour."
+    ];
+};
+
+/**
  * The section's measured colours, with the theme variable expressing each.
  *
  * Generate sees the crop, so it can see the hues — but not which of the fifty-odd allowed variables is
@@ -254,6 +286,7 @@ const buildPrompt = (
               ]
             : []),
         ...colourLines(component),
+        ...backgroundImageLines(component),
         ...typeScaleLines(component),
         ...alignmentLines(component),
         "",

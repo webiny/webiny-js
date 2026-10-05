@@ -45,6 +45,20 @@ const NEAR_COLOUR = 24;
 /** Transparent backgrounds are not a colour the section chose; they are the absence of one. */
 const isTransparent = (value: string): boolean => /rgba\([^)]*,\s*0(\.0+)?\s*\)/i.test(value);
 
+/**
+ * A background colour under a background image is a fallback the page never shows.
+ *
+ * Park city's hero is a dark blue photograph with a small terracotta button. Its root element sets
+ * `background-color: #a65f46` behind that photo, and with the image uncaptured the fallback was the
+ * largest painted colour in the section — 696,960px of 712,000. Plan bound the section background to
+ * it, Generate was told to use it, and a blue hero rendered as a flat terracotta block.
+ *
+ * The capture was right and the conclusion was wrong, which is the more dangerous combination: the
+ * colour is genuinely set, so nothing looked like an error. Reporting it is worse than reporting
+ * nothing, because `resolveSectionColours` feeds an instruction rather than a guess.
+ */
+const isCovered = (node: CapturedNode): boolean => Boolean(node.background?.url);
+
 const toRgb = (hex: string): [number, number, number] => [
     parseInt(hex.slice(1, 3), 16),
     parseInt(hex.slice(3, 5), 16),
@@ -167,7 +181,7 @@ export const resolveSectionColours = (
             const styles = current.styles ?? {};
 
             const background = styles.backgroundColor;
-            if (background && !isTransparent(background)) {
+            if (background && !isTransparent(background) && !isCovered(current)) {
                 const hex = colorToHex(background);
                 if (hex) {
                     add(ROLE_BY_PROP.backgroundColor, hex, area);

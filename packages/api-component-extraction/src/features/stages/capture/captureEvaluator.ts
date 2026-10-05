@@ -29,6 +29,29 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
         // the content rather than stacked above it, and its box cannot say so on its own.
         var STYLE_PROPS = ["backgroundColor","color","fontFamily","fontSize","fontWeight","lineHeight","letterSpacing","borderTopColor","borderTopWidth","borderRadius","boxShadow","paddingTop","paddingLeft","marginTop","gap","display","textAlign","position"];
         var SKIP = { SCRIPT:1, STYLE:1, NOSCRIPT:1, TEMPLATE:1, SVG:1, PATH:1, LINK:1, META:1, HEAD:1, BR:1 };
+
+        /*
+         * A CSS background image, and the three properties that decide how it covers its box.
+         *
+         * Only a \`url(...)\` counts. A gradient is also a background image, and it may be translucent,
+         * so it does not establish that the colour underneath is invisible — which is the question
+         * this answers. The computed value is already an absolute URL.
+         *
+         * Read here rather than added to STYLE_PROPS: most elements have no background image, and
+         * four more entries on every node's styles would grow every tree to record an absence.
+         */
+        function backgroundImage(cs) {
+            var value = "";
+            try { value = cs.backgroundImage || ""; } catch (e) { return null; }
+            if (!value || value === "none" || value.indexOf("url(") === -1) { return null; }
+            var match = /url\\((['"]?)(.*?)\\1\\)/.exec(value);
+            if (!match || !match[2]) { return null; }
+            var out = { url: match[2].slice(0, URL_CAP) };
+            try { if (cs.backgroundSize) { out.size = cs.backgroundSize.slice(0, CSS_CAP); } } catch (e) {}
+            try { if (cs.backgroundPosition) { out.position = cs.backgroundPosition.slice(0, CSS_CAP); } } catch (e) {}
+            try { if (cs.backgroundRepeat) { out.repeat = cs.backgroundRepeat.slice(0, CSS_CAP); } } catch (e) {}
+            return out;
+        }
         var MEDIA = { IMG:1, SOURCE:1, VIDEO:1, IFRAME:1, EMBED:1 };
 
         /*
@@ -79,6 +102,7 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
         // Capped because a data: URI can otherwise be megabytes, and one page's tree holds thousands
         // of nodes.
         var URL_CAP = ${1000};
+        var CSS_CAP = ${60};
         var ALT_CAP = ${300};
 
         function linkDestination(el) {
@@ -178,6 +202,8 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
             // node's shape identical to what earlier runs produced.
             var href = linkDestination(el);
             if (href) { node.href = href; }
+            var background = backgroundImage(cs);
+            if (background) { node.background = background; }
             var src = mediaSource(el);
             if (src) { node.src = src; }
             var alt = alternativeText(el);

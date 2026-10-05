@@ -119,6 +119,20 @@ export interface Box {
  * direct text, and children. This is the working artifact segmentation and clustering operate on — not
  * the raw DOM, which is a separate compressed cold artifact.
  */
+/** A background image a section paints, with the area it covers. Derived in Plan. */
+export interface SectionBackgroundImage extends BackgroundImage {
+    area: number;
+}
+
+/** A CSS background image, with the three properties that decide how it covers its box. */
+export interface BackgroundImage {
+    url: string;
+    /** `cover`, `contain`, a length pair… — absent if the browser reported nothing. */
+    size?: string;
+    position?: string;
+    repeat?: string;
+}
+
 export interface CapturedNode {
     tag: string;
     box: Box;
@@ -148,6 +162,22 @@ export interface CapturedNode {
     src?: string;
     /** An image's alternative text. Present when the element carries a non-empty `alt`. */
     alt?: string;
+    /**
+     * A CSS background image painted over this node's background colour. Present only when the
+     * element has a `url(...)` background.
+     *
+     * Not in `styles`, so a tree is not made larger on every node for a property most nodes lack, and
+     * only a real image is recorded: a gradient may be translucent, so it does not say the colour
+     * beneath it is invisible.
+     *
+     * This exists because the colour beneath one is a **fallback the page never shows**. Park city's
+     * hero is a dark blue photograph with a small terracotta button; its root element sets
+     * `background-color: #a65f46` behind the photo, and with the image uncaptured that fallback was
+     * the largest painted colour in the section by area. Plan bound the section background to it and
+     * Generate was told to paint it, so a blue hero rendered as a flat terracotta block. The capture
+     * was right about the colour and wrong about what the page looks like.
+     */
+    background?: BackgroundImage;
     /**
      * This node's box was **inferred from its children** rather than measured, because the element
      * reported a zero-area rect while rendering content — an absolutely positioned header inside a
@@ -621,6 +651,14 @@ export interface PlannedComponent {
      * need it.
      */
     textAlignments?: TextAlignment[];
+    /**
+     * The background images the reference section paints, largest area first.
+     *
+     * Carried because a hero whose photograph is a CSS background had, until this existed, no image
+     * in the pipeline at all — and the fallback colour beneath it was being reported as the section's
+     * background instead. See `sectionBackgroundImages`.
+     */
+    backgroundImages?: SectionBackgroundImage[];
     /**
      * Whether the props can hold every member's text.
      *

@@ -148,3 +148,54 @@ describe("role-aware token matching", () => {
         );
     });
 });
+
+describe("a colour under a background image", () => {
+    it("is not reported, because the page never shows it", () => {
+        // Park city's hero: a dark blue photograph over `background-color: #a65f46`. The fallback was
+        // the largest painted colour in the section, so the model was told to paint the whole hero
+        // terracotta.
+        const section: CapturedNode = {
+            tag: "div",
+            box: { x: 0, y: 0, width: 1440, height: 484 },
+            styles: { backgroundColor: "rgb(166, 95, 70)" },
+            background: { url: "https://example.com/hero.jpg", size: "cover" },
+            children: []
+        };
+
+        expect(resolveSectionColours(section, THEME)).toEqual([]);
+    });
+
+    it("still reports the text and border colours of a node with a background image", () => {
+        // Only the colour the image covers is hidden. The text painted on top of it is visible.
+        const section: CapturedNode = {
+            tag: "div",
+            box: { x: 0, y: 0, width: 1440, height: 484 },
+            styles: { backgroundColor: "rgb(166, 95, 70)", color: "rgb(255, 255, 255)" },
+            background: { url: "https://example.com/hero.jpg" },
+            text: "Comfort Is Coming Home",
+            children: []
+        };
+
+        expect(resolveSectionColours(section, THEME).map(c => [c.role, c.hex])).toEqual([
+            ["text", "#ffffff"]
+        ]);
+    });
+
+    it("reports a sibling's colour that no image covers", () => {
+        const section = node({}, {}, [
+            {
+                tag: "div",
+                box: { x: 0, y: 0, width: 1440, height: 400 },
+                styles: { backgroundColor: "rgb(166, 95, 70)" },
+                background: { url: "https://example.com/hero.jpg" },
+                children: []
+            },
+            node(
+                { backgroundColor: "rgb(54, 63, 84)" },
+                { box: { x: 0, y: 400, width: 1440, height: 200 } }
+            )
+        ]);
+
+        expect(resolveSectionColours(section, THEME).map(c => c.hex)).toEqual(["#363f54"]);
+    });
+});

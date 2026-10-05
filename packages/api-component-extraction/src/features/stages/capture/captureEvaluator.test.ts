@@ -143,3 +143,45 @@ describe("captureEvaluator link and media fields", () => {
         expect(result.title).toBe("Meridian — B2B analytics");
     });
 });
+
+describe("captureEvaluator background images", () => {
+    it("records a background image with how it covers its box", () => {
+        const result = run(
+            `<div data-rect="1440,484" style="background-image:url('https://cdn.example.com/hero.jpg');background-size:cover;background-position:50% 50%;background-repeat:no-repeat;background-color:rgb(166, 95, 70)">Hero</div>`
+        );
+        const hero = find(result.tree as CapturedNode, "div");
+
+        expect(hero?.background).toEqual({
+            url: "https://cdn.example.com/hero.jpg",
+            size: "cover",
+            position: "50% 50%",
+            repeat: "no-repeat"
+        });
+        // The colour beneath stays on the node; deciding it is invisible is Cluster's job, not the
+        // capture's — the capture reports what the page set.
+        expect(hero?.styles.backgroundColor).toBe("rgb(166, 95, 70)");
+    });
+
+    it("reads a url without quotes, which is how a computed value usually comes back", () => {
+        const result = run(
+            `<div data-rect="1440,484" style="background-image:url(https://cdn.example.com/a.png)">x</div>`
+        );
+        expect(find(result.tree as CapturedNode, "div")?.background?.url).toBe(
+            "https://cdn.example.com/a.png"
+        );
+    });
+
+    it("leaves the field off a node with no background image", () => {
+        const result = run(`<div data-rect="1440,484" style="background-color:red">x</div>`);
+        expect(find(result.tree as CapturedNode, "div")?.background).toBeUndefined();
+    });
+
+    it("ignores a gradient, which may be translucent", () => {
+        // The field answers "is the colour underneath invisible". A gradient does not establish that,
+        // so recording one would suppress a colour the page really shows.
+        const result = run(
+            `<div data-rect="1440,484" style="background-image:linear-gradient(red, blue)">x</div>`
+        );
+        expect(find(result.tree as CapturedNode, "div")?.background).toBeUndefined();
+    });
+});
