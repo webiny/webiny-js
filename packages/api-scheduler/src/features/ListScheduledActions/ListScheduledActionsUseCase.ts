@@ -14,6 +14,15 @@ import { SchedulerPermissionsResolver } from "~/features/permissions/abstraction
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 
+/**
+ * Lists scheduled actions with optional filtering
+ *
+ * Flow:
+ * 1. Build query filters based on where params (namespace, actionType, targetId, etc.)
+ * 2. Fetch entries from CMS storage with pagination and sorting
+ * 3. Transform CMS entries to IScheduledAction format
+ * 4. Return paginated results with metadata
+ */
 class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private listEntriesUseCase: ListLatestEntriesUseCase.Interface,
@@ -58,6 +67,7 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
             input: sortInput,
             fields: model.fields
         });
+        // List entries from CMS
         const listResult = await this.listEntriesUseCase.execute<IScheduledActionEntryValues<T>>(
             model,
             {

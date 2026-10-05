@@ -81,6 +81,9 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         });
 
         if (deleteResult.isFail()) {
+            /**
+             * Some process could have already deleted the entry, in which case we can safely ignore this error.
+             */
             if (deleteResult.error instanceof EntryNotFoundError) {
                 return Result.ok(true);
             }

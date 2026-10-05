@@ -16,6 +16,14 @@ import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 import { SCHEDULED_ACTION_PUBLISH, SCHEDULED_ACTION_UNPUBLISH } from "~/constants.js";
 
+/**
+ * Retrieves a scheduled action by its ID
+ *
+ * Flow:
+ * 1. Fetch schedule entry from CMS storage by ID
+ * 2. Return null if not found
+ * 3. Transform CMS entry to IScheduledAction format
+ */
 class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private getEntryByIdUseCase: GetEntryByIdUseCase.Interface,
@@ -54,6 +62,9 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
         }
 
         const entry = entryResult.value;
+        /**
+         * Always check if the namespace is correct because entry is loaded directly, not via filtering.
+         */
         if (entry.values.namespace !== namespace) {
             return Result.fail(new ScheduledActionNotFoundError(id));
         }
