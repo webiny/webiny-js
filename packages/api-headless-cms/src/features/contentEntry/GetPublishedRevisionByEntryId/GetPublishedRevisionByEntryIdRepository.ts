@@ -4,6 +4,7 @@ import { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { GetPublishedRevisionByEntryIdStorageOperation } from "~/features/shared/storageOperations/entry/GetPublishedRevisionByEntryIdStorageOperation.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * GetPublishedRevisionByEntryIdRepository - Fetches published revision from storage.
@@ -12,13 +13,16 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 class GetPublishedRevisionByEntryIdRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private getPublishedRevisionByEntryIdStorage: GetPublishedRevisionByEntryIdStorageOperation.Interface
+        private getPublishedRevisionByEntryIdStorage: GetPublishedRevisionByEntryIdStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
+        initialModel: CmsModel,
         entryId: string
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+
         try {
             // Get published revision from storage
             const storageEntry = await this.getPublishedRevisionByEntryIdStorage.execute<T>(model, {
@@ -41,5 +45,9 @@ class GetPublishedRevisionByEntryIdRepositoryImpl implements RepositoryAbstracti
 
 export const GetPublishedRevisionByEntryIdRepository = RepositoryAbstraction.createImplementation({
     implementation: GetPublishedRevisionByEntryIdRepositoryImpl,
-    dependencies: [EntryFromStorageTransform, GetPublishedRevisionByEntryIdStorageOperation]
+    dependencies: [
+        EntryFromStorageTransform,
+        GetPublishedRevisionByEntryIdStorageOperation,
+        RuntimeTenant
+    ]
 });
