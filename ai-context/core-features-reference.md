@@ -183,7 +183,7 @@ This document provides the correct import paths and type definitions for commonl
 
 - **Import:** `import { FileUrlGenerator } from "@webiny/api-file-manager/features/file/FileUrlGenerator/abstractions.js"`
 - **Interface Type:** See `packages/api-file-manager/src/features/file/FileUrlGenerator/abstractions.ts`
-- **Usage:** Generates full URLs for files by prepending `srcPrefix` from settings. Sync `generateUrl(file)` method; optional `init()` loads settings once. Registered as singleton.
+- **Usage:** Generates full URLs for files by prepending `srcPrefix` from settings. `generateUrl(file)` is async: the default implementation reads the settings on the first call and reuses them for the rest of the request. Registered as singleton (per request container).
 
 ### GetFileByUrlUseCase (File Manager)
 

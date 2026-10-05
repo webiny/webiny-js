@@ -3,18 +3,30 @@ import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions
 import type { File } from "~/domain/file/types.js";
 
 class FileUrlGeneratorImpl implements Abstraction.Interface {
-    private srcPrefix = "";
+    private srcPrefix: Promise<string> | null = null;
 
     public constructor(private readonly getSettings: GetSettingsUseCase.Interface) {}
 
-    public generateUrl(file: File): string {
-        return this.srcPrefix + file.key;
+    public async generateUrl(file: File): Promise<string> {
+        const srcPrefix = await this.getSrcPrefix();
+        return srcPrefix + file.key;
     }
 
-    public async init(): Promise<void> {
+    // The settings are read when the first URL is needed, once per instance. A failed read is
+    // forgotten, so the next URL tries again.
+    private getSrcPrefix(): Promise<string> {
+        if (!this.srcPrefix) {
+            this.srcPrefix = this.loadSrcPrefix().catch(error => {
+                this.srcPrefix = null;
+                throw error;
+            });
+        }
+        return this.srcPrefix;
+    }
+
+    private async loadSrcPrefix(): Promise<string> {
         const result = await this.getSettings.execute();
-        const settings = result.value;
-        this.srcPrefix = settings?.srcPrefix ?? "";
+        return result.value?.srcPrefix ?? "";
     }
 }
 

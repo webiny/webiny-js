@@ -20,7 +20,6 @@ import { GetFileByUrlUseCase } from "~/features/file/GetFileByUrl/abstractions.j
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { FileUrlGenerator } from "~/features/file/FileUrlGenerator/abstractions.js";
-import { initFileUrlGenerator } from "~/features/file/FileUrlGenerator/initFileUrlGenerator.js";
 import { FileModelProvider } from "~/domain/file/abstractions.js";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 
@@ -359,8 +358,7 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
             path: "FmFile.src",
             dependencies: [FileUrlGenerator],
             resolver: (urlGenerator: FileUrlGenerator.Interface) => {
-                return async ({ parent }) => {
-                    await initFileUrlGenerator(urlGenerator);
+                return ({ parent }) => {
                     return urlGenerator.generateUrl(parent);
                 };
             }

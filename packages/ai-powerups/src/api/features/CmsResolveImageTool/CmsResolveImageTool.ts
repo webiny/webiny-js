@@ -1,7 +1,6 @@
 import { AiOutputTool } from "@webiny/api-core/features/ai/index.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import { FileUrlGenerator } from "@webiny/api-file-manager/features/file/FileUrlGenerator/index.js";
-import { initFileUrlGenerator } from "@webiny/api-file-manager/features/file/FileUrlGenerator/index.js";
 
 class CmsResolveImageToolImpl implements AiOutputTool.Interface {
     readonly name = "cmsResolveImage";
@@ -22,8 +21,7 @@ class CmsResolveImageToolImpl implements AiOutputTool.Interface {
             return null;
         }
 
-        await initFileUrlGenerator(this.urlGenerator);
-        return this.urlGenerator.generateUrl(result.value);
+        return await this.urlGenerator.generateUrl(result.value);
     }
 }
 
