@@ -233,6 +233,10 @@ arrangement number carries a 14-of-47 blind spot.
 
 # Acceptance: the alignment fix
 
+> ⚠️ **Every number in this section is unverifiable.** The measure it uses counted `@media` rules
+> alongside base ones, and the artifacts needed to redo it have been overwritten. Read the correction
+> at the end of this file before quoting anything here. What survives re-derivation is stated there.
+
 Plan derives `textAlignments` from the node it already resolves for value binding; Generate names it.
 The contract and the Plan prompt are untouched. Re-run from Plan on all four sites, then rendered —
 no re-clustering, so the component set is the same 50 and this comparison is like-for-like.
@@ -253,7 +257,10 @@ one defect for its mirror.
 | Freehill  |              2 |            1 |              1 |              0 |
 | **total** |         **18** |       **16** |          **1** |          **1** |
 
-**Two sections moved off centre.** Both are near-ties rather than reflexes:
+⚠️ _Unverifiable — see the correction. Both flipping sections are exposed to the media-query defect._
+
+**Two sections moved off centre.** Both are near-ties rather than reflexes — ⚠️ _this reading is
+wrong; by text area, the key that ranks the list, Freehill's is `center 70%, left 30%`_:
 
 - Freehill _Contact Form with Map View_ — measured `center 22, left 21`. A one-element margin.
 - 2424 Tulane _Floor Plan Filter_ — measured `center 15, left 26, right 4`; it declared nothing.
@@ -275,6 +282,9 @@ had no successful render then have one now. Restricted to the same 45:
 
 **Defect, counting every disagreement plus the silently-left: 11 → 6.**
 
+> ⚠️ **Withdrawn.** Neither 11 nor 6 can be re-established. The before-state was measured on the
+> flawed definition and no v0 artifact survives. Do not carry this figure forward.
+
 Note that this is a wider definition than the one registered before the run. That one — "centred
 against the source, or silently left" — gives 9 → 4 and 2 → 1, but it no longer covers everything:
 before the fix every disagreement ran toward centre, and now two run toward left. A definition that
@@ -288,7 +298,9 @@ only counts centring would score the fix better by ignoring the two sections it 
 | declaring **two or more** | 23 | **7** |
 
 **Every section with a single measured alignment is correct. Every remaining failure is a section
-with more than one.** The seven, with what the prompt showed each:
+with more than one.** ⚠️ _The split holds on re-derivation — 21 of 21 single-alignment sections correct
+on base rules — but the membership of the seven does not; see the correction._ The seven, with what
+the prompt showed each:
 
 ```
 Park city  Site Footer                right  -> left     right 5, center 7, left 2  of 14
@@ -322,6 +334,9 @@ for three.
 | max font size within 10% | 44 of 45 | **42 of 47** |
 | height — tall / short / in band | 3 / 4 / 39 | **6 / 4 / 39** |
 | bare hex per component | 0.8 | **1.0** |
+
+⚠️ _These are the only numbers in this section not affected by the alignment measure defect; they
+read render output, not CSS._
 
 Bundling improved and every component now renders. **Three guards moved adversely**: the type ratio
 from 98% to 89%, the too-tall band from 3 to 6, and the bare-hex rate from 0.8 to 1.0. Two of the
