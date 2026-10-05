@@ -5,15 +5,16 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { FileUrlGenerator } from "~/features/file/FileUrlGenerator/abstractions.js";
+import { FileUrlPrefixProvider } from "~/features/file/FileUrlGenerator/abstractions.js";
 import { FileUrlGeneratorFeature } from "~/features/file/FileUrlGenerator/feature.js";
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
 import type { File } from "~/domain/file/types.js";
 
-const createGenerator = (execute: GetSettingsUseCase.Interface["execute"]) => {
+const createContainer = (execute: GetSettingsUseCase.Interface["execute"]) => {
     const container = new Container();
     container.registerInstance(GetSettingsUseCase, { execute });
     FileUrlGeneratorFeature.register(container);
-    return container.resolve(FileUrlGenerator);
+    return container;
 };
 
 const createFile = (key: string) => {
@@ -26,19 +27,39 @@ const settings = (srcPrefix: string) => {
 };
 
 describe("FileUrlGenerator", () => {
-    it("should read the settings once, however many URLs it generates", async () => {
+    it("should put the prefix in front of the file key", async () => {
         const execute = vi.fn(async () => settings("https://cdn.example.com/files/"));
-        const generator = createGenerator(execute);
+        const generator = createContainer(execute).resolve(FileUrlGenerator);
 
-        const [first, second] = await Promise.all([
-            generator.generateUrl(createFile("a/1.png")),
-            generator.generateUrl(createFile("b/2.png"))
-        ]);
-        const third = await generator.generateUrl(createFile("c/3.png"));
+        const url = await generator.generateUrl(createFile("a/1.png"));
 
-        expect(first).toEqual("https://cdn.example.com/files/a/1.png");
-        expect(second).toEqual("https://cdn.example.com/files/b/2.png");
-        expect(third).toEqual("https://cdn.example.com/files/c/3.png");
+        expect(url).toEqual("https://cdn.example.com/files/a/1.png");
+    });
+
+    it("should use a replacement prefix provider", async () => {
+        const execute = vi.fn(async () => settings("/from-settings/"));
+        const container = createContainer(execute);
+        container.registerInstance(FileUrlPrefixProvider, {
+            getPrefix: async () => "https://assets.example.com/"
+        });
+        const generator = container.resolve(FileUrlGenerator);
+
+        const url = await generator.generateUrl(createFile("a/1.png"));
+
+        expect(url).toEqual("https://assets.example.com/a/1.png");
+        expect(execute).not.toHaveBeenCalled();
+    });
+});
+
+describe("SettingsFileUrlPrefixProvider", () => {
+    it("should read the settings once, however many prefixes are requested", async () => {
+        const execute = vi.fn(async () => settings("/files/"));
+        const provider = createContainer(execute).resolve(FileUrlPrefixProvider);
+
+        const [first, second] = await Promise.all([provider.getPrefix(), provider.getPrefix()]);
+        const third = await provider.getPrefix();
+
+        expect([first, second, third]).toEqual(["/files/", "/files/", "/files/"]);
         expect(execute).toHaveBeenCalledTimes(1);
     });
 
@@ -47,23 +68,22 @@ describe("FileUrlGenerator", () => {
             .fn<GetSettingsUseCase.Interface["execute"]>()
             .mockRejectedValueOnce(new Error("Could not read the settings."))
             .mockResolvedValue(settings("/files/"));
-        const generator = createGenerator(execute);
-        const file = createFile("a/1.png");
+        const provider = createContainer(execute).resolve(FileUrlPrefixProvider);
 
-        const failed = generator.generateUrl(file);
+        const failed = provider.getPrefix();
         await expect(failed).rejects.toThrow("Could not read the settings.");
 
-        const url = await generator.generateUrl(file);
-        expect(url).toEqual("/files/a/1.png");
+        const prefix = await provider.getPrefix();
+        expect(prefix).toEqual("/files/");
         expect(execute).toHaveBeenCalledTimes(2);
     });
 
-    it("should return the key alone when there is no srcPrefix", async () => {
+    it("should return an empty prefix when the settings have none", async () => {
         const execute = vi.fn(async () => settings(""));
-        const generator = createGenerator(execute);
+        const provider = createContainer(execute).resolve(FileUrlPrefixProvider);
 
-        const url = await generator.generateUrl(createFile("a/1.png"));
+        const prefix = await provider.getPrefix();
 
-        expect(url).toEqual("a/1.png");
+        expect(prefix).toEqual("");
     });
 });
