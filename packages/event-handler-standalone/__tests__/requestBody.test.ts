@@ -1,7 +1,13 @@
 import http from "node:http";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import { afterEach } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { HttpRouteDefinition } from "@webiny/event-handler-core";
+import { HttpRouteHandler } from "@webiny/event-handler-core";
+import type { IHttpRequest } from "@webiny/event-handler-core";
+import type { IHttpResponse } from "@webiny/event-handler-core";
 import { createServerHandler } from "~/createServerHandler.js";
 import { NodeHttpFeature } from "~/features/NodeHttpFeature.js";
 
@@ -52,16 +58,18 @@ function post(port: number, body: Buffer, chunked: boolean): Promise<IReply> {
             }
         );
         // The server may close the connection before the whole body is sent.
-        request.on("error", error => {
-            if ((error as NodeJS.ErrnoException).code !== "EPIPE") {
+        request.on("error", (error: NodeJS.ErrnoException) => {
+            if (error.code !== "EPIPE") {
                 reject(error);
             }
         });
 
         if (chunked) {
             const half = Math.floor(body.length / 2);
-            request.write(body.subarray(0, half));
-            request.end(body.subarray(half));
+            const firstHalf = body.subarray(0, half);
+            const secondHalf = body.subarray(half);
+            request.write(firstHalf);
+            request.end(secondHalf);
             return;
         }
         request.end(body);
@@ -93,21 +101,24 @@ describe("Node HTTP server request body", () => {
     });
 
     it("accepts a body within the limit", async () => {
-        const reply = await post(port, Buffer.alloc(MAX_BYTES), false);
+        const body = Buffer.alloc(MAX_BYTES);
+        const reply = await post(port, body, false);
 
         expect(reply.statusCode).toBe(200);
         expect(JSON.parse(reply.body)).toEqual({ length: MAX_BYTES });
     });
 
     it("refuses a body whose declared length is over the limit", async () => {
-        const reply = await post(port, Buffer.alloc(MAX_BYTES + 1), false);
+        const body = Buffer.alloc(MAX_BYTES + 1);
+        const reply = await post(port, body, false);
 
         expect(reply.statusCode).toBe(413);
         expect(reply.body).toContain("maximum allowed size");
     });
 
     it("refuses a chunked body once it grows past the limit", async () => {
-        const reply = await post(port, Buffer.alloc(MAX_BYTES * 4), true);
+        const body = Buffer.alloc(MAX_BYTES * 4);
+        const reply = await post(port, body, true);
 
         expect(reply.statusCode).toBe(413);
     });

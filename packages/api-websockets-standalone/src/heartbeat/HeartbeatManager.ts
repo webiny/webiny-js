@@ -40,7 +40,8 @@ export class HeartbeatManager {
         // Cleanup forgets the sockets it evicts, so take them before it runs.
         const sockets = new Map<string, unknown>();
         for (const connectionId of this.connectionManager.getActiveConnectionIds()) {
-            sockets.set(connectionId, this.connectionManager.getSocket(connectionId));
+            const socket = this.connectionManager.getSocket(connectionId);
+            sockets.set(connectionId, socket);
         }
 
         let evicted: string[];

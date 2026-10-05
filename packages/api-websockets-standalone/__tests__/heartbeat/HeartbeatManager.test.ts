@@ -1,4 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { vi } from "vitest";
 import { HeartbeatManager } from "~/heartbeat/HeartbeatManager.js";
 import type { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
 import type { WebsocketsServerAdapter } from "~/adapter/abstractions.js";

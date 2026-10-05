@@ -33,9 +33,11 @@ function decodeBody(req: IncomingMessage, buffer: Buffer): unknown {
         // Known text bodies → decode as a string.
         return buffer.toString("utf8");
     }
-    // Everything else (multipart/form-data file uploads, octet-stream, or an unlabeled raw PUT body
-    // like a multipart upload part) is binary — hand routes the raw bytes. Decoding these as utf8
-    // would corrupt the payload.
+    /*
+     * Everything else (multipart/form-data file uploads, octet-stream, or an unlabeled raw PUT body
+     * like a multipart upload part) is binary, so routes get the raw bytes. Decoding these as utf8
+     * would corrupt the payload.
+     */
     return buffer;
 }
 
@@ -76,7 +78,8 @@ async function readBody(req: IncomingMessage): Promise<any> {
             // Throwing inside an event listener would be uncaught, so failures reject instead.
             try {
                 const buffer = Buffer.concat(chunks);
-                resolve(decodeBody(req, buffer));
+                const body = decodeBody(req, buffer);
+                resolve(body);
             } catch (error) {
                 reject(error);
             }

@@ -282,15 +282,18 @@ describe("TaskOrchestrator", () => {
     });
 
     it("should decode a multi-byte character split across response chunks", async () => {
-        const body = Buffer.from(JSON.stringify({ status: "done", output: "žđ€" }), "utf8");
+        const json = JSON.stringify({ status: "done", output: "žđ€" });
+        const body = Buffer.from(json, "utf8");
         const splitAt = body.indexOf(Buffer.from("€", "utf8")) + 1;
 
         const created = http.createServer((req, res) => {
             req.resume();
             req.on("end", () => {
                 res.writeHead(200, { "content-type": "application/json" });
-                res.write(body.subarray(0, splitAt));
-                setTimeout(() => res.end(body.subarray(splitAt)), 20);
+                const head = body.subarray(0, splitAt);
+                const tail = body.subarray(splitAt);
+                res.write(head);
+                setTimeout(() => res.end(tail), 20);
             });
         });
         await new Promise<void>(resolve => created.listen(0, "127.0.0.1", resolve));
