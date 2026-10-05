@@ -14,7 +14,7 @@ env:
 jobs:
   init:
     name: Init
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     outputs:
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 24
 
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: useblacksmith/checkout@v1 # v4
 
       - name: Get day of the month
         id: get-day
@@ -35,7 +35,7 @@ jobs:
   versioning:
     needs: init
     name: Determine Release Version
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     outputs:
       version: ${{ steps.determine-release-version.outputs.version }}
     steps:
@@ -43,7 +43,7 @@ jobs:
         with:
           node-version: 24
 
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: useblacksmith/checkout@v1 # v4
 
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         id: yarn-cache
@@ -82,7 +82,7 @@ jobs:
   npm-release:
     needs: [init, versioning]
     name: Release ${{ needs.versioning.outputs.version }} ("${{ github.event.client_payload.tag }}")
-    runs-on: webiny-build-packages
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     environment: release
     steps:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4

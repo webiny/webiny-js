@@ -38,7 +38,7 @@ jobs:
             Cypress E2E tests have been initiated (for more information, click
             [here](https://github.com/webiny/webiny-js/actions/runs/${{
             github.run_id }})). :sparkles:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: useblacksmith/checkout@v1 # v5
       - name: Get base branch
         id: base-branch
         env:
@@ -59,7 +59,7 @@ jobs:
         run: >-
           echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json
           baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -84,7 +84,7 @@ jobs:
         run: >-
           echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
           vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -93,12 +93,12 @@ jobs:
     needs:
       - baseBranch
       - constants
-    runs-on: webiny-build-packages
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: useblacksmith/checkout@v1 # v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -140,7 +140,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: useblacksmith/checkout@v1 # v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -159,7 +159,7 @@ jobs:
         run: >-
           echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
           github.run_id }}_ddb" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -188,7 +188,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: useblacksmith/checkout@v1 # v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -290,7 +290,7 @@ jobs:
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       id-token: write
   e2e-wby-cms-ddb-cypress-tests:
@@ -306,7 +306,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - blacksmith-4vcpu-ubuntu-2404
         node:
           - 24
         cypress-folder: >-
@@ -324,7 +324,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: useblacksmith/checkout@v1 # v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -358,7 +358,7 @@ jobs:
         timeout-minutes: 40
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
   e2e-wby-cms-ddb-os-constants:
     needs:
       - baseBranch
@@ -372,7 +372,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: useblacksmith/checkout@v1 # v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -391,7 +391,7 @@ jobs:
         run: >-
           echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
           github.run_id }}_ddb-os" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -425,7 +425,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: useblacksmith/checkout@v1 # v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -527,7 +527,7 @@ jobs:
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       id-token: write
   e2e-wby-cms-ddb-os-cypress-tests:
@@ -543,7 +543,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - blacksmith-4vcpu-ubuntu-2404
         node:
           - 24
         cypress-folder: >-
@@ -567,7 +567,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: useblacksmith/checkout@v1 # v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -602,4 +602,4 @@ jobs:
         timeout-minutes: 40
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404

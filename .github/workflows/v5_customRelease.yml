@@ -13,14 +13,14 @@ env:
 jobs:
   npm-release:
     name: NPM release ("${{ github.event.client_payload.tag }}" tag)
-    runs-on: webiny-build-packages
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     environment: release
     steps:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
 
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: useblacksmith/checkout@v1 # v4
         with:
           ref: ${{ github.event.client_payload.branch }}
           fetch-depth: 0

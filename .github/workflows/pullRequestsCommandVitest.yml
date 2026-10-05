@@ -67,7 +67,7 @@ jobs:
             | SQL | ⏳ Queued |
 
             | PGlite | ⏳ Queued |
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -81,7 +81,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
       - name: Get base branch
         id: base-branch
         env:
@@ -96,7 +96,7 @@ jobs:
         run: >-
           echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json
           headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -118,7 +118,7 @@ jobs:
           echo "global-cache-key=${{ needs.baseBranch.outputs.base-branch }}-${{
           runner.os }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX
           }}" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -130,12 +130,12 @@ jobs:
     needs:
       - baseBranch
       - constants
-    runs-on: webiny-build-packages
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -197,7 +197,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Mark "No storage" as running
@@ -230,7 +230,7 @@ jobs:
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
           '[""]')" >> "$GITHUB_OUTPUT"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -285,7 +285,7 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -302,7 +302,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - blacksmith-4vcpu-ubuntu-2404
         node:
           - 24
         testCommand: ${{ fromJSON(needs.vitest-constants.outputs.vitest-test-commands) }}
@@ -315,7 +315,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -374,7 +374,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Mark "DDB" as running
@@ -406,7 +406,7 @@ jobs:
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
           '["ddb"]')" >> "$GITHUB_OUTPUT"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -460,7 +460,7 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -477,7 +477,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - blacksmith-4vcpu-ubuntu-2404
         node:
           - 24
         testCommand: >-
@@ -493,7 +493,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -552,7 +552,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Mark "DDB+OS" as running
@@ -584,7 +584,7 @@ jobs:
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
           '["ddb-os,ddb"]')" >> "$GITHUB_OUTPUT"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -638,7 +638,7 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -655,7 +655,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - blacksmith-4vcpu-ubuntu-2404
         node:
           - 24
         testCommand: >-
@@ -682,7 +682,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -760,7 +760,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Mark "SQL" as running
@@ -792,7 +792,7 @@ jobs:
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
           '["sql"]')" >> "$GITHUB_OUTPUT"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -846,7 +846,7 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -863,7 +863,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - blacksmith-4vcpu-ubuntu-2404
         node:
           - 24
         testCommand: >-
@@ -879,7 +879,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -938,7 +938,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Mark "PGlite" as running
@@ -970,7 +970,7 @@ jobs:
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
           '["sql"]')" >> "$GITHUB_OUTPUT"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -1024,7 +1024,7 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -1041,7 +1041,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - blacksmith-4vcpu-ubuntu-2404
         node:
           - 24
         testCommand: >-
@@ -1059,7 +1059,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -1241,7 +1241,7 @@ jobs:
 
           gh pr edit "$PR_NUMBER" -R ${{ github.repository }} --body-file
           /tmp/pr-body.txt
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
       actions: write

@@ -32,7 +32,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
       - name: Gather PR signals
         run: >-
           set -euo pipefail
@@ -105,4 +105,4 @@ jobs:
               -F "body=@$REPORT"
             echo "::notice::Posted new slop cop comment."
           fi
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404

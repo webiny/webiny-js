@@ -50,7 +50,7 @@ jobs:
             Beta release has been initiated (for more information, click
             [here](https://github.com/webiny/webiny-js/actions/runs/${{
             github.run_id }})). :sparkles:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -92,7 +92,7 @@ jobs:
           release/* pattern" && exit 1; fi
 
           echo "release-version=$VERSION" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -103,12 +103,12 @@ jobs:
     name: Build
     needs:
       - prBranch
-    runs-on: webiny-build-packages
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}
           ref: ${{ needs.prBranch.outputs.pr-sha }}
@@ -163,7 +163,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}
           ref: ${{ needs.prBranch.outputs.pr-sha }}
@@ -241,7 +241,7 @@ jobs:
             -H "Content-type: application/json" \
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
       actions: write
@@ -261,7 +261,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@v1
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}
           ref: ${{ needs.prBranch.outputs.pr-sha }}
@@ -338,7 +338,7 @@ jobs:
             -H "Content-type: application/json" \
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
       actions: write
@@ -398,7 +398,7 @@ jobs:
             -H "Content-type: application/json" \
             --data @/tmp/slack-payload.json \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
       actions: write
