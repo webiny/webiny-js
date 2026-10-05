@@ -7,6 +7,7 @@ import {
     GetScheduledActionUseCase,
     ListScheduledActionsUseCase
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { CMS_NAMESPACE } from "~/utils/namespace.js";
 import { SchedulePublishEntryUseCase } from "~/exports/api/cms/scheduler.js";
 
@@ -69,5 +70,60 @@ describe("Scheduler permissions", () => {
         });
         expect(action.isFail()).toBe(true);
         expect(action.error.code).toBe("Scheduler/NotAuthorized");
+    });
+});
+
+/*
+ * When no app claims an action's namespace, or a caller lists without one, there are no app
+ * permissions to check against, so only full-access identities and code running without
+ * authorization get through.
+ */
+describe("Scheduler permissions without an owning app", () => {
+    const contextWith = (permissions: { name: string }[]) =>
+        useHandler({
+            permissions,
+            legacyPlugins: [createMockTargetModelPlugins()]
+        }).handler();
+
+    it("doesn't let a CMS user list without a namespace", async () => {
+        const { container } = await setup([{ name: "cms.*" }]);
+
+        const result = await container.resolve(ListScheduledActionsUseCase).execute({ where: {} });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Scheduler/NotAuthorized");
+    });
+
+    it("doesn't let a CMS user list a namespace no app claims", async () => {
+        const { container } = await contextWith([{ name: "cms.*" }]);
+
+        const result = await container.resolve(ListScheduledActionsUseCase).execute({
+            where: { namespace: "Unknown/App" }
+        });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Scheduler/NotAuthorized");
+    });
+
+    it("lets a full-access user list without a namespace", async () => {
+        const { container } = await setup([{ name: "*" }]);
+
+        const result = await container.resolve(ListScheduledActionsUseCase).execute({ where: {} });
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.items).toHaveLength(1);
+    });
+
+    it("lets code running without authorization list without a namespace", async () => {
+        const { container } = await setup([{ name: "cms.*" }]);
+
+        const result = await container
+            .resolve(IdentityContext)
+            .withoutAuthorization(() =>
+                container.resolve(ListScheduledActionsUseCase).execute({ where: {} })
+            );
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.items).toHaveLength(1);
     });
 });

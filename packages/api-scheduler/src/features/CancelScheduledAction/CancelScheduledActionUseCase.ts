@@ -35,11 +35,8 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     ): Promise<Result<boolean, UseCaseAbstraction.Error>> {
         const { id, namespace } = params;
         const permissions = this.permissionsResolver.forNamespace(namespace);
-        if (permissions) {
-            const hasPermission = await permissions.canRead();
-            if (!hasPermission) {
-                return Result.fail(new NotAuthorizedError());
-            }
+        if (!(await permissions.canRead())) {
+            return Result.fail(new NotAuthorizedError());
         }
         // Check if scheduled action exists
         const getResult = await this.getScheduledActionUseCase.execute(params);
