@@ -11,7 +11,7 @@ follow it.
 
 | concern                            | case                                  | scale                                                      |
 | ---------------------------------- | ------------------------------------- | ---------------------------------------------------------- |
-| **Alignment**                      | **2 — captured, read by nothing**     | 28 of 45 sections with an alignment lose it or get centred |
+| **Alignment**                      | **2 — captured, read by nothing**     | 11 of 45 sections render with the wrong alignment          |
 | **Arrangement (where the gutters)** | **2 — derivable from boxes, discarded** | 10 of 17 side-by-side sections rearrange                  |
 | **Arrangement (the CSS mechanism)** | **1 — not captured at all**           | `flex-direction`, grid tracks, `flex-wrap`, `justify-content` |
 
@@ -78,10 +78,28 @@ generated CSS declares.
 | --- | ---: |
 | source and CSS agree | 17 |
 | **they differ** | **9** |
-| **source has an alignment, the CSS declares none** | **19** |
+| source has an alignment, the CSS declares none | 19 |
 
 **Every one of the nine differences centres something the source did not centre.** Not one goes the
 other way.
+
+**The 19 undeclared are mostly not a defect, and must not be counted as one.** `text-align` defaults
+to left, so a left-aligned section that declares nothing still renders left. **17 of the 19 are
+left-aligned sources.** Only two are silent failures:
+
+```
+2424 Tulane   Contact Form             source center, CSS declares nothing  -> renders left
+71 Westland   Site Header Navigation   source right,  CSS declares nothing  -> renders left
+```
+
+So the defect is **11 of the 45 sections that have a measured alignment** — nine centred against the
+source and two silently left — not 28. Stated plainly because the first version of this report
+grouped all 19 with the nine, which is the shape of error
+`true-but-misleading-groupings` exists to catch: the grouping was accurate and implied a cause it did
+not have.
+
+For scale, the sources themselves are **left 23, centre 16, right 6**. Centring is right about a
+third of the time, which is why the reflex is not obviously wrong and why nothing flagged it.
 
 ```
 Park city Palace  Property Description             left  -> center
@@ -95,9 +113,8 @@ Park city Palace  Application Form                 left  -> center
 Freehill          Property Contact & Office Hours   right -> center
 ```
 
-Five of the nine are right-aligned footers becoming centred. Centre is what a model writes when
-nothing tells it otherwise, and the 19 undeclared cases are the same reflex with the browser default
-instead of an explicit rule.
+Four of the nine are right-aligned footers becoming centred. Centre is what a model writes when
+nothing tells it otherwise.
 
 ### Arrangement: gutters move and multiply, they do not disappear
 
@@ -143,7 +160,8 @@ holds closed, not collapsing structure the source holds open.
 
 **Alignment — case 2.** `textAlign` is captured on every node, appears as `start`, `center`, `left`
 and `right` across all four sites' trees, and is read by nothing. Neither prompt mentions alignment.
-Nine renders centre what the source does not and nineteen declare nothing.
+Nine renders centre what the source does not, and two more render left because nothing was
+declared and the source was not left.
 
 **Arrangement, the facts — case 2.** The boxes are captured. Column counts and gutter positions follow
 from them, and `geometryClass` already derives part of it in Cluster and throws it away with
