@@ -12,10 +12,18 @@ change.
 | concern               | case                                       | scale                                                                    |
 | --------------------- | ------------------------------------------ | ------------------------------------------------------------------------ |
 | **Colour**            | **2 — captured, resolved, then discarded** | 14 of 34 components render a background colour the section does not have |
-| **Placement**         | **2 — captured, read by nothing**          | 13 of 34 differ in arrangement, 7 of 34 in alignment                     |
+| **Placement**         | **2 — captured, read by nothing**          | 13 of 34 differ in arrangement, 7 of 34 in alignment ⚠️ _see correction_ |
 | **Background images** | **1 — not captured at all**                | 4 of 34 sections, far smaller than expected                              |
 
 **None of the three is case 3.** No prompt change is justified by this diagnosis.
+
+> ⚠️ **The placement numbers in this report are withdrawn.** Re-measured with one definition applied
+> to both sides, renders carry **more** side-by-side structure than their sources, not less — 19
+> gutters invented against 12 lost, 13 components with more and 2 with fewer. The six named column
+> collapses are an artefact of a measure that inflated the source side by counting navigation gaps and
+> photographic texture as columns. The case attribution below (case 2, captured and read by nothing)
+> stands; the direction and the scale do not. See
+> `plans/component-extraction-placement-report.md`.
 
 **The three do not correlate.** Both diverge on 7 components, colour only on 7, placement only on 10,
 neither on 10 — **phi = 0.00**. Three causes, not one.
@@ -126,6 +134,11 @@ Six of the seven collapse a multi-column section into a single column: Property 
 Header Navigation 5→1, Hero Introduction Section 3→1, Freehill Hero Banner 4→1, Contact Form with Map
 View 2→1, Privacy Policy 2→1.
 
+> ⚠️ **Withdrawn.** Five of these six do not survive a symmetric measure: they are photographic
+> sections, where ink cannot measure layout, or sections whose arrangement the render in fact keeps.
+> The sixth, _Site Header Navigation_, is real and is the opposite defect — the render has more
+> structure than the source, not less.
+
 | alignment band (left / centre / right) | count |
 | -------------------------------------- | ----- |
 | same                                   | 27    |
@@ -232,8 +245,9 @@ They do not correlate, so they can be taken in any order, and this is the order 
 
 1. **Colour.** The largest, and the fix persists something the pipeline already computes rather than
    capturing anything new.
-2. **Placement.** Captured and read by nothing. The six column collapses are the signal; the raw 13 is
-   not, because the measure counts any full-height gap.
+2. **Placement.** Captured and read by nothing — that part holds. ⚠️ Neither the six collapses nor
+   the raw 13 survived re-measurement; see the correction at the top. Alignment is the measurable
+   half and is being fixed first.
 3. **Background images.** The smallest. The URL alone covers every observed case, since all four are
    `cover / 50% 50% / no-repeat`.
 
@@ -250,9 +264,14 @@ that still fails is 2424 Tulane's _Site Header Navigation_ at 27% overlap, repor
 counted.
 
 **The column measure counts any full-height gap**, so a navigation bar's inter-item gaps register as
-columns. `5->7` and `2->4` are its noise floor, not findings. The signal is the six collapses to a
-single column, where a multi-column section became a stack. The raw 13 must not be read as 13 real
-divergences.
+columns. `5->7` and `2->4` are its noise floor, not findings.
+
+> ⚠️ This caveat did not go far enough, and the number it protected was wrong anyway. The measure had
+> a second flaw pointing the same way — nothing required a gutter to hold across the rows it separated,
+> so photographic texture counted as columns too — and both flaws inflate the **source** side, which
+> is what manufactured the collapses. Neither the six nor the raw 13 should be read as divergences.
+> `plans/component-extraction-placement-report.md` has the measure that replaces it, and the five
+> definitions falsified on the way to it.
 
 ## The pattern, at its starkest
 
