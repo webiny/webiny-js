@@ -72,6 +72,66 @@ const noClearance = (): OverlayClearanceResult => ({
     overlayRemains: null
 });
 
+/**
+ * How far to step down the page, as a fraction of the viewport, and how long to pause on each step.
+ *
+ * A lazy loader fires from an IntersectionObserver, so a step has to leave the element on screen long
+ * enough for the callback to run and the request to start. Overlapping the steps slightly means no
+ * band of the page is skipped between two scroll positions.
+ */
+const LAZY_SCROLL_FACTOR = 0.8;
+const LAZY_SCROLL_PAUSE_MS = 150;
+const LAZY_SCROLL_SETTLE_MS = 600;
+/** Enough for a very long page at a 900px viewport; past this the page is pathological. */
+const MAX_LAZY_SCROLL_STEPS = 40;
+
+/**
+ * Walk the page once so that whatever loads on scroll has loaded before anything is read.
+ *
+ * The tree used to be read off a page that had never been scrolled, while the screenshots were taken
+ * afterwards from a grown viewport — which is itself what triggers a lazy loader. So the camera saw
+ * the page and the sampler saw its placeholders, and nothing downstream could tell.
+ *
+ * Measured on one site: Park city's hero carries `class="lazy-background-images"` and
+ * `style="background-color: #a65f46"`, and its photograph only attaches on scroll. The capture
+ * recorded the placeholder terracotta as the section's largest colour, Plan bound the section
+ * background to it, and a dark blue hero was generated as a flat terracotta block. On the home page
+ * alone, elements with a `url(...)` background go from 2 to 6 across this pass, and section-sized
+ * ones from 0 to 3. `<img>` elements are unaffected — Chrome loads those regardless.
+ *
+ * The page is returned to the top before anything is read, so sticky offsets and viewport-relative
+ * layout are where they were. Best-effort by construction: a page that cannot be scrolled, or that
+ * throws while scrolling, is read exactly as it was before.
+ */
+const settleLazyContent = async (page: Page): Promise<void> => {
+    await withTimeoutOrDefault(
+        "scroll the page so lazy content loads",
+        DEFAULT_TIMEOUTS.evaluateMs,
+        undefined,
+        () =>
+            page.evaluate(
+                async (factor: number, pause: number, settle: number, maxSteps: number) => {
+                    const step = Math.max(1, Math.round(window.innerHeight * factor));
+                    const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+                    for (let i = 0; i < maxSteps; i++) {
+                        const y = i * step;
+                        if (y > document.documentElement.scrollHeight) {
+                            break;
+                        }
+                        window.scrollTo(0, y);
+                        await wait(pause);
+                    }
+                    window.scrollTo(0, 0);
+                    await wait(settle);
+                },
+                LAZY_SCROLL_FACTOR,
+                LAZY_SCROLL_PAUSE_MS,
+                LAZY_SCROLL_SETTLE_MS,
+                MAX_LAZY_SCROLL_STEPS
+            ) as Promise<void>
+    );
+};
+
 const clearOverlays = (page: Page): Promise<OverlayClearanceResult> => {
     return withTimeoutOrDefault<OverlayClearanceResult>(
         "clear popups and overlays",
@@ -424,6 +484,13 @@ class ChromiumSession implements IBrowserSession {
         );
 
         await this.assertNotChallenged(page, params.url, status, headers, title);
+
+        /*
+         * Before the clearance, so the overlays this scroll provokes are caught by it rather than by
+         * the late pass — a scroll-depth promo is exactly what the comment below anticipates, and it
+         * should not be allowed to land between the scroll and the sampler.
+         */
+        await settleLazyContent(page);
 
         // Before sampling, so the sampler's own `display: none` filter excludes whatever was hidden.
         const earlyClearance = await clearOverlays(page);
