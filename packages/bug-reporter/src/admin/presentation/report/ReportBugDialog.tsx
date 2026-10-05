@@ -4,15 +4,18 @@ import { useFeature } from "@webiny/app/shared/di/useFeature.js";
 import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { Textarea } from "@webiny/admin-ui";
+import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
+import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
 import { readPastedImage } from "../../capture/readPastedImage.js";
 import { BugReportFeature } from "../../feature.js";
 import { OutcomeDialog } from "./OutcomeDialog.js";
 
-const PLACEHOLDER = "Hey, this isn't working...";
+const PLACEHOLDER = "Hey, this isn't working... (optional)";
 
 export const ReportBugDialog = createReactiveComponent(function ReportBugDialog() {
     const { report } = useFeature(BugReportFeature);
@@ -43,6 +46,33 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
         };
     }, [vm.open, report]);
 
+    /*
+     * After a copy the link gives way to plain green text for a moment: a confirmation, not
+     * something to click again. `role="status"` has screen readers announce it.
+     */
+    let copyAction = (
+        <Button
+            variant={"link"}
+            size={"sm"}
+            icon={<CopyIcon />}
+            text={"Copy to clipboard"}
+            disabled={!vm.canSubmit}
+            onClick={() => void report.copy()}
+        />
+    );
+    if (vm.copied) {
+        copyAction = (
+            <Text
+                size={"sm"}
+                role={"status"}
+                className={"flex items-center gap-xs text-success-primary fill-success"}
+            >
+                <Icon size={"sm"} label={""} icon={<CheckIcon />} />
+                {"Copied"}
+            </Text>
+        );
+    }
+
     if (vm.outcome) {
         return <OutcomeDialog outcome={vm.outcome} open={vm.open} onClose={() => report.close()} />;
     }
@@ -54,6 +84,7 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
             title={"Report a bug"}
             description={"Say what went wrong, paste a screenshot. The rest is already captured."}
             loading={vm.busy}
+            info={copyAction}
             actions={
                 <>
                     <Button variant={"ghost"} text={"Cancel"} onClick={() => report.close()} />
@@ -128,7 +159,9 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
                  * Named before the report is sent, not after. With no configuration this is our own
                  * repository, and a reporter should not find that out by landing on it.
                  */}
-                <Text size={"sm"}>{`Goes to ${vm.targetRepository} on GitHub.`}</Text>
+                <Text size={"sm"}>
+                    {`Goes to ${vm.targetRepository} on GitHub, or copy it to send another way.`}
+                </Text>
 
                 {vm.statusLabel ? <Text size={"sm"}>{vm.statusLabel}</Text> : null}
             </div>
