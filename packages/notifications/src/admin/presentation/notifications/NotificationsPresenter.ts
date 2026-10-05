@@ -15,9 +15,16 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
     private counts: NotificationCounts = EMPTY_COUNTS;
     private items: Notification[] = [];
     private loaded = false;
+    private latestRequestId = 0;
+    /** Last list loaded per tab and filter, so switching back doesn't start from empty. */
+    private cache = new Map<string, Notification[]>();
 
     constructor(private api: NotificationsApi.Interface) {
-        makeAutoObservable<NotificationsPresenterImpl, "api">(this, { api: false });
+        makeAutoObservable<NotificationsPresenterImpl, "api" | "latestRequestId" | "cache">(this, {
+            api: false,
+            latestRequestId: false,
+            cache: false
+        });
     }
 
     get vm(): PresenterAbstraction.ViewModel {
@@ -37,13 +44,25 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
             return;
         }
         this.loaded = true;
+        // Nothing pushes new notifications to the browser, so catch up when the user comes back.
+        if (typeof window !== "undefined") {
+            window.addEventListener("focus", this.onWindowFocus);
+        }
         await this.refreshCounts();
     }
 
     openPanel() {
         this.open = true;
-        void this.reload();
+        this.showCurrentView();
+        void this.refreshCounts();
     }
+
+    private onWindowFocus = () => {
+        void this.refreshCounts();
+        if (this.open) {
+            void this.loadItems({ showLoading: false });
+        }
+    };
 
     closePanel() {
         this.open = false;
@@ -55,30 +74,79 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
 
     setTab(tab: NotificationsTab) {
         this.tab = tab;
-        void this.reload();
+        this.showCurrentView();
     }
 
     setUnreadOnly(value: boolean) {
         this.unreadOnly = value;
-        void this.reload();
+        this.showCurrentView();
     }
 
     async reload() {
+        await this.loadItems({ showLoading: true });
+    }
+
+    private get viewKey() {
+        return `${this.tab}:${this.unreadOnly}`;
+    }
+
+    /**
+     * Shows the last list loaded for the current tab and filter straight away and updates it in
+     * the background. The loading state only appears the first time a view is opened.
+     */
+    private showCurrentView() {
+        const cached = this.cache.get(this.viewKey);
+        if (cached) {
+            this.items = cached;
+            void this.loadItems({ showLoading: false });
+            return;
+        }
+        this.items = [];
+        void this.loadItems({ showLoading: true });
+    }
+
+    /**
+     * After mark read or archive, other views may hold stale lists (an archived item still in
+     * Inbox), so drop them; they load fresh the next time they're opened.
+     */
+    private forgetOtherViews() {
+        const current = this.cache.get(this.viewKey);
+        this.cache.clear();
+        if (current) {
+            this.cache.set(this.viewKey, current);
+        }
+    }
+
+    private async loadItems({ showLoading }: { showLoading: boolean }) {
+        const key = this.viewKey;
+        const archived = this.tab === "archive";
+        const unreadOnly = this.unreadOnly;
+        // Switching tabs or filters quickly can leave an older request still in flight; it may
+        // fill its own view's cache, but only the latest request writes the visible list.
+        const requestId = ++this.latestRequestId;
         runInAction(() => {
-            this.loading = true;
+            // Set either way: an older request that showed the loading state won't clear it,
+            // because it's no longer the latest.
+            this.loading = showLoading;
             this.error = null;
         });
         try {
             const result = await this.api.list({
-                archived: this.tab === "archive",
-                read: this.unreadOnly ? false : undefined,
+                archived,
+                read: unreadOnly ? false : undefined,
                 limit: 50
             });
             runInAction(() => {
-                this.items = result.items;
-                this.loading = false;
+                this.cache.set(key, result.items);
+                if (requestId === this.latestRequestId) {
+                    this.items = result.items;
+                    this.loading = false;
+                }
             });
         } catch (err) {
+            if (requestId !== this.latestRequestId) {
+                return;
+            }
             runInAction(() => {
                 this.error = (err as Error).message;
                 this.loading = false;
@@ -92,12 +160,14 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
 
     async markRead(id: string) {
         await this.api.markRead(id);
-        await Promise.all([this.reload(), this.refreshCounts()]);
+        this.forgetOtherViews();
+        await Promise.all([this.loadItems({ showLoading: false }), this.refreshCounts()]);
     }
 
     async markAllRead() {
         await this.api.markAllRead();
-        await Promise.all([this.reload(), this.refreshCounts()]);
+        this.forgetOtherViews();
+        await Promise.all([this.loadItems({ showLoading: false }), this.refreshCounts()]);
     }
 
     async archive(id: string) {
@@ -107,7 +177,8 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
         } else {
             await this.api.archive(id);
         }
-        await Promise.all([this.reload(), this.refreshCounts()]);
+        this.forgetOtherViews();
+        await Promise.all([this.loadItems({ showLoading: false }), this.refreshCounts()]);
     }
 
     private async refreshCounts() {
