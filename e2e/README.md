@@ -32,6 +32,8 @@ tests/
   auth.setup.e2e.ts             signs in once and saves the session
   fileManager/
     aiImageEnrichment.e2e.ts    tags: wcp, ai, file-manager
+  tenancy/
+    tenantFileDelivery.e2e.ts   tags: wcp, tenancy, file-manager
 ```
 
 Two tags say what a test needs:
