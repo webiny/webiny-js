@@ -57,6 +57,7 @@ interface WorkflowStep {
 ```
 
 - v1 validation on create and update (same path): exactly one entry in `models`, the model is publishable, and no other workflow is bound to it. The uniqueness race is accepted [D15, D41].
+- Editing is always allowed. Deleting is blocked while any of the workflow's reviews is `inProgress` (error lists the count); finished reviews do not block it [D81].
 - Designed for many-to-many in v2 (several models per workflow, several workflows per model) [D15].
 
 Step type configs:
@@ -110,12 +111,13 @@ interface Review {
     targetRevisionId: string;
     title: string;
     isActive: boolean;                   // current review of the revision; false only after cancel [D23]
-    state: "inProgress" | "approved" | "rejected";   // [D29]
+    state: "inProgress" | "approved" | "rejected" | "cancelled";   // [D29, D75]
     currentStepId: string | null;        // [D19]
     currentStepState: StepState | null;
-    currentOwnerId: string | null;
+    currentOwnerId: string | null;      // only for `user` owners; null for ai/automation [D74]
     currentCandidateTeamIds: string[];   // [D47]
     targetContext: TargetContext;        // typed, produced by the target adapter
+    workflow: { name: string; models: string[] };   // full workflow snapshot at request time [D81]
     steps: ReviewStep[];                 // snapshot of the workflow steps plus run data
     createdBy: Identity;                 // the requester
     createdOn: string;
@@ -133,6 +135,7 @@ interface ReviewStep extends WorkflowStep {
     candidateTeamIds: string[];          // resolved on step reached [D21]
     assignmentSource?: string | null;    // rule id, "strategy", "picked", "pool", "reassign" [D45]
     taskId?: string | null;              // AI/automation run id [D57]
+    runs?: { taskId: string; startedOn: string; finishedOn?: string; outcome?: string; reason?: string }[];   // earlier attempts [D82]
     reachedOn?: string | null;
     startedOn?: string | null;
     finishedOn?: string | null;
@@ -146,6 +149,7 @@ interface Actor {
 }
 ```
 
+- A review carries a full snapshot of its workflow. Editing a workflow never changes running reviews; no steps are inserted into a running review [D81].
 - At most one active review per target revision. Rejected, approved and failed reviews stay active; only cancel deactivates [D23].
 - Secret config fields are kept encrypted in the snapshot and stripped from read responses [D67].
 
@@ -189,8 +193,8 @@ All transitions live in the review aggregate, take an explicit actor, and never 
 | approve | `inReview` | `approved`; next step reached, or review `approved` | owner (user, AI or automation) |
 | reject | `inReview` | `rejected`; review `rejected` | owner |
 | fail | AI/automation `inReview`, or on reach (`pending`) when the definition is missing, settings are invalid, or the AI capability/licence is unavailable | `failed` (reason in comment) | system [D8, D28, D37, D40] |
-| restart | `failed` | re-runs step reached (definition lookup, settings re-validation, new task) | requester or `workflows.reassign` [D34] |
-| cancel | review `inProgress` | `isActive = false` | requester or `workflows.reassign` [D25, D54] |
+| restart | `failed` | re-runs step reached (definition lookup, settings re-validation, new task); clears `comment` and `issues`, keeps owner, appends the previous attempt to `runs` [D82] | requester or `workflows.reassign` [D34] |
+| cancel | review `inProgress` | review `cancelled`, `isActive = false`, current-step fields cleared, `system.workflow = null`, running task aborted | requester or `workflows.reassign` [D25, D54, D75] |
 
 Rules:
 
@@ -201,7 +205,7 @@ Rules:
 - The developer-mode "Remove Review Request" action on the rejected bar stays as an escape hatch [D25].
 - Human actions: start and take over require membership of `candidateTeamIds`, not being the requester, and read access to the target. Exclusions do not block them; exclusions only govern automatic assignment and the picker (brief). Reassign validates the chosen user like a pick: candidate, not excluded, not the requester, can read the target [D33, D61].
 - Exclusions govern new assignments only. Work already held by a user who becomes excluded stays with them (brief).
-- When the last step is approved the review is `approved` and publish is allowed. Publishing a revision with an unfinished or rejected review is blocked; content without a workflow publishes normally.
+- When the last step is approved the review is `approved` and publish is allowed. On a workflow-bound model, publish requires an approved review on that revision, enforced in the API (not only the UI); a failed lookup blocks publish. Models without a workflow publish normally [D79].
 
 ### 5.2 Step reached [D2]
 
@@ -293,8 +297,20 @@ One `workflows` permission with custom boolean actions, plus full access:
 
 - Security UI gets a "custom" access level with these checkboxes.
 - One shared permission checker in api-workflows replaces the four copied `ensureManageAccess` functions.
-- Requesting a review needs write access to the target. Reviewing needs team membership plus read access to the target.
+- Requesting a review needs write access to the target [D77]. Reviewing needs team membership plus read access to the target.
 - All review operations check permissions on the server (today none do).
+
+Query permissions [D78]:
+
+| Query | Who |
+|---|---|
+| `listWorkflows`, `getWorkflow` | any authenticated admin user |
+| `listStepCandidates` | write access to the workflow's model (can request a review) |
+| `getSettings`, `updateSettings` | `editor` |
+| `inspectRouting`, `folderExists`, `listUsers` | `editor` |
+| `listStepTypes`, `listAutomationDefinitions`, `listAiTools` | `editor` |
+
+Requesters see exclusion data only through `listStepCandidates` (refines D43).
 
 ## 9. API changes outside api-workflows
 
@@ -308,7 +324,7 @@ One `workflows` permission with custom boolean actions, plus full access:
 Each is one handler covering CMS entries and WB pages, because WB pages are CMS entries (`wbyWbPage`):
 
 - `EntryRevisionBeforeCreate`: set `system.workflow = null` [D59].
-- `EntryBeforeUpdate`: reject updates to a revision whose review is active and not approved. `UpdateEntrySystemUseCase` does not fire this event; automation and AI tool writes run in the bypass context [D62].
+- `EntryBeforeUpdate`: reject updates to a revision with an active review, including an approved one; an approved revision stays locked until published [D80]. `UpdateEntrySystemUseCase` does not fire this event; automation and AI tool writes run in the bypass context [D62].
 - `DeleteModelUseCase` decorator: return `Workflows/Model/BoundToWorkflow` listing the bound workflows; the workflow must be deleted or the model removed from it first. Replaces `DeleteWorkflowsOnModelAfterDelete` [D41, D64].
 
 Adapters that handle other CMS events must match their namespace and model explicitly, since WB operations also fire CMS entry events [D59].
@@ -318,7 +334,7 @@ Adapters that handle other CMS events must match their namespace and model expli
 One adapter per namespace (`cms.*` for CMS entries, `wb.page` for WB pages), replacing the duplicated CMS/WB handler pairs:
 
 - load target revision; produce typed `TargetContext` (folder id and type, model id, title, author);
-- publish and move blocking;
+- publish blocking (D79) and move blocking: moves are blocked only while the review is `inProgress` [D84];
 - `system.workflow` sync via `UpdateEntrySystemUseCase`;
 - implement the AI tools `readTarget` / `updateTargetFields`;
 - delete the review when the target is permanently deleted.
@@ -366,7 +382,9 @@ Errors return `code`, `message` and `data`; the admin must keep them (today gate
 | Team in review | `currentStepState = inReview`, owner is not me, my teams intersect `currentCandidateTeamIds` |
 | My requests | `createdBy = me` |
 
-Lists also apply folder-level read checks on the target.
+All lists also require `isActive: true` [D75].
+
+Lists keep the folder-level read filter on the target (today's `WorkflowStateFilter` decorators), so review titles from restricted folders do not leak. Pagination is rewritten: keep fetching pages until `limit` is filled, return the cursor of the last scanned record, and do not promise an exact `totalCount` [D76].
 
 ## 12. Notifications [D44, D60]
 

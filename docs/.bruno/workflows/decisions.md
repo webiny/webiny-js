@@ -400,3 +400,51 @@ Resolves A12.
 ## D73. endsOn conversion
 
 Keep D43: a helper in the exclusions settings presenter converts the picked date to end of that day in the user's timezone, stored as UTC ISO datetime. Resolves A13.
+
+## D74. currentOwnerId only for human owners
+
+`currentOwnerId` is set only when the current step owner is `type: "user"`. For AI and automation steps it stays null, so they never appear in "Assigned to me" or count toward least-loaded. Resolves S1.
+
+## D75. What cancel writes
+
+Cancel sets review `state` to the new value `cancelled` and `isActive = false`, clears the current-step fields (`currentStepId`, `currentStepState`, `currentOwnerId`, `currentCandidateTeamIds`), sets `system.workflow = null` (target unlocked), and aborts any running task. All review lists also filter `isActive: true`. Resolves S2.
+
+## D76. Folder-level filtering on review lists
+
+Review lists keep the folder-level read filter on the target. Pagination is rewritten: fetch pages until `limit` is filled, return the cursor of the last scanned record, no exact `totalCount`. Resolves S3.
+
+## D77. Requesting needs write access
+
+Requesting a review requires write access to the target revision. Resolves S4.
+
+## D78. Query permissions
+
+`listWorkflows`, `getWorkflow`: any authenticated admin user. `listStepCandidates`: write access to the workflow's model. `getSettings`, `updateSettings`, `inspectRouting`, `folderExists`, `listUsers`, `listStepTypes`, `listAutomationDefinitions`, `listAiTools`: `editor`. Requesters see exclusion data only through `listStepCandidates` (refines D43). Resolves S5.
+
+## D79. Publish requires an approved review on workflow-bound models
+
+If a model is bound to a workflow, a revision can only be published when it has an approved review. Enforced in the API publish handler, not only the UI. Today the UI blocks it (`canPublish && (!hasWorkflow || isApproved)`), but the API handler lets publish through when no active review exists or the lookup fails (`ValidateWorkflowStateOnEntryBeforePublish.ts:23-26`), so direct API/SDK publishes bypass the workflow. Lookup failure blocks publish (fail closed). Models without a workflow publish normally. Resolves S6.
+
+## D80. Approved revisions are locked
+
+Refines D62: the save block rejects updates to any revision with an active review, including an approved one. An approved revision stays locked until published; changes need a new revision and a new review. Exemptions unchanged (`UpdateEntrySystemUseCase`, automation / AI tool bypass context). Resolves S7.
+
+## D81. Full workflow snapshot; delete blocked while in progress
+
+- Each review carries a full snapshot of the workflow it was started with (name, models, all steps with config). Editing a workflow never changes running reviews; no steps are inserted into a running review.
+- Editing a workflow is always allowed.
+- Deleting a workflow is blocked while any of its reviews is `inProgress`; the error lists the count so the admin knows reviews are running. Finished reviews (approved, rejected, cancelled) do not block deletion and stay readable from their snapshot.
+
+Resolves S8.
+
+## D82. Restart resets
+
+Restart clears the step `comment` and `issues`, keeps the owner, and stores the new task id. Earlier attempts are kept on the step as `runs: [{ taskId, startedOn, finishedOn, outcome, reason }]`. Resolves S9.
+
+## D83. Confirmed spec details
+
+Kept as written in the spec: step timestamps `reachedOn` / `startedOn` / `finishedOn`; `listStepTypes` query (config schemas per step type); `getSettings` / `updateSettings`; `folderExists(id)`; `reassign` as an `assignmentSource` value; approve comment optional, reject comment required. Resolves S10.
+
+## D84. Move rule
+
+Moving the target to another folder is blocked only while its review is `inProgress`. Allowed when the review is approved, rejected or cancelled (rejected reviews stay active forever, D23; a move does not change content). Resolves S11.
