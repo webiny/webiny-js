@@ -55,3 +55,15 @@ express is a gap in extraction, not a disagreement about what the component shou
 
 Not the model's doing either: it is given the measured size and the nearest role, and it uses the role
 whenever one is offered.
+
+## One finding, seen twice
+
+`an-extracted-theme-cannot-express-its-own-sites-colours` is this issue in the colour slots: 26 of
+206 measured colours across the same four sites have no token within reach, and each one becomes a
+hardcoded hex for the same reason a too-large heading becomes a hardcoded `font-size`.
+
+**Theme extraction captures less than its own site uses.** Type and colour are two appearances of
+that one defect, found by two independent passes, and it should be expected to surface in every
+appearance pass that follows — spacing, radius, shadow, border width. Each pass makes it countable in
+its own dimension; none of them is the fix. The fix is extraction driven by what the captured pages
+actually use, and the pipeline already derives those lists per section.

@@ -306,6 +306,9 @@ before/after does not.**
 
 **59% → 77% match. Theme-not-section 41% → 23%.** Nothing lands in neither, before or after.
 
+_Counts are over 47 rendered components after and 34 before; see the denominator note above. The
+shares compare, the counts do not._
+
 Across every dominant colour in every render:
 
 |                                     | before       | after        |
@@ -331,6 +334,8 @@ as a hardcoded colour. A hex inside a `var()` survives a theme change; only a **
 | Westland      |          9 |             95 |                95 |            2 |                0.2 |
 | Freehill      |          7 |             72 |                70 |            9 |                1.3 |
 | **total**     |     **48** |        **442** |           **438** |       **38** |            **0.8** |
+
+_48 components, not 34; see the denominator note above. Per-component rates compare, totals do not._
 
 **The pre-colour baseline for the same measure is 0.8 bare hexes per component** — Freehill's Generate
 artifact, captured while the re-run was still on Westland and confirmed pre-colour by the absence of

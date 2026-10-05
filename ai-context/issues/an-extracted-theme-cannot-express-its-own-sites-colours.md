@@ -53,3 +53,15 @@ produces it per section — so the input exists.
 
 Until then the `null` token is the honest answer and should stay. It is the measurement that makes
 the gap visible; suppressing it would hide the defect rather than fix it.
+
+## One finding, seen twice
+
+`theme-extraction-stops-short-of-the-sites-own-headings` is this issue in the type scale: every
+extracted theme tops out at 43–45px while three of the four sites set display headings at 52–72px,
+so the largest heading on the page falls back to a plain `font-size` exactly as these colours fall
+back to a hex.
+
+**Theme extraction captures less than its own site uses.** Type and colour are two appearances of
+that one defect, found by two independent passes, and it should be expected to surface in every
+appearance pass that follows. Both are measured on the same four sites, and both have the same
+remedy — extraction driven by what the captured pages actually paint.
