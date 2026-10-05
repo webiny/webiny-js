@@ -5,12 +5,14 @@ End-to-end tests for Webiny, written with [TesterArmy's e2e framework](https://e
 ## Running
 
 ```bash
-cp e2e/example.env e2e/.env   # set ANTHROPIC_API_KEY
+cp e2e/example.env e2e/.env   # set ANTHROPIC_API_KEY for agent steps
 yarn e2e                      # headless
 yarn e2e:headed               # watch it in a browser
 ```
 
 The tests run against the admin at `E2E_ADMIN_URL`, `https://wby3.localhost` by default. They sign in as `admin@webiny.com` unless `E2E_ADMIN_EMAIL` and `E2E_ADMIN_PASSWORD` say otherwise.
+
+`ANTHROPIC_API_KEY` is only needed for tests with agent steps. Without it no model is configured, and the first agent step stops the run with `MODEL_UNAVAILABLE`. Today every test with agent steps is tagged `wcp`, so `yarn e2e --exclude-tag wcp` runs without a key.
 
 Anything after the script name goes to `e2e run`. File paths are relative to `e2e/`:
 
@@ -59,4 +61,4 @@ A WCP test that reaches an unlicensed project should fail, not skip. That means 
 
 `/e2e` on a pull request runs this suite in the WCP jobs, "Standalone (SQLite, WCP)" and "Standalone (Postgres, WCP)". These jobs are experimental and only run for the people listed in `AI_E2E_USERS` (`.github/workflows/wac/e2e/aiE2e.ts`). They build a licensed project, run the Cypress smoke test and then `yarn e2e`, and upload `e2e/.e2e/` as an artifact.
 
-The regular standalone jobs don't run this suite yet. When they do, they should run `yarn e2e --exclude-tag wcp --pass-with-no-tests`. Right now every test is tagged `wcp`, and without `--pass-with-no-tests` a filter that leaves nothing to run fails with `NO_TESTS`.
+The regular standalone jobs don't run this suite yet. When they do, they should run `yarn e2e --exclude-tag wcp`, which today is the login test. Keep `--pass-with-no-tests` in mind if a filter can ever leave nothing to run: without it the run fails with `NO_TESTS`.
