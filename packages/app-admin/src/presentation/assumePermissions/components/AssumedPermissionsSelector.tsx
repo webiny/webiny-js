@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 import { useFeature } from "@webiny/app";
 import { DropdownMenu } from "@webiny/admin-ui";

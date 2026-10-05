@@ -104,17 +104,17 @@ export const TeamsForm = createReactiveComponent(
                     </div>
                 </SimpleFormHeader>
                 <SimpleFormContent>
-                    {vm.selectedTeam && vm.selectedTeam.system ? (
+                    {vm.selectedTeam && vm.selectedTeam.system && (
                         <Alert type={"info"} title={"Permissions are locked"}>
                             This is a protected system team and you can&apos;t modify its
                             permissions.
                         </Alert>
-                    ) : null}
-                    {vm.selectedTeam && vm.selectedTeam.plugin ? (
+                    )}
+                    {vm.selectedTeam && vm.selectedTeam.plugin && (
                         <Alert type={"info"} title={"Important"}>
                             This team is registered via an extension, and cannot be modified.
                         </Alert>
-                    ) : null}
+                    )}
                     <FormErrors form={vm.form} className={"mb-md"} />
                     <FormView name={"Team"} form={vm.form} />
                 </SimpleFormContent>
@@ -124,13 +124,13 @@ export const TeamsForm = createReactiveComponent(
                         text={"Cancel"}
                         onClick={() => goToRoute(Routes.Teams.List)}
                     />
-                    {vm.canModify ? (
+                    {vm.canModify && (
                         <Button
                             text={"Save"}
                             data-testid="admin.am.team.new.save"
                             onClick={handleSave}
                         />
-                    ) : null}
+                    )}
                 </SimpleFormFooter>
             </SimpleForm>
         );

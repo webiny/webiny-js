@@ -125,7 +125,7 @@ export const RolesForm = createReactiveComponent(
                     </div>
                 </SimpleFormHeader>
                 <SimpleFormContent>
-                    {vm.isSystemRole ? (
+                    {vm.isSystemRole && (
                         <Grid>
                             <Grid.Column span={12}>
                                 <Alert type={"warning"} title={"Permissions are locked"}>
@@ -134,17 +134,17 @@ export const RolesForm = createReactiveComponent(
                                 </Alert>
                             </Grid.Column>
                         </Grid>
-                    ) : null}
-                    {vm.selectedRole && vm.selectedRole.plugin ? (
+                    )}
+                    {vm.selectedRole && vm.selectedRole.plugin && (
                         <Alert type={"warning"} title={"Permissions are locked"}>
                             This role is registered via an extension, and cannot be modified.
                         </Alert>
-                    ) : null}
+                    )}
                     <FormErrors form={vm.form} className={"mb-md"} />
                     <FormView name={"Role"} form={vm.form} />
                 </SimpleFormContent>
                 <SimpleFormFooter>
-                    {vm.canModify ? (
+                    {vm.canModify && (
                         <>
                             <Button
                                 variant={"secondary"}
@@ -157,7 +157,7 @@ export const RolesForm = createReactiveComponent(
                                 onClick={handleSave}
                             />
                         </>
-                    ) : null}
+                    )}
                 </SimpleFormFooter>
             </SimpleForm>
         );
