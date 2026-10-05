@@ -26,8 +26,14 @@ describe("updateRevisionDescription", () => {
     const manageOpts = { path: "manage" };
     const mainManager = useGraphQLHandler(manageOpts);
 
-    const { createFruit, publishFruit, createFruitFrom, getFruit, updateFruitRevisionDescription } =
-        useFruitManageHandler(manageOpts);
+    const {
+        createFruit,
+        publishFruit,
+        createFruitFrom,
+        updateFruit,
+        getFruit,
+        updateFruitRevisionDescription
+    } = useFruitManageHandler(manageOpts);
 
     it("should not wipe the latest revision values when updating description on an older revision", async () => {
         await setupGroupAndModels({ manager: mainManager, models: ["fruit"] });
@@ -45,6 +51,13 @@ describe("updateRevisionDescription", () => {
         expect(rev2.id).toContain("#0002");
         expect(rev2.values.name).toBe("Banana");
 
+        // Give #2 values of its own, so copying #1 onto it would be visible.
+        const [updateResponse] = await updateFruit({
+            revision: rev2.id,
+            data: { values: { ...bananaData.values, name: "Banana v2", rating: 500 } }
+        });
+        expect(updateResponse.data.updateFruit.error).toBeNull();
+
         // 3. Update the revision description on the older revision (#1).
         const [updateDescResponse] = await updateFruitRevisionDescription({
             revision: rev1.id,
@@ -56,8 +69,8 @@ describe("updateRevisionDescription", () => {
         const [latestResponse] = await getFruit({ revision: rev2.id });
         const latestRevision = latestResponse.data.getFruit.data;
 
-        expect(latestRevision.values.name).toBe("Banana");
-        expect(latestRevision.values.rating).toBe(450);
+        expect(latestRevision.values.name).toBe("Banana v2");
+        expect(latestRevision.values.rating).toBe(500);
         expect(latestRevision.values.email).toBe("john@doe.com");
         expect(latestRevision.values.description).toBe("fruit banana");
     });

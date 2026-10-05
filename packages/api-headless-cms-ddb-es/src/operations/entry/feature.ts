@@ -3,7 +3,6 @@ import { DataLoadersHandler } from "./dataLoaders.js";
 import { DdbEsCreateEntry } from "./DdbEsCreateEntry.js";
 import { DdbEsCreateEntryRevisionFrom } from "./DdbEsCreateEntryRevisionFrom.js";
 import { DdbEsUpdateEntry } from "./DdbEsUpdateEntry.js";
-import { DdbEsUpdateRevision } from "./DdbEsUpdateRevision.js";
 import { DdbEsMoveEntry } from "./DdbEsMoveEntry.js";
 import { DdbEsMoveToBin } from "./DdbEsMoveToBin.js";
 import { DdbEsDeleteEntry } from "./DdbEsDeleteEntry.js";
@@ -31,7 +30,6 @@ export const DdbEsEntryStorageOpsFeature = createFeature({
         container.register(DdbEsCreateEntry);
         container.register(DdbEsCreateEntryRevisionFrom);
         container.register(DdbEsUpdateEntry);
-        container.register(DdbEsUpdateRevision);
         container.register(DdbEsMoveEntry);
         container.register(DdbEsMoveToBin);
         container.register(DdbEsDeleteEntry);

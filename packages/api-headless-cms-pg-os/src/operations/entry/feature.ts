@@ -25,7 +25,6 @@ import { SqlGetPublishedEntriesByIds } from "@webiny/api-headless-cms-sql/operat
 import { SqlGetLatestRevisionByEntryId } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetLatestRevisionByEntryId.js";
 import { SqlGetPublishedRevisionByEntryId } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetPublishedRevisionByEntryId.js";
 import { SqlGetPreviousRevision } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetPreviousRevision.js";
-import { SqlUpdateRevision } from "@webiny/api-headless-cms-sql/operations/entry/SqlUpdateRevision.js";
 
 export const PgOsEntryStorageOpsFeature = createFeature({
     name: "cms.pgOs.entryStorageOps",
@@ -60,9 +59,5 @@ export const PgOsEntryStorageOpsFeature = createFeature({
         container.register(SqlGetLatestRevisionByEntryId);
         container.register(SqlGetPublishedRevisionByEntryId);
         container.register(SqlGetPreviousRevision);
-
-        // Writes a single revision row. OpenSearch holds the latest and published revisions, which
-        // this doesn't change, so it needs no sync.
-        container.register(SqlUpdateRevision);
     }
 });
