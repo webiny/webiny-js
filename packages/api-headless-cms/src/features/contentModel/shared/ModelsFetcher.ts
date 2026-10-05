@@ -16,8 +16,8 @@ import { ModelFieldCompression } from "~/features/contentModel/ModelFieldCompres
  * ModelsFetcherImpl - Implementation with multi-level caching.
  *
  * Caching strategy (per request, see ModelCache):
- * 1. Database models are cached per tenant (raw from DB)
- * 2. The merged list of plugin and database models is cached per tenant
+ * 1. Database models are cached per tenant (raw from DB).
+ * 2. The merged list of plugin and database models is cached per tenant.
  *
  * Neither list is filtered by access control, so the cache is the same whoever reads it first.
  * GetModelUseCase and ListModelsUseCase apply access control to what they return.

@@ -24,7 +24,8 @@ class HiddenModelFactory implements ModelFactory.Interface {
 }
 
 const registerHiddenModel = (container: Container) => {
-    container.registerInstance(ModelFactory, new HiddenModelFactory());
+    const factory = new HiddenModelFactory();
+    container.registerInstance(ModelFactory, factory);
 };
 
 describe("ModelsFetcher access control", () => {
