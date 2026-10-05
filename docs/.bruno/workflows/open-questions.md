@@ -77,3 +77,21 @@ P11. ~~Answered in D62.~~
 P12. ~~Answered in D63.~~
 P13. ~~Answered in D64.~~
 P14. ~~Answered in D57, D58.~~
+
+## Spec review (2026-10-05)
+
+Applied directly to the spec: guard on failure writes, reach-time failure and restart semantics, empty narrowed sets, round-robin fallback, resolution errors go to pool, lenient submit validation, rule target validation on save, human action checks, exclusions do not affect held work, log pool start and take-over, pool notification recipients, stuck detection on single reads only, editor reload, secret field display, brief overrides noted.
+
+Still open:
+
+S1. AI/automation owner id = requester (D58) puts requester's own AI/automation steps into their "Assigned to me" and least-loaded count. Set `currentOwnerId` only for `user` owners?
+S2. What does cancel write: step state, current-step fields, `system.workflow`? Lists do not check `isActive`.
+S3. Lists post-filter by folder-level read access (spec §11, unbacked; breaks cursor pagination). Keep or drop?
+S4. Requesting a review requires write access to the target (spec §8, unbacked). Confirm?
+S5. Per-query permissions: `listStepCandidates`, `getSettings`, `inspectRouting`, `folderExists`, `listStepTypes`, `listAutomationDefinitions`, `listAiTools`.
+S6. Must a revision of a workflow-bound model have an approved review before publish? Today no review = publish allowed.
+S7. Edits after approval are allowed by the save block (only active and not approved blocks). Intended?
+S8. Workflow deleted or edited while reviews are active: block delete, or snapshot keeps them running?
+S9. Restart: reset comment, issues, owner? Keep old task id for history?
+S10. Confirm unbacked spec items: `reachedOn`/`startedOn`/`finishedOn`, `listStepTypes`, `getSettings`/`updateSettings`, `folderExists` name, `assignmentSource: "reassign"`, approve comment optional / reject comment required.
+S11. Move rule: blocked while review active and not approved?

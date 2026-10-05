@@ -11,7 +11,7 @@ Status: draft, 2026-10-05. Consolidates decisions D1-D73 in `docs/.bruno/workflo
 
 ## 2. Constraints
 
-- Stored shape is free to change. No migration, no backward compatibility [D1].
+- Stored shape is free to change. No migration, no backward compatibility [D1]. This overrides the brief's "nothing changes for existing workflows": `next` is unreleased.
 - GraphQL operations, types and public package exports may break. CMS and WB workflow packages change in the same work. Admin and API deploy together [D17].
 - Workflows is an enterprise feature. OpenSearch storage is assumed; DDB-only performance is not a design constraint [D63].
 - Order of work: fix the double registration of `WorkflowsFeature` first (bug B2), then go straight into the rewrite [D18].
@@ -188,8 +188,8 @@ All transitions live in the review aggregate, take an explicit actor, and never 
 | reassign | `awaiting` or human `inReview` | `inReview`, owner = chosen user | `workflows.reassign` [D33] |
 | approve | `inReview` | `approved`; next step reached, or review `approved` | owner (user, AI or automation) |
 | reject | `inReview` | `rejected`; review `rejected` | owner |
-| fail | AI/automation `inReview` | `failed` (reason in comment) | system [D8, D28] |
-| restart | `failed` | `inReview`, new task | requester or `workflows.reassign` [D34] |
+| fail | AI/automation `inReview`, or on reach (`pending`) when the definition is missing, settings are invalid, or the AI capability/licence is unavailable | `failed` (reason in comment) | system [D8, D28, D37, D40] |
+| restart | `failed` | re-runs step reached (definition lookup, settings re-validation, new task) | requester or `workflows.reassign` [D34] |
 | cancel | review `inProgress` | `isActive = false` | requester or `workflows.reassign` [D25, D54] |
 
 Rules:
@@ -197,8 +197,10 @@ Rules:
 - The requester never reviews their own content.
 - Reject is final for that revision. To continue, create a new revision, fix it, request a new review [D10]. A rejected step cannot be restarted [D8].
 - AI and automation steps cannot be taken over [D9].
-- After cancel, a new request on the same revision starts from step 1 [D25].
-- The developer-mode "Remove Review Request" action stays as an escape hatch [D25].
+- Cancel is allowed at any point unless the review is approved or rejected. After cancel, a new request on the same revision starts from step 1 [D25].
+- The developer-mode "Remove Review Request" action on the rejected bar stays as an escape hatch [D25].
+- Human actions: start and take over require membership of `candidateTeamIds`, not being the requester, and read access to the target. Exclusions do not block them; exclusions only govern automatic assignment and the picker (brief). Reassign validates the chosen user like a pick: candidate, not excluded, not the requester, can read the target [D33, D61].
+- Exclusions govern new assignments only. Work already held by a user who becomes excluded stays with them (brief).
 - When the last step is approved the review is `approved` and publish is allowed. Publishing a revision with an unfinished or rejected review is blocked; content without a workflow publishes normally.
 
 ### 5.2 Step reached [D2]
@@ -221,9 +223,13 @@ Runs on step reached, against current team membership, exclusions and load. The 
 Order (first to produce an owner wins):
 
 1. Pick: `pickedUserId` stored at submit, if the step allows picks. Validated now: still a candidate, not excluded, not the requester, can read the target. Invalid pick is skipped and logged [D22].
-2. Rules: first rule whose conditions all match. User target: that user, if valid. Team target: narrows `candidateTeamIds` to that team, then the strategy runs inside it; with strategy `none` the step goes to that team's pool. Invalid target skips the rule [D46].
-3. Strategy: `roundRobin` takes the latest assignment-log record for `workflowId` + `stepId` and picks the next candidate in stable order; `leastLoaded` runs one query (`currentOwnerId_in: candidates`, `currentStepState: inReview`, active), groups by owner, ties go to the least recently assigned per the assignment log [D20, D63].
+2. Rules: first rule whose conditions all match. A user target is valid when the user is a member of the step's teams, not excluded, not the requester, and can read the target; an invalid user target skips the rule. A team target is valid when it is one of the step's teams; it narrows `candidateTeamIds` to that team, then the strategy runs inside it. With strategy `none`, or when the strategy finds nobody in the narrowed set, the step goes to that team's pool [D46, brief].
+3. Strategy: `roundRobin` takes the latest assignment-log record for `workflowId` + `stepId` and picks the next candidate in stable order (candidates sorted by user id; the first id after the last assignee's id, wrapping around, so it works when the last assignee is no longer a candidate); `leastLoaded` runs one query (`currentOwnerId_in: candidates`, `currentStepState: inReview`, active), groups by owner, ties go to the least recently assigned per the assignment log [D20, D63].
 4. Pool: `awaiting`, logged with `userId: null` and the reason [D45].
+
+Assignment never blocks the review. Any error during resolution (identity or team lookup, read-access check, folder ancestors) falls through to the pool with the reason logged (brief).
+
+If the requester is the only eligible member of the candidate teams, the step sits in `awaiting`; reassign is the way out.
 
 Candidates are members of `candidateTeamIds` (default: the step's teams), minus the requester, minus active exclusions, minus users without read access to the target (folder access and model read) [D21, D61].
 
@@ -233,7 +239,11 @@ Condition inputs:
 - Folder: the target's current folder and its ancestors (ACO `GetAncestors`, includes the folder itself), evaluated at step reached so later steps see the folder as it is then. `includeDescendants` matches if the rule folder is in that chain.
 - Model: the review's `model`.
 
-Every decision writes an assignment-log record and sets the step's `assignmentSource`.
+Every decision writes an assignment-log record and sets the step's `assignmentSource`. Start from the pool and take over also write a record (sources `poolStart`, `takeOver`), so rotation, tie-breaks and "who holds this and why" stay explainable.
+
+Submit-time validation of picks is lenient: `requestReview` rejects only malformed input (unknown step id, step without `allowManualPick`). Everything else is validated when the step is reached.
+
+Rule targets are also validated when the workflow is saved: user targets must be members of the step's teams, team targets must be among the step's teams. Invalid targets reject the save. A later team change can still invalidate a saved rule; evaluation then skips it and the editor flags it.
 
 ## 7. Step types
 
@@ -250,7 +260,7 @@ Every decision writes an assignment-log record and sets the step's `assignmentSo
 - An automation may create, update or delete anything, including the target revision. It runs in a workflow bypass context, so the save block does not apply, and the review stays valid.
 - External systems are polled across task iterations; no inbound callback route in v1.
 - On step reached the definition is looked up and the stored settings are re-validated; missing definition or invalid settings fail the step with the reason. The editor flags the same.
-- Secret settings (`.meta({ secret: true })`) are encrypted at rest, write-only in the API, decrypted only inside the task [D67].
+- Secret settings (`.meta({ secret: true })`) are encrypted at rest, write-only in the API (the editor shows "set" / "replace"), decrypted only inside the task [D67].
 
 ### 7.3 AI steps [D13, D39, D40, D55]
 
@@ -265,9 +275,9 @@ Every decision writes an assignment-log record and sets the step's `assignmentSo
 
 - One background task per AI or automation step run. The step stores the task id; it doubles as the run id.
 - The task always runs as the requester, including restarts, so records it creates or changes are attributed to the requester. `TaskService.trigger` in api-core gains an optional `identity`, stored as task `createdBy`.
-- Stale-result guard: on finish the task reloads the review and applies its result only if the review is still active, the step is still current, and the step's task id matches. The narrow write race is accepted.
+- Stale-result guard: on finish the task reloads the review and applies its result only if the review is still active, the step is still current, and the step's task id matches. The same guard applies to failure writes (`onError`, `onMaxIterations`) and to stuck detection, so a late hook from an old task cannot fail a restarted step. The narrow write race is accepted.
 - `onError` and `onMaxIterations` set the step `failed` with the reason; the write is idempotent.
-- Stuck detection on read: if the task is done, failed or aborted while the step is still `inReview`, the step is set `failed` ("task ended without result").
+- Stuck detection on read: only on single-review reads (`getReview`, `getTargetReview`), not in lists. If the task is done, failed or aborted while the step is still `inReview`, the step is set `failed` ("task ended without result").
 - Cancel aborts the running task where possible (`TaskService.abort`); the guard discards late results. Step implementations handle cancellation of their own work [D25].
 - No step max duration and no watchdog.
 
@@ -320,7 +330,7 @@ One adapter per namespace (`cms.*` for CMS entries, `wb.page` for WB pages), rep
 
 ### 9.5 Audit logs [D65]
 
-Not built in this refactor. Domain events must carry enough data for a later "Workflows" audit app (entities workflow and review; actions workflow create/update/delete, review request, start, take over, approve, reject, cancel, reassign, restart, step failed). Remove the old v5 "APW" entry from `common-audit-logs/src/apps.ts` now.
+Not built in this refactor. Until it lands, the assignment log is the only record of reassignments (the brief's reassign audit entry is deferred). Domain events must carry enough data for a later "Workflows" audit app (entities workflow and review; actions workflow create/update/delete, review request, start, take over, approve, reject, cancel, reassign, restart, step failed). Remove the old v5 "APW" entry from `common-audit-logs/src/apps.ts` now.
 
 ## 10. GraphQL surface (outline)
 
@@ -369,9 +379,10 @@ Lists also apply folder-level read checks on the target.
 | Review cancelled | Current owner, if any |
 
 - An assignment never notifies the whole team.
+- Pool notifications exclude the requester and excluded users.
 - Channels: transports configured on the step (`notifications[]`, e.g. e-mail via `MailNotificationTransport`) plus a websocket message every time.
 - Workflows only sends the websocket message (`WebsocketsSendToIdentityUseCase`); the websockets layer handles delivery. No stored inbox.
-- On the client every workflow websocket message also fires `WorkflowStateChangedEvent`, so the open bar, lists and editor refetch.
+- On the client every workflow websocket message also fires `WorkflowStateChangedEvent`, so the open bar, lists and editor refetch; the editor reloads the entry when its content changed.
 
 ## 13. Admin UI
 
@@ -421,7 +432,7 @@ Lists also apply folder-level read checks on the target.
 - Model condition in the rule editor (v2) [D42].
 - Locale condition, until CMS has locales [D12].
 - Comment threads via the collaboration feature, once it merges [D31, D68]. v1 uses step comments.
-- Audit logs [D65].
+- Audit logs, including the brief's reassign audit entry [D65].
 - Inbound callback route for automations [D38].
 - Optimistic locking on review writes [D27].
 
