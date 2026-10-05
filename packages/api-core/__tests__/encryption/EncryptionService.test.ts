@@ -2,6 +2,9 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { EncryptionImpl } from "~/features/encryption/EncryptionService.js";
+import { Container } from "@webiny/di";
+import { EncryptionKeyCache } from "~/features/encryption/abstractions.js";
+import { EncryptionKeyCacheFeature } from "~/features/encryption/EncryptionKeyCacheFeature.js";
 import type { BuildParams } from "~/features/buildParams/abstractions.js";
 
 const createBuildParams = (params: Record<string, string>): BuildParams.Interface => {
@@ -19,7 +22,7 @@ describe("EncryptionService", () => {
             EncryptionPassphrase: "passphrase",
             EncryptionSalt: "salt"
         });
-        const encryption = new EncryptionImpl(buildParams);
+        const encryption = new EncryptionImpl(buildParams, undefined);
 
         const encrypted = await encryption.encrypt("secret value");
         const decrypted = await encryption.decrypt(encrypted);
@@ -29,13 +32,16 @@ describe("EncryptionService", () => {
     });
 
     it("should decrypt values encrypted by another instance with the same build params", async () => {
-        // Every request gets its own instance, and they share the derived key.
+        // Every request gets its own instance, and they share the derived key through the cache.
+        const container = new Container();
+        EncryptionKeyCacheFeature.register(container);
+        const keyCache = container.resolve(EncryptionKeyCache);
         const buildParams = createBuildParams({
             EncryptionPassphrase: "passphrase",
             EncryptionSalt: "salt"
         });
-        const first = new EncryptionImpl(buildParams);
-        const second = new EncryptionImpl(buildParams);
+        const first = new EncryptionImpl(buildParams, keyCache);
+        const second = new EncryptionImpl(buildParams, keyCache);
 
         const encrypted = await first.encrypt("secret value");
         const decrypted = await second.decrypt(encrypted);
@@ -52,8 +58,8 @@ describe("EncryptionService", () => {
             EncryptionPassphrase: "passphrase",
             EncryptionSalt: "other salt"
         });
-        const first = new EncryptionImpl(firstBuildParams);
-        const second = new EncryptionImpl(secondBuildParams);
+        const first = new EncryptionImpl(firstBuildParams, undefined);
+        const second = new EncryptionImpl(secondBuildParams, undefined);
 
         const encrypted = await first.encrypt("secret value");
         const decryption = second.decrypt(encrypted);
@@ -63,7 +69,7 @@ describe("EncryptionService", () => {
 
     it("should leave values as they are without a passphrase", async () => {
         const buildParams = createBuildParams({});
-        const encryption = new EncryptionImpl(buildParams);
+        const encryption = new EncryptionImpl(buildParams, undefined);
 
         const encrypted = await encryption.encrypt("secret value");
         const decrypted = await encryption.decrypt("secret value");
