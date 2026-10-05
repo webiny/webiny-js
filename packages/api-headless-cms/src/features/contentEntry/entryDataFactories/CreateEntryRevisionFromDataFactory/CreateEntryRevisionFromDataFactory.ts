@@ -22,6 +22,8 @@ import WebinyError from "@webiny/error";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "../statuses.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
 import { getSystem } from "../system.js";
+import { ModelToAstConverter } from "~/features/contentModel/ModelToAstConverter/abstractions.js";
+import { ensureItemIds } from "../../ensureItemIds.js";
 
 const increaseEntryIdVersion = (id: string) => {
     const { id: entryId, version } = parseIdentifier(id);
@@ -48,7 +50,8 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
     public constructor(
         private readonly cmsContext: CmsContext.Interface,
         private readonly identityContext: IdentityContext.Interface,
-        private readonly accessControl: AccessControl.Interface
+        private readonly accessControl: AccessControl.Interface,
+        private readonly modelToAstConverter: ModelToAstConverter.Interface
     ) {}
 
     public async create<TValues extends CmsEntryValues = CmsEntryValues>(
@@ -63,6 +66,9 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
             ...originalEntry.values,
             ...mapAndCleanUpdatedInputData<TValues>(model, rawInput.values)
         };
+
+        const modelAst = this.modelToAstConverter.toAst(model);
+        await ensureItemIds(modelAst, initialValues);
 
         await validateModelEntryDataOrThrow({
             context: this.cmsContext,
@@ -211,5 +217,5 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
 
 export const CreateEntryRevisionFromDataFactory = FactoryAbstraction.createImplementation({
     implementation: CreateEntryRevisionFromDataFactoryImpl,
-    dependencies: [CmsContext, IdentityContext, AccessControl]
+    dependencies: [CmsContext, IdentityContext, AccessControl, ModelToAstConverter]
 });

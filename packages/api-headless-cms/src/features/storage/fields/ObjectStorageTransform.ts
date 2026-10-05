@@ -53,24 +53,26 @@ class StorageTransformImpl implements StorageTransform.Interface {
         const fields = (field.settings?.fields || []) as CmsModelField[];
 
         if (field.list) {
-            return await pMap(value as GenericRecord[], value =>
-                processValue({
-                    sourceValue: value,
+            return await pMap(value as GenericRecord[], async itemValue => {
+                const processed = await processValue({
+                    sourceValue: itemValue,
                     getStorageTransform,
                     model,
                     operation: "toStorage",
                     fields
-                })
-            );
+                });
+                return itemValue._id ? { _id: itemValue._id, ...processed } : processed;
+            });
         }
 
-        return await processValue({
+        const processed = await processValue({
             sourceValue: value,
             getStorageTransform,
             model,
             operation: "toStorage",
             fields
         });
+        return value._id ? { _id: value._id, ...processed } : processed;
     }
 
     public async fromStorage(
@@ -88,24 +90,26 @@ class StorageTransformImpl implements StorageTransform.Interface {
 
             return await Promise.all(
                 values.map(async value => {
-                    return await processValue({
+                    const processed = await processValue({
                         sourceValue: value,
                         getStorageTransform,
                         model,
                         operation: "fromStorage",
                         fields
                     });
+                    return value._id ? { _id: value._id, ...processed } : processed;
                 })
             );
         }
 
-        return await processValue({
+        const processed = await processValue({
             sourceValue: input,
             getStorageTransform,
             model,
             operation: "fromStorage",
             fields
         });
+        return input._id ? { _id: input._id, ...processed } : processed;
     }
 }
 
