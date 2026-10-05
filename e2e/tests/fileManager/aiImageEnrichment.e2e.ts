@@ -8,9 +8,10 @@ const CONNECTION_NAME = "E2E Anthropic";
 // labels, so a family name is enough.
 const VISION_MODEL = process.env.E2E_VISION_MODEL || "the newest Claude Sonnet model";
 
+// `wcp`: AI Power-Ups only exists on a licensed project. `ai`: makes real model calls.
 describe(
     "file manager AI image enrichment",
-    { serial: true, session: "admin", tags: ["ai", "file-manager"] },
+    { serial: true, session: "admin", tags: ["wcp", "ai", "file-manager"] },
     () => {
         test("an Anthropic connection runs the Vision role", async ({ app, agent, screen }) => {
             await app.open("/settings/ai-powerups");
