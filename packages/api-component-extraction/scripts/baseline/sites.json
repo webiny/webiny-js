@@ -1,5 +1,5 @@
 {
-  "about": "The pre-demo baseline set: five Realpage sites. Platform identified 2026-10-06 from public asset and API hosts on each home page; no site carries a generator tag, so each is inferred. Theme pins are filled in from the instance once each site's theme is published.",
+  "about": "The pre-demo baseline set: five Realpage sites. Platform identified 2026-10-06 from public asset and API hosts on each home page; no site carries a generator tag, so each is inferred. Theme pins are each site's existing extracted theme, v1, all published (thevibe's was published for this baseline).",
   "sites": [
     {
       "siteUrl": "https://www.71westlandapts.com/",
@@ -7,8 +7,8 @@
       "platform": "G5 Marketing Cloud",
       "platformEvidence": "g5-assets-cld-res.cloudinary.com, themes.g5dxm.com, call-tracking-edge.g5marketingcloud.com",
       "g5": true,
-      "themeEntryId": null,
-      "themeVersion": null
+      "themeEntryId": "6ab2534661ea650002f10a72",
+      "themeVersion": 1
     },
     {
       "siteUrl": "https://thevibe-apts.com/",
@@ -16,8 +16,9 @@
       "platform": "RealPage LeaseStar",
       "platformEvidence": "cs-cdn.realpage.com, capi.myleasestar.com, c-leasestar-api.realpage.com",
       "g5": false,
-      "themeEntryId": null,
-      "themeVersion": null
+      "themeEntryId": "6ab25c89b1d62000028225e5",
+      "themeVersion": 1,
+      "themeNote": "Was a draft; published 2026-10-06 for this baseline. Publish reported advisory contrast warnings: primary text on sunken surface 1.12:1, primary action label 2.9:1 (light); destructive action label 1.81:1 (dark)."
     },
     {
       "siteUrl": "https://www.parkcityplace.org/",
@@ -25,18 +26,18 @@
       "platform": "G5 Marketing Cloud",
       "platformEvidence": "g5-assets-cld-res.cloudinary.com, themes.g5dxm.com, client-leads.g5marketingcloud.com",
       "g5": true,
-      "themeEntryId": null,
-      "themeVersion": null
+      "themeEntryId": "6ab119a704782f0002001bd6",
+      "themeVersion": 1
     },
     {
       "siteUrl": "https://promo.freehillstreetlofts.com/",
       "jobName": "FreehillStreetLofts Baseline",
       "platform": "G5 Marketing Cloud (promo landing site)",
       "platformEvidence": "g5-assets-cld-res.cloudinary.com, client-leads.g5marketingcloud.com, g5-enhanced-form",
-      "note": "Supplied as https://promo.freehillstreetlofts.com/#/ — the fragment is dropped by every URL normaliser and the site uses no hash routing. Two pages: home and privacy policy. The main site (www.freehillstreetlofts.com, apts247/ResMan) is out of scope.",
+      "note": "Supplied as https://promo.freehillstreetlofts.com/#/ \u2014 the fragment is dropped by every URL normaliser and the site uses no hash routing. Two pages: home and privacy policy. The main site (www.freehillstreetlofts.com, apts247/ResMan) is out of scope.",
       "g5": true,
-      "themeEntryId": null,
-      "themeVersion": null
+      "themeEntryId": "6ab25f9d74d623000233f463",
+      "themeVersion": 1
     },
     {
       "siteUrl": "https://www.2424tulane.com/",
@@ -44,8 +45,8 @@
       "platform": "G5 Marketing Cloud",
       "platformEvidence": "g5-assets-cld-res.cloudinary.com, themes.g5dxm.com, call-tracking-edge.g5marketingcloud.com",
       "g5": true,
-      "themeEntryId": null,
-      "themeVersion": null
+      "themeEntryId": "6ab26b4838a369000286400d",
+      "themeVersion": 1
     }
   ]
 }
