@@ -50,7 +50,7 @@ export const createAiE2eSteps = ({
         name: "AI E2E - run tests",
         "working-directory": workingDirectory,
         env: {
-            ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}",
+            ANTHROPIC_API_KEY: "${{ secrets.E2E_ANTHROPIC_API_KEY }}",
             E2E_ADMIN_URL: STANDALONE_ADMIN_URL,
             E2E_TELEMETRY_DISABLED: "1"
         },
