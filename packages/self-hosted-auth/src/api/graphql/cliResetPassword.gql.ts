@@ -21,6 +21,10 @@ class SelfHostedAuthCliResetPasswordSchemaImpl implements CoreGraphQLSchemaFacto
         );
     }
 
+    getSchemaKey(): string {
+        return `self-hosted-auth/CliResetPassword:${this.enabled}`;
+    }
+
     async execute(
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): CoreGraphQLSchemaFactory.Return {

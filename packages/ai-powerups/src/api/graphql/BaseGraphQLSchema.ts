@@ -1,4 +1,5 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { Response, ErrorResponse } from "@webiny/api-graphql/responses.js";
 import { AiModelRegistry } from "@webiny/api-core/features/ai/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
@@ -17,6 +18,8 @@ import {
 } from "~/api/features/CmsGenerateEntryContent/CmsGenerateEntryContentTask.js";
 
 class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("ai-powerups/BaseGraphQLSchemaImpl");
+
     async execute(
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): Promise<CoreGraphQLSchemaFactory.SchemaBuilder> {
