@@ -17,7 +17,17 @@ from the runs listed in the state file.
 ## 1. Summary
 
 **68 components across five sites, placed 238 times across their pages, for about $26.60 of model calls in
-total** (both passes; Sonnet 5 for every stage). Every share below is given two ways:
+total** (both passes; Sonnet 5 for every stage).
+
+**The $26.60 is a floor, not the spend.** It is the sum of recorded model calls, and a call killed before
+it returned is never recorded. In this baseline that means the two Floor Plan Filter attempts that each ran
+for 15 minutes until the Lambda killed them. These are the calls most likely to be the most expensive:
+they were writing for the longest. Bounded at Sonnet 5's price for a full 15 minutes of output, the
+missing spend is at most about $1.30, which would bring the total to roughly $28.
+
+Since `c7669fc734`, a call is cut off at 5 minutes and recorded as a failed call, but its tokens still are
+not: the provider reports no usage for an aborted call. Spend will keep being understated by exactly these
+calls until that is closed. Every share below is given two ways:
 
 - **Page-weighted** counts a component once per page it appears on: what a visitor of the migrated site
   sees.
