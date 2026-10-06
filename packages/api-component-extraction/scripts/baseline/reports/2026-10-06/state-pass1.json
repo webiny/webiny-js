@@ -1,0 +1,333 @@
+{
+  "startedOn": "2026-10-06T10:44:44.368Z",
+  "budgetUsd": 60,
+  "sites": {
+    "www.71westlandapts.com": {
+      "host": "www.71westlandapts.com",
+      "timings": {
+        "discover": {
+          "triggeredOn": "2026-10-06T10:44:48.968Z",
+          "startedOn": "2026-10-06T10:44:57.131Z",
+          "finishedOn": "2026-10-06T10:45:02.379Z"
+        },
+        "capture": {
+          "triggeredOn": "2026-10-06T10:45:05.142Z",
+          "startedOn": "2026-10-06T10:45:10.380Z",
+          "finishedOn": "2026-10-06T10:48:38.357Z"
+        },
+        "segment": {
+          "triggeredOn": "2026-10-06T10:48:50.107Z",
+          "startedOn": "2026-10-06T10:48:55.255Z",
+          "finishedOn": "2026-10-06T10:49:07.030Z"
+        },
+        "cluster": {
+          "triggeredOn": "2026-10-06T10:49:16.647Z",
+          "startedOn": "2026-10-06T10:49:21.760Z",
+          "finishedOn": "2026-10-06T10:49:29.962Z"
+        },
+        "classify": {
+          "triggeredOn": "2026-10-06T10:49:32.686Z",
+          "startedOn": "2026-10-06T10:49:37.856Z",
+          "finishedOn": "2026-10-06T10:49:57.166Z"
+        },
+        "plan": {
+          "triggeredOn": "2026-10-06T10:50:00.964Z",
+          "startedOn": "2026-10-06T10:50:06.150Z",
+          "finishedOn": "2026-10-06T10:52:38.081Z"
+        },
+        "generate": {
+          "triggeredOn": "2026-10-06T10:52:55.545Z",
+          "startedOn": "2026-10-06T10:53:00.562Z",
+          "finishedOn": "2026-10-06T11:04:13.636Z"
+        },
+        "assemble": {
+          "triggeredOn": "2026-10-06T11:04:19.795Z",
+          "startedOn": "2026-10-06T11:04:25.029Z",
+          "finishedOn": "2026-10-06T11:04:27.139Z"
+        },
+        "promote": {
+          "triggeredOn": "2026-10-06T11:04:38.182Z",
+          "startedOn": "2026-10-06T11:04:44.180Z",
+          "finishedOn": "2026-10-06T11:04:52.907Z"
+        },
+        "render": {
+          "triggeredOn": "2026-10-06T11:04:58.367Z",
+          "finishedOn": "2026-10-06T11:05:54.113Z"
+        }
+      },
+      "jobId": "6ac4d11d03fba7000280d555#0001",
+      "job": {
+        "id": "6ac4d11d03fba7000280d555#0001",
+        "name": "71Westland Baseline",
+        "siteUrl": "https://www.71westlandapts.com/",
+        "themeEntryId": "6ab2534661ea650002f10a72",
+        "themeVersion": 1,
+        "pageCap": 40
+      },
+      "runId": "6ac4d11f03fba7000280d556#0001",
+      "completedOn": "2026-10-06T11:48:26.579Z"
+    },
+    "thevibe-apts.com": {
+      "host": "thevibe-apts.com",
+      "timings": {
+        "discover": {
+          "triggeredOn": "2026-10-06T11:05:58.146Z",
+          "startedOn": "2026-10-06T11:06:04.089Z",
+          "finishedOn": "2026-10-06T11:06:10.255Z"
+        },
+        "capture": {
+          "triggeredOn": "2026-10-06T11:06:14.110Z",
+          "startedOn": "2026-10-06T11:06:19.123Z",
+          "finishedOn": "2026-10-06T11:10:43.377Z"
+        },
+        "segment": {
+          "triggeredOn": "2026-10-06T11:10:53.265Z",
+          "startedOn": "2026-10-06T11:10:58.694Z",
+          "finishedOn": "2026-10-06T11:11:20.450Z"
+        },
+        "cluster": {
+          "triggeredOn": "2026-10-06T11:11:31.220Z",
+          "startedOn": "2026-10-06T11:11:36.570Z",
+          "finishedOn": "2026-10-06T11:11:45.433Z"
+        },
+        "classify": {
+          "triggeredOn": "2026-10-06T11:11:47.129Z",
+          "startedOn": "2026-10-06T11:11:52.222Z",
+          "finishedOn": "2026-10-06T11:12:56.542Z"
+        },
+        "plan": {
+          "triggeredOn": "2026-10-06T11:13:12.013Z",
+          "startedOn": "2026-10-06T11:13:17.448Z",
+          "finishedOn": "2026-10-06T11:20:13.934Z"
+        },
+        "generate": {
+          "triggeredOn": "2026-10-06T11:20:32.649Z",
+          "startedOn": "2026-10-06T11:20:37.964Z",
+          "finishedOn": "2026-10-06T11:46:21.603Z"
+        },
+        "render": {
+          "triggeredOn": "2026-10-06T11:48:36.806Z",
+          "finishedOn": "2026-10-06T11:51:11.373Z"
+        }
+      },
+      "jobId": "6ac4d613daf3ad0002fc11cc#0001",
+      "job": {
+        "id": "6ac4d613daf3ad0002fc11cc#0001",
+        "name": "TheVibe Baseline",
+        "siteUrl": "https://thevibe-apts.com/",
+        "themeEntryId": "6ab25c89b1d62000028225e5",
+        "themeVersion": 1,
+        "pageCap": 40
+      },
+      "runId": "6ac4d615daf3ad0002fc11cd#0001",
+      "interventions": [
+        "At 11:41 UTC, 21 minutes into Generate, the operator stopped the Generate coordinator's and one component task's Step Functions executions on a misread of elapsed time (UTC log against local clock), then re-triggered Generate on the same run. The pipeline continued the same stage version: 28 finished components were kept and the remaining 3 completed (31 of 31 by 11:46). No output was edited.",
+        "The re-trigger left a pipeline claim that never clears when a re-triggered task continues a running stage, which permanently blocks this run's Assemble and Promote. A pipeline defect, filed separately."
+      ],
+      "skipStages": {
+        "stages": [
+          "assemble",
+          "promote"
+        ],
+        "reason": "blocked by the stale Generate claim left by the operator re-trigger; neither stage feeds this report, and nothing from this run was promoted to the Library."
+      },
+      "completedOn": "2026-10-06T11:51:11.375Z"
+    },
+    "www.parkcityplace.org": {
+      "host": "www.parkcityplace.org",
+      "timings": {
+        "discover": {
+          "triggeredOn": "2026-10-06T11:51:14.847Z",
+          "startedOn": "2026-10-06T11:51:20.424Z",
+          "finishedOn": "2026-10-06T11:51:26.409Z"
+        },
+        "capture": {
+          "triggeredOn": "2026-10-06T11:51:31.148Z",
+          "startedOn": "2026-10-06T11:51:36.518Z",
+          "finishedOn": "2026-10-06T11:57:00.597Z"
+        },
+        "segment": {
+          "triggeredOn": "2026-10-06T11:57:02.846Z",
+          "startedOn": "2026-10-06T11:57:08.416Z",
+          "finishedOn": "2026-10-06T11:57:20.379Z"
+        },
+        "cluster": {
+          "triggeredOn": "2026-10-06T11:57:29.966Z",
+          "startedOn": "2026-10-06T11:57:35.685Z",
+          "finishedOn": "2026-10-06T11:57:43.887Z"
+        },
+        "classify": {
+          "triggeredOn": "2026-10-06T11:57:46.185Z",
+          "startedOn": "2026-10-06T11:57:51.599Z",
+          "finishedOn": "2026-10-06T11:58:08.468Z"
+        },
+        "plan": {
+          "triggeredOn": "2026-10-06T11:58:18.927Z",
+          "startedOn": "2026-10-06T11:58:24.323Z",
+          "finishedOn": "2026-10-06T12:00:53.737Z"
+        },
+        "generate": {
+          "triggeredOn": "2026-10-06T12:01:10.717Z",
+          "startedOn": "2026-10-06T12:01:16.212Z",
+          "finishedOn": "2026-10-06T12:07:06.180Z"
+        },
+        "assemble": {
+          "triggeredOn": "2026-10-06T12:07:22.790Z",
+          "startedOn": "2026-10-06T12:07:28.649Z",
+          "finishedOn": "2026-10-06T12:07:30.887Z"
+        },
+        "promote": {
+          "triggeredOn": "2026-10-06T12:07:38.589Z",
+          "startedOn": "2026-10-06T12:07:43.938Z",
+          "finishedOn": "2026-10-06T12:07:51.247Z"
+        },
+        "render": {
+          "triggeredOn": "2026-10-06T12:07:58.031Z",
+          "finishedOn": "2026-10-06T12:08:43.247Z"
+        }
+      },
+      "jobId": "6ac4e0b0c2034c0002286a3d#0001",
+      "job": {
+        "id": "6ac4e0b0c2034c0002286a3d#0001",
+        "name": "ParkCityPlace Baseline",
+        "siteUrl": "https://www.parkcityplace.org/",
+        "themeEntryId": "6ab119a704782f0002001bd6",
+        "themeVersion": 1,
+        "pageCap": 40
+      },
+      "runId": "6ac4e0b2c2034c0002286a3e#0001",
+      "completedOn": "2026-10-06T12:08:43.248Z"
+    },
+    "promo.freehillstreetlofts.com": {
+      "host": "promo.freehillstreetlofts.com",
+      "timings": {
+        "discover": {
+          "triggeredOn": "2026-10-06T12:08:46.846Z",
+          "startedOn": "2026-10-06T12:08:53.099Z",
+          "finishedOn": "2026-10-06T12:08:58.635Z"
+        },
+        "capture": {
+          "triggeredOn": "2026-10-06T12:09:03.025Z",
+          "startedOn": "2026-10-06T12:09:08.615Z",
+          "finishedOn": "2026-10-06T12:11:48.167Z"
+        },
+        "segment": {
+          "triggeredOn": "2026-10-06T12:11:52.670Z",
+          "startedOn": "2026-10-06T12:11:58.580Z",
+          "finishedOn": "2026-10-06T12:12:02.998Z"
+        },
+        "cluster": {
+          "triggeredOn": "2026-10-06T12:12:08.687Z",
+          "startedOn": "2026-10-06T12:12:14.200Z",
+          "finishedOn": "2026-10-06T12:12:17.499Z"
+        },
+        "classify": {
+          "triggeredOn": "2026-10-06T12:12:24.554Z",
+          "startedOn": "2026-10-06T12:12:30.814Z",
+          "finishedOn": "2026-10-06T12:12:47.609Z"
+        },
+        "plan": {
+          "triggeredOn": "2026-10-06T12:12:59.288Z",
+          "startedOn": "2026-10-06T12:13:04.434Z",
+          "finishedOn": "2026-10-06T12:14:59.667Z"
+        },
+        "generate": {
+          "triggeredOn": "2026-10-06T12:15:21.513Z",
+          "startedOn": "2026-10-06T12:15:26.830Z",
+          "finishedOn": "2026-10-06T12:31:42.467Z"
+        },
+        "assemble": {
+          "triggeredOn": "2026-10-06T12:31:59.333Z",
+          "startedOn": "2026-10-06T12:32:05.485Z",
+          "finishedOn": "2026-10-06T12:32:07.962Z"
+        },
+        "promote": {
+          "triggeredOn": "2026-10-06T12:32:15.055Z",
+          "startedOn": "2026-10-06T12:32:20.341Z",
+          "finishedOn": "2026-10-06T12:32:27.657Z"
+        },
+        "render": {
+          "triggeredOn": "2026-10-06T12:32:33.909Z",
+          "finishedOn": "2026-10-06T12:33:18.120Z"
+        }
+      },
+      "jobId": "6ac4e4ccc3738b0002d8e92c#0001",
+      "job": {
+        "id": "6ac4e4ccc3738b0002d8e92c#0001",
+        "name": "FreehillStreetLofts Baseline",
+        "siteUrl": "https://promo.freehillstreetlofts.com/",
+        "themeEntryId": "6ab25f9d74d623000233f463",
+        "themeVersion": 1,
+        "pageCap": 40
+      },
+      "runId": "6ac4e4cec3738b0002d8e92d#0001",
+      "completedOn": "2026-10-06T12:33:18.123Z"
+    },
+    "www.2424tulane.com": {
+      "host": "www.2424tulane.com",
+      "timings": {
+        "discover": {
+          "triggeredOn": "2026-10-06T12:33:21.253Z",
+          "startedOn": "2026-10-06T12:33:26.588Z",
+          "finishedOn": "2026-10-06T12:33:32.477Z"
+        },
+        "capture": {
+          "triggeredOn": "2026-10-06T12:33:37.039Z",
+          "startedOn": "2026-10-06T12:33:42.334Z",
+          "finishedOn": "2026-10-06T12:41:09.609Z"
+        },
+        "segment": {
+          "triggeredOn": "2026-10-06T12:41:16.985Z",
+          "startedOn": "2026-10-06T12:41:22.330Z",
+          "finishedOn": "2026-10-06T12:41:41.776Z"
+        },
+        "cluster": {
+          "triggeredOn": "2026-10-06T12:41:44.053Z",
+          "startedOn": "2026-10-06T12:41:49.387Z",
+          "finishedOn": "2026-10-06T12:41:59.719Z"
+        },
+        "classify": {
+          "triggeredOn": "2026-10-06T12:42:10.146Z",
+          "startedOn": "2026-10-06T12:42:15.429Z",
+          "finishedOn": "2026-10-06T12:42:36.419Z"
+        },
+        "plan": {
+          "triggeredOn": "2026-10-06T12:42:57.136Z",
+          "startedOn": "2026-10-06T12:43:02.304Z",
+          "finishedOn": "2026-10-06T12:45:39.626Z"
+        },
+        "generate": {
+          "triggeredOn": "2026-10-06T12:46:08.270Z",
+          "startedOn": "2026-10-06T12:46:13.824Z",
+          "finishedOn": "2026-10-06T13:10:06.999Z"
+        },
+        "assemble": {
+          "triggeredOn": "2026-10-06T13:10:23.690Z",
+          "startedOn": "2026-10-06T13:10:29.436Z",
+          "finishedOn": "2026-10-06T13:10:31.910Z"
+        },
+        "promote": {
+          "triggeredOn": "2026-10-06T13:10:39.610Z",
+          "startedOn": "2026-10-06T13:10:45.007Z",
+          "finishedOn": "2026-10-06T13:10:52.576Z"
+        },
+        "render": {
+          "triggeredOn": "2026-10-06T13:10:59.228Z",
+          "finishedOn": "2026-10-06T13:11:45.638Z"
+        }
+      },
+      "jobId": "6ac4ea8ec3738b0002d8e938#0001",
+      "job": {
+        "id": "6ac4ea8ec3738b0002d8e938#0001",
+        "name": "2424Tulane Baseline",
+        "siteUrl": "https://www.2424tulane.com/",
+        "themeEntryId": "6ab26b4838a369000286400d",
+        "themeVersion": 1,
+        "pageCap": 40
+      },
+      "runId": "6ac4ea90c3738b0002d8e939#0001",
+      "completedOn": "2026-10-06T13:11:45.642Z"
+    }
+  },
+  "spentUsd": 15.5311056
+}
