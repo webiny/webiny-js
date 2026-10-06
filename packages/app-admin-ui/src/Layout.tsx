@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import Helmet from "react-helmet";
 import type { LayoutProps } from "@webiny/app-admin";
-import { AssumedPermissionsBanner } from "@webiny/app-admin";
 import { AssumedPermissionsSelector } from "@webiny/app-admin";
+import { BannerBar } from "@webiny/app-admin";
 import { LayoutRenderer } from "@webiny/app-admin";
 import { Navigation } from "@webiny/app-admin";
 import { TenantSelector } from "@webiny/app-admin";
@@ -34,6 +34,19 @@ const parseSidebarState = (raw: unknown): SidebarCachedState | undefined => {
     return undefined;
 };
 
+/*
+ * Views size themselves with `h-main-content`, which is the window minus the header. While the
+ * banner bar shows, they have to lose its height too, or every page scrolls by exactly that much.
+ * The bar is always `--spacing-banner` tall, so plain CSS can do it. Scoped to the wrapper below,
+ * which holds both the bar and the views.
+ *
+ * TODO: Temporary. The real fix is for views to fill `main` instead of computing their own height
+ * from the window: make this wrapper a full-height column and `main` `flex-1 min-h-0`, then move
+ * the ~13 views that use `h-main-content` to `h-full`. That also lets the bar wrap its text.
+ */
+const MAKE_ROOM_FOR_BANNER =
+    "has-[>[data-admin-banner]]:[--spacing-main-content:calc(100vh_-_var(--spacing-header)_-_var(--spacing-banner))]";
+
 const LayoutContent = ({
     title,
     startElement = null,
@@ -55,10 +68,11 @@ const LayoutContent = ({
             <div
                 className={cn(
                     "ml-auto bg-neutral-base transition-[max-width,min-width] ease-linear w-full",
+                    MAKE_ROOM_FOR_BANNER,
                     hideNavigation ? undefined : widthClassNames
                 )}
             >
-                <AssumedPermissionsBanner />
+                <BannerBar />
                 <HeaderBar
                     start={
                         <div className="flex items-center gap-sm">

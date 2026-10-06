@@ -1,11 +1,20 @@
 import React from "react";
 import { useFeature } from "@webiny/app";
 import { Button } from "@webiny/admin-ui";
+import { Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as VisibilityIcon } from "@webiny/icons/visibility.svg";
 import { createReactiveComponent } from "~/presentation/createReactiveComponent.js";
 import { useSnackbar } from "~/hooks/useSnackbar.js";
 import { AssumePermissionsPresenterFeature } from "../feature.js";
 import type { AssumePermissionsPresenter } from "../abstractions.js";
+
+/*
+ * What happens on click, said before the click. The last sentence matters most: a preview is not a
+ * sandbox, so anything the role is allowed to save is saved for real.
+ */
+function tooltipText(type: AssumePermissionsPresenter.Target["type"]): string {
+    return `Reloads the Admin with only this ${type}'s permissions, so you see what its users see. Exit from the banner at the top. Anything you save while previewing is saved for real.`;
+}
 
 interface AssumePermissionsButtonProps {
     // The saved role or team open in the form. `null` while the record is new or still loading.
@@ -44,7 +53,7 @@ export const AssumePermissionsButton = createReactiveComponent(
             }
         };
 
-        return (
+        const button = (
             <Button
                 variant={"ghost"}
                 icon={<VisibilityIcon />}
@@ -54,5 +63,12 @@ export const AssumePermissionsButton = createReactiveComponent(
                 data-testid={"admin.am.view-as"}
             />
         );
+
+        // The label already explains a disabled button, and a disabled button gets no hover anyway.
+        if (isAssumed) {
+            return button;
+        }
+
+        return <Tooltip content={tooltipText(target.type)} trigger={button} />;
     }
 );

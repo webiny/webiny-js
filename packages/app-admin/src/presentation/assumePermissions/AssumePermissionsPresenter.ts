@@ -16,7 +16,26 @@ function toOption(entry: AssumableTarget): Abstraction.Option {
     return { value: optionValue(entry), label: entry.name };
 }
 
-function reloadPage(): void {
+function currentPath(): string {
+    const { pathname, search, hash } = window.location;
+    return `${pathname}${search}${hash}`;
+}
+
+/*
+ * The stored path comes back out of local storage, so it is only followed when it resolves to
+ * this Admin's own origin. Anything else falls back to a plain reload.
+ */
+function isSameOrigin(path: string): boolean {
+    const url = new URL(path, window.location.origin);
+    return url.origin === window.location.origin;
+}
+
+function leavePage(returnTo: string | undefined): void {
+    if (returnTo && isSameOrigin(returnTo)) {
+        window.location.assign(returnTo);
+        return;
+    }
+
     window.location.reload();
 }
 
@@ -38,8 +57,8 @@ class AssumePermissionsPresenterImpl implements Abstraction.Interface {
      * The role this page was LOADED with, captured once. The banner renders from this rather than
      * from the live context so it doesn't flicker during a switch: starting a preview would
      * otherwise pop the banner up a moment before the reload, and exiting would drop it a moment
-     * before, both of which read as a glitch. Since every switch reloads, the snapshot and the live value
-     * only ever differ inside that window.
+     * before, both of which read as a glitch. Since every switch reloads, the snapshot and the
+     * live value only ever differ inside that window.
      */
     private readonly loadedAssumed: AssumePermissionsContext.Value | null;
 
@@ -123,26 +142,32 @@ class AssumePermissionsPresenterImpl implements Abstraction.Interface {
             return;
         }
 
-        await this.switchTo({ type: entry.type, id: entry.id, name: entry.name });
+        // From the header control: exiting still returns to where the first preview began.
+        await this.switchTo({ type: entry.type, id: entry.id, name: entry.name }, {});
     }
 
     async assumeTarget(target: AssumePermissionsUseCase.Target): Promise<void> {
-        await this.switchTo(target);
+        // Started from the role or team form, so exiting comes back to it.
+        const returnTo = currentPath();
+        await this.switchTo(target, { returnTo });
     }
 
     async exit(): Promise<void> {
-        await this.switchTo(null);
+        await this.switchTo(null, {});
     }
 
     dismissError(): void {
         this.error = null;
     }
 
-    private async switchTo(target: AssumePermissionsUseCase.Target | null): Promise<void> {
+    private async switchTo(
+        target: AssumePermissionsUseCase.Target | null,
+        options: AssumePermissionsUseCase.Options
+    ): Promise<void> {
         this.startSwitching();
 
         try {
-            await this.assumePermissionsUseCase.execute(target);
+            await this.assumePermissionsUseCase.execute(target, options);
         } catch (error) {
             const message = toMessage(error, "Could not switch roles.");
             this.failSwitching(message);
@@ -156,10 +181,18 @@ class AssumePermissionsPresenterImpl implements Abstraction.Interface {
          * such as menus and the dashboard, still showing the previous role. The tenant switcher
          * reaches for a full page load for the same reason.
          *
+         * Exiting goes back to the page the preview started from, usually the role form, where the
+         * next step is editing what the preview showed was missing.
+         *
          * `switching` stays true on purpose: the page is on its way out, and the control should
          * not look ready for another click in the meantime.
          */
-        reloadPage();
+        let returnTo: string | undefined;
+        if (!target) {
+            returnTo = this.loadedAssumed?.returnTo;
+        }
+
+        leavePage(returnTo);
     }
 
     private startLoading(showLoader: boolean): void {
