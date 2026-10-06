@@ -3,20 +3,25 @@ import { createJob } from "./jobs/index.js";
 
 // A PR opened against `release/6.5.0` gets the `6.5.0` milestone assigned automatically.
 //
-// Uses `pull_request`, not `pull_request_target`. `pull_request_target` would also cover PRs
-// opened from forks (they get a read-only token and no secrets on `pull_request`, so they cannot
-// write a milestone), but it runs the base branch's copy of the workflow with a writable token
-// against the PR's head - a footgun that only stays safe as long as nobody adds a checkout. Fork
-// PRs against release branches are not worth that risk, so they are skipped instead: the job is
-// gated on the PR not coming from a fork, which keeps fork PRs green rather than failing them on
-// a permission error.
+// Uses `pull_request_target` so that GitHub always runs the copy of this file on the default
+// branch. With `pull_request` it runs the copy on the PR's base branch, so every release branch
+// would need its own copy, and patch branches (cut from the previous release's tag) would miss it.
+//
+// SECURITY - treat any change to this file with care. `pull_request_target` runs with a writable
+// token for every PR, forks included, so the PR's author is untrusted. It stays safe only while:
+//   - nothing checks out or runs the PR's code: no `actions/checkout` of the head, no `yarn`, no
+//     scripts from the repo. Doing so hands the token to whoever opened the PR.
+//   - event fields reach the script only through `env`, never as `${{ }}` inside `run`, so
+//     a crafted value is data, not shell code. Never read the PR's title, body or head branch.
+//   - the token keeps only the scopes listed on the job below.
+// If a change needs any of that, move it to a separate `pull_request` workflow instead.
 //
 // The `branches` filter applies to the PR's BASE branch, so the workflow only ever starts for
 // release branches. `edited` is included to catch a PR being retargeted onto (or off of) one.
 export const assignMilestone = createWorkflow({
     name: "Assign Milestone",
     on: {
-        pull_request: {
+        pull_request_target: {
             types: ["opened", "reopened", "edited"],
             branches: ["release/*"]
         }
@@ -28,11 +33,13 @@ export const assignMilestone = createWorkflow({
     jobs: {
         assignMilestone: createJob({
             name: "Assign milestone based on base branch",
-            // Fork PRs get a read-only token on `pull_request` and cannot write a milestone.
-            if: "${{ !github.event.pull_request.head.repo.fork }}",
+            // Never enable: see the SECURITY note at the top of this file.
             checkout: false,
             // Writing a milestone goes through the issues API, and the PR itself is an issue.
+            // `createJob` grants `contents` and `actions` by default; this job uses neither.
             permissions: {
+                contents: "none",
+                actions: "none",
                 issues: "write",
                 "pull-requests": "write"
             },
