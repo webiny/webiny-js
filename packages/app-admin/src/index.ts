@@ -11,6 +11,8 @@ export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/
 export * from "./base/ui/Tags.js";
 export * from "./base/ui/Layout.js";
 export * from "./base/ui/TenantSelector.js";
+export * from "./base/ui/AssumedPermissionsBanner.js";
+export * from "./base/ui/AssumedPermissionsSelector.js";
 export type { LayoutProps } from "./base/ui/Layout.js";
 export * from "./base/ui/Navigation.js";
 export * from "./base/ui/Brand.js";
@@ -21,7 +23,7 @@ export * from "./base/ui/CenteredView.js";
 export * from "./base/ui/Dashboard.js";
 export * from "./base/ui/NotFound.js";
 
-export { observer as createReactiveComponent } from "mobx-react-lite";
+export { createReactiveComponent } from "./presentation/createReactiveComponent.js";
 
 // Base admin app
 export { Admin } from "./base/Admin.js";
