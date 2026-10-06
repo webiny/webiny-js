@@ -1369,10 +1369,14 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     // Bodies are out of scope (W7.1) — only the accounting fields are returned.
                     return calls.map(call => ({
                         stage: call.stage,
+                        stageVersion: call.stageVersion,
                         name: call.name,
                         modelId: call.modelId,
+                        signature: call.signature,
                         inputTokens: call.inputTokens,
                         outputTokens: call.outputTokens,
+                        cacheReadTokens: call.cacheReadTokens,
+                        cacheWriteTokens: call.cacheWriteTokens,
                         latencyMs: call.latencyMs,
                         ok: call.ok,
                         createdOn: call.createdOn

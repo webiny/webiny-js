@@ -7,6 +7,7 @@ import {
     ExtractionValidationError,
     type ExtractionError
 } from "~/domain/errors.js";
+import { ModelCallScope } from "./modelCallScope.js";
 
 /**
  * The shared AI entry point for the model-backed stages (Classify, Plan). Generate goes through
@@ -43,6 +44,8 @@ export interface IComponentExtractionAi {
     generate(params: {
         system?: string;
         messages: AiMessage[];
+        /** The cluster the call is for, so its cost is recorded against it. */
+        signature?: string;
     }): Promise<Result<string, ExtractionError>>;
 }
 
@@ -55,16 +58,19 @@ export namespace ComponentExtractionAi {
 class ComponentExtractionAiImpl implements IComponentExtractionAi {
     constructor(
         private ai: Ai.Interface,
+        private modelCallScope: ModelCallScope.Interface,
         // AI Power-Ups registers nothing when the feature is off, so the resolver can be absent.
         private resolveCapability?: ResolveAiCapabilityUseCase.Interface
     ) {}
 
     async generate({
         system,
-        messages
+        messages,
+        signature
     }: {
         system?: string;
         messages: AiMessage[];
+        signature?: string;
     }): Promise<Result<string, ExtractionError>> {
         if (!this.resolveCapability) {
             return Result.fail(
@@ -79,12 +85,16 @@ class ComponentExtractionAiImpl implements IComponentExtractionAi {
         }
 
         try {
-            const result = await this.ai.generateText({
-                model: resolved.value.model,
-                connection: resolved.value.connection,
-                system,
-                messages
-            } as Parameters<Ai.Interface["generateText"]>[0]);
+            const call = () =>
+                this.ai.generateText({
+                    model: resolved.value.model,
+                    connection: resolved.value.connection,
+                    system,
+                    messages
+                } as Parameters<Ai.Interface["generateText"]>[0]);
+            const result = signature
+                ? await this.modelCallScope.forComponent(signature, call)
+                : await call();
 
             const steps = (result.steps ?? []) as Array<{ text?: string }>;
             const text =
@@ -109,5 +119,5 @@ class ComponentExtractionAiImpl implements IComponentExtractionAi {
 export const ComponentExtractionAiService = createImplementation({
     abstraction: ComponentExtractionAi,
     implementation: ComponentExtractionAiImpl,
-    dependencies: [Ai, [ResolveAiCapabilityUseCase, { optional: true }]]
+    dependencies: [Ai, ModelCallScope, [ResolveAiCapabilityUseCase, { optional: true }]]
 });

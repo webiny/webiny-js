@@ -130,7 +130,12 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         // attributed to the run's Generate stage — exactly as the inline stage did — keeping the token
         // panel's per-stage accounting correct now that the calls happen in per-component child tasks.
         const component = await this.modelCallScope.run(
-            { runId: input.runId, stage: "generate", stageVersion: input.stageVersion },
+            {
+                runId: input.runId,
+                stage: "generate",
+                stageVersion: input.stageVersion,
+                signature: input.signature
+            },
             () =>
                 generateComponentAttempts(
                     {

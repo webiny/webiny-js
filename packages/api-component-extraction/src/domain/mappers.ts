@@ -76,8 +76,11 @@ export class EntryToModelCallMapper {
             stageVersion: entry.values.stageVersion ?? 0,
             name: entry.values.name ?? "",
             modelId: entry.values.modelId ?? "",
+            signature: entry.values.signature ?? "",
             inputTokens: entry.values.inputTokens ?? 0,
             outputTokens: entry.values.outputTokens ?? 0,
+            cacheReadTokens: entry.values.cacheReadTokens ?? 0,
+            cacheWriteTokens: entry.values.cacheWriteTokens ?? 0,
             latencyMs: entry.values.latencyMs ?? 0,
             ok: entry.values.ok ?? false
         };

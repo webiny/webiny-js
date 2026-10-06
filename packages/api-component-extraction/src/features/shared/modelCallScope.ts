@@ -13,11 +13,26 @@ export interface ModelCallScopeValue {
     runId: string;
     stage: Stage;
     stageVersion: number;
+    /**
+     * The cluster signature the calls inside are made for, so cost can be read per component. Absent
+     * for calls made for no one component.
+     */
+    signature?: string;
+    /**
+     * Names the calls inside, for paths the stage name does not describe — an operator's regenerate is
+     * a Generate call, but not the stage's own. Absent means the stage's default name.
+     */
+    callName?: string;
 }
 
 export interface IModelCallScope {
     run<T>(scope: ModelCallScopeValue, fn: () => Promise<T>): Promise<T>;
     current(): ModelCallScopeValue | null;
+    /**
+     * Runs `fn` in the current scope narrowed to one component. Outside any scope it runs `fn` as is:
+     * the calls inside go unrecorded, exactly as they would have without this.
+     */
+    forComponent<T>(signature: string, fn: () => Promise<T>): Promise<T>;
 }
 
 export const ModelCallScope = createAbstraction<IModelCallScope>(
@@ -38,6 +53,10 @@ class ModelCallScopeImpl implements IModelCallScope {
     }
     current(): ModelCallScopeValue | null {
         return storage.getStore() ?? null;
+    }
+    forComponent<T>(signature: string, fn: () => Promise<T>): Promise<T> {
+        const current = storage.getStore();
+        return current ? storage.run({ ...current, signature }, fn) : fn();
     }
 }
 

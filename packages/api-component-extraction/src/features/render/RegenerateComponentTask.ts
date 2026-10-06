@@ -30,6 +30,7 @@ import {
     validateTokenBinding,
     textsToPreserve
 } from "~/features/shared/validators.js";
+import { ModelCallScope } from "~/features/shared/modelCallScope.js";
 
 export interface RegenerateTaskInput {
     runId: string;
@@ -55,7 +56,8 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
         readonly jobRepository: JobRepository.Interface,
         readonly artifactStore: StageArtifactStore.Interface,
         readonly refine: RefineRemoteComponentUseCase.Interface,
-        readonly manifestResolver: ThemeManifestResolver.Interface
+        readonly manifestResolver: ThemeManifestResolver.Interface,
+        readonly modelCallScope: ModelCallScope.Interface
     ) {}
 
     async run({ input, controller }: RunParams): RunResult {
@@ -104,11 +106,26 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
         const component = currentResult.value;
 
         // Refine from the current source/css, not the original plan prompt — preserving the work so far.
-        const refined = await this.refine.execute({
-            currentSource: component.source,
-            currentCss: component.css,
-            feedback: input.instruction
-        });
+        /*
+         * Recorded against the Generate stage and the component it refines, named apart from the
+         * stage's own calls: an operator's regenerate costs tokens the stage total never saw, and was
+         * not recorded at all before.
+         */
+        const refined = await this.modelCallScope.run(
+            {
+                runId: run.id,
+                stage: "generate",
+                stageVersion: stageEntry(run.stages, "generate")?.stageVersion ?? 0,
+                signature: input.signature,
+                callName: "regenerate-component"
+            },
+            () =>
+                this.refine.execute({
+                    currentSource: component.source,
+                    currentCss: component.css,
+                    feedback: input.instruction
+                })
+        );
         if (refined.isFail()) {
             await log.error({ message: `Refine failed: ${refined.error.message}` });
             return controller.response.error(refined.error.message);
@@ -248,7 +265,8 @@ const RegenerateComponentTaskHandler = TaskHandler.createImplementation({
         JobRepository,
         StageArtifactStore,
         RefineRemoteComponentUseCase,
-        ThemeManifestResolver
+        ThemeManifestResolver,
+        ModelCallScope
     ]
 });
 

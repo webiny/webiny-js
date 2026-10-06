@@ -107,8 +107,16 @@ class ModelCallModelFactory implements ModelFactory.Interface {
             stageVersion: fields.number().label("Stage version"),
             name: fields.text().label("Call name"),
             modelId: fields.text().label("Model id"),
+            /*
+             * The cluster signature the call was made for: the component it was generated or refined
+             * for, the cluster it classified or planned. Empty for a call made for no one component.
+             */
+            signature: fields.text().label("Signature"),
             inputTokens: fields.number().label("Input tokens"),
             outputTokens: fields.number().label("Output tokens"),
+            // Parts of `inputTokens`, not additions to it: read from and written to the prompt cache.
+            cacheReadTokens: fields.number().label("Cache-read input tokens"),
+            cacheWriteTokens: fields.number().label("Cache-write input tokens"),
             latencyMs: fields.number().label("Latency (ms)"),
             ok: fields.boolean().label("Succeeded")
         }));

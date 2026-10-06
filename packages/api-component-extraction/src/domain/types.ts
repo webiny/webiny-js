@@ -75,11 +75,28 @@ export interface ModelCallValues {
     runId: string;
     stage: Stage;
     stageVersion: number;
-    /** The call name, e.g. `classify-section`, `plan-component`, `generate-component`. */
+    /**
+     * The call name, e.g. `classify-section`, `plan-component`, `generate-component`, and for the
+     * operator-triggered paths `regenerate-component`, `regenerate-plan`.
+     */
     name: string;
     modelId: string;
+    /**
+     * The cluster signature the call was made for — the component generated or refined, the cluster
+     * classified or planned. Empty when the call was made for no one component, and on calls recorded
+     * before this was.
+     */
+    signature: string;
+    /** Every input token the call was billed for, cached ones included. */
     inputTokens: number;
     outputTokens: number;
+    /**
+     * The part of `inputTokens` read from the provider's prompt cache, and the part written to it.
+     * Billed at different rates from the rest, so a cost needs all three. Zero when the provider
+     * reported none, and on calls recorded before this was.
+     */
+    cacheReadTokens: number;
+    cacheWriteTokens: number;
     latencyMs: number;
     /** False for a call that errored (it still cost tokens up to the failure and is counted). */
     ok: boolean;

@@ -16,6 +16,7 @@ import {
     buildPlanRefinePrompt,
     parsePlanContract
 } from "./planContract.js";
+import { ModelCallScope } from "~/features/shared/modelCallScope.js";
 
 export interface RegeneratePlanTaskInput {
     runId: string;
@@ -42,7 +43,8 @@ class RegeneratePlanTaskHandlerImpl implements TaskHandler.Interface<RegenerateP
         readonly ai: ComponentExtractionAi.Interface,
         readonly manifestResolver: ThemeManifestResolver.Interface,
         readonly overrides: OverrideRepository.Interface,
-        readonly applicator: OverrideApplicator.Interface
+        readonly applicator: OverrideApplicator.Interface,
+        readonly modelCallScope: ModelCallScope.Interface
     ) {}
 
     async run({ input, controller }: RunParams): RunResult {
@@ -128,23 +130,36 @@ class RegeneratePlanTaskHandlerImpl implements TaskHandler.Interface<RegenerateP
         const history = component.refinements ?? [];
         const refine = Boolean(input.instruction?.trim()) || history.length > 0;
 
-        const aiResult = await this.ai.generate({
-            system: PLAN_SYSTEM,
-            messages: [
-                {
-                    role: "user",
-                    content: refine
-                        ? buildPlanRefinePrompt(
-                              classified,
-                              manifestValue,
-                              { props: currentProps, tokenBindings: currentBindings },
-                              history,
-                              input.instruction
-                          )
-                        : buildPlanPrompt(classified, manifestValue, input.instruction)
-                }
-            ]
-        });
+        /*
+         * Recorded against the Plan stage the regenerate edits, named apart from the stage's own calls
+         * — this is an operator's re-ask, and it costs tokens the stage total never saw.
+         */
+        const scope = {
+            runId: run.id,
+            stage: "plan" as const,
+            stageVersion: plan.stageVersion,
+            callName: "regenerate-plan"
+        };
+        const aiResult = await this.modelCallScope.run(scope, () =>
+            this.ai.generate({
+                signature: input.signature,
+                system: PLAN_SYSTEM,
+                messages: [
+                    {
+                        role: "user",
+                        content: refine
+                            ? buildPlanRefinePrompt(
+                                  classified,
+                                  manifestValue,
+                                  { props: currentProps, tokenBindings: currentBindings },
+                                  history,
+                                  input.instruction
+                              )
+                            : buildPlanPrompt(classified, manifestValue, input.instruction)
+                    }
+                ]
+            })
+        );
         if (aiResult.isFail()) {
             await log.error({ message: `Plan regenerate failed: ${aiResult.error.message}` });
             return controller.response.error(aiResult.error.message);
@@ -230,7 +245,8 @@ const RegeneratePlanTaskHandler = TaskHandler.createImplementation({
         ComponentExtractionAi,
         ThemeManifestResolver,
         OverrideRepository,
-        OverrideApplicator
+        OverrideApplicator,
+        ModelCallScope
     ]
 });
 

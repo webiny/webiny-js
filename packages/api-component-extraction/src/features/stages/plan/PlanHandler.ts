@@ -166,7 +166,8 @@ class PlanHandlerImpl implements StageHandler.Interface {
             const cluster = clusters[checkpoint.nextIndex];
             const aiResult = await this.ai.generate({
                 system: PLAN_SYSTEM,
-                messages: [{ role: "user", content: buildPlanPrompt(cluster, manifest) }]
+                messages: [{ role: "user", content: buildPlanPrompt(cluster, manifest) }],
+                signature: cluster.cluster.signature
             });
             if (aiResult.isFail()) {
                 if (aiResult.error.code === "ComponentExtraction/ValidationError") {

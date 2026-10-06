@@ -105,7 +105,8 @@ class ClassifyHandlerImpl implements StageHandler.Interface {
             const cluster = clusters[checkpoint.nextIndex];
             const aiResult = await this.ai.generate({
                 system: SYSTEM,
-                messages: [{ role: "user", content: buildPrompt(cluster.digest) }]
+                messages: [{ role: "user", content: buildPrompt(cluster.digest) }],
+                signature: cluster.signature
             });
 
             if (aiResult.isFail()) {

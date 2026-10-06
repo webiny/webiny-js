@@ -21,11 +21,28 @@ const callName = (stage: Stage): string =>
         stage as "classify" | "plan" | "generate"
     ] ?? `${stage}-call`;
 
-const readUsage = (usage: unknown): { inputTokens: number; outputTokens: number } => {
-    const u = (usage ?? {}) as Record<string, number | undefined>;
+interface CallUsage {
+    inputTokens: number;
+    outputTokens: number;
+    cacheReadTokens: number;
+    cacheWriteTokens: number;
+}
+
+/**
+ * The SDK's usage, as recorded. `inputTokens` is every input token billed, cached ones included; the
+ * cache reads and writes are its parts (`inputTokenDetails`), which is how the Anthropic and OpenAI
+ * providers both report them.
+ */
+export const readUsage = (usage: unknown): CallUsage => {
+    const u = (usage ?? {}) as Record<string, unknown>;
+    const number = (value: unknown): number =>
+        typeof value === "number" && Number.isFinite(value) ? value : 0;
+    const details = (u.inputTokenDetails ?? {}) as Record<string, unknown>;
     return {
-        inputTokens: u.inputTokens ?? u.promptTokens ?? 0,
-        outputTokens: u.outputTokens ?? u.completionTokens ?? 0
+        inputTokens: number(u.inputTokens ?? u.promptTokens),
+        outputTokens: number(u.outputTokens ?? u.completionTokens),
+        cacheReadTokens: number(details.cacheReadTokens ?? u.cachedInputTokens),
+        cacheWriteTokens: number(details.cacheWriteTokens)
     };
 };
 
@@ -38,7 +55,7 @@ const record = async (
     scope: ModelCallScope.Value,
     modelCalls: ModelCallRepository.Interface,
     modelId: string,
-    usage: { inputTokens: number; outputTokens: number },
+    usage: CallUsage,
     durationMs: number,
     ok: boolean
 ): Promise<void> => {
@@ -47,10 +64,13 @@ const record = async (
             runId: scope.runId,
             stage: scope.stage,
             stageVersion: scope.stageVersion,
-            name: callName(scope.stage),
+            name: scope.callName ?? callName(scope.stage),
             modelId,
+            signature: scope.signature ?? "",
             inputTokens: usage.inputTokens,
             outputTokens: usage.outputTokens,
+            cacheReadTokens: usage.cacheReadTokens,
+            cacheWriteTokens: usage.cacheWriteTokens,
             latencyMs: Math.round(durationMs),
             ok
         });
@@ -107,7 +127,7 @@ class ModelCallErrorRecorderImpl implements AiGenerateTextErrorEventHandler.Inte
             scope,
             this.modelCalls,
             modelIdOf(event.payload.params),
-            { inputTokens: 0, outputTokens: 0 },
+            { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 },
             event.payload.duration,
             false
         );
