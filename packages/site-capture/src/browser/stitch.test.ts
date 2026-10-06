@@ -1,6 +1,14 @@
 import { describe, it, expect } from "vitest";
 import sharp from "sharp";
-import { placeTiles, planTiles, stitchTiles } from "./stitch.js";
+import { JSDOM } from "jsdom";
+import {
+    placeTiles,
+    planTiles,
+    restoreShiftScript,
+    shiftScript,
+    stitchTiles,
+    tileShift
+} from "./stitch.js";
 
 const solid = async (width: number, height: number, r: number, g: number, b: number) =>
     new Uint8Array(
@@ -120,5 +128,54 @@ describe("stitchTiles", () => {
         const image = await stitchTiles(placeTiles([{ top: 0, bytes: tile }], 50, 30), 100, 30);
         const meta = await sharp(image).metadata();
         expect(meta.height).toBe(30);
+    });
+});
+
+describe("tileShift", () => {
+    it("shifts by the offset until the last full viewport of the page", () => {
+        expect(tileShift(0, 2000, 900)).toBe(0);
+        expect(tileShift(900, 2000, 900)).toBe(900);
+        expect(tileShift(1800, 2000, 900)).toBe(1100);
+    });
+
+    it("never shifts a page shorter than the viewport", () => {
+        expect(tileShift(0, 600, 900)).toBe(0);
+    });
+});
+
+describe("shiftScript and restoreShiftScript", () => {
+    const run = (dom: JSDOM, script: string) => dom.window.eval(script);
+
+    it("moves the page with a transform on body, without scrolling it", () => {
+        const dom = new JSDOM("<body><main>page</main></body>", { runScripts: "outside-only" });
+        let scrolled = 0;
+        dom.window.addEventListener("scroll", () => scrolled++);
+        dom.window.scrollTo = () => undefined;
+        run(dom, shiftScript(900));
+        expect(dom.window.document.body.style.getPropertyValue("transform")).toBe(
+            "translateY(-900px)"
+        );
+        expect(dom.window.document.body.style.getPropertyPriority("transform")).toBe("important");
+        expect(scrolled).toBe(0);
+    });
+
+    it("puts back the page's own inline transform afterwards", () => {
+        const dom = new JSDOM('<body style="transform: scale(1)"><main>page</main></body>', {
+            runScripts: "outside-only"
+        });
+        dom.window.scrollTo = () => undefined;
+        run(dom, shiftScript(900));
+        run(dom, shiftScript(1800));
+        run(dom, restoreShiftScript());
+        expect(dom.window.document.body.style.getPropertyValue("transform")).toBe("scale(1)");
+        expect(dom.window.document.body.hasAttribute("data-wby-capture-transform")).toBe(false);
+    });
+
+    it("removes the transform it added when the page had none", () => {
+        const dom = new JSDOM("<body><main>page</main></body>", { runScripts: "outside-only" });
+        dom.window.scrollTo = () => undefined;
+        run(dom, shiftScript(450));
+        run(dom, restoreShiftScript());
+        expect(dom.window.document.body.style.getPropertyValue("transform")).toBe("");
     });
 });

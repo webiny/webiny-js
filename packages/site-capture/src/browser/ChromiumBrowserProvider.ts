@@ -39,12 +39,12 @@ import {
 } from "./stabilize.js";
 import {
     PAGE_HEIGHT_EXPRESSION,
-    hideFixedScript,
     placeTiles,
     planTiles,
-    prepareTileLayoutScript,
-    restoreTileLayoutScript,
+    restoreShiftScript,
+    shiftScript,
     stitchTiles,
+    tileShift,
     type ShotTile
 } from "./stitch.js";
 
@@ -75,7 +75,7 @@ const PAGE_ERROR_MAX_CHARS = 300;
  * page is cut here and the screenshot records how tall it really was.
  */
 const MAX_STITCHED_HEIGHT = 32000;
-/** Per tile, after the scroll: enough for scroll-linked paint, short enough for a 35-tile page. */
+/** Per tile, after the shift: enough for the moved content to paint, short enough for a 35-tile page. */
 const TILE_SETTLE_MS = 150;
 /** A stitched shot is dozens of screenshots, not one; the single-shot ceiling does not fit it. */
 const FULL_PAGE_SCREENSHOT_MS = 45_000;
@@ -794,23 +794,15 @@ class ChromiumSession implements IBrowserSession {
         );
         const plan = planTiles(measured, viewportHeight, MAX_STITCHED_HEIGHT);
 
-        await page.evaluate(prepareTileLayoutScript());
         const shot: ShotTile[] = [];
         try {
-            for (let i = 0; i < plan.offsets.length; i++) {
-                // "instant", or a page with `scroll-behavior: smooth` is still travelling at the shot.
-                await page.evaluate(
-                    `window.scrollTo({ top: ${plan.offsets[i]}, left: 0, behavior: "instant" })`
-                );
-                if (i === 1) {
-                    await page.evaluate(hideFixedScript());
-                }
-                // A beat for whatever the scroll moved — lazy imagery, scroll-linked styles — to paint.
+            for (const offset of plan.offsets) {
+                const top = tileShift(offset, plan.height, viewportHeight);
+                await page.evaluate(shiftScript(top));
+                // A beat for the moved content to paint.
                 await new Promise(resolve => setTimeout(resolve, TILE_SETTLE_MS));
-                const top = Number(await page.evaluate("window.scrollY")) || 0;
                 const image = await page.screenshot({ type: "png", captureBeyondViewport: false });
                 shot.push({ top, bytes: image instanceof Uint8Array ? image : new Uint8Array() });
-                // The browser clamps the last scroll; once a tile reaches the bottom there is no more.
                 if (top + viewportHeight >= plan.height) {
                     break;
                 }
@@ -820,7 +812,7 @@ class ChromiumSession implements IBrowserSession {
                 "restore the page after tiling",
                 DEFAULT_TIMEOUTS.evaluateMs,
                 undefined,
-                () => page.evaluate(restoreTileLayoutScript()).then(() => undefined)
+                () => page.evaluate(restoreShiftScript()).then(() => undefined)
             );
         }
 

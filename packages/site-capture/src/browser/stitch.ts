@@ -11,21 +11,20 @@
  *   everything below moved down, and the boxes read at 1440x900 no longer matched the picture. A fixed
  *   element anchored to the viewport bottom was painted at the bottom of the whole page.
  *
- * Tiling keeps the viewport exactly as it was when the element tree was read: scroll by one viewport,
- * shoot the viewport, repeat, and stitch. Two kinds of element move with scrolling and are handled so
- * the stitched page shows them where the tree recorded them (at scroll 0):
- *
- * - `position: sticky` elements are pinned to their place in the flow for the duration, which is
- *   exactly where they sit at scroll 0 — sticky is in-flow, so pinning moves nothing else;
- * - `position: fixed` elements appear on the first tile only. At scroll 0 they occupy the first
- *   viewport, which is where the tree recorded them; on every later tile they would be painted again.
+ * Tiling keeps the viewport exactly as it was when the element tree was read: move the page up by one
+ * viewport, shoot the viewport, repeat, and stitch. The page is moved with a transform on `body`, never
+ * scrolled. Scrolling was the first version of this, and it fired the page's own scroll handlers: on the
+ * G5 sites the header turns fixed once the page scrolls, which took it out of the flow, shifted every
+ * section below the first screen by ~70px against the tree, and painted the nav bar over the middle of
+ * later tiles. Without scrolling, sticky elements stay where they sit at scroll 0, and fixed elements —
+ * whose containing block a transformed `body` becomes — are painted once, where the tree recorded them.
  *
  * The surface Chrome paints is never larger than the viewport, so a very tall page costs tile count,
  * not GPU memory — the reason the grown viewport needed a `fullPage` fallback at all.
  */
 
 export interface TilePlan {
-    /** Scroll offsets to shoot, in order. The browser may clamp the last one; the caller reads back. */
+    /** Document offsets to shoot, in order; the last is clamped to the page by `tileShift`. */
     offsets: number[];
     /** Height of the stitched image. */
     height: number;
@@ -34,7 +33,7 @@ export interface TilePlan {
 }
 
 /**
- * The scroll offsets that cover `documentHeight` in viewport steps, capped at `maxHeight`.
+ * The offsets that cover `documentHeight` in viewport steps, capped at `maxHeight`.
  *
  * A zero or unknown height still yields one tile: an empty-looking page photographed is better
  * evidence than no photograph.
@@ -96,63 +95,53 @@ export const placeTiles = (
 };
 
 /**
- * Pins sticky elements in place and marks fixed ones, so later tiles can hide them. Returns nothing;
- * `restoreTileLayoutScript` undoes exactly what this did. Inline `!important` styles, so the page's
- * own stylesheet cannot win, and the previous inline value is kept to restore.
+ * Moves the page under a viewport that never scrolls: `body` is translated up by `y` pixels, so the
+ * viewport shows document rows y..y+height. The page is never scrolled, so nothing that listens for
+ * scrolling runs — a header that turns fixed on scroll stays as it was at scroll 0, and nothing shifts
+ * the layout between the tree read and the picture. A transformed `body` also becomes the containing
+ * block of its fixed descendants, so they are painted once, at the document position the tree recorded
+ * for them, instead of on every tile.
+ *
+ * The first call records `body`'s inline transform so `restoreShiftScript` can put it back.
  */
-export const prepareTileLayoutScript = (): string => `(() => {
-    const all = document.querySelectorAll("body *");
-    for (const el of all) {
-        const position = getComputedStyle(el).position;
-        if (position === "sticky" || position === "-webkit-sticky") {
-            el.setAttribute("data-wby-capture-sticky", el.style.getPropertyValue("position") || "");
-            el.setAttribute(
-                "data-wby-capture-sticky-priority",
-                el.style.getPropertyPriority("position") || ""
-            );
-            el.style.setProperty("position", "static", "important");
-        } else if (position === "fixed") {
-            el.setAttribute("data-wby-capture-fixed", el.style.getPropertyValue("visibility") || "");
-            el.setAttribute(
-                "data-wby-capture-fixed-priority",
-                el.style.getPropertyPriority("visibility") || ""
-            );
-        }
+export const shiftScript = (y: number): string => `(() => {
+    const body = document.body;
+    if (!body) {
+        return;
     }
-})()`;
-
-/** Hides the fixed elements marked by `prepareTileLayoutScript` — for every tile after the first. */
-export const hideFixedScript = (): string => `(() => {
-    for (const el of document.querySelectorAll("[data-wby-capture-fixed]")) {
-        el.style.setProperty("visibility", "hidden", "important");
-    }
-})()`;
-
-export const restoreTileLayoutScript = (): string => `(() => {
-    for (const el of document.querySelectorAll("[data-wby-capture-sticky]")) {
-        const previous = el.getAttribute("data-wby-capture-sticky");
-        const priority = el.getAttribute("data-wby-capture-sticky-priority") || "";
-        if (previous) {
-            el.style.setProperty("position", previous, priority);
-        } else {
-            el.style.removeProperty("position");
-        }
-        el.removeAttribute("data-wby-capture-sticky");
-        el.removeAttribute("data-wby-capture-sticky-priority");
-    }
-    for (const el of document.querySelectorAll("[data-wby-capture-fixed]")) {
-        const previous = el.getAttribute("data-wby-capture-fixed");
-        const priority = el.getAttribute("data-wby-capture-fixed-priority") || "";
-        if (previous) {
-            el.style.setProperty("visibility", previous, priority);
-        } else {
-            el.style.removeProperty("visibility");
-        }
-        el.removeAttribute("data-wby-capture-fixed");
-        el.removeAttribute("data-wby-capture-fixed-priority");
+    if (!body.hasAttribute("data-wby-capture-transform")) {
+        body.setAttribute("data-wby-capture-transform", body.style.getPropertyValue("transform") || "");
+        body.setAttribute(
+            "data-wby-capture-transform-priority",
+            body.style.getPropertyPriority("transform") || ""
+        );
     }
     window.scrollTo(0, 0);
+    body.style.setProperty("transform", "translateY(${-Math.max(0, Math.floor(y))}px)", "important");
 })()`;
+
+export const restoreShiftScript = (): string => `(() => {
+    const body = document.body;
+    if (!body || !body.hasAttribute("data-wby-capture-transform")) {
+        return;
+    }
+    const previous = body.getAttribute("data-wby-capture-transform");
+    const priority = body.getAttribute("data-wby-capture-transform-priority") || "";
+    if (previous) {
+        body.style.setProperty("transform", previous, priority);
+    } else {
+        body.style.removeProperty("transform");
+    }
+    body.removeAttribute("data-wby-capture-transform");
+    body.removeAttribute("data-wby-capture-transform-priority");
+})()`;
+
+/**
+ * Where a tile's shift lands: never past the last full viewport of the page, so the final tile shows
+ * the page's bottom rows rather than empty canvas below them.
+ */
+export const tileShift = (offset: number, height: number, viewportHeight: number): number =>
+    Math.max(0, Math.min(offset, height - viewportHeight));
 
 /**
  * The page's full height. Both measures, because either can be the short one: `body.scrollHeight` is
