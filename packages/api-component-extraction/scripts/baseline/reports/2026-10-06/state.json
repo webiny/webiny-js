@@ -65,14 +65,14 @@
       "runId": "6ac4d615daf3ad0002fc11cd#0001",
       "interventions": [
         "At 11:41 UTC, 21 minutes into Generate, the operator stopped the Generate coordinator's and one component task's Step Functions executions on a misread of elapsed time (UTC log against local clock), then re-triggered Generate on the same run. The pipeline continued the same stage version: 28 finished components were kept and the remaining 3 completed (31 of 31 by 11:46). No output was edited.",
-        "The re-trigger left a pipeline claim that never clears when a re-triggered task continues a running stage, which permanently blocks this run's Assemble and Promote. A pipeline defect, filed separately."
+        "The re-trigger left a pipeline claim that never clears when a re-triggered task continues a running stage, which permanently blocks this run's Assemble and Promote. A pipeline defect, filed separately.",
+        "After the claim fix (c5afbc3800) was deployed, Assemble was triggered on this run at 17:52 UTC: the stage gate cleared the stale claim and Assemble completed (v1), the first live proof of the fix. Promote is held, so nothing from this run is in the Library."
       ],
       "skipStages": {
         "stages": [
-          "assemble",
           "promote"
         ],
-        "reason": "blocked by the stale Generate claim left by the operator re-trigger; neither stage feeds this report, and nothing from this run was promoted to the Library."
+        "reason": "held after the claim recovery, so nothing from this run is promoted to the Library during review."
       },
       "completedOn": "2026-10-06T13:52:20.010Z"
     },

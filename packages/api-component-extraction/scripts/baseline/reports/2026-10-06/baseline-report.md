@@ -1,6 +1,6 @@
 # Migration pipeline baseline
 
-Generated 2026-10-06T17:40:20.275Z from the runs recorded in `state.json`. Prices from the table dated 2026-10-06 (`src/domain/modelCost.ts`); cache rates marked "assumed" there are the standard multipliers, not published figures.
+Generated 2026-10-06T18:08:45.694Z from the runs recorded in `state.json`. Prices from the table dated 2026-10-06 (`src/domain/modelCost.ts`); cache rates marked "assumed" there are the standard multipliers, not published figures.
 
 **No Kentico site is in this set.** Four sites are on G5 Marketing Cloud and one on RealPage LeaseStar, identified from public asset and API hosts.
 
@@ -19,7 +19,7 @@ Two readings of every share, side by side. **Page-weighted** counts each compone
 
 "Passed" is a machine reading: generated, every validator green, rendered, height within 0.67–1.5x of the source section, at least one image where the section showed any, and no broken image. Images are counted as distinct sources visible inside the section box on the source side and as distinct images the render used on the other; a partial shortfall is listed as information, not a failure, because a box-based count cannot see which stacked carousel slide is on top. Components with no output count as failures here and in every share below.
 
-**What these numbers do not mean.** Every check behind them reads content and structure — text present, props declared, variables known, a height, an image request — and none reads appearance. A component can pass all of them while looking plainly wrong: Park City Place's Property Description passes every check and shows a different photograph from its section, a line pattern tiled over its body text, and the wrong display font. So the validator pass rate and the machine pass rate measure the absence of the defects the checks can see, not fidelity, and neither should be quoted as how much of a site migrated. Realpage's measure is the verdicts in the review sheet.
+**What these numbers do not mean.** Every check behind them reads content and structure — text present, props declared, variables known, a height, an image request — and none reads appearance. A component can pass all of them while looking plainly wrong: Park City Place's Property Description passes every check and shows a different photograph from its section, a line pattern tiled over its body text, and the wrong display font. So the validator pass rate and the machine pass rate measure the absence of the defects the checks can see, not fidelity, and neither should be quoted as how much of a site migrated. Realpage's measure is the human verdicts given in the admin.
 
 ## Main failure patterns
 
@@ -107,7 +107,8 @@ Job `6ac4d613daf3ad0002fc11cc#0001`, run `6ac4d615daf3ad0002fc11cd#0001`, status
 
 **Operator intervention:** At 11:41 UTC, 21 minutes into Generate, the operator stopped the Generate coordinator's and one component task's Step Functions executions on a misread of elapsed time (UTC log against local clock), then re-triggered Generate on the same run. The pipeline continued the same stage version: 28 finished components were kept and the remaining 3 completed (31 of 31 by 11:46). No output was edited.
 **Operator intervention:** The re-trigger left a pipeline claim that never clears when a re-triggered task continues a running stage, which permanently blocks this run's Assemble and Promote. A pipeline defect, filed separately.
-**Stages not run:** assemble, promote — blocked by the stale Generate claim left by the operator re-trigger; neither stage feeds this report, and nothing from this run was promoted to the Library.
+**Operator intervention:** After the claim fix (c5afbc3800) was deployed, Assemble was triggered on this run at 17:52 UTC: the stage gate cleared the stale claim and Assemble completed (v1), the first live proof of the fix. Promote is held, so nothing from this run is in the Library.
+**Stages not run:** promote — held after the claim recovery, so nothing from this run is promoted to the Library during review.
 
 | pages captured | pages failed | sections | clusters | components planned | generated | no output |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
