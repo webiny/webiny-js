@@ -24,6 +24,14 @@ describe("priceFor", () => {
         expect(priceFor("claude-opus-5")?.input).toBe(5);
     });
 
+    it("finds a model recorded with its vendor prefix, as AI Power-Ups records it", () => {
+        expect(priceFor("anthropic/claude-sonnet-5")?.input).toBe(2);
+    });
+
+    it("does not price another vendor's model by dropping its prefix", () => {
+        expect(priceFor("openai/gpt-5.5")).toBeNull();
+    });
+
     it("has no price for a model it does not list", () => {
         expect(priceFor("gpt-5.5")).toBeNull();
     });

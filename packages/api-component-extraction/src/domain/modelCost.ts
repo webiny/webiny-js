@@ -68,10 +68,14 @@ export const MODEL_PRICES: Readonly<Record<string, ModelPrice>> = {
 
 /**
  * The price entry for a model id: exact, else the longest entry the id starts with, so a dated or
- * suffixed id (`claude-haiku-4-5-20251001`) still finds its model. Null when nothing matches.
+ * suffixed id (`claude-haiku-4-5-20251001`) still finds its model. A vendor prefix is dropped first:
+ * AI Power-Ups records models as `anthropic/claude-sonnet-5`. Null when nothing matches.
  */
 export const priceFor = (modelId: string): ModelPrice | null => {
-    const id = modelId.trim().toLowerCase();
+    const id = modelId
+        .trim()
+        .toLowerCase()
+        .replace(/^anthropic\//, "");
     if (MODEL_PRICES[id]) {
         return MODEL_PRICES[id];
     }
