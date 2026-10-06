@@ -24,6 +24,21 @@ const withDefaultStyles = (styles: CssProperties) => {
     return { ...defaultStyles, ...styles };
 };
 
+/**
+ * Whether the caller's input data holds a value at a traverser path such as `columns/0/links`. An
+ * explicit empty list is a value; a missing one is not.
+ */
+const hasValueAtPath = (data: Record<string, any>, path: string): boolean => {
+    let current: any = data;
+    for (const segment of path.split("/")) {
+        if (current === null || current === undefined) {
+            return false;
+        }
+        current = current[segment];
+    }
+    return current !== null && current !== undefined;
+};
+
 export interface ElementFactoryCreateElementParams {
     componentName: string;
     parentId: string;
@@ -247,7 +262,31 @@ export class ElementFactory {
                         })
                     );
                 }
-            } else if (isObject && isList) {
+            } else if (isObject && isList && Array.isArray(value)) {
+                /*
+                 * The traverser hands an object list to the visitor as a whole only when it holds no
+                 * items: items are visited through their fields, or one by one when the list
+                 * declares none. Nothing to write for an empty list, unless the caller gave no value
+                 * at all and the input declares default items — then those items are bound exactly
+                 * as given ones would be.
+                 */
+                const defaults = node.input.defaultValue;
+                if (
+                    !ignoreDefaultValues &&
+                    !hasValueAtPath(inputData, path) &&
+                    Array.isArray(defaults) &&
+                    defaults.length > 0
+                ) {
+                    ops.push(
+                        ...this.generateOperationsFromBindings({
+                            elementId,
+                            inputsAst: [{ ...node, name: path }],
+                            bindings: { inputs: { [path]: defaults }, styles: {} },
+                            operations,
+                            ignoreDefaultValues
+                        })
+                    );
+                }
                 return;
             } else {
                 ops.push(
