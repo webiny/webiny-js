@@ -89,4 +89,23 @@ describe("BannersPresenter", () => {
 
         expect(presenter.vm.banner).toBeNull();
     });
+
+    /*
+     * A <Banner> calls show() again whenever its props change. A banner the user closed must stay
+     * closed until its owner hides it, and only then may it come back.
+     */
+    it("keeps a dismissed banner closed until its owner hides it", () => {
+        const { banners, presenter } = setup();
+
+        banners.show({ id: "a", variant: "success", message: "Saved.", dismissible: true });
+        presenter.dismiss();
+        banners.show({ id: "a", variant: "success", message: "Saved again.", dismissible: true });
+
+        expect(presenter.vm.banner).toBeNull();
+
+        banners.hide("a");
+        banners.show({ id: "a", variant: "success", message: "Saved once more." });
+
+        expect(presenter.vm.banner?.message).toBe("Saved once more.");
+    });
 });

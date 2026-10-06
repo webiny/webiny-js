@@ -58,6 +58,7 @@ export const BannerBar = createReactiveComponent(() => {
                 variant={"ghost"}
                 size={"sm"}
                 icon={<CloseIcon />}
+                aria-label={"Dismiss banner"}
                 onClick={() => presenter.dismiss()}
             />
         );

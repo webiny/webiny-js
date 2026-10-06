@@ -29,7 +29,14 @@ export interface IBanner {
  */
 export interface IBanners {
     show(banner: IBanner): void;
+    // Removes the banner. Called by whoever showed it, once its cause has gone away.
     hide(id: string): void;
+    /*
+     * Removes the banner because the user closed it, and ignores `show()` for that id until
+     * `hide()` is called. Otherwise an owner that shows the banner again on every change would
+     * bring it straight back.
+     */
+    dismiss(id: string): void;
     getBanners(): IBanner[];
 }
 

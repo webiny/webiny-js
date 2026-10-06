@@ -55,7 +55,7 @@ class BannersPresenterImpl implements Abstraction.Interface {
     dismiss(): void {
         const banner = this.current;
         if (banner) {
-            this.banners.hide(banner.id);
+            this.banners.dismiss(banner.id);
         }
     }
 
