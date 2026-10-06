@@ -17,6 +17,11 @@ export interface IAssumePermissionsTarget {
  */
 export interface IAssumedPermissions extends IAssumePermissionsTarget {
     startedBy: string;
+    /*
+     * The Admin path the preview was started from, such as the role form. Exiting goes back
+     * there. Absent when the preview was started from somewhere with nothing to return to.
+     */
+    returnTo?: string;
 }
 
 export interface IAssumePermissionsContext {
@@ -33,8 +38,19 @@ export namespace AssumePermissionsContext {
     export type Value = IAssumedPermissions;
 }
 
+export interface IAssumePermissionsOptions {
+    /*
+     * Where exiting should return to. Only taken when no preview is running yet: switching from one
+     * role to the next keeps the place the first preview started from.
+     */
+    returnTo?: string;
+}
+
 export interface IAssumePermissionsUseCase {
-    execute(target: IAssumePermissionsTarget | null): Promise<void>;
+    execute(
+        target: IAssumePermissionsTarget | null,
+        options?: IAssumePermissionsOptions
+    ): Promise<void>;
 }
 
 export const AssumePermissionsUseCase = createAbstraction<IAssumePermissionsUseCase>(
@@ -44,6 +60,7 @@ export const AssumePermissionsUseCase = createAbstraction<IAssumePermissionsUseC
 export namespace AssumePermissionsUseCase {
     export type Interface = IAssumePermissionsUseCase;
     export type Target = IAssumePermissionsTarget;
+    export type Options = IAssumePermissionsOptions;
 }
 
 export interface IAssumableTargetsDto {

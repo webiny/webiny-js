@@ -27,9 +27,12 @@ class AssumePermissionsUseCaseImpl implements Abstraction.Interface {
         private logInRepository: LogInRepository.Interface
     ) {}
 
-    async execute(target: Abstraction.Target | null): Promise<void> {
+    async execute(
+        target: Abstraction.Target | null,
+        options: Abstraction.Options = {}
+    ): Promise<void> {
         const previous = this.assumePermissionsContext.get();
-        const value = this.toStored(target);
+        const value = this.toStored(target, previous, options);
         this.assumePermissionsContext.set(value);
 
         try {
@@ -48,14 +51,25 @@ class AssumePermissionsUseCaseImpl implements Abstraction.Interface {
      * The identity id is the same whether or not a preview is running (only the permissions
      * change), so switching straight from one role to another still records the right person.
      */
-    private toStored(target: Abstraction.Target | null): AssumePermissionsContext.Value | null {
+    private toStored(
+        target: Abstraction.Target | null,
+        previous: AssumePermissionsContext.Value | null,
+        options: Abstraction.Options
+    ): AssumePermissionsContext.Value | null {
         if (!target) {
             return null;
         }
 
         const identity = this.identityContext.getIdentity();
+        const value: AssumePermissionsContext.Value = { ...target, startedBy: identity.id };
 
-        return { ...target, startedBy: identity.id };
+        // Switching from one role to the next keeps the place the first preview started from.
+        const returnTo = previous?.returnTo ?? options.returnTo;
+        if (returnTo) {
+            value.returnTo = returnTo;
+        }
+
+        return value;
     }
 
     private async verify(value: AssumePermissionsContext.Value | null): Promise<void> {

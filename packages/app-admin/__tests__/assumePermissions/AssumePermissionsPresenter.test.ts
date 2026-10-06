@@ -26,6 +26,7 @@ const setup = (options: SetupOptions) => {
     const { dto, teamsEnabled = true, ownPermissions = [{ name: "*" }], assumeError } = options;
     const calls: Array<{ includeTeams: boolean }> = [];
     const previewed: Array<AssumePermissionsUseCase.Target | null> = [];
+    const passedOptions: Array<AssumePermissionsUseCase.Options | undefined> = [];
     const container = new Container();
 
     container.register(IdentityContextImpl).inSingletonScope();
@@ -48,8 +49,12 @@ const setup = (options: SetupOptions) => {
         set: () => undefined
     });
     container.registerInstance(AssumePermissionsUseCase, {
-        execute: async (target: AssumePermissionsUseCase.Target | null) => {
+        execute: async (
+            target: AssumePermissionsUseCase.Target | null,
+            passed?: AssumePermissionsUseCase.Options
+        ) => {
             previewed.push(target);
+            passedOptions.push(passed);
             if (assumeError) {
                 throw assumeError;
             }
@@ -69,7 +74,7 @@ const setup = (options: SetupOptions) => {
     container.register(ListAssumableTargetsUseCase);
     container.register(AssumePermissionsPresenter).inSingletonScope();
 
-    return { presenter: container.resolve(PresenterAbstraction), calls, previewed };
+    return { presenter: container.resolve(PresenterAbstraction), calls, previewed, passedOptions };
 };
 
 describe("AssumePermissionsPresenter", () => {
@@ -101,6 +106,19 @@ describe("AssumePermissionsPresenter", () => {
         await presenter.assume("team:t1");
 
         expect(previewed).toEqual([{ type: "team", id: "t1", name: "Marketing" }]);
+    });
+
+    // Mid-preview, from the header control: the use case keeps the page the first preview began on.
+    it("records no page when switching from the header control", async () => {
+        const { presenter, passedOptions } = setup({
+            dto: { roles: [{ id: "r1", name: "Editor" }], teams: [] },
+            assumeError: new Error("Nope.")
+        });
+
+        await presenter.load();
+        await presenter.assume("role:r1");
+
+        expect(passedOptions).toEqual([{}]);
     });
 
     it("does not ask for teams when teams are disabled", async () => {
@@ -149,6 +167,18 @@ describe("AssumePermissionsPresenter", () => {
             await presenter.assumeTarget({ type: "team", id: "editorial", name: "Editorial" });
 
             expect(previewed).toEqual([{ type: "team", id: "editorial", name: "Editorial" }]);
+        });
+
+        it("records the page it was started from, so exiting can return there", async () => {
+            window.history.pushState({}, "", "/access-management/roles?id=editor");
+            const { presenter, passedOptions } = setup({
+                dto: { roles: [], teams: [] },
+                assumeError: new Error("Nope.")
+            });
+
+            await presenter.assumeTarget({ type: "role", id: "editor", name: "Editor" });
+
+            expect(passedOptions).toEqual([{ returnTo: "/access-management/roles?id=editor" }]);
         });
 
         it("surfaces a failure and stops switching", async () => {
