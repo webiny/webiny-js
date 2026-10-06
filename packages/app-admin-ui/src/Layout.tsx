@@ -39,6 +39,10 @@ const parseSidebarState = (raw: unknown): SidebarCachedState | undefined => {
  * banner bar shows, they have to lose its height too, or every page scrolls by exactly that much.
  * The bar is always `--spacing-banner` tall, so plain CSS can do it. Scoped to the wrapper below,
  * which holds both the bar and the views.
+ *
+ * TODO: Temporary. The real fix is for views to fill `main` instead of computing their own height
+ * from the window: make this wrapper a full-height column and `main` `flex-1 min-h-0`, then move
+ * the ~13 views that use `h-main-content` to `h-full`. That also lets the bar wrap its text.
  */
 const MAKE_ROOM_FOR_BANNER =
     "has-[>[data-admin-banner]]:[--spacing-main-content:calc(100vh_-_var(--spacing-header)_-_var(--spacing-banner))]";
