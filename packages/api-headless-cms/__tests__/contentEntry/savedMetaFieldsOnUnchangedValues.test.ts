@@ -8,6 +8,7 @@ import { CreateEntryRevisionFromUseCase } from "~/features/contentEntry/CreateEn
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 import { DeleteEntryUseCase } from "~/features/contentEntry/DeleteEntry/index.js";
 import { RestoreEntryFromBinUseCase } from "~/features/contentEntry/RestoreEntryFromBin/index.js";
+import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import type { CmsEntry } from "~/types";
 
 /**
@@ -69,11 +70,11 @@ describe("Saved/modified meta fields with unchanged values", () => {
 
     const getModel = async () => {
         const context = await getContext();
-        const model = await context.cms.getModel("article");
-        if (!model) {
+        const result = await context.container.resolve(GetModelUseCase).execute("article");
+        if (result.isFail()) {
             throw new Error(`Missing "article" model!`);
         }
-        return { context, model };
+        return { context, model: result.value };
     };
 
     const createStoredArticle = async (): Promise<CmsEntry> => {
