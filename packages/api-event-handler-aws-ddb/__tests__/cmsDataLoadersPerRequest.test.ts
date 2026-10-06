@@ -22,9 +22,10 @@ describe("api-event-handler-aws-ddb — CMS DataLoaders scope", () => {
             seen.push([first, second]);
         });
 
+        const documentClient = getDocumentClient();
         const handler = createAwsDdbApiHandler({
             extensions: () => [probe],
-            documentClient: getDocumentClient()
+            documentClient
         });
 
         const sendRequest = async (requestId: string) => {

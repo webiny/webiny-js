@@ -35,9 +35,10 @@ describe("api-event-handler-aws-ddb — CMS storage decorators", () => {
             resolved.push(listModels);
         });
 
+        const documentClient = getDocumentClient();
         const handler = createAwsDdbApiHandler({
             extensions: () => [extension],
-            documentClient: getDocumentClient()
+            documentClient
         });
 
         const body = JSON.stringify({ query: "{ __typename }" });
