@@ -194,7 +194,8 @@ describe("WebsocketsServer", () => {
             });
             await server.start();
 
-            const client = new WebSocket(`ws://127.0.0.1:${server.port()}/?token=t`);
+            const port = server.port();
+            const client = new WebSocket(`ws://127.0.0.1:${port}/?token=t`);
             await new Promise(resolve => client.once("open", resolve));
             await closeClient(client);
             await wait(50);
@@ -204,7 +205,8 @@ describe("WebsocketsServer", () => {
 
             expect(registry.register).toHaveBeenCalledTimes(1);
             expect(registry.unregister).toHaveBeenCalledTimes(1);
-            expect(manager.getActiveConnectionIds()).toEqual([]);
+            const activeConnectionIds = manager.getActiveConnectionIds();
+            expect(activeConnectionIds).toEqual([]);
 
             await server.stop();
         });

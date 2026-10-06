@@ -202,7 +202,8 @@ describe("Node HTTP server streaming", () => {
             });
             const released = producerReleased.promise.then(() => "released");
 
-            expect(await Promise.race([released, timedOut])).toBe("released");
+            const outcome = await Promise.race([released, timedOut]);
+            expect(outcome).toBe("released");
         } finally {
             await server.close();
         }

@@ -275,8 +275,9 @@ describe("TaskOrchestrator", () => {
         await orchestrator.run();
         const elapsed = Date.now() - started;
 
+        const messageTypes = messages.map(m => m.type);
         expect(receivedDelays).toEqual([30, -1]);
-        expect(messages.map(m => m.type)).toEqual(["done"]);
+        expect(messageTypes).toEqual(["done"]);
         // The runner's `wait` decides how long to pause; the worker does not wait the delay itself.
         expect(elapsed).toBeLessThan(1_000);
     });
@@ -284,7 +285,8 @@ describe("TaskOrchestrator", () => {
     it("should decode a multi-byte character split across response chunks", async () => {
         const json = JSON.stringify({ status: "done", output: "žđ€" });
         const body = Buffer.from(json, "utf8");
-        const splitAt = body.indexOf(Buffer.from("€", "utf8")) + 1;
+        const euro = Buffer.from("€", "utf8");
+        const splitAt = body.indexOf(euro) + 1;
 
         const created = http.createServer((req, res) => {
             req.resume();
