@@ -17,6 +17,7 @@
  */
 import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
+import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import type { Container } from "@webiny/di";
 import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
@@ -89,6 +90,8 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // ── Encryption key cache (root) ────────────────────────────
             // Root, so the scrypt-derived key is computed once per process instead of per request.
             EncryptionKeyCacheFeature.register(rootContainer);
+            // Root, so identity providers' signing keys are fetched once per process, not per request.
+            JwksStoreFeature.register(rootContainer);
 
             // ── Background tasks (root) ────────────────────────────────
             // Mirrors the AWS handler registering its background-task transport at root. There is no

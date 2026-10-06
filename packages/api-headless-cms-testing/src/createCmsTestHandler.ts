@@ -4,6 +4,7 @@ import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-co
 import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { GraphQLSchemaKeyVerificationFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
+import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
@@ -88,6 +89,8 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
         GraphQLSchemaKeyVerificationFeature.register(container);
         // Same as the real handlers, so the encryption key is derived once, not per request.
         EncryptionKeyCacheFeature.register(container);
+        // Root, so identity providers' signing keys are fetched once per process, not per request.
+        JwksStoreFeature.register(container);
     };
 
     // Everything up to (but not including) the GraphQL engine — shared by the HTTP handler and the
