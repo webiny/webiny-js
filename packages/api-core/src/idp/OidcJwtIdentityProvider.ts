@@ -76,8 +76,10 @@ class OidcJwtIdentityProviderImpl implements JwtIdentityProvider.Interface {
         // Fetch JWKs from cache
         const jwks = await this.jwksCache.getKeys(provider.issuer);
 
-        // Find matching JWK using header.kid. A key we don't have may be a key the issuer rotated in
-        // since the keys were cached, so fetch them once more before rejecting the token.
+        /*
+         * Find matching JWK using header.kid. A key we don't have may be a key the issuer rotated in
+         * since the keys were cached, so fetch them once more before rejecting the token.
+         */
         let jwk = jwks.find(key => key.kid === header.kid);
         if (!jwk) {
             const refreshed = await this.jwksCache.refreshKeys(provider.issuer);

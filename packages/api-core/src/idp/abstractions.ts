@@ -73,8 +73,8 @@ interface IJwkCache {
     getKeys(issuer: string): Promise<IJwk[]>;
     /**
      * Fetches the issuer's keys again, for a token signed with a key the cached set doesn't have
-     * (the issuer rotated its keys). Returns null when the keys were fetched less than a minute ago,
-     * so tokens with made-up key ids can't make every request call the issuer.
+     * (the issuer rotated its keys). Returns null when a fetch started less than a minute ago, or
+     * when the fetch fails, so tokens with made-up key ids can't make every request call the issuer.
      */
     refreshKeys(issuer: string): Promise<IJwk[] | null>;
 }
@@ -86,14 +86,19 @@ export namespace JwkCache {
     export type Jwk = IJwk;
 }
 
-export interface IJwksStoreEntry {
-    keys: IJwk[];
-    fetchedAt: number;
+export interface IJwksIssuerState {
+    keys?: IJwk[];
+    // When the keys were last fetched successfully.
+    fetchedAt?: number;
+    // When a fetch last started, successful or not. Limits how often an unknown key id can refetch.
+    lastAttemptAt?: number;
+    // The fetch in progress, shared by every request that needs it.
+    pending?: Promise<IJwk[]>;
 }
 
 export interface IJwksStore {
-    get(issuer: string): IJwksStoreEntry | undefined;
-    set(issuer: string, entry: IJwksStoreEntry): void;
+    // Returns the issuer's state, creating it on first use. Callers update it in place.
+    get(issuer: string): IJwksIssuerState;
 }
 
 /**
@@ -103,5 +108,5 @@ export interface IJwksStore {
 export const JwksStore = createAbstraction<IJwksStore>("JwksStore");
 export namespace JwksStore {
     export type Interface = IJwksStore;
-    export type Entry = IJwksStoreEntry;
+    export type IssuerState = IJwksIssuerState;
 }

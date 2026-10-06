@@ -118,4 +118,78 @@ describe("JwksCache", () => {
             vi.useRealTimers();
         }
     });
+
+    it("fetches the keys again once they're older than ten minutes", async () => {
+        vi.useFakeTimers();
+        try {
+            const { createRequestCache, requestJson } = createRootWithStore({ ...RESPONSES });
+            await createRequestCache().getKeys(ISSUER);
+
+            vi.advanceTimersByTime(9 * 60_000);
+            await createRequestCache().getKeys(ISSUER);
+            expect(requestJson).toHaveBeenCalledTimes(2);
+
+            vi.advanceTimersByTime(60_001);
+            await createRequestCache().getKeys(ISSUER);
+            expect(requestJson).toHaveBeenCalledTimes(4);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it("keeps using expired keys while the issuer can't be reached, and retries a minute later", async () => {
+        vi.useFakeTimers();
+        try {
+            const responses: Record<string, unknown> = { ...RESPONSES };
+            const { createRequestCache, requestJson } = createRootWithStore(responses);
+            await createRequestCache().getKeys(ISSUER);
+
+            delete responses[OPENID_CONFIGURATION_URL];
+            vi.advanceTimersByTime(10 * 60_000 + 1);
+
+            await expect(createRequestCache().getKeys(ISSUER)).resolves.toEqual(KEYS);
+            await expect(createRequestCache().getKeys(ISSUER)).resolves.toEqual(KEYS);
+            // The first expired read tried once; the second waited.
+            expect(requestJson).toHaveBeenCalledTimes(3);
+
+            vi.advanceTimersByTime(60_001);
+            await createRequestCache().getKeys(ISSUER);
+            expect(requestJson).toHaveBeenCalledTimes(4);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it("shares one fetch between concurrent requests", async () => {
+        const { createRequestCache, requestJson } = createRootWithStore({ ...RESPONSES });
+
+        const first = createRequestCache().getKeys(ISSUER);
+        const second = createRequestCache().getKeys(ISSUER);
+        const [firstKeys, secondKeys] = await Promise.all([first, second]);
+
+        expect(firstKeys).toEqual(KEYS);
+        expect(secondKeys).toEqual(KEYS);
+        expect(requestJson).toHaveBeenCalledTimes(2);
+    });
+
+    it("counts a failed refresh toward the once-a-minute limit and returns null", async () => {
+        vi.useFakeTimers();
+        try {
+            const responses: Record<string, unknown> = { ...RESPONSES };
+            const { createRequestCache, requestJson } = createRootWithStore(responses);
+            await createRequestCache().getKeys(ISSUER);
+
+            delete responses[OPENID_CONFIGURATION_URL];
+            vi.advanceTimersByTime(60_001);
+
+            const failed = await createRequestCache().refreshKeys(ISSUER);
+            const again = await createRequestCache().refreshKeys(ISSUER);
+
+            expect(failed).toBeNull();
+            expect(again).toBeNull();
+            expect(requestJson).toHaveBeenCalledTimes(3);
+        } finally {
+            vi.useRealTimers();
+        }
+    });
 });

@@ -8,8 +8,10 @@ export const IdpAuthenticatorFeature = createFeature({
     register(container) {
         container.register(JwtAuthenticator);
         container.register(OidcJwtIdentityProvider);
-        // Per request. The keys outlive it through JwksStore, which belongs in the root container
-        // (JwksStoreFeature).
+        /*
+         * Per request. The keys outlive it through JwksStore, which belongs in the root container
+         * (JwksStoreFeature).
+         */
         container.register(JwksCache).inSingletonScope();
     }
 });

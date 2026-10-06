@@ -5,8 +5,12 @@ import { HttpClient } from "~/features/httpClient/index.js";
 import { JwkCache } from "./abstractions.js";
 import { JwksStore } from "./abstractions.js";
 
-// How long fetched keys are trusted before an unknown key id may fetch them again.
-const MIN_REFRESH_INTERVAL_MS = 60_000;
+// Keys older than this are fetched again, so a key the issuer removes stops verifying tokens.
+const MAX_AGE_MS = 10 * 60_000;
+
+// The shortest time between two fetches that aren't for missing keys: refreshes for unknown key
+// ids, and retries after a failed fetch.
+const MIN_REFETCH_INTERVAL_MS = 60_000;
 
 const oidcConfigurationSchema = z.object({
     jwks_uri: z.string()
@@ -23,9 +27,16 @@ function getOpenidConfigurationUrl(issuer: string): string {
     return openidUrl.toString();
 }
 
+function attemptedRecently(state: JwksStore.IssuerState): boolean {
+    if (!state.lastAttemptAt) {
+        return false;
+    }
+    return Date.now() - state.lastAttemptAt < MIN_REFETCH_INTERVAL_MS;
+}
+
 class JwksCacheImpl implements JwkCache.Interface {
     // Used when no JwksStore is registered: the keys then last for this instance only.
-    private readonly entries = new Map<string, JwksStore.Entry>();
+    private readonly states = new Map<string, JwksStore.IssuerState>();
 
     constructor(
         private readonly httpClient: HttpClient.Interface,
@@ -33,45 +44,82 @@ class JwksCacheImpl implements JwkCache.Interface {
     ) {}
 
     async getKeys(issuer: string): Promise<Jwk[]> {
-        const entry = this.getEntry(issuer);
-        if (entry) {
-            return entry.keys;
+        const state = this.getState(issuer);
+
+        // No keys yet: fetch them, and let a failure fail the token verification.
+        if (!state.keys) {
+            return this.fetchKeys(issuer, state);
         }
 
-        const fetched = await this.fetchKeys(issuer);
-        return fetched.keys;
+        const age = Date.now() - (state.fetchedAt ?? 0);
+        if (age < MAX_AGE_MS || attemptedRecently(state)) {
+            return state.keys;
+        }
+
+        /*
+         * Expired. Fetch again, but keep using the old keys if the issuer can't be reached, so an
+         * outage doesn't fail every login. The failed attempt counts, so the next try waits.
+         */
+        try {
+            return await this.fetchKeys(issuer, state);
+        } catch {
+            return state.keys;
+        }
     }
 
     async refreshKeys(issuer: string): Promise<Jwk[] | null> {
-        const entry = this.getEntry(issuer);
-        if (entry && Date.now() - entry.fetchedAt < MIN_REFRESH_INTERVAL_MS) {
+        const state = this.getState(issuer);
+        if (attemptedRecently(state)) {
             return null;
         }
 
-        const fetched = await this.fetchKeys(issuer);
-        return fetched.keys;
+        try {
+            return await this.fetchKeys(issuer, state);
+        } catch {
+            return null;
+        }
     }
 
-    private getEntry(issuer: string): JwksStore.Entry | undefined {
+    private getState(issuer: string): JwksStore.IssuerState {
         if (this.store) {
             return this.store.get(issuer);
         }
-        return this.entries.get(issuer);
+
+        let state = this.states.get(issuer);
+        if (!state) {
+            state = {};
+            this.states.set(issuer, state);
+        }
+        return state;
     }
 
-    private async fetchKeys(issuer: string): Promise<JwksStore.Entry> {
+    // One fetch per issuer at a time: concurrent callers share the one in progress.
+    private fetchKeys(issuer: string, state: JwksStore.IssuerState): Promise<Jwk[]> {
+        if (state.pending) {
+            return state.pending;
+        }
+
+        state.lastAttemptAt = Date.now();
+        const pending = this.loadKeys(issuer).then(keys => {
+            state.keys = keys;
+            state.fetchedAt = Date.now();
+            return keys;
+        });
+        state.pending = pending;
+
+        const clearPending = () => {
+            state.pending = undefined;
+        };
+        pending.then(clearPending, clearPending);
+
+        return pending;
+    }
+
+    private async loadKeys(issuer: string): Promise<Jwk[]> {
         const openidConfigurationUrl = getOpenidConfigurationUrl(issuer);
         const oidcConfig = await this.fetchJson(openidConfigurationUrl, oidcConfigurationSchema);
         const jwksResponse = await this.fetchJson(oidcConfig.jwks_uri, jwksSchema);
-        const entry: JwksStore.Entry = { keys: jwksResponse.keys, fetchedAt: Date.now() };
-
-        if (this.store) {
-            this.store.set(issuer, entry);
-        } else {
-            this.entries.set(issuer, entry);
-        }
-
-        return entry;
+        return jwksResponse.keys;
     }
 
     // Throws, so a failed fetch fails the token verification instead of caching a bad answer.
