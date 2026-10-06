@@ -7,15 +7,17 @@
  *
  * `before.json` maps a site's host to the run id of its earlier run: { "www.example.com": "<runId>" }.
  *
- * What it measures, per page captured in both runs (up to `--pages` per site):
- *   - the full-page screenshot's height against the height the tree recorded at the capture viewport —
- *     the drift the grown viewport caused shows as a screenshot taller or shorter than the page the
- *     tree describes;
- *   - sections whose box lies wholly or partly below the bottom of the screenshot — where the old crop
- *     clamp produced 1-pixel crops;
- *   - each section crop's size against its box, which shows the width shrink on tall sections.
- * And it saves, for the page with the largest drift on each site, the first section's crop from both
- * runs side by side.
+ * Viewport-height drift cannot be read off a screenshot's size: the old capture measured the page,
+ * grew the viewport to exactly that height and shot it, so the image was always as tall as the tree's
+ * page — the content inside it moved, the frame did not. So drift is measured on the crops instead.
+ * Sections are matched across the two runs by identical box on the same page — the tree laid the
+ * section out in the same place both times — and each pair of crops is compared. Without drift a
+ * matched pair shows the same content; with it, everything below a viewport-height element shows
+ * whatever slid into that box. The comparison is a coarse greyscale difference, used only to rank
+ * pairs and pick examples: it is read alongside the images, never as a score.
+ *
+ * Also counted per run: sections whose box runs below the bottom of the screenshot, 1-pixel crops (the
+ * old clamp), and crops narrower than their section (the old width shrink).
  */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -31,7 +33,8 @@ const { values: args } = parseArgs({
     before: { type: "string" },
     state: { type: "string" },
     out: { type: "string" },
-    pages: { type: "string", default: "12" }
+    pages: { type: "string", default: "12" },
+    examples: { type: "string", default: "3" }
   }
 });
 if (!args.before || !args.state || !args.out) {
@@ -42,9 +45,10 @@ const before = JSON.parse(await readFile(args.before, "utf8"));
 const state = JSON.parse(await readFile(args.state, "utf8"));
 const OUT = path.resolve(args.out);
 const PAGES = Number(args.pages);
+const EXAMPLES = Number(args.examples);
 await mkdir(path.join(OUT, "evidence"), { recursive: true });
 
-const sizeOf = async (runId, ref) => {
+const fetchImage = async (runId, ref) => {
   if (!ref) {
     return null;
   }
@@ -57,141 +61,123 @@ const sizeOf = async (runId, ref) => {
   }
 };
 
-const measureRun = async (runId, urls) => {
-  const capture = await getStageArtifact(client, runId, "capture");
-  const segment = await getStageArtifact(client, runId, "segment");
-  const sectionsByUrl = new Map(
-    (segment?.pages ?? []).map(page => [page.url, page.sections ?? []])
-  );
-  const pages = new Map();
-  for (const page of capture?.pages ?? []) {
-    if (urls && !urls.has(page.url)) {
-      continue;
-    }
-    const screenshot = await sizeOf(runId, page.screenshotRef);
-    const sections = sectionsByUrl.get(page.url) ?? [];
-    const crops = [];
-    for (const section of sections) {
-      const crop = await sizeOf(runId, section.cropRef);
-      crops.push({ section, crop });
-    }
-    pages.set(page.url, { page, screenshot, crops });
+/** Mean absolute greyscale difference of two images squeezed to 64x64, 0..1. Ranking only. */
+const difference = async (a, b) => {
+  const grid = async bytes =>
+    sharp(bytes).resize(64, 64, { fit: "fill" }).greyscale().raw().toBuffer();
+  const [ga, gb] = await Promise.all([grid(a), grid(b)]);
+  let total = 0;
+  for (let i = 0; i < ga.length; i++) {
+    total += Math.abs(ga[i] - gb[i]);
   }
-  return pages;
+  return total / (ga.length * 255);
+};
+
+const boxKey = box => `${box.x},${box.y},${box.width},${box.height}`;
+
+const readRun = async runId => {
+  const [capture, segment] = await Promise.all([
+    getStageArtifact(client, runId, "capture"),
+    getStageArtifact(client, runId, "segment")
+  ]);
+  return {
+    pages: new Map((capture?.pages ?? []).map(page => [page.url, page])),
+    sections: new Map((segment?.pages ?? []).map(page => [page.url, page.sections ?? []]))
+  };
+};
+
+const tallyRun = async (runId, run, urls) => {
+  const tally = { sections: 0, beyond: 0, sliver: 0, shrunk: 0 };
+  for (const url of urls) {
+    const page = run.pages.get(url);
+    const screenshot = page ? await fetchImage(runId, page.screenshotRef) : null;
+    const scale = screenshot ? screenshot.width / 1440 : 1;
+    for (const section of run.sections.get(url) ?? []) {
+      tally.sections++;
+      const crop = await fetchImage(runId, section.cropRef);
+      const bottom = (section.box.y + section.box.height) * scale;
+      if (screenshot && bottom > screenshot.height + 2) {
+        tally.beyond++;
+      }
+      if (crop && crop.height <= 2 && section.box.height > 16) {
+        tally.sliver++;
+      }
+      if (crop && crop.width < Math.round(section.box.width * scale) - 2) {
+        tally.shrunk++;
+      }
+    }
+  }
+  return tally;
 };
 
 const lines = [
   "# Before and after: capture and crop fixes",
   "",
-  "Each site's earlier run (captured before the fixes) against its baseline run (after). Heights in CSS pixels; a screenshot is 1 pixel per CSS pixel unless it was downscaled.",
+  "Each site's earlier run (captured before the fixes) against its baseline run (after), on the pages both captured. Sections are matched across runs by identical box on the same page; each matched pair of crops is compared with a coarse greyscale difference used only to rank pairs for inspection.",
   ""
 ];
-const rows = [];
-for (const [host, beforeRun] of Object.entries(before)) {
-  const afterRun = state.sites?.[host]?.runId;
-  if (!afterRun) {
+const table = [
+  "| site | pages | matched sections | matched pairs that differ (>0.10) | sections below the screenshot, before / after | 1px crops, before / after | crops narrower than their section, before / after |",
+  "| --- | ---: | ---: | ---: | --- | --- | --- |"
+];
+const examples = [];
+
+for (const [host, beforeRunId] of Object.entries(before)) {
+  const afterRunId = state.sites?.[host]?.runId;
+  if (!afterRunId) {
     continue;
   }
-  const afterPages = await measureRun(afterRun, null);
-  const shared = new Set([...afterPages.keys()].slice(0, PAGES));
-  const beforePages = await measureRun(beforeRun, shared);
+  const [b, a] = await Promise.all([readRun(beforeRunId), readRun(afterRunId)]);
+  const urls = [...a.pages.keys()].filter(url => b.pages.has(url)).slice(0, PAGES);
 
-  const tally = {
-    pages: 0,
-    driftBefore: [],
-    driftAfter: [],
-    beyondBefore: 0,
-    beyondAfter: 0,
-    sliverBefore: 0,
-    sliverAfter: 0,
-    shrunkBefore: 0,
-    shrunkAfter: 0,
-    sections: [0, 0]
-  };
-  let worst = null;
-  for (const url of shared) {
-    const b = beforePages.get(url);
-    const a = afterPages.get(url);
-    if (!b || !a) {
-      continue;
-    }
-    tally.pages++;
-    for (const [side, run, drifts] of [
-      ["before", b, tally.driftBefore],
-      ["after", a, tally.driftAfter]
-    ]) {
-      const shotHeight = run.screenshot?.height ?? null;
-      const scale = run.screenshot ? run.screenshot.width / 1440 : 1;
-      const drift = shotHeight === null ? null : shotHeight / scale - run.page.documentHeight;
-      drifts.push(drift);
-      for (const { section, crop } of run.crops) {
-        const bottom = (section.box.y + section.box.height) * scale;
-        const beyond = shotHeight !== null && bottom > shotHeight + 2;
-        const sliver = crop && crop.height <= 2 && section.box.height > 16;
-        const shrunk = crop && crop.width < Math.round(section.box.width * scale) - 2;
-        if (side === "before") {
-          tally.sections[0]++;
-          tally.beyondBefore += beyond ? 1 : 0;
-          tally.sliverBefore += sliver ? 1 : 0;
-          tally.shrunkBefore += shrunk ? 1 : 0;
-        } else {
-          tally.sections[1]++;
-          tally.beyondAfter += beyond ? 1 : 0;
-          tally.sliverAfter += sliver ? 1 : 0;
-          tally.shrunkAfter += shrunk ? 1 : 0;
-        }
+  const pairs = [];
+  for (const url of urls) {
+    const beforeByBox = new Map((b.sections.get(url) ?? []).map(s => [boxKey(s.box), s]));
+    for (const section of a.sections.get(url) ?? []) {
+      const match = beforeByBox.get(boxKey(section.box));
+      if (!match || !match.cropRef || !section.cropRef) {
+        continue;
       }
-    }
-    const driftBefore = tally.driftBefore[tally.driftBefore.length - 1];
-    if (driftBefore !== null && (!worst || Math.abs(driftBefore) > Math.abs(worst.drift))) {
-      worst = { url, drift: driftBefore, b, a };
+      const [cb, ca] = await Promise.all([
+        fetchImage(beforeRunId, match.cropRef),
+        fetchImage(afterRunId, section.cropRef)
+      ]);
+      if (!cb || !ca) {
+        continue;
+      }
+      pairs.push({ url, box: section.box, diff: await difference(cb.bytes, ca.bytes), cb, ca });
     }
   }
 
-  const fmt = list => {
-    const known = list.filter(v => v !== null);
-    if (known.length === 0) {
-      return "n/a";
-    }
-    const off = known.filter(v => Math.abs(v) > 2).length;
-    const max = Math.max(...known.map(v => Math.abs(v)));
-    return `${off} of ${known.length} pages off by more than 2px (largest ${max.toFixed(0)}px)`;
-  };
-  rows.push(
-    `| ${host} | ${tally.pages} | ${fmt(tally.driftBefore)} | ${fmt(tally.driftAfter)} | ${tally.beyondBefore} / ${tally.sliverBefore} | ${tally.beyondAfter} / ${tally.sliverAfter} | ${tally.shrunkBefore} of ${tally.sections[0]} | ${tally.shrunkAfter} of ${tally.sections[1]} |`
+  const [tb, ta] = await Promise.all([
+    tallyRun(beforeRunId, b, urls),
+    tallyRun(afterRunId, a, urls)
+  ]);
+  table.push(
+    `| ${host} | ${urls.length} | ${pairs.length} | ${pairs.filter(p => p.diff > 0.1).length} | ${tb.beyond} / ${ta.beyond} | ${tb.sliver} / ${ta.sliver} | ${tb.shrunk} of ${tb.sections} / ${ta.shrunk} of ${ta.sections} |`
   );
 
-  if (worst) {
-    const dir = path.join(OUT, "evidence", host);
-    await mkdir(dir, { recursive: true });
-    const first = run => run.crops.find(entry => entry.crop)?.crop?.bytes;
-    const saved = [];
-    for (const [label, run] of [
-      ["before", worst.b],
-      ["after", worst.a]
-    ]) {
-      const bytes = first(run);
-      if (bytes) {
-        await writeFile(path.join(dir, `first-section-${label}.png`), bytes);
-        saved.push(
-          `[${label}](${path.relative(OUT, path.join(dir, `first-section-${label}.png`))})`
-        );
-      }
-    }
-    lines.push(
-      `- **${host}**, \`${new URL(worst.url).pathname}\`: the earlier screenshot was ${worst.drift > 0 ? "taller" : "shorter"} than the tree's page by ${Math.abs(worst.drift).toFixed(0)}px. First section crop: ${saved.join(" · ") || "unavailable"}.`
+  const dir = path.join(OUT, "evidence", host);
+  await mkdir(dir, { recursive: true });
+  for (const [i, pair] of pairs
+    .sort((x, y) => y.diff - x.diff)
+    .slice(0, EXAMPLES)
+    .entries()) {
+    const stem = `${i + 1}-${new URL(pair.url).pathname.replace(/[^a-z0-9]+/gi, "-") || "home"}-y${pair.box.y}`;
+    await writeFile(path.join(dir, `${stem}-before.png`), pair.cb.bytes);
+    await writeFile(path.join(dir, `${stem}-after.png`), pair.ca.bytes);
+    examples.push(
+      `- **${host}** \`${new URL(pair.url).pathname}\`, section at y=${pair.box.y} (${pair.box.width}x${pair.box.height}), difference ${pair.diff.toFixed(2)}: [before](${path.relative(OUT, path.join(dir, `${stem}-before.png`))}) ${pair.cb.width}x${pair.cb.height} · [after](${path.relative(OUT, path.join(dir, `${stem}-after.png`))}) ${pair.ca.width}x${pair.ca.height}`
     );
   }
 }
 
-lines.splice(
-  4,
-  0,
-  "| site | pages compared | screenshot vs tree height, before | after | sections below the screenshot / 1px crops, before | after | crops narrower than their section, before | after |",
-  "| --- | ---: | --- | --- | --- | --- | --- | --- |",
-  ...rows,
+lines.push(
+  ...table,
   "",
-  "Largest drift per site, with the first section's crop from each run:",
+  `The most different matched pairs per site (up to ${EXAMPLES}), to inspect by eye. A difference here can also be content that changed between the two captures — a rotated special, a new photo — so each needs looking at before it counts as drift.`,
+  "",
+  ...examples,
   ""
 );
 await writeFile(path.join(OUT, "before-after.md"), lines.join("\n"));
