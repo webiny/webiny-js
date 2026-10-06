@@ -31,6 +31,15 @@ describe("renderedImageCount", () => {
         ).toBe(1);
     });
 
+    it("does not count an object written where a URL belongs", () => {
+        expect(
+            renderedImageCount(
+                ["https://site.test/[object Object]", "https://site.test/[object%20Object]"],
+                []
+            )
+        ).toBe(0);
+    });
+
     it("does not count inline data images or empty sources", () => {
         expect(renderedImageCount(["data:image/png;base64,AAAA", ""], [])).toBe(0);
     });

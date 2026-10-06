@@ -258,7 +258,11 @@ const failureOf = c => {
   } else if (!c.render.ok) {
     reasons.push(`render failed: ${c.render.error ?? "no error recorded"}`);
   } else if (!inBand(c.heightRatio)) {
-    reasons.push(`height ${ratio(c.heightRatio)} of source`);
+    reasons.push(
+      c.heightRatio === null
+        ? "rendered blank (no height)"
+        : `height ${ratio(c.heightRatio)} of source`
+    );
   }
   if (imagesPresent(c) === false) {
     reasons.push(`no image (section showed ${c.expectedImages})`);

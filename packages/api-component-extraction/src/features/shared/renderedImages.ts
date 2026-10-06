@@ -1,5 +1,12 @@
 import type { Box, CapturedNode } from "~/domain/artifacts.js";
 
+/**
+ * An object written where a URL belongs — a file input's `{ src, … }` value read bare. Both spellings,
+ * since a CSS `url()` comes back percent-encoded. It names no image, so it never counts as one shown.
+ */
+const isStringifiedObject = (url: string): boolean =>
+    url.includes("[object Object]") || url.includes("[object%20Object]");
+
 /** The last two path segments of a URL, without its query: how render audits compare image URLs. */
 export const imageUrlTail = (url: string): string =>
     url.split("?")[0].split("/").slice(-2).join("/");
@@ -13,7 +20,7 @@ export const renderedImageCount = (used: string[], failed: string[]): number => 
     const failedTails = new Set(failed.map(imageUrlTail));
     return new Set(
         used
-            .filter(url => url && !url.startsWith("data:"))
+            .filter(url => url && !url.startsWith("data:") && !isStringifiedObject(url))
             .map(imageUrlTail)
             .filter(tail => !failedTails.has(tail))
     ).size;
