@@ -865,6 +865,12 @@ export interface ImageCheck {
      * element merely has no background. Verified in a browser.
      */
     declaredButUnused: string[];
+    /**
+     * How many distinct images the rendered component showed: `<img>` sources and CSS background
+     * images it used, less those that failed to load. The render's half of "expected vs rendered" —
+     * the source section's own image count is the other. Absent on renders made before this.
+     */
+    renderedImageCount?: number;
 }
 
 export interface RenderRecord {

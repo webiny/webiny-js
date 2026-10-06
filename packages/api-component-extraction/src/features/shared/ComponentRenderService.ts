@@ -3,6 +3,7 @@ import type { BrowserProvider } from "@webiny/site-capture";
 import { BlobStore } from "~/domain/stage.js";
 import type { ImageCheck, SectionGeometry } from "~/domain/artifacts.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
+import { imageUrlTail, renderedImageCount } from "./renderedImages.js";
 
 // The screenshot is taken at the desktop capture width so the rendered image lines up with the source
 // section crop it is compared against. Height is a starting viewport only — the shot is full-page.
@@ -214,7 +215,9 @@ const declaredImageUrls = (source: string): string[] => {
      * which is the measure describing the file rather than the defect.
      */
     const fields = new Set<string>();
-    for (const match of source.matchAll(/name:\s*"([A-Za-z0-9_]+)"\s*,\s*factory:\s*"createFileInput"/g)) {
+    for (const match of source.matchAll(
+        /name:\s*"([A-Za-z0-9_]+)"\s*,\s*factory:\s*"createFileInput"/g
+    )) {
         fields.add(match[1]);
     }
     if (fields.size === 0) {
@@ -406,11 +409,14 @@ class ComponentRenderServiceImpl implements IComponentRenderService {
          * rather than the whole URL, since a CDN may serve a different query string than the one in
          * the source.
          */
-        const tail = (url: string) => url.split("?")[0].split("/").slice(-2).join("/");
-        const used = new Set((measured?.images?.used ?? []).map(tail));
+        const used = new Set((measured?.images?.used ?? []).map(imageUrlTail));
         const declaredButUnused = declaredImageUrls(component.source).filter(
-            url => !used.has(tail(url))
+            url => !used.has(imageUrlTail(url))
         );
+        const failedRequests = [
+            ...(rendered.failedImageRequests ?? []),
+            ...(measured?.images?.broken ?? [])
+        ];
 
         return Result.ok({
             pageErrors: rendered.pageErrors ?? [],
@@ -418,11 +424,9 @@ class ComponentRenderServiceImpl implements IComponentRenderService {
             geometry: measured?.geometry ?? null,
             imageCheck: {
                 stringifiedValues: measured?.images?.stringified ?? [],
-                failedRequests: [
-                    ...(rendered.failedImageRequests ?? []),
-                    ...(measured?.images?.broken ?? [])
-                ].slice(0, 10),
-                declaredButUnused: declaredButUnused.slice(0, 10)
+                failedRequests: failedRequests.slice(0, 10),
+                declaredButUnused: declaredButUnused.slice(0, 10),
+                renderedImageCount: renderedImageCount(measured?.images?.used ?? [], failedRequests)
             },
             renderRef: stored.value,
             width: rendered.width,
