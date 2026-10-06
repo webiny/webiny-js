@@ -407,6 +407,9 @@ const modelReferenceImage = async (crop: Uint8Array): Promise<Buffer> => {
         .toBuffer();
 };
 
+/** The reference image's File Manager id, or why there is none. */
+type ReferenceImage = { fileId: string } | { failure: string };
+
 /**
  * The reference image for the model: the section crop Segment already produced. Copied into a File
  * Manager record so the remote-components generation path can attach it. No cropping here — Segment is
@@ -415,15 +418,15 @@ const modelReferenceImage = async (crop: Uint8Array): Promise<Buffer> => {
 const createReferenceImage = async (
     deps: GenerationDeps,
     input: GenerationInput
-): Promise<string | null> => {
-    const cropRef = input.planned.representativeCrop.cropRef;
+): Promise<ReferenceImage> => {
+    const cropRef = input.planned.representativeCrop?.cropRef;
     if (!cropRef) {
-        return null;
+        return { failure: "no member of the cluster has a usable reference crop" };
     }
     const cropResult = await deps.blobs.get(cropRef);
     if (cropResult.isFail()) {
         await input.log(`Could not read the section crop for "${input.planned.name}".`);
-        return null;
+        return { failure: `the reference crop could not be read: ${cropResult.error.message}` };
     }
     try {
         const bytes = await modelReferenceImage(cropResult.value);
@@ -468,27 +471,50 @@ const createReferenceImage = async (
             await input.log(
                 `Could not create the reference file for "${input.planned.name}": ${created.error.message}`
             );
-            return null;
+            return {
+                failure: `the reference image could not be created: ${created.error.message}`
+            };
         }
-        return created.value.id;
+        return { fileId: created.value.id };
     } catch (error) {
         await input.log(`Could not build the reference image for "${input.planned.name}".`, error);
-        return null;
+        return {
+            failure: `the reference image could not be built: ${
+                error instanceof Error ? error.message : String(error)
+            }`
+        };
     }
 };
 
 /**
+ * What one component's generation came to. `notGenerated` is set, with the reason, when nothing was
+ * attempted; `component` is null then, and also when every attempt failed (with no reason).
+ */
+export interface GenerationOutcome {
+    component: GeneratedComponent | null;
+    notGenerated?: string;
+}
+
+/**
  * Generate one component: crop the reference, then generate + validate up to MAX_ATTEMPTS times, keeping
  * the least-broken attempt. Context-independent (no StageContext) so both the fan-out child task and any
- * inline caller share the exact same behaviour. Returns null when no attempt produced output.
+ * inline caller share the exact same behaviour.
+ *
+ * No reference image, no model call. The prompt tells the model to reproduce the section shown in the
+ * image; sent without one, it pays for a component of nothing in particular that can still pass every
+ * validator. So when the image cannot be made the component is returned as not generated, with why.
  */
 export const generateComponentAttempts = async (
     deps: GenerationDeps,
     input: GenerationInput
-): Promise<GeneratedComponent | null> => {
+): Promise<GenerationOutcome> => {
     const { planned, validVariables, manifestAvailable, slotVariables } = input;
-    const fileId = await createReferenceImage(deps, input);
-    const additionalFileIds = fileId ? [fileId] : [];
+    const reference = await createReferenceImage(deps, input);
+    if ("failure" in reference) {
+        await input.log(`"${planned.name}" not generated: ${reference.failure}.`);
+        return { component: null, notGenerated: reference.failure };
+    }
+    const additionalFileIds = [reference.fileId];
     let best: GeneratedComponent | null = null;
     let bestFailureCount = Number.POSITIVE_INFINITY;
     let previousFailures: string[] | null = null;
@@ -626,5 +652,5 @@ export const generateComponentAttempts = async (
     }
 
     // Report the total attempts actually spent (the token cost), even when an earlier one was kept.
-    return best ? { ...best, attempts } : null;
+    return { component: best ? { ...best, attempts } : null };
 };

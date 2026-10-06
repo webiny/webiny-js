@@ -84,28 +84,6 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
             return controller.response.done("Planned component not found; nothing to generate.");
         }
 
-        /*
-         * No picture, no generation. Segment makes no crop of a box the screenshot does not contain, and
-         * Cluster has already looked for another member to stand in. Generating anyway would send the
-         * model a prompt that says "reproduce the section shown in the reference image" with no image,
-         * and pay for a component of nothing in particular — so it is recorded as not generated, with
-         * the reason, and costs no model call.
-         */
-        if (!planned.representativeCrop?.cropRef) {
-            const reason = "no member of the cluster has a usable reference crop";
-            await log.info({ message: `"${planned.name}" not generated: ${reason}.` });
-            const skipped = await this.artifactStore.putJson(resultKey, {
-                signature: input.signature,
-                component: null,
-                revision: 1,
-                notGenerated: reason
-            } satisfies ComponentResult);
-            if (skipped.isFail()) {
-                return controller.response.error(skipped.error.message);
-            }
-            return controller.response.done(`"${planned.name}" not generated: ${reason}.`);
-        }
-
         // Resolve the theme's css variables for token-binding validation (skipped if unresolved, exactly
         // as the inline stage did — otherwise every var(--wby-*) counts as unknown and all fail).
         const slotVariables = new Map<string, string[]>();
@@ -129,7 +107,7 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         // Run inside the generate model-call scope so the child's model calls (via remote-components) are
         // attributed to the run's Generate stage — exactly as the inline stage did — keeping the token
         // panel's per-stage accounting correct now that the calls happen in per-component child tasks.
-        const component = await this.modelCallScope.run(
+        const outcome = await this.modelCallScope.run(
             {
                 runId: input.runId,
                 stage: "generate",
@@ -158,17 +136,23 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
                 )
         );
 
+        const { component, notGenerated } = outcome;
         const written = await this.artifactStore.putJson(resultKey, {
             signature: input.signature,
             component,
-            revision: 1
+            revision: 1,
+            ...(notGenerated ? { notGenerated } : {})
         } satisfies ComponentResult);
         if (written.isFail()) {
             return controller.response.error(written.error.message);
         }
 
         return controller.response.done(
-            component ? `Generated "${planned.name}".` : `"${planned.name}" produced no output.`
+            component
+                ? `Generated "${planned.name}".`
+                : notGenerated
+                  ? `"${planned.name}" not generated: ${notGenerated}.`
+                  : `"${planned.name}" produced no output.`
         );
     }
 }
