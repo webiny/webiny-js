@@ -35,6 +35,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
     private _showingFilters = false;
     private _fileModel: CmsModel | null = null;
     private _persistFolder = true;
+    private _scope: string | undefined = undefined;
 
     constructor(
         private listPresenter: ListPresenter.Interface<FmFile>,
@@ -51,11 +52,12 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
     ) {
         makeAutoObservable<
             FileManagerPresenterImpl,
-            "_disposeReaction" | "fileDetailsPresenter" | "_persistFolder"
+            "_disposeReaction" | "fileDetailsPresenter" | "_persistFolder" | "_scope"
         >(this, {
             _disposeReaction: false,
             fileDetailsPresenter: false,
             _persistFolder: false,
+            _scope: false,
             vm: computed
         });
 
@@ -130,12 +132,15 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         refresh: () => this.listPresenter.actions.refresh(),
         upload: async (files: SelectedFile[]) => {
             const folderId = this.folderTreePresenter.vm.currentFolderId ?? "root";
+            // Scoped file managers only list files tagged with the scope, so uploads must carry it.
+            const tags = this._scope ? [this._scope] : [];
             await this.fileUploader.uploadMany(
                 files.map(file => ({
                     file: file.src.file,
                     data: {
                         name: file.name,
                         type: file.type,
+                        tags,
                         location: { folderId }
                     }
                 }))
@@ -192,6 +197,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
 
         // Don't persist folder navigation when an explicit initial folder is provided (e.g., overlay).
         this._persistFolder = !config?.initialFolderId;
+        this._scope = config?.scope;
 
         const dataSource = new FileListDataSource(
             this.listFilesUseCase,
