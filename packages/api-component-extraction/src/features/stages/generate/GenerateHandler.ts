@@ -19,8 +19,11 @@ import { noOutputReason } from "./noOutputReason.js";
 // many concurrent sandbox renders (the same resource pressure that bit Capture) — isolation, not a stampede.
 const GENERATE_CONCURRENCY = 4;
 // How long a child may go without writing its result before the coordinator considers it lost and
-// retries it. Comfortably above one component's worst case (MAX_ATTEMPTS slow generate+render calls).
-const CHILD_TIMEOUT_MS = 8 * 60 * 1000;
+// retries it. Longer than a child can live: it runs as one invocation, and a Lambda invocation ends at
+// 15 minutes. At 8 minutes a slow but healthy child (three attempts of ~4 minutes each) was retried while
+// still working, so the component was generated twice and the second result landed after the stage
+// closed. Past 17 minutes the first child is certainly gone.
+const CHILD_TIMEOUT_MS = 17 * 60 * 1000;
 // How many times one component may be (re)triggered before it's given up on as failed.
 const CHILD_MAX_TRIGGERS = 2;
 // Seconds between coordinator poll passes. Each pass is one task iteration, so this is paced against the

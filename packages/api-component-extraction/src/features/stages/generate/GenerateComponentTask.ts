@@ -16,6 +16,7 @@ import {
     generateResultKey,
     type ComponentResult
 } from "./componentGeneration.js";
+import { hasRecordedResult, recordResultOnce } from "./recordResultOnce.js";
 
 export interface GenerateComponentTaskInput {
     runId: string;
@@ -55,6 +56,11 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         }
         const log = controller.logger;
         const resultKey = generateResultKey(input.runId, input.stageVersion, input.signature);
+
+        // Another task already finished this component — a retrigger that overlapped a slow original.
+        if (await hasRecordedResult(this.artifactStore, resultKey)) {
+            return controller.response.done("This component's result is already recorded.");
+        }
 
         const runResult = await this.runRepository.get(input.runId);
         if (runResult.isFail()) {
@@ -137,7 +143,7 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         );
 
         const { component, notGenerated } = outcome;
-        const written = await this.artifactStore.putJson(resultKey, {
+        const written = await recordResultOnce(this.artifactStore, resultKey, {
             signature: input.signature,
             component,
             revision: 1,
@@ -145,6 +151,11 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         } satisfies ComponentResult);
         if (written.isFail()) {
             return controller.response.error(written.error.message);
+        }
+        if (written.value === "already-recorded") {
+            return controller.response.done(
+                `"${planned.name}": another task recorded this component first; this result was discarded.`
+            );
         }
 
         return controller.response.done(
