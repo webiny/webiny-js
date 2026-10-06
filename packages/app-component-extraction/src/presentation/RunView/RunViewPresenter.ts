@@ -17,7 +17,9 @@ import type {
     RenderArtifactDto,
     RunDto,
     StageProgress,
-    CaptureArtifactDto
+    CaptureArtifactDto,
+    ReviewInputDto,
+    ReviewsDto
 } from "~/shared/types.js";
 
 // How long to hold the optimistic "starting" indication before giving up on it. A stage marks itself
@@ -48,6 +50,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         rendering: false,
         renderingSignatures: [],
         decisions: {},
+        reviews: {},
+        reviewVerdicts: [],
+        reviewReasons: [],
+        savingReviews: [],
         sourceCrops: {},
         regenerating: [],
         planRegenerating: [],
@@ -495,6 +501,34 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 this.vm.error = (error as Error).message;
             });
         }
+    }
+
+    async setReview(signature: string, review: ReviewInputDto): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        runInAction(() => {
+            this.vm.savingReviews = [...this.vm.savingReviews, signature];
+        });
+        try {
+            const updated = await this.gateway.setComponentReview(runId, signature, review);
+            runInAction(() => this.applyReviews(updated));
+        } catch (error) {
+            runInAction(() => {
+                this.vm.error = (error as Error).message;
+            });
+        } finally {
+            runInAction(() => {
+                this.vm.savingReviews = this.vm.savingReviews.filter(s => s !== signature);
+            });
+        }
+    }
+
+    private applyReviews(reviews: ReviewsDto | null): void {
+        this.vm.reviews = reviews?.reviews ?? {};
+        this.vm.reviewVerdicts = reviews?.verdicts ?? [];
+        this.vm.reviewReasons = reviews?.reasons ?? [];
     }
 
     async acceptAll(signatures: string[]): Promise<void> {
@@ -1219,9 +1253,11 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     /** Load the accept/reject decisions and the source crop refs the Generate view pairs with renders. */
     private async loadGenerateExtras(run: RunDto): Promise<void> {
         try {
-            const [decisions, plan] = await Promise.all([
+            const [decisions, plan, reviews] = await Promise.all([
                 this.gateway.getDecisions(run.id) as Promise<DecisionsDto | null>,
-                this.gateway.getStageArtifact(run.id, "plan") as Promise<PlanArtifactDto | null>
+                this.gateway.getStageArtifact(run.id, "plan") as Promise<PlanArtifactDto | null>,
+                // A review failing to load leaves the cards without one, never without the comparison.
+                this.gateway.getReviews(run.id).catch(() => null)
             ]);
             const sourceCrops: Record<string, string> = {};
             for (const planned of plan?.components ?? []) {
@@ -1230,6 +1266,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             runInAction(() => {
                 this.vm.decisions = decisions?.decisions ?? {};
                 this.vm.sourceCrops = sourceCrops;
+                this.applyReviews(reviews);
             });
         } catch {
             // The comparison still renders without the source crop or a prior decision.

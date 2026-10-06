@@ -1,7 +1,7 @@
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import type {
     Correction,
-    CorrectionKind,
+    CorrectionLogKind,
     CorrectionLogEntry,
     GateConfig,
     Job,
@@ -109,13 +109,16 @@ export class EntryToCorrectionMapper {
             id: entry.id,
             entryId: entry.entryId,
             createdOn: entry.createdOn,
+            createdBy: entry.createdBy
+                ? { id: entry.createdBy.id, displayName: entry.createdBy.displayName ?? null }
+                : null,
             tenant: entry.tenant,
             runId: entry.values.runId ?? "",
             jobId: entry.values.jobId ?? "",
             stage: (entry.values.stage ?? "discover") as Stage,
             stageVersion: entry.values.stageVersion ?? 0,
             signature: entry.values.signature ?? "",
-            kind: (entry.values.kind ?? "classify.set") as CorrectionKind,
+            kind: (entry.values.kind ?? "classify.set") as CorrectionLogKind,
             machineValue: entry.values.machineValue ?? null,
             humanValue: entry.values.humanValue ?? null
         };

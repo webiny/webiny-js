@@ -145,6 +145,8 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionGetRenders(runId: ID!): ComponentExtractionArtifactResponse!
         "The operator's accept/reject decisions on a run's generated components (W7.8), keyed by signature."
         componentExtractionGetDecisions(runId: ID!): ComponentExtractionArtifactResponse!
+        "Human review verdicts on a run's generated components, keyed by signature: each component's latest, flagged current when given on the output it has now. Data also carries the verdict and reason lists with their labels."
+        componentExtractionGetReviews(runId: ID!): ComponentExtractionArtifactResponse!
         "A run's individual model calls (W7.9): stage, call name, model id, tokens in/out, latency, ok."
         componentExtractionListModelCalls(runId: ID!): ComponentExtractionArtifactResponse!
         "Projected generation cost for a run's plan (W7.9): component count × mean tokens/generate-call from prior runs of the job."
@@ -204,6 +206,14 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             runId: ID!
             signature: String!
             decision: String!
+        ): ComponentExtractionArtifactResponse!
+        "Record a human review verdict on a generated component, bound to its current output. Append-only and logged only: it does not change what Promote moves and does not carry to the job's next run. Returns the updated reviews."
+        componentExtractionSetComponentReview(
+            runId: ID!
+            signature: String!
+            verdict: String!
+            reasons: [String!]
+            note: String
         ): ComponentExtractionArtifactResponse!
         "Regenerate one generated component from an instruction via the refine path (W7.8), re-validating and replacing it."
         componentExtractionRegenerateComponent(

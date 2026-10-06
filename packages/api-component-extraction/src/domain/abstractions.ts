@@ -2,6 +2,7 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type {
     CorrectionLogEntry,
+    CorrectionLogKind,
     CorrectionLogValues,
     Job,
     JobValues,
@@ -131,7 +132,11 @@ export namespace OverrideRepository {
 
 export interface ICorrectionRepository {
     create(values: CorrectionLogValues): Promise<Result<CorrectionLogEntry, ExtractionError>>;
-    listByRun(runId: string): Promise<Result<CorrectionLogEntry[], ExtractionError>>;
+    /** A run's log, in no guaranteed order; `kind` narrows it to one kind. */
+    listByRun(
+        runId: string,
+        kind?: CorrectionLogKind
+    ): Promise<Result<CorrectionLogEntry[], ExtractionError>>;
 }
 
 export const CorrectionRepository = createAbstraction<ICorrectionRepository>(

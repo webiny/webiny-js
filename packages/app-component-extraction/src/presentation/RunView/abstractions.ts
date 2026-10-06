@@ -15,7 +15,10 @@ import type {
     RunDto,
     StageLogItem,
     StageProgress,
-    GeneratedComponentDetailDto
+    GeneratedComponentDetailDto,
+    ComponentReviewDto,
+    ReviewInputDto,
+    ReviewOptionDto
 } from "~/shared/types.js";
 
 export interface IRunViewVm {
@@ -46,6 +49,16 @@ export interface IRunViewVm {
     renderingSignatures: string[];
     /** Accept/reject decisions per component signature (W7.8). */
     decisions: Record<string, ComponentDecisionDto>;
+    /**
+     * Human review verdicts per component signature — the measure Realpage reads. Separate from the
+     * decisions: a verdict is logged only, and never changes what Promote moves.
+     */
+    reviews: Record<string, ComponentReviewDto>;
+    /** The verdict levels and reasons to offer, as the API names them. Empty until loaded. */
+    reviewVerdicts: ReviewOptionDto[];
+    reviewReasons: ReviewOptionDto[];
+    /** Signatures whose review is being saved, so each card can show its own state. */
+    savingReviews: string[];
     /** Source section crop ref per component signature, from the Plan artifact. */
     sourceCrops: Record<string, string>;
     /** Signatures of components whose regenerate (refine) is in flight (W7.8). */
@@ -144,6 +157,8 @@ export interface IRunViewPresenter {
     setDecision(signature: string, decision: string): Promise<void>;
     /** Accept every listed component (the validation-passing ones) in one action. */
     acceptAll(signatures: string[]): Promise<void>;
+    /** Record a human review verdict on a component's current output. */
+    setReview(signature: string, review: ReviewInputDto): Promise<void>;
     /** Regenerate a component from an instruction via the refine path (W7.8). */
     regenerateComponent(signature: string, instruction: string): Promise<void>;
     regeneratePlanComponent(signature: string, instruction?: string): Promise<void>;

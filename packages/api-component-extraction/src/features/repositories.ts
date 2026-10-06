@@ -35,6 +35,7 @@ import {
     type ExtractionError
 } from "~/domain/errors.js";
 import type {
+    CorrectionLogKind,
     CorrectionLogValues,
     JobValues,
     ModelCallValues,
@@ -380,10 +381,11 @@ class CorrectionRepositoryImpl implements CorrectionRepositoryAbstraction.Interf
         return Result.ok(EntryToCorrectionMapper.toCorrection(result.value));
     }
 
-    async listByRun(runId: string) {
+    async listByRun(runId: string, kind?: CorrectionLogKind) {
         const model = await this.modelProvider.get();
+        const input = kind ? { runId, kind } : { runId };
         const result = await this.listLatestEntries.execute(model, {
-            where: this.whereMapper.map({ fields: model.fields, input: { runId } }),
+            where: this.whereMapper.map({ fields: model.fields, input }),
             limit: CORRECTION_LIMIT,
             after: null
         });

@@ -522,6 +522,38 @@ export interface DecisionsDto {
     decisions: Record<string, ComponentDecisionDto>;
 }
 
+/** A human review verdict on one generated component, as the API stands it: its latest. */
+export interface ComponentReviewDto {
+    signature: string;
+    verdict: string;
+    reasons: string[];
+    note: string | null;
+    reviewedOn: string;
+    reviewer: { id: string; displayName: string | null } | null;
+    contentSha256: string;
+    revision: number;
+    /** False once the component has been regenerated or refined since the review was given. */
+    current: boolean;
+}
+
+export interface ReviewOptionDto {
+    value: string;
+    label: string;
+}
+
+export interface ReviewsDto {
+    reviews: Record<string, ComponentReviewDto>;
+    /** The verdict levels and reasons, with their labels — owned by the API, so a relabel is one place. */
+    verdicts: ReviewOptionDto[];
+    reasons: ReviewOptionDto[];
+}
+
+export interface ReviewInputDto {
+    verdict: string;
+    reasons: string[];
+    note: string;
+}
+
 // ----- Page composition (proof of concept) -------------------------------------------------------
 
 /** An instance Assemble placed that composition could not turn into a component. */

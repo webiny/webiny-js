@@ -4,14 +4,17 @@ import { Button, Heading, Icon, Input, Tag, Text, cn } from "@webiny/admin-ui";
 import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { RunImage } from "~/presentation/runImage/RunImage.js";
+import { ReviewControl } from "./ReviewControl.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type {
     ComponentDecisionDto,
     ComponentPromptDto,
+    ComponentReviewDto,
     GenerateArtifactDto,
     GeneratedComponentDto,
     GeneratedComponentDetailDto,
     RenderRecordDto,
+    ReviewOptionDto,
     ValidationResultDto
 } from "~/shared/types.js";
 
@@ -75,8 +78,8 @@ const ImageFinding = ({ render }: { render: RenderRecordDto | undefined }) => {
                 {`Render finding — ${headline}`}
             </Text>
             <Text size="sm" className="text-neutral-strong">
-                Observed after generation, so it failed nothing above. A file input&apos;s value is an
-                object; reading it bare puts &quot;[object Object]&quot; where a URL belongs.
+                Observed after generation, so it failed nothing above. A file input&apos;s value is
+                an object; reading it bare puts &quot;[object Object]&quot; where a URL belongs.
             </Text>
             {[...stringified, ...failed, ...unused].slice(0, 3).map((line, index) => (
                 <Text key={index} size="sm" className="truncate font-mono text-neutral-strong">
@@ -184,6 +187,10 @@ const GenerateCard = ({
     render,
     sourceCropRef,
     decision,
+    review,
+    reviewVerdicts,
+    reviewReasons,
+    reviewSaving,
     regenerating,
     renderingThis,
     runId,
@@ -194,6 +201,10 @@ const GenerateCard = ({
     render: RenderRecordDto | undefined;
     sourceCropRef: string | undefined;
     decision: ComponentDecisionDto | undefined;
+    review: ComponentReviewDto | undefined;
+    reviewVerdicts: ReviewOptionDto[];
+    reviewReasons: ReviewOptionDto[];
+    reviewSaving: boolean;
     regenerating: boolean;
     renderingThis: boolean;
     runId: string;
@@ -458,6 +469,15 @@ const GenerateCard = ({
                     </div>
                 ) : null}
             </div>
+            <ReviewControl
+                key={component.contentSha256}
+                contentSha256={component.contentSha256}
+                review={review}
+                verdicts={reviewVerdicts}
+                reasons={reviewReasons}
+                saving={reviewSaving}
+                onSave={review => void presenter.setReview(component.signature, review)}
+            />
         </div>
     );
 };
@@ -575,6 +595,10 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
                             render={rendersBySignature.get(component.signature)}
                             sourceCropRef={vm.sourceCrops[component.signature]}
                             decision={vm.decisions[component.signature]}
+                            review={vm.reviews[component.signature]}
+                            reviewVerdicts={vm.reviewVerdicts}
+                            reviewReasons={vm.reviewReasons}
+                            reviewSaving={vm.savingReviews.includes(component.signature)}
                             regenerating={vm.regenerating.includes(component.signature)}
                             renderingThis={
                                 vm.rendering || vm.renderingSignatures.includes(component.signature)

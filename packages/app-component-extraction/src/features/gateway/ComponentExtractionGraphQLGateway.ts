@@ -12,7 +12,9 @@ import type {
     RunDto,
     StageLogItem,
     StageTaskOutput,
-    ThemeOptionDto
+    ThemeOptionDto,
+    ReviewInputDto,
+    ReviewsDto
 } from "~/shared/types.js";
 import {
     CHECK_REACHABILITY,
@@ -46,6 +48,8 @@ import {
     RENDER_COMPONENTS,
     RUN_STAGE,
     SET_COMPONENT_DECISION,
+    SET_COMPONENT_REVIEW,
+    GET_REVIEWS,
     SET_OVERRIDE
 } from "./graphql.js";
 
@@ -349,6 +353,29 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: SET_COMPONENT_DECISION, variables: { runId, signature, decision } });
 
         return unwrap(response.componentExtractionSetComponentDecision);
+    }
+
+    async getReviews(runId: string): Promise<ReviewsDto> {
+        const response = await this.client.execute<{
+            componentExtractionGetReviews: GqlEnvelope<ReviewsDto>;
+        }>({ query: GET_REVIEWS, variables: { runId } });
+
+        return unwrap(response.componentExtractionGetReviews);
+    }
+
+    async setComponentReview(
+        runId: string,
+        signature: string,
+        review: ReviewInputDto
+    ): Promise<ReviewsDto> {
+        const response = await this.client.execute<{
+            componentExtractionSetComponentReview: GqlEnvelope<ReviewsDto>;
+        }>({
+            query: SET_COMPONENT_REVIEW,
+            variables: { runId, signature, ...review }
+        });
+
+        return unwrap(response.componentExtractionSetComponentReview);
     }
 
     async regenerateComponent(

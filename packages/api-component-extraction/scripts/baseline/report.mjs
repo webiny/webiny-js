@@ -5,10 +5,10 @@
  *     WEBINY_API_URL=… WEBINY_API_TOKEN=… node scripts/baseline/report.mjs \
  *         --config scripts/baseline/sites.json --state <dir>/state.json --out <dir>
  *
- * Writes `<out>/baseline-report.md`, `<out>/review-sheet.md`, `<out>/review-sheet.csv` and the
- * side-by-side images under `<out>/images/`. When `<out>/verdicts.csv` exists (the review sheet with its
- * verdict column filled in), the report also computes the share of components accepted as is, and as
- * is or with minor polish, per site and overall.
+ * Writes `<out>/baseline-report.md`, `<out>/review-sheet.md` and the side-by-side images under
+ * `<out>/images/`. Verdicts are given in the admin, on each component's Generate card, and stored in the
+ * run's correction log; when any exist the report computes the share migrated without manual edits,
+ * per site and overall, from the verdicts given on each component's current output.
  *
  * Repeatable: run it again after a later milestone with that milestone's state file.
  */
@@ -24,6 +24,7 @@ import {
   createClient,
   getGeneratedComponent,
   getRenders,
+  getReviews,
   getRun,
   getStageArtifact,
   listModelCalls
@@ -51,7 +52,6 @@ const HEIGHT_BAND = { min: 0.67, max: 1.5 };
 /** The cluster threshold the pipeline uses by default — the same bar for "the same block" here. */
 const SAME_BLOCK = 0.85;
 const DESKTOP_WIDTH = 1440;
-const VERDICTS = ["accept as is", "minor polish", "major rework", "reject"];
 
 const usd = value => (value === null || value === undefined ? "n/a" : `$${value.toFixed(2)}`);
 const pct = (part, whole) => (whole > 0 ? `${((100 * part) / whole).toFixed(0)}%` : "n/a");
@@ -63,7 +63,6 @@ const slug = value =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 60);
-const csv = value => `"${String(value ?? "").replace(/"/g, '""')}"`;
 const minutes = (from, to) =>
   from && to ? `${((new Date(to) - new Date(from)) / 60000).toFixed(1)} min` : "n/a";
 const pathOf = url => {
@@ -360,53 +359,84 @@ out(
   "",
   '"Passed" is a machine reading: generated, every validator green, rendered, height within 0.67–1.5x of the source section, at least one image where the section showed any, and no broken image. Images are counted as distinct sources visible inside the section box on the source side and as distinct images the render used on the other; a partial shortfall is listed as information, not a failure, because a box-based count cannot see which stacked carousel slide is on top. Components with no output count as failures here and in every share below.',
   "",
-  "**What these numbers do not mean.** Every check behind them reads content and structure — text present, props declared, variables known, a height, an image request — and none reads appearance. A component can pass all of them while looking plainly wrong: Park City Place's Property Description passes every check and shows a different photograph from its section, a line pattern tiled over its body text, and the wrong display font. So the validator pass rate and the machine pass rate measure the absence of the defects the checks can see, not fidelity, and neither should be quoted as how much of a site migrated. Realpage's measure is the verdicts in the review sheet.",
+  "**What these numbers do not mean.** Every check behind them reads content and structure — text present, props declared, variables known, a height, an image request — and none reads appearance. A component can pass all of them while looking plainly wrong: Park City Place's Property Description passes every check and shows a different photograph from its section, a line pattern tiled over its body text, and the wrong display font. So the validator pass rate and the machine pass rate measure the absence of the defects the checks can see, not fidelity, and neither should be quoted as how much of a site migrated. Realpage's measure is the human verdicts given in the admin.",
   ""
 );
 
-// Verdicts, when present.
-let verdicts = null;
-try {
-  const text = await readFile(path.join(OUT, "verdicts.csv"), "utf8");
-  const [header, ...rows] = text.trim().split(/\r?\n/);
-  const columns = header.split(",").map(c => c.replace(/"/g, "").trim());
-  verdicts = new Map(
-    rows.map(row => {
-      const cells = row
-        .match(/("([^"]|"")*"|[^,]*)(,|$)/g)
-        .map(cell => cell.replace(/,$/, "").replace(/^"|"$/g, "").replace(/""/g, '"'));
-      const record = Object.fromEntries(columns.map((c, i) => [c, cells[i]]));
-      return [`${record.site}|${record.signature}`, (record.verdict ?? "").trim().toLowerCase()];
-    })
-  );
-} catch {
-  verdicts = null;
+/*
+ * Realpage's measure, from the human verdicts given in the admin. Only a verdict given on a component's
+ * current output counts: one given on an earlier revision judged something else. A component with no
+ * output has nothing to review and counts as needing human work. A component nobody has reviewed is
+ * left out of the share and reported as coverage — an unreviewed component is not evidence either way.
+ */
+const reviewed = [];
+const verdictLabels = {};
+const reasonLabels = {};
+for (const s of sites.filter(x => !x.missing)) {
+  const data = await getReviews(client, s.runId).catch(() => null);
+  for (const option of data?.verdicts ?? []) {
+    verdictLabels[option.value] = option.label;
+  }
+  for (const option of data?.reasons ?? []) {
+    reasonLabels[option.value] = option.label;
+  }
+  for (const c of s.components) {
+    const review = data?.reviews?.[c.planned.signature];
+    const current = review && c.ref && review.contentSha256 === c.ref.contentSha256 ? review : null;
+    reviewed.push({ ...c, host: s.host, review: current, staleReview: Boolean(review && !current) });
+  }
 }
-if (verdicts) {
+const eligible = reviewed.filter(c => c.review || !c.ref);
+if (reviewed.some(c => c.review)) {
+  const migrated = c => c.review?.verdict === "migrated";
+  const label = value => verdictLabels[value] ?? value;
+  const reviewers = [
+    ...new Set(reviewed.filter(c => c.review).map(c => c.review.reviewer?.displayName ?? "unknown"))
+  ];
   out(
-    "## Realpage's measure (from the review verdicts)",
+    "## Realpage's measure: Webiny team review",
     "",
-    "Share of each site accepted as is, and as is or with minor polish — page-weighted first (what a visitor sees), then per component. A component with no output, or no verdict, counts as not accepted.",
+    `Verdicts given in the admin by the Webiny team (${reviewers.join(", ")}), on each component's current output. **Internal review only** — not Realpage's reviewers. A later review by Realpage is reported on its own and never pooled with this one.`,
     "",
-    "| site | accept as is, page-weighted | as is or minor polish, page-weighted | accept as is, per component | as is or minor polish, per component |",
-    "| --- | ---: | ---: | ---: | ---: |"
+    `Two levels, after Realpage's own split of a migration: **${label("migrated")}**, and **${label("needs-polish")}**. A component with no output counts as needing polish; an unreviewed one is left out and counted under coverage.`,
+    "",
+    `| site | reviewed | ${label("migrated").toLowerCase()}, page-weighted | per component |`,
+    "| --- | --- | ---: | ---: |"
   );
-  const verdictOf = (host, c) => verdicts.get(`${host}|${c.planned.signature}`) ?? "";
-  const tagged = sites
-    .filter(x => !x.missing)
-    .flatMap(x => x.components.map(c => ({ ...c, host: x.host })));
-  const asIs = c => verdictOf(c.host, c) === "accept as is";
-  const minor = c => ["accept as is", "minor polish"].includes(verdictOf(c.host, c));
-  for (const host of [...new Set(tagged.map(c => c.host))]) {
-    const comps = tagged.filter(c => c.host === host);
+  for (const host of [...new Set(reviewed.map(c => c.host))]) {
+    const all = reviewed.filter(c => c.host === host);
+    const comps = eligible.filter(c => c.host === host);
     out(
-      `| ${host} | ${weighted(comps, asIs)} | ${weighted(comps, minor)} | ${perComponent(comps, asIs)} | ${perComponent(comps, minor)} |`
+      `| ${host} | ${comps.length} of ${all.length} | ${weighted(comps, migrated)} | ${perComponent(comps, migrated)} |`
     );
   }
   out(
-    `| **all** | **${weighted(tagged, asIs)}** | **${weighted(tagged, minor)}** | **${perComponent(tagged, asIs)}** | **${perComponent(tagged, minor)}** |`,
+    `| **all** | **${eligible.length} of ${reviewed.length}** | **${weighted(eligible, migrated)}** | **${perComponent(eligible, migrated)}** |`,
     ""
   );
+  const stale = reviewed.filter(c => c.staleReview).length;
+  if (stale > 0) {
+    out(
+      `${stale} component(s) carry a verdict given on an earlier output and have not been reviewed since; they are counted as unreviewed.`,
+      ""
+    );
+  }
+  const polish = reviewed.filter(c => c.review?.verdict === "needs-polish");
+  const tally = {};
+  for (const c of polish) {
+    for (const reason of c.review.reasons ?? []) {
+      tally[reason] = (tally[reason] ?? 0) + 1;
+    }
+  }
+  out(
+    `Reasons given for the ${polish.length} reviewed component(s) needing polish (several per component allowed, none required):`,
+    ""
+  );
+  for (const [reason, count] of Object.entries(tally).sort((a, b) => b[1] - a[1])) {
+    out(`- ${reasonLabels[reason] ?? reason}: ${count}`);
+  }
+  const noReason = polish.filter(c => (c.review.reasons ?? []).length === 0).length;
+  out(`- no reason given: ${noReason}`, "");
 }
 
 out("## Main failure patterns", "");
@@ -662,41 +692,23 @@ await writeFile(path.join(OUT, "baseline-report.md"), lines.join("\n"));
 const sheet = [
   "# Baseline review sheet",
   "",
-  `One row per planned component. Fill the verdict column with one of: ${VERDICTS.map(v => `**${v}**`).join(", ")}. Rows with no output have no render; leave them blank or mark them reject — either way they count as not accepted. Put the verdicts in \`verdicts.csv\` (the CSV beside this file) and run the report again to compute Realpage's measure.`,
+  "Verdicts are given in the admin, not here: open each site's run, go to Generate, and use the Review panel at the foot of each component card. Pick **Migrated without manual edits** or **Needs human polish**; reasons and a note are optional. A verdict is recorded against the output on screen — if the component is regenerated afterwards, it needs reviewing again. Verdicts do not change what Promote moves. Run the report again to compute the share.",
   "",
-  "| site | # | component | type | pages | machine reading | source | render | verdict |",
-  "| --- | ---: | --- | --- | ---: | --- | --- | --- | --- |"
-];
-const sheetCsv = [
-  "site,signature,component,type,pages,machine_reading,source_image,render_image,verdict,notes"
+  "This listing is for orientation: every planned component with its machine reading. Rows with no output have nothing to review and count as needing polish.",
+  "",
+  "| site | run | # | component | type | pages | machine reading | source | render |",
+  "| --- | --- | ---: | --- | --- | ---: | --- | --- | --- |"
 ];
 for (const s of sites.filter(x => !x.missing)) {
   for (const [i, c] of s.components.entries()) {
     const reading = clean(c) ? "passed" : failureOf(c);
     const pages = c.ref?.pageCount ?? new Set((c.planned.members ?? []).map(m => m.url)).size;
     sheet.push(
-      `| ${s.host} | ${i + 1} | ${c.planned.name} | ${c.planned.type} | ${pages} | ${reading} | ${c.sourceImage ? `![](${c.sourceImage})` : "—"} | ${c.renderImage ? `![](${c.renderImage})` : "no render"} | |`
-    );
-    sheetCsv.push(
-      [
-        s.host,
-        c.planned.signature,
-        c.planned.name,
-        c.planned.type,
-        pages,
-        reading,
-        c.sourceImage ?? "",
-        c.renderImage ?? "",
-        "",
-        ""
-      ]
-        .map(csv)
-        .join(",")
+      `| ${s.host} | \`${s.runId}\` | ${i + 1} | ${c.planned.name} | ${c.planned.type} | ${pages} | ${reading} | ${c.sourceImage ? `![](${c.sourceImage})` : "—"} | ${c.renderImage ? `![](${c.renderImage})` : "no render"} |`
     );
   }
 }
 await writeFile(path.join(OUT, "review-sheet.md"), sheet.join("\n"));
-await writeFile(path.join(OUT, "review-sheet.csv"), sheetCsv.join("\n"));
 console.log(
-  `Wrote ${path.join(OUT, "baseline-report.md")}, review-sheet.md/.csv and ${allComponents.length} component image pair(s).`
+  `Wrote ${path.join(OUT, "baseline-report.md")}, review-sheet.md and ${allComponents.length} component image pair(s).`
 );

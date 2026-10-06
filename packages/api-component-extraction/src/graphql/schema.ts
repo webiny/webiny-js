@@ -54,6 +54,16 @@ import { ExtractionRunInProgressError } from "~/domain/errors.js";
 import type { StageTaskInput } from "~/features/stages/StageTaskRunner.js";
 import { OverrideApplicator, stageArtifactName } from "~/features/shared/OverrideApplicator.js";
 import { decisionsFromOverrides, normalizeUrl } from "~/domain/overrides.js";
+import {
+    latestReviews,
+    parseReview,
+    REVIEW_KIND,
+    REVIEW_REASON_LABELS,
+    REVIEW_REASONS,
+    REVIEW_VERDICT_LABELS,
+    REVIEW_VERDICTS,
+    type ReviewedOutput
+} from "~/domain/review.js";
 import { checkReachability } from "~/features/shared/reachability.js";
 import { ListRemoteComponentsUseCase } from "@webiny/remote-components/api/features/listComponents/abstractions.js";
 
@@ -1220,6 +1230,137 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
 
                     const list = await overrides.listByJob(run.jobId);
                     return { decisions: list.isOk() ? decisionsFromOverrides(list.value) : {} };
+                });
+        }
+    });
+
+    /*
+     * Human review verdicts (the measure Realpage reads). Logged only: a verdict is a correction-log
+     * entry, never an override, so it changes nothing Promote moves and does not carry to the job's
+     * next run. Each is bound to the content hash of the output it was given on.
+     */
+    const reviewsOf = async (
+        store: StageArtifactStore.Interface,
+        corrections: CorrectionRepository.Interface,
+        run: Run
+    ) => {
+        const componentsKey = stageEntry(run.stages, "generate")?.artifacts.components;
+        const artifact = componentsKey
+            ? await store.getJson<GenerateArtifact>(componentsKey)
+            : null;
+        const refs = new Map(
+            (artifact?.isOk() ? (artifact.value?.components ?? []) : []).map(ref => [
+                ref.signature,
+                ref
+            ])
+        );
+        const logged = await corrections.listByRun(run.id, REVIEW_KIND);
+        if (logged.isFail()) {
+            throw logged.error;
+        }
+        return {
+            reviews: latestReviews(logged.value, signature => refs.get(signature)?.contentSha256),
+            verdicts: REVIEW_VERDICTS.map(value => ({ value, label: REVIEW_VERDICT_LABELS[value] })),
+            reasons: REVIEW_REASONS.map(value => ({ value, label: REVIEW_REASON_LABELS[value] }))
+        };
+    };
+
+    builder.addResolver({
+        path: "Query.componentExtractionGetReviews",
+        dependencies: [
+            ComponentExtractionPermissions,
+            RunRepository,
+            StageArtifactStore,
+            CorrectionRepository
+        ],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            store: StageArtifactStore.Interface,
+            corrections: CorrectionRepository.Interface
+        ) {
+            return ({ args }: { args: { runId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    return reviewsOf(store, corrections, runResult.value);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionSetComponentReview",
+        dependencies: [
+            ComponentExtractionPermissions,
+            RunRepository,
+            StageArtifactStore,
+            CorrectionRepository
+        ],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            store: StageArtifactStore.Interface,
+            corrections: CorrectionRepository.Interface
+        ) {
+            return ({
+                args
+            }: {
+                args: {
+                    runId: string;
+                    signature: string;
+                    verdict: string;
+                    reasons?: string[] | null;
+                    note?: string | null;
+                };
+            }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to edit component extraction.");
+                    }
+                    const review = parseReview(args);
+                    if (typeof review === "string") {
+                        throw new Error(review);
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+                    const generate = stageEntry(run.stages, "generate");
+                    const artifact = generate?.artifacts.components
+                        ? await store.getJson<GenerateArtifact>(generate.artifacts.components)
+                        : null;
+                    const ref = artifact?.isOk()
+                        ? artifact.value?.components.find(
+                              component => component.signature === args.signature
+                          )
+                        : undefined;
+                    if (!generate || !ref) {
+                        throw new Error("There is no generated component to review.");
+                    }
+                    const reviewed: ReviewedOutput = {
+                        contentSha256: ref.contentSha256,
+                        revision: ref.revision
+                    };
+                    const created = await corrections.create({
+                        runId: run.id,
+                        jobId: run.jobId,
+                        stage: "generate",
+                        stageVersion: generate.stageVersion,
+                        signature: args.signature,
+                        kind: REVIEW_KIND,
+                        machineValue: reviewed,
+                        humanValue: review
+                    });
+                    if (created.isFail()) {
+                        throw created.error;
+                    }
+                    return reviewsOf(store, corrections, run);
                 });
         }
     });

@@ -92,4 +92,12 @@ export const getGeneratedComponent = (client, runId, signature) =>
     { runId, signature }
   );
 
+/** The human review verdicts recorded in the admin, each component's latest, with the level labels. */
+export const getReviews = (client, runId) =>
+  client.field(
+    "componentExtractionGetReviews",
+    `query ($runId: ID!) { componentExtractionGetReviews(runId: $runId) { data error { message } } }`,
+    { runId }
+  );
+
 export const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));

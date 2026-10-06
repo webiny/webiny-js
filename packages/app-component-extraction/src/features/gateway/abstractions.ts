@@ -10,7 +10,9 @@ import type {
     ReattachmentDto,
     RunDto,
     StageLogItem,
-    ThemeOptionDto
+    ThemeOptionDto,
+    ReviewInputDto,
+    ReviewsDto
 } from "~/shared/types.js";
 
 export interface StageTriggerResult {
@@ -56,6 +58,14 @@ export interface IComponentExtractionGateway {
     getDecisions(runId: string): Promise<unknown>;
     /** Set (or clear, with "none") a component's decision; returns the updated decision map. */
     setComponentDecision(runId: string, signature: string, decision: string): Promise<unknown>;
+    /** Human review verdicts for a run's generated components, with the verdict and reason lists. */
+    getReviews(runId: string): Promise<ReviewsDto>;
+    /** Record a review verdict on a component's current output; returns the updated reviews. */
+    setComponentReview(
+        runId: string,
+        signature: string,
+        review: ReviewInputDto
+    ): Promise<ReviewsDto>;
     /** Regenerate one component from an instruction via the refine path (W7.8). */
     regenerateComponent(
         runId: string,

@@ -227,6 +227,12 @@ export type Correction =
 export type CorrectionKind = Correction["kind"];
 
 /**
+ * What the correction log records. Every correction kind, plus a human review verdict — which is
+ * logged only, never applied: it is not an override, so it has no `Correction` shape.
+ */
+export type CorrectionLogKind = CorrectionKind | "review.verdict";
+
+/**
  * How an override takes effect. An `artifact` override edits a stage's OUTPUT in place (rename, merge,
  * prop edit) and marks downstream stale; a `parameter` override changes a stage's INPUT (the cluster
  * similarity threshold) and only takes effect on a re-run.
@@ -281,7 +287,7 @@ export interface CorrectionLogValues {
     stage: Stage;
     stageVersion: number;
     signature: string;
-    kind: CorrectionKind;
+    kind: CorrectionLogKind;
     machineValue: unknown;
     humanValue: unknown;
 }
@@ -290,5 +296,7 @@ export interface CorrectionLogEntry extends CorrectionLogValues {
     id: string;
     entryId: string;
     createdOn: string;
+    /** Who made the correction or gave the verdict. */
+    createdBy: { id: string; displayName: string | null } | null;
     tenant: string;
 }
