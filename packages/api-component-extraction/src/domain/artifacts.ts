@@ -840,6 +840,12 @@ export interface GenerateArtifact {
     components: GeneratedComponentRef[];
     /** Signatures of clusters that never produced a valid component. */
     failed: string[];
+    /**
+     * Why each component with no output has none, by signature: not generated (no model call was made,
+     * with the reason), every attempt failed, or no result was recorded. A component that produced
+     * output but failed validation is in `failed` and not here. Absent on artifacts written before this.
+     */
+    noOutput?: Record<string, string>;
 }
 
 // ----- Render (rendered-component screenshots, W7.7) ---------------------------------------------

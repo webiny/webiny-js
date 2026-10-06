@@ -13,6 +13,7 @@ import { GENERATE_COMPONENT_TASK_ID } from "~/constants.js";
 import { decideCoordination, initCoordinatorState, type CoordinatorState } from "./coordination.js";
 import { generateResultKey, type ComponentResult } from "./componentGeneration.js";
 import type { GenerateComponentTaskInput } from "./GenerateComponentTask.js";
+import { noOutputReason } from "./noOutputReason.js";
 
 // How many component tasks run at once. Bounded so the fan-out doesn't hammer the model API or spin up
 // many concurrent sandbox renders (the same resource pressure that bit Capture) — isolation, not a stampede.
@@ -154,6 +155,7 @@ class GenerateHandlerImpl implements StageHandler.Interface {
         // function of component count alone.
         const components: GeneratedComponentRef[] = [];
         const failed: string[] = [];
+        const noOutput: Record<string, string> = {};
         for (const signature of signatures) {
             const resultRef = generateResultKey(context.run.id, context.stageVersion, signature);
             const result = await context.store.getJson<ComponentResult>(resultRef);
@@ -166,13 +168,15 @@ class GenerateHandlerImpl implements StageHandler.Interface {
                 }
             } else {
                 failed.push(signature);
+                noOutput[signature] = noOutputReason(stored);
             }
         }
 
         const key = context.artifactKey("components");
         const written = await context.store.putJson(key, {
             components,
-            failed
+            failed,
+            ...(Object.keys(noOutput).length > 0 ? { noOutput } : {})
         } satisfies GenerateArtifact);
         if (written.isFail()) {
             return Result.fail(written.error);
