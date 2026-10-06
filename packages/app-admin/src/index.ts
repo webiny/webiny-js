@@ -11,7 +11,6 @@ export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/
 export * from "./base/ui/Tags.js";
 export * from "./base/ui/Layout.js";
 export * from "./base/ui/TenantSelector.js";
-export * from "./base/ui/AssumedPermissionsBanner.js";
 export * from "./base/ui/AssumedPermissionsSelector.js";
 export type { LayoutProps } from "./base/ui/Layout.js";
 export * from "./base/ui/Navigation.js";
@@ -62,6 +61,12 @@ export { BuildParamsFeature } from "./features/buildParams/feature.js";
 export { ToolsFeature } from "./features/tools/feature.js";
 export { Tool, ToolRegistry, ToolPipelineRunner } from "./features/tools/abstractions.js";
 export type { ITool, IToolRegistry, IToolPipelineRunner } from "./features/tools/abstractions.js";
+
+export { Banners } from "./features/banners/abstractions.js";
+export { BannersFeature } from "./features/banners/feature.js";
+export { Banner } from "./presentation/banners/components/Banner.js";
+export type { BannerProps } from "./presentation/banners/components/Banner.js";
+export { BannerBar } from "./presentation/banners/components/BannerBar.js";
 
 export { DateFormatter } from "./features/dateFormatter/abstractions.js";
 export type { IDateFormatter, FormattableDate } from "./features/dateFormatter/abstractions.js";

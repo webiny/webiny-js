@@ -114,8 +114,9 @@ export const AccessManagementExtension = () => {
             <RegisterFeature feature={UpdateApiKeyFeature} />
             <RegisterFeature feature={DeleteApiKeyFeature} />
             <RegisterFeature feature={ApiKeysPresenterFeature} />
-            {/* Install the real banner and header control over the Layout's placeholders. */}
+            {/* Shows the preview banner while a preview is active. */}
             <AssumedPermissionsBanner />
+            {/* Installs the real header control over the Layout's placeholder. */}
             <AssumedPermissionsSelector />
             <SecurityPermissions />
             <AdminConfig>

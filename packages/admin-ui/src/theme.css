@@ -232,6 +232,7 @@
   --spacing-sidebar-collapsed: 44px;
   --spacing-sidebar-expanded: 256px;
   --spacing-header: 45px;
+  --spacing-banner: 32px;
   --wb-spacing-toolbar: 329px;
   --wb-spacing-sidebar: 329px;
   --spacing-main-content: calc(100vh - var(--spacing-header));
