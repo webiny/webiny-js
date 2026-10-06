@@ -9,6 +9,11 @@ name: Push
       - dev
       - next
       - release/*
+concurrency:
+  group: >-
+    push-${{ startsWith(github.ref, 'refs/heads/release/') && github.run_id ||
+    github.ref }}
+  cancel-in-progress: true
 jobs:
   constants:
     name: Create constants
