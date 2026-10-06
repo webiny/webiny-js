@@ -11,6 +11,7 @@ import {
 import {
     AWS_REGION,
     BUILD_PACKAGES_RUNNER,
+    DEFAULT_RUNNER,
     createWaitForOpenSearchStep,
     NODE_OPTIONS,
     NODE_VERSION,
@@ -189,7 +190,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             strategy: {
                 "fail-fast": false,
                 matrix: {
-                    os: ["ubuntu-latest"],
+                    os: [DEFAULT_RUNNER],
                     node: [NODE_VERSION],
                     testCommand: `$\{{ fromJSON(needs.${jobNames.constants}.outputs.vitest-test-commands) }}`
                 }

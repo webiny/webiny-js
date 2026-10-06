@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           fetch-depth: 0
       - name: Resolve source ref and base branch
@@ -88,7 +88,7 @@ jobs:
             echo "| Release branch | \`release/$VERSION\` |"
             echo "| PR base | \`$BASE_BRANCH\` |"
           } >> "$GITHUB_STEP_SUMMARY"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
       actions: write
@@ -110,7 +110,7 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
       - name: Checkout source tag
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           ref: ${{ needs.resolveSource.outputs.source-ref }}
           fetch-depth: 0
@@ -170,7 +170,7 @@ jobs:
             -H "Content-type: application/json" \
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
       actions: write
@@ -190,7 +190,7 @@ jobs:
         run: >-
           gh workflow run create-release-branch.yml --repo
           webiny/docs.webiny.com -f version=${{ github.event.inputs.version }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
       actions: write
@@ -249,7 +249,7 @@ jobs:
             -H "Content-type: application/json" \
             --data @/tmp/slack-payload.json \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
       actions: write

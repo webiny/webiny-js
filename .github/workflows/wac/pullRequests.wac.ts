@@ -4,6 +4,7 @@ import {
     ACTION,
     AWS_REGION,
     BUILD_PACKAGES_RUNNER,
+    DEFAULT_RUNNER,
     NODE_VERSION,
     OPENSEARCH_SERVICE,
     addToOutputs,
@@ -87,7 +88,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         strategy: {
             "fail-fast": false,
             matrix: {
-                os: ["ubuntu-latest"],
+                os: [DEFAULT_RUNNER],
                 node: [NODE_VERSION],
                 testCommand: `$\{{ fromJSON(needs.${jobNames.constants}.outputs.vitest-test-commands) }}`
             }

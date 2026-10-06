@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -57,7 +57,7 @@ jobs:
         run: >-
           echo "latest-webiny-version=$(npm view @webiny/cli version)" >>
           "$GITHUB_OUTPUT"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -67,12 +67,12 @@ jobs:
   build:
     name: Build
     needs: constants
-    runs-on: webiny-build-packages
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -117,7 +117,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -152,7 +152,7 @@ jobs:
       - name: Build admin
         run: yarn webiny build admin --no-deployment-checks
         working-directory: ${{ github.base_ref }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
       actions: write
@@ -164,7 +164,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -201,7 +201,7 @@ jobs:
       - name: Validate webiny package
         run: yarn webiny-scripts validate-webiny-package
         working-directory: ${{ github.base_ref }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -217,7 +217,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -242,7 +242,7 @@ jobs:
       - name: Sync Dependencies Verification
         run: yarn verify-dependencies
         working-directory: ${{ github.base_ref }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -251,12 +251,12 @@ jobs:
       actions: write
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
-    runs-on: webiny-build-packages
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -291,7 +291,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -307,7 +307,7 @@ jobs:
         run: >-
           echo '${{ steps.list-vitest-test-commands.outputs.vitest-test-commands
           }}'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -324,7 +324,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - blacksmith-4vcpu-ubuntu-2404
         node:
           - 24
         testCommand: ${{ fromJSON(needs.vitest-constants.outputs.vitest-test-commands) }}
@@ -338,7 +338,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -377,7 +377,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -393,7 +393,7 @@ jobs:
         run: >-
           echo '${{ steps.list-vitest-test-commands.outputs.vitest-test-commands
           }}'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -410,7 +410,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - blacksmith-4vcpu-ubuntu-2404
         node:
           - 24
         testCommand: >-
@@ -433,7 +433,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -473,7 +473,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -489,7 +489,7 @@ jobs:
         run: >-
           echo '${{ steps.list-vitest-test-commands.outputs.vitest-test-commands
           }}'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -506,7 +506,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - blacksmith-4vcpu-ubuntu-2404
         node:
           - 24
         testCommand: >-
@@ -541,7 +541,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -600,7 +600,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -616,7 +616,7 @@ jobs:
         run: >-
           echo '${{ steps.list-vitest-test-commands.outputs.vitest-test-commands
           }}'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -633,7 +633,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
+          - blacksmith-4vcpu-ubuntu-2404
         node:
           - 24
         testCommand: >-
@@ -656,7 +656,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder

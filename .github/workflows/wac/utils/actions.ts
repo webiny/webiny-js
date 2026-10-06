@@ -10,8 +10,9 @@
 //
 // To bump one: `gh api repos/<owner>/<repo>/commits/<tag> --jq .sha`
 export const ACTION = {
-    // actions/checkout v5
-    checkout: "actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09",
+    // useblacksmith/checkout v1.8.1 - a drop-in for actions/checkout v5 that caches the clone on
+    // Blacksmith runners.
+    checkout: "useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a",
     // actions/setup-node v5
     setupNode: "actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444",
     // actions/cache v5

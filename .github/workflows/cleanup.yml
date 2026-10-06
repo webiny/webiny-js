@@ -10,7 +10,7 @@ on:
 
 jobs:
   aws-nuke:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       id-token: write
     steps:
@@ -22,7 +22,7 @@ jobs:
           role-duration-seconds: 7200
 
       # We need this step because of the `aws-nuke.yml` config which is stored in our repo.
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a # v1.8.1
 
       - name: Login to GHCR
         run: |

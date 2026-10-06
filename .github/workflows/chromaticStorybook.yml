@@ -12,10 +12,10 @@ jobs:
   chromatic:
     # Only run the job if the comment contains '/storybook' OR it's triggered manually
     if: github.event_name == 'workflow_dispatch' || github.event.comment.body == '/storybook'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Checkout Default Branch
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a # v1.8.1
         with:
           fetch-depth: 0
 
@@ -36,7 +36,7 @@ jobs:
 
       # Checkout the PR's head branch if it's a pull request; otherwise, use the branch on which the action is triggered manually.
       - name: Checkout the PR's head branch if it's a pull request; otherwise, use the branch on which the action is triggered manually.
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a # v1.8.1
         with:
           fetch-depth: 0
           # Conditionally checkout based on event type and use hub fetched branch if needed.
