@@ -1,19 +1,8 @@
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { LogInRepository } from "~/features/security/LogIn/abstractions.js";
+import { hasAppPermissions } from "~/features/security/LogIn/hasAppPermissions.js";
 import { AssumePermissionsContext } from "./abstractions.js";
 import { AssumePermissionsUseCase as Abstraction } from "./abstractions.js";
-import type { Identity } from "~/domain/Identity.js";
-
-/*
- * `aacl` is granted to every identity that can reach the Admin, so it says nothing about whether a
- * role is usable. Mirrors the same check in LogInUseCase.
- */
-function hasUsablePermissions(identity: Identity): boolean {
-    const permissions = identity.getPermissions();
-    const appPermissions = permissions.filter(permission => permission.name !== "aacl");
-
-    return appPermissions.length > 0;
-}
 
 /**
  * Switches the Admin into (or out of) previewing a role. The permissions themselves come from the
@@ -72,7 +61,7 @@ class AssumePermissionsUseCaseImpl implements Abstraction.Interface {
     private async verify(value: AssumePermissionsContext.Value | null): Promise<void> {
         const identity = await this.logInRepository.login();
 
-        if (value && !hasUsablePermissions(identity)) {
+        if (value && !hasAppPermissions(identity)) {
             throw new Error(`"${value.name}" grants no permissions on this tenant.`);
         }
     }
