@@ -1,4 +1,5 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import {
     JsonScalar,
@@ -60,6 +61,8 @@ const SCALAR_RESOLVERS: Record<string, any> = {
  * core factories does not matter, the engine merges all typeDefs in a single pass.
  */
 class ApiCoreSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-core/ApiCoreSchemaFactoryImpl");
+
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
         builder.addTypeDefs(BASE_TYPES);
 

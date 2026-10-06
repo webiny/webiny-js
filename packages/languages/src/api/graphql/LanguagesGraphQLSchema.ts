@@ -1,8 +1,11 @@
 import { Response, ErrorResponse } from "@webiny/api-graphql";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { ListLanguagesUseCase } from "~/api/features/ListLanguages/index.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 
 class LanguagesGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("languages/LanguagesGraphQLSchemaImpl");
+
     async execute(
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): Promise<CoreGraphQLSchemaFactory.SchemaBuilder> {

@@ -1,7 +1,10 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { createUpdateEntryRevisionResolver } from "../updateEntryResolver.js";
 
 class UpdateEntryRevisionResolver implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-headless-cms/UpdateEntryRevisionResolver");
+
     async execute(
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): CoreGraphQLSchemaFactory.Return {

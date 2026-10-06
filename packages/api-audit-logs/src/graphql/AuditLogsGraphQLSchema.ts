@@ -1,4 +1,5 @@
 import { resolve } from "@webiny/api-graphql";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { resolveList } from "@webiny/api-graphql";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
@@ -98,6 +99,8 @@ const TYPE_DEFS = /* GraphQL */ `
 `;
 
 class AuditLogsGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-audit-logs/AuditLogsGraphQLSchemaImpl");
+
     public async execute(builder: GraphQLSchemaBuilder.Interface): CoreGraphQLSchemaFactory.Return {
         builder.addTypeDefs(TYPE_DEFS);
 
