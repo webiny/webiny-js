@@ -72,12 +72,19 @@ export interface Screenshot {
     label: string;
     width: number;
     height: number;
+    /**
+     * Full-page shots only: set when the page was taller than the stitching cap, to the height it
+     * really had. The image stops at `height`; everything below it is not in the picture.
+     */
+    truncatedAt?: number;
+    /** Full-page shots only: how many viewport tiles the image was stitched from. */
+    tiles?: number;
 }
 
 /**
  * Which part of the page to capture. `"above-fold" | "mid-page" | "footer"` are viewport-sized scroll
- * crops; `"full-page"` is a true full-page image — `page.screenshot({ fullPage: true })`, unbounded by
- * document height. Theme extraction wants the scroll crops (a tall image scaled down to a model's
+ * crops; `"full-page"` is a full-page image stitched from viewport tiles at the capture viewport (see
+ * `browser/stitch.ts`), bounded at a fixed height. Theme extraction wants the scroll crops (a tall image scaled down to a model's
  * longest-edge limit loses the type and spacing detail it was sent to judge); component extraction
  * wants one `"full-page"` image per page and derives its segment crops from it offline.
  */

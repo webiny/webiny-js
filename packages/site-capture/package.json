@@ -21,7 +21,8 @@
     "@sparticuz/chromium-min": "123.0.1",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "puppeteer-core": "^22.6.0"
+    "puppeteer-core": "^22.6.0",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

@@ -196,6 +196,8 @@ export interface CaptureWarningsDto {
     overlayRemains?: string | null;
     brokenImages: number;
     totalImages: number;
+    /** The page's real height when the screenshot had to stop short of it. */
+    screenshotTruncatedAt?: number;
 }
 
 /** One run of the overlay pass. */

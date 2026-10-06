@@ -88,6 +88,9 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
             if (page.warnings && page.warnings.brokenImages > 0) {
                 warnings.push(`${page.warnings.brokenImages} broken image(s)`);
             }
+            if (page.warnings?.screenshotTruncatedAt) {
+                warnings.push(`screenshot cut short of ${page.warnings.screenshotTruncatedAt}px`);
+            }
             return {
                 url: page.url,
                 label: page.title?.trim() || pathOf(page.url),

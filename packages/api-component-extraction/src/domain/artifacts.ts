@@ -205,6 +205,12 @@ export interface CaptureWarnings {
     /** Broken `<img>` elements (loaded, zero natural size) at capture time, and the total on the page. */
     brokenImages: number;
     totalImages: number;
+    /**
+     * Set when the page was taller than the full-page screenshot can be: the height it really had. The
+     * screenshot stops short of it, so sections below the cut have no crop. Absent when the whole page
+     * is in the picture, and on artifacts written before this was recorded.
+     */
+    screenshotTruncatedAt?: number;
 }
 
 /**

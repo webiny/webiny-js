@@ -24,7 +24,11 @@ import { ExtractionValidationError, type ExtractionError } from "~/domain/errors
 
 export const DESKTOP = { width: 1440, height: 900 };
 export const NARROW = { width: 390, height: 844 };
-const PAGE_TIMEOUT_MS = 60_000;
+/*
+ * Navigation and settle can take 30s each on a slow site, and the full-page screenshot is stitched from
+ * one tile per viewport — up to 45s on a very tall page. 60s left a tall, slow page no room to finish.
+ */
+const PAGE_TIMEOUT_MS = 120_000;
 /**
  * Per-page ceiling for collected image bytes.
  *
@@ -37,9 +41,11 @@ const MAX_NODES = 4000;
 
 // A screenshot is NOT downscaled to a longest-edge budget: that would change the width every geometry
 // downstream depends on. Instead the capture's native width is kept and only pathologically tall pages
-// are bounded by height.
+// are bounded by height. The height bound matches the browser's stitching cap, so a page the browser
+// photographed whole is stored at its true scale rather than shrunk — shrinking narrows the width too,
+// and every crop cut from it.
 const SCREENSHOT_MAX_WIDTH = 2000;
-const SCREENSHOT_MAX_HEIGHT = 16000;
+const SCREENSHOT_MAX_HEIGHT = 32000;
 // The grid tile is a 3:4 crop of the top of the page, so the thumbnail is built to match at a crisp
 // width. A longest-edge downscale would crush a tall full-page screenshot and render blurry in the tile.
 const PAGE_THUMB = { width: 600, height: 800 };
@@ -285,7 +291,10 @@ class PageCaptureServiceImpl implements IPageCaptureService {
                 // The late pass's verdict: it ran against the page as photographed.
                 overlayRemains: desktop.lateClearance.overlayRemains,
                 brokenImages: desktop.result.imagesBroken,
-                totalImages: desktop.result.imagesTotal
+                totalImages: desktop.result.imagesTotal,
+                ...(desktop.screenshots[0]?.truncatedAt
+                    ? { screenshotTruncatedAt: desktop.screenshots[0].truncatedAt }
+                    : {})
             },
             overlayClearance: {
                 early: {

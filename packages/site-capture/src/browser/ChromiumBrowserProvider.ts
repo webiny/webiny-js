@@ -29,6 +29,16 @@ import {
     type ChromiumConfig
 } from "./launchConfig.js";
 import { withTimeout, withTimeoutOrDefault } from "./withTimeout.js";
+import {
+    PAGE_HEIGHT_EXPRESSION,
+    hideFixedScript,
+    placeTiles,
+    planTiles,
+    prepareTileLayoutScript,
+    restoreTileLayoutScript,
+    stitchTiles,
+    type ShotTile
+} from "./stitch.js";
 
 // A page in an error loop can log thousands of lines; enough to diagnose, not enough to drown a
 // task log. Each message is truncated too — a stack trace is rarely informative past its first line.
@@ -51,12 +61,19 @@ const PAGE_ERROR_MAX_CHARS = 300;
  * every driver call is wrapped in a timeout that names the operation.
  */
 
-/** Fraction of the viewport to scroll for the mid-page crop. */
-// Above this the grown-viewport surface is a memory risk on a 2 GB Lambda, so the full-page shot
-// falls back to `fullPage: true` — a mispainted header beats an OOM kill that loses the crawl.
-const MAX_GROWN_VIEWPORT_HEIGHT = 16000;
+/**
+ * The tallest stitched full-page image. Each tile is one viewport, so this bounds tile count and the
+ * stitched canvas (1440 x 32000 RGBA is ~180 MB while compositing), not the painted surface. A taller
+ * page is cut here and the screenshot records how tall it really was.
+ */
+const MAX_STITCHED_HEIGHT = 32000;
+/** Per tile, after the scroll: enough for scroll-linked paint, short enough for a 35-tile page. */
+const TILE_SETTLE_MS = 150;
+/** A stitched shot is dozens of screenshots, not one; the single-shot ceiling does not fit it. */
+const FULL_PAGE_SCREENSHOT_MS = 45_000;
 /** Bounded like `pageErrors`: a gallery of broken images should not fill the record. */
 const MAX_FAILED_IMAGE_REQUESTS = 10;
+/** Fraction of the viewport to scroll for the mid-page crop. */
 const MID_PAGE_SCROLL_FACTOR = 1.5;
 
 const CROP_LABELS: Record<ScreenshotCrop, string> = {
@@ -627,18 +644,33 @@ class ChromiumSession implements IBrowserSession {
         // Sequentially, like everything else here: a 2 GB Lambda running Chromium has no headroom for
         // concurrent captures, and the failure mode is an OOM kill that loses the whole crawl.
         for (const request of capture.requests) {
+            const fullPage = request.crop === "full-page";
             const screenshot = await withTimeoutOrDefault<Screenshot | undefined>(
                 `capture "${request.label}" (${CROP_LABELS[request.crop]})`,
-                DEFAULT_TIMEOUTS.screenshotMs,
+                fullPage ? FULL_PAGE_SCREENSHOT_MS : DEFAULT_TIMEOUTS.screenshotMs,
                 undefined,
                 async () => {
+                    if (fullPage) {
+                        const stitched = await this.fullPageScreenshot(
+                            page,
+                            params.viewportWidth,
+                            params.viewportHeight
+                        );
+                        const key = await capture.write(stitched.image, request.label);
+                        return {
+                            key,
+                            label: request.label,
+                            width: params.viewportWidth,
+                            height: stitched.height,
+                            tiles: stitched.tiles,
+                            ...(stitched.truncatedAt !== undefined
+                                ? { truncatedAt: stitched.truncatedAt }
+                                : {})
+                        };
+                    }
+
                     await this.scrollForCrop(page, request.crop, params.viewportHeight);
-
-                    const image =
-                        request.crop === "full-page"
-                            ? await this.fullPageScreenshot(page, params.viewportWidth)
-                            : await page.screenshot({ type: "png" });
-
+                    const image = await page.screenshot({ type: "png" });
                     const bytes = image instanceof Uint8Array ? image : new Uint8Array();
                     const key = await capture.write(bytes, request.label);
 
@@ -646,10 +678,7 @@ class ChromiumSession implements IBrowserSession {
                         key,
                         label: request.label,
                         width: params.viewportWidth,
-                        height:
-                            request.crop === "full-page"
-                                ? await this.documentHeight(page)
-                                : params.viewportHeight
+                        height: params.viewportHeight
                     };
                 }
             );
@@ -667,42 +696,72 @@ class ChromiumSession implements IBrowserSession {
     }
 
     /**
-     * A full-page screenshot taken by growing the viewport, not by `fullPage: true`.
+     * A full-page screenshot stitched from viewport tiles, at the viewport the page was read at.
      *
-     * `fullPage` captures beyond the viewport without changing the layout viewport, and Chrome paints
-     * some positioned elements wrongly in that pass. Measured on parkcityplace.org: the site's header
-     * is `position: absolute`, and a `fullPage` shot painted its background and dropped its logo and
-     * every nav item, keeping only an open dropdown — on 6 of 8 captured pages. The DOM was complete
-     * and correct at the time; only the picture was wrong, so nothing downstream could detect it. The
-     * same page, same browser, same moment, shot at viewport size or with the viewport grown to the
-     * document height, renders the header in full.
+     * Not `fullPage: true`: Chrome paints some positioned elements wrongly in that pass — measured on
+     * parkcityplace.org, an absolute header lost its logo and every nav item on 6 of 8 pages. Not a
+     * viewport grown to the document height either, which is what replaced it: that re-lays the page
+     * out at a viewport thousands of pixels tall, so `vh`-sized sections grow, everything below them
+     * moves, and the boxes the tree recorded at the real viewport no longer match the picture. See
+     * `stitch.ts` for how sticky and fixed elements are kept where the tree recorded them.
      *
-     * Growing the viewport is what `fullPage` is approximating anyway, and it puts the page in a state
-     * it would really be in. The cost is memory: the surface is width x document height, so a very
-     * tall page is bounded and falls back to `fullPage` rather than risking an OOM kill that loses the
-     * whole crawl — a mispainted header on a 20,000px page is the better failure.
+     * The page's own state is restored afterwards, whatever happens, so a screenshot request that
+     * follows sees the page as it was.
      */
-    private async fullPageScreenshot(page: Page, width: number): Promise<Uint8Array> {
-        const previous = page.viewport();
-        const height = await this.documentHeight(page);
+    private async fullPageScreenshot(
+        page: Page,
+        width: number,
+        viewportHeight: number
+    ): Promise<{ image: Uint8Array; height: number; tiles: number; truncatedAt?: number }> {
+        const measured = await withTimeoutOrDefault(
+            "measure the page height",
+            DEFAULT_TIMEOUTS.evaluateMs,
+            0,
+            () => page.evaluate(PAGE_HEIGHT_EXPRESSION) as Promise<number>
+        );
+        const plan = planTiles(measured, viewportHeight, MAX_STITCHED_HEIGHT);
 
-        if (!height || height > MAX_GROWN_VIEWPORT_HEIGHT) {
-            const image = await page.screenshot({ type: "png", fullPage: true });
-            return image instanceof Uint8Array ? image : new Uint8Array();
-        }
-
+        await page.evaluate(prepareTileLayoutScript());
+        const shot: ShotTile[] = [];
         try {
-            await page.setViewport({ width, height, deviceScaleFactor: 1 });
-            // The resize is a layout change; give the page the same beat the scroll helper gives it,
-            // so anything that reflows on resize has settled before the shot.
-            await new Promise(resolve => setTimeout(resolve, 400));
-            const image = await page.screenshot({ type: "png" });
-            return image instanceof Uint8Array ? image : new Uint8Array();
-        } finally {
-            if (previous) {
-                await page.setViewport(previous);
+            for (let i = 0; i < plan.offsets.length; i++) {
+                // "instant", or a page with `scroll-behavior: smooth` is still travelling at the shot.
+                await page.evaluate(
+                    `window.scrollTo({ top: ${plan.offsets[i]}, left: 0, behavior: "instant" })`
+                );
+                if (i === 1) {
+                    await page.evaluate(hideFixedScript());
+                }
+                // A beat for whatever the scroll moved — lazy imagery, scroll-linked styles — to paint.
+                await new Promise(resolve => setTimeout(resolve, TILE_SETTLE_MS));
+                const top = Number(await page.evaluate("window.scrollY")) || 0;
+                const image = await page.screenshot({ type: "png", captureBeyondViewport: false });
+                shot.push({ top, bytes: image instanceof Uint8Array ? image : new Uint8Array() });
+                // The browser clamps the last scroll; once a tile reaches the bottom there is no more.
+                if (top + viewportHeight >= plan.height) {
+                    break;
+                }
             }
+        } finally {
+            await withTimeoutOrDefault(
+                "restore the page after tiling",
+                DEFAULT_TIMEOUTS.evaluateMs,
+                undefined,
+                () => page.evaluate(restoreTileLayoutScript()).then(() => undefined)
+            );
         }
+
+        const image = await stitchTiles(
+            placeTiles(shot, viewportHeight, plan.height),
+            width,
+            plan.height
+        );
+        return {
+            image,
+            height: plan.height,
+            tiles: shot.length,
+            ...(plan.truncatedAt !== undefined ? { truncatedAt: plan.truncatedAt } : {})
+        };
     }
 
     private async scrollForCrop(

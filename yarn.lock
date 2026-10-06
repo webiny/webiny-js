@@ -13752,6 +13752,7 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     jsdom: "npm:^30.0.0"
     puppeteer-core: "npm:^22.6.0"
+    sharp: "npm:^0.35.3"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"
   languageName: unknown
