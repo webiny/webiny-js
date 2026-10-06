@@ -40,6 +40,12 @@ class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interfa
                     isEntryLevelEntryMetaField
                 );
 
+                // If the deleted revision was published, clear the live field
+                // so the new latest entry does not inherit a stale live pointer.
+                if (entry.status === "published") {
+                    pickedEntryLevelMetaFields.live = null;
+                }
+
                 const updatedLatestEntry = {
                     ...latestEntry,
                     ...pickedEntryLevelMetaFields

@@ -63,13 +63,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute<T>(model, rawInput, options);
 
         if (result.isFail()) {
-            // Convert Result error to WebinyError for backward compatibility
-            const error = result.error;
-            throw new WebinyError(
-                error.message || "Could not create content entry.",
-                error.code || "CREATE_ENTRY_ERROR",
-                error.data
-            );
+            throw result.error;
         }
 
         return result.value;
@@ -88,13 +82,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute<T>(model, sourceId, rawInput, options);
 
         if (result.isFail()) {
-            // Convert Result error to WebinyError for backward compatibility
-            const error = result.error;
-            throw new WebinyError(
-                error.message || "Could not create entry from existing one.",
-                error.code || "CREATE_FROM_REVISION_ERROR",
-                error.data
-            );
+            throw result.error;
         }
 
         return result.value;
@@ -113,12 +101,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute<T>(model, id, rawInput, options);
 
         if (result.isFail()) {
-            // Convert Result error to WebinyError for backward compatibility
-            const error = result.error;
-            throw new WebinyError(
-                error.message || "Could not update existing entry.",
-                error.code || "UPDATE_ERROR"
-            );
+            throw result.error;
         }
 
         return result.value;
@@ -135,12 +118,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute<T>(model, id, revisionDescription);
 
         if (result.isFail()) {
-            // Convert Result error to WebinyError for backward compatibility
-            const error = result.error;
-            throw new WebinyError(
-                error.message || "Could not update revision description of the revision.",
-                error.code || "UPDATE_REVISION_DESCRIPTION_ERROR"
-            );
+            throw result.error;
         }
 
         return result.value;
@@ -156,13 +134,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute<T>(model, id || null, input);
 
         if (result.isFail()) {
-            // Convert Result error to WebinyError for backward compatibility
-            const error = result.error;
-            throw new WebinyError(
-                error.message || "Could not validate entry.",
-                error.code || "VALIDATION_ERROR",
-                error.data
-            );
+            throw result.error;
         }
 
         return result.value;
@@ -178,13 +150,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute<T>(model, id, folderId);
 
         if (result.isFail()) {
-            // Convert Result error to WebinyError for backward compatibility
-            const error = result.error;
-            throw new WebinyError(
-                error.message || `Could not move entry "${id}" of model "${model.modelId}".`,
-                error.code || "MOVE_ENTRY_ERROR",
-                error.data
-            );
+            throw result.error;
         }
 
         return result.value;
@@ -199,13 +165,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute<T>(model, id);
 
         if (result.isFail()) {
-            // Convert Result error to WebinyError for backward compatibility
-            const error = result.error;
-            throw new WebinyError(
-                error.message || "Could not republish entry.",
-                error.code || "REPUBLISH_ERROR",
-                error.data
-            );
+            throw result.error;
         }
 
         return result.value;
@@ -219,7 +179,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute(model, revisionId);
 
         if (result.isFail()) {
-            throw new WebinyError(result.error.message, result.error.code, result.error.data);
+            throw result.error;
         }
     };
     const deleteMultipleEntries: CmsEntryContext["deleteMultipleEntries"] = async (
@@ -231,13 +191,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute(model, params);
 
         if (result.isFail()) {
-            // Convert Result error to WebinyError for backward compatibility
-            const error = result.error;
-            throw new WebinyError(
-                error.message || "Could not delete multiple entries.",
-                error.code || "DELETE_ENTRIES_MULTIPLE_ERROR",
-                error.data
-            );
+            throw result.error;
         }
 
         return result.value;
@@ -252,12 +206,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute<T>(model, id);
 
         if (result.isFail()) {
-            // Convert Result error to WebinyError for backward compatibility
-            throw new WebinyError(
-                result.error.message || "Could not publish entry.",
-                result.error.code || "PUBLISH_ERROR",
-                result.error.data
-            );
+            throw result.error;
         }
 
         return result.value;
@@ -271,12 +220,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute<T>(model, id);
 
         if (result.isFail()) {
-            const error = result.error;
-            throw new WebinyError(
-                error.message || "Could not unpublish entry.",
-                error.code || "UNPUBLISH_ERROR",
-                error.data
-            );
+            throw result.error;
         }
 
         return result.value;
@@ -287,7 +231,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute(model, params);
 
         if (result.isFail()) {
-            throw new WebinyError(result.error.message, result.error.code, result.error.data);
+            throw result.error;
         }
 
         return result.value;

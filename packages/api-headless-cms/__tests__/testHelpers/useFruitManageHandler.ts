@@ -168,6 +168,19 @@ const publishFruitMutation = (model: CmsModel) => {
     `;
 };
 
+const updateFruitRevisionDescriptionMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation UpdateFruitRevisionDescription($revision: ID!, $revisionDescription: String!) {
+            updateFruitRevisionDescription: update${model.singularApiName}RevisionDescription(revision: $revision, revisionDescription: $revisionDescription) {
+                data {
+                    ${fruitFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
 const unpublishFruitMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation UnpublishFruit($revision: ID!) {
@@ -240,6 +253,18 @@ export const useFruitManageHandler = (params: GraphQLHandlerParams) => {
             return await contentHandler.invoke({
                 body: {
                     query: publishFruitMutation(model),
+                    variables
+                },
+                headers
+            });
+        },
+        async updateFruitRevisionDescription(
+            variables: Record<string, any>,
+            headers: Record<string, any> = {}
+        ) {
+            return await contentHandler.invoke({
+                body: {
+                    query: updateFruitRevisionDescriptionMutation(model),
                     variables
                 },
                 headers

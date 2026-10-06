@@ -45,10 +45,17 @@ export class ContentEntriesDataSource extends FolderAwareDataSource<CmsContentEn
         }
 
         const titleFieldId = this.model.titleFieldId;
-        if (!titleFieldId) {
-            return sort.map(s => s.replace(/^name_/, "id_"));
-        }
 
-        return sort.map(s => s.replace(/^name_/, `values_${titleFieldId}_`));
+        return sort.map(s => {
+            if (s.startsWith("live_")) {
+                return s.replace(/^live_/, "lastPublishedOn_");
+            }
+            if (s.startsWith("name_")) {
+                return titleFieldId
+                    ? s.replace(/^name_/, `values_${titleFieldId}_`)
+                    : s.replace(/^name_/, "id_");
+            }
+            return s;
+        });
     }
 }
