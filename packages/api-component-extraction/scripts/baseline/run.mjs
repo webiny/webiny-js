@@ -12,7 +12,9 @@
  *   - a stage that fails is recorded and the site stops there. Nothing is retried or fixed mid-run.
  *
  * Resumable: the state file records each site's job and run, and a rerun picks each site up from its
- * first stage that is not done. A stage already running is waited on, never re-triggered.
+ * first stage that is not done. A stage already running is waited on, never re-triggered. A site's
+ * `skipStages: { stages, reason }` in the state file skips those stages; the reason goes into the
+ * report, as does any note in its `interventions` list.
  *
  * Spend: after every model-backed stage, the cost of every model call across all baseline runs is
  * priced from the dated table in `src/domain/modelCost.ts`. The script stops if the total passes the
@@ -207,6 +209,11 @@ const waitForStage = async (runId, stage) => {
 
 const runStages = async (siteState, runId) => {
   for (const stage of STAGES) {
+    // An operator-recorded skip, with its reason in the state file — reported, never silent.
+    if (siteState.skipStages?.stages?.includes(stage)) {
+      log(`  ${stage}: skipped (${siteState.skipStages.reason})`);
+      continue;
+    }
     let run = await getRun(client, runId);
     const entry = entryOf(run, stage);
     if (entry?.status === "done") {

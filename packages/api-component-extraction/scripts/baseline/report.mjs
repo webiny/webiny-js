@@ -168,6 +168,8 @@ for (const site of config.sites) {
     runId,
     jobId: recorded.jobId,
     timings: recorded.timings ?? {},
+    interventions: recorded.interventions ?? [],
+    skipStages: recorded.skipStages ?? null,
     run,
     capture,
     segment,
@@ -381,8 +383,13 @@ for (const s of sites) {
   out(
     `Platform: **${s.site.platform}** (inferred from ${s.site.platformEvidence}).${s.site.note ? ` ${s.site.note}` : ""}`,
     "",
-    `Job \`${s.jobId}\`, run \`${s.runId}\`, status ${s.run?.status}. Theme \`${s.site.themeEntryId}\` v${s.site.themeVersion}.`,
-    ""
+    `Job \`${s.jobId}\`, run \`${s.runId}\`, status ${s.run?.status}. Theme \`${s.site.themeEntryId}\` v${s.site.themeVersion}.${s.site.themeNote ? ` ${s.site.themeNote}` : ""}`,
+    "",
+    ...s.interventions.map(note => `**Operator intervention:** ${note}`),
+    ...(s.skipStages
+      ? [`**Stages not run:** ${s.skipStages.stages.join(", ")} — ${s.skipStages.reason}`]
+      : []),
+    ...(s.interventions.length || s.skipStages ? [""] : [])
   );
 
   const pages = s.capture?.pages ?? [];
