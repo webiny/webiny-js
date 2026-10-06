@@ -67,6 +67,8 @@ export { BannersFeature } from "./features/banners/feature.js";
 export { Banner } from "./presentation/banners/components/Banner.js";
 export type { BannerProps } from "./presentation/banners/components/Banner.js";
 export { BannerBar } from "./presentation/banners/components/BannerBar.js";
+export { useBanner } from "./presentation/banners/useBanner.js";
+export type { UseBannerResponse } from "./presentation/banners/useBanner.js";
 
 export { DateFormatter } from "./features/dateFormatter/abstractions.js";
 export type { IDateFormatter, FormattableDate } from "./features/dateFormatter/abstractions.js";

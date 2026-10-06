@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-import { useFeature } from "@webiny/app";
-import { BannersFeature } from "~/features/banners/feature.js";
 import type { Banners } from "~/features/banners/abstractions.js";
+import { useBanner } from "../useBanner.js";
 
 export type BannerProps = Banners.Banner;
 
@@ -9,15 +8,15 @@ export type BannerProps = Banners.Banner;
  * Shows a banner for as long as this component is mounted, and hides it on unmount. Renders
  * nothing itself; the Layout's bar does the drawing.
  *
- * For a banner whose lifetime isn't tied to a component, inject `Banners` and call `show()` and
- * `hide()` directly.
+ * To show a banner from an event handler, use `useBanner()`. Outside React, inject `Banners`
+ * and call `show()` and `hide()` directly.
  */
 export const Banner = (props: BannerProps) => {
-    const { banners } = useFeature(BannersFeature);
+    const { showBanner, hideBanner } = useBanner();
     const { id, variant, title, message, dismissible, action } = props;
 
     useEffect(() => {
-        banners.show({ id, variant, title, message, dismissible, action });
+        showBanner({ id, variant, title, message, dismissible, action });
     }, [
         id,
         variant,
@@ -30,7 +29,7 @@ export const Banner = (props: BannerProps) => {
     ]);
 
     useEffect(() => {
-        return () => banners.hide(id);
+        return () => hideBanner(id);
     }, [id]);
 
     return null;
