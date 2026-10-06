@@ -319,12 +319,32 @@ export interface SectionCandidate {
     offerable: boolean;
 }
 
+/**
+ * Why a section's crop is missing or incomplete.
+ *
+ * - `outside-screenshot`: the box lies (almost) entirely beyond the page's screenshot — a screenshot
+ *   cut short of a very tall page, or a box from a layout the picture does not show. No crop is made:
+ *   a sliver of a section would be sent to the model as the thing to reproduce.
+ * - `partially-outside`: part of the box lies beyond the screenshot; the crop holds the part inside it.
+ * - `no-screenshot`: the page's screenshot could not be read, so nothing could be cropped.
+ */
+export interface CropWarning {
+    kind: "outside-screenshot" | "partially-outside" | "no-screenshot";
+    /** Share of the box's area inside the screenshot, 0..1. */
+    visibleFraction: number;
+}
+
 export interface SectionBox {
     box: Box;
     /** Index of the section among the content root's children — a stable handle within the page. */
     index: number;
-    /** Blob key of this section's cropped, downscaled image, produced by Segment from the screenshot. */
+    /**
+     * Blob key of this section's cropped image, produced by Segment from the screenshot. Empty when no
+     * usable crop could be made; `cropWarning` then says why.
+     */
     cropRef: string;
+    /** Set when the crop is missing or holds only part of the section. Absent on a clean crop. */
+    cropWarning?: CropWarning;
     /** The child boundaries considered inside this section and rejected (W11.1). */
     candidates: SectionCandidate[];
 }
@@ -380,6 +400,8 @@ export interface ClusterMember {
     signature: string;
     /** Blob key of this member's section crop, so the cluster view can show every member. */
     cropRef: string;
+    /** Carried from Segment: why this member's crop is missing or partial, when it is. */
+    cropWarning?: CropWarning;
     /**
      * Per-member detail carried so a `cluster.split`/`cluster.move` override (W8) can promote this member
      * into its own cluster and still be classified, planned and generated. Optional for backward
@@ -419,6 +441,13 @@ export interface RepresentativeCrop {
     box: Box;
     /** Blob key of the pre-made section crop Generate uses as its reference image. */
     cropRef: string;
+    /**
+     * The member the crop belongs to. Usually the representative; another member when the
+     * representative's crop is missing or partial. Plan takes the component's text from the same member,
+     * so the picture and the words the model is given describe one section. Absent on artifacts
+     * written before this was recorded, where the crop is always the representative's.
+     */
+    member?: { url: string; sectionIndex: number };
 }
 
 export interface Cluster {

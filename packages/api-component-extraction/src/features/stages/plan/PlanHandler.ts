@@ -20,6 +20,7 @@ import { sectionTextAlignment } from "./sectionTextAlignment.js";
 import { sectionTypeScale } from "./sectionTypeScale.js";
 import { findNodeByBox } from "../cluster/sectionNode.js";
 import { stageEntry } from "~/domain/ledger.js";
+import { referenceTexts } from "./referenceTexts.js";
 
 // One model call per cluster. The margin MUST exceed one call's worst case: the timeout is checked only
 // between clusters, so too small a margin lets a call start without runway and the Lambda is hard-killed
@@ -31,23 +32,6 @@ const PLAN_SAFETY_MARGIN_SECONDS = 180;
  * cluster can carry one member per page; past a dozen the values repeat and only the artifact grows.
  */
 const MAX_MEMBERS_HARVESTED = 12;
-
-/**
- * The reference member's own text, in document order.
- *
- * Falls back to the cluster union when the representative has no digest texts — a section whose text
- * all sits on descendants the digest did not record. Emitting nothing there would tell the model to
- * reproduce a picture with no text at all, which is a worse instruction than the one being replaced.
- */
-const representativeTexts = (cluster: {
-    representative: { digest?: { texts?: string[] } };
-    observedTexts: string[];
-}): string[] => {
-    const texts = (cluster.representative.digest?.texts ?? []).filter(
-        (text): text is string => typeof text === "string"
-    );
-    return texts.length > 0 ? texts : cluster.observedTexts;
-};
 
 /** Resumable checkpoint: how far through the clusters we are, and the planned components so far. */
 interface PlanCheckpoint {
@@ -282,7 +266,7 @@ class PlanHandlerImpl implements StageHandler.Interface {
                         // What Generate must reproduce: the text of the member its reference image
                         // shows, not the union over the cluster. The union is kept beside it, and the
                         // obligation it used to carry is now checked against the props instead.
-                        sourceTexts: representativeTexts(cluster.cluster),
+                        sourceTexts: referenceTexts(cluster.cluster),
                         clusterTexts: cluster.cluster.observedTexts,
                         typeScale,
                         textAlignments,

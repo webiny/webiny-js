@@ -24,6 +24,11 @@ export interface ComponentResultArtifact {
     component: GeneratedComponent | null;
     /** Bumped on every write; see `GeneratedComponentRef.revision`. */
     revision: number;
+    /**
+     * Why no generation was attempted, when none was — set only for a component skipped before any
+     * model call (no usable reference crop). A component whose attempts all failed leaves it unset.
+     */
+    notGenerated?: string;
 }
 
 type Entry = GeneratedComponentRef | GeneratedComponent;

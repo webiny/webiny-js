@@ -84,6 +84,28 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
             return controller.response.done("Planned component not found; nothing to generate.");
         }
 
+        /*
+         * No picture, no generation. Segment makes no crop of a box the screenshot does not contain, and
+         * Cluster has already looked for another member to stand in. Generating anyway would send the
+         * model a prompt that says "reproduce the section shown in the reference image" with no image,
+         * and pay for a component of nothing in particular — so it is recorded as not generated, with
+         * the reason, and costs no model call.
+         */
+        if (!planned.representativeCrop?.cropRef) {
+            const reason = "no member of the cluster has a usable reference crop";
+            await log.info({ message: `"${planned.name}" not generated: ${reason}.` });
+            const skipped = await this.artifactStore.putJson(resultKey, {
+                signature: input.signature,
+                component: null,
+                revision: 1,
+                notGenerated: reason
+            } satisfies ComponentResult);
+            if (skipped.isFail()) {
+                return controller.response.error(skipped.error.message);
+            }
+            return controller.response.done(`"${planned.name}" not generated: ${reason}.`);
+        }
+
         // Resolve the theme's css variables for token-binding validation (skipped if unresolved, exactly
         // as the inline stage did — otherwise every var(--wby-*) counts as unknown and all fail).
         const slotVariables = new Map<string, string[]>();

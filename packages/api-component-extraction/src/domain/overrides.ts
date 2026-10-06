@@ -20,6 +20,7 @@ import type {
     SectionDigest,
     SegmentArtifact
 } from "./artifacts.js";
+import { chooseReferenceCrop } from "./referenceCrop.js";
 
 /**
  * Pure application and reattachment of overrides onto a stage's machine output — the load-bearing part of
@@ -105,11 +106,7 @@ const clusterFromMembers = (members: ClusterMember[]): Cluster => {
         representative,
         digest: representative.digest ?? emptyDigest(),
         observedTexts: [...new Set(texts)].slice(0, MAX_OBSERVED_TEXTS),
-        representativeCrop: {
-            screenshotRef: representative.screenshotRef ?? "",
-            box: representative.box ?? { x: 0, y: 0, width: 0, height: 0 },
-            cropRef: representative.cropRef
-        }
+        representativeCrop: chooseReferenceCrop(members)
     };
 };
 

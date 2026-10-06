@@ -5,7 +5,6 @@ import type {
     Cluster,
     ClusterArtifact,
     ClusterMember,
-    RepresentativeCrop,
     SectionDigest,
     SectionShape,
     SegmentArtifact,
@@ -21,6 +20,7 @@ import { buildTokenLookup, sectionShape, type TokenLookup } from "./sectionShape
 import { sectionDigest } from "./digest.js";
 import { clusterCountAt, leaderCluster, nearestPairSimilarity } from "./similarity.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
+import { chooseReferenceCrop } from "~/domain/referenceCrop.js";
 
 const DESKTOP_WIDTH = 1440;
 const EMPTY_LOOKUP: TokenLookup = { colorHexToPath: new Map() };
@@ -34,7 +34,6 @@ const THRESHOLD_GRID = [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1
 type MemberEntry = {
     member: ClusterMember;
     digest: SectionDigest;
-    crop: RepresentativeCrop;
     shape: SectionShape;
 };
 
@@ -130,6 +129,7 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                     sectionIndex: section.index,
                     signature: structuralSignature(shape),
                     cropRef: section.cropRef,
+                    ...(section.cropWarning ? { cropWarning: section.cropWarning } : {}),
                     // Carried per member so a W8 split/move override can promote it to a representative.
                     digest,
                     screenshotRef: page.screenshotRef,
@@ -147,12 +147,7 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                 entries.push({
                     member,
                     digest,
-                    shape,
-                    crop: {
-                        screenshotRef: page.screenshotRef,
-                        box: section.box,
-                        cropRef: section.cropRef
-                    }
+                    shape
                 });
             }
             await context.progress({
@@ -172,7 +167,7 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                 0,
                 MAX_OBSERVED_TEXTS
             ),
-            representativeCrop: group[0].crop
+            representativeCrop: chooseReferenceCrop(group.map(entry => entry.member))
         }));
 
         // The count-vs-threshold curve (for the slider) and the nearest-pair similarity (how close the two

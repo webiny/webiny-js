@@ -3,12 +3,13 @@ import { StageHandler, type StageContext, type StageOutcome } from "~/domain/sta
 import type {
     CapturedNode,
     CaptureArtifact,
+    CropWarning,
     SectionBox,
     SegmentArtifact,
     SegmentedPage
 } from "~/domain/artifacts.js";
 import { detectSections } from "./boundaries.js";
-import { cropFromScreenshot } from "~/features/shared/imageCrop.js";
+import { cropFromScreenshot, type SectionCropPlan } from "~/features/shared/imageCrop.js";
 import { OverrideRepository } from "~/domain/abstractions.js";
 import { effectiveMaxSectionHeight } from "~/domain/overrides.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
@@ -38,6 +39,17 @@ const MIN_CHILDREN_TO_SPLIT = 2;
 // intact, and the height cap bounds an unusually tall section for the model image.
 const CROP_MAX_WIDTH = 1600;
 const CROP_MAX_HEIGHT = 4000;
+
+/** What a crop plan says about the crop, as a warning — none when the whole box was in the picture. */
+const cropWarningOf = (plan: SectionCropPlan): CropWarning | undefined => {
+    if (plan.status === "ok") {
+        return undefined;
+    }
+    return {
+        kind: plan.status === "outside" ? "outside-screenshot" : "partially-outside",
+        visibleFraction: Math.round(plan.visibleFraction * 1000) / 1000
+    };
+};
 
 /**
  * Segment — deterministic, offline, no browser. Reads each captured page's pruned tree from S3 and
@@ -75,6 +87,7 @@ class SegmentHandlerImpl implements StageHandler.Interface {
 
         const pages: SegmentedPage[] = [];
         let totalSections = 0;
+        let croppingWarnings = 0;
 
         for (let index = 0; index < total; index++) {
             const page = capture.pages[index];
@@ -107,6 +120,9 @@ class SegmentHandlerImpl implements StageHandler.Interface {
             const sections: SectionBox[] = [];
             for (const section of detected) {
                 let cropRef = "";
+                let cropWarning: CropWarning | undefined = screenshot.isOk()
+                    ? undefined
+                    : { kind: "no-screenshot", visibleFraction: 0 };
                 if (screenshot.isOk()) {
                     try {
                         const cropped = await cropFromScreenshot(
@@ -116,13 +132,16 @@ class SegmentHandlerImpl implements StageHandler.Interface {
                             CROP_MAX_WIDTH,
                             CROP_MAX_HEIGHT
                         );
-                        const stored = await context.blobs.put(
-                            `${context.run.id}/segment/v${context.stageVersion}/${index}/section-${section.index}.png`,
-                            cropped,
-                            "image/png"
-                        );
-                        if (stored.isOk()) {
-                            cropRef = stored.value;
+                        cropWarning = cropWarningOf(cropped.plan);
+                        if (cropped.image) {
+                            const stored = await context.blobs.put(
+                                `${context.run.id}/segment/v${context.stageVersion}/${index}/section-${section.index}.png`,
+                                cropped.image,
+                                "image/png"
+                            );
+                            if (stored.isOk()) {
+                                cropRef = stored.value;
+                            }
                         }
                     } catch (error) {
                         await context.log.error({
@@ -131,7 +150,10 @@ class SegmentHandlerImpl implements StageHandler.Interface {
                         });
                     }
                 }
-                sections.push({ ...section, cropRef });
+                if (cropWarning) {
+                    croppingWarnings++;
+                }
+                sections.push({ ...section, cropRef, ...(cropWarning ? { cropWarning } : {}) });
             }
 
             totalSections += sections.length;
@@ -158,7 +180,11 @@ class SegmentHandlerImpl implements StageHandler.Interface {
         }
 
         await context.log.info({
-            message: `Segmented ${pages.length} page(s) into ${totalSections} section(s) at a ${maxSectionHeight}px container height.`
+            message: `Segmented ${pages.length} page(s) into ${totalSections} section(s) at a ${maxSectionHeight}px container height${
+                croppingWarnings > 0
+                    ? `; ${croppingWarnings} section(s) have a missing or partial crop`
+                    : ""
+            }.`
         });
         return Result.ok({ artifacts: { sections: key }, counts: { sections: totalSections } });
     }

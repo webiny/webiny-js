@@ -50,6 +50,11 @@ export interface ComponentResult {
      * poll waiting on content then never terminates.
      */
     revision: number;
+    /**
+     * Why no generation was attempted, when none was — set only for a component skipped before any
+     * model call (no usable reference crop). A component whose attempts all failed leaves it unset.
+     */
+    notGenerated?: string;
 }
 
 export interface GenerationDeps {
