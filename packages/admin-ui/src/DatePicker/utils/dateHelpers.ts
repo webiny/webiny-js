@@ -1,6 +1,20 @@
 import { format, getISOWeek, getISOWeekYear, startOfISOWeek, endOfISOWeek } from "date-fns";
 import { DEFAULT_YEAR_RANGE_SIZE, MONTH_NAMES_SHORT } from "./constants.js";
 
+/**
+ * `new Date("2026-10-10")` is UTC midnight, which is the previous day west of UTC.
+ * Bare dates are calendar days, so build them at local midnight instead.
+ */
+export function parseDateValue(value: string | Date | number): Date {
+    if (typeof value === "string") {
+        const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (match) {
+            return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+        }
+    }
+    return new Date(value);
+}
+
 export function formatDateForDisplay(
     value:
         | Date
@@ -20,7 +34,7 @@ export function formatDateForDisplay(
 
     switch (type) {
         case "date":
-            return format(new Date(value as string), displayFormat ?? "PPP");
+            return format(parseDateValue(value as string), displayFormat ?? "PPP");
         case "time":
             return value as string;
         case "dateTimeLocal":
@@ -83,9 +97,9 @@ export function formatDateForDisplay(
                 return undefined;
             }
             if (!range.to) {
-                return format(new Date(range.from), fmt);
+                return format(parseDateValue(range.from), fmt);
             }
-            return `${format(new Date(range.from), fmt)} – ${format(new Date(range.to), fmt)}`;
+            return `${format(parseDateValue(range.from), fmt)} – ${format(parseDateValue(range.to), fmt)}`;
         }
         case "multipleDates": {
             const dates = value as string[];
