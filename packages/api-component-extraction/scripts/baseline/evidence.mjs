@@ -175,6 +175,8 @@ for (const [host, beforeRunId] of Object.entries(before)) {
 lines.push(
   ...table,
   "",
+  "**Read the last three columns with their denominator.** Sections below the screenshot, 1-pixel crops and narrowed crops only appear where a site has the case — a page taller than the cap, a box past the screenshot's bottom, a section taller than the crop limit. A zero before and after means that fix was not exercised on these pages, not that it was shown to work. Only the matched-pair column and a non-zero 'before' are evidence of a fix.",
+  "",
   `The most different matched pairs per site (up to ${EXAMPLES}), to inspect by eye. A difference here can also be content that changed between the two captures — a rotated special, a new photo — so each needs looking at before it counts as drift.`,
   "",
   ...examples,

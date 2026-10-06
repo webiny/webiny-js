@@ -228,6 +228,18 @@ const imagesPresent = c =>
   c.renderedImages === null ? null : c.expectedImages === 0 || c.renderedImages > 0;
 const imageShortfall = c =>
   c.renderedImages !== null && c.renderedImages > 0 && c.renderedImages < c.expectedImages;
+/** The pages a component appears on: its cluster members' distinct pages. */
+const pagesOf = c => Math.max(1, new Set((c.planned.members ?? []).map(member => member.url)).size);
+const placements = comps => comps.reduce((total, c) => total + pagesOf(c), 0);
+const perComponent = (comps, test) => {
+  const count = comps.filter(test).length;
+  return `${count} of ${comps.length} (${pct(count, comps.length)})`;
+};
+const weighted = (comps, test) => {
+  const count = comps.filter(test).reduce((total, c) => total + pagesOf(c), 0);
+  const all = placements(comps);
+  return `${count} of ${all} (${pct(count, all)})`;
+};
 /**
  * "Passed without problems": generated, every validator green, rendered, the right height, an image
  * where the section showed any, and no broken image. A machine reading, not a verdict — it is the bar
@@ -326,25 +338,29 @@ out(
   "",
   "## Summary",
   "",
-  "| site | platform | components | passed without problems | not generated / no output | height outside 0.67–1.5x | spend |",
-  "| --- | --- | ---: | ---: | ---: | ---: | ---: |"
+  "Two readings of every share, side by side. **Page-weighted** counts each component once for every page it appears on — what a visitor of the migrated site sees: a broken navigation header on 11 pages is 11 broken pages, not one defect. **Per component** counts each component once — how well generation works. Page-weighted leads, because Realpage is judging a migration, not a generator.",
+  "",
+  "| site | platform | components | placements (component × page) | passed, page-weighted | passed, per component | no output | height outside 0.67–1.5x | spend |",
+  "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"
 );
 for (const s of sites) {
   if (s.missing) {
-    out(`| ${s.host} | ${s.site.platform} | — | — | — | — | not run |`);
+    out(`| ${s.host} | ${s.site.platform} | — | — | — | — | — | — | not run |`);
     continue;
   }
   const comps = s.components;
   const rendered = comps.filter(c => c.heightRatio !== null);
   out(
-    `| ${s.host} | ${s.site.platform} | ${comps.length} | ${comps.filter(clean).length} (${pct(comps.filter(clean).length, comps.length)}) | ${comps.filter(c => !c.ref).length} | ${rendered.filter(c => !inBand(c.heightRatio)).length} of ${rendered.length} | ${usd(summarizeCost(s.calls).usd)} |`
+    `| ${s.host} | ${s.site.platform} | ${comps.length} | ${placements(comps)} | ${weighted(comps, clean)} | ${perComponent(comps, clean)} | ${comps.filter(c => !c.ref).length} | ${rendered.filter(c => !inBand(c.heightRatio)).length} of ${rendered.length} | ${usd(summarizeCost(s.calls).usd)} |`
   );
 }
 const renderedAll = allComponents.filter(c => c.heightRatio !== null);
 out(
-  `| **all** | | **${allComponents.length}** | **${allComponents.filter(clean).length} (${pct(allComponents.filter(clean).length, allComponents.length)})** | **${allComponents.filter(c => !c.ref).length}** | **${renderedAll.filter(c => !inBand(c.heightRatio)).length} of ${renderedAll.length} (${pct(renderedAll.filter(c => !inBand(c.heightRatio)).length, renderedAll.length)})** | **${usd(total.usd)}** |`,
+  `| **all** | | **${allComponents.length}** | **${placements(allComponents)}** | **${weighted(allComponents, clean)}** | **${perComponent(allComponents, clean)}** | **${allComponents.filter(c => !c.ref).length}** | **${renderedAll.filter(c => !inBand(c.heightRatio)).length} of ${renderedAll.length} (${pct(renderedAll.filter(c => !inBand(c.heightRatio)).length, renderedAll.length)})** | **${usd(total.usd)}** |`,
   "",
-  '"Passed without problems" is a machine reading: generated, every validator green, rendered, height within 0.67–1.5x of the source section, at least one image where the section showed any, and no broken image. Images are counted as distinct sources visible inside the section box on the source side and as distinct images the render used on the other; a partial shortfall is listed as information, not a failure, because a box-based count cannot see which stacked carousel slide is on top. It is not Realpage\'s measure; that needs the verdicts in the review sheet. Components with no output count as failures here and in every share below.',
+  '"Passed" is a machine reading: generated, every validator green, rendered, height within 0.67–1.5x of the source section, at least one image where the section showed any, and no broken image. Images are counted as distinct sources visible inside the section box on the source side and as distinct images the render used on the other; a partial shortfall is listed as information, not a failure, because a box-based count cannot see which stacked carousel slide is on top. Components with no output count as failures here and in every share below.',
+  "",
+  "**What these numbers do not mean.** Every check behind them reads content and structure — text present, props declared, variables known, a height, an image request — and none reads appearance. A component can pass all of them while looking plainly wrong: Park City Place's Property Description passes every check and shows a different photograph from its section, a line pattern tiled over its body text, and the wrong display font. So the validator pass rate and the machine pass rate measure the absence of the defects the checks can see, not fidelity, and neither should be quoted as how much of a site migrated. Realpage's measure is the verdicts in the review sheet.",
   ""
 );
 
@@ -370,23 +386,25 @@ if (verdicts) {
   out(
     "## Realpage's measure (from the review verdicts)",
     "",
-    "Share of each site's components accepted as is, and as is or with minor polish. A component with no output, or no verdict, counts as not accepted.",
+    "Share of each site accepted as is, and as is or with minor polish — page-weighted first (what a visitor sees), then per component. A component with no output, or no verdict, counts as not accepted.",
     "",
-    "| site | components | accept as is | as is or minor polish |",
-    "| --- | ---: | ---: | ---: |"
+    "| site | accept as is, page-weighted | as is or minor polish, page-weighted | accept as is, per component | as is or minor polish, per component |",
+    "| --- | ---: | ---: | ---: | ---: |"
   );
-  let asIs = 0;
-  let minor = 0;
-  for (const s of sites.filter(x => !x.missing)) {
-    const v = s.components.map(c => verdicts.get(`${s.host}|${c.planned.signature}`) ?? "");
-    const a = v.filter(x => x === "accept as is").length;
-    const m = v.filter(x => x === "accept as is" || x === "minor polish").length;
-    asIs += a;
-    minor += m;
-    out(`| ${s.host} | ${v.length} | ${a} (${pct(a, v.length)}) | ${m} (${pct(m, v.length)}) |`);
+  const verdictOf = (host, c) => verdicts.get(`${host}|${c.planned.signature}`) ?? "";
+  const tagged = sites
+    .filter(x => !x.missing)
+    .flatMap(x => x.components.map(c => ({ ...c, host: x.host })));
+  const asIs = c => verdictOf(c.host, c) === "accept as is";
+  const minor = c => ["accept as is", "minor polish"].includes(verdictOf(c.host, c));
+  for (const host of [...new Set(tagged.map(c => c.host))]) {
+    const comps = tagged.filter(c => c.host === host);
+    out(
+      `| ${host} | ${weighted(comps, asIs)} | ${weighted(comps, minor)} | ${perComponent(comps, asIs)} | ${perComponent(comps, minor)} |`
+    );
   }
   out(
-    `| **all** | **${allComponents.length}** | **${asIs} (${pct(asIs, allComponents.length)})** | **${minor} (${pct(minor, allComponents.length)})** |`,
+    `| **all** | **${weighted(tagged, asIs)}** | **${weighted(tagged, minor)}** | **${perComponent(tagged, asIs)}** | **${perComponent(tagged, minor)}** |`,
     ""
   );
 }
@@ -548,7 +566,7 @@ out(
   "## Across all sites",
   "",
   `- Components: ${allComponents.length}; generated ${allComponents.filter(c => c.ref).length}; no output ${allComponents.filter(c => !c.ref).length}.`,
-  `- Passed without problems: ${allComponents.filter(clean).length} (${pct(allComponents.filter(clean).length, allComponents.length)}).`,
+  `- Passed (machine reading): ${weighted(allComponents, clean)} page placements; ${perComponent(allComponents, clean)} components.`,
   `- Every validator green: ${allComponents.filter(c => validatorsPassed(c.ref)).length} (${pct(allComponents.filter(c => validatorsPassed(c.ref)).length, allComponents.length)}).`,
   `- Height outside 0.67–1.5x of source: ${renderedAll.filter(c => !inBand(c.heightRatio)).length} of ${renderedAll.length} rendered (${pct(renderedAll.filter(c => !inBand(c.heightRatio)).length, renderedAll.length)}); too tall ${renderedAll.filter(c => c.heightRatio > HEIGHT_BAND.max).length}, too short ${renderedAll.filter(c => c.heightRatio < HEIGHT_BAND.min).length}.`,
   `- Mean height ratio: ${renderedAll.length ? ratio(renderedAll.reduce((t, c) => t + c.heightRatio, 0) / renderedAll.length) : "n/a"}; mean attempts: ${(allComponents.filter(c => c.ref).reduce((t, c) => t + c.ref.attempts, 0) / Math.max(1, allComponents.filter(c => c.ref).length)).toFixed(2)}.`,

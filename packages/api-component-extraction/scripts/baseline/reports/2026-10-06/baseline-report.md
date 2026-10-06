@@ -1,21 +1,25 @@
 # Migration pipeline baseline
 
-Generated 2026-10-06T15:25:42.295Z from the runs recorded in `state.json`. Prices from the table dated 2026-10-06 (`src/domain/modelCost.ts`); cache rates marked "assumed" there are the standard multipliers, not published figures.
+Generated 2026-10-06T17:40:20.275Z from the runs recorded in `state.json`. Prices from the table dated 2026-10-06 (`src/domain/modelCost.ts`); cache rates marked "assumed" there are the standard multipliers, not published figures.
 
 **No Kentico site is in this set.** Four sites are on G5 Marketing Cloud and one on RealPage LeaseStar, identified from public asset and API hosts.
 
 ## Summary
 
-| site | platform | components | passed without problems | not generated / no output | height outside 0.67–1.5x | spend |
-| --- | --- | ---: | ---: | ---: | ---: | ---: |
-| www.71westlandapts.com | G5 Marketing Cloud | 10 | 5 (50%) | 0 | 2 of 10 | $3.33 |
-| thevibe-apts.com | RealPage LeaseStar | 31 | 27 (87%) | 0 | 4 of 31 | $5.86 |
-| www.parkcityplace.org | G5 Marketing Cloud | 8 | 4 (50%) | 0 | 1 of 8 | $1.52 |
-| promo.freehillstreetlofts.com | G5 Marketing Cloud (promo landing site) | 8 | 2 (25%) | 0 | 1 of 7 | $2.16 |
-| www.2424tulane.com | G5 Marketing Cloud | 11 | 5 (45%) | 1 | 5 of 10 | $4.06 |
-| **all** | | **68** | **43 (63%)** | **1** | **13 of 66 (20%)** | **$16.92** |
+Two readings of every share, side by side. **Page-weighted** counts each component once for every page it appears on — what a visitor of the migrated site sees: a broken navigation header on 11 pages is 11 broken pages, not one defect. **Per component** counts each component once — how well generation works. Page-weighted leads, because Realpage is judging a migration, not a generator.
 
-"Passed without problems" is a machine reading: generated, every validator green, rendered, height within 0.67–1.5x of the source section, at least one image where the section showed any, and no broken image. Images are counted as distinct sources visible inside the section box on the source side and as distinct images the render used on the other; a partial shortfall is listed as information, not a failure, because a box-based count cannot see which stacked carousel slide is on top. It is not Realpage's measure; that needs the verdicts in the review sheet. Components with no output count as failures here and in every share below.
+| site | platform | components | placements (component × page) | passed, page-weighted | passed, per component | no output | height outside 0.67–1.5x | spend |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| www.71westlandapts.com | G5 Marketing Cloud | 10 | 50 | 20 of 50 (40%) | 5 of 10 (50%) | 0 | 2 of 10 | $3.33 |
+| thevibe-apts.com | RealPage LeaseStar | 31 | 80 | 61 of 80 (76%) | 27 of 31 (87%) | 0 | 4 of 31 | $5.86 |
+| www.parkcityplace.org | G5 Marketing Cloud | 8 | 39 | 25 of 39 (64%) | 4 of 8 (50%) | 0 | 1 of 8 | $1.52 |
+| promo.freehillstreetlofts.com | G5 Marketing Cloud (promo landing site) | 8 | 11 | 3 of 11 (27%) | 2 of 8 (25%) | 0 | 1 of 7 | $2.16 |
+| www.2424tulane.com | G5 Marketing Cloud | 11 | 58 | 23 of 58 (40%) | 5 of 11 (45%) | 1 | 5 of 10 | $4.06 |
+| **all** | | **68** | **238** | **132 of 238 (55%)** | **43 of 68 (63%)** | **1** | **13 of 66 (20%)** | **$16.92** |
+
+"Passed" is a machine reading: generated, every validator green, rendered, height within 0.67–1.5x of the source section, at least one image where the section showed any, and no broken image. Images are counted as distinct sources visible inside the section box on the source side and as distinct images the render used on the other; a partial shortfall is listed as information, not a failure, because a box-based count cannot see which stacked carousel slide is on top. Components with no output count as failures here and in every share below.
+
+**What these numbers do not mean.** Every check behind them reads content and structure — text present, props declared, variables known, a height, an image request — and none reads appearance. A component can pass all of them while looking plainly wrong: Park City Place's Property Description passes every check and shows a different photograph from its section, a line pattern tiled over its body text, and the wrong display font. So the validator pass rate and the machine pass rate measure the absence of the defects the checks can see, not fidelity, and neither should be quoted as how much of a site migrated. Realpage's measure is the verdicts in the review sheet.
 
 ## Main failure patterns
 
@@ -392,7 +396,7 @@ Generate per component: $0.38 mean over 10 component(s), 2.50 calls each.
 ## Across all sites
 
 - Components: 68; generated 67; no output 1.
-- Passed without problems: 43 (63%).
+- Passed (machine reading): 132 of 238 (55%) page placements; 43 of 68 (63%) components.
 - Every validator green: 63 (93%).
 - Height outside 0.67–1.5x of source: 13 of 66 rendered (20%); too tall 6, too short 7.
 - Mean height ratio: 1.24x; mean attempts: 1.91.

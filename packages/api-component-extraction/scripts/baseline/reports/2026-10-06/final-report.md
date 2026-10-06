@@ -16,42 +16,61 @@ from the runs listed in the state file.
 
 ## 1. Summary
 
-**68 components across five sites, from about $26.60 of model calls in total** (both passes; Sonnet 5 for
-every stage).
+**68 components across five sites, placed 238 times across their pages, for about $26.60 of model calls in
+total** (both passes; Sonnet 5 for every stage). Every share below is given two ways:
 
-- **Generated:** 67 of 68. One component never finished: its model call outran the 15-minute Lambda
-  limit twice.
-- **Every validator green:** 63 of 68 (93%).
-- **Machine checks passed:** 43 of 68 (63%), meaning generated, validators green, rendered, height
-  within 0.67–1.5x of the source, an image where the source had one, and no broken image.
-  - thevibe (RealPage LeaseStar): 27 of 31 (87%).
-  - The four G5 sites: 16 of 37 (25–50% each).
-- **Height outside 0.67–1.5x of the source:** 13 of 66 rendered (20%); 6 too tall, 7 too short.
-  - The worst are on 2424tulane: navigation headers at 7.3x and 2.6x, a highlights strip at 8.9x, and
-    a "Specials" tab at 0.16x.
+- **Page-weighted** counts a component once per page it appears on: what a visitor of the migrated site
+  sees.
+- **Per component** counts each component once: how well generation works.
 
-**The machine pass rate is not Realpage's measure and overstates fidelity.** Of two "passed" components
-checked by eye:
+Page-weighted leads, because Realpage is judging a migration.
 
-- thevibe's Neighborhood section is minor polish: the right photo and copy, with the display font
-  replaced and 30% shorter.
-- Park City Place's Property Description is major rework: a different photograph from the source, a
-  decorative line pattern tiled over the body text, and the display font gone. It still passed every
-  check.
+**Machine checks passed:** 55% of placements (132 of 238); 63% of components (43 of 68).
 
-The share of each site migrated without manual edits needs the verdicts in the review sheet.
+| site | platform | page-weighted | per component |
+| --- | --- | ---: | ---: |
+| thevibe | RealPage LeaseStar | 76% | 87% |
+| parkcityplace | G5 | 64% | 50% |
+| 71westland | G5 | 40% | 50% |
+| 2424tulane | G5 | 40% | 45% |
+| Freehill promo | G5 | 27% | 25% |
 
-**Main failure patterns:**
+The gap between the two readings is the point. 71westland's failing components are its header, footer and
+intro, which sit on many pages, so its page-weighted share is lower. Park City's failures sit on single
+pages, so its share is higher.
 
-| pattern | components |
-| --- | ---: |
-| height outside the band | 13 |
-| no image where the section had one | 6 (verified on Park City's hero: a full-bleed photo became a plain gradient) |
-| text-preservation failures | 4 |
-| broken images | 4 (incl. a file input read as `[object Object]`, rendering blank) |
+**Other counts:**
 
-Visible in the spot checks: display typography replaced by a generic sans, the wrong image bound, and
-decoration misapplied.
+- **Every validator green:** 63 of 68 components (93%).
+- **Generated:** 67 of 68. Floor Plan Filter never finished; see below.
+- **Height outside 0.67–1.5x of the source:** 13 of 66 rendered (20%).
+
+**What 93% and 63% do not mean.** Every check we have reads content and structure — text present, props
+declared, variables known, a height, an image request — and none reads appearance.
+
+- Park City Place's Property Description passes all four validators and every machine check.
+- It shows a different photograph from its section, a line pattern tiled over its body text, and the wrong
+  display font.
+
+That is not a calibration gap. The checks certify a component that is visibly wrong, so the validator set
+is incomplete. It is the same shape as the composed-page signals that read healthy on pages rendering
+nothing, and then on pages returning 500. Neither number measures fidelity, and neither should be quoted as
+how much of a site migrated. Realpage's measure is the human verdicts.
+
+**Floor Plan Filter (2424tulane) is a component problem, not two incidents.** It has now failed on two
+independent limits: `PRESERVED_TEXT_LIMIT` (35 texts against 30) and the 15-minute Lambda limit, twice.
+Its prompt contradicts itself:
+
+- Plan's list binding put the wrong content in every list, then marks it "exactly as given":
+  - tabs carry floor-plan codes and Matterport tour links;
+  - filters carry layout headings;
+  - floor plans read `squareFeet: "Filter By:"`, `bathrooms: "Site Map"`.
+- The preserve list includes the icon names "refresh" and "add".
+- The cut at 30 texts drops the third plan's prices.
+
+Probable cause of the runaway generation (inferred): the model has no consistent answer to give. The root
+defect is the list binding in sections with several sibling lists (`bindObservedValues`). The call bounds
+added since make the component fail in minutes, with a reason, rather than be killed silently.
 
 **Two things went wrong on the way and are recorded, not hidden:**
 
@@ -105,6 +124,11 @@ data. Neither changed a component.
 
 ## 3. Before and after (Part 1)
 
+**Part 1 is only partly evidenced.** These sites exercised two of the capture and crop fixes, viewport
+drift and width shrink. They never triggered the crop clamp (no box fell past a screenshot), the
+tall-page cap (no page over 32,000px), or the font wait (no font failed). Those three are covered by tests;
+this baseline does not show them changing real output.
+
 **Viewport-height drift, fixed.**
 
 - On thevibe's Gallery page, the pre-fix screenshot showed the stretched hero at y=8267, where the tree
@@ -125,7 +149,7 @@ on G5:
 
 **Width shrink, fixed.** thevibe had 2 of 82 crops narrower than their section before; 0 after.
 
-**Crop clamp, tall pages and fonts: not exercised by these sites.**
+**Crop clamp, tall pages and fonts: not exercised by these sites (see the note at the top of this section).**
 
 - No 1-pixel crops in the pre-fix runs on the pages compared.
 - No page taller than 32,000px.
@@ -137,28 +161,34 @@ on G5:
 
 ## 4. Further defects found (not fixed)
 
-**Pipeline:**
+**Pipeline (the first three fixed since, on `claude/theme-app`, to deploy):**
 
-1. **Re-triggering a running stage leaves a claim that never clears.** It permanently blocks every later
-   stage (`hasOutstandingClaim`: the continuation keeps the old task id while the new id stays pending).
-   The API explicitly allows the re-trigger.
-2. **Generate's 8-minute component timeout is shorter than three slow attempts.**
-   - The coordinator starts a second copy, so the component is generated twice.
-   - The late copy writes its result after the stage has closed, so the stored result can differ from
-     what was rendered and promoted.
-   - Seen on 71westland, about $0.47.
-3. **No output-token limit or per-call timeout on generation.**
-   - A long component ran past the 900-second Lambda limit and was killed with no result and no
-     model-call record. Its retry did the same.
-   - The spend is invisible to telemetry and the budget, up to about $1.30.
-   - Seen on 2424tulane's Floor Plan Filter.
-4. **Known issues still present:**
-   - A file input read bare (`[object Object]`) renders blank.
-   - Nothing visual is validated, so a wrong image or misapplied decoration passes.
-   - A fixed-position tab is cut as a section (2424tulane "Specials", 0.16x).
-5. **Display fonts replaced in renders (inferred).** Seen on both sites spot-checked. Needs a look at how
-   theme fonts reach the sandbox.
-6. **Stale task records.** A stopped Step Functions execution leaves its background task "running" forever.
+1. **Re-triggering a running stage stranded every stage after it.** Cancel was no recovery: it marks the
+   run cancelled, which the gate also refuses. **Fixed in `c5afbc3800`:**
+   - the runner adopts a re-triggered task that continues a running stage;
+   - the gate clears a claim whose task has finished, failed, been aborted or no longer exists, so runs
+     already stuck — thevibe's included — recover by triggering the next stage.
+2. **Duplicate generation.** The 8-minute component timeout was shorter than three slow attempts, so a
+   component was generated twice and its result overwritten after the stage closed. **Fixed in
+   `73c030a7ef`:**
+   - the timeout is now 17 minutes, longer than a component task can live;
+   - the first result wins, and a later task discards its own.
+3. **Runaway generation calls.** No output limit and no per-call timeout, so a call could be killed with no
+   result and no record. **Fixed in `c7669fc734`:**
+   - output is capped at 32K tokens;
+   - each call is aborted at 5 minutes, or at the time the task has left;
+   - the task always records its best attempt, or why it had none.
+   - An aborted call is recorded as a failed call, but its tokens are not (no usage is reported).
+4. **List binding puts the wrong content in sibling lists** (`bindObservedValues`). See Floor Plan Filter
+   above. It also feeds garbled "exactly as given" defaults into the prompt.
+5. **Known issues still present:**
+   - a file input read bare (`[object Object]`) renders blank;
+   - nothing visual is validated;
+   - non-content strings ("refresh", "add") are still asked for as text;
+   - a fixed-position tab is cut as a section (2424tulane "Specials", 0.16x).
+6. **Display fonts replaced in renders (inferred).** Seen on both components spot-checked. Needs a look at
+   how theme fonts reach the sandbox.
+7. **Stale task records.** A stopped Step Functions execution leaves its background task "running" forever.
 
 **Core (for Pavel):**
 
@@ -170,14 +200,14 @@ on G5:
 
 ---
 
-## 5. Open questions for Sven
+## 5. Decisions and open questions
 
-1. **The Library now holds 64 components from today:**
-   - 31 from pass 1, generated from the regressed crops and superseded.
-   - 33 from the re-run.
-   - Delete the 31 from pass 1? Nothing has been deleted.
-2. **Review sheet images:** publish the review sheet as a private page with the side-by-side images
-   embedded, for the team's verdicts?
-3. **Defects 2 and 3 before the demo?** Both waste money and lose components; each is a small change.
-4. **Weighting Realpage's measure:** per component as built, or weighted by how many pages each component
-   appears on?
+1. **Library: decided, do not delete the 31 superseded components yet.** Composed pages resolve components
+   by name at render time. Clean-up order, after the 16th:
+   1. delete the superseded pages;
+   2. then their components;
+   3. then verify nothing else references them.
+2. **Review sheet: open, see the reply.** Two things to settle before it is published: where verdicts are
+   stored, and how the images are served.
+3. **Weighting: decided, report both,** page-weighted first. Done in `report.mjs`; the verdict shares are
+   computed both ways too.
