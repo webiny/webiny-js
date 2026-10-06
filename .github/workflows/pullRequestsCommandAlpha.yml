@@ -108,7 +108,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}
           ref: ${{ needs.prBranch.outputs.pr-sha }}
@@ -163,7 +163,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}
           ref: ${{ needs.prBranch.outputs.pr-sha }}

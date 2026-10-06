@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -72,7 +72,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -117,7 +117,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -164,7 +164,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -217,7 +217,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -256,7 +256,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -291,7 +291,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -338,7 +338,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -377,7 +377,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -433,7 +433,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -473,7 +473,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -541,7 +541,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder
@@ -600,7 +600,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -656,7 +656,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - name: Resolve Yarn cache folder

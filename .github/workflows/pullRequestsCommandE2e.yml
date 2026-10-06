@@ -87,7 +87,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
       - name: Get base branch
         id: base-branch
         env:
@@ -141,7 +141,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -204,7 +204,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -262,7 +262,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -466,7 +466,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -529,7 +529,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -747,7 +747,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -978,7 +978,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -1199,7 +1199,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -1459,7 +1459,7 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
