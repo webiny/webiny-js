@@ -361,7 +361,7 @@ Queries:
 - `listReviews(list: assignedToMe | pool | teamInReview | myRequests, where, sort, limit, after)` [D47]
 - `listUsers` (requires `editor`) [D48]
 - `listStepCandidates(workflowId, stepId)` → `{ id, displayName, excluded, excludedReason }` [D48]
-- `inspectRouting(workflowId, stepId, requesterId, folderId)` → resulting owner, deciding rule, skipped reasons [D45]
+- `inspectRouting(stepConfig, model, requesterId, folderId)` → resulting owner, per-rule trace, strategy choice; evaluates unsaved config [D45, D95]
 - `folderExists(id)` → boolean [D69]
 - `getSettings`
 

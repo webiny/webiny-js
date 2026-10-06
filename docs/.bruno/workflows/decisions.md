@@ -460,3 +460,39 @@ v1 ships one built-in automation: "Send webhook" (POST to a URL with a secret si
 ## D87. Run tasks as the requester via withIdentity
 
 Supersedes D58's mechanism (the `TaskService.trigger` `identity` parameter). Workflows triggers AI and automation tasks inside `IdentityContext.withIdentity(requesterIdentity, () => taskService.trigger(...))`, so the task's `createdBy` (and the identity restored at run time) is the requester. `TaskService.trigger` keeps its current interface; api-core does not change. The interface shape is not changed just to pass a different identity.
+
+## D88. UI: review details view
+
+A review details view, reachable from the review bar, lists and widgets, shows the full step timeline: state, owner and actor type, assignment source and reason, comments, AI issues, earlier automation runs. The review bar stays compact (current step and actions).
+
+## D89. UI: who sees assignment reasons
+
+Everyone who can see a review sees assignment outcomes ("Assigned by rule X", "Sent to pool: all candidates excluded"). Per-user skip details and free-text exclusion reasons are visible only to `editor` or `reassign`.
+
+## D90. UI: running and failed automated steps
+
+A running AI or automation step shows "Running", the automation or AI name, and start time. Users with `editor` or `reassign` get a link to the run in the Background Tasks admin. A failed step shows the reason, earlier attempts, and Restart for permitted users.
+
+## D91. UI: step type chosen once
+
+Step type (Review, Automation, AI) is chosen when adding a step and cannot be changed; delete and re-add instead. AI appears only with the `aiPowerups` licence; Automation only when at least one definition covers the workflow's model.
+
+## D92. UI: explicit workflow save
+
+The workflow editor edits the whole workflow and saves explicitly (no per-step save, no auto-save). It tracks unsaved changes, warns before leaving, and shows server validation errors on the exact step, rule or field.
+
+## D93. UI: request review dialog
+
+Always shown. Contains: review title (prefilled from the entry/page title), a read-only preview of the steps (name, type, how the reviewer is chosen: pool, routed, AI, automation), and a reviewer choice ("Automatic" preselected or a person) only for steps that allow picks. One click to confirm when there is nothing to choose.
+
+## D94. UI: Content Reviews page
+
+Four lists as tabs (Assigned to me, Pool, Team in review, My requests). Filters: model, review state, step state; search by title. Columns: title, model, current step, step state, owner, requester, last change. Row actions follow server flags: open, open in new window, view details, start, take over, reassign. No approve/reject from the list.
+
+## D95. UI: rule inspector
+
+"Test routing" panel in the review step's assignment section. Inputs: requester user, folder. Output: resulting owner or pool, plus a per-rule trace (matched, not matched, skipped with reason) and the strategy's choice. Evaluates the unsaved step config in the editor, so `inspectRouting` accepts a step config (not only a step id).
+
+## D96. UI: notification channels per step
+
+Every step type has the same "Notify via" choice listing registered transports (e-mail today). The in-app websocket message is always sent and not shown as an option. Recipients follow D44; admins choose only channels.
