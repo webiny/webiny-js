@@ -53,6 +53,33 @@ export const withoutStageClaim = (ledger: StageLedgerEntry[], stage: Stage): Sta
 export const hasOutstandingClaim = (entry: StageLedgerEntry): boolean =>
     !!entry.pendingTaskId && entry.pendingTaskId !== entry.taskId;
 
+/**
+ * A re-triggered task continuing a stage that is already running takes the stage over: its id is
+ * stamped on the entry and its claim cleared.
+ *
+ * Re-triggering a running stage is allowed on purpose — it is how a stage whose task was killed gets
+ * resumed — but the claim was only ever cleared on a fresh start. A re-triggered task continues instead,
+ * so its claim stayed outstanding after the stage finished, and every later stage was refused for good:
+ * `hasOutstandingClaim` compared it with the original task's id, still on the entry. Leaves the entry
+ * as it is unless the claim is this task's.
+ */
+export const adoptStageTask = (
+    ledger: StageLedgerEntry[],
+    stage: Stage,
+    taskId: string
+): StageLedgerEntry[] =>
+    patch(ledger, stage, entry =>
+        entry.pendingTaskId === taskId ? { ...entry, taskId, pendingTaskId: null } : entry
+    );
+
+/**
+ * Whether a claim can still be taken over, from the status of the task that holds it. A task that
+ * finished, failed or was aborted — or no longer exists — will never take the stage over, so its claim
+ * blocks nothing real and only stands in the way.
+ */
+export const isClaimStale = (taskStatus: string | null | undefined): boolean =>
+    !taskStatus || ["success", "failed", "aborted"].includes(taskStatus);
+
 /** Stamp a model-backed stage's usage aggregate onto its entry (written once, at stage close). */
 export const withStageModelUsage = (
     ledger: StageLedgerEntry[],

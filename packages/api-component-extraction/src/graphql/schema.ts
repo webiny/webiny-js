@@ -1,6 +1,7 @@
 import { ErrorResponse, Response } from "@webiny/api-graphql";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { TasksCrud } from "@webiny/background-tasks/api/TasksCrud.js";
 import { componentExtractionTypeDefs } from "./typeDefs.js";
 import { ComponentExtractionPermissions } from "~/features/permissions.js";
 import {
@@ -15,6 +16,8 @@ import { StageArtifactStore } from "~/domain/stage.js";
 import {
     hasOutstandingClaim,
     initLedger,
+    isClaimStale,
+    withoutStageClaim,
     markStageFailed,
     markStaleFrom,
     stageEntry,
@@ -302,11 +305,12 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
 
     builder.addResolver({
         path: "Mutation.componentExtractionRunStage",
-        dependencies: [ComponentExtractionPermissions, RunRepository, TaskService],
+        dependencies: [ComponentExtractionPermissions, RunRepository, TaskService, TasksCrud],
         resolver(
             permissions: ComponentExtractionPermissions.Interface,
             runRepository: RunRepository.Interface,
-            taskService: TaskService.Interface
+            taskService: TaskService.Interface,
+            tasks: TasksCrud.Interface
         ) {
             return ({ args }: { args: { runId: string; stage: string } }) =>
                 resolve(async () => {
@@ -322,7 +326,7 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     if (runResult.isFail()) {
                         throw runResult.error;
                     }
-                    const run = runResult.value;
+                    let run = runResult.value;
 
                     /*
                      * A cancelled run is over. Without this it would still accept stages, which makes
@@ -358,10 +362,29 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         }
 
                         if (hasOutstandingClaim(previousEntry)) {
-                            throw new Error(
-                                `Cannot run "${stage}": "${previous}" has just been triggered and ` +
-                                    `has not started yet. Wait for it to finish.`
-                            );
+                            /*
+                             * A claim only means "a newer run of this stage is about to start" while
+                             * its task can still start. One whose task finished, failed or was aborted
+                             * never will — left alone it refuses every later stage for good, which is
+                             * what stranded a whole run's Assemble and Promote. Such a claim is cleared
+                             * and the trigger proceeds; a live one is still respected.
+                             */
+                            const claimedBy = await tasks
+                                .getTask(previousEntry.pendingTaskId as string)
+                                .catch(() => null);
+                            if (!isClaimStale(claimedBy?.taskStatus)) {
+                                throw new Error(
+                                    `Cannot run "${stage}": "${previous}" has just been triggered and ` +
+                                        `has not started yet. Wait for it to finish.`
+                                );
+                            }
+                            const cleared = await runRepository.update(run.id, {
+                                stages: withoutStageClaim(run.stages, previous)
+                            });
+                            if (cleared.isFail()) {
+                                throw cleared.error;
+                            }
+                            run = cleared.value;
                         }
 
                         const expected = `:v${previousEntry.stageVersion}:`;

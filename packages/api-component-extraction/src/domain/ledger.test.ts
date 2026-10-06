@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+    adoptStageTask,
+    hasOutstandingClaim,
     initLedger,
+    isClaimStale,
+    withStageClaim,
+    withStageTaskId,
     markStageDone,
     markStageFailed,
     markStageRunning,
@@ -131,5 +136,48 @@ describe("mergeLedgers — drops only regressions", () => {
         const merged = mergeLedgers(stored, staleAtV1);
         expect(stageEntry(merged, "segment")?.status).toBe("done");
         expect(stageEntry(merged, "segment")?.stageVersion).toBe(2);
+    });
+});
+
+describe("claims left by a re-triggered running stage", () => {
+    const running = () =>
+        withStageClaim(
+            withStageTaskId(markStageRunning(initLedger(), "generate", "t0"), "generate", "task-1"),
+            "generate",
+            "task-2"
+        );
+    const generate = (ledger: ReturnType<typeof initLedger>) =>
+        ledger.find(entry => entry.stage === "generate")!;
+
+    it("is outstanding while the re-triggered task has not taken over", () => {
+        expect(hasOutstandingClaim(generate(running()))).toBe(true);
+    });
+
+    it("is cleared when the re-triggered task continues the stage", () => {
+        const adopted = generate(adoptStageTask(running(), "generate", "task-2"));
+        expect(adopted.taskId).toBe("task-2");
+        expect(adopted.pendingTaskId).toBeNull();
+        expect(hasOutstandingClaim(adopted)).toBe(false);
+    });
+
+    it("is left alone by a task that does not hold it", () => {
+        const untouched = generate(adoptStageTask(running(), "generate", "task-1"));
+        expect(untouched.taskId).toBe("task-1");
+        expect(untouched.pendingTaskId).toBe("task-2");
+    });
+});
+
+describe("isClaimStale", () => {
+    it("treats a claim whose task can still start as live", () => {
+        expect(isClaimStale("pending")).toBe(false);
+        expect(isClaimStale("running")).toBe(false);
+    });
+
+    it("treats a claim whose task finished, failed, was aborted or is gone as stale", () => {
+        expect(isClaimStale("success")).toBe(true);
+        expect(isClaimStale("failed")).toBe(true);
+        expect(isClaimStale("aborted")).toBe(true);
+        expect(isClaimStale(null)).toBe(true);
+        expect(isClaimStale(undefined)).toBe(true);
     });
 });

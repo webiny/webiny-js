@@ -25,6 +25,7 @@ import {
     type StageProgressPayload
 } from "~/domain/stage.js";
 import {
+    adoptStageTask,
     markStageDone,
     markStageFailed,
     markStageRunning,
@@ -263,6 +264,16 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
             });
             await appendActivity(`Stage "${stage}" started.`);
         } else {
+            const taskId = controller.state.getTask().id;
+            if (existing?.pendingTaskId === taskId) {
+                // A re-trigger continuing this running stage: it takes the stage over (see
+                // `adoptStageTask`), or its claim would block every later stage once this one is done.
+                ledger = adoptStageTask((await latestRun(run)).stages, stage, taskId);
+                const adopted = await this.runRepository.update(run.id, { stages: ledger });
+                if (adopted.isFail()) {
+                    return controller.response.error(adopted.error.message);
+                }
+            }
             await appendActivity(`Stage "${stage}" resuming.`);
         }
 
