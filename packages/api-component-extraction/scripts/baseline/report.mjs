@@ -17,6 +17,7 @@ import path from "node:path";
 import { parseArgs } from "node:util";
 import { MODEL_PRICES_TAKEN_ON, summarizeCost } from "../../src/domain/modelCost.ts";
 import { findNodeByBox } from "../../src/features/stages/cluster/sectionNode.ts";
+import { visibleSectionImageCount } from "../../src/features/shared/renderedImages.ts";
 import { sectionShape } from "../../src/features/stages/cluster/sectionShape.ts";
 import { sectionSimilarity } from "../../src/features/stages/cluster/similarity.ts";
 import {
@@ -115,6 +116,27 @@ for (const site of config.sites) {
   const noOutput = generate?.noOutput ?? {};
 
   const components = [];
+  const trees = new Map();
+  const expectedImagesOf = async (runId, segment, reference, box) => {
+    const page = (segment?.pages ?? []).find(p => p.url === reference?.url);
+    if (page && box) {
+      if (!trees.has(page.treeRef)) {
+        trees.set(
+          page.treeRef,
+          await client
+            .blob(runId, page.treeRef, "tree")
+            .then(bytes => JSON.parse(new TextDecoder().decode(bytes)))
+            .catch(() => null)
+        );
+      }
+      const tree = trees.get(page.treeRef);
+      const section = tree ? findNodeByBox(tree, box) : null;
+      if (section) {
+        return visibleSectionImageCount(section, box);
+      }
+    }
+    return (reference?.digest?.imageCount ?? 0) + 0;
+  };
   for (const [index, planned] of (plan?.components ?? []).entries()) {
     const ref = generated.get(planned.signature) ?? null;
     const full = ref ? await getGeneratedComponent(client, runId, planned.signature) : null;
@@ -129,8 +151,8 @@ for (const site of config.sites) {
           member.url === planned.representativeCrop?.member?.url &&
           member.sectionIndex === planned.representativeCrop?.member?.sectionIndex
       ) ?? planned.representative;
-    const expectedImages =
-      (reference?.digest?.imageCount ?? 0) + (planned.backgroundImages?.length ?? 0);
+    // Images visible in the reference section, from its page tree — not every image node it holds.
+    const expectedImages = await expectedImagesOf(runId, segment, reference, box);
     const renderedImages = render?.imageCheck?.renderedImageCount ?? null;
     const componentCalls = calls.filter(
       call => call.stage === "generate" && call.signature === planned.signature
@@ -196,12 +218,20 @@ const inBand = value => value !== null && value >= HEIGHT_BAND.min && value <= H
 const imageProblems = c =>
   (c.render?.imageCheck?.stringifiedValues?.length ?? 0) +
   (c.render?.imageCheck?.failedRequests?.length ?? 0);
-const imagesPresent = c =>
-  c.renderedImages === null ? null : c.expectedImages === 0 || c.renderedImages >= c.expectedImages;
 /**
- * "Passed without problems": generated, every validator green, rendered, the right height, every image
- * the section had shown on the render, and no broken image. A machine reading, not a verdict — it is
- * the bar a component clears before anyone looks at it.
+ * Whether the render showed an image where the source section showed any. Deliberately not "as many
+ * images": the source count comes from boxes, which cannot tell which of a fade carousel's stacked
+ * slides is on top, so a partial shortfall is as likely to be the measure as the component. None at
+ * all is not. Partial shortfalls are listed separately, as information.
+ */
+const imagesPresent = c =>
+  c.renderedImages === null ? null : c.expectedImages === 0 || c.renderedImages > 0;
+const imageShortfall = c =>
+  c.renderedImages !== null && c.renderedImages > 0 && c.renderedImages < c.expectedImages;
+/**
+ * "Passed without problems": generated, every validator green, rendered, the right height, an image
+ * where the section showed any, and no broken image. A machine reading, not a verdict — it is the bar
+ * a component clears before anyone looks at it.
  */
 const clean = c =>
   Boolean(
@@ -231,7 +261,7 @@ const failureOf = c => {
     reasons.push(`height ${ratio(c.heightRatio)} of source`);
   }
   if (imagesPresent(c) === false) {
-    reasons.push(`images ${c.renderedImages}/${c.expectedImages}`);
+    reasons.push(`no image (section showed ${c.expectedImages})`);
   }
   if (imageProblems(c) > 0) {
     reasons.push(`${imageProblems(c)} broken image(s)`);
@@ -310,7 +340,7 @@ const renderedAll = allComponents.filter(c => c.heightRatio !== null);
 out(
   `| **all** | | **${allComponents.length}** | **${allComponents.filter(clean).length} (${pct(allComponents.filter(clean).length, allComponents.length)})** | **${allComponents.filter(c => !c.ref).length}** | **${renderedAll.filter(c => !inBand(c.heightRatio)).length} of ${renderedAll.length} (${pct(renderedAll.filter(c => !inBand(c.heightRatio)).length, renderedAll.length)})** | **${usd(total.usd)}** |`,
   "",
-  '"Passed without problems" is a machine reading: generated, every validator green, rendered, height within 0.67–1.5x of the source section, every image the section had shown, and no broken image. It is not Realpage\'s measure; that needs the verdicts in the review sheet. Components with no output count as failures here and in every share below.',
+  '"Passed without problems" is a machine reading: generated, every validator green, rendered, height within 0.67–1.5x of the source section, at least one image where the section showed any, and no broken image. Images are counted as distinct sources visible inside the section box on the source side and as distinct images the render used on the other; a partial shortfall is listed as information, not a failure, because a box-based count cannot see which stacked carousel slide is on top. It is not Realpage\'s measure; that needs the verdicts in the review sheet. Components with no output count as failures here and in every share below.',
   ""
 );
 
@@ -363,7 +393,7 @@ for (const c of allComponents.filter(x => !clean(x))) {
   for (const reason of failureOf(c).split("; ")) {
     const key = reason
       .replace(/^height [\d.]+x of source$/, "height outside 0.67–1.5x of source")
-      .replace(/images \d+\/\d+/, "fewer images than the section")
+      .replace(/^no image \(section showed \d+\)$/, "no image where the section showed one")
       .replace(/\d+ broken image\(s\)/, "broken images");
     patterns.set(key, (patterns.get(key) ?? 0) + 1);
   }
@@ -518,7 +548,12 @@ out(
   `- Every validator green: ${allComponents.filter(c => validatorsPassed(c.ref)).length} (${pct(allComponents.filter(c => validatorsPassed(c.ref)).length, allComponents.length)}).`,
   `- Height outside 0.67–1.5x of source: ${renderedAll.filter(c => !inBand(c.heightRatio)).length} of ${renderedAll.length} rendered (${pct(renderedAll.filter(c => !inBand(c.heightRatio)).length, renderedAll.length)}); too tall ${renderedAll.filter(c => c.heightRatio > HEIGHT_BAND.max).length}, too short ${renderedAll.filter(c => c.heightRatio < HEIGHT_BAND.min).length}.`,
   `- Mean height ratio: ${renderedAll.length ? ratio(renderedAll.reduce((t, c) => t + c.heightRatio, 0) / renderedAll.length) : "n/a"}; mean attempts: ${(allComponents.filter(c => c.ref).reduce((t, c) => t + c.ref.attempts, 0) / Math.max(1, allComponents.filter(c => c.ref).length)).toFixed(2)}.`,
-  `- Images: ${allComponents.filter(c => imagesPresent(c) === false).length} component(s) show fewer images than their section; ${allComponents.filter(c => imageProblems(c) > 0).length} have a broken image.`,
+  `- Images: ${allComponents.filter(c => imagesPresent(c) === false).length} component(s) show no image where their section showed one; ${allComponents.filter(c => imageProblems(c) > 0).length} have a broken image; ${allComponents.filter(imageShortfall).length} show fewer images than were visible in the section (information only: ${
+    allComponents
+      .filter(imageShortfall)
+      .map(c => `${c.planned.name} ${c.renderedImages}/${c.expectedImages}`)
+      .join(", ") || "none"
+  }).`,
   `- Spend: ${usd(total.usd)} over ${total.calls} model calls; cache read ${total.cacheReadTokens} and write ${total.cacheWriteTokens} input tokens; caching saved ${usd(total.cacheSavingUsd)}.${total.unpricedCalls ? ` ${total.unpricedCalls} unpriced call(s) excluded.` : ""}`,
   `- Models used: ${[...new Set(allCalls.map(call => `${call.stage}: ${call.modelId}`))].sort().join("; ") || "none recorded"}.`,
   ""
