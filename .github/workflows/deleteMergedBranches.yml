@@ -153,7 +153,7 @@ jobs:
             echo "::error::$FAILED branch(es) could not be deleted. See the warnings above."
             exit 1
           fi
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       actions: write

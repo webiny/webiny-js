@@ -3,7 +3,6 @@ import {
     ACTION,
     AWS_REGION,
     BUILD_PACKAGES_RUNNER,
-    DEFAULT_RUNNER,
     createWaitForOpenSearchStep,
     NODE_VERSION,
     OPENSEARCH_SERVICE,
@@ -271,7 +270,7 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
     //     strategy: {
     //         "fail-fast": false,
     //         matrix: {
-    //             os: [DEFAULT_RUNNER],
+    //             os: ["ubuntu-latest"],
     //             node: [NODE_VERSION],
     //             "cypress-folder": `$\{{ fromJson(needs.${jobNames.constants}.outputs.cypress-folders) }}`
     //         }
@@ -349,7 +348,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             strategy: {
                 "fail-fast": false,
                 matrix: {
-                    os: [DEFAULT_RUNNER],
+                    os: ["ubuntu-latest"],
                     node: [NODE_VERSION],
                     testCommand: `$\{{ fromJSON(needs.${jobNames.constants}.outputs.vitest-test-commands) }}`
                 }

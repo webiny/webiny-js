@@ -31,7 +31,7 @@ jobs:
         run: >-
           echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
           vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -41,7 +41,7 @@ jobs:
   build:
     name: Build
     needs: constants
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -121,7 +121,7 @@ jobs:
       - name: Check Package Node Modules
         run: yarn check:node-modules:ci
         working-directory: v6
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -162,7 +162,7 @@ jobs:
       - name: Sync Dependencies Verification
         run: yarn verify-dependencies
         working-directory: v6
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -171,7 +171,7 @@ jobs:
       actions: write
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -220,7 +220,7 @@ jobs:
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
           '[""]')" >> "$GITHUB_OUTPUT"
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -236,7 +236,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - blacksmith-4vcpu-ubuntu-2404
+          - ubuntu-latest
         node:
           - 24
         testCommand: ${{ fromJSON(needs.vitest-constants.outputs.vitest-test-commands) }}
@@ -297,7 +297,7 @@ jobs:
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
           '["ddb"]')" >> "$GITHUB_OUTPUT"
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -313,7 +313,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - blacksmith-4vcpu-ubuntu-2404
+          - ubuntu-latest
         node:
           - 24
         testCommand: >-
@@ -384,7 +384,7 @@ jobs:
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
           '["ddb-os,ddb"]')" >> "$GITHUB_OUTPUT"
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -400,7 +400,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - blacksmith-4vcpu-ubuntu-2404
+          - ubuntu-latest
         node:
           - 24
         testCommand: >-
@@ -500,7 +500,7 @@ jobs:
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
           '["sql"]')" >> "$GITHUB_OUTPUT"
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -516,7 +516,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - blacksmith-4vcpu-ubuntu-2404
+          - ubuntu-latest
         node:
           - 24
         testCommand: >-
@@ -589,7 +589,7 @@ jobs:
         run: >-
           echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
           github.run_id }}_ddb" >> $GITHUB_OUTPUT
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -601,7 +601,7 @@ jobs:
       - constants
       - build
       - e2eTests-ddb-constants
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: webiny-build-packages
     name: E2E (DDB) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -767,7 +767,7 @@ jobs:
         run: >-
           echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
           github.run_id }}_ddb-os" >> $GITHUB_OUTPUT
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -779,7 +779,7 @@ jobs:
       - constants
       - build
       - e2eTests-ddb-os-constants
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: webiny-build-packages
     name: E2E (DDB+OS) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -1105,7 +1105,7 @@ jobs:
           retention-days: 1
           if-no-files-found: ignore
           path: v6/cypress-tests/cypress/screenshots
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -1287,7 +1287,7 @@ jobs:
           retention-days: 1
           if-no-files-found: ignore
           path: v6/cypress-tests/cypress/screenshots
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false

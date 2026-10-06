@@ -105,4 +105,4 @@ jobs:
               -F "body=@$REPORT"
             echo "::notice::Posted new slop cop comment."
           fi
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
