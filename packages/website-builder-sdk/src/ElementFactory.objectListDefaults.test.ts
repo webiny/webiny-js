@@ -2,6 +2,12 @@ import { describe, it, expect } from "vitest";
 import { ElementFactory } from "./ElementFactory.js";
 import { BindingsResolver } from "./BindingsResolver.js";
 import { ComponentManifestToAstConverter } from "./ComponentManifestToAstConverter.js";
+import {
+    createFileInput,
+    createLongTextInput,
+    createObjectInput,
+    createTextInput
+} from "./createInput.js";
 import type { ComponentInput, ComponentManifest, Document } from "~/types.js";
 
 /**
@@ -233,5 +239,87 @@ describe("ElementFactory — object-list defaults", () => {
         expect(place(manifest, { cards: [{ title: "Given", body: "Explicit" }] }).cards).toEqual([
             { title: "Given", body: "Explicit" }
         ]);
+    });
+
+    /*
+     * The shape the migration pipeline's generated components use: inputs built by the SDK's own
+     * factories (the bundler evaluates `createObjectInput({ list: true, fields: [...] })` descriptors),
+     * a file input and a nested object inside each item, and the list items given in the manifest's
+     * `defaults.inputs` as the generation prompt instructs.
+     */
+    it("binds a generated component's list items from defaults.inputs, file and nested fields included", () => {
+        const image = {
+            id: "img-1",
+            name: "pool.jpg",
+            size: 1024,
+            mimeType: "image/jpeg",
+            src: "https://cdn.example.com/pool.jpg",
+            width: 1200,
+            height: 800
+        };
+        const manifest: ComponentManifest = {
+            name: "Custom/AmenitiesGrid",
+            label: "Amenities Grid",
+            tags: [],
+            inputs: [
+                createTextInput({ name: "heading", label: "Heading", defaultValue: "Amenities" }),
+                createObjectInput({
+                    name: "amenities",
+                    label: "Amenities",
+                    list: true,
+                    fields: [
+                        createTextInput({ name: "title", label: "Title", defaultValue: "Amenity" }),
+                        createLongTextInput({ name: "description", label: "Description" }),
+                        createFileInput({ name: "image", label: "Image" }),
+                        createObjectInput({
+                            name: "link",
+                            label: "Link",
+                            fields: [
+                                createTextInput({ name: "label", label: "Label" }),
+                                createTextInput({ name: "url", label: "URL" })
+                            ]
+                        })
+                    ]
+                })
+            ] as ComponentInput[],
+            defaults: {
+                inputs: {
+                    amenities: [
+                        {
+                            title: "Resort-style pool",
+                            description: "Heated, open year-round.",
+                            image,
+                            link: { label: "See the pool", url: "/amenities#pool" }
+                        },
+                        {
+                            title: "Fitness center",
+                            description: "Open 24/7.",
+                            image: {
+                                ...image,
+                                id: "img-2",
+                                src: "https://cdn.example.com/gym.jpg"
+                            },
+                            link: { label: "See the gym", url: "/amenities#gym" }
+                        },
+                        {
+                            title: "Pet spa",
+                            description: "Wash and groom.",
+                            image: {
+                                ...image,
+                                id: "img-3",
+                                src: "https://cdn.example.com/spa.jpg"
+                            },
+                            link: { label: "See the spa", url: "/amenities#spa" }
+                        }
+                    ]
+                }
+            }
+        };
+
+        const inputs = place(manifest);
+
+        expect(inputs.amenities).toEqual(manifest.defaults!.inputs!.amenities);
+        // Scalar inputs not in defaults.inputs fall back to their own defaultValue.
+        expect(inputs.heading).toBe("Amenities");
     });
 });
