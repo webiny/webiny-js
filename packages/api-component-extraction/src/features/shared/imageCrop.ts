@@ -88,35 +88,55 @@ export interface SectionCrop {
     /** The crop, or null when the plan says there is nothing usable to crop. */
     image: Buffer | null;
     plan: SectionCropPlan;
+    /**
+     * Crop pixels per CSS pixel of the section: 1 when the crop is at true scale. Below 1 when the page
+     * screenshot was stored narrower than the capture width, or the crop was shrunk to fit `maxHeight`.
+     */
+    scale: number;
 }
 
 /**
- * Crop a section out of a page's full-page screenshot and downscale it, keeping the section's native
- * width up to `maxWidth` and bounding only its height by `maxHeight`. A single longest-edge cap would
- * crush the width of a tall section the same way it crushed the screenshot — so width and height are
- * capped independently. The screenshot is stored at (near) the `desktopWidth`-wide capture width, so the
- * document-space box is scaled to the screenshot's actual pixels first.
+ * How far a crop of `height` pixels has to shrink to fit `maxHeight`, uniformly — 1 when it fits.
+ */
+export const cropResizeFactor = (height: number, maxHeight: number): number =>
+    height > maxHeight && height > 0 ? maxHeight / height : 1;
+
+/**
+ * Crop a section out of a page's full-page screenshot at true scale.
+ *
+ * The width is never capped: the screenshot is the capture width, so a crop is at most that wide, and
+ * shrinking it is what made a reference image smaller than the section it shows. A tall section used
+ * to be fitted inside 1600x4000, which narrowed its width with its height — a 1440x6000 section came
+ * back 960x4000, two thirds of its real size, and anything comparing a render to it compared against
+ * the wrong size. Only a crop taller than `maxHeight` is shrunk now, uniformly, and `scale` says by how
+ * much, so a consumer can measure against the section rather than the picture.
  */
 export const cropFromScreenshot = async (
     screenshot: Uint8Array,
     box: Box,
     desktopWidth: number,
-    maxWidth: number,
     maxHeight: number
 ): Promise<SectionCrop> => {
     const sharp = (await import("sharp")).default;
     const meta = await sharp(screenshot).metadata();
-    const plan = planSectionCrop(box, meta.width ?? desktopWidth, meta.height ?? 0, desktopWidth);
+    const imageWidth = meta.width ?? desktopWidth;
+    const plan = planSectionCrop(box, imageWidth, meta.height ?? 0, desktopWidth);
+    const pageScale = imageWidth / desktopWidth;
     if (plan.status === "outside") {
-        return { image: null, plan };
+        return { image: null, plan, scale: pageScale };
     }
 
-    const image = await sharp(screenshot)
-        .extract(plan.region)
-        .resize({ width: maxWidth, height: maxHeight, fit: "inside", withoutEnlargement: true })
-        .png()
-        .toBuffer();
-    return { image, plan };
+    const resize = cropResizeFactor(plan.region.height, maxHeight);
+    let pipeline = sharp(screenshot, { limitInputPixels: false }).extract(plan.region);
+    if (resize < 1) {
+        pipeline = pipeline.resize({
+            width: Math.max(1, Math.round(plan.region.width * resize)),
+            height: Math.max(1, Math.round(plan.region.height * resize)),
+            fit: "fill"
+        });
+    }
+    const image = await pipeline.png().toBuffer();
+    return { image, plan, scale: pageScale * resize };
 };
 
 /** Downscale an image to a longest-edge cap (for the capture-grid page thumbnails). */

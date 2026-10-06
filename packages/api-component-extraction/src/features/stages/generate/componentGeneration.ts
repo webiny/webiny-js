@@ -384,6 +384,30 @@ const buildRetryFeedback = (failures: string[], validVariables: Set<string>): st
 };
 
 /**
+ * The longest edge of the image the model is sent.
+ *
+ * Section crops are stored at true scale, so a tall one can be 1440x8000 — a PNG that can exceed the
+ * per-image size a provider accepts. Anthropic downscales anything past 1568px on its long edge before
+ * the model sees it, so fitting the image here first changes nothing the model receives, and keeps a
+ * large crop from failing the call.
+ */
+const MODEL_IMAGE_MAX_EDGE = 1568;
+
+const modelReferenceImage = async (crop: Uint8Array): Promise<Buffer> => {
+    // Lazily: `sharp` is a Lambda-layer native module present on the background-task runtime only.
+    const sharp = (await import("sharp")).default;
+    return sharp(crop, { limitInputPixels: false })
+        .resize({
+            width: MODEL_IMAGE_MAX_EDGE,
+            height: MODEL_IMAGE_MAX_EDGE,
+            fit: "inside",
+            withoutEnlargement: true
+        })
+        .png()
+        .toBuffer();
+};
+
+/**
  * The reference image for the model: the section crop Segment already produced. Copied into a File
  * Manager record so the remote-components generation path can attach it. No cropping here — Segment is
  * the single place that reads the screenshot and derives crops.
@@ -402,7 +426,7 @@ const createReferenceImage = async (
         return null;
     }
     try {
-        const bytes = Buffer.from(cropResult.value);
+        const bytes = await modelReferenceImage(cropResult.value);
         const tenant = deps.tenantContext.getTenant().id;
         /*
          * The id is passed explicitly AND the key is shaped `${id}/${filename}`, because File Manager

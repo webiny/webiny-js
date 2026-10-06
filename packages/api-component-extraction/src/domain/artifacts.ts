@@ -345,6 +345,12 @@ export interface SectionBox {
     cropRef: string;
     /** Set when the crop is missing or holds only part of the section. Absent on a clean crop. */
     cropWarning?: CropWarning;
+    /**
+     * Crop pixels per CSS pixel, set only when the crop is not at true scale — a very tall section
+     * shrunk to fit, or a page screenshot stored narrower than the capture. Divide the crop's pixel
+     * size by this to get the section's size.
+     */
+    cropScale?: number;
     /** The child boundaries considered inside this section and rejected (W11.1). */
     candidates: SectionCandidate[];
 }
@@ -402,6 +408,8 @@ export interface ClusterMember {
     cropRef: string;
     /** Carried from Segment: why this member's crop is missing or partial, when it is. */
     cropWarning?: CropWarning;
+    /** Carried from Segment: the crop's scale, when it is not at true scale. */
+    cropScale?: number;
     /**
      * Per-member detail carried so a `cluster.split`/`cluster.move` override (W8) can promote this member
      * into its own cluster and still be classified, planned and generated. Optional for backward
@@ -448,6 +456,8 @@ export interface RepresentativeCrop {
      * written before this was recorded, where the crop is always the representative's.
      */
     member?: { url: string; sectionIndex: number };
+    /** The crop's scale, when it is not at true scale (see `SectionBox.cropScale`). */
+    cropScale?: number;
 }
 
 export interface Cluster {

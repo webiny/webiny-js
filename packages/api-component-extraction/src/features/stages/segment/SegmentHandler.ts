@@ -33,12 +33,10 @@ const DESKTOP_WIDTH = 1440;
  */
 const DEFAULT_MAX_SECTION_HEIGHT = 900;
 const MIN_CHILDREN_TO_SPLIT = 2;
-// Section crops serve both the cluster gallery and the model reference image. Width and height are
-// capped independently so a tall section keeps its full horizontal detail (a single edge cap would
-// crush a tall crop's width): the width cap sits above the 1440 capture so a full-width section is kept
-// intact, and the height cap bounds an unusually tall section for the model image.
-const CROP_MAX_WIDTH = 1600;
-const CROP_MAX_HEIGHT = 4000;
+// Section crops serve both the cluster gallery and the model reference image, at true scale. Only a
+// section taller than this is shrunk (uniformly, with the scale recorded): 8000px is the largest image
+// dimension model providers accept, and a section that tall is a page that failed to split.
+const CROP_MAX_HEIGHT = 8000;
 
 /** What a crop plan says about the crop, as a warning — none when the whole box was in the picture. */
 const cropWarningOf = (plan: SectionCropPlan): CropWarning | undefined => {
@@ -120,6 +118,7 @@ class SegmentHandlerImpl implements StageHandler.Interface {
             const sections: SectionBox[] = [];
             for (const section of detected) {
                 let cropRef = "";
+                let cropScale = 1;
                 let cropWarning: CropWarning | undefined = screenshot.isOk()
                     ? undefined
                     : { kind: "no-screenshot", visibleFraction: 0 };
@@ -129,10 +128,10 @@ class SegmentHandlerImpl implements StageHandler.Interface {
                             screenshot.value,
                             section.box,
                             DESKTOP_WIDTH,
-                            CROP_MAX_WIDTH,
                             CROP_MAX_HEIGHT
                         );
                         cropWarning = cropWarningOf(cropped.plan);
+                        cropScale = cropped.scale;
                         if (cropped.image) {
                             const stored = await context.blobs.put(
                                 `${context.run.id}/segment/v${context.stageVersion}/${index}/section-${section.index}.png`,
@@ -153,7 +152,15 @@ class SegmentHandlerImpl implements StageHandler.Interface {
                 if (cropWarning) {
                     croppingWarnings++;
                 }
-                sections.push({ ...section, cropRef, ...(cropWarning ? { cropWarning } : {}) });
+                sections.push({
+                    ...section,
+                    cropRef,
+                    ...(cropWarning ? { cropWarning } : {}),
+                    // Only when the crop is not at true scale, rounded so float noise is not "scaled".
+                    ...(cropRef && Math.abs(cropScale - 1) > 0.001
+                        ? { cropScale: Math.round(cropScale * 10000) / 10000 }
+                        : {})
+                });
             }
 
             totalSections += sections.length;

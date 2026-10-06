@@ -21,7 +21,8 @@ export const chooseReferenceCrop = (members: ClusterMember[]): RepresentativeCro
         screenshotRef: chosen?.screenshotRef ?? "",
         box: chosen?.box ?? { x: 0, y: 0, width: 0, height: 0 },
         cropRef: chosen?.cropRef ?? "",
-        ...(chosen ? { member: { url: chosen.url, sectionIndex: chosen.sectionIndex } } : {})
+        ...(chosen ? { member: { url: chosen.url, sectionIndex: chosen.sectionIndex } } : {}),
+        ...(chosen?.cropScale ? { cropScale: chosen.cropScale } : {})
     };
 };
 

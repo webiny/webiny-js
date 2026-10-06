@@ -130,6 +130,7 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                     signature: structuralSignature(shape),
                     cropRef: section.cropRef,
                     ...(section.cropWarning ? { cropWarning: section.cropWarning } : {}),
+                    ...(section.cropScale ? { cropScale: section.cropScale } : {}),
                     // Carried per member so a W8 split/move override can promote it to a representative.
                     digest,
                     screenshotRef: page.screenshotRef,

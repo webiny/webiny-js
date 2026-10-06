@@ -1,5 +1,21 @@
 import { describe, it, expect } from "vitest";
-import { planSectionCrop } from "./imageCrop.js";
+import sharp from "sharp";
+import { cropFromScreenshot, cropResizeFactor, planSectionCrop } from "./imageCrop.js";
+
+const page = async (width: number, height: number) =>
+    new Uint8Array(
+        await sharp({
+            create: { width, height, channels: 3, background: { r: 200, g: 200, b: 200 } },
+            limitInputPixels: false
+        })
+            .png()
+            .toBuffer()
+    );
+
+const sizeOf = async (image: Buffer | null) => {
+    const meta = await sharp(image!).metadata();
+    return [meta.width, meta.height];
+};
 
 describe("planSectionCrop", () => {
     it("crops a box that is entirely inside the screenshot", () => {
@@ -72,5 +88,60 @@ describe("planSectionCrop", () => {
         if (plan.status !== "outside") {
             expect(plan.region).toEqual({ left: 200, top: 0, width: 1240, height: 400 });
         }
+    });
+});
+
+describe("cropFromScreenshot", () => {
+    it("keeps a tall section at true scale instead of narrowing it", async () => {
+        // A 6000px section used to come back 960x4000 — two thirds of its real width.
+        const crop = await cropFromScreenshot(
+            await page(1440, 7000),
+            { x: 0, y: 500, width: 1440, height: 6000 },
+            1440,
+            8000
+        );
+        expect(await sizeOf(crop.image)).toEqual([1440, 6000]);
+        expect(crop.scale).toBe(1);
+    });
+
+    it("shrinks only a section taller than the cap, uniformly, and records the scale", async () => {
+        const crop = await cropFromScreenshot(
+            await page(1440, 10000),
+            { x: 0, y: 0, width: 1440, height: 10000 },
+            1440,
+            8000
+        );
+        expect(await sizeOf(crop.image)).toEqual([1152, 8000]);
+        expect(crop.scale).toBeCloseTo(0.8);
+    });
+
+    it("records the page screenshot's own scale when it is narrower than the capture", async () => {
+        const crop = await cropFromScreenshot(
+            await page(720, 2000),
+            { x: 0, y: 1000, width: 1440, height: 800 },
+            1440,
+            8000
+        );
+        expect(await sizeOf(crop.image)).toEqual([720, 400]);
+        expect(crop.scale).toBeCloseTo(0.5);
+    });
+
+    it("returns no image for a box outside the screenshot", async () => {
+        const crop = await cropFromScreenshot(
+            await page(1440, 2000),
+            { x: 0, y: 4000, width: 1440, height: 600 },
+            1440,
+            8000
+        );
+        expect(crop.image).toBeNull();
+        expect(crop.plan.status).toBe("outside");
+    });
+});
+
+describe("cropResizeFactor", () => {
+    it("is 1 for a crop that fits, and the ratio for one that does not", () => {
+        expect(cropResizeFactor(4000, 8000)).toBe(1);
+        expect(cropResizeFactor(16000, 8000)).toBe(0.5);
+        expect(cropResizeFactor(0, 8000)).toBe(1);
     });
 });
