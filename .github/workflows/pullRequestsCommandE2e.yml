@@ -73,7 +73,7 @@ jobs:
             ${{ contains(fromJSON('["adrians5j"]'),
             github.event.comment.user.login) && '| Standalone (Postgres, WCP) |
             🔄 Running... | - |' || '' }}
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -102,7 +102,7 @@ jobs:
         run: >-
           echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json
           headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -124,7 +124,7 @@ jobs:
           echo "global-cache-key=${{ needs.baseBranch.outputs.base-branch }}-${{
           runner.os }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX
           }}" >> $GITHUB_OUTPUT
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -136,7 +136,7 @@ jobs:
     needs:
       - baseBranch
       - constants
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -225,7 +225,7 @@ jobs:
         run: >-
           echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
           github.run_id }}_ddb" >> $GITHUB_OUTPUT
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -448,7 +448,7 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       actions: write
@@ -487,7 +487,7 @@ jobs:
         run: >-
           echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
           github.run_id }}_ddb-os" >> $GITHUB_OUTPUT
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -731,7 +731,7 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       actions: write
@@ -948,7 +948,7 @@ jobs:
           path: >-
             ${{ needs.baseBranch.outputs.base-branch
             }}/cypress-tests/cypress/screenshots
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -1181,7 +1181,7 @@ jobs:
           path: >-
             ${{ needs.baseBranch.outputs.base-branch
             }}/cypress-tests/cypress/screenshots
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -1426,7 +1426,7 @@ jobs:
           path: >-
             ${{ needs.baseBranch.outputs.base-branch
             }}/cypress-tests/cypress/screenshots
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -1688,7 +1688,7 @@ jobs:
           path: >-
             ${{ needs.baseBranch.outputs.base-branch
             }}/cypress-tests/cypress/screenshots
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false

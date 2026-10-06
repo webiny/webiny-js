@@ -33,7 +33,7 @@ jobs:
         run: >-
           echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
           vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -43,7 +43,7 @@ jobs:
   build:
     name: Build
     needs: constants
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -132,7 +132,7 @@ jobs:
       - name: Version and publish "unstable" tag to NPM
         working-directory: ${{ github.event.inputs.branch }}
         run: yarn release --type=unstable
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       actions: write
