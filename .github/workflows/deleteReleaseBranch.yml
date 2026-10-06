@@ -42,7 +42,7 @@ jobs:
               echo "Base branch $BASE_REF is not a release base branch; leaving it in place."
               ;;
           esac
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false

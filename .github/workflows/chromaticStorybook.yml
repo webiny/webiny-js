@@ -12,7 +12,7 @@ jobs:
   chromatic:
     # Only run the job if the comment contains '/storybook' OR it's triggered manually
     if: github.event_name == 'workflow_dispatch' || github.event.comment.body == '/storybook'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Checkout Default Branch
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

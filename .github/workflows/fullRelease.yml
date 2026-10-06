@@ -88,7 +88,7 @@ jobs:
             echo "| Release branch | \`release/$VERSION\` |"
             echo "| PR base | \`$BASE_BRANCH\` |"
           } >> "$GITHUB_STEP_SUMMARY"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
       actions: write
@@ -170,7 +170,7 @@ jobs:
             -H "Content-type: application/json" \
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
       actions: write
@@ -190,7 +190,7 @@ jobs:
         run: >-
           gh workflow run create-release-branch.yml --repo
           webiny/docs.webiny.com -f version=${{ github.event.inputs.version }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
       actions: write
@@ -249,7 +249,7 @@ jobs:
             -H "Content-type: application/json" \
             --data @/tmp/slack-payload.json \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: read
       actions: write
