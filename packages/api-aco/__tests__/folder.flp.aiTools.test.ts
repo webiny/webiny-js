@@ -22,10 +22,13 @@ interface AccessResult {
  * The two are separate stores: a permission write lands on the folder entry, and a projection copies
  * it onto the FLP record, which is what folder reads actually report. Asserting the entry alone would
  * pass while every reader still saw the old permissions, so these tests assert the record.
+ *
+ * Stored object values carry a generated `_id`, which these tests don't assert on, so it's dropped.
  */
 const readFlpPermissions = async (container: Container, folderId: string) => {
     const flp = await container.resolve(AcoFlpCrud).get(folderId);
-    return flp?.permissions ?? [];
+    const permissions = flp?.permissions ?? [];
+    return permissions.map(({ _id, ...permission }: { _id?: string }) => permission);
 };
 
 /**
