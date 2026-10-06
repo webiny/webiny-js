@@ -15,7 +15,12 @@ describe(
         const tenantName = `E2E tenant ${runId}`;
         const fileName = `e2e-tenant-delivery-${runId}.jpeg`;
 
-        test("a new tenant is created, installed and opened", async ({ app, agent, screen }) => {
+        test("a new tenant is created, installed and opened", async ({
+            app,
+            agent,
+            screen,
+            browser
+        }) => {
             await app.open("/cms/content-entries/wbyTenant");
 
             await agent.act("Create a new tenant named {name} and save it.", {
@@ -23,6 +28,8 @@ describe(
             });
 
             // Saving keeps the entry form open; the Install and Manage buttons are on the list.
+            // The URL gains the entry's ID once the save is done, so leaving earlier could lose it.
+            await expect(browser).toHaveURL(/[?&]id=/);
             await app.open("/cms/content-entries/wbyTenant");
             const row = screen.getByRole("row").filter({ hasText: tenantName });
             await row.getByRole("button", "Install").tap();
@@ -32,8 +39,11 @@ describe(
             await expect(manage).toBeVisible({ timeout: 120_000 });
             await manage.tap();
 
-            // The header's tenant selector shows the current tenant's name.
-            await expect(screen.getByText(tenantName).first()).toBeVisible({ timeout: 30_000 });
+            // The header's tenant selector shows the current tenant's name. Its text also holds the
+            // parent tenant's name ("Root tenant"), so match a substring.
+            await expect(screen.getByText(tenantName, { exact: false }).first()).toBeVisible({
+                timeout: 30_000
+            });
         });
 
         test("the uploaded image downloads byte for byte", async ({
@@ -47,7 +57,7 @@ describe(
 
             await app.open("/file-manager");
             // Still in the tenant: the switch is kept in localStorage.
-            await expect(screen.getByText(tenantName).first()).toBeVisible();
+            await expect(screen.getByText(tenantName, { exact: false }).first()).toBeVisible();
 
             await browser
                 .locator('input[type="file"]')
