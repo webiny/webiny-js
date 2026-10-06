@@ -50,7 +50,7 @@ interface WorkflowStep {
     title: string;
     color: string;
     description?: string;
-    type: string;              // step type id: "review" | "automation" | "ai" | custom [D56]
+    type: string;              // step type id: "review" (UI label "People", D98) | "automation" | "ai" | custom [D56]
     notifications: { id: string }[];   // transport ids, e.g. "e-mail" [D44]
     config: unknown;           // validated by the step type's schema [D56]
 }
@@ -360,7 +360,7 @@ Queries:
 - `getReview(id)`, `getTargetReview(model, targetRevisionId)`
 - `listReviews(list: assignedToMe | pool | teamInReview | myRequests, where, sort, limit, after)` [D47]
 - `listUsers` (requires `editor`) [D48]
-- `listStepCandidates(workflowId, stepId)` → `{ id, displayName, excluded, excludedReason }` [D48]
+- `listStepCandidates(workflowId, stepId)` → `{ id, displayName, excluded, excludedReason }`; `excludedReason` only for `editor` / `reassign` [D48, D97]
 - `inspectRouting(stepConfig, model, requesterId, folderId)` → resulting owner, per-rule trace, strategy choice; evaluates unsaved config [D45, D95]
 - `folderExists(id)` → boolean [D69]
 - `getSettings`
@@ -370,6 +370,7 @@ Mutations:
 - `storeWorkflow`, `deleteWorkflow`
 - `requestReview(model, targetRevisionId, title, picks: [{ stepId, userId }])`
 - `startStep`, `takeOverStep`, `reassignStep(reviewId, userId)`, `approveStep(comment?)`, `rejectStep(comment)`, `restartStep`, `cancelReview`
+- Validation: review title at least 5 characters; reject comment at least 10 characters [D100].
 - `updateSettings`
 
 Errors return `code`, `message` and `data`; the admin must keep them (today gateways drop them).

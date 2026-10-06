@@ -496,3 +496,19 @@ Four lists as tabs (Assigned to me, Pool, Team in review, My requests). Filters:
 ## D96. UI: notification channels per step
 
 Every step type has the same "Notify via" choice listing registered transports (e-mail today). The in-app websocket message is always sent and not shown as an option. Recipients follow D44; admins choose only channels.
+
+## D97. Exclusion reasons in pickers
+
+Requesters see excluded users in pickers as "Unavailable" without a reason. Users with "Manage workflows" (`editor`) or "Reassign and operate" (`reassign`) see the reason. `listStepCandidates` returns `excludedReason` only to those users. Narrows D43 and D78.
+
+## D98. Human step type is called "People"
+
+Step types in the UI: People, Automation, AI. "Review" always means one run of a workflow on a revision. (Internal step type id may stay `review`; UI label is "People".)
+
+## D99. Unsaved edits on request
+
+No special handling: requesting a review with unsaved form changes discards those changes. Request review is not disabled and the dialog does not save.
+
+## D100. Minimum lengths
+
+Review title: at least 5 characters. Reject comment: at least 10 characters. Both enforced on the server (and mirrored in the UI).
