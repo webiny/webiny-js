@@ -22,6 +22,8 @@ describe(
                 params: { name: unique(tenantName) }
             });
 
+            // Saving keeps the entry form open; the Install and Manage buttons are on the list.
+            await app.open("/cms/content-entries/wbyTenant");
             const row = screen.getByRole("row").filter({ hasText: tenantName });
             await row.getByRole("button", "Install").tap();
 
