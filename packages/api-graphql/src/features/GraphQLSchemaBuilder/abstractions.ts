@@ -36,6 +36,11 @@ export namespace GraphQLSchemaBuilder {
 
 export interface IGraphQLSchemaComposer {
     build(): Promise<IGraphQLSchema>;
+    /**
+     * Combines every factory's schema key. Returns null when any factory has no key, because its
+     * output can then only be known by running it.
+     */
+    getSchemaKey(): Promise<string | null>;
 }
 
 export const GraphQLSchemaComposer =

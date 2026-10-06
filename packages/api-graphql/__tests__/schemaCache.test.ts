@@ -142,29 +142,54 @@ describe("GraphQL schema cache", () => {
         expect(schemas[0]).not.toBe(schemas[1]);
     });
 
-    test("drops the least recently used schema once full", () => {
+    test("drops the least recently used schema once full", async () => {
         const container = new Container();
         GraphQLSchemaCacheFeature.register(container);
         const cache = container.resolve(GraphQLSchemaCache);
 
         const builds: string[] = [];
-        const build = (key: string) => () => {
+        const build = (key: string) => async () => {
             builds.push(key);
             return { key } as unknown as GraphQLSchema;
         };
 
         for (let i = 0; i < 10; i++) {
-            cache.getOrBuild(`key-${i}`, build(`key-${i}`));
+            await cache.getOrBuild(`key-${i}`, build(`key-${i}`));
         }
         // Touch key-0 so key-1 becomes the least recently used entry.
-        cache.getOrBuild("key-0", build("key-0"));
-        cache.getOrBuild("key-10", build("key-10"));
+        await cache.getOrBuild("key-0", build("key-0"));
+        await cache.getOrBuild("key-10", build("key-10"));
 
-        cache.getOrBuild("key-0", build("key-0"));
-        cache.getOrBuild("key-1", build("key-1"));
+        await cache.getOrBuild("key-0", build("key-0"));
+        await cache.getOrBuild("key-1", build("key-1"));
 
         expect(builds.filter(key => key === "key-0")).toHaveLength(1);
         expect(builds.filter(key => key === "key-1")).toHaveLength(2);
+    });
+
+    test("shares one build between concurrent requests and forgets a failed build", async () => {
+        const container = new Container();
+        GraphQLSchemaCacheFeature.register(container);
+        const cache = container.resolve(GraphQLSchemaCache);
+
+        let builds = 0;
+        const build = async () => {
+            builds++;
+            return {} as GraphQLSchema;
+        };
+        const first = cache.getOrBuild("shared", build);
+        const second = cache.getOrBuild("shared", build);
+        const [firstSchema, secondSchema] = await Promise.all([first, second]);
+        expect(firstSchema).toBe(secondSchema);
+        expect(builds).toBe(1);
+
+        const failing = cache.getOrBuild("failing", async () => {
+            throw new Error("Build failed.");
+        });
+        await expect(failing).rejects.toThrow("Build failed.");
+        const retried = await cache.getOrBuild("failing", build);
+        expect(retried).toBeDefined();
+        expect(builds).toBe(2);
     });
 
     test("resolves resolver dependencies from the request that runs the query, not the one that built the schema", async () => {

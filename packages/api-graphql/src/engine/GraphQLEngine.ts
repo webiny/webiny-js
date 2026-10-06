@@ -39,6 +39,11 @@ const buildStaticSchema = (schemaConfig: IGraphQLSchema): GraphQLSchema => {
     });
 };
 
+const composeAndBuild = async (composer: IGraphQLSchemaComposer): Promise<GraphQLSchema> => {
+    const schemaConfig = await composer.build();
+    return buildStaticSchema(schemaConfig);
+};
+
 class GraphQLEngineImpl implements GraphQLEngineAbstraction.Interface {
     constructor(
         private composer: IGraphQLSchemaComposer,
@@ -48,9 +53,7 @@ class GraphQLEngineImpl implements GraphQLEngineAbstraction.Interface {
 
     async execute(body: any): Promise<any> {
         const ctx: Record<string, any> = { container: this.container };
-        const schemaConfig = await this.composer.build();
-
-        const schema = this.resolveSchema(schemaConfig);
+        const schema = await this.resolveSchema();
         const parsed = createRequestBody(body);
 
         if (!Array.isArray(parsed)) {
@@ -66,15 +69,27 @@ class GraphQLEngineImpl implements GraphQLEngineAbstraction.Interface {
 
     /**
      * The same composer output always builds the same executable schema, so with a cache in the
-     * root container it's built once and reused.
+     * root container it's built once and reused. When every schema factory has a schema key, the key
+     * comes from those and the factories only run on a cache miss. Otherwise they run on every
+     * request, and the key comes from what they produced.
      */
-    private resolveSchema(schemaConfig: IGraphQLSchema): GraphQLSchema {
+    private async resolveSchema(): Promise<GraphQLSchema> {
         if (!this.schemaCache) {
-            return buildStaticSchema(schemaConfig);
+            return composeAndBuild(this.composer);
         }
 
-        const key = createSchemaCacheKey(schemaConfig);
-        return this.schemaCache.getOrBuild(key, () => buildStaticSchema(schemaConfig));
+        const factoriesKey = await this.composer.getSchemaKey();
+        if (factoriesKey) {
+            return this.schemaCache.getOrBuild(`factories:${factoriesKey}`, () => {
+                return composeAndBuild(this.composer);
+            });
+        }
+
+        const schemaConfig = await this.composer.build();
+        const contentKey = createSchemaCacheKey(schemaConfig);
+        return this.schemaCache.getOrBuild(`content:${contentKey}`, async () => {
+            return buildStaticSchema(schemaConfig);
+        });
     }
 
     private async executeOne(
