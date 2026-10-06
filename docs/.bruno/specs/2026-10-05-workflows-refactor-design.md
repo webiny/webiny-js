@@ -93,7 +93,7 @@ interface AutomationStepConfig {
 // "ai" (registered by ai-powerups) [D56]
 interface AiStepConfig {
     instructions: string;      // the reviewer prompt
-    modelRole?: string;        // ai-powerups model role [D40]
+    model: string;             // chosen AI model, required [D101]
     tools: string[];           // allowlist from the workflow AI tool registry [D55]
 }
 ```
@@ -274,7 +274,7 @@ Rule targets are also validated when the workflow is saved: user targets must be
 - Input built by the framework: target content serialized with field labels, model name, previous step comments, the step instructions as prompt.
 - Runs as an agent loop (`stopWhen`) with tools from the workflow AI tool registry only, filtered by the step's allowlist. Built-in tools: `readTarget`, `updateTargetFields(fieldPath → value)`, scoped to the revision under review and implemented per target adapter. Developers can register more. The global `AiSdkTools` registry is never exposed to AI steps.
 - Structured output: `{ approved: boolean, comment: string, issues: [{ fieldPath?, severity, message, suggestion? }] }`.
-- Model and connection come from one ai-powerups capability, "Workflow review", via `ResolveAiCapabilityUseCase`; the model role can be set per step. The resolved inline connection is passed to `Ai.generateText` / `streamText`.
+- The step's chosen model is used [D101]. The connection comes from ai-powerups via the "Workflow review" capability (`ResolveAiCapabilityUseCase`); the resolved inline connection is passed to `Ai.generateText` / `streamText`. A model that is no longer available fails the step on reach (restartable).
 - Needs both `advancedPublishingWorkflow` and `aiPowerups`. Without `aiPowerups` the type is hidden in the editor. A disabled capability or lapsed licence fails the step on reach; restartable once fixed.
 
 ### 7.4 Task execution [D6, D7, D27, D28, D57, D58]

@@ -512,3 +512,7 @@ No special handling: requesting a review with unsaved form changes discards thos
 ## D100. Minimum lengths
 
 Review title: at least 5 characters. Reject comment: at least 10 characters. Both enforced on the server (and mirrored in the UI).
+
+## D101. AI step picks a model
+
+Supersedes the per-step model role in D40. When creating or editing an AI step, the admin chooses a specific model (required) from the list of available models (ai-powerups `listModels`, `packages/ai-powerups/src/admin/features/listModels/`). The step stores the chosen model. If the model is no longer available, the editor warns and the step fails when reached (restartable after a fix). The "Workflow review" capability still gates whether AI steps can run.

@@ -109,7 +109,7 @@ The server computes which actions the current viewer may take; the UI shows exac
 
 **Shows.**
 - The list of models the admin can attach a workflow to, with an indicator of which already have one. Searchable.
-- For the selected model: the workflow name and its ordered steps. Each step shows its title, colour, type, and a one-line summary (People: teams and how reviewers are chosen; Automation: which automation; AI: model role and number of tools).
+- For the selected model: the workflow name and its ordered steps. Each step shows its title, colour, type, and a one-line summary (People: teams and how reviewers are chosen; Automation: which automation; AI: model and number of tools).
 - The flow must be easy to read as "draft → steps in order → published".
 
 **Actions.**
@@ -130,6 +130,7 @@ The server computes which actions the current viewer may take; the UI shows exac
   - a rule references a folder that no longer exists;
   - a People step's reviewing teams have no members;
   - an automation's definition is missing, or its saved settings no longer validate;
+  - an AI step's model is no longer available;
   - an AI step exists but the AI Power-Ups licence is missing (show the step read-only with a licence warning; it fails when reached and can be restarted once the licence is back).
 - Deleting a model that has a workflow is blocked elsewhere (Headless CMS model delete) with an error naming the workflow; the model delete dialog must show it.
 
@@ -155,7 +156,7 @@ Common fields for every step type:
 ### 3.3 AI step
 
 - **Instructions**: multi-line text, the reviewer prompt ("Check tone of voice, flag any personal data…").
-- **Model role**: choose from the AI Power-Ups roles (e.g. Fast, Standard); default preselected.
+- **Model** (required): choose a specific AI model from the list of available models [D101]. If a saved model is no longer available, show a warning; the step would fail when reached.
 - **Tools**: choose which tools the AI may use, from a list with name and description. Some tools can change the content under review (e.g. "Update fields"); mark these clearly.
 - Without the AI Power-Ups licence: the type cannot be added; existing AI steps show read-only with a licence warning.
 
