@@ -1361,7 +1361,7 @@ jobs:
       - name: AI E2E - run tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
@@ -1623,7 +1623,7 @@ jobs:
       - name: AI E2E - run tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
