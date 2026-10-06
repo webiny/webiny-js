@@ -3,13 +3,15 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
 import {
     FOLDER_CREATED_WEBSOCKET_ACTION,
+    FOLDER_DELETED_WEBSOCKET_ACTION,
     FOLDER_UPDATED_WEBSOCKET_ACTION,
     NotifyFolderChangeUseCase as UseCaseAbstraction
 } from "./abstractions.js";
 
 const ACTIONS: Record<UseCaseAbstraction.Params["change"], string> = {
     created: FOLDER_CREATED_WEBSOCKET_ACTION,
-    updated: FOLDER_UPDATED_WEBSOCKET_ACTION
+    updated: FOLDER_UPDATED_WEBSOCKET_ACTION,
+    deleted: FOLDER_DELETED_WEBSOCKET_ACTION
 };
 
 /*

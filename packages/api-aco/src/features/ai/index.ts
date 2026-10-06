@@ -5,4 +5,5 @@ export { ListRolesTool } from "./ListRolesTool.js";
 export { GrantFolderAccessTool } from "./GrantFolderAccessTool.js";
 export { RevokeFolderAccessTool } from "./RevokeFolderAccessTool.js";
 export { CreateFolderTool } from "./CreateFolderTool.js";
+export { DeleteFolderTool } from "./DeleteFolderTool.js";
 export { CreateTeamTool } from "./CreateTeamTool.js";
