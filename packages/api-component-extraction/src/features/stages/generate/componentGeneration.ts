@@ -23,6 +23,38 @@ import {
 } from "~/features/shared/validators.js";
 
 const MAX_ATTEMPTS = 3;
+/*
+ * Time limits for one component's attempts, which all run inside one task invocation and so inside one
+ * Lambda's 15 minutes. A model call had no limit at all: a component whose example defaults ran long
+ * (2424tulane's Floor Plan Filter) wrote until the Lambda was killed — twice — leaving no result, no
+ * model-call record and no reason. Each call now gets at most PER_CALL_TIMEOUT_MS, never more than the
+ * invocation has left after ATTEMPT_RESERVE_MS for bundling, validating and writing the result; and
+ * no attempt starts with less than MIN_ATTEMPT_MS left, so the best attempt so far is always recorded.
+ */
+const PER_CALL_TIMEOUT_MS = 5 * 60 * 1000;
+const ATTEMPT_RESERVE_MS = 60 * 1000;
+const MIN_ATTEMPT_MS = 90 * 1000;
+
+/**
+ * Whether another attempt fits before `deadline`, and how long its model call may run. With no deadline
+ * every attempt gets the full per-call limit.
+ */
+export const attemptBudget = (
+    now: number,
+    deadline: number | undefined
+): { proceed: boolean; timeoutMs: number } => {
+    if (deadline === undefined) {
+        return { proceed: true, timeoutMs: PER_CALL_TIMEOUT_MS };
+    }
+    const remaining = deadline - now;
+    if (remaining < MIN_ATTEMPT_MS) {
+        return { proceed: false, timeoutMs: 0 };
+    }
+    return {
+        proceed: true,
+        timeoutMs: Math.min(PER_CALL_TIMEOUT_MS, remaining - ATTEMPT_RESERVE_MS)
+    };
+};
 // How many of a section's text fragments the prompt asks the model to preserve. Text preservation is
 // validated against this SAME slice — validating against text the model was never given would fail every
 // text-heavy section on content it never saw.
@@ -75,6 +107,11 @@ export interface GenerationInput {
     log: (message: string, error?: unknown) => Promise<void>;
     /** Live heartbeat (progress the operator watches). */
     beat: (message: string) => Promise<void>;
+    /**
+     * Epoch ms by which the attempts must be over — the end of the invocation they run in, less a margin.
+     * Absent means no deadline beyond each call's own limit.
+     */
+    deadline?: number;
 }
 
 /**
@@ -521,6 +558,13 @@ export const generateComponentAttempts = async (
     let attempts = 0;
 
     while (attempts < MAX_ATTEMPTS) {
+        const budget = attemptBudget(Date.now(), input.deadline);
+        if (!budget.proceed) {
+            await input.log(
+                `"${planned.name}": stopping after ${attempts} attempt(s) — too little time left for another.`
+            );
+            break;
+        }
         attempts++;
         await input.beat(`"${planned.name}": generation attempt ${attempts}/${MAX_ATTEMPTS}…`);
         const feedback = previousFailures
@@ -529,7 +573,8 @@ export const generateComponentAttempts = async (
         const generated = await deps.generateComponent.execute({
             prompt: buildPrompt(planned, slotVariables, feedback),
             name: planned.name,
-            additionalFileIds
+            additionalFileIds,
+            abortSignal: AbortSignal.timeout(budget.timeoutMs)
         });
         if (generated.isFail()) {
             await input.log(

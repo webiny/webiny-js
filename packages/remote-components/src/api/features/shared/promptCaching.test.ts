@@ -9,6 +9,7 @@ import { RefineRemoteComponentUseCase as RefineAbstraction } from "~/api/feature
 import { RefineRemoteComponentUseCase } from "~/api/features/refineComponent/RefineRemoteComponentUseCase.js";
 import { buildComponentPrompt } from "~/api/features/generateComponent/buildComponentPrompt.js";
 import { buildRefinePrompt } from "~/api/features/refineComponent/buildRefinePrompt.js";
+import { MAX_OUTPUT_TOKENS } from "./promptCaching.js";
 
 const GENERATED = [
     "---",
@@ -101,5 +102,23 @@ describe("prompt caching", () => {
     it("builds a byte-identical system prompt every time", () => {
         expect(buildComponentPrompt()).toBe(buildComponentPrompt());
         expect(buildRefinePrompt()).toBe(buildRefinePrompt());
+    });
+
+    it("caps output and passes the caller's abort signal to every model call", async () => {
+        const { container, calls } = setup();
+        const controller = new AbortController();
+        await container
+            .resolve(GenerateAbstraction)
+            .execute({ prompt: "p", abortSignal: controller.signal });
+        await container.resolve(RefineAbstraction).execute({
+            currentSource: "a",
+            currentCss: "",
+            feedback: "f",
+            abortSignal: controller.signal
+        });
+        for (const call of calls) {
+            expect(call.maxOutputTokens).toBe(MAX_OUTPUT_TOKENS);
+            expect(call.abortSignal).toBe(controller.signal);
+        }
     });
 });

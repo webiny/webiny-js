@@ -18,6 +18,9 @@ import {
 } from "./componentGeneration.js";
 import { hasRecordedResult, recordResultOnce } from "./recordResultOnce.js";
 
+// Left at the end of the invocation to write the result after the last attempt.
+const DEADLINE_MARGIN_MS = 20 * 1000;
+
 export interface GenerateComponentTaskInput {
     runId: string;
     /** The structural signature of the planned component to generate. */
@@ -56,6 +59,9 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         }
         const log = controller.logger;
         const resultKey = generateResultKey(input.runId, input.stageVersion, input.signature);
+        // The end of this invocation, less a margin to write the result: the attempts must be over by then.
+        const deadline =
+            Date.now() + controller.runtime.getRemainingMilliseconds() - DEADLINE_MARGIN_MS;
 
         // Another task already finished this component — a retrigger that overlapped a slow original.
         if (await hasRecordedResult(this.artifactStore, resultKey)) {
@@ -137,7 +143,8 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
                         slotVariables,
                         log: (message, error) =>
                             log.error({ message, ...(error instanceof Error ? { error } : {}) }),
-                        beat: message => log.info({ message })
+                        beat: message => log.info({ message }),
+                        deadline
                     }
                 )
         );

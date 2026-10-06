@@ -6,7 +6,7 @@ import { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/fi
 import { RefineRemoteComponentUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { buildRefinePrompt, buildRefineUserMessage } from "./buildRefinePrompt.js";
 import { parseGeneratedSource } from "~/api/features/generateComponent/parseGeneratedSource.js";
-import { cachedSystemPrompt } from "~/api/features/shared/promptCaching.js";
+import { cachedSystemPrompt, MAX_OUTPUT_TOKENS } from "~/api/features/shared/promptCaching.js";
 
 interface FilePart {
     type: "file";
@@ -66,6 +66,8 @@ class RefineRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
                     systemText,
                     `${REMOTE_COMPONENT_GENERATION_CAPABILITY}.refine`
                 ),
+                maxOutputTokens: MAX_OUTPUT_TOKENS,
+                abortSignal: input.abortSignal,
                 messages: [
                     {
                         role: "user" as const,

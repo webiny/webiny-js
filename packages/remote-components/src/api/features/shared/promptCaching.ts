@@ -1,6 +1,13 @@
 import type { Ai } from "@webiny/api-core/features/ai/index.js";
 
 /**
+ * The most a generation or refinement may write. A component with its CSS and example defaults runs to
+ * about 10K tokens; this is three times that. It bounds what one call can cost — a model writing out an
+ * enormous defaults list otherwise writes until something else stops it.
+ */
+export const MAX_OUTPUT_TOKENS = 32_000;
+
+/**
  * The static system prompt, sent so providers can cache it.
  *
  * Generation and refinement send the same ~27 KB system prompt on every call (`buildComponentPrompt`;

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Result } from "@webiny/feature/api";
 import type { StageArtifactStore } from "~/domain/stage.js";
 import { recordResultOnce } from "./recordResultOnce.js";
+import { attemptBudget } from "./componentGeneration.js";
 
 const memoryStore = () => {
     const data = new Map<string, unknown>();
@@ -35,5 +36,28 @@ describe("recordResultOnce", () => {
         const late = await recordResultOnce(store, "k", result("late duplicate"));
         expect(late.isOk() && late.value).toBe("already-recorded");
         expect((data.get("k") as ReturnType<typeof result>).component).toEqual({ name: "first" });
+    });
+});
+
+describe("attemptBudget", () => {
+    const now = 1_000_000;
+
+    it("gives each call the full limit when there is no deadline", () => {
+        expect(attemptBudget(now, undefined)).toEqual({ proceed: true, timeoutMs: 300_000 });
+    });
+
+    it("gives the full limit when plenty of time is left", () => {
+        expect(attemptBudget(now, now + 14 * 60_000)).toEqual({
+            proceed: true,
+            timeoutMs: 300_000
+        });
+    });
+
+    it("shortens the call to leave time to record the result", () => {
+        expect(attemptBudget(now, now + 3 * 60_000)).toEqual({ proceed: true, timeoutMs: 120_000 });
+    });
+
+    it("starts no attempt with too little time left", () => {
+        expect(attemptBudget(now, now + 60_000).proceed).toBe(false);
     });
 });

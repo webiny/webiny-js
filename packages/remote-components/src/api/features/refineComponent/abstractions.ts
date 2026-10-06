@@ -5,6 +5,11 @@ export interface IRefineRemoteComponentInput {
     currentCss: string;
     feedback: string;
     additionalFileIds?: string[];
+    /**
+     * Abandons the model call when it fires. Without one a call runs as long as the model keeps
+     * writing — past the caller's own time limit, where it is killed with nothing returned.
+     */
+    abortSignal?: AbortSignal;
 }
 
 export interface IRefineRemoteComponentOutput {
