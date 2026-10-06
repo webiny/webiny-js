@@ -270,7 +270,11 @@ describe("ElementFactory — object-list defaults", () => {
                     fields: [
                         createTextInput({ name: "title", label: "Title", defaultValue: "Amenity" }),
                         createLongTextInput({ name: "description", label: "Description" }),
-                        createFileInput({ name: "image", label: "Image" }),
+                        createFileInput({
+                            name: "image",
+                            label: "Image",
+                            allowedFileTypes: ["image/*"]
+                        }),
                         createObjectInput({
                             name: "link",
                             label: "Link",
