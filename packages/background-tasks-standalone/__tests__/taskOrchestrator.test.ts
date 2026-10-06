@@ -300,10 +300,9 @@ describe("TaskOrchestrator", () => {
         server = created;
         const address = created.address() as AddressInfo;
 
+        const start = makeStartMessage(address.port);
         const messages: WorkerToParentMessage[] = [];
-        const orchestrator = new TaskOrchestrator(makeStartMessage(address.port), msg =>
-            messages.push(msg)
-        );
+        const orchestrator = new TaskOrchestrator(start, msg => messages.push(msg));
         await orchestrator.run();
 
         expect(messages).toHaveLength(1);

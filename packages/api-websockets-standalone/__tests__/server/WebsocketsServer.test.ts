@@ -158,7 +158,8 @@ describe("WebsocketsServer", () => {
             await server.start();
 
             // Vitest fails the run on an unhandled rejection, which is what these used to be.
-            const client = await connectClient(server.port());
+            const port = server.port();
+            const client = await connectClient(port);
             await wait(50);
             client.send(JSON.stringify({ action: "ping" }));
             await wait(50);
@@ -221,7 +222,8 @@ describe("WebsocketsServer", () => {
             });
             await server.start();
 
-            const client = await connectClient(server.port());
+            const port = server.port();
+            const client = await connectClient(port);
             await wait(20);
             const [connectionId] = manager.getActiveConnectionIds();
             registry.listStale = vi.fn().mockResolvedValue([{ connectionId }]);
