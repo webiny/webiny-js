@@ -23,6 +23,10 @@ interface DrawerProps
     showCloseButton?: boolean;
     bodyPadding?: boolean;
     headerSeparator?: boolean;
+    /**
+     * Controls rendered in the header, next to the close button.
+     */
+    headerActions?: React.ReactNode;
     footerSeparator?: boolean;
     description?: React.ReactNode;
     children: React.ReactNode;
@@ -57,6 +61,7 @@ const DrawerBase = (props: DrawerProps) => {
                 description,
                 showCloseButton,
                 headerSeparator,
+                headerActions,
 
                 // Body props.
                 children,
@@ -102,6 +107,7 @@ const DrawerBase = (props: DrawerProps) => {
                     icon,
                     description,
                     showCloseButton,
+                    headerActions,
                     separator: headerSeparator
                 },
                 bodyProps: { children, bodyPadding },
