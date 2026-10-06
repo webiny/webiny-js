@@ -211,6 +211,13 @@ export interface CaptureWarnings {
      * is in the picture, and on artifacts written before this was recorded.
      */
     screenshotTruncatedAt?: number;
+    /**
+     * Web font families that failed to load: the page was read and photographed in a fallback
+     * wherever these were declared, while the tree's computed `fontFamily` still names them.
+     */
+    fontsFailed?: string[];
+    /** Web font families that had not arrived when the wait ran out. */
+    fontsPending?: string[];
 }
 
 /**

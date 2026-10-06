@@ -82,6 +82,17 @@ export interface Screenshot {
 }
 
 /**
+ * What the page's web fonts did by the time it was read. `failed` faces were tried and did not load,
+ * so the page is set in a fallback wherever they were declared; `pending` had not arrived when the
+ * wait ran out. `ready` is whether `document.fonts.ready` settled within the wait.
+ */
+export interface FontLoadingReport {
+    ready: boolean;
+    failed: string[];
+    pending: string[];
+}
+
+/**
  * Which part of the page to capture. `"above-fold" | "mid-page" | "footer"` are viewport-sized scroll
  * crops; `"full-page"` is a full-page image stitched from viewport tiles at the capture viewport (see
  * `browser/stitch.ts`), bounded at a fixed height. Theme extraction wants the scroll crops (a tall image scaled down to a model's
@@ -144,6 +155,20 @@ export interface CapturePageParams {
      * component extraction a DOM/segment sampler, over the same visit sequence.
      */
     evaluate: string;
+    /**
+     * Make the page hold still before it is read and photographed. Opt-in, so a consumer whose
+     * screenshots are judged as the visitor sees them keeps the page exactly as it behaves.
+     *
+     * - `freezeMotion`: emulate `prefers-reduced-motion`, collapse CSS animations and transitions to
+     *   their end state, and finish running Web Animations — so an element mid-entrance is read and
+     *   photographed where it ends up.
+     * - `fontsTimeoutMs`: wait up to this long for `document.fonts.ready` before reading, and report
+     *   faces that failed or had not arrived (`CaptureResult.fontLoading`).
+     */
+    stabilize?: {
+        freezeMotion?: boolean;
+        fontsTimeoutMs?: number;
+    };
     /**
      * Screenshots are taken only when this is supplied.
      *
@@ -257,6 +282,8 @@ export interface CaptureResult<TResult> {
     earlyClearance: OverlayClearanceResult;
     /** The late overlay pass — immediately before the camera, so it decides what the screenshot shows. */
     lateClearance: OverlayClearanceResult;
+    /** Present when `stabilize.fontsTimeoutMs` asked for the wait. */
+    fontLoading?: FontLoadingReport;
 }
 
 /**

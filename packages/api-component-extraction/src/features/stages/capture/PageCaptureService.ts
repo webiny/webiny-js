@@ -52,6 +52,15 @@ const PAGE_THUMB = { width: 600, height: 800 };
 
 const NARROW_EVALUATOR = `(() => ({ tree: null, documentHeight: 0, rawDom: "" }))()`;
 
+/*
+ * The page is held still before it is read: motion collapsed to its end state, and web fonts given
+ * time to arrive. The tree and the screenshot are taken seconds apart, and an entrance animation or a
+ * late font swap in between makes them describe different pages — an element read mid-fade is in the
+ * tree at full size and missing from the picture, a line set in the fallback font wraps differently.
+ * Both viewports, so the narrow screenshot matches the desktop one in what it shows.
+ */
+const STABILIZE = { freezeMotion: true, fontsTimeoutMs: 5000 };
+
 // `sharp` is a native module provided by a Lambda layer, present only on the background-task runtime
 // (where stages and tasks execute) — not on the GraphQL Lambda that imports this feature to build its
 // schema. So it is loaded lazily, at call time, never at module import.
@@ -151,6 +160,7 @@ class PageCaptureServiceImpl implements IPageCaptureService {
             viewportWidth: DESKTOP.width,
             viewportHeight: DESKTOP.height,
             timeoutMs: PAGE_TIMEOUT_MS,
+            stabilize: STABILIZE,
             evaluate: captureEvaluator({ maxNodes: MAX_NODES }),
             /*
              * Collected from the responses the browser already received, not re-requested later. A CDN
@@ -220,6 +230,7 @@ class PageCaptureServiceImpl implements IPageCaptureService {
             viewportWidth: NARROW.width,
             viewportHeight: NARROW.height,
             timeoutMs: PAGE_TIMEOUT_MS,
+            stabilize: STABILIZE,
             evaluate: NARROW_EVALUATOR,
             screenshots: {
                 requests: [{ label: "full-page-narrow", crop: "full-page" }],
@@ -294,6 +305,12 @@ class PageCaptureServiceImpl implements IPageCaptureService {
                 totalImages: desktop.result.imagesTotal,
                 ...(desktop.screenshots[0]?.truncatedAt
                     ? { screenshotTruncatedAt: desktop.screenshots[0].truncatedAt }
+                    : {}),
+                ...(desktop.fontLoading?.failed.length
+                    ? { fontsFailed: desktop.fontLoading.failed }
+                    : {}),
+                ...(desktop.fontLoading?.pending.length
+                    ? { fontsPending: desktop.fontLoading.pending }
                     : {})
             },
             overlayClearance: {

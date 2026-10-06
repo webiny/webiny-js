@@ -198,6 +198,9 @@ export interface CaptureWarningsDto {
     totalImages: number;
     /** The page's real height when the screenshot had to stop short of it. */
     screenshotTruncatedAt?: number;
+    /** Web font families that failed to load, or had not arrived in time. */
+    fontsFailed?: string[];
+    fontsPending?: string[];
 }
 
 /** One run of the overlay pass. */

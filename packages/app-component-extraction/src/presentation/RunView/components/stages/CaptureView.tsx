@@ -91,6 +91,13 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
             if (page.warnings?.screenshotTruncatedAt) {
                 warnings.push(`screenshot cut short of ${page.warnings.screenshotTruncatedAt}px`);
             }
+            const fonts = [
+                ...(page.warnings?.fontsFailed ?? []),
+                ...(page.warnings?.fontsPending ?? [])
+            ];
+            if (fonts.length > 0) {
+                warnings.push(`font(s) not loaded: ${fonts.join(", ")}`);
+            }
             return {
                 url: page.url,
                 label: page.title?.trim() || pathOf(page.url),

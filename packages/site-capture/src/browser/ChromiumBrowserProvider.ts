@@ -6,6 +6,7 @@ import {
     BrowserProvider as BrowserProviderAbstraction,
     type CapturePageParams,
     type CaptureResult,
+    type FontLoadingReport,
     type FontResource,
     type IBrowserSession,
     type RenderPageParams,
@@ -29,6 +30,13 @@ import {
     type ChromiumConfig
 } from "./launchConfig.js";
 import { withTimeout, withTimeoutOrDefault } from "./withTimeout.js";
+import {
+    FREEZE_MOTION_CSS,
+    finishAnimationsScript,
+    fontLoadingScript,
+    summarizeFontFaces,
+    type ObservedFontFace
+} from "./stabilize.js";
 import {
     PAGE_HEIGHT_EXPRESSION,
     hideFixedScript,
@@ -149,6 +157,47 @@ const settleLazyContent = async (page: Page): Promise<void> => {
                 MAX_LAZY_SCROLL_STEPS
             ) as Promise<void>
     );
+};
+
+const finishAnimations = async (page: Page): Promise<void> => {
+    await withTimeoutOrDefault(
+        "finish running animations",
+        DEFAULT_TIMEOUTS.evaluateMs,
+        undefined,
+        () => page.evaluate(finishAnimationsScript()).then(() => undefined)
+    );
+};
+
+/** Best-effort: a page that refuses the stylesheet is read as it is, not failed. */
+const freezeMotion = async (page: Page): Promise<void> => {
+    await withTimeoutOrDefault("freeze motion", DEFAULT_TIMEOUTS.evaluateMs, undefined, () =>
+        page.addStyleTag({ content: FREEZE_MOTION_CSS }).then(() => undefined)
+    );
+    await finishAnimations(page);
+};
+
+/**
+ * Waits for the page's fonts, bounded, and reports the faces that did not make it. The evaluate is
+ * given the wait plus a margin so the in-page timeout, not ours, decides "not ready".
+ */
+const waitForFonts = async (page: Page, timeoutMs: number): Promise<FontLoadingReport> => {
+    const observed = await withTimeoutOrDefault<{
+        ready: boolean;
+        faces: ObservedFontFace[];
+    } | null>(
+        "wait for web fonts",
+        timeoutMs + 5000,
+        null,
+        () =>
+            page.evaluate(fontLoadingScript(timeoutMs)) as Promise<{
+                ready: boolean;
+                faces: ObservedFontFace[];
+            }>
+    );
+    if (!observed) {
+        return { ready: false, failed: [], pending: [] };
+    }
+    return summarizeFontFaces(observed.faces ?? [], Boolean(observed.ready));
 };
 
 const clearOverlays = (page: Page): Promise<OverlayClearanceResult> => {
@@ -469,8 +518,15 @@ class ChromiumSession implements IBrowserSession {
             deviceScaleFactor: 1
         });
 
-        if (params.emulateDarkMode) {
-            await page.emulateMediaFeatures([{ name: "prefers-color-scheme", value: "dark" }]);
+        // One call: each `emulateMediaFeatures` replaces the features the previous call set.
+        const mediaFeatures = [
+            ...(params.emulateDarkMode ? [{ name: "prefers-color-scheme", value: "dark" }] : []),
+            ...(params.stabilize?.freezeMotion
+                ? [{ name: "prefers-reduced-motion", value: "reduce" }]
+                : [])
+        ];
+        if (mediaFeatures.length > 0) {
+            await page.emulateMediaFeatures(mediaFeatures);
         }
 
         // Fonts are recorded from the network, not from CSS: an @font-face block proves a declaration,
@@ -539,12 +595,28 @@ class ChromiumSession implements IBrowserSession {
 
         await this.assertNotChallenged(page, params.url, status, headers, title);
 
+        // Before the lazy scroll, so the entrances that scroll triggers land in their end state too.
+        if (params.stabilize?.freezeMotion) {
+            await freezeMotion(page);
+        }
+
         /*
          * Before the clearance, so the overlays this scroll provokes are caught by it rather than by
          * the late pass — a scroll-depth promo is exactly what the comment below anticipates, and it
          * should not be allowed to land between the scroll and the sampler.
          */
         await settleLazyContent(page);
+
+        if (params.stabilize?.freezeMotion) {
+            // Whatever the scroll started is finished before anything is read.
+            await finishAnimations(page);
+        }
+
+        // After the scroll, because a lazy section can bring its own fonts with it.
+        const fontLoading =
+            params.stabilize?.fontsTimeoutMs !== undefined
+                ? await waitForFonts(page, params.stabilize.fontsTimeoutMs)
+                : undefined;
 
         // Before sampling, so the sampler's own `display: none` filter excludes whatever was hidden.
         const earlyClearance = await clearOverlays(page);
@@ -596,7 +668,8 @@ class ChromiumSession implements IBrowserSession {
             // Returned rather than logged here: the caller has its own logger, and this belongs in the
             // consumer's own log where someone debugging a missing element will look for it.
             earlyClearance,
-            lateClearance
+            lateClearance,
+            ...(fontLoading ? { fontLoading } : {})
         };
     }
 
