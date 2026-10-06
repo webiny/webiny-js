@@ -43,15 +43,20 @@ export class TableManager implements ITableManager {
         // One TableManager serves every request, so concurrent first requests share a single
         // hasTable+createTable instead of racing into "table already exists". Cleared on failure so
         // a later call can retry.
-        let pending = this.pending.get(resolved);
-        if (!pending) {
-            pending = this.ensureTable(resolved, creator).finally(() => {
-                this.pending.delete(resolved);
-            });
-            this.pending.set(resolved, pending);
+        const pending = this.pending.get(resolved);
+        if (pending) {
+            return pending;
         }
 
-        return pending;
+        const check = this.ensureTable(resolved, creator).finally(() => {
+            // Only remove our own entry: after reset() a newer check may own this table's slot.
+            if (this.pending.get(resolved) === check) {
+                this.pending.delete(resolved);
+            }
+        });
+        this.pending.set(resolved, check);
+
+        return check;
     }
 
     private async ensureTable(
