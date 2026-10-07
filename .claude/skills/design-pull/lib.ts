@@ -2,6 +2,7 @@
  * Logic for the design-pull and design-ask skills. Node built-ins only.
  * The command-line entry is design.ts; run it with `yarn tsx .claude/skills/design-pull/design.ts`.
  */
+import { spawnSync } from "node:child_process";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -345,4 +346,135 @@ export const loadCatalogue = (folder: string): Catalogue => {
 
 export const saveCatalogue = (folder: string, cat: Catalogue): void => {
     atomicWriteBytes(path.join(folder, "catalogue.md"), renderCatalogue(cat));
+};
+
+// ---------------------------------------------------------------- repository
+
+const git = (cwd: string, ...args: string[]): string => {
+    const result = spawnSync("git", args, { cwd, encoding: "utf8" });
+    if (result.status !== 0) {
+        throw new DesignError(`git ${args.join(" ")} failed: ${(result.stderr || "").trim()}`);
+    }
+    return result.stdout.trim();
+};
+
+export const repoTop = (cwd: string = process.cwd()): string =>
+    fs.realpathSync(git(cwd, "rev-parse", "--show-toplevel"));
+
+export const excludePath = (top: string): string => {
+    const file = git(top, "rev-parse", "--git-path", "info/exclude");
+    return path.isAbsolute(file) ? file : path.join(top, file);
+};
+
+const GITIGNORE_SPECIAL = new Set(["\\", "*", "?", "[", "!", "#"]);
+
+export const escapeGitignore = (value: string): string =>
+    [...value].map(char => (GITIGNORE_SPECIAL.has(char) ? `\\${char}` : char)).join("");
+
+export const unescapeGitignore = (value: string): string => value.replace(/\\(.)/gs, "$1");
+
+export const printJson = (value: unknown): void => {
+    process.stdout.write(`${JSON.stringify(value, null, 2)}\n`);
+};
+
+/** Resolves symlinks in the longest existing prefix of a path, keeping the rest as is. */
+const realpathLoose = (target: string): string => {
+    let existing = path.resolve(target);
+    const rest: string[] = [];
+    while (!fs.existsSync(existing)) {
+        rest.unshift(path.basename(existing));
+        existing = path.dirname(existing);
+    }
+    return path.join(fs.realpathSync(existing), ...rest);
+};
+
+// ---------------------------------------------------------------- listing
+
+export interface ListingEntry {
+    size: number;
+    etag: string;
+}
+
+export type Listing = Record<string, ListingEntry>;
+
+interface RawListingEntry {
+    path: string;
+    type?: string;
+    size: number | string;
+    etag: string | number;
+}
+
+export const loadListing = (file: string): Listing => {
+    const text = fs.readFileSync(file, "utf8");
+    const start = text.indexOf("[");
+    const end = text.lastIndexOf("]");
+    if (start < 0 || end < start) {
+        throw new DesignError(`${file}: no JSON array found`);
+    }
+    let entries: RawListingEntry[];
+    try {
+        entries = JSON.parse(text.slice(start, end + 1));
+    } catch (error) {
+        throw new DesignError(`${file}: invalid JSON: ${(error as Error).message}`);
+    }
+    const listing: Listing = {};
+    for (const entry of entries) {
+        if ((entry.type ?? "file") === "file") {
+            listing[entry.path] = { size: Number(entry.size), etag: String(entry.etag) };
+        }
+    }
+    return listing;
+};
+
+// ---------------------------------------------------------------- commands: folders
+
+export const cmdInit = (folderArg: string, project: string, projectId: string): void => {
+    const top = repoTop();
+    const folder = realpathLoose(path.resolve(top, folderArg));
+    const rel = path.relative(top, folder);
+    if (!rel || rel.startsWith("..") || path.isAbsolute(rel)) {
+        throw new DesignError(`folder must be inside the repository: ${folderArg}`);
+    }
+    if (fs.existsSync(path.join(folder, "catalogue.md"))) {
+        throw new DesignError(`catalogue.md already exists in ${folder}`);
+    }
+    fs.mkdirSync(folder, { recursive: true });
+    saveCatalogue(folder, createCatalogue(project, projectId));
+    const posixRel = rel.split(path.sep).join("/");
+    const entry = `/${escapeGitignore(posixRel)}/`;
+    const exclude = excludePath(top);
+    const existing = fs.existsSync(exclude) ? fs.readFileSync(exclude, "utf8") : "";
+    if (!existing.split("\n").includes(entry)) {
+        const prefix = existing === "" || existing.endsWith("\n") ? "" : "\n";
+        atomicWriteBytes(exclude, `${existing}${prefix}${entry}\n`);
+    }
+    printJson({ folder: posixRel, exclude_entry: entry });
+};
+
+export const cmdListFolders = (): void => {
+    const top = repoTop();
+    const exclude = excludePath(top);
+    const lines = fs.existsSync(exclude) ? fs.readFileSync(exclude, "utf8").split("\n") : [];
+    const found: Array<{ folder: string; project: string }> = [];
+    for (const line of lines) {
+        if (!(line.startsWith("/") && line.endsWith("/") && line.length > 2)) {
+            continue;
+        }
+        const rel = unescapeGitignore(line.slice(1, -1));
+        const file = path.join(top, rel, "catalogue.md");
+        if (!isRegularFile(file)) {
+            continue;
+        }
+        try {
+            const cat = parseCatalogue(fs.readFileSync(file, "utf8"));
+            if (cat.projectId) {
+                found.push({ folder: rel, project: cat.project });
+            }
+        } catch (error) {
+            if (!(error instanceof DesignError)) {
+                throw error;
+            }
+        }
+    }
+    printJson(found);
 };
