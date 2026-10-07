@@ -34,7 +34,10 @@ export {
     FileBeforeDeleteEventHandler
 } from "~/features/file/DeleteFile/events.js";
 
-export { FileUrlGenerator } from "~/features/file/FileUrlGenerator/abstractions.js";
+export {
+    FileUrlGenerator,
+    FileUrlPrefixProvider
+} from "~/features/file/FileUrlGenerator/abstractions.js";
 
 export { GetFileRepository, GetFileUseCase } from "~/features/file/GetFile/abstractions.js";
 

@@ -103,13 +103,13 @@ describe("Content entries - Entry Meta Fields", () => {
             createdOn: expect.toBeDateString(),
             savedOn: expect.toBeDateString(),
 
-            // Note that these are not null, since, on an entry-level, an update has been made.
+            // Note that these are not null, since the entry was updated in step 2.
             modifiedOn: expect.toBeDateString(),
 
             createdBy: identityA,
             savedBy: identityA,
 
-            // Note that these are not null, since, on an entry-level, an update has been made.
+            // Note that these are not null, since the entry was updated in step 2.
             modifiedBy: identityA
         };
 
@@ -137,13 +137,12 @@ describe("Content entries - Entry Meta Fields", () => {
         expect(revision2.createdOn).toBe(revision1.createdOn);
         expect(entriesList[0].createdOn).toBe(revision1.createdOn);
 
-        // Entry-level `savedOn` and `modifiedOn` meta fields should change.
-        // It is true that previous revision's entry-level fields are not updated, but that's
-        // fine. When updating entry-level meta fields, we only care about latest revisions.
-        expect(revision2.savedOn > revision1.savedOn).toBe(true);
-        expect(revision2.modifiedOn > revision1.modifiedOn).toBe(true);
-        expect(entriesList[0].savedOn > revision1.savedOn).toBe(true);
-        expect(entriesList[0].modifiedOn > revision1.modifiedOn).toBe(true);
+        // Entry-level `savedOn` and `modifiedOn` meta fields should remain the same, since the
+        // new revision was created without changing the entry's content.
+        expect(revision2.savedOn).toBe(revision1.savedOn);
+        expect(revision2.modifiedOn).toBe(revision1.modifiedOn);
+        expect(entriesList[0].savedOn).toBe(revision1.savedOn);
+        expect(entriesList[0].modifiedOn).toBe(revision1.modifiedOn);
     });
 
     it("updating a previous revision should update entry-level meta fields", async () => {

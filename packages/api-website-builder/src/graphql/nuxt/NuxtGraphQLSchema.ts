@@ -1,4 +1,5 @@
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import { ErrorResponse, Response } from "@webiny/api-graphql";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
@@ -6,6 +7,8 @@ import { NuxtConfig } from "~/features/nuxt/index.js";
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 
 class Schema implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-website-builder/NuxtSchema");
+
     public async execute(builder: GraphQLSchemaBuilder.Interface): CoreGraphQLSchemaFactory.Return {
         builder.addTypeDefs(/* GraphQL */ `
             type NuxtConfigResponse {

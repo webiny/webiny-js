@@ -1,8 +1,7 @@
 import WebinyError from "@webiny/error";
 import { ApiKeyAfterDeleteEventHandler } from "@webiny/api-core/features/security/apiKeys/DeleteApiKey/index.js";
-import { AuditLogRecorder } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
 
 /**
@@ -23,16 +22,23 @@ const cleanupApiKey = (apiKey: ApiKey): Omit<ApiKey, "token"> => {
 };
 
 class AuditLogApiKeyAfterDeleteHandlerImpl implements ApiKeyAfterDeleteEventHandler.Interface {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: ApiKeyAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { apiKey: initialApiKey } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.DELETE);
 
             const apiKey = cleanupApiKey(initialApiKey);
 
-            await createAuditLog("API key deleted", apiKey, apiKey.id, this.recorder);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.SECURITY.API_KEY.DELETE,
+                message: "API key deleted",
+                content: apiKey,
+                entityId: apiKey.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogApiKeyAfterDeleteHandler",
@@ -44,5 +50,5 @@ class AuditLogApiKeyAfterDeleteHandlerImpl implements ApiKeyAfterDeleteEventHand
 
 export const AuditLogApiKeyAfterDeleteHandler = ApiKeyAfterDeleteEventHandler.createImplementation({
     implementation: AuditLogApiKeyAfterDeleteHandlerImpl,
-    dependencies: [AuditLogRecorder]
+    dependencies: [RecordAuditLogUseCase]
 });

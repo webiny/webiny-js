@@ -1,4 +1,5 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { createModelSchemaKey } from "@webiny/api-headless-cms/utils/createModelSchemaKey.js";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
@@ -243,6 +244,16 @@ class BackgroundTasksGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface
         private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface
     ) {}
 
+    public async getSchemaKey(): Promise<string> {
+        if (!this.tenantContext.getTenant()) {
+            return "BackgroundTasks:no-tenant";
+        }
+
+        const { taskModel, logModel, models } = await this.loadInputs();
+        const modelKey = createModelSchemaKey([taskModel, logModel], models);
+        return `BackgroundTasks:${modelKey}`;
+    }
+
     public async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
@@ -260,15 +271,21 @@ class BackgroundTasksGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface
         return builder;
     }
 
-    private async createTypeDefs(): Promise<string> {
+    private async loadInputs() {
         const taskModel = await this.tasksCrud.getTaskModel();
         const logModel = await this.tasksCrud.getLogModel();
-        const fieldRegistry = this.fieldRegistry;
 
         const models = await this.identityContext.withoutAuthorization(async () => {
             const modelsResult = await this.listModelsUseCase.execute({ includePrivate: false });
             return modelsResult.value.filter(model => model.fields.length > 0);
         });
+
+        return { taskModel, logModel, models };
+    }
+
+    private async createTypeDefs(): Promise<string> {
+        const { taskModel, logModel, models } = await this.loadInputs();
+        const fieldRegistry = this.fieldRegistry;
 
         const taskFields = renderFields({
             models,

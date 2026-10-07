@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { registerExtensions } from "@webiny/handler";
+import { registerBuildParams, registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
@@ -34,7 +34,8 @@ export interface RegisterApiRequestStackConfig {
     extensions: () => Parameters<typeof registerExtensions>[1];
     /**
      * Register request-phase storage features that must run BEFORE `HeadlessCmsFeature` builds its
-     * storage — e.g. `DbRegistryFeature` for the DDB+ES variant. Optional (DDB-only needs none).
+     * storage — e.g. `DbRegistryFeature` for the DDB+ES variant. Per-request storage state
+     * (the DDB CMS entry DataLoaders) goes here too. Optional.
      */
     registerRequestStorage?: (container: Container) => void | Promise<void>;
     /**
@@ -89,6 +90,14 @@ export async function registerApiRequestStack(
     // (~5-min TTL) + single-flighted → cheap no-op on warm requests.
     await WcpLicenseLoader.load();
 
+    // ── Build params (before ANY feature) ──────────────────────
+    // Features gate themselves on FeatureFlags at register() time (AuditLogs, RecordLocking,
+    // Workflows, ...), and FeatureFlags is a BuildParam. Registered with the rest of the extensions
+    // below, it arrived too late: those gates read `{}`, and a license-granted feature couldn't be
+    // disabled from config.
+    const extensions = config.extensions();
+    await registerBuildParams(container, extensions);
+
     // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind to the
     // request child container so per-request event handlers are resolvable) ─────────
     ApiCoreFeature.register(container, { wcpLicense: undefined });
@@ -139,7 +148,7 @@ export async function registerApiRequestStack(
     // ModelCache.getOrSet) caches it for the rest of the request, so a set built before extensions
     // register would be missing their models. Every consumer now resolves models at schema-build or
     // resolver time, i.e. after all registration.
-    await registerExtensions(container, config.extensions());
+    await registerExtensions(container, extensions);
 
     // ── GraphQL engine (always last) ───────────────────────────
     GraphQLEngineFeature.register(container);

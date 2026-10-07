@@ -106,13 +106,12 @@ describe("SubmitBugReportUseCase", () => {
         expect(github.createIssue).not.toHaveBeenCalled();
     });
 
-    it("refuses a report with neither a description nor a screenshot", async () => {
+    it("accepts a report with neither a description nor a screenshot", async () => {
         const { useCase } = buildUseCase();
 
-        const result = await useCase.execute({ ...PAYLOAD, description: "   " });
+        const result = await useCase.execute({ ...PAYLOAD, description: "" });
 
-        expect(result.isFail()).toBe(true);
-        expect(result.error.code).toBe("BUG_REPORT_EMPTY");
+        expect(result.isOk()).toBe(true);
     });
 
     it("accepts a screenshot with no description, since the error text is often in it", async () => {

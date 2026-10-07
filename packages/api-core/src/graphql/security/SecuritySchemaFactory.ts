@@ -1,4 +1,5 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { addSecurityBaseSchema } from "./addSecurityBaseSchema.js";
 import { addApiKeySchema } from "./addApiKeySchema.js";
@@ -12,6 +13,8 @@ import { addIdentitySchema } from "./addIdentitySchema.js";
  * base, team, apiKey, role, identity.
  */
 class SecuritySchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-core/SecuritySchemaFactoryImpl");
+
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
         addSecurityBaseSchema(builder);
         addTeamSchema(builder);

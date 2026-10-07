@@ -1,5 +1,4 @@
 import { getIntrospectionQuery } from "graphql";
-import { HeadlessCmsContextualSchema } from "@webiny/api-headless-cms/HeadlessCmsContextualSchema.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import { until } from "@webiny/api/testing/until.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -38,22 +37,23 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const fnPlugins = allPlugins.filter(isFn);
     const extraCmsPlugins = allPlugins.filter(p => !isFn(p));
 
-    const { handler, invoke } = createCmsTestHandler({
+    const { handler, invoke, invokeCms } = createCmsTestHandler({
         identity: params.identity ?? createIdentity(),
         permissions: params.permissions ?? (createPermissions() as SecurityPermission[]),
         testProjectLicense: params.testProjectLicense,
         extraCmsPlugins,
         legacyPlugins: fnPlugins,
         setup: container => {
-            container.register(HeadlessCmsContextualSchema);
             // Background tasks + bulk actions are DI-native now.
             BackgroundTasksFeature.register(container);
             HcmsBulkActionsFeature.register(container);
         }
     });
 
+    // The bulk action enums are part of the CMS schema, which is served on /cms/manage.
     const introspect = async () => {
-        return invoke({
+        return invokeCms({
+            type: "manage",
             body: {
                 query: getIntrospectionQuery()
             }

@@ -58,7 +58,7 @@ class StubMasker implements Masker.Interface {
 }
 
 class ImageCapability implements AiCapability.Interface {
-    readonly id = "test.readsImages";
+    readonly id = "testReadsImages";
     readonly label = "Reads images";
     readonly description = "Declares vision, which an upgraded project has never filled in.";
     readonly defaultRole = "vision" as const;
@@ -66,7 +66,7 @@ class ImageCapability implements AiCapability.Interface {
 }
 
 class WritingCapability implements AiCapability.Interface {
-    readonly id = "test.writes";
+    readonly id = "testWrites";
     readonly label = "Writes";
     readonly description = "For tests.";
     readonly defaultRole = "standard" as const;
@@ -131,7 +131,7 @@ function resolver(value: IAiPowerUpsSettings) {
 
 describe("upgrading a project that already used AI Power-Ups", () => {
     it("resolves a capability from the legacy section with nothing saved", async () => {
-        const result = await resolver(readSettings()).execute("test.writes");
+        const result = await resolver(readSettings()).execute("testWrites");
 
         expect(result.isOk()).toBe(true);
         expect(result.value.model).toBe(LEGACY_MODEL);
@@ -157,7 +157,7 @@ describe("upgrading a project that already used AI Power-Ups", () => {
      * legacy preset instead: same model as before, now visible on the settings screen.
      */
     it("keeps image work running on the legacy model via a seeded vision role", async () => {
-        const result = await resolver(readSettings()).execute("test.readsImages");
+        const result = await resolver(readSettings()).execute("testReadsImages");
 
         expect(result.isOk()).toBe(true);
         expect(result.value.model).toBe(LEGACY_MODEL);

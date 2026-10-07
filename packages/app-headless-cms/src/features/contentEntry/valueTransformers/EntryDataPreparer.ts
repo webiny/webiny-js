@@ -3,7 +3,18 @@ import type { ICmsEntryValueTransformer } from "./abstractions.js";
 import type { CmsModelField } from "~/types.js";
 
 export interface IEntryDataPreparer {
+    /**
+     * Converts field values from the form shape into the GraphQL input shape.
+     */
     prepare(data: Record<string, unknown>, fields: CmsModelField[]): Record<string, unknown>;
+    /**
+     * Prepares `data.values` of a mutation payload and keeps all other keys as they are.
+     * Every gateway that sends entry values to the API must use this method.
+     */
+    prepareEntryData(
+        data: Record<string, unknown>,
+        fields: CmsModelField[]
+    ): Record<string, unknown>;
 }
 
 export class EntryDataPreparerImpl implements IEntryDataPreparer {
@@ -36,6 +47,20 @@ export class EntryDataPreparerImpl implements IEntryDataPreparer {
         }
 
         return result;
+    }
+
+    prepareEntryData(
+        data: Record<string, unknown>,
+        fields: CmsModelField[]
+    ): Record<string, unknown> {
+        const values = data.values;
+        if (!values || typeof values !== "object") {
+            return data;
+        }
+        return {
+            ...data,
+            values: this.prepare(values as Record<string, unknown>, fields)
+        };
     }
 }
 

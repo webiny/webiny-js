@@ -1,4 +1,5 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import {
     JsonScalar,
@@ -8,6 +9,7 @@ import {
     NumberScalar,
     AnyScalar,
     DateTimeScalar,
+    DateTimeZScalar,
     DateScalar,
     TimeScalar
 } from "@webiny/api-graphql/builtInTypes/index.js";
@@ -23,6 +25,7 @@ const BASE_TYPES = `
     scalar Any
     scalar Date
     scalar DateTime
+    scalar DateTimeZ
     scalar Time
 
     type Error {
@@ -46,6 +49,7 @@ const SCALAR_RESOLVERS: Record<string, any> = {
     Number: NumberScalar,
     Any: AnyScalar,
     DateTime: DateTimeScalar,
+    DateTimeZ: DateTimeZScalar,
     Date: DateScalar,
     Time: TimeScalar
 };
@@ -57,6 +61,8 @@ const SCALAR_RESOLVERS: Record<string, any> = {
  * core factories does not matter, the engine merges all typeDefs in a single pass.
  */
 class ApiCoreSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-core/ApiCoreSchemaFactoryImpl");
+
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
         builder.addTypeDefs(BASE_TYPES);
 

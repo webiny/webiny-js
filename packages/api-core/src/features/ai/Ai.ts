@@ -4,7 +4,8 @@ import { streamText } from "ai";
 import { Ai as AiAbstraction } from "./abstractions.js";
 import { AiSdkFactory } from "./abstractions.js";
 import { AiConnectionFactory } from "./abstractions.js";
-import type { AiGenerateTextParams, AiModel, IAiSdkFactory } from "./abstractions.js";
+import { AiModelRegistry } from "./abstractions.js";
+import type { AiGenerateTextParams, AiModel } from "./abstractions.js";
 import type { AiStreamTextParams } from "./abstractions.js";
 import type { IAiSdk } from "./abstractions.js";
 import type { IAiConnection } from "./abstractions.js";
@@ -19,14 +20,22 @@ import {
     AiBeforeStreamTextEvent
 } from "./events.js";
 
-function toAiModel(factory: IAiSdkFactory, modelId: string, modelName: string): AiModel {
-    return {
-        providerId: factory.id,
-        providerName: factory.name,
-        modelId,
-        modelName
-    };
-}
+/**
+ * Drops call options the model doesn't accept. Several current models reject `temperature` outright
+ * (a 400, not a warning), so it is only sent when the catalog says the model supports it. No
+ * information counts as unsupported: leaving it out costs some determinism, sending it can fail the
+ * whole request.
+ */
+const withSupportedOptions = <T extends { temperature?: number }>(
+    options: T,
+    model: AiModel
+): T => {
+    if (options.temperature === undefined || model.supports?.temperature === true) {
+        return options;
+    }
+    const { temperature: _temperature, ...rest } = options;
+    return rest as T;
+};
 
 class AiImpl implements AiAbstraction.Interface {
     private sdkCache = new Map<string, IAiSdk>();
@@ -35,12 +44,15 @@ class AiImpl implements AiAbstraction.Interface {
     constructor(
         private readonly sdkFactories: AiSdkFactory.Interface[],
         private readonly connectionFactories: AiConnectionFactory.Interface[],
-        private readonly eventPublisher: EventPublisher.Interface
+        private readonly eventPublisher: EventPublisher.Interface,
+        private readonly modelRegistry: AiModelRegistry.Interface
     ) {}
 
     async generateText(params: AiGenerateTextParams): ReturnType<typeof generateText> {
-        const { model, connection, ...rest } = params;
-        const resolvedModel = await this.resolveLanguageModel(model, connection);
+        const { model, connection, ...options } = params;
+        const { languageModel: resolvedModel, model: catalogModel } =
+            await this.resolveLanguageModel(model, connection);
+        const rest = withSupportedOptions(options, catalogModel);
         const requestId = mdbid();
 
         await this.eventPublisher.publish(new AiBeforeGenerateTextEvent({ requestId, params }));
@@ -72,8 +84,10 @@ class AiImpl implements AiAbstraction.Interface {
     }
 
     async streamText(params: AiStreamTextParams): Promise<ReturnType<typeof streamText>> {
-        const { model, connection, ...rest } = params;
-        const resolvedModel = await this.resolveLanguageModel(model, connection);
+        const { model, connection, ...options } = params;
+        const { languageModel: resolvedModel, model: catalogModel } =
+            await this.resolveLanguageModel(model, connection);
+        const rest = withSupportedOptions(options, catalogModel);
 
         await this.eventPublisher.publish(new AiBeforeStreamTextEvent({ params }));
 
@@ -82,37 +96,30 @@ class AiImpl implements AiAbstraction.Interface {
     }
 
     listModels(): Promise<AiModel[]> {
-        return Promise.resolve(
-            this.sdkFactories.flatMap(factory =>
-                factory.models.map(m => toAiModel(factory, m.id, m.name))
-            )
-        );
+        return this.modelRegistry.listModels();
     }
 
     async listModelsByConnections(): Promise<AiModel[]> {
-        const connections = await this.getConnections();
-        return connections.flatMap(conn => {
-            const factory = this.sdkFactories.find(f => f.id === conn.sdkName);
-            if (!factory) {
-                return [];
-            }
-            return factory.models.map(m => toAiModel(factory, m.id, m.name));
-        });
+        const [connections, models] = await Promise.all([
+            this.getConnections(),
+            this.modelRegistry.listModels()
+        ]);
+        const connectedProviderIds = new Set(connections.map(c => c.sdkName));
+        return models.filter(m => connectedProviderIds.has(m.providerId));
     }
 
     async listModelsByConnection(connection: string | IAiConnectionInline): Promise<AiModel[]> {
-        const conn = await this.resolveConnection(undefined, connection);
-        const factory = this.sdkFactories.find(f => f.id === conn.sdkName);
-        if (!factory) {
-            return [];
-        }
-        return factory.models.map(m => toAiModel(factory, m.id, m.name));
+        const [conn, models] = await Promise.all([
+            this.resolveConnection(undefined, connection),
+            this.modelRegistry.listModels()
+        ]);
+        return models.filter(m => m.providerId === conn.sdkName);
     }
 
     private async resolveLanguageModel(
         modelId: string,
         connection?: string | IAiConnectionInline
-    ): Promise<LanguageModel> {
+    ): Promise<{ languageModel: LanguageModel; model: AiModel }> {
         const slashIndex = modelId.indexOf("/");
         if (slashIndex === -1) {
             throw new Error(
@@ -121,11 +128,19 @@ class AiImpl implements AiAbstraction.Interface {
         }
 
         const providerId = modelId.slice(0, slashIndex);
-        const modelName = modelId.slice(slashIndex + 1);
+        const rawModelId = modelId.slice(slashIndex + 1);
+
+        const models = await this.modelRegistry.listModels();
+        const found = models.find(m => m.providerId === providerId && m.modelId === rawModelId);
+        if (!found) {
+            throw new Error(
+                `Model "${modelId}" is not available. Use listModels() to see available models.`
+            );
+        }
 
         const conn = await this.resolveConnection(providerId, connection);
         const sdk = await this.getSdk(conn);
-        return sdk.languageModel(modelName);
+        return { languageModel: sdk.languageModel(rawModelId), model: found };
     }
 
     private async getConnections(): Promise<IAiConnection[]> {
@@ -199,6 +214,7 @@ export const Ai = createImplementation({
     dependencies: [
         [AiSdkFactory, { multiple: true }],
         [AiConnectionFactory, { multiple: true }],
-        EventPublisher
+        EventPublisher,
+        AiModelRegistry
     ]
 });

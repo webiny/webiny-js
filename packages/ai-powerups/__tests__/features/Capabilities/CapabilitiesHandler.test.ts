@@ -33,7 +33,7 @@ describe("CapabilitiesHandler", () => {
     it("accepts the nulls the form sends for untouched fields", () => {
         const result = handler.inputSchema.safeParse({
             items: {
-                "cms.generateEntry": {
+                cmsGenerateEntry: {
                     enabled: null,
                     overrides: {
                         roleId: null,
@@ -51,7 +51,7 @@ describe("CapabilitiesHandler", () => {
     it("accepts a fully configured entry", () => {
         const result = handler.inputSchema.safeParse({
             items: {
-                "cms.generateEntry": {
+                cmsGenerateEntry: {
                     enabled: false,
                     overrides: {
                         roleId: "fast",
@@ -68,7 +68,7 @@ describe("CapabilitiesHandler", () => {
 
     it("still rejects a role that does not exist", () => {
         const result = handler.inputSchema.safeParse({
-            items: { "cms.generateEntry": { overrides: { roleId: "cheapest" } } }
+            items: { cmsGenerateEntry: { overrides: { roleId: "cheapest" } } }
         });
 
         expect(result.success).toBe(false);
@@ -82,7 +82,7 @@ describe("CapabilitiesHandler", () => {
     it("stores an entry for every capability the form sent", async () => {
         const stored = await store({
             items: {
-                "cms.generateEntry": {
+                cmsGenerateEntry: {
                     enabled: true,
                     overrides: {
                         roleId: null,
@@ -90,7 +90,7 @@ describe("CapabilitiesHandler", () => {
                         additionalInstructions: "  "
                     }
                 },
-                "wb.generatePage": {
+                wbGeneratePage: {
                     enabled: true,
                     overrides: { additionalInstructions: "Keep it short." }
                 }
@@ -98,8 +98,8 @@ describe("CapabilitiesHandler", () => {
         });
 
         expect(stored.items).toEqual({
-            "cms.generateEntry": { enabled: true, overrides: {} },
-            "wb.generatePage": {
+            cmsGenerateEntry: { enabled: true, overrides: {} },
+            wbGeneratePage: {
                 enabled: true,
                 overrides: { additionalInstructions: "Keep it short." }
             }
@@ -118,7 +118,7 @@ describe("CapabilitiesHandler", () => {
     it("stores a capability that was switched off", async () => {
         const stored = await store({
             items: {
-                "fm.imageEnrichment": {
+                fmImageEnrichment: {
                     enabled: false,
                     overrides: {
                         roleId: null,
@@ -130,7 +130,7 @@ describe("CapabilitiesHandler", () => {
             }
         });
 
-        expect(stored.items?.["fm.imageEnrichment"]).toEqual({
+        expect(stored.items?.["fmImageEnrichment"]).toEqual({
             enabled: false,
             overrides: {}
         });
@@ -139,10 +139,10 @@ describe("CapabilitiesHandler", () => {
     /* An untouched switch can arrive as `null`, and that means on, same as absence. */
     it("settles a null switch to enabled rather than storing the null", async () => {
         const stored = await store({
-            items: { "cms.generateEntry": { enabled: null, overrides: {} } }
+            items: { cmsGenerateEntry: { enabled: null, overrides: {} } }
         });
 
-        expect(stored.items?.["cms.generateEntry"]).toEqual({
+        expect(stored.items?.["cmsGenerateEntry"]).toEqual({
             enabled: true,
             overrides: {}
         });
@@ -151,7 +151,7 @@ describe("CapabilitiesHandler", () => {
     it("keeps nulls and empty strings out of a stored override", async () => {
         const stored = await store({
             items: {
-                "wb.generatePage": {
+                wbGeneratePage: {
                     overrides: {
                         roleId: null,
                         connectionId: "",
@@ -162,7 +162,7 @@ describe("CapabilitiesHandler", () => {
             }
         });
 
-        expect(stored.items?.["wb.generatePage"]).toEqual({
+        expect(stored.items?.["wbGeneratePage"]).toEqual({
             enabled: true,
             overrides: { additionalInstructions: "Keep it short." }
         });
@@ -176,13 +176,13 @@ describe("CapabilitiesHandler", () => {
      */
     it("rejects a prompt override, which is no longer a thing", () => {
         const result = handler.inputSchema.safeParse({
-            items: { "cms.compareEntryRevisions": { overrides: { guidance: "Mine now." } } }
+            items: { cmsCompareEntryRevisions: { overrides: { guidance: "Mine now." } } }
         });
 
         // Zod strips the unknown key rather than failing, so the check is that it never lands.
         expect(result.success).toBe(true);
         expect(result.data).toEqual({
-            items: { "cms.compareEntryRevisions": { overrides: {} } }
+            items: { cmsCompareEntryRevisions: { overrides: {} } }
         });
     });
 

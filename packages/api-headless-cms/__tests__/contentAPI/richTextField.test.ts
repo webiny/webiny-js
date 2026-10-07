@@ -157,7 +157,7 @@ describe("richTextField", () => {
                         id: expect.any(String),
                         entryId: expect.any(String),
                         createdOn: expect.toBeDateString(),
-                        modifiedOn: expect.toBeDateString(),
+                        modifiedOn: null,
                         savedOn: expect.toBeDateString(),
                         firstPublishedOn: expect.toBeDateString(),
                         lastPublishedOn: expect.toBeDateString(),

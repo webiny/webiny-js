@@ -1,4 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/api-graphql";
+import { createModelSchemaKey } from "@webiny/api-headless-cms/utils/createModelSchemaKey.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import type { IGraphQLSchemaPlugin } from "@webiny/api-graphql/plugins/GraphQLSchemaPlugin.js";
@@ -29,25 +30,23 @@ class AcoFolderSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
         private tenantContext: TenantContext.Interface
     ) {}
 
+    async getSchemaKey(): Promise<string> {
+        const inputs = await this.loadInputs();
+        if (!inputs) {
+            return "Aco/Folder:no-tenant";
+        }
+
+        const modelKey = createModelSchemaKey([inputs.model], inputs.models);
+        return `Aco/Folder:${modelKey}`;
+    }
+
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
-        // On a fresh project there is no tenant until installation completes, and there is no model
-        // to render a schema from. (This is what `isHeadlessCmsReady` checked in the initializer.)
-        if (!this.tenantContext.getTenant()) {
+        const inputs = await this.loadInputs();
+        if (!inputs) {
             return builder;
         }
 
-        const model = await this.folderModelProvider.get();
-
-        // The model list feeds `ref` field rendering, so it must be the COMPLETE set — access
-        // control filters models by permission, which would otherwise make the generated schema
-        // vary by identity. Hence the unauthorized read, exactly as the initializer did.
-        const models = await this.identityContext.withoutAuthorization(async () => {
-            const result = await this.listModels.execute();
-            if (result.isFail()) {
-                throw result.error;
-            }
-            return result.value;
-        });
+        const { model, models } = inputs;
 
         const fieldPlugins = createGraphQLSchemaPluginFromFieldPlugins({
             models,
@@ -83,6 +82,29 @@ class AcoFolderSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
         }
 
         return builder;
+    }
+
+    private async loadInputs() {
+        // On a fresh project there is no tenant until installation completes, and there is no model
+        // to render a schema from. (This is what `isHeadlessCmsReady` checked in the initializer.)
+        if (!this.tenantContext.getTenant()) {
+            return null;
+        }
+
+        const model = await this.folderModelProvider.get();
+
+        // The model list feeds `ref` field rendering, so it must be the COMPLETE set — access
+        // control filters models by permission, which would otherwise make the generated schema
+        // vary by identity. Hence the unauthorized read, exactly as the initializer did.
+        const models = await this.identityContext.withoutAuthorization(async () => {
+            const result = await this.listModels.execute();
+            if (result.isFail()) {
+                throw result.error;
+            }
+            return result.value;
+        });
+
+        return { model, models };
     }
 }
 

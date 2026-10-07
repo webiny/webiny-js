@@ -8,8 +8,7 @@ import { readPayload } from "./readPayload.js";
 import type { BugReportStreamEvent } from "../shared/types.js";
 
 const STATUS_BY_CODE: Record<string, number> = {
-    BUG_REPORT_NOT_AUTHORIZED: 401,
-    BUG_REPORT_EMPTY: 400
+    BUG_REPORT_NOT_AUTHORIZED: 401
 };
 
 async function* toSseFrames(events: AsyncGenerator<BugReportStreamEvent>): AsyncGenerator<string> {
@@ -27,8 +26,8 @@ async function* toSseFrames(events: AsyncGenerator<BugReportStreamEvent>): Async
  * wrong twice over — there is somebody to stream to, and the payload carries base64 screenshots,
  * routinely megabytes, which cannot go into a task's persisted `input` under DynamoDB's 400 kB cap.
  *
- * Everything the use case can decide up front comes back as a failed Result, so authorization and
- * an empty report get real status codes. Once the first frame is out the status is committed to
+ * Everything the use case can decide up front comes back as a failed Result, so a failed
+ * authorization gets a real status code. Once the first frame is out the status is committed to
  * 200 and failures can only be an `error` event.
  */
 class SubmitBugReportRouteImpl implements HttpRouteHandler.Interface {

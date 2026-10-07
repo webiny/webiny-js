@@ -8,15 +8,19 @@ import { AcoFeature } from "@webiny/api-aco";
 import { AuditLogsFeature } from "~/index";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import type { Container } from "@webiny/di";
-import { AuditLogs } from "~/abstractions";
-import { AuditLogRecorder } from "~/abstractions";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions";
+import { ListAuditLogsUseCase } from "~/features/ListAuditLogs/abstractions";
+import type { IListAuditLogsParams } from "~/types";
+import type { IAuditLog } from "~/storage/types";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 export interface AuditLogsTestContext {
     container: Container;
-    auditLogs: AuditLogs.Interface;
-    recorder: AuditLogRecorder.Interface;
+    // Records an audit log through RecordAuditLogUseCase, throwing if it fails.
+    recordAuditLog(input: RecordAuditLogUseCase.Input): Promise<IAuditLog | null>;
+    // Lists audit logs through ListAuditLogsUseCase, throwing if it fails.
+    listAuditLogs(params: IListAuditLogsParams): Promise<ListAuditLogsUseCase.Output>;
 }
 
 export interface UseHandlerParams {
@@ -61,8 +65,20 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             const { container } = await inner.getContext<{ container: Container }>();
             return {
                 container,
-                auditLogs: container.resolve(AuditLogs),
-                recorder: container.resolve(AuditLogRecorder)
+                recordAuditLog: async input => {
+                    const result = await container.resolve(RecordAuditLogUseCase).execute(input);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return result.value;
+                },
+                listAuditLogs: async params => {
+                    const result = await container.resolve(ListAuditLogsUseCase).execute(params);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return result.value;
+                }
             };
         }
     };

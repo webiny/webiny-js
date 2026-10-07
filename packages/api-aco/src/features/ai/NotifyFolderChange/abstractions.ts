@@ -7,10 +7,11 @@ import { createAbstraction } from "@webiny/feature/api";
  */
 export const FOLDER_CREATED_WEBSOCKET_ACTION = "aco.folder.created";
 export const FOLDER_UPDATED_WEBSOCKET_ACTION = "aco.folder.updated";
+export const FOLDER_DELETED_WEBSOCKET_ACTION = "aco.folder.deleted";
 
 export interface NotifyFolderChangeParams {
     id: string;
-    change: "created" | "updated";
+    change: "created" | "updated" | "deleted";
 }
 
 export interface INotifyFolderChangeUseCase {

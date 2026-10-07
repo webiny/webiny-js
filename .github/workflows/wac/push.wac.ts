@@ -3,6 +3,7 @@ import {
     ACTION,
     AWS_REGION,
     BUILD_PACKAGES_RUNNER,
+    DEFAULT_RUNNER,
     createWaitForOpenSearchStep,
     NODE_VERSION,
     OPENSEARCH_SERVICE,
@@ -270,7 +271,7 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
     //     strategy: {
     //         "fail-fast": false,
     //         matrix: {
-    //             os: ["ubuntu-latest"],
+    //             os: [DEFAULT_RUNNER],
     //             node: [NODE_VERSION],
     //             "cypress-folder": `$\{{ fromJson(needs.${jobNames.constants}.outputs.cypress-folders) }}`
     //         }
@@ -348,7 +349,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             strategy: {
                 "fail-fast": false,
                 matrix: {
-                    os: ["ubuntu-latest"],
+                    os: [DEFAULT_RUNNER],
                     node: [NODE_VERSION],
                     testCommand: `$\{{ fromJSON(needs.${jobNames.constants}.outputs.vitest-test-commands) }}`
                 }
@@ -376,6 +377,14 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 export const push = createWorkflow({
     name: `Push`,
     on: { push: { branches: ["dev", "next", "release/*"] } },
+    // A newer push to dev or next makes the running workflow redundant, so it gets cancelled.
+    // On release branches every run gets its own group, so each release commit gets a full
+    // result. E2E infrastructure left behind by a cancelled run is removed by the nightly
+    // cleanup workflow.
+    concurrency: {
+        group: "push-${{ startsWith(github.ref, 'refs/heads/release/') && github.run_id || github.ref }}",
+        "cancel-in-progress": true
+    },
     jobs: {
         constants: createJob({
             name: "Create constants",

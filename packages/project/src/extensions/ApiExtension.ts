@@ -108,6 +108,15 @@ export const ApiExtension = defineExtension({
                     namedImports: ["createRegisterExtensionPlugin"],
                     moduleSpecifier: registerExtensionPluginImportPath
                 });
+            } else if (
+                !existingRegisterExtensionPluginImport
+                    .getNamedImports()
+                    .some(i => i.getName() === "createRegisterExtensionPlugin")
+            ) {
+                // BuildParam imports `createRegisterBuildParamPlugin` from the same path.
+                existingRegisterExtensionPluginImport.addNamedImport(
+                    "createRegisterExtensionPlugin"
+                );
             }
         }
 

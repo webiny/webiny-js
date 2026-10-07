@@ -1,8 +1,11 @@
-import { NotFoundError, resolve, resolveList } from "@webiny/api-graphql";
+import { resolve } from "@webiny/api-graphql";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
+import { resolveList } from "@webiny/api-graphql";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { createZodError } from "@webiny/utils";
-import { AuditLogs } from "~/abstractions.js";
+import { GetAuditLogUseCase } from "~/features/GetAuditLog/abstractions.js";
+import { ListAuditLogsUseCase } from "~/features/ListAuditLogs/abstractions.js";
 import { getValidationSchema, listValidationSchema } from "./validation.js";
 
 interface IListAuditLogsWhere {
@@ -96,6 +99,8 @@ const TYPE_DEFS = /* GraphQL */ `
 `;
 
 class AuditLogsGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-audit-logs/AuditLogsGraphQLSchemaImpl");
+
     public async execute(builder: GraphQLSchemaBuilder.Interface): CoreGraphQLSchemaFactory.Return {
         builder.addTypeDefs(TYPE_DEFS);
 
@@ -107,8 +112,8 @@ class AuditLogsGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<{ id: string }>({
             path: "AuditLogsQuery.getAuditLog",
-            dependencies: [AuditLogs],
-            resolver(auditLogs: AuditLogs.Interface) {
+            dependencies: [GetAuditLogUseCase],
+            resolver(getAuditLog: GetAuditLogUseCase.Interface) {
                 return async ({ args }) => {
                     return resolve(async () => {
                         const validation = await getValidationSchema.safeParseAsync(args);
@@ -117,13 +122,11 @@ class AuditLogsGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                             throw createZodError(validation.error);
                         }
 
-                        const result = await auditLogs.getAuditLog(validation.data.id);
-                        if (!result) {
-                            throw new NotFoundError(
-                                `Audit log with id "${validation.data.id}" not found.`
-                            );
+                        const result = await getAuditLog.execute(validation.data.id);
+                        if (result.isFail()) {
+                            throw result.error;
                         }
-                        return result;
+                        return result.value;
                     });
                 };
             }
@@ -131,25 +134,25 @@ class AuditLogsGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<IListAuditLogsArgs>({
             path: "AuditLogsQuery.listAuditLogs",
-            dependencies: [AuditLogs],
-            resolver(auditLogs: AuditLogs.Interface) {
+            dependencies: [ListAuditLogsUseCase],
+            resolver(listAuditLogs: ListAuditLogsUseCase.Interface) {
                 return async ({ args }) => {
                     return resolveList(async () => {
                         const validation = await listValidationSchema.safeParseAsync(args);
                         if (!validation.success) {
                             throw createZodError(validation.error);
                         }
-                        const result = await auditLogs.listAuditLogs({
+                        const result = await listAuditLogs.execute({
                             ...validation.data,
                             ...validation.data.where
                         });
-                        if (result.error) {
+                        if (result.isFail()) {
                             throw result.error;
                         }
                         return {
-                            items: result.items,
+                            items: result.value.items,
                             meta: {
-                                ...result.meta,
+                                ...result.value.meta,
                                 totalCount: 0
                             }
                         };

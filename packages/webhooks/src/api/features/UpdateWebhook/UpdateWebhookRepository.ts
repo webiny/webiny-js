@@ -36,11 +36,15 @@ class UpdateWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
 
             const values = this.transformer.toStorage(webhook);
 
-            const { entry } = await this.updateEntryDataFactory.create<WebhookCmsEntryValues>(
+            const dataResult = await this.updateEntryDataFactory.create<WebhookCmsEntryValues>(
                 modelResult.value,
                 { values },
                 entryResult.value
             );
+            if (dataResult.isFail()) {
+                return Result.fail(WebhookPersistenceError.from(dataResult.error));
+            }
+            const { entry } = dataResult.value;
 
             const updateResult = await this.updateEntryRepository.execute(modelResult.value, entry);
 

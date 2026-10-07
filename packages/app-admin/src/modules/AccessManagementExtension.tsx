@@ -32,6 +32,8 @@ import { ApiKeysView } from "~/presentation/accessManagement/apiKeys/components/
 import { ApiKeysPresenterFeature } from "~/presentation/accessManagement/apiKeys/feature.js";
 import { TeamsPresenterFeature } from "~/presentation/accessManagement/teams/feature.js";
 import { RolesAutocompletePresenterFeature } from "~/presentation/accessManagement/roles/rolesAutocomplete/feature.js";
+import { AssumedPermissionsBanner } from "~/presentation/assumePermissions/components/AssumedPermissionsBanner.js";
+import { AssumedPermissionsSelector } from "~/presentation/assumePermissions/components/AssumedPermissionsSelector.js";
 import { TeamsAutocompletePresenterFeature } from "~/presentation/accessManagement/teams/teamsAutocomplete/feature.js";
 
 const { Menu, Route } = AdminConfig;
@@ -112,6 +114,10 @@ export const AccessManagementExtension = () => {
             <RegisterFeature feature={UpdateApiKeyFeature} />
             <RegisterFeature feature={DeleteApiKeyFeature} />
             <RegisterFeature feature={ApiKeysPresenterFeature} />
+            {/* Shows the preview banner while a preview is active. */}
+            <AssumedPermissionsBanner />
+            {/* Installs the real header control over the Layout's placeholder. */}
+            <AssumedPermissionsSelector />
             <SecurityPermissions />
             <AdminConfig>
                 <HasPermission name={Permission.Roles}>

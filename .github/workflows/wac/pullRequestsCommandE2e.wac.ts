@@ -3,9 +3,11 @@ import { createCheckoutPrSteps } from "./steps/index.js";
 import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
 import type { StandaloneStorageOps } from "./e2e/index.js";
 import {
+    createWcpStandaloneJobs,
     createAwsJobs,
     createStandaloneJobs,
     standaloneVariantCommentRow,
+    wcpVariantCommentRow,
     DIR_WEBINY_JS,
     globalBuildCacheSteps,
     installBuildSteps,
@@ -17,6 +19,10 @@ import {
 // so the two cannot drift apart.
 const SERVER_VARIANTS: StandaloneStorageOps[] = ["sqlite", "postgres"];
 
+// The same backends again, connected to WCP and running the AI tests too. Only for the people in
+// AI_E2E_USERS (e2e/aiE2e.ts).
+const WCP_VARIANTS: StandaloneStorageOps[] = ["sqlite", "postgres"];
+
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     command: "e2e",
     name: "💬 PR Command - E2E",
@@ -27,7 +33,9 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         "| --- | --- | --- |",
         "| DDB | 🔄 Deploying... | - |",
         "| DDB+OS | 🔄 Deploying... | - |",
-        ...SERVER_VARIANTS.map(standaloneVariantCommentRow)
+        ...SERVER_VARIANTS.map(standaloneVariantCommentRow),
+        // Must stay last, see aiE2eCommentRow.
+        ...WCP_VARIANTS.map(wcpVariantCommentRow)
     ].join("\n"),
     captureCommentId: true,
     workflow: {
@@ -96,6 +104,10 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         ...createAwsJobs("ddb-os"),
         ...SERVER_VARIANTS.reduce(
             (jobs, storageOps) => ({ ...jobs, ...createStandaloneJobs(storageOps) }),
+            {}
+        ),
+        ...WCP_VARIANTS.reduce(
+            (jobs, storageOps) => ({ ...jobs, ...createWcpStandaloneJobs(storageOps) }),
             {}
         )
     }
