@@ -527,7 +527,7 @@ export interface GenerationLogEntryDto {
     id: string;
     recordedOn: string;
     stageVersion: number;
-    trigger: "generate" | "generate-again";
+    trigger: "generate" | "generate-again" | "refine";
     attempt: number;
     maxAttempts: number;
     model: string;

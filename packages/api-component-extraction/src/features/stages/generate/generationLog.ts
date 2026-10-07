@@ -22,7 +22,7 @@ const MAX_ENTRIES = 60;
 /** Enough failures to see the pattern; the full list is the prompt of the next attempt. */
 const MAX_FAILURES = 20;
 
-export type GenerationTrigger = "generate" | "generate-again";
+export type GenerationTrigger = "generate" | "generate-again" | "refine";
 
 export interface GenerationLogEntry {
     id: string;

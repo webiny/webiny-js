@@ -16,6 +16,12 @@ const OUTCOME: Record<GenerationLogEntryDto["outcome"], string> = {
     "call-failed": "no answer"
 };
 
+const TRIGGER: Record<GenerationLogEntryDto["trigger"], string> = {
+    generate: "Generate",
+    "generate-again": "Generate again",
+    refine: "Regenerate with instruction"
+};
+
 const subtitle = (entry: GenerationLogEntryDto): string => {
     const when = new Date(entry.recordedOn).toLocaleTimeString();
     const tokens = entry.usage
@@ -58,7 +64,7 @@ export const GenerationLog = ({ state, prompts, onOpenEntry }: Props) => {
             {entries.map(entry => (
                 <Accordion.Item
                     key={entry.id}
-                    title={`Attempt ${entry.attempt} of ${entry.maxAttempts} · ${entry.trigger === "generate-again" ? "Generate again" : "Generate"}`}
+                    title={`Attempt ${entry.attempt} of ${entry.maxAttempts} · ${TRIGGER[entry.trigger]}`}
                     subtitle={subtitle(entry)}
                     onOpenChange={open => {
                         if (open) {

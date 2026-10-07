@@ -597,16 +597,16 @@ const modelReferenceImage = async (crop: Uint8Array): Promise<Buffer> => {
 };
 
 /** The reference image's File Manager id, or why there is none. */
-type ReferenceImage = { fileId: string } | { failure: string };
+export type ReferenceImage = { fileId: string } | { failure: string };
 
 /**
  * The reference image for the model: the section crop Segment already produced. Copied into a File
  * Manager record so the remote-components generation path can attach it. No cropping here — Segment is
  * the single place that reads the screenshot and derives crops.
  */
-const createReferenceImage = async (
-    deps: GenerationDeps,
-    input: GenerationInput
+export const createReferenceImage = async (
+    deps: Pick<GenerationDeps, "blobs" | "createFile" | "tenantContext">,
+    input: Pick<GenerationInput, "runId" | "planned" | "log">
 ): Promise<ReferenceImage> => {
     const cropRef = input.planned.representativeCrop?.cropRef;
     if (!cropRef) {

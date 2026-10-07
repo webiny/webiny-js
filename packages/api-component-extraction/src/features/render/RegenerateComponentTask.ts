@@ -5,7 +5,14 @@ import {
 import { RefineRemoteComponentUseCase } from "@webiny/remote-components/api/features/refineComponent/abstractions.js";
 import { REGENERATE_COMPONENT_TASK_ID, stageArtifactKey } from "~/constants.js";
 import { RunRepository, JobRepository } from "~/domain/abstractions.js";
-import { StageArtifactStore } from "~/domain/stage.js";
+import { BlobStore, StageArtifactStore } from "~/domain/stage.js";
+import { CreateFileUseCase } from "@webiny/api-file-manager/features/file/CreateFile/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import type { GenerationTrace } from "@webiny/remote-components/api/features/generateComponent/abstractions.js";
+import {
+    appendGenerationLog,
+    type AttemptRecord
+} from "~/features/stages/generate/generationLog.js";
 import { stageEntry } from "~/domain/ledger.js";
 import { readComponent, toComponentRef } from "~/domain/generatedComponents.js";
 import {
@@ -13,7 +20,10 @@ import {
     renderComponentMarkup
 } from "@webiny/remote-components/api/bundler/index.js";
 import type { RenderedFile } from "@webiny/remote-components/api/bundler/index.js";
-import { flattenObservedValues } from "~/features/stages/generate/componentGeneration.js";
+import {
+    createReferenceImage,
+    flattenObservedValues
+} from "~/features/stages/generate/componentGeneration.js";
 import {
     generateResultKey,
     type ComponentResult
@@ -63,7 +73,10 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
         readonly artifactStore: StageArtifactStore.Interface,
         readonly refine: RefineRemoteComponentUseCase.Interface,
         readonly manifestResolver: ThemeManifestResolver.Interface,
-        readonly modelCallScope: ModelCallScope.Interface
+        readonly modelCallScope: ModelCallScope.Interface,
+        readonly blobs: BlobStore.Interface,
+        readonly createFile: CreateFileUseCase.Interface,
+        readonly tenantContext: TenantContext.Interface
     ) {}
 
     async run({ input, controller }: RunParams): RunResult {
@@ -111,7 +124,53 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
         }
         const component = currentResult.value;
 
+        // The planned component: its texts for validation, and its reference crop for the model.
+        const planKey = stageEntry(run.stages, "plan")?.artifacts.plan;
+        const plan = planKey ? await this.artifactStore.getJson<PlanArtifact>(planKey) : null;
+        const planned =
+            plan && plan.isOk() && plan.value
+                ? plan.value.components.find(item => item.signature === input.signature)
+                : undefined;
+        if (!planned) {
+            return controller.response.error(
+                "The component is not in the run's plan, so there is no reference image to refine against."
+            );
+        }
+
+        /*
+         * The reference image, the same crop Generate is given. Refining without it asked the model to
+         * fix how a component looks without showing it what it should look like. No image, no call —
+         * Generate's rule: the component stays as it is and the task says why.
+         */
+        const reference = await createReferenceImage(
+            { blobs: this.blobs, createFile: this.createFile, tenantContext: this.tenantContext },
+            {
+                runId: run.id,
+                planned,
+                log: (message, error) =>
+                    log.error({ message, ...(error instanceof Error ? { error } : {}) })
+            }
+        );
+        if ("failure" in reference) {
+            return controller.response.error(`Not refined: ${reference.failure}.`);
+        }
+
         // Refine from the current source/css, not the original plan prompt — preserving the work so far.
+        let trace: GenerationTrace | null = null;
+        const recordAttempt = async (outcome: AttemptRecord["outcome"], failures: string[]) => {
+            const appended = await appendGenerationLog(this.artifactStore, this.blobs, {
+                runId: run.id,
+                signature: input.signature,
+                stageVersion: generateVersion,
+                trigger: "refine",
+                record: { attempt: 1, maxAttempts: 1, trace, outcome, failures }
+            });
+            if (appended.isFail()) {
+                await log.error({
+                    message: `Could not write the generation log: ${appended.error.message}`
+                });
+            }
+        };
         /*
          * Recorded against the Generate stage and the component it refines, named apart from the
          * stage's own calls: an operator's regenerate costs tokens the stage total never saw, and was
@@ -129,30 +188,26 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
                 this.refine.execute({
                     currentSource: component.source,
                     currentCss: component.css,
-                    feedback: input.instruction
+                    // Said here rather than in the shared refine prompt, which serves callers that
+                    // attach no image.
+                    feedback: `The attached image shows the section this component must reproduce. Treat it as the target appearance.\n\n${input.instruction}`,
+                    additionalFileIds: [reference.fileId],
+                    onTrace: recorded => {
+                        trace = recorded;
+                    }
                 })
         );
         if (refined.isFail()) {
             await log.error({ message: `Refine failed: ${refined.error.message}` });
+            await recordAttempt("call-failed", [refined.error.message]);
             return controller.response.error(refined.error.message);
         }
         const { source, css } = refined.value;
 
         // Re-validate. Source texts come from the Plan artifact (as in Generate); prop names are already
         // on the component. Token binding needs the pinned theme's valid variables.
-        let sourceTexts: string[] = [];
-        let textPool: string[] = [];
-        const planKey = stageEntry(run.stages, "plan")?.artifacts.plan;
-        if (planKey) {
-            const plan = await this.artifactStore.getJson<PlanArtifact>(planKey);
-            if (plan.isOk() && plan.value) {
-                const planned = plan.value.components.find(
-                    item => item.signature === input.signature
-                );
-                sourceTexts = planned?.sourceTexts ?? [];
-                textPool = planned ? sourceTextPool(planned) : [];
-            }
-        }
+        const sourceTexts = planned.sourceTexts ?? [];
+        const textPool = sourceTextPool(planned);
 
         let validVariables = new Set<string>();
         let manifestAvailable = false;
@@ -224,6 +279,13 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
         };
 
         const refinedComponent = { ...component, source, css, validation };
+        const failures = [
+            validation.bundling,
+            validation.textPreservation,
+            validation.contractConformance,
+            validation.tokenBinding
+        ].flatMap(result => (result.passed ? [] : result.failures));
+        await recordAttempt(failures.length === 0 ? "passed" : "failed-checks", failures);
 
         // The component's own artifact is the source of truth now, so it is written first. `revision`
         // is bumped unconditionally: refining is a model call that may return byte-identical source,
@@ -293,7 +355,10 @@ const RegenerateComponentTaskHandler = TaskHandler.createImplementation({
         StageArtifactStore,
         RefineRemoteComponentUseCase,
         ThemeManifestResolver,
-        ModelCallScope
+        ModelCallScope,
+        BlobStore,
+        CreateFileUseCase,
+        TenantContext
     ]
 });
 

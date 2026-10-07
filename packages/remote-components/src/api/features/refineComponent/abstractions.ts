@@ -1,4 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { GenerationTrace } from "~/api/features/generateComponent/abstractions.js";
 
 export interface IRefineRemoteComponentInput {
     currentSource: string;
@@ -10,6 +11,8 @@ export interface IRefineRemoteComponentInput {
      * writing — past the caller's own time limit, where it is killed with nothing returned.
      */
     abortSignal?: AbortSignal;
+    /** Called once per model call with what was sent and what it cost, as for generation. */
+    onTrace?: (trace: GenerationTrace) => void | Promise<void>;
 }
 
 export interface IRefineRemoteComponentOutput {

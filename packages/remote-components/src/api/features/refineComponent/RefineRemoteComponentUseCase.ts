@@ -7,6 +7,8 @@ import { RefineRemoteComponentUseCase as UseCaseAbstraction } from "./abstractio
 import { buildRefinePrompt, buildRefineUserMessage } from "./buildRefinePrompt.js";
 import { parseGeneratedSource } from "~/api/features/generateComponent/parseGeneratedSource.js";
 import { cachedSystemPrompt, MAX_OUTPUT_TOKENS } from "~/api/features/shared/promptCaching.js";
+import type { GenerationTrace } from "~/api/features/generateComponent/abstractions.js";
+import { emitTrace, modelNameOf, usageOf } from "~/api/features/shared/generationTrace.js";
 
 interface FilePart {
     type: "file";
@@ -51,12 +53,29 @@ class RefineRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
             feedback: input.feedback
         });
 
+        const started = Date.now();
+        let imagesAttached: GenerationTrace["imagesAttached"] = [];
+        const trace = (rest: Partial<GenerationTrace>) =>
+            emitTrace(input.onTrace, {
+                model: modelNameOf(model),
+                system: systemText,
+                user: userMessage,
+                imageFileIds: input.additionalFileIds ?? [],
+                imagesAttached,
+                durationMs: Date.now() - started,
+                ...rest
+            });
+
         try {
             const userContent: ContentPart[] = [{ type: "text", text: userMessage }];
 
             if (input.additionalFileIds && input.additionalFileIds.length > 0) {
                 const images = await this.resolveImageFiles(input.additionalFileIds);
                 userContent.push(...images);
+                imagesAttached = images.map(image => ({
+                    mediaType: image.mediaType,
+                    bytes: image.data.byteLength
+                }));
             }
 
             const aiResult = await this.ai.generateText({
@@ -80,6 +99,13 @@ class RefineRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
                 aiResult.text ||
                 (aiResult.steps.filter((step: any) => step.text.length > 0).pop()?.text ?? "");
 
+            await trace({
+                ...(usageOf(aiResult) ? { usage: usageOf(aiResult) } : {}),
+                finishReason: String((aiResult as { finishReason?: unknown }).finishReason ?? ""),
+                outputChars: text.length,
+                ...(text ? {} : { error: "AI returned an empty response." })
+            });
+
             if (!text) {
                 return Result.fail(new Error("AI returned an empty response."));
             }
@@ -87,6 +113,7 @@ class RefineRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
             const parsed = parseGeneratedSource(text);
             return Result.ok({ source: parsed.source, css: parsed.css });
         } catch (error) {
+            await trace({ error: error instanceof Error ? error.message : String(error) });
             return Result.fail(error as Error);
         }
     }
