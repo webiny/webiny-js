@@ -44,8 +44,14 @@ describe("finish and report", () => {
             etagPulled: "e2",
             etagImplemented: "e1"
         });
-        cat.rows["gone.html"] = d.createRow("gone.html", { etagPulled: "g1", etagImplemented: "g1" });
-        cat.rows["Picker.dc.html"] = d.createRow("Picker.dc.html", { etagPulled: "p2", etagImplemented: "p1" });
+        cat.rows["gone.html"] = d.createRow("gone.html", {
+            etagPulled: "g1",
+            etagImplemented: "g1"
+        });
+        cat.rows["Picker.dc.html"] = d.createRow("Picker.dc.html", {
+            etagPulled: "p2",
+            etagImplemented: "p1"
+        });
         d.saveCatalogue(folder, cat);
         const implemented = path.join(folder, ".implemented");
         writeIn(implemented, "Content Review.dc.html", "v2");
@@ -67,7 +73,10 @@ describe("finish and report", () => {
 
         const report = runOk("report", folder, "--plan", planFile);
         assert.ok(report.includes("Removed:\n  - gone.html"), report);
-        assert.ok(report.includes("Etag changed, content identical:\n  - Content Review.dc.html"), report);
+        assert.ok(
+            report.includes("Etag changed, content identical:\n  - Content Review.dc.html"),
+            report
+        );
         assert.ok(report.includes("diff .implemented/Picker.dc.html files/Picker.dc.html"), report);
     });
 

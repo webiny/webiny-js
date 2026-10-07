@@ -9,13 +9,30 @@ const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "design-pull-"));
 
 describe("validateRelPath", () => {
     it("accepts normal paths", () => {
-        for (const p of ["a.html", "Content Review.dc.html", "_ds/x/kit.css", "assets/webiny-avatar.svg"]) {
+        for (const p of [
+            "a.html",
+            "Content Review.dc.html",
+            "_ds/x/kit.css",
+            "assets/webiny-avatar.svg"
+        ]) {
             assert.equal(d.validateRelPath(p), p);
         }
     });
 
     it("rejects unsafe paths", () => {
-        for (const p of ["", "/etc/passwd", "~/x", "a/../b", "..", "./a", "a//b", "a\\b", "a\x00b", "a\nb", "a/"]) {
+        for (const p of [
+            "",
+            "/etc/passwd",
+            "~/x",
+            "a/../b",
+            "..",
+            "./a",
+            "a//b",
+            "a\\b",
+            "a\x00b",
+            "a\nb",
+            "a/"
+        ]) {
             assert.throws(() => d.validateRelPath(p), d.DesignError, JSON.stringify(p));
         }
     });

@@ -46,5 +46,6 @@ Spec: `docs/.bruno/specs/2026-10-07-design-pull-ask-skills-design.md`.
    ```
 
    Use `Q<id>` alone instead of a range when there is one question.
+
 6. **Copy.** Write the text to `<scratchpad>/ask-paste.txt` and run `pbcopy < "<scratchpad>/ask-paste.txt"`. Show the text and say it is in the clipboard. If `pbcopy` is not available, show the text and say it was not copied.
 7. If nothing was added or resent, say so and do not touch the clipboard.

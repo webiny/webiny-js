@@ -43,19 +43,35 @@ describe("init and list-folders", () => {
 
     it("writes the header and an anchored exclude entry", () => {
         fs.mkdirSync(path.join(top, "docs/my design/files"), { recursive: true });
-        const out = runJson(top, "init", "docs/my design", "--project", "Workflows", "--project-id", "uuid-1");
+        const out = runJson(
+            top,
+            "init",
+            "docs/my design",
+            "--project",
+            "Workflows",
+            "--project-id",
+            "uuid-1"
+        );
         assert.equal(out.folder, "docs/my design");
         assert.equal(d.loadCatalogue(path.join(top, "docs/my design")).projectId, "uuid-1");
         const exclude = fs.readFileSync(path.join(top, ".git/info/exclude"), "utf8");
         assert.ok(exclude.includes("/docs/my design/\n"));
-        assert.deepEqual(runJson(top, "list-folders"), [{ folder: "docs/my design", project: "Workflows" }]);
+        assert.deepEqual(runJson(top, "list-folders"), [
+            { folder: "docs/my design", project: "Workflows" }
+        ]);
         assert.equal(gitOutput(top, "status", "--porcelain"), "");
     });
 
     it("refuses an existing catalogue and folders outside the repository", () => {
         runCli(top, "init", "docs/d", "--project", "P", "--project-id", "u");
-        assert.equal(runCli(top, "init", "docs/d", "--project", "P", "--project-id", "u").status, 1);
-        assert.equal(runCli(top, "init", "../elsewhere", "--project", "P", "--project-id", "u").status, 1);
+        assert.equal(
+            runCli(top, "init", "docs/d", "--project", "P", "--project-id", "u").status,
+            1
+        );
+        assert.equal(
+            runCli(top, "init", "../elsewhere", "--project", "P", "--project-id", "u").status,
+            1
+        );
     });
 
     it("does not duplicate the exclude entry", () => {

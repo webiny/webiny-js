@@ -68,7 +68,10 @@ describe("plan", () => {
         const before = fs.readFileSync(path.join(folder, "catalogue.md"), "utf8");
         const result = plan();
         assert.deepEqual(result.unchanged, ["a.html"]);
-        assert.deepEqual([...result.adopted, ...result.mcp, ...result.manual, ...result.removed], []);
+        assert.deepEqual(
+            [...result.adopted, ...result.mcp, ...result.manual, ...result.removed],
+            []
+        );
         assert.equal(fs.readFileSync(path.join(folder, "catalogue.md"), "utf8"), before);
     });
 

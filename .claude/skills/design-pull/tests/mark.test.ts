@@ -19,7 +19,10 @@ describe("mark and unmark", () => {
         const cat = d.loadCatalogue(folder);
         cat.rows["A B.html"] = d.createRow("A B.html", { etagPulled: "e2" });
         cat.rows["support.js"] = d.createRow("support.js", { kind: "support", etagPulled: "s1" });
-        cat.rows["gone.html"] = d.createRow("gone.html", { etagPulled: "g1", removedAt: "2026-10-07T00:00:00Z" });
+        cat.rows["gone.html"] = d.createRow("gone.html", {
+            etagPulled: "g1",
+            removedAt: "2026-10-07T00:00:00Z"
+        });
         d.saveCatalogue(folder, cat);
     });
     afterEach(() => {
@@ -37,7 +40,10 @@ describe("mark and unmark", () => {
     it("defaults to HEAD on a clean tree", () => {
         const out = runJson(top, "mark", folder, "A B.html");
         assert.deepEqual(out.warnings, []);
-        assert.equal(d.loadCatalogue(folder).rows["A B.html"].commit, gitOutput(top, "rev-parse", "HEAD"));
+        assert.equal(
+            d.loadCatalogue(folder).rows["A B.html"].commit,
+            gitOutput(top, "rev-parse", "HEAD")
+        );
     });
 
     it("warns on a dirty tree", () => {
@@ -49,8 +55,20 @@ describe("mark and unmark", () => {
         let out = runJson(top, "mark", folder, "A B.html", "--etag", "old", "--commit", "c");
         assert.deepEqual(out.done, []);
         assert.ok(out.skipped[0].reason.includes("e2"));
-        out = runJson(top, "mark", folder, "support.js", "gone.html", "missing.html", "--commit", "c");
-        assert.deepEqual(out.skipped.map((s: any) => s.file), ["support.js", "gone.html", "missing.html"]);
+        out = runJson(
+            top,
+            "mark",
+            folder,
+            "support.js",
+            "gone.html",
+            "missing.html",
+            "--commit",
+            "c"
+        );
+        assert.deepEqual(
+            out.skipped.map((s: any) => s.file),
+            ["support.js", "gone.html", "missing.html"]
+        );
         assert.equal(d.loadCatalogue(folder).rows["A B.html"].etagImplemented, "");
     });
 

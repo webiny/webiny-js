@@ -58,7 +58,10 @@ describe("import-raw", () => {
         fs.writeFileSync(raw, makeRaw("Content Review.dc.html", "e1", content));
         const [code, out] = importRaw();
         assert.deepEqual([code, out.status], [0, "imported"]);
-        assert.equal(fs.readFileSync(path.join(folder, "files/Content Review.dc.html"), "utf8"), content);
+        assert.equal(
+            fs.readFileSync(path.join(folder, "files/Content Review.dc.html"), "utf8"),
+            content
+        );
         assert.equal(d.loadCatalogue(folder).rows["Content Review.dc.html"].etagPulled, "e1");
         assert.deepEqual(readPlan().imported, ["Content Review.dc.html"]);
     });

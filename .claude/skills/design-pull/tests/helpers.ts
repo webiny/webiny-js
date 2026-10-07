@@ -40,7 +40,10 @@ export const makeRepo = (): string => {
 export const gitOutput = git;
 
 export const runCli = (cwd: string, ...args: string[]): CliResult => {
-    const result = spawnSync(process.execPath, [TSX_CLI, SCRIPT, ...args], { cwd, encoding: "utf8" });
+    const result = spawnSync(process.execPath, [TSX_CLI, SCRIPT, ...args], {
+        cwd,
+        encoding: "utf8"
+    });
     return { status: result.status, stdout: result.stdout, stderr: result.stderr };
 };
 

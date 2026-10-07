@@ -20,7 +20,14 @@ describe("question model", () => {
                 text: "Why?\n# not a heading\n> not a quote\nfile: nope",
                 answer: ""
             },
-            { id: 2, status: "answered", date: "2026-10-08", file: "", text: "Second", answer: "Line one\n\n## Q7 fake" }
+            {
+                id: 2,
+                status: "answered",
+                date: "2026-10-08",
+                file: "",
+                text: "Second",
+                answer: "Line one\n\n## Q7 fake"
+            }
         ];
         const rendered = d.renderQuestions(questions);
         assert.deepEqual(d.parseQuestions(rendered), questions);
@@ -29,11 +36,14 @@ describe("question model", () => {
 
     it("parses answer sections, last one per ID wins", () => {
         const text = "intro\n## Q1 — title\nfirst\n### Q2\n\n## Q1\nsecond\n## Q3\n   \n";
-        assert.deepEqual(d.parseAnswers(text), new Map([
-            [1, "second"],
-            [2, ""],
-            [3, ""]
-        ]));
+        assert.deepEqual(
+            d.parseAnswers(text),
+            new Map([
+                [1, "second"],
+                [2, ""],
+                [3, ""]
+            ])
+        );
     });
 });
 
@@ -62,17 +72,26 @@ describe("question commands", () => {
             { file: "A.html", text: "Bulk approve?" },
             { file: "", text: "Empty state?" }
         ]);
-        assert.deepEqual(out.added.map((a: any) => a.id), [1, 2]);
+        assert.deepEqual(
+            out.added.map((a: any) => a.id),
+            [1, 2]
+        );
         out = add([
             { file: "A.html", text: "  Bulk approve? " },
             { file: "B.html", text: "Colors?" }
         ]);
         assert.deepEqual(out.duplicates, [{ id: 1, text: "Bulk approve?" }]);
-        assert.deepEqual(out.added.map((a: any) => a.id), [3]);
+        assert.deepEqual(
+            out.added.map((a: any) => a.id),
+            [3]
+        );
         fs.writeFileSync(path.join(folder, "answers.md"), "## Q9\nfrom another log\n");
         out = add([{ file: "", text: "Next?" }]);
         assert.equal(out.added[0].id, 10);
-        assert.deepEqual(runJson(top, "ask-open", folder).map((q: any) => q.id), [1, 2, 3, 10]);
+        assert.deepEqual(
+            runJson(top, "ask-open", folder).map((q: any) => q.id),
+            [1, 2, 3, 10]
+        );
     });
 
     it("matches answers idempotently and reports changes", () => {
@@ -80,7 +99,10 @@ describe("question commands", () => {
             { file: "A.html", text: "Bulk approve?" },
             { file: "", text: "Empty state?" }
         ]);
-        fs.writeFileSync(path.join(folder, "answers.md"), "## Q1\nYes, add it.\n## Q2\n\n## Q5\nOrphan\n");
+        fs.writeFileSync(
+            path.join(folder, "answers.md"),
+            "## Q1\nYes, add it.\n## Q2\n\n## Q5\nOrphan\n"
+        );
         const planFile = path.join(top, "plan.json");
         fs.writeFileSync(planFile, JSON.stringify({ answers_result: null }));
         let out = runJson(top, "answers", folder, "--plan", planFile);
@@ -98,10 +120,16 @@ describe("question commands", () => {
         fs.writeFileSync(path.join(folder, "answers.md"), "## Q1\nNo, skip it.\n");
         out = runJson(top, "answers", folder);
         assert.deepEqual(out.changed, [1]);
-        assert.ok(fs.readFileSync(path.join(folder, "questions.md"), "utf8").includes("> No, skip it."));
+        assert.ok(
+            fs.readFileSync(path.join(folder, "questions.md"), "utf8").includes("> No, skip it.")
+        );
     });
 
     it("does nothing without answers.md", () => {
-        assert.deepEqual(runJson(top, "answers", folder), { answered: [], changed: [], unknown: [] });
+        assert.deepEqual(runJson(top, "answers", folder), {
+            answered: [],
+            changed: [],
+            unknown: []
+        });
     });
 });

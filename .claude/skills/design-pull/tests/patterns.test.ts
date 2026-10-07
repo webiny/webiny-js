@@ -10,7 +10,10 @@ describe("matches", () => {
 
     it("handles **", () => {
         assert.equal(d.matches("_ds/x/ui_kits/kit.css", ["_ds/**"]), true);
-        assert.equal(d.matches("design_handoff_workflows/README.md", ["design_handoff_*/**"]), true);
+        assert.equal(
+            d.matches("design_handoff_workflows/README.md", ["design_handoff_*/**"]),
+            true
+        );
         assert.equal(d.matches("a/b/c.css", ["**/c.css"]), true);
         assert.equal(d.matches("c.css", ["**/c.css"]), true);
     });

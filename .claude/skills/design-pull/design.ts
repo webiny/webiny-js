@@ -52,7 +52,11 @@ const commands: Record<string, Command> = {
             if (positionals.length !== 2) {
                 throw new lib.DesignError(`usage: ${commands.plan.usage}`);
             }
-            lib.cmdPlan(positionals[0], positionals[1], required(values, "out", commands.plan.usage));
+            lib.cmdPlan(
+                positionals[0],
+                positionals[1],
+                required(values, "out", commands.plan.usage)
+            );
         }
     },
     "import-raw": {
@@ -84,13 +88,19 @@ const commands: Record<string, Command> = {
         usage: "finish <folder> --plan <plan.json>",
         options: { plan: { type: "string" } },
         run: (positionals, values) =>
-            lib.cmdFinish(one(positionals, commands.finish.usage), required(values, "plan", commands.finish.usage))
+            lib.cmdFinish(
+                one(positionals, commands.finish.usage),
+                required(values, "plan", commands.finish.usage)
+            )
     },
     report: {
         usage: "report <folder> --plan <plan.json>",
         options: { plan: { type: "string" } },
         run: (positionals, values) =>
-            lib.cmdReport(one(positionals, commands.report.usage), required(values, "plan", commands.report.usage))
+            lib.cmdReport(
+                one(positionals, commands.report.usage),
+                required(values, "plan", commands.report.usage)
+            )
     },
     "ask-add": {
         usage: "ask-add <folder> <items.json>",

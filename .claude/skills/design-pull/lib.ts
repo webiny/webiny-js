@@ -9,7 +9,17 @@ import path from "node:path";
 
 export const MCP_MAX_FILE = 8192;
 export const MCP_LIMIT = 262144;
-export const TEXT_EXTENSIONS = new Set([".html", ".htm", ".css", ".js", ".mjs", ".json", ".md", ".txt", ".svg"]);
+export const TEXT_EXTENSIONS = new Set([
+    ".html",
+    ".htm",
+    ".css",
+    ".js",
+    ".mjs",
+    ".json",
+    ".md",
+    ".txt",
+    ".svg"
+]);
 export const DEFAULT_EXCLUDE = [".thumbnail", "design_handoff_*/**"];
 export const DEFAULT_SUPPORT = ["_ds/**", "support.js", "assets/**"];
 export const ANSWERS_PATH = "answers.md";
@@ -34,7 +44,13 @@ export const today = (): string => {
 const CONTROL = /[\x00-\x1f\x7f]/;
 
 export const validateRelPath = (rel: string): string => {
-    if (!rel || rel.startsWith("/") || rel.startsWith("~") || rel.includes("\\") || CONTROL.test(rel)) {
+    if (
+        !rel ||
+        rel.startsWith("/") ||
+        rel.startsWith("~") ||
+        rel.includes("\\") ||
+        CONTROL.test(rel)
+    ) {
         throw new DesignError(`unsafe path: ${JSON.stringify(rel)}`);
     }
     if (rel.split("/").some(part => part === "" || part === "." || part === "..")) {
@@ -77,7 +93,8 @@ export const safeJoin = (root: string, rel: string): string => {
 
 export const collisionKey = (rel: string): string => rel.normalize("NFC").toLowerCase();
 
-export const isText = (rel: string): boolean => TEXT_EXTENSIONS.has(path.extname(rel).toLowerCase());
+export const isText = (rel: string): boolean =>
+    TEXT_EXTENSIONS.has(path.extname(rel).toLowerCase());
 
 export const atomicWriteBytes = (file: string, data: Buffer | string): void => {
     const dir = path.dirname(file);
@@ -210,7 +227,8 @@ export const rowStatus = (cat: Catalogue, row: Row): string => {
     return row.etagImplemented === row.etagPulled ? "implemented" : "pending";
 };
 
-export const kindFor = (cat: Catalogue, rel: string): Kind => (matches(rel, cat.support) ? "support" : "screen");
+export const kindFor = (cat: Catalogue, rel: string): Kind =>
+    matches(rel, cat.support) ? "support" : "screen";
 
 const trimSlashes = (value: string): string => value.replace(/^\/+|\/+$/g, "");
 
@@ -270,8 +288,10 @@ export const parseCatalogue = (text: string): Catalogue => {
         const value = colon < 0 ? "" : line.slice(colon + 1).trim();
         data[key] = LIST_KEYS.has(key) ? [] : value;
     }
-    const valueOf = (name: string): string => (typeof data[name] === "string" ? (data[name] as string) : "");
-    const list = (name: string): string[] => (Array.isArray(data[name]) ? (data[name] as string[]) : []);
+    const valueOf = (name: string): string =>
+        typeof data[name] === "string" ? (data[name] as string) : "";
+    const list = (name: string): string[] =>
+        Array.isArray(data[name]) ? (data[name] as string[]) : [];
     const cat: Catalogue = {
         project: valueOf("project"),
         projectId: valueOf("project_id"),
@@ -286,7 +306,16 @@ export const parseCatalogue = (text: string): Catalogue => {
         if (!line.startsWith("| ") || line.startsWith("| file |")) {
             continue;
         }
-        const [file, kind, etagPulled, pulledAt, etagImplemented, implementedAt, commit, removedAt] = splitRow(line);
+        const [
+            file,
+            kind,
+            etagPulled,
+            pulledAt,
+            etagImplemented,
+            implementedAt,
+            commit,
+            removedAt
+        ] = splitRow(line);
         cat.rows[file] = {
             file,
             kind: kind === "support" ? "support" : "screen",
@@ -604,7 +633,9 @@ export const cmdPlan = (folder: string, listingFile: string, out: string): void 
         }
         if (local && fs.statSync(local).size === entry.size) {
             const placedAfterPull =
-                !row || !row.pulledAt || fs.statSync(local).mtimeMs > parseIso(row.pulledAt).getTime();
+                !row ||
+                !row.pulledAt ||
+                fs.statSync(local).mtimeMs > parseIso(row.pulledAt).getTime();
             if (placedAfterPull) {
                 row = row ?? createRow(rel);
                 row.kind = kind;
@@ -637,7 +668,8 @@ const BODY_ENTITIES: Record<string, string> = { amp: "&", lt: "<", gt: ">" };
 const ATTR_ENTITIES: Record<string, string> = { ...BODY_ENTITIES, quot: '"', "#39": "'" };
 
 /** The server escapes exactly &, < and >; one pass over those three entities restores the original. */
-const decodeBody = (text: string): string => text.replace(/&(amp|lt|gt);/g, (_, name: string) => BODY_ENTITIES[name]);
+const decodeBody = (text: string): string =>
+    text.replace(/&(amp|lt|gt);/g, (_, name: string) => BODY_ENTITIES[name]);
 
 const decodeAttr = (text: string): string =>
     text.replace(/&(amp|lt|gt|quot|#39);/g, (_, name: string) => ATTR_ENTITIES[name]);
@@ -676,7 +708,13 @@ export interface ImportRawOptions {
 }
 
 /** Exit codes of import-raw. */
-export const IMPORT_EXIT = { imported: 0, size_mismatch: 2, etag_unknown: 3, manual: 4, failed: 5 } as const;
+export const IMPORT_EXIT = {
+    imported: 0,
+    size_mismatch: 2,
+    etag_unknown: 3,
+    manual: 4,
+    failed: 5
+} as const;
 
 type ImportStatus = keyof typeof IMPORT_EXIT;
 
@@ -708,14 +746,18 @@ export const cmdImportRaw = (options: ImportRawOptions): number => {
     let entry: ListingEntry | null | undefined;
     if (options.answers) {
         if (projectPath !== ANSWERS_PATH) {
-            throw new DesignError(`--answers expects ${ANSWERS_PATH}, got ${JSON.stringify(projectPath)}`);
+            throw new DesignError(
+                `--answers expects ${ANSWERS_PATH}, got ${JSON.stringify(projectPath)}`
+            );
         }
         key = ANSWERS_PATH;
         entry = plan.answers;
     } else {
         const rel = toSourceRel(cat, projectPath);
         if (rel === null) {
-            throw new DesignError(`${JSON.stringify(projectPath)} is outside source ${JSON.stringify(cat.source)}`);
+            throw new DesignError(
+                `${JSON.stringify(projectPath)} is outside source ${JSON.stringify(cat.source)}`
+            );
         }
         key = validateRelPath(rel);
         entry = plan.entries[key];
@@ -786,7 +828,12 @@ export const cmdFinish = (folder: string, planFile: string): void => {
     }
     for (const rel of Object.keys(cat.rows).sort()) {
         const row = cat.rows[rel];
-        if (row.kind !== "screen" || row.removedAt || !row.etagImplemented || row.etagImplemented === row.etagPulled) {
+        if (
+            row.kind !== "screen" ||
+            row.removedAt ||
+            !row.etagImplemented ||
+            row.etagImplemented === row.etagPulled
+        ) {
             continue;
         }
         const current = localFile(folder, rel);
@@ -835,7 +882,10 @@ export const cmdReport = (folder: string, planFile: string): void => {
     if (pending.length) {
         lines.push("Pending (design changed since implementation), run from the design folder:");
         for (const rel of pending) {
-            lines.push(`  - ${rel}`, `      diff ${shellQuote(`.implemented/${rel}`)} ${shellQuote(`files/${rel}`)}`);
+            lines.push(
+                `  - ${rel}`,
+                `      diff ${shellQuote(`.implemented/${rel}`)} ${shellQuote(`files/${rel}`)}`
+            );
         }
     }
     section("Newly answered", ids(plan.answers_result?.answered));
@@ -870,7 +920,8 @@ export const normalize = (text: string): string =>
         .join("\n")
         .replace(/\n{3,}/g, "\n\n");
 
-const escapeLine = (line: string): string => (ESCAPED_START.some(start => line.startsWith(start)) ? `\\${line}` : line);
+const escapeLine = (line: string): string =>
+    ESCAPED_START.some(start => line.startsWith(start)) ? `\\${line}` : line;
 
 const unescapeLine = (line: string): string => (line.startsWith("\\") ? line.slice(1) : line);
 
@@ -939,7 +990,8 @@ export const parseAnswers = (text: string): Map<number, string> => {
     const heads = [...text.matchAll(ANSWER_HEAD)];
     heads.forEach((head, index) => {
         const start = (head.index ?? 0) + head[0].length;
-        const end = index + 1 < heads.length ? (heads[index + 1].index ?? text.length) : text.length;
+        const end =
+            index + 1 < heads.length ? (heads[index + 1].index ?? text.length) : text.length;
         sections.set(Number(head[1]), normalize(text.slice(start, end)));
     });
     return sections;
@@ -1009,7 +1061,9 @@ export const cmdAnswers = (folder: string, planFile?: string): void => {
     if (isRegularFile(file)) {
         const questions = loadQuestions(folder);
         const byId = new Map(questions.map(q => [q.id, q]));
-        const sections = [...parseAnswers(fs.readFileSync(file, "utf8")).entries()].sort(([a], [b]) => a - b);
+        const sections = [...parseAnswers(fs.readFileSync(file, "utf8")).entries()].sort(
+            ([a], [b]) => a - b
+        );
         for (const [id, body] of sections) {
             if (!body) {
                 continue;
@@ -1048,7 +1102,12 @@ interface MarkResult {
     warnings: string[];
 }
 
-export const cmdMark = (folder: string, names: string[], etag?: string, commitArg?: string): void => {
+export const cmdMark = (
+    folder: string,
+    names: string[],
+    etag?: string,
+    commitArg?: string
+): void => {
     const cat = loadCatalogue(folder);
     const top = repoTop(folder);
     const result: MarkResult = { done: [], skipped: [], warnings: [] };
@@ -1056,7 +1115,9 @@ export const cmdMark = (folder: string, names: string[], etag?: string, commitAr
     if (!commit) {
         commit = git(top, "rev-parse", "HEAD");
         if (git(top, "status", "--porcelain")) {
-            result.warnings.push("working tree has uncommitted changes; HEAD may not contain the implementation");
+            result.warnings.push(
+                "working tree has uncommitted changes; HEAD may not contain the implementation"
+            );
         }
     }
     for (const name of names) {
@@ -1082,7 +1143,10 @@ export const cmdMark = (folder: string, names: string[], etag?: string, commitAr
             });
             continue;
         }
-        atomicWriteBytes(safeJoin(path.join(folder, ".implemented"), name), fs.readFileSync(source));
+        atomicWriteBytes(
+            safeJoin(path.join(folder, ".implemented"), name),
+            fs.readFileSync(source)
+        );
         row.etagImplemented = row.etagPulled;
         row.implementedAt = nowIso();
         row.commit = commit;
