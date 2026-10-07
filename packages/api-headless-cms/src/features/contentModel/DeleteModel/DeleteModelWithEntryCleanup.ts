@@ -106,25 +106,31 @@ class DeleteModelWithEntryCleanupImpl implements DeleteModelUseCase.Interface {
             | ModelPersistenceError
         >
     > {
-        // Check for latest entries
-        const latestEntries = await this.listLatestEntries.execute(model, { limit: 1 });
-        if (latestEntries.isFail()) {
-            return Result.fail(new ModelPersistenceError(latestEntries.error));
-        }
-        if (latestEntries.value.entries.length > 0) {
-            return Result.fail(new ModelCannotDeleteHasEntriesError(model.modelId));
-        }
+        // The list use cases can also throw (a failed group lookup in access control does), so both
+        // failure paths end up as a persistence error.
+        try {
+            // Check for latest entries
+            const latestEntries = await this.listLatestEntries.execute(model, { limit: 1 });
+            if (latestEntries.isFail()) {
+                return Result.fail(new ModelPersistenceError(latestEntries.error));
+            }
+            if (latestEntries.value.entries.length > 0) {
+                return Result.fail(new ModelCannotDeleteHasEntriesError(model.modelId));
+            }
 
-        // Check for deleted entries (trash)
-        const deletedEntries = await this.listDeletedEntries.execute(model, { limit: 1 });
-        if (deletedEntries.isFail()) {
-            return Result.fail(new ModelPersistenceError(deletedEntries.error));
-        }
-        if (deletedEntries.value.entries.length > 0) {
-            return Result.fail(new ModelCannotDeleteHasEntriesInTrashError(model.modelId));
-        }
+            // Check for deleted entries (trash)
+            const deletedEntries = await this.listDeletedEntries.execute(model, { limit: 1 });
+            if (deletedEntries.isFail()) {
+                return Result.fail(new ModelPersistenceError(deletedEntries.error));
+            }
+            if (deletedEntries.value.entries.length > 0) {
+                return Result.fail(new ModelCannotDeleteHasEntriesInTrashError(model.modelId));
+            }
 
-        return Result.ok(true);
+            return Result.ok(true);
+        } catch (error) {
+            return Result.fail(new ModelPersistenceError(error));
+        }
     }
 }
 
