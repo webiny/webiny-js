@@ -117,24 +117,28 @@ describe("Frontend Settings GraphQL", () => {
             expect(getResponse.data.frontend.getSettings.data.domain).toBe("http://localhost:3000");
         });
 
-        it("should give starter kits and updates to a user with the frontend settings permission", async () => {
-            const manager = useGraphQlHandler({
-                permissions: [{ name: "dev-tools.frontend-settings.*" }]
-            });
+        // The Admin shows the Frontend Settings menu to both of these.
+        it.each(["dev-tools.frontend-settings.*", "dev-tools.*"])(
+            "should give starter kits and updates to a user with %s",
+            async permission => {
+                const manager = useGraphQlHandler({
+                    permissions: [{ name: permission }]
+                });
 
-            const [getResponse] = await manager.wb.getFrontendSettings({});
-            expect(getResponse.data.frontend.getSettings.error).toBeNull();
-            expect(
-                getResponse.data.frontend.getSettings.data.starterKits.map((kit: any) => kit.id)
-            ).toEqual(["nextjs", "nuxt"]);
+                const [getResponse] = await manager.wb.getFrontendSettings({});
+                expect(getResponse.data.frontend.getSettings.error).toBeNull();
+                expect(
+                    getResponse.data.frontend.getSettings.data.starterKits.map((kit: any) => kit.id)
+                ).toEqual(["nextjs", "nuxt"]);
 
-            const [updateResponse] = await manager.wb.updateFrontendSettings({
-                data: { domain: "https://example.com" }
-            });
-            expect(updateResponse.data.frontend.updateSettings).toEqual({
-                data: true,
-                error: null
-            });
-        });
+                const [updateResponse] = await manager.wb.updateFrontendSettings({
+                    data: { domain: "https://example.com" }
+                });
+                expect(updateResponse.data.frontend.updateSettings).toEqual({
+                    data: true,
+                    error: null
+                });
+            }
+        );
     });
 });
