@@ -8,6 +8,7 @@ import {
     TaskDefinition,
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { TasksCrud } from "@webiny/background-tasks/api/TasksCrud.js";
 
 function getDataManagerTaskDefinition(
     context: Context
@@ -32,7 +33,7 @@ describe("mock data manager task", () => {
         const context = await handler();
         const definition = getDataManagerTaskDefinition(context);
 
-        const task = await context.tasks.createTask<IMockDataManagerInput>({
+        const task = await context.container.resolve(TasksCrud).createTask<IMockDataManagerInput>({
             definitionId: definition.id,
             name: "Testing of a Mock Data Manager Task",
             input: {
@@ -62,7 +63,7 @@ describe("mock data manager task", () => {
             }
         });
 
-        const childTasks = await context.tasks.listTasks({
+        const childTasks = await context.container.resolve(TasksCrud).listTasks({
             where: {
                 parentId: task.id
             },

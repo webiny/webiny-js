@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
 import { createTaskDefinition } from "~tests/helpers/createTaskDefinition.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
 
 describe("tasks - definitions crud", () => {
     const handler = useRawHandler({
@@ -32,7 +33,9 @@ describe("tasks - definitions crud", () => {
     it("should get task definition", async () => {
         const context = await handler.handle();
 
-        const definition = context.tasks.getDefinition("testDefinitionNumber1");
+        const definition = context.container
+            .resolve(TasksCrud)
+            .getDefinition("testDefinitionNumber1");
         expect(definition).toMatchObject({
             id: "testDefinitionNumber1",
             title: "Test definition #1"
@@ -42,14 +45,16 @@ describe("tasks - definitions crud", () => {
     it("should return null when definition does not exist", async () => {
         const context = await handler.handle();
 
-        const definition = context.tasks.getDefinition("non-existing-definition");
+        const definition = context.container
+            .resolve(TasksCrud)
+            .getDefinition("non-existing-definition");
         expect(definition).toBeNull();
     });
 
     it("should list all definitions", async () => {
         const context = await handler.handle();
 
-        const definitions = context.tasks.listDefinitions();
+        const definitions = context.container.resolve(TasksCrud).listDefinitions();
 
         expect(definitions).toHaveLength(4);
         expect(definitions).toMatchObject([

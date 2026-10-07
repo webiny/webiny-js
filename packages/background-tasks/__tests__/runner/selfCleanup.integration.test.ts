@@ -5,13 +5,14 @@ import { createLiveContextFactory } from "~tests/live";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation";
 import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { createTaskDefinition } from "~tests/helpers/createTaskDefinition";
+import { TasksCrud } from "~/api/TasksCrud.js";
 
 const runTask = async (
     context: Awaited<ReturnType<ReturnType<typeof createLiveContextFactory>>>,
     definitionId: string,
     input: Record<string, unknown> = {}
 ) => {
-    const task = await context.tasks.createTask({
+    const task = await context.container.resolve(TasksCrud).createTask({
         definitionId,
         input,
         name: `run-${definitionId}`
@@ -39,7 +40,7 @@ describe("selfCleanup integration", () => {
 
         const task = await runTask(context, "cleanupOnSuccess");
 
-        expect(await context.tasks.getTask(task.id)).toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(task.id)).toBeNull();
     });
 
     it("selfCleanup='onSuccess' does NOT delete on ERROR", async () => {
@@ -55,7 +56,7 @@ describe("selfCleanup integration", () => {
 
         const task = await runTask(context, "cleanupErrOnlyOnSuccess");
 
-        expect(await context.tasks.getTask(task.id)).not.toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(task.id)).not.toBeNull();
     });
 
     it("selfCleanup='always' deletes the task and writes no logs", async () => {
@@ -71,9 +72,11 @@ describe("selfCleanup integration", () => {
 
         const task = await runTask(context, "cleanupAlways");
 
-        expect(await context.tasks.getTask(task.id)).toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(task.id)).toBeNull();
 
-        const { items } = await context.tasks.listLogs({ where: { task: task.id } });
+        const { items } = await context.container
+            .resolve(TasksCrud)
+            .listLogs({ where: { task: task.id } });
         expect(items).toHaveLength(0);
     });
 
@@ -94,18 +97,18 @@ describe("selfCleanup integration", () => {
         });
         const context = await contextFactory();
 
-        const parent = await context.tasks.createTask({
+        const parent = await context.container.resolve(TasksCrud).createTask({
             definitionId: "cleanupParent",
             input: {},
             name: "parent"
         });
-        await context.tasks.createTask({
+        await context.container.resolve(TasksCrud).createTask({
             definitionId: "cleanupChild",
             input: {},
             name: "child-1",
             parentId: parent.id
         });
-        await context.tasks.createTask({
+        await context.container.resolve(TasksCrud).createTask({
             definitionId: "cleanupChild",
             input: {},
             name: "child-2",
@@ -120,8 +123,8 @@ describe("selfCleanup integration", () => {
             })
         );
 
-        expect(await context.tasks.getTask(parent.id)).toBeNull();
-        const remaining = await context.tasks.listTasks({
+        expect(await context.container.resolve(TasksCrud).getTask(parent.id)).toBeNull();
+        const remaining = await context.container.resolve(TasksCrud).listTasks({
             where: { parentId: parent.id }
         });
         expect(remaining.items).toHaveLength(0);
@@ -137,14 +140,16 @@ describe("selfCleanup integration", () => {
         const contextFactory = createLiveContextFactory({ plugins: [plugin] });
         const context = await contextFactory();
 
-        const task = await context.tasks.createTask({
+        const task = await context.container.resolve(TasksCrud).createTask({
             definitionId: "cleanupOnAbort",
             input: {},
             name: "to-abort"
         });
-        await context.tasks.abort({ id: task.id, message: "testing cleanup on abort" });
+        await context.container
+            .resolve(TasksCrud)
+            .abort({ id: task.id, message: "testing cleanup on abort" });
 
-        expect(await context.tasks.getTask(task.id)).toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(task.id)).toBeNull();
     });
 
     it("selfCleanup='onError' deletes the task on ERROR", async () => {
@@ -160,7 +165,7 @@ describe("selfCleanup integration", () => {
 
         const task = await runTask(context, "cleanupOnError");
 
-        expect(await context.tasks.getTask(task.id)).toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(task.id)).toBeNull();
     });
 
     it("selfCleanup array form cleans up on any matching event", async () => {
@@ -183,8 +188,8 @@ describe("selfCleanup integration", () => {
         const doneTask = await runTask(context, "cleanupArrayDone");
         const errTask = await runTask(context, "cleanupArrayError");
 
-        expect(await context.tasks.getTask(doneTask.id)).toBeNull();
-        expect(await context.tasks.getTask(errTask.id)).toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(doneTask.id)).toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(errTask.id)).toBeNull();
     });
 
     it("user's onDone runs before cleanup fires", async () => {
@@ -200,7 +205,9 @@ describe("selfCleanup integration", () => {
             run: async ({ controller }) => controller.response.done("ok"),
             onDone: async ({ task }) => {
                 // Task must still exist while the user's hook runs.
-                const live = await contextRef.current!.tasks.getTask(task.id);
+                const live = await contextRef
+                    .current!.container.resolve(TasksCrud)
+                    .getTask(task.id);
                 order.push(live ? "user-saw-task" : "user-task-gone");
             }
         });
@@ -212,7 +219,7 @@ describe("selfCleanup integration", () => {
 
         // After the run finishes: user hook observed the task, cleanup then removed it.
         expect(order).toEqual(["user-saw-task"]);
-        expect(await context.tasks.getTask(task.id)).toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(task.id)).toBeNull();
     });
 
     it("cascade deletes grandchildren (3 levels deep)", async () => {
@@ -238,18 +245,18 @@ describe("selfCleanup integration", () => {
         });
         const context = await contextFactory();
 
-        const p = await context.tasks.createTask({
+        const p = await context.container.resolve(TasksCrud).createTask({
             definitionId: "cleanupDeepParent",
             input: {},
             name: "p"
         });
-        const c = await context.tasks.createTask({
+        const c = await context.container.resolve(TasksCrud).createTask({
             definitionId: "cleanupDeepChild",
             input: {},
             name: "c",
             parentId: p.id
         });
-        const g = await context.tasks.createTask({
+        const g = await context.container.resolve(TasksCrud).createTask({
             definitionId: "cleanupDeepGrandchild",
             input: {},
             name: "g",
@@ -264,9 +271,9 @@ describe("selfCleanup integration", () => {
             })
         );
 
-        expect(await context.tasks.getTask(p.id)).toBeNull();
-        expect(await context.tasks.getTask(c.id)).toBeNull();
-        expect(await context.tasks.getTask(g.id)).toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(p.id)).toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(c.id)).toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(g.id)).toBeNull();
     });
 
     it("cascade sweeps child logs when the child definition has databaseLogs=true", async () => {
@@ -286,19 +293,19 @@ describe("selfCleanup integration", () => {
         const contextFactory = createLiveContextFactory({ plugins: [parent, child] });
         const context = await contextFactory();
 
-        const p = await context.tasks.createTask({
+        const p = await context.container.resolve(TasksCrud).createTask({
             definitionId: "cleanupMixedParent",
             input: {},
             name: "p"
         });
-        const c = await context.tasks.createTask({
+        const c = await context.container.resolve(TasksCrud).createTask({
             definitionId: "cleanupMixedChild",
             input: {},
             name: "c",
             parentId: p.id
         });
         // Seed a log row on the child.
-        await context.tasks.createLog(c, {
+        await context.container.resolve(TasksCrud).createLog(c, {
             executionName: "seed",
             iteration: 1
         });
@@ -311,10 +318,12 @@ describe("selfCleanup integration", () => {
             })
         );
 
-        expect(await context.tasks.getTask(p.id)).toBeNull();
-        expect(await context.tasks.getTask(c.id)).toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(p.id)).toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(c.id)).toBeNull();
 
-        const { items } = await context.tasks.listLogs({ where: { task: c.id } });
+        const { items } = await context.container
+            .resolve(TasksCrud)
+            .listLogs({ where: { task: c.id } });
         expect(items).toHaveLength(0);
     });
 
@@ -330,6 +339,6 @@ describe("selfCleanup integration", () => {
 
         const task = await runTask(context, "cleanupNever");
 
-        expect(await context.tasks.getTask(task.id)).not.toBeNull();
+        expect(await context.container.resolve(TasksCrud).getTask(task.id)).not.toBeNull();
     });
 });
