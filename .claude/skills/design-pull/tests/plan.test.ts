@@ -150,4 +150,33 @@ describe("plan", () => {
         writeListing(listing, [["big.js", d.MCP_LIMIT + 1, "e1"]]);
         assert.deepEqual(plan().manual, ["big.js"]);
     });
+
+    it("rejects shell metacharacters in names", () => {
+        writeListing(listing, [
+            ["a$(x).html", 1, "e1"],
+            ["b`y`.html", 1, "e2"],
+            ['c"d.html', 1, "e3"],
+            ["ok.html", 1, "e4"]
+        ]);
+        const result = plan();
+        assert.deepEqual([...result.rejected].sort(), ["a$(x).html", "b`y`.html", 'c"d.html']);
+        assert.deepEqual(result.mcp, ["ok.html"]);
+    });
+
+    it("handles names that clash with object prototype members", () => {
+        write("constructor", "a");
+        write("toString", "b");
+        writeListing(listing, [
+            ["constructor", 1, "e1"],
+            ["toString", 1, "e2"],
+            ["__proto__", 1, "e3"]
+        ]);
+        const result = plan();
+        assert.deepEqual(result.adopted, ["constructor", "toString"]);
+        assert.deepEqual(result.manual, ["__proto__"]);
+        const again = plan();
+        assert.deepEqual(again.unchanged, ["constructor", "toString"]);
+        assert.deepEqual(again.removed, []);
+        assert.equal(d.loadCatalogue(folder).rows["constructor"].etagPulled, "e1");
+    });
 });

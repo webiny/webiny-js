@@ -62,7 +62,7 @@ describe("catalogue round trip", () => {
         assert.deepEqual(again.exclude, []);
         assert.deepEqual(again.support, []);
         assert.equal(again.lastPull, "");
-        assert.deepEqual(again.rows, {});
+        assert.deepEqual({ ...again.rows }, {});
     });
 
     it("rejects a file without header", () => {

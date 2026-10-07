@@ -31,7 +31,10 @@ describe("validateRelPath", () => {
             "a\\b",
             "a\x00b",
             "a\nb",
-            "a/"
+            "a/",
+            "a$b",
+            "a`b",
+            'a"b'
         ]) {
             assert.throws(() => d.validateRelPath(p), d.DesignError, JSON.stringify(p));
         }

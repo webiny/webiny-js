@@ -142,4 +142,15 @@ describe("import-raw", () => {
         const row = d.loadCatalogue(folder).rows["a.html"];
         assert.deepEqual([row.removedAt, row.etagImplemented], ["", "e0"]);
     });
+
+    it("does not adopt the imported copy for a newer same-size etag", () => {
+        makePlan([["a.html", 2, "e1"]]);
+        fs.writeFileSync(raw, makeRaw("a.html", "e1", "ab"));
+        assert.equal(importRaw()[0], 0);
+        writeListing(listing, [["a.html", 2, "e2"]]);
+        const result = runCli(top, "plan", folder, listing, "--out", planFile);
+        assert.equal(result.status, 0, result.stderr);
+        assert.deepEqual(readPlan().adopted, []);
+        assert.deepEqual(readPlan().mcp, ["a.html"]);
+    });
 });

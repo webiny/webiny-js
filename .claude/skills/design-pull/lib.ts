@@ -26,11 +26,24 @@ export const ANSWERS_PATH = "answers.md";
 
 export class DesignError extends Error {}
 
+/** A map keyed by untrusted paths: no prototype, so names like "constructor" or "__proto__" are plain keys. */
+export const dict = <T>(): Record<string, T> => Object.create(null);
+
+export const own = <T>(record: Record<string, T>, key: string): T | undefined =>
+    Object.hasOwn(record, key) ? record[key] : undefined;
+
 // ---------------------------------------------------------------- time
 
 export const nowIso = (): string => new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
 
 export const parseIso = (value: string): Date => new Date(value);
+
+/**
+ * pulled_at for a file just written or adopted: strictly later than the file's mtime, with milliseconds,
+ * so only files placed after the pull can later look newer than their row.
+ */
+export const stampAfter = (file: string): string =>
+    new Date(Math.max(Date.now(), Math.ceil(fs.statSync(file).mtimeMs) + 1)).toISOString();
 
 export const today = (): string => {
     const date = new Date();
@@ -41,7 +54,8 @@ export const today = (): string => {
 // ---------------------------------------------------------------- paths
 
 // eslint-disable-next-line no-control-regex
-const CONTROL = /[\x00-\x1f\x7f]/;
+// Control characters, plus characters that are unsafe inside double-quoted shell arguments.
+const UNSAFE_CHARS = /[\x00-\x1f\x7f`$"]/;
 
 export const validateRelPath = (rel: string): string => {
     if (
@@ -49,7 +63,7 @@ export const validateRelPath = (rel: string): string => {
         rel.startsWith("/") ||
         rel.startsWith("~") ||
         rel.includes("\\") ||
-        CONTROL.test(rel)
+        UNSAFE_CHARS.test(rel)
     ) {
         throw new DesignError(`unsafe path: ${JSON.stringify(rel)}`);
     }
@@ -208,7 +222,7 @@ export const createCatalogue = (project: string, projectId: string): Catalogue =
     support: [...DEFAULT_SUPPORT],
     lastPull: "",
     answersEtag: "",
-    rows: {}
+    rows: dict<Row>()
 });
 
 export const rowStatus = (cat: Catalogue, row: Row): string => {
@@ -300,7 +314,7 @@ export const parseCatalogue = (text: string): Catalogue => {
         support: list("support"),
         lastPull: valueOf("last_pull"),
         answersEtag: valueOf("answers_etag"),
-        rows: {}
+        rows: dict<Row>()
     };
     for (const line of lines.slice(end + 1)) {
         if (!line.startsWith("| ") || line.startsWith("| file |")) {
@@ -446,7 +460,7 @@ export const loadListing = (file: string): Listing => {
     } catch (error) {
         throw new DesignError(`${file}: invalid JSON: ${(error as Error).message}`);
     }
-    const listing: Listing = {};
+    const listing: Listing = dict<ListingEntry>();
     for (const entry of entries) {
         if ((entry.type ?? "file") === "file") {
             listing[entry.path] = { size: Number(entry.size), etag: String(entry.etag) };
@@ -526,6 +540,8 @@ export interface PullPlan {
     removed: string[];
     excluded: string[];
     rejected: string[];
+    /** Files that had no row, or a removed row, before this pull. */
+    new: string[];
     answers: ListingEntry | null;
     imported: string[];
     failed: string[];
@@ -563,7 +579,7 @@ export const cmdPlan = (folder: string, listingFile: string, out: string): void 
     const listing = loadListing(listingFile);
     const plan: PullPlan = {
         listed_at: nowIso(),
-        entries: {},
+        entries: dict<ListingEntry>(),
         adopted: [],
         mcp: [],
         manual: [],
@@ -571,14 +587,15 @@ export const cmdPlan = (folder: string, listingFile: string, out: string): void 
         removed: [],
         excluded: [],
         rejected: [],
-        answers: listing[ANSWERS_PATH] ?? null,
+        new: [],
+        answers: own(listing, ANSWERS_PATH) ?? null,
         imported: [],
         failed: [],
         reconciled: [],
         answers_result: null
     };
 
-    const candidates: Listing = {};
+    const candidates: Listing = dict<ListingEntry>();
     for (const [projectPath, entry] of Object.entries(listing)) {
         if (projectPath === ANSWERS_PATH) {
             continue;
@@ -594,7 +611,7 @@ export const cmdPlan = (folder: string, listingFile: string, out: string): void 
             continue;
         }
         if (matches(rel, cat.exclude)) {
-            const row = cat.rows[rel];
+            const row = own(cat.rows, rel);
             if (row && !row.removedAt) {
                 plan.excluded.push(rel);
             }
@@ -621,12 +638,15 @@ export const cmdPlan = (folder: string, listingFile: string, out: string): void 
         const entry = candidates[rel];
         plan.entries[rel] = entry;
         const kind = kindFor(cat, rel);
-        let row: Row | undefined = cat.rows[rel];
+        let row: Row | undefined = own(cat.rows, rel);
         if (row) {
             row.kind = kind;
         }
         const local = localFile(folder, rel);
         const isNew = !row || Boolean(row.removedAt);
+        if (isNew) {
+            plan.new.push(rel);
+        }
         if (row && !isNew && row.etagPulled === entry.etag && local) {
             plan.unchanged.push(rel);
             continue;
@@ -640,7 +660,7 @@ export const cmdPlan = (folder: string, listingFile: string, out: string): void 
                 row = row ?? createRow(rel);
                 row.kind = kind;
                 row.etagPulled = entry.etag;
-                row.pulledAt = nowIso();
+                row.pulledAt = stampAfter(local);
                 row.removedAt = "";
                 cat.rows[rel] = row;
                 plan.adopted.push(rel);
@@ -651,7 +671,7 @@ export const cmdPlan = (folder: string, listingFile: string, out: string): void 
     }
 
     for (const rel of Object.keys(cat.rows).sort()) {
-        if (!cat.rows[rel].removedAt && !(toProjectPath(cat, rel) in listing)) {
+        if (!cat.rows[rel].removedAt && !Object.hasOwn(listing, toProjectPath(cat, rel))) {
             plan.removed.push(rel);
         }
     }
@@ -731,7 +751,7 @@ const expectedEntry = (
         return { expected: null, usedListing: false };
     }
     const listing = loadListing(listingFile);
-    const found = listing[projectPath] ?? listing[projectPath.split("/").pop() as string];
+    const found = own(listing, projectPath) ?? own(listing, projectPath.split("/").pop() as string);
     return { expected: found && found.etag === etag ? found : null, usedListing: true };
 };
 
@@ -760,7 +780,7 @@ export const cmdImportRaw = (options: ImportRawOptions): number => {
             );
         }
         key = validateRelPath(rel);
-        entry = plan.entries[key];
+        entry = own(plan.entries, key);
     }
 
     const finish = (status: ImportStatus): number => {
@@ -789,11 +809,12 @@ export const cmdImportRaw = (options: ImportRawOptions): number => {
         atomicWriteBytes(path.join(options.folder, ANSWERS_PATH), data);
         cat.answersEtag = etag;
     } else {
-        atomicWriteBytes(safeJoin(path.join(options.folder, "files"), key), data);
-        const row = cat.rows[key] ?? createRow(key);
+        const target = safeJoin(path.join(options.folder, "files"), key);
+        atomicWriteBytes(target, data);
+        const row = own(cat.rows, key) ?? createRow(key);
         row.kind = kindFor(cat, key);
         row.etagPulled = etag;
-        row.pulledAt = nowIso();
+        row.pulledAt = stampAfter(target);
         row.removedAt = "";
         cat.rows[key] = row;
     }
@@ -816,7 +837,7 @@ export const cmdFinish = (folder: string, planFile: string): void => {
     const cat = loadCatalogue(folder);
     const plan = loadPlan(planFile);
     for (const rel of plan.removed) {
-        const row = cat.rows[rel];
+        const row = own(cat.rows, rel);
         if (!row || row.removedAt) {
             continue;
         }
@@ -871,8 +892,21 @@ export const cmdReport = (folder: string, planFile: string): void => {
     };
     const ids = (values: number[] | undefined) => (values ?? []).map(id => `Q${id}`);
 
-    section("Adopted from unzipped files", plan.adopted);
-    section("Imported through MCP", plan.imported);
+    const isNew = new Set(plan.new);
+    const pulled = [
+        ...plan.adopted.map(rel => ({ rel, how: "adopted from unzipped files" })),
+        ...plan.imported
+            .filter(rel => rel !== ANSWERS_PATH)
+            .map(rel => ({ rel, how: "downloaded" }))
+    ];
+    section(
+        "New",
+        pulled.filter(item => isNew.has(item.rel)).map(item => `${item.rel} (${item.how})`)
+    );
+    section(
+        "Changed",
+        pulled.filter(item => !isNew.has(item.rel)).map(item => `${item.rel} (${item.how})`)
+    );
     section("Removed", plan.removed);
     section("Excluded", plan.excluded);
     section("Etag changed, content identical", plan.reconciled);
@@ -1121,7 +1155,7 @@ export const cmdMark = (
         }
     }
     for (const name of names) {
-        const row = cat.rows[name];
+        const row = own(cat.rows, name);
         if (!row) {
             result.skipped.push({ file: name, reason: "no catalogue row" });
             continue;
@@ -1143,10 +1177,15 @@ export const cmdMark = (
             });
             continue;
         }
-        atomicWriteBytes(
-            safeJoin(path.join(folder, ".implemented"), name),
-            fs.readFileSync(source)
-        );
+        try {
+            atomicWriteBytes(
+                safeJoin(path.join(folder, ".implemented"), name),
+                fs.readFileSync(source)
+            );
+        } catch (error) {
+            result.skipped.push({ file: name, reason: (error as Error).message });
+            continue;
+        }
         row.etagImplemented = row.etagPulled;
         row.implementedAt = nowIso();
         row.commit = commit;
@@ -1160,12 +1199,17 @@ export const cmdUnmark = (folder: string, names: string[]): void => {
     const cat = loadCatalogue(folder);
     const result: MarkResult = { done: [], skipped: [], warnings: [] };
     for (const name of names) {
-        const row = cat.rows[name];
+        const row = own(cat.rows, name);
         if (!row || !row.etagImplemented) {
             result.skipped.push({ file: name, reason: "not marked" });
             continue;
         }
-        fs.rmSync(safeJoin(path.join(folder, ".implemented"), name), { force: true });
+        try {
+            fs.rmSync(safeJoin(path.join(folder, ".implemented"), name), { force: true });
+        } catch (error) {
+            result.skipped.push({ file: name, reason: (error as Error).message });
+            continue;
+        }
         row.etagImplemented = "";
         row.implementedAt = "";
         row.commit = "";

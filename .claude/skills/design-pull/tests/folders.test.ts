@@ -22,7 +22,7 @@ describe("loadListing", () => {
             'prefix text [{"path":"a.html","type":"file","size":3,"etag":"1"},' +
                 '{"path":"x","type":"directory","size":0,"etag":"0"}] trailing'
         );
-        assert.deepEqual(d.loadListing(file), { "a.html": { size: 3, etag: "1" } });
+        assert.deepEqual({ ...d.loadListing(file) }, { "a.html": { size: 3, etag: "1" } });
     });
 
     it("fails without an array", () => {

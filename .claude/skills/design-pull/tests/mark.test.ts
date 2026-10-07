@@ -81,4 +81,24 @@ describe("mark and unmark", () => {
         assert.deepEqual([row.etagImplemented, row.implementedAt, row.commit], ["", "", ""]);
         assert.equal(fs.existsSync(path.join(folder, ".implemented/A B.html")), false);
     });
+
+    it("keeps the catalogue consistent when one file in a batch fails", () => {
+        const cat = d.loadCatalogue(folder);
+        cat.rows["C.html"] = d.createRow("C.html", {
+            etagPulled: "c1",
+            etagImplemented: "c1",
+            commit: "x"
+        });
+        d.saveCatalogue(folder, cat);
+        runJson(top, "mark", folder, "A B.html", "--commit", "c");
+        fs.mkdirSync(path.join(folder, ".implemented/C.html"), { recursive: true });
+        const out = runJson(top, "unmark", folder, "A B.html", "C.html");
+        assert.deepEqual(out.done, ["A B.html"]);
+        assert.deepEqual(
+            out.skipped.map((s: any) => s.file),
+            ["C.html"]
+        );
+        assert.equal(d.loadCatalogue(folder).rows["A B.html"].etagImplemented, "");
+        assert.equal(d.loadCatalogue(folder).rows["C.html"].etagImplemented, "c1");
+    });
 });

@@ -79,7 +79,7 @@ Commands (exact flags are fixed in the implementation plan):
 Every project path from `list_files` is validated before it touches the filesystem. A path is rejected when it:
 
 - is absolute or starts with `~`,
-- contains a `..` segment, a backslash, a NUL or any control character,
+- contains a `..` segment, a backslash, a NUL, any control character, or one of `` ` ``, `$`, `"` (they would be live inside a double-quoted shell argument),
 - resolves (after joining with the target directory) outside that directory.
 
 macOS file systems are case-insensitive by default. `plan` compares the paths it would mirror after Unicode NFC normalization and lower-casing; when two paths collide, both are rejected.

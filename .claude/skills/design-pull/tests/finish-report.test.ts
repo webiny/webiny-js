@@ -103,6 +103,25 @@ describe("finish and report", () => {
         runOk("finish", folder, "--plan", planFile);
         assert.equal(runOk("report", folder, "--plan", planFile).trim(), "Nothing changed.");
     });
+
+    it("separates new and changed files", () => {
+        writeIn(files, "old.html", "o2");
+        writeIn(files, "fresh.html", "f");
+        const cat = d.loadCatalogue(folder);
+        cat.rows["old.html"] = d.createRow("old.html", {
+            etagPulled: "o1",
+            pulledAt: "2000-01-01T00:00:00Z"
+        });
+        d.saveCatalogue(folder, cat);
+        writeListing(listing, [
+            ["old.html", 2, "o2"],
+            ["fresh.html", 1, "f1"]
+        ]);
+        runOk("plan", folder, listing, "--out", planFile);
+        const report = runOk("report", folder, "--plan", planFile);
+        assert.ok(report.includes("New:\n  - fresh.html"), report);
+        assert.ok(report.includes("Changed:\n  - old.html"), report);
+    });
 });
 
 describe("shellQuote", () => {
