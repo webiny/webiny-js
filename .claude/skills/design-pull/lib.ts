@@ -629,3 +629,132 @@ export const cmdPlan = (folder: string, listingFile: string, out: string): void 
     savePlan(out, plan);
     printJson(summary(plan));
 };
+
+const WRAPPER_OPEN = /^<untrusted-project-content((?:\s+[\w-]+="[^"]*")*)\s*>\n/;
+const WRAPPER_CLOSE = "\n</untrusted-project-content>";
+const ATTR = /([\w-]+)="([^"]*)"/g;
+const BODY_ENTITIES: Record<string, string> = { amp: "&", lt: "<", gt: ">" };
+const ATTR_ENTITIES: Record<string, string> = { ...BODY_ENTITIES, quot: '"', "#39": "'" };
+
+/** The server escapes exactly &, < and >; one pass over those three entities restores the original. */
+const decodeBody = (text: string): string => text.replace(/&(amp|lt|gt);/g, (_, name: string) => BODY_ENTITIES[name]);
+
+const decodeAttr = (text: string): string =>
+    text.replace(/&(amp|lt|gt|quot|#39);/g, (_, name: string) => ATTR_ENTITIES[name]);
+
+export interface WrapperContent {
+    attrs: Record<string, string>;
+    data: Buffer;
+}
+
+export const parseWrapper = (text: string): WrapperContent => {
+    const open = WRAPPER_OPEN.exec(text);
+    if (!open) {
+        throw new DesignError("read result: opening wrapper tag not found");
+    }
+    const bodyStart = open[0].length;
+    const end = text.lastIndexOf(WRAPPER_CLOSE);
+    if (end < bodyStart - 1) {
+        throw new DesignError("read result: closing wrapper tag not found");
+    }
+    const attrs: Record<string, string> = {};
+    for (const match of open[1].matchAll(ATTR)) {
+        attrs[match[1]] = decodeAttr(match[2]);
+    }
+    const body = end >= bodyStart ? text.slice(bodyStart, end) : "";
+    return { attrs, data: Buffer.from(decodeBody(body), "utf8") };
+};
+
+export interface ImportRawOptions {
+    folder: string;
+    raw: string;
+    plan: string;
+    listing?: string;
+    answers: boolean;
+    retyped: boolean;
+    retry: boolean;
+}
+
+/** Exit codes of import-raw. */
+export const IMPORT_EXIT = { imported: 0, size_mismatch: 2, etag_unknown: 3, manual: 4, failed: 5 } as const;
+
+type ImportStatus = keyof typeof IMPORT_EXIT;
+
+const expectedEntry = (
+    entry: ListingEntry | null | undefined,
+    etag: string,
+    listingFile: string | undefined,
+    projectPath: string
+): { expected: ListingEntry | null; usedListing: boolean } => {
+    if (entry && entry.etag === etag) {
+        return { expected: entry, usedListing: false };
+    }
+    if (!listingFile) {
+        return { expected: null, usedListing: false };
+    }
+    const listing = loadListing(listingFile);
+    const found = listing[projectPath] ?? listing[projectPath.split("/").pop() as string];
+    return { expected: found && found.etag === etag ? found : null, usedListing: true };
+};
+
+export const cmdImportRaw = (options: ImportRawOptions): number => {
+    const cat = loadCatalogue(options.folder);
+    const plan = loadPlan(options.plan);
+    const { attrs, data } = parseWrapper(fs.readFileSync(options.raw, "utf8"));
+    const projectPath = attrs.path ?? "";
+    const etag = attrs.etag ?? "";
+
+    let key: string;
+    let entry: ListingEntry | null | undefined;
+    if (options.answers) {
+        if (projectPath !== ANSWERS_PATH) {
+            throw new DesignError(`--answers expects ${ANSWERS_PATH}, got ${JSON.stringify(projectPath)}`);
+        }
+        key = ANSWERS_PATH;
+        entry = plan.answers;
+    } else {
+        const rel = toSourceRel(cat, projectPath);
+        if (rel === null) {
+            throw new DesignError(`${JSON.stringify(projectPath)} is outside source ${JSON.stringify(cat.source)}`);
+        }
+        key = validateRelPath(rel);
+        entry = plan.entries[key];
+    }
+
+    const finish = (status: ImportStatus): number => {
+        if (status === "imported") {
+            plan.imported.push(key);
+        } else if (status === "failed") {
+            plan.failed.push(key);
+        }
+        savePlan(options.plan, plan);
+        printJson({ path: key, status });
+        return IMPORT_EXIT[status];
+    };
+
+    if (options.retyped && data.length > MCP_MAX_FILE) {
+        return finish("manual");
+    }
+    const { expected, usedListing } = expectedEntry(entry, etag, options.listing, projectPath);
+    if (!expected) {
+        return finish(usedListing ? "failed" : "etag_unknown");
+    }
+    if (data.length !== expected.size) {
+        return finish(options.retyped && !options.retry ? "size_mismatch" : "failed");
+    }
+
+    if (options.answers) {
+        atomicWriteBytes(path.join(options.folder, ANSWERS_PATH), data);
+        cat.answersEtag = etag;
+    } else {
+        atomicWriteBytes(safeJoin(path.join(options.folder, "files"), key), data);
+        const row = cat.rows[key] ?? createRow(key);
+        row.kind = kindFor(cat, key);
+        row.etagPulled = etag;
+        row.pulledAt = nowIso();
+        row.removedAt = "";
+        cat.rows[key] = row;
+    }
+    saveCatalogue(options.folder, cat);
+    return finish("imported");
+};

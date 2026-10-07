@@ -54,6 +54,31 @@ const commands: Record<string, Command> = {
             }
             lib.cmdPlan(positionals[0], positionals[1], required(values, "out", commands.plan.usage));
         }
+    },
+    "import-raw": {
+        usage: "import-raw <folder> <raw> --plan <plan.json> [--listing <parent.json>] [--answers] [--retyped] [--retry]",
+        options: {
+            plan: { type: "string" },
+            listing: { type: "string" },
+            answers: { type: "boolean" },
+            retyped: { type: "boolean" },
+            retry: { type: "boolean" }
+        },
+        run: (positionals, values) => {
+            const usage = commands["import-raw"].usage;
+            if (positionals.length !== 2) {
+                throw new lib.DesignError(`usage: ${usage}`);
+            }
+            return lib.cmdImportRaw({
+                folder: positionals[0],
+                raw: positionals[1],
+                plan: required(values, "plan", usage),
+                listing: typeof values.listing === "string" ? values.listing : undefined,
+                answers: values.answers === true,
+                retyped: values.retyped === true,
+                retry: values.retry === true
+            });
+        }
     }
 };
 
