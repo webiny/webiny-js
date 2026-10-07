@@ -95,4 +95,59 @@ describe("Frontend Settings GraphQL", () => {
             domain: "https://new.example.com"
         });
     });
+
+    describe("permissions", () => {
+        // Can edit pages, but can't manage frontend settings.
+        const editorPermissions = [{ name: "wb.page" }, { name: "cms.*" }];
+
+        it("should let a user without the frontend settings permission read the domain, without starter kits", async () => {
+            const editor = useGraphQlHandler({ permissions: editorPermissions });
+
+            const [response] = await editor.wb.getFrontendSettings({});
+            expect(response.data.frontend.getSettings.error).toBeNull();
+            expect(response.data.frontend.getSettings.data).toEqual({
+                domain: "http://localhost:3000",
+                starterKits: []
+            });
+        });
+
+        it("should not let a user without the frontend settings permission update settings", async () => {
+            const editor = useGraphQlHandler({ permissions: editorPermissions });
+
+            const [response] = await editor.wb.updateFrontendSettings({
+                data: { domain: "https://example.com" }
+            });
+            expect(response.data.frontend.updateSettings.data).toBeNull();
+            expect(response.data.frontend.updateSettings.error).toMatchObject({
+                code: "NOT_AUTHORIZED"
+            });
+
+            const [getResponse] = await editor.wb.getFrontendSettings({});
+            expect(getResponse.data.frontend.getSettings.data.domain).toBe("http://localhost:3000");
+        });
+
+        // The Admin shows the Frontend Settings menu to both of these.
+        it.each(["dev-tools.frontend-settings.*", "dev-tools.*"])(
+            "should give starter kits and updates to a user with %s",
+            async permission => {
+                const manager = useGraphQlHandler({
+                    permissions: [{ name: permission }]
+                });
+
+                const [getResponse] = await manager.wb.getFrontendSettings({});
+                expect(getResponse.data.frontend.getSettings.error).toBeNull();
+                expect(
+                    getResponse.data.frontend.getSettings.data.starterKits.map((kit: any) => kit.id)
+                ).toEqual(["nextjs", "nuxt"]);
+
+                const [updateResponse] = await manager.wb.updateFrontendSettings({
+                    data: { domain: "https://example.com" }
+                });
+                expect(updateResponse.data.frontend.updateSettings).toEqual({
+                    data: true,
+                    error: null
+                });
+            }
+        );
+    });
 });
