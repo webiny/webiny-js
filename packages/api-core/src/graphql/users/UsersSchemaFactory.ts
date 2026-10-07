@@ -65,7 +65,6 @@ class UsersSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
                 avatar: JSON
                 external: Boolean
                 createdOn: DateTime
-                dashboardLayout: JSON
             }
 
             type AdminUsersResponse {

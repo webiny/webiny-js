@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
+import { GetCachedDashboardLayoutUseCase } from "~/Dashboard/dashboardLayout/loadLayout/abstractions.js";
+import { FetchDashboardLayoutUseCase } from "~/Dashboard/dashboardLayout/loadLayout/abstractions.js";
 import { SaveDashboardLayoutUseCase } from "~/Dashboard/dashboardLayout/saveLayout/abstractions.js";
 import { DashboardLayoutPresenter as PresenterAbstraction } from "~/Dashboard/dashboardLayout/presenter/abstractions.js";
 import { DashboardLayoutPresenter } from "~/Dashboard/dashboardLayout/presenter/DashboardLayoutPresenter.js";
@@ -16,7 +18,7 @@ function createControlledSaves() {
     const calls: DashboardLayoutData[] = [];
     const resolvers: (() => void)[] = [];
 
-    const execute = (layout: DashboardLayoutData): Promise<void> => {
+    const execute = (_userId: string, layout: DashboardLayoutData): Promise<void> => {
         calls.push(layout);
         return new Promise(resolve => {
             resolvers.push(resolve);
@@ -33,30 +35,45 @@ function createControlledSaves() {
     return { calls, execute, finishNext };
 }
 
-function setup() {
+// Hands out one pending fetch per init, which the test answers when it wants to.
+function createControlledFetches() {
+    const resolvers: ((layout: DashboardLayoutData | null) => void)[] = [];
+
+    const execute = (): Promise<DashboardLayoutData | null> => {
+        return new Promise(resolve => {
+            resolvers.push(resolve);
+        });
+    };
+
+    const answerNext = async (layout: DashboardLayoutData | null): Promise<void> => {
+        const resolve = resolvers.shift();
+        resolve?.(layout);
+        await new Promise(resolve => setTimeout(resolve, 0));
+    };
+
+    return { execute, answerNext };
+}
+
+function setup(cached: Record<string, DashboardLayoutData> = {}) {
     const saves = createControlledSaves();
-
-    class FakeSaveDashboardLayoutUseCase implements SaveDashboardLayoutUseCase.Interface {
-        execute = saves.execute;
-    }
-
-    const SaveImpl = SaveDashboardLayoutUseCase.createImplementation({
-        implementation: FakeSaveDashboardLayoutUseCase,
-        dependencies: []
-    });
+    const fetches = createControlledFetches();
 
     const container = new Container();
-    container.register(SaveImpl);
+    container.registerInstance(GetCachedDashboardLayoutUseCase, {
+        execute: (userId: string) => cached[userId] ?? null
+    });
+    container.registerInstance(FetchDashboardLayoutUseCase, { execute: fetches.execute });
+    container.registerInstance(SaveDashboardLayoutUseCase, { execute: saves.execute });
     container.register(DashboardLayoutPresenter);
     const presenter = container.resolve(PresenterAbstraction);
 
-    return { presenter, saves };
+    return { presenter, saves, fetches };
 }
 
 describe("DashboardLayoutPresenter", () => {
     it("sends one save at a time and keeps only the newest queued layout", async () => {
         const { presenter, saves } = setup();
-        presenter.init("user-1", WIDGETS, null);
+        presenter.init("user-1", WIDGETS);
 
         presenter.setColumnCount(3);
         presenter.setColumnCount(4);
@@ -77,15 +94,15 @@ describe("DashboardLayoutPresenter", () => {
     });
 
     it("starts over for a different user and drops the previous user's queued save", async () => {
-        const { presenter, saves } = setup();
-        presenter.init("user-1", WIDGETS, null);
+        const secondUserLayout = { columns: [["c"], ["a", "b"]], hidden: [], columnCount: 2 };
+        const { presenter, saves } = setup({ "user-2": secondUserLayout });
+        presenter.init("user-1", WIDGETS);
 
         presenter.removeWidget("a");
         presenter.removeWidget("b");
         expect(saves.calls).toHaveLength(1);
 
-        const secondUserLayout = { columns: [["c"], ["a", "b"]], hidden: [], columnCount: 2 };
-        presenter.init("user-2", WIDGETS, secondUserLayout);
+        presenter.init("user-2", WIDGETS);
 
         expect(presenter.vm.columns).toEqual([["c"], ["a", "b"]]);
         expect(presenter.vm.hidden).toEqual([]);
@@ -98,7 +115,7 @@ describe("DashboardLayoutPresenter", () => {
 
     it("adds a widget to the column the user picks", () => {
         const { presenter } = setup();
-        presenter.init("user-1", WIDGETS, null);
+        presenter.init("user-1", WIDGETS);
         presenter.removeWidget("a");
 
         presenter.addWidget("a", 1);
@@ -109,7 +126,7 @@ describe("DashboardLayoutPresenter", () => {
 
     it("adds a widget to its default column when no column is given", () => {
         const { presenter } = setup();
-        presenter.init("user-1", WIDGETS, null);
+        presenter.init("user-1", WIDGETS);
         presenter.removeWidget("c");
 
         presenter.addWidget("c");
@@ -119,7 +136,7 @@ describe("DashboardLayoutPresenter", () => {
 
     it("turns Customize mode on and off, and ends a drag when it turns off", () => {
         const { presenter } = setup();
-        presenter.init("user-1", WIDGETS, null);
+        presenter.init("user-1", WIDGETS);
         expect(presenter.vm.editing).toBe(false);
 
         presenter.startEditing();
@@ -133,7 +150,7 @@ describe("DashboardLayoutPresenter", () => {
 
     it("resets Customize mode on dispose, so the next visit opens normally", () => {
         const { presenter } = setup();
-        presenter.init("user-1", WIDGETS, null);
+        presenter.init("user-1", WIDGETS);
         presenter.removeWidget("a");
         presenter.startEditing();
         presenter.beginDrag("b");
@@ -148,21 +165,74 @@ describe("DashboardLayoutPresenter", () => {
 
     it("leaves Customize mode when a different user signs in", () => {
         const { presenter } = setup();
-        presenter.init("user-1", WIDGETS, null);
+        presenter.init("user-1", WIDGETS);
         presenter.startEditing();
 
-        presenter.init("user-2", WIDGETS, null);
+        presenter.init("user-2", WIDGETS);
 
         expect(presenter.vm.editing).toBe(false);
     });
 
     it("keeps the current layout when the same user's widgets are re-registered", () => {
         const { presenter } = setup();
-        presenter.init("user-1", WIDGETS, null);
+        presenter.init("user-1", WIDGETS);
         presenter.removeWidget("a");
 
-        presenter.init("user-1", WIDGETS, null);
+        presenter.init("user-1", WIDGETS);
 
         expect(presenter.vm.hidden).toEqual(["a"]);
+    });
+
+    it("renders the cached layout before the fetch finishes", () => {
+        const cached = { columns: [["c"], ["b"]], hidden: ["a"], columnCount: 2 };
+        const { presenter } = setup({ "user-1": cached });
+
+        presenter.init("user-1", WIDGETS);
+
+        expect(presenter.vm.columns).toEqual([["c"], ["b"]]);
+        expect(presenter.vm.hidden).toEqual(["a"]);
+    });
+
+    it("replaces the cached layout with the fetched one", async () => {
+        const cached = { columns: [["c"], ["b"]], hidden: ["a"], columnCount: 2 };
+        const { presenter, fetches } = setup({ "user-1": cached });
+        presenter.init("user-1", WIDGETS);
+
+        await fetches.answerNext({ columns: [["a"], ["b"], ["c"]], hidden: [], columnCount: 3 });
+
+        expect(presenter.vm.columnCount).toBe(3);
+        expect(presenter.vm.columns).toEqual([["a"], ["b"], ["c"]]);
+    });
+
+    it("falls back to the default layout when nothing is stored", async () => {
+        const cached = { columns: [["c"], ["b"]], hidden: ["a"], columnCount: 2 };
+        const { presenter, fetches } = setup({ "user-1": cached });
+        presenter.init("user-1", WIDGETS);
+
+        await fetches.answerNext(null);
+
+        expect(presenter.vm.columns).toEqual([["a", "b"], ["c"]]);
+        expect(presenter.vm.hidden).toEqual([]);
+    });
+
+    it("keeps the user's changes when the fetch finishes after them", async () => {
+        const { presenter, fetches } = setup();
+        presenter.init("user-1", WIDGETS);
+        presenter.removeWidget("a");
+
+        await fetches.answerNext({ columns: [["a", "b", "c"], []], hidden: [], columnCount: 2 });
+
+        expect(presenter.vm.hidden).toEqual(["a"]);
+        expect(presenter.vm.columns).toEqual([["b"], ["c"]]);
+    });
+
+    it("ignores a fetch that finishes after another user signed in", async () => {
+        const { presenter, fetches } = setup();
+        presenter.init("user-1", WIDGETS);
+        presenter.init("user-2", WIDGETS);
+
+        await fetches.answerNext({ columns: [["c"], ["a", "b"]], hidden: [], columnCount: 2 });
+
+        expect(presenter.vm.columns).toEqual([["a", "b"], ["c"]]);
     });
 });

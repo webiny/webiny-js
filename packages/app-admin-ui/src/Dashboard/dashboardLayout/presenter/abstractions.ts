@@ -1,5 +1,4 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { DashboardLayoutData } from "../types.js";
 
 /**
  * Minimal description of a registered widget the presenter needs to order it.
@@ -21,7 +20,6 @@ export interface DashboardDropTarget {
 }
 
 export interface IDashboardLayoutViewModel {
-    loading: boolean;
     columns: string[][];
     columnCount: number;
     hidden: string[];
@@ -33,11 +31,8 @@ export interface IDashboardLayoutViewModel {
 
 export interface IDashboardLayoutPresenter {
     vm: IDashboardLayoutViewModel;
-    init(
-        userId: string,
-        widgets: DashboardWidgetInput[],
-        savedLayout: DashboardLayoutData | null
-    ): void;
+    // Renders the cached layout at once, then replaces it with the stored one when that arrives.
+    init(userId: string, widgets: DashboardWidgetInput[]): void;
     beginDrag(name: string): void;
     hoverSlot(column: number, beforeName: string | null): void;
     drop(): void;

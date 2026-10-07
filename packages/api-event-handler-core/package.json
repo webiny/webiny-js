@@ -21,6 +21,7 @@
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-audit-logs": "0.0.0",
     "@webiny/api-core": "0.0.0",
+    "@webiny/api-dashboard": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-file-manager-aco": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
