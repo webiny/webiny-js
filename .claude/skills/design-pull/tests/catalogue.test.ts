@@ -68,6 +68,12 @@ describe("catalogue round trip", () => {
     it("rejects a file without header", () => {
         assert.throws(() => d.parseCatalogue("| file |\n"), d.DesignError);
     });
+
+    it("keeps a file named exactly file", () => {
+        const cat = d.createCatalogue("P", "u");
+        cat.rows["file"] = d.createRow("file", { etagPulled: "1" });
+        assert.deepEqual(Object.keys(d.parseCatalogue(d.renderCatalogue(cat)).rows), ["file"]);
+    });
 });
 
 describe("catalogue files", () => {

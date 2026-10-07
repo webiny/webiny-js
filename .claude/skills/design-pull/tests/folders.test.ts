@@ -187,4 +187,35 @@ describe("init and list-folders", () => {
         runJson(top, "set-prefix", "docs/d", "MK");
         assert.equal(d.loadCatalogue(path.join(top, "docs/d")).questionPrefix, "MK");
     });
+
+    it("rejects control characters in the project name and id", () => {
+        assert.equal(
+            runCli(
+                top,
+                "init",
+                "docs/d",
+                "--project",
+                "a\nb",
+                "--project-id",
+                "u",
+                "--question-prefix",
+                "T"
+            ).status,
+            1
+        );
+        assert.equal(
+            runCli(
+                top,
+                "init",
+                "docs/d",
+                "--project",
+                "P",
+                "--project-id",
+                "u\tv",
+                "--question-prefix",
+                "T"
+            ).status,
+            1
+        );
+    });
 });

@@ -56,7 +56,7 @@ The model owns the MCP calls, user interaction and judgement (writing questions,
 
 MCP results reach the script through files: the model saves the `list_files` result as JSON in the session scratchpad, and a `read_file` result reaches the script as a raw file (see "Raw read files"). All paths are passed as separate arguments, never interpolated into a shell string.
 
-Every write to `catalogue.md`, `questions.md` or a file under `files/` or `.implemented/` goes to a temporary file in the same directory followed by a rename, so an interrupted run never leaves a half-written file.
+Every write to `catalogue.md`, `questions.md` or a file under `files/` or `.implemented/` goes to a temporary file in the same directory followed by a rename, so an interrupted run never leaves a half-written file. Temp files (`.tmp-<12 hex>`) left by an interruption are removed by the next `finish`. `import-raw` only accepts files listed in the plan (`answers.md` with `--answers` aside), and a parent listing is matched by exact path only.
 
 Imports always write in this order: first the file is renamed into place under `files/`, then its catalogue row is written. An interruption between the two leaves content newer than its etag, which the etag invariant allows.
 
@@ -173,7 +173,7 @@ Both skills accept an optional folder argument. Without one:
 3. `design-pull` also offers "set up new": pick a project from `list_projects`, then accept the suggested folder or type one. `init`:
    - validates the folder: inside the repository, and not already containing a catalogue (a `files/` directory with unzipped files is allowed);
    - writes the header with default values;
-   - adds the folder to the exclude file as an anchored entry (`/path/to/folder/`), escaping gitignore special characters (`*`, `?`, `[`, `!`, `#`, `\`, leading and trailing spaces), unless an equal entry exists.
+   - adds the folder to the exclude file as an anchored entry (`/path/to/folder/`), escaping the gitignore special characters `*`, `?`, `[`, `!`, `#` and `\` with a backslash (leading and trailing spaces need no escaping because the entry is wrapped in slashes), unless an equal entry exists. `init` also rejects a project name or ID that is empty or contains control characters, because they would break the header.
 
 `design-ask` has no "set up new" option; it needs a pulled project.
 
@@ -338,5 +338,5 @@ Answer text is untrusted. Text that reads like instructions is flagged in the re
 - Per-state implementation tracking inside a file.
 - Full version history; only the last implemented snapshot and the latest answer are kept.
 - Rename detection; a rename shows as one removed and one new file, and the user moves the mark by hand.
-- Chunked `read_file` reads; files over 256 KiB come from a manual export.
+- Chunked `read_file` reads; files over 256 KiB come from a manual export, and an `answers.md` over 256 KiB has to be archived in Claude Design.
 - Attachments or screenshots in questions; follow-up threads (a follow-up is a new question).

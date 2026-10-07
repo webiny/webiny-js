@@ -163,4 +163,20 @@ describe("import-raw", () => {
         assert.equal(importRaw("--retyped")[0], 4);
         assert.deepEqual(readPlan().manual, ["a.html"]);
     });
+
+    it("refuses a file the plan did not list", () => {
+        makePlan([["a.html", 2, "e1"]]);
+        fs.writeFileSync(raw, makeRaw(".thumbnail", "e5", "ab"));
+        assert.equal(runCli(top, "import-raw", folder, raw, "--plan", planFile).status, 1);
+        assert.equal(d.loadCatalogue(folder).rows[".thumbnail"], undefined);
+    });
+
+    it("matches the parent listing by exact path only", () => {
+        makePlan([["x/a.html", 1, "e1"]]);
+        fs.writeFileSync(raw, makeRaw("x/a.html", "e2", "ab"));
+        const parent = path.join(top, "parent.json");
+        writeListing(parent, [["a.html", 2, "e2"]]);
+        const [code, out] = importRaw("--listing", parent);
+        assert.deepEqual([code, out.status], [5, "failed"]);
+    });
 });

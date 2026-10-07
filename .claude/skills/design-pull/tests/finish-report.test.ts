@@ -137,6 +137,19 @@ describe("finish and report", () => {
         const report = runOk("report", folder, "--plan", planFile);
         assert.ok(report.includes("Not fetched:\n  - a.html\n  - b.html"), report);
     });
+
+    it("removes temp files left by interrupted writes", () => {
+        writeIn(files, "a.html", "a");
+        writeIn(files, ".tmp-0123456789ab", "partial");
+        writeIn(path.join(folder, ".implemented"), ".tmp-abcdefabcdef", "partial");
+        writeIn(files, ".tmp-notours", "keep");
+        writeListing(listing, [["a.html", 1, "e1"]]);
+        runOk("plan", folder, listing, "--out", planFile);
+        runOk("finish", folder, "--plan", planFile);
+        assert.equal(fs.existsSync(path.join(files, ".tmp-0123456789ab")), false);
+        assert.equal(fs.existsSync(path.join(folder, ".implemented/.tmp-abcdefabcdef")), false);
+        assert.ok(fs.existsSync(path.join(files, ".tmp-notours")));
+    });
 });
 
 describe("shellQuote", () => {

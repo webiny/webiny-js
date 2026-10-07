@@ -54,6 +54,8 @@ export const today = (): string => {
 // ---------------------------------------------------------------- paths
 
 // eslint-disable-next-line no-control-regex
+const CONTROL_CHARS = /[\x00-\x1f\x7f]/;
+
 // Control characters, plus characters that are unsafe inside double-quoted shell arguments.
 const UNSAFE_CHARS = /[\x00-\x1f\x7f`$"]/;
 
@@ -95,6 +97,9 @@ export const isRegularFile = (file: string): boolean => {
  */
 export const safeJoin = (root: string, rel: string): string => {
     validateRelPath(rel);
+    if (isSymlink(root)) {
+        throw new DesignError(`symlinked root: ${root}`);
+    }
     let current = root;
     for (const part of rel.split("/").slice(0, -1)) {
         current = path.join(current, part);
@@ -302,6 +307,8 @@ const splitRow = (line: string): string[] => {
 
 const LIST_KEYS = new Set(["exclude", "support"]);
 
+const TABLE_HEADER = `| ${COLUMNS.join(" | ")} |`;
+
 export const parseCatalogue = (text: string): Catalogue => {
     const lines = text.split("\n");
     const end = lines.indexOf("---", 1);
@@ -336,7 +343,7 @@ export const parseCatalogue = (text: string): Catalogue => {
         rows: dict<Row>()
     };
     for (const line of lines.slice(end + 1)) {
-        if (!line.startsWith("| ") || line.startsWith("| file |")) {
+        if (!line.startsWith("| ") || line === TABLE_HEADER) {
             continue;
         }
         const [
@@ -378,7 +385,7 @@ export const renderCatalogue = (cat: Catalogue): string => {
         `question_prefix: ${cat.questionPrefix}`,
         "---",
         "",
-        `| ${COLUMNS.join(" | ")} |`,
+        TABLE_HEADER,
         `|${COLUMNS.map(() => "---").join("|")}|`
     ];
     for (const name of Object.keys(cat.rows).sort()) {
@@ -514,6 +521,14 @@ export const cmdInit = (
     projectId: string,
     questionPrefix: string
 ): void => {
+    for (const [name, value] of [
+        ["project", project],
+        ["project id", projectId]
+    ]) {
+        if (!value || CONTROL_CHARS.test(value)) {
+            throw new DesignError(`${name} must be non-empty and without control characters`);
+        }
+    }
     validatePrefix(questionPrefix);
     const top = repoTop();
     const folder = realpathLoose(path.resolve(top, folderArg));
@@ -817,7 +832,7 @@ const expectedEntry = (
         return { expected: null, usedListing: false };
     }
     const listing = loadListing(listingFile);
-    const found = own(listing, projectPath) ?? own(listing, projectPath.split("/").pop() as string);
+    const found = own(listing, projectPath);
     return { expected: found && found.etag === etag ? found : null, usedListing: true };
 };
 
@@ -847,6 +862,11 @@ export const cmdImportRaw = (options: ImportRawOptions): number => {
         }
         key = validateRelPath(rel);
         entry = own(plan.entries, key);
+        if (!entry) {
+            throw new DesignError(
+                `${JSON.stringify(key)} is not in this plan; only fetch files listed under mcp`
+            );
+        }
     }
 
     const finish = (status: ImportStatus): number => {
@@ -900,6 +920,20 @@ export const shellQuote = (value: string): string => {
     return `'${value.replace(/'/g, `'"'"'`)}'`;
 };
 
+const TEMP_FILE = /^\.tmp-[0-9a-f]{12}$/;
+
+/** Removes temp files that atomicWriteBytes left behind when a run was interrupted. */
+const removeTempFiles = (dir: string): void => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            removeTempFiles(full);
+        } else if (entry.isFile() && TEMP_FILE.test(entry.name)) {
+            fs.rmSync(full);
+        }
+    }
+};
+
 export const cmdFinish = (folder: string, planFile: string): void => {
     const cat = loadCatalogue(folder);
     const plan = loadPlan(planFile);
@@ -945,6 +979,7 @@ export const cmdFinish = (folder: string, planFile: string): void => {
             plan.reconciled.push(rel);
         }
     }
+    removeTempFiles(folder);
     cat.lastPull = plan.listed_at;
     saveCatalogue(folder, cat);
     savePlan(planFile, plan);

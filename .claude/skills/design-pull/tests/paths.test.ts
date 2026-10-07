@@ -52,6 +52,12 @@ describe("safeJoin", () => {
         fs.symlinkSync(tmp(), path.join(root, "link"));
         assert.throws(() => d.safeJoin(root, "link/file.html"), d.DesignError);
     });
+
+    it("rejects a symlinked root", () => {
+        const root = tmp();
+        fs.symlinkSync(tmp(), path.join(root, "files"));
+        assert.throws(() => d.safeJoin(path.join(root, "files"), "a.html"), d.DesignError);
+    });
 });
 
 describe("collisionKey", () => {
