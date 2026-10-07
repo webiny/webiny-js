@@ -91,5 +91,10 @@ class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interfa
 
 export const UpdateRevisionDescriptionUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateRevisionDescriptionUseCaseImpl,
-    dependencies: [EntryEventPublisher, UpdateEntryRepository, AccessControl, GetRevisionByIdUseCase]
+    dependencies: [
+        EntryEventPublisher,
+        UpdateEntryRepository,
+        AccessControl,
+        GetRevisionByIdUseCase
+    ]
 });
