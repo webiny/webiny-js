@@ -16,6 +16,7 @@ import { PLAN_SYSTEM, buildPlanPrompt, parsePlanContract } from "./planContract.
 import { coverMemberTexts } from "./textCoverage.js";
 import { bindObservedValues } from "./bindObservedValues.js";
 import { sectionBackgroundImages } from "./sectionBackgroundImages.js";
+import { sectionUnboundImages } from "./sectionUnboundImages.js";
 import { sectionTextAlignment } from "./sectionTextAlignment.js";
 import { sectionTypeScale } from "./sectionTypeScale.js";
 import { findNodeByBox } from "../cluster/sectionNode.js";
@@ -272,6 +273,8 @@ class PlanHandlerImpl implements StageHandler.Interface {
                         typeScale,
                         textAlignments,
                         backgroundImages,
+                        // After binding, so what the props took is known.
+                        unboundImages: nodes[0] ? sectionUnboundImages(nodes[0], contract.props) : [],
                         textCoverage: coverMemberTexts(cluster.cluster.members, contract.props)
                     });
                 }

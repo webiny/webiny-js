@@ -222,6 +222,29 @@ const backgroundImageLines = (component: PlannedComponent): string[] => {
 };
 
 /**
+ * The section's images that no prop carries — logos, badges, marks the contract left out.
+ *
+ * Without this the model sees them in the crop, has no URL for them, and has been told never to invent
+ * one, so it drops them: every G5 footer lost its management-company logo that way. Each is offered
+ * as an image input with the page's URL as its default, so it stays editable rather than baked in.
+ */
+export const unboundImageLines = (component: PlannedComponent): string[] => {
+    const images = component.unboundImages ?? [];
+    if (images.length === 0) {
+        return [];
+    }
+    return [
+        "",
+        "The section also shows these images, which none of the inputs above carry. Keep each one, at",
+        "about the size given, as an image input (`createFileInput`) whose default is its URL:",
+        ...images.map(
+            image =>
+                `- ${image.url} — ${image.width}x${image.height}px${image.alt ? ` (alt: "${image.alt}")` : ""}`
+        )
+    ];
+};
+
+/**
  * The section's measured colours, with the theme variable expressing each.
  *
  * Generate sees the crop, so it can see the hues — but not which of the fifty-odd allowed variables is
@@ -350,6 +373,7 @@ const buildPrompt = (
             : []),
         ...colourLines(component),
         ...backgroundImageLines(component),
+        ...unboundImageLines(component),
         ...typeScaleLines(component),
         ...alignmentLines(component),
         "",

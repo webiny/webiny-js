@@ -120,6 +120,14 @@ export interface Box {
  * the raw DOM, which is a separate compressed cold artifact.
  */
 /** A background image a section paints, with the area it covers. Derived in Plan. */
+/** An `<img>` a section shows, with the size it was drawn at. */
+export interface SectionImage {
+    url: string;
+    alt?: string;
+    width: number;
+    height: number;
+}
+
 export interface SectionBackgroundImage extends BackgroundImage {
     area: number;
 }
@@ -716,6 +724,11 @@ export interface PlannedComponent {
      * background instead. See `sectionBackgroundImages`.
      */
     backgroundImages?: SectionBackgroundImage[];
+    /**
+     * The reference section's images that no prop carries — logos, badges, marks the contract left
+     * out — so Generate can keep them. See `sectionUnboundImages`. Absent on plans made before it.
+     */
+    unboundImages?: SectionImage[];
     /**
      * Whether the props can hold every member's text.
      *
