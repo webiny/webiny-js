@@ -120,6 +120,12 @@ export interface Box {
  * the raw DOM, which is a separate compressed cold artifact.
  */
 /** A background image a section paints, with the area it covers. Derived in Plan. */
+/** An icon-font icon a section shows: what it is for, and where it links. */
+export interface SectionIcon {
+    label: string;
+    href?: string;
+}
+
 /** An `<img>` a section shows, with the size it was drawn at. */
 export interface SectionImage {
     url: string;
@@ -170,6 +176,12 @@ export interface CapturedNode {
     src?: string;
     /** An image's alternative text. Present when the element carries a non-empty `alt`. */
     alt?: string;
+    /**
+     * An icon-font glyph this element draws (a private-use character in `::before`/`::after`), with
+     * the accessible name of what it is for. The glyph needs the page's font to mean anything, so the
+     * label is the useful half. Present only on small elements that draw one.
+     */
+    icon?: { glyph: string; label: string };
     /**
      * A CSS background image painted over this node's background colour. Present only when the
      * element has a `url(...)` background.
@@ -729,6 +741,8 @@ export interface PlannedComponent {
      * out — so Generate can keep them. See `sectionUnboundImages`. Absent on plans made before it.
      */
     unboundImages?: SectionImage[];
+    /** The reference section's icon-font icons, by name. See `sectionIcons`. Absent on older plans. */
+    icons?: SectionIcon[];
     /**
      * Whether the props can hold every member's text.
      *

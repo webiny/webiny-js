@@ -245,6 +245,27 @@ export const unboundImageLines = (component: PlannedComponent): string[] => {
 };
 
 /**
+ * The section's icon-font icons, by name.
+ *
+ * The page draws them with its own icon font, which the component will not have, so there is nothing
+ * to copy — only what each icon is for. The model draws an equivalent as inline SVG, which is what it
+ * would have to do for a hand-built component too.
+ */
+export const iconLines = (component: PlannedComponent): string[] => {
+    const icons = component.icons ?? [];
+    if (icons.length === 0) {
+        return [];
+    }
+    return [
+        "",
+        "The section shows these icons, drawn on the page with an icon font this component will not",
+        "have. Draw each as a simple inline SVG of that symbol, in the colour and size the crop shows,",
+        "linked where a destination is given:",
+        ...icons.map(icon => `- ${icon.label}${icon.href ? ` -> ${icon.href}` : ""}`)
+    ];
+};
+
+/**
  * The section's measured colours, with the theme variable expressing each.
  *
  * Generate sees the crop, so it can see the hues — but not which of the fifty-odd allowed variables is
@@ -374,6 +395,7 @@ const buildPrompt = (
         ...colourLines(component),
         ...backgroundImageLines(component),
         ...unboundImageLines(component),
+        ...iconLines(component),
         ...typeScaleLines(component),
         ...alignmentLines(component),
         "",

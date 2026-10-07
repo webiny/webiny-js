@@ -211,3 +211,44 @@ describe("captureEvaluator hidden content", () => {
     });
 });
 
+// 71 Westland's footer: FontAwesome glyphs drawn in ::before inside labelled links.
+describe("captureEvaluator icon glyphs", () => {
+    const withPseudoContent = (content: Record<string, string>) => {
+        const real = window.getComputedStyle.bind(window);
+        window.getComputedStyle = ((el: Element, pseudo?: string | null) => {
+            const style = real(el);
+            const key = el.getAttribute("data-icon");
+            if (pseudo === "::before" && key && content[key]) {
+                return {
+                    ...style,
+                    content: content[key],
+                    getPropertyValue: () => ""
+                } as CSSStyleDeclaration;
+            }
+            return style;
+        }) as typeof window.getComputedStyle;
+        return () => (window.getComputedStyle = real);
+    };
+
+    it("records a private-use glyph under the accessible name of its link", () => {
+        const restore = withPseudoContent({ fb: '""', chevron: '""' });
+        try {
+            const result = run(`
+                <a href="https://www.facebook.com/x" aria-label="Visit Facebook page" data-rect="50,50"><span data-icon="fb" data-rect="30,30"></span></a>
+                <div data-rect="200,40"><span data-icon="chevron" data-rect="12,12"></span></div>
+            `);
+            const icons: unknown[] = [];
+            const walk = (node: CapturedNode) => {
+                if (node.icon) {
+                    icons.push(node.icon);
+                }
+                node.children.forEach(walk);
+            };
+            walk(result.tree as CapturedNode);
+            // The unlabelled chevron is ornament, not content.
+            expect(icons).toEqual([{ glyph: "f09a", label: "Visit Facebook page" }]);
+        } finally {
+            restore();
+        }
+    });
+});

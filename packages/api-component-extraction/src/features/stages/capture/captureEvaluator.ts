@@ -149,6 +149,53 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
             return false;
         }
 
+        /*
+         * An icon drawn by an icon font: a pseudo-element whose content is a single private-use
+         * character (U+E000-U+F8FF), the code points icon fonts draw their glyphs at.
+         *
+         * It is invisible to everything else read here: no image, no text, no URL. A footer's social
+         * links were 50x50 boxes with nothing in them, so the icons were gone from the migration with
+         * every check green. The glyph itself means nothing without the page's font, so what is
+         * recorded is what the icon is for — the link's accessible name — for Generate to draw.
+         * Read only on small elements: a pseudo-element style read on every node of a large page is
+         * not free, and an icon is small.
+         */
+        var ICON_MAX = 96;
+        function iconOf(el, width, height) {
+            if (width > ICON_MAX || height > ICON_MAX) { return null; }
+            var glyph = "";
+            var pseudo = ["::before", "::after"];
+            for (var i = 0; i < pseudo.length && !glyph; i++) {
+                var content = "";
+                try { content = window.getComputedStyle(el, pseudo[i]).content || ""; } catch (e) {}
+                var raw = content.replace(/^["']|["']$/g, "");
+                if (raw.length === 1) {
+                    var code = raw.charCodeAt(0);
+                    if (code >= 0xe000 && code <= 0xf8ff) { glyph = code.toString(16); }
+                }
+            }
+            if (!glyph) { return null; }
+            /*
+             * Named by what a reader is told it is: the accessible name of the control it sits in,
+             * else an icon class (fa-map-marker, icon-instagram). An icon with neither is a chevron
+             * or an ornament, not content, and is left out rather than labelled with layout classes.
+             */
+            var named = el.closest ? el.closest("a,button,[aria-label],[title]") : null;
+            var label = "";
+            try {
+                if (named) { label = named.getAttribute("aria-label") || named.getAttribute("title") || ""; }
+                if (!label) {
+                    var classes = (String(el.className || "") + " " + String((named && named.className) || "")).split(/\\s+/);
+                    for (var c = 0; c < classes.length && !label; c++) {
+                        var m = /^(?:fa|icon|glyphicon|bi)-([a-z0-9-]+)$/i.exec(classes[c]);
+                        if (m) { label = m[1].replace(/-/g, " "); }
+                    }
+                }
+            } catch (e) {}
+            if (!label) { return null; }
+            return { glyph: glyph, label: label.slice(0, ALT_CAP) };
+        }
+
         function walk(el) {
             if (count >= MAX || !el || el.nodeType !== 1 || SKIP[el.tagName]) { return null; }
             var cs = window.getComputedStyle(el);
@@ -234,6 +281,8 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
             if (src) { node.src = src; }
             var alt = alternativeText(el);
             if (alt) { node.alt = alt; }
+            var icon = iconOf(el, width, height);
+            if (icon) { node.icon = icon; }
             return node;
         }
 
