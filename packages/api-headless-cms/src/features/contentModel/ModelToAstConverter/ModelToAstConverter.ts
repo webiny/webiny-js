@@ -15,7 +15,7 @@ import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 class ModelToAstConverterImpl implements ConverterAbstraction.Interface {
     public constructor(private readonly registry: CmsModelFieldToGraphQLRegistry.Interface) {}
 
-    toAst(model: CmsModel): CmsModelAst {
+    toAst(model: Pick<CmsModel, "fields">): CmsModelAst {
         const fieldTypePlugins = this.registry.getAll();
 
         const converter = new CmsModelToAstConverter(

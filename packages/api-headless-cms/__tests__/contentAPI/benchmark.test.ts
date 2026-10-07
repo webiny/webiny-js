@@ -54,9 +54,7 @@ describe("benchmark points", () => {
 
         expect(logs).toHaveLength(3);
         // The GraphQL request flow is measured at the graphql layer (getSchema ->
-        // createRequestBody -> processRequestBody). Per-operation CRUD measures live on the
-        // HeadlessCms facade, which the DI resolvers no longer route through, so they are not
-        // part of the request's benchmark output.
+        // createRequestBody -> processRequestBody). The use cases don't add measures of their own.
         expect(logs).toMatchObject([
             `Benchmark total time elapsed: ${elapsed}ms`,
             "Benchmark measurements:",
