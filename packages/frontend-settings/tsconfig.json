@@ -4,10 +4,10 @@
   "references": [
     { "path": "../admin-ui" },
     { "path": "../api-core" },
+    { "path": "../api-graphql" },
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../feature" },
-    { "path": "../handler-graphql" },
     { "path": "../project-aws" }
   ],
   "compilerOptions": {
@@ -21,16 +21,14 @@
       "@webiny/admin-ui": ["../admin-ui/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/feature/api": ["../feature/src/api/index.js"],
-      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/project-aws/*": ["../project-aws/src/*"],
       "@webiny/project-aws": ["../project-aws/src"]
     }

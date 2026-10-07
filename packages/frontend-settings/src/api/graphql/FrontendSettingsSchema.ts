@@ -1,14 +1,17 @@
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
+import { ErrorResponse, Response } from "@webiny/api-graphql";
 import { FrontendGetSettingsUseCase } from "~/api/features/getSettings/abstractions.js";
 import { FrontendUpdateSettingsUseCase } from "~/api/features/updateSettings/abstractions.js";
 import { StarterKitsProvider } from "~/api/features/starterKits/abstractions.js";
 import type { IFrontendSettings } from "~/shared/types.js";
 
-class FrontendSettingsSchemaImpl implements GraphQLSchemaFactory.Interface {
+class FrontendSettingsSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("frontend-settings/FrontendSettingsSchemaImpl");
+
     async execute(
-        builder: GraphQLSchemaFactory.SchemaBuilder
-    ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
+        builder: CoreGraphQLSchemaFactory.SchemaBuilder
+    ): Promise<CoreGraphQLSchemaFactory.SchemaBuilder> {
         builder.addTypeDefs(/* GraphQL */ `
             type FrontendStarterKit {
                 id: String!
@@ -99,7 +102,7 @@ class FrontendSettingsSchemaImpl implements GraphQLSchemaFactory.Interface {
     }
 }
 
-export const FrontendSettingsSchema = GraphQLSchemaFactory.createImplementation({
+export const FrontendSettingsSchema = CoreGraphQLSchemaFactory.createImplementation({
     implementation: FrontendSettingsSchemaImpl,
     dependencies: []
 });

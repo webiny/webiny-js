@@ -4,6 +4,7 @@
   "references": [
     { "path": "../ai-powerups/tsconfig.build.json" },
     { "path": "../bug-reporter/tsconfig.build.json" },
+    { "path": "../frontend-settings/tsconfig.build.json" },
     { "path": "../languages/tsconfig.build.json" },
     { "path": "../tenant-manager/tsconfig.build.json" }
   ],
@@ -18,6 +19,8 @@
       "@webiny/ai-powerups": ["../ai-powerups/src"],
       "@webiny/bug-reporter/*": ["../bug-reporter/src/*"],
       "@webiny/bug-reporter": ["../bug-reporter/src"],
+      "@webiny/frontend-settings/*": ["../frontend-settings/src/*"],
+      "@webiny/frontend-settings": ["../frontend-settings/src"],
       "@webiny/languages/*": ["../languages/src/*"],
       "@webiny/languages": ["../languages/src"],
       "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
