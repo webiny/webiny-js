@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import type { CapturedNode } from "~/domain/artifacts.js";
-import { measureTone } from "./imageTone.js";
+import { measureTone } from "~/features/shared/imageTone.js";
 import { sectionImages, sectionLayout } from "./sectionLayout.js";
 
 // Freehill's header as captured from the live site: 70px tall, its logo hanging below it.
@@ -123,7 +123,7 @@ describe("measureTone", () => {
             ])
             .png()
             .toBuffer();
-        expect(await measureTone(logo)).toEqual({ tone: "light", transparent: true });
+        expect(await measureTone(logo)).toEqual({ tone: "light", transparent: true, opacity: 0.2 });
     });
 
     it("reads a dark opaque photograph as dark", async () => {
@@ -132,6 +132,6 @@ describe("measureTone", () => {
         })
             .jpeg()
             .toBuffer();
-        expect(await measureTone(photo)).toEqual({ tone: "dark", transparent: false });
+        expect(await measureTone(photo)).toEqual({ tone: "dark", transparent: false, opacity: 1 });
     });
 });

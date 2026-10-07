@@ -18,6 +18,7 @@ import type {
     ValidationResult
 } from "~/domain/artifacts.js";
 import { representativeValues } from "~/domain/artifacts.js";
+import { isTranslucent } from "~/features/shared/translucency.js";
 import { stageArtifactKey } from "~/constants.js";
 import {
     combineValidation,
@@ -233,23 +234,66 @@ const alignmentLines = (component: PlannedComponent): string[] => {
  * instruction not to substitute anything else.
  */
 const backgroundImageLines = (component: PlannedComponent): string[] => {
-    const images = component.backgroundImages ?? [];
-    if (images.length === 0) {
-        return [];
+    const all = component.backgroundImages ?? [];
+    const sizing = (image: (typeof all)[number]) => {
+        const how = [image.size, image.position, image.repeat].filter(Boolean).join(" / ");
+        return `- ${image.url}${how ? ` — ${how}` : ""}`;
+    };
+    const covers = all.filter(image => !isTranslucent(image));
+    const tints = all.filter(image => isTranslucent(image));
+    const lines: string[] = [];
+    if (covers.length > 0) {
+        lines.push(
+            "",
+            "This section's background is painted with an image, not a colour. Set it as a CSS",
+            "background-image on the section, with the sizing given:",
+            ...covers.map(sizing),
+            "",
+            "Use these URLs exactly as given. Do not substitute a stock photograph, and do not replace the",
+            "image with a flat background colour."
+        );
     }
-    return [
-        "",
-        "This section's background is painted with an image, not a colour. Set it as a CSS",
-        "background-image on the section, with the sizing given:",
-        ...images.map(image => {
-            const how = [image.size, image.position, image.repeat].filter(Boolean).join(" / ");
-            return `- ${image.url}${how ? ` — ${how}` : ""}`;
-        }),
-        "",
-        "Use these URLs exactly as given. Do not substitute a stock photograph, and do not replace the",
-        "image with a flat background colour."
-    ];
+    if (tints.length > 0) {
+        lines.push("", ...tintLines(tints, sizing));
+    }
+    return lines;
 };
+
+/**
+ * A see-through background image: a pattern, a texture or a mark the colour behind it shows through.
+ *
+ * Worded apart from photographs, because the photograph wording — "painted with an image, not a colour"
+ * — is the opposite of true for these: Park city's pattern is white lines at 10-20% opacity, and what
+ * the section looks like is the colour under it. That colour is the one Plan measured where the image is
+ * drawn (`colourUnderImage`), not the first background in the colour list: there the largest colour is
+ * the navy panel in front of the pattern, and naming it put the pattern over navy. Where no colour was
+ * measured, none is named.
+ */
+const tintLines = (
+    tints: NonNullable<PlannedComponent["backgroundImages"]>,
+    sizing: (image: NonNullable<PlannedComponent["backgroundImages"]>[number]) => string
+): string[] =>
+    tints.flatMap(image => {
+        const opacity = `about ${Math.round((image.opacity ?? 0) * 100)}% opaque`;
+        const under = image.under
+            ? image.under.token
+                ? `var(${image.under.token.cssVariable}) (${image.under.hex})`
+                : `${image.under.hex} (no theme variable is near this colour, use it directly)`
+            : null;
+        return [
+            `This section's background has a mostly see-through image drawn over a colour (${opacity}):`,
+            "the colour shows through it and is what the section looks like there.",
+            ...(under
+                ? [`Under it, paint ${under}, and set the image over it as a CSS background-image:`]
+                : [
+                      "Paint the colour the reference image shows through it, and set the image over it as a",
+                      "CSS background-image:"
+                  ]),
+            sizing(image),
+            "",
+            "Use the URL exactly as given, and keep both the colour and the image over it."
+        ];
+    });
 
 /**
  * The section's images that no prop carries — logos, badges, marks the contract left out.
@@ -318,6 +362,10 @@ export const imageFactLines = (component: PlannedComponent): string[] => {
         inline: "an element in the section"
     } as const;
     const tone = (image: (typeof images)[number]) => {
+        if (image.role === "background" && isTranslucent(image)) {
+            // A tint, not a logo: the warnings below are about a picture drawn on a surface.
+            return `, ${image.tone ? `${image.tone}, ` : ""}mostly see-through (about ${Math.round((image.opacity ?? 0) * 100)}% opaque) — the colour behind it shows through`;
+        }
         if (!image.tone) {
             return "";
         }

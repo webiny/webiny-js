@@ -6,6 +6,7 @@ import type {
     ClassifyArtifact,
     PlanArtifact,
     PlannedComponent,
+    SectionBackgroundImage,
     SegmentArtifact
 } from "~/domain/artifacts.js";
 import { ComponentExtractionAi } from "~/features/shared/ai.js";
@@ -19,10 +20,11 @@ import { sectionBackgroundImages } from "./sectionBackgroundImages.js";
 import { sectionUnboundImages } from "./sectionUnboundImages.js";
 import { sectionIcons } from "./sectionIcons.js";
 import { sectionImages, sectionLayout } from "./sectionLayout.js";
-import { createToneReader } from "./imageTone.js";
+import { createToneReader, isTranslucent } from "~/features/shared/imageTone.js";
 import { sectionTextAlignment } from "./sectionTextAlignment.js";
 import { sectionTypeScale } from "./sectionTypeScale.js";
 import { findNodeByBox } from "../cluster/sectionNode.js";
+import { colourUnderImage } from "../cluster/resolvedColours.js";
 import { stageEntry } from "~/domain/ledger.js";
 import { referenceTexts } from "./referenceTexts.js";
 
@@ -107,7 +109,7 @@ class PlanHandlerImpl implements StageHandler.Interface {
         const referenceSection = async (
             url: string,
             sectionIndex: number
-        ): Promise<CapturedNode | null> => {
+        ): Promise<{ node: CapturedNode; tree: CapturedNode } | null> => {
             const page = segmentByUrl.get(url);
             const section = page?.sections.find(candidate => candidate.index === sectionIndex);
             if (!page || !section) {
@@ -126,11 +128,62 @@ class PlanHandlerImpl implements StageHandler.Interface {
                 treeCache.set(page.treeRef, tree);
             }
             const tree = treeCache.get(page.treeRef) ?? null;
-            return tree ? findNodeByBox(tree, section.box) : null;
+            const node = tree ? findNodeByBox(tree, section.box) : null;
+            return tree && node ? { node, tree } : null;
         };
 
         // Pictures are measured once per URL for the whole stage: a logo repeats on every page.
         const readTone = createToneReader();
+
+        /*
+         * Each background image measured like the pictures, and for a see-through one the colour that
+         * shows through it, read where the image is drawn. Generate words a tint over a colour
+         * differently from a photograph that covers the section, and has to be told which colour.
+         */
+        const measureBackgroundImages = async (
+            images: SectionBackgroundImage[],
+            section: CapturedNode | undefined,
+            tree: CapturedNode | null
+        ): Promise<SectionBackgroundImage[]> => {
+            if (images.length === 0) {
+                return images;
+            }
+            const urls = new Set<string>();
+            const walk = (node: CapturedNode): void => {
+                if (node.background?.url) {
+                    urls.add(node.background.url);
+                }
+                (node.children ?? []).forEach(walk);
+            };
+            if (tree) {
+                walk(tree);
+            }
+            const seeThroughUrls = new Set<string>();
+            await Promise.all(
+                [...urls].map(async url => {
+                    const tone = await readTone(url);
+                    if (tone && isTranslucent(tone)) {
+                        seeThroughUrls.add(url);
+                    }
+                })
+            );
+            const seeThrough = (url: string) => seeThroughUrls.has(url);
+            return Promise.all(
+                images.map(async image => {
+                    const tone = await readTone(image.url);
+                    const measured: SectionBackgroundImage = {
+                        ...image,
+                        ...(tone?.opacity !== undefined ? { opacity: tone.opacity } : {}),
+                        ...(tone?.tone ? { tone: tone.tone } : {})
+                    };
+                    if (!isTranslucent(measured) || !section || !tree) {
+                        return measured;
+                    }
+                    const under = colourUnderImage(tree, section, image.url, manifest, seeThrough);
+                    return under ? { ...measured, under } : measured;
+                })
+            );
+        };
 
         let manifest: ThemeManifest | null = null;
         const manifestResult = await this.manifestResolver.resolve(
@@ -238,13 +291,15 @@ class PlanHandlerImpl implements StageHandler.Interface {
                         ].slice(0, MAX_MEMBERS_HARVESTED);
 
                         const nodes: CapturedNode[] = [];
+                        let representativeTree: CapturedNode | null = null;
                         for (const member of members) {
                             const resolved = await referenceSection(
                                 member.url,
                                 member.sectionIndex
                             );
                             if (resolved) {
-                                nodes.push(resolved);
+                                representativeTree ??= resolved.tree;
+                                nodes.push(resolved.node);
                             }
                         }
 
@@ -299,7 +354,13 @@ class PlanHandlerImpl implements StageHandler.Interface {
                             clusterTexts: cluster.cluster.observedTexts,
                             typeScale,
                             textAlignments,
-                            backgroundImages,
+                            // Measured like the pictures: Generate words a tint over a colour
+                            // differently from a photograph that covers the section.
+                            backgroundImages: await measureBackgroundImages(
+                                backgroundImages,
+                                nodes[0],
+                                representativeTree
+                            ),
                             // After binding, so what the props took is known.
                             unboundImages: nodes[0]
                                 ? sectionUnboundImages(nodes[0], contract.props)

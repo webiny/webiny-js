@@ -149,9 +149,14 @@ export interface SectionImageFact {
     height: number;
     /** Share of the section's area the picture covers, 0-1. */
     coverage: number;
-    /** From the file's opaque pixels; absent when the file could not be read. */
+    /**
+     * From the file's opaque pixels, or, where it has none, from what it paints weighted by opacity.
+     * Absent when the file could not be read or paints nothing.
+     */
     tone?: "light" | "dark" | "mid";
     transparent?: boolean;
+    /** Mean opacity over the file, 0-1. Low means a tint over a colour, not a cover. */
+    opacity?: number;
 }
 
 /** An icon-font icon a section shows: what it is for, and where it links. */
@@ -170,6 +175,11 @@ export interface SectionImage {
 
 export interface SectionBackgroundImage extends BackgroundImage {
     area: number;
+    /** Measured from the file in Plan; absent when it could not be read. See `isTranslucent`. */
+    opacity?: number;
+    tone?: SectionImageFact["tone"];
+    /** For a see-through image, the colour that shows through it. See `colourUnderImage`. */
+    under?: Pick<ResolvedColour, "hex" | "token">;
 }
 
 /** A CSS background image, with the three properties that decide how it covers its box. */

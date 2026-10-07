@@ -56,8 +56,20 @@ const isTransparent = (value: string): boolean => /rgba\([^)]*,\s*0(\.0+)?\s*\)/
  * The capture was right and the conclusion was wrong, which is the more dangerous combination: the
  * colour is genuinely set, so nothing looked like an error. Reporting it is worse than reporting
  * nothing, because `resolveSectionColours` feeds an instruction rather than a guess.
+ *
+ * Except where the image is a tint rather than a cover. Park city's Property Description draws faint
+ * white lines at 10-20% opacity over the page's light backdrop, and 2424 Tulane's highlights draw
+ * circles over their own pale green: treated as covers, the colour that actually shows was dropped,
+ * the largest remaining colour (a navy text panel, dark inner boxes) became the section's background,
+ * and both rendered dark. Which images are tints is measured from the files, which the tree does not
+ * hold, so the caller passes it in; an image it could not measure is treated as a cover, as before.
  */
-const isCovered = (node: CapturedNode): boolean => Boolean(node.background?.url);
+export type SeeThrough = (url: string) => boolean;
+
+const COVERS: SeeThrough = () => false;
+
+const isCovered = (node: CapturedNode, seeThrough: SeeThrough): boolean =>
+    Boolean(node.background?.url) && !seeThrough(node.background!.url);
 
 const toRgb = (hex: string): [number, number, number] => [
     parseInt(hex.slice(1, 3), 16),
@@ -157,7 +169,11 @@ const BACKDROP_SHOWS = 0.5;
  * the way up: 2424 Tulane's header floats over the hero photograph, so what is behind it is the
  * photo, not the page colour its ancestor paints.
  */
-export const backdropColour = (root: CapturedNode, target: CapturedNode): string | null => {
+export const backdropColour = (
+    root: CapturedNode,
+    target: CapturedNode,
+    seeThrough: SeeThrough = COVERS
+): string | null => {
     const path: CapturedNode[] = [];
     const find = (current: CapturedNode): boolean => {
         if (current === target) {
@@ -195,7 +211,7 @@ export const backdropColour = (root: CapturedNode, target: CapturedNode): string
             return false;
         }
         if (
-            (isCovered(current) || current.tag === "img" || current.tag === "video") &&
+            (isCovered(current, seeThrough) || current.tag === "img" || current.tag === "video") &&
             current !== root &&
             overlap(current.box) >= BACKDROP_SHOWS * box.width * box.height
         ) {
@@ -211,7 +227,7 @@ export const backdropColour = (root: CapturedNode, target: CapturedNode): string
         if (overlays(ancestor)) {
             return null;
         }
-        if (isCovered(ancestor)) {
+        if (isCovered(ancestor, seeThrough)) {
             return null;
         }
         const background = ancestor.styles?.backgroundColor;
@@ -236,7 +252,8 @@ const MAX_COLOURS = 8;
 export const resolveSectionColours = (
     node: CapturedNode,
     manifest: ThemeManifest | null,
-    backdrop: string | null = null
+    backdrop: string | null = null,
+    seeThrough: SeeThrough = COVERS
 ): ResolvedColour[] => {
     const roles = manifest ? themeColourRoles(manifest) : [];
     const areas = new Map<string, { role: ResolvedColour["role"]; hex: string; area: number }>();
@@ -262,11 +279,15 @@ export const resolveSectionColours = (
             const styles = current.styles ?? {};
 
             // A background image, or a picture laid in as an element, paints what is behind it.
-            if (isCovered(current) || current.tag === "img" || current.tag === "video") {
+            if (
+                isCovered(current, seeThrough) ||
+                current.tag === "img" ||
+                current.tag === "video"
+            ) {
                 paintedArea += area;
             }
             const background = styles.backgroundColor;
-            if (background && !isTransparent(background) && !isCovered(current)) {
+            if (background && !isTransparent(background) && !isCovered(current, seeThrough)) {
                 const hex = colorToHex(background);
                 if (hex) {
                     add(ROLE_BY_PROP.backgroundColor, hex, area);
@@ -327,4 +348,50 @@ export const resolveSectionColours = (
                     : null
             };
         });
+};
+
+/**
+ * The colour that shows through a see-through background image: what the section looks like where
+ * the image is drawn.
+ *
+ * Taken where the image is, not from the section's colour list. Park city's pattern sits on the
+ * section's root over the page's light backdrop, while the largest colour the section measures is the
+ * navy of the text panel in front of it; naming the list's first background as "the colour under the
+ * pattern" told Generate the pattern was over navy, which is the opposite of the page. So: the image
+ * element's own background colour where it paints one, else the colour behind that element. Null when
+ * neither can be read, and the caller says nothing rather than guessing.
+ */
+export const colourUnderImage = (
+    root: CapturedNode,
+    section: CapturedNode,
+    url: string,
+    manifest: ThemeManifest | null,
+    seeThrough: SeeThrough
+): Pick<ResolvedColour, "hex" | "token"> | null => {
+    let host: CapturedNode | null = null;
+    const find = (current: CapturedNode): void => {
+        if (
+            current.background?.url === url &&
+            (!host || current.box.width * current.box.height > host.box.width * host.box.height)
+        ) {
+            host = current;
+        }
+        (current.children ?? []).forEach(find);
+    };
+    find(section);
+    if (!host) {
+        return null;
+    }
+    const element: CapturedNode = host;
+    const own = element.styles?.backgroundColor;
+    const hex =
+        own && !isTransparent(own) ? colorToHex(own) : backdropColour(root, element, seeThrough);
+    if (!hex) {
+        return null;
+    }
+    const token = manifest ? nearest(hex, "background", themeColourRoles(manifest)) : null;
+    return {
+        hex,
+        token: token ? { path: token.path, cssVariable: token.cssVariable, hex: token.hex } : null
+    };
 };

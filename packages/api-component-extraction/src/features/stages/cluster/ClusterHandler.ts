@@ -15,6 +15,7 @@ import { OverrideRepository } from "~/domain/abstractions.js";
 import { effectiveClusterThreshold } from "~/domain/overrides.js";
 import { findNodeByBox } from "./sectionNode.js";
 import { backdropColour, resolveSectionColours } from "./resolvedColours.js";
+import { createToneReader, isTranslucent } from "~/features/shared/imageTone.js";
 import { structuralSignature } from "./signature.js";
 import { buildTokenLookup, sectionShape, type TokenLookup } from "./sectionShape.js";
 import { sectionDigest } from "./digest.js";
@@ -97,6 +98,36 @@ class ClusterHandlerImpl implements StageHandler.Interface {
         // representatives, so it needs the whole set, not a per-signature bucket.
         const entries: MemberEntry[] = [];
 
+        /*
+         * Which background images are tints rather than covers, measured from the files once per URL.
+         * Read for every background on the page, not only inside sections: the backdrop behind a
+         * section can be an ancestor's pattern too.
+         */
+        const readTone = createToneReader();
+        const seeThroughUrls = new Set<string>();
+        const unreadable = new Set<string>();
+        const measureBackgrounds = async (tree: CapturedNode): Promise<void> => {
+            const urls = new Set<string>();
+            const walk = (node: CapturedNode): void => {
+                if (node.background?.url) {
+                    urls.add(node.background.url);
+                }
+                (node.children ?? []).forEach(walk);
+            };
+            walk(tree);
+            await Promise.all(
+                [...urls].map(async url => {
+                    const tone = await readTone(url);
+                    if (!tone) {
+                        unreadable.add(url);
+                    } else if (isTranslucent(tone)) {
+                        seeThroughUrls.add(url);
+                    }
+                })
+            );
+        };
+        const seeThrough = (url: string) => seeThroughUrls.has(url);
+
         for (let index = 0; index < total; index++) {
             const page = segment.pages[index];
             const treeResult = await context.blobs.get(page.treeRef);
@@ -111,6 +142,7 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                 await context.log.error({ message: `Malformed tree for ${page.url}.` });
                 continue;
             }
+            await measureBackgrounds(tree);
 
             for (const section of page.sections) {
                 // Resolve the section back to its node by its box, not by tree position — a section may
@@ -143,7 +175,8 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                     resolvedColours: resolveSectionColours(
                         node,
                         manifest.isOk() ? manifest.value : null,
-                        backdropColour(tree, node)
+                        backdropColour(tree, node, seeThrough),
+                        seeThrough
                     )
                 };
                 entries.push({
@@ -156,6 +189,12 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                 message: `Fingerprinted ${index + 1}/${total} page(s)`,
                 current: index + 1,
                 total
+            });
+        }
+
+        if (seeThroughUrls.size > 0 || unreadable.size > 0) {
+            await context.log.info({
+                message: `Background images: ${seeThroughUrls.size} measured as see-through, so the colour behind them is kept${unreadable.size > 0 ? `; ${unreadable.size} could not be read and are treated as covering what is behind them (${[...unreadable].slice(0, 3).join(", ")}${unreadable.size > 3 ? ", …" : ""})` : ""}.`
             });
         }
 
