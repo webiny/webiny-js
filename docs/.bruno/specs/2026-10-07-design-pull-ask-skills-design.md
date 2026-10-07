@@ -12,7 +12,7 @@ Two project skills that connect Claude Code with Claude Design through the `clau
 ## Constraints
 
 - The skills are generic: they work with any Claude Design project, not only the workflows project.
-- The skills live in `.claude/skills/design-pull/` and `.claude/skills/design-ask/` and are committed.
+- The skills live in `.claude/skills/design-pull/SKILL.md` and `.claude/skills/design-ask/SKILL.md` and are committed. Each `SKILL.md` has the project's frontmatter (`name`, `description`, `user_invocable: true`), as in `.claude/skills/tester/SKILL.md`. Arguments arrive as the skill's free-text arguments; the skill parses the folder, subcommand and flags from them.
 - Everything design-related stays local: mirrored files, catalogue, question log and snapshots live in a design folder excluded through the repository's `info/exclude` file (never `.gitignore`). Nothing design-related is committed.
 - The exclude file path is resolved with `git rev-parse --git-path info/exclude`. In worktrees this is the shared exclude file, so an entry applies to every worktree, while the design folder itself exists only in the worktree where it was set up.
 - No nested git repositories inside design folders.
@@ -71,7 +71,9 @@ Every project path, from `list_files` or a zip entry, is validated before it tou
 
 macOS file systems are case-insensitive by default. `plan` compares the paths it would mirror after `casefold()` and Unicode NFC normalization; when two paths collide, both are rejected.
 
-Rejected paths are reported and skipped. Zip extraction uses Python's `zipfile`, validates every member, and skips symlink and directory entries. `unzip` is never used.
+Rejected paths are reported and skipped. Zip extraction uses Python's `zipfile`, validates every member, and skips symlink and directory entries. `unzip` is never used. Only members that match a listing entry are extracted, and each is read in chunks and abandoned as soon as it exceeds its listing size, so an oversized or malicious zip cannot fill the disk.
+
+Mirrored files are handled as bytes and never re-encoded. Files the script parses (`catalogue.md`, `questions.md`, `answers.md`, listings, raw read files) are read and written as UTF-8.
 
 Paths printed for the user to run (for example the diff hint) are shell-quoted with `shlex.quote`, because project paths contain spaces.
 
