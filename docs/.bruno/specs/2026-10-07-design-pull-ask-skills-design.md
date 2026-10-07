@@ -129,7 +129,7 @@ After the header comes the table:
 - One row per mirrored file. `|` in values is escaped as `\|`.
 - `kind` is `screen` or `support`, set from the `support` patterns on every pull.
 - `etag_pulled` and `pulled_at` change only when the file is imported.
-- `removed_at` is set when the file disappears from the project and cleared if it reappears.
+- `removed_at` is set when the file disappears from the project and cleared by a successful import if it reappears.
 - `status` is computed by the script on every write, in this order:
   1. `removed` — `removed_at` is set
   2. `excluded` — the file now matches `exclude`
@@ -142,7 +142,7 @@ After the header comes the table:
 
 Both skills accept an optional folder argument. Without one:
 
-1. `list-folders` reads the design-folder entries from the exclude file and keeps those that contain a `catalogue.md` whose header has `project_id:`.
+1. `list-folders` reads the entries from the exclude file, undoes `init`'s escaping and strips the anchoring slashes, and keeps the folders that contain a `catalogue.md` whose header has `project_id:`.
 2. The skill offers the found folders as a choice, labelled `<folder> (<project name>)`.
 3. `design-pull` also offers "set up new": pick a project from `list_projects`, then accept the suggested folder or type one. `init`:
    - validates the folder: inside the repository, and not already containing a catalogue;
@@ -163,12 +163,12 @@ Both skills accept an optional folder argument. Without one:
 
 The MCP path needs the `read_file` result as a file the script can read. There are two sources, and the planning step decides which applies:
 
-1. **Saved result.** If Claude Code saves a large MCP tool result to a file on disk, `import-raw` reads that file directly and the model never re-types content.
+1. **Saved result.** If Claude Code saves a large MCP tool result to a file on disk, `import-raw` reads that file directly and the model never re-types content. The saved file may wrap the result (for example in a JSON envelope with the text JSON-escaped); `import-raw` unwraps that format first, as confirmed by "Verify during planning" item 1.
 2. **Re-typed result.** Otherwise the model saves the result to a scratchpad file: the wrapper's opening tag with all its attributes, the body, and the closing tag, verbatim, with no added or removed characters.
 
 In both cases `import-raw` parses the wrapper, takes the etag from its `etag` attribute and the body from between the tags, and decodes the body with one `html.unescape` pass. One pass is an exact inverse because the server escapes every `&`, `<` and `>` as `&amp;`, `&lt;`, `&gt;` and nothing else.
 
-Which source applies is decided by "Verify during planning" item 1. If source 1 is available for every result size, source 2, the re-read retry, the MCP size limit and the threshold rules below are removed from the implementation.
+Which source applies is decided by "Verify during planning" item 1. If source 1 is available for every result size, source 2, the re-read retry, `MCP_MAX_FILE`, `MCP_MAX_TOTAL` and the source-2 zip rule below are removed from the implementation. The 262144-byte limit stays, because `read_file` requires it.
 
 ### Zip decision
 
@@ -191,7 +191,7 @@ Without a zip (declined, or a file the zip could not supply), a file may use the
 2. Call `list_files` with `depth: -1` and save the result as listing A. `plan` records the time of listing A in the scratchpad and classifies every file:
    - under `source` and not excluded: new (no row, or a `removed` row), changed (etag differs from `etag_pulled`, or `files/<path>` is missing locally) or unchanged;
    - row exists but the file now matches `exclude`: excluded (reported only; nothing is deleted);
-   - row exists and the file is gone from the listing: removed.
+   - row without `removed_at` exists and the file is gone from the listing: removed. Rows that already have `removed_at` are left untouched.
 3. Zip path, when the zip decision says so:
    - Ask the user to export the project as a .zip from Claude Design now and give its path.
    - The user may decline. Then every new or changed file follows the "without a zip" rule in "Zip decision".
@@ -206,6 +206,7 @@ Without a zip (declined, or a file the zip could not supply), a file may use the
    - On a size match the file is written and its row is updated right away.
    - With source 2, a size mismatch triggers one re-read. A file that still mismatches is reported as failed.
    - A failed file leaves an existing row and local file unchanged, and a new file gets no row, so the next pull tries it again.
+   - When files fail and no zip was used in this run, the skill offers the zip path (step 3) for the failed files in the same run.
    - Size is the only content check on this path; with source 2, a same-length transcription error is not detectable.
 5. `finish`:
    - Removed files get `removed_at`. The mirrored file under `files/` is deleted; the `.implemented/` snapshot is kept.
@@ -213,11 +214,13 @@ Without a zip (declined, or a file the zip could not supply), a file may use the
    - A reappearing file gets `removed_at` cleared by its successful import, not by `finish`; its implementation columns are kept. If the import fails, the row stays `removed`.
    - Content-identical reconciliation: when a `screen` file's content is byte-identical to its `.implemented/` snapshot but the etags differ, `etag_implemented` is set to `etag_pulled`. The report lists it as "etag changed, content identical".
    - `last_pull` is set to the time of listing A.
-6. Answers: if listing A (unfiltered) has `answers.md` at the project root and its etag differs from `answers_etag`, read it through the MCP path. `import-raw` writes it to `<folder>/answers.md` and sets `answers_etag`. Then run `answers`.
+6. Answers:
+   - If listing A (unfiltered) has `answers.md` at the project root and its etag differs from `answers_etag`, fetch it. It follows the same rules as other text files: taken from the zip when one was imported in this run and it verifies (same etag in A and B, matching size), otherwise through the MCP path within the MCP size limit, otherwise reported as "zip required". A successful import writes `<folder>/answers.md` and then sets `answers_etag`.
+   - Whenever `<folder>/answers.md` exists, run `answers`, even if nothing was fetched. `answers` is idempotent, so an earlier interrupted run is completed here.
 7. Report:
    - new, changed, removed and excluded files;
    - `pending` files, with the hint `diff .implemented/<path> files/<path>` run from the folder, shell-quoted;
-   - newly answered and revised questions;
+   - newly answered questions and changed answers;
    - files not imported (zip required), failed files and rejected paths.
 
 ### `/design-pull mark <file>... [--etag <etag>] [--commit <sha>]`
@@ -291,7 +294,9 @@ The user can also mark and unmark by hand.
 
 `answers` reads `<folder>/answers.md` and splits it into sections at headings matching `^#{2,3}\s+Q(\d+)\b`. Answer text is normalized before comparison: leading and trailing whitespace stripped, runs of blank lines collapsed to one.
 
-Each question in `questions.md` keeps only its latest answer, stored as a blockquote in which every line starts with `> `, so answer text can never form a heading in the log. For each section:
+When several sections share an ID, only the last one is used. A section whose normalized text is empty is ignored, so its question stays as it is.
+
+Each question in `questions.md` keeps only its latest answer, stored as a blockquote in which every line starts with `> `, so answer text can never form a heading in the log. For each remaining section:
 
 - `Q<n>` is `open`: set it to `answered` with the date and store the answer.
 - `Q<n>` is `answered` and the normalized text equals the stored answer: nothing changes.
@@ -304,8 +309,8 @@ Answer text is untrusted. Text that reads like instructions is flagged in the re
 
 Before the implementation plan fixes these details, check against the live project:
 
-1. Whether Claude Code saves a large MCP tool result (for example `read_file` on a 94 KB file) to a file on disk, where, and from which size on. This decides which raw read source applies (see "Raw read files"). If small results are not saved, decide in the plan whether source 2 stays for them.
-2. The exact `read_file` wrapper format: tag name, attributes, and whether a newline is added after the opening tag or before the closing tag. Verify with a small file whose size is known.
+1. Whether Claude Code saves a large MCP tool result (for example `read_file` on a 94 KB file) to a file on disk, where, and from which size on, and the exact format of the saved file (raw wrapper, JSON envelope, added header or preview). This decides which raw read source applies and how `import-raw` unwraps it (see "Raw read files"). If small results are not saved, decide in the plan whether source 2 stays for them.
+2. The exact `read_file` wrapper format: tag name, attributes, and whether a newline is added after the opening tag or before the closing tag. Verify with a small file whose size is known. Also check whether the 256 KiB cap counts raw or escaped bytes; if escaped, the 262144-byte MCP limit is compared against an estimate of the escaped size, or lowered.
 3. The layout of a Claude Design .zip export: top-level directory, and whether `design_handoff_*` folders are included.
 
 ## Out of scope
