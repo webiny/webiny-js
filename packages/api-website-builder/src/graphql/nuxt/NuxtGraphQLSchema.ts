@@ -7,7 +7,7 @@ import { NuxtConfig } from "~/features/nuxt/index.js";
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 
 class Schema implements CoreGraphQLSchemaFactory.Interface {
-    public getSchemaKey = staticSchemaKey("api-website-builder/Schema");
+    public getSchemaKey = staticSchemaKey("api-website-builder/NuxtSchema");
 
     public async execute(builder: GraphQLSchemaBuilder.Interface): CoreGraphQLSchemaFactory.Return {
         builder.addTypeDefs(/* GraphQL */ `
