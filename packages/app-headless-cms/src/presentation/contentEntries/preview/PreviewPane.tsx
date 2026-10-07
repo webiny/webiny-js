@@ -15,11 +15,21 @@ interface PreviewPaneProps {
     previewPath: string;
     entryId: string;
     entryData: Record<string, unknown> | null;
+    /**
+     * Entry data used to resolve the preview path, with referenced entries' values filled in.
+     */
+    urlEntryData: Record<string, unknown> | null;
 }
 
 type ViewportMode = "desktop" | "mobile";
 
-export const PreviewPane = ({ domain, previewPath, entryId, entryData }: PreviewPaneProps) => {
+export const PreviewPane = ({
+    domain,
+    previewPath,
+    entryId,
+    entryData,
+    urlEntryData
+}: PreviewPaneProps) => {
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
     const messengerRef = useRef<Messenger | null>(null);
     const entryDataRef = useRef(entryData);
@@ -32,11 +42,7 @@ export const PreviewPane = ({ domain, previewPath, entryId, entryData }: Preview
 
     entryDataRef.current = entryData;
 
-    const displayUrl = buildDisplayUrl(
-        domain,
-        previewPath,
-        (entryData as Record<string, unknown>) || {}
-    );
+    const displayUrl = buildDisplayUrl(domain, previewPath, urlEntryData || {});
 
     const [address, setAddress] = useState(displayUrl);
 
