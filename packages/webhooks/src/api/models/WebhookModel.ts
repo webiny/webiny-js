@@ -4,7 +4,7 @@ import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
 class WebhookModelFactory implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
         const model = builder
-            .private({ modelId: WEBHOOK_MODEL_ID, name: "Webhook" })
+            .private({ modelId: WEBHOOK_MODEL_ID, name: "Webhook", lifecycleEvents: false })
             .tags(["$publishing:false", "$hidden:true"]);
 
         model.fields(fields => ({

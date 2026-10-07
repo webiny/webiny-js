@@ -3,6 +3,7 @@ import { ContentEntriesCacheProvider } from "./ContentEntriesCacheProvider.js";
 import { GetEntryFeature } from "./getEntry/feature.js";
 import { ListEntriesFeature } from "./listEntries/feature.js";
 import { CreateEntryFeature } from "./createEntry/feature.js";
+import { DuplicateEntryFeature } from "./duplicateEntry/feature.js";
 import { UpdateEntryFeature } from "./updateEntry/feature.js";
 import { PublishEntryFeature } from "./publishEntry/feature.js";
 import { UnpublishEntryFeature } from "./unpublishEntry/feature.js";
@@ -32,6 +33,7 @@ export const ContentEntryFeature = createFeature({
         SearchContentEntriesFeature.register(container);
         GetContentEntriesFeature.register(container);
         CreateEntryFeature.register(container);
+        DuplicateEntryFeature.register(container);
         UpdateEntryFeature.register(container);
         PublishEntryFeature.register(container);
         UnpublishEntryFeature.register(container);

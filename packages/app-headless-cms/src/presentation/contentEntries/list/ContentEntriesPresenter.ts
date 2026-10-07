@@ -11,6 +11,7 @@ import { DeleteEntryUseCase } from "~/features/contentEntry/deleteEntry/abstract
 import { PublishEntryUseCase } from "~/features/contentEntry/publishEntry/abstractions.js";
 import { UnpublishEntryUseCase } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { MoveEntryUseCase } from "~/features/contentEntry/moveEntry/abstractions.js";
+import { DuplicateEntryUseCase } from "~/features/contentEntry/duplicateEntry/abstractions.js";
 import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
 import {
     ContentEntriesCacheProvider,
@@ -18,13 +19,15 @@ import {
 } from "~/features/contentEntry/abstractions.js";
 import {
     ContentEntriesPresenter as Abstraction,
-    type IContentEntriesViewModel
+    type IContentEntriesViewModel,
+    type IDuplicateEntryResult
 } from "./abstractions.js";
 import { ContentEntriesDataSource } from "./ContentEntriesDataSource.js";
 
 export const TRASH_ENTRY_DIALOG = "trash-entry";
 export const PUBLISH_ENTRY_DIALOG = "publish-entry";
 export const UNPUBLISH_ENTRY_DIALOG = "unpublish-entry";
+export const DUPLICATE_ENTRY_DIALOG = "duplicate-entry";
 
 class ContentEntriesPresenterImpl implements Abstraction.Interface {
     private selectedEntryId: string | null = null;
@@ -40,6 +43,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
         private publishEntryUseCase: PublishEntryUseCase.Interface,
         private unpublishEntryUseCase: UnpublishEntryUseCase.Interface,
         private moveEntryUseCase: MoveEntryUseCase.Interface,
+        private duplicateEntryUseCase: DuplicateEntryUseCase.Interface,
         private updateRevisionDescriptionUseCase: UpdateRevisionDescriptionUseCase.Interface,
         private cacheProvider: ContentEntriesCacheProvider.Interface,
         private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface
@@ -54,6 +58,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             | "publishEntryUseCase"
             | "unpublishEntryUseCase"
             | "moveEntryUseCase"
+            | "duplicateEntryUseCase"
             | "updateRevisionDescriptionUseCase"
             | "cacheProvider"
             | "getDescendantFoldersUseCase"
@@ -66,6 +71,7 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
             publishEntryUseCase: false,
             unpublishEntryUseCase: false,
             moveEntryUseCase: false,
+            duplicateEntryUseCase: false,
             updateRevisionDescriptionUseCase: false,
             cacheProvider: false,
             getDescendantFoldersUseCase: false,
@@ -198,6 +204,25 @@ class ContentEntriesPresenterImpl implements Abstraction.Interface {
         return true;
     }
 
+    async duplicateEntry(entry: CmsContentEntry): Promise<IDuplicateEntryResult | false> {
+        const model = this.model;
+        return this.confirmation.confirm(
+            DUPLICATE_ENTRY_DIALOG,
+            { entry },
+            async (): Promise<IDuplicateEntryResult> => {
+                try {
+                    const duplicate = await this.duplicateEntryUseCase.execute({
+                        model,
+                        revisionId: entry.id
+                    });
+                    return { entry: duplicate };
+                } catch (error) {
+                    return { error: error as Error };
+                }
+            }
+        );
+    }
+
     dispose(): void {
         if (this.disposeReaction) {
             this.disposeReaction();
@@ -218,6 +243,7 @@ export const ContentEntriesPresenter = Abstraction.createImplementation({
         PublishEntryUseCase,
         UnpublishEntryUseCase,
         MoveEntryUseCase,
+        DuplicateEntryUseCase,
         UpdateRevisionDescriptionUseCase,
         ContentEntriesCacheProvider,
         GetDescendantFoldersUseCase

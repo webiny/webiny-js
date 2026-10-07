@@ -1,5 +1,5 @@
 import { Result } from "@webiny/feature/api";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import {
     CreateEntryRevisionFromRepository,
     CreateEntryRevisionFromUseCase as UseCaseAbstraction
@@ -26,7 +26,7 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
         private repository: CreateEntryRevisionFromRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
-        private eventPublisher: EventPublisher.Interface,
+        private eventPublisher: EntryEventPublisher.Interface,
         private createEntryRevisionFromDataFactory: CreateEntryRevisionFromDataFactory.Interface
     ) {}
 
@@ -129,7 +129,7 @@ export const CreateEntryRevisionFromUseCase = UseCaseAbstraction.createImplement
         CreateEntryRevisionFromRepository,
         AccessControl,
         GetRevisionByIdUseCase,
-        EventPublisher,
+        EntryEventPublisher,
         CreateEntryRevisionFromDataFactory
     ]
 });
