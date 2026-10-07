@@ -54,7 +54,10 @@ const median = (values: number[]): number => {
  */
 export const SegmentView = createReactiveComponent(function SegmentView({ presenter }: Props) {
     const { vm } = presenter;
-    const artifact = vm.artifact as SegmentArtifactDto | null;
+    // Only this stage's artifact: on a tab switch the previous stage's is still loaded for a render,
+    // and another stage's shape here crashes the view (Plan's components carry no validation).
+    const artifact =
+        vm.artifactStage === "segment" ? (vm.artifact as SegmentArtifactDto | null) : null;
     const runId = vm.run?.id ?? "";
     const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
     // The section (by list position) currently focused via hover, or null.

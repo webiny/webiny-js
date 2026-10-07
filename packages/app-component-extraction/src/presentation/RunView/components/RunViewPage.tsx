@@ -248,7 +248,7 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
      * number shown under "parameters this stage ran with" has to be the one it ran with.
      */
     const segmentHeight =
-        selected === "segment" && vm.artifact
+        selected === "segment" && vm.artifactStage === "segment" && vm.artifact
             ? ((vm.artifact as SegmentArtifactDto).maxSectionHeight ?? null)
             : null;
 

@@ -226,7 +226,9 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
     const artifact =
         vm.machineArtifactStage === "discover"
             ? (vm.machineArtifact as DiscoverArtifactDto | null)
-            : (vm.artifact as DiscoverArtifactDto | null);
+            : vm.artifactStage === "discover"
+              ? (vm.artifact as DiscoverArtifactDto | null)
+              : null;
     const pageCap = vm.job?.pageCap ?? 0;
     const [manualInput, setManualInput] = useState("");
 

@@ -506,7 +506,9 @@ const Fact = ({ label, value }: { label: string; value: React.ReactNode }) => (
  */
 export const PlanView = createReactiveComponent(function PlanView({ presenter }: Props) {
     const { vm } = presenter;
-    const artifact = vm.artifact as PlanArtifactDto | null;
+    // Only this stage's artifact: on a tab switch the previous stage's is still loaded for a render,
+    // and another stage's shape here crashes the view (Plan's components carry no validation).
+    const artifact = vm.artifactStage === "plan" ? (vm.artifact as PlanArtifactDto | null) : null;
     const projection = vm.planProjection;
     const generating = vm.actionStage === "generate";
     const runId = vm.run?.id ?? "";

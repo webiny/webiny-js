@@ -46,7 +46,10 @@ interface Tile {
  */
 export const CaptureView = createReactiveComponent(function CaptureView({ presenter }: Props) {
     const { vm } = presenter;
-    const artifact = vm.artifact as CaptureArtifactDto | null;
+    // Only this stage's artifact: on a tab switch the previous stage's is still loaded for a render,
+    // and another stage's shape here crashes the view (Plan's components carry no validation).
+    const artifact =
+        vm.artifactStage === "capture" ? (vm.artifact as CaptureArtifactDto | null) : null;
     const runId = vm.run?.id ?? "";
     const [lightbox, setLightbox] = useState<CapturePageDto | null>(null);
     const [selected, setSelected] = useState<Set<string>>(new Set());

@@ -170,7 +170,10 @@ const PromoteRow = ({
 export const PromoteView = createReactiveComponent(function PromoteView({ presenter }: Props) {
     const { vm } = presenter;
     const { goToRoute } = useRouter();
-    const result = vm.artifact as PromoteArtifactDto | null;
+    // Only this stage's artifact: on a tab switch the previous stage's is still loaded for a render,
+    // and another stage's shape here crashes the view (Plan's components carry no validation).
+    const result =
+        vm.artifactStage === "promote" ? (vm.artifact as PromoteArtifactDto | null) : null;
     const promoting = vm.actionStage === "promote";
     const hasDecisions = Object.keys(vm.decisions).length > 0;
     const library = new Set(vm.libraryNames);

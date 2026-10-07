@@ -358,7 +358,10 @@ const SelectionBar = ({ presenter }: Props) => {
  */
 export const ClusterView = createReactiveComponent(function ClusterView({ presenter }: Props) {
     const { vm } = presenter;
-    const artifact = vm.artifact as ClusterArtifactDto | null;
+    // Only this stage's artifact: on a tab switch the previous stage's is still loaded for a render,
+    // and another stage's shape here crashes the view (Plan's components carry no validation).
+    const artifact =
+        vm.artifactStage === "cluster" ? (vm.artifact as ClusterArtifactDto | null) : null;
     const runId = vm.run?.id ?? "";
     const [lightbox, setLightbox] = useState<{ cropRef: string; alt: string } | null>(null);
     // Stable so it doesn't defeat ClusterCard's memoisation.

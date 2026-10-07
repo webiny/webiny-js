@@ -132,7 +132,10 @@ const ClassifyRow = ({
  */
 export const ClassifyView = createReactiveComponent(function ClassifyView({ presenter }: Props) {
     const { vm } = presenter;
-    const artifact = vm.artifact as ClassifyArtifactDto | null;
+    // Only this stage's artifact: on a tab switch the previous stage's is still loaded for a render,
+    // and another stage's shape here crashes the view (Plan's components carry no validation).
+    const artifact =
+        vm.artifactStage === "classify" ? (vm.artifact as ClassifyArtifactDto | null) : null;
     const machine =
         vm.machineArtifactStage === "classify"
             ? (vm.machineArtifact as ClassifyArtifactDto | null)

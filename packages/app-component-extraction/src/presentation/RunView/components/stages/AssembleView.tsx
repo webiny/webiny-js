@@ -154,7 +154,10 @@ const AssembleCard = ({ page, runId }: { page: AssembledPageDto; runId: string }
  */
 export const AssembleView = createReactiveComponent(function AssembleView({ presenter }: Props) {
     const { vm } = presenter;
-    const artifact = vm.artifact as AssembleArtifactDto | null;
+    // Only this stage's artifact: on a tab switch the previous stage's is still loaded for a render,
+    // and another stage's shape here crashes the view (Plan's components carry no validation).
+    const artifact =
+        vm.artifactStage === "assemble" ? (vm.artifact as AssembleArtifactDto | null) : null;
     const runId = vm.run?.id ?? "";
 
     if (vm.artifactLoading && !artifact) {

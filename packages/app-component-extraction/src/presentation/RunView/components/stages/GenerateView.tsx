@@ -514,7 +514,10 @@ const GenerateCard = ({
  */
 export const GenerateView = createReactiveComponent(function GenerateView({ presenter }: Props) {
     const { vm } = presenter;
-    const artifact = vm.artifact as GenerateArtifactDto | null;
+    // Only this stage's artifact: on a tab switch the previous stage's is still loaded for a render,
+    // and another stage's shape here crashes the view (Plan's components carry no validation).
+    const artifact =
+        vm.artifactStage === "generate" ? (vm.artifact as GenerateArtifactDto | null) : null;
     const runId = vm.run?.id ?? "";
     // Opening a component's code is a fetch: the Generate artifact references its components rather
     // than carrying their source, so the list is served without it.
