@@ -8,7 +8,8 @@ class RecordLockingPrivateModelImpl implements ModelFactory.Interface {
             builder
                 .private({
                     modelId: RECORD_LOCKING_MODEL_ID,
-                    name: "Record Lock Tracking"
+                    name: "Record Lock Tracking",
+                    lifecycleEvents: false
                 })
                 .fields(fields => ({
                     targetId: fields.text().label("Target ID").required("Target ID is required."),

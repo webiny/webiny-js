@@ -8,7 +8,8 @@ class FolderPrivateModelImpl implements ModelFactory.Interface {
             builder
                 .private({
                     modelId: FOLDER_MODEL_ID,
-                    name: "ACO - Folder"
+                    name: "ACO - Folder",
+                    lifecycleEvents: false
                 })
                 .fields(fields => ({
                     title: fields.text().label("Title").required("Value is required."),

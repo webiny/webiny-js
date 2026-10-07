@@ -6,7 +6,8 @@ class VariantModelFactory implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
         const model = builder.private({
             modelId: VARIANT_MODEL_ID,
-            name: "Website Builder - Variant"
+            name: "Website Builder - Variant",
+            lifecycleEvents: false
         });
 
         model.fields(fields => ({
