@@ -7,7 +7,9 @@ import { PublishPageUseCase } from "~/features/pages/publishPage/abstractions.js
 import { BulkPublishPresenter as Abstraction } from "./abstractions.js";
 
 class BulkPublishPresenterImpl implements Abstraction.Interface {
-    private runner = new BulkActionRunner<Page>();
+    private runner = new BulkActionRunner<Page>({
+        getItemTitle: page => page.properties.title
+    });
 
     constructor(private publishPageUseCase: PublishPageUseCase.Interface) {}
 
