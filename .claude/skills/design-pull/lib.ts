@@ -1039,3 +1039,74 @@ export const cmdAnswers = (folder: string, planFile?: string): void => {
     }
     printJson(result);
 };
+
+// ---------------------------------------------------------------- commands: mark
+
+interface MarkResult {
+    done: string[];
+    skipped: Array<{ file: string; reason: string }>;
+    warnings: string[];
+}
+
+export const cmdMark = (folder: string, names: string[], etag?: string, commitArg?: string): void => {
+    const cat = loadCatalogue(folder);
+    const top = repoTop(folder);
+    const result: MarkResult = { done: [], skipped: [], warnings: [] };
+    let commit = commitArg;
+    if (!commit) {
+        commit = git(top, "rev-parse", "HEAD");
+        if (git(top, "status", "--porcelain")) {
+            result.warnings.push("working tree has uncommitted changes; HEAD may not contain the implementation");
+        }
+    }
+    for (const name of names) {
+        const row = cat.rows[name];
+        if (!row) {
+            result.skipped.push({ file: name, reason: "no catalogue row" });
+            continue;
+        }
+        const status = rowStatus(cat, row);
+        if (row.kind !== "screen" || status === "removed" || status === "excluded") {
+            result.skipped.push({ file: name, reason: `status is ${status}` });
+            continue;
+        }
+        const source = localFile(folder, name);
+        if (!source) {
+            result.skipped.push({ file: name, reason: "files/ copy is missing" });
+            continue;
+        }
+        if (etag && etag !== row.etagPulled) {
+            result.skipped.push({
+                file: name,
+                reason: `a newer version was pulled: implemented ${etag}, pending ${row.etagPulled}`
+            });
+            continue;
+        }
+        atomicWriteBytes(safeJoin(path.join(folder, ".implemented"), name), fs.readFileSync(source));
+        row.etagImplemented = row.etagPulled;
+        row.implementedAt = nowIso();
+        row.commit = commit;
+        result.done.push(name);
+    }
+    saveCatalogue(folder, cat);
+    printJson(result);
+};
+
+export const cmdUnmark = (folder: string, names: string[]): void => {
+    const cat = loadCatalogue(folder);
+    const result: MarkResult = { done: [], skipped: [], warnings: [] };
+    for (const name of names) {
+        const row = cat.rows[name];
+        if (!row || !row.etagImplemented) {
+            result.skipped.push({ file: name, reason: "not marked" });
+            continue;
+        }
+        fs.rmSync(safeJoin(path.join(folder, ".implemented"), name), { force: true });
+        row.etagImplemented = "";
+        row.implementedAt = "";
+        row.commit = "";
+        result.done.push(name);
+    }
+    saveCatalogue(folder, cat);
+    printJson(result);
+};

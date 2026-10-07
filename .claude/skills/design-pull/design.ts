@@ -115,6 +115,33 @@ const commands: Record<string, Command> = {
                 one(positionals, commands.answers.usage),
                 typeof values.plan === "string" ? values.plan : undefined
             )
+    },
+    mark: {
+        usage: "mark <folder> <file>... [--etag <etag>] [--commit <sha>]",
+        options: { etag: { type: "string" }, commit: { type: "string" } },
+        run: (positionals, values) => {
+            const [folder, ...names] = positionals;
+            if (!folder || names.length === 0) {
+                throw new lib.DesignError(`usage: ${commands.mark.usage}`);
+            }
+            lib.cmdMark(
+                folder,
+                names,
+                typeof values.etag === "string" ? values.etag : undefined,
+                typeof values.commit === "string" ? values.commit : undefined
+            );
+        }
+    },
+    unmark: {
+        usage: "unmark <folder> <file>...",
+        options: {},
+        run: positionals => {
+            const [folder, ...names] = positionals;
+            if (!folder || names.length === 0) {
+                throw new lib.DesignError(`usage: ${commands.unmark.usage}`);
+            }
+            lib.cmdUnmark(folder, names);
+        }
     }
 };
 
