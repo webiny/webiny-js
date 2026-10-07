@@ -1,9 +1,8 @@
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse } from "@webiny/handler-graphql";
+import { Response } from "@webiny/handler-graphql";
 import { FrontendGetSettingsUseCase } from "~/api/features/getSettings/abstractions.js";
 import { FrontendUpdateSettingsUseCase } from "~/api/features/updateSettings/abstractions.js";
-import { StarterKitsProvider } from "~/api/features/starterKits/abstractions.js";
-import { FrontendPermissions } from "~/api/features/permissions/abstractions.js";
 import type { IFrontendSettings } from "~/shared/types.js";
 
 class FrontendSettingsSchemaImpl implements GraphQLSchemaFactory.Interface {
@@ -66,23 +65,14 @@ class FrontendSettingsSchemaImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "FrontendQuery.getSettings",
-            dependencies: [FrontendGetSettingsUseCase, StarterKitsProvider, FrontendPermissions],
-            resolver: (
-                useCase: FrontendGetSettingsUseCase.Interface,
-                starterKitsProvider: StarterKitsProvider.Interface,
-                permissions: FrontendPermissions.Interface
-            ) => {
+            dependencies: [FrontendGetSettingsUseCase],
+            resolver: (useCase: FrontendGetSettingsUseCase.Interface) => {
                 return async () => {
                     const result = await useCase.execute();
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }
-                    // Starter kit configs include API key tokens, so only users who can manage
-                    // frontend settings get them.
-                    const starterKits = (await permissions.canAccess("frontend-settings"))
-                        ? await starterKitsProvider.execute()
-                        : [];
-                    return new Response({ ...result.value, starterKits });
+                    return new Response(result.value);
                 };
             }
         });

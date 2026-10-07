@@ -150,4 +150,33 @@ describe("Frontend Settings GraphQL", () => {
             }
         );
     });
+
+    describe("domain validation", () => {
+        // The domain ends up as a preview iframe URL, so only http(s) URLs are stored.
+        it.each(["example.com", "javascript:alert(1)", "ftp://example.com"])(
+            "should not store %s as the domain",
+            async domain => {
+                const [response] = await handler.wb.updateFrontendSettings({ data: { domain } });
+                expect(response.data.frontend.updateSettings.data).toBeNull();
+                expect(response.data.frontend.updateSettings.error).toMatchObject({
+                    code: "FrontendSettings/InvalidDomain"
+                });
+
+                const [getResponse] = await handler.wb.getFrontendSettings({});
+                expect(getResponse.data.frontend.getSettings.data.domain).toBe(
+                    "http://localhost:3000"
+                );
+            }
+        );
+
+        it("should store an empty domain, which falls back to the default", async () => {
+            await handler.wb.updateFrontendSettings({ data: { domain: "https://example.com" } });
+
+            const [response] = await handler.wb.updateFrontendSettings({ data: { domain: "" } });
+            expect(response.data.frontend.updateSettings).toEqual({ data: true, error: null });
+
+            const [getResponse] = await handler.wb.getFrontendSettings({});
+            expect(getResponse.data.frontend.getSettings.data.domain).toBe("http://localhost:3000");
+        });
+    });
 });
