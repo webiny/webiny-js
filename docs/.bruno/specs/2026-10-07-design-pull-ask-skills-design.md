@@ -55,7 +55,8 @@ Commands (exact flags are fixed in the implementation plan):
 | `plan` | compare a listing with the catalogue; print what changed and which files need the zip |
 | `import-zip` | extract a zip safely, import the files that verify, update their rows |
 | `import-raw` | decode one `read_file` result, import it if it verifies, update its row (or the answers file) |
-| `finish` | record removals, reconcile content-identical files, set `last_pull`, print the report |
+| `finish` | record removals, reconcile content-identical files, set `last_pull` (records state only) |
+| `report` | print the pull report, after `answers` has run |
 | `answers` | process a pulled `answers.md` |
 | `mark` / `unmark` | record or clear an implementation |
 | `ask-add` | allocate IDs and append questions to `questions.md` |
@@ -177,7 +178,7 @@ Two script constants, used only with source 2:
 - `MCP_MAX_FILE` = 32768 bytes: the largest text file the MCP path takes.
 - `MCP_MAX_TOTAL` = 102400 bytes: the largest total of new and changed text files the MCP path takes in one pull.
 
-`plan` asks for a zip when any of these holds:
+`plan` counts the project-root `answers.md` as a new or changed text file for these rules whenever its etag differs from `answers_etag`. `plan` asks for a zip when any of these holds:
 
 - the catalogue table is empty,
 - any new or changed file is binary or larger than 262144 bytes,
@@ -197,7 +198,7 @@ Without a zip (declined, or a file the zip could not supply), a file may use the
    - The user may decline. Then every new or changed file follows the "without a zip" rule in "Zip decision".
    - A zip whose modification time is earlier than listing A is rejected, with no option to confirm it.
    - Call `list_files` again and save it as listing B.
-   - `import-zip` extracts into a new, empty scratchpad directory. Entries are matched by exact path to listing B (after `source` and `exclude`), once as they are and once with a shared top-level directory stripped (when every entry has one). The variant with more exact matches is used; unmatched entries are ignored.
+   - `import-zip` extracts into a new, empty scratchpad directory. Entries are matched by exact path to listing B (after `source` and `exclude`), once as they are and once with a shared top-level directory stripped (when every entry has one). The variant with more exact matches is used; unmatched entries are ignored. The project-root `answers.md` entry is matched separately, ignoring `source` and `exclude`.
    - A file is imported from the zip only when its etag is the same in listings A and B and its byte size equals the listing size. Its row is updated right away with the etag from listing B.
    - Every other new or changed file follows the "without a zip" rule in "Zip decision".
 4. MCP path, for each remaining text file:
@@ -217,7 +218,7 @@ Without a zip (declined, or a file the zip could not supply), a file may use the
 6. Answers:
    - If listing A (unfiltered) has `answers.md` at the project root and its etag differs from `answers_etag`, fetch it. It follows the same rules as other text files: taken from the zip when one was imported in this run and it verifies (same etag in A and B, matching size), otherwise through the MCP path within the MCP size limit, otherwise reported as "zip required". A successful import writes `<folder>/answers.md` and then sets `answers_etag`.
    - Whenever `<folder>/answers.md` exists, run `answers`, even if nothing was fetched. `answers` is idempotent, so an earlier interrupted run is completed here.
-7. Report:
+7. `report` prints, combining the results of steps 2–6:
    - new, changed, removed and excluded files;
    - `pending` files, with the hint `diff .implemented/<path> files/<path>` run from the folder, shell-quoted;
    - newly answered questions and changed answers;
