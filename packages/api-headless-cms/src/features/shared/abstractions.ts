@@ -2,17 +2,10 @@ import { createAbstraction } from "@webiny/feature/api";
 import type {
     CmsContext as CmsCtx,
     CmsEntryValues,
-    HeadlessCms as HeadlessCmsApi,
     StorageOperationsCmsModel
 } from "~/types/types.js";
 import type { CmsModel } from "~/types/model.js";
 import type { AccessControl as AccessControlClass } from "~/crud/AccessControl/AccessControl.js";
-
-export const HeadlessCms = createAbstraction<HeadlessCmsApi>("HeadlessCms");
-
-export namespace HeadlessCms {
-    export type Interface = HeadlessCmsApi;
-}
 
 export interface ICmsStorageModelProvider {
     getModel<T extends CmsEntryValues = CmsEntryValues>(

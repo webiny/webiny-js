@@ -1,10 +1,10 @@
-import { HeadlessCms } from "~/features/shared/abstractions.js";
+import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
+import { ModelToAstConverter } from "~/features/contentModel/ModelToAstConverter/index.js";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import models, { createModelPlugins } from "~tests/contentAPI/mocks/contentModels";
 import { ModelFieldTraverser } from "~/utils";
 import type { CmsContext } from "~/types";
 import { pageModel } from "~tests/contentAPI/mocks/pageWithDynamicZonesModel";
-import type { CmsModelToAstConverter } from "~/utils/contentModelAst";
 import type { CmsModelInput } from "~/plugins";
 import { createModelPlugin } from "~/plugins";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -18,7 +18,7 @@ describe("model field traverser", () => {
     });
 
     let context: CmsContext;
-    let converter: CmsModelToAstConverter;
+    let converter: ModelToAstConverter.Interface;
 
     beforeEach(async () => {
         context = await handler({
@@ -27,11 +27,11 @@ describe("model field traverser", () => {
                 "x-tenant": "root"
             }
         });
-        converter = context.container.resolve(HeadlessCms).getModelToAstConverter();
+        converter = context.container.resolve(ModelToAstConverter);
     });
 
     it("should properly traverse through model fields - product", async () => {
-        const model = await context.container.resolve(HeadlessCms).getModel("product");
+        const model = (await context.container.resolve(GetModelUseCase).execute("product")).value;
         const ast = converter.toAst(model);
         const traverser = new ModelFieldTraverser();
 
@@ -77,7 +77,8 @@ describe("model field traverser", () => {
 
     // TODO: update the test
     it("should properly traverse through model fields - page builder", async () => {
-        const model = await context.container.resolve(HeadlessCms).getModel(pageModel.modelId);
+        const model = (await context.container.resolve(GetModelUseCase).execute(pageModel.modelId))
+            .value;
         const ast = converter.toAst(model);
         const traverser = new ModelFieldTraverser();
 
