@@ -30,7 +30,8 @@ const registerRootStorage: BaseConfig["registerRootStorage"] = (container, { doc
 };
 
 const registerRequestStorage: BaseConfig["registerRequestStorage"] = container => {
-    // The CMS entry DataLoader caches reads, so it must be fresh for every request.
+    // The CMS storage operations are per request, so extension decorators apply to them and the
+    // entry DataLoader cache lives for one request only.
     HeadlessCmsDdbRequestFeature.register(container);
 };
 

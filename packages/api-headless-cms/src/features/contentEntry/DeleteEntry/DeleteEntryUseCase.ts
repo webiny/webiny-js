@@ -4,7 +4,7 @@ import { DeleteEntryRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import type { CmsDeleteEntryOptions, CmsModel } from "~/types/index.js";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import { EntryBeforeDeleteEvent, EntryAfterDeleteEvent, EntryDeleteErrorEvent } from "./events.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
@@ -23,7 +23,7 @@ class DeleteEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: DeleteEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getLatestRevision: GetLatestRevisionByEntryIdIncludingDeletedUseCase.Interface,
-        private eventPublisher: EventPublisher.Interface
+        private eventPublisher: EntryEventPublisher.Interface
     ) {}
 
     async execute(
@@ -119,6 +119,6 @@ export const DeleteEntryUseCase = UseCaseAbstraction.createImplementation({
         DeleteEntryRepository,
         AccessControl,
         GetLatestRevisionByEntryIdIncludingDeletedUseCase,
-        EventPublisher
+        EntryEventPublisher
     ]
 });

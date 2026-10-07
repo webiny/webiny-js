@@ -6,7 +6,8 @@ class WebhookDeliveryModelFactory implements ModelFactory.Interface {
         const model = builder
             .private({
                 modelId: WEBHOOK_DELIVERY_MODEL_ID,
-                name: "Webhook Delivery"
+                name: "Webhook Delivery",
+                lifecycleEvents: false
             })
             .tags(["$publishing:false", "$hidden:true"]);
 

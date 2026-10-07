@@ -6,10 +6,8 @@ import { TableNameResolverConfig } from "~/features/tableNameResolver/abstractio
 import type { Knex } from "knex";
 import { TableNameResolverFeature } from "~/features/tableNameResolver/feature.js";
 import { ValueFilterFeature } from "@webiny/db-utils";
-import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
-import { SqlGroupStorageOpsFeature } from "~/operations/group/feature.js";
-import { SqlModelStorageOpsFeature } from "~/operations/model/feature.js";
-import { SqlEntryStorageOpsFeature } from "~/operations/entry/feature.js";
+
+export { HeadlessCmsSqlRequestFeature } from "~/requestFeature.js";
 
 interface ISqlStorageOperationsConfig {
     knex: Knex;
@@ -17,6 +15,11 @@ interface ISqlStorageOperationsConfig {
     tableNameSuffix?: string;
 }
 
+/**
+ * Root half of the SQL CMS storage: table naming and the table managers, which remember the tables
+ * they have checked for the life of the process. The storage operations are per request, in
+ * `HeadlessCmsSqlRequestFeature`.
+ */
 export const HeadlessCmsSqlFeature = createFeature<ISqlStorageOperationsConfig>({
     name: "cms.storageOperations.sql",
     register: (container, config) => {
@@ -30,13 +33,8 @@ export const HeadlessCmsSqlFeature = createFeature<ISqlStorageOperationsConfig>(
 
         TableNameResolverFeature.register(container);
         ValueFilterFeature.register(container);
-        FilterRegistriesFeature.register(container);
         GroupSchemaManagerFeature.register(container);
         ModelSchemaManagerFeature.register(container);
         EntryTableManagerFeature.register(container);
-
-        SqlGroupStorageOpsFeature.register(container);
-        SqlModelStorageOpsFeature.register(container);
-        SqlEntryStorageOpsFeature.register(container);
     }
 });

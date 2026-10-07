@@ -9,7 +9,8 @@ class TaskPrivateModelImpl implements ModelFactory.Interface {
             builder
                 .private({
                     modelId: WEBINY_TASK_MODEL_ID,
-                    name: "Webiny Task"
+                    name: "Webiny Task",
+                    lifecycleEvents: false
                 })
                 .fields(fields => ({
                     name: fields.text().label("Name").required("Name is required."),

@@ -433,6 +433,10 @@ export default /* GraphQL */ `
             options: CreateRevisionCmsEntryOptionsInput
         ): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
+        duplicateCategoryApiNameWhichIsABitDifferentThanModelId(
+            revision: ID!
+        ): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
+
         updateCategoryApiNameWhichIsABitDifferentThanModelId(
             revision: ID!
             data: CategoryApiNameWhichIsABitDifferentThanModelIdInput!
