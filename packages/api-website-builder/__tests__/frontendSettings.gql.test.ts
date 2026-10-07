@@ -114,9 +114,7 @@ describe("Frontend Settings GraphQL", () => {
             });
 
             const [getResponse] = await editor.wb.getFrontendSettings({});
-            expect(getResponse.data.frontend.getSettings.data.domain).toBe(
-                "http://localhost:3000"
-            );
+            expect(getResponse.data.frontend.getSettings.data.domain).toBe("http://localhost:3000");
         });
 
         it("should give starter kits and updates to a user with the frontend settings permission", async () => {
