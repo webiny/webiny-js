@@ -298,7 +298,7 @@ The input value is rendered as children. Use for: layout containers, card bodies
 8. If a component name is provided in the request (e.g., "Custom/Hero"), use it EXACTLY as the manifest.name. Do NOT invent a different name.
 9. If a component label is provided in the request (e.g., "Hero Section"), use it EXACTLY as the manifest.label. Do NOT invent a different label.
 10. The manifest MUST include an \`aiContext\` field — a 1-2 sentence description for AI content generation
-11. Use CSS class names for styling — not inline styles
+11. Use CSS class names for styling. The one exception is a value that only exists at runtime — a background image from a file input (\`backgroundImage: url(...)\`), a colour from a colour input, a height driven by state: set just that property in a \`style\` attribute and keep every other style in the CSS block
 12. Always provide sensible defaultValue for text inputs so the component looks good out of the box
 13. Handle missing/empty values gracefully — use ternary with null (\`value ? <Tag>{value}</Tag> : null\`), NEVER use \`&&\` for conditional rendering
 14. Every className used in JSX must have a corresponding CSS rule in the CSS block

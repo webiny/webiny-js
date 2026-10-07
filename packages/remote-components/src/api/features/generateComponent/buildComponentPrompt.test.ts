@@ -30,4 +30,13 @@ describe("buildComponentPrompt", () => {
     it("instructs the model to include a fallback in every token reference", () => {
         expect(prompt).toMatch(/var\(--wby-…, <fallback>\)/);
     });
+
+    // 12 of 101 generated components set a background image, colour or state-driven height inline,
+    // every one from a runtime value; the rule used to forbid inline styles outright.
+    it("allows inline styles only for values that exist at runtime", () => {
+        const prompt = buildComponentPrompt();
+        expect(prompt).toContain("The one exception is a value that only exists at runtime");
+        expect(prompt).toContain("keep every other style in the CSS block");
+        expect(prompt).not.toContain("— not inline styles");
+    });
 });
