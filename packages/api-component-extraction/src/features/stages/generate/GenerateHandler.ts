@@ -15,9 +15,11 @@ import { generateResultKey, type ComponentResult } from "./componentGeneration.j
 import type { GenerateComponentTaskInput } from "./GenerateComponentTask.js";
 import { noOutputReason } from "./noOutputReason.js";
 
-// How many component tasks run at once. Bounded so the fan-out doesn't hammer the model API or spin up
-// many concurrent sandbox renders (the same resource pressure that bit Capture) — isolation, not a stampede.
-const GENERATE_CONCURRENCY = 4;
+// How many component tasks run at once. Bounded so the fan-out doesn't hammer the model API — isolation,
+// not a stampede. Each task is its own Lambda and renders in-process, so the bound is the model API's
+// rate, not local resources. At 4 a site of 31 components queued for most of Generate; a component's
+// generation takes 1-4 minutes a call, often twice.
+const GENERATE_CONCURRENCY = 8;
 // How long a child may go without writing its result before the coordinator considers it lost and
 // retries it. Longer than a child can live: it runs as one invocation, and a Lambda invocation ends at
 // 15 minutes. At 8 minutes a slow but healthy child (three attempts of ~4 minutes each) was retried while

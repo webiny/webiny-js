@@ -28,6 +28,8 @@ import { referenceTexts } from "./referenceTexts.js";
 // between clusters, so too small a margin lets a call start without runway and the Lambda is hard-killed
 // mid-call, leaving the stage stuck "running".
 const PLAN_SAFETY_MARGIN_SECONDS = 180;
+/** How many sections' contracts are requested from the model at once. */
+const PLAN_CONCURRENCY = 4;
 
 /*
  * How many of a cluster's sections are read for their non-text values. Bounded because a navigation
@@ -165,132 +167,154 @@ class PlanHandlerImpl implements StageHandler.Interface {
         const checkpoint: PlanCheckpoint = loaded.value ?? { nextIndex: 0, components: [] };
 
         while (checkpoint.nextIndex < total) {
-            const cluster = clusters[checkpoint.nextIndex];
-            const aiResult = await this.ai.generate({
-                system: PLAN_SYSTEM,
-                messages: [{ role: "user", content: buildPlanPrompt(cluster, manifest) }],
-                signature: cluster.cluster.signature
-            });
-            if (aiResult.isFail()) {
-                if (aiResult.error.code === "ComponentExtraction/ValidationError") {
-                    return Result.fail(aiResult.error);
-                }
-                await context.log.error({
-                    message: `Plan failed for "${cluster.name}": ${aiResult.error.message}`
-                });
-            } else {
-                const contract = parsePlanContract(
-                    aiResult.value,
-                    cluster.cluster.members.length,
-                    cluster.cluster.observedTexts
-                );
-                if (!contract) {
+            /*
+             * The model calls for the next few sections run together; everything after them runs in
+             * order, exactly as it did one section at a time. Each call is a component's whole contract
+             * and takes 10-20s, so one at a time made Plan as long as their sum — two minutes for a
+             * site of eight components.
+             */
+            const batch = clusters.slice(
+                checkpoint.nextIndex,
+                checkpoint.nextIndex + PLAN_CONCURRENCY
+            );
+            const aiResults = await Promise.all(
+                batch.map(cluster =>
+                    this.ai.generate({
+                        system: PLAN_SYSTEM,
+                        messages: [{ role: "user", content: buildPlanPrompt(cluster, manifest) }],
+                        signature: cluster.cluster.signature
+                    })
+                )
+            );
+            for (const [offset, cluster] of batch.entries()) {
+                const aiResult = aiResults[offset];
+                if (aiResult.isFail()) {
+                    if (aiResult.error.code === "ComponentExtraction/ValidationError") {
+                        return Result.fail(aiResult.error);
+                    }
                     await context.log.error({
-                        message: `Plan returned no usable contract for "${cluster.name}".`
+                        message: `Plan failed for "${cluster.name}": ${aiResult.error.message}`
                     });
                 } else {
-                    /*
-                     * Fill the non-text props from the reference section before anything reads the
-                     * contract. Ordering matters twice: the coverage check below counts a member text
-                     * as held only if some prop observed it, and a link label only becomes an observed
-                     * value here; and Generate is handed these values so it has something real to put
-                     * in the component's defaults instead of inventing a stock photograph.
-                     */
-                    /*
-                     * Every member's section, representative first.
-                     *
-                     * `observedValues` means "observed across the cluster's members", and the texts a
-                     * prop most needs to hold are the ones the representative does not have — another
-                     * page's navigation labels are not in this page's navigation. Representative first
-                     * so the positional rule gives the section the reference image shows the first
-                     * claim on each prop.
-                     */
-                    const members = [
-                        cluster.cluster.representative,
-                        ...cluster.cluster.members.filter(
-                            member =>
-                                member.url !== cluster.cluster.representative.url ||
-                                member.sectionIndex !== cluster.cluster.representative.sectionIndex
-                        )
-                    ].slice(0, MAX_MEMBERS_HARVESTED);
+                    const contract = parsePlanContract(
+                        aiResult.value,
+                        cluster.cluster.members.length,
+                        cluster.cluster.observedTexts
+                    );
+                    if (!contract) {
+                        await context.log.error({
+                            message: `Plan returned no usable contract for "${cluster.name}".`
+                        });
+                    } else {
+                        /*
+                         * Fill the non-text props from the reference section before anything reads the
+                         * contract. Ordering matters twice: the coverage check below counts a member text
+                         * as held only if some prop observed it, and a link label only becomes an observed
+                         * value here; and Generate is handed these values so it has something real to put
+                         * in the component's defaults instead of inventing a stock photograph.
+                         */
+                        /*
+                         * Every member's section, representative first.
+                         *
+                         * `observedValues` means "observed across the cluster's members", and the texts a
+                         * prop most needs to hold are the ones the representative does not have — another
+                         * page's navigation labels are not in this page's navigation. Representative first
+                         * so the positional rule gives the section the reference image shows the first
+                         * claim on each prop.
+                         */
+                        const members = [
+                            cluster.cluster.representative,
+                            ...cluster.cluster.members.filter(
+                                member =>
+                                    member.url !== cluster.cluster.representative.url ||
+                                    member.sectionIndex !==
+                                        cluster.cluster.representative.sectionIndex
+                            )
+                        ].slice(0, MAX_MEMBERS_HARVESTED);
 
-                    const nodes: CapturedNode[] = [];
-                    for (const member of members) {
-                        const resolved = await referenceSection(member.url, member.sectionIndex);
-                        if (resolved) {
-                            nodes.push(resolved);
+                        const nodes: CapturedNode[] = [];
+                        for (const member of members) {
+                            const resolved = await referenceSection(
+                                member.url,
+                                member.sectionIndex
+                            );
+                            if (resolved) {
+                                nodes.push(resolved);
+                            }
                         }
-                    }
 
-                    /*
-                     * The reference section's type scale — the first node, which is the
-                     * representative. Taken here because the node is already resolved and walked for
-                     * the value binding, so this costs one more pass over a subtree rather than
-                     * another tree read.
-                     */
-                    const typeScale = nodes[0] ? sectionTypeScale(nodes[0], manifest) : [];
-                    if (typeScale.length === 0 && nodes[0]) {
-                        await context.log.info({
-                            message: `No type scale read for "${cluster.name}": its reference section has no text-bearing elements.`
-                        });
-                    }
-
-                    /* Same node, same pass, same reason: measured during capture and read by nothing. */
-                    const textAlignments = nodes[0] ? sectionTextAlignment(nodes[0]) : [];
-                    const backgroundImages = nodes[0] ? sectionBackgroundImages(nodes[0]) : [];
-                    if (textAlignments.length === 0 && nodes[0]) {
-                        await context.log.info({
-                            message: `No text alignment read for "${cluster.name}": no text-bearing element of its reference section records one.`
-                        });
-                    }
-
-                    if (nodes.length > 0) {
-                        const bound = bindObservedValues(nodes, contract.props);
-                        if (bound.propsBound > 0) {
+                        /*
+                         * The reference section's type scale — the first node, which is the
+                         * representative. Taken here because the node is already resolved and walked for
+                         * the value binding, so this costs one more pass over a subtree rather than
+                         * another tree read.
+                         */
+                        const typeScale = nodes[0] ? sectionTypeScale(nodes[0], manifest) : [];
+                        if (typeScale.length === 0 && nodes[0]) {
                             await context.log.info({
-                                message: `Filled ${bound.propsBound} non-text prop(s) of "${cluster.name}" from ${nodes.length} member section(s): ${bound.mediaBound} image(s), ${bound.linksBound} link(s), ${bound.itemsBound} list item(s).`
+                                message: `No type scale read for "${cluster.name}": its reference section has no text-bearing elements.`
                             });
                         }
-                    } else {
-                        await context.log.error({
-                            message: `No member section node resolved for "${cluster.name}" (${cluster.cluster.representative.url} section ${cluster.cluster.representative.sectionIndex}); its image and link props stay empty.`
+
+                        /* Same node, same pass, same reason: measured during capture and read by nothing. */
+                        const textAlignments = nodes[0] ? sectionTextAlignment(nodes[0]) : [];
+                        const backgroundImages = nodes[0] ? sectionBackgroundImages(nodes[0]) : [];
+                        if (textAlignments.length === 0 && nodes[0]) {
+                            await context.log.info({
+                                message: `No text alignment read for "${cluster.name}": no text-bearing element of its reference section records one.`
+                            });
+                        }
+
+                        if (nodes.length > 0) {
+                            const bound = bindObservedValues(nodes, contract.props);
+                            if (bound.propsBound > 0) {
+                                await context.log.info({
+                                    message: `Filled ${bound.propsBound} non-text prop(s) of "${cluster.name}" from ${nodes.length} member section(s): ${bound.mediaBound} image(s), ${bound.linksBound} link(s), ${bound.itemsBound} list item(s).`
+                                });
+                            }
+                        } else {
+                            await context.log.error({
+                                message: `No member section node resolved for "${cluster.name}" (${cluster.cluster.representative.url} section ${cluster.cluster.representative.sectionIndex}); its image and link props stay empty.`
+                            });
+                        }
+
+                        checkpoint.components.push({
+                            signature: cluster.cluster.signature,
+                            name: cluster.name,
+                            type: cluster.type,
+                            props: contract.props,
+                            tokenBindings: contract.tokenBindings,
+                            representative: cluster.cluster.representative,
+                            members: cluster.cluster.members,
+                            representativeCrop: cluster.cluster.representativeCrop,
+                            // What Generate must reproduce: the text of the member its reference image
+                            // shows, not the union over the cluster. The union is kept beside it, and the
+                            // obligation it used to carry is now checked against the props instead.
+                            sourceTexts: referenceTexts(cluster.cluster),
+                            clusterTexts: cluster.cluster.observedTexts,
+                            typeScale,
+                            textAlignments,
+                            backgroundImages,
+                            // After binding, so what the props took is known.
+                            unboundImages: nodes[0]
+                                ? sectionUnboundImages(nodes[0], contract.props)
+                                : [],
+                            icons: nodes[0] ? sectionIcons(nodes[0]) : [],
+                            textCoverage: coverMemberTexts(cluster.cluster.members, contract.props)
                         });
                     }
-
-                    checkpoint.components.push({
-                        signature: cluster.cluster.signature,
-                        name: cluster.name,
-                        type: cluster.type,
-                        props: contract.props,
-                        tokenBindings: contract.tokenBindings,
-                        representative: cluster.cluster.representative,
-                        members: cluster.cluster.members,
-                        representativeCrop: cluster.cluster.representativeCrop,
-                        // What Generate must reproduce: the text of the member its reference image
-                        // shows, not the union over the cluster. The union is kept beside it, and the
-                        // obligation it used to carry is now checked against the props instead.
-                        sourceTexts: referenceTexts(cluster.cluster),
-                        clusterTexts: cluster.cluster.observedTexts,
-                        typeScale,
-                        textAlignments,
-                        backgroundImages,
-                        // After binding, so what the props took is known.
-                        unboundImages: nodes[0] ? sectionUnboundImages(nodes[0], contract.props) : [],
-                        icons: nodes[0] ? sectionIcons(nodes[0]) : [],
-                        textCoverage: coverMemberTexts(cluster.cluster.members, contract.props)
-                    });
                 }
-            }
 
-            checkpoint.nextIndex++;
-            await context.progress({
-                message: `Planned ${checkpoint.nextIndex}/${total} sections`,
-                current: checkpoint.nextIndex,
-                total
-            });
-            const saved = await context.store.putJson(checkpointKey, checkpoint);
-            if (saved.isFail()) {
-                return Result.fail(saved.error);
+                checkpoint.nextIndex++;
+                await context.progress({
+                    message: `Planned ${checkpoint.nextIndex}/${total} sections`,
+                    current: checkpoint.nextIndex,
+                    total
+                });
+                const saved = await context.store.putJson(checkpointKey, checkpoint);
+                if (saved.isFail()) {
+                    return Result.fail(saved.error);
+                }
             }
 
             if (
