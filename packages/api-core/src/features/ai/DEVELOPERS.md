@@ -143,7 +143,7 @@ Source: https://ai.google.dev/gemini-api/docs/deprecations
 
 OpenRouter is a gateway: one key reaches models from many vendors. Its model ids carry the vendor, so a stored model looks like `openrouter/anthropic/claude-sonnet-5.5`. `Ai` splits on the first slash, so the provider is `openrouter` and the rest goes to OpenRouter unchanged.
 
-The factory list is a short pick of each vendor's current models that support tool calling, not OpenRouter's whole catalog (a few hundred models, many without tools). Pick from `https://openrouter.ai/api/v1/models`, keeping entries whose `supported_parameters` includes `tools` and skipping the `:free` and `:batch` variants.
+The factory list is a short pick of each vendor's current models that support tool calling, not OpenRouter's whole catalog (a few hundred models, many without tools). Pick from `https://openrouter.ai/api/v1/models`, keeping entries whose `supported_parameters` includes `tools` and skipping the `:free` and `:batch` variants. OpenRouter publishes retirement dates as `expiration_date`; leave out models that have one coming up.
 
 Uses `@openrouter/ai-sdk-provider` rather than `@ai-sdk/openai` with a different base URL, so non-OpenAI models routed through it don't get OpenAI-only request options.
 

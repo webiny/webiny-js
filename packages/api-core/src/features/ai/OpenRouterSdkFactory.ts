@@ -27,8 +27,7 @@ const OPENROUTER_MODELS: IAiSdkModel[] = [
     { id: "openai/gpt-5.6-terra", name: "OpenAI: GPT-5.6 Terra" },
     { id: "anthropic/claude-sonnet-5", name: "Anthropic: Claude Sonnet 5" },
     { id: "openai/gpt-5.4-mini", name: "OpenAI: GPT-5.4 Mini" },
-    { id: "anthropic/claude-haiku-4.5", name: "Anthropic: Claude Haiku 4.5" },
-    { id: "google/gemini-2.5-pro", name: "Google: Gemini 2.5 Pro" }
+    { id: "anthropic/claude-haiku-4.5", name: "Anthropic: Claude Haiku 4.5" }
 ];
 
 class OpenRouterSdkFactoryImpl implements AiSdkFactoryAbstraction.Interface {
