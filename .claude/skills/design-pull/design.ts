@@ -91,6 +91,30 @@ const commands: Record<string, Command> = {
         options: { plan: { type: "string" } },
         run: (positionals, values) =>
             lib.cmdReport(one(positionals, commands.report.usage), required(values, "plan", commands.report.usage))
+    },
+    "ask-add": {
+        usage: "ask-add <folder> <items.json>",
+        options: {},
+        run: positionals => {
+            if (positionals.length !== 2) {
+                throw new lib.DesignError(`usage: ${commands["ask-add"].usage}`);
+            }
+            lib.cmdAskAdd(positionals[0], positionals[1]);
+        }
+    },
+    "ask-open": {
+        usage: "ask-open <folder>",
+        options: {},
+        run: positionals => lib.cmdAskOpen(one(positionals, commands["ask-open"].usage))
+    },
+    answers: {
+        usage: "answers <folder> [--plan <plan.json>]",
+        options: { plan: { type: "string" } },
+        run: (positionals, values) =>
+            lib.cmdAnswers(
+                one(positionals, commands.answers.usage),
+                typeof values.plan === "string" ? values.plan : undefined
+            )
     }
 };
 

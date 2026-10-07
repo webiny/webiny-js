@@ -846,3 +846,196 @@ export const cmdReport = (folder: string, planFile: string): void => {
     section("Rejected paths", plan.rejected);
     process.stdout.write(`${lines.length ? lines.join("\n") : "Nothing changed."}\n`);
 };
+
+// ---------------------------------------------------------------- questions
+
+export interface Question {
+    id: number;
+    status: "open" | "answered";
+    date: string;
+    file: string;
+    text: string;
+    answer: string;
+}
+
+const QUESTION_HEAD = /^## Q(\d+) — (open|answered) — (\d{4}-\d{2}-\d{2})$/;
+const ANSWER_HEAD = /^#{2,3}\s+Q(\d+)\b.*$/gm;
+const ESCAPED_START = ["#", ">", "file:", "\\"];
+
+export const normalize = (text: string): string =>
+    text
+        .trim()
+        .split("\n")
+        .map(line => line.trimEnd())
+        .join("\n")
+        .replace(/\n{3,}/g, "\n\n");
+
+const escapeLine = (line: string): string => (ESCAPED_START.some(start => line.startsWith(start)) ? `\\${line}` : line);
+
+const unescapeLine = (line: string): string => (line.startsWith("\\") ? line.slice(1) : line);
+
+export const parseQuestions = (text: string): Question[] => {
+    const questions: Question[] = [];
+    let current: Question | null = null;
+    let body: string[] = [];
+    let answer: string[] = [];
+    const close = () => {
+        if (current) {
+            current.text = normalize(body.join("\n"));
+            current.answer = answer.join("\n").replace(/^\n+|\n+$/g, "");
+        }
+    };
+    for (const line of text.split("\n")) {
+        const head = QUESTION_HEAD.exec(line);
+        if (head) {
+            close();
+            current = {
+                id: Number(head[1]),
+                status: head[2] as Question["status"],
+                date: head[3],
+                file: "",
+                text: "",
+                answer: ""
+            };
+            questions.push(current);
+            body = [];
+            answer = [];
+            continue;
+        }
+        if (!current) {
+            continue;
+        }
+        if (line.startsWith("file: ") && body.length === 0 && !current.file) {
+            current.file = line.slice(6);
+        } else if (line.startsWith(">")) {
+            answer.push(line.startsWith("> ") ? line.slice(2) : line.slice(1));
+        } else {
+            body.push(unescapeLine(line));
+        }
+    }
+    close();
+    return questions;
+};
+
+export const renderQuestions = (questions: Question[]): string => {
+    const out = ["# Questions", ""];
+    for (const question of [...questions].sort((a, b) => a.id - b.id)) {
+        out.push(`## Q${question.id} — ${question.status} — ${question.date}`);
+        if (question.file) {
+            out.push(`file: ${question.file}`);
+        }
+        out.push("", ...question.text.split("\n").map(escapeLine));
+        if (question.answer) {
+            out.push("", ...question.answer.split("\n").map(line => (line ? `> ${line}` : ">")));
+        }
+        out.push("");
+    }
+    return out.join("\n");
+};
+
+/** Answer sections keyed by question ID; when an ID repeats, the last section wins. */
+export const parseAnswers = (text: string): Map<number, string> => {
+    const sections = new Map<number, string>();
+    const heads = [...text.matchAll(ANSWER_HEAD)];
+    heads.forEach((head, index) => {
+        const start = (head.index ?? 0) + head[0].length;
+        const end = index + 1 < heads.length ? (heads[index + 1].index ?? text.length) : text.length;
+        sections.set(Number(head[1]), normalize(text.slice(start, end)));
+    });
+    return sections;
+};
+
+const loadQuestions = (folder: string): Question[] => {
+    const file = path.join(folder, "questions.md");
+    return isRegularFile(file) ? parseQuestions(fs.readFileSync(file, "utf8")) : [];
+};
+
+const saveQuestions = (folder: string, questions: Question[]): void => {
+    atomicWriteBytes(path.join(folder, "questions.md"), renderQuestions(questions));
+};
+
+const answerIds = (folder: string): number[] => {
+    const file = path.join(folder, ANSWERS_PATH);
+    return isRegularFile(file) ? [...parseAnswers(fs.readFileSync(file, "utf8")).keys()] : [];
+};
+
+// ---------------------------------------------------------------- commands: questions
+
+interface AskItem {
+    file?: string;
+    text: string;
+}
+
+export const cmdAskAdd = (folder: string, itemsFile: string): void => {
+    const questions = loadQuestions(folder);
+    const items: AskItem[] = JSON.parse(fs.readFileSync(itemsFile, "utf8"));
+    const openByText = new Map(questions.filter(q => q.status === "open").map(q => [q.text, q.id]));
+    let nextId = Math.max(0, ...questions.map(q => q.id), ...answerIds(folder));
+    const added: Array<{ id: number; file: string; text: string }> = [];
+    const duplicates: Array<{ id: number; text: string }> = [];
+    for (const item of items) {
+        const text = normalize(item.text ?? "");
+        if (!text) {
+            continue;
+        }
+        const existing = openByText.get(text);
+        if (existing !== undefined) {
+            duplicates.push({ id: existing, text });
+            continue;
+        }
+        nextId += 1;
+        const file = item.file ?? "";
+        questions.push({ id: nextId, status: "open", date: today(), file, text, answer: "" });
+        openByText.set(text, nextId);
+        added.push({ id: nextId, file, text });
+    }
+    if (added.length) {
+        saveQuestions(folder, questions);
+    }
+    printJson({ added, duplicates });
+};
+
+export const cmdAskOpen = (folder: string): void => {
+    printJson(
+        loadQuestions(folder)
+            .filter(q => q.status === "open")
+            .map(q => ({ id: q.id, file: q.file, text: q.text }))
+    );
+};
+
+export const cmdAnswers = (folder: string, planFile?: string): void => {
+    const result: AnswersResult = { answered: [], changed: [], unknown: [] };
+    const file = path.join(folder, ANSWERS_PATH);
+    if (isRegularFile(file)) {
+        const questions = loadQuestions(folder);
+        const byId = new Map(questions.map(q => [q.id, q]));
+        const sections = [...parseAnswers(fs.readFileSync(file, "utf8")).entries()].sort(([a], [b]) => a - b);
+        for (const [id, body] of sections) {
+            if (!body) {
+                continue;
+            }
+            const question = byId.get(id);
+            if (!question) {
+                result.unknown.push(id);
+            } else if (question.status === "open") {
+                question.status = "answered";
+                question.date = today();
+                question.answer = body;
+                result.answered.push(id);
+            } else if (normalize(question.answer) !== body) {
+                question.date = today();
+                question.answer = body;
+                result.changed.push(id);
+            }
+        }
+        if (result.answered.length || result.changed.length) {
+            saveQuestions(folder, questions);
+        }
+    }
+    if (planFile) {
+        const plan = loadPlan(planFile);
+        plan.answers_result = result;
+        savePlan(planFile, plan);
+    }
+    printJson(result);
+};
