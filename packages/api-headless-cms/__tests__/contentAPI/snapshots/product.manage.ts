@@ -638,6 +638,8 @@ export default /* GraphQL */ `
             options: CreateRevisionCmsEntryOptionsInput
         ): ProductApiSingularResponse
 
+        duplicateProductApiSingular(revision: ID!): ProductApiSingularResponse
+
         updateProductApiSingular(
             revision: ID!
             data: ProductApiSingularInput!

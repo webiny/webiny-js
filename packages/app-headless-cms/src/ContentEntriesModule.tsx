@@ -16,12 +16,14 @@ import {
 import {
     TRASH_ENTRY_DIALOG,
     PUBLISH_ENTRY_DIALOG,
-    UNPUBLISH_ENTRY_DIALOG
+    UNPUBLISH_ENTRY_DIALOG,
+    DUPLICATE_ENTRY_DIALOG
 } from "~/presentation/contentEntries/list/ContentEntriesPresenter.js";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import {
     ChangeEntryStatus,
     DeleteEntry,
+    DuplicateEntry,
     EditEntry,
     MoveEntry
 } from "~/admin/components/ContentEntries/Table/Actions/index.js";
@@ -40,6 +42,7 @@ import { CmsTrashBin } from "~/presentation/contentEntries/trashBin/CmsTrashBin.
 import { TrashEntryConfirmDialog } from "~/admin/components/Dialogs/TrashEntryConfirmDialog.js";
 import { PublishEntryConfirmDialog } from "~/admin/components/Dialogs/PublishEntryConfirmDialog.js";
 import { UnpublishEntryConfirmDialog } from "~/admin/components/Dialogs/UnpublishEntryConfirmDialog.js";
+import { DuplicateEntryConfirmDialog } from "~/admin/components/Dialogs/DuplicateEntryConfirmDialog.js";
 import { DeleteRevisionConfirmDialog } from "~/admin/components/Dialogs/DeleteRevisionConfirmDialog.js";
 import { EditRevisionNoteDialog } from "~/admin/components/Dialogs/EditRevisionNoteDialog.js";
 import {
@@ -75,6 +78,10 @@ export const ContentEntriesModule = () => {
                     element={<UnpublishEntryConfirmDialog />}
                 />
                 <AdminConfig.Dialog
+                    name={DUPLICATE_ENTRY_DIALOG}
+                    element={<DuplicateEntryConfirmDialog />}
+                />
+                <AdminConfig.Dialog
                     name={DELETE_REVISION_DIALOG}
                     element={<DeleteRevisionConfirmDialog />}
                 />
@@ -101,6 +108,7 @@ export const ContentEntriesModule = () => {
                     <Browser.Entry.Action name={"status"} element={<ChangeEntryStatus />} />
                 </IsModelPublishable>
                 <Browser.Entry.Action name={"move"} element={<MoveEntry />} />
+                <Browser.Entry.Action name={"duplicate"} element={<DuplicateEntry />} />
                 <Browser.Entry.Action name={"delete"} element={<DeleteEntry />} after={"$last"} />
                 <Browser.Table.Column
                     name={"name"}

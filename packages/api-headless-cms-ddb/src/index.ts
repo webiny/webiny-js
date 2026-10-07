@@ -2,7 +2,6 @@ import { ENTITIES } from "~/types.js";
 import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
-import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 import { createTable } from "~/definitions/table.js";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { DynamoDBClient } from "@webiny/db-dynamodb";
@@ -11,14 +10,12 @@ import { CmsDdbTable } from "~/abstractions/CmsDdbTable.js";
 import { CmsDdbGroupEntity } from "~/abstractions/CmsDdbGroupEntity.js";
 import { CmsDdbModelEntity } from "~/abstractions/CmsDdbModelEntity.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
-import { DdbGroupStorageOpsFeature } from "~/operations/group/feature.js";
-import { DdbModelStorageOpsFeature } from "~/operations/model/feature.js";
-import { DdbEntryStorageOpsFeature } from "~/operations/entry/feature.js";
 
-export { HeadlessCmsDdbRequestFeature } from "~/operations/entry/requestFeature.js";
+export { HeadlessCmsDdbRequestFeature } from "~/requestFeature.js";
 
 /**
- * DI-native feature — registers the DynamoDB CMS storage operations directly via the DI container.
+ * Root half of the DynamoDB CMS storage: the table and entity definitions, built once per process.
+ * The storage operations are per request, in `HeadlessCmsDdbRequestFeature`.
  * Requires DynamoDBClient to be registered in the container first (via DbFeature).
  *
  * Usage:
@@ -31,7 +28,6 @@ export { HeadlessCmsDdbRequestFeature } from "~/operations/entry/requestFeature.
 export const HeadlessCmsDdbFeature = createFeature({
     name: "cms.storageOperations.ddb",
     register: container => {
-        FilterRegistriesFeature.register(container);
         FilterUtilFeature.register(container);
 
         const db = container.resolve(DynamoDBClient);
@@ -62,9 +58,5 @@ export const HeadlessCmsDdbFeature = createFeature({
                 table: tableInstance
             })
         );
-
-        DdbGroupStorageOpsFeature.register(container);
-        DdbModelStorageOpsFeature.register(container);
-        DdbEntryStorageOpsFeature.register(container);
     }
 });

@@ -214,6 +214,8 @@ export const createManageSDL: CreateManageSDL = ({
             create${singularName}(data: ${singularName}Input!, options: CreateCmsEntryOptionsInput): ${singularName}Response
 
             create${singularName}From(revision: ID!, data: ${singularName}Input, options: CreateRevisionCmsEntryOptionsInput): ${singularName}Response
+
+            duplicate${singularName}(revision: ID!): ${singularName}Response
     
             update${singularName}(revision: ID!, data: ${singularName}Input!, options: UpdateCmsEntryOptionsInput): ${singularName}Response
             

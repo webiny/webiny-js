@@ -6,6 +6,7 @@ import {
     createCategoryMutation,
     deleteCategoriesMutation,
     deleteCategoryMutation,
+    duplicateCategoryMutation,
     getCategoriesByIdsQuery,
     getCategoryQuery,
     type ICreateCategoryFromMutationResponse,
@@ -16,6 +17,8 @@ import {
     type IDeleteCategoriesMutationVariables,
     type IDeleteCategoryMutationResponse,
     type IDeleteCategoryMutationVariables,
+    type IDuplicateCategoryMutationResponse,
+    type IDuplicateCategoryMutationVariables,
     type IGetCategoriesByIdsQueryResponse,
     IGetCategoriesByIdsQueryVariables,
     type IGetCategoryQueryResponse,
@@ -104,6 +107,15 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
             return await contentHandler.invoke<ICreateCategoryFromMutationResponse>({
                 body: {
                     query: createCategoryFromMutation(model),
+                    variables: params.variables
+                },
+                headers: params.headers
+            });
+        },
+        async duplicateCategory(params: IMutationParams<IDuplicateCategoryMutationVariables>) {
+            return await contentHandler.invoke<IDuplicateCategoryMutationResponse>({
+                body: {
+                    query: duplicateCategoryMutation(model),
                     variables: params.variables
                 },
                 headers: params.headers
