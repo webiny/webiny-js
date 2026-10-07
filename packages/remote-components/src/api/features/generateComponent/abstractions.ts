@@ -26,8 +26,13 @@ export interface GenerationTrace {
     system: string;
     /** The user message's text, whole. */
     user: string;
-    /** The File Manager ids of the images sent with it. */
+    /** The File Manager ids of the images asked to be sent with it. */
     imageFileIds: string[];
+    /**
+     * The image parts actually placed in the request. An id whose file could not be read, or is not an
+     * image, is dropped without an error — so this, not `imageFileIds`, says whether the model saw it.
+     */
+    imagesAttached: { mediaType: string; bytes: number }[];
     durationMs: number;
     /** Absent when the call failed or was cut off — the provider reports no usage for those. */
     usage?: {

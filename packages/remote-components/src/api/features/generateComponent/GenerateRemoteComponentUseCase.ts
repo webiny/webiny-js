@@ -55,6 +55,7 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
                 ? model
                 : String((model as { modelId?: unknown } | undefined)?.modelId ?? model);
         let userText = "";
+        let imagesAttached: GenerationTrace["imagesAttached"] = [];
         const trace = async (rest: Partial<GenerationTrace>) => {
             if (!input.onTrace) {
                 return;
@@ -65,6 +66,7 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
                     system: systemText,
                     user: userText,
                     imageFileIds: input.additionalFileIds ?? [],
+                    imagesAttached,
                     durationMs: Date.now() - started,
                     ...rest
                 });
@@ -79,6 +81,9 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
                 .filter((part): part is TextPart => part.type === "text")
                 .map(part => part.text)
                 .join("\n");
+            imagesAttached = userContent
+                .filter((part): part is FilePart => part.type === "file")
+                .map(part => ({ mediaType: part.mediaType, bytes: part.data.byteLength }));
 
             const aiResult = await this.ai.generateText({
                 model,

@@ -52,6 +52,8 @@ export interface GenerationPrompt {
     system: string;
     user: string;
     imageFileIds: string[];
+    /** The image parts the request actually carried. Absent on entries written before it was recorded. */
+    imagesAttached?: { mediaType: string; bytes: number }[];
 }
 
 /** One attempt as the attempt loop reports it. */
@@ -86,7 +88,8 @@ export const appendGenerationLog = async (
     const prompt: GenerationPrompt = {
         system: trace?.system ?? "",
         user: trace?.user ?? "",
-        imageFileIds: trace?.imageFileIds ?? []
+        imageFileIds: trace?.imageFileIds ?? [],
+        imagesAttached: trace?.imagesAttached ?? []
     };
     const stored = await blobs.put(
         `${input.runId}/generation-log/${signatureHash(input.signature)}/${id}.json`,

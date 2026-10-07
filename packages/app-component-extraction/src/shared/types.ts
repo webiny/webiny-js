@@ -555,6 +555,8 @@ export interface GenerationPromptDto {
     system: string;
     user: string;
     imageFileIds: string[];
+    /** The image parts the request actually carried. */
+    imagesAttached?: { mediaType: string; bytes: number }[];
 }
 
 /** A human review verdict on one generated component, as the API stands it: its latest. */

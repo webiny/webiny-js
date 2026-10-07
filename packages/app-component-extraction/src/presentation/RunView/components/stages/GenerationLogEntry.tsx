@@ -90,10 +90,22 @@ export const GenerationLogEntry = ({ entry, prompt }: Props) => {
                         </Text>
                         <Block text={prompt.prompt.user} />
                     </div>
-                    <Row label="Images sent">
+                    <Row label="Images requested">
                         {prompt.prompt.imageFileIds.length > 0
                             ? `${prompt.prompt.imageFileIds.length} — the section's reference crop (File Manager ${prompt.prompt.imageFileIds.join(", ")})`
                             : "none"}
+                    </Row>
+                    <Row label="Images attached">
+                        {prompt.prompt.imagesAttached === undefined
+                            ? "not recorded for this attempt"
+                            : prompt.prompt.imagesAttached.length === 0
+                              ? "none — the model did not see the reference image"
+                              : prompt.prompt.imagesAttached
+                                    .map(
+                                        image =>
+                                            `${image.mediaType}, ${number(Math.round(image.bytes / 1024))} KB`
+                                    )
+                                    .join("; ")}
                     </Row>
                     <div className="flex flex-col gap-xxs">
                         <Button

@@ -40,6 +40,7 @@ const cutOff: AttemptRecord = {
         system: "You are a React component generator…",
         user: 'Build a "list" website section component named "Amenities List".',
         imageFileIds: ["file-1"],
+        imagesAttached: [{ mediaType: "image/png", bytes: 412_000 }],
         durationMs: 300_000,
         error: "The operation was aborted due to timeout"
     },
@@ -54,6 +55,7 @@ const failedChecks: AttemptRecord = {
         system: "You are a React component generator…",
         user: "…Your previous attempt was rejected…",
         imageFileIds: ["file-1"],
+        imagesAttached: [{ mediaType: "image/png", bytes: 412_000 }],
         durationMs: 160_000,
         usage: {
             inputTokens: 20149,
@@ -109,7 +111,8 @@ describe("generationLog", () => {
         expect(prompt.isOk() && prompt.value).toEqual({
             system: "You are a React component generator…",
             user: "…Your previous attempt was rejected…",
-            imageFileIds: ["file-1"]
+            imageFileIds: ["file-1"],
+            imagesAttached: [{ mediaType: "image/png", bytes: 412_000 }]
         });
         const unknown = await readGenerationPrompt(store, blobs, {
             runId: "run#0001",
