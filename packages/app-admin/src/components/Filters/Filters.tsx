@@ -8,6 +8,8 @@ type Filter = {
     element: React.ReactElement;
 };
 
+const GRID_COLUMNS = 4;
+
 export type GenericFiltersData = GenericFormData;
 
 export type FiltersOnSubmit<T extends GenericFiltersData = GenericFiltersData> = FormOnSubmit<T>;
@@ -43,7 +45,19 @@ export const Filters = <T extends GenericFiltersData = GenericFiltersData>(
                                     {filter.element}
                                 </div>
                             ))}
-                            {props.children && <div>{props.children}</div>}
+                            {props.children && (
+                                // Children (e.g. advanced search) take the rest of the row.
+                                <div
+                                    className={"min-w-0"}
+                                    style={{
+                                        gridColumn: `span ${
+                                            GRID_COLUMNS - (props.filters.length % GRID_COLUMNS)
+                                        }`
+                                    }}
+                                >
+                                    {props.children}
+                                </div>
+                            )}
                         </div>
                     )}
                 </Form>
