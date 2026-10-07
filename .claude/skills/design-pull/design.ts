@@ -1,7 +1,7 @@
 /**
  * Command-line entry for the design-pull and design-ask skills.
  * Run from the repository root: yarn tsx .claude/skills/design-pull/design.ts <command> ...
- * Exit codes: 0 success, 1 error, 2 unknown command; import-raw adds 2-5 (see lib.ts).
+ * Exit codes: 0 success, 1 error, 64 unknown command; import-raw adds 2-5 (see lib.ts).
  */
 import { parseArgs, type ParseArgsConfig } from "node:util";
 import * as lib from "./lib.ts";
@@ -31,14 +31,29 @@ const required = (values: Values, name: string, usage: string): string => {
 
 const commands: Record<string, Command> = {
     init: {
-        usage: "init <folder> --project <name> --project-id <uuid>",
-        options: { project: { type: "string" }, "project-id": { type: "string" } },
+        usage: "init <folder> --project <name> --project-id <uuid> --question-prefix <PREFIX>",
+        options: {
+            project: { type: "string" },
+            "project-id": { type: "string" },
+            "question-prefix": { type: "string" }
+        },
         run: (positionals, values) =>
             lib.cmdInit(
                 one(positionals, commands.init.usage),
                 required(values, "project", commands.init.usage),
-                required(values, "project-id", commands.init.usage)
+                required(values, "project-id", commands.init.usage),
+                required(values, "question-prefix", commands.init.usage)
             )
+    },
+    "set-prefix": {
+        usage: "set-prefix <folder> <PREFIX>",
+        options: {},
+        run: positionals => {
+            if (positionals.length !== 2) {
+                throw new lib.DesignError(`usage: ${commands["set-prefix"].usage}`);
+            }
+            lib.cmdSetPrefix(positionals[0], positionals[1]);
+        }
     },
     "list-folders": {
         usage: "list-folders",
@@ -46,8 +61,8 @@ const commands: Record<string, Command> = {
         run: () => lib.cmdListFolders()
     },
     plan: {
-        usage: "plan <folder> <listing> --out <plan.json>",
-        options: { out: { type: "string" } },
+        usage: "plan <folder> <listing> --out <plan.json> [--force]",
+        options: { out: { type: "string" }, force: { type: "boolean" } },
         run: (positionals, values) => {
             if (positionals.length !== 2) {
                 throw new lib.DesignError(`usage: ${commands.plan.usage}`);
@@ -55,7 +70,8 @@ const commands: Record<string, Command> = {
             lib.cmdPlan(
                 positionals[0],
                 positionals[1],
-                required(values, "out", commands.plan.usage)
+                required(values, "out", commands.plan.usage),
+                values.force === true
             );
         }
     },
@@ -160,7 +176,7 @@ const main = (argv: string[]): number => {
     const command = name ? commands[name] : undefined;
     if (!command) {
         process.stderr.write(`usage: design.ts <${Object.keys(commands).join("|")}> ...\n`);
-        return 2;
+        return 64;
     }
     try {
         const { values, positionals } = parseArgs({

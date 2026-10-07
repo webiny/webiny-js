@@ -14,7 +14,7 @@ describe("finish and report", () => {
 
     beforeEach(() => {
         top = makeRepo();
-        runCli(top, "init", "d", "--project", "P", "--project-id", "u");
+        runCli(top, "init", "d", "--project", "P", "--project-id", "u", "--question-prefix", "T");
         folder = path.join(top, "d");
         files = path.join(folder, "files");
         fs.mkdirSync(files);
@@ -68,6 +68,7 @@ describe("finish and report", () => {
         assert.equal(after.rows["Content Review.dc.html"].etagImplemented, "e2");
         assert.ok(after.rows["gone.html"].removedAt);
         assert.equal(fs.existsSync(path.join(files, "gone.html")), false);
+        assert.equal(fs.readFileSync(path.join(folder, ".removed/gone.html"), "utf8"), "g");
         assert.ok(fs.existsSync(path.join(implemented, "gone.html")));
         assert.equal(after.lastPull, JSON.parse(fs.readFileSync(planFile, "utf8")).listed_at);
 
@@ -88,17 +89,21 @@ describe("finish and report", () => {
         writeIn(files, "A B.html", "");
         runOk("plan", folder, listing, "--out", planFile);
         const plan = JSON.parse(fs.readFileSync(planFile, "utf8"));
-        plan.answers_result = { answered: [3], changed: [4], unknown: [9] };
+        plan.answers_result = { answered: ["BZ-3"], changed: ["BZ-4"], unknown: ["BZ-9"] };
         fs.writeFileSync(planFile, JSON.stringify(plan));
         const report = runOk("report", folder, "--plan", planFile);
         assert.ok(report.includes("diff '.implemented/A B.html' 'files/A B.html'"), report);
-        assert.ok(report.includes("Newly answered:\n  - Q3"), report);
-        assert.ok(report.includes("Answer changed:\n  - Q4"), report);
-        assert.ok(report.includes("Answers without a logged question:\n  - Q9"), report);
+        assert.ok(report.includes("Newly answered:\n  - QBZ-3"), report);
+        assert.ok(report.includes("Answer changed:\n  - QBZ-4"), report);
+        assert.ok(report.includes("Answers without a logged question:\n  - QBZ-9"), report);
     });
 
     it("says nothing changed", () => {
-        writeListing(listing, []);
+        writeIn(files, "a.html", "a");
+        writeListing(listing, [["a.html", 1, "e1"]]);
+        runOk("plan", folder, listing, "--out", planFile);
+        runOk("finish", folder, "--plan", planFile);
+        fs.rmSync(planFile);
         runOk("plan", folder, listing, "--out", planFile);
         runOk("finish", folder, "--plan", planFile);
         assert.equal(runOk("report", folder, "--plan", planFile).trim(), "Nothing changed.");
@@ -121,6 +126,16 @@ describe("finish and report", () => {
         const report = runOk("report", folder, "--plan", planFile);
         assert.ok(report.includes("New:\n  - fresh.html"), report);
         assert.ok(report.includes("Changed:\n  - old.html"), report);
+    });
+
+    it("lists files that were planned for download but never fetched", () => {
+        writeListing(listing, [
+            ["a.html", 3, "e1"],
+            ["b.html", 3, "e2"]
+        ]);
+        runOk("plan", folder, listing, "--out", planFile);
+        const report = runOk("report", folder, "--plan", planFile);
+        assert.ok(report.includes("Not fetched:\n  - a.html\n  - b.html"), report);
     });
 });
 

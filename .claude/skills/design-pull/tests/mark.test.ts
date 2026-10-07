@@ -11,7 +11,7 @@ describe("mark and unmark", () => {
 
     beforeEach(() => {
         top = makeRepo();
-        runCli(top, "init", "d", "--project", "P", "--project-id", "u");
+        runCli(top, "init", "d", "--project", "P", "--project-id", "u", "--question-prefix", "T");
         folder = path.join(top, "d");
         fs.mkdirSync(path.join(folder, "files"));
         fs.writeFileSync(path.join(folder, "files/A B.html"), "design");

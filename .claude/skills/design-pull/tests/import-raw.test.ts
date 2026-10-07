@@ -31,7 +31,7 @@ describe("import-raw", () => {
 
     beforeEach(() => {
         top = makeRepo();
-        runCli(top, "init", "d", "--project", "P", "--project-id", "u");
+        runCli(top, "init", "d", "--project", "P", "--project-id", "u", "--question-prefix", "T");
         folder = path.join(top, "d");
         listing = path.join(top, "listing.json");
         planFile = path.join(top, "plan.json");
@@ -148,9 +148,19 @@ describe("import-raw", () => {
         fs.writeFileSync(raw, makeRaw("a.html", "e1", "ab"));
         assert.equal(importRaw()[0], 0);
         writeListing(listing, [["a.html", 2, "e2"]]);
+        fs.rmSync(planFile);
         const result = runCli(top, "plan", folder, listing, "--out", planFile);
         assert.equal(result.status, 0, result.stderr);
         assert.deepEqual(readPlan().adopted, []);
         assert.deepEqual(readPlan().mcp, ["a.html"]);
+    });
+
+    it("records a manual result in the plan", () => {
+        const content = "x".repeat(d.MCP_MAX_FILE + 1);
+        makePlan([["a.html", content.length, "e1"]]);
+        fs.writeFileSync(raw, makeRaw("a.html", "e1", content));
+        assert.equal(importRaw("--retyped")[0], 4);
+        assert.equal(importRaw("--retyped")[0], 4);
+        assert.deepEqual(readPlan().manual, ["a.html"]);
     });
 });

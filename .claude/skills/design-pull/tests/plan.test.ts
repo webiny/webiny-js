@@ -14,7 +14,7 @@ describe("plan", () => {
 
     beforeEach(() => {
         top = makeRepo();
-        runCli(top, "init", "d", "--project", "P", "--project-id", "u");
+        runCli(top, "init", "d", "--project", "P", "--project-id", "u", "--question-prefix", "T");
         folder = path.join(top, "d");
         files = path.join(folder, "files");
         fs.mkdirSync(files);
@@ -26,6 +26,7 @@ describe("plan", () => {
     });
 
     const plan = () => {
+        fs.rmSync(out, { force: true });
         const result = runCli(top, "plan", folder, listing, "--out", out);
         assert.equal(result.status, 0, result.stderr);
         return JSON.parse(fs.readFileSync(out, "utf8"));
@@ -178,5 +179,27 @@ describe("plan", () => {
         assert.deepEqual(again.unchanged, ["constructor", "toString"]);
         assert.deepEqual(again.removed, []);
         assert.equal(d.loadCatalogue(folder).rows["constructor"].etagPulled, "e1");
+    });
+
+    it("refuses an empty listing", () => {
+        writeListing(listing, []);
+        assert.equal(runCli(top, "plan", folder, listing, "--out", out).status, 1);
+    });
+
+    it("refuses a listing that matches none of the existing rows unless forced", () => {
+        write("a.html", "abcd");
+        writeListing(listing, [["a.html", 4, "e1"]]);
+        plan();
+        writeListing(listing, [["other.html", 1, "e9"]]);
+        fs.rmSync(out, { force: true });
+        assert.equal(runCli(top, "plan", folder, listing, "--out", out).status, 1);
+        assert.ok(fs.existsSync(path.join(files, "a.html")));
+        assert.equal(runCli(top, "plan", folder, listing, "--out", out, "--force").status, 0);
+    });
+
+    it("refuses to overwrite an existing plan file", () => {
+        writeListing(listing, [["a.html", 4, "e1"]]);
+        plan();
+        assert.equal(runCli(top, "plan", folder, listing, "--out", out).status, 1);
     });
 });

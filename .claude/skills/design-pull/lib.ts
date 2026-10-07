@@ -187,6 +187,8 @@ export interface Catalogue {
     support: string[];
     lastPull: string;
     answersEtag: string;
+    /** Prefix of this folder's question IDs (QBZ-4); keeps IDs unique across people and worktrees. */
+    questionPrefix: string;
     rows: Record<string, Row>;
 }
 
@@ -214,7 +216,11 @@ export const createRow = (file: string, values: Partial<Omit<Row, "file">> = {})
     ...values
 });
 
-export const createCatalogue = (project: string, projectId: string): Catalogue => ({
+export const createCatalogue = (
+    project: string,
+    projectId: string,
+    questionPrefix = ""
+): Catalogue => ({
     project,
     projectId,
     source: "/",
@@ -222,8 +228,20 @@ export const createCatalogue = (project: string, projectId: string): Catalogue =
     support: [...DEFAULT_SUPPORT],
     lastPull: "",
     answersEtag: "",
+    questionPrefix,
     rows: dict<Row>()
 });
+
+const QUESTION_PREFIX = /^[A-Z][A-Z0-9]{0,7}$/;
+
+export const validatePrefix = (prefix: string): string => {
+    if (!QUESTION_PREFIX.test(prefix)) {
+        throw new DesignError(
+            `question prefix must be 1-8 upper-case letters or digits, starting with a letter: ${JSON.stringify(prefix)}`
+        );
+    }
+    return prefix;
+};
 
 export const rowStatus = (cat: Catalogue, row: Row): string => {
     if (row.removedAt) {
@@ -313,6 +331,7 @@ export const parseCatalogue = (text: string): Catalogue => {
         exclude: list("exclude"),
         support: list("support"),
         lastPull: valueOf("last_pull"),
+        questionPrefix: valueOf("question_prefix"),
         answersEtag: valueOf("answers_etag"),
         rows: dict<Row>()
     };
@@ -356,6 +375,7 @@ export const renderCatalogue = (cat: Catalogue): string => {
         ...cat.support.map(pattern => `  - ${pattern}`),
         `last_pull: ${cat.lastPull}`,
         `answers_etag: ${cat.answersEtag}`,
+        `question_prefix: ${cat.questionPrefix}`,
         "---",
         "",
         `| ${COLUMNS.join(" | ")} |`,
@@ -441,10 +461,10 @@ export interface ListingEntry {
 export type Listing = Record<string, ListingEntry>;
 
 interface RawListingEntry {
-    path: string;
-    type?: string;
-    size: number | string;
-    etag: string | number;
+    path?: unknown;
+    type?: unknown;
+    size?: unknown;
+    etag?: unknown;
 }
 
 export const loadListing = (file: string): Listing => {
@@ -454,24 +474,47 @@ export const loadListing = (file: string): Listing => {
     if (start < 0 || end < start) {
         throw new DesignError(`${file}: no JSON array found`);
     }
-    let entries: RawListingEntry[];
+    let entries: unknown;
     try {
         entries = JSON.parse(text.slice(start, end + 1));
     } catch (error) {
         throw new DesignError(`${file}: invalid JSON: ${(error as Error).message}`);
     }
+    if (!Array.isArray(entries)) {
+        throw new DesignError(`${file}: not a JSON array`);
+    }
     const listing: Listing = dict<ListingEntry>();
-    for (const entry of entries) {
-        if ((entry.type ?? "file") === "file") {
-            listing[entry.path] = { size: Number(entry.size), etag: String(entry.etag) };
+    for (const entry of entries as RawListingEntry[]) {
+        if ((entry?.type ?? "file") !== "file") {
+            continue;
         }
+        const size = Number(entry.size);
+        const etagValid = typeof entry.etag === "string" || typeof entry.etag === "number";
+        if (
+            typeof entry.path !== "string" ||
+            !entry.path ||
+            !Number.isFinite(size) ||
+            size < 0 ||
+            !etagValid
+        ) {
+            throw new DesignError(
+                `${file}: not a list_files result (bad entry ${JSON.stringify(entry)})`
+            );
+        }
+        listing[entry.path] = { size, etag: String(entry.etag) };
     }
     return listing;
 };
 
 // ---------------------------------------------------------------- commands: folders
 
-export const cmdInit = (folderArg: string, project: string, projectId: string): void => {
+export const cmdInit = (
+    folderArg: string,
+    project: string,
+    projectId: string,
+    questionPrefix: string
+): void => {
+    validatePrefix(questionPrefix);
     const top = repoTop();
     const folder = realpathLoose(path.resolve(top, folderArg));
     const rel = path.relative(top, folder);
@@ -482,7 +525,7 @@ export const cmdInit = (folderArg: string, project: string, projectId: string): 
         throw new DesignError(`catalogue.md already exists in ${folder}`);
     }
     fs.mkdirSync(folder, { recursive: true });
-    saveCatalogue(folder, createCatalogue(project, projectId));
+    saveCatalogue(folder, createCatalogue(project, projectId, questionPrefix));
     const posixRel = rel.split(path.sep).join("/");
     const entry = `/${escapeGitignore(posixRel)}/`;
     const exclude = excludePath(top);
@@ -492,6 +535,14 @@ export const cmdInit = (folderArg: string, project: string, projectId: string): 
         atomicWriteBytes(exclude, `${existing}${prefix}${entry}\n`);
     }
     printJson({ folder: posixRel, exclude_entry: entry });
+};
+
+export const cmdSetPrefix = (folder: string, questionPrefix: string): void => {
+    validatePrefix(questionPrefix);
+    const cat = loadCatalogue(folder);
+    cat.questionPrefix = questionPrefix;
+    saveCatalogue(folder, cat);
+    printJson({ question_prefix: questionPrefix });
 };
 
 export const cmdListFolders = (): void => {
@@ -525,9 +576,9 @@ export const cmdListFolders = (): void => {
 // ---------------------------------------------------------------- commands: pull
 
 export interface AnswersResult {
-    answered: number[];
-    changed: number[];
-    unknown: number[];
+    answered: string[];
+    changed: string[];
+    unknown: string[];
 }
 
 export interface PullPlan {
@@ -574,9 +625,24 @@ const summary = (plan: PullPlan): Omit<PullPlan, "entries"> => {
     return rest;
 };
 
-export const cmdPlan = (folder: string, listingFile: string, out: string): void => {
+export const cmdPlan = (folder: string, listingFile: string, out: string, force = false): void => {
     const cat = loadCatalogue(folder);
+    if (fs.existsSync(out)) {
+        throw new DesignError(
+            `${out} already exists; run plan once per pull, in a new run directory`
+        );
+    }
     const listing = loadListing(listingFile);
+    if (Object.keys(listing).length === 0) {
+        throw new DesignError(`${listingFile}: the listing is empty`);
+    }
+    const liveRows = Object.keys(cat.rows).filter(rel => !cat.rows[rel].removedAt);
+    const matched = liveRows.some(rel => Object.hasOwn(listing, toProjectPath(cat, rel)));
+    if (liveRows.length > 0 && !matched && !force) {
+        throw new DesignError(
+            `${listingFile} matches none of the ${liveRows.length} catalogued files; wrong project? Use --force only if every file really was removed`
+        );
+    }
     const plan: PullPlan = {
         listed_at: nowIso(),
         entries: dict<ListingEntry>(),
@@ -784,10 +850,11 @@ export const cmdImportRaw = (options: ImportRawOptions): number => {
     }
 
     const finish = (status: ImportStatus): number => {
-        if (status === "imported") {
-            plan.imported.push(key);
-        } else if (status === "failed") {
-            plan.failed.push(key);
+        const record = { imported: plan.imported, failed: plan.failed, manual: plan.manual }[
+            status as "imported" | "failed" | "manual"
+        ];
+        if (record && !record.includes(key)) {
+            record.push(key);
         }
         savePlan(options.plan, plan);
         printJson({ path: key, status });
@@ -844,7 +911,10 @@ export const cmdFinish = (folder: string, planFile: string): void => {
         row.removedAt = nowIso();
         const mirrored = localFile(folder, rel);
         if (mirrored) {
-            fs.rmSync(mirrored);
+            // Moved aside instead of deleted: a wrong listing must never destroy unzipped files.
+            const aside = safeJoin(path.join(folder, ".removed"), rel);
+            fs.mkdirSync(path.dirname(aside), { recursive: true });
+            fs.renameSync(mirrored, aside);
         }
     }
     for (const rel of Object.keys(cat.rows).sort()) {
@@ -890,7 +960,7 @@ export const cmdReport = (folder: string, planFile: string): void => {
             lines.push(`${title}:`, ...items.map(item => `  - ${item}`));
         }
     };
-    const ids = (values: number[] | undefined) => (values ?? []).map(id => `Q${id}`);
+    const ids = (values: string[] | undefined) => (values ?? []).map(id => `Q${id}`);
 
     const isNew = new Set(plan.new);
     const pulled = [
@@ -926,6 +996,11 @@ export const cmdReport = (folder: string, planFile: string): void => {
     section("Answer changed", ids(plan.answers_result?.changed));
     section("Answers without a logged question", ids(plan.answers_result?.unknown));
     section("Needs manual export (unzip into files/ and pull again)", plan.manual);
+    const settled = new Set([...plan.imported, ...plan.failed, ...plan.manual]);
+    section(
+        "Not fetched",
+        plan.mcp.filter(rel => !settled.has(rel))
+    );
     section("Failed", plan.failed);
     section("Rejected paths", plan.rejected);
     process.stdout.write(`${lines.length ? lines.join("\n") : "Nothing changed."}\n`);
@@ -934,7 +1009,8 @@ export const cmdReport = (folder: string, planFile: string): void => {
 // ---------------------------------------------------------------- questions
 
 export interface Question {
-    id: number;
+    /** Prefixed ID without the Q, for example "BZ-4". */
+    id: string;
     status: "open" | "answered";
     date: string;
     file: string;
@@ -942,9 +1018,13 @@ export interface Question {
     answer: string;
 }
 
-const QUESTION_HEAD = /^## Q(\d+) — (open|answered) — (\d{4}-\d{2}-\d{2})$/;
-const ANSWER_HEAD = /^#{2,3}\s+Q(\d+)\b.*$/gm;
+const QUESTION_HEAD = /^## Q([A-Z][A-Z0-9]*-\d+) — (open|answered) — (\d{4}-\d{2}-\d{2})$/;
+const ANSWER_HEAD = /^#{2,3}[ \t]+Q([A-Z][A-Z0-9]*-\d+)\b.*$/gm;
 const ESCAPED_START = ["#", ">", "file:", "\\"];
+
+const idNumber = (id: string): number => Number(id.slice(id.lastIndexOf("-") + 1));
+
+const idPrefix = (id: string): string => id.slice(0, id.lastIndexOf("-"));
 
 export const normalize = (text: string): string =>
     text
@@ -975,7 +1055,7 @@ export const parseQuestions = (text: string): Question[] => {
         if (head) {
             close();
             current = {
-                id: Number(head[1]),
+                id: head[1],
                 status: head[2] as Question["status"],
                 date: head[3],
                 file: "",
@@ -1004,7 +1084,10 @@ export const parseQuestions = (text: string): Question[] => {
 
 export const renderQuestions = (questions: Question[]): string => {
     const out = ["# Questions", ""];
-    for (const question of [...questions].sort((a, b) => a.id - b.id)) {
+    const sorted = [...questions].sort(
+        (a, b) => idPrefix(a.id).localeCompare(idPrefix(b.id)) || idNumber(a.id) - idNumber(b.id)
+    );
+    for (const question of sorted) {
         out.push(`## Q${question.id} — ${question.status} — ${question.date}`);
         if (question.file) {
             out.push(`file: ${question.file}`);
@@ -1018,15 +1101,15 @@ export const renderQuestions = (questions: Question[]): string => {
     return out.join("\n");
 };
 
-/** Answer sections keyed by question ID; when an ID repeats, the last section wins. */
-export const parseAnswers = (text: string): Map<number, string> => {
-    const sections = new Map<number, string>();
+/** Answer sections keyed by prefixed question ID; when an ID repeats, the last section wins. */
+export const parseAnswers = (text: string): Map<string, string> => {
+    const sections = new Map<string, string>();
     const heads = [...text.matchAll(ANSWER_HEAD)];
     heads.forEach((head, index) => {
         const start = (head.index ?? 0) + head[0].length;
         const end =
             index + 1 < heads.length ? (heads[index + 1].index ?? text.length) : text.length;
-        sections.set(Number(head[1]), normalize(text.slice(start, end)));
+        sections.set(head[1], normalize(text.slice(start, end)));
     });
     return sections;
 };
@@ -1040,9 +1123,18 @@ const saveQuestions = (folder: string, questions: Question[]): void => {
     atomicWriteBytes(path.join(folder, "questions.md"), renderQuestions(questions));
 };
 
-const answerIds = (folder: string): number[] => {
+const answerIds = (folder: string): string[] => {
     const file = path.join(folder, ANSWERS_PATH);
     return isRegularFile(file) ? [...parseAnswers(fs.readFileSync(file, "utf8")).keys()] : [];
+};
+
+/** The folder's question prefix; fails when the catalogue is missing or has none. */
+const questionPrefixOf = (folder: string): string => {
+    const prefix = loadCatalogue(folder).questionPrefix;
+    if (!prefix) {
+        throw new DesignError(`no question_prefix in ${folder}/catalogue.md; run set-prefix first`);
+    }
+    return prefix;
 };
 
 // ---------------------------------------------------------------- commands: questions
@@ -1052,15 +1144,32 @@ interface AskItem {
     text: string;
 }
 
+const readAskItems = (itemsFile: string): AskItem[] => {
+    let items: unknown;
+    try {
+        items = JSON.parse(fs.readFileSync(itemsFile, "utf8"));
+    } catch (error) {
+        throw new DesignError(`${itemsFile}: invalid JSON: ${(error as Error).message}`);
+    }
+    if (!Array.isArray(items) || items.some(item => typeof item?.text !== "string")) {
+        throw new DesignError(`${itemsFile}: expected [{"file": "...", "text": "..."}]`);
+    }
+    return items as AskItem[];
+};
+
 export const cmdAskAdd = (folder: string, itemsFile: string): void => {
+    const prefix = questionPrefixOf(folder);
+    const items = readAskItems(itemsFile);
     const questions = loadQuestions(folder);
-    const items: AskItem[] = JSON.parse(fs.readFileSync(itemsFile, "utf8"));
     const openByText = new Map(questions.filter(q => q.status === "open").map(q => [q.text, q.id]));
-    let nextId = Math.max(0, ...questions.map(q => q.id), ...answerIds(folder));
-    const added: Array<{ id: number; file: string; text: string }> = [];
-    const duplicates: Array<{ id: number; text: string }> = [];
+    const ownIds = [...questions.map(q => q.id), ...answerIds(folder)].filter(
+        id => idPrefix(id) === prefix
+    );
+    let next = Math.max(0, ...ownIds.map(idNumber));
+    const added: Array<{ id: string; file: string; text: string }> = [];
+    const duplicates: Array<{ id: string; text: string }> = [];
     for (const item of items) {
-        const text = normalize(item.text ?? "");
+        const text = normalize(item.text);
         if (!text) {
             continue;
         }
@@ -1069,11 +1178,12 @@ export const cmdAskAdd = (folder: string, itemsFile: string): void => {
             duplicates.push({ id: existing, text });
             continue;
         }
-        nextId += 1;
+        next += 1;
+        const id = `${prefix}-${next}`;
         const file = item.file ?? "";
-        questions.push({ id: nextId, status: "open", date: today(), file, text, answer: "" });
-        openByText.set(text, nextId);
-        added.push({ id: nextId, file, text });
+        questions.push({ id, status: "open", date: today(), file, text, answer: "" });
+        openByText.set(text, id);
+        added.push({ id, file, text });
     }
     if (added.length) {
         saveQuestions(folder, questions);
@@ -1082,6 +1192,7 @@ export const cmdAskAdd = (folder: string, itemsFile: string): void => {
 };
 
 export const cmdAskOpen = (folder: string): void => {
+    loadCatalogue(folder);
     printJson(
         loadQuestions(folder)
             .filter(q => q.status === "open")
@@ -1090,14 +1201,15 @@ export const cmdAskOpen = (folder: string): void => {
 };
 
 export const cmdAnswers = (folder: string, planFile?: string): void => {
+    const prefix = loadCatalogue(folder).questionPrefix;
     const result: AnswersResult = { answered: [], changed: [], unknown: [] };
     const file = path.join(folder, ANSWERS_PATH);
     if (isRegularFile(file)) {
         const questions = loadQuestions(folder);
         const byId = new Map(questions.map(q => [q.id, q]));
-        const sections = [...parseAnswers(fs.readFileSync(file, "utf8")).entries()].sort(
-            ([a], [b]) => a - b
-        );
+        const sections = [...parseAnswers(fs.readFileSync(file, "utf8")).entries()]
+            .filter(([id]) => idPrefix(id) === prefix)
+            .sort(([a], [b]) => idNumber(a) - idNumber(b));
         for (const [id, body] of sections) {
             if (!body) {
                 continue;

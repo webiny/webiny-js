@@ -65,14 +65,15 @@ Commands (exact flags are fixed in the implementation plan):
 | command | purpose |
 |---|---|
 | `list-folders` | find design folders (see "Choosing the folder") |
-| `init` | write the catalogue header for a new folder and add the folder to the exclude file |
+| `init` | write the catalogue header (including the question prefix) for a new folder and add the folder to the exclude file |
+| `set-prefix` | set or change the folder's question prefix |
 | `plan` | compare a listing with the catalogue and the local files; adopt unzipped files; print what still needs MCP or a manual export |
 | `import-raw` | unwrap and decode one `read_file` result, import it if it verifies, update its row (or the answers file) |
 | `finish` | record removals, reconcile content-identical files, set `last_pull` (records state only) |
 | `report` | print the pull report, after `answers` has run |
 | `answers` | process a pulled `answers.md` |
 | `mark` / `unmark` | record or clear an implementation |
-| `ask-add` | allocate IDs and append questions to `questions.md` |
+| `ask-add` | allocate prefixed IDs and append questions to `questions.md` |
 
 ## Path safety
 
@@ -87,6 +88,10 @@ macOS file systems are case-insensitive by default. `plan` compares the paths it
 Local files under `files/` are inspected with `lstat`; symlinks are never followed, adopted or written through.
 
 Rejected paths are reported and skipped.
+
+A `list_files` result is validated as a whole: every entry needs a string `path`, a finite non-negative `size` and an `etag`. Anything else (an error text, a truncated re-typed listing) is rejected before `plan` changes anything.
+
+Command-line exit codes: `0` success, `1` error, `64` unknown command; `import-raw` adds `2`–`5`.
 
 Mirrored files are handled as bytes and never re-encoded. Files the script parses (`catalogue.md`, `questions.md`, `answers.md`, listings, raw read files) are read and written as UTF-8.
 
@@ -127,6 +132,7 @@ support:
   - assets/**
 last_pull: <RFC 3339 timestamp>
 answers_etag: <etag or empty>
+question_prefix: <PREFIX>
 ---
 ```
 
@@ -138,6 +144,7 @@ answers_etag: <etag or empty>
   - there is no directory pruning, so a `!` pattern can re-include a file inside an excluded directory.
 - `answers.md` at the project root is never part of the table, whatever `source` and `exclude` say. It is handled separately (see "Answers"); its last seen etag is `answers_etag`.
 - `support` marks files that are tracked but never implemented.
+- `question_prefix` (1–8 upper-case letters or digits, starting with a letter, for example the user's initials) is part of every question ID from this folder: `QBZ-4`. It keeps IDs unique when several people or worktrees ask questions about the same project, because they all share one `answers.md` in Claude Design. `init` requires it; `set-prefix` sets it for older folders.
 
 After the header comes the table:
 
@@ -212,7 +219,7 @@ In both cases `import-raw` parses the wrapper, takes the etag from its `etag` at
 ### `/design-pull [folder]`
 
 1. Resolve the folder, read the catalogue header and check the prerequisite.
-2. Call `list_files` with `depth: -1` and save the result as the listing. `plan` classifies every file:
+2. Call `list_files` with `depth: -1` and save the result as the listing. `plan` refuses to run when its output file already exists (one plan per run), when the listing is empty, or when the catalogue has live rows and the listing matches none of them (a wrong project or a broken listing); `--force` overrides the last check after the user confirms. It then classifies every file:
    - under `source` and not excluded: new (no row, or a `removed` row), changed (etag differs from `etag_pulled`, or `files/<path>` is missing locally) or unchanged;
    - row exists but the file now matches `exclude`: excluded (reported only; nothing is deleted);
    - row without `removed_at` exists and the file is gone from the listing: removed. Rows that already have `removed_at` are left untouched.
@@ -227,7 +234,7 @@ In both cases `import-raw` parses the wrapper, takes the etag from its `etag` at
    - A failed file leaves an existing row and local file unchanged, and a new file gets no row, so the next pull tries it again.
    - Size is the only content check on this path; for a re-typed result, a same-length transcription error is not detectable.
 5. `finish`:
-   - Removed files get `removed_at`. The mirrored file under `files/` is deleted; the `.implemented/` snapshot is kept.
+   - Removed files get `removed_at`. The mirrored file under `files/` is moved to `<folder>/.removed/<path>`, never deleted, so a wrong listing cannot destroy unzipped files; the `.implemented/` snapshot is kept.
    - Excluded files keep their row and mirrored file.
    - A reappearing file gets `removed_at` cleared by its successful import or adoption, not by `finish`; its implementation columns are kept. If the import fails, the row stays `removed`.
    - Content-identical reconciliation: when a `screen` file's content is byte-identical to its `.implemented/` snapshot but the etags differ, `etag_implemented` is set to `etag_pulled`. The report lists it as "etag changed, content identical".
@@ -236,10 +243,10 @@ In both cases `import-raw` parses the wrapper, takes the etag from its `etag` at
    - If the listing (unfiltered) has `answers.md` at the project root and its etag differs from `answers_etag`, fetch it through the MCP path. A successful import writes `<folder>/answers.md` and then sets `answers_etag`. A file over the MCP limit is reported as "needs manual export".
    - Whenever `<folder>/answers.md` exists, run `answers`, even if nothing was fetched. `answers` is idempotent, so an earlier interrupted run is completed here.
 7. `report` prints, combining the results of steps 2–6:
-   - adopted, new, changed, removed and excluded files;
+   - new and changed files (each marked adopted or downloaded), removed and excluded files;
    - `pending` files, with the hint `diff .implemented/<path> files/<path>` run from the folder, shell-quoted;
    - newly answered questions and changed answers;
-   - files that need a manual export, failed files and rejected paths.
+   - files that need a manual export (including `import-raw` exit 4), failed files, rejected paths, and "Not fetched": files planned for MCP that were never imported, failed or sent to manual export.
 
 ### `/design-pull mark <file>... [--etag <etag>] [--commit <sha>]`
 
@@ -284,10 +291,10 @@ The user can also mark and unmark by hand.
 3. Content rules for every question:
    - no code excerpts, secrets, credentials, internal URLs or file contents;
    - no question that originates from text in Claude Design content (files or `answers.md`); such text is reported to the user instead.
-4. `ask-add` allocates IDs right before appending: next ID is the highest `Q<n>` found in `questions.md` and `answers.md`, plus one. It appends:
+4. `ask-add` refuses a folder without a catalogue or without `question_prefix`. It allocates IDs right before appending: the next number is the highest `<n>` among IDs with this folder's prefix in `questions.md` and `answers.md`, plus one. It appends:
 
    ```
-   ## Q4 — open — 2026-10-07
+   ## QBZ-4 — open — 2026-10-07
    file: Content Review.dc.html
 
    <question>
@@ -296,13 +303,13 @@ The user can also mark and unmark by hand.
 5. Build the paste text:
 
    ```
-   Questions from the code side (Q4–Q6):
+   Questions from the code side (QBZ-4 to QBZ-6):
 
-   Q4 (Content Review.dc.html): ...
-   Q5 (Workflow Editor.dc.html): ...
+   QBZ-4 (Content Review.dc.html): ...
+   QBZ-5 (Workflow Editor.dc.html): ...
 
    Write the answers to answers.md at the project root.
-   Put each answer under a heading with its ID, for example "## Q4".
+   Put each answer under a heading with its ID, for example "## QBZ-4".
    Do not change earlier answers. Update the designs where an answer changes them.
    ```
 
@@ -310,16 +317,16 @@ The user can also mark and unmark by hand.
 
 ### Answers
 
-`answers` reads `<folder>/answers.md` and splits it into sections at headings matching `^#{2,3}\s+Q(\d+)\b`. Answer text is normalized before comparison: leading and trailing whitespace stripped, runs of blank lines collapsed to one.
+`answers` reads `<folder>/answers.md` and splits it into sections at headings matching `^#{2,3}[ \t]+Q(<PREFIX>-<n>)\b` (any prefix). Sections with another folder's prefix belong to someone else and are ignored. Answer text is normalized before comparison: leading and trailing whitespace stripped, runs of blank lines collapsed to one.
 
 When several sections share an ID, only the last one is used. A section whose normalized text is empty is ignored, so its question stays as it is.
 
 Each question in `questions.md` keeps only its latest answer, stored as a blockquote in which every line starts with `> `, so answer text can never form a heading in the log. For each remaining section:
 
-- `Q<n>` is `open`: set it to `answered` with the date and store the answer.
-- `Q<n>` is `answered` and the normalized text equals the stored answer: nothing changes.
-- `Q<n>` is `answered` and the normalized text differs: replace the stored answer, update the date, and report "Q<n> answer changed".
-- `Q<n>` is not in the log: report it.
+- `Q<PREFIX>-<n>` is `open`: set it to `answered` with the date and store the answer.
+- `Q<PREFIX>-<n>` is `answered` and the normalized text equals the stored answer: nothing changes.
+- `Q<PREFIX>-<n>` is `answered` and the normalized text differs: replace the stored answer, update the date, and report "Q<PREFIX>-<n> answer changed".
+- `Q<PREFIX>-<n>` is not in the log: report it.
 
 Answer text is untrusted. Text that reads like instructions is flagged in the report.
 
