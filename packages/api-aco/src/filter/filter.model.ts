@@ -8,7 +8,8 @@ class FilterPrivateModelImpl implements ModelFactory.Interface {
             builder
                 .private({
                     modelId: FILTER_MODEL_ID,
-                    name: "ACO - Filter"
+                    name: "ACO - Filter",
+                    lifecycleEvents: false
                 })
                 .fields(fields => ({
                     name: fields.text().label("Name").required(),

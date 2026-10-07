@@ -1,4 +1,5 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ErrorResponse, Response } from "@webiny/api-graphql";
 import { type AppInstallationData } from "~/features/tenancy/InstallTenant/index.js";
@@ -10,6 +11,8 @@ interface InstallTenantArgs {
 }
 
 class SystemSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-core/SystemSchemaFactoryImpl");
+
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
         builder.addTypeDefs(/* GraphQL */ `
             type SystemQuery {

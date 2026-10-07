@@ -1,4 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { HeadlessCmsEndpointConfig } from "./HeadlessCmsEndpointConfig.js";
@@ -189,6 +190,7 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
         container.registerInstance(CmsContextAbstraction, cmsContext);
 
         container.registerInstance(CoreGraphQLSchemaFactory, {
+            getSchemaKey: staticSchemaKey("api-headless-cms/RevisionId"),
             execute: async builder => {
                 builder.addTypeDefs("scalar RevisionId");
                 builder.addLegacyResolvers({ RevisionId: RevisionIdScalar });

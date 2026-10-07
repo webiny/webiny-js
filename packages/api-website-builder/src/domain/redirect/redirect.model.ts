@@ -8,7 +8,8 @@ class RedirectModelFactory implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
         const model = builder.private({
             modelId: REDIRECT_MODEL_ID,
-            name: "Website Builder - Redirect"
+            name: "Website Builder - Redirect",
+            lifecycleEvents: false
         });
 
         model.fields(fields => ({

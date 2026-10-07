@@ -11,6 +11,10 @@ export interface IModelSettings {
     aiEntryWizard?: boolean;
     previewPrefix?: string;
     previewSlug?: string;
+    /**
+     * Set via `builder.private({ lifecycleEvents: false })`. Only honored for private models.
+     */
+    lifecycleEvents?: boolean;
     [key: string]: any;
 }
 

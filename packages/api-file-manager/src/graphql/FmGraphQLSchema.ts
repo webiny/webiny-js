@@ -1,4 +1,5 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { createModelSchemaKey } from "@webiny/api-headless-cms/utils/createModelSchemaKey.js";
 import { ErrorResponse } from "@webiny/api-graphql";
 import { ListResponse } from "@webiny/api-graphql";
 import { NotFoundResponse } from "@webiny/api-graphql";
@@ -47,6 +48,13 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
         private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface,
         private readonly fileModelProvider: FileModelProvider.Interface
     ) {}
+
+    public async getSchemaKey(): Promise<string> {
+        const models = await this.loadModels();
+        const fileModel = await this.fileModelProvider.get();
+        const modelKey = createModelSchemaKey([fileModel], models);
+        return `FileManager:${modelKey}`;
+    }
 
     public async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder

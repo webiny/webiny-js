@@ -554,17 +554,6 @@ describe("Content entries", () => {
                 entries: {
                     data: [
                         {
-                            id: secondBanana.id,
-                            entryId: secondBanana.entryId,
-                            title: secondBanana.values.name,
-                            status: secondBanana.meta.status,
-                            published: {
-                                id: banana.id,
-                                entryId: banana.entryId,
-                                title: banana.values.name
-                            }
-                        },
-                        {
                             id: greenApple.id,
                             entryId: greenApple.entryId,
                             title: greenApple.values.name,
@@ -584,6 +573,17 @@ describe("Content entries", () => {
                                 id: orange.id,
                                 entryId: orange.entryId,
                                 title: orange.values.name
+                            }
+                        },
+                        {
+                            id: secondBanana.id,
+                            entryId: secondBanana.entryId,
+                            title: secondBanana.values.name,
+                            status: secondBanana.meta.status,
+                            published: {
+                                id: banana.id,
+                                entryId: banana.entryId,
+                                title: banana.values.name
                             }
                         },
                         {

@@ -1,4 +1,5 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { createModelSchemaKey } from "@webiny/api-headless-cms/utils/createModelSchemaKey.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
@@ -437,12 +438,42 @@ class RecordLockingGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface {
         private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface
     ) {}
 
+    public async getSchemaKey(): Promise<string> {
+        const inputs = await this.loadInputs();
+        if (!inputs) {
+            return "RecordLocking:no-tenant";
+        }
+
+        const modelKey = createModelSchemaKey([inputs.model], inputs.models);
+        return `RecordLocking:${modelKey}`;
+    }
+
     public async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
+        const inputs = await this.loadInputs();
+        if (!inputs) {
+            return builder;
+        }
+
+        const { model, models } = inputs;
+        const typeDefs = renderTypeDefs({
+            model,
+            models,
+            fieldRegistry: this.fieldRegistry
+        });
+
+        builder.addTypeDefs(typeDefs);
+        addQueryResolvers(builder);
+        addMutationResolvers(builder);
+
+        return builder;
+    }
+
+    private async loadInputs() {
         // There is no tenant until installation completes, and no model to render a schema from.
         if (!this.tenantContext.getTenant()) {
-            return builder;
+            return null;
         }
 
         const model = await this.modelProvider.get();
@@ -457,17 +488,7 @@ class RecordLockingGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface {
             return result.value;
         });
 
-        const typeDefs = renderTypeDefs({
-            model,
-            models,
-            fieldRegistry: this.fieldRegistry
-        });
-
-        builder.addTypeDefs(typeDefs);
-        addQueryResolvers(builder);
-        addMutationResolvers(builder);
-
-        return builder;
+        return { model, models };
     }
 }
 

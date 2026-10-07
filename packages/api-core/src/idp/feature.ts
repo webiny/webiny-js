@@ -8,7 +8,10 @@ export const IdpAuthenticatorFeature = createFeature({
     register(container) {
         container.register(JwtAuthenticator);
         container.register(OidcJwtIdentityProvider);
-        // Singleton, so the keys stay cached for the life of the process.
+        /*
+         * Per request. The keys outlive it through JwksStore, which belongs in the root container
+         * (JwksStoreFeature).
+         */
         container.register(JwksCache).inSingletonScope();
     }
 });

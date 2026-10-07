@@ -1,4 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import type { Container } from "@webiny/di";
@@ -56,6 +57,8 @@ import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpt
 import { AcoAiToolsFeature } from "~/features/ai/index.js";
 
 class AcoSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-aco/AcoSchemaFactoryImpl");
+
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
         // Static ACO base + filter schema (DI-native contributors declaring their deps). The
         // dynamic, per-tenant folder schema is built by AcoFolderSchemaFactory.
