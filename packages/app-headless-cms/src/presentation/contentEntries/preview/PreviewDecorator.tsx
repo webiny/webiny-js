@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import {
     SplitView,
@@ -9,24 +9,41 @@ import { usePreviewDomain } from "@webiny/frontend-settings/exports/admin.js";
 import { ContentEntryFormContent } from "~/presentation/contentEntries/views/layout/ContentEntryFormContent.js";
 import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { PreviewPane } from "./PreviewPane.js";
+import { useLivePreviewPresenter } from "./useLivePreviewPresenter.js";
+import { getPatternRefFieldIds, getRefValues, withRefValues } from "./resolvePreviewUrl.js";
 
 export const PreviewDecorator = ContentEntryFormContent.createDecorator(Original => {
     return createReactiveComponent(
         (props: React.HTMLAttributes<HTMLDivElement> & { width?: string }) => {
             const presenter = useContentEntryFormPresenter();
+            const livePreview = useLivePreviewPresenter();
             const model = presenter.vm.model;
             const previewPath = model?.settings?.previewPath as string | undefined;
             const { previewDomain } = usePreviewDomain();
+
+            const form = presenter.vm.form;
+            const entry = presenter.vm.entry;
+            const formValues = form ? (form.getData() as Record<string, unknown>) : null;
+            const entryData = formValues ? { ...entry, values: formValues } : null;
+
+            const refFieldIds =
+                previewPath && model ? getPatternRefFieldIds(previewPath, model.fields) : [];
+            const refs = formValues ? getRefValues(formValues, refFieldIds) : [];
+            const refsKey = refs.map(ref => ref.id).join(",");
+
+            useEffect(() => {
+                if (refs.length > 0) {
+                    livePreview.loadRefValues(refs);
+                }
+            }, [refsKey]);
 
             if (!previewPath) {
                 return <Original {...props} />;
             }
 
-            const form = presenter.vm.form;
-            const entry = presenter.vm.entry;
-            const formValues = form ? form.getData() : null;
-            const entryData = formValues
-                ? { ...entry, values: formValues as Record<string, unknown> }
+            // Only the preview URL gets the referenced values; the iframe receives the raw form data.
+            const urlEntryData = entryData
+                ? withRefValues(entryData, refFieldIds, livePreview.vm.refValues)
                 : null;
 
             const entryId = entry?.id || "new";
@@ -51,6 +68,7 @@ export const PreviewDecorator = ContentEntryFormContent.createDecorator(Original
                             previewPath={previewPath}
                             entryId={entryId}
                             entryData={entryData}
+                            urlEntryData={urlEntryData}
                         />
                     </RightPanel>
                 </SplitView>
