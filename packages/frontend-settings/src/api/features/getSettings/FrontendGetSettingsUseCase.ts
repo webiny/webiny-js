@@ -18,10 +18,7 @@ class FrontendGetSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new NotAuthorizedError());
         }
 
-        if (!this.identityContext.getPermission("dev-tools.frontend-settings.*")) {
-            return Result.fail(new NotAuthorizedError());
-        }
-
+        // Every Admin user can read the domain, because content previews are built from it.
         const { domain } = await this.repository.execute();
         return Result.ok({ domain });
     }

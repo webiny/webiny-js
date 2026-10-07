@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler.js";
-import { createContextPlugin } from "@webiny/api";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 
 describe("Frontend Settings GraphQL", () => {
@@ -9,6 +8,14 @@ describe("Frontend Settings GraphQL", () => {
     beforeEach(async () => {
         handler = useGraphQlHandler({});
     });
+
+    const seedKeyValueStore = async (values: Record<string, unknown>) => {
+        const { container } = await handler.getContext();
+        const kvStore = container.resolve(KeyValueStore);
+        for (const [key, value] of Object.entries(values)) {
+            await kvStore.set(key, value);
+        }
+    };
 
     it("should get frontend settings with default domain", async () => {
         const [response] = await handler.wb.getFrontendSettings({});
@@ -56,18 +63,11 @@ describe("Frontend Settings GraphQL", () => {
     });
 
     it("should fall back to legacy WebsiteBuilder/Settings domain", async () => {
-        const legacyHandler = useGraphQlHandler({
-            plugins: [
-                createContextPlugin(async context => {
-                    const kvStore = context.container.resolve(KeyValueStore);
-                    await kvStore.set("WebsiteBuilder/Settings", {
-                        previewDomain: "https://legacy.example.com"
-                    });
-                })
-            ]
+        await seedKeyValueStore({
+            "WebsiteBuilder/Settings": { previewDomain: "https://legacy.example.com" }
         });
 
-        const [response] = await legacyHandler.wb.getFrontendSettings({});
+        const [response] = await handler.wb.getFrontendSettings({});
         expect(response.data.frontend.getSettings.error).toBeNull();
         expect(response.data.frontend.getSettings.data).toMatchObject({
             domain: "https://legacy.example.com"
@@ -75,24 +75,68 @@ describe("Frontend Settings GraphQL", () => {
     });
 
     it("should prefer FrontendSettings domain over legacy domain", async () => {
-        const bothHandler = useGraphQlHandler({
-            plugins: [
-                createContextPlugin(async context => {
-                    const kvStore = context.container.resolve(KeyValueStore);
-                    await kvStore.set("WebsiteBuilder/Settings", {
-                        previewDomain: "https://legacy.example.com"
-                    });
-                    await kvStore.set("FrontendSettings/Settings", {
-                        domain: "https://new.example.com"
-                    });
-                })
-            ]
+        await seedKeyValueStore({
+            "WebsiteBuilder/Settings": { previewDomain: "https://legacy.example.com" },
+            "FrontendSettings/Settings": { domain: "https://new.example.com" }
         });
 
-        const [response] = await bothHandler.wb.getFrontendSettings({});
+        const [response] = await handler.wb.getFrontendSettings({});
         expect(response.data.frontend.getSettings.error).toBeNull();
         expect(response.data.frontend.getSettings.data).toMatchObject({
             domain: "https://new.example.com"
+        });
+    });
+
+    describe("permissions", () => {
+        // Can edit pages, but can't manage frontend settings.
+        const editorPermissions = [{ name: "wb.page" }, { name: "cms.*" }];
+
+        it("should let a user without the frontend settings permission read the domain, without starter kits", async () => {
+            const editor = useGraphQlHandler({ permissions: editorPermissions });
+
+            const [response] = await editor.wb.getFrontendSettings({});
+            expect(response.data.frontend.getSettings.error).toBeNull();
+            expect(response.data.frontend.getSettings.data).toEqual({
+                domain: "http://localhost:3000",
+                starterKits: []
+            });
+        });
+
+        it("should not let a user without the frontend settings permission update settings", async () => {
+            const editor = useGraphQlHandler({ permissions: editorPermissions });
+
+            const [response] = await editor.wb.updateFrontendSettings({
+                data: { domain: "https://example.com" }
+            });
+            expect(response.data.frontend.updateSettings.data).toBeNull();
+            expect(response.data.frontend.updateSettings.error).toMatchObject({
+                code: "NOT_AUTHORIZED"
+            });
+
+            const [getResponse] = await editor.wb.getFrontendSettings({});
+            expect(getResponse.data.frontend.getSettings.data.domain).toBe(
+                "http://localhost:3000"
+            );
+        });
+
+        it("should give starter kits and updates to a user with the frontend settings permission", async () => {
+            const manager = useGraphQlHandler({
+                permissions: [{ name: "dev-tools.frontend-settings.*" }]
+            });
+
+            const [getResponse] = await manager.wb.getFrontendSettings({});
+            expect(getResponse.data.frontend.getSettings.error).toBeNull();
+            expect(
+                getResponse.data.frontend.getSettings.data.starterKits.map((kit: any) => kit.id)
+            ).toEqual(["nextjs", "nuxt"]);
+
+            const [updateResponse] = await manager.wb.updateFrontendSettings({
+                data: { domain: "https://example.com" }
+            });
+            expect(updateResponse.data.frontend.updateSettings).toEqual({
+                data: true,
+                error: null
+            });
         });
     });
 });

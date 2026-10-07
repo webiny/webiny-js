@@ -19,7 +19,7 @@ export interface UseGQLHandlerParams extends Omit<CmsTestHandlerParams, "setup">
 }
 
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
-    const { handler, invoke } = createCmsTestHandler({
+    const { handler, invoke, getContext } = createCmsTestHandler({
         ...params,
         // identity === null → anonymous (handled natively by the shared harness).
         legacyPlugins: [
@@ -46,6 +46,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         params,
         handler,
         invoke,
+        getContext,
         wb,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });

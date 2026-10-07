@@ -4,6 +4,7 @@ import { ErrorResponse, Response } from "@webiny/api-graphql";
 import { FrontendGetSettingsUseCase } from "~/api/features/getSettings/abstractions.js";
 import { FrontendUpdateSettingsUseCase } from "~/api/features/updateSettings/abstractions.js";
 import { StarterKitsProvider } from "~/api/features/starterKits/abstractions.js";
+import { FrontendPermissions } from "~/api/features/permissions/abstractions.js";
 import type { IFrontendSettings } from "~/shared/types.js";
 
 class FrontendSettingsSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
@@ -68,17 +69,22 @@ class FrontendSettingsSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "FrontendQuery.getSettings",
-            dependencies: [FrontendGetSettingsUseCase, StarterKitsProvider],
+            dependencies: [FrontendGetSettingsUseCase, StarterKitsProvider, FrontendPermissions],
             resolver: (
                 useCase: FrontendGetSettingsUseCase.Interface,
-                starterKitsProvider: StarterKitsProvider.Interface
+                starterKitsProvider: StarterKitsProvider.Interface,
+                permissions: FrontendPermissions.Interface
             ) => {
                 return async () => {
                     const result = await useCase.execute();
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }
-                    const starterKits = await starterKitsProvider.execute();
+                    // Starter kit configs include API key tokens, so only users who can manage
+                    // frontend settings get them.
+                    const starterKits = (await permissions.canAccess("frontend-settings"))
+                        ? await starterKitsProvider.execute()
+                        : [];
                     return new Response({ ...result.value, starterKits });
                 };
             }

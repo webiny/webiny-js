@@ -4,12 +4,14 @@ import {
     FrontendUpdateSettingsRepository
 } from "./abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { FrontendPermissions } from "~/api/features/permissions/abstractions.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import type { IFrontendSettings } from "~/shared/types.js";
 
 class FrontendUpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
+        private permissions: FrontendPermissions.Interface,
         private repository: FrontendUpdateSettingsRepository.Interface
     ) {}
 
@@ -19,7 +21,7 @@ class FrontendUpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface 
             return Result.fail(new NotAuthorizedError());
         }
 
-        if (!this.identityContext.getPermission("dev-tools.frontend-settings.*")) {
+        if (!(await this.permissions.canAccess("frontend-settings"))) {
             return Result.fail(new NotAuthorizedError());
         }
 
@@ -30,5 +32,5 @@ class FrontendUpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface 
 
 export const FrontendUpdateSettingsUseCase = UseCaseAbstraction.createImplementation({
     implementation: FrontendUpdateSettingsUseCaseImpl,
-    dependencies: [IdentityContext, FrontendUpdateSettingsRepository]
+    dependencies: [IdentityContext, FrontendPermissions, FrontendUpdateSettingsRepository]
 });
