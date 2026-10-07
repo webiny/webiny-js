@@ -157,7 +157,7 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
 
             const valuePath = convertBracketPathToDotPath(node.path);
             const devFriendlyInputs = set(
-                structuredClone(deepInputs),
+                JSON.parse(JSON.stringify(deepInputs)),
                 valuePath,
                 valueObject.get()
             );
@@ -241,7 +241,7 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
 
             const valuePath = convertBracketPathToDotPath(node.path);
             const devFriendlyInputs = set(
-                structuredClone(deepInputs),
+                JSON.parse(JSON.stringify(deepInputs)),
                 valuePath,
                 valueObject.get()
             );

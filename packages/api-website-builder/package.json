@@ -26,6 +26,7 @@
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
+    "@webiny/frontend-settings": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/languages": "0.0.0",
     "@webiny/tenant-manager": "0.0.0",
