@@ -52,6 +52,13 @@ call leaving no result and no record.
 | 10  | system: a token for every colour                                                                                                          | "no theme variable is near this colour, use #hex directly"                                                                 | followed the user prompt                                                                                                                                                                                                                                                                                                                                                                       |
 | 11  | "Do NOT invent image URLs ... not in the list above"                                                                                      | URLs given in up to four separate lists                                                                                    | "the list above" is ambiguous                                                                                                                                                                                                                                                                                                                                                                  |
 
+## How row 3 was got wrong
+
+Row 3 first said the image was "a transparent pattern over navy". That was inferred from the generated
+component's render, while the source crop was available. The crop shows the opposite. Reasoning from a
+model's output back to its input is the inference this diagnosis exists to check, and it is how an
+earlier measure was got wrong too. Describe the source from the source artifact.
+
 ## Order of work agreed
 
 1. Image on the refine path — done, `cf6b7088c7`.
