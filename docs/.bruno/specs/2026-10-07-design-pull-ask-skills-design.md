@@ -25,7 +25,7 @@ Two project skills that connect Claude Code with Claude Design through the `clau
 
 Checked against the live workflows project on 2026-10-07:
 
-- **`read_file` wrapper.** The result is `<untrusted-project-content path="<path>" etag="<etag>">`, a newline, the escaped body, a newline, `</untrusted-project-content>`, then a newline and a fixed note. A full read has no `lines` or `total_lines` attributes. The body escapes exactly `&`, `<` and `>` as `&amp;`, `&lt;`, `&gt;`; no `&quot;`, no numeric entities, no bare `&`. Removing the wrapper's two newlines and running one `html.unescape` pass gives the exact original bytes (checked: 93692 and 12484 bytes, equal to the listing sizes).
+- **`read_file` wrapper.** The result is `<untrusted-project-content path="<path>" etag="<etag>">`, a newline, the escaped body, a newline, `</untrusted-project-content>`, then a newline and a fixed note. A full read has no `lines` or `total_lines` attributes. The body escapes exactly `&`, `<` and `>` as `&amp;`, `&lt;`, `&gt;`; no `&quot;`, no numeric entities, no bare `&`. Removing the wrapper's two newlines and decoding those three entities in one pass (`&lt;`, `&gt;`, then `&amp;` last) gives the exact original bytes (checked: 93692 and 12484 bytes, equal to the listing sizes).
 - **Saved results.** When an MCP tool result exceeds `MAX_MCP_OUTPUT_TOKENS`, Claude Code saves it to `~/.claude*/projects/<project>/<session>/tool-results/mcp-claude-design-read_file-<timestamp>.txt` and returns the path. The saved file holds the raw wrapper and note as plain text (no JSON envelope).
 - **Output limit.** `MAX_MCP_OUTPUT_TOKENS` set in `env` of `.claude/settings.local.json` takes effect without a restart. With `2000`, results over roughly 8 KB are saved; smaller ones come back inline.
 - **Export layout.** A Claude Design .zip export is the handoff bundle: the content of `design_handoff_<name>/` (screens, `README.md`, `support.js`, `_ds/`, `assets/`) with no top-level directory and no `.thumbnail`. Screen sizes match the live project root.
@@ -41,7 +41,7 @@ A recorded etag must never be newer than the content it describes. Content newer
 
 ## Helper script
 
-Deterministic work is done by one helper script, `.claude/skills/design-pull/design.py`, used by both skills. It uses only the Python standard library and always runs as `python3 -I .claude/skills/design-pull/design.py <command> ...`.
+Deterministic work is done by one TypeScript helper, used by both skills: `.claude/skills/design-pull/design.ts` is the command-line entry and `.claude/skills/design-pull/lib.ts` holds the logic. It uses only Node built-ins (no packages beyond the repository's `tsx`) and always runs from the repository root as `yarn tsx .claude/skills/design-pull/design.ts <command> ...`. TypeScript, not Python, because every developer of this repository has Node and `tsx`, while `python3` is not guaranteed.
 
 The script owns:
 
@@ -82,7 +82,7 @@ Every project path from `list_files` is validated before it touches the filesyst
 - contains a `..` segment, a backslash, a NUL or any control character,
 - resolves (after joining with the target directory) outside that directory.
 
-macOS file systems are case-insensitive by default. `plan` compares the paths it would mirror after `casefold()` and Unicode NFC normalization; when two paths collide, both are rejected.
+macOS file systems are case-insensitive by default. `plan` compares the paths it would mirror after Unicode NFC normalization and lower-casing; when two paths collide, both are rejected.
 
 Local files under `files/` are inspected with `lstat`; symlinks are never followed, adopted or written through.
 
@@ -90,7 +90,7 @@ Rejected paths are reported and skipped.
 
 Mirrored files are handled as bytes and never re-encoded. Files the script parses (`catalogue.md`, `questions.md`, `answers.md`, listings, raw read files) are read and written as UTF-8.
 
-Paths printed for the user to run (for example the diff hint) are shell-quoted with `shlex.quote`, because project paths contain spaces.
+Paths printed for the user to run (for example the diff hint) are shell-quoted (single quotes, `'` escaped as `'\''`, unquoted when only safe characters), because project paths contain spaces.
 
 ## Design folder
 
@@ -207,7 +207,7 @@ The MCP path needs the `read_file` result as a file the script can read:
 1. **Saved result.** When the result is larger than the output limit, Claude Code saves it (see "Verified facts") and `import-raw` reads that file directly. The model never re-types content.
 2. **Re-typed result.** When the result comes back inline, the model saves it to a scratchpad file: the wrapper's opening tag with all its attributes, the newline, the body, the newline and the closing tag, verbatim. Only files up to `MCP_MAX_FILE` = 8192 bytes are re-typed; a larger file that comes back inline is reported as "needs manual export".
 
-In both cases `import-raw` parses the wrapper, takes the etag from its `etag` attribute, takes the body between the newline after the opening tag and the newline before the closing tag, ignores the trailing note, and decodes the body with one `html.unescape` pass.
+In both cases `import-raw` parses the wrapper, takes the etag from its `etag` attribute, takes the body between the newline after the opening tag and the newline before the closing tag, ignores the trailing note, and decodes the body by replacing `&lt;` and `&gt;`, then `&amp;` last. Replacing `&amp;` last keeps literal entity text such as `&amp;lt;` in the original intact.
 
 ### `/design-pull [folder]`
 

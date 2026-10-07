@@ -6,15 +6,17 @@
 
 **Architecture:** One Python helper script (`design.py`, standard library only) does every deterministic step: path safety, catalogue and question-log files, adopting unzipped files, unwrapping and decoding `read_file` results, reconciliation and answer parsing. Two `SKILL.md` files tell the model how to drive the `claude-design` MCP server and the script. State lives in Markdown files inside the design folder; MCP results reach the script as files.
 
-**Tech Stack:** Python 3 (stdlib: `argparse`, `dataclasses`, `html`, `json`, `re`, `shlex`, `subprocess`, `tempfile`, `unicodedata`), `unittest`, Claude Code skills, `claude-design` MCP server, macOS `pbcopy`.
+**Tech Stack:** TypeScript run by the repository's `tsx` (Node built-ins only: `node:fs`, `node:path`, `node:child_process`, `node:crypto`), `node:test` with `node:assert/strict`, Claude Code skills, `claude-design` MCP server, macOS `pbcopy`.
+
+> **Revision 2026-10-07 — TypeScript.** The helper was first started in Python (Tasks 1–6 committed, then removed in `7974488486`). The user switched it to TypeScript: every developer has Node and `tsx`, `python3` is not guaranteed. The Python code blocks below remain the behavioural reference: each task is implemented as a TypeScript port with the same commands, flags, exit codes, file formats and test cases. File mapping: `design.py` → `lib.ts` (exported logic) + `design.ts` (CLI entry); `tests/test_<x>.py` → `tests/<x>.test.ts`; `tests/helpers.py` → `tests/helpers.ts`; `_load.py` is dropped (tests import `../lib.ts`). Commands become `yarn tsx .claude/skills/design-pull/design.ts <command> ...`; the test command becomes `yarn tsx --test '.claude/skills/design-pull/tests/*.test.ts'`.
 
 **Spec:** `docs/.bruno/specs/2026-10-07-design-pull-ask-skills-design.md`
 
 ## Global Constraints
 
 - Skills: `.claude/skills/design-pull/SKILL.md` and `.claude/skills/design-ask/SKILL.md`, frontmatter `name`, `description`, `user_invocable: true`. Committed.
-- Helper: `.claude/skills/design-pull/design.py`, run as `python3 -I .claude/skills/design-pull/design.py <command> ...`. Standard library only.
-- Tests: `.claude/skills/design-pull/tests/`, run with `python3 -I -m unittest discover -s .claude/skills/design-pull/tests -v` from the repository root.
+- Helper: `.claude/skills/design-pull/lib.ts` + `.claude/skills/design-pull/design.ts`, run as `yarn tsx .claude/skills/design-pull/design.ts <command> ...` from the repository root. Node built-ins only.
+- Tests: `.claude/skills/design-pull/tests/*.test.ts`, run with `yarn tsx --test '.claude/skills/design-pull/tests/*.test.ts'` from the repository root.
 - Nothing design-related is committed. The design folder is excluded through the file from `git rev-parse --git-path info/exclude`, never `.gitignore`.
 - The skills never write to Claude Design (no `write_files`, `copy_files`, `delete_files`, comments or acks) and never use `render_preview`.
 - `MCP_MAX_FILE` = 8192 bytes (largest re-typed result). `MCP_LIMIT` = 262144 bytes (largest file the MCP path takes).
