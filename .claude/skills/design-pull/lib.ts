@@ -90,3 +90,44 @@ export const atomicWriteBytes = (file: string, data: Buffer | string): void => {
         throw error;
     }
 };
+
+// ---------------------------------------------------------------- patterns
+
+const escapeRegex = (char: string): string => char.replace(/[.*+?^${}()|[\]\\/-]/g, "\\$&");
+
+export const compilePattern = (pattern: string): RegExp => {
+    let out = "";
+    let i = 0;
+    while (i < pattern.length) {
+        if (pattern.startsWith("**/", i)) {
+            out += "(?:.*/)?";
+            i += 3;
+        } else if (pattern.startsWith("**", i)) {
+            out += ".*";
+            i += 2;
+        } else if (pattern[i] === "*") {
+            out += "[^/]*";
+            i += 1;
+        } else if (pattern[i] === "?") {
+            out += "[^/]";
+            i += 1;
+        } else {
+            out += escapeRegex(pattern[i]);
+            i += 1;
+        }
+    }
+    return new RegExp(`^${out}$`, "s");
+};
+
+/** Gitignore-style matching against a whole relative path; the last matching pattern wins, `!` re-includes. */
+export const matches = (rel: string, patterns: string[]): boolean => {
+    let result = false;
+    for (const pattern of patterns) {
+        const negate = pattern.startsWith("!");
+        const body = negate ? pattern.slice(1) : pattern;
+        if (compilePattern(body).test(rel)) {
+            result = !negate;
+        }
+    }
+    return result;
+};
