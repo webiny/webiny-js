@@ -250,11 +250,9 @@ const GenerateCard = ({
         }
     };
 
+    // An empty instruction generates the component again from its original prompt.
     const submitRegenerate = () => {
         const text = instruction.trim();
-        if (!text) {
-            return;
-        }
         void presenter.regenerateComponent(component.signature, text);
         setInstruction("");
         setShowInstruction(false);
@@ -482,14 +480,13 @@ const GenerateCard = ({
                         <Input
                             value={instruction}
                             onChange={(value: string) => setInstruction(value)}
-                            placeholder="Instruction, then regenerate — e.g. make the heading larger"
+                            placeholder="Instruction (optional) — e.g. make the heading larger. Leave empty to generate again from the original prompt"
                             onEnter={submitRegenerate}
                         />
                         <Button
                             variant="primary"
                             size="sm"
                             text="Regenerate"
-                            disabled={!instruction.trim()}
                             onClick={submitRegenerate}
                         />
                     </div>

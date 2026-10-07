@@ -60,6 +60,16 @@ export interface IComponentExtractionGateway {
     getDecisions(runId: string): Promise<unknown>;
     /** Set (or clear, with "none") a component's decision; returns the updated decision map. */
     setComponentDecision(runId: string, signature: string, decision: string): Promise<unknown>;
+    /**
+     * Generate components again through Generate itself — its original prompt, checks and retries —
+     * each replacing its component. Returns the task per signature.
+     */
+    generateComponents(
+        runId: string,
+        signatures: string[]
+    ): Promise<{ tasks: { signature: string; taskId: string }[] }>;
+    /** A background task's status (`pending`, `running`, `success`, `failed`, `aborted`…), or null. */
+    getTaskStatus(taskId: string): Promise<string | null>;
     /** A component's generation log: every Generate attempt, oldest first, without prompts. */
     getGenerationLog(runId: string, signature: string): Promise<GenerationLogDto>;
     /** One attempt's whole prompt; null when the log has no such attempt. */

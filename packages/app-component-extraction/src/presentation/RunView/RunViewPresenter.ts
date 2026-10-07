@@ -90,6 +90,8 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
 
     /** Pre-refine source per signature, so a completed regenerate is detected when the source changes. */
     private regenerateBaseline: Record<string, number> = {};
+    /** The Generate-again task per signature, so a run that ends with no new component still clears. */
+    private generateAgainTasks: Record<string, string> = {};
 
     /** Pre-regenerate props fingerprint per signature, so a completed Plan regenerate is detected. */
     private planRegenerateBaseline: Record<string, string> = {};
@@ -519,6 +521,13 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
         runInAction(() => {
             this.vm.openLogs = [...this.vm.openLogs, signature];
+        });
+        await this.loadGenerationLog(runId, signature);
+    }
+
+    /** Loads a component's generation log, keeping what is shown while it loads. */
+    private async loadGenerationLog(runId: string, signature: string): Promise<void> {
+        runInAction(() => {
             this.vm.generationLogs = {
                 ...this.vm.generationLogs,
                 [signature]: {
@@ -638,7 +647,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     async regenerateComponent(signature: string, instruction: string): Promise<void> {
         const runId = this.vm.run?.id;
         const trimmed = instruction.trim();
-        if (!runId || !trimmed) {
+        if (!runId) {
             return;
         }
         // Remember the current revision so the refresh loop can tell when the refined version lands.
@@ -653,7 +662,17 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             this.vm.error = null;
         });
         try {
-            await this.gateway.regenerateComponent(runId, signature, trimmed);
+            if (trimmed) {
+                // An instruction: refine the current component with it.
+                await this.gateway.regenerateComponent(runId, signature, trimmed);
+            } else {
+                // No instruction: generate it again from the original prompt, through Generate.
+                const started = await this.gateway.generateComponents(runId, [signature]);
+                const task = started.tasks.find(item => item.signature === signature);
+                if (task) {
+                    this.generateAgainTasks[signature] = task.taskId;
+                }
+            }
         } catch (error) {
             runInAction(() => {
                 this.vm.regenerating = this.vm.regenerating.filter(item => item !== signature);
@@ -723,14 +742,45 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     private async pollRegenerations(run: RunDto): Promise<void> {
         await this.loadArtifact(run, "generate");
         const artifact = this.vm.artifact as GenerateArtifactDto | null;
-        const stillRunning = this.vm.regenerating.filter(signature => {
-            const component = artifact?.components.find(item => item.signature === signature);
-            return !component || component.revision === this.regenerateBaseline[signature];
+        const landed = new Set(
+            this.vm.regenerating.filter(signature => {
+                const component = artifact?.components.find(item => item.signature === signature);
+                return component && component.revision !== this.regenerateBaseline[signature];
+            })
+        );
+        /*
+         * A Generate-again whose attempts all fail writes nothing, so the revision never moves; its task
+         * finishing is what says it is over. Without this the card would spin forever.
+         */
+        const ended = new Set<string>();
+        for (const signature of this.vm.regenerating) {
+            const taskId = this.generateAgainTasks[signature];
+            if (!taskId || landed.has(signature)) {
+                continue;
+            }
+            const status = await this.gateway.getTaskStatus(taskId).catch(() => null);
+            if (status && !["pending", "running"].includes(status)) {
+                ended.add(signature);
+            }
+        }
+        const finished = [...landed, ...ended];
+        if (finished.length === 0) {
+            return;
+        }
+        const nameOf = (signature: string) =>
+            artifact?.components.find(item => item.signature === signature)?.name ?? signature;
+        runInAction(() => {
+            this.vm.regenerating = this.vm.regenerating.filter(item => !finished.includes(item));
+            if (ended.size > 0) {
+                this.vm.error = `${[...ended].map(nameOf).join(", ")}: generated again with no new component — every attempt failed. Open the Log to see why.`;
+            }
         });
-        if (stillRunning.length !== this.vm.regenerating.length) {
-            runInAction(() => {
-                this.vm.regenerating = stillRunning;
-            });
+        for (const signature of finished) {
+            delete this.generateAgainTasks[signature];
+            // An open log gains this regeneration's attempts.
+            if (this.vm.openLogs.includes(signature)) {
+                await this.loadGenerationLog(run.id, signature);
+            }
         }
     }
 

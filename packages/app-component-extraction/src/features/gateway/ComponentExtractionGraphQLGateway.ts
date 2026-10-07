@@ -54,6 +54,8 @@ import {
     GET_REVIEWS,
     GET_GENERATION_LOG,
     GET_GENERATION_PROMPT,
+    GENERATE_COMPONENTS,
+    GET_TASK_STATUS,
     SET_OVERRIDE
 } from "./graphql.js";
 
@@ -357,6 +359,27 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: SET_COMPONENT_DECISION, variables: { runId, signature, decision } });
 
         return unwrap(response.componentExtractionSetComponentDecision);
+    }
+
+    async generateComponents(
+        runId: string,
+        signatures: string[]
+    ): Promise<{ tasks: { signature: string; taskId: string }[] }> {
+        const response = await this.client.execute<{
+            componentExtractionGenerateComponents: GqlEnvelope<{
+                tasks: { signature: string; taskId: string }[];
+            }>;
+        }>({ query: GENERATE_COMPONENTS, variables: { runId, signatures } });
+
+        return unwrap(response.componentExtractionGenerateComponents);
+    }
+
+    async getTaskStatus(taskId: string): Promise<string | null> {
+        const response = await this.client.execute<{
+            backgroundTasks: { getTask: GqlEnvelope<{ id: string; taskStatus: string } | null> };
+        }>({ query: GET_TASK_STATUS, variables: { id: taskId } });
+
+        return unwrap(response.backgroundTasks.getTask)?.taskStatus ?? null;
     }
 
     async getGenerationLog(runId: string, signature: string): Promise<GenerationLogDto> {
