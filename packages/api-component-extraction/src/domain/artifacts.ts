@@ -714,7 +714,20 @@ export interface ObservedItem {
     fields: Record<string, string | Omit<ObservedMedia, "kind"> | Omit<ObservedLink, "kind">>;
 }
 
-export type ObservedStructuredValue = ObservedMedia | ObservedLink | ObservedItem;
+/**
+ * A bound value, with the copy of the section it came from: the index into the members Plan bound,
+ * representative first (0). `observedStructured` holds every copy's values — the union several readers
+ * rely on, in this order — and the copy says which are the representative's own, the ones its reference
+ * image shows. Absent on plans made before it was recorded.
+ */
+export type ObservedStructuredValue = (ObservedMedia | ObservedLink | ObservedItem) & {
+    member?: number;
+};
+
+/** The values the representative copy itself showed — or every value, on plans that predate `member`. */
+export const representativeValues = (
+    values: ObservedStructuredValue[] | undefined
+): ObservedStructuredValue[] => (values ?? []).filter(value => (value.member ?? 0) === 0);
 
 export interface TokenBinding {
     /** Which prop or element the binding applies to (free-form; the model proposes it). */

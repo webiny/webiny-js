@@ -119,4 +119,41 @@ describe("buildComponentPrompt", () => {
             "light on a transparent background — it is invisible on a light surface"
         );
     });
+
+    it("gives as defaults only the values the representative copy showed", () => {
+        // Park City's Property Description: its own carousel photo, and a Neighborhood page photo.
+        const withCopies = buildComponentPrompt(
+            {
+                ...footer,
+                props: [
+                    {
+                        name: "images",
+                        type: "Image",
+                        array: true,
+                        optional: false,
+                        observedValues: [],
+                        observedStructured: [
+                            {
+                                kind: "item",
+                                fields: {
+                                    src: { src: "https://cdn.example/GettyImages-172432728.jpg" }
+                                },
+                                member: 0
+                            },
+                            {
+                                kind: "item",
+                                fields: {
+                                    src: { src: "https://cdn.example/GettyImages-1375934212.jpg" }
+                                },
+                                member: 1
+                            }
+                        ]
+                    }
+                ]
+            } as unknown as PlannedComponent,
+            new Map()
+        );
+        expect(withCopies).toContain("GettyImages-172432728");
+        expect(withCopies).not.toContain("GettyImages-1375934212");
+    });
 });

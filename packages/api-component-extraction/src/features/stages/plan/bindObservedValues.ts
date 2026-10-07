@@ -60,10 +60,26 @@ const readItem = (node: CapturedNode): ItemContent => ({
  * is the list — a row of three cards each offering an image, a heading and a link scores 3, while the
  * single wrapper holding all of them scores the same 3 and is not a list of anything.
  */
+/** The text field that names a picture: filled from the picture's own alt, not the text beside it. */
+const altFieldOf = (fields: ComponentProp[]): ComponentProp | undefined =>
+    fields.find(field => /^alt(text)?$/i.test(field.name) && fieldKind(field) === "text");
+
+/*
+ * How many of a list's fields an item can fill. An `alt` field counts as filled by the item's picture:
+ * Park City's photo carousel lost to its three paragraphs because a paragraph filled `alt` as text while
+ * a photograph, alt and all, filled only `src` — so the component shipped paragraphs as image alts and
+ * no photographs. Counting the picture's alt makes the carousel the better fit on its merits, and a
+ * section with no pictures binds exactly as it did.
+ */
 const satisfied = (content: ItemContent, fields: ComponentProp[]): number => {
     let used = { media: 0, link: 0, text: 0 };
     let count = 0;
+    const altField = altFieldOf(fields);
     for (const field of fields) {
+        if (field === altField && content.images[0]?.alt) {
+            count++;
+            continue;
+        }
         const kind = fieldKind(field);
         const available =
             kind === "media"
@@ -89,8 +105,14 @@ const fillItem = (
         string,
         string | { src: string; alt?: string } | { label: string; href: string }
     > = {};
+    // An item's alt text is its picture's alt, not the next run of text beside it.
+    const altField = altFieldOf(fields);
     for (const field of fields) {
         const kind = fieldKind(field);
+        if (field === altField && content.images[0]?.alt) {
+            record[field.name] = content.images[0].alt;
+            continue;
+        }
         if (kind === "media" && next.media < content.images.length) {
             const image = content.images[next.media++];
             record[field.name] = image.alt
@@ -152,8 +174,8 @@ export const bindObservedValues = (
 ): BindSummary => {
     const summary: BindSummary = { propsBound: 0, mediaBound: 0, linksBound: 0, itemsBound: 0 };
     const bound = new Set<ComponentProp>();
-    for (const section of sections) {
-        bindOneSection(section, props, summary, bound);
+    for (const [member, section] of sections.entries()) {
+        bindOneSection(section, props, summary, bound, member);
     }
     summary.propsBound = bound.size;
     return summary;
@@ -163,7 +185,9 @@ const bindOneSection = (
     node: CapturedNode,
     props: ComponentProp[],
     summary: BindSummary,
-    bound: Set<ComponentProp>
+    bound: Set<ComponentProp>,
+    /** Which copy of the section this is: 0 is the representative. */
+    member: number
 ): void => {
     /*
      * Nodes some prop has taken. Every read goes through this, scalars included — an earlier version
@@ -237,14 +261,17 @@ const bindOneSection = (
 
         if (values.length > 0) {
             // Merge with what earlier members contributed. Deduped on the value's own identity — the
-            // same logo appears on every page and should be observed once.
+            // same logo appears on every page and should be observed once — and kept under the
+            // earliest copy that showed it, so a value the representative shows stays its own.
+            const identity = ({ member: _member, ...value }: ObservedStructuredValue) =>
+                JSON.stringify(value);
             const existingStructured = prop.observedStructured ?? [];
-            const seenValues = new Set(existingStructured.map(value => JSON.stringify(value)));
+            const seenValues = new Set(existingStructured.map(identity));
             for (const value of values) {
-                const key = JSON.stringify(value);
+                const key = identity(value);
                 if (!seenValues.has(key) && existingStructured.length < MAX_VALUES_TOTAL) {
                     seenValues.add(key);
-                    existingStructured.push(value);
+                    existingStructured.push({ ...value, member });
                 }
             }
             prop.observedStructured = existingStructured;

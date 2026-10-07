@@ -4,6 +4,7 @@ import type {
     ObservedStructuredValue,
     SectionImage
 } from "~/domain/artifacts.js";
+import { representativeValues } from "~/domain/artifacts.js";
 
 /**
  * The images a section shows that no prop carries.
@@ -36,14 +37,18 @@ const boundUrls = (props: ComponentProp[]): Set<string> => {
         }
     };
     const walk = (prop: ComponentProp): void => {
-        (prop.observedStructured ?? []).forEach(fromValue);
+        // Only what the representative's props took: an image another copy bound is still unbound here.
+        representativeValues(prop.observedStructured).forEach(fromValue);
         (prop.fields ?? []).forEach(walk);
     };
     props.forEach(walk);
     return urls;
 };
 
-export const sectionUnboundImages = (node: CapturedNode, props: ComponentProp[]): SectionImage[] => {
+export const sectionUnboundImages = (
+    node: CapturedNode,
+    props: ComponentProp[]
+): SectionImage[] => {
     const bound = boundUrls(props);
     const found = new Map<string, SectionImage>();
 

@@ -17,6 +17,7 @@ import type {
     PlannedComponent,
     ValidationResult
 } from "~/domain/artifacts.js";
+import { representativeValues } from "~/domain/artifacts.js";
 import { stageArtifactKey } from "~/constants.js";
 import {
     combineValidation,
@@ -434,7 +435,9 @@ const buildPrompt = (
      */
     const structuredLines = (prop: PlannedComponent["props"][number], indent: string): string[] => {
         const lines: string[] = [];
-        for (const value of prop.observedStructured ?? []) {
+        // The representative's own values: they are what its reference image shows. Other copies'
+        // values stay in the plan for the readers that need the union.
+        for (const value of representativeValues(prop.observedStructured)) {
             if (value.kind === "media") {
                 lines.push(
                     `${indent}${prop.name}: ${value.src}${value.alt ? ` (alt: "${value.alt}")` : ""}`

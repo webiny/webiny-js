@@ -30,7 +30,7 @@ describe("bindObservedValues", () => {
         bindObservedValues([section], props);
 
         expect(props[0].observedStructured).toEqual([
-            { kind: "media", src: "https://cdn.example/one.jpg", alt: "One" }
+            { kind: "media", src: "https://cdn.example/one.jpg", alt: "One", member: 0 }
         ]);
     });
 
@@ -43,7 +43,7 @@ describe("bindObservedValues", () => {
         bindObservedValues([section], props);
 
         expect(props[0].observedStructured).toEqual([
-            { kind: "link", label: "Schedule a Tour", href: "https://example.com/tour" }
+            { kind: "link", label: "Schedule a Tour", href: "https://example.com/tour", member: 0 }
         ]);
         // The label is a string, so it joins observedValues and every existing text consumer sees it
         // without learning about a new type.
@@ -85,7 +85,8 @@ describe("bindObservedValues", () => {
                     image: { src: "https://cdn.example/plans.jpg" },
                     heading: "Floor Plans",
                     link: { label: "View Floor Plans", href: "/plans" }
-                }
+                },
+                member: 0
             },
             {
                 kind: "item",
@@ -93,7 +94,8 @@ describe("bindObservedValues", () => {
                     image: { src: "https://cdn.example/gym.jpg" },
                     heading: "Amenities",
                     link: { label: "View Amenities", href: "/amenities" }
-                }
+                },
+                member: 0
             }
         ]);
     });
@@ -122,11 +124,13 @@ describe("bindObservedValues", () => {
         expect(items).toHaveLength(2);
         expect(items[0]).toEqual({
             kind: "item",
-            fields: { link: { label: "First", href: "/a" } }
+            fields: { link: { label: "First", href: "/a" } },
+            member: 0
         });
         expect(items[1]).toEqual({
             kind: "item",
-            fields: { link: { label: "Second", href: "/b" } }
+            fields: { link: { label: "Second", href: "/b" } },
+            member: 0
         });
     });
 
@@ -193,8 +197,9 @@ describe("bindObservedValues across members", () => {
         bindObservedValues([nav("Home", "/"), nav("Contact", "/contact")], props);
 
         expect(props[0].observedStructured).toEqual([
-            { kind: "link", label: "Home", href: "/" },
-            { kind: "link", label: "Contact", href: "/contact" }
+            { kind: "link", label: "Home", href: "/", member: 0 },
+            // Another copy's value is kept for the readers of the union, and says whose it is.
+            { kind: "link", label: "Contact", href: "/contact", member: 1 }
         ]);
         expect(props[0].observedValues).toEqual(["Home", "Contact"]);
     });
@@ -207,7 +212,8 @@ describe("bindObservedValues across members", () => {
         bindObservedValues([withLogo(), withLogo(), withLogo()], props);
 
         expect(props[0].observedStructured).toEqual([
-            { kind: "media", src: "https://cdn.example/logo.svg" }
+            // Kept under the representative: it shows it too.
+            { kind: "media", src: "https://cdn.example/logo.svg", member: 0 }
         ]);
     });
 
