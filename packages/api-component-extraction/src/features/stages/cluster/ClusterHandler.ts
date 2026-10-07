@@ -14,7 +14,7 @@ import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import { OverrideRepository } from "~/domain/abstractions.js";
 import { effectiveClusterThreshold } from "~/domain/overrides.js";
 import { findNodeByBox } from "./sectionNode.js";
-import { resolveSectionColours } from "./resolvedColours.js";
+import { backdropColour, resolveSectionColours } from "./resolvedColours.js";
 import { structuralSignature } from "./signature.js";
 import { buildTokenLookup, sectionShape, type TokenLookup } from "./sectionShape.js";
 import { sectionDigest } from "./digest.js";
@@ -142,7 +142,8 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                      */
                     resolvedColours: resolveSectionColours(
                         node,
-                        manifest.isOk() ? manifest.value : null
+                        manifest.isOk() ? manifest.value : null,
+                        backdropColour(tree, node)
                     )
                 };
                 entries.push({

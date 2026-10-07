@@ -146,6 +146,82 @@ const nearest = (
     return any.best && any.bestDistance <= NEAR_COLOUR ? any.best : null;
 };
 
+/** Below this share of its area painted by its own backgrounds, a section shows its backdrop. */
+const BACKDROP_SHOWS = 0.5;
+
+/**
+ * The colour behind a section: the background of its nearest ancestor that paints one.
+ *
+ * Null when that ancestor is painted with an image, when nothing up the tree paints at all, and when
+ * the section is laid over the page rather than in it — absolutely or fixed positioned, itself or on
+ * the way up: 2424 Tulane's header floats over the hero photograph, so what is behind it is the
+ * photo, not the page colour its ancestor paints.
+ */
+export const backdropColour = (root: CapturedNode, target: CapturedNode): string | null => {
+    const path: CapturedNode[] = [];
+    const find = (current: CapturedNode): boolean => {
+        if (current === target) {
+            return true;
+        }
+        path.push(current);
+        for (const child of current.children ?? []) {
+            if (find(child)) {
+                return true;
+            }
+        }
+        path.pop();
+        return false;
+    };
+    if (!find(root)) {
+        return null;
+    }
+    const overlays = (node: CapturedNode) =>
+        node.styles?.position === "absolute" || node.styles?.position === "fixed";
+    if (overlays(target)) {
+        return null;
+    }
+    // A picture anywhere on the page under most of the section — a parallax layer, a positioned
+    // background element — may be what shows through, and a colour would then be the wrong answer.
+    // thevibe's "Like what you see?" band sits over a lawn photograph painted by a sibling.
+    const box = target.box;
+    const overlap = (other: CapturedNode["box"]) =>
+        Math.max(0, Math.min(box.x + box.width, other.x + other.width) - Math.max(box.x, other.x)) *
+        Math.max(
+            0,
+            Math.min(box.y + box.height, other.y + other.height) - Math.max(box.y, other.y)
+        );
+    const pictured = (current: CapturedNode): boolean => {
+        if (current === target) {
+            return false;
+        }
+        if (
+            (isCovered(current) || current.tag === "img" || current.tag === "video") &&
+            current !== root &&
+            overlap(current.box) >= BACKDROP_SHOWS * box.width * box.height
+        ) {
+            return true;
+        }
+        return (current.children ?? []).some(pictured);
+    };
+    if (pictured(root)) {
+        return null;
+    }
+    for (let i = path.length - 1; i >= 0; i--) {
+        const ancestor = path[i];
+        if (overlays(ancestor)) {
+            return null;
+        }
+        if (isCovered(ancestor)) {
+            return null;
+        }
+        const background = ancestor.styles?.backgroundColor;
+        if (background && !isTransparent(background)) {
+            return colorToHex(background);
+        }
+    }
+    return null;
+};
+
 /** Bounded so a gradient-heavy section cannot inflate every member of a cluster. */
 const MAX_COLOURS = 8;
 
@@ -159,7 +235,8 @@ const MAX_COLOURS = 8;
  */
 export const resolveSectionColours = (
     node: CapturedNode,
-    manifest: ThemeManifest | null
+    manifest: ThemeManifest | null,
+    backdrop: string | null = null
 ): ResolvedColour[] => {
     const roles = manifest ? themeColourRoles(manifest) : [];
     const areas = new Map<string, { role: ResolvedColour["role"]; hex: string; area: number }>();
@@ -174,17 +251,26 @@ export const resolveSectionColours = (
         }
     };
 
+    // How much of the section its own backgrounds and pictures paint, to tell whether the backdrop
+    // shows through.
+    let paintedArea = 0;
+
     const walk = (current: CapturedNode): void => {
         const box = current.box;
         const area = box && box.width > 0 && box.height > 0 ? box.width * box.height : 0;
         if (area > 0) {
             const styles = current.styles ?? {};
 
+            // A background image, or a picture laid in as an element, paints what is behind it.
+            if (isCovered(current) || current.tag === "img" || current.tag === "video") {
+                paintedArea += area;
+            }
             const background = styles.backgroundColor;
             if (background && !isTransparent(background) && !isCovered(current)) {
                 const hex = colorToHex(background);
                 if (hex) {
                     add(ROLE_BY_PROP.backgroundColor, hex, area);
+                    paintedArea += area;
                 }
             }
 
@@ -211,6 +297,21 @@ export const resolveSectionColours = (
         }
     };
     walk(node);
+
+    /*
+     * A transparent section shows whatever is behind it. Freehill's header element paints nothing:
+     * the teal band is an ancestor's background, so the section measured no background colour at
+     * all and Generate gave the header the theme's white surface — with a white logo on it. Where
+     * the section leaves most of itself unpainted, the backdrop is its background.
+     */
+    const sectionArea = node.box.width * node.box.height;
+    if (backdrop && sectionArea > 0 && paintedArea < BACKDROP_SHOWS * sectionArea) {
+        add(
+            ROLE_BY_PROP.backgroundColor,
+            backdrop,
+            sectionArea - Math.min(paintedArea, sectionArea)
+        );
+    }
 
     return [...areas.values()]
         .sort((a, b) => b.area - a.area)
