@@ -758,3 +758,91 @@ export const cmdImportRaw = (options: ImportRawOptions): number => {
     saveCatalogue(options.folder, cat);
     return finish("imported");
 };
+
+/** POSIX shell quoting, same rules as Python's shlex.quote. */
+export const shellQuote = (value: string): string => {
+    if (value === "") {
+        return "''";
+    }
+    if (/^[\w@%+=:,./-]+$/.test(value)) {
+        return value;
+    }
+    return `'${value.replace(/'/g, `'"'"'`)}'`;
+};
+
+export const cmdFinish = (folder: string, planFile: string): void => {
+    const cat = loadCatalogue(folder);
+    const plan = loadPlan(planFile);
+    for (const rel of plan.removed) {
+        const row = cat.rows[rel];
+        if (!row || row.removedAt) {
+            continue;
+        }
+        row.removedAt = nowIso();
+        const mirrored = localFile(folder, rel);
+        if (mirrored) {
+            fs.rmSync(mirrored);
+        }
+    }
+    for (const rel of Object.keys(cat.rows).sort()) {
+        const row = cat.rows[rel];
+        if (row.kind !== "screen" || row.removedAt || !row.etagImplemented || row.etagImplemented === row.etagPulled) {
+            continue;
+        }
+        const current = localFile(folder, rel);
+        let snapshot: string;
+        try {
+            snapshot = safeJoin(path.join(folder, ".implemented"), rel);
+        } catch (error) {
+            if (error instanceof DesignError) {
+                continue;
+            }
+            throw error;
+        }
+        if (!current || !isRegularFile(snapshot)) {
+            continue;
+        }
+        if (fs.readFileSync(current).equals(fs.readFileSync(snapshot))) {
+            row.etagImplemented = row.etagPulled;
+            plan.reconciled.push(rel);
+        }
+    }
+    cat.lastPull = plan.listed_at;
+    saveCatalogue(folder, cat);
+    savePlan(planFile, plan);
+    printJson({ removed: plan.removed, reconciled: plan.reconciled, last_pull: cat.lastPull });
+};
+
+export const cmdReport = (folder: string, planFile: string): void => {
+    const cat = loadCatalogue(folder);
+    const plan = loadPlan(planFile);
+    const lines: string[] = [];
+    const section = (title: string, items: string[]) => {
+        if (items.length) {
+            lines.push(`${title}:`, ...items.map(item => `  - ${item}`));
+        }
+    };
+    const ids = (values: number[] | undefined) => (values ?? []).map(id => `Q${id}`);
+
+    section("Adopted from unzipped files", plan.adopted);
+    section("Imported through MCP", plan.imported);
+    section("Removed", plan.removed);
+    section("Excluded", plan.excluded);
+    section("Etag changed, content identical", plan.reconciled);
+    const pending = Object.keys(cat.rows)
+        .filter(rel => rowStatus(cat, cat.rows[rel]) === "pending")
+        .sort();
+    if (pending.length) {
+        lines.push("Pending (design changed since implementation), run from the design folder:");
+        for (const rel of pending) {
+            lines.push(`  - ${rel}`, `      diff ${shellQuote(`.implemented/${rel}`)} ${shellQuote(`files/${rel}`)}`);
+        }
+    }
+    section("Newly answered", ids(plan.answers_result?.answered));
+    section("Answer changed", ids(plan.answers_result?.changed));
+    section("Answers without a logged question", ids(plan.answers_result?.unknown));
+    section("Needs manual export (unzip into files/ and pull again)", plan.manual);
+    section("Failed", plan.failed);
+    section("Rejected paths", plan.rejected);
+    process.stdout.write(`${lines.length ? lines.join("\n") : "Nothing changed."}\n`);
+};

@@ -79,6 +79,18 @@ const commands: Record<string, Command> = {
                 retry: values.retry === true
             });
         }
+    },
+    finish: {
+        usage: "finish <folder> --plan <plan.json>",
+        options: { plan: { type: "string" } },
+        run: (positionals, values) =>
+            lib.cmdFinish(one(positionals, commands.finish.usage), required(values, "plan", commands.finish.usage))
+    },
+    report: {
+        usage: "report <folder> --plan <plan.json>",
+        options: { plan: { type: "string" } },
+        run: (positionals, values) =>
+            lib.cmdReport(one(positionals, commands.report.usage), required(values, "plan", commands.report.usage))
     }
 };
 
