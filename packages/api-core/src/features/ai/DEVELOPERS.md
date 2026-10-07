@@ -145,6 +145,8 @@ OpenRouter is a gateway: one key reaches models from many vendors. Its model ids
 
 The factory list is a short pick of each vendor's current models that support tool calling, not OpenRouter's whole catalog (a few hundred models, many without tools). Pick from `https://openrouter.ai/api/v1/models`, keeping entries whose `supported_parameters` includes `tools` and skipping the `:free` and `:batch` variants. OpenRouter publishes retirement dates as `expiration_date`; leave out models that have one coming up.
 
+`openrouter/auto` is OpenRouter's Auto Router: it picks the model per request, so the vendor that answers can change between calls. It's stored as `openrouter/openrouter/auto`. The catalog marks it as not accepting `temperature`, because some of the models it can pick reject it.
+
 Uses `@openrouter/ai-sdk-provider` rather than `@ai-sdk/openai` with a different base URL, so non-OpenAI models routed through it don't get OpenAI-only request options.
 
 Env var fallback: `WEBINY_API_OPENROUTER_API_KEY`.

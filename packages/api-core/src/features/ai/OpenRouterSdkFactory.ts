@@ -8,6 +8,8 @@ import type { IAiSdk, IAiSdkModel } from "./abstractions.js";
  * OpenRouter id intact.
  */
 const OPENROUTER_MODELS: IAiSdkModel[] = [
+    // OpenRouter picks the model per request, so which vendor answers can change between calls.
+    { id: "openrouter/auto", name: "OpenRouter: Auto Router" },
     { id: "mistralai/mistral-large-4-0", name: "Mistral: Mistral Large 4" },
     { id: "openai/gpt-6.1-sol", name: "OpenAI: GPT-6.1 Sol" },
     { id: "anthropic/claude-sonnet-5.5", name: "Anthropic: Claude Sonnet 5.5" },
