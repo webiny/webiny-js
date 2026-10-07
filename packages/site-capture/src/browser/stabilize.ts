@@ -91,3 +91,49 @@ export const fontLoadingScript = (timeoutMs: number): string => `(async () => {
     document.fonts.forEach(face => faces.push({ family: face.family, status: face.status }));
     return { ready, faces };
 })()`;
+
+/**
+ * Lets a page catch up with being back at the top, before anything is read.
+ *
+ * The lazy-load pass ends by jumping back to scroll 0, and a page that keeps state about scrolling
+ * learns that only from its scroll handler. G5 sites set `body.stuck` while `scrollY >= 500` — which
+ * hides the header logo and shows a small favicon logo in its place — and recompute it in a scroll
+ * handler debounced by 250ms. On the deployed capture Freehill's home page was read in the stuck
+ * state in 4 of 7 captures: the handler had not run yet, so the tree and the screenshot both had a
+ * header with no logo, and every component built from that header inherited it. Read straight after
+ * the jump back to the top, the live page is still stuck; after this, it is not.
+ *
+ * So the page is told once more that it scrolled, at the top, and the capture waits until the page
+ * stops changing classes — a quiet period, bounded — rather than for a fixed time that a slow machine
+ * can outrun. Classes, not styles: page state like `stuck` is a class, while a running carousel
+ * rewrites inline styles forever and would hold every page to the bound.
+ */
+export const settleAtTopScript = (quietMs: number, maxMs: number): string => `(async () => {
+    window.scrollTo(0, 0);
+    try { window.dispatchEvent(new Event("scroll")); } catch (e) {}
+    var last = Date.now();
+    var changes = 0;
+    var observer = null;
+    try {
+        observer = new MutationObserver(function (records) {
+            changes += records.length;
+            last = Date.now();
+        });
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class"],
+            subtree: true
+        });
+    } catch (e) {}
+    var started = Date.now();
+    await new Promise(function (resolve) {
+        var check = function () {
+            var now = Date.now();
+            if (now - last >= ${quietMs} || now - started >= ${maxMs}) { resolve(undefined); return; }
+            setTimeout(check, 50);
+        };
+        setTimeout(check, 50);
+    });
+    if (observer) { observer.disconnect(); }
+    return { changes: changes, waitedMs: Date.now() - started, quiet: Date.now() - last >= ${quietMs} };
+})()`;

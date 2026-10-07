@@ -35,6 +35,7 @@ import {
     finishAnimationsScript,
     fontLoadingScript,
     summarizeFontFaces,
+    settleAtTopScript,
     type ObservedFontFace
 } from "./stabilize.js";
 import {
@@ -111,6 +112,9 @@ const LAZY_SCROLL_PAUSE_MS = 150;
 const LAZY_SCROLL_SETTLE_MS = 600;
 /** Enough for a very long page at a 900px viewport; past this the page is pathological. */
 const MAX_LAZY_SCROLL_STEPS = 40;
+/** Back at the top: how long the page must stop changing classes and styles, and the most to wait. */
+const SETTLE_QUIET_MS = 400;
+const SETTLE_MAX_MS = 2500;
 
 /**
  * Walk the page once so that whatever loads on scroll has loaded before anything is read.
@@ -156,6 +160,10 @@ const settleLazyContent = async (page: Page): Promise<void> => {
                 LAZY_SCROLL_SETTLE_MS,
                 MAX_LAZY_SCROLL_STEPS
             ) as Promise<void>
+    );
+    // Back at the top, the page's own scroll state has to catch up too — see `settleAtTopScript`.
+    await withTimeoutOrDefault("settle at the top", DEFAULT_TIMEOUTS.evaluateMs, undefined, () =>
+        page.evaluate(settleAtTopScript(SETTLE_QUIET_MS, SETTLE_MAX_MS)).then(() => undefined)
     );
 };
 
