@@ -1389,8 +1389,10 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     }
                     const run = runResult.value;
 
+                    // Stale as well as done, as the render task itself accepts: a re-run Plan leaves
+                    // Generate stale, and its components (some generated again since) still render.
                     const generate = stageEntry(run.stages, "generate");
-                    if (!generate || generate.status !== "done") {
+                    if (!generate || (generate.status !== "done" && generate.status !== "stale")) {
                         throw new Error("Render requires Generate to be done.");
                     }
 
