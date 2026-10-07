@@ -18,6 +18,7 @@ import {
 } from "./componentGeneration.js";
 import { hasRecordedResult, recordResultOnce } from "./recordResultOnce.js";
 import { replaceGeneratedComponent } from "./replaceGeneratedComponent.js";
+import { appendGenerationLog } from "./generationLog.js";
 
 // Left at the end of the invocation to write the result after the last attempt.
 const DEADLINE_MARGIN_MS = 20 * 1000;
@@ -152,7 +153,25 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
                         log: (message, error) =>
                             log.error({ message, ...(error instanceof Error ? { error } : {}) }),
                         beat: message => log.info({ message }),
-                        deadline
+                        deadline,
+                        recordAttempt: async record => {
+                            const appended = await appendGenerationLog(
+                                this.artifactStore,
+                                this.blobs,
+                                {
+                                    runId: input.runId,
+                                    signature: input.signature,
+                                    stageVersion: input.stageVersion,
+                                    trigger: input.replaceInto ? "generate-again" : "generate",
+                                    record
+                                }
+                            );
+                            if (appended.isFail()) {
+                                await log.error({
+                                    message: `Could not write the generation log for "${planned.name}": ${appended.error.message}`
+                                });
+                            }
+                        }
                     }
                 )
         );

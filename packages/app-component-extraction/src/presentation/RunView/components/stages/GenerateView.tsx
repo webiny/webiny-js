@@ -5,7 +5,12 @@ import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { RunImage } from "~/presentation/runImage/RunImage.js";
 import { ReviewControl } from "./ReviewControl.js";
-import type { RunViewPresenter } from "../../abstractions.js";
+import { GenerationLog } from "./GenerationLog.js";
+import type {
+    GenerationLogState,
+    GenerationPromptState,
+    RunViewPresenter
+} from "../../abstractions.js";
 import type {
     ComponentDecisionDto,
     ComponentPromptDto,
@@ -191,6 +196,9 @@ const GenerateCard = ({
     reviewVerdicts,
     reviewReasons,
     reviewSaving,
+    logOpen,
+    logState,
+    logPrompts,
     regenerating,
     renderingThis,
     runId,
@@ -205,6 +213,9 @@ const GenerateCard = ({
     reviewVerdicts: ReviewOptionDto[];
     reviewReasons: ReviewOptionDto[];
     reviewSaving: boolean;
+    logOpen: boolean;
+    logState: GenerationLogState | undefined;
+    logPrompts: Record<string, GenerationPromptState>;
     regenerating: boolean;
     renderingThis: boolean;
     runId: string;
@@ -410,6 +421,12 @@ const GenerateCard = ({
                         text={promptOpen ? "Hide prompt" : "View prompt"}
                         onClick={() => void togglePrompt()}
                     />
+                    <Button
+                        variant="tertiary"
+                        size="sm"
+                        text={logOpen ? "Hide log" : "Log"}
+                        onClick={() => void presenter.toggleGenerationLog(component.signature)}
+                    />
                     <div className="flex-1" />
                     <Button
                         variant="tertiary"
@@ -450,6 +467,15 @@ const GenerateCard = ({
                             </Text>
                         )}
                     </div>
+                ) : null}
+                {logOpen ? (
+                    <GenerationLog
+                        state={logState}
+                        prompts={logPrompts}
+                        onOpenEntry={entryId =>
+                            void presenter.loadGenerationPrompt(component.signature, entryId)
+                        }
+                    />
                 ) : null}
                 {showInstruction && !regenerating ? (
                     <div className="flex items-center gap-sm">
@@ -599,6 +625,9 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
                             reviewVerdicts={vm.reviewVerdicts}
                             reviewReasons={vm.reviewReasons}
                             reviewSaving={vm.savingReviews.includes(component.signature)}
+                            logOpen={vm.openLogs.includes(component.signature)}
+                            logState={vm.generationLogs[component.signature]}
+                            logPrompts={vm.generationPrompts}
                             regenerating={vm.regenerating.includes(component.signature)}
                             renderingThis={
                                 vm.rendering || vm.renderingSignatures.includes(component.signature)

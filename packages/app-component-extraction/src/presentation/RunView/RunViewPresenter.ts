@@ -54,6 +54,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         reviewVerdicts: [],
         reviewReasons: [],
         savingReviews: [],
+        openLogs: [],
+        generationLogs: {},
+        generationPrompts: {},
         sourceCrops: {},
         regenerating: [],
         planRegenerating: [],
@@ -503,6 +506,76 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
+    async toggleGenerationLog(signature: string): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        if (this.vm.openLogs.includes(signature)) {
+            runInAction(() => {
+                this.vm.openLogs = this.vm.openLogs.filter(item => item !== signature);
+            });
+            return;
+        }
+        runInAction(() => {
+            this.vm.openLogs = [...this.vm.openLogs, signature];
+            this.vm.generationLogs = {
+                ...this.vm.generationLogs,
+                [signature]: {
+                    loading: true,
+                    entries: this.vm.generationLogs[signature]?.entries ?? [],
+                    error: null
+                }
+            };
+        });
+        // Loaded on every opening: a "generate again" since the last one adds attempts.
+        try {
+            const log = await this.gateway.getGenerationLog(runId, signature);
+            runInAction(() => {
+                this.vm.generationLogs = {
+                    ...this.vm.generationLogs,
+                    [signature]: { loading: false, entries: log.entries, error: null }
+                };
+            });
+        } catch (error) {
+            runInAction(() => {
+                this.vm.generationLogs = {
+                    ...this.vm.generationLogs,
+                    [signature]: { loading: false, entries: [], error: (error as Error).message }
+                };
+            });
+        }
+    }
+
+    async loadGenerationPrompt(signature: string, entryId: string): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId || this.vm.generationPrompts[entryId]) {
+            return;
+        }
+        runInAction(() => {
+            this.vm.generationPrompts = {
+                ...this.vm.generationPrompts,
+                [entryId]: { loading: true, prompt: null, error: null }
+            };
+        });
+        try {
+            const prompt = await this.gateway.getGenerationPrompt(runId, signature, entryId);
+            runInAction(() => {
+                this.vm.generationPrompts = {
+                    ...this.vm.generationPrompts,
+                    [entryId]: { loading: false, prompt, error: null }
+                };
+            });
+        } catch (error) {
+            runInAction(() => {
+                this.vm.generationPrompts = {
+                    ...this.vm.generationPrompts,
+                    [entryId]: { loading: false, prompt: null, error: (error as Error).message }
+                };
+            });
+        }
+    }
+
     async setReview(signature: string, review: ReviewInputDto): Promise<void> {
         const runId = this.vm.run?.id;
         if (!runId) {
@@ -689,7 +762,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
      * fixed was fixed by changing what the model is told, and each was first seen in a picture and
      * only then traced back to a line that was missing from the prompt.
      */
-    async loadComponentPrompt(runId: string, signature: string): Promise<ComponentPromptDto | null> {
+    async loadComponentPrompt(
+        runId: string,
+        signature: string
+    ): Promise<ComponentPromptDto | null> {
         try {
             const prompt = await this.gateway.getComponentPrompt(runId, signature);
             return (prompt as ComponentPromptDto | null) ?? null;

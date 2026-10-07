@@ -96,6 +96,38 @@ export const SET_COMPONENT_DECISION = /* GraphQL */ `
     }
 `;
 
+export const GET_GENERATION_LOG = /* GraphQL */ `
+    query GetComponentExtractionGenerationLog($runId: ID!, $signature: String!) {
+        componentExtractionGetGenerationLog(runId: $runId, signature: $signature) {
+            data
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
+export const GET_GENERATION_PROMPT = /* GraphQL */ `
+    query GetComponentExtractionGenerationPrompt(
+        $runId: ID!
+        $signature: String!
+        $entryId: String!
+    ) {
+        componentExtractionGetGenerationPrompt(
+            runId: $runId
+            signature: $signature
+            entryId: $entryId
+        ) {
+            data
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
 export const GET_REVIEWS = /* GraphQL */ `
     query GetComponentExtractionReviews($runId: ID!) {
         componentExtractionGetReviews(runId: $runId) {

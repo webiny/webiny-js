@@ -12,7 +12,9 @@ import type {
     StageLogItem,
     ThemeOptionDto,
     ReviewInputDto,
-    ReviewsDto
+    ReviewsDto,
+    GenerationLogDto,
+    GenerationPromptDto
 } from "~/shared/types.js";
 
 export interface StageTriggerResult {
@@ -58,6 +60,14 @@ export interface IComponentExtractionGateway {
     getDecisions(runId: string): Promise<unknown>;
     /** Set (or clear, with "none") a component's decision; returns the updated decision map. */
     setComponentDecision(runId: string, signature: string, decision: string): Promise<unknown>;
+    /** A component's generation log: every Generate attempt, oldest first, without prompts. */
+    getGenerationLog(runId: string, signature: string): Promise<GenerationLogDto>;
+    /** One attempt's whole prompt; null when the log has no such attempt. */
+    getGenerationPrompt(
+        runId: string,
+        signature: string,
+        entryId: string
+    ): Promise<GenerationPromptDto | null>;
     /** Human review verdicts for a run's generated components, with the verdict and reason lists. */
     getReviews(runId: string): Promise<ReviewsDto>;
     /** Record a review verdict on a component's current output; returns the updated reviews. */

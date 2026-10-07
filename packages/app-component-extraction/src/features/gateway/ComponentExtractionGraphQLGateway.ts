@@ -14,7 +14,9 @@ import type {
     StageTaskOutput,
     ThemeOptionDto,
     ReviewInputDto,
-    ReviewsDto
+    ReviewsDto,
+    GenerationLogDto,
+    GenerationPromptDto
 } from "~/shared/types.js";
 import {
     CHECK_REACHABILITY,
@@ -50,6 +52,8 @@ import {
     SET_COMPONENT_DECISION,
     SET_COMPONENT_REVIEW,
     GET_REVIEWS,
+    GET_GENERATION_LOG,
+    GET_GENERATION_PROMPT,
     SET_OVERRIDE
 } from "./graphql.js";
 
@@ -353,6 +357,26 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: SET_COMPONENT_DECISION, variables: { runId, signature, decision } });
 
         return unwrap(response.componentExtractionSetComponentDecision);
+    }
+
+    async getGenerationLog(runId: string, signature: string): Promise<GenerationLogDto> {
+        const response = await this.client.execute<{
+            componentExtractionGetGenerationLog: GqlEnvelope<GenerationLogDto>;
+        }>({ query: GET_GENERATION_LOG, variables: { runId, signature } });
+
+        return unwrap(response.componentExtractionGetGenerationLog);
+    }
+
+    async getGenerationPrompt(
+        runId: string,
+        signature: string,
+        entryId: string
+    ): Promise<GenerationPromptDto | null> {
+        const response = await this.client.execute<{
+            componentExtractionGetGenerationPrompt: GqlEnvelope<GenerationPromptDto | null>;
+        }>({ query: GET_GENERATION_PROMPT, variables: { runId, signature, entryId } });
+
+        return unwrap(response.componentExtractionGetGenerationPrompt);
     }
 
     async getReviews(runId: string): Promise<ReviewsDto> {

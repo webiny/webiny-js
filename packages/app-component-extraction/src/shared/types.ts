@@ -522,6 +522,41 @@ export interface DecisionsDto {
     decisions: Record<string, ComponentDecisionDto>;
 }
 
+/** One Generate attempt of a component, from its generation log. */
+export interface GenerationLogEntryDto {
+    id: string;
+    recordedOn: string;
+    stageVersion: number;
+    trigger: "generate" | "generate-again";
+    attempt: number;
+    maxAttempts: number;
+    model: string;
+    durationMs: number;
+    usage?: {
+        inputTokens: number;
+        outputTokens: number;
+        cacheReadTokens: number;
+        cacheWriteTokens: number;
+    };
+    finishReason?: string;
+    outputChars?: number;
+    outcome: "passed" | "failed-checks" | "call-failed";
+    error?: string;
+    failures: string[];
+}
+
+export interface GenerationLogDto {
+    signature: string;
+    entries: GenerationLogEntryDto[];
+}
+
+/** One attempt's whole prompt. */
+export interface GenerationPromptDto {
+    system: string;
+    user: string;
+    imageFileIds: string[];
+}
+
 /** A human review verdict on one generated component, as the API stands it: its latest. */
 export interface ComponentReviewDto {
     signature: string;

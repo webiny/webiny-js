@@ -18,8 +18,22 @@ import type {
     GeneratedComponentDetailDto,
     ComponentReviewDto,
     ReviewInputDto,
-    ReviewOptionDto
+    ReviewOptionDto,
+    GenerationLogEntryDto,
+    GenerationPromptDto
 } from "~/shared/types.js";
+
+export interface GenerationLogState {
+    loading: boolean;
+    entries: GenerationLogEntryDto[];
+    error: string | null;
+}
+
+export interface GenerationPromptState {
+    loading: boolean;
+    prompt: GenerationPromptDto | null;
+    error: string | null;
+}
 
 export interface IRunViewVm {
     loading: boolean;
@@ -59,6 +73,12 @@ export interface IRunViewVm {
     reviewReasons: ReviewOptionDto[];
     /** Signatures whose review is being saved, so each card can show its own state. */
     savingReviews: string[];
+    /** Signatures whose generation log is open on its card. */
+    openLogs: string[];
+    /** Each opened component's generation log, loaded when first opened. */
+    generationLogs: Record<string, GenerationLogState>;
+    /** Each attempt's prompt, by log entry id, loaded when the attempt is opened. */
+    generationPrompts: Record<string, GenerationPromptState>;
     /** Source section crop ref per component signature, from the Plan artifact. */
     sourceCrops: Record<string, string>;
     /** Signatures of components whose regenerate (refine) is in flight (W7.8). */
@@ -157,6 +177,10 @@ export interface IRunViewPresenter {
     setDecision(signature: string, decision: string): Promise<void>;
     /** Accept every listed component (the validation-passing ones) in one action. */
     acceptAll(signatures: string[]): Promise<void>;
+    /** Open or close a component's generation log; loads it (again) on opening. */
+    toggleGenerationLog(signature: string): Promise<void>;
+    /** Load one attempt's prompt, once. */
+    loadGenerationPrompt(signature: string, entryId: string): Promise<void>;
     /** Record a human review verdict on a component's current output. */
     setReview(signature: string, review: ReviewInputDto): Promise<void>;
     /** Regenerate a component from an instruction via the refine path (W7.8). */

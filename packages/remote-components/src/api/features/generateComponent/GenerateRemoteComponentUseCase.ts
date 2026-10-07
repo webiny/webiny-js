@@ -3,7 +3,10 @@ import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { ResolveAiCapabilityUseCase } from "@webiny/ai-powerups/exports/api/ai-powerups.js";
 import { REMOTE_COMPONENT_GENERATION_CAPABILITY } from "~/api/features/shared/capability.js";
 import { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsById/index.js";
-import { GenerateRemoteComponentUseCase as UseCaseAbstraction } from "./abstractions.js";
+import {
+    GenerateRemoteComponentUseCase as UseCaseAbstraction,
+    type GenerationTrace
+} from "./abstractions.js";
 import { buildComponentPrompt } from "./buildComponentPrompt.js";
 import { parseGeneratedSource } from "./parseGeneratedSource.js";
 import { cachedSystemPrompt, MAX_OUTPUT_TOKENS } from "~/api/features/shared/promptCaching.js";
@@ -46,8 +49,36 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
         const { model, connection } = resolved.value;
         const systemText = buildComponentPrompt();
 
+        const started = Date.now();
+        const modelName =
+            typeof model === "string"
+                ? model
+                : String((model as { modelId?: unknown } | undefined)?.modelId ?? model);
+        let userText = "";
+        const trace = async (rest: Partial<GenerationTrace>) => {
+            if (!input.onTrace) {
+                return;
+            }
+            try {
+                await input.onTrace({
+                    model: modelName,
+                    system: systemText,
+                    user: userText,
+                    imageFileIds: input.additionalFileIds ?? [],
+                    durationMs: Date.now() - started,
+                    ...rest
+                });
+            } catch {
+                // A log that cannot be written must not fail the generation it describes.
+            }
+        };
+
         try {
             const userContent = await this.buildUserContent(input);
+            userText = userContent
+                .filter((part): part is TextPart => part.type === "text")
+                .map(part => part.text)
+                .join("\n");
 
             const aiResult = await this.ai.generateText({
                 model,
@@ -70,6 +101,24 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
                 aiResult.text ||
                 (aiResult.steps.filter((step: any) => step.text.length > 0).pop()?.text ?? "");
 
+            const usage = (aiResult as { usage?: Record<string, unknown> }).usage;
+            const details = (usage?.inputTokenDetails ?? {}) as Record<string, unknown>;
+            await trace({
+                ...(usage
+                    ? {
+                          usage: {
+                              inputTokens: Number(usage.inputTokens ?? 0),
+                              outputTokens: Number(usage.outputTokens ?? 0),
+                              cacheReadTokens: Number(details.cacheReadTokens ?? 0),
+                              cacheWriteTokens: Number(details.cacheWriteTokens ?? 0)
+                          }
+                      }
+                    : {}),
+                finishReason: String((aiResult as { finishReason?: unknown }).finishReason ?? ""),
+                outputChars: text.length,
+                ...(text ? {} : { error: "AI returned an empty response." })
+            });
+
             if (!text) {
                 return Result.fail(new Error("AI returned an empty response."));
             }
@@ -77,6 +126,7 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
             const parsed = parseGeneratedSource(text);
             return Result.ok(parsed);
         } catch (error) {
+            await trace({ error: error instanceof Error ? error.message : String(error) });
             return Result.fail(error as Error);
         }
     }

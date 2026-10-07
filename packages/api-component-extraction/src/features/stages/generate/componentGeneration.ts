@@ -4,6 +4,8 @@ import { GenerateRemoteComponentUseCase } from "@webiny/remote-components/api/fe
 import { CreateFileUseCase } from "@webiny/api-file-manager/features/file/CreateFile/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { BlobStore } from "~/domain/stage.js";
+import type { GenerationTrace } from "@webiny/remote-components/api/features/generateComponent/abstractions.js";
+import type { AttemptRecord } from "./generationLog.js";
 import {
     bundleComponent,
     renderComponentMarkup
@@ -118,6 +120,8 @@ export interface GenerationInput {
      * Absent means no deadline beyond each call's own limit.
      */
     deadline?: number;
+    /** Called after each attempt with what was sent, what it cost and how it ended — for the log. */
+    recordAttempt?: (record: AttemptRecord) => Promise<void>;
 }
 
 /**
@@ -718,16 +722,27 @@ export const generateComponentAttempts = async (
         const feedback = previousFailures
             ? buildRetryFeedback(previousFailures, validVariables)
             : [];
+        let trace: GenerationTrace | null = null;
         const generated = await deps.generateComponent.execute({
             prompt: buildPrompt(planned, slotVariables, feedback),
             name: planned.name,
             additionalFileIds,
-            abortSignal: AbortSignal.timeout(budget.timeoutMs)
+            abortSignal: AbortSignal.timeout(budget.timeoutMs),
+            onTrace: recorded => {
+                trace = recorded;
+            }
         });
         if (generated.isFail()) {
             await input.log(
                 `Generate attempt ${attempts} failed for "${planned.name}": ${generated.error.message}`
             );
+            await input.recordAttempt?.({
+                attempt: attempts,
+                maxAttempts: MAX_ATTEMPTS,
+                trace,
+                outcome: "call-failed",
+                failures: [generated.error.message]
+            });
             continue;
         }
 
@@ -841,6 +856,13 @@ export const generateComponentAttempts = async (
             attempts,
             validation
         };
+        await input.recordAttempt?.({
+            attempt: attempts,
+            maxAttempts: MAX_ATTEMPTS,
+            trace,
+            outcome: failures.length === 0 ? "passed" : "failed-checks",
+            failures
+        });
         // Keep the least-broken attempt, not merely the last — an informed retry can still regress.
         if (failures.length < bestFailureCount) {
             best = candidate;

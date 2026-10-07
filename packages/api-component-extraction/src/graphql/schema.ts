@@ -12,7 +12,11 @@ import {
     RunLock,
     RunRepository
 } from "~/domain/abstractions.js";
-import { StageArtifactStore } from "~/domain/stage.js";
+import { BlobStore, StageArtifactStore } from "~/domain/stage.js";
+import {
+    readGenerationLog,
+    readGenerationPrompt
+} from "~/features/stages/generate/generationLog.js";
 import {
     hasOutstandingClaim,
     initLedger,
@@ -1482,6 +1486,51 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
      * it is about, at the cost of those components rather than of a whole run. Each runs as its own
      * component task, all at once, and replaces its component in the finished stage.
      */
+    // A component's generation log: every attempt's model, tokens, duration and outcome. Prompts are
+    // fetched one at a time, when the operator opens an attempt.
+    builder.addResolver({
+        path: "Query.componentExtractionGetGenerationLog",
+        dependencies: [ComponentExtractionPermissions, StageArtifactStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            store: StageArtifactStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string; signature: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const log = await readGenerationLog(store, args.runId, args.signature);
+                    if (log.isFail()) {
+                        throw log.error;
+                    }
+                    return log.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionGetGenerationPrompt",
+        dependencies: [ComponentExtractionPermissions, StageArtifactStore, BlobStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            store: StageArtifactStore.Interface,
+            blobs: BlobStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string; signature: string; entryId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const prompt = await readGenerationPrompt(store, blobs, args);
+                    if (prompt.isFail()) {
+                        throw prompt.error;
+                    }
+                    return prompt.value;
+                });
+        }
+    });
+
     builder.addResolver({
         path: "Mutation.componentExtractionGenerateComponents",
         dependencies: [

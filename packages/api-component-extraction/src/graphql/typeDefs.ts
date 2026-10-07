@@ -147,6 +147,17 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionGetDecisions(runId: ID!): ComponentExtractionArtifactResponse!
         "Human review verdicts on a run's generated components, keyed by signature: each component's latest, flagged current when given on the output it has now. Data also carries the verdict and reason lists with their labels."
         componentExtractionGetReviews(runId: ID!): ComponentExtractionArtifactResponse!
+        "A component's generation log: every Generate attempt (the stage's and generate-again's) with its model, tokens, duration, outcome and failures, oldest first. Prompts are fetched per attempt."
+        componentExtractionGetGenerationLog(
+            runId: ID!
+            signature: String!
+        ): ComponentExtractionArtifactResponse!
+        "One generation attempt's full prompt: the system prompt, the user message and the ids of the images sent."
+        componentExtractionGetGenerationPrompt(
+            runId: ID!
+            signature: String!
+            entryId: String!
+        ): ComponentExtractionArtifactResponse!
         "A run's individual model calls (W7.9): stage, call name, model id, tokens in/out, latency, ok."
         componentExtractionListModelCalls(runId: ID!): ComponentExtractionArtifactResponse!
         "Projected generation cost for a run's plan (W7.9): component count × mean tokens/generate-call from prior runs of the job."
