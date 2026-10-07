@@ -221,6 +221,11 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             signature: String!
             instruction: String!
         ): ComponentExtractionTaskResponse!
+        "Generate selected components again through Generate itself (its prompt, validation and retries, not the refine path), each replacing its component in the finished stage. Data carries the task id per signature. Renders of those components are dropped; render them again after."
+        componentExtractionGenerateComponents(
+            runId: ID!
+            signatures: [String!]!
+        ): ComponentExtractionArtifactResponse!
         "Regenerate one component's Plan contract (W8) — a fresh model proposal of its props and token bindings, optionally steered by an instruction, clearing that component's prop edits."
         componentExtractionRegeneratePlan(
             runId: ID!

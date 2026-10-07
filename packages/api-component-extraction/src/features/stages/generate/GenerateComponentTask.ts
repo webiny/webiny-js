@@ -17,6 +17,7 @@ import {
     type ComponentResult
 } from "./componentGeneration.js";
 import { hasRecordedResult, recordResultOnce } from "./recordResultOnce.js";
+import { replaceGeneratedComponent } from "./replaceGeneratedComponent.js";
 
 // Left at the end of the invocation to write the result after the last attempt.
 const DEADLINE_MARGIN_MS = 20 * 1000;
@@ -29,6 +30,13 @@ export interface GenerateComponentTaskInput {
     stageVersion: number;
     /** The effective Plan artifact key, so the child generates exactly what the coordinator planned. */
     planRef: string;
+    /**
+     * Generate again and replace the component in a Generate stage that has finished — set by the
+     * selected-components action, never by the coordinator. The recorded result is not a reason to stop,
+     * the new one is written over it, and the stage's aggregate is updated. A generation that produces
+     * nothing leaves the existing component in place.
+     */
+    replaceInto?: { componentsKey: string };
 }
 
 type RunParams = TaskHandler.RunParams<GenerateComponentTaskInput>;
@@ -64,7 +72,7 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
             Date.now() + controller.runtime.getRemainingMilliseconds() - DEADLINE_MARGIN_MS;
 
         // Another task already finished this component — a retrigger that overlapped a slow original.
-        if (await hasRecordedResult(this.artifactStore, resultKey)) {
+        if (!input.replaceInto && (await hasRecordedResult(this.artifactStore, resultKey))) {
             return controller.response.done("This component's result is already recorded.");
         }
 
@@ -150,6 +158,27 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         );
 
         const { component, notGenerated } = outcome;
+
+        if (input.replaceInto) {
+            if (!component) {
+                return controller.response.done(
+                    `"${planned.name}" was not regenerated (${notGenerated ?? "no output"}); the existing component is unchanged.`
+                );
+            }
+            const replaced = await replaceGeneratedComponent(this.artifactStore, {
+                runId: input.runId,
+                stageVersion: input.stageVersion,
+                componentsKey: input.replaceInto.componentsKey,
+                component
+            });
+            if (replaced.isFail()) {
+                return controller.response.error(replaced.error.message);
+            }
+            return controller.response.done(
+                `Regenerated "${planned.name}" (revision ${replaced.value.revision}).`
+            );
+        }
+
         const written = await recordResultOnce(this.artifactStore, resultKey, {
             signature: input.signature,
             component,

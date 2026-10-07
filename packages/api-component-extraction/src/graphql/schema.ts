@@ -38,6 +38,7 @@ import type { Correction, Run } from "~/domain/types.js";
 import {
     DEFAULT_PAGE_CAP,
     MAX_PAGE_CAP,
+    GENERATE_COMPONENT_TASK_ID,
     previousStage,
     REGENERATE_COMPONENT_TASK_ID,
     REGENERATE_PLAN_TASK_ID,
@@ -52,6 +53,7 @@ import {
 } from "~/constants.js";
 import { ExtractionRunInProgressError } from "~/domain/errors.js";
 import type { StageTaskInput } from "~/features/stages/StageTaskRunner.js";
+import type { GenerateComponentTaskInput } from "~/features/stages/generate/GenerateComponentTask.js";
 import { OverrideApplicator, stageArtifactName } from "~/features/shared/OverrideApplicator.js";
 import { decisionsFromOverrides, normalizeUrl } from "~/domain/overrides.js";
 import {
@@ -1260,7 +1262,10 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
         }
         return {
             reviews: latestReviews(logged.value, signature => refs.get(signature)?.contentSha256),
-            verdicts: REVIEW_VERDICTS.map(value => ({ value, label: REVIEW_VERDICT_LABELS[value] })),
+            verdicts: REVIEW_VERDICTS.map(value => ({
+                value,
+                label: REVIEW_VERDICT_LABELS[value]
+            })),
             reasons: REVIEW_REASONS.map(value => ({ value, label: REVIEW_REASON_LABELS[value] }))
         };
     };
@@ -1465,6 +1470,83 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     }
 
                     return { taskId: triggered.value.id, runId: run.id, stage: "regenerate" };
+                });
+        }
+    });
+
+    /*
+     * Generate selected components again, through Generate itself: the same prompt, validation and
+     * retries as the stage, not the refine path. For checking a change to generation on the components
+     * it is about, at the cost of those components rather than of a whole run. Each runs as its own
+     * component task, all at once, and replaces its component in the finished stage.
+     */
+    builder.addResolver({
+        path: "Mutation.componentExtractionGenerateComponents",
+        dependencies: [
+            ComponentExtractionPermissions,
+            RunRepository,
+            StageArtifactStore,
+            TaskService
+        ],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            store: StageArtifactStore.Interface,
+            taskService: TaskService.Interface
+        ) {
+            return ({ args }: { args: { runId: string; signatures: string[] } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+                    const signatures = [...new Set(args.signatures)];
+                    if (signatures.length === 0) {
+                        throw new Error("Select at least one component to generate.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+                    const generate = stageEntry(run.stages, "generate");
+                    const componentsKey = generate?.artifacts.components;
+                    if (!generate || generate.status !== "done" || !componentsKey) {
+                        throw new Error(
+                            "Generate has to have finished before selected components can be generated again."
+                        );
+                    }
+                    const planRef = stageEntry(run.stages, "plan")?.artifacts.plan;
+                    const plan = planRef ? await store.getJson<PlanArtifact>(planRef) : null;
+                    if (!planRef || !plan?.isOk() || !plan.value) {
+                        throw new Error("The run's plan could not be read.");
+                    }
+                    const planned = new Map(
+                        plan.value.components.map(component => [component.signature, component])
+                    );
+                    const unknown = signatures.filter(signature => !planned.has(signature));
+                    if (unknown.length > 0) {
+                        throw new Error(`Not in the run's plan: ${unknown.join(", ")}.`);
+                    }
+
+                    const tasks: { signature: string; taskId: string }[] = [];
+                    for (const signature of signatures) {
+                        const triggered = await taskService.trigger<GenerateComponentTaskInput>({
+                            definition: GENERATE_COMPONENT_TASK_ID,
+                            name: `Generate again: ${planned.get(signature)!.name}`,
+                            input: {
+                                runId: run.id,
+                                signature,
+                                stageVersion: generate.stageVersion,
+                                planRef,
+                                replaceInto: { componentsKey }
+                            }
+                        });
+                        if (triggered.isFail()) {
+                            throw triggered.error;
+                        }
+                        tasks.push({ signature, taskId: triggered.value.id });
+                    }
+                    return { tasks };
                 });
         }
     });
