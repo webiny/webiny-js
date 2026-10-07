@@ -24,9 +24,12 @@ const resolveDbRegistry = (container: Container): DbRegistry.Interface | undefin
  * extension points, and everything they keep state in. Register it in the request (child) container,
  * after `HeadlessCmsDdbEsFeature` is in the root.
  *
- * - Decorators only apply to registrations in the container that holds the decorator or below it.
- *   Extensions register in the request container, so the OpenSearch extension points (index, field
- *   indexes, filters, modifiers) must be registered here for extension decorators to apply.
+ * - @webiny/di applies a decorator only if it sits in the same container as the registration it
+ *   decorates, or in one of that container's parents. Extensions register their decorators in the
+ *   request container, so with the storage operations and OpenSearch extension points (index, field
+ *   indexes, filters, modifiers) in the root, an extension decorator on one of them (e.g.
+ *   `CmsModelOpenSearchIndex`) would be skipped without an error. Registering them here puts the
+ *   decorator and its target in the same container.
  * - The DataLoader cache must live for one request. A root singleton outlives the request and keeps
  *   serving the entries it read first.
  * - The filter registries are mutable; a root instance would collect every request's registrations.
