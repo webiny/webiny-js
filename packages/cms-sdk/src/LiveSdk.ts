@@ -12,6 +12,7 @@ import type {
 import { collectRefs, setAtPath } from "./refUtils.js";
 
 const SYSTEM_FIELDS = ["id", "entryId", "createdOn", "modifiedOn", "savedOn"];
+const DEFAULT_FIELDS = [...SYSTEM_FIELDS, "values.*"];
 
 export class LiveSdk implements IContentSdk {
     private webiny: Webiny;
@@ -49,7 +50,7 @@ export class LiveSdk implements IContentSdk {
         const result = await this.webiny.cms.getEntry<T>({
             modelId: params.modelId,
             where,
-            fields: [...SYSTEM_FIELDS, "values.*"],
+            fields: params.fields ?? DEFAULT_FIELDS,
             preview: this.preview
         });
 
@@ -58,6 +59,11 @@ export class LiveSdk implements IContentSdk {
         }
 
         const entry = result.value as CmsEntry<T>;
+
+        // A projection already selects the referenced values it needs, so there is nothing to resolve.
+        if (params.fields) {
+            return entry;
+        }
 
         return this.resolveEntryRefs(entry, params.modelId);
     }
@@ -72,7 +78,7 @@ export class LiveSdk implements IContentSdk {
             limit: params.limit,
             after: params.after,
             search: params.search,
-            fields: [...SYSTEM_FIELDS, "values.*"],
+            fields: params.fields ?? DEFAULT_FIELDS,
             preview: this.preview
         });
 

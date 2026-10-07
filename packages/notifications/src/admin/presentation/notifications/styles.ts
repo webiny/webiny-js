@@ -2,21 +2,6 @@ const CSS = `
 .wby-notif-bell-wrap { position:relative; display:inline-flex; }
 .wby-notif-bell__badge { position:absolute; top:-2px; right:-2px; min-width:16px; height:16px; padding:0 4px; background:var(--color-primary); color:#fff; border-radius:8px; font-size:10px; font-weight:700; line-height:1; display:flex; align-items:center; justify-content:center; box-sizing:border-box; box-shadow:0 0 0 2px var(--color-neutral-0); pointer-events:none; }
 
-/* The slide-in shell (overlay, positioning, animation, focus) is the admin-ui Drawer; this is the
-   full-height flex column inside its body so the header/tabs stay put and the list scrolls. */
-.wby-notif-panel-inner { display:flex; flex-direction:column; height:100%; font-family:var(--font-sans); color:var(--text-color-neutral-primary); }
-
-.wby-notif-header { flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:16px 16px 10px; }
-.wby-notif-title { display:flex; align-items:center; gap:8px; font-size:20px; font-weight:600; }
-.wby-notif-title__icon { flex:0 0 auto; width:22px; height:22px; fill:var(--color-primary); }
-.wby-notif-newbadge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; background:var(--color-primary-100); color:var(--color-primary-700); border-radius:10px; font-size:12px; font-weight:700; }
-.wby-notif-actions { display:flex; align-items:center; gap:2px; }
-.wby-notif-spin { animation:wby-notif-spin .8s linear infinite; }
-@keyframes wby-notif-spin { to { transform:rotate(360deg); } }
-
-.wby-notif-tabs { flex:0 0 auto; display:flex; align-items:center; gap:8px; padding:0 16px 12px; border-bottom:1px solid var(--color-neutral-200); }
-
-.wby-notif-list { flex:1 1 auto; overflow-y:auto; }
 .wby-notif-group__label { padding:14px 16px 4px; font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--color-neutral-500); }
 .wby-notif-item { display:flex; gap:12px; padding:14px 16px; border-top:1px solid var(--color-neutral-100); cursor:pointer; position:relative; transition:background .12s ease; }
 .wby-notif-item:first-child { border-top:none; }
