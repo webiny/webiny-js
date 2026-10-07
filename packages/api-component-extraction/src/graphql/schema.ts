@@ -1510,7 +1510,13 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     const run = runResult.value;
                     const generate = stageEntry(run.stages, "generate");
                     const componentsKey = generate?.artifacts.components;
-                    if (!generate || generate.status !== "done" || !componentsKey) {
+                    // Stale is fine: generating a few components again against a re-run Plan is what this
+                    // is for. The stage stays stale — the components not selected came from the old plan.
+                    if (
+                        !generate ||
+                        (generate.status !== "done" && generate.status !== "stale") ||
+                        !componentsKey
+                    ) {
                         throw new Error(
                             "Generate has to have finished before selected components can be generated again."
                         );
