@@ -131,3 +131,218 @@ export const matches = (rel: string, patterns: string[]): boolean => {
     }
     return result;
 };
+
+// ---------------------------------------------------------------- catalogue
+
+export type Kind = "screen" | "support";
+
+export interface Row {
+    file: string;
+    kind: Kind;
+    etagPulled: string;
+    pulledAt: string;
+    etagImplemented: string;
+    implementedAt: string;
+    commit: string;
+    removedAt: string;
+}
+
+export interface Catalogue {
+    project: string;
+    projectId: string;
+    source: string;
+    exclude: string[];
+    support: string[];
+    lastPull: string;
+    answersEtag: string;
+    rows: Record<string, Row>;
+}
+
+const COLUMNS = [
+    "file",
+    "kind",
+    "etag_pulled",
+    "pulled_at",
+    "etag_implemented",
+    "implemented_at",
+    "commit",
+    "removed_at",
+    "status"
+];
+
+export const createRow = (file: string, values: Partial<Omit<Row, "file">> = {}): Row => ({
+    file,
+    kind: "screen",
+    etagPulled: "",
+    pulledAt: "",
+    etagImplemented: "",
+    implementedAt: "",
+    commit: "",
+    removedAt: "",
+    ...values
+});
+
+export const createCatalogue = (project: string, projectId: string): Catalogue => ({
+    project,
+    projectId,
+    source: "/",
+    exclude: [...DEFAULT_EXCLUDE],
+    support: [...DEFAULT_SUPPORT],
+    lastPull: "",
+    answersEtag: "",
+    rows: {}
+});
+
+export const rowStatus = (cat: Catalogue, row: Row): string => {
+    if (row.removedAt) {
+        return "removed";
+    }
+    if (matches(row.file, cat.exclude)) {
+        return "excluded";
+    }
+    if (row.kind === "support") {
+        return "support";
+    }
+    if (!row.etagImplemented) {
+        return "new";
+    }
+    return row.etagImplemented === row.etagPulled ? "implemented" : "pending";
+};
+
+export const kindFor = (cat: Catalogue, rel: string): Kind => (matches(rel, cat.support) ? "support" : "screen");
+
+const trimSlashes = (value: string): string => value.replace(/^\/+|\/+$/g, "");
+
+export const toSourceRel = (cat: Catalogue, projectPath: string): string | null => {
+    const source = trimSlashes(cat.source);
+    if (!source) {
+        return projectPath;
+    }
+    const prefix = `${source}/`;
+    return projectPath.startsWith(prefix) ? projectPath.slice(prefix.length) : null;
+};
+
+export const toProjectPath = (cat: Catalogue, rel: string): string => {
+    const source = trimSlashes(cat.source);
+    return source ? `${source}/${rel}` : rel;
+};
+
+const escapeCell = (value: string): string => value.replace(/\\/g, "\\\\").replace(/\|/g, "\\|");
+
+const splitRow = (line: string): string[] => {
+    const inner = line.slice(1, -1);
+    const cells: string[] = [];
+    let current = "";
+    for (let i = 0; i < inner.length; i++) {
+        const char = inner[i];
+        if (char === "\\" && i + 1 < inner.length) {
+            current += inner[i + 1];
+            i++;
+        } else if (char === "|") {
+            cells.push(current);
+            current = "";
+        } else {
+            current += char;
+        }
+    }
+    cells.push(current);
+    return cells.map(cell => (cell.length >= 2 ? cell.slice(1, -1) : cell.trim()));
+};
+
+const LIST_KEYS = new Set(["exclude", "support"]);
+
+export const parseCatalogue = (text: string): Catalogue => {
+    const lines = text.split("\n");
+    const end = lines.indexOf("---", 1);
+    if (lines[0] !== "---" || end < 0) {
+        throw new DesignError("catalogue.md: missing header block");
+    }
+    const data: Record<string, string | string[]> = {};
+    let key = "";
+    for (const line of lines.slice(1, end)) {
+        if (line.startsWith("  - ") && LIST_KEYS.has(key)) {
+            (data[key] as string[]).push(line.slice(4));
+            continue;
+        }
+        const colon = line.indexOf(":");
+        key = (colon < 0 ? line : line.slice(0, colon)).trim();
+        const value = colon < 0 ? "" : line.slice(colon + 1).trim();
+        data[key] = LIST_KEYS.has(key) ? [] : value;
+    }
+    const valueOf = (name: string): string => (typeof data[name] === "string" ? (data[name] as string) : "");
+    const list = (name: string): string[] => (Array.isArray(data[name]) ? (data[name] as string[]) : []);
+    const cat: Catalogue = {
+        project: valueOf("project"),
+        projectId: valueOf("project_id"),
+        source: valueOf("source") || "/",
+        exclude: list("exclude"),
+        support: list("support"),
+        lastPull: valueOf("last_pull"),
+        answersEtag: valueOf("answers_etag"),
+        rows: {}
+    };
+    for (const line of lines.slice(end + 1)) {
+        if (!line.startsWith("| ") || line.startsWith("| file |")) {
+            continue;
+        }
+        const [file, kind, etagPulled, pulledAt, etagImplemented, implementedAt, commit, removedAt] = splitRow(line);
+        cat.rows[file] = {
+            file,
+            kind: kind === "support" ? "support" : "screen",
+            etagPulled,
+            pulledAt,
+            etagImplemented,
+            implementedAt,
+            commit,
+            removedAt
+        };
+    }
+    return cat;
+};
+
+export const renderCatalogue = (cat: Catalogue): string => {
+    const out = [
+        "---",
+        `project: ${cat.project}`,
+        `project_id: ${cat.projectId}`,
+        `source: ${cat.source}`,
+        "exclude:",
+        ...cat.exclude.map(pattern => `  - ${pattern}`),
+        "support:",
+        ...cat.support.map(pattern => `  - ${pattern}`),
+        `last_pull: ${cat.lastPull}`,
+        `answers_etag: ${cat.answersEtag}`,
+        "---",
+        "",
+        `| ${COLUMNS.join(" | ")} |`,
+        `|${COLUMNS.map(() => "---").join("|")}|`
+    ];
+    for (const name of Object.keys(cat.rows).sort()) {
+        const row = cat.rows[name];
+        const values = [
+            row.file,
+            row.kind,
+            row.etagPulled,
+            row.pulledAt,
+            row.etagImplemented,
+            row.implementedAt,
+            row.commit,
+            row.removedAt,
+            rowStatus(cat, row)
+        ];
+        out.push(`| ${values.map(escapeCell).join(" | ")} |`);
+    }
+    return `${out.join("\n")}\n`;
+};
+
+export const loadCatalogue = (folder: string): Catalogue => {
+    const file = path.join(folder, "catalogue.md");
+    if (!isRegularFile(file)) {
+        throw new DesignError(`no catalogue.md in ${folder}`);
+    }
+    return parseCatalogue(fs.readFileSync(file, "utf8"));
+};
+
+export const saveCatalogue = (folder: string, cat: Catalogue): void => {
+    atomicWriteBytes(path.join(folder, "catalogue.md"), renderCatalogue(cat));
+};
