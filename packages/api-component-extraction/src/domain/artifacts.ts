@@ -336,6 +336,11 @@ export interface CropWarning {
 
 export interface SectionBox {
     box: Box;
+    /**
+     * Where the section paints, set only when that reaches past `box` — a logo hanging out of a
+     * header. The crop is taken from it; `box` stays the key that finds the section's node.
+     */
+    cropBox?: Box;
     /** Index of the section among the content root's children — a stable handle within the page. */
     index: number;
     /**

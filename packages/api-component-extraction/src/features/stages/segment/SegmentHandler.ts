@@ -126,7 +126,8 @@ class SegmentHandlerImpl implements StageHandler.Interface {
                     try {
                         const cropped = await cropFromScreenshot(
                             screenshot.value,
-                            section.box,
+                            // What the section paints, which can reach past its box (a hanging logo).
+                            section.cropBox ?? section.box,
                             DESKTOP_WIDTH,
                             CROP_MAX_HEIGHT
                         );

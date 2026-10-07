@@ -27,7 +27,9 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
         var count = 0;
         // position is here for segmentation, not for tokens: a fixed or sticky header is painted over
         // the content rather than stacked above it, and its box cannot say so on its own.
-        var STYLE_PROPS = ["backgroundColor","color","fontFamily","fontSize","fontWeight","lineHeight","letterSpacing","borderTopColor","borderTopWidth","borderRadius","boxShadow","paddingTop","paddingLeft","marginTop","gap","display","textAlign","position"];
+        // overflow likewise: whether an element's content can be drawn outside its box, which decides
+        // what a section's crop has to include.
+        var STYLE_PROPS = ["backgroundColor","color","fontFamily","fontSize","fontWeight","lineHeight","letterSpacing","borderTopColor","borderTopWidth","borderRadius","boxShadow","paddingTop","paddingLeft","marginTop","gap","display","textAlign","position","overflow"];
         var SKIP = { SCRIPT:1, STYLE:1, NOSCRIPT:1, TEMPLATE:1, SVG:1, PATH:1, LINK:1, META:1, HEAD:1, BR:1 };
 
         /*

@@ -1,4 +1,5 @@
 import type { Box, CapturedNode } from "~/domain/artifacts.js";
+import { paintedBox } from "./paintedBox.js";
 
 /**
  * Why a child of a section was not taken as a boundary of its own.
@@ -40,6 +41,8 @@ export interface SectionCandidate {
 /** A detected section boundary before its crop is produced (Segment attaches `cropRef`). */
 export interface DetectedSection {
     box: Box;
+    /** Where the section paints, when that reaches past its box; the crop is taken from it. */
+    cropBox?: Box;
     index: number;
     /** The child boundaries considered inside this section and rejected (W11.1). */
     candidates: SectionCandidate[];
@@ -320,9 +323,13 @@ export const detectSections = (root: CapturedNode, options: SegmentOptions): Det
             collectSections(child, out, options);
         }
     }
-    return out.map((section, index) => ({
-        box: section.node.box,
-        index,
-        candidates: section.candidates
-    }));
+    return out.map((section, index) => {
+        const painted = paintedBox(section.node, options.viewportWidth);
+        return {
+            box: section.node.box,
+            ...(painted ? { cropBox: painted } : {}),
+            index,
+            candidates: section.candidates
+        };
+    });
 };
