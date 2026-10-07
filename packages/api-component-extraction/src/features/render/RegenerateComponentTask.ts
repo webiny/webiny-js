@@ -27,6 +27,8 @@ import type {
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import {
     combineValidation,
+    sourceTextPool,
+    validateNoInventedText,
     validateRenderedFiles,
     validateRenderedValues,
     validateContractConformance,
@@ -139,6 +141,7 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
         // Re-validate. Source texts come from the Plan artifact (as in Generate); prop names are already
         // on the component. Token binding needs the pinned theme's valid variables.
         let sourceTexts: string[] = [];
+        let textPool: string[] = [];
         const planKey = stageEntry(run.stages, "plan")?.artifacts.plan;
         if (planKey) {
             const plan = await this.artifactStore.getJson<PlanArtifact>(planKey);
@@ -147,6 +150,7 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
                     item => item.signature === input.signature
                 );
                 sourceTexts = planned?.sourceTexts ?? [];
+                textPool = planned ? sourceTextPool(planned) : [];
             }
         }
 
@@ -176,10 +180,14 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
                 source,
                 css: css || undefined
             });
-            const rendered = renderComponentMarkup(bundled.bundled, component.name, component.props);
+            const rendered = renderComponentMarkup(
+                bundled.bundled,
+                component.name,
+                component.props
+            );
             renderedText = rendered.text;
             renderedMarkup = rendered.markup;
-                renderedFiles = rendered.files;
+            renderedFiles = rendered.files;
             renderedValues = flattenObservedValues(component.props);
         } catch (error) {
             bundling = { passed: false, failures: [(error as Error).message] };
@@ -187,11 +195,15 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
 
         const validation = {
             bundling,
-            textPreservation: validateTextPreservation(
-                textsToPreserve(sourceTexts).slice(0, PRESERVED_TEXT_LIMIT),
-                renderedText,
-                renderedValues,
-                source
+            // The section's text is on the component, and no text the section does not show.
+            textPreservation: combineValidation(
+                validateTextPreservation(
+                    textsToPreserve(sourceTexts).slice(0, PRESERVED_TEXT_LIMIT),
+                    renderedText,
+                    renderedValues,
+                    source
+                ),
+                validateNoInventedText(renderedMarkup, textPool)
             ),
             contractConformance: combineValidation(
                 validateContractConformance(

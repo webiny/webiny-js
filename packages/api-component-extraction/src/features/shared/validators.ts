@@ -254,7 +254,8 @@ export const validateRenderedFiles = (
     files: { path: string; urls: string[]; list: boolean }[]
 ): ValidationResult => {
     // React escapes `&` in attributes, and Cloudinary URLs are full of them.
-    const shown = (url: string) => markup.includes(url) || markup.includes(url.replace(/&/g, "&amp;"));
+    const shown = (url: string) =>
+        markup.includes(url) || markup.includes(url.replace(/&/g, "&amp;"));
     const failures = files
         .filter(file => (file.list ? !file.urls.some(shown) : !file.urls.every(shown)))
         .map(
@@ -262,6 +263,162 @@ export const validateRenderedFiles = (
                 `image input "${file.path}" was given ${file.urls[0]} and the component did not render it — a file input's value is \`{ url }\` and nothing else: read \`${file.path.replace(/\[\]/g, "")}.url\``
         );
     return { passed: failures.length === 0, failures };
+};
+
+/** The text a section shows: what an invented fragment is measured against. */
+export const sourceTextPool = (planned: {
+    sourceTexts?: string[];
+    clusterTexts?: string[];
+    props?: {
+        observedValues?: string[];
+        observedStructured?: unknown[];
+        fields?: unknown[];
+    }[];
+}): string[] => {
+    const out: string[] = [...(planned.sourceTexts ?? []), ...(planned.clusterTexts ?? [])];
+    const fromProps = (props: typeof planned.props): void => {
+        for (const prop of props ?? []) {
+            out.push(...(prop.observedValues ?? []));
+            for (const value of (prop.observedStructured ?? []) as Record<string, unknown>[]) {
+                for (const key of ["label", "alt"]) {
+                    if (typeof value[key] === "string") {
+                        out.push(value[key] as string);
+                    }
+                }
+                for (const field of Object.values(
+                    (value.fields ?? {}) as Record<string, unknown>
+                )) {
+                    if (typeof field === "string") {
+                        out.push(field);
+                    } else if (field && typeof (field as { label?: unknown }).label === "string") {
+                        out.push((field as { label: string }).label);
+                    }
+                }
+            }
+            fromProps(prop.fields as typeof planned.props);
+        }
+    };
+    fromProps(planned.props);
+    return out;
+};
+
+const decodeEntities = (text: string): string =>
+    text
+        .replace(/&nbsp;/g, " ")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#x27;|&#39;/g, "'")
+        .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+        .replace(/&amp;/g, "&");
+
+const normalizeWords = (text: string): string =>
+    text
+        .toLowerCase()
+        .normalize("NFKD")
+        .replace(/[\u2018\u2019]/g, "'")
+        .replace(/[^a-z0-9']+/g, " ")
+        .trim();
+
+/** Form furniture: a field's label or option is the page's placeholder, which the capture does not read. */
+const FORM_TAGS = new Set(["option", "label", "select", "textarea", "legend"]);
+const VOID_TAGS = new Set(["img", "br", "hr", "input", "meta", "link", "source", "wbr"]);
+/** Words too common to say whether a fragment came from the page. */
+const STOP_WORDS = new Set([
+    "the",
+    "and",
+    "for",
+    "you",
+    "your",
+    "our",
+    "with",
+    "are",
+    "all",
+    "from",
+    "that",
+    "this",
+    "into",
+    "out",
+    "get",
+    "now"
+]);
+/** A fragment counts as the page's when this share of its words is the page's. */
+const KNOWN_WORDS = 0.8;
+
+/** Each text run in rendered markup, outside form furniture. */
+const renderedFragments = (markup: string): string[] => {
+    const fragments: string[] = [];
+    const open: string[] = [];
+    for (const part of markup.split(/(<[^>]+>)/)) {
+        if (part.startsWith("<")) {
+            const tag = /^<\/?([a-zA-Z0-9-]+)/.exec(part)?.[1]?.toLowerCase();
+            if (!tag) {
+                continue;
+            }
+            if (part.startsWith("</")) {
+                const at = open.lastIndexOf(tag);
+                if (at >= 0) {
+                    open.length = at;
+                }
+            } else if (!part.endsWith("/>") && !VOID_TAGS.has(tag)) {
+                open.push(tag);
+            }
+            continue;
+        }
+        const text = decodeEntities(part).replace(/\s+/g, " ").trim();
+        if (text && !open.some(tag => FORM_TAGS.has(tag))) {
+            fragments.push(text);
+        }
+    }
+    return fragments;
+};
+
+/**
+ * No text the page does not show.
+ *
+ * Text preservation asks whether the section's text is on the rendered component; nothing asked the
+ * converse, and the model fills a sparse crop with plausible copy. Freehill's header gained an "Apply
+ * Now" button in two separate runs, and a photo-only block gained a panel reading "A Place to Call
+ * Home" with a sentence of marketing copy — every check green.
+ *
+ * Each text run in the render is measured against the section's own text, its other instances' and
+ * the values Plan observed. A run of two or more words counts as the page's when it appears there, or
+ * when nearly all its words do — so a footer's "Copyright © 2026 71 Westland Apartments", assembled
+ * from separate source runs, is not invented. Form labels and options are left out: a field's label is
+ * a placeholder on the page, and the capture does not read placeholders.
+ *
+ * Swept over 93 generated components: it flags the three that invented copy, and two whose text is
+ * real but not captured as text — a date field's placeholder, and words drawn inside a floor-plan image.
+ */
+export const validateNoInventedText = (markup: string, pool: string[]): ValidationResult => {
+    if (!markup) {
+        return { passed: true, failures: [] };
+    }
+    const corpus = ` | ${pool.map(normalizeWords).join(" | ")} | `;
+    const words = new Set(corpus.split(/[ |]+/).filter(Boolean));
+    const invented = [...new Set(renderedFragments(markup))].filter(fragment => {
+        const normalized = normalizeWords(fragment);
+        const lettered = normalized.split(" ").filter(word => /[a-z]/.test(word));
+        if (
+            lettered.length < 2 ||
+            corpus.includes(` ${normalized} `) ||
+            corpus.includes(normalized)
+        ) {
+            return false;
+        }
+        const content = lettered.filter(word => word.length >= 3 && !STOP_WORDS.has(word));
+        if (content.length === 0) {
+            return true;
+        }
+        return content.filter(word => words.has(word)).length / content.length < KNOWN_WORDS;
+    });
+    return {
+        passed: invented.length === 0,
+        failures: invented.map(
+            fragment =>
+                `text not on the source page: "${fragment.slice(0, 120)}" — remove it; use only the section's own text`
+        )
+    };
 };
 
 /** Two results as one: passed only if both did. */

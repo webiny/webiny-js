@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+    validateNoInventedText,
     validateRenderedFiles,
     validateRenderedValues,
     validateContractConformance,
@@ -159,8 +160,10 @@ describe("validateRenderedValues", () => {
 });
 
 describe("validateRenderedFiles", () => {
-    const hero = "https://res.cloudinary.com/g5-assets-cld/image/upload/q_auto,f_auto/resize_33_sp1b2p.jpg";
-    const pool = "https://res.cloudinary.com/g5-assets-cld/image/upload/q_auto,f_auto/resize_17_j8yvlb.jpg";
+    const hero =
+        "https://res.cloudinary.com/g5-assets-cld/image/upload/q_auto,f_auto/resize_33_sp1b2p.jpg";
+    const pool =
+        "https://res.cloudinary.com/g5-assets-cld/image/upload/q_auto,f_auto/resize_17_j8yvlb.jpg";
 
     it("fails an image input whose URL the component never put on the page", () => {
         // Freehill's Amenities List: defaults of { url, src }, read as `.src`.
@@ -185,6 +188,55 @@ describe("validateRenderedFiles", () => {
             validateRenderedFiles(`<img src="${url.replace(/&/g, "&amp;")}"/>`, [
                 { path: "image", urls: [url], list: false }
             ]).passed
+        ).toBe(true);
+    });
+});
+
+// Text from real generated components and the sections they came from.
+describe("validateNoInventedText", () => {
+    it("fails copy the section does not show", () => {
+        // Freehill's photo-only block, generated with a text panel.
+        const result = validateNoInventedText(
+            '<section class="iwt"><img src="https://g5-assets-cld-res.cloudinary.com/x.jpg" alt=""/><div class="iwt-panel"><h2>A Place to Call Home</h2><p>Discover a community designed for modern living, where comfort meets convenience in every detail.</p></div></section>',
+            [
+                "Freehill Street Lofts",
+                "Two people reviewing a lease agreement at Freehill Street Lofts"
+            ]
+        );
+        expect(result.passed).toBe(false);
+        expect(result.failures).toHaveLength(2);
+        expect(result.failures[0]).toContain('"A Place to Call Home"');
+    });
+
+    it("fails a button the header never had", () => {
+        // Freehill's header: a logo and nothing else, in two separate runs given an "Apply Now".
+        const result = validateNoInventedText(
+            '<header class="site-header"><img src="https://res.cloudinary.com/Logo_xkmkne.png" alt="Freehill Street Lofts"/><a class="site-header-nav-link" href="https://promo.freehillstreetlofts.com/">Apply Now</a></header>',
+            ["Freehill Street Lofts"]
+        );
+        expect(result.failures).toEqual([
+            'text not on the source page: "Apply Now" — remove it; use only the section\'s own text'
+        ]);
+    });
+
+    it("passes text assembled from the section's own runs", () => {
+        // 71 Westland's footer: "©", "2026" and the name are separate runs on the page.
+        expect(
+            validateNoInventedText("<p>Copyright © 2026 71 Westland Apartments</p>", [
+                "Copyright",
+                "©",
+                "2026",
+                "71 Westland Apartments"
+            ]).passed
+        ).toBe(true);
+    });
+
+    it("leaves form labels and options alone, which the page holds as placeholders", () => {
+        expect(
+            validateNoInventedText(
+                "<form><label>First Name</label><select><option>-Select State-</option></select></form>",
+                []
+            ).passed
         ).toBe(true);
     });
 });

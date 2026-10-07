@@ -75,4 +75,8 @@ describe("buildComponentPrompt", () => {
             "a `logo` object with a file field `src` is read as `logo.src.url`, never `logo.src`."
         );
     });
+
+    it("tells the model to show no text the section does not have", () => {
+        expect(prompt).toContain("Show no other text.");
+    });
 });

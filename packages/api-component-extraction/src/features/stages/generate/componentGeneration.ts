@@ -18,6 +18,8 @@ import type {
 import { stageArtifactKey } from "~/constants.js";
 import {
     combineValidation,
+    sourceTextPool,
+    validateNoInventedText,
     validateRenderedFiles,
     validateRenderedValues,
     validateContractConformance,
@@ -404,7 +406,11 @@ const buildPrompt = (
         "Preserve this text content exactly:",
         ...textsToPreserve(component.sourceTexts)
             .slice(0, PRESERVED_TEXT_LIMIT)
-            .map(text => `- ${text}`)
+            .map(text => `- ${text}`),
+        "",
+        "Show no other text. Do not add a heading, a button, a caption or a sentence the section does",
+        "not have — not even a plausible one. Where the crop shows only an image or a logo, the",
+        "component shows only that."
     ];
 
     const observed = component.props.flatMap(prop => structuredLines(prop, "- "));
@@ -699,11 +705,15 @@ export const generateComponentAttempts = async (
 
         const validation = {
             bundling,
-            textPreservation: validateTextPreservation(
-                textsToPreserve(planned.sourceTexts).slice(0, PRESERVED_TEXT_LIMIT),
-                renderedText,
-                renderedValues,
-                output.source
+            // The section's text is on the component, and no text the section does not show.
+            textPreservation: combineValidation(
+                validateTextPreservation(
+                    textsToPreserve(planned.sourceTexts).slice(0, PRESERVED_TEXT_LIMIT),
+                    renderedText,
+                    renderedValues,
+                    output.source
+                ),
+                validateNoInventedText(renderedMarkup, sourceTextPool(planned))
             ),
             // The declared props are used, and the values they carry render as values.
             contractConformance: combineValidation(
