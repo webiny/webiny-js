@@ -44,6 +44,16 @@ const commands: Record<string, Command> = {
         usage: "list-folders",
         options: {},
         run: () => lib.cmdListFolders()
+    },
+    plan: {
+        usage: "plan <folder> <listing> --out <plan.json>",
+        options: { out: { type: "string" } },
+        run: (positionals, values) => {
+            if (positionals.length !== 2) {
+                throw new lib.DesignError(`usage: ${commands.plan.usage}`);
+            }
+            lib.cmdPlan(positionals[0], positionals[1], required(values, "out", commands.plan.usage));
+        }
     }
 };
 

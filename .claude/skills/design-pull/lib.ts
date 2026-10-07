@@ -478,3 +478,154 @@ export const cmdListFolders = (): void => {
     }
     printJson(found);
 };
+
+// ---------------------------------------------------------------- commands: pull
+
+export interface AnswersResult {
+    answered: number[];
+    changed: number[];
+    unknown: number[];
+}
+
+export interface PullPlan {
+    listed_at: string;
+    entries: Listing;
+    adopted: string[];
+    mcp: string[];
+    manual: string[];
+    unchanged: string[];
+    removed: string[];
+    excluded: string[];
+    rejected: string[];
+    answers: ListingEntry | null;
+    imported: string[];
+    failed: string[];
+    reconciled: string[];
+    answers_result: AnswersResult | null;
+}
+
+export const loadPlan = (file: string): PullPlan => JSON.parse(fs.readFileSync(file, "utf8"));
+
+export const savePlan = (file: string, plan: PullPlan): void => {
+    atomicWriteBytes(file, JSON.stringify(plan, null, 2));
+};
+
+/** The mirrored copy of a file, when it is a regular file (never a symlink) inside files/. */
+export const localFile = (folder: string, rel: string): string | null => {
+    let file: string;
+    try {
+        file = safeJoin(path.join(folder, "files"), rel);
+    } catch (error) {
+        if (error instanceof DesignError) {
+            return null;
+        }
+        throw error;
+    }
+    return isRegularFile(file) ? file : null;
+};
+
+const summary = (plan: PullPlan): Omit<PullPlan, "entries"> => {
+    const { entries: _entries, ...rest } = plan;
+    return rest;
+};
+
+export const cmdPlan = (folder: string, listingFile: string, out: string): void => {
+    const cat = loadCatalogue(folder);
+    const listing = loadListing(listingFile);
+    const plan: PullPlan = {
+        listed_at: nowIso(),
+        entries: {},
+        adopted: [],
+        mcp: [],
+        manual: [],
+        unchanged: [],
+        removed: [],
+        excluded: [],
+        rejected: [],
+        answers: listing[ANSWERS_PATH] ?? null,
+        imported: [],
+        failed: [],
+        reconciled: [],
+        answers_result: null
+    };
+
+    const candidates: Listing = {};
+    for (const [projectPath, entry] of Object.entries(listing)) {
+        if (projectPath === ANSWERS_PATH) {
+            continue;
+        }
+        const rel = toSourceRel(cat, projectPath);
+        if (rel === null) {
+            continue;
+        }
+        try {
+            validateRelPath(rel);
+        } catch {
+            plan.rejected.push(projectPath);
+            continue;
+        }
+        if (matches(rel, cat.exclude)) {
+            const row = cat.rows[rel];
+            if (row && !row.removedAt) {
+                plan.excluded.push(rel);
+            }
+            continue;
+        }
+        candidates[rel] = entry;
+    }
+
+    const groups = new Map<string, string[]>();
+    for (const rel of Object.keys(candidates)) {
+        const key = collisionKey(rel);
+        groups.set(key, [...(groups.get(key) ?? []), rel]);
+    }
+    for (const group of groups.values()) {
+        if (group.length > 1) {
+            for (const rel of group) {
+                plan.rejected.push(rel);
+                delete candidates[rel];
+            }
+        }
+    }
+
+    for (const rel of Object.keys(candidates).sort()) {
+        const entry = candidates[rel];
+        plan.entries[rel] = entry;
+        const kind = kindFor(cat, rel);
+        let row: Row | undefined = cat.rows[rel];
+        if (row) {
+            row.kind = kind;
+        }
+        const local = localFile(folder, rel);
+        const isNew = !row || Boolean(row.removedAt);
+        if (row && !isNew && row.etagPulled === entry.etag && local) {
+            plan.unchanged.push(rel);
+            continue;
+        }
+        if (local && fs.statSync(local).size === entry.size) {
+            const placedAfterPull =
+                !row || !row.pulledAt || fs.statSync(local).mtimeMs > parseIso(row.pulledAt).getTime();
+            if (placedAfterPull) {
+                row = row ?? createRow(rel);
+                row.kind = kind;
+                row.etagPulled = entry.etag;
+                row.pulledAt = nowIso();
+                row.removedAt = "";
+                cat.rows[rel] = row;
+                plan.adopted.push(rel);
+                continue;
+            }
+        }
+        (isText(rel) && entry.size <= MCP_LIMIT ? plan.mcp : plan.manual).push(rel);
+    }
+
+    for (const rel of Object.keys(cat.rows).sort()) {
+        if (!cat.rows[rel].removedAt && !(toProjectPath(cat, rel) in listing)) {
+            plan.removed.push(rel);
+        }
+    }
+
+    saveCatalogue(folder, cat);
+    savePlan(out, plan);
+    printJson(summary(plan));
+};
