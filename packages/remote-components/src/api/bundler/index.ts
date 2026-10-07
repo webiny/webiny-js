@@ -1,6 +1,7 @@
 export { bundleComponent, bundleComponents } from "./bundleComponent.js";
 export { validateComponentSource } from "./validateComponentSource.js";
 export {
+    renderComponentMarkup,
     renderComponentText,
     propValuesFromObservations,
     ComponentRenderError

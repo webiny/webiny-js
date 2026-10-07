@@ -1,0 +1,68 @@
+export default function HeroBanner({ inputs: { eyebrowText, title, cta, images } }) {
+    const slides = images && images.length ? images : [];
+    const [activeIndex, setActiveIndex] = React.useState(0);
+
+    React.useEffect(() => {
+        if (slides.length <= 1) return;
+        const interval = setInterval(() => {
+            setActiveIndex((prev) => (prev + 1) % slides.length);
+        }, 6000);
+        return () => clearInterval(interval);
+    }, [slides.length]);
+
+    return (
+        <section className="hero-banner">
+            <div className="hero-banner-images">
+                {slides.map((img, index) => (
+                    <div
+                        key={index}
+                        className={`hero-banner-image ${index === activeIndex ? "is-active" : ""}`}
+                        style={{ backgroundImage: img && img.src ? `url(${img.src})` : undefined }}
+                        role="img"
+                        aria-label={img && img.alt ? img.alt : ""}
+                    />
+                ))}
+                <div className="hero-banner-overlay" />
+            </div>
+            <div className="hero-banner-content">
+                {eyebrowText ? <p className="hero-banner-eyebrow">{eyebrowText}</p> : null}
+                <h1 className="hero-banner-title">{title}</h1>
+                {cta && cta.label ? (
+                    <a href={cta.url || "#"} className="hero-banner-cta">{cta.label}</a>
+                ) : null}
+            </div>
+        </section>
+    );
+}
+
+export const manifest = {
+    name: "Custom/HeroBanner",
+    label: "Hero Banner",
+    applyDefaultStyles: false,
+    aiContext: "A hero banner section for a residential/apartment website with a rotating background image, eyebrow text, bold title, and a call-to-action button. Use as the top section of a landing page.",
+    inputs: [
+        { name: "eyebrowText", factory: "createTextInput", params: { label: "Eyebrow Text", defaultValue: "Come Home to a" } },
+        { name: "title", factory: "createTextInput", params: { label: "Title", defaultValue: "Comfortable Life in Bridgeport" } },
+        { name: "cta", factory: "createObjectInput", params: { label: "Call to Action", fields: [
+            { name: "label", factory: "createTextInput", params: { label: "Label", defaultValue: "View Floor Plans" } },
+            { name: "url", factory: "createTextInput", params: { label: "URL", defaultValue: "#" } }
+        ] } },
+        { name: "images", factory: "createObjectInput", params: { label: "Background Images", list: true, fields: [
+            { name: "src", factory: "createFileInput", params: { label: "Image", allowedFileTypes: ["image/*"] } },
+            { name: "alt", factory: "createTextInput", params: { label: "Alt Text" } }
+        ] } }
+    ],
+    defaults: {
+        inputs: {
+            cta: {
+                label: "View Floor Plans",
+                url: "https://www.parkcityplace.org/apartments/ct/bridgeport/floor-plans"
+            },
+            images: [
+                { src: { url: "https://g5-assets-cld-res.cloudinary.com/image/upload/x_0,y_96,h_850,w_2000,c_crop/q_auto,f_auto,c_fill,g_center,h_670,w_1575/v1773912127/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/GettyImages-2165184721_z0zxbo.jpg" }, alt: "Apartments at Park City Place in Bridgeport, Connecticut" },
+                { src: { url: "https://g5-assets-cld-res.cloudinary.com/image/upload/x_0,y_344,h_850,w_2000,c_crop/q_auto,f_auto,c_fill,g_center,h_670,w_1575/v1773912175/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/GettyImages-1299523542_qiaq2u.jpg" }, alt: "Park City Place apartments in Bridgeport, Connecticut" },
+                { src: { url: "https://g5-assets-cld-res.cloudinary.com/image/upload/x_0,y_130,h_850,w_2000,c_crop/q_auto,f_auto,c_fill,g_center,h_670,w_1575/v1773912209/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/GettyImages-2150361546_ffcips.jpg" }, alt: "Bridgeport, Connecticut apartments" }
+            ]
+        }
+    }
+};

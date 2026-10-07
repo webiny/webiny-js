@@ -10,7 +10,7 @@ import { stageEntry } from "~/domain/ledger.js";
 import { readComponent, toComponentRef } from "~/domain/generatedComponents.js";
 import {
     bundleComponent,
-    renderComponentText
+    renderComponentMarkup
 } from "@webiny/remote-components/api/bundler/index.js";
 import { flattenObservedValues } from "~/features/stages/generate/componentGeneration.js";
 import {
@@ -25,6 +25,8 @@ import type {
 } from "~/domain/artifacts.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import {
+    combineValidation,
+    validateRenderedValues,
     validateContractConformance,
     validateTextPreservation,
     validateTokenBinding,
@@ -161,6 +163,7 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
         // Same checks Generate runs, including the render: a refined component is validated the way a
         // generated one is, or the operator gets a different verdict for the same code.
         let renderedText = "";
+        let renderedMarkup = "";
         let renderedValues: string[] = [];
         let bundling: ValidationResult = { passed: true, failures: [] };
 
@@ -170,7 +173,9 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
                 source,
                 css: css || undefined
             });
-            renderedText = renderComponentText(bundled.bundled, component.name, component.props);
+            const rendered = renderComponentMarkup(bundled.bundled, component.name, component.props);
+            renderedText = rendered.text;
+            renderedMarkup = rendered.markup;
             renderedValues = flattenObservedValues(component.props);
         } catch (error) {
             bundling = { passed: false, failures: [(error as Error).message] };
@@ -184,9 +189,12 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
                 renderedValues,
                 source
             ),
-            contractConformance: validateContractConformance(
-                component.props.map(prop => prop.name),
-                source
+            contractConformance: combineValidation(
+                validateContractConformance(
+                    component.props.map(prop => prop.name),
+                    source
+                ),
+                validateRenderedValues(renderedMarkup)
             ),
             tokenBinding: manifestAvailable
                 ? validateTokenBinding(css, validVariables)

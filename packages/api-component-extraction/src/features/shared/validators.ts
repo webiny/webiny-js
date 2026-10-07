@@ -210,6 +210,43 @@ export const validateContractConformance = (
 };
 
 /**
+ * Values rendered as `[object Object]`: an object input used where a string belongs.
+ *
+ * The case it exists for is an image. A file input's value is an object (`{ url, ... }`), and a
+ * component that reads it as the URL — `src={logo.src}`, `url(${image.src})` — renders
+ * `[object Object]` into the attribute or the style, so the image is blank while every other check
+ * passes. Measured across five sites, that blanked a header logo, two hero backgrounds and four
+ * content photos. It is read off the component rendered with its values, so it sees what an instance
+ * would put on the page, wherever in the markup it lands.
+ */
+export const validateRenderedValues = (markup: string): ValidationResult => {
+    const failures = new Set<string>();
+    for (const match of markup.matchAll(/\[object Object\]/g)) {
+        const before = markup.slice(0, match.index);
+        const tagStart = before.lastIndexOf("<");
+        const inTag = tagStart > before.lastIndexOf(">");
+        const attribute = inTag ? /([a-zA-Z-]+)="[^"]*$/.exec(before)?.[1] : undefined;
+        const tag = inTag ? /^<([a-zA-Z0-9-]+)/.exec(before.slice(tagStart))?.[1] : undefined;
+        const where =
+            attribute === "style"
+                ? `the inline style of <${tag}>`
+                : attribute
+                  ? `the ${attribute} attribute of <${tag}>`
+                  : "the text";
+        failures.add(
+            `an object value rendered as "[object Object]" in ${where} — a file input's value is an object: read its URL as \`.url\` (e.g. \`image.url\`, or \`logo.src.url\` for a file field named src)`
+        );
+    }
+    return { passed: failures.size === 0, failures: [...failures] };
+};
+
+/** Two results as one: passed only if both did. */
+export const combineValidation = (a: ValidationResult, b: ValidationResult): ValidationResult => ({
+    passed: a.passed && b.passed,
+    failures: [...a.failures, ...b.failures]
+});
+
+/**
  * Token binding: every `var(--wby-*)` reference in the generated CSS resolves to a css variable present
  * in the theme manifest. The existing `validateComponentSource` checks structure only, not token names.
  */

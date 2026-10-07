@@ -201,7 +201,20 @@ export const renderComponentText = (
     bundled: string,
     componentName: string,
     observed: ObservedProp[]
-): string => {
+): string => renderComponentMarkup(bundled, componentName, observed).text;
+
+/**
+ * The same render, with the markup kept as well as its text.
+ *
+ * Text alone cannot show a value used wrongly in an attribute or a style: an image file input whose
+ * object lands in `src` or in `url(...)` renders as `[object Object]` there, which leaves the text
+ * untouched and the image blank.
+ */
+export const renderComponentMarkup = (
+    bundled: string,
+    componentName: string,
+    observed: ObservedProp[]
+): { markup: string; text: string } => {
     try {
         // A fresh context with nothing in it, for the same reason `buildComponentManifest` uses one:
         // this is model-generated code derived from captured third-party pages.
@@ -248,7 +261,7 @@ export const renderComponentText = (
             })
         );
 
-        return markupToText(markup);
+        return { markup, text: markupToText(markup) };
     } catch (error) {
         throw new ComponentRenderError(componentName, error);
     }

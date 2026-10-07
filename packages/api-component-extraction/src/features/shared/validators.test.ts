@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+    validateRenderedValues,
     validateContractConformance,
     validateTextPreservation,
     validateTokenBinding,
@@ -124,5 +125,34 @@ describe("textsToPreserve", () => {
 
     it("drops a non-string the artifact round-tripped to null", () => {
         expect(textsToPreserve(["Apply Now", null as unknown as string])).toEqual(["Apply Now"]);
+    });
+});
+
+// Markup rendered from real generated components (the Freehill header, the Park City hero).
+describe("validateRenderedValues", () => {
+    it("fails a file input's object rendered into an attribute, naming where", () => {
+        const result = validateRenderedValues(
+            '<header class="site-header" style="background:#26464b"><div class="site-header-inner"><a href="/" class="site-header-logo-link"><img class="site-header-logo" src="[object Object]" alt="Freehill Street Lofts"/></a></div></header>'
+        );
+        expect(result.passed).toBe(false);
+        expect(result.failures[0]).toContain("the src attribute of <img>");
+        expect(result.failures[0]).toContain("logo.src.url");
+    });
+
+    it("fails one rendered into an inline style, once however many times it repeats", () => {
+        const result = validateRenderedValues(
+            '<div class="hero-banner-image is-active" style="background-image:url([object Object])" role="img"></div><div class="hero-banner-image " style="background-image:url([object Object])" role="img"></div>'
+        );
+        expect(result.passed).toBe(false);
+        expect(result.failures).toHaveLength(1);
+        expect(result.failures[0]).toContain("the inline style of <div>");
+    });
+
+    it("passes markup whose values rendered as values", () => {
+        expect(
+            validateRenderedValues(
+                '<img class="site-header-logo" src="https://res.cloudinary.com/g5/Logo_xkmkne.png" alt="Freehill Street Lofts"/>'
+            ).passed
+        ).toBe(true);
     });
 });

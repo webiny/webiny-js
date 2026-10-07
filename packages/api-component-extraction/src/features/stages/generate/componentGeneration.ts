@@ -6,7 +6,7 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 import type { BlobStore } from "~/domain/stage.js";
 import {
     bundleComponent,
-    renderComponentText
+    renderComponentMarkup
 } from "@webiny/remote-components/api/bundler/index.js";
 import type {
     ComponentProp,
@@ -16,6 +16,8 @@ import type {
 } from "~/domain/artifacts.js";
 import { stageArtifactKey } from "~/constants.js";
 import {
+    combineValidation,
+    validateRenderedValues,
     validateContractConformance,
     validateTextPreservation,
     validateTokenBinding,
@@ -366,7 +368,12 @@ const buildPrompt = (
             ...observed,
             "",
             "Do NOT invent image URLs. No stock photography, no placeholder services, no URL that is",
-            "not in the list above — a component that ships one puts it in the customer's library."
+            "not in the list above — a component that ships one puts it in the customer's library.",
+            "",
+            "An image is a `createFileInput`, and its value is an object, not a URL: its default is",
+            '`{ url: "..." }`, and the component reads `.url` everywhere it uses it — `src={image.url}`,',
+            "`url(${image.url})` in a style. That holds when the file input is a field inside an object:",
+            "a `logo` object with a file field `src` is read as `logo.src.url`, never `logo.src`."
         );
     }
     // On a retry, tell the model precisely what the previous attempt got wrong so it can fix that rather
@@ -598,6 +605,7 @@ export const generateComponentAttempts = async (
          * done for components that are never promoted, and two bundles that could disagree.
          */
         let renderedText = "";
+        let renderedMarkup = "";
         let renderedValues: string[] = [];
         let bundling: ValidationResult = { passed: true, failures: [] };
 
@@ -610,7 +618,13 @@ export const generateComponentAttempts = async (
             renderedValues = flattenObservedValues(planned.props);
 
             try {
-                renderedText = renderComponentText(bundled.bundled, planned.name, planned.props);
+                const rendered = renderComponentMarkup(
+                    bundled.bundled,
+                    planned.name,
+                    planned.props
+                );
+                renderedText = rendered.text;
+                renderedMarkup = rendered.markup;
             } catch {
                 /*
                  * A render that throws is not a bundle failure and not a text failure.
@@ -641,9 +655,13 @@ export const generateComponentAttempts = async (
                 renderedValues,
                 output.source
             ),
-            contractConformance: validateContractConformance(
-                planned.props.map(prop => prop.name),
-                output.source
+            // The declared props are used, and the values they carry render as values.
+            contractConformance: combineValidation(
+                validateContractConformance(
+                    planned.props.map(prop => prop.name),
+                    output.source
+                ),
+                validateRenderedValues(renderedMarkup)
             ),
             tokenBinding: manifestAvailable
                 ? validateTokenBinding(output.css, validVariables)

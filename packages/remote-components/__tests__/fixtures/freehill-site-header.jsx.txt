@@ -1,0 +1,49 @@
+export default function SiteHeader({ inputs: { logo, navLink, background } }) {
+    return (
+        <header className="site-header" style={background ? { background } : undefined}>
+            <div className="site-header-inner">
+                <a href="/" className="site-header-logo-link">
+                    {logo && logo.src ? (
+                        <img className="site-header-logo" src={logo.src} alt={logo.alt || ""} />
+                    ) : null}
+                </a>
+                {navLink && navLink.label ? (
+                    <a className="site-header-nav-link" href={navLink.href || "#"}>
+                        {navLink.label}
+                    </a>
+                ) : null}
+            </div>
+        </header>
+    );
+}
+
+export const manifest = {
+    name: "Custom/SiteHeader",
+    label: "Site Header",
+    applyDefaultStyles: false,
+    aiContext: "A website header section with a logo and a single call-to-action navigation link. Use at the top of a page.",
+    inputs: [
+        { name: "logo", factory: "createObjectInput", params: { label: "Logo", fields: [
+            { name: "src", factory: "createFileInput", params: { label: "Image", allowedFileTypes: ["image/*"] } },
+            { name: "alt", factory: "createTextInput", params: { label: "Alt Text", defaultValue: "Freehill Street Lofts" } }
+        ] } },
+        { name: "navLink", factory: "createObjectInput", params: { label: "Navigation Link", fields: [
+            { name: "label", factory: "createTextInput", params: { label: "Label", defaultValue: "Apply Now" } },
+            { name: "href", factory: "createTextInput", params: { label: "URL", defaultValue: "https://promo.freehillstreetlofts.com/" } }
+        ] } },
+        { name: "background", factory: "createColorInput", params: { label: "Background Color", defaultValue: "#26464b" } }
+    ],
+    defaults: {
+        inputs: {
+            logo: {
+                src: { url: "https://res.cloudinary.com/g5-assets-cld/image/upload/e_replace_color:fff/x_0,y_0,h_304,w_958,c_crop/q_auto,f_auto,fl_lossy,g_center,h_120,w_378/g5/g5-c-5g6kt09bu-kastle-multifamily-managers-llc/g5-cl-1r9ej2k10t-kastle-multifamily-managers-llc-houston-tx/uploads/Logo_xkmkne.png" },
+                alt: "Freehill Street Lofts"
+            },
+            navLink: {
+                label: "Apply Now",
+                href: "https://promo.freehillstreetlofts.com/"
+            },
+            background: "#26464b"
+        }
+    }
+};
