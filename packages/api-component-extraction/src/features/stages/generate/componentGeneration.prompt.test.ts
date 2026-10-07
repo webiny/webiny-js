@@ -79,4 +79,44 @@ describe("buildComponentPrompt", () => {
     it("tells the model to show no text the section does not have", () => {
         expect(prompt).toContain("Show no other text.");
     });
+
+    it("states the section's geometry and each picture's role and tone", () => {
+        const withLayout = buildComponentPrompt(
+            {
+                ...footer,
+                layout: {
+                    width: 1440,
+                    height: 70,
+                    elements: [
+                        {
+                            kind: "image",
+                            label: '"Freehill Street Lofts"',
+                            x: 30,
+                            y: 15,
+                            width: 378,
+                            height: 120
+                        }
+                    ],
+                    omitted: 0
+                },
+                images: [
+                    {
+                        url: "https://res.cloudinary.com/g5-assets-cld/image/upload/Logo_xkmkne.png",
+                        role: "inline",
+                        width: 378,
+                        height: 120,
+                        coverage: 0.45,
+                        tone: "light",
+                        transparent: true
+                    }
+                ]
+            } as unknown as PlannedComponent,
+            new Map()
+        );
+        expect(withLayout).toContain("The section measures 1440x70px.");
+        expect(withLayout).toContain('- image "Freehill Street Lofts" at 30,15 — 378x120');
+        expect(withLayout).toContain(
+            "light on a transparent background — it is invisible on a light surface"
+        );
+    });
 });

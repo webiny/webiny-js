@@ -249,6 +249,70 @@ export const unboundImageLines = (component: PlannedComponent): string[] => {
 };
 
 /**
+ * The section's measured geometry: its size and where each element sits.
+ *
+ * Without it the model sizes everything from a downscaled picture: Freehill's 340x108 header logo came
+ * out at a third of that, and a fifth of the baseline's components rendered outside 0.67-1.5x of their
+ * section's height.
+ */
+export const layoutLines = (component: PlannedComponent): string[] => {
+    const layout = component.layout;
+    if (!layout || layout.elements.length === 0) {
+        return [];
+    }
+    return [
+        "",
+        `The section measures ${layout.width}x${layout.height}px. Its elements, in px from the section's top-left`,
+        "(x,y and width x height), in reading order:",
+        ...layout.elements.map(
+            element =>
+                `- ${element.kind} ${element.label} at ${element.x},${element.y} — ${element.width}x${element.height}`
+        ),
+        ...(layout.omitted > 0 ? [`(${layout.omitted} smaller text element(s) not listed.)`] : []),
+        "",
+        "Match these sizes and positions — the section's height, each picture's size, where text sits",
+        "and how wide it runs. Use relative units where the layout must stretch, but keep the proportions."
+    ];
+};
+
+/**
+ * The section's pictures, by the part each plays, with tone.
+ *
+ * The crop cannot say whether a photograph is a backdrop or content, and it cannot say that a logo is
+ * white on transparent: Freehill's footer put its white logo on a white panel.
+ */
+export const imageFactLines = (component: PlannedComponent): string[] => {
+    const images = component.images ?? [];
+    if (images.length === 0) {
+        return [];
+    }
+    const role = {
+        background: "the section's background (CSS background-image)",
+        "fills-section": "covers the section, behind its content",
+        inline: "an element in the section"
+    } as const;
+    const tone = (image: (typeof images)[number]) => {
+        if (!image.tone) {
+            return "";
+        }
+        const base = `${image.tone}${image.transparent ? " on a transparent background" : ""}`;
+        return image.tone === "light" && image.transparent
+            ? `, ${base} — it is invisible on a light surface; keep it on the dark colour the section shows behind it`
+            : image.tone === "dark" && image.transparent
+              ? `, ${base} — keep it on a light surface`
+              : `, ${base}`;
+    };
+    return [
+        "",
+        "The pictures in this section, largest first — the part each plays and the size it is drawn at:",
+        ...images.map(
+            image =>
+                `- ${image.url} — ${role[image.role]}, ${image.width}x${image.height}px (${Math.round(image.coverage * 100)}% of the section)${tone(image)}`
+        )
+    ];
+};
+
+/**
  * The section's icon-font icons, by name.
  *
  * The page draws them with its own icon font, which the component will not have, so there is nothing
@@ -402,6 +466,8 @@ const buildPrompt = (
         ...iconLines(component),
         ...typeScaleLines(component),
         ...alignmentLines(component),
+        ...layoutLines(component),
+        ...imageFactLines(component),
         "",
         "Preserve this text content exactly:",
         ...textsToPreserve(component.sourceTexts)

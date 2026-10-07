@@ -18,6 +18,8 @@ import { bindObservedValues } from "./bindObservedValues.js";
 import { sectionBackgroundImages } from "./sectionBackgroundImages.js";
 import { sectionUnboundImages } from "./sectionUnboundImages.js";
 import { sectionIcons } from "./sectionIcons.js";
+import { sectionImages, sectionLayout } from "./sectionLayout.js";
+import { createToneReader } from "./imageTone.js";
 import { sectionTextAlignment } from "./sectionTextAlignment.js";
 import { sectionTypeScale } from "./sectionTypeScale.js";
 import { findNodeByBox } from "../cluster/sectionNode.js";
@@ -126,6 +128,9 @@ class PlanHandlerImpl implements StageHandler.Interface {
             const tree = treeCache.get(page.treeRef) ?? null;
             return tree ? findNodeByBox(tree, section.box) : null;
         };
+
+        // Pictures are measured once per URL for the whole stage: a logo repeats on every page.
+        const readTone = createToneReader();
 
         let manifest: ThemeManifest | null = null;
         const manifestResult = await this.manifestResolver.resolve(
@@ -300,6 +305,17 @@ class PlanHandlerImpl implements StageHandler.Interface {
                                 ? sectionUnboundImages(nodes[0], contract.props)
                                 : [],
                             icons: nodes[0] ? sectionIcons(nodes[0]) : [],
+                            ...(nodes[0]
+                                ? {
+                                      layout: sectionLayout(nodes[0]),
+                                      images: await Promise.all(
+                                          sectionImages(nodes[0]).map(async image => ({
+                                              ...image,
+                                              ...((await readTone(image.url)) ?? {})
+                                          }))
+                                      )
+                                  }
+                                : {}),
                             textCoverage: coverMemberTexts(cluster.cluster.members, contract.props)
                         });
                     }

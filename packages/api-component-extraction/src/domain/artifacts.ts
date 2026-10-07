@@ -120,6 +120,40 @@ export interface Box {
  * the raw DOM, which is a separate compressed cold artifact.
  */
 /** A background image a section paints, with the area it covers. Derived in Plan. */
+/** One element of a section's layout, in px from the section's top-left. See `sectionLayout`. */
+export interface LayoutElement {
+    kind: "text" | "image" | "background" | "icon" | "field";
+    /** Quoted text, an image's alt or file name, an icon's name, a field's tag. */
+    label: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
+export interface SectionLayout {
+    width: number;
+    height: number;
+    elements: LayoutElement[];
+    /** Elements left out past the cap (the smallest text first). */
+    omitted: number;
+}
+
+/** A picture in a section: the part it plays, its drawn size, and its tone. See `sectionImages`. */
+export interface SectionImageFact {
+    url: string;
+    alt?: string;
+    /** A CSS background, an inline picture covering most of the section, or an element in it. */
+    role: "background" | "fills-section" | "inline";
+    width: number;
+    height: number;
+    /** Share of the section's area the picture covers, 0-1. */
+    coverage: number;
+    /** From the file's opaque pixels; absent when the file could not be read. */
+    tone?: "light" | "dark" | "mid";
+    transparent?: boolean;
+}
+
 /** An icon-font icon a section shows: what it is for, and where it links. */
 export interface SectionIcon {
     label: string;
@@ -743,6 +777,10 @@ export interface PlannedComponent {
     unboundImages?: SectionImage[];
     /** The reference section's icon-font icons, by name. See `sectionIcons`. Absent on older plans. */
     icons?: SectionIcon[];
+    /** The reference section's size and where its elements sit. Absent on older plans. */
+    layout?: SectionLayout;
+    /** The reference section's pictures: role, drawn size, tone. Absent on older plans. */
+    images?: SectionImageFact[];
     /**
      * Whether the props can hold every member's text.
      *
