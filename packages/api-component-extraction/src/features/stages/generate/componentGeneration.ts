@@ -139,17 +139,38 @@ const typeScaleLines = (component: PlannedComponent): string[] => {
     if (scale.length === 0) {
         return [];
     }
-    const lines = scale.map(entry => {
+    const lines = scale.flatMap(entry => {
         const line = entry.lineHeight ? `, line height ${entry.lineHeight}px` : "";
         const used = `${entry.elements} element${entry.elements === 1 ? "" : "s"}`;
         const how = entry.token
             ? `use var(${entry.token.cssVariable})`
             : `no theme variable is near this size — use ${entry.fontSize}px directly`;
-        return `- ${entry.fontSize}px${line} (${used}) — ${how}`;
+        const example = entry.example ? ` "${entry.example}"` : "";
+        const style = [
+            entry.fontWeight ? `weight ${entry.fontWeight}` : null,
+            entry.textTransform
+                ? `${entry.textTransform} (text-transform: ${entry.textTransform})`
+                : null,
+            entry.letterSpacing ? `letter-spacing ${entry.letterSpacing}px` : null,
+            entry.italic ? "italic" : null
+        ].filter(Boolean);
+        const family = entry.fontFamily
+            ? entry.fontFamilyToken
+                ? `font-family: var(${entry.fontFamilyToken.cssVariable})`
+                : `font-family: ${entry.fontFamily} — the theme has no variable for it, so set it as given`
+            : null;
+        return [
+            `- ${entry.fontSize}px${line} (${used}${example}) — ${how}`,
+            ...(style.length > 0 || family
+                ? [`  ${[...style, ...(family ? [family] : [])].join("; ")}`]
+                : [])
+        ];
     });
     return [
         "",
-        "The type sizes this section measured, largest first. Match them:",
+        "The type this section measured, largest first — size, then the style that sets each apart. Match",
+        "them, including case: text the page displays in capitals is uppercase through text-transform, not",
+        "retyped, so keep the text as given and set the transform.",
         ...lines,
         "",
         `The largest is the section's heading at ${scale[0].fontSize}px. Do not substitute a default heading size for it.`

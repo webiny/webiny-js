@@ -112,28 +112,145 @@ const nearestRole = (size: number, roles: ThemeTypeRole[]): ThemeTypeRole | null
  * render-side measurement uses, so the two are comparable. A wrapper's inherited size is not a
  * decision the page made about type.
  */
+interface ThemeFont {
+    family: string;
+    cssVariable: string;
+}
+
+const firstFamily = (stack: unknown): string | null => {
+    const value = Array.isArray(stack)
+        ? stack[0]
+        : typeof stack === "string"
+          ? stack.split(",")[0]
+          : null;
+    if (typeof value !== "string") {
+        return null;
+    }
+    const family = value
+        .trim()
+        .replace(/^["']|["']$/g, "")
+        .trim()
+        .toLowerCase();
+    return family || null;
+};
+
+/**
+ * The theme's font families, each with the variable that carries it: a typography style's own
+ * font-family variable, and every standalone font-family token.
+ */
+export const themeFonts = (manifest: ThemeManifest): ThemeFont[] => {
+    const fonts: ThemeFont[] = [];
+    for (const slot of manifest.slots) {
+        const value = slot.values?.light as unknown;
+        const variables = slot.cssVariables ?? [];
+        if (value && typeof value === "object" && !Array.isArray(value)) {
+            const family = firstFamily((value as { fontFamily?: unknown }).fontFamily);
+            const variable = variables.find(name => /font-?family$/i.test(name));
+            if (family && variable) {
+                fonts.push({ family, cssVariable: variable });
+            }
+        } else if (variables.length === 1 && /font-?family/i.test(variables[0])) {
+            const family = firstFamily(value);
+            if (family) {
+                fonts.push({ family, cssVariable: variables[0] });
+            }
+        }
+    }
+    return fonts;
+};
+
+const TRANSFORMS = new Set(["uppercase", "lowercase", "capitalize"]);
+/**
+ * Icon fonts draw a glyph from a ligature name — "chevron_left", "event" — so their text is not text.
+ * Measured on Freehill's contact form: three of its thirteen steps were Material Icons names.
+ */
+const ICON_FONT = /material[\s-]*(icons|symbols)|font\s*awesome|^fa$|icomoon|glyphicons|icons?$/i;
+/** Enough for a dense form; past this the steps covering fewest elements are left out. */
+const MAX_STEPS = 10;
+const EXAMPLE_CAP = 40;
+
+interface StepStyle {
+    family: string | null;
+    stack: string | null;
+    weight: number | null;
+    transform: TypeScaleEntry["textTransform"] | null;
+    italic: boolean;
+}
+
+const styleOf = (styles: Record<string, string> | undefined): StepStyle => {
+    const weight = parseInt(styles?.fontWeight ?? "", 10);
+    const transform = styles?.textTransform;
+    return {
+        family: firstFamily(styles?.fontFamily),
+        stack: styles?.fontFamily?.trim() || null,
+        weight: isFinite(weight) ? weight : null,
+        transform:
+            transform && TRANSFORMS.has(transform) ? (transform as StepStyle["transform"]) : null,
+        italic: styles?.fontStyle === "italic" || styles?.fontStyle === "oblique"
+    };
+};
+
+const sameStyle = (a: StepStyle, b: StepStyle): boolean =>
+    a.family === b.family &&
+    a.weight === b.weight &&
+    a.transform === b.transform &&
+    a.italic === b.italic;
+
+/**
+ * The section's type steps, largest first: each distinct size, and within a size each distinct
+ * style — family, weight, case, slant.
+ *
+ * Sizes alone left out what makes text look like the page's: Freehill's hero headline is uppercase
+ * and light on the page, set in lowercase in the HTML, and came out mixed-case in one run and capitals
+ * in another, depending on what the model read off the picture; display families were swapped for
+ * the default. So each step carries its style, and the theme variable for its family when there is
+ * one. A 14px uppercase label and 14px body text are now two steps, as they look.
+ */
 export const sectionTypeScale = (
     node: CapturedNode,
     manifest: ThemeManifest | null
 ): TypeScaleEntry[] => {
     const roles = manifest ? themeTypeRoles(manifest) : [];
-    const seen: { fontSize: number; lineHeight: number | null; elements: number }[] = [];
+    const fonts = manifest ? themeFonts(manifest) : [];
+    const seen: {
+        fontSize: number;
+        lineHeight: number | null;
+        elements: number;
+        style: StepStyle;
+        letterSpacing: number | null;
+        example: string;
+    }[] = [];
 
     const walk = (current: CapturedNode): void => {
         const runs = current.textRuns ?? (current.text ? [current.text] : []);
         const text = runs.join(" ").replace(/\s+/g, " ").trim();
         const box = current.box;
         const size = px(current.styles?.fontSize);
-        if (text && box && box.width > 0 && box.height > 0 && size !== null) {
+        const iconFont = ICON_FONT.test(firstFamily(current.styles?.fontFamily) ?? "");
+        if (text && !iconFont && box && box.width > 0 && box.height > 0 && size !== null) {
             const lineHeight = px(current.styles?.lineHeight);
-            const existing = seen.find(entry => Math.abs(entry.fontSize - size) <= SAME_SIZE_PX);
+            const style = styleOf(current.styles);
+            const existing = seen.find(
+                entry =>
+                    Math.abs(entry.fontSize - size) <= SAME_SIZE_PX && sameStyle(entry.style, style)
+            );
             if (existing) {
                 existing.elements++;
                 if (existing.lineHeight === null) {
                     existing.lineHeight = lineHeight;
                 }
+                if (existing.letterSpacing === null) {
+                    existing.letterSpacing = px(current.styles?.letterSpacing);
+                }
             } else {
-                seen.push({ fontSize: size, lineHeight, elements: 1 });
+                seen.push({
+                    fontSize: size,
+                    lineHeight,
+                    elements: 1,
+                    style,
+                    letterSpacing: px(current.styles?.letterSpacing),
+                    example: text.length > EXAMPLE_CAP ? `${text.slice(0, EXAMPLE_CAP - 1)}…` : text
+                });
             }
         }
         for (const child of current.children ?? []) {
@@ -142,10 +259,15 @@ export const sectionTypeScale = (
     };
     walk(node);
 
-    return seen
+    return [...seen]
+        .sort((a, b) => b.elements - a.elements)
+        .slice(0, MAX_STEPS)
         .sort((a, b) => b.fontSize - a.fontSize)
         .map(entry => {
             const role = nearestRole(entry.fontSize, roles);
+            const font = entry.style.family
+                ? fonts.find(candidate => candidate.family === entry.style.family)
+                : undefined;
             return {
                 fontSize: Math.round(entry.fontSize * 10) / 10,
                 lineHeight:
@@ -157,7 +279,16 @@ export const sectionTypeScale = (
                           cssVariable: role.cssVariable,
                           fontSize: Math.round(role.fontSize * 10) / 10
                       }
-                    : null
+                    : null,
+                ...(entry.style.stack ? { fontFamily: entry.style.stack } : {}),
+                ...(font ? { fontFamilyToken: { cssVariable: font.cssVariable } } : {}),
+                ...(entry.style.weight !== null ? { fontWeight: entry.style.weight } : {}),
+                ...(entry.style.transform ? { textTransform: entry.style.transform } : {}),
+                ...(entry.letterSpacing
+                    ? { letterSpacing: Math.round(entry.letterSpacing * 100) / 100 }
+                    : {}),
+                ...(entry.style.italic ? { italic: true } : {}),
+                example: entry.example
             };
         });
 };

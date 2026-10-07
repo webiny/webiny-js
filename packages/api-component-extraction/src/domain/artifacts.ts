@@ -653,6 +653,21 @@ export interface TypeScaleEntry {
     /** How many text-bearing elements of the section use this size. */
     elements: number;
     token: { path: string; cssVariable: string; fontSize: number } | null;
+    /**
+     * The style that sets this step apart, where captured: the family as the page declares it (the
+     * whole stack, fallbacks included), its weight, case, tracking and slant. Absent fields were not
+     * captured or are the default.
+     */
+    fontFamily?: string;
+    /** The theme variable carrying the same family, when the theme has one. */
+    fontFamilyToken?: { cssVariable: string };
+    fontWeight?: number;
+    textTransform?: "uppercase" | "lowercase" | "capitalize";
+    /** In px; absent when normal. */
+    letterSpacing?: number;
+    italic?: boolean;
+    /** The first text at this step, so the model can tell which element it is. */
+    example?: string;
 }
 
 /**

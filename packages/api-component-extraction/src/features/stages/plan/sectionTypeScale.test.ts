@@ -45,13 +45,19 @@ describe("sectionTypeScale", () => {
                 fontSize: 60,
                 lineHeight: 66,
                 elements: 1,
-                token: { path: "type.h1", cssVariable: "--wby-type-h1-font-size", fontSize: 60 }
+                token: { path: "type.h1", cssVariable: "--wby-type-h1-font-size", fontSize: 60 },
+                example: "Heading"
             },
             {
                 fontSize: 16,
                 lineHeight: 24,
                 elements: 2,
-                token: { path: "type.body", cssVariable: "--wby-type-body-font-size", fontSize: 16 }
+                token: {
+                    path: "type.body",
+                    cssVariable: "--wby-type-body-font-size",
+                    fontSize: 16
+                },
+                example: "One"
             }
         ]);
     });
@@ -126,5 +132,73 @@ describe("themeTypeRoles", () => {
             { path: "color.bg", cssVariables: ["--wby-color-bg"], values: { light: "#fff" } }
         ];
         expect(themeTypeRoles(colours)).toEqual([]);
+    });
+});
+
+// Freehill's hero and amenities steps, as the live page styles them.
+describe("sectionTypeScale style", () => {
+    const FONTS = {
+        slots: [
+            {
+                path: "type.heading.1",
+                displayName: "",
+                description: "",
+                cssVariables: ["--wby-type-heading-1-size", "--wby-type-heading-1-font-family"],
+                values: {
+                    light: { fontSize: "3rem", fontFamily: ["freight-sans-pro", "sans-serif"] },
+                    dark: { fontSize: "3rem", fontFamily: ["freight-sans-pro", "sans-serif"] }
+                }
+            }
+        ]
+    } as unknown as ThemeManifest;
+
+    it("carries the family, weight, case and tracking, with the theme's variable for the family", () => {
+        const section = node("section", {}, undefined, [
+            node(
+                "h1",
+                {
+                    fontSize: "52.5px",
+                    lineHeight: "49.875px",
+                    fontFamily: "freight-sans-pro, proxima-nova, sans-serif",
+                    fontWeight: "300",
+                    textTransform: "uppercase",
+                    letterSpacing: "1px",
+                    fontStyle: "normal"
+                },
+                "Turn the Page to Better Living at Freehill Street Lofts"
+            )
+        ]);
+        expect(sectionTypeScale(section, FONTS)[0]).toMatchObject({
+            fontFamily: "freight-sans-pro, proxima-nova, sans-serif",
+            fontFamilyToken: { cssVariable: "--wby-type-heading-1-font-family" },
+            fontWeight: 300,
+            textTransform: "uppercase",
+            letterSpacing: 1,
+            example: "Turn the Page to Better Living at Freeh…"
+        });
+    });
+
+    it("splits one size into two steps when the style differs", () => {
+        const section = node("section", {}, undefined, [
+            node(
+                "span",
+                { fontSize: "14px", textTransform: "uppercase", fontWeight: "600" },
+                "More to Enjoy"
+            ),
+            node("li", { fontSize: "14px", fontWeight: "400" }, "Air Conditioning")
+        ]);
+        expect(sectionTypeScale(section, null).map(entry => entry.textTransform ?? "none")).toEqual(
+            ["uppercase", "none"]
+        );
+    });
+
+    it("leaves out text set in an icon font, whose words are glyph names", () => {
+        const section = node("section", {}, undefined, [
+            node("span", { fontSize: "24px", fontFamily: '"Material Icons"' }, "event"),
+            node("p", { fontSize: "16px", fontFamily: "figtree" }, "Availability:")
+        ]);
+        expect(sectionTypeScale(section, null).map(entry => entry.example)).toEqual([
+            "Availability:"
+        ]);
     });
 });
