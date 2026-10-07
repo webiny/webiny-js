@@ -63,7 +63,7 @@ earlier measure was got wrong too. Describe the source from the source artifact.
 
 1. Image on the refine path — done, `cf6b7088c7`.
 2. Rule 11 against input-driven backgrounds (#8) — done, `bcb0b9b36b`.
-3. Data defects: #2 (done, `7bac68a985`, below), then #3, then #1 and #7, then #6 and #5.
+3. Data defects: #2 (done, `7bac68a985`, below), then #3 (done, `ebbc2893bb`, below), then #1 and #7, then #6 and #5.
 4. Ablation of the prohibitions, widened, including components where a prohibition should not bind.
 
 The token list and the worked examples are not cut: they are shared with the general system prompt and
@@ -85,3 +85,46 @@ counts as filled by an item's picture, so a photo carousel outscores paragraphs.
 - Generate again, twice (~$0.50 each): both used GettyImages-172432728, -675343744, -957633616 with
   their real alts, and no other page's photo. Before: GettyImages-1375934212 and -517303040, paragraphs
   as alts. Both first attempts failed on invented `--wby-space-*` variables and passed on retry.
+
+## #3 result: see-through background images keep the colour behind them
+
+Fix `ebbc2893bb`. A background image was assumed to cover what is behind it. `measureTone` reported a
+picture with no opaque pixel as "dark" (the empty average, 0). Cluster now measures every background
+image on a page, and one below 0.5 mean opacity no longer hides its element's colour or the backdrop.
+Plan records the colour measured where each see-through image is drawn, and Generate words these
+images apart from photographs.
+
+- Threshold sweep, all 139 readable background images on the planned pages: every one is at or below
+  0.33, or exactly 1.00. Any threshold above 0.33 gives the same result.
+- Offline replay, all 95 components (94 of 95 reproduce the stored colours; the miss is a stale
+  check-run header): 12 prompts change.
+  - 3 predicted: Park City Property Description, Tulane Property Highlights Links, check-run Tulane
+    FAQ Section.
+  - 9 not predicted, from the should-not-change set: thevibe's `<body>` is white with a 5% texture,
+    which hid the white backdrop of 9 sections that previously had no background colour at all. Their
+    crops are white (dominant `#f8f8f8`). The change is correct, but the prediction failed: I had not
+    considered a see-through image on an ancestor.
+  - The first wording named the section's largest colour as the one under the pattern. For Park City
+    that is navy, which restated the wrong claim from row 3. The replay caught it, and Plan now
+    measures the colour where the image is drawn.
+- Park City, Plan re-run on the deployed code: pattern opacity 0.12, light, colour under it `#f7f7f9`
+  (`surface-sunken`). Generated twice (~$0.50, ~$0.40): both paint the section `surface-sunken` with the
+  pattern, and navy on the text column. Before: the whole section was navy.
+
+**Park City's Property Description is not fully fixed.** Its navy panel is drawn by something the
+capture does not record (most likely a pseudo-element). The only navy element captured is the 660x520
+text column, so nothing tells Generate that the navy extends behind the photograph. The background
+colour is now right; the panel's extent is not conveyed. Being in the should-change set means the
+prompt changed as predicted, not that the component is now correct.
+
+Not yet regenerated: the two Tulane sections. Their colours come from Cluster, so Cluster, Classify and
+Plan must re-run first, and Classify and Plan call the model again (see `../../VERIFYING.md`).
+
+Sized, not fixed:
+
+- Tulane's `circle-background5` is a 780x900 absolutely positioned element listed as the background of
+  2 components, both Tulane baseline headers, at 2.1x and 8.1x the header's area. No other component
+  in the 95 has a background image larger than its section.
+- Carousel slides positioned off-canvas: 3 thevibe components (Carousel/Slider, Hero Intro, Image
+  Slideshow) list 19 slide images that sit wholly or partly outside the section box as "the section's
+  background".
