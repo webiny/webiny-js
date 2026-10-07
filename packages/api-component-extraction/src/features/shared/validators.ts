@@ -240,6 +240,30 @@ export const validateRenderedValues = (markup: string): ValidationResult => {
     return { passed: failures.size === 0, failures: [...failures] };
 };
 
+/**
+ * Every image input puts its image on the page.
+ *
+ * The other half of `validateRenderedValues`. A component can read a file input in a shape the editor
+ * never stores — one wrote a default of `{ url, src }` and read `.src` — and once the render is given
+ * what an instance holds (`{ url }` only), that component renders no image at all and no marker either.
+ * So each file input's URL has to appear in the markup, as an attribute or in a style. A list input
+ * (a carousel) passes when any of its items does, since a carousel shows one slide.
+ */
+export const validateRenderedFiles = (
+    markup: string,
+    files: { path: string; urls: string[]; list: boolean }[]
+): ValidationResult => {
+    // React escapes `&` in attributes, and Cloudinary URLs are full of them.
+    const shown = (url: string) => markup.includes(url) || markup.includes(url.replace(/&/g, "&amp;"));
+    const failures = files
+        .filter(file => (file.list ? !file.urls.some(shown) : !file.urls.every(shown)))
+        .map(
+            file =>
+                `image input "${file.path}" was given ${file.urls[0]} and the component did not render it — a file input's value is \`{ url }\` and nothing else: read \`${file.path.replace(/\[\]/g, "")}.url\``
+        );
+    return { passed: failures.length === 0, failures };
+};
+
 /** Two results as one: passed only if both did. */
 export const combineValidation = (a: ValidationResult, b: ValidationResult): ValidationResult => ({
     passed: a.passed && b.passed,

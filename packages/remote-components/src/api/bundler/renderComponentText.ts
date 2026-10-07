@@ -101,6 +101,15 @@ const propsFromManifestAndObservations = (
     const valueFor = (input: ManifestInput): unknown => {
         const match = observedByName.get(input.name ?? "");
 
+        /*
+         * An image's value comes from the component's own defaults, never from observations: what
+         * Plan observed for an image prop is its alt text, and a sentence in place of a URL is a
+         * value no instance would hold.
+         */
+        if (input.type === "file") {
+            return manifestDefaults[input.name ?? ""] ?? input.defaultValue ?? "";
+        }
+
         if (input.fields?.length) {
             const fieldObservations = match?.fields ?? [];
             const byName = new Map(fieldObservations.map(f => [f.name, f]));
@@ -126,6 +135,15 @@ const propsFromManifestAndObservations = (
                         input.fields!.map(field => {
                             const values = byName.get(field.name ?? "")?.observedValues ?? [];
                             const value = values[index];
+                            // Images, and objects that hold them, come from the default row: observations
+                            // carry their text, not their values.
+                            if (field.type === "file" || field.fields?.length) {
+                                const rowsDefault = Array.isArray(listDefault)
+                                    ? (listDefault as Record<string, unknown>[])
+                                    : [];
+                                const row = rowsDefault[index] ?? rowsDefault[0];
+                                return [field.name, row?.[field.name ?? ""] ?? field.defaultValue ?? ""];
+                            }
                             return [
                                 field.name,
                                 typeof value === "string" && value.trim()
@@ -146,7 +164,7 @@ const propsFromManifestAndObservations = (
                     const values = byName.get(field.name ?? "")?.observedValues;
                     return [
                         field.name,
-                        firstUseful(values) ??
+                        (field.type === "file" ? undefined : firstUseful(values)) ??
                             objectDefault?.[field.name ?? ""] ??
                             field.defaultValue ??
                             ""
@@ -169,8 +187,121 @@ const propsFromManifestAndObservations = (
     };
 
     return Object.fromEntries(
-        inputs.filter(input => input.name).map(input => [input.name, valueFor(input)])
+        inputs
+            .filter(input => input.name)
+            .map(input => [input.name, asStored(input, valueFor(input))])
     );
+};
+
+/** An image (file) input and the URLs it held in the render. */
+export interface RenderedFile {
+    /** Where the input sits, e.g. `logo.src` or `slides[].image`. */
+    path: string;
+    urls: string[];
+    /** A list input: one of its items on screen is enough (a carousel shows one slide). */
+    list: boolean;
+}
+
+export interface RenderedComponent {
+    markup: string;
+    text: string;
+    files: RenderedFile[];
+}
+
+/** The URLs every file input was given in this render, by where the input sits. */
+const fileValues = (inputs: ManifestInput[], props: Record<string, unknown>): RenderedFile[] => {
+    const out: RenderedFile[] = [];
+    const urlOf = (value: unknown): string | undefined =>
+        value && typeof value === "object" && typeof (value as { url?: unknown }).url === "string"
+            ? (value as { url: string }).url
+            : undefined;
+    const visit = (input: ManifestInput, value: unknown, path: string, inList: boolean): void => {
+        if (input.type === "file") {
+            const values = Array.isArray(value) ? value : [value];
+            const urls = values.map(urlOf).filter((url): url is string => Boolean(url));
+            if (urls.length > 0) {
+                out.push({ path, urls, list: inList || Array.isArray(value) });
+            }
+            return;
+        }
+        if (!input.fields?.length || !value || typeof value !== "object") {
+            return;
+        }
+        const rows = Array.isArray(value) ? value : [value];
+        for (const field of input.fields) {
+            const fieldPath = `${path}${Array.isArray(value) ? "[]" : ""}.${field.name}`;
+            if (Array.isArray(value)) {
+                const urls = rows.flatMap(row =>
+                    field.type === "file" ? [urlOf((row as Record<string, unknown>)?.[field.name ?? ""])] : []
+                );
+                if (field.type === "file") {
+                    const found = urls.filter((url): url is string => Boolean(url));
+                    if (found.length > 0) {
+                        out.push({ path: fieldPath, urls: found, list: true });
+                    }
+                    continue;
+                }
+            }
+            for (const row of rows) {
+                visit(field, (row as Record<string, unknown>)?.[field.name ?? ""], fieldPath, inList || Array.isArray(value));
+            }
+        }
+    };
+    for (const input of inputs) {
+        if (input.name) {
+            visit(input, props[input.name], input.name, false);
+        }
+    }
+    // A field inside list rows is visited once per row; it is one list input.
+    const byPath = new Map<string, RenderedFile>();
+    for (const file of out) {
+        const existing = byPath.get(file.path);
+        if (existing) {
+            existing.urls.push(...file.urls);
+            existing.list = true;
+        } else {
+            byPath.set(file.path, { ...file, urls: [...file.urls] });
+        }
+    }
+    return [...byPath.values()];
+};
+
+/**
+ * A file input's value as the editor stores it: `{ url }`, and nothing else.
+ *
+ * A component's defaults are its own to write, so they can give a file input any shape, and a
+ * component can read whatever shape it wrote. One did exactly that — a default of `{ url, src }` and a
+ * component reading `.src` — which renders here and goes blank the moment an editor picks a different
+ * image, because the picked file carries `url` only. Rendering with what an instance would actually
+ * hold makes that visible.
+ */
+const asStoredFile = (value: unknown): unknown => {
+    if (typeof value === "string") {
+        return value ? { url: value } : value;
+    }
+    if (value && typeof value === "object" && "url" in value) {
+        return { url: (value as { url: unknown }).url };
+    }
+    return value;
+};
+
+const asStored = (input: ManifestInput, value: unknown): unknown => {
+    if (input.type === "file") {
+        return Array.isArray(value) ? value.map(asStoredFile) : asStoredFile(value);
+    }
+    if (input.fields?.length && value && typeof value === "object") {
+        const row = (item: unknown) =>
+            item && typeof item === "object"
+                ? Object.fromEntries(
+                      Object.entries(item as Record<string, unknown>).map(([name, fieldValue]) => {
+                          const field = input.fields!.find(f => f.name === name);
+                          return [name, field ? asStored(field, fieldValue) : fieldValue];
+                      })
+                  )
+                : item;
+        return Array.isArray(value) ? value.map(row) : row(value);
+    }
+    return value;
 };
 
 /**
@@ -214,7 +345,7 @@ export const renderComponentMarkup = (
     bundled: string,
     componentName: string,
     observed: ObservedProp[]
-): { markup: string; text: string } => {
+): RenderedComponent => {
     try {
         // A fresh context with nothing in it, for the same reason `buildComponentManifest` uses one:
         // this is model-generated code derived from captured third-party pages.
@@ -261,7 +392,7 @@ export const renderComponentMarkup = (
             })
         );
 
-        return { markup, text: markupToText(markup) };
+        return { markup, text: markupToText(markup), files: fileValues(manifestInputs, props) };
     } catch (error) {
         throw new ComponentRenderError(componentName, error);
     }

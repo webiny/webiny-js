@@ -1,0 +1,116 @@
+export default function PropertyHighlightsLinks({ inputs: { items } }) {
+    const list = items || [];
+
+    return (
+        <section className="phl">
+            <div className="phl-grid">
+                {list.map((item, index) => (
+                    <div className="phl-item" key={index}>
+                        {item.image && item.image.src ? (
+                            <div className="phl-image-wrap">
+                                <img
+                                    className="phl-image"
+                                    src={item.image.src}
+                                    alt={item.image.alt || item.heading || ""}
+                                />
+                            </div>
+                        ) : null}
+                        {item.heading ? <h3 className="phl-heading">{item.heading}</h3> : null}
+                        {item.link && item.link.label ? (
+                            <a className="phl-link" href={item.link.url || "#"}>
+                                {item.link.label}
+                            </a>
+                        ) : null}
+                    </div>
+                ))}
+            </div>
+        </section>
+    );
+}
+
+export const manifest = {
+    name: "Custom/PropertyHighlightsLinks",
+    label: "Property Highlights Links",
+    applyDefaultStyles: false,
+    aiContext: "A features section with image, heading and link button for each item (e.g. Floor Plans, Amenities, Neighborhood). Use to highlight key property sections with links to dedicated pages.",
+    inputs: [
+        {
+            name: "items",
+            factory: "createObjectInput",
+            params: {
+                label: "Items",
+                list: true,
+                fields: [
+                    { name: "heading", factory: "createTextInput", params: { label: "Heading", defaultValue: "Floor Plans" } },
+                    {
+                        name: "image",
+                        factory: "createObjectInput",
+                        params: {
+                            label: "Image",
+                            fields: [
+                                { name: "src", factory: "createFileInput", params: { label: "Image", allowedFileTypes: ["image/*"] } },
+                                { name: "alt", factory: "createTextInput", params: { label: "Alt Text" } }
+                            ]
+                        }
+                    },
+                    {
+                        name: "link",
+                        factory: "createObjectInput",
+                        params: {
+                            label: "Link",
+                            fields: [
+                                { name: "label", factory: "createTextInput", params: { label: "Label", defaultValue: "View Floor Plans" } },
+                                { name: "url", factory: "createTextInput", params: { label: "URL", defaultValue: "#" } }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    defaults: {
+        inputs: {
+            items: [
+                {
+                    heading: "Floor Plans",
+                    image: {
+                        src: {
+                            url: "https://g5-assets-cld-res.cloudinary.com/image/upload/x_644,y_0,h_1330,w_1330,c_crop/q_auto,f_auto,c_fill,g_center,h_998,w_998/v1773912685/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/GettyImages-1227235023_iuoimu.jpg"
+                        },
+                        alt: "Bedroom of an apartment home at Park City Place in Bridgeport, Connecticut"
+                    },
+                    link: {
+                        label: "View Floor Plans",
+                        url: "https://www.parkcityplace.org/apartments/ct/bridgeport/floor-plans"
+                    }
+                },
+                {
+                    heading: "Amenities",
+                    image: {
+                        src: {
+                            url: "https://g5-assets-cld-res.cloudinary.com/image/upload/x_574,y_0,h_1115,w_1115,c_crop/q_auto,f_auto,c_fill,g_center,h_998,w_998/v1773912753/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/GettyImages-622918790_cy86ln.jpg"
+                        },
+                        alt: "Amenities at Park City Place in Bridgeport, Connecticut"
+                    },
+                    link: {
+                        label: "View Amenities",
+                        url: "https://www.parkcityplace.org/apartments/ct/bridgeport/amenities"
+                    }
+                },
+                {
+                    heading: "Neighborhood",
+                    image: {
+                        src: {
+                            url: "https://g5-assets-cld-res.cloudinary.com/image/upload/x_167,y_0,h_1330,w_1330,c_crop/q_auto,f_auto,c_fill,g_center,h_998,w_998/v1786541992/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/GettyImages-1452691657_qgatk1.jpg"
+                        },
+                        alt: "Neighborhood near Park City Place in Bridgeport, Connecticut"
+                    },
+                    link: {
+                        label: "Neighborhood",
+                        url: "https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood"
+                    }
+                }
+            ]
+        }
+    }
+};

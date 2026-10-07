@@ -12,6 +12,7 @@ import {
     bundleComponent,
     renderComponentMarkup
 } from "@webiny/remote-components/api/bundler/index.js";
+import type { RenderedFile } from "@webiny/remote-components/api/bundler/index.js";
 import { flattenObservedValues } from "~/features/stages/generate/componentGeneration.js";
 import {
     generateResultKey,
@@ -26,6 +27,7 @@ import type {
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import {
     combineValidation,
+    validateRenderedFiles,
     validateRenderedValues,
     validateContractConformance,
     validateTextPreservation,
@@ -164,6 +166,7 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
         // generated one is, or the operator gets a different verdict for the same code.
         let renderedText = "";
         let renderedMarkup = "";
+        let renderedFiles: RenderedFile[] = [];
         let renderedValues: string[] = [];
         let bundling: ValidationResult = { passed: true, failures: [] };
 
@@ -176,6 +179,7 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
             const rendered = renderComponentMarkup(bundled.bundled, component.name, component.props);
             renderedText = rendered.text;
             renderedMarkup = rendered.markup;
+                renderedFiles = rendered.files;
             renderedValues = flattenObservedValues(component.props);
         } catch (error) {
             bundling = { passed: false, failures: [(error as Error).message] };
@@ -194,7 +198,10 @@ class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Regene
                     component.props.map(prop => prop.name),
                     source
                 ),
-                validateRenderedValues(renderedMarkup)
+                combineValidation(
+                    validateRenderedValues(renderedMarkup),
+                    validateRenderedFiles(renderedMarkup, renderedFiles)
+                )
             ),
             tokenBinding: manifestAvailable
                 ? validateTokenBinding(css, validVariables)

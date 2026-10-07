@@ -6,4 +6,5 @@ export {
     propValuesFromObservations,
     ComponentRenderError
 } from "./renderComponentText.js";
+export type { RenderedComponent, RenderedFile } from "./renderComponentText.js";
 export type { ComponentSource, BundledComponent, ValidationResult } from "./types.js";

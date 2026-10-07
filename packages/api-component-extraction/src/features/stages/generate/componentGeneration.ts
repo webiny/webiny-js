@@ -8,6 +8,7 @@ import {
     bundleComponent,
     renderComponentMarkup
 } from "@webiny/remote-components/api/bundler/index.js";
+import type { RenderedFile } from "@webiny/remote-components/api/bundler/index.js";
 import type {
     ComponentProp,
     GeneratedComponent,
@@ -17,6 +18,7 @@ import type {
 import { stageArtifactKey } from "~/constants.js";
 import {
     combineValidation,
+    validateRenderedFiles,
     validateRenderedValues,
     validateContractConformance,
     validateTextPreservation,
@@ -652,6 +654,7 @@ export const generateComponentAttempts = async (
          */
         let renderedText = "";
         let renderedMarkup = "";
+        let renderedFiles: RenderedFile[] = [];
         let renderedValues: string[] = [];
         let bundling: ValidationResult = { passed: true, failures: [] };
 
@@ -671,6 +674,7 @@ export const generateComponentAttempts = async (
                 );
                 renderedText = rendered.text;
                 renderedMarkup = rendered.markup;
+                renderedFiles = rendered.files;
             } catch {
                 /*
                  * A render that throws is not a bundle failure and not a text failure.
@@ -707,7 +711,10 @@ export const generateComponentAttempts = async (
                     planned.props.map(prop => prop.name),
                     output.source
                 ),
-                validateRenderedValues(renderedMarkup)
+                combineValidation(
+                    validateRenderedValues(renderedMarkup),
+                    validateRenderedFiles(renderedMarkup, renderedFiles)
+                )
             ),
             tokenBinding: manifestAvailable
                 ? validateTokenBinding(output.css, validVariables)

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+    validateRenderedFiles,
     validateRenderedValues,
     validateContractConformance,
     validateTextPreservation,
@@ -153,6 +154,37 @@ describe("validateRenderedValues", () => {
             validateRenderedValues(
                 '<img class="site-header-logo" src="https://res.cloudinary.com/g5/Logo_xkmkne.png" alt="Freehill Street Lofts"/>'
             ).passed
+        ).toBe(true);
+    });
+});
+
+describe("validateRenderedFiles", () => {
+    const hero = "https://res.cloudinary.com/g5-assets-cld/image/upload/q_auto,f_auto/resize_33_sp1b2p.jpg";
+    const pool = "https://res.cloudinary.com/g5-assets-cld/image/upload/q_auto,f_auto/resize_17_j8yvlb.jpg";
+
+    it("fails an image input whose URL the component never put on the page", () => {
+        // Freehill's Amenities List: defaults of { url, src }, read as `.src`.
+        const result = validateRenderedFiles('<div class="amenities-media"></div>', [
+            { path: "primaryImage", urls: [hero], list: false }
+        ]);
+        expect(result.passed).toBe(false);
+        expect(result.failures[0]).toContain("read `primaryImage.url`");
+    });
+
+    it("passes a list when one item is on the page, as a carousel shows one slide", () => {
+        expect(
+            validateRenderedFiles(`<div style="background-image:url(${hero})"></div>`, [
+                { path: "images[].src", urls: [hero, pool], list: true }
+            ]).passed
+        ).toBe(true);
+    });
+
+    it("finds a URL React escaped in an attribute", () => {
+        const url = "https://capi.myleasestar.com/v2/dimg-crop/154735885/2000x1250?w=2000&h=1250";
+        expect(
+            validateRenderedFiles(`<img src="${url.replace(/&/g, "&amp;")}"/>`, [
+                { path: "image", urls: [url], list: false }
+            ]).passed
         ).toBe(true);
     });
 });
