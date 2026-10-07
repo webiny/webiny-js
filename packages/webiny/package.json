@@ -42,6 +42,7 @@
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/form": "0.0.0",
+    "@webiny/frontend-settings": "0.0.0",
     "@webiny/languages": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/project": "0.0.0",
@@ -153,7 +154,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "1f02d737cf1250bc7ce5aac1a9e189555f9953080d0dd0b5c238688343fe9f6e",
+  "exportGenerationHash": "ff8d3dcb09a5570573211113c0616313b88dd3c2085605bb18e43132730f3745",
   "webiny": {
     "publishFrom": "dist"
   }
