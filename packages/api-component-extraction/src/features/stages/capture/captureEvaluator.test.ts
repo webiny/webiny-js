@@ -185,3 +185,29 @@ describe("captureEvaluator background images", () => {
         expect(find(result.tree as CapturedNode, "div")?.background).toBeUndefined();
     });
 });
+
+const texts = (node: CapturedNode | null): string[] =>
+    node
+        ? [...(node.text ? [node.text] : []), ...node.children.flatMap(child => texts(child))]
+        : [];
+
+// Shaped on 2424 Tulane's header: a hamburger bar, and the closed menu laid out beneath it twice over —
+// at opacity 0, inside a zero-width drawer that clips.
+describe("captureEvaluator hidden content", () => {
+    it("leaves out a transparent subtree", () => {
+        const result = run(`
+            <header data-rect="1440,60"><a href="/tour" data-rect="140,30">Schedule A Tour</a></header>
+            <nav style="opacity: 0" data-rect="720,730"><a href="/photos" data-rect="504,72">Photo Gallery</a></nav>
+        `);
+        expect(texts(result.tree as CapturedNode)).toEqual(["Schedule A Tour"]);
+    });
+
+    it("leaves out what a zero-size box clips, and keeps what escapes one", () => {
+        const result = run(`
+            <div style="overflow: hidden" data-rect="0,1400"><a href="/faq" data-rect="200,40">FAQ</a></div>
+            <header data-rect="1440,0"><a href="/" data-rect="300,108">Freehill Street Lofts</a></header>
+        `);
+        expect(texts(result.tree as CapturedNode)).toEqual(["Freehill Street Lofts"]);
+    });
+});
+

@@ -139,10 +139,26 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
             return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
         }
 
+        function clips(cs) {
+            var values = [cs.overflow, cs.overflowX, cs.overflowY];
+            for (var i = 0; i < values.length; i++) {
+                if (values[i] && values[i] !== "visible") { return true; }
+            }
+            return false;
+        }
+
         function walk(el) {
             if (count >= MAX || !el || el.nodeType !== 1 || SKIP[el.tagName]) { return null; }
             var cs = window.getComputedStyle(el);
             if (cs.display === "none" || cs.visibility === "hidden") { return null; }
+            /*
+             * Transparent is hidden too. A closed menu is commonly an opacity:0 layer laid out under
+             * the header — on 2424 Tulane, its navigation, address and hours sat 645px down the page
+             * at opacity 0 — and reading it as content made Generate build the open menu into the
+             * header. Entrance animations also start at 0, but the visit sequence has finished them
+             * by now, so what is still at 0 is meant to be.
+             */
+            if (parseFloat(cs.opacity) === 0) { return null; }
             var rect = el.getBoundingClientRect();
             var width = Math.round(rect.width), height = Math.round(rect.height);
 
@@ -162,6 +178,14 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
              * six sites, 91% of zero-area nodes are that case.
              */
             var zeroArea = width <= 0 || height <= 0;
+
+            /*
+             * Except a zero-area box that clips: nothing inside it can be seen. The derived box above
+             * is for wrappers whose content escapes them (overflow visible); a collapsed drawer —
+             * width 0, overflow hidden — has the same zero box and content that does not escape. Kept,
+             * it handed the closed menu a box and the menu became content.
+             */
+            if (zeroArea && clips(cs)) { return null; }
 
             if (!zeroArea) { count++; }
 
