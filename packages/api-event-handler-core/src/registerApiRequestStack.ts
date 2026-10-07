@@ -35,7 +35,7 @@ export interface RegisterApiRequestStackConfig {
     /**
      * Register request-phase storage features that must run BEFORE `HeadlessCmsFeature` builds its
      * storage — e.g. `DbRegistryFeature` for the DDB+ES variant. Per-request storage state
-     * (the DDB CMS entry DataLoaders) goes here too. Optional.
+     * (the CMS storage operations) goes here too. Optional.
      */
     registerRequestStorage?: (container: Container) => void | Promise<void>;
     /**
