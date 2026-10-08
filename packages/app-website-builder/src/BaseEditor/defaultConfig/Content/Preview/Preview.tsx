@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import type { Messenger } from "@webiny/website-builder-sdk";
+import React, { useEffect, useMemo, useState } from "react";
 import { ViewportManager } from "@webiny/website-builder-sdk";
 import { mouseTracker } from "@webiny/website-builder-sdk";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
-import { Iframe } from "./Iframe.js";
+import { PreviewFrame } from "./PreviewFrame.js";
 import { DropZoneManager } from "./DropZoneManager.js";
 import { DropZoneManagerProvider } from "./DropZoneManagerProvider.js";
 import { KeyboardShortcuts } from "./KeyboardShortcuts.js";
@@ -82,21 +81,20 @@ export const Preview = () => {
         };
     }, []);
 
-    const onConnected = useCallback((messenger: Messenger) => {
-        previewEvents.onConnected(messenger);
-    }, []);
-
     return (
         <>
             <ApplyTheme />
             <DropZoneManagerProvider dropzoneManager={dropzoneManager}>
                 <AwaitIframeUrl>
                     {({ url }) => (
-                        <Iframe
+                        <PreviewFrame
+                            // A new URL or timestamp means a new page load, so the connection with
+                            // the frontend has to be established from scratch.
+                            key={`${url}|${iframeTimestamp}`}
                             url={url}
                             timestamp={iframeTimestamp}
                             viewportManager={viewportManager}
-                            onConnected={onConnected}
+                            previewEvents={previewEvents}
                             showLoading={loadingPreview}
                         />
                     )}
