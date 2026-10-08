@@ -9,7 +9,7 @@ import type { BlobStore, StageArtifactStore } from "~/domain/stage.js";
  * and the whole prompt.
  *
  * A component that keeps failing could not be diagnosed: the artifact keeps only the best attempt's
- * validation, and a call cut off at its time limit leaves no output and no usage. The log keeps each
+ * validation, and a call cut off at its time limit leaves no usage, only what it had written by then. The log keeps each
  * attempt — of the stage and of "generate again" — so the operator can read what was asked and what
  * came back, attempt by attempt.
  *
@@ -35,7 +35,10 @@ export interface GenerationLogEntry {
     durationMs: number;
     usage?: GenerationTrace["usage"];
     finishReason?: string;
+    /** On a cut-off call, how much it had written. */
     outputChars?: number;
+    /** When the answer's chunks arrived: a last chunk long before the end is a stall, not a long answer. */
+    stream?: GenerationTrace["stream"];
     /** `passed`: every check green. `failed-checks`: an answer that failed validation. `call-failed`: no answer. */
     outcome: "passed" | "failed-checks" | "call-failed";
     error?: string;
@@ -58,6 +61,8 @@ export interface GenerationPrompt {
     imagesAttached?: { mediaType: string; bytes: number }[];
     /** What the attempt answered, as parsed. Absent where there was no answer, and on older entries. */
     output?: { source: string; css: string };
+    /** What a failed or cut-off call had written before it stopped. */
+    partialOutput?: string;
 }
 
 /** One attempt as the attempt loop reports it. */
@@ -96,7 +101,8 @@ export const appendGenerationLog = async (
         user: trace?.user ?? "",
         imageFileIds: trace?.imageFileIds ?? [],
         imagesAttached: trace?.imagesAttached ?? [],
-        ...(input.record.output ? { output: input.record.output } : {})
+        ...(input.record.output ? { output: input.record.output } : {}),
+        ...(trace?.partialOutput ? { partialOutput: trace.partialOutput } : {})
     };
     const stored = await blobs.put(
         `${input.runId}/generation-log/${signatureHash(input.signature)}/${id}.json`,
@@ -119,6 +125,7 @@ export const appendGenerationLog = async (
         ...(trace?.usage ? { usage: trace.usage } : {}),
         ...(trace?.finishReason ? { finishReason: trace.finishReason } : {}),
         ...(trace?.outputChars !== undefined ? { outputChars: trace.outputChars } : {}),
+        ...(trace?.stream ? { stream: trace.stream } : {}),
         outcome: input.record.outcome,
         ...(trace?.error ? { error: trace.error } : {}),
         failures: input.record.failures.slice(0, MAX_FAILURES),

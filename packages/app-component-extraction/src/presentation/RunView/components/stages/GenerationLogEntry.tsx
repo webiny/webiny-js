@@ -37,6 +37,8 @@ const Block = ({ text }: { text: string }) => (
  * One generation attempt: what was sent, what it cost and how it ended. The prompt is loaded when the
  * attempt is opened; the system prompt, the same for every attempt, is folded away until asked for.
  */
+const seconds = (ms: number) => `${(ms / 1000).toFixed(1)}s`;
+
 export const GenerationLogEntry = ({ entry, prompt }: Props) => {
     const [showSystem, setShowSystem] = useState(false);
     const usage = entry.usage;
@@ -55,6 +57,13 @@ export const GenerationLogEntry = ({ entry, prompt }: Props) => {
                 {entry.finishReason ? <Row label="Finish reason">{entry.finishReason}</Row> : null}
                 {entry.outputChars !== undefined ? (
                     <Row label="Answer length">{`${number(entry.outputChars)} characters`}</Row>
+                ) : null}
+                {entry.stream ? (
+                    <Row label="Answer streamed">
+                        {entry.stream.firstChunkMs === null
+                            ? "nothing — no chunk arrived"
+                            : `first chunk at ${seconds(entry.stream.firstChunkMs)}, last at ${seconds(entry.stream.lastChunkMs ?? 0)} (${number(entry.stream.chunks)} chunks)`}
+                    </Row>
                 ) : null}
                 <Row label="Outcome">{OUTCOME[entry.outcome]}</Row>
                 {entry.error ? <Row label="Error">{entry.error}</Row> : null}

@@ -542,6 +542,13 @@ export interface GenerationLogEntryDto {
     };
     finishReason?: string;
     outputChars?: number;
+    /** When the answer's chunks arrived, from the start of the call. Absent on older entries. */
+    stream?: {
+        firstChunkMs: number | null;
+        lastChunkMs: number | null;
+        chunks: number;
+        reasoningChars: number;
+    };
     outcome: "passed" | "failed-checks" | "call-failed";
     error?: string;
     failures: string[];

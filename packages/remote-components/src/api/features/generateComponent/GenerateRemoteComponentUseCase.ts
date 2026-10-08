@@ -27,6 +27,41 @@ interface TextPart {
 
 type ContentPart = TextPart | FilePart;
 
+/** What a streamed answer has produced so far, and when its chunks arrived. */
+export const streamProgress = (started: number, now: () => number = Date.now) => {
+    const parts: string[] = [];
+    let reasoningChars = 0;
+    let chunks = 0;
+    let firstChunkMs: number | null = null;
+    let lastChunkMs: number | null = null;
+    const text = () => parts.join("");
+    const timing = (): NonNullable<GenerationTrace["stream"]> => ({
+        firstChunkMs,
+        lastChunkMs,
+        chunks,
+        reasoningChars
+    });
+    return {
+        chunk(type: "text-delta" | "reasoning-delta", value: string) {
+            const at = now() - started;
+            firstChunkMs ??= at;
+            lastChunkMs = at;
+            chunks++;
+            if (type === "text-delta") {
+                parts.push(value);
+            } else {
+                reasoningChars += value.length;
+            }
+        },
+        text,
+        timing,
+        partial(): Partial<GenerationTrace> {
+            const written = text();
+            return { outputChars: written.length, partialOutput: written, stream: timing() };
+        }
+    };
+};
+
 class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private ai: Ai.Interface,
@@ -65,6 +100,7 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
                 : String((model as { modelId?: unknown } | undefined)?.modelId ?? model);
         let userText = "";
         let imagesAttached: GenerationTrace["imagesAttached"] = [];
+        const progress = streamProgress(started);
         const trace = async (rest: Partial<GenerationTrace>) => {
             if (!input.onTrace) {
                 return;
@@ -94,7 +130,8 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
                 .filter((part): part is FilePart => part.type === "file")
                 .map(part => ({ mediaType: part.mediaType, bytes: part.data.byteLength }));
 
-            const aiResult = await this.ai.generateText({
+            // Streamed so that a call cut off at its limit still leaves what it had written, and when.
+            const streamed = await this.ai.streamText({
                 model,
                 connection,
                 ...cachedSystemPrompt(systemText, `${REMOTE_COMPONENT_CAPABILITY}.generate`),
@@ -108,25 +145,51 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
                 ]
             });
 
-            const text =
-                aiResult.text ||
-                (aiResult.steps.filter((step: any) => step.text.length > 0).pop()?.text ?? "");
+            let finish: { reason: string; usage: Record<string, unknown> } | null = null;
+            let failure: unknown = null;
+            try {
+                for await (const part of streamed.fullStream) {
+                    if (part.type === "text-delta" || part.type === "reasoning-delta") {
+                        progress.chunk(part.type, part.text);
+                    } else if (part.type === "finish") {
+                        finish = {
+                            reason: String(part.finishReason ?? ""),
+                            usage: (part.totalUsage ?? {}) as Record<string, unknown>
+                        };
+                    } else if (part.type === "error") {
+                        failure = part.error;
+                    } else if (part.type === "abort") {
+                        failure = input.abortSignal?.reason ?? new Error(part.reason || "aborted");
+                    }
+                }
+            } catch (error) {
+                failure = error;
+            }
+            if (!failure && !finish && input.abortSignal?.aborted) {
+                failure = input.abortSignal.reason;
+            }
+            if (failure || !finish) {
+                const error =
+                    failure instanceof Error
+                        ? failure
+                        : new Error(failure ? String(failure) : "The stream ended without finishing.");
+                await trace({ error: error.message, ...progress.partial() });
+                return Result.fail(error);
+            }
 
-            const usage = (aiResult as { usage?: Record<string, unknown> }).usage;
-            const details = (usage?.inputTokenDetails ?? {}) as Record<string, unknown>;
+            const text = progress.text();
+            const usage = finish.usage;
+            const details = (usage.inputTokenDetails ?? {}) as Record<string, unknown>;
             await trace({
-                ...(usage
-                    ? {
-                          usage: {
-                              inputTokens: Number(usage.inputTokens ?? 0),
-                              outputTokens: Number(usage.outputTokens ?? 0),
-                              cacheReadTokens: Number(details.cacheReadTokens ?? 0),
-                              cacheWriteTokens: Number(details.cacheWriteTokens ?? 0)
-                          }
-                      }
-                    : {}),
-                finishReason: String((aiResult as { finishReason?: unknown }).finishReason ?? ""),
+                usage: {
+                    inputTokens: Number(usage.inputTokens ?? 0),
+                    outputTokens: Number(usage.outputTokens ?? 0),
+                    cacheReadTokens: Number(details.cacheReadTokens ?? 0),
+                    cacheWriteTokens: Number(details.cacheWriteTokens ?? 0)
+                },
+                finishReason: finish.reason,
                 outputChars: text.length,
+                stream: progress.timing(),
                 ...(text ? {} : { error: "AI returned an empty response." })
             });
 
@@ -137,7 +200,10 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
             const parsed = parseGeneratedSource(text);
             return Result.ok(parsed);
         } catch (error) {
-            await trace({ error: error instanceof Error ? error.message : String(error) });
+            await trace({
+                error: error instanceof Error ? error.message : String(error),
+                ...progress.partial()
+            });
             return Result.fail(error as Error);
         }
     }

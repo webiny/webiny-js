@@ -12,8 +12,8 @@ export interface IGenerateRemoteComponentInput {
      */
     abortSignal?: AbortSignal;
     /**
-     * Called once per model call — after it returns, fails or is cut off — with what was sent and what
-     * it cost, for a caller that keeps a log of its attempts. A failure in the callback is ignored.
+     * Called once per model call — after it returns, fails or is cut off — with what was sent, what
+     * came back (partially, if cut off) and what it cost, for a caller that keeps a log of its attempts. A failure in the callback is ignored.
      */
     onTrace?: (trace: GenerationTrace) => void | Promise<void>;
     /**
@@ -56,6 +56,21 @@ export interface GenerationTrace {
     outputChars?: number;
     /** Why the call failed or was cut off. */
     error?: string;
+    /**
+     * The text the model had written when the call failed or was cut off. The provider reports token
+     * usage only when the answer ends, so for a cut-off call this and `stream` are all there is.
+     */
+    partialOutput?: string;
+    /**
+     * When the answer's chunks arrived, from the start of the call. A call that streams to its limit
+     * is writing that much; one whose last chunk is long before its end stalled.
+     */
+    stream?: {
+        firstChunkMs: number | null;
+        lastChunkMs: number | null;
+        chunks: number;
+        reasoningChars: number;
+    };
 }
 
 export interface IGenerateRemoteComponentOutput {
