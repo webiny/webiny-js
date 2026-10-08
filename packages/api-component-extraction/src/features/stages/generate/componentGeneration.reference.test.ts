@@ -2,7 +2,11 @@ import { describe, expect, it, vi } from "vitest";
 import sharp from "sharp";
 import { Result } from "@webiny/feature/api";
 import type { PlannedComponent } from "~/domain/artifacts.js";
-import { generateComponentAttempts, type GenerationDeps } from "./componentGeneration.js";
+import {
+    GENERATION_EFFORT,
+    generateComponentAttempts,
+    type GenerationDeps
+} from "./componentGeneration.js";
 
 // The reference image is written to S3 before its File Manager record is created; no S3 in a test.
 vi.mock("@webiny/aws-sdk/client-s3/index.js", () => ({
@@ -109,5 +113,23 @@ describe("generateComponentAttempts — no reference image, no model call", () =
         ]);
         // Every attempt failed here, which is not the same as not attempting.
         expect(outcome.notGenerated).toBeUndefined();
+    });
+});
+
+describe("generateComponentAttempts — effort", () => {
+    const sent = (generate: ReturnType<typeof vi.fn>) =>
+        (generate.mock.calls[0] as unknown as [{ effort?: string }])[0].effort;
+
+    it("sends medium effort by default", async () => {
+        const { deps, generate } = await setup({});
+        await generateComponentAttempts(deps, input("crop.png"));
+        expect(GENERATION_EFFORT).toBe("medium");
+        expect(sent(generate)).toBe("medium");
+    });
+
+    it("sends an experiment's effort instead", async () => {
+        const { deps, generate } = await setup({});
+        await generateComponentAttempts(deps, { ...input("crop.png"), effort: "high" });
+        expect(sent(generate)).toBe("high");
     });
 });

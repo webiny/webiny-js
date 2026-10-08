@@ -50,6 +50,14 @@ const MAX_ATTEMPTS = 3;
  * invocation has left after ATTEMPT_RESERVE_MS for bundling, validating and writing the result; and
  * no attempt starts with less than MIN_ATTEMPT_MS left, so the best attempt so far is always recorded.
  */
+/**
+ * How much the model may think before answering. Its default (high) spent about three quarters of
+ * billed output on thinking and ran the Site Header and Footer into PER_CALL_TIMEOUT_MS; medium kept
+ * the checks and generated every component. See
+ * `scripts/baseline/reports/2026-10-08/effort-result.md`.
+ */
+export const GENERATION_EFFORT: GenerationEffort = "medium";
+
 const PER_CALL_TIMEOUT_MS = 5 * 60 * 1000;
 const ATTEMPT_RESERVE_MS = 60 * 1000;
 const MIN_ATTEMPT_MS = 90 * 1000;
@@ -144,7 +152,7 @@ export interface GenerationInput {
     slotVariables: Map<string, string[]>;
     /** Prompt lines to leave out, by id, for a prompt experiment. Never set outside one. */
     ablate?: readonly string[];
-    /** How much the model may think, for an effort experiment. Unset: the provider's default. */
+    /** How much the model may think, for an effort experiment. Unset: GENERATION_EFFORT. */
     effort?: GenerationEffort;
     /** The theme's own vocabulary for the shared system prompt; see `systemPromptOverride`. */
     systemOverride?: SystemPromptOverride;
@@ -907,7 +915,7 @@ export const generateComponentAttempts = async (
             prompt: buildPrompt(planned, slotVariables, feedback),
             name: planned.name,
             ablate: [...SYSTEM_PROMPT_OVERRIDE, ...(input.ablate ?? [])],
-            ...(input.effort ? { effort: input.effort } : {}),
+            effort: input.effort ?? GENERATION_EFFORT,
             ...(input.systemOverride ?? {}),
             additionalFileIds,
             abortSignal: AbortSignal.timeout(budget.timeoutMs),
