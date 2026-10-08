@@ -600,3 +600,7 @@ An approved revision that was published and later unpublished can be published a
 ## D122. Unavailable step types are shown disabled
 
 Revises D91: in Add step, every step type is listed. AI without the `aiPowerups` licence and Automation with no definition covering the workflow's model are shown disabled with the reason ("Requires AI Power-Ups", "No automations are available for this model" / "for pages"), and cannot be added. Resolves final-check item H2.
+
+## D123. Deleted-while-editing dialog without who and when
+
+No tombstone is kept for deleted workflows. When a save finds the workflow gone, the dialog reads "“{workflow}” was deleted while you were editing, so your changes were not saved. Save them as a new workflow for {model}, or discard them." with Discard changes / Save as new workflow. The server only reports that the workflow no longer exists. Resolves final-check item H3.
