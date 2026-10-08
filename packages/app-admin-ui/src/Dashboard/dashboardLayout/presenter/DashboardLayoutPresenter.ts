@@ -1,4 +1,6 @@
 import { makeAutoObservable } from "mobx";
+import { GetCachedDashboardLayoutUseCase } from "../loadLayout/abstractions.js";
+import { FetchDashboardLayoutUseCase } from "../loadLayout/abstractions.js";
 import { SaveDashboardLayoutUseCase } from "../saveLayout/abstractions.js";
 import { DEFAULT_COLUMN_COUNT } from "../types.js";
 import { MAX_COLUMN_COUNT } from "../types.js";
@@ -8,8 +10,12 @@ import { DashboardLayoutPresenter as Abstraction } from "./abstractions.js";
 import type { DashboardDropTarget } from "./abstractions.js";
 import type { DashboardWidgetInput } from "./abstractions.js";
 
+interface PendingSave {
+    userId: string;
+    layout: DashboardLayoutData;
+}
+
 class DashboardLayoutPresenterImpl implements Abstraction.Interface {
-    private _loading = true;
     // Whose layout this is. The presenter is a singleton, so a different user starts over.
     private _userId: string | null = null;
     private _columns: string[][] = [];
@@ -21,23 +27,41 @@ class DashboardLayoutPresenterImpl implements Abstraction.Interface {
     private _editing = false;
     // Non-reactive: each registered widget's default column index, used when (re)adding a widget.
     private _defaultColumns = new Map<string, number>();
+    // Non-reactive: the registered widgets, kept to apply the fetched layout when it arrives.
+    private _widgets: DashboardWidgetInput[] = [];
+    // Non-reactive: the user changed the layout since init, so the fetched layout is out of date.
+    private _changed = false;
     // Non-reactive: saves go out one at a time, and only the newest pending layout is kept.
     private _saving = false;
-    private _pendingSave: DashboardLayoutData | null = null;
+    private _pendingSave: PendingSave | null = null;
 
-    constructor(private saveDashboardLayoutUseCase: SaveDashboardLayoutUseCase.Interface) {
+    constructor(
+        private getCachedDashboardLayoutUseCase: GetCachedDashboardLayoutUseCase.Interface,
+        private fetchDashboardLayoutUseCase: FetchDashboardLayoutUseCase.Interface,
+        private saveDashboardLayoutUseCase: SaveDashboardLayoutUseCase.Interface
+    ) {
         makeAutoObservable<
             DashboardLayoutPresenterImpl,
+            | "getCachedDashboardLayoutUseCase"
+            | "fetchDashboardLayoutUseCase"
             | "saveDashboardLayoutUseCase"
             | "_defaultColumns"
+            | "_widgets"
+            | "_changed"
             | "_saving"
             | "_pendingSave"
+            | "revalidate"
             | "flushSaves"
         >(this, {
+            getCachedDashboardLayoutUseCase: false,
+            fetchDashboardLayoutUseCase: false,
             saveDashboardLayoutUseCase: false,
             _defaultColumns: false,
+            _widgets: false,
+            _changed: false,
             _saving: false,
             _pendingSave: false,
+            revalidate: false,
             flushSaves: false
         });
     }
@@ -49,7 +73,6 @@ class DashboardLayoutPresenterImpl implements Abstraction.Interface {
         }
 
         return {
-            loading: this._loading,
             columns: this._columns.map(column => [...column]),
             columnCount: this._columnCount,
             hidden: [...this._hidden],
@@ -59,21 +82,21 @@ class DashboardLayoutPresenterImpl implements Abstraction.Interface {
         };
     }
 
-    init(
-        userId: string,
-        widgets: DashboardWidgetInput[],
-        savedLayout: DashboardLayoutData | null
-    ): void {
+    init(userId: string, widgets: DashboardWidgetInput[]): void {
+        this._widgets = widgets;
+
         if (this._userId !== userId) {
-            // New session or another user: load their saved layout, and drop any save still
-            // queued for the previous user so it can't land in this user's profile.
+            // New session or another user: show their cached layout, and drop any save still
+            // queued for the previous user so it can't land in this user's dashboard.
             this._userId = userId;
             this._pendingSave = null;
+            this._changed = false;
             this._editing = false;
             this.endDrag();
-            const layout = normalizeLayout(savedLayout);
+            const cached = this.getCachedDashboardLayoutUseCase.execute(userId);
+            const layout = normalizeLayout(cached);
             this.applyOrder(widgets, layout);
-            this._loading = false;
+            void this.revalidate(userId);
             return;
         }
 
@@ -207,6 +230,15 @@ class DashboardLayoutPresenterImpl implements Abstraction.Interface {
         this.persist();
     };
 
+    // The stored layout replaces the cached one, unless the user already changed it on this visit.
+    applyFetchedLayout = (userId: string, fetched: DashboardLayoutData | null): void => {
+        if (this._userId !== userId || this._changed || this._draggingName !== null) {
+            return;
+        }
+        const layout = normalizeLayout(fetched);
+        this.applyOrder(this._widgets, layout);
+    };
+
     /**
      * Rebuild the columns and hidden list from a base state, keeping only currently registered
      * widgets. Widgets neither placed nor hidden are treated as newly registered and appended to
@@ -285,11 +317,29 @@ class DashboardLayoutPresenterImpl implements Abstraction.Interface {
         return clamp(column, 0, this._columnCount - 1);
     }
 
+    private async revalidate(userId: string): Promise<void> {
+        let fetched: DashboardLayoutData | null;
+        try {
+            fetched = await this.fetchDashboardLayoutUseCase.execute(userId);
+        } catch {
+            // Ignore, the cached or default layout stays on screen.
+            return;
+        }
+        this.applyFetchedLayout(userId, fetched);
+    }
+
     private persist(): void {
+        if (this._userId === null) {
+            return;
+        }
+        this._changed = true;
         this._pendingSave = {
-            columns: this._columns,
-            hidden: this._hidden,
-            columnCount: this._columnCount
+            userId: this._userId,
+            layout: {
+                columns: this._columns,
+                hidden: this._hidden,
+                columnCount: this._columnCount
+            }
         };
         if (!this._saving) {
             void this.flushSaves();
@@ -303,10 +353,10 @@ class DashboardLayoutPresenterImpl implements Abstraction.Interface {
     private async flushSaves(): Promise<void> {
         this._saving = true;
         while (this._pendingSave) {
-            const layout = this._pendingSave;
+            const { userId, layout } = this._pendingSave;
             this._pendingSave = null;
             try {
-                await this.saveDashboardLayoutUseCase.execute(layout);
+                await this.saveDashboardLayoutUseCase.execute(userId, layout);
             } catch {
                 // Ignore, a failed save must not break the interaction. The layout still applies locally.
             }
@@ -366,5 +416,9 @@ function normalizeLayout(layout: DashboardLayoutData | null): DashboardLayoutDat
 
 export const DashboardLayoutPresenter = Abstraction.createImplementation({
     implementation: DashboardLayoutPresenterImpl,
-    dependencies: [SaveDashboardLayoutUseCase]
+    dependencies: [
+        GetCachedDashboardLayoutUseCase,
+        FetchDashboardLayoutUseCase,
+        SaveDashboardLayoutUseCase
+    ]
 });

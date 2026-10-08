@@ -39,9 +39,6 @@ const WelcomeBase = () => {
         return map;
     }, [widgets]);
 
-    // The saved layout arrives with the login profile, so there's no extra request.
-    const savedLayout = identity?.profile?.dashboardLayout ?? null;
-
     // Re-initialize the presenter when the user or the set of registered widgets changes.
     const widgetsKey = widgets.map(w => `${w.name}:${toColumnIndex(w.column)}`).join("|");
     useEffect(() => {
@@ -49,7 +46,7 @@ const WelcomeBase = () => {
             name: widget.name,
             column: toColumnIndex(widget.column)
         }));
-        presenter.init(identity!.id, inputs, savedLayout);
+        presenter.init(identity!.id, inputs);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [identity?.id, widgetsKey]);
 

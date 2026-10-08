@@ -19,12 +19,6 @@ export interface ITeam {
     name: string;
 }
 
-export interface IDashboardLayout {
-    columns: string[][];
-    hidden: string[];
-    columnCount: number;
-}
-
 export interface IProfile {
     external: boolean;
     email?: string;
@@ -33,7 +27,6 @@ export interface IProfile {
     avatar?: {
         src?: string;
     };
-    dashboardLayout?: IDashboardLayout | null;
 }
 
 export interface IdentityData {
