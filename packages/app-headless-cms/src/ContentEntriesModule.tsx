@@ -38,6 +38,7 @@ import {
 } from "~/admin/components/ContentEntries/Table/Cells/index.js";
 import { IsModelPublishable } from "~/admin/components/IsModelPublishable.js";
 import { FilterByStatus } from "~/admin/components/ContentEntries/FilterByStatus.js";
+import { Ref } from "~/admin/components/ContentEntries/Filters/RefFieldRenderer.js";
 import { CmsTrashBin } from "~/presentation/contentEntries/trashBin/CmsTrashBin.js";
 import { TrashEntryConfirmDialog } from "~/admin/components/Dialogs/TrashEntryConfirmDialog.js";
 import { PublishEntryConfirmDialog } from "~/admin/components/Dialogs/PublishEntryConfirmDialog.js";
@@ -155,6 +156,11 @@ export const ContentEntriesModule = () => {
                     hideable={false}
                     truncate={false}
                     className={"flex justify-center"}
+                />
+                <Browser.AdvancedSearch.FieldRenderer
+                    name={"ref"}
+                    type={Browser.AdvancedSearch.FieldRenderer.FieldType.REF}
+                    element={<Ref />}
                 />
             </InternalContentEntryListConfig>
             <InternalContentEntryEditorConfig>
