@@ -580,3 +580,15 @@ The editor's model list loads 20 models at a time, sorted by name, with "Load mo
 ## D117. Editor resolves saved references for display
 
 When the editor loads a workflow, saved user and folder references (rule targets, folder conditions) are resolved by id so a value is never shown empty. A user that no longer exists shows as "Deleted user" with the warning "The assigned user was deleted."; routing already skips such a rule (D46). Folders use the D69 checks: "Restricted folder" when the admin cannot see it, "Deleted folder" with "The folder no longer exists." when it is gone. The user lookup accepts a list of ids and reports which ones do not exist. From design answer QBZ-7.
+
+## D118. Rules targeting an excluded person are skipped
+
+Extends D46. When a routing rule matches but its target person is currently excluded (D16), the rule is skipped and evaluation continues with the next rule, then the strategy. The routing trace (and Test routing) marks the rule "Skipped" with the exclusion reason and lists the person among skipped people. The rule card in the editor warns "{name} is unavailable (excluded until …). The rule is skipped while the exclusion lasts." From design answer QBZ-41.
+
+## D119. Review "last change" and list sorting
+
+Each review keeps a `lastChangedOn` timestamp, updated on every review event: requested, step reached, started, taken over, reassigned, approved, rejected, failed, restarted, and content updated by a step. Edits made outside the review do not update it. Content Reviews lists sort only by it: oldest first by default in Assigned to me, Team pool, Team in review and Failed steps (work queues), newest first in My requests; the user can toggle the direction, and switching tabs resets it. The list queries take `sort: lastChangedOn asc | desc`; load more continues in the current order. For approved reviews the list shows the last step and its owner; for rejected ones the rejecting step and who rejected it (D107 naming). From design answers QBZ-69 and QBZ-70.
+
+## D120. Step descriptions are shown to users
+
+A step's description is shown to the requester in the Request review steps preview and to everyone with access in Review details, under the step name. The steps preview and Review details queries return it. Placeholders in the editor differ per step type. From design answer QBZ-46.

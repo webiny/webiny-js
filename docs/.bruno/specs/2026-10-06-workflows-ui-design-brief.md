@@ -287,7 +287,7 @@ Common fields for every step type:
 
 **Filters.** All tabs: content type, search by title. **My requests** only: review state (In progress, Approved, Rejected) and step state. The other tabs have a fixed step state, so no state filter. Cancelled reviews never appear.
 
-**Columns.** Title, content type, current step, step state, owner, requester, last change.
+**Columns.** Title, content type, current step, step state, owner, requester, last change. Only Last change is sortable: oldest first in the work-queue tabs, newest first in My requests, toggleable; it updates on every review event, not on edits outside the review [D119].
 
 **Row actions** (only where allowed): open content, open in new window, view details, start, take over, reassign. Approve and reject are not available from the list; reviewers open the content first.
 
