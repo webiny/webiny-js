@@ -7,6 +7,7 @@ import { createLiveContextFactory } from "~tests/live";
 import { testDefinitionPlugin, TASK_ID } from "~tests/runner/taskDefinition";
 import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation";
+import { TasksCrud } from "~/api/TasksCrud.js";
 
 describe("task runner error in failed state", () => {
     const contextFactory = createLiveContextFactory({
@@ -18,12 +19,12 @@ describe("task runner error in failed state", () => {
 
         const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
-        const task = await context.tasks.createTask({
+        const task = await context.container.resolve(TasksCrud).createTask({
             definitionId: TASK_ID,
             input: {},
             name: "My task name"
         });
-        const updatedTask = await context.tasks.updateTask(task.id, {
+        const updatedTask = await context.container.resolve(TasksCrud).updateTask(task.id, {
             taskStatus: TaskDataStatus.FAILED
         });
 

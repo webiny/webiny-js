@@ -7,6 +7,7 @@ import { createLiveContextFactory } from "~tests/live";
 import { testDefinitionPlugin, TASK_ID } from "~tests/runner/taskDefinition";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation";
 import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
 
 describe("task runner trigger and end successfully", () => {
     const contextFactory = createLiveContextFactory({
@@ -18,7 +19,7 @@ describe("task runner trigger and end successfully", () => {
 
         const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
-        const task = await context.tasks.createTask({
+        const task = await context.container.resolve(TasksCrud).createTask({
             definitionId: TASK_ID,
             input: {},
             name: "My task name"
@@ -43,13 +44,13 @@ describe("task runner trigger and end successfully", () => {
             }
         });
 
-        const doneTask = await context.tasks.getTask(task.id);
+        const doneTask = await context.container.resolve(TasksCrud).getTask(task.id);
         expect(doneTask?.taskStatus).toBe(TaskDataStatus.SUCCESS);
         expect(doneTask?.output).toEqual({
             myCustomOutput: "yes!"
         });
 
-        const { items, meta } = await context.tasks.listLogs({
+        const { items, meta } = await context.container.resolve(TasksCrud).listLogs({
             where: {
                 task: task.id
             }
@@ -81,7 +82,7 @@ describe("task runner trigger and end successfully", () => {
             new TaskEventValidation()
         );
 
-        const task = await context.tasks.createTask({
+        const task = await context.container.resolve(TasksCrud).createTask({
             definitionId: TASK_ID,
             input: {
                 aTaskInput: "yes"
@@ -113,7 +114,7 @@ describe("task runner trigger and end successfully", () => {
         /**
          * Make sure that the data in the DB is correct.
          */
-        const firstRunTask = await context.tasks.getTask(task.id);
+        const firstRunTask = await context.container.resolve(TasksCrud).getTask(task.id);
         expect(firstRunTask).toEqual({
             taskStatus: TaskDataStatus.RUNNING,
             input: {
@@ -154,7 +155,7 @@ describe("task runner trigger and end successfully", () => {
             }
         });
 
-        const secondRunTask = await context.tasks.getTask(task.id);
+        const secondRunTask = await context.container.resolve(TasksCrud).getTask(task.id);
         expect(secondRunTask).toEqual({
             taskStatus: TaskDataStatus.SUCCESS,
             input: {

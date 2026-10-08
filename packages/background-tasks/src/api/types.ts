@@ -251,9 +251,7 @@ export interface ITasksContextServiceObject {
 export interface ITasksContextObject
     extends ITasksContextCrudObject, ITasksContextDefinitionObject, ITasksContextServiceObject {}
 
-export interface Context extends BaseContext {
-    tasks: ITasksContextObject;
-}
+export interface Context extends BaseContext {}
 
 export interface TaskPermission extends SecurityPermission {
     name: "task";

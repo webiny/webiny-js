@@ -4,6 +4,7 @@ import { createMockTaskDefinitions } from "~tests/mocks/definition";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
 import { TaskLogItemType } from "~/api/types";
 import { createMockIdentity } from "~tests/mocks/identity";
+import { TasksCrud } from "~/api/TasksCrud.js";
 
 describe("graphql - logs", () => {
     const contextHandler = useRawHandler({
@@ -16,13 +17,13 @@ describe("graphql - logs", () => {
     it("should add first log entry", async () => {
         const context = await contextHandler.handle();
 
-        const task = await context.tasks.createTask({
+        const task = await context.container.resolve(TasksCrud).createTask({
             name: "My Custom Task #1",
             definitionId: "myCustomTaskNumber1",
             input: {}
         });
 
-        const log = await context.tasks.createLog(task, {
+        const log = await context.container.resolve(TasksCrud).createLog(task, {
             executionName: "someExecutionName",
             iteration: 1
         });
@@ -36,7 +37,7 @@ describe("graphql - logs", () => {
             items: []
         });
 
-        const result = await context.tasks.getLatestLog(task.id);
+        const result = await context.container.resolve(TasksCrud).getLatestLog(task.id);
         expect(result).toEqual({
             id: expect.any(String),
             createdBy: createMockIdentity(),
@@ -51,13 +52,13 @@ describe("graphql - logs", () => {
     it("should list logs", async () => {
         const context = await contextHandler.handle();
 
-        const task = await context.tasks.createTask({
+        const task = await context.container.resolve(TasksCrud).createTask({
             name: "My Custom Task #1",
             definitionId: "myCustomTaskNumber1",
             input: {}
         });
 
-        const log1 = await context.tasks.createLog(task, {
+        const log1 = await context.container.resolve(TasksCrud).createLog(task, {
             executionName: "someExecutionName",
             iteration: 1
         });
@@ -67,7 +68,7 @@ describe("graphql - logs", () => {
             type: TaskLogItemType.INFO,
             createdOn: new Date().toISOString()
         };
-        const log2 = await context.tasks.updateLog(log1.id, {
+        const log2 = await context.container.resolve(TasksCrud).updateLog(log1.id, {
             items: log1.items.concat(log2Item)
         });
 
@@ -77,7 +78,7 @@ describe("graphql - logs", () => {
             createdOn: new Date().toISOString()
         };
 
-        const log3 = await context.tasks.updateLog(log1.id, {
+        const log3 = await context.container.resolve(TasksCrud).updateLog(log1.id, {
             items: log2.items.concat(log3Item)
         });
 
@@ -94,11 +95,11 @@ describe("graphql - logs", () => {
             }
         };
 
-        await context.tasks.updateLog(log1.id, {
+        await context.container.resolve(TasksCrud).updateLog(log1.id, {
             items: log3.items.concat(log4Item)
         });
 
-        const logResult = await context.tasks.getLatestLog(task.id);
+        const logResult = await context.container.resolve(TasksCrud).getLatestLog(task.id);
         expect(logResult).toEqual({
             id: log1.id,
             createdBy: createMockIdentity(),
