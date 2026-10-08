@@ -473,6 +473,12 @@ export interface ClusterMember {
     /** Index of the section on its page (into the content root's children). */
     sectionIndex: number;
     signature: string;
+    /**
+     * The section's signature under the previous fingerprint (depth 6 from the section root), which
+     * overrides recorded before 2026-10-08 are keyed by. Reattachment accepts either. Absent on members
+     * clustered before it existed, whose `signature` is that one.
+     */
+    legacySignature?: string;
     /** Blob key of this member's section crop, so the cluster view can show every member. */
     cropRef: string;
     /** Carried from Segment: why this member's crop is missing or partial, when it is. */

@@ -1,8 +1,64 @@
 import type { ThemeManifest } from "@webiny/theme-common";
 import type { CapturedNode, SectionShape, TypeNode } from "~/domain/artifacts.js";
 
+/** The fixed depth the fingerprint used before it was anchored at a section's content. */
+export const LEGACY_DEPTH = 6;
+/** How far below its first content element a section is fingerprinted. */
+const BELOW_CONTENT = 5;
+
+/** Elements that are content rather than layout: what a section shows and does. */
+const CONTENT_TAGS = new Set([
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "p",
+    "img",
+    "picture",
+    "video",
+    "iframe",
+    "svg",
+    "a",
+    "button",
+    "form",
+    "input",
+    "select",
+    "textarea",
+    "label",
+    "ul",
+    "ol"
+]);
+
+/** The depth of a section's shallowest content element below its root, or null when it has none. */
+export const firstContentDepth = (node: CapturedNode, depth = 0): number | null => {
+    if (depth > 0 && CONTENT_TAGS.has(node.tag)) {
+        return depth;
+    }
+    let best: number | null = null;
+    for (const child of node.children ?? []) {
+        const found = firstContentDepth(child, depth + 1);
+        if (found !== null && (best === null || found < best)) {
+            best = found;
+        }
+    }
+    return best;
+};
+
+/**
+ * How deep a section is fingerprinted: from its root to a fixed distance below its first content.
+ *
+ * A fixed depth of 6 fingerprinted the wrapper stack on templates whose first heading sits at depth 8 or
+ * 9 (four of the five demo sites), so a photo carousel, an apply-now hero and a tour form read as the
+ * same shape and clustered together. Anchoring the depth at the content keeps a shallow section's
+ * fingerprint exactly as it was.
+ */
+export const fingerprintDepth = (node: CapturedNode): number =>
+    Math.max(LEGACY_DEPTH, (firstContentDepth(node) ?? 1) + BELOW_CONTENT);
+
 /** The element-type tree shape — tags only, depth-capped so a deep section stays a bounded fingerprint. */
-export const toTypeTree = (node: CapturedNode, maxDepth = 6): TypeNode => ({
+export const toTypeTree = (node: CapturedNode, maxDepth = LEGACY_DEPTH): TypeNode => ({
     tag: node.tag,
     children: maxDepth <= 0 ? [] : node.children.map(child => toTypeTree(child, maxDepth - 1))
 });
@@ -91,7 +147,7 @@ export const sectionShape = (
     }
 
     return {
-        typeTree: toTypeTree(node),
+        typeTree: toTypeTree(node, fingerprintDepth(node)),
         geometryClass: geometryClass(node, viewportWidth),
         tokens: [...tokens]
     };

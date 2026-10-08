@@ -17,7 +17,7 @@ import { findNodeByBox } from "./sectionNode.js";
 import { backdropColour, resolveSectionColours } from "./resolvedColours.js";
 import { createToneReader, isTranslucent } from "~/features/shared/imageTone.js";
 import { structuralSignature } from "./signature.js";
-import { buildTokenLookup, sectionShape, type TokenLookup } from "./sectionShape.js";
+import { buildTokenLookup, sectionShape, toTypeTree, type TokenLookup } from "./sectionShape.js";
 import { sectionDigest } from "./digest.js";
 import { clusterCountAt, leaderCluster, nearestPairSimilarity } from "./similarity.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
@@ -160,6 +160,11 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                     url: page.url,
                     sectionIndex: section.index,
                     signature: structuralSignature(shape),
+                    // The signature under the previous fingerprint, which earlier overrides are keyed by.
+                    legacySignature: structuralSignature({
+                        ...shape,
+                        typeTree: toTypeTree(node)
+                    }),
                     cropRef: section.cropRef,
                     ...(section.cropWarning ? { cropWarning: section.cropWarning } : {}),
                     ...(section.cropScale ? { cropScale: section.cropScale } : {}),

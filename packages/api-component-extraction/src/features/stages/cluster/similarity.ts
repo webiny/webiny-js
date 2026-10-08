@@ -25,17 +25,25 @@ const collectPaths = (node: TypeNode, prefix: string, out: Map<string, number>):
     }
 };
 
-/** Weighted Jaccard of two multisets: shared paths over total paths, counting multiplicity. */
-const weightedJaccard = (a: Map<string, number>, b: Map<string, number>): number => {
-    let intersection = 0;
-    let union = 0;
-    for (const key of new Set([...a.keys(), ...b.keys()])) {
-        const av = a.get(key) ?? 0;
-        const bv = b.get(key) ?? 0;
-        intersection += Math.min(av, bv);
-        union += Math.max(av, bv);
+/**
+ * Jaccard over the paths present, ignoring how many times each occurs.
+ *
+ * With the fingerprint reaching a section's content, counting paths made content length structural:
+ * Westland's five centred intros, one template, split three ways by how many paragraphs each has.
+ * Which paths exist says what the section is built from; how often says how much it says.
+ */
+const presenceJaccard = (a: Map<string, number>, b: Map<string, number>): number => {
+    const keys = new Set([...a.keys(), ...b.keys()]);
+    if (keys.size === 0) {
+        return 1;
     }
-    return union === 0 ? 1 : intersection / union;
+    let shared = 0;
+    for (const key of keys) {
+        if (a.has(key) && b.has(key)) {
+            shared++;
+        }
+    }
+    return shared / keys.size;
 };
 
 /** Jaccard of two token sets; two token-less sections don't discriminate, so they score 1. */
@@ -60,7 +68,7 @@ export const sectionSimilarity = (a: SectionShape, b: SectionShape): number => {
     collectPaths(a.typeTree, "", pathsA);
     collectPaths(b.typeTree, "", pathsB);
 
-    const treeSim = weightedJaccard(pathsA, pathsB);
+    const treeSim = presenceJaccard(pathsA, pathsB);
     const geometrySim = a.geometryClass === b.geometryClass ? 1 : 0;
     const tokenSim = setJaccard(a.tokens, b.tokens);
 

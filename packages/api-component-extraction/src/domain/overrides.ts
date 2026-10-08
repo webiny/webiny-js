@@ -111,10 +111,20 @@ const clusterFromMembers = (members: ClusterMember[]): Cluster => {
 };
 
 /** Combine merged clusters into one, choosing the representative and unioning members and observed text. */
+/**
+ * Whether a recorded signature names this member: its signature, or the one it had under the previous
+ * fingerprint. The fingerprint changed (2026-10-08, depth anchored at the first content element) and gave
+ * most sections a new signature; without this, every correction recorded before it stopped reattaching.
+ */
+const isSignatureOf = (
+    member: Pick<ClusterMember, "signature" | "legacySignature">,
+    signature: string
+) => member.signature === signature || member.legacySignature === signature;
+
 const mergeClusters = (matched: Cluster[], pinnedSignature: string | undefined): Cluster => {
     const representative =
         (pinnedSignature &&
-            matched.find(cluster => cluster.representative.signature === pinnedSignature)) ||
+            matched.find(cluster => isSignatureOf(cluster.representative, pinnedSignature))) ||
         [...matched].sort((a, b) => b.members.length - a.members.length)[0];
     const members = dedupeMembers(matched.flatMap(cluster => cluster.members));
     const observedTexts = [...new Set(matched.flatMap(cluster => cluster.observedTexts))].slice(
@@ -165,7 +175,7 @@ export const applyClusterOverrides = (
     // The current cluster holding a given section (a representative is always a member) — stable across
     // representative re-selection, unlike matching on `representative.signature`.
     const clusterHolding = (signature: string): Cluster | undefined =>
-        clusters.find(cluster => cluster.members.some(member => member.signature === signature));
+        clusters.find(cluster => cluster.members.some(member => isSignatureOf(member, signature)));
 
     // Apply in creation order so a later correction sees the effect of earlier ones.
     const ordered = [...overrides].sort((a, b) => a.createdOn.localeCompare(b.createdOn));
@@ -204,9 +214,11 @@ export const applyClusterOverrides = (
                 const pulled: ClusterMember[] = [];
                 for (const cluster of clusters) {
                     const staying = cluster.members.filter(
-                        member => !targets.has(member.signature)
+                        member => ![...targets].some(signature => isSignatureOf(member, signature))
                     );
-                    const leaving = cluster.members.filter(member => targets.has(member.signature));
+                    const leaving = cluster.members.filter(member =>
+                        [...targets].some(signature => isSignatureOf(member, signature))
+                    );
                     if (leaving.length > 0) {
                         pulled.push(...leaving);
                         cluster.members = staying;
@@ -252,8 +264,8 @@ export const applyClusterOverrides = (
                     break;
                 }
                 if (source !== target) {
-                    const member = source.members.find(
-                        item => item.signature === correction.memberSignature
+                    const member = source.members.find(item =>
+                        isSignatureOf(item, correction.memberSignature)
                     )!;
                     source.members = source.members.filter(item => item !== member);
                     target.members.push(member);
@@ -298,10 +310,20 @@ export const applyClassifyOverrides = (
             .map(override => [override.structuralSignature, override])
     );
     const reattachments: Reattachment[] = [];
-    const present = new Set(artifact.clusters.map(entry => entry.cluster.signature));
+    // A cluster answers to its signature and to its representative's under the previous fingerprint.
+    const present = new Set(
+        artifact.clusters.flatMap(entry =>
+            [entry.cluster.signature, entry.cluster.representative?.legacySignature].filter(
+                (signature): signature is string => Boolean(signature)
+            )
+        )
+    );
 
     const clusters = artifact.clusters.map(entry => {
-        const override = bySignature.get(entry.cluster.signature);
+        const legacy = entry.cluster.representative?.legacySignature;
+        const override =
+            bySignature.get(entry.cluster.signature) ??
+            (legacy ? bySignature.get(legacy) : undefined);
         if (!override) {
             return entry;
         }
@@ -339,10 +361,19 @@ export const applyPlanOverrides = (
         bySignature.set(override.structuralSignature, list);
     }
     const reattachments: Reattachment[] = [];
-    const present = new Set(artifact.components.map(component => component.signature));
+    // As for Classify: a component answers to its representative's previous signature too.
+    const present = new Set(
+        artifact.components.flatMap(component =>
+            [component.signature, component.representative?.legacySignature].filter(
+                (signature): signature is string => Boolean(signature)
+            )
+        )
+    );
 
     const components = artifact.components.map(component => {
-        const forComponent = bySignature.get(component.signature);
+        const legacy = component.representative?.legacySignature;
+        const forComponent =
+            bySignature.get(component.signature) ?? (legacy ? bySignature.get(legacy) : undefined);
         if (!forComponent) {
             return component;
         }

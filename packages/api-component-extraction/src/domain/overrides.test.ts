@@ -468,3 +468,62 @@ describe("page + parameter helpers", () => {
         expect(overrideMode("cluster.exclude")).toBe("artifact");
     });
 });
+
+/*
+ * The cluster fingerprint changed on 2026-10-08 and gave most sections a new signature. Overrides recorded
+ * before then are keyed by the old one, which Cluster now keeps as `legacySignature`.
+ */
+describe("overrides recorded under the previous fingerprint", () => {
+    const renamed = (newSig: string, oldSig: string, url: string, index = 0): ClusterMember => ({
+        ...member(newSig, url, index),
+        legacySignature: oldSig
+    });
+
+    it("excludes a cluster found by a member's previous signature", () => {
+        const artifact = {
+            clusters: [
+                cluster("NEW-A", [renamed("NEW-A", "OLD-A", "/1")]),
+                cluster("B", [member("B", "/2")])
+            ]
+        };
+        const result = applyClusterOverrides(artifact as never, [
+            override("cluster", "OLD-A", { kind: "cluster.exclude" })
+        ]);
+        expect(result.effective.clusters.find(c => c.signature === "NEW-A")!.excluded).toBe(true);
+        expect(result.reattachments[0].status).toBe("applied");
+    });
+
+    it("splits members named by their previous signatures", () => {
+        const artifact = {
+            clusters: [
+                cluster("NEW-A", [
+                    renamed("NEW-A", "OLD-A", "/1"),
+                    renamed("NEW-X", "OLD-X", "/2"),
+                    renamed("NEW-X", "OLD-X", "/3", 1)
+                ])
+            ]
+        };
+        const result = applyClusterOverrides(artifact as never, [
+            override("cluster", "OLD-A", { kind: "cluster.split", memberSignatures: ["OLD-X"] })
+        ]);
+        expect(result.effective.clusters).toHaveLength(2);
+        expect(result.reattachments[0].status).toBe("applied");
+    });
+
+    it("applies a Classify override keyed by the representative's previous signature", () => {
+        const classified = {
+            clusters: [
+                {
+                    cluster: cluster("NEW-A", [renamed("NEW-A", "OLD-A", "/1")]),
+                    name: "Machine name",
+                    type: "content"
+                }
+            ]
+        } as unknown as ClassifyArtifact;
+        const result = applyClassifyOverrides(classified, [
+            override("classify", "OLD-A", { kind: "classify.set", name: "Hero", type: "hero" })
+        ]);
+        expect(result.effective.clusters[0].name).toBe("Hero");
+        expect(result.reattachments.every(r => r.status === "applied")).toBe(true);
+    });
+});

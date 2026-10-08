@@ -6,11 +6,13 @@ import { bundleComponent } from "@webiny/remote-components/api/bundler/index.js"
 import { StageHandler, type StageContext, type StageOutcome } from "~/domain/stage.js";
 import { OverrideRepository } from "~/domain/abstractions.js";
 import { decisionsFromOverrides, overridesForStage } from "~/domain/overrides.js";
+import { stageEntry } from "~/domain/ledger.js";
 import { readComponents } from "~/domain/generatedComponents.js";
 import type { Correction } from "~/domain/types.js";
 import type {
     AssembleArtifact,
     GenerateArtifact,
+    PlanArtifact,
     PromoteArtifact,
     PromotedComponent,
     SkippedComponent
@@ -131,6 +133,27 @@ class PromoteHandlerImpl implements StageHandler.Interface {
 
         // When any decision exists, only accepted components are promoted; with none, every valid one is.
         const decisions = decisionsFromOverrides(allOverrides);
+        /*
+         * Decisions and choices recorded before the fingerprint changed (2026-10-08) are keyed by a
+         * component's previous signature, which the plan keeps on its representative.
+         */
+        const legacyOf = new Map<string, string>();
+        const planRef = stageEntry(context.run.stages, "plan")?.artifacts?.plan;
+        if (planRef) {
+            const plan = await context.store.getJson<PlanArtifact>(planRef);
+            for (const planned of plan.isOk() ? (plan.value?.components ?? []) : []) {
+                if (planned.representative?.legacySignature) {
+                    legacyOf.set(planned.signature, planned.representative.legacySignature);
+                }
+            }
+        }
+        const recorded = <T>(
+            bySignature: (signature: string) => T | undefined,
+            signature: string
+        ) => {
+            const legacy = legacyOf.get(signature);
+            return bySignature(signature) ?? (legacy ? bySignature(legacy) : undefined);
+        };
         const hasDecisions = Object.keys(decisions).length > 0;
 
         // Every promoted component is namespaced under the extraction's name, e.g. "Webiny4/Hero".
@@ -152,7 +175,7 @@ class PromoteHandlerImpl implements StageHandler.Interface {
 
             // Honour the operator's decisions first: a rejected component is never promoted, and once any
             // decision has been made, an undecided one is held back too (only explicit accepts promote).
-            const decision = decisions[component.signature];
+            const decision = recorded(signature => decisions[signature], component.signature);
             if (decision === "rejected" || (hasDecisions && decision !== "accepted")) {
                 skipped.push({
                     signature: component.signature,
@@ -209,7 +232,7 @@ class PromoteHandlerImpl implements StageHandler.Interface {
             }
 
             // Honour the operator's Promote selection: a component explicitly deselected is not promoted.
-            const choice = choices.get(component.signature);
+            const choice = recorded(signature => choices.get(signature), component.signature);
             if (choice && !choice.selected) {
                 skipped.push({ signature: component.signature, reason: "deselected" });
                 await context.progress({
