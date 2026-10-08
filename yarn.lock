@@ -10611,6 +10611,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-dashboard@npm:0.0.0, @webiny/api-dashboard@workspace:packages/api-dashboard":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-dashboard@workspace:packages/api-dashboard"
+  dependencies:
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
+    "@webiny/api-graphql": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    graphql: "npm:^16.14.2"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.11"
+    zod: "npm:4.4.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-event-handler-aws-ddb-os@npm:0.0.0, @webiny/api-event-handler-aws-ddb-os@workspace:packages/api-event-handler-aws-ddb-os":
   version: 0.0.0-use.local
   resolution: "@webiny/api-event-handler-aws-ddb-os@workspace:packages/api-event-handler-aws-ddb-os"
@@ -10696,6 +10714,7 @@ __metadata:
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-dashboard": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-file-manager-aco": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
@@ -11817,13 +11836,19 @@ __metadata:
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.1.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     cmdk: "npm:^1.1.1"
+    mobx: "npm:^7.0.3"
     react: "npm:18.3.1"
+    react-dnd: "npm:^16.0.1"
+    react-dnd-html5-backend: "npm:^16.0.1"
     react-dom: "npm:18.3.1"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.11"
   languageName: unknown
   linkType: soft
 

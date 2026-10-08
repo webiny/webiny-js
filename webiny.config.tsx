@@ -39,6 +39,8 @@ export const Extensions = () => {
             <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
             <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
             <Admin.Extension src={"@/extensions/commandPalette/index.tsx"} />
+            {/* Dashboard widgets demo: five store widgets with previews in the "Add widget" drawer. */}
+            {/*<Admin.Extension src={"@/extensions/dashboardWidgetsDemo/index.tsx"} />*/}
             {/*<Admin.Extension src={"@/extensions/newEntryWizardDemo/index.tsx"} />*/}
 
             {/* Bulk actions demo: "Apply Discount" bulk action on Products (API + Admin) */}
