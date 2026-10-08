@@ -209,4 +209,39 @@ describe("buildComponentPrompt", () => {
             }
         });
     });
+    describe("measured spacing", () => {
+        it("says what a variable renders where the theme's value is not the section's", () => {
+            const prompt = buildComponentPrompt(
+                {
+                    ...footer,
+                    spacing: [
+                        {
+                            kind: "gap",
+                            px: 16,
+                            elements: 7,
+                            token: null,
+                            otherSlot: { cssVariable: "--wby-space-gap", px: 30 }
+                        },
+                        {
+                            kind: "container",
+                            px: 25,
+                            elements: 3,
+                            token: {
+                                path: "space.container.padding",
+                                cssVariable: "--wby-space-container-padding",
+                                px: 25
+                            }
+                        }
+                    ]
+                } as unknown as PlannedComponent,
+                new Map()
+            );
+            expect(prompt).toContain(
+                "- gap between items in a stack or row: 16px (7) — write 16px as a plain value, not inside a variable: var(--wby-space-gap) renders 30px on this theme, so 16px in its fallback would never apply"
+            );
+            expect(prompt).toContain(
+                "- padding inside cards, panels and containers: 25px (3) — use var(--wby-space-container-padding)"
+            );
+        });
+    });
 });

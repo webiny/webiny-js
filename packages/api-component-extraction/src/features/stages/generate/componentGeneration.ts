@@ -368,6 +368,12 @@ const SPACING_KIND: Record<SpacingEntry["kind"], string> = {
  * components with the library's scale. Each kind is given as the theme's variable for it where that
  * carries the section's value, and as px where it does not. On the five demo sites it mostly does not:
  * the themes' spacing slots were not measured from these sections.
+ *
+ * Where it does not, the line says what the variable renders instead. Told only "use 16px directly",
+ * the model wrote `var(--wby-space-gap, 16px)` — the right number, as the fallback of a variable that
+ * renders 30px on that theme, so the number never applied (8 of 10 such declarations after the spacing
+ * fix). A fact about this theme rather than a rule: the ablation found the model follows accurate
+ * specifics and ignores general prohibitions.
  */
 const spacingLines = (component: PlannedComponent): string[] => {
     const spacing = component.spacing ?? [];
@@ -382,7 +388,9 @@ const spacingLines = (component: PlannedComponent): string[] => {
                 `- ${SPACING_KIND[entry.kind]}: ${entry.px}px (${entry.elements}) — ${
                     entry.token
                         ? `use var(${entry.token.cssVariable})`
-                        : `no theme variable carries this value, use ${entry.px}px directly`
+                        : entry.otherSlot
+                          ? `write ${entry.px}px as a plain value, not inside a variable: var(${entry.otherSlot.cssVariable}) renders ${entry.otherSlot.px}px on this theme, so ${entry.px}px in its fallback would never apply`
+                          : `no theme variable carries this value, use ${entry.px}px directly`
                 }`
         )
     ];

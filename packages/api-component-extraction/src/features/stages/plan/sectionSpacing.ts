@@ -101,12 +101,16 @@ export const sectionSpacing = (
         // The most common value; on a tie, the larger one, which is the more visible.
         const [px, elements] = [...byValue.entries()].sort((a, b) => b[1] - a[1] || b[0] - a[0])[0];
         const slot = slotPx(manifest, SLOT[kind]);
+        const matches = slot !== null && Math.abs(slot.px - px) <= NEAR(px);
         return [
             {
                 kind,
                 px,
                 elements,
-                token: slot && Math.abs(slot.px - px) <= NEAR(px) ? slot : null
+                token: matches ? slot : null,
+                ...(slot && !matches
+                    ? { otherSlot: { cssVariable: slot.cssVariable, px: slot.px } }
+                    : {})
             }
         ];
     });

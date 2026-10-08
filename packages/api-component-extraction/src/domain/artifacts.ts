@@ -762,6 +762,11 @@ export interface SpacingEntry {
     elements: number;
     /** The slot made for this kind, when its value is this one. */
     token: { path: string; cssVariable: string; px: number } | null;
+    /**
+     * The slot made for this kind when its value is NOT this one: what that variable renders on this
+     * theme, so the prompt can say why the value must be written plainly rather than as its fallback.
+     */
+    otherSlot?: { cssVariable: string; px: number };
 }
 
 export interface PlannedComponent {

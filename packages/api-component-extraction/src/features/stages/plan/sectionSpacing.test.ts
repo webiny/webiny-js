@@ -39,6 +39,13 @@ describe("sectionSpacing", () => {
             ["space.container.padding", "--wby-space-container-padding", "25px"]
         ]);
         expect(sectionSpacing(section, park).every(entry => entry.token === null)).toBe(true);
+        // ...and says what the kind's variable renders instead, for the prompt to name.
+        expect(
+            sectionSpacing(section, park).find(entry => entry.kind === "gap")?.otherSlot
+        ).toEqual({
+            cssVariable: "--wby-space-gap",
+            px: 20
+        });
 
         const matching = manifest([["space.gap", "--wby-space-gap", "16px"]]);
         expect(
