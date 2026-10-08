@@ -38,8 +38,8 @@ export const WidgetDropIndicator = ({ title, height }: WidgetDropIndicatorProps)
             data-testid={"dashboard-widget-drop-indicator"}
             className={cn(
                 "pointer-events-none w-full flex-none overflow-hidden",
-                // `rounded-xl` matches the DS Widget, so the slot looks like the card it stands for.
-                "rounded-xl border-sm border-dashed",
+                // `rounded-xl` and the 2px border match the cards' outline in Customize mode.
+                "rounded-xl border-2 border-dashed",
                 "motion-safe:transition-[height] motion-safe:duration-200 motion-safe:ease-out"
             )}
             style={{
