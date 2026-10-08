@@ -68,6 +68,7 @@ const WelcomeBase = () => {
             title: widget.title ?? widget.name,
             description: widget.description,
             group: widget.group,
+            preview: widget.preview,
             added: !vm.hidden.includes(widget.name),
             defaultColumn: Math.min(registeredColumn, vm.columnCount - 1)
         };

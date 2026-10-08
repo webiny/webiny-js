@@ -25,6 +25,7 @@ export const AdminUI = () => {
                     column="right"
                     pin="last"
                     element={<AssistanceWidget />}
+                    preview={<AssistanceWidget />}
                 />
                 <AdminConfig.Dashboard.Widget
                     name="admin.community"
@@ -34,6 +35,7 @@ export const AdminUI = () => {
                     pin="last"
                     column="right"
                     element={<CommunityWidget />}
+                    preview={<CommunityWidget />}
                 />
             </AdminConfig>
             <Dashboard />
