@@ -17,8 +17,8 @@ import type {
     PlannedComponent,
     ValidationResult
 } from "~/domain/artifacts.js";
-import { representativeValues } from "~/domain/artifacts.js";
 import { isTranslucent } from "~/features/shared/translucency.js";
+import { createCopyAttribution, ownStructuredValues } from "./copyAttribution.js";
 import { stageArtifactKey } from "~/constants.js";
 import {
     combineValidation,
@@ -463,11 +463,24 @@ const buildPrompt = (
     slotVariables: Map<string, string[]>,
     feedback: string[] = []
 ): string => {
+    const attribute = createCopyAttribution(component);
     const propLines = (prop: PlannedComponent["props"][number], indent: string): string[] => {
         const decor = `${prop.array ? "[]" : ""}${prop.optional ? "?" : ""}`;
-        const sample = prop.observedValues.length
-            ? `: e.g. ${prop.observedValues.slice(0, 3).join(" | ")}`
-            : "";
+        /*
+         * A prop's examples are the values this section has, not the ones only another copy shows: the
+         * model builds its examples in. `observedValues` itself stays the union, for the readers that
+         * rely on it.
+         */
+        const values = prop.observedValues.filter(value => attribute(value) !== "other");
+        const elsewhere =
+            prop.observedValues.length > 0 &&
+            values.length === 0 &&
+            ownStructuredValues(prop.observedStructured, attribute).length === 0;
+        const sample = elsewhere
+            ? " — this section shows no value for it: default it to empty and render nothing when it is empty"
+            : values.length
+              ? `: e.g. ${values.slice(0, 3).join(" | ")}`
+              : "";
         const line = `${indent}${prop.name} (${prop.type}${decor})${sample}`;
         const children = (prop.fields ?? []).flatMap(field => propLines(field, `  ${indent}`));
         return [line, ...children];
@@ -483,9 +496,9 @@ const buildPrompt = (
      */
     const structuredLines = (prop: PlannedComponent["props"][number], indent: string): string[] => {
         const lines: string[] = [];
-        // The representative's own values: they are what its reference image shows. Other copies'
-        // values stay in the plan for the readers that need the union.
-        for (const value of representativeValues(prop.observedStructured)) {
+        // The section's own values: they are what its reference image shows. Other copies' values
+        // stay in the plan for the readers that need the union. See `ownStructuredValues`.
+        for (const value of ownStructuredValues(prop.observedStructured, attribute)) {
             if (value.kind === "media") {
                 lines.push(
                     `${indent}${prop.name}: ${value.src}${value.alt ? ` (alt: "${value.alt}")` : ""}`
