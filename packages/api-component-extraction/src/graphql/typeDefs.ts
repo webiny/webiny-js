@@ -94,6 +94,12 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         error: ComponentExtractionError
     }
 
+    "A prompt experiment: a label to find its attempts by, and the prompt line ids to leave out."
+    input ComponentExtractionExperimentInput {
+        label: String!
+        ablate: [String!]!
+    }
+
     input ComponentExtractionCreateJobInput {
         name: String!
         siteUrl: String!
@@ -236,6 +242,11 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionGenerateComponents(
             runId: ID!
             signatures: [String!]!
+            """
+            A prompt experiment, development environments only: generate with the named prompt lines
+            left out, without replacing anything in the run. Results are read from the generation log.
+            """
+            experiment: ComponentExtractionExperimentInput
         ): ComponentExtractionArtifactResponse!
         "Regenerate one component's Plan contract (W8) — a fresh model proposal of its props and token bindings, optionally steered by an instruction, clearing that component's prop edits."
         componentExtractionRegeneratePlan(

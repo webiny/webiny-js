@@ -19,7 +19,8 @@ const OUTCOME: Record<GenerationLogEntryDto["outcome"], string> = {
 const TRIGGER: Record<GenerationLogEntryDto["trigger"], string> = {
     generate: "Generate",
     "generate-again": "Generate again",
-    refine: "Regenerate with instruction"
+    refine: "Regenerate with instruction",
+    experiment: "Prompt experiment"
 };
 
 const subtitle = (entry: GenerationLogEntryDto): string => {
@@ -64,7 +65,7 @@ export const GenerationLog = ({ state, prompts, onOpenEntry }: Props) => {
             {entries.map(entry => (
                 <Accordion.Item
                     key={entry.id}
-                    title={`Attempt ${entry.attempt} of ${entry.maxAttempts} · ${TRIGGER[entry.trigger]}`}
+                    title={`Attempt ${entry.attempt} of ${entry.maxAttempts} · ${TRIGGER[entry.trigger]}${entry.experiment ? ` "${entry.experiment.label}" (without ${entry.experiment.ablate.join(", ") || "nothing"})` : ""}`}
                     subtitle={subtitle(entry)}
                     onOpenChange={open => {
                         if (open) {

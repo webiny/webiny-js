@@ -49,7 +49,10 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
         }
         const { model, connection } = resolved.value;
         // With any instructions the project added to the capability in settings.
-        const systemText = withAdditionalInstructions(resolved.value, buildComponentPrompt());
+        const systemText = withAdditionalInstructions(
+            resolved.value,
+            buildComponentPrompt({ ablate: input.ablate })
+        );
 
         const started = Date.now();
         const modelName =

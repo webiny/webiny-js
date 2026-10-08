@@ -39,6 +39,12 @@ export interface GenerateComponentTaskInput {
      * nothing leaves the existing component in place.
      */
     replaceInto?: { componentsKey: string };
+    /**
+     * A prompt experiment (development only): generate with the named prompt lines left out, log the
+     * attempts marked as the experiment, and keep the result out of the run — no replacement, no stage
+     * result. The outputs are read back from the generation log.
+     */
+    experiment?: { label: string; ablate: string[] };
 }
 
 type RunParams = TaskHandler.RunParams<GenerateComponentTaskInput>;
@@ -74,7 +80,11 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
             Date.now() + controller.runtime.getRemainingMilliseconds() - DEADLINE_MARGIN_MS;
 
         // Another task already finished this component — a retrigger that overlapped a slow original.
-        if (!input.replaceInto && (await hasRecordedResult(this.artifactStore, resultKey))) {
+        if (
+            !input.replaceInto &&
+            !input.experiment &&
+            (await hasRecordedResult(this.artifactStore, resultKey))
+        ) {
             return controller.response.done("This component's result is already recorded.");
         }
 
@@ -153,6 +163,7 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
                         validVariables,
                         manifestAvailable,
                         slotVariables,
+                        ...(input.experiment ? { ablate: input.experiment.ablate } : {}),
                         log: (message, error) =>
                             log.error({ message, ...(error instanceof Error ? { error } : {}) }),
                         beat: message => log.info({ message }),
@@ -165,8 +176,13 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
                                     runId: input.runId,
                                     signature: input.signature,
                                     stageVersion: input.stageVersion,
-                                    trigger: input.replaceInto ? "generate-again" : "generate",
-                                    record
+                                    trigger: input.experiment
+                                        ? "experiment"
+                                        : input.replaceInto
+                                          ? "generate-again"
+                                          : "generate",
+                                    record,
+                                    ...(input.experiment ? { experiment: input.experiment } : {})
                                 }
                             );
                             if (appended.isFail()) {
@@ -180,6 +196,12 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         );
 
         const { component, notGenerated } = outcome;
+
+        if (input.experiment) {
+            return controller.response.done(
+                `Experiment "${input.experiment.label}" on "${planned.name}": ${component ? "generated" : (notGenerated ?? "no output")}; the run is unchanged.`
+            );
+        }
 
         if (input.replaceInto) {
             if (!component) {

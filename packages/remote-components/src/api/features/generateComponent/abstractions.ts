@@ -16,6 +16,11 @@ export interface IGenerateRemoteComponentInput {
      * it cost, for a caller that keeps a log of its attempts. A failure in the callback is ignored.
      */
     onTrace?: (trace: GenerationTrace) => void | Promise<void>;
+    /**
+     * System prompt lines to leave out, by id (`SYSTEM_PROMPT_LINE_IDS`), for a prompt experiment.
+     * Never set outside one.
+     */
+    ablate?: readonly string[];
 }
 
 /** One model call, as sent and as answered. */

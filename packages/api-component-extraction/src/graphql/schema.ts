@@ -38,6 +38,7 @@ import type {
 import { readComponent } from "~/domain/generatedComponents.js";
 import {
     buildComponentPrompt,
+    PROMPT_LINE_IDS,
     withRoleAwareTypeTokens
 } from "~/features/stages/generate/componentGeneration.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
@@ -1550,10 +1551,34 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
             store: StageArtifactStore.Interface,
             taskService: TaskService.Interface
         ) {
-            return ({ args }: { args: { runId: string; signatures: string[] } }) =>
+            return ({
+                args
+            }: {
+                args: {
+                    runId: string;
+                    signatures: string[];
+                    experiment?: { label: string; ablate: string[] } | null;
+                };
+            }) =>
                 resolve(async () => {
                     if (!(await permissions.canCreate("componentExtraction"))) {
                         throw new Error("You do not have permission to run component extraction.");
+                    }
+                    const experiment = args.experiment ?? undefined;
+                    if (experiment) {
+                        if (process.env.WEBINY_ENV !== "dev") {
+                            throw new Error(
+                                "Prompt experiments run only in a development environment."
+                            );
+                        }
+                        const unknownLines = experiment.ablate.filter(
+                            id => !PROMPT_LINE_IDS.includes(id)
+                        );
+                        if (unknownLines.length > 0) {
+                            throw new Error(
+                                `Unknown prompt line id(s): ${unknownLines.join(", ")}. Known: ${PROMPT_LINE_IDS.join(", ")}.`
+                            );
+                        }
                     }
                     const signatures = [...new Set(args.signatures)];
                     if (signatures.length === 0) {
@@ -1594,13 +1619,22 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     for (const signature of signatures) {
                         const triggered = await taskService.trigger<GenerateComponentTaskInput>({
                             definition: GENERATE_COMPONENT_TASK_ID,
-                            name: `Generate again: ${planned.get(signature)!.name}`,
+                            name: experiment
+                                ? `Experiment ${experiment.label}: ${planned.get(signature)!.name}`
+                                : `Generate again: ${planned.get(signature)!.name}`,
                             input: {
                                 runId: run.id,
                                 signature,
                                 stageVersion: generate.stageVersion,
                                 planRef,
-                                replaceInto: { componentsKey }
+                                ...(experiment
+                                    ? {
+                                          experiment: {
+                                              label: experiment.label,
+                                              ablate: experiment.ablate
+                                          }
+                                      }
+                                    : { replaceInto: { componentsKey } })
                             }
                         });
                         if (triggered.isFail()) {

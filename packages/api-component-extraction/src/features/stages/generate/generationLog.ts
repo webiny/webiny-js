@@ -22,7 +22,7 @@ const MAX_ENTRIES = 60;
 /** Enough failures to see the pattern; the full list is the prompt of the next attempt. */
 const MAX_FAILURES = 20;
 
-export type GenerationTrigger = "generate" | "generate-again" | "refine";
+export type GenerationTrigger = "generate" | "generate-again" | "refine" | "experiment";
 
 export interface GenerationLogEntry {
     id: string;
@@ -41,6 +41,8 @@ export interface GenerationLogEntry {
     error?: string;
     failures: string[];
     promptRef: string;
+    /** Set on a prompt experiment's attempts: its label and the prompt lines it left out. */
+    experiment?: { label: string; ablate: string[] };
 }
 
 export interface GenerationLog {
@@ -54,6 +56,8 @@ export interface GenerationPrompt {
     imageFileIds: string[];
     /** The image parts the request actually carried. Absent on entries written before it was recorded. */
     imagesAttached?: { mediaType: string; bytes: number }[];
+    /** What the attempt answered, as parsed. Absent where there was no answer, and on older entries. */
+    output?: { source: string; css: string };
 }
 
 /** One attempt as the attempt loop reports it. */
@@ -63,6 +67,7 @@ export interface AttemptRecord {
     trace: GenerationTrace | null;
     outcome: GenerationLogEntry["outcome"];
     failures: string[];
+    output?: { source: string; css: string };
 }
 
 const signatureHash = (signature: string): string =>
@@ -81,6 +86,7 @@ export const appendGenerationLog = async (
         stageVersion: number;
         trigger: GenerationTrigger;
         record: AttemptRecord;
+        experiment?: GenerationLogEntry["experiment"];
     }
 ): Promise<Result<GenerationLogEntry, ExtractionError>> => {
     const id = randomUUID();
@@ -89,7 +95,8 @@ export const appendGenerationLog = async (
         system: trace?.system ?? "",
         user: trace?.user ?? "",
         imageFileIds: trace?.imageFileIds ?? [],
-        imagesAttached: trace?.imagesAttached ?? []
+        imagesAttached: trace?.imagesAttached ?? [],
+        ...(input.record.output ? { output: input.record.output } : {})
     };
     const stored = await blobs.put(
         `${input.runId}/generation-log/${signatureHash(input.signature)}/${id}.json`,
@@ -115,7 +122,8 @@ export const appendGenerationLog = async (
         outcome: input.record.outcome,
         ...(trace?.error ? { error: trace.error } : {}),
         failures: input.record.failures.slice(0, MAX_FAILURES),
-        promptRef: stored.value
+        promptRef: stored.value,
+        ...(input.experiment ? { experiment: input.experiment } : {})
     };
 
     const key = generationLogKey(input.runId, input.signature);

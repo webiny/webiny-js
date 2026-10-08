@@ -5,6 +5,7 @@ import { CreateFileUseCase } from "@webiny/api-file-manager/features/file/Create
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { BlobStore } from "~/domain/stage.js";
 import type { GenerationTrace } from "@webiny/remote-components/api/features/generateComponent/abstractions.js";
+import { SYSTEM_PROMPT_LINE_IDS } from "@webiny/remote-components/api/features/generateComponent/buildComponentPrompt.js";
 import type { AttemptRecord } from "./generationLog.js";
 import {
     bundleComponent,
@@ -109,6 +110,25 @@ export interface GenerationDeps {
     blobs: BlobStore.Interface;
 }
 
+/**
+ * Stable ids for the prompt lines a prompt experiment may leave out (see the ablation design,
+ * `scripts/baseline/reports/2026-10-08/ablation-design.md`). The extraction prompt's own lines, plus the
+ * shared system prompt's (`SYSTEM_PROMPT_LINE_IDS`). Nothing else can be removed.
+ */
+export const EXTRACTION_PROMPT_LINE_IDS = [
+    "extraction.hex",
+    "extraction.heading-size",
+    "extraction.centre",
+    "extraction.only-variables"
+] as const;
+export const PROMPT_LINE_IDS: readonly string[] = [
+    ...EXTRACTION_PROMPT_LINE_IDS,
+    ...SYSTEM_PROMPT_LINE_IDS
+];
+
+type Ablation = ReadonlySet<string>;
+const NO_ABLATION: Ablation = new Set();
+
 export interface GenerationInput {
     runId: string;
     stageVersion: number;
@@ -116,6 +136,8 @@ export interface GenerationInput {
     validVariables: Set<string>;
     manifestAvailable: boolean;
     slotVariables: Map<string, string[]>;
+    /** Prompt lines to leave out, by id, for a prompt experiment. Never set outside one. */
+    ablate?: readonly string[];
     /** Durable log (errors worth keeping). */
     log: (message: string, error?: unknown) => Promise<void>;
     /** Live heartbeat (progress the operator watches). */
@@ -143,7 +165,7 @@ export interface GenerationInput {
  * value is what the contract already permits for anything without a suitable variable — and a run
  * with many of those is saying theme extraction missed the site's type scale.
  */
-const typeScaleLines = (component: PlannedComponent): string[] => {
+const typeScaleLines = (component: PlannedComponent, ablate: Ablation = NO_ABLATION): string[] => {
     const scale = component.typeScale ?? [];
     if (scale.length === 0) {
         return [];
@@ -182,7 +204,9 @@ const typeScaleLines = (component: PlannedComponent): string[] => {
         "retyped, so keep the text as given and set the transform.",
         ...lines,
         "",
-        `The largest is the section's heading at ${scale[0].fontSize}px. Do not substitute a default heading size for it.`
+        ablate.has("extraction.heading-size")
+            ? `The largest is the section's heading at ${scale[0].fontSize}px.`
+            : `The largest is the section's heading at ${scale[0].fontSize}px. Do not substitute a default heading size for it.`
     ];
 };
 
@@ -206,7 +230,7 @@ const typeScaleLines = (component: PlannedComponent): string[] => {
  * those are precisely the sections where the first version of this fix broke a correct alignment or
  * left one undeclared. A reader cannot tell which key ranks a list unless the list shows that key.
  */
-const alignmentLines = (component: PlannedComponent): string[] => {
+const alignmentLines = (component: PlannedComponent, ablate: Ablation = NO_ABLATION): string[] => {
     const alignments = component.textAlignments ?? [];
     if (alignments.length === 0) {
         return [];
@@ -219,7 +243,9 @@ const alignmentLines = (component: PlannedComponent): string[] => {
                 `- ${entry.align} — ${Math.round(entry.areaShare * 100)}% of the text (${entry.elements} element${entry.elements === 1 ? "" : "s"})`
         ),
         "",
-        "Set text-align explicitly to match. Do not centre text this section does not centre."
+        ablate.has("extraction.centre")
+            ? "Set text-align explicitly to match."
+            : "Set text-align explicitly to match. Do not centre text this section does not centre."
     ];
 };
 
@@ -423,7 +449,7 @@ export const iconLines = (component: PlannedComponent): string[] => {
  * theme cannot express says so, because omitting it would leave the model to guess exactly the colour
  * this is meant to pin down.
  */
-const colourLines = (component: PlannedComponent): string[] => {
+const colourLines = (component: PlannedComponent, ablate: Ablation = NO_ABLATION): string[] => {
     const colours = component.representative?.resolvedColours ?? [];
     if (colours.length === 0) {
         return [];
@@ -439,8 +465,12 @@ const colourLines = (component: PlannedComponent): string[] => {
                   : `- ${colour.role} ${colour.hex} — use var(${colour.token.cssVariable})`
         ),
         "",
-        "Do not substitute a different theme colour for one listed here, and do not write a hex value",
-        "where a variable is given — a hardcoded colour survives no theme change."
+        ...(ablate.has("extraction.hex")
+            ? ["Do not substitute a different theme colour for one listed here."]
+            : [
+                  "Do not substitute a different theme colour for one listed here, and do not write a hex value",
+                  "where a variable is given — a hardcoded colour survives no theme change."
+              ])
     ];
 };
 
@@ -484,13 +514,15 @@ export const withRoleAwareTypeTokens = (
 export const buildComponentPrompt = (
     component: PlannedComponent,
     slotVariables: Map<string, string[]>,
-    feedback: string[] = []
-): string => buildPrompt(component, slotVariables, feedback);
+    feedback: string[] = [],
+    ablate: Ablation = NO_ABLATION
+): string => buildPrompt(component, slotVariables, feedback, ablate);
 
 const buildPrompt = (
     component: PlannedComponent,
     slotVariables: Map<string, string[]>,
-    feedback: string[] = []
+    feedback: string[] = [],
+    ablate: Ablation = NO_ABLATION
 ): string => {
     const attribute = createCopyAttribution(component);
     const propLines = (prop: PlannedComponent["props"][number], indent: string): string[] => {
@@ -575,19 +607,21 @@ const buildPrompt = (
         ...(allowed.length > 0
             ? [
                   "",
-                  "Use ONLY these theme CSS variables — any other var(--wby-*) fails validation; for anything without a suitable variable, use a plain CSS value:",
+                  ablate.has("extraction.only-variables")
+                      ? "The theme's CSS variables:"
+                      : "Use ONLY these theme CSS variables — any other var(--wby-*) fails validation; for anything without a suitable variable, use a plain CSS value:",
                   allowed
                       .slice(0, MAX_PROMPT_VARIABLES)
                       .map(name => `var(${name})`)
                       .join(", ")
               ]
             : []),
-        ...colourLines(component),
+        ...colourLines(component, ablate),
         ...backgroundImageLines(component),
         ...unboundImageLines(component),
         ...iconLines(component),
-        ...typeScaleLines(component),
-        ...alignmentLines(component),
+        ...typeScaleLines(component, ablate),
+        ...alignmentLines(component, ablate),
         ...layoutLines(component),
         ...imageFactLines(component),
         "",
@@ -821,8 +855,9 @@ export const generateComponentAttempts = async (
             : [];
         let trace: GenerationTrace | null = null;
         const generated = await deps.generateComponent.execute({
-            prompt: buildPrompt(planned, slotVariables, feedback),
+            prompt: buildPrompt(planned, slotVariables, feedback, new Set(input.ablate ?? [])),
             name: planned.name,
+            ...(input.ablate?.length ? { ablate: input.ablate } : {}),
             additionalFileIds,
             abortSignal: AbortSignal.timeout(budget.timeoutMs),
             onTrace: recorded => {
@@ -958,7 +993,8 @@ export const generateComponentAttempts = async (
             maxAttempts: MAX_ATTEMPTS,
             trace,
             outcome: failures.length === 0 ? "passed" : "failed-checks",
-            failures
+            failures,
+            output: { source: output.source, css: output.css ?? "" }
         });
         // Keep the least-broken attempt, not merely the last — an informed retry can still regress.
         if (failures.length < bestFailureCount) {

@@ -1,6 +1,26 @@
 import { buildTokenCatalogSection } from "./tokenCatalogSection.js";
 
-export function buildComponentPrompt(): string {
+/**
+ * Stable ids for the system prompt's lines that a prompt experiment may leave out. Only lines named
+ * here can be removed; the rest of the prompt is fixed.
+ */
+export const SYSTEM_PROMPT_LINE_IDS = ["system.rule-17-multiple"] as const;
+export type SystemPromptLineId = (typeof SYSTEM_PROMPT_LINE_IDS)[number];
+
+export interface BuildComponentPromptOptions {
+    /** Lines to leave out, for a prompt experiment. Never set outside one. */
+    ablate?: readonly string[];
+}
+
+export function buildComponentPrompt(options: BuildComponentPromptOptions = {}): string {
+    const ablate = new Set(options.ablate ?? []);
+    // The prohibition is stated twice, here and in the input table; an experiment leaves out both.
+    const listCell = ablate.has("system.rule-17-multiple")
+        ? "If \`true\`, the input becomes a repeatable list of objects."
+        : "If \`true\`, the input becomes a repeatable list of objects. **Use \`list: true\`, NOT \`multiple: true\`.**";
+    const rule17 = ablate.has("system.rule-17-multiple")
+        ? "17. For repeatable lists, use \`list: true\` inside params"
+        : "17. For repeatable lists, use \`list: true\` inside params — NEVER use \`multiple: true\`";
     return `You are a React component generator for the Webiny Website Builder.
 
 You generate component source code that will be bundled and loaded at runtime by the Webiny Next.js SDK. Components are rendered both server-side (SSR) and client-side.
@@ -270,7 +290,7 @@ Nested object with sub-fields.
 |-------|------|---------|-------------|
 | \`label\` | \`string\` | — | Label shown in the editor sidebar. |
 | \`description\` | \`string\` | — | Help text. |
-| \`list\` | \`boolean\` | \`false\` | If \`true\`, the input becomes a repeatable list of objects. **Use \`list: true\`, NOT \`multiple: true\`.** |
+| \`list\` | \`boolean\` | \`false\` | ${listCell} |
 | \`fields\` | \`InputDefinition[]\` | \`[]\` | Nested input definitions. |
 
 The input value is \`Record<string, any>\` (or an array if \`list: true\`). Use for: grouped settings (e.g., address, author info), repeatable items (e.g., feature cards, testimonials).
@@ -304,7 +324,7 @@ The input value is rendered as children. Use for: layout containers, card bodies
 14. Every className used in JSX must have a corresponding CSS rule in the CSS block
 15. Design for visual quality — components should look polished with proper spacing, typography, and colors
 16. Group related inputs into \`createObjectInput\` — e.g., \`primaryButton: { label, url }\`, \`author: { name, role, avatarUrl }\`
-17. For repeatable lists, use \`list: true\` inside params — NEVER use \`multiple: true\`
+${rule17}
 18. File inputs (\`createFileInput\`) return an object — always access \`.url\` for the URL (e.g., \`image.url\`, NOT \`image\` directly)
 19. The first input in the manifest \`inputs\` array MUST be a text input (createTextInput or createLongTextInput) — never start with icons, images, files, booleans, or other non-text inputs. The first input is shown as the element label in the editor sidebar, so it should be the most descriptive text field (e.g., title, heading, name). For object inputs with \`list: true\`, the first field inside \`fields\` must also be text.
 
