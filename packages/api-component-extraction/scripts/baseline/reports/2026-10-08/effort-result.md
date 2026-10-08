@@ -73,9 +73,13 @@ tree of the representative section.
 **The difference is visible**: medium's glyphs are clearly larger. Neither arm matches the site: default
 is 2-3px under it, medium 3-4px over, and medium's circle 2px wide.
 
-**The spacing check scored the wrong element.** The 15px the site measured as container padding is
-its grid-column padding (45px row padding plus 15px column padding: the 60px text inset both arms
-reproduce). Default "kept" it by putting 15px on the icon link, which the site does not pad; that
-squeezed the glyph. Medium wrote 15px as a gap. The check confirms a declaration of the right kind, not
-on the right element; its bound, stated twice before, is what moved here. The control's spacing
-difference between the arms is not a loss of the site's padding at medium.
+**The spacing check scored the wrong element and ranked the worse output first.** The 15px the site
+measured as container padding is its grid-column padding (45px row padding plus 15px column padding:
+the 60px text inset both arms reproduce). Default "kept" it by padding the icon link, which the site
+does not pad, which squeezed its glyph to 13px, and scored higher for it. Medium wrote 15px as a gap
+and scored lower. The check did not merely miss: it confirms a declaration of the right kind, not on
+the right element, and here that preferred the worse output.
+
+**Decision: medium.** Neither arm matches the site's icons (default 2-3px under, medium 3-4px over and
+2px on the circle), so the quality difference is a wash. What default costs is a component that does
+not generate.
