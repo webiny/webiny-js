@@ -564,3 +564,7 @@ Content Reviews gets a fifth tab, **Failed steps**, shown only to users with Rea
 ## D113. "Content type" in lists
 
 Content Reviews, its filters and the dashboard widgets call the model column and filter **Content type**, shown as name plus app (e.g. "Article · Headless CMS", "Pages · Website Builder"; Pages listed first). "Model" stays where an admin works with a specific CMS model (workflow editor, model delete). Adopts the designer's UI-9. Resolves gap A12 from the design review.
+
+## D114. Start asks for confirmation
+
+Start (taking a step from the team pool) asks for confirmation everywhere it is offered, in the editors and in the Content Reviews list: "You become the owner of this step and it leaves the team pool." On confirm, a toast says where the step went ("It's now in Assigned to me."). Resolves gap A13 from the design review.

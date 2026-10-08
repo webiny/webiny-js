@@ -242,6 +242,7 @@ Common fields for every step type:
 **Dialogs.**
 - **Approve**: optional comment.
 - **Reject**: required comment (at least 10 characters). State plainly that rejection is final for this revision.
+- **Start**: confirm ("You become the owner of this step and it leaves the team pool."), in the editors and in the Content Reviews list alike [D114].
 - **Take over**: confirm, naming the current owner.
 - **Reassign**: pick a person from the step's eligible reviewers (excluded users disabled; reason per section 5). The previous owner (if any) and the new owner are notified. Empty state when nobody is eligible.
 - **Cancel review**: confirm. Say that review progress is lost and a new request starts from the first step. If an AI or automation is running, say it will be stopped.
