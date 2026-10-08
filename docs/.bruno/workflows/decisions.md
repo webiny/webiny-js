@@ -516,3 +516,7 @@ Review title: at least 5 characters. Reject comment: at least 10 characters. Bot
 ## D101. AI step picks a model
 
 Supersedes the per-step model role in D40. When creating or editing an AI step, the admin chooses a specific model (required) from the list of available models (ai-powerups `listModels`, `packages/ai-powerups/src/admin/features/listModels/`). The step stores the chosen model. If the model is no longer available, the editor warns and the step fails when reached (restartable after a fix). The "Workflow review" capability still gates whether AI steps can run.
+
+## D102. In-app notification is a toast
+
+An in-app notification is shown as a toast through the existing admin `Notifications` feature (`packages/app-admin/src/features/notifications/`) while the recipient has the admin open. Clicking it opens the content or Review details. No list, history or read/unread state: notifications are not stored (D60), and the Content Reviews tabs show the work. Resolves gap A1 from the design review.

@@ -311,6 +311,8 @@ Not a screen, but the designer needs it for copy and in-app notification design.
 
 The whole team is never notified about work that went to one person. In-app notifications always go out; e-mail goes out when the step's "Notify via" includes it.
 
+An in-app notification is a toast (title, one short line, link) shown while the recipient has the admin open. There is no notification list, history or read/unread state: notifications are not stored, and the Content Reviews tabs show the work [D102].
+
 ---
 
 ## 10. Settings: exclusion list
