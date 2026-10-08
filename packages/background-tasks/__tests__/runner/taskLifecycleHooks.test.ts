@@ -10,6 +10,7 @@ import {
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { Container } from "@webiny/di";
 import { TaskDataStatus } from "~/api/types.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
 
 describe("task lifecycle hooks", () => {
     describe("onBeforeTrigger", () => {
@@ -51,7 +52,7 @@ describe("task lifecycle hooks", () => {
             const context = await contextFactory();
 
             // Trigger should call onBeforeTrigger
-            await context.tasks.trigger({
+            await context.container.resolve(TasksCrud).trigger({
                 definition: "testOnBeforeTrigger",
                 input: { test: "value" },
                 name: "Test task"
@@ -111,7 +112,7 @@ describe("task lifecycle hooks", () => {
             const context = await contextFactory();
             const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
-            const task = await context.tasks.createTask({
+            const task = await context.container.resolve(TasksCrud).createTask({
                 definitionId: "testOnDone",
                 input: { test: "input" },
                 name: "Test task"
@@ -182,7 +183,7 @@ describe("task lifecycle hooks", () => {
             const context = await contextFactory();
             const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
-            const task = await context.tasks.createTask({
+            const task = await context.container.resolve(TasksCrud).createTask({
                 definitionId: "testOnError",
                 input: { test: "input" },
                 name: "Test task"
@@ -246,14 +247,14 @@ describe("task lifecycle hooks", () => {
 
             const context = await contextFactory();
 
-            const task = await context.tasks.createTask({
+            const task = await context.container.resolve(TasksCrud).createTask({
                 definitionId: "testOnAbort",
                 input: { test: "input" },
                 name: "Test task"
             });
 
             // Abort the task
-            await context.tasks.abort({
+            await context.container.resolve(TasksCrud).abort({
                 id: task.id,
                 message: "Testing abort"
             });
@@ -312,7 +313,7 @@ describe("task lifecycle hooks", () => {
             const context = await contextFactory();
             const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
-            const task = await context.tasks.createTask({
+            const task = await context.container.resolve(TasksCrud).createTask({
                 definitionId: "testOnMaxIterations",
                 input: { test: "input" },
                 name: "Test task"
@@ -401,7 +402,7 @@ describe("task lifecycle hooks", () => {
             const context = await contextFactory();
             const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
-            const task = await context.tasks.trigger({
+            const task = await context.container.resolve(TasksCrud).trigger({
                 definition: "testMultipleHooks",
                 input: {},
                 name: "Test task"

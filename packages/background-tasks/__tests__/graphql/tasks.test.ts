@@ -4,6 +4,7 @@ import { createMockTaskDefinitions } from "~tests/mocks/definition";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
 import { TaskDataStatus } from "~/api/types";
 import { createMockIdentity } from "~tests/mocks/identity";
+import { TasksCrud } from "~/api/TasksCrud.js";
 
 describe("graphql - tasks", () => {
     const contextHandler = useRawHandler({
@@ -103,7 +104,7 @@ describe("graphql - tasks", () => {
     it("should list tasks", async () => {
         const context = await contextHandler.handle();
 
-        const task = await context.tasks.createTask({
+        const task = await context.container.resolve(TasksCrud).createTask({
             name: "My Custom Task #1",
             definitionId: "myCustomTaskNumber1",
             input: {
@@ -112,7 +113,7 @@ describe("graphql - tasks", () => {
             }
         });
 
-        await context.tasks.createTask({
+        await context.container.resolve(TasksCrud).createTask({
             name: "My Custom Task #2",
             definitionId: "myCustomTaskNumber2",
             input: {
@@ -121,7 +122,7 @@ describe("graphql - tasks", () => {
             }
         });
 
-        await context.tasks.createTask({
+        await context.container.resolve(TasksCrud).createTask({
             name: "My Custom Task #3",
             definitionId: "myCustomTaskNumber3",
             input: {
@@ -130,7 +131,7 @@ describe("graphql - tasks", () => {
             }
         });
 
-        await context.tasks.createLog(task, {
+        await context.container.resolve(TasksCrud).createLog(task, {
             executionName: task.executionName || "mock execution name",
             iteration: 1
         });

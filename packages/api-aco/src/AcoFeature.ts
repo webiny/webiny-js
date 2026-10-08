@@ -5,7 +5,6 @@ import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQL
 import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { addAcoBaseSchema } from "./createAcoGraphQL.js";
 import { addFilterSchema } from "~/filter/filter.gql.js";
 import { AcoFolderSchemaFactory } from "./AcoFolderSchemaFactory.js";
@@ -112,18 +111,16 @@ export const AcoFeature = createFeature({
         EnsureHcmsFolderIsEmptyOnDeleteFeature.register(container);
 
         // ===== Lazy ACO facade =====
-        // Built on first resolve (post-auth) so the HeadlessCms facade (also lazy) is resolved on
-        // demand. Memoised per request container. Consumers resolve AcoFlpCrud / AcoFilterCrud /
-        // FilterStorageOperations via DI.
+        // Built on first resolve (post-auth), memoised per request container. Consumers resolve
+        // AcoFlpCrud / AcoFilterCrud / FilterStorageOperations via DI.
         const getTenant = (): Tenant => container.resolve(TenantContext).getTenant();
 
         let storageOperations: AcoStorageOperations | undefined;
         const getStorageOperations = (): AcoStorageOperations => {
             if (!storageOperations) {
-                const cms = container.resolve(HeadlessCms);
                 const identityContext = container.resolve(IdentityContext);
                 storageOperations = {
-                    filter: createFilterOperations({ cms, identityContext, container }),
+                    filter: createFilterOperations({ identityContext, container }),
                     flp: container.resolve(FlpStorageOperations)
                 };
             }

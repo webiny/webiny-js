@@ -6,6 +6,7 @@ import { TaskDataStatus } from "~/api/types";
 import { createMockIdentity } from "~tests/mocks/identity";
 import { TaskDefinitionNotFoundError, TaskNotFoundError } from "~/api/domain/errors.js";
 import { createTaskDefinition } from "../helpers/createTaskDefinition.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
 
 describe("tasks - store crud", () => {
     const handler = useRawHandler({
@@ -23,7 +24,7 @@ describe("tasks - store crud", () => {
     it("should return null when getting task which does not exist", async () => {
         const context = await handler.handle();
 
-        const result = await context.tasks.getTask("non-existing-id");
+        const result = await context.container.resolve(TasksCrud).getTask("non-existing-id");
 
         expect(result).toBeNull();
     });
@@ -31,7 +32,7 @@ describe("tasks - store crud", () => {
     it("should return empty item array when listing tasks and no tasks are present", async () => {
         const context = await handler.handle();
 
-        const result = await context.tasks.listTasks();
+        const result = await context.container.resolve(TasksCrud).listTasks();
 
         expect(result).toEqual({
             items: [],
@@ -48,7 +49,7 @@ describe("tasks - store crud", () => {
 
         let result: WebinyError | null = null;
         try {
-            await context.tasks.createTask({
+            await context.container.resolve(TasksCrud).createTask({
                 name: "My Custom Task",
                 definitionId: "non-existing-definition",
                 input: {
@@ -69,7 +70,7 @@ describe("tasks - store crud", () => {
         let result: any = null;
 
         try {
-            await context.tasks.updateTask("non-existing-id", {});
+            await context.container.resolve(TasksCrud).updateTask("non-existing-id", {});
         } catch (ex) {
             result = ex;
         }
@@ -80,7 +81,7 @@ describe("tasks - store crud", () => {
     it("should create, update and delete a task", async () => {
         const context = await handler.handle();
 
-        const task = await context.tasks.createTask({
+        const task = await context.container.resolve(TasksCrud).createTask({
             name: "My Custom Task",
             definitionId: "testDefinition",
             input: {
@@ -108,10 +109,10 @@ describe("tasks - store crud", () => {
         };
         expect(task).toEqual(expectedCreatedTask);
 
-        const getTaskAfterCreate = await context.tasks.getTask(task.id);
+        const getTaskAfterCreate = await context.container.resolve(TasksCrud).getTask(task.id);
         expect(getTaskAfterCreate).toEqual(expectedCreatedTask);
 
-        const listTasksAfterCreate = await context.tasks.listTasks();
+        const listTasksAfterCreate = await context.container.resolve(TasksCrud).listTasks();
         expect(listTasksAfterCreate).toEqual({
             items: [expectedCreatedTask],
             meta: {
@@ -121,7 +122,7 @@ describe("tasks - store crud", () => {
             }
         });
 
-        const updatedTask = await context.tasks.updateTask(task.id, {
+        const updatedTask = await context.container.resolve(TasksCrud).updateTask(task.id, {
             output: {
                 myCustomOutput: "yes!"
             },
@@ -156,10 +157,10 @@ describe("tasks - store crud", () => {
         };
         expect(updatedTask).toEqual(expectedUpdatedTask);
 
-        const getTaskAfterUpdate = await context.tasks.getTask(task.id);
+        const getTaskAfterUpdate = await context.container.resolve(TasksCrud).getTask(task.id);
         expect(getTaskAfterUpdate).toEqual(expectedUpdatedTask);
 
-        const listTasksAfterUpdate = await context.tasks.listTasks();
+        const listTasksAfterUpdate = await context.container.resolve(TasksCrud).listTasks();
         expect(listTasksAfterUpdate).toEqual({
             items: [expectedUpdatedTask],
             meta: {
@@ -169,13 +170,13 @@ describe("tasks - store crud", () => {
             }
         });
 
-        const deletedTask = await context.tasks.deleteTask(task.id);
+        const deletedTask = await context.container.resolve(TasksCrud).deleteTask(task.id);
         expect(deletedTask).toBe(true);
 
-        const getTaskAfterDelete = await context.tasks.getTask(task.id);
+        const getTaskAfterDelete = await context.container.resolve(TasksCrud).getTask(task.id);
         expect(getTaskAfterDelete).toBeNull();
 
-        const listTasksAfterDelete = await context.tasks.listTasks();
+        const listTasksAfterDelete = await context.container.resolve(TasksCrud).listTasks();
         expect(listTasksAfterDelete).toEqual({
             items: [],
             meta: {

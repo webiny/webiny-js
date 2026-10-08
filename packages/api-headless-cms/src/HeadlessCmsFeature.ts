@@ -43,9 +43,6 @@ import {
 } from "~/graphql/schema/cms/resolvers/index.js";
 // Facade wiring (moved here from HeadlessCmsInitializer so the facade can be a lazy DI factory).
 import { AccessControl } from "~/crud/AccessControl/AccessControl.js";
-import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud.js";
-import { createModelsCrud } from "~/crud/contentModel.crud.js";
-import { createContentEntryCrud } from "~/crud/contentEntry.crud.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import {
     CmsGraphQLSchemaPlugin,
@@ -70,8 +67,7 @@ import { RevisionIdScalar } from "~/graphql/scalars/RevisionId.js";
 import {
     AccessControl as AccessControlAbstraction,
     CmsContext as CmsContextAbstraction,
-    CmsStorageModelProvider,
-    HeadlessCms
+    CmsStorageModelProvider
 } from "~/features/shared/abstractions.js";
 
 import {
@@ -237,28 +233,8 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
         };
         container.registerFactory(AccessControlAbstraction, () => getAccessControl());
 
-        // The HeadlessCms facade — a LAZY factory built on first resolve (post-auth), memoised per
-        // request container.
-        let cmsFacade: HeadlessCms.Interface | undefined;
-        container.registerFactory(HeadlessCms, () => {
-            if (!cmsFacade) {
-                cmsFacade = {
-                    type,
-                    READ: type === "read",
-                    PREVIEW: type === "preview",
-                    MANAGE: type === "manage",
-                    accessControl: getAccessControl(),
-                    ...createModelGroupsCrud({ context: cmsContext }),
-                    ...createModelsCrud({ context: cmsContext }),
-                    ...createContentEntryCrud({ context: cmsContext }),
-                    export: { ...createExportCrud(cmsContext) },
-                    importing: { ...createImportCrud(cmsContext) }
-                } as HeadlessCms.Interface;
-            }
-            return cmsFacade;
-        });
-        container.registerFactory(CmsExport, () => container.resolve(HeadlessCms).export);
-        container.registerFactory(CmsImport, () => container.resolve(HeadlessCms).importing);
+        container.registerFactory(CmsExport, () => createExportCrud(cmsContext));
+        container.registerFactory(CmsImport, () => createImportCrud(cmsContext));
 
         // Register CmsSchemaExecutor so proxy resolvers can build and execute the CMS sub-schema.
         container.registerInstance(CmsSchemaExecutor, {

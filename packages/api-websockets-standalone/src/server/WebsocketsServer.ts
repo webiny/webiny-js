@@ -18,6 +18,10 @@ import type {
 
 const ANONYMOUS_IDENTITY: ConnectionRegistry.Identity = { id: "", displayName: "", type: "" };
 
+const DEFAULT_HEARTBEAT_INTERVAL = 60_000;
+// Three admin ping intervals (5 minutes each): one late ping is not enough to evict a live tab.
+const DEFAULT_STALE_AFTER = 15 * 60_000;
+
 const toHeaders = (raw: IncomingMessage["headers"]): Record<string, string> => {
     const headers: Record<string, string> = {};
     for (const [key, value] of Object.entries(raw)) {
@@ -36,6 +40,7 @@ interface WebsocketsServerParams {
     connectionManager?: WebsocketsConnectionManager.Interface<unknown>;
     authenticate?: WebsocketsConnectionAuthenticator;
     heartbeatInterval: number;
+    staleAfter: number;
     debug: boolean;
     port: number;
     host: string;
@@ -71,7 +76,9 @@ class WebsocketsServer implements IWebsocketsServer {
         if (params.connectionManager) {
             this.heartbeat = new HeartbeatManager(
                 params.connectionManager,
-                params.heartbeatInterval
+                params.adapter,
+                params.heartbeatInterval,
+                params.staleAfter
             );
         }
     }
@@ -129,14 +136,27 @@ class WebsocketsServer implements IWebsocketsServer {
                     return;
                 }
 
-                const decision = await this.upgradeHandler.shouldUpgrade(request);
-                if (!decision.allowed) {
-                    socket.write(`HTTP/1.1 ${decision.statusCode} ${decision.reason}\r\n\r\n`);
-                    socket.destroy();
-                    return;
-                }
+                /*
+                 * Node drops its own error listener before emitting `upgrade`, so an error on the
+                 * raw socket before `ws` takes it over would be unhandled and end the process.
+                 */
+                socket.on("error", error => {
+                    console.error("WebSocket upgrade socket error:", error.message);
+                });
 
-                this.adapter.handleUpgrade(request, socket, head);
+                try {
+                    const decision = await this.upgradeHandler.shouldUpgrade(request);
+                    if (!decision.allowed) {
+                        socket.write(`HTTP/1.1 ${decision.statusCode} ${decision.reason}\r\n\r\n`);
+                        socket.destroy();
+                        return;
+                    }
+
+                    this.adapter.handleUpgrade(request, socket, head);
+                } catch (error) {
+                    console.error("WebSocket upgrade failed:", error);
+                    socket.destroy();
+                }
             }
         );
     }
@@ -158,7 +178,7 @@ class WebsocketsServer implements IWebsocketsServer {
             // close or message that arrives during the gap. If a message does arrive before
             // registration finishes, the `getMetadata` guard below just drops it, which is fine since
             // the client doesn't send anything meaningful right at connect time.
-            void this.registerConnection({
+            const registration = this.registerConnection({
                 connectionId,
                 socket,
                 request,
@@ -183,14 +203,23 @@ class WebsocketsServer implements IWebsocketsServer {
                     return;
                 }
 
-                this.connectionManager?.updateLastSeen(connectionId);
+                this.connectionManager?.updateLastSeen(connectionId).catch(error => {
+                    console.error(
+                        `Failed to update last seen for WebSocket connection "${connectionId}":`,
+                        error
+                    );
+                });
             });
 
             this.adapter.onClose(socket, () => {
                 if (this.shuttingDown) {
                     return;
                 }
-                this.connectionManager?.remove(connectionId);
+                /*
+                 * Wait for registration: a socket that closes while it is still authenticating
+                 * would otherwise be removed first and then registered, leaving a dead entry.
+                 */
+                void registration.then(() => this.removeConnection(connectionId));
             });
 
             this.adapter.onError(socket, error => {
@@ -250,6 +279,14 @@ class WebsocketsServer implements IWebsocketsServer {
         }
     }
 
+    private async removeConnection(connectionId: string): Promise<void> {
+        try {
+            await this.connectionManager?.remove(connectionId);
+        } catch (error) {
+            console.error(`Failed to remove WebSocket connection "${connectionId}":`, error);
+        }
+    }
+
     private resolvePortFromExistingServer(): void {
         const address = this.httpServer.address();
         if (address && typeof address !== "string") {
@@ -297,7 +334,8 @@ export const createWebsocketsServer = (params: CreateWebsocketsServerParams): IW
         upgradeHandler: new DefaultUpgradeHandlerImpl(),
         connectionManager: params.connectionManager,
         authenticate: params.authenticate,
-        heartbeatInterval: params.heartbeatInterval ?? 60_000,
+        heartbeatInterval: params.heartbeatInterval ?? DEFAULT_HEARTBEAT_INTERVAL,
+        staleAfter: params.staleAfter ?? DEFAULT_STALE_AFTER,
         debug: params.debug ?? false,
         port: params.port ?? 0,
         host: params.host ?? "127.0.0.1"
@@ -313,7 +351,8 @@ export const attachWebsocketsServer = (params: AttachWebsocketsServerParams): IW
         upgradeHandler: new DefaultUpgradeHandlerImpl(),
         connectionManager: params.connectionManager,
         authenticate: params.authenticate,
-        heartbeatInterval: params.heartbeatInterval ?? 60_000,
+        heartbeatInterval: params.heartbeatInterval ?? DEFAULT_HEARTBEAT_INTERVAL,
+        staleAfter: params.staleAfter ?? DEFAULT_STALE_AFTER,
         debug: params.debug ?? false,
         port: 0,
         host: "127.0.0.1"

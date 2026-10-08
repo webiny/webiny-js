@@ -245,6 +245,71 @@ describe("TaskOrchestrator", () => {
         expect((receivedBodies[1] as any).input.webinyTaskId).toBe("evil-id");
     });
 
+    /*
+     * Mirrors TaskRunner: a request with `delay > 0` is answered with `continue` and nothing runs.
+     * Resending the trigger's delay on every request kept the task in that answer forever.
+     */
+    it("should run a delayed task once the delay has been waited out", async () => {
+        const receivedDelays: unknown[] = [];
+        const result = await createTestServer(body => {
+            receivedDelays.push(body.delay);
+            if (typeof body.delay === "number" && body.delay > 0) {
+                return {
+                    statusCode: 200,
+                    body: { status: "continue", input: {}, wait: 0, delay: -1 }
+                };
+            }
+            return { statusCode: 200, body: { status: "done" } };
+        });
+        server = result.server;
+
+        const start = makeStartMessage(result.port);
+        const delayedStart: StartMessage = {
+            ...start,
+            taskEvent: { ...start.taskEvent, delay: 30 }
+        };
+
+        const messages: WorkerToParentMessage[] = [];
+        const orchestrator = new TaskOrchestrator(delayedStart, msg => messages.push(msg));
+        const started = Date.now();
+        await orchestrator.run();
+        const elapsed = Date.now() - started;
+
+        expect(receivedDelays).toEqual([30, -1]);
+        expect(messages.map(m => m.type)).toEqual(["done"]);
+        // The runner's `wait` decides how long to pause; the worker does not wait the delay itself.
+        expect(elapsed).toBeLessThan(1_000);
+    });
+
+    it("should decode a multi-byte character split across response chunks", async () => {
+        const json = JSON.stringify({ status: "done", output: "žđ€" });
+        const body = Buffer.from(json, "utf8");
+        const splitAt = body.indexOf(Buffer.from("€", "utf8")) + 1;
+
+        const created = http.createServer((req, res) => {
+            req.resume();
+            req.on("end", () => {
+                res.writeHead(200, { "content-type": "application/json" });
+                const head = body.subarray(0, splitAt);
+                const tail = body.subarray(splitAt);
+                res.write(head);
+                setTimeout(() => res.end(tail), 20);
+            });
+        });
+        await new Promise<void>(resolve => created.listen(0, "127.0.0.1", resolve));
+        server = created;
+        const address = created.address() as AddressInfo;
+
+        const messages: WorkerToParentMessage[] = [];
+        const orchestrator = new TaskOrchestrator(makeStartMessage(address.port), msg =>
+            messages.push(msg)
+        );
+        await orchestrator.run();
+
+        expect(messages).toHaveLength(1);
+        expect(messages[0]).toMatchObject({ type: "done", result: { output: "žđ€" } });
+    });
+
     it("should send internal token header", async () => {
         let receivedHeaders: Record<string, string> = {};
         const result = await createTestServer(() => {

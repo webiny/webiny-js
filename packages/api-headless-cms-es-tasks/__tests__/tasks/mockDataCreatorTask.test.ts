@@ -15,6 +15,7 @@ import type { Context } from "~/types.js";
 import { MOCK_DATA_MANAGER_TASK_ID } from "~/tasks/MockDataManagerTask.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
+import { TasksCrud } from "@webiny/background-tasks/api/TasksCrud.js";
 
 vi.setConfig({
     testTimeout: 120_000
@@ -58,7 +59,7 @@ describe("mock data creator task", () => {
             indexProvider
         });
 
-        const task = await context.tasks.createTask<IMockDataCreatorInput>({
+        const task = await context.container.resolve(TasksCrud).createTask<IMockDataCreatorInput>({
             definitionId: definition.id,
             name: "Testing of a Mock Data Creator Task",
             input: {
