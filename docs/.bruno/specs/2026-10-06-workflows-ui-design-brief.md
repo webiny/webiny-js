@@ -335,7 +335,7 @@ E-mail for a review-level event follows the "Notify via" of the step where it ha
 - Work they already hold stays with them.
 - Excluded users can still start or take over work themselves.
 
-**States.** Empty list; expired entries (de-emphasised or filterable); save errors.
+**States.** Empty list; expired entries (de-emphasised or filterable); save errors. No conflict handling between admins: the last save wins [D106].
 
 ---
 

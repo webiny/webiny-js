@@ -532,3 +532,7 @@ Reviewer pickers (Request review, Reassign, rule targets) show the person's name
 ## D105. One exclusion entry per user
 
 `exclusions[].userId` is unique, enforced on the server when the settings are saved. Expired entries stay until removed. Adding a user who already has an entry (active or expired) is rejected with "This user is already in the list. Edit it instead."; the UI links to that entry. Excluding someone again means editing their entry with a new end date. No exclusion history. Extends D16. Resolves gap A4 from the design review.
+
+## D106. Exclusion list: last save wins
+
+Saving the exclusion list writes the whole settings record; the last save wins. No version check and no conflict UI. Accepted risk: when two admins edit the list at the same time, one admin's change can be lost silently. Judged rare (few admins, infrequent edits). Resolves gap A5 from the design review.
