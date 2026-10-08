@@ -47,6 +47,9 @@ export const GenerationLogEntry = ({ entry, prompt }: Props) => {
         <div className="flex flex-col gap-sm">
             <div className="flex flex-col gap-xxs">
                 <Row label="Model">{entry.model || "unknown"}</Row>
+                {entry.effort !== undefined ? (
+                    <Row label="Effort">{entry.effort ?? "provider default"}</Row>
+                ) : null}
                 <Row label="Tokens in">
                     {usage
                         ? `${number(usage.inputTokens)} (cache read ${number(usage.cacheReadTokens)}, cache write ${number(usage.cacheWriteTokens)})`

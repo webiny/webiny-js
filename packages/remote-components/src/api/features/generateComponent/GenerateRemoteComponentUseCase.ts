@@ -112,6 +112,7 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
             try {
                 await input.onTrace({
                     model: modelName,
+                    effort: input.effort ?? null,
                     system: systemText,
                     user: userText,
                     imageFileIds: input.additionalFileIds ?? [],

@@ -39,6 +39,8 @@ export type GenerationEffort = "low" | "medium" | "high";
 export interface GenerationTrace {
     /** The model as the provider named it, e.g. `anthropic/claude-sonnet-5`. */
     model: string;
+    /** The effort the call asked for; null when it set none and the provider's default applied. */
+    effort: GenerationEffort | null;
     /** The system prompt, whole. */
     system: string;
     /** The user message's text, whole. */

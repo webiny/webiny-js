@@ -35,6 +35,8 @@ export interface GenerationLogEntry {
     attempt: number;
     maxAttempts: number;
     model: string;
+    /** The effort the call asked for; null for the provider's default. Absent on older entries. */
+    effort?: GenerationEffort | null;
     durationMs: number;
     usage?: GenerationTrace["usage"];
     finishReason?: string;
@@ -124,6 +126,7 @@ export const appendGenerationLog = async (
         attempt: input.record.attempt,
         maxAttempts: input.record.maxAttempts,
         model: trace?.model ?? "",
+        ...(trace ? { effort: trace.effort } : {}),
         durationMs: trace?.durationMs ?? 0,
         ...(trace?.usage ? { usage: trace.usage } : {}),
         ...(trace?.finishReason ? { finishReason: trace.finishReason } : {}),

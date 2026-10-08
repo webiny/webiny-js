@@ -54,6 +54,20 @@ const setup = ({ resolution, withResolver = true }: SetupParams = {}) => {
         generateText: async (request: Ai.GenerateTextParams) => {
             requests.push(request);
             return { text: RESPONSE, steps: [] };
+        },
+        // Generation streams, so a call cut off at its limit keeps what it wrote.
+        streamText: async (request: Ai.StreamTextParams) => {
+            requests.push(request as Ai.GenerateTextParams);
+            return {
+                fullStream: (async function* () {
+                    yield { type: "text-delta", id: "0", text: RESPONSE };
+                    yield {
+                        type: "finish",
+                        finishReason: "stop",
+                        totalUsage: { inputTokens: 10, outputTokens: 20 }
+                    };
+                })()
+            };
         }
     } as unknown as Ai.Interface);
 

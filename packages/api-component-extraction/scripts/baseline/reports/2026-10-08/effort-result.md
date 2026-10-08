@@ -1,5 +1,10 @@
 # Effort: result
 
+> **For a future comparison:** since this decision, an unset effort means **medium**
+> (`GENERATION_EFFORT`), not the provider's default. An arm meant to reproduce this experiment's
+> `effort-high` must pass `effort: "high"` explicitly; left unset it silently runs medium and the
+> comparison is void. Every generation-log entry since 2026-10-08 records the effort its call sent.
+
 Design and predictions: `effort-design.md` (committed before the runs). 30 dry-run generation runs,
 5 components x 3 arms x 2 repeats, on `anthropic/claude-sonnet-5`, all arms at the same moment.
 

@@ -37,6 +37,7 @@ const cutOff: AttemptRecord = {
     maxAttempts: 3,
     trace: {
         model: "anthropic/claude-sonnet-5",
+        effort: "medium",
         system: "You are a React component generator…",
         user: 'Build a "list" website section component named "Amenities List".',
         imageFileIds: ["file-1"],
@@ -52,6 +53,7 @@ const failedChecks: AttemptRecord = {
     maxAttempts: 3,
     trace: {
         model: "anthropic/claude-sonnet-5",
+        effort: null,
         system: "You are a React component generator…",
         user: "…Your previous attempt was rejected…",
         imageFileIds: ["file-1"],
@@ -90,6 +92,8 @@ describe("generationLog", () => {
         ]);
         expect(entries[0]).not.toHaveProperty("usage");
         expect(entries[1].usage?.outputTokens).toBe(17280);
+        // Recorded on every call, so a slow or costly run can be read for the effort it used.
+        expect(entries.map(entry => entry.effort)).toEqual(["medium", null]);
         expect(entries[1].failures).toEqual(['text not on the source page: "Dive In"']);
     });
 

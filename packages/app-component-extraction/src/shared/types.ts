@@ -533,6 +533,8 @@ export interface GenerationLogEntryDto {
     attempt: number;
     maxAttempts: number;
     model: string;
+    /** The effort the call asked for; null for the provider's default. Absent on older entries. */
+    effort?: "low" | "medium" | "high" | null;
     durationMs: number;
     usage?: {
         inputTokens: number;
