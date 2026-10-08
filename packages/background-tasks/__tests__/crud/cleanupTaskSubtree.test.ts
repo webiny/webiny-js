@@ -11,7 +11,11 @@ import {
     CleanupTaskSubtreeFeature,
     CleanupTaskSubtreeUseCase
 } from "~/api/features/CleanupTaskSubtree/index.js";
-import { TaskDefinitionNotFoundError, TaskNotFoundError } from "~/api/domain/errors.js";
+import {
+    BackgroundTaskPersistenceError,
+    TaskDefinitionNotFoundError,
+    TaskNotFoundError
+} from "~/api/domain/errors.js";
 
 const mkTask = (id: string, definitionId: string, parentId?: string): ITask =>
     ({
@@ -42,6 +46,7 @@ interface Fixture {
     tasks: ITask[];
     logs: ITaskLog[];
     definitions: Record<string, { databaseLogs?: boolean } | undefined>;
+    listFails?: boolean;
 }
 
 const makeContext = (fx: Fixture) => {
@@ -64,6 +69,9 @@ const makeContext = (fx: Fixture) => {
             return task ? Result.ok(task) : Result.fail(new TaskNotFoundError());
         },
         list: async (params?: any) => {
+            if (fx.listFails) {
+                return Result.fail(BackgroundTaskPersistenceError.from(new Error("db down")));
+            }
             const parentId = params?.where?.parentId;
             const items = [...tasks.values()].filter(t => (t as any).parentId === parentId);
             return Result.ok({ items, meta: meta(items.length) });
@@ -210,5 +218,17 @@ describe("cleanupTaskSubtree", () => {
 
         await expect(cleanup("root")).resolves.toBeUndefined();
         expect(deletedTasks.sort()).toEqual(["cyc", "root"]);
+    });
+
+    it("deletes nothing when the subtree can't be listed", async () => {
+        const fx = makeContext({
+            tasks: [mkTask("root", "defA"), mkTask("c1", "defA", "root")],
+            logs: [],
+            definitions: { defA: { databaseLogs: false } },
+            listFails: true
+        });
+        await expect(fx.cleanup("root")).resolves.toBeUndefined();
+        expect(fx.deletedTasks).toEqual([]);
+        expect(fx.logger.warn).toHaveBeenCalled();
     });
 });

@@ -205,7 +205,12 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
 
     private async findTask(id: string): Promise<TaskService.Task | null> {
         const result = await this.tasks.get(id);
-        return result.isOk() ? result.value : null;
+        if (result.isOk()) {
+            return result.value;
+        } else if (result.error instanceof TaskNotFoundError) {
+            return null;
+        }
+        throw result.error;
     }
 
     private async getOrCreateLog(task: TaskService.Task<any, any>): Promise<ITaskLog> {

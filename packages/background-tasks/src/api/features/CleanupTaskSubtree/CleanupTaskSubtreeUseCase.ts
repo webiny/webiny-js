@@ -20,7 +20,17 @@ class CleanupTaskSubtreeUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     public async execute(rootId: string): Promise<void> {
-        const ordered = await this.collectSubtree(rootId);
+        let ordered: ITask[];
+        try {
+            ordered = await this.collectSubtree(rootId);
+        } catch (error) {
+            // Without the full subtree, deleting anything could orphan the tasks we didn't find.
+            this.logger.warn(
+                { error },
+                `cleanupTaskSubtree: failed to collect the subtree of task "${rootId}", skipping.`
+            );
+            return;
+        }
         for (const task of ordered) {
             await this.deleteTaskLogs(task);
             const result = await this.deleteTask.execute(task.id);

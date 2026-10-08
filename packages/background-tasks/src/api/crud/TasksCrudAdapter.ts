@@ -15,7 +15,7 @@ import { CleanupTaskSubtreeUseCase } from "~/api/features/CleanupTaskSubtree/ind
 import { GetRunnableTaskDefinitionUseCase } from "~/api/features/GetRunnableTaskDefinition/index.js";
 import { ListTaskDefinitionsUseCase } from "~/api/features/ListTaskDefinitions/index.js";
 import { NotFoundError } from "@webiny/api-graphql";
-import { TaskLogNotFoundError } from "~/api/domain/errors.js";
+import { TaskLogNotFoundError, TaskNotFoundError } from "~/api/domain/errors.js";
 import type {
     IListTaskLogParams,
     IListTaskParams,
@@ -58,7 +58,12 @@ class TasksCrudAdapterImpl implements TasksCrud.Interface {
 
     async getTask<I extends TaskInput = TaskInput, O extends TaskOutput = TaskOutput>(id: string) {
         const result = await this.tasks.get<I, O>(id);
-        return result.isOk() ? result.value : null;
+        if (result.isOk()) {
+            return result.value;
+        } else if (result.error instanceof TaskNotFoundError) {
+            return null;
+        }
+        throw result.error;
     }
 
     async listTasks<I extends TaskInput = TaskInput, O extends TaskOutput = TaskOutput>(
