@@ -50,3 +50,10 @@ A measurement can be right and its conclusion wrong for a reason outside what it
 After the prompt's vocabulary was made to match the validator's, the same ablation changed nothing: the
 line had been absorbing the mismatched lists' consequences (`reports/2026-10-08/line5-result.md`).
 Record what a "load-bearing" result was measured against, and re-measure it when that changes.
+
+## Look at what a fix changes, not only the totals
+
+A deeper cluster fingerprint separated mixed clusters and kept every genuine copy together, which the
+totals showed as an unqualified improvement. The crops of its splits showed it also split one template
+by content length (a deeper tree counts paragraphs). Contact sheets of every split and merge are part of
+any clustering change (`reports/2026-10-08/clustering-depth-cap-proposal.md`).
