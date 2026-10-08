@@ -612,3 +612,7 @@ Refines D110. The list cell shows "End of {date}" when the stored instant falls 
 ## D125. One toast stack for everything
 
 Extends D102. Every toast in workflows UI — incoming notifications and confirmations of the user's own actions in the editors and Content Reviews — goes through the existing admin `Notifications` feature as one stack: bottom right, 8 seconds, paused on hover or focus, up to 3, newest at the bottom, with a close button and an optional link. No separate confirmation pill. Resolves final-check item H5.
+
+## D126. No "by" when a step rejects itself
+
+Refines D107. When the decider is the rejecting step itself (AI and Automation steps), a rejection without a comment reads "Rejected at {step}." instead of repeating the title after "by". People steps keep "Rejected at {step} by {person}." Applies to the review bar, popover, Review details and the "Review rejected" notification. From design answer QBZ-83.
