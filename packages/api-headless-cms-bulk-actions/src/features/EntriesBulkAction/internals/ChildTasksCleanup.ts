@@ -1,15 +1,15 @@
-import type {
-    DeleteTaskUseCase,
-    ITask,
-    ListTasksUseCase,
-    TaskLogsRepository
-} from "@webiny/background-tasks/api";
+import type { DeleteTaskLogUseCase } from "@webiny/background-tasks/api";
+import type { DeleteTaskUseCase } from "@webiny/background-tasks/api";
+import type { ITask } from "@webiny/background-tasks/api";
+import type { ListTaskLogsUseCase } from "@webiny/background-tasks/api";
+import type { ListTasksUseCase } from "@webiny/background-tasks/api";
 import { TaskLogItemType } from "@webiny/background-tasks/api";
 import type { IUseCase } from "~/abstractions/index.js";
 
 export interface IChildTasksCleanupExecuteParams {
     listTasks: ListTasksUseCase.Interface;
-    logs: TaskLogsRepository.Interface;
+    listTaskLogs: ListTaskLogsUseCase.Interface;
+    deleteTaskLog: DeleteTaskLogUseCase.Interface;
     deleteTask: DeleteTaskUseCase.Interface;
     task: ITask;
 }
@@ -32,7 +32,7 @@ const deleteTasks = async (
  */
 export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecuteParams, void> {
     public async execute(params: IChildTasksCleanupExecuteParams): Promise<void> {
-        const { listTasks, logs, deleteTask, task } = params;
+        const { listTasks, listTaskLogs, deleteTaskLog, deleteTask, task } = params;
 
         const { items: childTasks } = await listTasks.execute({
             where: {
@@ -48,7 +48,7 @@ export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecutePara
 
         const childTaskIdList = childTasks.map(childTask => childTask.id);
 
-        const logsResult = await logs.list({
+        const logsResult = await listTaskLogs.execute({
             where: {
                 task_in: childTaskIdList
             },
@@ -74,7 +74,7 @@ export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecutePara
             if (log.items.some(item => item.type === TaskLogItemType.ERROR)) {
                 continue;
             }
-            const deleted = await logs.delete(log.id);
+            const deleted = await deleteTaskLog.execute(log.id);
             if (deleted.isFail()) {
                 throw deleted.error;
             }

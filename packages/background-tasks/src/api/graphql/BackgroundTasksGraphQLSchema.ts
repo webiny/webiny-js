@@ -8,11 +8,9 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import type { Context, IListTaskLogParams, IListTaskParams, ITask, ITaskLog } from "~/api/types.js";
-import {
-    TaskLogModelProvider,
-    TaskLogsRepository,
-    TaskModelProvider
-} from "~/api/domain/task/abstractions.js";
+import { TaskLogModelProvider } from "~/api/domain/task/abstractions.js";
+import { TaskModelProvider } from "~/api/domain/task/abstractions.js";
+import { ListTaskLogsUseCase } from "~/api/features/ListTaskLogs/index.js";
 import { GetTaskUseCase } from "~/api/features/GetTask/index.js";
 import { ListTasksUseCase } from "~/api/features/ListTasks/index.js";
 import { DeleteTaskUseCase } from "~/api/features/DeleteTask/index.js";
@@ -105,12 +103,12 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
 
     builder.addResolver({
         path: "WebinyBackgroundTaskQuery.listLogs",
-        dependencies: [TaskLogsRepository],
-        resolver: (logs: TaskLogsRepository.Interface) => {
+        dependencies: [ListTaskLogsUseCase],
+        resolver: (listTaskLogs: ListTaskLogsUseCase.Interface) => {
             return ({ args, context }: IResolverParams<IListTaskLogParams>) => {
                 return resolveList(async () => {
                     await checkPermissions(context, { rwd: "r" });
-                    const result = await logs.list(args);
+                    const result = await listTaskLogs.execute(args);
                     if (result.isFail()) {
                         throw result.error;
                     }
@@ -217,10 +215,10 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
 function addFieldResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
     builder.addResolver({
         path: "WebinyBackgroundTask.logs",
-        dependencies: [TaskLogsRepository],
-        resolver: (logs: TaskLogsRepository.Interface) => {
+        dependencies: [ListTaskLogsUseCase],
+        resolver: (listTaskLogs: ListTaskLogsUseCase.Interface) => {
             return async ({ parent, args }: IResolverParams<IListTaskLogParams, ITask>) => {
-                const result = await logs.list({
+                const result = await listTaskLogs.execute({
                     sort: ["createdBy_ASC"],
                     limit: 10000,
                     ...args,

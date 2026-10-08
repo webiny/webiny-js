@@ -16,9 +16,13 @@ import {
     TaskDefinition,
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type { TaskLogsRepository, TasksRepository } from "~/api/domain/task/abstractions.js";
+import type { GetTaskUseCase } from "~/api/features/GetTask/index.js";
+import type { ListTasksUseCase } from "~/api/features/ListTasks/index.js";
+import type { CreateTaskLogUseCase } from "~/api/features/CreateTaskLog/index.js";
+import type { GetLatestTaskLogUseCase } from "~/api/features/GetLatestTaskLog/index.js";
+import type { UpdateTaskLogUseCase } from "~/api/features/UpdateTaskLog/index.js";
 import type { UpdateTaskUseCase } from "~/api/features/UpdateTask/index.js";
-import { TaskLogNotFoundError, TaskNotFoundError } from "~/api/domain/errors.js";
+import { TaskLogNotFoundError } from "~/api/domain/errors.js";
 import { GetRunnableTaskDefinitionUseCase } from "~/api/features/GetRunnableTaskDefinition/abstractions.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/abstractions.js";
@@ -41,9 +45,12 @@ export interface ITaskControlDependencies {
     logger: Logger.Interface;
     identityContext: IdentityContext.Interface;
     taskExecutionContext: TaskExecutionContext.Interface;
-    tasks: TasksRepository.Interface;
-    logs: TaskLogsRepository.Interface;
+    getTask: GetTaskUseCase.Interface;
+    listTasks: ListTasksUseCase.Interface;
     updateTask: UpdateTaskUseCase.Interface;
+    getLatestTaskLog: GetLatestTaskLogUseCase.Interface;
+    createTaskLog: CreateTaskLogUseCase.Interface;
+    updateTaskLog: UpdateTaskLogUseCase.Interface;
     taskController: TaskController.Interface;
     getRunnableTaskDefinition: GetRunnableTaskDefinitionUseCase.Interface;
 }
@@ -163,9 +170,9 @@ export class TaskControl implements ITaskControl {
 
         const store = new TaskManagerStore({
             context: this.context,
-            tasks: this.deps.tasks,
-            logs: this.deps.logs,
+            listTasks: this.deps.listTasks,
             updateTask: this.deps.updateTask,
+            updateTaskLog: this.deps.updateTaskLog,
             task,
             log: taskLog,
             databaseLogs
@@ -244,17 +251,18 @@ export class TaskControl implements ITaskControl {
     }
 
     private async getTask<T extends TaskDefinition.TaskInput>(id: string): Promise<ITask<T>> {
-        const result = await this.deps.tasks.get<T>(id);
-        if (result.isOk()) {
-            return result.value;
-        } else if (!(result.error instanceof TaskNotFoundError)) {
-            const error = result.error;
+        try {
+            const task = await this.deps.getTask.execute<T>(id);
+            if (task) {
+                return task;
+            }
+        } catch (ex) {
             throw this.response.error({
                 error: {
-                    message: error.message,
-                    code: error.code || "TASK_ERROR",
-                    stack: error.stack,
-                    data: error.data
+                    message: ex.message,
+                    code: ex.code || "TASK_ERROR",
+                    stack: ex.stack,
+                    data: ex.data
                 }
             });
         }
@@ -286,7 +294,7 @@ export class TaskControl implements ITaskControl {
         /**
          * First we are trying to get existing latest log.
          */
-        const latest = await this.deps.logs.getLatest(task.id);
+        const latest = await this.deps.getLatestTaskLog.execute(task.id);
         if (latest.isOk()) {
             taskLog = latest.value;
         } else if (!(latest.error instanceof TaskLogNotFoundError)) {
@@ -298,7 +306,7 @@ export class TaskControl implements ITaskControl {
 
         const currentIteration = taskLog?.iteration || 0;
 
-        const created = await this.deps.logs.create(task, {
+        const created = await this.deps.createTaskLog.execute(task, {
             executionName: this.response.event.executionName,
             iteration: currentIteration + 1
         });

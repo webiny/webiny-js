@@ -10,8 +10,9 @@ import type {
     ITaskManagerStoreUpdateTaskOptions,
     TaskDataStatus
 } from "~/api/types.js";
-import type { TaskLogsRepository, TasksRepository } from "~/api/domain/task/abstractions.js";
+import type { ListTasksUseCase } from "~/api/features/ListTasks/index.js";
 import type { UpdateTaskUseCase } from "~/api/features/UpdateTask/index.js";
+import type { UpdateTaskLogUseCase } from "~/api/features/UpdateTaskLog/index.js";
 import type { Container } from "@webiny/feature/api";
 import { TaskLogItemType } from "~/api/types.js";
 import type {
@@ -54,9 +55,9 @@ export interface ITaskManagerStoreParams {
      * Supplied by the caller rather than pulled from `context.container`, so the store's
      * collaborators are visible in its signature and a test can substitute them.
      */
-    tasks: TasksRepository.Interface;
-    logs: TaskLogsRepository.Interface;
+    listTasks: ListTasksUseCase.Interface;
     updateTask: UpdateTaskUseCase.Interface;
+    updateTaskLog: UpdateTaskLogUseCase.Interface;
 }
 
 export class TaskManagerStore<
@@ -64,9 +65,9 @@ export class TaskManagerStore<
     O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > implements ITaskManagerStorePrivate<T, O> {
     private readonly context: TaskManagerStoreContext;
-    private readonly tasks: TasksRepository.Interface;
-    private readonly logs: TaskLogsRepository.Interface;
+    private readonly listTasksUseCase: ListTasksUseCase.Interface;
     private readonly updateTaskUseCase: UpdateTaskUseCase.Interface;
+    private readonly updateTaskLogUseCase: UpdateTaskLogUseCase.Interface;
     private task: ITask<T, O>;
     private taskLog: ITaskLog;
     private readonly databaseLogs: boolean;
@@ -76,9 +77,9 @@ export class TaskManagerStore<
 
     public constructor(params: ITaskManagerStoreParams) {
         this.context = params.context;
-        this.tasks = params.tasks;
-        this.logs = params.logs;
+        this.listTasksUseCase = params.listTasks;
         this.updateTaskUseCase = params.updateTask;
+        this.updateTaskLogUseCase = params.updateTaskLog;
         this.task = params.task as ITask<T, O>;
         this.taskLog = params.log;
         this.databaseLogs = params.databaseLogs === true;
@@ -102,15 +103,12 @@ export class TaskManagerStore<
         if (definitionId) {
             where.definitionId = definitionId;
         }
-        const result = await this.tasks.list<I, O>({
+        const result = await this.listTasksUseCase.execute<I, O>({
             where,
             sort: ["createdOn_ASC"],
             limit: 1000000
         });
-        if (result.isFail()) {
-            throw result.error;
-        }
-        return result.value.items;
+        return result.items;
     }
 
     public async updateTask(
@@ -241,10 +239,8 @@ export class TaskManagerStore<
          * Update both task and the log, if anything to update.
          */
         if (this.taskUpdater.isDirty()) {
-            const result = await this.updateTaskUseCase.execute<T, O>(
-                this.task.id,
-                this.taskUpdater.fetch()
-            );
+            const changes = this.taskUpdater.fetch();
+            const result = await this.updateTaskUseCase.execute<T, O>(this.task.id, changes);
             if (result.isFail()) {
                 throw result.error;
             }
@@ -254,7 +250,8 @@ export class TaskManagerStore<
             return;
         }
         if (this.taskLogUpdater.isDirty()) {
-            const result = await this.logs.update(this.taskLog.id, this.taskLogUpdater.fetch());
+            const changes = this.taskLogUpdater.fetch();
+            const result = await this.updateTaskLogUseCase.execute(this.taskLog.id, changes);
             if (result.isFail()) {
                 throw result.error;
             }
