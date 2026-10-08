@@ -7,6 +7,10 @@
  * so every threshold above 0.33 and up to 1.0 classifies them identically; 0.5 sits in the gap. A
  * logo counts as see-through by this measure, which is right for colour — the colour around it shows —
  * and is why the wording for these says "mostly see-through" rather than "pattern".
+ *
+ * Not a tuning parameter. The gap is a property of the images: an image is either drawn opaque or
+ * drawn as a tint. Do not revisit this value unless that distribution changes — an image that measures
+ * strictly between 0.33 and 1.00 — and then sweep again over every background image, not a sample.
  */
 export const TRANSLUCENT_BELOW = 0.5;
 

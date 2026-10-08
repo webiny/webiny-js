@@ -95,18 +95,23 @@ Plan records the colour measured where each see-through image is drawn, and Gene
 images apart from photographs.
 
 - Threshold sweep, all 139 readable background images on the planned pages: every one is at or below
-  0.33, or exactly 1.00. Any threshold above 0.33 gives the same result.
+  0.33, or exactly 1.00. Any threshold above 0.33 gives the same result. This is a property of the
+  images, not of this sample: the parameter does not need tuning and should not be revisited unless that
+  distribution changes (an image measured strictly between 0.33 and 1.00).
 - Offline replay, all 95 components (94 of 95 reproduce the stored colours; the miss is a stale
   check-run header): 12 prompts change.
   - 3 predicted: Park City Property Description, Tulane Property Highlights Links, check-run Tulane
     FAQ Section.
-  - 9 not predicted, from the should-not-change set: thevibe's `<body>` is white with a 5% texture,
-    which hid the white backdrop of 9 sections that previously had no background colour at all. Their
-    crops are white (dominant `#f8f8f8`). The change is correct, but the prediction failed: I had not
-    considered a see-through image on an ancestor.
+  - 9 not predicted, from the should-not-change set. **A finding, not only a miss:** 9 thevibe
+    sections had no background colour at all, because a 5% texture on the page `<body>` hid the white
+    backdrop behind them. Their crops are white (dominant `#f8f8f8`), so the change is correct. The
+    prediction failed because the model of the defect did not include a see-through image on a parent
+    element, which is a real gap in the model being tested, not only in the forecast.
   - The first wording named the section's largest colour as the one under the pattern. For Park City
-    that is navy, which restated the wrong claim from row 3. The replay caught it, and Plan now
-    measures the colour where the image is drawn.
+    that is navy, which would have reinstated the corrected navy claim from row 3 inside the fix for
+    it. The replay caught it, and Plan now measures the colour where the image is drawn. This is the
+    second time in two passes that a correction was nearly undone by the fix built from it: replay the
+    fix against the case that prompted the correction, not only against the cases it was written for.
 - Park City, Plan re-run on the deployed code: pattern opacity 0.12, light, colour under it `#f7f7f9`
   (`surface-sunken`). Generated twice (~$0.50, ~$0.40): both paint the section `surface-sunken` with the
   pattern, and navy on the text column. Before: the whole section was navy.
@@ -120,7 +125,8 @@ prompt changed as predicted, not that the component is now correct.
 Not yet regenerated: the two Tulane sections. Their colours come from Cluster, so Cluster, Classify and
 Plan must re-run first, and Classify and Plan call the model again (see `../../VERIFYING.md`).
 
-Sized, not fixed:
+Sized, not fixed. Both are the same shape — something outside the section, or larger than it,
+reported as the section's background — and the carousel case is the larger of the two:
 
 - Tulane's `circle-background5` is a 780x900 absolutely positioned element listed as the background of
   2 components, both Tulane baseline headers, at 2.1x and 8.1x the header's area. No other component
