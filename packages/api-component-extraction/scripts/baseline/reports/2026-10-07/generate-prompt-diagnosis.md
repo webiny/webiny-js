@@ -209,6 +209,11 @@ without re-running Cluster, Classify or Plan.
   shipping it: of 113 re-tied steps, 92 are body text (right; all 92 were wrong before), 14 are all
   headings (now wrong: section headings set at 20px, moved to `lead`), 7 mixed. The alternative of
   taking the section's largest step as a heading scored 76 right, 30 wrong, and was not used.
+- **Old runs and new runs disagree, by design.** Stored plans keep the fallback until they are
+  re-planned, so the 14 headings moved to `lead` persist on every existing run; a run planned since
+  `f3972c6219` records `headings` and gets them right. The same section can therefore come out
+  differently on an old run and a new one. Re-planning the old run removes the difference (and, per
+  `../../VERIFYING.md`, re-plans its props too).
 - Replay over all 95 stored plans, untagged ones included: 78 predicted, 78 changed, no misses either
   way; the other 17 byte-identical.
 - Generate twice each on thevibe Hero Intro, Tulane Property Highlights Links and Westland Contact Form:

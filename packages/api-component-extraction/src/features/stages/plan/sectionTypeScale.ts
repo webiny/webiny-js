@@ -104,6 +104,12 @@ const isHeadingRole = (path: string): boolean => /heading|display/i.test(path);
  * `--wby-type-heading-3-size`. A tie now goes to a heading role only when every element at the step is
  * a heading. A step with a clear nearest role is left as it was. Where a plan predates `headings`, the
  * step is taken as body text: it is a tie-break, so it cannot move a step that was not tied.
+ *
+ * Two sets of runs therefore disagree, and that is expected. A plan made before `headings` existed
+ * (every plan before 2026-10-08) keeps the fallback until it is re-planned: measured against the pages,
+ * it is right on 92 of 113 tied steps and moves 14 real section headings set at a body size (20px) to
+ * `lead`. A plan made since records the count and gets those 14 right. The same section can come out
+ * differently on an old run and a new one; re-planning the old run is what removes the difference.
  */
 export const roleAwareTypeToken = (
     step: Pick<TypeScaleEntry, "fontSize" | "elements" | "headings" | "token">,
