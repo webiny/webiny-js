@@ -13,15 +13,13 @@ class FrontendGetSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(): UseCaseAbstraction.Return {
+        /*
+         * Reading only needs a signed-in user. Content editors need the domain to preview pages
+         * and entries, and the domain is not a secret. Changing it still needs the
+         * `dev-tools.frontend-settings.*` permission (see FrontendUpdateSettingsUseCase).
+         */
         const identity = this.identityContext.getIdentity();
         if (identity.isAnonymous()) {
-            return Result.fail(new NotAuthorizedError());
-        }
-
-        const permission = await this.identityContext.getPermission(
-            "dev-tools.frontend-settings.*"
-        );
-        if (!permission) {
             return Result.fail(new NotAuthorizedError());
         }
 
