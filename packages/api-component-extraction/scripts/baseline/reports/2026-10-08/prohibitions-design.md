@@ -22,9 +22,17 @@ actually sent on the re-clustered check run (21 components, 111 props) and from 
 - *Removed by upstream fixes:* other copies' text. Re-clustering and the representative-only samples
   (#1/#7) took it to 0; the line no longer has that to absorb.
 - *Left:* props that reach the prompt with no value from the section: **12 props in 9 components**
-  (8 links whose label the model must write, 3 text props, 1 map point). The clustering measure counted
-  4 props absent from the representative; the rest are props the section likely has but Plan captured
-  no value for (a form's submit button). The overlap is not verified.
+  (8 links whose label the model must write, 3 text props, 1 map point). Two kinds, counted apart so
+  neither is quoted against the other:
+  - **4: the contract carries what the section lacks.** Other copies in the cluster have a value, the
+    representative does not: `sidebarHeading`, `sidebarLinks`, `featureList` (tabbed panels merged into
+    "Contact Form") and `subheading` (on 3 of 7 copies). This is the clustering measure (16 before
+    re-clustering, 4 after), the same 4 props.
+  - **8: the section has the element, Plan captured no value.** Present on every copy, or 8-9 of 11,
+    with no text or destination observed: an icon-only menu toggle, the carousel's two arrow "CTAs",
+    two submit buttons and a privacy link on single-copy forms, the Footer's map point and social icon
+    links. Clustering cannot change these. Each invites a label or a destination the section does not
+    show.
 - *Left, and untouched by clustering:* the reflex to add a plausible heading or call to action. Every
   component is exposed to it.
 - Backed by a validator (`validateNoInventedText`): with the line, **0 of 31** stage attempts failed it.
