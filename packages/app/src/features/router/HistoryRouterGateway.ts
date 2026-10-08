@@ -106,9 +106,22 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
         return undefined;
     }
 
+    // history v5 prompts before every unload (reload, typed URL, closing the tab) while a blocker
+    // is registered, even when no guard has anything to lose. This listener runs first, being a
+    // capture listener on the same target, and stops history's prompt unless a guard blocks.
+    private readonly onBeforeUnload = (event: Event): void => {
+        if (!this.findBlockingGuard()) {
+            event.stopImmediatePropagation();
+        }
+    };
+
     private installBlocker(): void {
         if (this.unblock) {
             this.unblock();
+        }
+
+        if (typeof window !== "undefined") {
+            window.addEventListener("beforeunload", this.onBeforeUnload, { capture: true });
         }
 
         this.unblock = this.history.block(tx => {
@@ -138,6 +151,10 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
         if (this.unblock) {
             this.unblock();
             this.unblock = undefined;
+        }
+
+        if (typeof window !== "undefined") {
+            window.removeEventListener("beforeunload", this.onBeforeUnload, { capture: true });
         }
     }
 
