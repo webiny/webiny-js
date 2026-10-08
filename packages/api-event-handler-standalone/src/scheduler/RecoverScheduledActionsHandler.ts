@@ -4,10 +4,11 @@ import { GetRootTenantUseCase } from "@webiny/api-core/features/tenancy/GetRootT
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
 import { ScheduledActionRecoverEventHandler } from "./ScheduledActionRecoverEventHandler.js";
+import type { IPendingAction } from "@webiny/api-scheduler-standalone";
 import { SchedulerSingleton } from "./abstractions/SchedulerSingleton.js";
 
-// The most pending actions one recovery reads.
-const MAX_RECOVERED_ACTIONS = 1000;
+// Pending actions read per page.
+const PAGE_SIZE = 1000;
 
 /**
  * Re-arms the root tenant's pending scheduled actions in the Bree singleton. Overdue ones run at
@@ -41,25 +42,43 @@ class RecoverScheduledActionsHandlerImpl implements ScheduledActionRecoverEventH
          * Nobody is signed in at boot. Listing without authorization is what the run side does too
          * (ExecuteScheduledActionUseCase); otherwise the anonymous identity fails the permission check.
          */
-        const listResult = await this.identityContext.withoutAuthorization(() => {
-            return this.listScheduledActions.execute({ where: {}, limit: MAX_RECOVERED_ACTIONS });
-        });
-        if (listResult.isFail()) {
-            throw listResult.error;
-        }
-
-        const pending = listResult.value.items.map(action => {
-            return {
-                id: action.id,
-                namespace: action.namespace,
-                tenant,
-                scheduledFor: action.scheduledFor
-            };
+        const pending = await this.identityContext.withoutAuthorization(() => {
+            return this.listAllPending(tenant);
         });
 
         await this.scheduler.recover(pending);
 
         return { recovered: pending.length };
+    }
+
+    private async listAllPending(tenant: string): Promise<IPendingAction[]> {
+        const pending: IPendingAction[] = [];
+        let after: string | undefined;
+
+        do {
+            const listResult = await this.listScheduledActions.execute({
+                where: {},
+                limit: PAGE_SIZE,
+                after
+            });
+            if (listResult.isFail()) {
+                throw listResult.error;
+            }
+
+            for (const action of listResult.value.items) {
+                pending.push({
+                    id: action.id,
+                    namespace: action.namespace,
+                    tenant,
+                    scheduledFor: action.scheduledFor
+                });
+            }
+
+            const { meta } = listResult.value;
+            after = meta.hasMoreItems && meta.cursor ? meta.cursor : undefined;
+        } while (after);
+
+        return pending;
     }
 }
 
