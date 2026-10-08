@@ -117,7 +117,8 @@ export interface GenerationDeps {
  * `scripts/baseline/reports/2026-10-08/ablation-design.md`). The extraction prompt's own lines, plus the
  * shared system prompt's (`SYSTEM_PROMPT_LINE_IDS`). Nothing else can be removed.
  */
-export const EXTRACTION_PROMPT_LINE_IDS = ["extraction.only-variables"] as const;
+// Every extraction line measured so far has been removed; the list stays for the next experiment.
+export const EXTRACTION_PROMPT_LINE_IDS = [] as const;
 
 /**
  * The shared system prompt's lines this pipeline leaves out on every call: its own override of the
@@ -130,9 +131,6 @@ export const PROMPT_LINE_IDS: readonly string[] = [
     ...EXTRACTION_PROMPT_LINE_IDS,
     ...SYSTEM_PROMPT_LINE_IDS
 ];
-
-type Ablation = ReadonlySet<string>;
-const NO_ABLATION: Ablation = new Set();
 
 export interface GenerationInput {
     runId: string;
@@ -560,15 +558,13 @@ export const withRoleAwareTypeTokens = (
 export const buildComponentPrompt = (
     component: PlannedComponent,
     slotVariables: Map<string, string[]>,
-    feedback: string[] = [],
-    ablate: Ablation = NO_ABLATION
-): string => buildPrompt(component, slotVariables, feedback, ablate);
+    feedback: string[] = []
+): string => buildPrompt(component, slotVariables, feedback);
 
 const buildPrompt = (
     component: PlannedComponent,
     slotVariables: Map<string, string[]>,
-    feedback: string[] = [],
-    ablate: Ablation = NO_ABLATION
+    feedback: string[] = []
 ): string => {
     const attribute = createCopyAttribution(component);
     const propLines = (prop: PlannedComponent["props"][number], indent: string): string[] => {
@@ -653,9 +649,10 @@ const buildPrompt = (
         ...(allowed.length > 0
             ? [
                   "",
-                  ablate.has("extraction.only-variables")
-                      ? "The theme's CSS variables:"
-                      : "Use ONLY these theme CSS variables — any other var(--wby-*) fails validation; for anything without a suitable variable, use a plain CSS value:",
+                  // "Use ONLY these theme CSS variables ..." was measured dead once the prompt's
+                  // vocabulary matched the validator's (line5-result.md); its apparent load in the
+                  // first ablation was the mismatched lists.
+                  "The theme's CSS variables:",
                   allowed
                       .slice(0, MAX_PROMPT_VARIABLES)
                       .map(name => `var(${name})`)
@@ -902,7 +899,7 @@ export const generateComponentAttempts = async (
             : [];
         let trace: GenerationTrace | null = null;
         const generated = await deps.generateComponent.execute({
-            prompt: buildPrompt(planned, slotVariables, feedback, new Set(input.ablate ?? [])),
+            prompt: buildPrompt(planned, slotVariables, feedback),
             name: planned.name,
             ablate: [...SYSTEM_PROMPT_OVERRIDE, ...(input.ablate ?? [])],
             ...(input.systemOverride ?? {}),
