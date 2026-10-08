@@ -80,6 +80,26 @@ and Footer were run in dry-run mode, with Social Media Links at the same moment 
   call is the model's default thinking, which the call does not set. Thinking also counts against
   `MAX_OUTPUT_TOKENS` (32K), so a call that is not cut off by time is cut off at the token cap.
 
+**The streaming fix paid for itself on its first use.** Three to four minutes of silence followed by a
+complete answer was indistinguishable from a stall until chunk timing was recorded. Every conclusion in
+this section rests on it.
+
+## Every cost figure in this project is mostly thinking
+
+Measured over all 213 logged attempts with usage (2026-10-07 and 08, every run that has a generation
+log): **about three quarters of billed output tokens is thinking** (0.72-0.76; the per-attempt median is
+0.73, the lowest tenth under 0.31). Output is 87% of Generate's spend, so thinking is roughly two thirds
+of the money. The answer's share is estimated from its length at 3.4-4.0 characters a token, calibrated
+on the three streamed calls (text-phase duration times their measured token rate).
+
+So the ablation's $22.92, and every pass priced since the log existed, mostly paid for tokens that
+produced no text. The $26.60 baseline predates the log and cannot be split, but ran on the same model
+with the same unset thinking. Two further corrections to those figures:
+
+- Not "nine tenths". That held on the two long calls of the reproduction (0.90-0.91), not across runs.
+- They undercount. The 12 attempts cut off at the time limit report no usage, so no figure includes
+  them, though a cut-off call has generated up to about 30K tokens before it stops.
+
 Not decided here: bounding thinking (effort or a thinking setting on the generation call), raising the
 per-call limit, or both. Either changes cost and possibly quality, so it is measured before it ships.
 Also open: whether thinking was this long on 2026-10-06 cannot be read from what is stored.
