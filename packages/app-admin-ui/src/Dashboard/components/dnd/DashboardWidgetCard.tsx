@@ -1,4 +1,5 @@
 import React from "react";
+import { useRef } from "react";
 import { useDrag } from "react-dnd";
 import { DragPreviewImage } from "react-dnd";
 import { IconButton } from "@webiny/admin-ui";
@@ -6,12 +7,8 @@ import { Tooltip } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
 import { ReactComponent as RemoveIcon } from "@webiny/icons/delete.svg";
 import type { DashboardLayoutPresenter } from "../../dashboardLayout/presenter/abstractions.js";
-
-export const DASHBOARD_WIDGET_DND_TYPE = "dashboard-widget";
-
-interface DragItem {
-    name: string;
-}
+import { DASHBOARD_WIDGET_DND_TYPE } from "./dragItem.js";
+import type { DashboardWidgetDragItem } from "./dragItem.js";
 
 // Transparent 1px gif. Hides the browser's drag preview so DashboardDragLayer's card is the only one.
 const EMPTY_DRAG_IMAGE =
@@ -39,11 +36,14 @@ export const DashboardWidgetCard = ({
     registerRef,
     children
 }: DashboardWidgetCardProps) => {
+    const cardRef = useRef<HTMLElement | null>(null);
+
     const [, drag, preview] = useDrag({
         type: DASHBOARD_WIDGET_DND_TYPE,
         item: () => {
             presenter.beginDrag(name);
-            return { name } satisfies DragItem;
+            const height = cardRef.current?.getBoundingClientRect().height ?? 0;
+            return { name, title, height } satisfies DashboardWidgetDragItem;
         },
         end: () => {
             presenter.endDrag();
@@ -54,7 +54,10 @@ export const DashboardWidgetCard = ({
         <>
             <DragPreviewImage connect={preview} src={EMPTY_DRAG_IMAGE} />
             <div
-                ref={node => registerRef(name, node)}
+                ref={node => {
+                    cardRef.current = node;
+                    registerRef(name, node);
+                }}
                 className={cn(
                     // A named group: a plain `group` here would also trigger `group-hover:` styles inside the
                     // widget (e.g. every Tabs trigger at once), since those match any `.group` ancestor.

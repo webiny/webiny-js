@@ -77,9 +77,9 @@ export const ColumnEmptyState = ({
         <div
             data-testid={"dashboard-empty-column"}
             className={cn(
-                // `rounded-xl` matches the widgets.
+                // `rounded-xl` and the 2px border match the cards' outline and the drop slot.
                 "flex min-h-[220px] flex-col items-center justify-center gap-sm rounded-xl",
-                "border-sm border-dashed p-lg transition-colors",
+                "border-2 border-dashed p-lg transition-colors",
                 stateClasses
             )}
         >
