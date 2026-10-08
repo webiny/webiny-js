@@ -1,6 +1,6 @@
-import { EventType } from "@webiny/event-handler-core";
-import type { IEventType } from "@webiny/event-handler-core";
-import { ScheduledActionEventHandler } from "~/abstractions/handlers/ScheduledActionEventHandler.js";
+import { EventType } from "~/features/events/EventType.js";
+import type { IEventType } from "~/features/events/EventType.js";
+import { ScheduledActionEventHandler } from "./ScheduledActionEventHandler.js";
 
 export const SCHEDULED_ACTION_EVENT_IDENTIFIER = "WebinyScheduledAction";
 

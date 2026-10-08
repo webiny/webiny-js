@@ -19,7 +19,7 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { EventType } from "@webiny/event-handler-core";
-import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "@webiny/event-handler-aws/eventTypes/ScheduledActionEventType.js";
+import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "@webiny/event-handler-core";
 import { registerInboundEventTypes } from "~/composition/registerInboundEventTypes.js";
 
 /** One representative payload per inbound transport, shaped as the real invoker sends it. */

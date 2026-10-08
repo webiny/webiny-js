@@ -76,7 +76,7 @@ This document provides the correct import paths and type definitions for commonl
 
 - **Import:** `import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js"`
 - **Interface Type:** See `packages/background-tasks/src/api/domain/TaskService.ts`
-- **Usage:** Low-level transport abstraction (`send` + `fetch`). Implemented by `StepFunctionService` (AWS) and `WorkerService` (server). Registered by `BackgroundTasksAwsFeature` or `BackgroundTasksStandaloneFeature`. Namespace types: `TaskService.Interface`, `.SendTaskParams`, `.Task`.
+- **Usage:** Low-level transport abstraction (`send` + `fetch`). Implemented by `StepFunctionService` (AWS) and `InProcessTaskService` (standalone, which hands the task to a root `TaskLoop` that dispatches one `BackgroundTaskEvent` per iteration). Registered by `BackgroundTasksAwsFeature` or `BackgroundTasksStandaloneFeature`. Namespace types: `TaskService.Interface`, `.SendTaskParams`, `.Task`.
 
 ### Timer
 
