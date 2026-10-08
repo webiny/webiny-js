@@ -568,3 +568,15 @@ Content Reviews, its filters and the dashboard widgets call the model column and
 ## D114. Start asks for confirmation
 
 Start (taking a step from the team pool) asks for confirmation everywhere it is offered, in the editors and in the Content Reviews list: "You become the owner of this step and it leaves the team pool." On confirm, a toast says where the step went ("It's now in Assigned to me."). Resolves gap A13 from the design review.
+
+## D115. Blocked workflow delete lists the blocking reviews
+
+Extends D81. The delete-blocked error carries the exact count of in-progress reviews and up to 5 of them, each with the content reference (model, entry or page id, revision), title, step position ("Step n of N") and step name. Only reviews the admin can read are listed; the count stays exact regardless. The dialog body depends on the viewer's permission (with or without Reassign and operate). From design answer QBZ-19.
+
+## D116. Model list in the workflow editor is paged and searched on the server
+
+The editor's model list loads 20 models at a time, sorted by name, with "Load more" and no counts. Search runs on the server; a new search starts again at the first page. The list query used by the editor takes `search`, `limit` and a cursor. From design answer QBZ-20.
+
+## D117. Editor resolves saved references for display
+
+When the editor loads a workflow, saved user and folder references (rule targets, folder conditions) are resolved by id so a value is never shown empty. A user that no longer exists shows as "Deleted user" with the warning "The assigned user was deleted."; routing already skips such a rule (D46). Folders use the D69 checks: "Restricted folder" when the admin cannot see it, "Deleted folder" with "The folder no longer exists." when it is gone. The user lookup accepts a list of ids and reports which ones do not exist. From design answer QBZ-7.
