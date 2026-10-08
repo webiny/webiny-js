@@ -105,7 +105,8 @@ describe("Node HTTP server request body", () => {
         const reply = await post(port, body, false);
 
         expect(reply.statusCode).toBe(200);
-        expect(JSON.parse(reply.body)).toEqual({ length: MAX_BYTES });
+        const parsed = JSON.parse(reply.body);
+        expect(parsed).toEqual({ length: MAX_BYTES });
     });
 
     it("refuses a body whose declared length is over the limit", async () => {

@@ -187,8 +187,10 @@ describe("Node HTTP server streaming", () => {
         const server = await startServer(route);
 
         try {
-            // A client that never reads fills the socket buffer, so the server ends up waiting
-            // for `drain`. Disconnecting then emits `close`, which that wait must also notice.
+            /*
+             * A client that never reads fills the socket buffer, so the server ends up waiting
+             * for `drain`. Disconnecting then emits `close`, which that wait must also notice.
+             */
             const request = http.get(server.url, response => {
                 response.pause();
                 setTimeout(() => request.destroy(), 200);
@@ -200,7 +202,8 @@ describe("Node HTTP server streaming", () => {
             });
             const released = producerReleased.promise.then(() => "released");
 
-            expect(await Promise.race([released, timedOut])).toBe("released");
+            const outcome = await Promise.race([released, timedOut]);
+            expect(outcome).toBe("released");
         } finally {
             await server.close();
         }
