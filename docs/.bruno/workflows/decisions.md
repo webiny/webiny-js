@@ -560,3 +560,7 @@ The Take over dialog has a checkbox "Notify {name} that you took over", checked 
 ## D112. "Failed steps" tab for operators
 
 Content Reviews gets a fifth tab, **Failed steps**, shown only to users with Reassign and operate. It lists every AI or Automation step in state Failed on reviews the user can read, with the same columns, filters (model, title) and incremental loading as the other tabs. Row actions add Restart and Cancel review where allowed (§1.6). One extra list query by step state. Resolves gap A11 from the design review.
+
+## D113. "Content type" in lists
+
+Content Reviews, its filters and the dashboard widgets call the model column and filter **Content type**, shown as name plus app (e.g. "Article · Headless CMS", "Pages · Website Builder"; Pages listed first). "Model" stays where an admin works with a specific CMS model (workflow editor, model delete). Adopts the designer's UI-9. Resolves gap A12 from the design review.

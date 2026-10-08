@@ -31,10 +31,11 @@ One person can hold several roles. A requester can never review their own conten
 - **Step**: one stage of a review.
 - **Step types**: **People** (members of one or more teams review), **Automation** (code-defined, e.g. "Send webhook"), **AI** (an AI model reviews against written instructions) [D98].
 - **Reviewing teams**: the teams allowed to review a People step. A routing rule can narrow them to one team for a particular review.
-- **Owner**: who currently holds a step. For People steps, a person. For AI and Automation steps, display the AI step or the automation by name (from the step's configuration), never a person's name.
+- **Owner**: who currently holds a step. For People steps, a person. For AI and Automation steps, the step's title (never the automation's name, never a person's name) [D107].
 - **Team pool**: a People step nobody owns yet; any eligible team member can start it. Use "Team pool" everywhere (not "pool" alone, not "waiting").
 - **Picked**: the requester chose the reviewer when requesting.
 - **Routed**: the system chose the reviewer, by a routing rule or a strategy.
+- **Content type**: what lists call the model of an entry or page, shown as name plus app ("Article · Headless CMS", "Pages · Website Builder"). "Model" stays only where an admin configures a specific CMS model [D113].
 - Never use the word "manual" for assignment.
 
 Permission labels (as shown in the role editor, section 11): **Manage workflows** and **Reassign and operate**. Use these labels wherever the brief refers to permissions.
@@ -283,9 +284,9 @@ Common fields for every step type:
 - **My requests**: reviews I requested.
 - **Failed steps** (only with Reassign and operate): AI or Automation steps that failed, on any review the user can read; row actions add Restart and Cancel review [D112].
 
-**Filters.** All tabs: model, search by title. **My requests** only: review state (In progress, Approved, Rejected) and step state. The other tabs have a fixed step state, so no state filter. Cancelled reviews never appear.
+**Filters.** All tabs: content type, search by title. **My requests** only: review state (In progress, Approved, Rejected) and step state. The other tabs have a fixed step state, so no state filter. Cancelled reviews never appear.
 
-**Columns.** Title, model, current step, step state, owner, requester, last change.
+**Columns.** Title, content type, current step, step state, owner, requester, last change.
 
 **Row actions** (only where allowed): open content, open in new window, view details, start, take over, reassign. Approve and reject are not available from the list; reviewers open the content first.
 
