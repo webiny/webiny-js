@@ -81,3 +81,47 @@ describe("TenantContext.withTenant", () => {
         expect(tenantContext.getTenant().id).toBe("root");
     });
 });
+
+/*
+ * Work outside an HTTP request (a background task, a scheduled action, a scheduled EventBridge
+ * event) starts with no tenant. Restoring that afterwards used to throw, after the callback had
+ * already done its work.
+ */
+describe("TenantContext with no tenant set", () => {
+    let tenantContext: TenantContext.Interface;
+
+    beforeEach(() => {
+        const container = new Container();
+        TenancyFeature.register(container, new MockTenancyStorageOperations());
+        tenantContext = container.resolve(TenantContext);
+    });
+
+    it("withTenant runs the callback and leaves no tenant set", async () => {
+        const tenant = createTenant("sub", "root");
+        const result = await tenantContext.withTenant(tenant, async () => {
+            return tenantContext.getTenant().id;
+        });
+
+        expect(result).toBe("sub");
+        expect(tenantContext.getTenant()).toBeNull();
+    });
+
+    it("withRootTenant runs the callback and leaves no tenant set", async () => {
+        const result = await tenantContext.withRootTenant(async () => {
+            return tenantContext.getTenant().id;
+        });
+
+        expect(result).toBe("root");
+        expect(tenantContext.getTenant()).toBeNull();
+    });
+
+    it("withEachTenant runs the callback per tenant and leaves no tenant set", async () => {
+        const tenants = [createTenant("a", "root"), createTenant("b", "root")];
+        const result = await tenantContext.withEachTenant(tenants, async tenant => {
+            return tenant.id;
+        });
+
+        expect(result).toEqual(["a", "b"]);
+        expect(tenantContext.getTenant()).toBeNull();
+    });
+});
