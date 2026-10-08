@@ -94,3 +94,29 @@ cluster, every genuine copy stays with its copies, and today's 97 clusters becom
 The demo is on 16 October. Re-clustering the demo runs re-runs everything downstream of Cluster on
 them, and renames their components. Whether that happens before the demo or after it is a decision
 to make before step 3.
+
+## Contact sheets and the one tuning round (2026-10-08)
+
+**Contact sheets, every split and merge under the proposal.**
+
+- 12 splits: 6 right, 3 mostly right (some mixing left), 3 wrong. The three wrong ones are over-splits:
+  a home-page section split from same-design copies with less text (Park City's Property Description,
+  Tulane's "In New Orleans" on both runs).
+- 8 merges: 2 right, 4 mostly right, 2 wrong (a "please update your browser" widget fallback with a
+  photo hero on thevibe; a laundry feature with a photo grid on Westland). The two wrong merges are new:
+  those sections sit in different clusters today.
+- **The over-split is the content-length sensitivity surviving in smaller form.** Comparing which paths
+  are present was meant to remove it, and did for Westland's centred intros, but a section with extra
+  element types (a list, a link) still separates from copies without them. Recorded, not fixed.
+
+**One bounded tuning round, aimed at the two wrong merges only.** Hypothesis: sparse sections merge on a
+few shared paths. Rule: a section with fewer than 3 content elements joins a group only if its paths
+are identical. Result: one wrong merge cleared, the other remained; a right merge (thevibe's two
+centred intros) was lost; Westland's five centred intros split again. **It did not clear the merges.**
+As agreed, no second rule: the proposal ships as it was (option 1), with its known errors on these runs
+written down: 2 wrong merges, 3 over-splits.
+
+**Override reattachment.** Overrides match by exact signature; 262 of 347 sections get a new one. In
+this environment, 22 cluster corrections on two jobs (20 on "Validation — webiny.com") would stop
+reattaching. Built alongside the change: Cluster records each member's signature under the old
+fingerprint as well, and reattachment accepts either.
