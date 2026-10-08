@@ -36,8 +36,8 @@ export interface MigrateImagesDeps {
     ): Promise<Array<{ id: string; key: string }>>;
     /** Whether a File Manager file still exists. The map is a pointer, not a promise. */
     fileExists(fileId: string): Promise<boolean>;
-    /** A renderable URL for a stored file. */
-    urlOf(fileKey: string): string;
+    /** A renderable URL for a stored file. Async: the File Manager loads its URL prefix on first use. */
+    urlOf(fileKey: string): Promise<string>;
     log(message: string): Promise<void>;
 }
 
@@ -101,7 +101,7 @@ export const migrateImages = async (
                 kind: "deduplicated",
                 sourceUrl: image.url,
                 fileId: asset.fileId,
-                url: deps.urlOf(asset.fileKey),
+                url: await deps.urlOf(asset.fileKey),
                 sha256: image.sha256,
                 by
             });
@@ -161,7 +161,7 @@ export const migrateImages = async (
     }
 
     /** Resolve the references that were waiting on a queued upload, once it has an id. */
-    const settleRepeats = (resolved: Map<string, MigratedAsset>): void => {
+    const settleRepeats = async (resolved: Map<string, MigratedAsset>): Promise<void> => {
         for (const repeat of repeats) {
             const asset = resolved.get(repeat.image.sha256);
             if (!asset) {
@@ -176,7 +176,7 @@ export const migrateImages = async (
                 kind: "deduplicated",
                 sourceUrl: repeat.image.url,
                 fileId: asset.fileId,
-                url: deps.urlOf(asset.fileKey),
+                url: await deps.urlOf(asset.fileKey),
                 sha256: repeat.image.sha256,
                 by: "content"
             });
@@ -222,13 +222,13 @@ export const migrateImages = async (
                 kind: "migrated",
                 sourceUrl: pending.image.url,
                 fileId: file.id,
-                url: deps.urlOf(file.key),
+                url: await deps.urlOf(file.key),
                 sha256: pending.image.sha256,
                 bytes: pending.image.size
             });
         }
 
-        settleRepeats(thisRun);
+        await settleRepeats(thisRun);
     } catch (error) {
         // The whole batch failed. Every image in it is reported, never left to look migrated — the
         // references waiting on those uploads included.

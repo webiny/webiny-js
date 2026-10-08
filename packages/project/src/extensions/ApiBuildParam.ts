@@ -109,7 +109,7 @@ export default BuildParam.createImplementation({
         ) as ArrayLiteralExpression;
 
         pluginsArray.addElement(
-            `\ncreateRegisterExtensionPlugin(ctx => {\n\tregisterExtension(ctx.container, ${className});\n})`
+            `\ncreateRegisterBuildParamPlugin(ctx => {\n\tregisterExtension(ctx.container, ${className});\n})`
         );
 
         {
@@ -121,14 +121,22 @@ export default BuildParam.createImplementation({
                 index = last.getChildIndex() + 1;
             }
 
+            // Build params get their own plugin type so the API applies them before any feature
+            // registers (features read FeatureFlags, a BuildParam, at register() time). ApiExtension
+            // imports from the same path, so merge into an existing import rather than skip it.
             const contextPluginImportPath = "@webiny/handler/plugins/RegisterExtensionPlugin.js";
-            const existingRegisterExtensionPluginImport =
-                source.getImportDeclaration(contextPluginImportPath);
-            if (!existingRegisterExtensionPluginImport) {
+            const existingImport = source.getImportDeclaration(contextPluginImportPath);
+            if (!existingImport) {
                 source.insertImportDeclaration(index, {
-                    namedImports: ["createRegisterExtensionPlugin"],
+                    namedImports: ["createRegisterBuildParamPlugin"],
                     moduleSpecifier: contextPluginImportPath
                 });
+            } else if (
+                !existingImport
+                    .getNamedImports()
+                    .some(i => i.getName() === "createRegisterBuildParamPlugin")
+            ) {
+                existingImport.addNamedImport("createRegisterBuildParamPlugin");
             }
         }
 

@@ -1,4 +1,4 @@
-import type { AuditLogsContext } from "~/types.js";
+import type { Container } from "@webiny/di";
 import { AuditLogEntryAfterCreateEventHandler } from "./handlers/AuditLogEntryAfterCreateEventHandler.js";
 import { AuditLogEntryAfterUpdateEventHandler } from "./handlers/AuditLogEntryAfterUpdateEventHandler.js";
 import { AuditLogEntryAfterDeleteEventHandler } from "./handlers/AuditLogEntryAfterDeleteEventHandler.js";
@@ -14,24 +14,24 @@ import { AuditLogGroupAfterCreateEventHandler } from "./handlers/AuditLogGroupAf
 import { AuditLogGroupAfterUpdateEventHandler } from "./handlers/AuditLogGroupAfterUpdateEventHandler.js";
 import { AuditLogGroupAfterDeleteEventHandler } from "./handlers/AuditLogGroupAfterDeleteEventHandler.js";
 
-export const createHeadlessCmsHooks = (context: AuditLogsContext) => {
+export const createHeadlessCmsHooks = (container: Container) => {
     // Register entry handlers
-    context.container.register(AuditLogEntryAfterCreateEventHandler);
-    context.container.register(AuditLogEntryAfterUpdateEventHandler);
-    context.container.register(AuditLogEntryAfterDeleteEventHandler);
-    context.container.register(AuditLogEntryAfterPublishEventHandler);
-    context.container.register(AuditLogEntryAfterUnpublishEventHandler);
-    context.container.register(AuditLogEntryAfterRestoreFromBinEventHandler);
-    context.container.register(AuditLogEntryRevisionAfterCreateEventHandler);
-    context.container.register(AuditLogEntryRevisionAfterDeleteEventHandler);
+    container.register(AuditLogEntryAfterCreateEventHandler);
+    container.register(AuditLogEntryAfterUpdateEventHandler);
+    container.register(AuditLogEntryAfterDeleteEventHandler);
+    container.register(AuditLogEntryAfterPublishEventHandler);
+    container.register(AuditLogEntryAfterUnpublishEventHandler);
+    container.register(AuditLogEntryAfterRestoreFromBinEventHandler);
+    container.register(AuditLogEntryRevisionAfterCreateEventHandler);
+    container.register(AuditLogEntryRevisionAfterDeleteEventHandler);
 
     // Register model handlers
-    context.container.register(AuditLogModelAfterCreateEventHandler);
-    context.container.register(AuditLogModelAfterUpdateEventHandler);
-    context.container.register(AuditLogModelAfterDeleteEventHandler);
+    container.register(AuditLogModelAfterCreateEventHandler);
+    container.register(AuditLogModelAfterUpdateEventHandler);
+    container.register(AuditLogModelAfterDeleteEventHandler);
 
     // Register group handlers
-    context.container.register(AuditLogGroupAfterCreateEventHandler);
-    context.container.register(AuditLogGroupAfterUpdateEventHandler);
-    context.container.register(AuditLogGroupAfterDeleteEventHandler);
+    container.register(AuditLogGroupAfterCreateEventHandler);
+    container.register(AuditLogGroupAfterUpdateEventHandler);
+    container.register(AuditLogGroupAfterDeleteEventHandler);
 };

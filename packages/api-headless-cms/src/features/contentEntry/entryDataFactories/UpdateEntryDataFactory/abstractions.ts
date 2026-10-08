@@ -1,4 +1,6 @@
-import { createAbstraction } from "@webiny/feature/api";
+import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
+import type { EntryValidationError } from "~/domain/contentEntry/errors.js";
 import type {
     CmsEntry,
     CmsEntryValues,
@@ -12,13 +14,23 @@ export interface IUpdateEntryDataResponse<TValues extends CmsEntryValues = CmsEn
     input: UpdateCmsEntryInput<TValues>;
 }
 
+/**
+ * Expected failures of building the data of an entry being updated.
+ */
+export interface IUpdateEntryDataFactoryErrors {
+    latest: GetLatestRevisionByEntryIdUseCase.Error;
+    validation: EntryValidationError;
+}
+
+type FactoryError = IUpdateEntryDataFactoryErrors[keyof IUpdateEntryDataFactoryErrors];
+
 export interface IUpdateEntryDataFactory {
     create<TValues extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         rawInput: UpdateCmsEntryInput<TValues>,
         originalEntry: CmsEntry<TValues>,
         options?: UpdateCmsEntryOptionsInput
-    ): Promise<IUpdateEntryDataResponse<TValues>>;
+    ): Promise<Result<IUpdateEntryDataResponse<TValues>, FactoryError>>;
 }
 
 export const UpdateEntryDataFactory = createAbstraction<IUpdateEntryDataFactory>(
@@ -27,6 +39,11 @@ export const UpdateEntryDataFactory = createAbstraction<IUpdateEntryDataFactory>
 
 export namespace UpdateEntryDataFactory {
     export type Interface = IUpdateEntryDataFactory;
+    export type Error = FactoryError;
+    export type Return<TValues extends CmsEntryValues = CmsEntryValues> = Result<
+        IUpdateEntryDataResponse<TValues>,
+        FactoryError
+    >;
     export type Response<TValues extends CmsEntryValues = CmsEntryValues> =
         IUpdateEntryDataResponse<TValues>;
 }

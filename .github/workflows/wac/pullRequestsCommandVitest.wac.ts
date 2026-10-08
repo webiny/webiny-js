@@ -11,6 +11,7 @@ import {
 import {
     AWS_REGION,
     BUILD_PACKAGES_RUNNER,
+    DEFAULT_RUNNER,
     createWaitForOpenSearchStep,
     NODE_OPTIONS,
     NODE_VERSION,
@@ -125,9 +126,16 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     const env: Record<string, string> = { AWS_REGION };
 
-    // The container needs no configuration at all - see `utils/openSearch.ts` for why there is no
-    // endpoint, no credentials and no index prefix here.
+    // The container needs no endpoint and no credentials - see `utils/openSearch.ts`. The index
+    // prefix stays in this workflow only. GitHub runs `issue_comment` workflows from the default
+    // branch, so `/vitest` on a release/6.4.x or release/6.5.0 PR runs this file against that
+    // branch's code. There, `IndexManager` in `api-elasticsearch-tasks` lists every index without a
+    // leading ".", which picks up the container's `top_queries-*` index (query insights plugin)
+    // unless a prefix filters it out.
     const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
+    if (needsOpenSearch) {
+        env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
+    }
 
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
@@ -182,7 +190,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             strategy: {
                 "fail-fast": false,
                 matrix: {
-                    os: ["ubuntu-latest"],
+                    os: [DEFAULT_RUNNER],
                     node: [NODE_VERSION],
                     testCommand: `$\{{ fromJSON(needs.${jobNames.constants}.outputs.vitest-test-commands) }}`
                 }

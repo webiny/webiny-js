@@ -1,3 +1,10 @@
 import { createTestConfig } from "../../testing";
 
-export default createTestConfig({ path: import.meta.dirname });
+export default async () => {
+    return createTestConfig({
+        path: import.meta.dirname,
+        vitestConfig: {
+            fileParallelism: true
+        }
+    });
+};

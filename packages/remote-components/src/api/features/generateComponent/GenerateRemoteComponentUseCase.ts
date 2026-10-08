@@ -1,7 +1,10 @@
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { ResolveAiCapabilityUseCase } from "@webiny/ai-powerups/exports/api/ai-powerups.js";
-import { REMOTE_COMPONENT_GENERATION_CAPABILITY } from "~/api/features/shared/capability.js";
+import {
+    ResolveAiCapabilityUseCase,
+    withAdditionalInstructions
+} from "@webiny/ai-powerups/exports/api/ai-powerups.js";
+import { REMOTE_COMPONENT_CAPABILITY } from "~/api/capability.js";
 import { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsById/index.js";
 import {
     GenerateRemoteComponentUseCase as UseCaseAbstraction,
@@ -39,15 +42,14 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
             return Result.fail(new Error("AI Power-Ups is not enabled on this project."));
         }
 
-        const resolved = await this.resolveCapability.execute(
-            REMOTE_COMPONENT_GENERATION_CAPABILITY
-        );
+        const resolved = await this.resolveCapability.execute(REMOTE_COMPONENT_CAPABILITY);
         if (resolved.isFail()) {
             // The resolver's message names the settings screen and what to pick there.
             return Result.fail(resolved.error);
         }
         const { model, connection } = resolved.value;
-        const systemText = buildComponentPrompt();
+        // With any instructions the project added to the capability in settings.
+        const systemText = withAdditionalInstructions(resolved.value, buildComponentPrompt());
 
         const started = Date.now();
         const modelName =
@@ -88,10 +90,7 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
             const aiResult = await this.ai.generateText({
                 model,
                 connection,
-                ...cachedSystemPrompt(
-                    systemText,
-                    `${REMOTE_COMPONENT_GENERATION_CAPABILITY}.generate`
-                ),
+                ...cachedSystemPrompt(systemText, `${REMOTE_COMPONENT_CAPABILITY}.generate`),
                 maxOutputTokens: MAX_OUTPUT_TOKENS,
                 abortSignal: input.abortSignal,
                 messages: [

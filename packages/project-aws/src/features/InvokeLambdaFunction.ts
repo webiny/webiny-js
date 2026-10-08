@@ -1,4 +1,3 @@
-import { LambdaClient, InvokeCommand } from "@webiny/aws-sdk/client-lambda/index.js";
 import { GetAppStackOutput } from "@webiny/project/abstractions/index.js";
 import { InvokeLambdaFunction as InvokeLambdaFunctionAbstraction } from "~/abstractions/InvokeLambdaFunction.js";
 import { IDefaultStackOutput } from "~/pulumi/types.js";
@@ -15,6 +14,11 @@ export class InvokeLambdaFunctionImpl implements InvokeLambdaFunctionAbstraction
         if (!stackOutput) {
             throw new Error("Could not retrieve API stack output for Lambda invocation.");
         }
+
+        // Loaded here rather than at the top of the file. Validating the project config imports this
+        // file on every command, and only an actual invocation needs the Lambda client.
+        const { LambdaClient, InvokeCommand } =
+            await import("@webiny/aws-sdk/client-lambda/index.js");
 
         const { region } = stackOutput;
         const lambdaClient = new LambdaClient({ region });

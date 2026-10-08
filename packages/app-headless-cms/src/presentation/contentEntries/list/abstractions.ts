@@ -18,6 +18,10 @@ export interface IContentEntriesViewModel {
     childFolders: FolderDto[];
 }
 
+export type IDuplicateEntryResult =
+    | { entry: CmsContentEntry; error?: never }
+    | { entry?: never; error: Error };
+
 export interface IContentEntriesPresenter {
     readonly vm: IContentEntriesViewModel;
     readonly list: IListPresenter<CmsContentEntry>;
@@ -30,6 +34,10 @@ export interface IContentEntriesPresenter {
     publishEntry(id: string): Promise<boolean>;
     unpublishEntry(id: string): Promise<boolean>;
     moveEntry(id: string, folderId: string): Promise<boolean>;
+    /**
+     * Resolves to `false` when the user cancels the confirmation dialog.
+     */
+    duplicateEntry(entry: CmsContentEntry): Promise<IDuplicateEntryResult | false>;
 
     init(config?: IContentEntriesInitConfig): void;
     dispose(): void;
@@ -42,4 +50,5 @@ export namespace ContentEntriesPresenter {
     export type Interface = IContentEntriesPresenter;
     export type ViewModel = IContentEntriesViewModel;
     export type InitConfig = IContentEntriesInitConfig;
+    export type DuplicateEntryResult = IDuplicateEntryResult;
 }

@@ -48,6 +48,13 @@ class ProvidersHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interface {
         const existingData = existing as ProvidersSettings | null;
         const existingPresets = existingData?.presets ?? [];
 
+        /*
+         * No model check here. This section is legacy: the form no longer edits it, and every save
+         * carries it forward unchanged from storage. Rejecting a model that has since left the
+         * catalog (e.g. a shut-down `openai/gpt-5.3-chat-latest`) blocked every settings save with
+         * an error the user had no field to fix. The model a feature uses comes from `modelRoles` and
+         * capability overrides, and `Ai` rejects one that isn't available when it's called.
+         */
         const presets: PersistedProviderPreset[] = await Promise.all(
             input.presets.map(async preset => {
                 const existingMatch = existingPresets.find(ep => ep.id === preset.id);

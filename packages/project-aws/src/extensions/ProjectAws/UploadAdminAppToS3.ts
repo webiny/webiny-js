@@ -1,6 +1,5 @@
 import { AdminAfterDeploy, GetApp, UiService } from "@webiny/project/abstractions/index.js";
 import fs from "fs";
-import { uploadFolderToS3 } from "~/pulumi/index.js";
 import { type IDefaultStackOutput } from "~/pulumi/types.js";
 import { AdminStackOutputService } from "~/abstractions/index.js";
 
@@ -32,6 +31,12 @@ class UploadAdminAppToS3Impl implements AdminAfterDeploy.Interface {
         if (!appOutput) {
             throw new Error("Missing app stack output.");
         }
+
+        // Imported here rather than at the top of the file. Every CLI command imports this hook when
+        // the project SDK registers its extensions, even `webiny --help`, and a top-level import used
+        // to come through the `~/pulumi` barrel, which loads all of Pulumi and the AWS SDK: about
+        // 2,700 modules. The upload is the only thing that needs it, so the upload pays for it.
+        const { uploadFolderToS3 } = await import("~/pulumi/utils/uploadFolderToS3.js");
 
         await uploadFolderToS3({
             path: buildFolderPath,

@@ -11,6 +11,7 @@ import {
     type ISingleEntryPresenter,
     type ISingleEntryViewModel
 } from "./abstractions.js";
+import { toFormErrors } from "~/presentation/contentEntries/form/toFormErrors.js";
 
 class SingleEntryPresenterImpl implements ISingleEntryPresenter {
     private entry: CmsContentEntry | null = null;
@@ -60,7 +61,11 @@ class SingleEntryPresenterImpl implements ISingleEntryPresenter {
             return false;
         }
 
-        const data = await this.form.submit();
+        // The form can be disposed or rebuilt while saving; only the form being saved gets the result.
+        const form = this.form;
+        const model = this.model;
+
+        const data = await form.submit();
         if (!data) {
             return false;
         }
@@ -76,13 +81,19 @@ class SingleEntryPresenterImpl implements ISingleEntryPresenter {
             });
 
             runInAction(() => {
+                if (this.form !== form) {
+                    return;
+                }
                 this.entry = entry;
-                this.form!.setData(entry.values);
-                this.form!.reset();
+                form.setData(entry.values);
+                form.reset();
             });
 
             return true;
-        } catch {
+        } catch (error) {
+            if (this.form === form) {
+                form.setErrors(toFormErrors(error, model));
+            }
             return false;
         } finally {
             runInAction(() => {

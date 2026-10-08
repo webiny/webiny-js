@@ -13,6 +13,7 @@ import {
     PrepareImageEnrichmentUseCase
 } from "~/api/features/AiImageEnrichment/abstractions.js";
 import type { IPreparedImageEnrichment } from "~/api/features/AiImageEnrichment/abstractions.js";
+import { EnrichmentCapabilityDisabledError } from "~/api/features/AiImageEnrichment/errors.js";
 import {
     EnrichmentFileNotFoundError,
     EnrichmentNoProviderError,
@@ -196,6 +197,17 @@ describe("AiImageEnrichmentStreamRoute", () => {
             expect(errorBody(response).code).toBe("ENRICHMENT_NO_AI_PROVIDER");
         });
 
+        it("should answer 409, not 500, when image enrichment is switched off", async () => {
+            prepare.execute.mockResolvedValue(
+                Result.fail(new EnrichmentCapabilityDisabledError("switched off"))
+            );
+
+            const response = await invokeHttpRoute(route, request());
+
+            expect(response.statusCode).toBe(409);
+            expect(errorBody(response).code).toBe("ENRICHMENT_CAPABILITY_DISABLED");
+        });
+
         it("should answer 400 when no file ID was matched", async () => {
             const response = await invokeHttpRoute(route, { ...request(), pathParameters: {} });
 
@@ -215,6 +227,35 @@ describe("AiImageEnrichmentStreamRoute", () => {
                 message: "AI enrichment failed: rate limited"
             });
             expect(apply.execute).not.toHaveBeenCalled();
+        });
+
+        /*
+         * What the AI SDK actually does. `streamText` never rejects on a provider error: it hands
+         * the error to `onError` and ends the stream. Mocking a rejection, as the test above does,
+         * hid that the route turned an overloaded provider into a `done` with nothing in it.
+         */
+        it("should emit an error event when the provider fails mid-stream", async () => {
+            ai.streamText.mockImplementation(async (params: any) => {
+                const overloaded = new Error("Overloaded");
+
+                async function* failingStream() {
+                    yield { tags: [] };
+                    params.onError({ error: overloaded });
+                }
+
+                return { partialOutputStream: failingStream() };
+            });
+
+            const response = await invokeHttpRoute(route, request());
+            const events = await collectEvents(response);
+            const last = events.at(-1);
+            const sentDone = events.some(e => e.type === "done");
+
+            expect(last).toEqual({
+                type: "error",
+                message: "AI enrichment failed: Overloaded"
+            });
+            expect(sentDone).toBe(false);
         });
 
         it("should emit no done event after an error", async () => {

@@ -101,7 +101,8 @@ export interface ICreateFlpTaskInput {
 
 export interface IUpdateFlpTaskInput {
     folder: Folder;
-    queued?: string[];
+    /** Folders whose whole subtree an earlier run of this task already wrote. */
+    completed?: string[];
 }
 
 export interface IDeleteFlpTaskInput {

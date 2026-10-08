@@ -28,6 +28,7 @@ export interface IContentEntryFormPresenter {
     deleteEntry(): Promise<boolean>;
     setFolderId(folderId: string | null): void;
     newEntry(initialValues?: Record<string, unknown>): void;
+    patchEntryMeta(meta: Partial<CmsContentEntry["meta"]>): void;
     reset(): void;
 }
 

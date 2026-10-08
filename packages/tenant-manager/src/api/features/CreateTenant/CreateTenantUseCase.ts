@@ -17,7 +17,8 @@ class CreateTenantUseCase implements UseCaseAbstraction.Interface {
 
     async execute(input: ICreateTenantInput): Promise<Result<Tenant, UseCaseAbstraction.Error>> {
         // Authorization checks
-        if (!this.identityContext.getPermission("tm.tenant")) {
+        const permission = await this.identityContext.getPermission("tm.tenant");
+        if (!permission) {
             return Result.fail(
                 new NotAuthorizedError({
                     message: "Not authorized to create tenants!"

@@ -51,12 +51,6 @@ export const WB_PERMISSIONS_SCHEMA = createPermissionSchema({
             permission: "wb.redirect"
         },
         {
-            id: "settings",
-            title: "Settings",
-            scopes: ["full"],
-            permission: "wb.settings"
-        },
-        {
             id: "integrations",
             title: "Integrations",
             scopes: ["full"],

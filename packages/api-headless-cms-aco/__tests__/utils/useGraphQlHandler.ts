@@ -3,7 +3,6 @@ import { createTestHttpHandler } from "@webiny/event-handler-core/features/testi
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { HeadlessCmsContextualSchema } from "@webiny/api-headless-cms/HeadlessCmsContextualSchema.js";
 import { AcoFeature } from "@webiny/api-aco";
 import { AcoHcmsFeature } from "~/AcoHcmsFeature.js";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
@@ -92,7 +91,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 type: "manage",
                 extraPlugins: extraCmsPlugins
             });
-            container.register(HeadlessCmsContextualSchema);
             AcoFeature.register(container);
             AcoHcmsFeature.register(container);
             // DI-native function plugins run after the package's features so they can override
@@ -104,10 +102,13 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         }
     });
 
-    const invoke = async ({ httpMethod = "POST", body, headers = {} }: InvokeParams) => {
+    const request = async (
+        path: string,
+        { httpMethod = "POST", body, headers = {} }: InvokeParams
+    ) => {
         const response = await handler({
             method: httpMethod,
-            path: "/graphql",
+            path,
             headers: {
                 ["x-tenant"]: "root",
                 ["content-type"]: "application/json",
@@ -117,6 +118,10 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         });
         return [response.body, response];
     };
+
+    const invoke = (params: InvokeParams) => request("/graphql", params);
+    // Content models and entries are part of the CMS schema, which is served on /cms/manage.
+    const invokeCms = (params: InvokeParams) => request("/cms/manage", params);
 
     const aco = {
         async createFolder(variables = {}, fields: string[] = []) {
@@ -132,10 +137,10 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
     const cms = {
         async createContentModel(variables: Record<string, any>) {
-            return invoke({ body: { query: CREATE_CONTENT_MODEL, variables } });
+            return invokeCms({ body: { query: CREATE_CONTENT_MODEL, variables } });
         },
         async createContentModelGroup(variables: Record<string, any>) {
-            return invoke({ body: { query: CREATE_CONTENT_MODEL_GROUP, variables } });
+            return invokeCms({ body: { query: CREATE_CONTENT_MODEL_GROUP, variables } });
         },
         async createTestModelGroup() {
             return cms
@@ -168,16 +173,16 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 });
         },
         async createEntry(model: CmsModel, variables: Record<string, any>) {
-            return invoke({ body: { query: CREATE_ENTRY(model), variables } });
+            return invokeCms({ body: { query: CREATE_ENTRY(model), variables } });
         },
         async deleteEntry(model: CmsModel, variables: Record<string, any>) {
-            return invoke({ body: { query: DELETE_ENTRY(model), variables } });
+            return invokeCms({ body: { query: DELETE_ENTRY(model), variables } });
         },
         async restoreEntry(model: CmsModel, variables: Record<string, any>) {
-            return invoke({ body: { query: RESTORE_ENTRY(model), variables } });
+            return invokeCms({ body: { query: RESTORE_ENTRY(model), variables } });
         },
         async getEntry(model: CmsModel, variables: Record<string, any>) {
-            return invoke({ body: { query: GET_ENTRY(model), variables } });
+            return invokeCms({ body: { query: GET_ENTRY(model), variables } });
         }
     };
 

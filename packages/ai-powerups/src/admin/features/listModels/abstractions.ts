@@ -28,6 +28,8 @@ export type AiModel = {
     providerName: string;
     modelId: string;
     modelName: string;
+    deprecated: Date | undefined;
+    endOfLife: Date | undefined;
 };
 
 export interface IListModelsGateway {

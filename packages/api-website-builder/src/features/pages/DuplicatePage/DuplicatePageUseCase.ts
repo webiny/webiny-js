@@ -3,12 +3,11 @@ import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
 } from "@webiny/api-core/features/eventPublisher/index.js";
-import {
-    DuplicatePageUseCase as UseCaseAbstraction,
-    DuplicatePageRepository
-} from "./abstractions.js";
+import { DuplicatePageUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { PageBeforeDuplicateEvent, PageAfterDuplicateEvent } from "./events.js";
+import { createDuplicatePageData } from "./createDuplicatePageData.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
+import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
@@ -17,7 +16,7 @@ class DuplicatePageUseCaseImpl implements UseCaseAbstraction.Interface {
         private permissions: WbPermissions.Interface,
         private eventPublisher: EventPublisherAbstraction.Interface,
         private getPageById: GetPageByIdUseCase.Interface,
-        private repository: DuplicatePageRepository.Interface
+        private createPage: CreatePageUseCase.Interface
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
@@ -26,7 +25,6 @@ class DuplicatePageUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new PageNotAuthorizedError());
         }
 
-        // Get the original page for events
         const getResult = await this.getPageById.execute(params.id);
 
         if (getResult.isFail()) {
@@ -42,8 +40,8 @@ class DuplicatePageUseCaseImpl implements UseCaseAbstraction.Interface {
 
         await this.eventPublisher.publish(beforeEvent);
 
-        // Execute the duplicate operation
-        const result = await this.repository.execute(params);
+        // The duplicate is a brand-new page, so it goes through the regular create flow (and its events).
+        const result = await this.createPage.execute(createDuplicatePageData(original));
 
         if (result.isFail()) {
             return result;
@@ -64,5 +62,5 @@ class DuplicatePageUseCaseImpl implements UseCaseAbstraction.Interface {
 export const DuplicatePageUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: DuplicatePageUseCaseImpl,
-    dependencies: [WbPermissions, EventPublisher, GetPageByIdUseCase, DuplicatePageRepository]
+    dependencies: [WbPermissions, EventPublisher, GetPageByIdUseCase, CreatePageUseCase]
 });

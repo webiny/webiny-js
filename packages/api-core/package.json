@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.40",
+    "@ai-sdk/google": "^4.0.49",
     "@ai-sdk/openai": "^4.0.45",
     "@webiny/api": "0.0.0",
     "@webiny/api-graphql": "0.0.0",

@@ -10,7 +10,7 @@ import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
 import type { IEntryRow } from "./types.js";
 import { entryToRow } from "./mappers.js";
-import { createEntryQuery, patchAllEntryRevisions } from "./queryHelpers.js";
+import { createModelEntryQuery, patchAllEntryRevisions } from "./queryHelpers.js";
 
 class SqlDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.Interface {
     private readonly knex: Knex;
@@ -22,8 +22,8 @@ class SqlDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
         this.knex = knexClient.client;
     }
 
-    private query(): Knex.QueryBuilder<IEntryRow> {
-        return createEntryQuery(this.knex, this.entryTableManager.getTableName());
+    private modelQuery(model: CmsModel): Knex.QueryBuilder<IEntryRow> {
+        return createModelEntryQuery(this.knex, this.entryTableManager.getTableName(), model);
     }
 
     async execute<T extends CmsEntryValues>(
@@ -34,17 +34,14 @@ class SqlDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
 
         const wasPublished = params.storageEntry.status === "published";
 
-        await this.query()
-            .where("tenant", model.tenant)
-            .andWhere("id", params.storageEntry.id)
-            .delete();
+        await this.modelQuery(model).andWhere("id", params.storageEntry.id).delete();
 
         if (wasPublished) {
             await patchAllEntryRevisions(
                 this.knex,
                 this.entryTableManager.getTableName(),
+                model,
                 params.storageEntry.entryId,
-                model.tenant,
                 parsed => {
                     parsed.live = null;
                 }
@@ -61,8 +58,7 @@ class SqlDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
 
             const latestRow = entryToRow(latestParsed as CmsStorageEntry);
 
-            await this.query()
-                .where("tenant", model.tenant)
+            await this.modelQuery(model)
                 .andWhere("id", params.latestStorageEntry.id)
                 .update(latestRow);
         }

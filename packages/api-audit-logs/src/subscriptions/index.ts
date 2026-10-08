@@ -5,14 +5,14 @@ import { createMailerHooks } from "./mailer/index.js";
 import { createAcoHooks } from "./aco/index.js";
 import { createWebsiteBuilderHooks } from "~/subscriptions/websiteBuilder/index.js";
 import { createAiHooks } from "./ai/index.js";
-import type { AuditLogsContext } from "~/types.js";
+import type { Container } from "@webiny/di";
 
-export const createSubscriptionHooks = (context: AuditLogsContext) => {
-    createFileManagerHooks(context);
-    createHeadlessCmsHooks(context);
-    createSecurityHooks(context);
-    createMailerHooks(context);
-    createAcoHooks(context);
-    createWebsiteBuilderHooks(context);
-    createAiHooks(context);
+export const createSubscriptionHooks = (container: Container) => {
+    createFileManagerHooks(container);
+    createHeadlessCmsHooks(container);
+    createSecurityHooks(container);
+    createMailerHooks(container);
+    createAcoHooks(container);
+    createWebsiteBuilderHooks(container);
+    createAiHooks(container);
 };

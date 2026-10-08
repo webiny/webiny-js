@@ -4,6 +4,7 @@ import path from "node:path";
 import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import { pickServerRuntimeEnvVariables } from "@webiny/project";
 import { findFreePort } from "./findFreePort.js";
+import { stopWithParent } from "./stopWithParent.js";
 
 interface IRunApiServerOptions {
     /**
@@ -82,16 +83,7 @@ export async function spawnApiServer(
         env: { ...runtimeEnv, PORT: port }
     });
 
-    const cleanup = () => {
-        if (!child.killed) {
-            child.kill();
-        }
-    };
-    process.on("exit", cleanup);
-    process.on("SIGINT", () => {
-        cleanup();
-        process.exit(0);
-    });
+    stopWithParent(child);
 
     return child;
 }

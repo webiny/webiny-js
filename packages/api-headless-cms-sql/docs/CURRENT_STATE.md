@@ -53,7 +53,7 @@ packages/api-headless-cms-sql/src/
 
 ## Test Infrastructure
 
-- `yarn test:sql` env: `WEBINY_STORAGE=sql,ddb` (DDB fallback for apiCore features).
+- `yarn test:sql` env: `WEBINY_STORAGE=sql`.
 - SQLite in-memory via `better-sqlite3` (needs `dependenciesMeta.better-sqlite3.built: true` in root `package.json`).
 - `setupAfterEnv.js` drops ALL SQLite tables in `beforeEach` + bumps `globalThis.__schemaRegistryVersion` to invalidate SchemaRegistry cache.
 - Knex instance created once in `setupFile.js`, shared across all test handlers.

@@ -1389,12 +1389,6 @@ describe("MANAGE - Resolvers", () => {
                 publishCategory: {
                     data: {
                         ...createdWebinyCategory,
-                        modifiedBy: {
-                            id: "id-12345678",
-                            displayName: "John Doe",
-                            type: "admin"
-                        },
-                        modifiedOn: expect.any(String),
                         firstPublishedOn: expect.any(String),
                         lastPublishedOn: expect.any(String),
                         meta: {
@@ -1436,7 +1430,6 @@ describe("MANAGE - Resolvers", () => {
                     createCategoryFrom: {
                         data: {
                             ...webiny,
-                            modifiedOn: expect.stringMatching(/^20/),
                             lastPublishedOn: expect.stringMatching(/^20/),
                             meta: {
                                 ...webiny.meta,
@@ -1470,7 +1463,6 @@ describe("MANAGE - Resolvers", () => {
                     publishCategory: {
                         data: {
                             ...createdCategory,
-                            modifiedOn: expect.any(String),
                             lastPublishedOn: expect.any(String),
                             meta: {
                                 ...createdCategory.meta,

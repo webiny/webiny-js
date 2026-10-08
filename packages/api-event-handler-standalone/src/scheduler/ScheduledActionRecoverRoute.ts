@@ -3,7 +3,6 @@ import {
     HttpRouteHandler,
     RequestContainer
 } from "@webiny/event-handler-core";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
     RequestTenantLoader
@@ -49,14 +48,6 @@ class ScheduledActionRecoverRouteImpl implements HttpRouteHandler.Interface {
 
             this.container.resolve(RawTenantId).set(tenant);
             await this.container.resolve(RequestTenantLoader).establish();
-
-            const ctx: Record<string, any> = { container: this.container };
-            for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
-                await enhancer.enhance(ctx);
-            }
-            for (const schema of this.container.resolveAll(GraphQLContextualSchema)) {
-                await schema.build(ctx);
-            }
 
             // At boot there's no request and no identity, so we skip authorization for the list — the
             // same thing ExecuteScheduledActionUseCase does on the run route. Without it, the

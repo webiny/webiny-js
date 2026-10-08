@@ -8,11 +8,10 @@
 import { describe, expect, it } from "vitest";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/api-graphql";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { createRegisterExtensionPlugin } from "@webiny/handler/plugins/RegisterExtensionPlugin.js";
 import { registerExtensions } from "@webiny/handler";
 import { registerExtension } from "@webiny/project/utils/registerExtension.js";
-import { buildSchema } from "graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
@@ -66,13 +65,7 @@ describe("Languages api extension — registered via the app indirection", () =>
                     })
                 ]);
 
-                const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
-                container.registerInstance(GraphQLContextualSchema, {
-                    async build(ctx: Record<string, any>) {
-                        capturedCtx.value = ctx;
-                        return STUB_SCHEMA;
-                    }
-                });
+                capturedCtx.value = { container };
 
                 GraphQLEngineFeature.register(container);
             }

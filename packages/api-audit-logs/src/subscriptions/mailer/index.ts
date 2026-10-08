@@ -1,7 +1,7 @@
 import { AuditLogMailerSettingsAfterSaveHandler } from "./handlers/AuditLogMailerSettingsAfterSaveHandler.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import type { Container } from "@webiny/di";
 
-export const createMailerHooks = (context: AuditLogsContext.Interface) => {
+export const createMailerHooks = (container: Container) => {
     // Register mailer settings event handlers
-    context.container.register(AuditLogMailerSettingsAfterSaveHandler);
+    container.register(AuditLogMailerSettingsAfterSaveHandler);
 };

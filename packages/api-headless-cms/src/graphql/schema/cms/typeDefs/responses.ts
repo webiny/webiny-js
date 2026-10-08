@@ -1,6 +1,9 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 
 class CmsResponseTypeDefs implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-headless-cms/CmsResponseTypeDefs");
+
     async execute(
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): CoreGraphQLSchemaFactory.Return {

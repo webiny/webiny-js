@@ -22,6 +22,7 @@ export const createListTaskLogsQuery = () => {
                         executionName
                         iteration
                         items {
+                            _id
                             message
                             createdOn
                             type

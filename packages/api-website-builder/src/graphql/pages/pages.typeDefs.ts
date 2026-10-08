@@ -150,7 +150,7 @@ export const pagesTypeDefs = /* GraphQL */ `
     }
 
     type WbSettings {
-        previewDomain: String!
+        domain: String!
     }
 
     type WbPageResponse {
@@ -166,10 +166,6 @@ export const pagesTypeDefs = /* GraphQL */ `
     type WbIntegrationsResponse {
         data: JSON!
         error: WbError
-    }
-
-    input WbSettingsInput {
-        previewDomain: String!
     }
 
     type WbPagesListResponse {
@@ -255,7 +251,6 @@ export const pagesTypeDefs = /* GraphQL */ `
         createPageRevisionFrom(id: ID!): WbPageResponse
         deletePage(id: ID!, permanently: Boolean): WbBooleanResponse
         restorePage(id: ID!): WbPageResponse
-        updateSettings(data: WbSettingsInput!): BooleanResponse
         updateIntegrations(data: JSON!): BooleanResponse
     }
 `;

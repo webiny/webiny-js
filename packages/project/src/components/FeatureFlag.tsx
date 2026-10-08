@@ -37,7 +37,7 @@ function CanUseHcmsFieldPermissions({ children }: { children: React.ReactNode })
 }
 
 function CanUseRemoteComponents({ children }: { children: React.ReactNode }) {
-    return <CanUse name="remoteComponents">{children}</CanUse>;
+    return <CanUse name="aiPowerups.remoteComponents">{children}</CanUse>;
 }
 
 function CanUseAiPowerups({ children }: { children: React.ReactNode }) {

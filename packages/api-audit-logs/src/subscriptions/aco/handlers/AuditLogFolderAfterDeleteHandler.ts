@@ -1,24 +1,44 @@
 import WebinyError from "@webiny/error";
 import { FolderAfterDeleteEventHandler } from "@webiny/api-aco/features/folder/DeleteFolder/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogFolderAfterDeleteHandlerImpl implements FolderAfterDeleteEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: FolderAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { folder } = event.payload;
             if (folder.type === "PbPage") {
-                const createAuditLog = getAuditConfig(AUDIT.PAGE_BUILDER.PAGE_FOLDER.DELETE);
-                await createAuditLog("Folder deleted", folder, folder.id, this.context);
+                const recordResult = await this.recordAuditLog.execute({
+                    audit: AUDIT.PAGE_BUILDER.PAGE_FOLDER.DELETE,
+                    message: "Folder deleted",
+                    content: folder,
+                    entityId: folder.id
+                });
+                if (recordResult.isFail()) {
+                    throw recordResult.error;
+                }
             } else if (folder.type === "FmFile") {
-                const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE_FOLDER.DELETE);
-                await createAuditLog("Folder deleted", folder, folder.id, this.context);
+                const recordResult = await this.recordAuditLog.execute({
+                    audit: AUDIT.FILE_MANAGER.FILE_FOLDER.DELETE,
+                    message: "Folder deleted",
+                    content: folder,
+                    entityId: folder.id
+                });
+                if (recordResult.isFail()) {
+                    throw recordResult.error;
+                }
             } else if (folder.type.startsWith("cms:")) {
-                const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL_FOLDER.DELETE);
-                await createAuditLog("Folder deleted", folder, folder.id, this.context);
+                const recordResult = await this.recordAuditLog.execute({
+                    audit: AUDIT.HEADLESS_CMS.MODEL_FOLDER.DELETE,
+                    message: "Folder deleted",
+                    content: folder,
+                    entityId: folder.id
+                });
+                if (recordResult.isFail()) {
+                    throw recordResult.error;
+                }
             }
         } catch (error) {
             throw WebinyError.from(error, {
@@ -31,5 +51,5 @@ class AuditLogFolderAfterDeleteHandlerImpl implements FolderAfterDeleteEventHand
 
 export const AuditLogFolderAfterDeleteHandler = FolderAfterDeleteEventHandler.createImplementation({
     implementation: AuditLogFolderAfterDeleteHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [RecordAuditLogUseCase]
 });

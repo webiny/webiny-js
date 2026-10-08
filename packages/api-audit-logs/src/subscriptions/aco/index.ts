@@ -1,10 +1,10 @@
-import type { AuditLogsContext } from "~/types.js";
+import type { Container } from "@webiny/di";
 import { AuditLogFolderAfterCreateHandler } from "./handlers/AuditLogFolderAfterCreateHandler.js";
 import { AuditLogFolderAfterUpdateHandler } from "./handlers/AuditLogFolderAfterUpdateHandler.js";
 import { AuditLogFolderAfterDeleteHandler } from "./handlers/AuditLogFolderAfterDeleteHandler.js";
 
-export const createAcoHooks = (context: AuditLogsContext) => {
-    context.container.register(AuditLogFolderAfterCreateHandler);
-    context.container.register(AuditLogFolderAfterUpdateHandler);
-    context.container.register(AuditLogFolderAfterDeleteHandler);
+export const createAcoHooks = (container: Container) => {
+    container.register(AuditLogFolderAfterCreateHandler);
+    container.register(AuditLogFolderAfterUpdateHandler);
+    container.register(AuditLogFolderAfterDeleteHandler);
 };

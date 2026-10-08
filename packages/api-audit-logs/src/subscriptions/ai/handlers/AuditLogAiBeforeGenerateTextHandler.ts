@@ -1,22 +1,21 @@
 import WebinyError from "@webiny/error";
 import { AiBeforeGenerateTextEventHandler } from "@webiny/api-core/features/ai/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogAiBeforeGenerateTextHandlerImpl
     implements AiBeforeGenerateTextEventHandler.Interface
 {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: AiBeforeGenerateTextEventHandler.Event): Promise<void> {
         try {
             const { requestId, params } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.AI.TEXT.GENERATE);
 
-            await createAuditLog(
-                "AI Generate Text",
-                {
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.AI.TEXT.GENERATE,
+                message: "AI Generate Text",
+                content: {
                     before: {
                         model: params.model,
                         system: params.system,
@@ -24,9 +23,11 @@ class AuditLogAiBeforeGenerateTextHandlerImpl
                         tools: params.tools ? Object.keys(params.tools) : []
                     }
                 },
-                requestId,
-                this.context
-            );
+                entityId: requestId
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogAiBeforeGenerateTextHandler",
@@ -39,5 +40,5 @@ class AuditLogAiBeforeGenerateTextHandlerImpl
 export const AuditLogAiBeforeGenerateTextHandler =
     AiBeforeGenerateTextEventHandler.createImplementation({
         implementation: AuditLogAiBeforeGenerateTextHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [RecordAuditLogUseCase]
     });

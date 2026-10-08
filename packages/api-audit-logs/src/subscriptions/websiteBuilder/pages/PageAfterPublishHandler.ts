@@ -1,17 +1,23 @@
 import { WebinyError } from "@webiny/error";
 import { PageAfterPublishEventHandler } from "@webiny/api-website-builder/features/pages/PublishPage/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
 
 class PageAfterPublishHandlerImpl implements PageAfterPublishEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: PageAfterPublishEventHandler.Event): Promise<void> {
         try {
             const { page } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.WEBSITE_BUILDER.PAGE.PUBLISH);
-            await createAuditLog("Website Page Published", page, page.id, this.context);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.WEBSITE_BUILDER.PAGE.PUBLISH,
+                message: "Website Page Published",
+                content: page,
+                entityId: page.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing PageAfterPublishEventHandler",
@@ -23,5 +29,5 @@ class PageAfterPublishHandlerImpl implements PageAfterPublishEventHandler.Interf
 
 export const PageAfterPublishAuditHandler = PageAfterPublishEventHandler.createImplementation({
     implementation: PageAfterPublishHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [RecordAuditLogUseCase]
 });

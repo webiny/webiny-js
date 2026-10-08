@@ -1,20 +1,19 @@
 import WebinyError from "@webiny/error";
 import { AiGenerateTextErrorEventHandler } from "@webiny/api-core/features/ai/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogAiGenerateTextErrorHandlerImpl implements AiGenerateTextErrorEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: AiGenerateTextErrorEventHandler.Event): Promise<void> {
         try {
             const { requestId, error, duration } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.AI.TEXT.GENERATE);
 
-            await createAuditLog(
-                "AI Generate Text",
-                {
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.AI.TEXT.GENERATE,
+                message: "AI Generate Text",
+                content: {
                     after: {
                         status: "error",
                         duration: Math.round(duration),
@@ -24,9 +23,11 @@ class AuditLogAiGenerateTextErrorHandlerImpl implements AiGenerateTextErrorEvent
                         }
                     }
                 },
-                requestId,
-                this.context
-            );
+                entityId: requestId
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (err) {
             throw WebinyError.from(err, {
                 message: "Error while executing AuditLogAiGenerateTextErrorHandler",
@@ -39,5 +40,5 @@ class AuditLogAiGenerateTextErrorHandlerImpl implements AiGenerateTextErrorEvent
 export const AuditLogAiGenerateTextErrorHandler =
     AiGenerateTextErrorEventHandler.createImplementation({
         implementation: AuditLogAiGenerateTextErrorHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [RecordAuditLogUseCase]
     });

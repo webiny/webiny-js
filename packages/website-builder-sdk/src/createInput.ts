@@ -12,7 +12,8 @@ import type {
     DateTimeInput,
     ComponentInput,
     TagsInput,
-    SlotInput
+    SlotInput,
+    ContentEntryInput
 } from "./types.js";
 import { functionConverter } from "~/FunctionConverter.js";
 
@@ -29,7 +30,8 @@ export type InputFactory<Name extends string> =
     | ReturnType<typeof createRadioInput<Name>>
     | ReturnType<typeof createObjectInput<Name>>
     | ReturnType<typeof createTagsInput<Name>>
-    | ReturnType<typeof createSlotInput<Name>>;
+    | ReturnType<typeof createSlotInput<Name>>
+    | ReturnType<typeof createContentEntryInput<Name>>;
 
 /**
  * TypeScript Overload Resolution and Input Factory Design
@@ -250,6 +252,23 @@ export function createSlotInput<TName extends string>(input: any): SlotInput & {
         defaultValue: [],
         ...input
     }) as SlotInput & { name: TName };
+}
+
+// Content Entry
+export function createContentEntryInput<TName extends string>(
+    input: { name: TName } & Omit<ContentEntryInput, "type" | "name">
+): ContentEntryInput & { name: TName };
+export function createContentEntryInput<TName extends string>(
+    input: Omit<ContentEntryInput, "type" | "name">
+): ContentEntryInput & { name: TName };
+export function createContentEntryInput<TName extends string>(
+    input: any
+): ContentEntryInput & { name: TName } {
+    return createInput({
+        type: "contentEntry",
+        renderer: "Webiny/ContentEntry",
+        ...input
+    }) as ContentEntryInput & { name: TName };
 }
 
 // Implementation

@@ -98,13 +98,21 @@ export const List = ({
 
                 // Abort if either folder is not found
                 if (!folder || !targetFolder) {
-                    return;
+                    throw new Error("Folder not found");
                 }
 
-                showConfirmMoveFolderDialog({
-                    folder,
-                    targetFolder,
-                    onAccept: runDrop
+                await new Promise<void>((resolve, reject) => {
+                    showConfirmMoveFolderDialog({
+                        folder,
+                        targetFolder,
+                        onAccept: async () => {
+                            await runDrop();
+                            resolve();
+                        },
+                        onClose: () => {
+                            reject(new Error("cancelled"));
+                        }
+                    });
                 });
             } else {
                 // Otherwise, perform the drop immediately

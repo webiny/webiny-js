@@ -53,6 +53,11 @@ class ObjectFieldIndexImpl implements CmsEntryOpenSearchFieldIndex.Interface {
                     fields
                 });
 
+                if (initialValue[key]?._id) {
+                    value._id = initialValue[key]._id;
+                    rawValue._id = initialValue[key]._id;
+                }
+
                 result.value.push(value);
                 result.rawValue.push(rawValue);
             }
@@ -88,15 +93,20 @@ class ObjectFieldIndexImpl implements CmsEntryOpenSearchFieldIndex.Interface {
         if (field.list) {
             const source = value || rawValue || [];
 
-            return source.map((_: any, index: number) =>
-                this.processFromIndex({
+            return source.map((_: any, index: number) => {
+                const processed = this.processFromIndex({
                     value: value ? value[index] || {} : {},
                     rawValue: rawValue ? rawValue[index] || {} : {},
                     getFieldIndex,
                     model,
                     fields
-                })
-            );
+                });
+                const sourceItem = value ? value[index] : rawValue ? rawValue[index] : null;
+                if (sourceItem?._id) {
+                    processed._id = sourceItem._id;
+                }
+                return processed;
+            });
         }
 
         return this.processFromIndex({

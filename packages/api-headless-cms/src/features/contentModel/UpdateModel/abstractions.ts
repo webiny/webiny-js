@@ -50,7 +50,7 @@ export namespace UpdateModelUseCase {
  * UpdateModelRepository - Validates domain rules and persists model updates.
  */
 export interface IUpdateModelRepository {
-    execute(model: CmsModel, original: CmsModel): Promise<Result<void, RepositoryError>>;
+    execute(model: CmsModel, original: CmsModel): Promise<Result<CmsModel, RepositoryError>>;
 }
 
 export interface IUpdateModelRepositoryErrors {

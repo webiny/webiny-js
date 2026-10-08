@@ -1,4 +1,4 @@
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import { Result } from "@webiny/feature/api";
 import { parseIdentifier } from "@webiny/utils";
 import { UnpublishEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
@@ -17,7 +17,7 @@ import { CreateUnpublishEntryDataFactory } from "~/features/contentEntry/entryDa
 
 class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
-        private eventPublisher: EventPublisher.Interface,
+        private eventPublisher: EntryEventPublisher.Interface,
         private repository: UnpublishEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getPublishedRevisionByEntryId: GetPublishedRevisionByEntryIdUseCase.Interface,
@@ -61,7 +61,14 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        const { entry } = await this.createUnpublishEntryDataFactory.create<T>(originalEntry);
+        const dataResult = await this.createUnpublishEntryDataFactory.create<T>(
+            model,
+            originalEntry
+        );
+        if (dataResult.isFail()) {
+            return Result.fail(dataResult.error);
+        }
+        const { entry } = dataResult.value;
 
         try {
             await this.eventPublisher.publish(new EntryBeforeUnpublishEvent({ entry, model }));
@@ -97,7 +104,7 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 export const UnpublishEntryUseCase = UseCaseAbstraction.createImplementation({
     implementation: UnpublishEntryUseCaseImpl,
     dependencies: [
-        EventPublisher,
+        EntryEventPublisher,
         UnpublishEntryRepository,
         AccessControl,
         GetPublishedRevisionByEntryIdUseCase,

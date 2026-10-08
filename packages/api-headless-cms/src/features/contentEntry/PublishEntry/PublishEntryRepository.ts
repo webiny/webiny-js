@@ -4,6 +4,7 @@ import { PublishEntryStorageOperation } from "~/features/shared/storageOperation
 import { EntryFromStorageTransform, EntryToStorageTransform } from "~/legacy/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * PublishEntryRepository - Handles storage operations for publishing entries.
@@ -18,13 +19,17 @@ class PublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private publishEntryStorage: PublishEntryStorageOperation.Interface
+        private publishEntryStorage: PublishEntryStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        entry: CmsEntry<T>
+        initialModel: CmsModel,
+        initialEntry: CmsEntry<T>
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+        const entry = this.runtimeTenant.assign(initialEntry);
+
         try {
             // Transform entry to storage format
             const storageEntry = await this.entryToStorageTransform(model, entry);
@@ -47,5 +52,10 @@ class PublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const PublishEntryRepository = RepositoryAbstraction.createImplementation({
     implementation: PublishEntryRepositoryImpl,
-    dependencies: [EntryToStorageTransform, EntryFromStorageTransform, PublishEntryStorageOperation]
+    dependencies: [
+        EntryToStorageTransform,
+        EntryFromStorageTransform,
+        PublishEntryStorageOperation,
+        RuntimeTenant
+    ]
 });

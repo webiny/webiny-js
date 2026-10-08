@@ -255,7 +255,6 @@ class PageCaptureServiceImpl implements IPageCaptureService {
          * per-page ceiling exists to avoid. Dedup is what keeps the repetition cheap — a logo on eight
          * pages is uploaded once and referenced eight times.
          */
-        await this.imageAssets.prepare();
         const assetOutcomes = await migrateImages(
             this.imageAssets.deps(async message => {
                 await input.log(message);

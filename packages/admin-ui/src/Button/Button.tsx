@@ -52,6 +52,18 @@ const buttonVariants = cva(
                     "active:bg-neutral-base/30",
                     "aria-disabled:text-neutral-disabled aria-disabled:fill-neutral-base/50",
                     "focus-visible:border-neutral-base!"
+                ],
+                /*
+                 * An action that reads as a link, e.g. a secondary step in a dialog footer. Styled
+                 * like the base `a` rule in theme.css. The `!` overrides undo the padding, border
+                 * and underline rules that every other variant shares.
+                 */
+                link: [
+                    "bg-transparent text-accent-primary fill-accent-default",
+                    "p-0! border-0! rounded-xs",
+                    "hover:underline!",
+                    "aria-disabled:text-neutral-disabled aria-disabled:fill-neutral-strong",
+                    "focus-visible:ring-lg focus-visible:ring-primary-dimmed"
                 ]
             },
             size: {

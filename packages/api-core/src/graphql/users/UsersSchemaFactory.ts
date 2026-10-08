@@ -1,4 +1,5 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import {
     ErrorResponse,
     ListErrorResponse,
@@ -16,6 +17,8 @@ import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
 import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 
 class UsersSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-core/UsersSchemaFactoryImpl");
+
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
         builder.addTypeDefs(/* GraphQL */ `
             type AdminUsersQuery {

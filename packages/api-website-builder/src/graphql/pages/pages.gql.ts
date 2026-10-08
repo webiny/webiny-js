@@ -1,8 +1,9 @@
 import { ErrorResponse, ListResponse, NotFoundError, Response } from "@webiny/api-graphql";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
+import { ensurePermission } from "~/utils/ensurePermission.js";
 import { resolve } from "~/utils/resolve.js";
-import { WEBSITE_BUILDER_INTEGRATIONS, WEBSITE_BUILDER_SETTINGS } from "~/constants.js";
+import { WEBSITE_BUILDER_INTEGRATIONS } from "~/constants.js";
 import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
 import { PageModelProvider } from "~/domain/page/abstractions.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
@@ -19,6 +20,7 @@ import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
 import { TranslatePageUseCase } from "~/features/pages/TranslatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { GetSettingsUseCase } from "~/features/pages/GetSettings/index.js";
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
@@ -162,27 +164,19 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
 
     builder.addResolver({
         path: "WbQuery.getSettings",
-        dependencies: [KeyValueStore],
-        resolver(keyValueStore) {
-            return async ({ context }) => {
-                ensureAuthentication(context);
+        dependencies: [GetSettingsUseCase],
+        resolver(getSettings) {
+            return ({ context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
 
-                const result = await keyValueStore.get(WEBSITE_BUILDER_SETTINGS);
+                    const result = await getSettings.execute();
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
 
-                if (result.isFail()) {
-                    return new Response({
-                        // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
-                        previewDomain: "http://localhost:3000"
-                    });
-                }
-
-                const settings = result.value;
-
-                return new Response({
-                    // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
-                    previewDomain: settings.previewDomain ?? "http://localhost:3000"
+                    return { domain: result.value.domain };
                 });
-            };
         }
     });
 
@@ -417,26 +411,13 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
 
     // TODO: move these settings updates into dedicated use cases
     builder.addResolver({
-        path: "WbMutation.updateSettings",
-        dependencies: [KeyValueStore],
-        resolver(keyValueStore) {
-            return ({ args, context }) =>
-                resolve(async () => {
-                    ensureAuthentication(context, { permission: "wb.settings" });
-                    await keyValueStore.set(WEBSITE_BUILDER_SETTINGS, args.data);
-
-                    return true;
-                });
-        }
-    });
-
-    builder.addResolver({
         path: "WbMutation.updateIntegrations",
         dependencies: [KeyValueStore],
         resolver(keyValueStore) {
             return ({ args, context }) =>
                 resolve(async () => {
-                    ensureAuthentication(context, { permission: "wb.settings" });
+                    ensureAuthentication(context);
+                    await ensurePermission(context, "wb.integrations");
                     await keyValueStore.set(WEBSITE_BUILDER_INTEGRATIONS, args.data);
 
                     return true;

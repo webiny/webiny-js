@@ -131,6 +131,19 @@ const createFruitFromMutation = (model: CmsModel) => {
     `;
 };
 
+const duplicateFruitMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation DuplicateFruit($revision: ID!) {
+            duplicateFruit: duplicate${model.singularApiName}(revision: $revision) {
+                data {
+                    ${fruitFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
 const updateFruitMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation UpdateFruit($revision: ID!, $data: ${model.singularApiName}Input!) {
@@ -159,6 +172,19 @@ const publishFruitMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation PublishFruit($revision: ID!) {
             publishFruit: publish${model.singularApiName}(revision: $revision) {
+                data {
+                    ${fruitFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
+const updateFruitRevisionDescriptionMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation UpdateFruitRevisionDescription($revision: ID!, $revisionDescription: String!) {
+            updateFruitRevisionDescription: update${model.singularApiName}RevisionDescription(revision: $revision, revisionDescription: $revisionDescription) {
                 data {
                     ${fruitFields}
                 }
@@ -218,6 +244,12 @@ export const useFruitManageHandler = (params: GraphQLHandlerParams) => {
                 headers
             });
         },
+        async duplicateFruit(variables: Record<string, any>, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: { query: duplicateFruitMutation(model), variables },
+                headers
+            });
+        },
         async updateFruit(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
@@ -240,6 +272,18 @@ export const useFruitManageHandler = (params: GraphQLHandlerParams) => {
             return await contentHandler.invoke({
                 body: {
                     query: publishFruitMutation(model),
+                    variables
+                },
+                headers
+            });
+        },
+        async updateFruitRevisionDescription(
+            variables: Record<string, any>,
+            headers: Record<string, any> = {}
+        ) {
+            return await contentHandler.invoke({
+                body: {
+                    query: updateFruitRevisionDescriptionMutation(model),
                     variables
                 },
                 headers

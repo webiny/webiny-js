@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { type IAppModel } from "@webiny/project/abstractions/models/index.js";
 import { findFreePort } from "./findFreePort.js";
+import { stopWithParent } from "./stopWithParent.js";
 
 interface IRunAdminServerOptions {
     /**
@@ -50,16 +51,7 @@ export async function spawnAdminServer(
         env: { ...process.env, PORT: port }
     });
 
-    const cleanup = () => {
-        if (!child.killed) {
-            child.kill();
-        }
-    };
-    process.on("exit", cleanup);
-    process.on("SIGINT", () => {
-        cleanup();
-        process.exit(0);
-    });
+    stopWithParent(child);
 
     return child;
 }

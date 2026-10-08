@@ -20,8 +20,8 @@
     "mobx-react-lite": "^5.0.3"
   },
   "peerDependencies": {
-    "next": ">=15",
-    "react": ">=19"
+    "next": ">=15.0.0 <16.0.0",
+    "react": ">=19.0.0 <20.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

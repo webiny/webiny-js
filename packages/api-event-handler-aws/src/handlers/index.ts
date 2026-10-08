@@ -4,3 +4,5 @@ export * from "./FunctionUrlStreamTenantLoaderDecorator.js";
 export * from "./extractRequestAuth.js";
 export * from "./ApiGatewayTenantLoaderDecorator.js";
 export * from "./S3TenantLoaderDecorator.js";
+export * from "./ApiGatewayAssumePermissionsDecorator.js";
+export * from "./FunctionUrlStreamAssumePermissionsDecorator.js";

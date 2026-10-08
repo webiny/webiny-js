@@ -42,6 +42,12 @@ export interface CmsListResult<T extends CmsEntryValues = CmsEntryValues> {
 export interface GetEntryParams {
     modelId: string;
     entryId: string;
+    /**
+     * Fields to return, e.g. ["entryId", "values.title", "values.author.values.name"].
+     * Referenced entries are resolved only as deep as these paths ask for.
+     * Defaults to all system fields and "values.*", with refs resolved by follow-up requests.
+     */
+    fields?: string[];
 }
 
 export interface ListEntriesParams {
@@ -50,6 +56,12 @@ export interface ListEntriesParams {
     sort?: Record<string, "asc" | "desc">;
     limit?: number;
     after?: string;
+    search?: string;
+    /**
+     * Fields to return, e.g. ["entryId", "values.title", "values.author.values.name"].
+     * Defaults to all system fields and "values.*".
+     */
+    fields?: string[];
 }
 
 export interface IEnvironment {

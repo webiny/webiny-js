@@ -55,7 +55,7 @@ class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
     private async createTable(): Promise<void> {
         try {
             await this.knex.client.schema.createTable(this.tableName, table => {
-                table.text("id").primary();
+                table.text("id").notNullable();
                 table.text("entryId").notNullable();
                 table.text("modelId").notNullable();
                 table.text("tenant").notNullable();
@@ -64,6 +64,8 @@ class EntryTableManagerImpl implements EntryTableManagerAbstraction.Interface {
                 table.boolean("isPublished").defaultTo(false);
                 table.boolean("wbyDeleted").defaultTo(false);
                 table.text("data").notNullable();
+
+                table.primary(["tenant", "id"]);
 
                 table.index(["tenant", "modelId", "isLatest"]);
                 table.index(["tenant", "modelId", "isPublished"]);

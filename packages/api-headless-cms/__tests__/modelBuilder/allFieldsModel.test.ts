@@ -64,6 +64,9 @@ describe("All Field Types Model", () => {
                             // DateTime field - without timezone
                             createdAt: fields.datetime().label("Created At").withoutTimezone(),
 
+                            // DateTime field - no subtype, defaults to with timezone
+                            defaultDateTime: fields.datetime().label("Default DateTime"),
+
                             // Reference field
                             author: fields
                                 .ref()
@@ -237,6 +240,9 @@ describe("All Field Types Model", () => {
         const scheduledAtField = model!.fields.find(f => f.fieldId === "scheduledAt");
         expect(scheduledAtField?.type).toBe("datetime");
         expect(scheduledAtField?.settings?.type).toBe("dateTimeWithTimezone");
+
+        const defaultDateTimeField = model!.fields.find(f => f.fieldId === "defaultDateTime");
+        expect(defaultDateTimeField?.settings?.type).toBe("dateTimeWithTimezone");
 
         const metadataField = model!.fields.find(f => f.fieldId === "metadata");
         expect(metadataField?.type).toBe("object");

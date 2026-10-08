@@ -2,8 +2,9 @@ import zod from "zod";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { CmsGraphQLSchemaPlugin, CmsGraphQLSchemaFactory } from "@webiny/api-headless-cms";
-import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { HeadlessCmsEndpointConfig } from "@webiny/api-headless-cms/HeadlessCmsEndpointConfig.js";
 import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
+import type { IHeadlessCmsEndpointConfig } from "@webiny/api-headless-cms/HeadlessCmsEndpointConfig.js";
 import type { HcmsTasksContext } from "~/types.js";
 import { createResolverDecorator } from "@webiny/api-graphql";
 import { ErrorResponse } from "@webiny/api-graphql";
@@ -53,7 +54,7 @@ const getValidation = zod
 class DeleteModelGraphQLSchemaFactory implements CmsGraphQLSchemaFactory.Interface {
     constructor(
         private readonly tenantContext: TenantContext.Interface,
-        private readonly headlessCms: HeadlessCms.Interface,
+        private readonly endpointConfig: IHeadlessCmsEndpointConfig,
         private readonly logger: Logger.Interface
     ) {}
 
@@ -62,7 +63,7 @@ class DeleteModelGraphQLSchemaFactory implements CmsGraphQLSchemaFactory.Interfa
 
         // On a fresh project there is no tenant until installation completes; and the delete-model
         // schema only belongs on the MANAGE endpoint. (`isHeadlessCmsReady` only checks the tenant.)
-        if (!this.tenantContext.getTenant() || !this.headlessCms.MANAGE) {
+        if (!this.tenantContext.getTenant() || this.endpointConfig.type !== "manage") {
             return [];
         }
 
@@ -219,5 +220,5 @@ class DeleteModelGraphQLSchemaFactory implements CmsGraphQLSchemaFactory.Interfa
 
 export const DeleteModelGraphQLSchemaFactoryImpl = CmsGraphQLSchemaFactory.createImplementation({
     implementation: DeleteModelGraphQLSchemaFactory,
-    dependencies: [TenantContext, HeadlessCms, Logger]
+    dependencies: [TenantContext, HeadlessCmsEndpointConfig, Logger]
 });

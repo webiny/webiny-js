@@ -1,14 +1,12 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/api-graphql";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { SchedulerFeature } from "@webiny/api-scheduler";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
-import { buildSchema } from "graphql";
-import type { GraphQLSchema } from "graphql";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
@@ -62,13 +60,7 @@ export const useHandler = (params: UseHandlerParams) => {
 
             SchedulerFeature.register(container);
 
-            const STUB_SCHEMA: GraphQLSchema = buildSchema("type Query { _empty: String }");
-            container.registerInstance(GraphQLContextualSchema, {
-                async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
-                    capturedCtx = ctx;
-                    return STUB_SCHEMA;
-                }
-            });
+            capturedCtx = { container };
 
             GraphQLEngineFeature.register(container);
         }

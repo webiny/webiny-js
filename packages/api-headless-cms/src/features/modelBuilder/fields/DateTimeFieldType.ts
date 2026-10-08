@@ -16,6 +16,11 @@ export interface IDateTimeFieldBuilder
 class DateTimeFieldBuilder extends DataFieldBuilder<"datetime"> implements IDateTimeFieldBuilder {
     public constructor() {
         super("datetime");
+        /**
+         * Without a subtype the GraphQL, storage and admin layers each assume a different
+         * format. Default to an ISO datetime with timezone; subtype methods override it.
+         */
+        this.withTimezone();
     }
 
     required(message?: string): this {

@@ -50,6 +50,7 @@ export const Extensions = () => {
                     <AiContentExtension />
                 </FeatureFlag.CanUse>
             </FeatureFlag.CanUseMultiTenancy>
+            <Admin.Extension src={"@/extensions/folderDropConfirmation/index.tsx"} />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
@@ -93,6 +94,7 @@ export const Extensions = () => {
             {/*<Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />*/}
             {/* Bulk actions demo: Products model (the bulk actions themselves are registered
                 by the <ApplyDiscountExtension /> / <AiContentExtension /> components above) */}
+            <Api.Extension src={"/extensions/models/ArticleModel.ts"} />
             <Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />
             <Api.Extension src={"/extensions/models/ProductModel.ts"} />
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}
@@ -128,8 +130,28 @@ export const Extensions = () => {
             <Api.Extension src={"/extensions/MyApiKey.ts"} />
             <Api.Extension src={"/extensions/MyApiKeyAfterUpdate.ts"} />
 
+            {/* Code-defined roles, teams and folder-level permissions. The FLP rules grant access
+                to `content-team`, which comes from MyTeam.ts, whose role comes from MyRole.ts —
+                so all three go together. */}
+            <Api.Extension src={"/extensions/MyRole.ts"} />
+            <Api.Extension src={"/extensions/MyTeam.ts"} />
+            <Api.Extension src={"/extensions/MyFolderPermissions.ts"} />
+
             {/* CLI 👇 */}
             <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
+
+            {/* Bug reporter 👇 The base ships with Webiny via DefaultExtensions and files reports
+                verbatim. These two are ours: a token so the API files the issue itself, and AI
+                drafting for the title and steps to reproduce.
+
+                Both the token AND the repository have to be set before anything is filed. A token
+                on its own leaves the reporter in compose mode, so that nobody's local build starts
+                opening issues on whatever the default repository happens to be. */}
+            <Project.BugReporter
+                token={process.env.BUG_REPORT_GITHUB_TOKEN || ""}
+                repository={process.env.BUG_REPORT_REPOSITORY || ""}
+            />
+            <Api.Extension src={"@/extensions/bugReportAi/Extension.ts"} />
 
             {/* Tasks 👇 */}
             <Api.Extension src={"/extensions/tasks/SelfCleaningTask.ts"} />

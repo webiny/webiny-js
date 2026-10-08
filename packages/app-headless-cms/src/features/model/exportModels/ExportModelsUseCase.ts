@@ -4,7 +4,13 @@ class ExportModelsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private gateway: ExportModelsGateway.Interface) {}
 
     async execute(models?: string[]) {
-        return this.gateway.execute(models);
+        const result = await this.gateway.execute(models);
+        try {
+            return JSON.parse(result);
+        } catch (ex) {
+            console.error(ex);
+            return null;
+        }
     }
 }
 

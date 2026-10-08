@@ -31,7 +31,7 @@ import type { TestOpenSearchClient } from "@webiny/api-opensearch/testing";
 
 export const createSyncTestSetup = async () => {
     const db = await PGlite.create();
-    const server = new PGLiteSocketServer({ db, port: 0, host: "127.0.0.1" });
+    const server = new PGLiteSocketServer({ db, port: 0, host: "127.0.0.1", maxConnections: 2 });
     await server.start();
 
     const knex = knexLib({

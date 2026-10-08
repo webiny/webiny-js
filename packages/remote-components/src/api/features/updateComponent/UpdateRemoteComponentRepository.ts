@@ -37,11 +37,15 @@ class UpdateRemoteComponentRepositoryImpl implements RepositoryAbstraction.Inter
                 return Result.fail(new RemoteComponentNotFoundError(id));
             }
 
-            const { entry } = await this.updateEntryDataFactory.create(
+            const dataResult = await this.updateEntryDataFactory.create(
                 modelResult.value,
                 { values },
                 entryResult.value
             );
+            if (dataResult.isFail()) {
+                return Result.fail(new RemoteComponentPersistenceError(dataResult.error));
+            }
+            const { entry } = dataResult.value;
 
             const updateResult = await this.updateEntryRepository.execute(modelResult.value, entry);
 

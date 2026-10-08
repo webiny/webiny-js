@@ -17,12 +17,17 @@ import { DeleteEntryFeature } from "~/features/contentEntry/deleteEntry/feature.
 import { PublishEntryFeature } from "~/features/contentEntry/publishEntry/feature.js";
 import { UnpublishEntryFeature } from "~/features/contentEntry/unpublishEntry/feature.js";
 import { MoveEntryFeature } from "~/features/contentEntry/moveEntry/feature.js";
+import { DuplicateEntryFeature } from "~/features/contentEntry/duplicateEntry/feature.js";
 import { UpdateRevisionDescriptionFeature } from "~/features/contentEntry/updateRevisionDescription/feature.js";
 import { ListEntriesGateway } from "~/features/contentEntry/listEntries/abstractions.js";
 import { DeleteEntryGateway } from "~/features/contentEntry/deleteEntry/abstractions.js";
-import { PublishEntryGateway } from "~/features/contentEntry/publishEntry/abstractions.js";
+import {
+    PublishEntryGateway,
+    PublishEntryUseCase
+} from "~/features/contentEntry/publishEntry/abstractions.js";
 import { UnpublishEntryGateway } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { MoveEntryGateway } from "~/features/contentEntry/moveEntry/abstractions.js";
+import { DuplicateEntryGateway } from "~/features/contentEntry/duplicateEntry/abstractions.js";
 import { UpdateRevisionDescriptionGateway } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
 import { EventPublisher } from "@webiny/app/features/eventPublisher/index.js";
 import { ContentEntriesPresenter as Abstraction } from "./abstractions.js";
@@ -122,8 +127,11 @@ interface TestSetup {
     listEntriesGateway: { execute: ReturnType<typeof vi.fn> };
     moveEntryGateway: { execute: ReturnType<typeof vi.fn> };
     deleteEntryGateway: { execute: ReturnType<typeof vi.fn> };
+    duplicateEntryGateway: { execute: ReturnType<typeof vi.fn> };
     getDescendantFolders: ReturnType<typeof vi.fn>;
     foldersPresenter: MockFolderTreePresenter;
+    publishEntryGateway: { execute: ReturnType<typeof vi.fn> };
+    container: Container;
 }
 
 function setup(): TestSetup {
@@ -137,7 +145,7 @@ function setup(): TestSetup {
     container.registerInstance(Confirmation, {
         confirm: vi.fn(async (_name, _params, execute) => {
             if (execute) {
-                await execute(undefined);
+                return await execute(undefined);
             }
             return true;
         })
@@ -158,6 +166,7 @@ function setup(): TestSetup {
     PublishEntryFeature.register(container);
     UnpublishEntryFeature.register(container);
     MoveEntryFeature.register(container);
+    DuplicateEntryFeature.register(container);
     UpdateRevisionDescriptionFeature.register(container);
 
     const listEntriesGateway = { execute: vi.fn() };
@@ -167,7 +176,10 @@ function setup(): TestSetup {
     container.registerInstance(ListEntriesGateway, listEntriesGateway);
     container.registerInstance(MoveEntryGateway, moveEntryGateway);
     container.registerInstance(DeleteEntryGateway, deleteEntryGateway);
-    container.registerInstance(PublishEntryGateway, { execute: vi.fn() });
+    const duplicateEntryGateway = { execute: vi.fn() };
+    container.registerInstance(DuplicateEntryGateway, duplicateEntryGateway);
+    const publishEntryGateway = { execute: vi.fn() };
+    container.registerInstance(PublishEntryGateway, publishEntryGateway);
     container.registerInstance(UnpublishEntryGateway, { execute: vi.fn() });
     container.registerInstance(UpdateRevisionDescriptionGateway, { execute: vi.fn() });
 
@@ -179,8 +191,11 @@ function setup(): TestSetup {
         listEntriesGateway,
         moveEntryGateway,
         deleteEntryGateway,
+        duplicateEntryGateway,
         getDescendantFolders,
-        foldersPresenter
+        foldersPresenter,
+        publishEntryGateway,
+        container
     };
 }
 
@@ -486,6 +501,49 @@ describe("ContentEntriesPresenter", () => {
         });
     });
 
+    describe("duplicate entry", () => {
+        it("should add the duplicated entry to the current view", async () => {
+            const entries = [
+                createEntry("entry-2", "root", { savedOn: "2024-01-02T00:00:00.000Z" }),
+                createEntry("entry-1", "root", { savedOn: "2024-01-01T00:00:00.000Z" })
+            ];
+            await initPresenter(t, { data: entries });
+
+            const duplicate = createEntry("entry-3", "root", {
+                savedOn: "2024-01-03T00:00:00.000Z"
+            });
+            t.duplicateEntryGateway.execute.mockResolvedValueOnce(duplicate);
+
+            const result = await t.presenter.duplicateEntry(entries[1]);
+
+            expect(result).toEqual({ entry: duplicate });
+            expect(t.duplicateEntryGateway.execute).toHaveBeenCalledWith({
+                model: MODEL,
+                revisionId: "entry-1#0001"
+            });
+            await vi.waitFor(() => {
+                expect(t.presenter.list.vm.rows.map(r => r.entryId)).toEqual([
+                    "entry-3",
+                    "entry-2",
+                    "entry-1"
+                ]);
+            });
+        });
+
+        it("should return the error when duplication fails", async () => {
+            const entries = [createEntry("entry-1", "root")];
+            await initPresenter(t, { data: entries });
+
+            const error = new Error("Not allowed.");
+            t.duplicateEntryGateway.execute.mockRejectedValueOnce(error);
+
+            const result = await t.presenter.duplicateEntry(entries[0]);
+
+            expect(result).toEqual({ error });
+            expect(t.presenter.list.vm.rows).toHaveLength(1);
+        });
+    });
+
     describe("delete entry", () => {
         it("should remove entry from current view after delete", async () => {
             const entries = [createEntry("entry-1", "root"), createEntry("entry-2", "root")];
@@ -548,6 +606,59 @@ describe("ContentEntriesPresenter", () => {
             await vi.waitFor(() => {
                 expect(t.presenter.vm.showFolders).toBe(false);
             });
+        });
+    });
+
+    describe("publish entry", () => {
+        /**
+         * Publishing is not a content modification: the API returns the entry with its
+         * `savedOn` unchanged, so the entry must keep its position in a list sorted by `savedOn`.
+         */
+        const entries = [
+            createEntry("entry-3", "root", { savedOn: "2024-01-03T00:00:00.000Z" }),
+            createEntry("entry-2", "root", { savedOn: "2024-01-02T00:00:00.000Z" }),
+            createEntry("entry-1", "root", { savedOn: "2024-01-01T00:00:00.000Z" })
+        ];
+
+        const publish = async (entry: CmsContentEntry) => {
+            t.publishEntryGateway.execute.mockResolvedValueOnce({
+                ...entry,
+                meta: { ...entry.meta, status: "published", locked: true }
+            });
+            await t.container
+                .resolve(PublishEntryUseCase)
+                .execute({ model: MODEL, revisionId: entry.id });
+        };
+
+        it("should keep a published entry in its position", async () => {
+            await initPresenter(t, { data: entries });
+
+            await publish(entries[1]);
+
+            const rows = t.presenter.list.vm.rows;
+            expect(rows.map(r => r.entryId)).toEqual(["entry-3", "entry-2", "entry-1"]);
+            expect((rows[1].meta as { status: string }).status).toBe("published");
+        });
+
+        it("should keep a published entry in its position when sorted ascending", async () => {
+            await initPresenter(t, { data: entries });
+
+            t.listEntriesGateway.execute.mockResolvedValueOnce({
+                data: [...entries].reverse(),
+                meta: { cursor: null, hasMoreItems: false, totalCount: entries.length }
+            });
+            t.presenter.list.actions.sort.set("savedOn", "ASC");
+            await vi.waitFor(() => {
+                expect(t.presenter.list.vm.appliedQuery?.sort?.direction).toBe("ASC");
+            });
+
+            await publish(entries[1]);
+
+            expect(t.presenter.list.vm.rows.map(r => r.entryId)).toEqual([
+                "entry-1",
+                "entry-2",
+                "entry-3"
+            ]);
         });
     });
 });

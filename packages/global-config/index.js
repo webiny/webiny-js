@@ -1,6 +1,6 @@
 import os from "os";
 import path from "path";
-import { uuid as uuidv4 } from "@webiny/stdlib";
+import { randomUUID } from "crypto";
 import { loadJsonFileSync } from "load-json-file";
 import { writeJsonFileSync } from "write-json-file";
 import { isCI } from "ci-info";
@@ -20,7 +20,9 @@ export const globalConfig = {
         } catch {
             // A new config file is written if it doesn't exist or is invalid.
             this.__globalConfig = {
-                id: uuidv4(),
+                // Node's own v4 UUID. This used to come from `@webiny/stdlib`, whose root entry is
+                // about 30 modules, loaded on every CLI command just to generate this one ID.
+                id: randomUUID(),
                 telemetry: true,
 
                 // This flag is set to `false` the moment user successfully

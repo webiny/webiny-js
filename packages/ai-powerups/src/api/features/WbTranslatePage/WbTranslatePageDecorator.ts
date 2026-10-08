@@ -6,12 +6,15 @@ import { GetDefaultLanguageUseCase } from "@webiny/languages/exports/api/languag
 import { TranslatePageUseCase } from "@webiny/api-website-builder/features/pages/TranslatePage/index.js";
 import { UpdatePageRepository } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";
 import type { WbPage } from "@webiny/api-website-builder/domain/page/abstractions.js";
+import { AiCapabilityDisabledError } from "~/api/features/Capabilities/index.js";
 import {
     ResolveAiCapabilityUseCase,
     withAdditionalInstructions
 } from "~/api/features/Capabilities/index.js";
 import { WB_TRANSLATE_PAGE_CAPABILITY } from "./capability.js";
 import { LexicalParser } from "./abstractions/LexicalParser.js";
+import { GetPageByIdUseCase } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
+import { LlmJsonResponse } from "~/domain/LlmJsonResponse.js";
 
 type InputType = "text" | "longText" | "lexical";
 
@@ -34,6 +37,7 @@ interface TranslatedData {
 class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
     constructor(
         private getDefaultLanguage: GetDefaultLanguageUseCase.Interface,
+        private getPageById: GetPageByIdUseCase.Interface,
         private resolveCapability: ResolveAiCapabilityUseCase.Interface,
         private logger: Logger.Interface,
         private ai: Ai.Interface,
@@ -67,6 +71,11 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
 
     private async resolveSourceLanguage(page: WbPage): Promise<string> {
         if (page.properties["sourcePage"]) {
+            const sourcePageId = `${page.properties["sourcePage"]}#0001`;
+            const sourcePage = await this.getPageById.execute(sourcePageId);
+            if (sourcePage.isOk()) {
+                return sourcePage.value.properties["language"];
+            }
             return page.properties["language"] ?? "en";
         }
 
@@ -87,10 +96,14 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         if (resolved.isFail()) {
             /*
              * Translation is a decorator on top of a successful page save, so it stays
-             * non-fatal: the page is already created, just untranslated. It does get logged
-             * now, because a silently skipped translation was indistinguishable from a
-             * misconfigured one.
+             * non-fatal: the page is already created, just untranslated. A misconfiguration is
+             * logged as a warning, because a silently skipped translation was indistinguishable
+             * from a broken one. Switched off is not a problem, so it is only noted.
              */
+            if (resolved.error instanceof AiCapabilityDisabledError) {
+                this.logger.info("AI page translation is switched off; skipping.");
+                return null;
+            }
             this.logger.warn({ reason: resolved.error.message }, "Skipping AI page translation.");
             return null;
         }
@@ -114,7 +127,7 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         });
 
         try {
-            return JSON.parse(result.text);
+            return LlmJsonResponse.fromRawText(result.text).toJSON<TranslatedData>();
         } catch {
             return null;
         }
@@ -200,6 +213,7 @@ export const WbTranslatePageDecorator = TranslatePageUseCase.createDecorator({
     decorator: WbTranslatePageDecoratorImpl,
     dependencies: [
         GetDefaultLanguageUseCase,
+        GetPageByIdUseCase,
         ResolveAiCapabilityUseCase,
         Logger,
         Ai,

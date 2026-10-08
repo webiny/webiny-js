@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import { loadJsonFileSync } from "load-json-file";
 import { execa } from "execa";
 import pRetry, { AbortError } from "p-retry";

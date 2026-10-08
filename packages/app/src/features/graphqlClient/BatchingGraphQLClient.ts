@@ -165,9 +165,11 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
             throw new Error("Expected batch response to be an array");
         }
 
-        // Map each result, handling individual errors
+        // Map each result, handling individual errors. As with the non-batched client, a result
+        // may carry both `data` and `errors` (partial success); we only fail an operation when it
+        // produced no data at all, otherwise the partial payload is handed back to its caller.
         return json.map((result: any, index: number) => {
-            if (result.errors && result.errors.length > 0) {
+            if (result.errors && result.errors.length > 0 && !result.data) {
                 throw new Error(
                     `GraphQL errors in operation ${index}: ${JSON.stringify(result.errors)}`
                 );

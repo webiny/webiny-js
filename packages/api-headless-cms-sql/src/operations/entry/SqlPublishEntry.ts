@@ -10,7 +10,7 @@ import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
 import type { IEntryRow } from "./types.js";
 import { entryToRow } from "./mappers.js";
-import { createEntryQuery, syncEntryToLatest } from "./queryHelpers.js";
+import { createModelEntryQuery, syncEntryToLatest } from "./queryHelpers.js";
 
 class SqlPublishEntryImpl implements PublishEntryStorageOperation.Interface {
     private readonly knex: Knex;
@@ -22,8 +22,8 @@ class SqlPublishEntryImpl implements PublishEntryStorageOperation.Interface {
         this.knex = knexClient.client;
     }
 
-    private query(): Knex.QueryBuilder<IEntryRow> {
-        return createEntryQuery(this.knex, this.entryTableManager.getTableName());
+    private modelQuery(model: CmsModel): Knex.QueryBuilder<IEntryRow> {
+        return createModelEntryQuery(this.knex, this.entryTableManager.getTableName(), model);
     }
 
     async execute<T extends CmsEntryValues>(
@@ -32,8 +32,7 @@ class SqlPublishEntryImpl implements PublishEntryStorageOperation.Interface {
     ) {
         await this.entryTableManager.ensureTable();
 
-        const oldPublishedRows = await this.query()
-            .where("tenant", model.tenant)
+        const oldPublishedRows = await this.modelQuery(model)
             .andWhere("entryId", params.entry.entryId)
             .andWhere("isPublished", true);
 
@@ -42,12 +41,14 @@ class SqlPublishEntryImpl implements PublishEntryStorageOperation.Interface {
             parsed.isPublished = false;
             parsed.status = "unpublished";
 
-            await this.query()
-                .where("id", row.id)
+            await this.modelQuery(model)
+                .andWhere("id", row.id)
                 .update({ isPublished: false, data: JSON.stringify(parsed) });
         }
 
-        const existing = await this.query().where("id", params.storageEntry.id).first();
+        const existing = await this.modelQuery(model)
+            .andWhere("id", params.storageEntry.id)
+            .first();
         const se = params.storageEntry as CmsStorageEntry;
         se.isLatest = existing?.isLatest ?? se.isLatest;
         se.isPublished = true;
@@ -55,15 +56,20 @@ class SqlPublishEntryImpl implements PublishEntryStorageOperation.Interface {
         const row = entryToRow(se);
         const { isLatest: _il, ...rowWithoutIsLatest } = row;
 
-        await this.query()
-            .where("tenant", model.tenant)
+        await this.modelQuery(model)
             .andWhere("id", params.storageEntry.id)
             .update(rowWithoutIsLatest);
 
         const liveValue = { version: params.entry.version };
-        await syncEntryToLatest(this.knex, this.entryTableManager.getTableName(), se, latest => {
-            latest.live = liveValue;
-        });
+        await syncEntryToLatest(
+            this.knex,
+            this.entryTableManager.getTableName(),
+            model,
+            se,
+            latest => {
+                latest.live = liveValue;
+            }
+        );
 
         return params.entry;
     }

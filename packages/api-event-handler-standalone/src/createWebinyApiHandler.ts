@@ -15,6 +15,9 @@
  * The identity provider (e.g. `@webiny/self-hosted-auth`'s JWT IdP) must be registered by the variant
  * in `registerRootStorage`, so the RequestIdentityLoader driven by the identity decorator can resolve it.
  */
+import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
+import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
+import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import type { Container } from "@webiny/di";
 import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
@@ -32,6 +35,7 @@ import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/sched
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
+import { NodeHttpAssumePermissionsDecorator } from "~/handlers/NodeHttpAssumePermissionsDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
 import { EmptyTrashBinRouteFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
 
@@ -46,6 +50,11 @@ export interface CreateWebinyApiHandlerConfig {
      * IdP assumption — the variant supplies the complete storage + auth wiring.
      */
     registerRootStorage: (container: Container) => void | Promise<void>;
+    /**
+     * Register the per-request storage features (e.g. the CMS storage operations) in the request
+     * container, before `HeadlessCmsFeature` builds its storage. Optional.
+     */
+    registerRequestStorage?: (container: Container) => void | Promise<void>;
 }
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
@@ -65,6 +74,9 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             rootContainer.registerDecorator(NodeHttpIdentityLoaderDecorator);
             rootContainer.registerDecorator(NodeHttpTenantLoaderDecorator);
 
+            // Preview-as. Mirrors the AWS handler.
+            rootContainer.registerDecorator(NodeHttpAssumePermissionsDecorator);
+
             // ── Storage + identity provider (variant-supplied) ─────────
             await config.registerRootStorage(rootContainer);
 
@@ -75,6 +87,16 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // connection registry (ConnectionRegistry) is the storage variant's job (e.g. sql).
             rootContainer.register(ServerConnectionManager).inSingletonScope();
             rootContainer.register(NodeWsAdapter).inSingletonScope();
+
+            // ── GraphQL schema cache (root) ────────────────────────────
+            // Root, so a built schema outlives the request that built it.
+            GraphQLSchemaCacheFeature.register(rootContainer);
+
+            // ── Encryption key cache (root) ────────────────────────────
+            // Root, so the scrypt-derived key is computed once per process instead of per request.
+            EncryptionKeyCacheFeature.register(rootContainer);
+            // Root, so identity providers' signing keys are fetched once per process, not per request.
+            JwksStoreFeature.register(rootContainer);
 
             // ── Background tasks (root) ────────────────────────────────
             // Mirrors the AWS handler registering its background-task transport at root. There is no
@@ -110,6 +132,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // transport here — it's a root singleton wired in `root` + `onServer` (see above).
             await registerApiRequestStack(container, {
                 extensions: config.extensions,
+                registerRequestStorage: config.registerRequestStorage,
                 // Why hooks (and not just registering the transports ourselves): `.register()` calls
                 // are otherwise order-independent — you can register Features in any order, because
                 // they only REGISTER, they don't RESOLVE during registration (resolution happens

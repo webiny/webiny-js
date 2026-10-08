@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { FormModelFeature } from "./feature.js";
+import { IdentityContextFeature } from "~/features/security/IdentityContext/feature.js";
 import { ConditionRuleEvaluator } from "./ConditionRuleEvaluator.js";
 import {
     FormModelFactory,
@@ -17,6 +18,7 @@ function createForm(config: {
     layout?: IFormModelConfig["layout"];
 }) {
     const container = new Container();
+    IdentityContextFeature.register(container);
     FormModelFeature.register(container);
     return container.resolve(FormModelFactory).create({
         fields: config.fields,
@@ -90,7 +92,7 @@ describe("Rules system", () => {
                             {
                                 type: "condition",
                                 target: "plan",
-                                operator: "eq",
+                                operator: "==",
                                 value: "enterprise",
                                 action: "hide"
                             }
@@ -285,39 +287,35 @@ describe("Rules system", () => {
 
     describe("custom rule evaluators", () => {
         it("uses externally registered evaluators for custom rule types", () => {
-            class AccessControlEvaluator implements IRuleEvaluator {
-                constructor(private userTeams: string[]) {}
+            class FeatureFlagEvaluator implements IRuleEvaluator {
+                constructor(private enabledFlags: string[]) {}
                 canEvaluate(rule: IRule) {
-                    return rule.type === "accessControl";
+                    return rule.type === "featureFlag";
                 }
                 evaluate(rule: IRule): boolean {
-                    if (!rule.value) {
-                        return false;
-                    }
-                    const [scope, id] = rule.value.split(":");
-                    return scope === "team" && this.userTeams.includes(id);
+                    return typeof rule.value === "string" && this.enabledFlags.includes(rule.value);
                 }
             }
 
             const form = createForm({
-                extraEvaluators: [new AccessControlEvaluator(["admins"])],
+                extraEvaluators: [new FeatureFlagEvaluator(["beta"])],
                 fields: fields => ({
-                    adminField: fields
+                    betaField: fields
                         .text()
-                        .label("Admin Only")
+                        .label("Beta Only")
                         .rules([
                             {
-                                type: "accessControl",
-                                target: "identity",
+                                type: "featureFlag",
+                                target: "flags",
                                 operator: "matches",
-                                value: "team:admins",
+                                value: "beta",
                                 action: "disable"
                             }
                         ])
                 })
             });
 
-            expect(form.field("adminField").vm.disabled).toBe(true);
+            expect(form.field("betaField").vm.disabled).toBe(true);
         });
 
         it("ignores rules with unknown types (no evaluator)", () => {
@@ -351,7 +349,7 @@ describe("Rules system", () => {
                 e.canEvaluate({
                     type: "condition",
                     target: "x",
-                    operator: "eq",
+                    operator: "==",
                     value: "y",
                     action: "hide"
                 })
@@ -388,6 +386,148 @@ describe("Rules system", () => {
             expect(e.evaluate(rule, mkForm([]))).toBe(true);
             expect(e.evaluate(rule, mkForm("hello"))).toBe(false);
             expect(e.evaluate(rule, mkForm(0))).toBe(false);
+        });
+
+        describe("typed rule values", () => {
+            const e = new ConditionRuleEvaluator();
+            const mkForm = (value: unknown): IFormModel =>
+                ({
+                    field: () => ({ getValue: () => value })
+                }) as unknown as IFormModel;
+            const mkRule = (operator: string, value: IRule["value"]): IRule => ({
+                type: "condition",
+                target: "x",
+                operator,
+                value,
+                action: "hide"
+            });
+
+            it.each([
+                [false, false, true],
+                [false, true, false],
+                [true, true, true],
+                [true, false, false]
+            ])("== with boolean field %s and boolean rule value %s -> %s", (field, rule, out) => {
+                expect(e.evaluate(mkRule("==", rule), mkForm(field))).toBe(out);
+            });
+
+            it.each([
+                [false, false, false],
+                [false, true, true],
+                [true, true, false],
+                [true, false, true]
+            ])("!= with boolean field %s and boolean rule value %s -> %s", (field, rule, out) => {
+                expect(e.evaluate(mkRule("!=", rule), mkForm(field))).toBe(out);
+            });
+
+            it("supports eq/neq aliases with boolean values", () => {
+                expect(e.evaluate(mkRule("eq", false), mkForm(false))).toBe(true);
+                expect(e.evaluate(mkRule("neq", false), mkForm(true))).toBe(true);
+            });
+
+            it("does not coerce strings to booleans", () => {
+                expect(e.evaluate(mkRule("==", "false"), mkForm(false))).toBe(false);
+                expect(e.evaluate(mkRule("==", "true"), mkForm(true))).toBe(false);
+                expect(e.evaluate(mkRule("==", false), mkForm("false"))).toBe(false);
+                expect(e.evaluate(mkRule("!=", "false"), mkForm(false))).toBe(true);
+            });
+
+            it("does not loosely match falsy values against booleans", () => {
+                expect(e.evaluate(mkRule("==", ""), mkForm(false))).toBe(false);
+                expect(e.evaluate(mkRule("==", 0), mkForm(false))).toBe(false);
+                expect(e.evaluate(mkRule("==", false), mkForm(0))).toBe(false);
+                expect(e.evaluate(mkRule("==", true), mkForm(1))).toBe(false);
+            });
+
+            it("compares plain strings as strings", () => {
+                expect(e.evaluate(mkRule("==", "false"), mkForm("false"))).toBe(true);
+                expect(e.evaluate(mkRule("==", "map"), mkForm("map"))).toBe(true);
+                expect(e.evaluate(mkRule("!=", "map"), mkForm("other"))).toBe(true);
+            });
+
+            it("does not treat an empty field as false", () => {
+                expect(e.evaluate(mkRule("==", false), mkForm(null))).toBe(false);
+            });
+
+            it("compares numbers with number and numeric string rule values", () => {
+                expect(e.evaluate(mkRule("==", 5), mkForm(5))).toBe(true);
+                expect(e.evaluate(mkRule("==", "5"), mkForm(5))).toBe(true);
+                expect(e.evaluate(mkRule("!=", 5), mkForm(6))).toBe(true);
+                expect(e.evaluate(mkRule(">", 5), mkForm(6))).toBe(true);
+                expect(e.evaluate(mkRule("gte", 5), mkForm(5))).toBe(true);
+                expect(e.evaluate(mkRule("<", 5), mkForm(6))).toBe(false);
+                expect(e.evaluate(mkRule("lte", "5"), mkForm(4))).toBe(true);
+            });
+        });
+    });
+
+    describe("rules with typed values on layout elements", () => {
+        const createAdvancedForm = (ruleValue: IRule["value"]) =>
+            createForm({
+                fields: fields => ({
+                    advanced: fields.text().label("Advanced").defaultValue(false),
+                    options: fields.text().label("Options"),
+                    map: fields.text().label("Map")
+                }),
+                layout: layout => [
+                    layout.row("advanced"),
+                    layout
+                        .tabs("tabs")
+                        .rules([
+                            {
+                                type: "condition",
+                                target: "advanced",
+                                operator: "==",
+                                value: ruleValue,
+                                action: "hide"
+                            }
+                        ])
+                        .tab("tab1", tab => {
+                            tab.label("Tab 1").layout(layout => [layout.row("options")]);
+                        })
+                        .tab("tab2", tab => {
+                            tab.label("Tab 2")
+                                .rules([
+                                    {
+                                        type: "condition",
+                                        target: "options",
+                                        operator: "!=",
+                                        value: "map",
+                                        action: "disable"
+                                    }
+                                ])
+                                .layout(layout => [layout.row("map")]);
+                        })
+                ]
+            });
+
+        const tabsVm = (form: IFormModel) =>
+            form.vm.layout.find(n => n.type === "tabs") as ITabsNodeVM | undefined;
+
+        it("hides tabs while a boolean field equals false", () => {
+            const form = createAdvancedForm(false);
+
+            expect(tabsVm(form)).toBeUndefined();
+            expect(form.field("options").visible).toBe(false);
+
+            form.field("advanced").setValue(true);
+            expect(tabsVm(form)).toBeDefined();
+            expect(form.field("options").visible).toBe(true);
+
+            form.field("advanced").setValue(false);
+            expect(tabsVm(form)).toBeUndefined();
+        });
+
+        it("disables a tab until its string condition stops matching", () => {
+            const form = createAdvancedForm(false);
+            form.field("advanced").setValue(true);
+
+            expect(tabsVm(form)!.tabs[1].disabled).toBe(true);
+            expect(form.field("map").vm.disabled).toBe(true);
+
+            form.field("options").setValue("map");
+            expect(tabsVm(form)!.tabs[1].disabled).toBe(false);
+            expect(form.field("map").vm.disabled).toBe(false);
         });
     });
 });

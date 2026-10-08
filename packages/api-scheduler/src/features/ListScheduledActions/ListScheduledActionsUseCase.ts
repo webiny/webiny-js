@@ -10,7 +10,7 @@ import { ScheduledActionModelProvider } from "~/shared/abstractions.js";
 import { NotAuthorizedError, ScheduledActionPersistenceError } from "~/domain/errors.js";
 import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
 import type { GenericRecord } from "@webiny/api/types.js";
-import { SchedulerPermissions } from "~/features/permissions/abstractions.js";
+import { SchedulerPermissionsResolver } from "~/features/permissions/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 
@@ -29,19 +29,21 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
         private modelProvider: ScheduledActionModelProvider.Interface,
         private cmsWhereMapper: CmsWhereMapper.Interface,
         private cmsSortMapper: CmsSortMapper.Interface,
-        private permissions: SchedulerPermissions.Interface,
+        private permissionsResolver: SchedulerPermissionsResolver.Interface,
         private identityContext: IdentityContext.Interface
     ) {}
 
     async execute<T extends GenericRecord>(
         params: IListScheduledActionsParams
     ): Promise<Result<IListScheduledActionsResponse<T>, UseCaseAbstraction.Error>> {
-        const hasPermission = await this.permissions.canRead("action");
-        if (!hasPermission) {
+        const namespace = params.where?.namespace || params.where?.namespace_startsWith;
+        const permissions = this.permissionsResolver.forNamespace(namespace);
+
+        if (!(await permissions.canRead())) {
             return Result.fail(new NotAuthorizedError());
         }
 
-        const ownRecordsOnly = await this.permissions.onlyOwnRecords("action");
+        const ownRecordsOnly = await permissions.onlyOwnRecords();
 
         const { where: initialWhere, sort: sortInput, limit, after } = params;
         const model = await this.modelProvider.get();
@@ -91,7 +93,7 @@ export const ListScheduledActionsUseCase = UseCaseAbstraction.createImplementati
         ScheduledActionModelProvider,
         CmsWhereMapper,
         CmsSortMapper,
-        SchedulerPermissions,
+        SchedulerPermissionsResolver,
         IdentityContext
     ]
 });

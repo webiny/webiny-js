@@ -3,6 +3,8 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../ai-powerups" },
+    { "path": "../bug-reporter" },
+    { "path": "../frontend-settings" },
     { "path": "../languages" },
     { "path": "../tenant-manager" }
   ],
@@ -15,6 +17,10 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/ai-powerups/*": ["../ai-powerups/src/*"],
       "@webiny/ai-powerups": ["../ai-powerups/src"],
+      "@webiny/bug-reporter/*": ["../bug-reporter/src/*"],
+      "@webiny/bug-reporter": ["../bug-reporter/src"],
+      "@webiny/frontend-settings/*": ["../frontend-settings/src/*"],
+      "@webiny/frontend-settings": ["../frontend-settings/src"],
       "@webiny/languages/*": ["../languages/src/*"],
       "@webiny/languages": ["../languages/src"],
       "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],

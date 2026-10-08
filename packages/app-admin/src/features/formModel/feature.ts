@@ -2,6 +2,7 @@ import { createFeature } from "@webiny/feature/admin";
 import { FormModelFactory as Abstraction } from "./abstractions.js";
 import { FormModelFactory } from "./FormModelFactory.js";
 import { ConditionRuleEvaluator } from "./ConditionRuleEvaluator.js";
+import { AccessControlRuleEvaluator } from "./AccessControlRuleEvaluator.js";
 import { FieldBuilderRegistry } from "./FieldBuilderRegistry.js";
 import {
     TextFieldType,
@@ -34,6 +35,7 @@ export const FormModelFeature = createFeature({
 
         container.register(FieldBuilderRegistry).inSingletonScope();
         container.register(ConditionRuleEvaluator).inSingletonScope();
+        container.register(AccessControlRuleEvaluator).inSingletonScope();
         container.register(FormModelFactory).inSingletonScope();
     },
     resolve(container) {

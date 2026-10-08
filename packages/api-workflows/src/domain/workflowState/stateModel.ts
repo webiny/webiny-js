@@ -28,7 +28,8 @@ class WorkflowStateModelImpl implements ModelFactory.Interface {
             builder
                 .private({
                     modelId: WORKFLOW_STATE_MODEL_ID,
-                    name: "RecordWorkflow State"
+                    name: "RecordWorkflow State",
+                    lifecycleEvents: false
                 })
                 .fields(fields => ({
                     workflowId: fields.text().label("Workflow ID"),

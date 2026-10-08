@@ -49,17 +49,25 @@ class ModelRolesHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interface 
         /*
          * Nothing has filled `standard` yet, so seed it from the legacy `providers` section. Every
          * AI feature used to read `providers.presets[0]` and nothing else, so lifting exactly that
-         * preset into `standard` reproduces the old behaviour for a project that upgrades without
-         * touching the settings screen.
+         * preset reproduces the old behaviour for a project that upgrades without touching the
+         * settings screen.
          *
-         * `fast` and `vision` stay empty on purpose. Both fall back to `standard` at resolve time,
-         * so an untouched project keeps working, and the settings screen shows the fallback rather
-         * than pretending someone chose it.
+         * `vision` gets the same preset, because it does not fall back: image enrichment ran on
+         * that model before the upgrade and has to keep running on it. Seeding it, rather than
+         * falling back at resolve time, also means the settings screen shows which model reads
+         * images instead of hiding the choice.
+         *
+         * `fast` stays empty on purpose. It falls back to `standard`, so an untouched project keeps
+         * working, and the screen shows the fallback rather than pretending someone chose it.
          */
         const legacy = readLegacyProviderPresets(all)[0];
 
         if (legacy?.model) {
             roles.standard = { connectionId: legacy.id, model: legacy.model };
+
+            if (!roles.vision.model) {
+                roles.vision = { connectionId: legacy.id, model: legacy.model };
+            }
         }
 
         return { roles };

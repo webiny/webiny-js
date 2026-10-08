@@ -85,6 +85,8 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
             return undefined;
         }
 
+        const initial: CmsEntryValues = value._id ? { _id: value._id } : {};
+
         return fields.reduce<CmsEntryValues>((output, field) => {
             if (value[field.fieldId] === undefined) {
                 return output;
@@ -101,7 +103,7 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
                 ...output,
                 ...newValue
             };
-        }, {});
+        }, initial);
     }
 
     public override convertFromStorage(params: ConvertParams): CmsEntryValues {
@@ -165,6 +167,8 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
             return undefined;
         }
 
+        const initial: CmsEntryValues = value._id ? { _id: value._id } : {};
+
         return fields.reduce<CmsEntryValues>((output, field) => {
             if (value[field.storageId] === undefined) {
                 return output;
@@ -185,6 +189,6 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
                 ...output,
                 ...newValue
             };
-        }, {});
+        }, initial);
     }
 }

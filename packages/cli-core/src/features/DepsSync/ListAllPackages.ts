@@ -1,7 +1,10 @@
-import { listWorkspaces } from "@webiny/stdlib/node";
-
 export class ListAllPackages {
-    public list(paths: string[]): string[] {
+    public async list(paths: string[]): Promise<string[]> {
+        // Imported here rather than at the top of the file. The CLI imports every command's code
+        // on every run, even `webiny --help`, and `@webiny/stdlib/node` is about 60 modules that only
+        // `sync-dependencies` and `verify-dependencies` ever need.
+        const { listWorkspaces } = await import("@webiny/stdlib/node");
+
         const results: string[] = [];
         for (const p of paths) {
             results.push(

@@ -1,6 +1,5 @@
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
@@ -127,15 +126,7 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
         const identity = await authCtx.authenticate("");
         identityCtx.setIdentity(identity);
 
-        const enhancers = container.resolveAll(GraphQLContextEnhancer);
         const ctx: Record<string, any> = { container };
-        for (const enhancer of enhancers) {
-            await enhancer.enhance(ctx);
-        }
-        const schemas = container.resolveAll(GraphQLContextualSchema);
-        for (const schema of schemas) {
-            await schema.build(ctx);
-        }
 
         // DI-native source for the legacy `context.tasks` service-locator: resolve the CRUD
         // aggregate from the container and expose it on the captured context. See the "full-DI

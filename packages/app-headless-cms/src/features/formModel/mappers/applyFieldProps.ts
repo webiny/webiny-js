@@ -95,7 +95,7 @@ export function applyFieldProps(
                 type: r.type,
                 target: r.target,
                 operator: r.operator,
-                value: r.value != null ? String(r.value) : null,
+                value: r.value ?? null,
                 action: r.action as "hide" | "disable"
             }))
         );

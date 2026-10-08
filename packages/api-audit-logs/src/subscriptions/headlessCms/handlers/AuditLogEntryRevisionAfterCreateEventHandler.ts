@@ -1,13 +1,12 @@
 import WebinyError from "@webiny/error";
 import { EntryRevisionAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 
 class AuditLogEntryRevisionAfterCreateHandlerImpl
     implements EntryRevisionAfterCreateEventHandler.Interface
 {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: EntryRevisionAfterCreateEventHandler.Event): Promise<void> {
         const { model, entry } = event.payload;
@@ -17,9 +16,15 @@ class AuditLogEntryRevisionAfterCreateHandlerImpl
         }
 
         try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.CREATE);
-
-            await createAuditLog("Entry revision created", entry, entry.id, this.context);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.HEADLESS_CMS.ENTRY_REVISION.CREATE,
+                message: "Entry revision created",
+                content: entry,
+                entityId: entry.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogEntryRevisionAfterCreateHandler",
@@ -32,5 +37,5 @@ class AuditLogEntryRevisionAfterCreateHandlerImpl
 export const AuditLogEntryRevisionAfterCreateEventHandler =
     EntryRevisionAfterCreateEventHandler.createImplementation({
         implementation: AuditLogEntryRevisionAfterCreateHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [RecordAuditLogUseCase]
     });

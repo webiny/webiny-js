@@ -1,9 +1,12 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ErrorResponse, Response } from "@webiny/api-graphql/responses.js";
 import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 
 class WcpSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-core/WcpSchemaFactoryImpl");
+
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
         builder.addTypeDefs(/* GraphQL */ `
             type WcpProjectPackageFeaturesFeature {
@@ -21,7 +24,6 @@ class WcpSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
                 fileManager: WcpProjectPackageFeaturesFeature
                 aiPowerups: WcpProjectPackageFeaturesFeature
                 abTesting: WcpProjectPackageFeaturesFeature
-                websiteBuilder: WcpProjectPackageFeaturesFeature
                 collaboration: WcpProjectPackageFeaturesFeature
             }
 

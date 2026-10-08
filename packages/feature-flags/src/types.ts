@@ -9,30 +9,31 @@ export interface IFileManagerFeatureFlags {
     threatDetection?: boolean;
 }
 
-export interface IAiPowerupsWebsiteBuilderOptions {
+export interface IAiPowerupsWebsiteBuilderFeatureFlags {
     pageGeneration?: boolean;
     pageTranslation?: boolean;
 }
 
-export interface IAiPowerupsFileManagerOptions {
+export interface IAiPowerupsFileManagerFeatureFlags {
     imageEnrichment?: boolean;
 }
 
-export interface IAiPowerupsCmsOptions {
+export interface IAiPowerupsCmsFeatureFlags {
     entryGeneration?: boolean;
     entryComparison?: boolean;
     entryTranslation?: boolean;
 }
 
-export interface IAiPowerupsOptions {
-    websiteBuilder?: IAiPowerupsWebsiteBuilderOptions;
-    fileManager?: IAiPowerupsFileManagerOptions;
+export interface IAiPowerupsFeatureFlags {
+    websiteBuilder?: IAiPowerupsWebsiteBuilderFeatureFlags;
+    fileManager?: IAiPowerupsFileManagerFeatureFlags;
     lexicalGeneration?: boolean;
     adminAssistant?: boolean;
-    cms?: IAiPowerupsCmsOptions;
+    remoteComponents?: boolean;
+    cms?: IAiPowerupsCmsFeatureFlags;
 }
 
-export interface ICollaborationOptions {
+export interface ICollaborationFeatureFlags {
     comments?: boolean;
     activityLog?: boolean;
 }
@@ -50,8 +51,7 @@ export interface IFeatureFlagsDto {
     auditLogs?: boolean;
     recordLocking?: boolean;
     fileManager?: IFileManagerFeatureFlags;
-    aiPowerups?: boolean | IAiPowerupsOptions;
+    aiPowerups?: boolean | IAiPowerupsFeatureFlags;
     abTesting?: boolean;
-    remoteComponents?: boolean;
-    collaboration?: boolean | ICollaborationOptions;
+    collaboration?: boolean | ICollaborationFeatureFlags;
 }

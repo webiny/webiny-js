@@ -75,6 +75,10 @@ class ContentEntryFormPresenterWithWorkflow implements IContentEntryFormPresente
         return this.original.newEntry(initialValues);
     }
 
+    patchEntryMeta(...args: Parameters<IContentEntryFormPresenter["patchEntryMeta"]>): void {
+        this.original.patchEntryMeta(...args);
+    }
+
     reset(): void {
         this.original.reset();
         this.workflowPresenter.dispose();

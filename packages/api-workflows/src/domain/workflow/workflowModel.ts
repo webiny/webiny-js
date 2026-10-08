@@ -9,7 +9,8 @@ class WorkflowModelImpl implements ModelFactory.Interface {
             builder
                 .private({
                     modelId: WORKFLOW_MODEL_ID,
-                    name: "Workflow"
+                    name: "Workflow",
+                    lifecycleEvents: false
                 })
                 .fields(fields => ({
                     name: fields.text().label("Name").required("Workflow name is required."),

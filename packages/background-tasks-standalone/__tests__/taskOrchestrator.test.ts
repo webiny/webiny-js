@@ -1,4 +1,5 @@
 import http from "node:http";
+import type { AddressInfo } from "node:net";
 import { afterEach, describe, expect, it } from "vitest";
 import { TaskOrchestrator } from "~/worker/TaskOrchestrator.js";
 import type { StartMessage, WorkerToParentMessage } from "~/worker/TaskOrchestratorMessage.js";
@@ -35,6 +36,59 @@ const createTestServer = (
     });
 };
 
+/** Answers `done`, but only `delayMs` after the request has arrived: a slow iteration. */
+const createSlowServer = (delayMs: number): Promise<{ port: number; server: http.Server }> => {
+    return new Promise(resolve => {
+        const body = JSON.stringify({ status: "done" });
+
+        const created = http.createServer((req, res) => {
+            req.resume();
+            req.on("end", () => {
+                setTimeout(() => {
+                    res.writeHead(200, { "content-type": "application/json" });
+                    res.end(body);
+                }, delayMs);
+            });
+        });
+
+        created.listen(0, "127.0.0.1", () => {
+            const address = created.address() as AddressInfo;
+            resolve({ port: address.port, server: created });
+        });
+    });
+};
+
+/*
+ * Answers `done` after `durationMs`, sending a whitespace chunk every 100ms until then. The chunks
+ * keep the socket busy, which is what an inactivity timeout would have mistaken for progress.
+ */
+const createTricklingServer = (
+    durationMs: number
+): Promise<{ port: number; server: http.Server }> => {
+    return new Promise(resolve => {
+        const body = JSON.stringify({ status: "done" });
+
+        const created = http.createServer((req, res) => {
+            req.resume();
+            req.on("end", () => {
+                res.writeHead(200, { "content-type": "application/json" });
+
+                const trickle = setInterval(() => res.write(" "), 100);
+
+                setTimeout(() => {
+                    clearInterval(trickle);
+                    res.end(body);
+                }, durationMs);
+            });
+        });
+
+        created.listen(0, "127.0.0.1", () => {
+            const address = created.address() as AddressInfo;
+            resolve({ port: address.port, server: created });
+        });
+    });
+};
+
 const makeStartMessage = (port: number, overrides?: Partial<StartMessage>): StartMessage => {
     return {
         type: "start",
@@ -42,7 +96,10 @@ const makeStartMessage = (port: number, overrides?: Partial<StartMessage>): Star
             webinyTaskId: "task-1",
             webinyTaskDefinitionId: "testDef",
             tenant: "root",
-            delay: 0
+            delay: 0,
+            endpoint: `http://127.0.0.1:${port}/background-task`,
+            executionName: "task-1",
+            stateMachineId: ""
         },
         serverUrl: `http://127.0.0.1:${port}/background-task`,
         maxDurationMs: 10_000,
@@ -271,6 +328,63 @@ describe("TaskOrchestrator", () => {
         const errorMsg = messages.find(m => m.type === "error");
         expect(errorMsg).toBeDefined();
         expect((errorMsg as any).error).toContain("maximum duration");
+    });
+
+    /*
+     * One iteration is one request, answered only when the iteration finishes. Its time limit is the
+     * task's remaining budget, not a fixed figure: a fixed 60s failed AI work that merely retried
+     * through a provider overload, while the task was allowed to run for hours.
+     */
+    it("should give a slow iteration the task's budget, and no more", async () => {
+        const withinBudget = await createSlowServer(300);
+        server = withinBudget.server;
+
+        const finished: WorkerToParentMessage[] = [];
+        const generousStart = makeStartMessage(withinBudget.port, { maxDurationMs: 5_000 });
+        const generous = new TaskOrchestrator(generousStart, msg => finished.push(msg));
+        await generous.run();
+
+        const finishedTypes = finished.map(m => m.type);
+        expect(finishedTypes).toEqual(["done"]);
+        server.close();
+
+        const pastBudget = await createSlowServer(2_000);
+        server = pastBudget.server;
+
+        const cutOff: WorkerToParentMessage[] = [];
+        const tightStart = makeStartMessage(pastBudget.port, { maxDurationMs: 300 });
+        const tight = new TaskOrchestrator(tightStart, msg => cutOff.push(msg));
+        const started = Date.now();
+        await tight.run();
+        const elapsed = Date.now() - started;
+
+        expect(elapsed).toBeLessThan(1_500);
+        expect(cutOff).toHaveLength(1);
+
+        const [message] = cutOff;
+        expect(message.type).toBe("error");
+        expect(message).toMatchObject({ error: expect.stringContaining("maximum duration") });
+    });
+
+    it("should cut off a response that keeps trickling in past the budget", async () => {
+        const trickling = await createTricklingServer(2_000);
+        server = trickling.server;
+
+        const messages: WorkerToParentMessage[] = [];
+        const start = makeStartMessage(trickling.port, { maxDurationMs: 300 });
+        const orchestrator = new TaskOrchestrator(start, msg => messages.push(msg));
+        const started = Date.now();
+        await orchestrator.run();
+        const elapsed = Date.now() - started;
+
+        expect(elapsed).toBeLessThan(1_500);
+        expect(messages).toHaveLength(1);
+
+        const [message] = messages;
+        expect(message).toMatchObject({
+            type: "error",
+            error: expect.stringContaining("maximum duration")
+        });
     });
 
     it("should report error when server is unreachable", async () => {

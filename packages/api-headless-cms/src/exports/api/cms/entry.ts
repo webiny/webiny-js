@@ -17,6 +17,13 @@ export {
     EntryRevisionAfterCreateEventHandler
 } from "~/features/contentEntry/CreateEntryRevisionFrom/events.js";
 
+// DuplicateEntry
+export { DuplicateEntryUseCase } from "~/features/contentEntry/DuplicateEntry/abstractions.js";
+export {
+    EntryBeforeDuplicateEventHandler,
+    EntryAfterDuplicateEventHandler
+} from "~/features/contentEntry/DuplicateEntry/events.js";
+
 // DeleteEntry
 export {
     DeleteEntryUseCase,

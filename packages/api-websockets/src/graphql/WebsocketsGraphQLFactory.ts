@@ -1,4 +1,5 @@
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 import { ErrorResponse, Response } from "@webiny/api-graphql/responses.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -28,6 +29,8 @@ const checkPermissions = async (identityContext: IdentityContext.Interface): Pro
 };
 
 class WebsocketsGraphQL implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-websockets/WebsocketsGraphQL");
+
     public async execute(
         builder: GraphQLSchemaBuilder.Interface
     ): Promise<GraphQLSchemaBuilder.Interface> {

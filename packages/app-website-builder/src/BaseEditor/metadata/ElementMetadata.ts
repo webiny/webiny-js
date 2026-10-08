@@ -33,6 +33,20 @@ export class ElementMetadata implements IMetadata {
     }
 
     applyToDocument(document: Document) {
-        document.bindings[this.elementId].metadata = this.metadata;
+        // Don't write an empty metadata object to the document.
+        if (Object.keys(this.metadata).length === 0) {
+            return;
+        }
+
+        const current = document.bindings[this.elementId].metadata;
+        if (current && current !== this.metadata) {
+            // Merge rather than replace: when multiple inputs on the same
+            // element each hold a stale metadata snapshot (produced by toJS()
+            // in useBindingsForElement), a plain assignment would discard keys
+            // written by earlier onChange callbacks.
+            Object.assign(current, this.metadata);
+        } else {
+            document.bindings[this.elementId].metadata = this.metadata;
+        }
     }
 }

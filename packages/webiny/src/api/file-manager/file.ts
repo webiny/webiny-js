@@ -30,7 +30,10 @@ export {
     FileAfterDeleteEventHandler,
     FileBeforeDeleteEventHandler
 } from "@webiny/api-file-manager/features/file/DeleteFile/events.js";
-export { FileUrlGenerator } from "@webiny/api-file-manager/features/file/FileUrlGenerator/abstractions.js";
+export {
+    FileUrlGenerator,
+    FileUrlPrefixProvider
+} from "@webiny/api-file-manager/features/file/FileUrlGenerator/abstractions.js";
 export {
     GetFileRepository,
     GetFileUseCase

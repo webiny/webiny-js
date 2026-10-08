@@ -1,4 +1,5 @@
 import type { Container } from "@webiny/di";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { addPagesSchema } from "~/graphql/pages/pages.gql.js";
@@ -110,6 +111,8 @@ const addBaseSchema = (builder: GraphQLSchemaBuilder.Interface): void => {
 };
 
 class WebsiteBuilderSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-website-builder/WebsiteBuilderSchemaFactoryImpl");
+
     public async execute(builder: GraphQLSchemaBuilder.Interface): CoreGraphQLSchemaFactory.Return {
         addBaseSchema(builder);
         addPagesSchema(builder);

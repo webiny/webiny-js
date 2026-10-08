@@ -1,4 +1,3 @@
-import { Pulumi } from "@webiny/pulumi-sdk";
 import { createImplementation } from "@webiny/di";
 import {
     GetProjectService,
@@ -38,6 +37,10 @@ export class DefaultGetPulumiService implements GetPulumiService.Interface {
                 ...contextEnv
             }
         };
+
+        // Loaded here rather than at the top of the file. This service is registered for every
+        // command, and the Pulumi SDK is only needed by the commands that run Pulumi.
+        const { Pulumi } = await import("@webiny/pulumi-sdk");
 
         return Pulumi.create({
             ...pulumiOptions,

@@ -5,11 +5,13 @@ import {
     PrepareImageEnrichmentUseCase as UseCaseAbstraction,
     type IPreparedImageEnrichment
 } from "./abstractions.js";
+import { AiCapabilityDisabledError } from "~/api/features/Capabilities/index.js";
 import {
     ResolveAiCapabilityUseCase,
     withAdditionalInstructions
 } from "~/api/features/Capabilities/index.js";
 import { FM_IMAGE_ENRICHMENT_CAPABILITY } from "./capability.js";
+import { EnrichmentCapabilityDisabledError } from "./errors.js";
 import {
     EnrichmentFileContentsError,
     EnrichmentFileNotFoundError,
@@ -37,6 +39,25 @@ class PrepareImageEnrichmentUseCaseImpl implements UseCaseAbstraction.Interface 
             return Result.fail(new EnrichmentNotAnImageError(file.type));
         }
 
+        /*
+         * Resolved before the download, not after. Switched off is now a quiet, normal outcome, so
+         * checking it last would pull the whole image from storage on every upload only to throw it
+         * away, with nothing in the logs to show for it.
+         */
+        const resolved = await this.resolveCapability.execute(FM_IMAGE_ENRICHMENT_CAPABILITY);
+        if (resolved.isFail()) {
+            /*
+             * Switched off is a decision, not a missing model, so it must not become the error
+             * that callers treat as a misconfiguration.
+             */
+            if (resolved.error instanceof AiCapabilityDisabledError) {
+                return Result.fail(new EnrichmentCapabilityDisabledError(resolved.error.message));
+            }
+            return Result.fail(new EnrichmentNoProviderError(resolved.error.message));
+        }
+
+        const capability = resolved.value;
+
         // Read the image bytes and send them to the AI as base64, NOT a URL. A URL forces the
         // provider to fetch the file — which fails for private/access-controlled files, leaks the
         // domain, and can't reach a non-public origin (e.g. local dev). base64 is a portable standard
@@ -45,13 +66,6 @@ class PrepareImageEnrichmentUseCaseImpl implements UseCaseAbstraction.Interface 
         if (contentsResult.isFail()) {
             return Result.fail(new EnrichmentFileContentsError(contentsResult.error.message));
         }
-
-        const resolved = await this.resolveCapability.execute(FM_IMAGE_ENRICHMENT_CAPABILITY);
-        if (resolved.isFail()) {
-            return Result.fail(new EnrichmentNoProviderError(resolved.error.message));
-        }
-
-        const capability = resolved.value;
 
         return Result.ok({
             fileId: file.id,

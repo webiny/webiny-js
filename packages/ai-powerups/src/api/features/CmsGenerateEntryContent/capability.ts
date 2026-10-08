@@ -1,6 +1,6 @@
 import { AiCapability } from "~/api/features/Capabilities/index.js";
 
-export const CMS_GENERATE_ENTRY_CAPABILITY = "cms.generateEntry";
+export const CMS_GENERATE_ENTRY_CAPABILITY = "cmsGenerateEntry";
 
 /**
  * No `guidance`: this prompt is rebuilt on every request from the content model's JSON Schema and

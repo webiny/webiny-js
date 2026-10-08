@@ -3,7 +3,6 @@ import {
     HttpRouteHandler,
     RequestContainer
 } from "@webiny/event-handler-core";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
     RequestTenantLoader
@@ -42,14 +41,8 @@ class BackgroundTaskRouteImpl implements HttpRouteHandler.Interface {
                 await this.container.resolve(RequestTenantLoader).establish();
             }
 
-            /* TODO: remove once legacy ctx is gone — resolve services directly from the container. */
+            // TaskRunner still takes the legacy context object, which now only carries the container.
             const ctx: Record<string, any> = { container: this.container };
-            for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
-                await enhancer.enhance(ctx);
-            }
-            for (const schema of this.container.resolveAll(GraphQLContextualSchema)) {
-                await schema.build(ctx);
-            }
 
             const timer = new ProcessTimer();
             const runner = new TaskRunner(ctx as Context, timer, new TaskEventValidation());

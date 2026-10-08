@@ -111,6 +111,21 @@ describe("DevProxy", () => {
         ]);
     });
 
+    it("routes /api followed directly by a query to the api, query intact", async () => {
+        const { proxy, api, admin } = await setup();
+
+        expect(await (await get(proxy, "/api?token=abc&tenant=root")).text()).toBe(
+            "served /?token=abc&tenant=root"
+        );
+        expect(await (await get(proxy, "/api/graphql?x=1")).text()).toBe("served /graphql?x=1");
+
+        expect(admin.requests).toHaveLength(0);
+        expect(api.requests.map(request => request.url)).toEqual([
+            "/?token=abc&tenant=root",
+            "/graphql?x=1"
+        ]);
+    });
+
     it("does not mistake an admin route that merely starts with the same letters", async () => {
         const { proxy, admin, api } = await setup();
 
@@ -288,5 +303,53 @@ describe("DevProxy", () => {
         // Prefix stripped on the upgrade too, not just on plain requests.
         expect(head).toBe("/ws");
         expect(firstMessage).toBe("echo:ping");
+    });
+
+    /*
+     * The admin's own socket, exactly as app-websockets opens it: the bare prefix with the token and
+     * tenant straight after. Routed to admin, this upgrade was never answered, so the socket sat in
+     * CONNECTING with no error and every task notification in local development went missing.
+     */
+    it("sends the admin's websocket, /api?token=..., to the api rather than admin", async () => {
+        const seen: Record<"api" | "admin", string[]> = { api: [], admin: [] };
+
+        const upstreams = (["api", "admin"] as const).map(name => {
+            const upstream = createUpstream(echo);
+            upstream.server.on("upgrade", (req, socket) => {
+                seen[name].push(String(req.url));
+                socket.write(
+                    "HTTP/1.1 101 Switching Protocols\r\n" +
+                        "Upgrade: websocket\r\n" +
+                        "Connection: Upgrade\r\n\r\n"
+                );
+            });
+            return upstream;
+        });
+
+        const [apiPort, adminPort] = await Promise.all(upstreams.map(u => u.listen()));
+        const wsProxy = await DevProxy.start({
+            port: await findFreePort(47500),
+            apiPort,
+            adminPort
+        });
+        cleanups.push(() => wsProxy.close(), ...upstreams.map(u => u.close));
+
+        const status = await new Promise<number | undefined>((resolve, reject) => {
+            const request = http.request({
+                port: new URL(wsProxy.url).port,
+                path: "/api?token=abc&tenant=root",
+                headers: { Connection: "Upgrade", Upgrade: "websocket" }
+            });
+            request.on("upgrade", (res, socket) => {
+                socket.destroy();
+                resolve(res.statusCode);
+            });
+            request.on("error", reject);
+            request.end();
+        });
+
+        expect(status).toBe(101);
+        expect(seen.api).toEqual(["/?token=abc&tenant=root"]);
+        expect(seen.admin).toEqual([]);
     });
 });

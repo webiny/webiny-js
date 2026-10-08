@@ -1,4 +1,5 @@
-import { HeadlessCms } from "~/features/shared/abstractions.js";
+import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
+import { ModelToAstConverter } from "~/features/contentModel/ModelToAstConverter/index.js";
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { articleModel } from "./mocks/article.model";
@@ -18,8 +19,8 @@ describe("Model to AST", () => {
             }
         });
 
-        const modelAstConverter = context.container.resolve(HeadlessCms).getModelToAstConverter();
-        const model = await context.container.resolve(HeadlessCms).getModel("article");
+        const modelAstConverter = context.container.resolve(ModelToAstConverter);
+        const model = (await context.container.resolve(GetModelUseCase).execute("article")).value;
 
         if (!model) {
             throw new Error(`Missing "article" model!`);

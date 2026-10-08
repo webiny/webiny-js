@@ -8,11 +8,21 @@ export class ScheduledActionMapper {
         action: IScheduledActionEntry<T>
     ): IScheduledAction<T> {
         const { id: scheduleId } = parseIdentifier(action.id);
+        const scheduledBy = action.values.scheduledBy;
         return {
             id: scheduleId,
             targetId: action.values.targetId,
             namespace: action.values.namespace,
-            scheduledBy: action.values.scheduledBy,
+            /**
+             * Mapped field by field on purpose: Headless CMS stores this as an object
+             * field, and object values carry a generated `_id` we don't want to leak
+             * into the identity.
+             */
+            scheduledBy: {
+                id: scheduledBy.id,
+                displayName: scheduledBy.displayName,
+                type: scheduledBy.type
+            },
             scheduledFor: new Date(action.values.scheduledFor),
             actionType: action.values.actionType,
             title: action.values.title,

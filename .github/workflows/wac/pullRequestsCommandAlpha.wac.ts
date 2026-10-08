@@ -88,7 +88,7 @@ export const pullRequestsCommandAlpha = createSlashCommandWorkflow({
         }),
         npmReleaseAlpha: createJob({
             needs: ["prBranch", "build"],
-            name: 'NPM release ("alpha" tag)',
+            name: "NPM release (alpha)",
             env: {
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}",
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
@@ -114,7 +114,7 @@ export const pullRequestsCommandAlpha = createSlashCommandWorkflow({
                             run: 'git config --global user.name "webiny-bot"'
                         },
                         {
-                            name: 'Version and publish "alpha" tag to NPM',
+                            name: "Version and publish alpha to NPM",
                             id: "release",
                             run: [
                                 "set -o pipefail",

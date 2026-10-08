@@ -5,7 +5,7 @@ const asset = (image?: any) => ({
     id: "f",
     src: "https://cdn/x/pic.jpg",
     name: "pic.jpg",
-    type: "image/jpeg",
+    mimeType: "image/jpeg",
     size: 1,
     image: { width: 800, height: 600, ...image }
 });

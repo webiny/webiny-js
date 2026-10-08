@@ -1,11 +1,9 @@
-import { AccessControl } from "~/features/shared/abstractions.js";
 import {
     CmsModelPluginInstance,
     PluginModelsProvider as ProviderAbstraction
 } from "./abstractions.js";
 import type { CmsModel } from "~/types/index.js";
 import type { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
-import { filterAsync } from "~/utils/filterAsync.js";
 import {
     ModelsProvider,
     type IModelsProvider
@@ -15,11 +13,15 @@ import {
  * PluginModelsProvider implementation that fetches models from:
  * 1. Legacy CmsModelPlugin instances (resolved from the DI container)
  * 2. New ModelBuilder providers (public and private)
+ *
+ * Returns every model of the tenant, without access control. ModelsFetcher caches this list for the
+ * whole request, so filtering it by the current identity would leak that identity's view into every
+ * later read, including reads that run without authorization. GetModelUseCase and ListModelsUseCase
+ * apply access control to what they return.
  */
 class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
     public constructor(
         private modelPlugins: CmsModelPlugin[],
-        private accessControl: AccessControl.Interface,
         private modelsProvider: IModelsProvider
     ) {}
 
@@ -43,15 +45,11 @@ class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
                 };
             }) as unknown as CmsModel[];
 
-        const allowedLegacyModels = await filterAsync(legacyModels, model => {
-            return this.accessControl.canAccessModel({ model });
-        });
-
-        // Get models from new builder providers. These already have access control applied.
+        // Get models from new builder providers.
         const builderModels = await this.modelsProvider.list(tenant);
 
         // Combine both sources
-        return [...allowedLegacyModels, ...builderModels];
+        return [...legacyModels, ...builderModels];
     }
 
     private ensureTypeTag(model: Pick<CmsModel, "tags">) {
@@ -68,5 +66,5 @@ class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
 
 export const PluginModelsProvider = ProviderAbstraction.createImplementation({
     implementation: PluginModelsProviderImpl,
-    dependencies: [[CmsModelPluginInstance, { multiple: true }], AccessControl, ModelsProvider]
+    dependencies: [[CmsModelPluginInstance, { multiple: true }], ModelsProvider]
 });

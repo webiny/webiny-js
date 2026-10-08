@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import fs from "fs";
-import path from "path";
-import os from "os";
-import { versionPackages } from "../src/versionPackages";
+import fs from "node:fs";
+import path from "node:path";
+import os from "node:os";
+import { versionPackages } from "../src/versionPackages.js";
 
 let tmpDir: string;
 let originalCwd: string;

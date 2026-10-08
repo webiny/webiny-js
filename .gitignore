@@ -81,3 +81,7 @@ packages/remote-components/src/api/bundler/esbuild.wasm.gz
 
 # Local page-comparison output (screenshots; regenerate with the comparePages script).
 .page-comparison/
+
+.design-sync
+ds-bundle
+.ds-sync

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { z } from "zod";
 import { Container } from "@webiny/di";
 import { FormModelFeature } from "./feature.js";
+import { IdentityContextFeature } from "~/features/security/IdentityContext/feature.js";
 import { FieldBuilderRegistry, type IFieldBuilderRegistry } from "./abstractions.js";
 import { TextFieldBuilder } from "./fieldTypes/TextFieldType.js";
 import { NumberFieldBuilder } from "./fieldTypes/NumberFieldType.js";
@@ -10,6 +11,7 @@ import { DateTimeFieldBuilder } from "./fieldTypes/DateTimeFieldType.js";
 
 function createRegistry(): IFieldBuilderRegistry {
     const container = new Container();
+    IdentityContextFeature.register(container);
     FormModelFeature.register(container);
     return container.resolve(FieldBuilderRegistry);
 }
@@ -166,6 +168,40 @@ describe("DateTimeFieldBuilder", () => {
         expect(config.type).toBe("datetime");
         expect(config.renderer).toBe("dateTimeInput");
         expect(config.label).toBe("Created");
+    });
+
+    it("keeps the list renderer when a subtype is set after list()", () => {
+        const subtypes = [
+            (b: DateTimeFieldBuilder) => b.dateOnly(),
+            (b: DateTimeFieldBuilder) => b.timeOnly(),
+            (b: DateTimeFieldBuilder) => b.withTimezone(),
+            (b: DateTimeFieldBuilder) => b.withoutTimezone()
+        ];
+        for (const subtype of subtypes) {
+            expect(subtype(new DateTimeFieldBuilder().list()).build("d").renderer).toBe(
+                "dateTimeInputs"
+            );
+            expect(subtype(new DateTimeFieldBuilder()).build("d").renderer).toBe("dateTimeInput");
+        }
+    });
+
+    it("normalizes withTimezone values", () => {
+        const builder = new DateTimeFieldBuilder().withTimezone();
+        expect(builder.normalizeValue("2026-05-01T14:30:00+02:00")).toBe(
+            "2026-05-01T14:30:00+02:00"
+        );
+        expect(builder.normalizeValue("2026-05-01T14:30-05:30")).toBe("2026-05-01T14:30:00-05:30");
+        expect(builder.normalizeValue("2026-05-01T09:00:00.000Z")).toBe(
+            "2026-05-01T09:00:00.000+00:00"
+        );
+        expect(builder.normalizeValue("2026-05-01T14:30:00")).toBe("2026-05-01T14:30:00");
+    });
+
+    it("normalizes withoutTimezone values to a stable UTC instant", () => {
+        const builder = new DateTimeFieldBuilder().withoutTimezone();
+        const value = "2026-05-01T12:30:00.000Z";
+        expect(builder.normalizeValue(value)).toBe(value);
+        expect(builder.normalizeValue(builder.normalizeValue(value))).toBe(value);
     });
 });
 

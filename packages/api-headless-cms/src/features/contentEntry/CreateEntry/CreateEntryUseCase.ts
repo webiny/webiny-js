@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { CreateEntryRepository, CreateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import { EntryAfterCreateEvent, EntryBeforeCreateEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import type {
@@ -10,12 +10,12 @@ import type {
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput
 } from "~/types/index.js";
-import { EntryNotAuthorizedError, EntryValidationError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { CreateEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreateEntryDataFactory/index.js";
 
 class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
-        private eventPublisher: EventPublisher.Interface,
+        private eventPublisher: EntryEventPublisher.Interface,
         private repository: CreateEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private createEntryDataFactory: CreateEntryDataFactory.Interface
@@ -65,9 +65,6 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
             return Result.ok(entry);
         } catch (error) {
-            if (error.code === "VALIDATION_FAILED") {
-                return Result.fail(new EntryValidationError(error.message, error.data));
-            }
             return Result.fail(error as UseCaseAbstraction.Error);
         }
     }
@@ -75,5 +72,10 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const CreateEntryUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateEntryUseCaseImpl,
-    dependencies: [EventPublisher, CreateEntryRepository, AccessControl, CreateEntryDataFactory]
+    dependencies: [
+        EntryEventPublisher,
+        CreateEntryRepository,
+        AccessControl,
+        CreateEntryDataFactory
+    ]
 });

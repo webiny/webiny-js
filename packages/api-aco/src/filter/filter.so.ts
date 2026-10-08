@@ -1,12 +1,10 @@
 import omit from "lodash/omit.js";
 import WebinyError from "@webiny/error";
 import { FILTER_MODEL_ID } from "./filter.model.js";
-import type { HeadlessCms } from "@webiny/api-headless-cms/types/index.js";
 import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { Container } from "@webiny/di";
 
 interface CreateFilterOperationsParams {
-    cms: HeadlessCms;
     identityContext: IdentityContext.Interface;
     container: Container;
 }
@@ -16,16 +14,36 @@ import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues.js";
 import type { AcoFilterStorageOperations, Filter } from "./filter.types.js";
 import { ENTRY_META_FIELDS } from "@webiny/api-headless-cms/constants.js";
 import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
+import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
+import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
+import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
+import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
+import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
+import type { Result } from "@webiny/feature/api";
+
+const unwrap = <TValue>(result: Result<TValue, Error>): TValue => {
+    if (result.isFail()) {
+        throw result.error;
+    }
+    return result.value;
+};
 
 export const createFilterOperations = (
     params: CreateFilterOperationsParams
 ): AcoFilterStorageOperations => {
-    const { cms, identityContext, container } = params;
+    const { identityContext, container } = params;
 
     const { withModel } = createOperationsWrapper({
-        ...params,
+        identityContext,
+        container,
         modelName: FILTER_MODEL_ID
     });
+
+    /*
+     * The CMS use cases are resolved when an operation runs, not here. These operations are built
+     * while ACO's storage is being resolved, and resolving the use cases at this point loops back
+     * into that same storage until the stack overflows.
+     */
 
     const cmsWhereMapper = container.resolve(CmsWhereMapper);
     const cmsSortMapper = container.resolve(CmsSortMapper);
@@ -33,7 +51,9 @@ export const createFilterOperations = (
     return {
         getFilter({ id }) {
             return withModel(async model => {
-                const entry = await cms.getEntryById(model, id);
+                const entry = unwrap(
+                    await container.resolve(GetEntryByIdUseCase).execute(model, id)
+                );
 
                 if (!entry) {
                     throw new WebinyError("Could not load filter.", "GET_FILTER_ERROR", {
@@ -49,7 +69,7 @@ export const createFilterOperations = (
                 const { sort, where } = params;
                 const createdBy = identityContext.getIdentity().id;
 
-                const [entries, meta] = await cms.listLatestEntries(model, {
+                const result = await container.resolve(ListLatestEntriesUseCase).execute(model, {
                     ...params,
                     sort: cmsSortMapper.map({
                         input: createListSort(sort),
@@ -63,22 +83,26 @@ export const createFilterOperations = (
                         fields: model.fields
                     })
                 });
+                const { entries, meta } = unwrap(result);
 
                 return [entries.map(pickEntryFieldValues<Filter>), meta];
             });
         },
         createFilter({ data }) {
             return withModel(async model => {
-                const entry = await cms.createEntry(model, {
+                const result = await container.resolve(CreateEntryUseCase).execute(model, {
                     id: data.id,
                     values: data
                 });
+                const entry = unwrap(result);
                 return pickEntryFieldValues(entry);
             });
         },
         updateFilter({ id, data }) {
             return withModel(async model => {
-                const original = await cms.getEntryById(model, id);
+                const original = unwrap(
+                    await container.resolve(GetEntryByIdUseCase).execute(model, id)
+                );
 
                 const input = {
                     /**
@@ -92,13 +116,15 @@ export const createFilterOperations = (
                     }
                 };
 
-                const entry = await cms.updateEntry(model, original.id, input);
+                const entry = unwrap(
+                    await container.resolve(UpdateEntryUseCase).execute(model, original.id, input)
+                );
                 return pickEntryFieldValues(entry);
             });
         },
         deleteFilter({ id }) {
             return withModel(async model => {
-                await cms.deleteEntry(model, id);
+                unwrap(await container.resolve(DeleteEntryUseCase).execute(model, id));
                 return true;
             });
         }

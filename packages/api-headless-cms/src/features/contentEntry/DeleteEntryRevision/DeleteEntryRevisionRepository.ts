@@ -5,6 +5,7 @@ import type { CmsEntry, CmsModel } from "~/types/index.js";
 import { DeleteEntryRevisionStorageOperation } from "~/features/shared/storageOperations/entry/DeleteEntryRevisionStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * DeleteEntryRevisionRepository - Handles storage operations for deleting entry revisions.
@@ -12,7 +13,8 @@ import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants.js"
 class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
-        private deleteEntryRevisionStorage: DeleteEntryRevisionStorageOperation.Interface
+        private deleteEntryRevisionStorage: DeleteEntryRevisionStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     async execute(params: {
@@ -20,7 +22,12 @@ class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interfa
         entry: CmsEntry;
         latestEntry: CmsEntry | null;
     }): Promise<Result<void, RepositoryAbstraction.Error>> {
-        const { model, entry, latestEntry } = params;
+        const model = this.runtimeTenant.assign(params.model);
+        const entry = this.runtimeTenant.assign(params.entry);
+
+        const latestEntry = params.latestEntry
+            ? this.runtimeTenant.assign(params.latestEntry)
+            : null;
 
         try {
             const storageEntry = await this.entryToStorageTransform(model, entry);
@@ -32,6 +39,12 @@ class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interfa
                     entry,
                     isEntryLevelEntryMetaField
                 );
+
+                // If the deleted revision was published, clear the live field
+                // so the new latest entry does not inherit a stale live pointer.
+                if (entry.status === "published") {
+                    pickedEntryLevelMetaFields.live = null;
+                }
 
                 const updatedLatestEntry = {
                     ...latestEntry,
@@ -57,5 +70,5 @@ class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interfa
 
 export const DeleteEntryRevisionRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteEntryRevisionRepositoryImpl,
-    dependencies: [EntryToStorageTransform, DeleteEntryRevisionStorageOperation]
+    dependencies: [EntryToStorageTransform, DeleteEntryRevisionStorageOperation, RuntimeTenant]
 });

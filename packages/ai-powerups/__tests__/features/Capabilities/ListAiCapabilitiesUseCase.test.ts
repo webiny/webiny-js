@@ -7,7 +7,7 @@ import {
 import { ListAiCapabilitiesUseCaseImplementation } from "~/api/features/Capabilities/ListAiCapabilitiesUseCase.js";
 
 class WithGuidance implements AiCapability.Interface {
-    readonly id = "cms.compareEntryRevisions";
+    readonly id = "cmsCompareEntryRevisions";
     readonly label = "CMS revision comparison";
     readonly description = "For tests.";
     readonly defaultRole = "fast" as const;
@@ -15,7 +15,7 @@ class WithGuidance implements AiCapability.Interface {
 }
 
 class WithoutGuidance implements AiCapability.Interface {
-    readonly id = "cms.generateEntry";
+    readonly id = "cmsGenerateEntry";
     readonly label = "CMS entry generation";
     readonly description = "For tests.";
     readonly defaultRole = "standard" as const;
@@ -37,7 +37,7 @@ describe("ListAiCapabilitiesUseCase", () => {
         const result = await useCase(WithGuidance, WithoutGuidance).execute();
 
         expect(result.map(c => c.id)).toEqual(
-            expect.arrayContaining(["cms.compareEntryRevisions", "cms.generateEntry"])
+            expect.arrayContaining(["cmsCompareEntryRevisions", "cmsGenerateEntry"])
         );
     });
 
@@ -45,7 +45,7 @@ describe("ListAiCapabilitiesUseCase", () => {
         const result = await useCase(WithoutGuidance).execute();
 
         expect(result[0]).toEqual({
-            id: "cms.generateEntry",
+            id: "cmsGenerateEntry",
             label: "CMS entry generation",
             description: "For tests.",
             defaultRole: "standard"

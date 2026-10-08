@@ -777,15 +777,13 @@ describe("filtering", () => {
                 publishProduct: {
                     data: {
                         ...bananaProductUnpublished,
-                        modifiedOn: expect.toBeDateString(),
                         firstPublishedOn: expect.toBeDateString(),
                         lastPublishedOn: expect.toBeDateString(),
                         meta: {
                             ...bananaProductUnpublished.meta,
                             locked: true,
                             status: "published"
-                        },
-                        savedOn: expect.any(String)
+                        }
                     },
                     error: null
                 }

@@ -427,6 +427,8 @@ export default /* GraphQL */ `
             options: CreateRevisionCmsEntryOptionsInput
         ): ReviewApiModelResponse
 
+        duplicateReviewApiModel(revision: ID!): ReviewApiModelResponse
+
         updateReviewApiModel(
             revision: ID!
             data: ReviewApiModelInput!

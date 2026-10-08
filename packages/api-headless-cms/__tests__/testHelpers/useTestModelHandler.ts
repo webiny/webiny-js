@@ -8,6 +8,7 @@ import type {
     IManageGetTestEntriesByIdsVariables,
     IManageGetTestEntryVariables,
     IManageListTestEntryVariables,
+    IDuplicateTestEntryMutationVariables,
     IMoveTestEntryMutationVariables,
     IPublishTestEntryMutationVariables,
     IRepublishTestEntryMutationVariables,
@@ -166,6 +167,20 @@ export const useTestModelHandler = (params: UseTestModelHandlerParams) => {
                     .invoke({
                         body: {
                             query: manageGql.CREATE_TEST_ENTRY_FROM,
+                            variables: params.variables
+                        },
+                        headers: params.headers
+                    })
+                    .then(extractGqlResponseData);
+            },
+
+            async duplicateTestEntry(
+                params: IMutationParams<IDuplicateTestEntryMutationVariables>
+            ) {
+                return manageGqlHandler
+                    .invoke({
+                        body: {
+                            query: manageGql.DUPLICATE_TEST_ENTRY,
                             variables: params.variables
                         },
                         headers: params.headers

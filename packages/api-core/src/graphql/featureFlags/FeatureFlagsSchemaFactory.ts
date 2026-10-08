@@ -1,9 +1,12 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ErrorResponse, Response } from "@webiny/api-graphql/responses.js";
 import { FeatureFlags } from "~/features/featureFlags/abstractions.js";
 
 class FeatureFlagsSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-core/FeatureFlagsSchemaFactoryImpl");
+
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
         builder.addTypeDefs(/* GraphQL */ `
             type FeatureFlagsError {

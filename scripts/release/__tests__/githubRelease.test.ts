@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { GithubRelease } from "../src/GithubRelease";
+import { GithubRelease } from "../src/GithubRelease.js";
 
 describe("GithubRelease.from", () => {
     it('should preserve "latest" string', () => {

@@ -29,6 +29,7 @@ Read every rule in this folder before writing or editing code.
 | [prefer-provider-over-resolved-value.md](./prefer-provider-over-resolved-value.md)                         | Inject a provider with `get()`; never an abstraction holding another's result.                 |
 | [check-the-layer-below-before-caching.md](./check-the-layer-below-before-caching.md)                       | Check whether the layer below already caches; memoizing providers go per request.              |
 | [without-authorization-only-for-private-models.md](./without-authorization-only-for-private-models.md)     | `withoutAuthorization` is a no-op on private models; keep it where reads are filtered.         |
+| [use-cases-may-share-a-repository.md](./use-cases-may-share-a-repository.md)                               | Call another feature's repository directly unless you need what its use case adds.             |
 | [an-absent-input-is-an-error-not-an-empty-result.md](./an-absent-input-is-an-error-not-an-empty-result.md) | A missing input is logged as an error; never carry on and return the empty answer.             |
 | [persist-what-a-later-stage-needs.md](./persist-what-a-later-stage-needs.md)                               | A value a later stage needs goes on the artifact; computing and dropping it is a silent guess. |
 

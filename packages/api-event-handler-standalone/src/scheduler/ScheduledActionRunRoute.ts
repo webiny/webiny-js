@@ -3,7 +3,6 @@ import {
     HttpRouteHandler,
     RequestContainer
 } from "@webiny/event-handler-core";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
     RequestTenantLoader
@@ -40,15 +39,6 @@ class ScheduledActionRunRouteImpl implements HttpRouteHandler.Interface {
         try {
             this.container.resolve(RawTenantId).set(tenant);
             await this.container.resolve(RequestTenantLoader).establish();
-
-            /* TODO: remove once legacy ctx is gone — resolve services directly from the container. */
-            const ctx: Record<string, any> = { container: this.container };
-            for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
-                await enhancer.enhance(ctx);
-            }
-            for (const schema of this.container.resolveAll(GraphQLContextualSchema)) {
-                await schema.build(ctx);
-            }
 
             const result = await this.container
                 .resolve(ExecuteScheduledActionUseCase)

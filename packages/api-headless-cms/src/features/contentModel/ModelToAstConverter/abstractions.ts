@@ -5,7 +5,7 @@ import type { CmsModel, CmsModelAst } from "~/types/index.js";
  * Convert model to AST
  */
 export interface IModelToAstConverter {
-    toAst(model: CmsModel): CmsModelAst;
+    toAst(model: Pick<CmsModel, "fields">): CmsModelAst;
 }
 
 export const ModelToAstConverter = createAbstraction<IModelToAstConverter>("ModelToAstConverter");

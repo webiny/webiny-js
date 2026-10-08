@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.js";
+import { IdentityContextFeature } from "@webiny/app-admin/features/security/IdentityContext/feature.js";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { applyFieldProps } from "./applyFieldProps.js";
 import type { CmsModelField } from "~/types.js";
@@ -24,6 +25,7 @@ const createField = (overrides: Partial<CmsModelField>): CmsModelField =>
  */
 const buildForm = (field: CmsModelField) => {
     const container = new Container();
+    IdentityContextFeature.register(container);
     FormModelFeature.register(container);
 
     return container.resolve(FormModelFactory).create({

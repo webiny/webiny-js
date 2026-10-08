@@ -36,7 +36,6 @@ export namespace AssetUrlResolver {
 
 class AssetUrlResolverImpl implements IAssetUrlResolver {
     private urls = new Map<string, string | null>();
-    private prepared = false;
 
     constructor(
         private keyValueStore: KeyValueStore.Interface,
@@ -44,17 +43,6 @@ class AssetUrlResolverImpl implements IAssetUrlResolver {
     ) {}
 
     async prime(sourceUrls: Iterable<string>): Promise<void> {
-        /*
-         * `FileUrlGenerator` prefixes nothing until `init()` has read the File Manager's `srcPrefix`,
-         * so a url generated before that is a bare storage key, not an address. The File Manager's own
-         * GraphQL schema calls it per request; every other caller has to, and gets keys if it does not.
-         */
-        if (!this.prepared) {
-            // Optional on the abstraction: an implementation needing no prefix omits it.
-            await this.fileUrlGenerator.init?.();
-            this.prepared = true;
-        }
-
         for (const sourceUrl of new Set(sourceUrls)) {
             if (this.urls.has(sourceUrl)) {
                 continue;

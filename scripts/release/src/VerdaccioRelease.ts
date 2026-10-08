@@ -1,5 +1,5 @@
 import { execa } from "execa";
-import { Release } from "./Release";
+import { Release } from "./Release.js";
 
 export class VerdaccioRelease extends Release {
     constructor(logger: any) {

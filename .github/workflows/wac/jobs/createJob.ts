@@ -1,5 +1,5 @@
 import { NormalJob } from "github-actions-wac";
-import { ACTION, AWS_REGION, NODE_OPTIONS, NODE_VERSION } from "../utils/index.js";
+import { ACTION, AWS_REGION, DEFAULT_RUNNER, NODE_OPTIONS, NODE_VERSION } from "../utils/index.js";
 
 interface CreateJobParams extends Partial<NormalJob> {
     awsAuth?: boolean;
@@ -51,7 +51,7 @@ export const createJob = (params: CreateJobParams): NormalJob => {
 
     const job: NormalJob = {
         ...jobParams,
-        "runs-on": jobParams["runs-on"] || "ubuntu-latest",
+        "runs-on": jobParams["runs-on"] || DEFAULT_RUNNER,
         env: { NODE_OPTIONS, YARN_ENABLE_IMMUTABLE_INSTALLS: false },
         steps: [setupNodeStep],
         permissions

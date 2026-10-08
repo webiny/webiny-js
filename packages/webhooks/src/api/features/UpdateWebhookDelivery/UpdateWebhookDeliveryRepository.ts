@@ -62,12 +62,16 @@ class UpdateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
 
             const storageValues = this.transformer.toStorage(updated);
 
-            const { entry } =
+            const dataResult =
                 await this.updateEntryDataFactory.create<WebhookDeliveryCmsEntryValues>(
                     modelResult.value,
                     { values: storageValues },
                     originalEntry
                 );
+            if (dataResult.isFail()) {
+                return Result.fail(WebhookPersistenceError.from(dataResult.error));
+            }
+            const { entry } = dataResult.value;
 
             const updateResult = await this.updateEntryRepository.execute(modelResult.value, entry);
 

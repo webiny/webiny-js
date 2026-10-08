@@ -6,6 +6,7 @@ import { ScheduleUnpublishActionGateway } from "~/features/scheduleUnpublishActi
 import { ScheduleActionType } from "~/types.js";
 import type { SchedulerEntry } from "~/types.js";
 import { DateFormatter } from "@webiny/app-admin";
+import { formatUtcOffset } from "@webiny/app-admin";
 import {
     ScheduleDialogPresenter as Abstraction,
     type IScheduleDialogPresenter,
@@ -49,7 +50,10 @@ class ScheduleDialogPresenterImpl implements IScheduleDialogPresenter {
         }
         const actionName =
             entry.actionType === ScheduleActionType.publish ? "publish" : "unpublish";
-        return { actionName, scheduleOn: this.dateFormatter.format(scheduleOn) };
+        return {
+            actionName,
+            scheduleOn: `${this.dateFormatter.format(scheduleOn)} (${formatUtcOffset()})`
+        };
     }
 
     async load(params: IScheduleDialogPresenterLoadParams): Promise<void> {

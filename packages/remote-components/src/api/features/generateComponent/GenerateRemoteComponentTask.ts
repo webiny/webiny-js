@@ -4,6 +4,7 @@ import {
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { GenerateRemoteComponentUseCase } from "./abstractions.js";
 import { CreateRemoteComponentUseCase } from "~/api/features/createComponent/abstractions.js";
 
@@ -22,7 +23,8 @@ class GenerateRemoteComponentTaskHandlerImpl implements TaskHandler.Interface<IG
         private identityContext: IdentityContext.Interface,
         private generateComponent: GenerateRemoteComponentUseCase.Interface,
         private createComponent: CreateRemoteComponentUseCase.Interface,
-        private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
+        private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface,
+        private logger: Logger.Interface
     ) {}
 
     async run({
@@ -36,6 +38,12 @@ class GenerateRemoteComponentTaskHandlerImpl implements TaskHandler.Interface<IG
         }
 
         const identity = this.identityContext.getIdentity();
+        // Messages are addressed to this identity's open sockets, so it has to be the user who
+        // triggered the task (TaskControl restores it from the task's createdBy).
+        this.logger.info(
+            { identityId: identity.id, identityType: identity.type },
+            "Generating remote component."
+        );
 
         let generateResult;
         try {
@@ -74,25 +82,25 @@ class GenerateRemoteComponentTaskHandlerImpl implements TaskHandler.Interface<IG
             return controller.response.error({ message });
         }
 
-        await this.sendToIdentity.execute(
-            { id: identity.id },
-            {
-                action: "remoteComponents.generateComponent.content",
-                data: { id: createResult.value.id }
-            }
-        );
+        await this.send(identity.id, "remoteComponents.generateComponent.content", {
+            id: createResult.value.id
+        });
 
         return controller.response.done("Component generated successfully.");
     }
 
     private async sendErrorToUser(identityId: string, message: string) {
-        await this.sendToIdentity.execute(
-            { id: identityId },
-            {
-                action: "remoteComponents.generateComponent.error",
-                data: { message }
-            }
-        );
+        await this.send(identityId, "remoteComponents.generateComponent.error", { message });
+    }
+
+    private async send(identityId: string, action: string, data: Record<string, any>) {
+        const result = await this.sendToIdentity.execute({ id: identityId }, { action, data });
+        if (result.isFail()) {
+            this.logger.error(
+                { identityId, action, error: result.error.message },
+                "Failed to send websocket message."
+            );
+        }
     }
 }
 
@@ -102,7 +110,8 @@ const GenerateRemoteComponentTaskHandler = TaskHandler.createImplementation({
         IdentityContext,
         GenerateRemoteComponentUseCase,
         CreateRemoteComponentUseCase,
-        WebsocketsSendToIdentityUseCase
+        WebsocketsSendToIdentityUseCase,
+        Logger
     ]
 });
 

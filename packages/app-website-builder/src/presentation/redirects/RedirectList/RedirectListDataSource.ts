@@ -21,7 +21,7 @@ export class RedirectListDataSource extends FolderAwareDataSource<Redirect> {
     }
 
     get rows(): Redirect[] {
-        return this.queryMatcher.filter(this.cache.getItems());
+        return this.queryMatcher.select(this.cache.getItems());
     }
 
     async fetch(params: FetchParams): Promise<FetchResult<Redirect>> {

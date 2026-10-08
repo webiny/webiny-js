@@ -1,4 +1,5 @@
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/index.js";
 import { ErrorResponse, ListResponse, Response } from "@webiny/api-graphql/responses.js";
@@ -26,6 +27,8 @@ interface IScheduleRecordOutput {
 }
 
 export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-scheduler/SchedulerGraphQL");
+
     public async execute(
         builder: GraphQLSchemaBuilder.Interface
     ): Promise<GraphQLSchemaBuilder.Interface> {

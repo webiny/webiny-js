@@ -100,13 +100,30 @@ export class TaskOrchestrator {
             const url = new URL(this.serverUrl);
             const body = JSON.stringify(payload);
 
+            /*
+             * The server answers only once the iteration finishes, so this is how long one iteration
+             * may take. It used to be a fixed 60s, well short of the task's own budget: an AI call
+             * that retried through a provider overload failed the task for running a little over a
+             * minute. Bounded by what is left of the budget instead.
+             *
+             * A deadline, not the request's `timeout` option. That one only measures silence and
+             * restarts on every chunk, so a response trickling in could outlive the budget and still
+             * come back as `done`.
+             */
+            const remaining = this.timer.getRemainingMilliseconds();
+            let deadline: NodeJS.Timeout | undefined;
+
+            const fail = (error: Error) => {
+                clearTimeout(deadline);
+                reject(error);
+            };
+
             const req = http.request(
                 {
                     hostname: url.hostname,
                     port: url.port,
                     path: url.pathname,
                     method: "POST",
-                    timeout: 60_000,
                     headers: {
                         "content-type": "application/json",
                         "content-length": Buffer.byteLength(body),
@@ -118,7 +135,10 @@ export class TaskOrchestrator {
                     res.on("data", chunk => {
                         data += chunk;
                     });
+                    // Where a deadline that fires mid-response surfaces.
+                    res.on("error", fail);
                     res.on("end", () => {
+                        clearTimeout(deadline);
                         if (!res.statusCode || res.statusCode < 200 || res.statusCode >= 300) {
                             reject(new Error(`HTTP ${res.statusCode}: ${data}`));
                             return;
@@ -132,10 +152,13 @@ export class TaskOrchestrator {
                 }
             );
 
-            req.on("timeout", () => {
-                req.destroy(new Error("Request timed out after 60s."));
-            });
-            req.on("error", reject);
+            deadline = setTimeout(() => {
+                const exceeded = new Error("Task exceeded maximum duration.");
+                req.destroy(exceeded);
+                fail(exceeded);
+            }, remaining);
+
+            req.on("error", fail);
             req.write(body);
             req.end();
         });

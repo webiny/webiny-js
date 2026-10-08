@@ -3,3 +3,4 @@ export * from "./statusComment.js";
 export * from "./sharedSteps.js";
 export * from "./createAwsJobs.js";
 export * from "./createStandaloneJobs.js";
+export * from "./aiE2e.js";

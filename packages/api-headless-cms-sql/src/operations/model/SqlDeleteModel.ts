@@ -20,7 +20,8 @@ class SqlDeleteModelImpl implements DeleteModelStorageOperation.Interface {
         await this.modelSchemaManager.ensure(this.tableName);
         await this.knex
             .client<IModelRow>(this.tableName)
-            .where("modelId", params.model.modelId)
+            .where("tenant", params.model.tenant)
+            .andWhere("modelId", params.model.modelId)
             .delete();
     }
 }

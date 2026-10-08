@@ -59,6 +59,12 @@ export const ListItemMeta = ({
             removePermissionDisabled = true;
         }
 
+        if (permission.plugin) {
+            message = "Defined in code and cannot be changed here.";
+            disabled = true;
+            removePermissionDisabled = true;
+        }
+
         if (identity!.id === target.id) {
             message = "You can't change your own permissions.";
             if (permission.inheritedFrom?.startsWith("team:")) {

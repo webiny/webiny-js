@@ -73,6 +73,10 @@ class ContentEntryFormPresenterWithLocking implements IContentEntryFormPresenter
         return this.original.newEntry(initialValues);
     }
 
+    patchEntryMeta(...args: Parameters<IContentEntryFormPresenter["patchEntryMeta"]>): void {
+        this.original.patchEntryMeta(...args);
+    }
+
     reset(): void {
         return this.original.reset();
     }

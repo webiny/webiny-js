@@ -8,8 +8,7 @@
  * present when the list is first built and cached.
  */
 import { describe, expect, it } from "vitest";
-import { GraphQLContextualSchema } from "@webiny/api-graphql";
-import { buildSchema } from "graphql";
+import { CmsGraphQLSchemaFactory } from "@webiny/api-headless-cms/graphql/CmsGraphQLSchemaFactory.js";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
@@ -122,13 +121,13 @@ describe("Languages model via the CMS manage route (createCmsRoute)", () => {
                 HeadlessCmsFeature.register(container, { type: "manage" });
 
                 // Simulate a request-time consumer that lists models and thereby caches the model
-                // list — what AcoFolderSchemaFactory does. GraphQLContextualSchema is the hook
-                // createCmsRoute runs per request; it is registered BEFORE the languages extension,
-                // and the route ignores the returned schema, hence the empty stub.
-                container.registerInstance(GraphQLContextualSchema, {
-                    build: async () => {
+                // list, which is what AcoFolderSchemaFactory does. The CMS runs its schema
+                // factories per request, while it composes the /cms/manage schema. This one is
+                // registered BEFORE the languages extension and adds no schema of its own.
+                container.registerInstance(CmsGraphQLSchemaFactory, {
+                    execute: async () => {
                         await container.resolve(ListModelsUseCase).execute();
-                        return buildSchema("type Query { _empty: String }");
+                        return [];
                     }
                 });
 

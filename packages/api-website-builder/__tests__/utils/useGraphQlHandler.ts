@@ -9,6 +9,7 @@ import { NoopInvalidateAssetCacheTaskDefinition } from "./noopInvalidateAssetCac
 import { WebsiteBuilderFeature } from "~/index.js";
 import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
 import { createWbSdk } from "~tests/utils/createWbSdk.js";
+import { Extension as FrontendSettingsExtension } from "@webiny/frontend-settings/api/Extension.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 
@@ -18,7 +19,7 @@ export interface UseGQLHandlerParams extends Omit<CmsTestHandlerParams, "setup">
 }
 
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
-    const { handler, invoke } = createCmsTestHandler({
+    const { handler, invoke, getContext } = createCmsTestHandler({
         ...params,
         // identity === null → anonymous (handled natively by the shared harness).
         legacyPlugins: [
@@ -33,6 +34,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             BackgroundTasksFeature.register(container);
             WebsiteBuilderFeature.register(container);
             LanguagesExtension.register(container);
+            FrontendSettingsExtension.register(container);
             container.registerInstance(TaskService, createMockTaskService());
         }
     });
@@ -44,6 +46,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         params,
         handler,
         invoke,
+        getContext,
         wb,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });

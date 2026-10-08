@@ -15,6 +15,7 @@ import { validatePluralApiName } from "~/domain/contentModel/validation/pluralAp
 import { validateModelFields } from "~/domain/contentModel/validation/modelFields.js";
 import type { CmsModel } from "~/types/index.js";
 import { ModelFieldCompression } from "~/features/contentModel/ModelFieldCompression/index.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * UpdateModelRepository - Validates domain rules and persists model updates.
@@ -34,13 +35,16 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
         private readonly updateModel: UpdateModelStorageOperation.Interface,
         private readonly cmsContext: CmsContext.Interface,
         private readonly modelFieldCompression: ModelFieldCompression.Interface,
-        private readonly identityContext: IdentityContext.Interface
+        private readonly identityContext: IdentityContext.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     async execute(
-        model: CmsModel,
+        initialModel: CmsModel,
         original: CmsModel
-    ): Promise<Result<void, RepositoryAbstraction.Error>> {
+    ): Promise<Result<CmsModel, RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+
         try {
             // Validate API name endings
             try {
@@ -112,7 +116,7 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
             // Clear cache
             this.modelCache.clear();
 
-            return Result.ok();
+            return Result.ok(model);
         } catch (error) {
             return Result.fail(new ModelPersistenceError(error as Error));
         }
@@ -127,6 +131,7 @@ export const UpdateModelRepository = RepositoryAbstraction.createImplementation(
         UpdateModelStorageOperation,
         CmsContext,
         ModelFieldCompression,
-        IdentityContext
+        IdentityContext,
+        RuntimeTenant
     ]
 });

@@ -1,6 +1,5 @@
 import path from "path";
 import fs from "fs";
-import { nodeFileTrace } from "@vercel/nft";
 import { ApiAfterBuild, GetProjectService, UiService } from "@webiny/project/abstractions/index.js";
 import { getStandaloneBuildPaths } from "./getStandaloneBuildPaths.js";
 
@@ -47,6 +46,9 @@ class CopyExternalDependenciesImpl implements ApiAfterBuild.Interface {
             return;
         }
 
+        // Loaded only when there is something to trace. Every CLI command registers this hook, and
+        // loading `@vercel/nft` up front would cost each of them for work only a build does.
+        const { nodeFileTrace } = await import("@vercel/nft");
         const { fileList } = await nodeFileTrace(entries, { base: projectRoot });
 
         let copied = 0;

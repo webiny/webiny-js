@@ -19,6 +19,7 @@ import { StringFormatterFeature } from "~/features/stringFormatter/feature.js";
 import { DateFormatterFeature } from "~/features/dateFormatter/feature.js";
 import { AiFeature } from "~/features/ai/feature.js";
 import { WcpFeature } from "~/features/wcp/WcpFeature.js";
+import { HttpClientFeature } from "~/features/httpClient/feature.js";
 import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/NullWebhookDispatcher.js";
 import { WebhookProviderFeature } from "~/features/webhooks/index.js";
 import { RequestContextFeature } from "~/features/requestContext/index.js";
@@ -41,6 +42,7 @@ export const ApiCoreFeature = createFeature({
         MaskerFeature.register(container);
         StringFormatterFeature.register(container);
         DateFormatterFeature.register(container);
+        HttpClientFeature.register(container);
         AiFeature.register(container);
         LoggerFeature.register(container);
         EventPublisherFeature.register(container);

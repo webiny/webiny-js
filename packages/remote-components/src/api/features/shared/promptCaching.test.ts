@@ -65,7 +65,7 @@ describe("prompt caching", () => {
             anthropic: { cacheControl: { type: "ephemeral" } }
         });
         expect(calls[0].providerOptions).toEqual({
-            openai: { promptCacheKey: "wb.remoteComponentGeneration.generate" }
+            openai: { promptCacheKey: "wbGenerateComponent.generate" }
         });
     });
 
@@ -95,7 +95,7 @@ describe("prompt caching", () => {
             anthropic: { cacheControl: { type: "ephemeral" } }
         });
         expect(calls[0].providerOptions).toEqual({
-            openai: { promptCacheKey: "wb.remoteComponentGeneration.refine" }
+            openai: { promptCacheKey: "wbGenerateComponent.refine" }
         });
     });
 

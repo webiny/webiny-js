@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
-import { getAuditConfig } from "~/utils/getAuditConfig";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { useHandler } from "./helpers/useHandler";
 import { ActionType } from "@webiny/common-audit-logs";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
@@ -7,6 +8,7 @@ import { auditAction } from "~tests/mocks/auditAction.js";
 import type { IAuditLog } from "~/storage/types.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import { usesDynamoDb } from "./helpers/usesDynamoDb";
 
 const convertDates = (item: IAuditLog | null) => {
     return {
@@ -33,14 +35,8 @@ const getIdentitySnapshot = (identity: SecurityIdentity) => {
     };
 };
 
-const isSql = process.env.WEBINY_STORAGE?.includes("sql");
-
-describe.skipIf(isSql)("create audit log", () => {
-    const client = getDocumentClient();
-
+describe("create audit log", () => {
     it("should create a new audit log", async () => {
-        const createAuditLog = getAuditConfig(auditAction);
-
         const { handler } = useHandler();
         const context = await handler();
 
@@ -54,7 +50,12 @@ describe.skipIf(isSql)("create audit log", () => {
             evenMoreStringData: "abcdef"
         };
 
-        const result = await createAuditLog(message, data, entityId, context);
+        const result = await context.recordAuditLog({
+            audit: auditAction,
+            message: message,
+            content: data,
+            entityId: entityId
+        });
 
         expect(convertDates(result)).toMatchObject({
             id: expect.any(String),
@@ -72,30 +73,9 @@ describe.skipIf(isSql)("create audit log", () => {
             content: JSON.stringify(data),
             tags: []
         });
-
-        const partitionKey = `T#root#AUDIT_LOG`;
-        const sortKey = `${result!.id}`;
-
-        const scanned = await client.scan({
-            TableName: process.env.DB_TABLE_AUDIT_LOGS
-        });
-
-        expect(scanned.Count).toBe(1);
-
-        for (const item of scanned.Items || []) {
-            expect(item).toMatchObject({
-                PK: partitionKey,
-                SK: sortKey,
-                data: {
-                    content: expect.stringMatching(`{"compression":"gzip","value":`)
-                }
-            });
-        }
     });
 
     it("should list created logs", async () => {
-        const createAuditLog = getAuditConfig(auditAction);
-
         const { handler } = useHandler();
         const context = await handler();
 
@@ -109,9 +89,14 @@ describe.skipIf(isSql)("create audit log", () => {
             evenMoreStringData: "abcdef"
         };
 
-        await createAuditLog(message, data, entityId, context);
+        await context.recordAuditLog({
+            audit: auditAction,
+            message: message,
+            content: data,
+            entityId: entityId
+        });
 
-        const { items } = await context.auditLogs.listAuditLogs({});
+        const { items } = await context.listAuditLogs({});
         expect(items).toHaveLength(1);
 
         const result = items![0];
@@ -130,6 +115,22 @@ describe.skipIf(isSql)("create audit log", () => {
             createdOn: expect.any(Date),
             content: JSON.stringify(data),
             tags: []
+        });
+    });
+});
+
+describe.runIf(usesDynamoDb)("create audit log in DynamoDB", () => {
+    const client = getDocumentClient();
+
+    it("should store the audit log under the tenant partition, with compressed content", async () => {
+        const { handler } = useHandler();
+        const context = await handler();
+
+        const result = await context.recordAuditLog({
+            audit: auditAction,
+            message: "Some Meaningful Message.",
+            content: { someData: true },
+            entityId: "abcdefgh0001"
         });
 
         const partitionKey = `T#root#AUDIT_LOG`;

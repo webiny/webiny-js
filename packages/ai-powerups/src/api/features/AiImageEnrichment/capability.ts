@@ -1,7 +1,7 @@
 import { AiCapability } from "~/api/features/Capabilities/index.js";
 import { AI_ENRICHMENT_PROMPT } from "./abstractions.js";
 
-export const FM_IMAGE_ENRICHMENT_CAPABILITY = "fm.imageEnrichment";
+export const FM_IMAGE_ENRICHMENT_CAPABILITY = "fmImageEnrichment";
 
 class FmImageEnrichmentCapabilityImpl implements AiCapability.Interface {
     readonly id = FM_IMAGE_ENRICHMENT_CAPABILITY;

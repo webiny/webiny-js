@@ -1,4 +1,5 @@
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/api-graphql/responses.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
@@ -8,6 +9,8 @@ import { UpdateUserUseCase } from "~/api/features/UpdateUser/index.js";
 import { DeleteUserUseCase } from "~/api/features/DeleteUser/index.js";
 
 class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("cognito/AdminUserSchemaImpl");
+
     async execute(
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): CoreGraphQLSchemaFactory.Return {

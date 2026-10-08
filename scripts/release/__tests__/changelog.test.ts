@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Changelog } from "../src/Changelog";
+import { Changelog } from "../src/Changelog.js";
 
 vi.mock("execa", () => ({
     execa: vi.fn()

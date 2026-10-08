@@ -1,4 +1,5 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { Response } from "@webiny/api-graphql";
 import { ErrorResponse } from "@webiny/api-graphql";
 import { ListResponse } from "@webiny/api-graphql";
@@ -24,6 +25,8 @@ interface IUpdateWebhookArgs {
 }
 
 class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("webhooks/WebhookCrudSchema_");
+
     async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {

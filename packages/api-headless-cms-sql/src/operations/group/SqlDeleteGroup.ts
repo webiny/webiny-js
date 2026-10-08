@@ -18,7 +18,11 @@ class SqlDeleteGroupImpl implements DeleteGroupStorageOperation.Interface {
 
     async execute(params: CmsGroupStorageOperationsDeleteParams) {
         await this.groupSchemaManager.ensure(this.tableName);
-        await this.knex.client<IGroupRow>(this.tableName).where("id", params.group.id).delete();
+        await this.knex
+            .client<IGroupRow>(this.tableName)
+            .where("tenant", params.group.tenant)
+            .andWhere("id", params.group.id)
+            .delete();
     }
 }
 

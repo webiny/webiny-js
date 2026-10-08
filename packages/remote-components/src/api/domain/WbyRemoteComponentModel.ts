@@ -6,7 +6,8 @@ class WbyRemoteComponentModelFactory implements ModelFactory.Interface {
         const model = builder
             .private({
                 modelId: REMOTE_COMPONENT_MODEL_ID,
-                name: "Remote Component"
+                name: "Remote Component",
+                lifecycleEvents: false
             })
             .tags(["$publishing:false"]);
 

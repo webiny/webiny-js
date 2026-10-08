@@ -1,7 +1,10 @@
 import { GraphQLSchemaFactory } from "webiny/api/graphql";
+import { staticSchemaKey } from "webiny/api/graphql";
 import { MyService } from "@/extensions/myFeature/MyFeature.js";
 
 class MyGraphQLSchema implements GraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("extensions/MyGraphQLSchema");
+
     async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {

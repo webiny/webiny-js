@@ -68,9 +68,8 @@ export const Extension = createFeature({
         AdminAssistantFeature.register(container);
         ExtractFrontmatterFeature.register(container);
 
-        // Registered unconditionally. The WCP license gate lives inside the feature's
-        // FileAfterCreate handler (trigger-time), because the license isn't loaded yet during this
-        // register() phase — a register-time canUse* check reads NullLicense and is always false.
+        // Gates itself on `aiPowerups.fileManager.imageEnrichment` in its own `register()`, for the
+        // same reason as the check above: the licence is already loaded by the time it runs.
         AiImageEnrichmentFeature.register(container);
 
         CmsCompareEntryRevisionsFeature.register(container);

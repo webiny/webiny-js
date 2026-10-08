@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 import { Octokit } from "@octokit/rest";
-import { ConsoleLogger } from "../../ConsoleLogger";
-import { checkReleaseType } from "./releaseTypes";
+import { ConsoleLogger } from "./ConsoleLogger.js";
+import { checkReleaseType } from "./releaseTypes.js";
 
-yargs.version(false);
+const cli = yargs(hideBin(process.argv));
+
+// Disable default handling of `--version` parameter.
+cli.version(false);
 
 interface ReleaseArgs {
     branch?: string;
@@ -16,11 +20,12 @@ interface ReleaseArgs {
 }
 
 /**
- * A simple script that will trigger the "release" GitHub workflow.
+ * A simple script that will trigger the "v6 Custom Release" GitHub workflow (`release-v6` event).
  */
 
 (async () => {
-    const { branch, type, token, tag, version, createGithubRelease } = yargs.argv as ReleaseArgs;
+    const { branch, type, token, tag, version, createGithubRelease } =
+        (await cli.argv) as ReleaseArgs;
     const logger = new ConsoleLogger();
 
     try {
@@ -29,7 +34,9 @@ interface ReleaseArgs {
         }
 
         if (!type) {
-            throw Error(`"--type" argument missing. Specify one of: latest, beta, unstable.`);
+            throw Error(
+                `"--type" argument missing. Specify one of: latest, beta, alpha, unstable, verdaccio, release.`
+            );
         }
 
         checkReleaseType(type);
@@ -60,7 +67,7 @@ interface ReleaseArgs {
         await octokit.repos.createDispatchEvent({
             owner: "webiny",
             repo: "webiny-js",
-            event_type: "release",
+            event_type: "release-v6",
             client_payload: {
                 branch,
                 type,
@@ -74,5 +81,6 @@ interface ReleaseArgs {
         logger.info("See action details: %s", "https://github.com/webiny/webiny-js/actions");
     } catch (e) {
         logger.error(e.message);
+        process.exit(1);
     }
 })();

@@ -1,9 +1,10 @@
-import { LatestRelease } from "./LatestRelease";
-import { BetaRelease } from "./BetaRelease";
-import { AlphaRelease } from "./AlphaRelease";
-import { UnstableRelease } from "./UnstableRelease";
-import { VerdaccioRelease } from "./VerdaccioRelease";
-import { Release } from "./Release";
+import { LatestRelease } from "./LatestRelease.js";
+import { BetaRelease } from "./BetaRelease.js";
+import { AlphaRelease } from "./AlphaRelease.js";
+import { UnstableRelease } from "./UnstableRelease.js";
+import { VerdaccioRelease } from "./VerdaccioRelease.js";
+import { ExactRelease } from "./ExactRelease.js";
+import { Release } from "./Release.js";
 
 type ReleaseClass = typeof Release;
 
@@ -12,7 +13,8 @@ const releaseTypes: Record<string, ReleaseClass> = {
     beta: BetaRelease,
     alpha: AlphaRelease,
     unstable: UnstableRelease,
-    verdaccio: VerdaccioRelease
+    verdaccio: VerdaccioRelease,
+    release: ExactRelease
 };
 
 export const checkReleaseType = (type: string): void => {

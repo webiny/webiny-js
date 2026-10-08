@@ -5,6 +5,14 @@ import { PublicModelBuilder } from "./PublicModelBuilder.js";
 export interface IModelBuilderPrivateInput {
     modelId: string;
     name: string;
+    /**
+     * Publish entry lifecycle events (`Cms/Entry/*`) for this model. Defaults to `true`.
+     *
+     * Set to `false` when the model is used as a storage layer, and your own use cases publish
+     * app-specific events. No entry event handlers will run for this model: that includes
+     * `Before*` handlers (validation, data modification), audit logs, webhooks, etc.
+     */
+    lifecycleEvents?: boolean;
 }
 
 export interface IModelBuilderPublicInput {
@@ -29,6 +37,9 @@ export class ModelBuilder {
         const model = new PrivateModelBuilder(this.registry);
         model.modelId(input.modelId);
         model.name(input.name);
+        if (input.lifecycleEvents === false) {
+            model.disableLifecycleEvents();
+        }
         return model;
     }
 

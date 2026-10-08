@@ -5,6 +5,7 @@ import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
 import { UnpublishEntryStorageOperation } from "~/features/shared/storageOperations/entry/UnpublishEntryStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * UnpublishEntryRepository - Handles persistence of entry unpublish.
@@ -13,13 +14,17 @@ import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 class UnpublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
-        private unpublishEntryStorage: UnpublishEntryStorageOperation.Interface
+        private unpublishEntryStorage: UnpublishEntryStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        entry: CmsEntry<T>
+        initialModel: CmsModel,
+        initialEntry: CmsEntry<T>
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+        const entry = this.runtimeTenant.assign(initialEntry);
+
         try {
             // Transform domain entry to storage format
             const storageEntry = await this.entryToStorageTransform<T>(model, entry);
@@ -39,5 +44,5 @@ class UnpublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const UnpublishEntryRepository = RepositoryAbstraction.createImplementation({
     implementation: UnpublishEntryRepositoryImpl,
-    dependencies: [EntryToStorageTransform, UnpublishEntryStorageOperation]
+    dependencies: [EntryToStorageTransform, UnpublishEntryStorageOperation, RuntimeTenant]
 });

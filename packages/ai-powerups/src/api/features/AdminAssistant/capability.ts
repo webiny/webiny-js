@@ -1,14 +1,14 @@
 import { AiCapability } from "~/api/features/Capabilities/index.js";
 import { SYSTEM_PROMPT } from "./systemPrompt.js";
 
-export const ADMIN_ASSISTANT_CAPABILITY = "admin.assistant";
+export const ADMIN_ASSISTANT_CAPABILITY = "adminAssistant";
 
 /**
  * The assistant behind the admin command palette.
  *
- * `admin.assistant` matches the WCP licence option and the `aiPowerups.adminAssistant` flag, so the
+ * `adminAssistant` matches the WCP licence option and the `aiPowerups.adminAssistant` flag, so the
  * feature has one name everywhere. It is also the name that survives: every other id says what the
- * feature does (`fm.imageEnrichment`, `cms.generateEntry`), and this one deliberately does not do
+ * feature does (`fmImageEnrichment`, `cmsGenerateEntry`), and this one deliberately does not do
  * one thing. Today it reads and changes content, and the direction is for it to build things
  * too, like a field renderer or a menu change. The id is the persisted settings key, so a later rename
  * orphans a project's overrides.

@@ -12,15 +12,6 @@ import type { MigrateImagesDeps } from "~/features/stages/capture/migrateImages.
  * `migrateImages` stays a decision function with no infrastructure in it.
  */
 export interface IImageAssetService {
-    /**
-     * Load what the service needs before it can produce urls. Call once before `deps`.
-     *
-     * `FileUrlGenerator` reads the File Manager's `srcPrefix` in `init()` and prefixes nothing until
-     * it has — so a url generated before that is a bare storage key rather than an address. The
-     * File Manager's own GraphQL schema calls `init()` on every request; anything using the generator
-     * outside that path has to do it itself, and silently gets keys if it does not.
-     */
-    prepare(): Promise<void>;
     /** The dependency bundle `migrateImages` takes, minus the logger the caller supplies. */
     deps(log: (message: string) => Promise<void>): MigrateImagesDeps;
 }
@@ -33,8 +24,6 @@ export namespace ImageAssetService {
 }
 
 class ImageAssetServiceImpl implements IImageAssetService {
-    private prepared = false;
-
     constructor(
         private keyValueStore: KeyValueStore.Interface,
         private tenantContext: TenantContext.Interface,
@@ -42,15 +31,6 @@ class ImageAssetServiceImpl implements IImageAssetService {
         private getFile: GetFileUseCase.Interface,
         private fileUrlGenerator: FileUrlGenerator.Interface
     ) {}
-
-    async prepare(): Promise<void> {
-        if (this.prepared) {
-            return;
-        }
-        // `init` is optional on the abstraction: an implementation that needs no prefix omits it.
-        await this.fileUrlGenerator.init?.();
-        this.prepared = true;
-    }
 
     deps(log: (message: string) => Promise<void>): MigrateImagesDeps {
         return {

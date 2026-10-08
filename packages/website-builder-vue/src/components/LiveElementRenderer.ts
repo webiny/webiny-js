@@ -4,6 +4,7 @@ import { ElementSlot } from "./ElementSlot.js";
 import { useViewport } from "~/composables/useViewport.js";
 import { useBindingsForElement } from "~/composables/useBindingsForElement.js";
 import { useDocumentState } from "~/composables/useDocumentState.js";
+import { useDocumentStore } from "~/components/DocumentStoreProvider.js";
 
 /**
  * Resolves a single document element into its rendered Vue subtree.
@@ -45,6 +46,7 @@ export const LiveElementRenderer = defineComponent({
         const elementId = computed(() => props.element?.id ?? "");
         const elementBindings = useBindingsForElement(elementId.value, breakpoint);
         const state = useDocumentState();
+        const documentStore = useDocumentStore();
 
         return () => {
             const { element } = props;
@@ -66,10 +68,13 @@ export const LiveElementRenderer = defineComponent({
                 return value;
             };
 
+            const doc = documentStore.getDocument();
+
             const instances = contentSdk.resolveElement({
                 element,
                 state: state.value,
                 elementBindings: elementBindings.value,
+                cache: doc?.__cache,
                 onResolved
             });
 

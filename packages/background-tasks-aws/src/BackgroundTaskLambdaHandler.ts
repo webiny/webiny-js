@@ -1,7 +1,6 @@
 import type { Container } from "@webiny/feature/api";
 import { AwsLambdaContext } from "@webiny/event-handler-aws/abstractions/AwsLambdaContext.js";
 import { BackgroundTaskEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/BackgroundTaskEventHandler.js";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import { RequestContainer } from "@webiny/event-handler-core";
 import {
     RawTenantId,
@@ -43,14 +42,8 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Inte
             await this.container.resolve(RequestTenantLoader).establish();
         }
 
-        // TODO: remove once legacy ctx is gone — resolve services directly from the container.
+        // TaskRunner still takes the legacy context object, which now only carries the container.
         const ctx: Record<string, any> = { container: this.container };
-        for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
-            await enhancer.enhance(ctx);
-        }
-        for (const schema of this.container.resolveAll(GraphQLContextualSchema)) {
-            await schema.build(ctx);
-        }
 
         // Use the real Lambda context's countdown when the invocation has one; otherwise fall back
         // to a Date-based countdown so the timer still winds down instead of staying static.

@@ -16,12 +16,12 @@ const ROLE_TEXT: Record<AiModelRoleId, { label: string; description: string }> =
     standard: {
         label: "Standard",
         description:
-            "The workhorse. Anything that writes content a person will read, or has to follow a schema and call tools. Every other role falls back to this one when left empty."
+            "The workhorse. Anything that writes content a person will read, or has to follow a schema and call tools. Fast falls back to this one when left empty."
     },
     vision: {
         label: "Vision",
         description:
-            "Work that reads images. Pick a model that accepts image input. Left empty, image features fall back to Standard and only work there if Standard is multimodal too."
+            "Work that reads images, such as image enrichment. Pick a model that accepts image input. There is no fallback: left empty, image features stop and say so."
     }
 };
 

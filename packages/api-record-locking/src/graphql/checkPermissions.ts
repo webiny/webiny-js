@@ -1,12 +1,10 @@
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared";
-import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 /**
- * Simple permission check. Only authenticated users can access the websockets API via GraphQL
+ * Simple permission check. Only authenticated users can access the record locking API via GraphQL.
  */
-export const checkPermissions = async (context: ApiCoreContext): Promise<void> => {
-    const identityContext = context.container.resolve(IdentityContext);
+export const checkPermissions = (identityContext: IdentityContext.Interface): void => {
     const identity = identityContext.getIdentity();
 
     if (identity.isAnonymous()) {

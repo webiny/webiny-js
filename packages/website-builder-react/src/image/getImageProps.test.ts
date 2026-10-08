@@ -6,7 +6,7 @@ const asset = (overrides: Partial<Asset> = {}): Asset => ({
     id: "1",
     name: "photo.jpg",
     size: 1234,
-    type: "image/jpeg",
+    mimeType: "image/jpeg",
     src: "https://cdn.test/photo.jpg",
     url: "https://cdn.test/photo.jpg",
     image: { width: 1600, height: 900 },

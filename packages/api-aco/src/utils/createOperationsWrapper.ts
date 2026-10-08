@@ -1,29 +1,28 @@
-import type { HeadlessCms } from "@webiny/api-headless-cms/types/index.js";
 import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import type { Container } from "@webiny/di";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import WebinyError from "@webiny/error";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 
 interface CreateOperationsWrapperParams {
-    cms: HeadlessCms;
+    container: Container;
     identityContext: IdentityContext.Interface;
     modelName: string;
 }
 
 export const createOperationsWrapper = (params: CreateOperationsWrapperParams) => {
-    const { identityContext, cms, modelName } = params;
+    const { identityContext, container, modelName } = params;
 
     const withModel = async <TResult>(
         cb: (model: CmsModel) => Promise<TResult>
     ): Promise<TResult> => {
-        const model = await identityContext.withoutAuthorization(() => {
-            return cms.getModel(modelName);
+        const result = await identityContext.withoutAuthorization(() => {
+            return container.resolve(GetModelUseCase).execute(modelName);
         });
-
-        if (!model) {
-            throw new WebinyError(`Could not find "${modelName}" model.`, "MODEL_NOT_FOUND_ERROR");
+        if (result.isFail()) {
+            throw result.error;
         }
 
-        return cb(model);
+        return cb(result.value);
     };
 
     return { withModel };

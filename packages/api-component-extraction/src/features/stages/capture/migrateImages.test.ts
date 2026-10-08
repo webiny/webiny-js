@@ -31,7 +31,7 @@ const deps = (overrides: Partial<MigrateImagesDeps> = {}) => {
             return files.map(file => ({ id: file.id, key: file.key }));
         },
         fileExists: async () => true,
-        urlOf: fileKey => `https://cdn.webiny/${fileKey}`,
+        urlOf: async fileKey => `https://cdn.webiny/${fileKey}`,
         log: async () => undefined,
         ...overrides
     };

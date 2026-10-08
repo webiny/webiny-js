@@ -5,6 +5,7 @@ import {
     LeftPanel,
     RightPanel
 } from "@webiny/app-admin/components/SplitView/SplitView.js";
+import { usePreviewDomain } from "@webiny/frontend-settings/exports/admin.js";
 import { ContentEntryFormContent } from "~/presentation/contentEntries/views/layout/ContentEntryFormContent.js";
 import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { PreviewPane } from "./PreviewPane.js";
@@ -14,10 +15,10 @@ export const PreviewDecorator = ContentEntryFormContent.createDecorator(Original
         (props: React.HTMLAttributes<HTMLDivElement> & { width?: string }) => {
             const presenter = useContentEntryFormPresenter();
             const model = presenter.vm.model;
-            const previewPrefix = model?.settings?.previewPrefix as string | undefined;
-            const previewSlug = model?.settings?.previewSlug as string | undefined;
+            const previewPath = model?.settings?.previewPath as string | undefined;
+            const { previewDomain } = usePreviewDomain();
 
-            if (!previewPrefix) {
+            if (!previewPath) {
                 return <Original {...props} />;
             }
 
@@ -46,8 +47,8 @@ export const PreviewDecorator = ContentEntryFormContent.createDecorator(Original
                         style={{ overflowY: "hidden" }}
                     >
                         <PreviewPane
-                            previewPrefix={previewPrefix}
-                            previewSlug={previewSlug || ""}
+                            domain={previewDomain}
+                            previewPath={previewPath}
                             entryId={entryId}
                             entryData={entryData}
                         />

@@ -1,16 +1,13 @@
 import { ModelsProvider as ProviderAbstraction } from "./abstractions.js";
-import { AccessControl } from "~/features/shared/abstractions.js";
 import { ModelFactory } from "../abstractions.js";
 import { FieldBuilderRegistry } from "../abstractions.js";
 import type { CmsModel } from "~/types/index.js";
-import { filterAsync } from "~/utils/filterAsync.js";
 import { ModelBuilder } from "./ModelBuilder.js";
 
 export class ModelsProvider implements ProviderAbstraction.Interface {
     public constructor(
         private getModels: () => ModelFactory.Interface[],
-        private fieldsRegistry: FieldBuilderRegistry.Interface,
-        private accessControl: AccessControl.Interface | undefined
+        private fieldsRegistry: FieldBuilderRegistry.Interface
     ) {}
 
     async list(tenant: string): Promise<CmsModel[]> {
@@ -35,12 +32,7 @@ export class ModelsProvider implements ProviderAbstraction.Interface {
             }
         }
 
-        if (!this.accessControl) {
-            return allModels;
-        }
-        // Apply access control filtering
-        return filterAsync(allModels, model => {
-            return this.accessControl!.canAccessModel({ model });
-        });
+        // No access control here: see PluginModelsProvider for why the model list is not filtered.
+        return allModels;
     }
 }

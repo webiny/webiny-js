@@ -1,6 +1,6 @@
 import { ModelFactory } from "webiny/api/cms/model";
 
-export const ARTICLE_MODEL_ID = "article";
+export const ARTICLE_MODEL_ID = "code-article";
 
 class ArticleModelImpl implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
@@ -23,7 +23,7 @@ class ArticleModelImpl implements ModelFactory.Interface {
                     slug: fields.text().renderer("textInput").label("Slug").help("Page slug."),
                     content: fields
                         .dynamicZone()
-                        .renderer("dynamicZone")
+                        .renderer("dynamicZone", {})
                         .label("Content")
                         .list()
                         .listMinLength(1, "You must create at least 1 entries.")
@@ -32,6 +32,7 @@ class ArticleModelImpl implements ModelFactory.Interface {
                             gqlTypeName: "Hero",
                             icon: { type: "icon", name: "fas/grin-alt" },
                             description: "Hero banner",
+                            componentName: "Article/Hero",
                             fields: f => ({
                                 title: f.text().renderer("textInput").label("Title"),
                                 subtitle: f.text().renderer("textInput").label("Subtitle"),
@@ -60,6 +61,7 @@ class ArticleModelImpl implements ModelFactory.Interface {
                             gqlTypeName: "ThreeGridBox",
                             icon: { type: "icon", name: "fas/3" },
                             description: "Section with three boxes",
+                            componentName: "Article/ThreeGridBox",
                             fields: f => ({
                                 boxes: f
                                     .object()
@@ -92,6 +94,7 @@ class ArticleModelImpl implements ModelFactory.Interface {
                             gqlTypeName: "Banner",
                             icon: { type: "icon", name: "fas/rectangle-ad" },
                             description: "Call out banner",
+                            componentName: "Article/Banner",
                             fields: f => ({
                                 title: f.text().renderer("textInput").label("Title"),
                                 actionLabel: f.text().renderer("textInput").label("Action - Label"),
@@ -105,6 +108,7 @@ class ArticleModelImpl implements ModelFactory.Interface {
                             gqlTypeName: "Richtextfield",
                             icon: { type: "icon", name: "fas/font" },
                             description: "Rich text field",
+                            componentName: "Article/RichText",
                             fields: f => ({
                                 content: f.richText().renderer("lexicalEditor").label("Content")
                             }),
@@ -116,6 +120,10 @@ class ArticleModelImpl implements ModelFactory.Interface {
                 .descriptionFieldId("description")
                 .singularApiName("Article")
                 .pluralApiName("Articles")
+                .settings({
+                    aiEntryWizard: true,
+                    previewPath: "/articles/{values.slug}"
+                })
         ];
     }
 }

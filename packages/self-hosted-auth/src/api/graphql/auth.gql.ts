@@ -1,4 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/api-graphql/responses.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { LoginUseCase } from "~/api/features/Login/index.js";
 
@@ -7,6 +8,8 @@ import { LoginUseCase } from "~/api/features/Login/index.js";
  * unauthenticated — it is how an identity is obtained in the first place.
  */
 class SelfHostedAuthSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("self-hosted-auth/SelfHostedAuthSchemaImpl");
+
     async execute(
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): CoreGraphQLSchemaFactory.Return {

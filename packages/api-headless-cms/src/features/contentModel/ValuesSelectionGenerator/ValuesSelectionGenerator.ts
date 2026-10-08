@@ -15,7 +15,7 @@ import { createTypeName } from "~/utils/createTypeName.js";
 const REF_SELECTION = "{ id modelId }";
 
 const ASSET_SELECTION = [
-    "{ id src url name type size",
+    "{ id src url name mimeType size width height",
     "image { width height crop { top left bottom right } focalPoint { x y } alt caption }",
     "document { pages }",
     "video { autoplay poster } }"
@@ -75,7 +75,8 @@ class ValuesSelectionGeneratorImpl implements IValuesSelectionGenerator {
             return null;
         }
 
-        return `${field.fieldId} { ${childSelection} }`;
+        const idSelection = field.type === "object" ? "_id " : "";
+        return `${field.fieldId} { ${idSelection}${childSelection} }`;
     }
 
     private walkCollectionNode(
@@ -95,7 +96,7 @@ class ValuesSelectionGeneratorImpl implements IValuesSelectionGenerator {
             .filter(Boolean)
             .join("\n");
 
-        return `...on ${templateType} { ${childSelection} _templateId __typename }`;
+        return `...on ${templateType} { ${childSelection} _templateId _id __typename }`;
     }
 }
 

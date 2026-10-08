@@ -1,5 +1,4 @@
 import { createFeature } from "@webiny/feature/api/index.js";
-import { DataLoadersHandler } from "./dataLoaders.js";
 import { DdbEsCreateEntry } from "./DdbEsCreateEntry.js";
 import { DdbEsCreateEntryRevisionFrom } from "./DdbEsCreateEntryRevisionFrom.js";
 import { DdbEsUpdateEntry } from "./DdbEsUpdateEntry.js";
@@ -26,7 +25,6 @@ import { DdbEsGetUniqueFieldValues } from "./DdbEsGetUniqueFieldValues.js";
 export const DdbEsEntryStorageOpsFeature = createFeature({
     name: "cms.ddbEs.entryStorageOps",
     register: container => {
-        container.register(DataLoadersHandler).inSingletonScope();
         container.register(DdbEsCreateEntry);
         container.register(DdbEsCreateEntryRevisionFrom);
         container.register(DdbEsUpdateEntry);

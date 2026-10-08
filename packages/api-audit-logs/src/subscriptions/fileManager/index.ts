@@ -2,14 +2,14 @@ import { AuditLogFileAfterCreateHandler } from "./handlers/AuditLogFileAfterCrea
 import { AuditLogFileAfterUpdateHandler } from "./handlers/AuditLogFileAfterUpdateHandler.js";
 import { AuditLogFileAfterDeleteHandler } from "./handlers/AuditLogFileAfterDeleteHandler.js";
 import { AuditLogSettingsAfterUpdateHandler } from "./handlers/AuditLogSettingsAfterUpdateHandler.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import type { Container } from "@webiny/di";
 
-export const createFileManagerHooks = (context: AuditLogsContext.Interface) => {
+export const createFileManagerHooks = (container: Container) => {
     // Register file event handlers
-    context.container.register(AuditLogFileAfterCreateHandler);
-    context.container.register(AuditLogFileAfterUpdateHandler);
-    context.container.register(AuditLogFileAfterDeleteHandler);
+    container.register(AuditLogFileAfterCreateHandler);
+    container.register(AuditLogFileAfterUpdateHandler);
+    container.register(AuditLogFileAfterDeleteHandler);
 
     // Register settings event handlers
-    context.container.register(AuditLogSettingsAfterUpdateHandler);
+    container.register(AuditLogSettingsAfterUpdateHandler);
 };

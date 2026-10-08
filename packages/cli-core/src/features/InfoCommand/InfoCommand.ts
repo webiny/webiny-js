@@ -18,7 +18,8 @@ export class InfoCommand implements CliCommandFactory.Interface<IInfoCommandPara
         return {
             name: "info",
             description: "Lists relevant URLs for your Webiny project",
-            options: createBaseAppOptions(projectSdk),
+            // No default env here: without `--env`, we list info for all deployed environments.
+            options: createBaseAppOptions(projectSdk, { env: { default: undefined } }),
             handler: async params => {
                 const ui = this.uiService;
 
