@@ -524,3 +524,7 @@ An in-app notification is shown as a toast through the existing admin `Notificat
 ## D103. Which step's channels apply to review-level events
 
 Every notification uses the "Notify via" channels of the step where its event happened: Review approved uses the last step (the one that approved), Review rejected the step that rejected, Review cancelled the step the review was on, A step failed the failed step. Step events (reached, started, reassigned) use their own step as before. No workflow-level channel setting. Resolves gap A2 from the design review.
+
+## D104. No workload counts in reviewer pickers
+
+Reviewer pickers (Request review, Reassign, rule targets) show the person's name and, when it applies, "Unavailable" with the reason (D97). No per-person count of open reviews: it would need a count query per candidate on every picker open, which is expensive with many users, and it would expose colleagues' workload. Resolves gap A3 from the design review.

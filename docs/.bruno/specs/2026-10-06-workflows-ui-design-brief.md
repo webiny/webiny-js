@@ -95,7 +95,7 @@ The server computes which actions the current viewer may take; the UI shows exac
 - Live updates: when anything in a review changes (someone approves, an AI finishes, an automation edits the content), open screens refresh without a reload.
 - Concurrent actions: if someone else acted first (took over, cancelled, approved), the action fails. Keep anything the user typed (e.g. a comment), say who acted and what changed, and refresh.
 - Licensing: without the workflows licence none of this UI appears. AI steps also need the AI Power-Ups licence.
-- Lists are loaded incrementally ("load more"); there are no total counts anywhere (tabs, widgets, lists).
+- Lists are loaded incrementally ("load more"); there are no total counts anywhere (tabs, widgets, lists, and no per-person workload counts in reviewer pickers [D104]).
 
 ---
 
