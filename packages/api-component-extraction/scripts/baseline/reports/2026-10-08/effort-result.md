@@ -57,3 +57,25 @@ generated at all.
 
 Two repeats find large regressions, not small ones. At this resolution: low regresses colour and type;
 medium differs from high only in the control's container padding; high times out.
+
+## The render check on the control (medium against default)
+
+Each of the four control outputs (two per arm) rendered with its own defaults on the site's theme
+values, at 1440px, and measured in the browser. The site's own geometry is read from the captured page
+tree of the representative section.
+
+|                   | Site                                  | Default (2 runs)                       | Medium (2 runs)          |
+| ----------------- | ------------------------------------- | -------------------------------------- | ------------------------ |
+| Icon circle       | 45px, padding 0                       | 45px                                   | 47px (content-box + 1px border) |
+| Icon glyph        | a font icon at font-size 15-16px      | 13px: squeezed by 15px padding on the link | 18-20px              |
+| Text inset        | 60px                                  | 60px                                   | 60px                     |
+
+**The difference is visible**: medium's glyphs are clearly larger. Neither arm matches the site: default
+is 2-3px under it, medium 3-4px over, and medium's circle 2px wide.
+
+**The spacing check scored the wrong element.** The 15px the site measured as container padding is
+its grid-column padding (45px row padding plus 15px column padding: the 60px text inset both arms
+reproduce). Default "kept" it by putting 15px on the icon link, which the site does not pad; that
+squeezed the glyph. Medium wrote 15px as a gap. The check confirms a declaration of the right kind, not
+on the right element; its bound, stated twice before, is what moved here. The control's spacing
+difference between the arms is not a loss of the site's padding at medium.
