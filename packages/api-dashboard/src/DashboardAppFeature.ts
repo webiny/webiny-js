@@ -1,7 +1,7 @@
 import type { Container } from "@webiny/feature/api";
 import { createFeature } from "@webiny/feature/api";
-import { GetMyDashboardFeature } from "~/features/GetMyDashboard/index.js";
-import { SaveMyDashboardFeature } from "~/features/SaveMyDashboard/index.js";
+import { ListDashboardsFeature } from "~/features/ListDashboards/index.js";
+import { UpdateDashboardFeature } from "~/features/UpdateDashboard/index.js";
 import { DashboardGraphQLSchema } from "~/graphql/DashboardGraphQLSchema.js";
 
 /**
@@ -11,8 +11,8 @@ import { DashboardGraphQLSchema } from "~/graphql/DashboardGraphQLSchema.js";
 export const DashboardAppFeature = createFeature({
     name: "DashboardApp",
     register(container: Container) {
-        GetMyDashboardFeature.register(container);
-        SaveMyDashboardFeature.register(container);
+        ListDashboardsFeature.register(container);
+        UpdateDashboardFeature.register(container);
         container.register(DashboardGraphQLSchema);
     }
 });

@@ -2,23 +2,26 @@ import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstra
 import { DashboardLayoutGateway as GatewayAbstraction } from "./abstractions.js";
 import type { DashboardLayoutData } from "../types.js";
 
-interface DashboardLayoutResponse {
-    data: DashboardLayoutData | null;
-    error: { message: string } | null;
+interface DashboardError {
+    message: string;
 }
 
-interface GetMyDashboardResponse {
-    dashboard: { getMyDashboard: DashboardLayoutResponse };
+interface ListDashboardsResponse {
+    dashboard: {
+        listDashboards: { data: DashboardLayoutData[] | null; error: DashboardError | null };
+    };
 }
 
-interface SaveMyDashboardResponse {
-    dashboard: { saveMyDashboard: DashboardLayoutResponse };
+interface UpdateDashboardResponse {
+    dashboard: {
+        updateDashboard: { data: DashboardLayoutData | null; error: DashboardError | null };
+    };
 }
 
-const GET_MY_DASHBOARD_QUERY = /* GraphQL */ `
-    query GetMyDashboard {
+const LIST_DASHBOARDS_QUERY = /* GraphQL */ `
+    query ListDashboards {
         dashboard {
-            getMyDashboard {
+            listDashboards {
                 data {
                     columns
                     hidden
@@ -32,10 +35,10 @@ const GET_MY_DASHBOARD_QUERY = /* GraphQL */ `
     }
 `;
 
-const SAVE_MY_DASHBOARD_MUTATION = /* GraphQL */ `
-    mutation SaveMyDashboard($data: DashboardLayoutInput!) {
+const UPDATE_DASHBOARD_MUTATION = /* GraphQL */ `
+    mutation UpdateDashboard($data: DashboardInput!) {
         dashboard {
-            saveMyDashboard(data: $data) {
+            updateDashboard(data: $data) {
                 data {
                     columns
                     hidden
@@ -53,25 +56,26 @@ class DashboardLayoutGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
 
     async get(): Promise<DashboardLayoutData | null> {
-        const response = await this.client.execute<GetMyDashboardResponse>({
-            query: GET_MY_DASHBOARD_QUERY
+        const response = await this.client.execute<ListDashboardsResponse>({
+            query: LIST_DASHBOARDS_QUERY
         });
 
-        const { data, error } = response.dashboard.getMyDashboard;
+        const { data, error } = response.dashboard.listDashboards;
         if (error) {
             throw new Error(error.message);
         }
 
-        return data;
+        // Each user has at most one dashboard for now.
+        return data?.[0] ?? null;
     }
 
     async save(layout: DashboardLayoutData): Promise<DashboardLayoutData> {
-        const response = await this.client.execute<SaveMyDashboardResponse>({
-            query: SAVE_MY_DASHBOARD_MUTATION,
+        const response = await this.client.execute<UpdateDashboardResponse>({
+            query: UPDATE_DASHBOARD_MUTATION,
             variables: { data: layout }
         });
 
-        const { data, error } = response.dashboard.saveMyDashboard;
+        const { data, error } = response.dashboard.updateDashboard;
         if (error) {
             throw new Error(error.message);
         }

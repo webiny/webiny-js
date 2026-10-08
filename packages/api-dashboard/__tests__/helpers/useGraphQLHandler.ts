@@ -20,10 +20,10 @@ export const defaultIdentity: IdentityData = {
     displayName: "John Doe"
 };
 
-const GET_MY_DASHBOARD = /* GraphQL */ `
-    query GetMyDashboard {
+const LIST_DASHBOARDS = /* GraphQL */ `
+    query ListDashboards {
         dashboard {
-            getMyDashboard {
+            listDashboards {
                 data {
                     columns
                     hidden
@@ -38,10 +38,10 @@ const GET_MY_DASHBOARD = /* GraphQL */ `
     }
 `;
 
-const SAVE_MY_DASHBOARD = /* GraphQL */ `
-    mutation SaveMyDashboard($data: DashboardLayoutInput!) {
+const UPDATE_DASHBOARD = /* GraphQL */ `
+    mutation UpdateDashboard($data: DashboardInput!) {
         dashboard {
-            saveMyDashboard(data: $data) {
+            updateDashboard(data: $data) {
                 data {
                     columns
                     hidden
@@ -56,17 +56,27 @@ const SAVE_MY_DASHBOARD = /* GraphQL */ `
     }
 `;
 
-interface DashboardLayoutResponse {
+interface DashboardError {
+    code: string;
+    message: string;
+}
+
+interface DashboardResponse {
     data: DashboardLayout | null;
-    error: { code: string; message: string } | null;
+    error: DashboardError | null;
 }
 
-interface GetMyDashboardResponse {
-    data: { dashboard: { getMyDashboard: DashboardLayoutResponse } };
+interface DashboardListResponse {
+    data: DashboardLayout[] | null;
+    error: DashboardError | null;
 }
 
-interface SaveMyDashboardResponse {
-    data: { dashboard: { saveMyDashboard: DashboardLayoutResponse } };
+interface ListDashboardsResponse {
+    data: { dashboard: { listDashboards: DashboardListResponse } };
+}
+
+interface UpdateDashboardResponse {
+    data: { dashboard: { updateDashboard: DashboardResponse } };
 }
 
 export const useGraphQLHandler = (params: { identity?: IdentityData } = {}) => {
@@ -100,13 +110,13 @@ export const useGraphQLHandler = (params: { identity?: IdentityData } = {}) => {
     };
 
     return {
-        async getMyDashboard() {
-            const response = await invoke<GetMyDashboardResponse>(GET_MY_DASHBOARD);
-            return response.data.dashboard.getMyDashboard;
+        async listDashboards() {
+            const response = await invoke<ListDashboardsResponse>(LIST_DASHBOARDS);
+            return response.data.dashboard.listDashboards;
         },
-        async saveMyDashboard(data: DashboardLayout) {
-            const response = await invoke<SaveMyDashboardResponse>(SAVE_MY_DASHBOARD, { data });
-            return response.data.dashboard.saveMyDashboard;
+        async updateDashboard(data: DashboardLayout) {
+            const response = await invoke<UpdateDashboardResponse>(UPDATE_DASHBOARD, { data });
+            return response.data.dashboard.updateDashboard;
         }
     };
 };

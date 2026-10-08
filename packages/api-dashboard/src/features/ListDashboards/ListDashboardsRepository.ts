@@ -1,11 +1,11 @@
 import { Result } from "@webiny/feature/api";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import { GetMyDashboardRepository as RepositoryAbstraction } from "./abstractions.js";
+import { ListDashboardsRepository as RepositoryAbstraction } from "./abstractions.js";
 import { DashboardPersistenceError } from "~/domain/errors.js";
 import { createDashboardKey } from "~/domain/dashboardKey.js";
 import type { DashboardLayout } from "~/domain/types.js";
 
-class GetMyDashboardRepositoryImpl implements RepositoryAbstraction.Interface {
+class ListDashboardsRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(private keyValueStore: KeyValueStore.Interface) {}
 
     async get(
@@ -24,7 +24,7 @@ class GetMyDashboardRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const GetMyDashboardRepository = RepositoryAbstraction.createImplementation({
-    implementation: GetMyDashboardRepositoryImpl,
+export const ListDashboardsRepository = RepositoryAbstraction.createImplementation({
+    implementation: ListDashboardsRepositoryImpl,
     dependencies: [KeyValueStore]
 });

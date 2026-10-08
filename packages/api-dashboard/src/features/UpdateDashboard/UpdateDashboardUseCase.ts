@@ -1,14 +1,14 @@
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { SaveMyDashboardUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { SaveMyDashboardRepository } from "./abstractions.js";
+import { UpdateDashboardUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { UpdateDashboardRepository } from "./abstractions.js";
 import { DashboardNotAuthenticatedError } from "~/domain/errors.js";
 import type { DashboardLayout } from "~/domain/types.js";
 
-class SaveMyDashboardUseCaseImpl implements UseCaseAbstraction.Interface {
+class UpdateDashboardUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private repository: SaveMyDashboardRepository.Interface
+        private repository: UpdateDashboardRepository.Interface
     ) {}
 
     async execute(
@@ -23,7 +23,7 @@ class SaveMyDashboardUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const SaveMyDashboardUseCase = UseCaseAbstraction.createImplementation({
-    implementation: SaveMyDashboardUseCaseImpl,
-    dependencies: [IdentityContext, SaveMyDashboardRepository]
+export const UpdateDashboardUseCase = UseCaseAbstraction.createImplementation({
+    implementation: UpdateDashboardUseCaseImpl,
+    dependencies: [IdentityContext, UpdateDashboardRepository]
 });

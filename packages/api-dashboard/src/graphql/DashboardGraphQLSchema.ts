@@ -3,19 +3,19 @@ import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js"
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { createZodError } from "@webiny/utils";
-import { GetMyDashboardUseCase } from "~/features/GetMyDashboard/abstractions.js";
-import { SaveMyDashboardUseCase } from "~/features/SaveMyDashboard/abstractions.js";
+import { ListDashboardsUseCase } from "~/features/ListDashboards/abstractions.js";
+import { UpdateDashboardUseCase } from "~/features/UpdateDashboard/abstractions.js";
 import type { DashboardLayout } from "~/domain/types.js";
-import { saveValidationSchema } from "./validation.js";
+import { updateValidationSchema } from "./validation.js";
 
 const TYPE_DEFS = /* GraphQL */ `
-    type DashboardLayout {
+    type Dashboard {
         columns: [[String!]!]!
         hidden: [String!]!
         columnCount: Int!
     }
 
-    input DashboardLayoutInput {
+    input DashboardInput {
         columns: [[String!]!]!
         hidden: [String!]!
         columnCount: Int!
@@ -28,18 +28,24 @@ const TYPE_DEFS = /* GraphQL */ `
         stack: String
     }
 
-    type DashboardLayoutResponse {
-        data: DashboardLayout
+    type DashboardResponse {
+        data: Dashboard
+        error: DashboardError
+    }
+
+    type DashboardListResponse {
+        data: [Dashboard!]
         error: DashboardError
     }
 
     type DashboardQuery {
-        # The current identity's layout, or null if it never customized its dashboard.
-        getMyDashboard: DashboardLayoutResponse!
+        # The current identity's dashboards: empty until it customizes one, at most one for now.
+        listDashboards: DashboardListResponse!
     }
 
     type DashboardMutation {
-        saveMyDashboard(data: DashboardLayoutInput!): DashboardLayoutResponse!
+        # Creates the identity's dashboard on first use.
+        updateDashboard(data: DashboardInput!): DashboardResponse!
     }
 
     extend type Query {
@@ -70,12 +76,12 @@ class DashboardGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
         });
 
         builder.addResolver({
-            path: "DashboardQuery.getMyDashboard",
-            dependencies: [GetMyDashboardUseCase],
-            resolver(getMyDashboard: GetMyDashboardUseCase.Interface) {
+            path: "DashboardQuery.listDashboards",
+            dependencies: [ListDashboardsUseCase],
+            resolver(listDashboards: ListDashboardsUseCase.Interface) {
                 return async () => {
                     return resolve(async () => {
-                        const result = await getMyDashboard.execute();
+                        const result = await listDashboards.execute();
                         if (result.isFail()) {
                             throw result.error;
                         }
@@ -86,17 +92,17 @@ class DashboardGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
         });
 
         builder.addResolver<{ data: DashboardLayout }>({
-            path: "DashboardMutation.saveMyDashboard",
-            dependencies: [SaveMyDashboardUseCase],
-            resolver(saveMyDashboard: SaveMyDashboardUseCase.Interface) {
+            path: "DashboardMutation.updateDashboard",
+            dependencies: [UpdateDashboardUseCase],
+            resolver(updateDashboard: UpdateDashboardUseCase.Interface) {
                 return async ({ args }) => {
                     return resolve(async () => {
-                        const validation = await saveValidationSchema.safeParseAsync(args);
+                        const validation = await updateValidationSchema.safeParseAsync(args);
                         if (!validation.success) {
                             throw createZodError(validation.error);
                         }
 
-                        const result = await saveMyDashboard.execute(validation.data.data);
+                        const result = await updateDashboard.execute(validation.data.data);
                         if (result.isFail()) {
                             throw result.error;
                         }
