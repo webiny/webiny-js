@@ -100,7 +100,15 @@ const findExportDefaultFunction = (ast: Node): { name: string } & Range => {
     throw new Error("Could not find `export default function` in component source.");
 };
 
-const findManifestExport = (ast: Node): { objectNode: Node } & Range => {
+/**
+ * The manifest export, and what has to stay in the body when it is removed: the statement's other
+ * declarators. `export const manifest = { ... }, SIZE = 20;` declares `SIZE` too, and removing the whole
+ * statement left the component referring to a name that no longer existed.
+ */
+const findManifestExport = (
+    ast: Node,
+    source: string
+): { objectNode: Node; remainder: string } & Range => {
     for (const node of ast.body) {
         if (
             node.type !== "ExportNamedDeclaration" ||
@@ -111,7 +119,15 @@ const findManifestExport = (ast: Node): { objectNode: Node } & Range => {
 
         for (const decl of node.declaration.declarations) {
             if (decl.id.name === "manifest" && decl.init?.type === "ObjectExpression") {
-                return { objectNode: decl.init, start: node.start, end: node.end };
+                const others = node.declaration.declarations.filter(
+                    (other: Node) => other !== decl
+                );
+                const remainder = others.length
+                    ? `${node.declaration.kind} ${others
+                          .map((other: Node) => source.slice(other.start, other.end))
+                          .join(", ")};`
+                    : "";
+                return { objectNode: decl.init, start: node.start, end: node.end, remainder };
             }
         }
     }
@@ -159,8 +175,14 @@ const collectInputFactories = (manifestNode: Node): Set<string> => {
  * Exports are removed rather than rewritten because the body ends up inside a function, where an
  * `export` is a syntax error.
  */
-const deriveComponentBody = (source: string, ast: Node, manifest: Range): string => {
-    const edits: { range: Range; replacement: string }[] = [{ range: manifest, replacement: "" }];
+const deriveComponentBody = (
+    source: string,
+    ast: Node,
+    manifest: Range & { remainder: string }
+): string => {
+    const edits: { range: Range; replacement: string }[] = [
+        { range: manifest, replacement: manifest.remainder }
+    ];
 
     for (const node of ast.body) {
         if (node.start === manifest.start && node.end === manifest.end) {
@@ -331,7 +353,7 @@ export const deriveComponentBundle = (component: ComponentSource): ComponentDeri
     const ast = parseSource(source);
 
     const exportDefault = findExportDefaultFunction(ast);
-    const manifest = findManifestExport(ast);
+    const manifest = findManifestExport(ast, source);
 
     const componentBody = deriveComponentBody(source, ast, manifest);
     const manifestCode = transformManifest(source, manifest.objectNode);

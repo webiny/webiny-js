@@ -204,6 +204,18 @@ export const manifest = {
 `.trim()
 };
 
+// From next's browser bundler (#5890): the manifest's statement declares something else too.
+const manifestWithAnotherDeclarator = {
+    name: "Custom/Badge",
+    source: `
+export const manifest = { name: "Custom/Badge", label: "Badge", inputs: [] }, SIZE = 20;
+
+export default function Badge() {
+    return <span>{SIZE}</span>;
+}
+`.trim()
+};
+
 describe("bundler conformance", () => {
     it("keeps module-level constants, which are part of the component", async () => {
         const { bundled } = await bundleComponent(moduleLevelConstant);
@@ -349,5 +361,11 @@ describe("bundler conformance", () => {
 
         expect(wrappedSource).toContain("list: true");
         expect(wrappedSource).not.toContain("multiple: true");
+    });
+    it("keeps the other declarators of the manifest's statement", async () => {
+        const { bundled } = await bundleComponent(manifestWithAnotherDeclarator);
+
+        expect(bundled).toMatch(/SIZE = 20/);
+        expect(bundled).toContain("Custom/Badge");
     });
 });
