@@ -307,6 +307,7 @@ Not a screen, but the designer needs it for copy and in-app notification design.
 | Step reached, team pool | Members of the step's reviewing teams (not the requester, not excluded users) |
 | Step started by routing, a pick or reassignment | The new owner |
 | Reassignment | Previous owner (if any) and new owner |
+| Take over | Previous owner, unless the taker unticks "Notify {name} that you took over" in the Take over dialog (checked by default) [D111] |
 | Review approved, review rejected, a step failed | Requester |
 | Review cancelled | Current owner, if any |
 

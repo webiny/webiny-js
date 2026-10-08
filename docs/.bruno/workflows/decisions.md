@@ -552,3 +552,7 @@ An AI step's Instructions (the reviewer prompt) must be non-empty, enforced on t
 ## D110. Exclusion end dates across timezones
 
 Extends D73. The timezone used when saving is the browser's (there is no profile timezone). Active or Expired is computed from the stored UTC instant, the same for every viewer. The list shows the end date in the viewer's local time; hovering shows the full local time and timezone name, e.g. "Until 3 Nov 2026, 23:59 (Europe/Zagreb)". The saving admin's timezone is not stored. Resolves gap A9 from the design review.
+
+## D111. Take over can notify the previous owner
+
+The Take over dialog has a checkbox "Notify {name} that you took over", checked by default. When checked, the previous owner gets "{taker} took over {step} on {title}." in-app and through the step's channels (D103). The take-over action carries `notifyPreviousOwner` (default true). Reassignment keeps notifying both previous and new owner, with no opt-out. Resolves gap A10 from the design review.
