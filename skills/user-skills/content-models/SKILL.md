@@ -100,6 +100,10 @@ edits the form, the values are pushed into the iframe live.
 - `{...}` placeholders are dot-paths into the entry, e.g. `{values.slug}` or `{entryId}`. A
   placeholder with an empty value resolves to `new`. The resolved URL (e.g. `/articles/my-post`)
   is used for the address bar, "open in new tab" and "copy URL".
+- A placeholder can read through a `ref` field into the referenced entry's values, e.g.
+  `/{values.location.slug}/{values.slug}` resolves to `/baker/climbing`. The editor loads the
+  referenced entry when the ref is set; until it arrives, the placeholder resolves to `new`. For
+  a multiple-value ref field, index into it: `{values.tags.0.slug}`.
 - **The iframe loads a dedicated preview route, not the resolved URL.** That route is the static
   part of the pattern before the first `{`, followed by `/preview`. For example,
   `/articles/{values.slug}` loads `<domain>/articles/preview?wb.editing=true&wb.type=entry&wb.id=<entry id>&...`.
