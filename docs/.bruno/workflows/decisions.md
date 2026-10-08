@@ -616,3 +616,23 @@ Extends D102. Every toast in workflows UI — incoming notifications and confirm
 ## D126. No "by" when a step rejects itself
 
 Refines D107. When the decider is the rejecting step itself (AI and Automation steps), a rejection without a comment reads "Rejected at {step}." instead of repeating the title after "by". People steps keep "Rejected at {step} by {person}." Applies to the review bar, popover, Review details and the "Review rejected" notification. From design answer QBZ-83.
+
+## D127. Assignment details on review steps
+
+Each `ReviewStep` carries `assignment?: { source; ruleId?; reason?; by?: Actor }` (sources: rule id, `strategy`, `picked`, `pool`, `poolStart`, `takeOver`, `reassign`). `by` names who acted for reassign and take over. `getReview` returns the step's assignment-log entries for "why this owner"; per-user skip entries (requester, excluded with reason, can't read) only to users with `editor` or `reassign` [D89]. Resolves spec review finding 1.
+
+## D128. Reviewer candidates for reassign
+
+`listStepCandidates` has two forms: `(workflowId, stepId)` for Request review (write access to the model, live workflow) and `(reviewId, stepId)` for Reassign (`reassign` permission, resolved from the review's snapshot and the step's `candidateTeamIds`). Both return name, `excluded` and, for `editor` / `reassign`, `excludedReason`; no workload counts [D97, D104]. Resolves spec review finding 3.
+
+## D129. Transport list for "Notify via"
+
+`listNotificationTransports` returns the registered transports (`id`, `title`, optional `description`), permission `editor`. The editor shows them as the "Notify via" list, or "Only in-app notifications are available." when there are none [D96]. Resolves spec review finding 6.
+
+## D130. Editor model list and step type availability
+
+The editor's model list query (D116) requires `editor`; each row carries the bound workflow's id and name, if any. `listStepTypes` returns `available: boolean` and `unavailableReason` per type (AI: missing `aiPowerups` licence; Automation: no definition covering the model) for D122. Resolves spec review findings 7 and 8.
+
+## D131. Optimistic check on workflow save
+
+`storeWorkflow` takes the `savedOn` the editor loaded. If the stored workflow's `savedOn` differs, the save fails with `Workflows/Workflow/Conflict` (data: who saved and when, from the stored record); if the workflow no longer exists, with `Workflows/Workflow/NotFound` [D123]. The editor shows the conflict dialog (reload, losing unsaved edits) or the deleted dialog. Reviews keep no optimistic locking (D27). Resolves spec review finding 9.
