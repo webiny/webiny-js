@@ -37,7 +37,7 @@ import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoad
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
 import { NodeHttpAssumePermissionsDecorator } from "~/handlers/NodeHttpAssumePermissionsDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
-import { EmptyTrashBinRouteFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
+import { EmptyTrashBinsFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
@@ -99,30 +99,25 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             JwksStoreFeature.register(rootContainer);
 
             // ── Background tasks (root) ────────────────────────────────
-            // Mirrors the AWS handler registering its background-task transport at root. There is no
-            // Step Functions / Lambda re-invocation in a single process, so the transport is in-process:
-            // WorkerService (the BackgroundTasks/TaskService dispatch abstraction) runs each triggered
-            // task in a Node worker_thread that POSTs back to this server's `/background-task` HTTP route
-            // (BackgroundTaskRoute), which runs the task loop (continue/timeout/abort) in-process. Root,
-            // not per-request, is load-bearing: the shared InternalToken (registered here as a singleton)
-            // gates the route against the worker's callback, so dispatcher and route MUST see the SAME
-            // token — a per-request registration would mint a fresh token per request and always 403.
-            // The route is an HttpRoute; the per-request HttpRouter collects it via the parent chain.
+            // Mirrors the AWS handler registering its background-task transport at root. Where AWS
+            // has Step Functions invoke the Lambda once per iteration, a root task loop dispatches a
+            // BackgroundTaskEvent per iteration through the EventDispatcher (registered by
+            // createServerHandler), and each one runs in a fresh request container.
             BackgroundTasksStandaloneFeature.register(rootContainer);
 
             // ── Scheduler (root) ───────────────────────────────────────
             // The Bree scheduler is a single long-lived instance for ALL tenants, started once at boot
             // (onServer, below) — the counterpart of the WebSockets connection manager, NOT a per-request
             // transport. Registered here as SchedulerService (per-request create/update/delete during
-            // mutations manipulate this one live timer set) plus the run/recover HTTP routes + internal
-            // token. When a timer fires (outside any request) it POSTs `/scheduled-action-run`, which
-            // rebuilds the tenant's request context and executes the action.
+            // mutations manipulate this one live timer set) plus the run/recover event handlers. When a
+            // timer fires (outside any request) it dispatches a ScheduledActionEvent, handled in a fresh
+            // request container by the same handler AWS uses.
             registerSchedulerServer(rootContainer);
 
             // ── Bulk actions (root) ───────────────────────────────────
-            // Registers the `/empty-trash-bins` HTTP route + internal token so the periodic trigger
-            // (startBulkActionsServer, onServer below) can POST to it after the server is listening.
-            EmptyTrashBinRouteFeature.register(rootContainer);
+            // Registers the EmptyTrashBinsEvent handler that the periodic trigger
+            // (startBulkActionsServer, onServer below) dispatches.
+            EmptyTrashBinsFeature.register(rootContainer);
         },
 
         child: async container => {
@@ -175,11 +170,11 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             });
             await websockets.start();
 
-            // Start the in-process scheduler timers, then re-arm persisted schedules (deferred until
-            // the server is listening — see startSchedulerServer).
+            // Start the in-process scheduler timers, then re-arm persisted schedules in the
+            // background (see startSchedulerServer).
             await startSchedulerServer(rootContainer);
 
-            // Start the periodic empty-trash-bin trigger (deferred until the server is listening).
+            // Start the periodic empty-trash-bin trigger.
             startBulkActionsServer(rootContainer);
         }
     });

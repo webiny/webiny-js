@@ -1,15 +1,3 @@
-import { createFeature } from "@webiny/feature/api";
-import { EmptyTrashBinRouteDefinition } from "./EmptyTrashBinRoute.js";
-import { uuid } from "@webiny/stdlib";
-import { BulkActionsInternalToken } from "./BulkActionsInternalToken.js";
-
-export { BulkActionsInternalToken };
-
-export const EmptyTrashBinRouteFeature = createFeature({
-    name: "BulkActions/EmptyTrashBinRoute",
-    register: container => {
-        const token = uuid();
-        container.registerInstance(BulkActionsInternalToken, { value: token });
-        container.register(EmptyTrashBinRouteDefinition);
-    }
-});
+export { EmptyTrashBinsFeature } from "./EmptyTrashBinsFeature.js";
+export { EMPTY_TRASH_BINS_EVENT_IDENTIFIER } from "./EmptyTrashBinsEventType.js";
+export type { IEmptyTrashBinsEvent } from "./EmptyTrashBinsEventType.js";

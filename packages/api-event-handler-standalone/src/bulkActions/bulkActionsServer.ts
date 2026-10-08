@@ -1,35 +1,30 @@
 import type { Container } from "@webiny/di";
-import { BulkActionsInternalToken } from "@webiny/api-headless-cms-bulk-actions-standalone";
+import { EventDispatcher } from "@webiny/event-handler-core";
+import { EMPTY_TRASH_BINS_EVENT_IDENTIFIER } from "@webiny/api-headless-cms-bulk-actions-standalone";
+import type { IEmptyTrashBinsEvent } from "@webiny/api-headless-cms-bulk-actions-standalone";
 
-const BULK_ACTIONS_HEADER = "x-webiny-bulk-actions-token";
-const serverBase = () => `http://localhost:${process.env.PORT || "3002"}`;
-
-// Default: trigger every 6 hours (in milliseconds).
+// Every 6 hours.
 const EMPTY_TRASH_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
+// Shortly after boot, so the first run doesn't compete with startup.
+const FIRST_RUN_DELAY_MS = 5000;
+
+/**
+ * Empties the trash bins on a timer by dispatching an `EmptyTrashBinsEvent`. The standalone
+ * counterpart of the EventBridge rule that does it on AWS.
+ */
 export function startBulkActionsServer(rootContainer: Container): void {
-    const token = rootContainer.resolve(BulkActionsInternalToken).value;
+    const dispatcher = rootContainer.resolve(EventDispatcher);
+    const event: IEmptyTrashBinsEvent = { [EMPTY_TRASH_BINS_EVENT_IDENTIFIER]: true };
 
     const trigger = async () => {
         try {
-            const res = await fetch(`${serverBase()}/empty-trash-bins`, {
-                method: "POST",
-                headers: { "content-type": "application/json", [BULK_ACTIONS_HEADER]: token },
-                body: JSON.stringify({})
-            });
-            if (!res.ok) {
-                const body = await res.text().catch(() => "");
-                console.error(
-                    `[bulk-actions] empty-trash-bins returned HTTP ${res.status}: ${body}`
-                );
-            }
+            await dispatcher.dispatch(event);
         } catch (err) {
-            const message = err instanceof Error ? err.message : String(err);
-            console.error(`[bulk-actions] failed to reach empty-trash-bins route: ${message}`);
+            console.error("[bulk-actions] failed to start emptying the trash bins:", err);
         }
     };
 
-    // Deferred initial trigger + periodic interval.
-    setTimeout(trigger, 5000);
+    setTimeout(trigger, FIRST_RUN_DELAY_MS);
     setInterval(trigger, EMPTY_TRASH_INTERVAL_MS);
 }
