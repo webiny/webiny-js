@@ -596,3 +596,7 @@ A step's description is shown to the requester in the Request review steps previ
 ## D121. Unpublished approved revisions can be republished
 
 An approved revision that was published and later unpublished can be published again without a new review: the approval covers the revision's content, which cannot change after approval. The review bar keeps "Review: Approved" with Publish enabled; the editor tag shows the app's own "Unpublished" status; the read-only reason is the app's usual one for non-draft revisions. Applies to CMS entries and Website Builder pages. Resolves final-check item H1.
+
+## D122. Unavailable step types are shown disabled
+
+Revises D91: in Add step, every step type is listed. AI without the `aiPowerups` licence and Automation with no definition covering the workflow's model are shown disabled with the reason ("Requires AI Power-Ups", "No automations are available for this model" / "for pages"), and cannot be added. Resolves final-check item H2.
