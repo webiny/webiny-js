@@ -19,3 +19,14 @@ export class DashboardPersistenceError extends BaseError {
         });
     }
 }
+
+export class DashboardValidationError extends BaseError<{ message: string }> {
+    override readonly code = "Dashboard/Validation" as const;
+
+    constructor(message: string) {
+        super({
+            message,
+            data: { message }
+        });
+    }
+}

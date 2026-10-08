@@ -5,7 +5,6 @@
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-graphql/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" },
     { "path": "../api-core-testing/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" }
   ],
@@ -22,8 +21,6 @@
       "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/api-core-testing/*": ["../api-core-testing/src/*"],
       "@webiny/api-core-testing": ["../api-core-testing/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],

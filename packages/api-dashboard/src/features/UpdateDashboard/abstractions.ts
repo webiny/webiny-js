@@ -3,6 +3,7 @@ import { Result } from "@webiny/feature/api";
 import type { DashboardLayout } from "~/domain/types.js";
 import type { DashboardNotAuthenticatedError } from "~/domain/errors.js";
 import type { DashboardPersistenceError } from "~/domain/errors.js";
+import type { DashboardValidationError } from "~/domain/errors.js";
 
 /**
  * UpdateDashboard Use Case - Stores the current identity's dashboard, creating it on first use.
@@ -13,6 +14,7 @@ export interface IUpdateDashboardUseCase {
 
 export interface IUpdateDashboardUseCaseErrors {
     notAuthenticated: DashboardNotAuthenticatedError;
+    validation: DashboardValidationError;
     persistence: DashboardPersistenceError;
 }
 

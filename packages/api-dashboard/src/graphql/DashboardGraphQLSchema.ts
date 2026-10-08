@@ -2,11 +2,9 @@ import { resolve } from "@webiny/api-graphql";
 import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
-import { createZodError } from "@webiny/utils";
 import { ListDashboardsUseCase } from "~/features/ListDashboards/abstractions.js";
 import { UpdateDashboardUseCase } from "~/features/UpdateDashboard/abstractions.js";
 import type { DashboardLayout } from "~/domain/types.js";
-import { updateValidationSchema } from "./validation.js";
 
 const TYPE_DEFS = /* GraphQL */ `
     type Dashboard {
@@ -97,12 +95,7 @@ class DashboardGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
             resolver(updateDashboard: UpdateDashboardUseCase.Interface) {
                 return async ({ args }) => {
                     return resolve(async () => {
-                        const validation = await updateValidationSchema.safeParseAsync(args);
-                        if (!validation.success) {
-                            throw createZodError(validation.error);
-                        }
-
-                        const result = await updateDashboard.execute(validation.data.data);
+                        const result = await updateDashboard.execute(args.data);
                         if (result.isFail()) {
                             throw result.error;
                         }

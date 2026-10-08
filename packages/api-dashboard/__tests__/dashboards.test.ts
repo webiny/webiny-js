@@ -55,7 +55,7 @@ describe("dashboards", () => {
         const response = await updateDashboard({ ...layout, columnCount: 5 });
 
         expect(response.data).toBeNull();
-        expect(response.error).toMatchObject({ code: "VALIDATION_FAILED_INVALID_FIELDS" });
+        expect(response.error).toMatchObject({ code: "Dashboard/Validation" });
         expect(await listDashboards()).toEqual({ data: [], error: null });
     });
 });

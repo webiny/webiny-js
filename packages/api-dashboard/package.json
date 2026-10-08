@@ -16,7 +16,6 @@
     "@webiny/api-core": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "@webiny/utils": "0.0.0",
     "zod": "4.4.3"
   },
   "devDependencies": {

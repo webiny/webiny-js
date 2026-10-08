@@ -3,6 +3,8 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { UpdateDashboardUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { UpdateDashboardRepository } from "./abstractions.js";
 import { DashboardNotAuthenticatedError } from "~/domain/errors.js";
+import { DashboardValidationError } from "~/domain/errors.js";
+import { updateDashboardValidation } from "./schema.js";
 import type { DashboardLayout } from "~/domain/types.js";
 
 class UpdateDashboardUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -19,7 +21,13 @@ class UpdateDashboardUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new DashboardNotAuthenticatedError());
         }
 
-        return await this.repository.save(identity.id, layout);
+        const validation = updateDashboardValidation.safeParse(layout);
+        if (!validation.success) {
+            const [issue] = validation.error.issues;
+            return Result.fail(new DashboardValidationError(issue.message));
+        }
+
+        return await this.repository.save(identity.id, validation.data);
     }
 }
 
