@@ -30,3 +30,15 @@ regeneration by name.
 
 A stage re-run can be read only on output whose shape survived the re-run, and that has to be checked
 first, not assumed.
+
+## Replay what is deployed, not only what the new code produces
+
+A replay covers the artifacts it is fed. #2 (tagging each bound value with the copy it came from) was
+verified by replaying old against new binder on fresh binds, and was correct there. But the tags
+exist only on plans made after it shipped, and the stored plans of 7 of 8 runs predate it, so in
+production it covered 1 run of 8. It was correct where it was built and inert everywhere else, and
+nothing failed to say so.
+
+The replay would have caught it had it included the plans as stored. So a replay of a change that
+reads a field another change writes includes artifacts made before that field existed, and reports
+how many of them the change actually reaches.

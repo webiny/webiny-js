@@ -148,7 +148,7 @@ showing another property's content, not a fidelity blemish.
 
 - Each value is attributed to a copy from the texts the plan holds. A value only another copy has is
   no longer an example; a prop the representative has no value for is told to default to empty.
-- **#2 was in effect on 1 of 8 runs.** Its member tags exist only on plans made after `7bac68a985`,
+- **#2 was in effect on 1 of 8 runs** — a fix verified on the case it was built from, correct there, inert everywhere else; the replay would have caught it had it covered plans made before the tags existed (`../../VERIFYING.md`). Its member tags exist only on plans made after `7bac68a985`,
   and `representativeValues` read an untagged value as the representative's. Only Park City has been
   re-planned since. Untagged values are now attributed by their text (label, alt, item fields).
 - Freehill's "(346) 489-6939" is not another property's number: the representative writes the same
