@@ -1,6 +1,9 @@
 import { createHash, randomUUID } from "node:crypto";
 import { Result } from "@webiny/feature/api";
-import type { GenerationTrace } from "@webiny/remote-components/api/features/generateComponent/abstractions.js";
+import type {
+    GenerationEffort,
+    GenerationTrace
+} from "@webiny/remote-components/api/features/generateComponent/abstractions.js";
 import type { ExtractionError } from "~/domain/errors.js";
 import type { BlobStore, StageArtifactStore } from "~/domain/stage.js";
 
@@ -45,7 +48,7 @@ export interface GenerationLogEntry {
     failures: string[];
     promptRef: string;
     /** Set on a prompt experiment's attempts: its label and the prompt lines it left out. */
-    experiment?: { label: string; ablate: string[] };
+    experiment?: { label: string; ablate: string[]; effort?: GenerationEffort };
 }
 
 export interface GenerationLog {

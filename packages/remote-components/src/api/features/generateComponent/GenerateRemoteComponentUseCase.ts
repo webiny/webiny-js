@@ -12,7 +12,11 @@ import {
 } from "./abstractions.js";
 import { buildComponentPrompt } from "./buildComponentPrompt.js";
 import { parseGeneratedSource } from "./parseGeneratedSource.js";
-import { cachedSystemPrompt, MAX_OUTPUT_TOKENS } from "~/api/features/shared/promptCaching.js";
+import {
+    cachedSystemPrompt,
+    MAX_OUTPUT_TOKENS,
+    withEffort
+} from "~/api/features/shared/promptCaching.js";
 
 interface FilePart {
     type: "file";
@@ -134,7 +138,10 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
             const streamed = await this.ai.streamText({
                 model,
                 connection,
-                ...cachedSystemPrompt(systemText, `${REMOTE_COMPONENT_CAPABILITY}.generate`),
+                ...withEffort(
+                    cachedSystemPrompt(systemText, `${REMOTE_COMPONENT_CAPABILITY}.generate`),
+                    input.effort
+                ),
                 maxOutputTokens: MAX_OUTPUT_TOKENS,
                 abortSignal: input.abortSignal,
                 messages: [

@@ -94,10 +94,17 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         error: ComponentExtractionError
     }
 
-    "A prompt experiment: a label to find its attempts by, and the prompt line ids to leave out."
+    "A prompt experiment: a label to find its attempts by, the prompt line ids to leave out, and optionally how much the model may think."
+    enum ComponentExtractionGenerationEffort {
+        low
+        medium
+        high
+    }
+
     input ComponentExtractionExperimentInput {
         label: String!
         ablate: [String!]!
+        effort: ComponentExtractionGenerationEffort
     }
 
     input ComponentExtractionCreateJobInput {

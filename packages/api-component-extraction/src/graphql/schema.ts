@@ -1,3 +1,4 @@
+import type { GenerationEffort } from "@webiny/remote-components/api/features/generateComponent/abstractions.js";
 import { ErrorResponse, Response } from "@webiny/api-graphql";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
@@ -1577,7 +1578,7 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                 args: {
                     runId: string;
                     signatures: string[];
-                    experiment?: { label: string; ablate: string[] } | null;
+                    experiment?: { label: string; ablate: string[]; effort?: GenerationEffort } | null;
                 };
             }) =>
                 resolve(async () => {
@@ -1651,7 +1652,10 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                                     ? {
                                           experiment: {
                                               label: experiment.label,
-                                              ablate: experiment.ablate
+                                              ablate: experiment.ablate,
+                                              ...(experiment.effort
+                                                  ? { effort: experiment.effort }
+                                                  : {})
                                           }
                                       }
                                     : { replaceInto: { componentsKey } })

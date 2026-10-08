@@ -4,7 +4,10 @@ import { GenerateRemoteComponentUseCase } from "@webiny/remote-components/api/fe
 import { CreateFileUseCase } from "@webiny/api-file-manager/features/file/CreateFile/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { BlobStore } from "~/domain/stage.js";
-import type { GenerationTrace } from "@webiny/remote-components/api/features/generateComponent/abstractions.js";
+import type {
+    GenerationEffort,
+    GenerationTrace
+} from "@webiny/remote-components/api/features/generateComponent/abstractions.js";
 import { SYSTEM_PROMPT_LINE_IDS } from "@webiny/remote-components/api/features/generateComponent/buildComponentPrompt.js";
 import type { AttemptRecord } from "./generationLog.js";
 import {
@@ -141,6 +144,8 @@ export interface GenerationInput {
     slotVariables: Map<string, string[]>;
     /** Prompt lines to leave out, by id, for a prompt experiment. Never set outside one. */
     ablate?: readonly string[];
+    /** How much the model may think, for an effort experiment. Unset: the provider's default. */
+    effort?: GenerationEffort;
     /** The theme's own vocabulary for the shared system prompt; see `systemPromptOverride`. */
     systemOverride?: SystemPromptOverride;
     /** Durable log (errors worth keeping). */
@@ -902,6 +907,7 @@ export const generateComponentAttempts = async (
             prompt: buildPrompt(planned, slotVariables, feedback),
             name: planned.name,
             ablate: [...SYSTEM_PROMPT_OVERRIDE, ...(input.ablate ?? [])],
+            ...(input.effort ? { effort: input.effort } : {}),
             ...(input.systemOverride ?? {}),
             additionalFileIds,
             abortSignal: AbortSignal.timeout(budget.timeoutMs),

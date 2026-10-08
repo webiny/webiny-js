@@ -21,11 +21,19 @@ export interface IGenerateRemoteComponentInput {
      * as a caller's own override of a line measured dead for it. Other callers keep the line.
      */
     ablate?: readonly string[];
+    /**
+     * How much the model may think before answering. Unset leaves the provider's default — for
+     * Anthropic, high — and thinking is most of what a generation is billed for; see
+     * `ai-context/issues/generate-calls-time-out-and-leave-no-output.md`.
+     */
+    effort?: GenerationEffort;
     /** A caller's own theme vocabulary for the system prompt; see `BuildComponentPromptOptions`. */
     tokenCatalog?: string;
     /** Rewrites the worked examples' variables into the caller's theme; see `BuildComponentPromptOptions`. */
     rewriteExampleVariable?: (variable: string, fallback: string) => string | null;
 }
+
+export type GenerationEffort = "low" | "medium" | "high";
 
 /** One model call, as sent and as answered. */
 export interface GenerationTrace {

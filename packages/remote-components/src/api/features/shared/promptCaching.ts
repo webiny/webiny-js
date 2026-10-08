@@ -1,4 +1,5 @@
 import type { Ai } from "@webiny/api-core/features/ai/index.js";
+import type { GenerationEffort } from "~/api/features/generateComponent/abstractions.js";
 
 /**
  * The most a generation or refinement may write. A component with its CSS and example defaults runs to
@@ -37,3 +38,21 @@ export const cachedSystemPrompt = (
     },
     providerOptions: { openai: { promptCacheKey: cacheKey } }
 });
+
+type CallOptions = Pick<Ai.GenerateTextParams, "system" | "providerOptions">;
+
+/**
+ * Sets how much the model may think, for each provider that takes it. Provider options are keyed by
+ * provider, so each ignores the other's. Unset leaves the provider's default.
+ */
+export const withEffort = (options: CallOptions, effort?: GenerationEffort): CallOptions =>
+    effort
+        ? {
+              ...options,
+              providerOptions: {
+                  ...options.providerOptions,
+                  anthropic: { ...options.providerOptions?.anthropic, effort },
+                  openai: { ...options.providerOptions?.openai, reasoningEffort: effort }
+              }
+          }
+        : options;
