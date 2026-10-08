@@ -14,6 +14,12 @@ export interface WidgetConfig {
     description?: string;
     // Heading the widget is listed under in the "Add widget" drawer, usually the app name.
     group?: string;
+    /*
+     * A static stand-in for the widget, shown scaled down in the "Add widget" drawer. Use sample
+     * data and no requests: the drawer renders every preview at once, and the user may not have
+     * access to what the widget shows.
+     */
+    preview?: React.ReactElement;
 }
 
 export interface WidgetProps {
@@ -24,6 +30,7 @@ export interface WidgetProps {
     title?: string;
     description?: string;
     group?: string;
+    preview?: React.ReactElement;
 }
 
 export const Widget = ({
@@ -33,7 +40,8 @@ export const Widget = ({
     pin,
     title,
     description,
-    group
+    group,
+    preview
 }: WidgetProps) => {
     const getId = useIdGenerator("DashboardWidget");
 
@@ -56,7 +64,7 @@ export const Widget = ({
                 array={true}
                 before={placeBefore}
                 after={placeAfter}
-                value={{ name, element, column, pin, title, description, group }}
+                value={{ name, element, column, pin, title, description, group, preview }}
             />
         </ConnectToProperties>
     );

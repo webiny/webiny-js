@@ -6,8 +6,37 @@ import { Routes } from "~/routes.js";
 import { WorkflowStateListView } from "~/presentation/workflowStateList/components/List/WorkflowStateListView.js";
 import { WorkflowStatesOwnWidget } from "~/presentation/workflowStatesWidget/components/WorkflowStatesOwnWidget.js";
 import { WorkflowStatesRequestedWidget } from "~/presentation/workflowStatesWidget/components/WorkflowStatesRequestedWidget.js";
+import { ContentReviewsWidgetPreview } from "~/presentation/workflowStatesWidget/components/ContentReviewsWidgetPreview.js";
+import type { ContentReviewsWidgetPreviewRow } from "~/presentation/workflowStatesWidget/components/ContentReviewsWidgetPreview.js";
 
 const { Route } = AdminConfig;
+
+// Sample entries for the "Add widget" drawer previews.
+const REQUESTED_PREVIEW_ROWS: ContentReviewsWidgetPreviewRow[] = [
+    {
+        title: "Spring product launch",
+        description: "Legal review - Jane Doe, 2 hours ago",
+        color: "#E28743"
+    },
+    {
+        title: "Pricing page update",
+        description: "Editorial review - John Smith, yesterday",
+        color: "#4A90E2"
+    }
+];
+
+const OWN_PREVIEW_ROWS: ContentReviewsWidgetPreviewRow[] = [
+    {
+        title: "Customer story: Acme",
+        description: "Editorial review - Ana Lee, 3 hours ago",
+        color: "#4A90E2"
+    },
+    {
+        title: "Q3 newsletter",
+        description: "Final approval - Mark Ross, 2 days ago",
+        color: "#7B61FF"
+    }
+];
 
 export const ContentReviews = () => {
     return (
@@ -36,6 +65,17 @@ export const ContentReviews = () => {
                 group="Workflows"
                 column="right"
                 element={<WorkflowStatesRequestedWidget />}
+                preview={
+                    <ContentReviewsWidgetPreview
+                        title={
+                            <span>
+                                <span className={"text-accent-primary"}>Content Reviews</span>{" "}
+                                assigned to me
+                            </span>
+                        }
+                        rows={REQUESTED_PREVIEW_ROWS}
+                    />
+                }
             />
             <AdminConfig.Dashboard.Widget
                 name="workflows.own"
@@ -44,6 +84,17 @@ export const ContentReviews = () => {
                 group="Workflows"
                 column="right"
                 element={<WorkflowStatesOwnWidget />}
+                preview={
+                    <ContentReviewsWidgetPreview
+                        title={
+                            <span>
+                                <span className={"text-accent-primary"}>Content Reviews</span>{" "}
+                                assigned by me
+                            </span>
+                        }
+                        rows={OWN_PREVIEW_ROWS}
+                    />
+                }
             />
         </AdminConfig>
     );

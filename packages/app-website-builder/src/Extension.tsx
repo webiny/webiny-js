@@ -113,6 +113,7 @@ export const Extension = () => {
                         group="Website Builder"
                         column={"left"}
                         element={<PagesWidget />}
+                        preview={<PagesWidget />}
                     />
                 </HasPermission>
 

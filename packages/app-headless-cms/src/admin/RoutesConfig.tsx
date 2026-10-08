@@ -133,6 +133,7 @@ export const RoutesConfig = () => {
                     group="Headless CMS"
                     column="left"
                     element={<ContentModelsWidget />}
+                    preview={<ContentModelsWidget />}
                 />
             </HasPermission>
         </AdminConfig>
