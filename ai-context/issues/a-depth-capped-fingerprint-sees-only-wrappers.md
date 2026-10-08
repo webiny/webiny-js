@@ -8,6 +8,16 @@
 > **Status:** open. Found during the #1/#7 work on values merged across copies (2026-10-08,
 > `packages/api-component-extraction/scripts/baseline/reports/2026-10-07/generate-prompt-diagnosis.md`).
 
+## Read this before the fix list
+
+Several passes have fixed symptoms of clusters that should not have been clusters: the union of every
+copy's text in Plan's contract, other copies' values leaking into Generate's examples and defaults
+(#2, #1/#7), and contracts carrying props the section does not have. Those fixes were right, and the
+leakage was real: a migrated site was showing another property's address and phone number. What
+changes is what the residual defect is. Where a cluster mixes unlike sections, the fixes stop the
+wrong content reaching the component; they do not make the contract fit the section. A list of those
+fixes is not a list of this problem solved.
+
 ## What happened
 
 The check run's 2424 Tulane "Hero Section" cluster has 7 members. Its representative, on the home

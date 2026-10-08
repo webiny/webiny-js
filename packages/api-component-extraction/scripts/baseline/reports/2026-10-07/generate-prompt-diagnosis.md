@@ -183,3 +183,11 @@ Found on the way:
   6 and their content starts at 8-9, so it sees only wrappers (tree similarity 1.00). Filed as
   `ai-context/issues/a-depth-capped-fingerprint-sees-only-wrappers.md`; 34 of 95 representatives are
   exposed, concentrated on the G5 template.
+
+## #6 and #5: the measurement correction from this pass
+
+The first measure of whether Generate used the cross-family colour variables it was given read only
+each component's JSX source, not its CSS, where the colours are. It reported 1 of 63; with the CSS it
+is 59 of 63. Read as reported, it would have closed #6 as a non-issue: "the model ignores those
+variables". Same class as the earlier ones: a join that silently covered part of what it claimed to
+measure. A near-zero against a model measured elsewhere at 302 of 307 was the tell.
