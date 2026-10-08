@@ -63,6 +63,7 @@ Review states: **In progress**, **Approved**, **Rejected**, **Cancelled**. Cance
 | In progress | Blocked | Blocked | Blocked |
 | Approved, not yet published | Blocked (to change it: create a new revision, which needs a new review) | Allowed | Allowed |
 | Approved and published | Blocked (same as above) | Already published | Allowed |
+| Approved, published, then unpublished | Blocked (same as above) | Allowed again, no new review [D121] | Allowed |
 | Rejected | Blocked permanently (create a new revision) | Blocked | Allowed |
 | Cancelled | Allowed (same as no review) | Blocked: needs an approved review | Allowed |
 

@@ -592,3 +592,7 @@ Each review keeps a `lastChangedOn` timestamp, updated on every review event: re
 ## D120. Step descriptions are shown to users
 
 A step's description is shown to the requester in the Request review steps preview and to everyone with access in Review details, under the step name. The steps preview and Review details queries return it. Placeholders in the editor differ per step type. From design answer QBZ-46.
+
+## D121. Unpublished approved revisions can be republished
+
+An approved revision that was published and later unpublished can be published again without a new review: the approval covers the revision's content, which cannot change after approval. The review bar keeps "Review: Approved" with Publish enabled; the editor tag shows the app's own "Unpublished" status; the read-only reason is the app's usual one for non-draft revisions. Applies to CMS entries and Website Builder pages. Resolves final-check item H1.
