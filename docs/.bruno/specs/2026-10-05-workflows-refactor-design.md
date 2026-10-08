@@ -1,6 +1,6 @@
 # Workflows refactor: design
 
-Status: draft, 2026-10-05. Consolidates decisions D1-D73 in `docs/.bruno/workflows/decisions.md`; where decisions refine or supersede each other, this document states the final result. Decision ids are given in brackets for traceability. Discovery background lives in `docs/.bruno/workflows/` (`README.md`, `api.md`, `app.md`, `integrations.md`, `infrastructure.md`); the product brief for routing is `docs/.bruno/workflows/routing.md`.
+Status: draft, 2026-10-05, updated 2026-10-08. Consolidates decisions D1-D126 in `docs/.bruno/workflows/decisions.md`; where decisions refine or supersede each other, this document states the final result. Decision ids are given in brackets for traceability. Discovery background lives in `docs/.bruno/workflows/` (`README.md`, `api.md`, `app.md`, `integrations.md`, `infrastructure.md`); the product brief for routing is `docs/.bruno/workflows/routing.md`; the UI design brief is `docs/.bruno/specs/2026-10-06-workflows-ui-design-brief.md` (UI decisions D88-D126).
 
 ## 1. Goals
 
@@ -57,7 +57,9 @@ interface WorkflowStep {
 ```
 
 - v1 validation on create and update (same path): exactly one entry in `models`, the model is publishable, and no other workflow is bound to it. The uniqueness race is accepted [D15, D41].
-- Editing is always allowed. Deleting is blocked while any of the workflow's reviews is `inProgress` (error lists the count); finished reviews do not block it [D81].
+- At least one step ("Add at least one step.") [D108]. AI steps need non-empty `instructions` and a `model` [D101, D109]. Every rule needs a target; required automation settings must be present (the same checks run in the editor before Save).
+- Editing is always allowed. Deleting is blocked while any of the workflow's reviews is `inProgress`; the error carries the exact count and up to 5 of those reviews the caller can read (content reference, title, step position and name). Finished reviews do not block it [D81, D115].
+- No tombstone: a save that finds the workflow deleted only learns that it no longer exists [D123].
 - Designed for many-to-many in v2 (several models per workflow, several workflows per model) [D15].
 
 Step type configs:
@@ -122,6 +124,7 @@ interface Review {
     createdBy: Identity;                 // the requester
     createdOn: string;
     savedOn: string;
+    lastChangedOn: string;              // updated on every review event; list sort key [D119]
 }
 
 type StepState = "pending" | "awaiting" | "inReview" | "approved" | "rejected" | "failed";   // [D4]
@@ -152,6 +155,7 @@ interface Actor {
 - A review carries a full snapshot of its workflow. Editing a workflow never changes running reviews; no steps are inserted into a running review [D81].
 - At most one active review per target revision. Rejected, approved and failed reviews stay active; only cancel deactivates [D23].
 - Secret config fields are kept encrypted in the snapshot and stripped from read responses [D67].
+- `lastChangedOn` changes on request, step reached, start, take over, reassign, approve, reject, fail, restart and content updated by a step; edits outside the review do not touch it [D119].
 
 ### 4.3 Assignment log (`wbyWorkflowAssignment`) [D20, D45]
 
@@ -166,6 +170,10 @@ interface WorkflowSettings {
 ```
 
 No artificial cap; save fails naturally above the DDB item limit. Expired entries are filtered in memory.
+
+- `userId` is unique across the list, enforced on save; an expired entry stays until removed, and excluding someone again means editing their entry [D105].
+- Saves write the whole record; the last save wins, with no version check [D106].
+- `endsOn` is end of the picked day in the saving admin's browser timezone; active or expired is computed from the instant. Editing without changing the date keeps the stored instant [D110, D124].
 
 ### 4.5 `system.workflow` on the target [D29]
 
@@ -206,6 +214,7 @@ Rules:
 - The developer-mode "Remove Review Request" action on the rejected bar stays as an escape hatch [D25].
 - Human actions: start and take over require membership of `candidateTeamIds`, not being the requester, and read access to the target. Exclusions do not block them; exclusions only govern automatic assignment and the picker (brief). Reassign validates the chosen user like a pick: candidate, not excluded, not the requester, can read the target [D33, D61].
 - Exclusions govern new assignments only. Work already held by a user who becomes excluded stays with them (brief).
+- An approved revision that was published and later unpublished can be published again without a new review [D121].
 - When the last step is approved the review is `approved` and publish is allowed. On a workflow-bound model, publish requires an approved review on that revision, enforced in the API (not only the UI); a failed lookup blocks publish. Models without a workflow publish normally [D79].
 
 ### 5.2 Step reached [D2]
@@ -244,6 +253,8 @@ Condition inputs:
 - Folder: the target's current folder and its ancestors (ACO `GetAncestors`, includes the folder itself), evaluated at step reached so later steps see the folder as it is then. `includeDescendants` matches if the rule folder is in that chain.
 - Model: the review's `model`.
 
+A rule whose user target is currently excluded is skipped like any invalid target; the trace and the rule inspector mark it "Skipped" with the exclusion reason [D118].
+
 Every decision writes an assignment-log record and sets the step's `assignmentSource`. Start from the pool and take over also write a record (sources `poolStart`, `takeOver`), so rotation, tie-breaks and "who holds this and why" stay explainable.
 
 Submit-time validation of picks is lenient: `requestReview` rejects only malformed input (unknown step id, step without `allowManualPick`). Everything else is validated when the step is reached.
@@ -275,7 +286,7 @@ Rule targets are also validated when the workflow is saved: user targets must be
 - Runs as an agent loop (`stopWhen`) with tools from the workflow AI tool registry only, filtered by the step's allowlist. Built-in tools: `readTarget`, `updateTargetFields(fieldPath → value)`, scoped to the revision under review and implemented per target adapter. Developers can register more. The global `AiSdkTools` registry is never exposed to AI steps.
 - Structured output: `{ approved: boolean, comment: string, issues: [{ fieldPath?, severity, message, suggestion? }] }`.
 - The step's chosen model is used [D101]. The connection comes from ai-powerups via the "Workflow review" capability (`ResolveAiCapabilityUseCase`); the resolved inline connection is passed to `Ai.generateText` / `streamText`. A model that is no longer available fails the step on reach (restartable).
-- Needs both `advancedPublishingWorkflow` and `aiPowerups`. Without `aiPowerups` the type is hidden in the editor. A disabled capability or lapsed licence fails the step on reach; restartable once fixed.
+- Needs both `advancedPublishingWorkflow` and `aiPowerups`. Without `aiPowerups` the type is listed disabled with the reason in the editor and cannot be added [D122]. A disabled capability or lapsed licence fails the step on reach; restartable once fixed.
 
 ### 7.4 Task execution [D6, D7, D27, D28, D57, D58]
 
@@ -358,10 +369,11 @@ Queries:
 - `listWorkflows`, `getWorkflow`
 - `listStepTypes` (with config JSON schemas), `listAutomationDefinitions` (with scope and settings JSON schemas), `listAiTools`
 - `getReview(id)`, `getTargetReview(model, targetRevisionId)`
-- `listReviews(list: assignedToMe | pool | teamInReview | myRequests, where, sort, limit, after)` [D47]
-- `listUsers` (requires `editor`) [D48]
+- `listReviews(list: assignedToMe | pool | teamInReview | myRequests | failedSteps, where, sort: lastChangedOn_ASC | lastChangedOn_DESC, limit, after)` [D47, D112, D119]
+- `listUsers` (requires `editor`) [D48]; also accepts a list of ids and reports which do not exist, so the editor can show saved targets as "Deleted user" [D117]
 - `listStepCandidates(workflowId, stepId)` → `{ id, displayName, excluded, excludedReason }`; `excludedReason` only for `editor` / `reassign` [D48, D97]
-- `inspectRouting(stepConfig, model, requesterId, folderId)` → resulting owner, per-rule trace, strategy choice; evaluates unsaved config [D45, D95]
+- `inspectRouting(stepConfig, model, requesterId, folderId)` → resulting owner, per-rule trace (including skipped rules and why), strategy choice; evaluates unsaved config; returns no per-person load numbers [D45, D95, D104, D118]
+- The workflow editor's model list: `search`, `limit`, cursor; 20 per page, sorted by name [D116]
 - `folderExists(id)` → boolean [D69]
 - `getSettings`
 
@@ -369,11 +381,13 @@ Mutations:
 
 - `storeWorkflow`, `deleteWorkflow`
 - `requestReview(model, targetRevisionId, title, picks: [{ stepId, userId }])`
-- `startStep`, `takeOverStep`, `reassignStep(reviewId, userId)`, `approveStep(comment?)`, `rejectStep(comment)`, `restartStep`, `cancelReview`
+- `startStep`, `takeOverStep(notifyPreviousOwner = true)` [D111], `reassignStep(reviewId, userId)`, `approveStep(comment?)`, `rejectStep(comment)`, `restartStep`, `cancelReview`
 - Validation: review title at least 5 characters; reject comment at least 10 characters [D100].
 - `updateSettings`
 
 Errors return `code`, `message` and `data`; the admin must keep them (today gateways drop them).
+
+Review reads (steps preview, review details) include each step's `description` [D120]. Reviewer candidates carry no workload counts [D104].
 
 ## 11. Review lists [D47]
 
@@ -383,8 +397,11 @@ Errors return `code`, `message` and `data`; the admin must keep them (today gate
 | Pool | `currentStepState = awaiting`, my teams intersect `currentCandidateTeamIds`, I am not the requester |
 | Team in review | `currentStepState = inReview`, owner is not me, my teams intersect `currentCandidateTeamIds` |
 | My requests | `createdBy = me` |
+| Failed steps (only with `reassign`) | `currentStepState = failed`, current step type AI or automation [D112] |
 
 All lists also require `isActive: true` [D75].
+
+Sort only by `lastChangedOn`: oldest first by default in Assigned to me, Pool, Team in review and Failed steps; newest first in My requests; the client can switch the direction [D119].
 
 Lists keep the folder-level read filter on the target (today's `WorkflowStateFilter` decorators), so review titles from restricted folders do not leak. Pagination is rewritten: keep fetching pages until `limit` is filled, return the cursor of the last scanned record, and do not promise an exact `totalCount` [D76].
 
@@ -395,16 +412,21 @@ Lists keep the folder-level read filter on the target (today's `WorkflowStateFil
 | Step reached, pool | Members of the candidate teams |
 | Step started by routing, pick or reassign | Owner |
 | Reassign | Old and new owner |
+| Take over | Previous owner, unless the taker opts out [D111] |
 | Review approved, review rejected, step failed | Requester |
 | Review cancelled | Current owner, if any |
 
 - An assignment never notifies the whole team.
 - Pool notifications exclude the requester and excluded users.
-- Channels: transports configured on the step (`notifications[]`, e.g. e-mail via `MailNotificationTransport`) plus a websocket message every time.
+- Channels: transports configured on the step (`notifications[]`, e.g. e-mail via `MailNotificationTransport`) plus a websocket message every time. Each event uses the channels of the step where it happened: approved the last step, rejected the rejecting step, cancelled the current step, failed the failed step [D103].
+- AI and automation steps are named by their step title as decider or owner, never by the automation's name [D107, D126].
 - Workflows only sends the websocket message (`WebsocketsSendToIdentityUseCase`); the websockets layer handles delivery. No stored inbox.
+- On the client an in-app notification is a toast through the admin `Notifications` feature; every workflow toast, including confirmations of the user's own actions, uses that one stack [D102, D125].
 - On the client every workflow websocket message also fires `WorkflowStateChangedEvent`, so the open bar, lists and editor refetch; the editor reloads the entry when its content changed.
 
 ## 13. Admin UI
+
+Screens, states and copy are specified in the UI design brief (`docs/.bruno/specs/2026-10-06-workflows-ui-design-brief.md`, decisions D88-D126) and the Claude Design prototypes (local copy, `/design-pull`). This section keeps the architectural points.
 
 ### 13.1 Architecture
 
@@ -434,7 +456,7 @@ Lists keep the folder-level read filter on the target (today's `WorkflowStateFil
 
 ### 13.5 Lists and dashboard
 
-- Content reviews page with the four lists [D47].
+- Content Reviews page with the five lists (Failed steps only with `reassign`), "Content type" column and filter [D47, D112, D113].
 - Dashboard widgets: "For me to review" (tabs Assigned to me, Pool) and "My requests"; "View all" opens the matching list [D71].
 - CMS and WB content lists: row selectability reads `system.workflow.reviewState`; nothing else changes [D70].
 
