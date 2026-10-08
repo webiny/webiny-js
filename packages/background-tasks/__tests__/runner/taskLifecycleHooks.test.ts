@@ -10,7 +10,9 @@ import {
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { Container } from "@webiny/di";
 import { TaskDataStatus } from "~/api/types.js";
-import { TasksCrud } from "~/api/TasksCrud.js";
+import { AbortTaskUseCase } from "~/api/features/AbortTask/abstractions.js";
+import { CreateTaskUseCase } from "~/api/features/CreateTask/index.js";
+import { TriggerTaskUseCase } from "~/api/features/TriggerTask/abstractions.js";
 
 describe("task lifecycle hooks", () => {
     describe("onBeforeTrigger", () => {
@@ -52,7 +54,7 @@ describe("task lifecycle hooks", () => {
             const context = await contextFactory();
 
             // Trigger should call onBeforeTrigger
-            await context.container.resolve(TasksCrud).trigger({
+            await context.container.resolve(TriggerTaskUseCase).execute({
                 definition: "testOnBeforeTrigger",
                 input: { test: "value" },
                 name: "Test task"
@@ -112,11 +114,13 @@ describe("task lifecycle hooks", () => {
             const context = await contextFactory();
             const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
-            const task = await context.container.resolve(TasksCrud).createTask({
-                definitionId: "testOnDone",
-                input: { test: "input" },
-                name: "Test task"
-            });
+            const task = (
+                await context.container.resolve(CreateTaskUseCase).execute({
+                    definitionId: "testOnDone",
+                    input: { test: "input" },
+                    name: "Test task"
+                })
+            ).value;
 
             await runner.run(
                 createMockEvent({
@@ -183,11 +187,13 @@ describe("task lifecycle hooks", () => {
             const context = await contextFactory();
             const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
-            const task = await context.container.resolve(TasksCrud).createTask({
-                definitionId: "testOnError",
-                input: { test: "input" },
-                name: "Test task"
-            });
+            const task = (
+                await context.container.resolve(CreateTaskUseCase).execute({
+                    definitionId: "testOnError",
+                    input: { test: "input" },
+                    name: "Test task"
+                })
+            ).value;
 
             await runner.run(
                 createMockEvent({
@@ -247,14 +253,16 @@ describe("task lifecycle hooks", () => {
 
             const context = await contextFactory();
 
-            const task = await context.container.resolve(TasksCrud).createTask({
-                definitionId: "testOnAbort",
-                input: { test: "input" },
-                name: "Test task"
-            });
+            const task = (
+                await context.container.resolve(CreateTaskUseCase).execute({
+                    definitionId: "testOnAbort",
+                    input: { test: "input" },
+                    name: "Test task"
+                })
+            ).value;
 
             // Abort the task
-            await context.container.resolve(TasksCrud).abort({
+            await context.container.resolve(AbortTaskUseCase).execute({
                 id: task.id,
                 message: "Testing abort"
             });
@@ -313,11 +321,13 @@ describe("task lifecycle hooks", () => {
             const context = await contextFactory();
             const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
-            const task = await context.container.resolve(TasksCrud).createTask({
-                definitionId: "testOnMaxIterations",
-                input: { test: "input" },
-                name: "Test task"
-            });
+            const task = (
+                await context.container.resolve(CreateTaskUseCase).execute({
+                    definitionId: "testOnMaxIterations",
+                    input: { test: "input" },
+                    name: "Test task"
+                })
+            ).value;
 
             // Run first iteration
             await runner.run(
@@ -402,7 +412,7 @@ describe("task lifecycle hooks", () => {
             const context = await contextFactory();
             const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
-            const task = await context.container.resolve(TasksCrud).trigger({
+            const task = await context.container.resolve(TriggerTaskUseCase).execute({
                 definition: "testMultipleHooks",
                 input: {},
                 name: "Test task"

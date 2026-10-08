@@ -7,7 +7,9 @@ import { createRunner } from "@webiny/background-tasks/testing/index.js";
 import type { CreateIndexesRunner } from "@webiny/api-search-index-tasks";
 import { TenantIndexFactory } from "@webiny/api-search-index-tasks";
 import { createTestModelIndexName } from "@webiny/api-headless-cms-utils-os/testing/index.js";
-import { TasksCrud } from "@webiny/background-tasks/api/TasksCrud.js";
+import { CreateTaskUseCase } from "@webiny/background-tasks/api";
+import { GetRunnableTaskDefinitionUseCase } from "@webiny/background-tasks/api";
+import { GetTaskUseCase } from "@webiny/background-tasks/api";
 
 interface Context extends TasksContext, CmsContext {}
 
@@ -74,22 +76,22 @@ describe("Create index task", () => {
             }
         });
 
-        const task = await context.container
-            .resolve(TasksCrud)
-            .createTask<CreateIndexesRunner.Input>({
+        const task = (
+            await context.container.resolve(CreateTaskUseCase).execute<CreateIndexesRunner.Input>({
                 name: "Create indexes",
                 definitionId: "elasticsearchCreateIndexes",
                 input: {
                     matching: "-car"
                 }
-            });
+            })
+        ).value;
 
         // `getDefinition` composes the definition's metadata with its handler's behaviour, which
         // is what the runner receives. Resolving the raw TaskDefinition gives metadata only: the
         // hooks live on the handler it names.
         const createIndexesTask = context.container
-            .resolve(TasksCrud)
-            .getDefinition("elasticsearchCreateIndexes")!;
+            .resolve(GetRunnableTaskDefinitionUseCase)
+            .execute("elasticsearchCreateIndexes").value!;
 
         const runner = createRunner({
             context,
@@ -133,7 +135,7 @@ describe("Create index task", () => {
         });
         expect(result.status).toBe("done");
 
-        const doneTask = await context.container.resolve(TasksCrud).getTask(task.id);
+        const doneTask = await context.container.resolve(GetTaskUseCase).execute(task.id);
         expect(doneTask?.output).toEqual({
             done
         });

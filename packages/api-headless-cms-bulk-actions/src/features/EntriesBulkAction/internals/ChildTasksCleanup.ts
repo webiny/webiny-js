@@ -1,11 +1,30 @@
-import type { ITask, TasksCrud } from "@webiny/background-tasks/api";
+import type { DeleteTaskLogUseCase } from "@webiny/background-tasks/api";
+import type { DeleteTaskUseCase } from "@webiny/background-tasks/api";
+import type { ITask } from "@webiny/background-tasks/api";
+import type { ListTaskLogsUseCase } from "@webiny/background-tasks/api";
+import type { ListTasksUseCase } from "@webiny/background-tasks/api";
 import { TaskLogItemType } from "@webiny/background-tasks/api";
 import type { IUseCase } from "~/abstractions/index.js";
 
 export interface IChildTasksCleanupExecuteParams {
-    tasksCrud: TasksCrud.Interface;
+    listTasks: ListTasksUseCase.Interface;
+    listTaskLogs: ListTaskLogsUseCase.Interface;
+    deleteTaskLog: DeleteTaskLogUseCase.Interface;
+    deleteTask: DeleteTaskUseCase.Interface;
     task: ITask;
 }
+
+const deleteTasks = async (
+    deleteTask: DeleteTaskUseCase.Interface,
+    taskIds: string[]
+): Promise<void> => {
+    for (const taskId of taskIds) {
+        const result = await deleteTask.execute(taskId);
+        if (result.isFail()) {
+            throw result.error;
+        }
+    }
+};
 
 /**
  * Cleanup of the child tasks.
@@ -13,9 +32,9 @@ export interface IChildTasksCleanupExecuteParams {
  */
 export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecuteParams, void> {
     public async execute(params: IChildTasksCleanupExecuteParams): Promise<void> {
-        const { tasksCrud, task } = params;
+        const { listTasks, listTaskLogs, deleteTaskLog, deleteTask, task } = params;
 
-        const { items: childTasks } = await tasksCrud.listTasks({
+        const { items: childTasks } = await listTasks.execute({
             where: {
                 parentId: task.id
             },
@@ -29,18 +48,22 @@ export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecutePara
 
         const childTaskIdList = childTasks.map(childTask => childTask.id);
 
-        const { items: childLogs } = await tasksCrud.listLogs({
+        const logsResult = await listTaskLogs.execute({
             where: {
                 task_in: childTaskIdList
             },
             limit: 10000
         });
+        if (logsResult.isFail()) {
+            throw logsResult.error;
+        }
+        const childLogs = logsResult.value.items;
 
         /**
          * No logs found. Proceed with deleting the child tasks.
          */
         if (childLogs.length === 0) {
-            await this.deleteTasks(tasksCrud, childTaskIdList);
+            await deleteTasks(deleteTask, childTaskIdList);
         }
 
         const deletedChildTaskLogIdList: string[] = [];
@@ -51,7 +74,10 @@ export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecutePara
             if (log.items.some(item => item.type === TaskLogItemType.ERROR)) {
                 continue;
             }
-            await tasksCrud.deleteLog(log.id);
+            const deleted = await deleteTaskLog.execute(log.id);
+            if (deleted.isFail()) {
+                throw deleted.error;
+            }
             if (deletedChildTaskLogIdList.includes(log.task)) {
                 continue;
             }
@@ -60,15 +86,6 @@ export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecutePara
         /**
          * Now we can remove the tasks.
          */
-        await this.deleteTasks(tasksCrud, deletedChildTaskLogIdList);
-    }
-
-    /**
-     * Helper method to delete tasks by ID.
-     */
-    private async deleteTasks(tasksCrud: TasksCrud.Interface, taskIds: string[]): Promise<void> {
-        for (const taskId of taskIds) {
-            await tasksCrud.deleteTask(taskId);
-        }
+        await deleteTasks(deleteTask, deletedChildTaskLogIdList);
     }
 }

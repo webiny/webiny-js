@@ -10,7 +10,7 @@ import {
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { Container } from "@webiny/di";
-import { TasksCrud } from "~/api/TasksCrud.js";
+import { CreateTaskUseCase } from "~/api/features/CreateTask/index.js";
 
 const TASK_ID = "taskRunnerTask";
 
@@ -64,11 +64,13 @@ describe("task tenant", () => {
             }
         });
 
-        const task = await context.container.resolve(TasksCrud).createTask({
-            definitionId: TASK_ID,
-            input: {},
-            name: "My task name"
-        });
+        const task = (
+            await context.container.resolve(CreateTaskUseCase).execute({
+                definitionId: TASK_ID,
+                input: {},
+                name: "My task name"
+            })
+        ).value;
 
         const { handle } = useTaskHandler({
             plugins: [
