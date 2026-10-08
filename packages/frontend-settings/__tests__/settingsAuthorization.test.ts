@@ -11,12 +11,15 @@ import {
     FrontendUpdateSettingsUseCase,
     FrontendUpdateSettingsRepository
 } from "~/api/features/updateSettings/abstractions.js";
+import { StarterKitsProvider } from "~/api/features/starterKits/abstractions.js";
 import { FrontendUpdateSettingsUseCase as UpdateSettingsUseCaseImpl } from "~/api/features/updateSettings/FrontendUpdateSettingsUseCase.js";
 
 /*
- * `getPermission()` is async. Checking its result without awaiting it tests a Promise, which is
- * always truthy, so every signed-in user passed. These tests pin the awaited behavior: a denied
- * or failed lookup must never reach the repository.
+ * Reading the domain only needs a signed-in user, because content editors need it to preview.
+ * Starter kits contain the frontend integration API key token, so only callers with
+ * `dev-tools.frontend-settings.*` get them, and only they can update. `getPermission()` is async, and
+ * checking its result without awaiting it tests a Promise, which is always truthy. These tests
+ * pin the awaited behavior: a denied or failed lookup must never reach the update repository.
  */
 type Lookup = "allowed" | "denied" | "rejected";
 
@@ -39,10 +42,12 @@ const setup = (params: { anonymous?: boolean; lookup: Lookup }) => {
 
     const getRepository = { execute: vi.fn().mockResolvedValue({ domain: "https://site.com" }) };
     const updateRepository = { execute: vi.fn().mockResolvedValue(true) };
+    const starterKits = [{ id: "nextjs", label: "Next.js", config: "API_KEY=secret-token" }];
 
     container.registerInstance(IdentityContext, createIdentityContext(params) as any);
     container.registerInstance(FrontendGetSettingsRepository, getRepository);
     container.registerInstance(FrontendUpdateSettingsRepository, updateRepository);
+    container.registerInstance(StarterKitsProvider, { execute: async () => starterKits });
     container.register(GetSettingsUseCaseImpl);
     container.register(UpdateSettingsUseCaseImpl);
 
@@ -62,7 +67,8 @@ describe("Frontend settings authorization", () => {
 
         const read = await getSettings.execute();
         expect(read.isOk()).toBe(true);
-        expect(read.value).toEqual({ domain: "https://site.com" });
+        expect(read.value.domain).toBe("https://site.com");
+        expect(read.value.starterKits).toHaveLength(1);
 
         const update = await updateSettings.execute({ domain: "https://new.com" });
         expect(update.isOk()).toBe(true);
@@ -71,20 +77,20 @@ describe("Frontend settings authorization", () => {
         expect(updateRepository.execute).toHaveBeenCalledWith({ domain: "https://new.com" });
     });
 
-    it("denies a caller without the permission before touching the repository", async () => {
+    it("lets a signed-in user without the permission read the domain, but nothing else", async () => {
         const { getSettings, updateSettings, getRepository, updateRepository } = setup({
             lookup: "denied"
         });
 
         const read = await getSettings.execute();
-        expect(read.isFail()).toBe(true);
-        expect(read.error).toBeInstanceOf(NotAuthorizedError);
+        expect(read.isOk()).toBe(true);
+        expect(read.value).toEqual({ domain: "https://site.com", starterKits: [] });
 
         const update = await updateSettings.execute({ domain: "https://evil.com" });
         expect(update.isFail()).toBe(true);
         expect(update.error).toBeInstanceOf(NotAuthorizedError);
 
-        expect(getRepository.execute).not.toHaveBeenCalled();
+        expect(getRepository.execute).toHaveBeenCalledTimes(1);
         expect(updateRepository.execute).not.toHaveBeenCalled();
     });
 
@@ -101,8 +107,8 @@ describe("Frontend settings authorization", () => {
         expect(updateRepository.execute).not.toHaveBeenCalled();
     });
 
-    it("does not touch the repository when the permission lookup fails", async () => {
-        const { getSettings, updateSettings, getRepository, updateRepository } = setup({
+    it("returns nothing and does not update when the permission lookup fails", async () => {
+        const { getSettings, updateSettings, updateRepository } = setup({
             lookup: "rejected"
         });
 
@@ -111,7 +117,6 @@ describe("Frontend settings authorization", () => {
             "Permission lookup failed."
         );
 
-        expect(getRepository.execute).not.toHaveBeenCalled();
         expect(updateRepository.execute).not.toHaveBeenCalled();
     });
 });
