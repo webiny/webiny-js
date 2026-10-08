@@ -60,6 +60,8 @@ class RefineRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
         const trace = (rest: Partial<GenerationTrace>) =>
             emitTrace(input.onTrace, {
                 model: modelNameOf(model),
+                // Refinement sets no effort: the provider's default applies.
+                effort: null,
                 system: systemText,
                 user: userMessage,
                 imageFileIds: input.additionalFileIds ?? [],
