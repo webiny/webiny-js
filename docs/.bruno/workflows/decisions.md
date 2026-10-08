@@ -544,3 +544,7 @@ Wherever the UI or a notification names who decided or who owns a step, AI and A
 ## D108. A workflow needs at least one step
 
 Saving a workflow with no steps is rejected on the server and in the editor ("Add at least one step."). The editor still lets the admin delete the last step while editing. To stop requiring reviews for a model, delete its workflow. Resolves gap A7 from the design review.
+
+## D109. AI instructions are required
+
+An AI step's Instructions (the reviewer prompt) must be non-empty, enforced on the server and in the editor. No minimum length and no default prompt. Resolves gap A8 from the design review.

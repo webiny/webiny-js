@@ -156,7 +156,7 @@ Common fields for every step type:
 
 ### 3.3 AI step
 
-- **Instructions**: multi-line text, the reviewer prompt ("Check tone of voice, flag any personal data…").
+- **Instructions** (required): multi-line text, the reviewer prompt ("Check tone of voice, flag any personal data…") [D109].
 - **Model** (required): choose a specific AI model from the list of available models [D101]. If a saved model is no longer available, show a warning; the step would fail when reached.
 - **Tools**: choose which tools the AI may use, from a list with name and description. Some tools can change the content under review (e.g. "Update fields"); mark these clearly.
 - Without the AI Power-Ups licence: the type cannot be added; existing AI steps show read-only with a licence warning.
