@@ -36,7 +36,10 @@ import type {
     PlanArtifact
 } from "~/domain/artifacts.js";
 import { readComponent } from "~/domain/generatedComponents.js";
-import { buildComponentPrompt } from "~/features/stages/generate/componentGeneration.js";
+import {
+    buildComponentPrompt,
+    withRoleAwareTypeTokens
+} from "~/features/stages/generate/componentGeneration.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import type { Correction, Run } from "~/domain/types.js";
 import {
@@ -696,6 +699,7 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                      */
                     const slotVariables = new Map<string, string[]>();
                     let themeError: string | null = null;
+                    let promptPlanned = planned;
                     const job = await jobRepository.get(run.jobId);
                     if (job.isOk()) {
                         const manifest = await manifestResolver.resolve(
@@ -706,6 +710,7 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                             for (const slot of manifest.value.slots) {
                                 slotVariables.set(String(slot.path), slot.cssVariables);
                             }
+                            promptPlanned = withRoleAwareTypeTokens(planned, manifest.value);
                         } else {
                             themeError = manifest.error.message;
                         }
@@ -716,7 +721,7 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     return {
                         signature: args.signature,
                         name: planned.name,
-                        prompt: buildComponentPrompt(planned, slotVariables),
+                        prompt: buildComponentPrompt(promptPlanned, slotVariables),
                         /** Null unless the theme could not be resolved, in which case the prompt has no variables. */
                         themeError
                     };

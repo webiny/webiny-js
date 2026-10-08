@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ThemeManifest } from "@webiny/theme-common";
 import type { CapturedNode } from "~/domain/artifacts.js";
-import { sectionTypeScale, themeTypeRoles } from "./sectionTypeScale.js";
+import { roleAwareTypeToken, sectionTypeScale, themeTypeRoles } from "./sectionTypeScale.js";
 
 const node = (
     tag: string,
@@ -45,6 +45,7 @@ describe("sectionTypeScale", () => {
                 fontSize: 60,
                 lineHeight: 66,
                 elements: 1,
+                headings: 1,
                 token: { path: "type.h1", cssVariable: "--wby-type-h1-font-size", fontSize: 60 },
                 example: "Heading"
             },
@@ -52,6 +53,7 @@ describe("sectionTypeScale", () => {
                 fontSize: 16,
                 lineHeight: 24,
                 elements: 2,
+                headings: 0,
                 token: {
                     path: "type.body",
                     cssVariable: "--wby-type-body-font-size",
@@ -200,5 +202,59 @@ describe("sectionTypeScale style", () => {
         expect(sectionTypeScale(section, null).map(entry => entry.example)).toEqual([
             "Availability:"
         ]);
+    });
+    describe("a heading role and a body role of the same size", () => {
+        // thevibe's extracted theme, in manifest order: heading.3 and body are both 22px.
+        const VIBE = manifest([
+            ["type.heading.3", "--wby-type-heading-3-size", "22px"],
+            ["type.body", "--wby-type-body-size", "22px"]
+        ]);
+
+        it("gives body text the body role", () => {
+            const section = node("section", {}, undefined, [
+                node("p", { fontSize: "22px" }, "Find your home in the center of it all")
+            ]);
+            expect(sectionTypeScale(section, VIBE)[0].token?.path).toBe("type.body");
+        });
+
+        it("gives a heading the heading role", () => {
+            const section = node("section", {}, undefined, [
+                node("h3", { fontSize: "22px" }, "Explore The Location")
+            ]);
+            expect(sectionTypeScale(section, VIBE)[0].token?.path).toBe("type.heading.3");
+        });
+
+        it("takes a step from a plan made before headings were recorded as body text", () => {
+            const roles = themeTypeRoles(VIBE);
+            const step = {
+                fontSize: 22,
+                elements: 3,
+                token: {
+                    path: "type.heading.3",
+                    cssVariable: "--wby-type-heading-3-size",
+                    fontSize: 22
+                }
+            };
+            expect(roleAwareTypeToken(step, roles)?.path).toBe("type.body");
+        });
+
+        it("leaves a step that was not tied as it was", () => {
+            const roles = themeTypeRoles(
+                manifest([
+                    ["type.heading.3", "--wby-type-heading-3-size", "22px"],
+                    ["type.body", "--wby-type-body-size", "16px"]
+                ])
+            );
+            const step = {
+                fontSize: 22,
+                elements: 3,
+                token: {
+                    path: "type.heading.3",
+                    cssVariable: "--wby-type-heading-3-size",
+                    fontSize: 22
+                }
+            };
+            expect(roleAwareTypeToken(step, roles)?.path).toBe("type.heading.3");
+        });
     });
 });

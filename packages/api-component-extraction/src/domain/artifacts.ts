@@ -662,6 +662,11 @@ export interface TypeScaleEntry {
     lineHeight: number | null;
     /** How many text-bearing elements of the section use this size. */
     elements: number;
+    /**
+     * How many of those are headings (`h1`-`h6`, or inside one). Breaks a tie between a heading role
+     * and a body role of the same size; absent on plans made before it was recorded.
+     */
+    headings?: number;
     token: { path: string; cssVariable: string; fontSize: number } | null;
     /**
      * The style that sets this step apart, where captured: the family as the page declares it (the

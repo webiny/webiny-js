@@ -19,6 +19,9 @@ import type {
 } from "~/domain/artifacts.js";
 import { isTranslucent } from "~/features/shared/translucency.js";
 import { createCopyAttribution, ownStructuredValues } from "./copyAttribution.js";
+import { bindingCrossesFamily, crossesFamily } from "./colourFamilies.js";
+import type { ThemeManifest } from "@webiny/theme-common";
+import { roleAwareTypeToken, themeTypeRoles } from "~/features/stages/plan/sectionTypeScale.js";
 import { stageArtifactKey } from "~/constants.js";
 import {
     combineValidation,
@@ -429,14 +432,40 @@ const colourLines = (component: PlannedComponent): string[] => {
         "",
         "The colours this section measured, largest area first. Use the variable given for each:",
         ...colours.map(colour =>
-            colour.token
-                ? `- ${colour.role} ${colour.hex} — use var(${colour.token.cssVariable})`
-                : `- ${colour.role} ${colour.hex} — no theme variable is near this colour, use ${colour.hex} directly`
+            !colour.token
+                ? `- ${colour.role} ${colour.hex} — no theme variable is near this colour, use ${colour.hex} directly`
+                : crossesFamily(colour.role, colour.token.path)
+                  ? `- ${colour.role} ${colour.hex} — the theme has this colour only as ${colour.token.path}, which is not a ${colour.role} colour; use ${colour.hex} directly`
+                  : `- ${colour.role} ${colour.hex} — use var(${colour.token.cssVariable})`
         ),
         "",
         "Do not substitute a different theme colour for one listed here, and do not write a hex value",
         "where a variable is given — a hardcoded colour survives no theme change."
     ];
+};
+
+/**
+ * The plan's type steps with a heading/body tie decided by the elements rather than manifest order.
+ *
+ * Applied here, where the theme manifest is at hand, so plans made before Plan recorded `headings`
+ * get it too: the replay of #2 measured fresh output and missed that 7 of 8 stored plans predated the
+ * fix. See `roleAwareTypeToken`.
+ */
+export const withRoleAwareTypeTokens = (
+    planned: PlannedComponent,
+    manifest: ThemeManifest
+): PlannedComponent => {
+    if (!planned.typeScale?.length) {
+        return planned;
+    }
+    const roles = themeTypeRoles(manifest);
+    return {
+        ...planned,
+        typeScale: planned.typeScale.map(step => ({
+            ...step,
+            token: roleAwareTypeToken(step, roles)
+        }))
+    };
 };
 
 /**
@@ -523,12 +552,16 @@ const buildPrompt = (
     const props = component.props.flatMap(prop => propLines(prop, "- "));
     // Resolve each planned binding's slot path to the theme's real css variable name(s) — the model must
     // reference these exact names, not a name derived from the slot path.
-    const bindings = component.tokenBindings.map(binding => {
-        const names = slotVariables.get(binding.token) ?? [];
-        return names.length > 0
-            ? `- ${binding.target}: ${names.map(name => `var(${name})`).join(" or ")}`
-            : `- ${binding.target}: theme token "${binding.token}" — use the closest allowed variable below`;
-    });
+    // A binding that puts a text token on a background (or the reverse) is dropped, as the colour
+    // list refuses the same mapping — otherwise the two lines would contradict each other.
+    const bindings = component.tokenBindings
+        .filter(binding => !bindingCrossesFamily(binding))
+        .map(binding => {
+            const names = slotVariables.get(binding.token) ?? [];
+            return names.length > 0
+                ? `- ${binding.target}: ${names.map(name => `var(${name})`).join(" or ")}`
+                : `- ${binding.target}: theme token "${binding.token}" — use the closest allowed variable below`;
+        });
     const allowed = [...new Set([...slotVariables.values()].flat())];
     const lines = [
         `Build a "${component.type}" website section component named "${component.name}".`,

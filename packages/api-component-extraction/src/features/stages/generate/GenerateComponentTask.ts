@@ -14,6 +14,7 @@ import type { PlanArtifact } from "~/domain/artifacts.js";
 import {
     generateComponentAttempts,
     generateResultKey,
+    withRoleAwareTypeTokens,
     type ComponentResult
 } from "./componentGeneration.js";
 import { hasRecordedResult, recordResultOnce } from "./recordResultOnce.js";
@@ -111,8 +112,10 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         let validVariables = new Set<string>();
         let manifestAvailable = false;
         const manifest = await this.manifestResolver.resolve(job.themeEntryId, job.themeVersion);
+        let promptPlanned = planned;
         if (manifest.isOk()) {
             manifestAvailable = true;
+            promptPlanned = withRoleAwareTypeTokens(planned, manifest.value);
             for (const slot of manifest.value.slots) {
                 slotVariables.set(String(slot.path), slot.cssVariables);
             }
@@ -146,7 +149,7 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
                     {
                         runId: input.runId,
                         stageVersion: input.stageVersion,
-                        planned,
+                        planned: promptPlanned,
                         validVariables,
                         manifestAvailable,
                         slotVariables,

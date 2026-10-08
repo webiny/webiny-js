@@ -52,7 +52,7 @@ const px = (value: unknown): number | null => {
     return match[2] === "rem" || match[2] === "em" ? n * 16 : n;
 };
 
-interface ThemeTypeRole {
+export interface ThemeTypeRole {
     path: string;
     cssVariable: string;
     fontSize: number;
@@ -90,6 +90,47 @@ export const themeTypeRoles = (manifest: ThemeManifest): ThemeTypeRole[] => {
         roles.push({ path: String(slot.path), cssVariable: sized, fontSize: size });
     }
     return roles;
+};
+
+const isHeadingRole = (path: string): boolean => /heading|display/i.test(path);
+
+/**
+ * Breaks a tie between a heading role and a body role at the same distance from a step's size.
+ *
+ * `nearestRole` matches by size alone and keeps the first role at the smallest distance, and the
+ * manifest lists headings first. The extracted themes reuse sizes across roles — thevibe's body and
+ * `heading.3` are both 22px, `lead` and `heading.4` both 20px — so 151 of 266 type steps across five
+ * sites were decided by that order, and the heading won every one: a paragraph was told to use
+ * `--wby-type-heading-3-size`. A tie now goes to a heading role only when every element at the step is
+ * a heading. A step with a clear nearest role is left as it was. Where a plan predates `headings`, the
+ * step is taken as body text: it is a tie-break, so it cannot move a step that was not tied.
+ */
+export const roleAwareTypeToken = (
+    step: Pick<TypeScaleEntry, "fontSize" | "elements" | "headings" | "token">,
+    roles: ThemeTypeRole[]
+): TypeScaleEntry["token"] => {
+    const token = step.token;
+    const chosen = token ? roles.find(role => role.path === token.path) : undefined;
+    if (!token || !chosen) {
+        return token;
+    }
+    const wantHeading =
+        step.headings !== undefined && step.elements > 0 && step.headings === step.elements;
+    if (isHeadingRole(chosen.path) === wantHeading) {
+        return token;
+    }
+    const distance = (role: ThemeTypeRole) =>
+        Math.round(Math.abs(role.fontSize - step.fontSize) * 10) / 10;
+    const rival = roles.find(
+        role => isHeadingRole(role.path) === wantHeading && distance(role) === distance(chosen)
+    );
+    return rival
+        ? {
+              path: rival.path,
+              cssVariable: rival.cssVariable,
+              fontSize: Math.round(rival.fontSize * 10) / 10
+          }
+        : token;
 };
 
 const nearestRole = (size: number, roles: ThemeTypeRole[]): ThemeTypeRole | null => {
@@ -216,12 +257,14 @@ export const sectionTypeScale = (
         fontSize: number;
         lineHeight: number | null;
         elements: number;
+        headings: number;
         style: StepStyle;
         letterSpacing: number | null;
         example: string;
     }[] = [];
 
-    const walk = (current: CapturedNode): void => {
+    const walk = (current: CapturedNode, inHeading = false): void => {
+        const heading = inHeading || /^h[1-6]$/i.test(current.tag);
         const runs = current.textRuns ?? (current.text ? [current.text] : []);
         const text = runs.join(" ").replace(/\s+/g, " ").trim();
         const box = current.box;
@@ -236,6 +279,7 @@ export const sectionTypeScale = (
             );
             if (existing) {
                 existing.elements++;
+                existing.headings += heading ? 1 : 0;
                 if (existing.lineHeight === null) {
                     existing.lineHeight = lineHeight;
                 }
@@ -247,6 +291,7 @@ export const sectionTypeScale = (
                     fontSize: size,
                     lineHeight,
                     elements: 1,
+                    headings: heading ? 1 : 0,
                     style,
                     letterSpacing: px(current.styles?.letterSpacing),
                     example: text.length > EXAMPLE_CAP ? `${text.slice(0, EXAMPLE_CAP - 1)}…` : text
@@ -254,7 +299,7 @@ export const sectionTypeScale = (
             }
         }
         for (const child of current.children ?? []) {
-            walk(child);
+            walk(child, heading);
         }
     };
     walk(node);
@@ -264,7 +309,22 @@ export const sectionTypeScale = (
         .slice(0, MAX_STEPS)
         .sort((a, b) => b.fontSize - a.fontSize)
         .map(entry => {
-            const role = nearestRole(entry.fontSize, roles);
+            const nearest = nearestRole(entry.fontSize, roles);
+            const token = roleAwareTypeToken(
+                {
+                    fontSize: entry.fontSize,
+                    elements: entry.elements,
+                    headings: entry.headings,
+                    token: nearest
+                        ? {
+                              path: nearest.path,
+                              cssVariable: nearest.cssVariable,
+                              fontSize: Math.round(nearest.fontSize * 10) / 10
+                          }
+                        : null
+                },
+                roles
+            );
             const font = entry.style.family
                 ? fonts.find(candidate => candidate.family === entry.style.family)
                 : undefined;
@@ -273,13 +333,8 @@ export const sectionTypeScale = (
                 lineHeight:
                     entry.lineHeight === null ? null : Math.round(entry.lineHeight * 10) / 10,
                 elements: entry.elements,
-                token: role
-                    ? {
-                          path: role.path,
-                          cssVariable: role.cssVariable,
-                          fontSize: Math.round(role.fontSize * 10) / 10
-                      }
-                    : null,
+                headings: entry.headings,
+                token,
                 ...(entry.style.stack ? { fontFamily: entry.style.stack } : {}),
                 ...(font ? { fontFamilyToken: { cssVariable: font.cssVariable } } : {}),
                 ...(entry.style.weight !== null ? { fontWeight: entry.style.weight } : {}),
