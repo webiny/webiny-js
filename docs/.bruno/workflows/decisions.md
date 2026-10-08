@@ -608,3 +608,7 @@ No tombstone is kept for deleted workflows. When a save finds the workflow gone,
 ## D124. Exclusion end date display and editing
 
 Refines D110. The list cell shows "End of {date}" when the stored instant falls at 23:59 in the viewer's timezone, otherwise date and time ("4 Nov 2026, 06:59"); hover shows the full time with the timezone. The Edit dialog pre-fills the viewer's local date. If the date is not changed, the stored instant is kept exactly; only a changed date is recomputed to the end of the newly picked local day. Resolves final-check item H4.
+
+## D125. One toast stack for everything
+
+Extends D102. Every toast in workflows UI — incoming notifications and confirmations of the user's own actions in the editors and Content Reviews — goes through the existing admin `Notifications` feature as one stack: bottom right, 8 seconds, paused on hover or focus, up to 3, newest at the bottom, with a close button and an optional link. No separate confirmation pill. Resolves final-check item H5.
