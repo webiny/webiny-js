@@ -1,9 +1,7 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { registerApiCoreStorageOperations } from "@webiny/api-core";
-import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
-import { RegisterExtensionPlugin } from "@webiny/handler";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { TestIdentity } from "@webiny/api-core-testing";
 import { TestAuthenticator } from "@webiny/api-core-testing";
@@ -73,7 +71,6 @@ interface SaveMyDashboardResponse {
 
 export const useGraphQLHandler = (params: { identity?: IdentityData } = {}) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps("cms");
 
     const handler = createTestHttpHandler({
         root: container => {
@@ -87,12 +84,6 @@ export const useGraphQLHandler = (params: { identity?: IdentityData } = {}) => {
         child: async container => {
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
             ApiCoreFeature.register(container, { wcpLicense: undefined });
-            for (const plugin of [cmsStorage.plugins].flat(Infinity as 1)) {
-                if (plugin instanceof RegisterExtensionPlugin) {
-                    plugin.apply({ container } as any);
-                }
-            }
-            HeadlessCmsFeature.register(container, { type: "manage" });
             DashboardAppFeature.register(container);
             GraphQLEngineFeature.register(container);
         }

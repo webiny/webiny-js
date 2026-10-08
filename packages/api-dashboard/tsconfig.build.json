@@ -4,12 +4,10 @@
   "references": [
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-graphql/tsconfig.build.json" },
-    { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api-core-testing/tsconfig.build.json" },
-    { "path": "../event-handler-core/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" }
+    { "path": "../event-handler-core/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -22,8 +20,6 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
-      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
-      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/utils/*": ["../utils/src/*"],
@@ -31,9 +27,7 @@
       "@webiny/api-core-testing/*": ["../api-core-testing/src/*"],
       "@webiny/api-core-testing": ["../api-core-testing/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/event-handler-core": ["../event-handler-core/src"]
     }
   }
 }
