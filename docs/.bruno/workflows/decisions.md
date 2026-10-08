@@ -528,3 +528,7 @@ Every notification uses the "Notify via" channels of the step where its event ha
 ## D104. No workload counts in reviewer pickers
 
 Reviewer pickers (Request review, Reassign, rule targets) show the person's name and, when it applies, "Unavailable" with the reason (D97). No per-person count of open reviews: it would need a count query per candidate on every picker open, which is expensive with many users, and it would expose colleagues' workload. Resolves gap A3 from the design review.
+
+## D105. One exclusion entry per user
+
+`exclusions[].userId` is unique, enforced on the server when the settings are saved. Expired entries stay until removed. Adding a user who already has an entry (active or expired) is rejected with "This user is already in the list. Edit it instead."; the UI links to that entry. Excluding someone again means editing their entry with a new end date. No exclusion history. Extends D16. Resolves gap A4 from the design review.

@@ -327,7 +327,7 @@ E-mail for a review-level event follows the "Notify via" of the step where it ha
 
 **Shows.** List of excluded users: name, reason (optional), until (optional end date), status (active or expired).
 
-**Actions.** Add (pick user, optional reason, optional end date), edit, remove. The end date is picked as a date and means "until the end of that day" in the admin's timezone [D73].
+**Actions.** Add (pick user, optional reason, optional end date), edit, remove. The end date is picked as a date and means "until the end of that day" in the admin's timezone [D73]. Each user appears at most once: adding someone already in the list (active or expired) says "This user is already in the list. Edit it instead." and links to their entry; excluding them again means editing that entry [D105].
 
 **Behaviour to communicate.**
 - Excluded users are skipped by automatic assignment and shown as "Unavailable" in reviewer pickers.
