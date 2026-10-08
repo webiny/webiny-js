@@ -1,23 +1,24 @@
 import { createFeature } from "@webiny/feature/api";
-import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { TaskDefinitionDefaultsDecorator } from "./decorators/TaskDefinitionDefaultsDecorator.js";
 import { SelfCleaningTaskHandlerDecorator } from "./decorators/SelfCleaningTaskHandlerDecorator.js";
 import { TaskController } from "./features/TaskController/index.js";
 import { TaskPrivateModel } from "./crud/TaskPrivateModel.js";
 import { TaskLogPrivateModel } from "./crud/TaskLogPrivateModel.js";
 import { BackgroundTaskSettingsModel } from "./models/BackgroundTaskSettingsModel.js";
-import { createDefinitionCrud } from "./crud/definition.tasks.js";
-import { createServiceCrud } from "./crud/service.tasks.js";
-import { createTaskCrud } from "./crud/crud.tasks.js";
+import { TasksCrudAdapter } from "./crud/TasksCrudAdapter.js";
+import { TaskModelProvider } from "./domain/task/TaskModelProvider.js";
+import { TaskLogModelProvider } from "./domain/task/TaskLogModelProvider.js";
+import { TasksRepository } from "./domain/task/TasksRepository.js";
+import { TaskLogsRepository } from "./domain/task/TaskLogsRepository.js";
 import { TaskExecutionContextFeature } from "./features/TaskExecutionContext/feature.js";
 import { TaskHandlerResolverFeature } from "./features/TaskHandlerResolver/feature.js";
 import { GetRunnableTaskDefinitionFeature } from "./features/GetRunnableTaskDefinition/feature.js";
 import { ListTaskDefinitionsFeature } from "./features/ListTaskDefinitions/feature.js";
-import {
-    CleanupTaskSubtreeUseCase,
-    CleanupTaskSubtreeUseCaseImpl
-} from "./features/CleanupTaskSubtree/index.js";
-import { TasksCrud } from "./TasksCrud.js";
+import { CleanupTaskSubtreeFeature } from "./features/CleanupTaskSubtree/index.js";
+import { CreateTaskFeature } from "./features/CreateTask/index.js";
+import { UpdateTaskFeature } from "./features/UpdateTask/index.js";
+import { DeleteTaskFeature } from "./features/DeleteTask/index.js";
+import { BackgroundTaskServiceFeature } from "./features/TaskService/index.js";
 import { TriggerTaskFeature } from "./features/TriggerTask/feature.js";
 import { AbortTaskFeature } from "./features/AbortTask/feature.js";
 import { GetTaskFeature } from "./features/GetTask/feature.js";
@@ -49,26 +50,25 @@ export const BackgroundTasksFeature = createFeature({
         GetRunnableTaskDefinitionFeature.register(container);
         ListTaskDefinitionsFeature.register(container);
 
-        // Build the tasks CRUD facade from the container and register it as the canonical TasksCrud
-        // abstraction (plus the legacy TaskService alias). The factory methods resolve TasksCrud
-        // lazily for sibling calls, so registering the assembled object up front is sufficient.
-        const tasksCrud = {
-            ...createDefinitionCrud(container),
-            ...createTaskCrud(container),
-            ...createServiceCrud(container)
-        };
-        container.registerInstance(TasksCrud, tasksCrud);
-        container.registerInstance(TaskService, tasksCrud);
+        // Task and log storage.
+        container.register(TaskModelProvider);
+        container.register(TaskLogModelProvider);
+        container.register(TasksRepository);
+        container.register(TaskLogsRepository);
 
-        // Task CRUD use cases (must be after TasksCrud is registered).
-        TriggerTaskFeature.register(container);
-        AbortTaskFeature.register(container);
+        // Task use cases, and the public TaskService (trigger, abort, service info) on top of them.
         GetTaskFeature.register(container);
         ListTasksFeature.register(container);
-        container.registerInstance(
-            CleanupTaskSubtreeUseCase,
-            new CleanupTaskSubtreeUseCaseImpl(container.resolve(TasksCrud))
-        );
+        CreateTaskFeature.register(container);
+        UpdateTaskFeature.register(container);
+        DeleteTaskFeature.register(container);
+        CleanupTaskSubtreeFeature.register(container);
+        BackgroundTaskServiceFeature.register(container);
+        TriggerTaskFeature.register(container);
+        AbortTaskFeature.register(container);
+
+        // The old all-in-one TasksCrud API, for the callers that still use it.
+        container.register(TasksCrudAdapter);
 
         // Execution context (singleton), controller, and the built-in test task.
         TaskExecutionContextFeature.register(container);

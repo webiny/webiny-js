@@ -1,2 +1,2 @@
 export { CleanupTaskSubtreeUseCase } from "./abstractions.js";
-export { CleanupTaskSubtreeUseCaseImpl } from "./CleanupTaskSubtreeUseCase.js";
+export { CleanupTaskSubtreeFeature } from "./feature.js";
