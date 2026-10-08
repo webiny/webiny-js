@@ -38,6 +38,12 @@ roughly $1.35 more on the high arm. Total reported $5.67 against an estimate of 
 5. **Failed.** The control's spacing changed at medium and at low.
 6. **First-attempt failures did not rise at low** (10/10), but colour and type flags did (above).
 
+**Prediction 6 failed in the instructive direction.** Low passed 10 of 10 first attempts and produced
+worse components: literal colours where it was given a variable, a heading at 32px against a measured
+45px. A validator-based quality measure cannot see that; it is the same gap as the 63% finding.
+Anyone revisiting this decision will reach for pass rates first, and pass rates say low is the best
+arm. Quality here was read from the colour, type and spacing checks, in the outputs.
+
 Props a contract carries were not measured: Plan is the same in every arm by construction, so the check
 cannot move in a dry-run Generate.
 
