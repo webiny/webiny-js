@@ -63,7 +63,7 @@ earlier measure was got wrong too. Describe the source from the source artifact.
 
 1. Image on the refine path — done, `cf6b7088c7`.
 2. Rule 11 against input-driven backgrounds (#8) — done, `bcb0b9b36b`.
-3. Data defects: #2 (done, `7bac68a985`, below), then #3 (done, `ebbc2893bb`, below), then #1 and #7 (done, `95eb1116db`, below), then #6 and #5.
+3. Data defects: #2 (done, `7bac68a985`, below), then #3 (done, `ebbc2893bb`, below), then #1 and #7 (done, `95eb1116db`, below), then #6 and #5 (done, `f3972c6219`, below).
 4. Ablation of the prohibitions, widened, including components where a prohibition should not bind.
 
 The token list and the worked examples are not cut: they are shared with the general system prompt and
@@ -191,3 +191,32 @@ each component's JSX source, not its CSS, where the colours are. It reported 1 o
 is 59 of 63. Read as reported, it would have closed #6 as a non-issue: "the model ignores those
 variables". Same class as the earlier ones: a join that silently covered part of what it claimed to
 measure. A near-zero against a model measured elsewhere at 302 of 307 was the tell.
+
+## #6 and #5 result
+
+Fix `f3972c6219`, applied in Generate (with the manifest it already resolves), so stored plans get it
+without re-running Cluster, Classify or Plan.
+
+- #6: a colour mapped to a token of a contradicting family (background to text, text to surface,
+  border to text) is given as a hex, with the line saying the theme has it only under the other
+  family; Plan bindings that make the same crossing are dropped. 28 of 362 measured colours, 22
+  bindings. Accent and page-surface borders are left.
+- #5: 151 of 266 type steps had been decided by manifest order (headings first, so the heading won
+  every tie; the extracted themes reuse sizes across roles). A tie now goes to a heading role only when
+  every element at the step is a heading. Plan records `headings` per step from now on.
+- **Applied to stored plans, not learned from them.** All 227 stored steps predate `headings`, so the
+  fallback (take the step as body text) is what production runs. Measured against the pages before
+  shipping it: of 113 re-tied steps, 92 are body text (right; all 92 were wrong before), 14 are all
+  headings (now wrong: section headings set at 20px, moved to `lead`), 7 mixed. The alternative of
+  taking the section's largest step as a heading scored 76 right, 30 wrong, and was not used.
+- Replay over all 95 stored plans, untagged ones included: 78 predicted, 78 changed, no misses either
+  way; the other 17 byte-identical.
+- Generate twice each on thevibe Hero Intro, Tulane Property Highlights Links and Westland Contact Form:
+  6 of 6 use none of the variables the fix removed from the prompt (`text-muted` and `text-primary` on
+  backgrounds, `heading-3/4/5-size` on body steps) and put no text colour on a background. Before the
+  fix all three did both. Westland Contact Form failed validation in both runs on a missing "Message
+  (1750 character limit)" and invented `--wby-space-*` variables; the component from before the fix
+  omits that text too, so the omission predates this change.
+
+Upstream of both: theme extraction produces themes that hold a dark background only as a text colour
+and give body roles the sizes of heading roles. These corrections are downstream of that.
