@@ -10,9 +10,42 @@ export type SystemPromptLineId = (typeof SYSTEM_PROMPT_LINE_IDS)[number];
 export interface BuildComponentPromptOptions {
     /** Lines to leave out: for a prompt experiment, or a caller's override of a line measured dead for it. */
     ablate?: readonly string[];
+    /**
+     * A caller's own theme vocabulary, in place of the catalog of every token `@webiny/theme-common`
+     * knows. For a caller that validates against a theme's manifest, which lists fewer variables than
+     * the catalog: told the catalog, the model uses variables the caller then rejects.
+     */
+    tokenCatalog?: string;
+    /**
+     * Rewrites a variable the worked examples use, given its name and fallback, into what the caller's
+     * theme has: a replacement `var(...)` or a literal. Return null to keep it. The examples otherwise
+     * teach variables the caller's theme may not define.
+     */
+    rewriteExampleVariable?: (variable: string, fallback: string) => string | null;
 }
 
 export function buildComponentPrompt(options: BuildComponentPromptOptions = {}): string {
+    const rewrite = options.rewriteExampleVariable;
+    const prompt = buildPromptText(options);
+    if (!rewrite) {
+        return prompt;
+    }
+    const examples = prompt.indexOf("## Examples");
+    if (examples < 0) {
+        return prompt;
+    }
+    return (
+        prompt.slice(0, examples) +
+        prompt
+            .slice(examples)
+            .replace(
+                /var\(\s*(--wby-[\w-]+)\s*,\s*([^()]*?)\s*\)/g,
+                (whole, variable: string, fallback: string) => rewrite(variable, fallback) ?? whole
+            )
+    );
+}
+
+function buildPromptText(options: BuildComponentPromptOptions): string {
     const ablate = new Set(options.ablate ?? []);
     // The prohibition is stated twice, here and in the input table; an experiment leaves out both.
     const listCell = ablate.has("system.rule-17-multiple")
@@ -345,7 +378,7 @@ The active theme defines these CSS custom properties on \`:root\`. Reference the
 
 **Keep a foreground and its background on the same footing.** These colour tokens flip between light and dark mode, so a \`--wby-color-text-*\` token (or any theme colour) used as text MUST sit on a theme *background* token — then they flip together and stay legible. When you hardcode a background (a decorative gradient or a fixed colour/image), hardcode the text colour on it too, picked to contrast with that specific background (e.g. \`color: #fff\` on a dark gradient). NEVER put a theme text token on a hardcoded background: the text flips with the mode while the background does not, so it becomes unreadable in one mode. In particular \`--wby-color-text-inverse\` is the theme's *inverse-surface* text (white in light mode, dark in dark mode) — only use it over a theme surface, never over a fixed dark background.
 
-${buildTokenCatalogSection()}
+${options.tokenCatalog ?? buildTokenCatalogSection()}
 
 ## Examples
 

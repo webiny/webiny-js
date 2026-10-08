@@ -51,7 +51,11 @@ class GenerateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface
         // With any instructions the project added to the capability in settings.
         const systemText = withAdditionalInstructions(
             resolved.value,
-            buildComponentPrompt({ ablate: input.ablate })
+            buildComponentPrompt({
+                ablate: input.ablate,
+                tokenCatalog: input.tokenCatalog,
+                rewriteExampleVariable: input.rewriteExampleVariable
+            })
         );
 
         const started = Date.now();

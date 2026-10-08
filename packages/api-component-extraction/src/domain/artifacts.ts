@@ -751,6 +751,19 @@ export interface TokenBinding {
     token: string;
 }
 
+/** The spacing a section measured, by kind. See `sectionSpacing`. */
+export type SpacingKind = "gap" | "container" | "section" | "control-y" | "control-x";
+
+export interface SpacingEntry {
+    kind: SpacingKind;
+    /** The most common value of this kind in the section, in px. */
+    px: number;
+    /** How many elements use it. */
+    elements: number;
+    /** The slot made for this kind, when its value is this one. */
+    token: { path: string; cssVariable: string; px: number } | null;
+}
+
 export interface PlannedComponent {
     signature: string;
     name: string;
@@ -791,6 +804,11 @@ export interface PlannedComponent {
      * picture, so the numbers should describe that picture.
      */
     typeScale?: TypeScaleEntry[];
+    /**
+     * The section's measured spacing, attached when a prompt is built from the representative's
+     * captured tree (not stored on the plan, so every stored plan gets it).
+     */
+    spacing?: SpacingEntry[];
     /**
      * The alignments the reference section's text uses, most text first.
      *

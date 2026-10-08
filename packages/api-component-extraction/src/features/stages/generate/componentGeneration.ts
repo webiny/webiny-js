@@ -16,10 +16,12 @@ import type {
     ComponentProp,
     GeneratedComponent,
     PlannedComponent,
+    SpacingEntry,
     ValidationResult
 } from "~/domain/artifacts.js";
 import { isTranslucent } from "~/features/shared/translucency.js";
 import { createCopyAttribution, ownStructuredValues } from "./copyAttribution.js";
+import type { SystemPromptOverride } from "./themeVocabulary.js";
 import { bindingCrossesFamily, crossesFamily } from "./colourFamilies.js";
 import type { ThemeManifest } from "@webiny/theme-common";
 import { roleAwareTypeToken, themeTypeRoles } from "~/features/stages/plan/sectionTypeScale.js";
@@ -141,6 +143,8 @@ export interface GenerationInput {
     slotVariables: Map<string, string[]>;
     /** Prompt lines to leave out, by id, for a prompt experiment. Never set outside one. */
     ablate?: readonly string[];
+    /** The theme's own vocabulary for the shared system prompt; see `systemPromptOverride`. */
+    systemOverride?: SystemPromptOverride;
     /** Durable log (errors worth keeping). */
     log: (message: string, error?: unknown) => Promise<void>;
     /** Live heartbeat (progress the operator watches). */
@@ -345,6 +349,41 @@ export const unboundImageLines = (component: PlannedComponent): string[] => {
         ...images.map(
             image =>
                 `- ${image.url} — ${image.width}x${image.height}px${image.alt ? ` (alt: "${image.alt}")` : ""}`
+        )
+    ];
+};
+
+const SPACING_KIND: Record<SpacingEntry["kind"], string> = {
+    section: "section padding, top and bottom",
+    container: "padding inside cards, panels and containers",
+    gap: "gap between items in a stack or row",
+    "control-y": "padding inside buttons and inputs, top and bottom",
+    "control-x": "padding inside buttons and inputs, left and right"
+};
+
+/**
+ * The spacing the section measured, by the job each value does.
+ *
+ * Captured on every element and read by nothing before this, while the shared prompt's examples spaced
+ * components with the library's scale. Each kind is given as the theme's variable for it where that
+ * carries the section's value, and as px where it does not. On the five demo sites it mostly does not:
+ * the themes' spacing slots were not measured from these sections.
+ */
+const spacingLines = (component: PlannedComponent): string[] => {
+    const spacing = component.spacing ?? [];
+    if (spacing.length === 0) {
+        return [];
+    }
+    return [
+        "",
+        "The spacing this section measured — the most common value of each kind, and how many elements use it:",
+        ...spacing.map(
+            entry =>
+                `- ${SPACING_KIND[entry.kind]}: ${entry.px}px (${entry.elements}) — ${
+                    entry.token
+                        ? `use var(${entry.token.cssVariable})`
+                        : `no theme variable carries this value, use ${entry.px}px directly`
+                }`
         )
     ];
 };
@@ -622,6 +661,7 @@ const buildPrompt = (
         ...typeScaleLines(component),
         ...alignmentLines(component),
         ...layoutLines(component),
+        ...spacingLines(component),
         ...imageFactLines(component),
         "",
         "Preserve this text content exactly:",
@@ -857,6 +897,7 @@ export const generateComponentAttempts = async (
             prompt: buildPrompt(planned, slotVariables, feedback, new Set(input.ablate ?? [])),
             name: planned.name,
             ablate: [...SYSTEM_PROMPT_OVERRIDE, ...(input.ablate ?? [])],
+            ...(input.systemOverride ?? {}),
             additionalFileIds,
             abortSignal: AbortSignal.timeout(budget.timeoutMs),
             onTrace: recorded => {

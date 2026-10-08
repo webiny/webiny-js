@@ -75,6 +75,9 @@ import {
     type ReviewedOutput
 } from "~/domain/review.js";
 import { checkReachability } from "~/features/shared/reachability.js";
+import type { ThemeManifest } from "@webiny/theme-common";
+import { loadRepresentativeNode } from "~/features/stages/generate/representativeNode.js";
+import { sectionSpacing } from "~/features/stages/plan/sectionSpacing.js";
 import { ListRemoteComponentsUseCase } from "@webiny/remote-components/api/features/listComponents/abstractions.js";
 
 /** Thin resolvers: authorize, delegate, map onto the `{ data, error }` envelope. */
@@ -658,14 +661,16 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
             RunRepository,
             JobRepository,
             StageArtifactStore,
-            ThemeManifestResolver
+            ThemeManifestResolver,
+            BlobStore
         ],
         resolver(
             permissions: ComponentExtractionPermissions.Interface,
             runRepository: RunRepository.Interface,
             jobRepository: JobRepository.Interface,
             store: StageArtifactStore.Interface,
-            manifestResolver: ThemeManifestResolver.Interface
+            manifestResolver: ThemeManifestResolver.Interface,
+            blobs: BlobStore.Interface
         ) {
             return ({ args }: { args: { runId: string; signature: string } }) =>
                 resolve(async () => {
@@ -701,6 +706,7 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     const slotVariables = new Map<string, string[]>();
                     let themeError: string | null = null;
                     let promptPlanned = planned;
+                    let sectionManifest: ThemeManifest | null = null;
                     const job = await jobRepository.get(run.jobId);
                     if (job.isOk()) {
                         const manifest = await manifestResolver.resolve(
@@ -712,11 +718,25 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                                 slotVariables.set(String(slot.path), slot.cssVariables);
                             }
                             promptPlanned = withRoleAwareTypeTokens(planned, manifest.value);
+                            sectionManifest = manifest.value;
                         } else {
                             themeError = manifest.error.message;
                         }
                     } else {
                         themeError = job.error.message;
+                    }
+
+                    // The same measured spacing GenerateComponentTask adds, so this shows what it sends.
+                    const sectionNode = await loadRepresentativeNode(
+                        { store, blobs },
+                        run.stages,
+                        planned
+                    );
+                    if (sectionNode) {
+                        promptPlanned = {
+                            ...promptPlanned,
+                            spacing: sectionSpacing(sectionNode, sectionManifest)
+                        };
                     }
 
                     return {

@@ -21,6 +21,10 @@ export interface IGenerateRemoteComponentInput {
      * as a caller's own override of a line measured dead for it. Other callers keep the line.
      */
     ablate?: readonly string[];
+    /** A caller's own theme vocabulary for the system prompt; see `BuildComponentPromptOptions`. */
+    tokenCatalog?: string;
+    /** Rewrites the worked examples' variables into the caller's theme; see `BuildComponentPromptOptions`. */
+    rewriteExampleVariable?: (variable: string, fallback: string) => string | null;
 }
 
 /** One model call, as sent and as answered. */

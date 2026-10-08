@@ -19,6 +19,9 @@ import {
 } from "./componentGeneration.js";
 import { hasRecordedResult, recordResultOnce } from "./recordResultOnce.js";
 import { replaceGeneratedComponent } from "./replaceGeneratedComponent.js";
+import { loadRepresentativeNode } from "./representativeNode.js";
+import { systemPromptOverride, type SystemPromptOverride } from "./themeVocabulary.js";
+import { sectionSpacing } from "~/features/stages/plan/sectionSpacing.js";
 import { appendGenerationLog } from "./generationLog.js";
 
 // Left at the end of the invocation to write the result after the last attempt.
@@ -123,9 +126,11 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         let manifestAvailable = false;
         const manifest = await this.manifestResolver.resolve(job.themeEntryId, job.themeVersion);
         let promptPlanned = planned;
+        let systemOverride: SystemPromptOverride | undefined;
         if (manifest.isOk()) {
             manifestAvailable = true;
             promptPlanned = withRoleAwareTypeTokens(planned, manifest.value);
+            systemOverride = systemPromptOverride(manifest.value);
             for (const slot of manifest.value.slots) {
                 slotVariables.set(String(slot.path), slot.cssVariables);
             }
@@ -135,6 +140,24 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         } else {
             await log.info({
                 message: `Generating "${planned.name}" without token-binding validation: ${manifest.error.message}`
+            });
+        }
+
+        // The section's measured spacing, from its captured tree. Measured here rather than in Plan so
+        // stored plans get it too; a section that cannot be read goes without, as before.
+        const sectionNode = await loadRepresentativeNode(
+            { store: this.artifactStore, blobs: this.blobs },
+            runResult.value.stages,
+            planned
+        );
+        if (sectionNode) {
+            promptPlanned = {
+                ...promptPlanned,
+                spacing: sectionSpacing(sectionNode, manifest.isOk() ? manifest.value : null)
+            };
+        } else {
+            await log.info({
+                message: `"${planned.name}": its section's captured tree could not be read; generating without measured spacing.`
             });
         }
 
@@ -160,6 +183,7 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
                         runId: input.runId,
                         stageVersion: input.stageVersion,
                         planned: promptPlanned,
+                        ...(systemOverride ? { systemOverride } : {}),
                         validVariables,
                         manifestAvailable,
                         slotVariables,
