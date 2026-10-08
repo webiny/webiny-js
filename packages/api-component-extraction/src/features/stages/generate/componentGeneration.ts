@@ -128,8 +128,13 @@ export interface GenerationDeps {
  * `scripts/baseline/reports/2026-10-08/ablation-design.md`). The extraction prompt's own lines, plus the
  * shared system prompt's (`SYSTEM_PROMPT_LINE_IDS`). Nothing else can be removed.
  */
-// Every extraction line measured so far has been removed; the list stays for the next experiment.
-export const EXTRACTION_PROMPT_LINE_IDS = [] as const;
+// The three content prohibitions, unmeasured until scripts/baseline/reports/2026-10-08/
+// prohibitions-design.md. Every extraction line measured before them has been removed.
+export const EXTRACTION_PROMPT_LINE_IDS = [
+    "extraction.no-other-text",
+    "extraction.no-invented-urls",
+    "extraction.urls-exactly"
+] as const;
 
 /**
  * The shared system prompt's lines this pipeline leaves out on every call: its own override of the
@@ -142,6 +147,9 @@ export const PROMPT_LINE_IDS: readonly string[] = [
     ...EXTRACTION_PROMPT_LINE_IDS,
     ...SYSTEM_PROMPT_LINE_IDS
 ];
+
+type Ablation = ReadonlySet<string>;
+const NO_ABLATION: Ablation = new Set();
 
 export interface GenerationInput {
     runId: string;
@@ -279,7 +287,7 @@ const alignmentLines = (component: PlannedComponent): string[] => {
  * The URL is given as the page's own, exactly as the observed `<img>` values are, and with the same
  * instruction not to substitute anything else.
  */
-const backgroundImageLines = (component: PlannedComponent): string[] => {
+const backgroundImageLines = (component: PlannedComponent, ablate: Ablation): string[] => {
     const all = component.backgroundImages ?? [];
     const sizing = (image: (typeof all)[number]) => {
         const how = [image.size, image.position, image.repeat].filter(Boolean).join(" / ");
@@ -294,13 +302,17 @@ const backgroundImageLines = (component: PlannedComponent): string[] => {
             "This section's background is painted with an image, not a colour. Set it as a CSS",
             "background-image on the section, with the sizing given:",
             ...covers.map(sizing),
-            "",
-            "Use these URLs exactly as given. Do not substitute a stock photograph, and do not replace the",
-            "image with a flat background colour."
+            ...(ablate.has("extraction.urls-exactly")
+                ? []
+                : [
+                      "",
+                      "Use these URLs exactly as given. Do not substitute a stock photograph, and do not replace the",
+                      "image with a flat background colour."
+                  ])
         );
     }
     if (tints.length > 0) {
-        lines.push("", ...tintLines(tints, sizing));
+        lines.push("", ...tintLines(tints, sizing, ablate));
     }
     return lines;
 };
@@ -317,7 +329,8 @@ const backgroundImageLines = (component: PlannedComponent): string[] => {
  */
 const tintLines = (
     tints: NonNullable<PlannedComponent["backgroundImages"]>,
-    sizing: (image: NonNullable<PlannedComponent["backgroundImages"]>[number]) => string
+    sizing: (image: NonNullable<PlannedComponent["backgroundImages"]>[number]) => string,
+    ablate: Ablation
 ): string[] =>
     tints.flatMap(image => {
         const opacity = `about ${Math.round((image.opacity ?? 0) * 100)}% opaque`;
@@ -336,8 +349,12 @@ const tintLines = (
                       "CSS background-image:"
                   ]),
             sizing(image),
-            "",
-            "Use the URL exactly as given, and keep both the colour and the image over it."
+            ...(ablate.has("extraction.urls-exactly")
+                ? []
+                : [
+                      "",
+                      "Use the URL exactly as given, and keep both the colour and the image over it."
+                  ])
         ];
     });
 
@@ -571,13 +588,15 @@ export const withRoleAwareTypeTokens = (
 export const buildComponentPrompt = (
     component: PlannedComponent,
     slotVariables: Map<string, string[]>,
-    feedback: string[] = []
-): string => buildPrompt(component, slotVariables, feedback);
+    feedback: string[] = [],
+    ablate: Ablation = NO_ABLATION
+): string => buildPrompt(component, slotVariables, feedback, ablate);
 
 const buildPrompt = (
     component: PlannedComponent,
     slotVariables: Map<string, string[]>,
-    feedback: string[] = []
+    feedback: string[] = [],
+    ablate: Ablation = NO_ABLATION
 ): string => {
     const attribute = createCopyAttribution(component);
     const propLines = (prop: PlannedComponent["props"][number], indent: string): string[] => {
@@ -673,7 +692,7 @@ const buildPrompt = (
               ]
             : []),
         ...colourLines(component),
-        ...backgroundImageLines(component),
+        ...backgroundImageLines(component, ablate),
         ...unboundImageLines(component),
         ...iconLines(component),
         ...typeScaleLines(component),
@@ -686,10 +705,14 @@ const buildPrompt = (
         ...textsToPreserve(component.sourceTexts)
             .slice(0, PRESERVED_TEXT_LIMIT)
             .map(text => `- ${text}`),
-        "",
-        "Show no other text. Do not add a heading, a button, a caption or a sentence the section does",
-        "not have — not even a plausible one. Where the crop shows only an image or a logo, the",
-        "component shows only that."
+        ...(ablate.has("extraction.no-other-text")
+            ? []
+            : [
+                  "",
+                  "Show no other text. Do not add a heading, a button, a caption or a sentence the section does",
+                  "not have — not even a plausible one. Where the crop shows only an image or a logo, the",
+                  "component shows only that."
+              ])
     ];
 
     const observed = component.props.flatMap(prop => structuredLines(prop, "- "));
@@ -699,9 +722,13 @@ const buildPrompt = (
             "These are the images and destinations the section itself used. Put them in the manifest's",
             "`defaults` as the default values for those inputs, exactly as given:",
             ...observed,
-            "",
-            "Do NOT invent image URLs. No stock photography, no placeholder services, no URL that is",
-            "not in the list above — a component that ships one puts it in the customer's library.",
+            ...(ablate.has("extraction.no-invented-urls")
+                ? []
+                : [
+                      "",
+                      "Do NOT invent image URLs. No stock photography, no placeholder services, no URL that is",
+                      "not in the list above — a component that ships one puts it in the customer's library."
+                  ]),
             "",
             "An image is a `createFileInput`, and its value is an object, not a URL: its default is",
             '`{ url: "..." }`, and the component reads `.url` everywhere it uses it — `src={image.url}`,',
@@ -912,7 +939,7 @@ export const generateComponentAttempts = async (
             : [];
         let trace: GenerationTrace | null = null;
         const generated = await deps.generateComponent.execute({
-            prompt: buildPrompt(planned, slotVariables, feedback),
+            prompt: buildPrompt(planned, slotVariables, feedback, new Set(input.ablate ?? [])),
             name: planned.name,
             ablate: [...SYSTEM_PROMPT_OVERRIDE, ...(input.ablate ?? [])],
             effort: input.effort ?? GENERATION_EFFORT,
