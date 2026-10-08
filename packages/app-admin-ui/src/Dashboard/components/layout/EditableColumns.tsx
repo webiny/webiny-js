@@ -23,7 +23,7 @@ export const EditableColumns = ({
 }: EditableColumnsProps) => {
     return (
         <>
-            <DashboardDragLayer titles={titles} />
+            <DashboardDragLayer />
             <div className={"flex gap-lg"} style={{ maxWidth: DASHBOARD_MAX_WIDTH }}>
                 {vm.columns.map((names, index) => (
                     <DashboardWidgetColumn

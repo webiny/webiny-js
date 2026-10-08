@@ -1,7 +1,8 @@
 import React from "react";
 import { useRef } from "react";
 import { useDrop } from "react-dnd";
-import { DASHBOARD_WIDGET_DND_TYPE } from "./DashboardWidgetCard.js";
+import { DASHBOARD_WIDGET_DND_TYPE } from "./dragItem.js";
+import type { DashboardWidgetDragItem } from "./dragItem.js";
 import { DashboardWidgetCard } from "./DashboardWidgetCard.js";
 import { WidgetDropIndicator } from "./WidgetDropIndicator.js";
 import { ColumnEmptyState } from "./ColumnEmptyState.js";
@@ -44,8 +45,9 @@ export const DashboardWidgetColumn = ({
         }
     };
 
-    const [, drop] = useDrop({
+    const [{ item }, drop] = useDrop({
         accept: DASHBOARD_WIDGET_DND_TYPE,
+        collect: monitor => ({ item: monitor.getItem<DashboardWidgetDragItem | null>() }),
         hover: (_item, monitor) => {
             const pointer = monitor.getClientOffset();
             if (!pointer) {
@@ -77,6 +79,12 @@ export const DashboardWidgetColumn = ({
         dropTarget.column === columnIndex &&
         dropTarget.beforeName === name;
 
+    // The slot takes the dragged card's size and names it, so it shows exactly what lands there.
+    let indicator = null;
+    if (item) {
+        indicator = <WidgetDropIndicator title={item.title} height={item.height} />;
+    }
+
     return (
         <div
             ref={node => {
@@ -92,7 +100,7 @@ export const DashboardWidgetColumn = ({
                 }
                 return (
                     <React.Fragment key={name}>
-                        {showIndicatorBefore(name) ? <WidgetDropIndicator /> : null}
+                        {showIndicatorBefore(name) ? indicator : null}
                         <DashboardWidgetCard
                             name={name}
                             title={titles.get(name)?.title ?? name}
@@ -105,7 +113,7 @@ export const DashboardWidgetColumn = ({
                     </React.Fragment>
                 );
             })}
-            {names.length > 0 && showIndicatorBefore(null) && <WidgetDropIndicator />}
+            {names.length > 0 && showIndicatorBefore(null) && indicator}
             {/* An empty column stays put and becomes the target itself, like the editor's empty slots. */}
             {names.length === 0 && (
                 <ColumnEmptyState

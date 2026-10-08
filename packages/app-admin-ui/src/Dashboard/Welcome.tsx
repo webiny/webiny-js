@@ -32,7 +32,7 @@ const WelcomeBase = () => {
         return map;
     }, [widgets]);
 
-    // Widget titles, for the "Add widget" drawer and the drag preview.
+    // Widget titles, for the cards' labels while customizing.
     const titles = useMemo(() => {
         const map = new Map<string, { title: string }>();
         widgets.forEach(widget => map.set(widget.name, { title: widget.title ?? widget.name }));
