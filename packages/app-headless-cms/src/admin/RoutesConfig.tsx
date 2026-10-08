@@ -128,8 +128,12 @@ export const RoutesConfig = () => {
             <HasPermission name={"cms.contentModel"}>
                 <AdminConfig.Dashboard.Widget
                     name="cms.contentModels"
+                    title="CMS"
+                    description="Jump straight into a content model."
+                    group="Headless CMS"
                     column="left"
                     element={<ContentModelsWidget />}
+                    preview={<ContentModelsWidget />}
                 />
             </HasPermission>
         </AdminConfig>
