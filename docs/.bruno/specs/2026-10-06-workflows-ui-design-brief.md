@@ -313,6 +313,8 @@ The whole team is never notified about work that went to one person. In-app noti
 
 An in-app notification is a toast (title, one short line, link) shown while the recipient has the admin open. There is no notification list, history or read/unread state: notifications are not stored, and the Content Reviews tabs show the work [D102].
 
+Whoever decided is named by person for People steps and by step title for AI and Automation steps (never the automation's name). A rejection without a comment reads "Rejected at {step} by {decider}." [D107]
+
 E-mail for a review-level event follows the "Notify via" of the step where it happened: approved uses the last step, rejected the step that rejected, cancelled the step the review was on, failed the failed step [D103].
 
 ---

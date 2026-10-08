@@ -536,3 +536,7 @@ Reviewer pickers (Request review, Reassign, rule targets) show the person's name
 ## D106. Exclusion list: last save wins
 
 Saving the exclusion list writes the whole settings record; the last save wins. No version check and no conflict UI. Accepted risk: when two admins edit the list at the same time, one admin's change can be lost silently. Judged rare (few admins, infrequent edits). Resolves gap A5 from the design review.
+
+## D107. Automated steps are named by their step title
+
+Wherever the UI or a notification names who decided or who owns a step, AI and Automation steps are shown by their step title (e.g. "Notify web team"), never by the automation's or model's name, because one automation can back several steps. People steps show the person. A rejection without a comment drops the quote: "Rejected at {step} by {decider}." Resolves gaps A6 and F11 from the design review.
