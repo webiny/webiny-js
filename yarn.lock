@@ -12810,7 +12810,7 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    mobx: "npm:^6.16.1"
+    mobx: "npm:^7.0.3"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
@@ -13268,7 +13268,7 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    mobx: "npm:^6.16.1"
+    mobx: "npm:^7.0.3"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
@@ -21574,13 +21574,6 @@ __metadata:
     mobx: ^7.0.0
     react: ^18 || ^19
   checksum: 10/0f55d1c29ae3379ace135c7085a1e8c6d9c875f48aa2c53ea2182a6a0a5bbbfc3519765c0e9536d08834862f1e281eb3f52f16d851e95b83aae23d68411bc9d0
-  languageName: node
-  linkType: hard
-
-"mobx@npm:^6.16.1":
-  version: 6.16.1
-  resolution: "mobx@npm:6.16.1"
-  checksum: 10/01753230a35d2f8a376d4f0e5b0096848141a6c1567f09f4a5e6f7a983814e971141eccb58288e737a7b259618312e4c963523100ccc13f5505881ead7066c80
   languageName: node
   linkType: hard
 
