@@ -48,6 +48,10 @@ pending. What is available: the same contracts produced 2K-4.5K tokens then, and
 arms output size moved by at most 30% between prompt versions (Hero Intro 14K to 18-20K characters,
 the others flat), nothing like the six-fold growth a runaway would need.
 
+**The limit may be the defect.** At roughly 100 tokens a second against a 5-minute limit, a component
+that legitimately needs 28-30K output tokens is at the ceiling by nature. If the header or footer turns
+out to be writing that much legitimately, the per-call limit is what is wrong, not the component.
+
 ## Next
 
 Record what an aborted call had produced (stream the call, keep the partial text and token count on
