@@ -281,6 +281,7 @@ Common fields for every step type:
 - **Team pool**: steps waiting in the team pool of a team I belong to (excluding my own requests).
 - **Team in review**: People steps in my teams that someone else is reviewing.
 - **My requests**: reviews I requested.
+- **Failed steps** (only with Reassign and operate): AI or Automation steps that failed, on any review the user can read; row actions add Restart and Cancel review [D112].
 
 **Filters.** All tabs: model, search by title. **My requests** only: review state (In progress, Approved, Rejected) and step state. The other tabs have a fixed step state, so no state filter. Cancelled reviews never appear.
 

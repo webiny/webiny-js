@@ -556,3 +556,7 @@ Extends D73. The timezone used when saving is the browser's (there is no profile
 ## D111. Take over can notify the previous owner
 
 The Take over dialog has a checkbox "Notify {name} that you took over", checked by default. When checked, the previous owner gets "{taker} took over {step} on {title}." in-app and through the step's channels (D103). The take-over action carries `notifyPreviousOwner` (default true). Reassignment keeps notifying both previous and new owner, with no opt-out. Resolves gap A10 from the design review.
+
+## D112. "Failed steps" tab for operators
+
+Content Reviews gets a fifth tab, **Failed steps**, shown only to users with Reassign and operate. It lists every AI or Automation step in state Failed on reviews the user can read, with the same columns, filters (model, title) and incremental loading as the other tabs. Row actions add Restart and Cancel review where allowed (§1.6). One extra list query by step state. Resolves gap A11 from the design review.
