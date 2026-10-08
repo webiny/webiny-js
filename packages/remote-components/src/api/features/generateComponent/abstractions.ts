@@ -17,8 +17,8 @@ export interface IGenerateRemoteComponentInput {
      */
     onTrace?: (trace: GenerationTrace) => void | Promise<void>;
     /**
-     * System prompt lines to leave out, by id (`SYSTEM_PROMPT_LINE_IDS`), for a prompt experiment.
-     * Never set outside one.
+     * System prompt lines to leave out, by id (`SYSTEM_PROMPT_LINE_IDS`): for a prompt experiment, or
+     * as a caller's own override of a line measured dead for it. Other callers keep the line.
      */
     ablate?: readonly string[];
 }

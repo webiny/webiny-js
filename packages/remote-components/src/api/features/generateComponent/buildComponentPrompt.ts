@@ -8,7 +8,7 @@ export const SYSTEM_PROMPT_LINE_IDS = ["system.rule-17-multiple"] as const;
 export type SystemPromptLineId = (typeof SYSTEM_PROMPT_LINE_IDS)[number];
 
 export interface BuildComponentPromptOptions {
-    /** Lines to leave out, for a prompt experiment. Never set outside one. */
+    /** Lines to leave out: for a prompt experiment, or a caller's override of a line measured dead for it. */
     ablate?: readonly string[];
 }
 

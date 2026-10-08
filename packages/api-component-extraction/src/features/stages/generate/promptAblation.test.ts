@@ -10,9 +10,6 @@ const hero = JSON.parse(
 const variables = new Map([["color.text.primary", ["--wby-color-text-primary"]]]);
 
 const removed: Record<string, string> = {
-    "extraction.hex": ", and do not write a hex value",
-    "extraction.heading-size": "Do not substitute a default heading size for it.",
-    "extraction.centre": "Do not centre text this section does not centre.",
     "extraction.only-variables": "Use ONLY these theme CSS variables"
 };
 
@@ -38,5 +35,12 @@ describe("prompt ablation", () => {
         const changed = fullLines.filter(line => !ablatedLines.includes(line));
         expect(changed.length).toBeGreaterThan(0);
         expect(changed.length).toBeLessThanOrEqual(2);
+    });
+
+    it("no longer carries the three lines measured dead", () => {
+        expect(full).not.toContain("Do not substitute a default heading size");
+        expect(full).not.toContain("Do not centre text this section does not centre");
+        expect(full).not.toContain("do not write a hex value");
+        expect(full).toContain("Do not substitute a different theme colour for one listed here.");
     });
 });

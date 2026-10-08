@@ -115,12 +115,15 @@ export interface GenerationDeps {
  * `scripts/baseline/reports/2026-10-08/ablation-design.md`). The extraction prompt's own lines, plus the
  * shared system prompt's (`SYSTEM_PROMPT_LINE_IDS`). Nothing else can be removed.
  */
-export const EXTRACTION_PROMPT_LINE_IDS = [
-    "extraction.hex",
-    "extraction.heading-size",
-    "extraction.centre",
-    "extraction.only-variables"
-] as const;
+export const EXTRACTION_PROMPT_LINE_IDS = ["extraction.only-variables"] as const;
+
+/**
+ * The shared system prompt's lines this pipeline leaves out on every call: its own override of the
+ * shared prompt, which other callers keep. Each was measured dead for extraction at the resolution
+ * stated in `scripts/baseline/reports/2026-10-08/ablation-result.md` — zero failures in 9 runs on three
+ * single-copy components, which bounds the rate rather than proving it zero.
+ */
+const SYSTEM_PROMPT_OVERRIDE: readonly string[] = ["system.rule-17-multiple"];
 export const PROMPT_LINE_IDS: readonly string[] = [
     ...EXTRACTION_PROMPT_LINE_IDS,
     ...SYSTEM_PROMPT_LINE_IDS
@@ -165,7 +168,7 @@ export interface GenerationInput {
  * value is what the contract already permits for anything without a suitable variable — and a run
  * with many of those is saying theme extraction missed the site's type scale.
  */
-const typeScaleLines = (component: PlannedComponent, ablate: Ablation = NO_ABLATION): string[] => {
+const typeScaleLines = (component: PlannedComponent): string[] => {
     const scale = component.typeScale ?? [];
     if (scale.length === 0) {
         return [];
@@ -204,9 +207,9 @@ const typeScaleLines = (component: PlannedComponent, ablate: Ablation = NO_ABLAT
         "retyped, so keep the text as given and set the transform.",
         ...lines,
         "",
-        ablate.has("extraction.heading-size")
-            ? `The largest is the section's heading at ${scale[0].fontSize}px.`
-            : `The largest is the section's heading at ${scale[0].fontSize}px. Do not substitute a default heading size for it.`
+        // "Do not substitute a default heading size for it" was measured dead and removed: see
+        // `scripts/baseline/reports/2026-10-08/ablation-result.md`.
+        `The largest is the section's heading at ${scale[0].fontSize}px.`
     ];
 };
 
@@ -230,7 +233,7 @@ const typeScaleLines = (component: PlannedComponent, ablate: Ablation = NO_ABLAT
  * those are precisely the sections where the first version of this fix broke a correct alignment or
  * left one undeclared. A reader cannot tell which key ranks a list unless the list shows that key.
  */
-const alignmentLines = (component: PlannedComponent, ablate: Ablation = NO_ABLATION): string[] => {
+const alignmentLines = (component: PlannedComponent): string[] => {
     const alignments = component.textAlignments ?? [];
     if (alignments.length === 0) {
         return [];
@@ -243,9 +246,8 @@ const alignmentLines = (component: PlannedComponent, ablate: Ablation = NO_ABLAT
                 `- ${entry.align} — ${Math.round(entry.areaShare * 100)}% of the text (${entry.elements} element${entry.elements === 1 ? "" : "s"})`
         ),
         "",
-        ablate.has("extraction.centre")
-            ? "Set text-align explicitly to match."
-            : "Set text-align explicitly to match. Do not centre text this section does not centre."
+        // "Do not centre text this section does not centre" was measured dead and removed (ablation-result.md).
+        "Set text-align explicitly to match."
     ];
 };
 
@@ -449,7 +451,7 @@ export const iconLines = (component: PlannedComponent): string[] => {
  * theme cannot express says so, because omitting it would leave the model to guess exactly the colour
  * this is meant to pin down.
  */
-const colourLines = (component: PlannedComponent, ablate: Ablation = NO_ABLATION): string[] => {
+const colourLines = (component: PlannedComponent): string[] => {
     const colours = component.representative?.resolvedColours ?? [];
     if (colours.length === 0) {
         return [];
@@ -465,12 +467,9 @@ const colourLines = (component: PlannedComponent, ablate: Ablation = NO_ABLATION
                   : `- ${colour.role} ${colour.hex} — use var(${colour.token.cssVariable})`
         ),
         "",
-        ...(ablate.has("extraction.hex")
-            ? ["Do not substitute a different theme colour for one listed here."]
-            : [
-                  "Do not substitute a different theme colour for one listed here, and do not write a hex value",
-                  "where a variable is given — a hardcoded colour survives no theme change."
-              ])
+        // "Do not write a hex value where a variable is given" was measured dead and removed
+        // (ablation-result.md); it also contradicted this prompt's own "use the hex directly" lines.
+        "Do not substitute a different theme colour for one listed here."
     ];
 };
 
@@ -616,12 +615,12 @@ const buildPrompt = (
                       .join(", ")
               ]
             : []),
-        ...colourLines(component, ablate),
+        ...colourLines(component),
         ...backgroundImageLines(component),
         ...unboundImageLines(component),
         ...iconLines(component),
-        ...typeScaleLines(component, ablate),
-        ...alignmentLines(component, ablate),
+        ...typeScaleLines(component),
+        ...alignmentLines(component),
         ...layoutLines(component),
         ...imageFactLines(component),
         "",
@@ -857,7 +856,7 @@ export const generateComponentAttempts = async (
         const generated = await deps.generateComponent.execute({
             prompt: buildPrompt(planned, slotVariables, feedback, new Set(input.ablate ?? [])),
             name: planned.name,
-            ...(input.ablate?.length ? { ablate: input.ablate } : {}),
+            ablate: [...SYSTEM_PROMPT_OVERRIDE, ...(input.ablate ?? [])],
             additionalFileIds,
             abortSignal: AbortSignal.timeout(budget.timeoutMs),
             onTrace: recorded => {
