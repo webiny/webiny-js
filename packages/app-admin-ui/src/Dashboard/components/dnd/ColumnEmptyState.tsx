@@ -16,9 +16,11 @@ interface ColumnEmptyStateProps {
     active: boolean;
 }
 
-const IDLE_CLASSES = "border-neutral-strong/40 bg-neutral-base/50 hover:border-neutral-strong/60";
-const CAN_DROP_CLASSES = "border-primary/50 bg-primary/5";
-const ACTIVE_CLASSES = "border-primary bg-primary/10";
+const IDLE_CLASSES =
+    "border-sm border-neutral-strong/40 bg-neutral-base/50 hover:border-neutral-strong/60";
+// While dragging, the 2px border matches the cards' outline and the drop slot in other columns.
+const CAN_DROP_CLASSES = "border-2 border-primary/50 bg-primary/5";
+const ACTIVE_CLASSES = "border-2 border-primary bg-primary/10";
 
 export const ColumnEmptyState = ({
     canRemove,
@@ -79,7 +81,7 @@ export const ColumnEmptyState = ({
             className={cn(
                 // `rounded-xl` matches the widgets.
                 "flex min-h-[220px] flex-col items-center justify-center gap-sm rounded-xl",
-                "border-sm border-dashed p-lg transition-colors",
+                "border-dashed p-lg transition-colors",
                 stateClasses
             )}
         >
