@@ -5,6 +5,12 @@ import { WebSocketServer } from "ws";
 import { WebSocket } from "ws";
 import { WebsocketsServerAdapter } from "./abstractions.js";
 
+/*
+ * Clients only send small JSON envelopes (a ping carrying a token). The `ws` default is 100 MiB,
+ * which any client, authenticated or not, could make the server buffer per message.
+ */
+const MAX_PAYLOAD_BYTES = 64 * 1024;
+
 class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> {
     private wss: WebSocketServer | undefined;
 
@@ -18,7 +24,7 @@ class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> 
     /* The server param is kept for interface compliance but not used —
        the HTTP upgrade event is handled externally via handleUpgrade(). */
     public start(_server: HttpServer): void {
-        this.wss = new WebSocketServer({ noServer: true });
+        this.wss = new WebSocketServer({ noServer: true, maxPayload: MAX_PAYLOAD_BYTES });
     }
 
     public handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): void {
