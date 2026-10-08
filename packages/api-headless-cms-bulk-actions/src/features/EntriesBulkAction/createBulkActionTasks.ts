@@ -3,7 +3,12 @@ import {
     TaskHandler
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { ListTasksUseCase, TriggerTaskUseCase, TasksCrud } from "@webiny/background-tasks/api";
+import {
+    DeleteTaskUseCase,
+    ListTasksUseCase,
+    TaskLogsRepository,
+    TriggerTaskUseCase
+} from "@webiny/background-tasks/api";
 import type {
     IBulkActionOperationByModelInput,
     IBulkActionOperationByModelOutput,
@@ -41,7 +46,8 @@ class BulkActionListTaskHandlerImpl implements TaskHandler.Interface<
         private readonly getModel: GetModelUseCase.Interface,
         private readonly listTasks: ListTasksUseCase.Interface,
         private readonly triggerTask: TriggerTaskUseCase.Interface,
-        private readonly tasksCrud: TasksCrud.Interface,
+        private readonly logs: TaskLogsRepository.Interface,
+        private readonly deleteTask: DeleteTaskUseCase.Interface,
         private readonly bulkActionsConfig: EntriesBulkActionConfig.Interface
     ) {}
 
@@ -115,7 +121,12 @@ class BulkActionListTaskHandlerImpl implements TaskHandler.Interface<
     async cleanup(task: TaskDefinition.Task) {
         const childTasksCleanup = new ChildTasksCleanup();
         try {
-            await childTasksCleanup.execute({ tasksCrud: this.tasksCrud, task });
+            await childTasksCleanup.execute({
+                listTasks: this.listTasks,
+                logs: this.logs,
+                deleteTask: this.deleteTask,
+                task
+            });
         } catch (ex) {
             console.error(`Error while cleaning bulk action list child tasks.`, ex);
         }
@@ -129,7 +140,8 @@ const BulkActionListTaskHandler = TaskHandler.createImplementation({
         GetModelUseCase,
         ListTasksUseCase,
         TriggerTaskUseCase,
-        TasksCrud,
+        TaskLogsRepository,
+        DeleteTaskUseCase,
         EntriesBulkActionConfig
     ]
 });

@@ -10,7 +10,8 @@ import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TaskExecutionContext } from "~/api/features/TaskExecutionContext/index.js";
-import { TasksCrud } from "~/api/TasksCrud.js";
+import { TaskLogsRepository, TasksRepository } from "~/api/domain/task/abstractions.js";
+import { UpdateTaskUseCase } from "~/api/features/UpdateTask/index.js";
 import { GetRunnableTaskDefinitionUseCase } from "~/api/features/GetRunnableTaskDefinition/abstractions.js";
 import type { ITaskControlDependencies } from "./TaskControl.js";
 
@@ -80,7 +81,9 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
             logger: container.resolve(Logger),
             identityContext: container.resolve(IdentityContext),
             taskExecutionContext: container.resolve(TaskExecutionContext),
-            tasksCrud: container.resolve(TasksCrud),
+            tasks: container.resolve(TasksRepository),
+            logs: container.resolve(TaskLogsRepository),
+            updateTask: container.resolve(UpdateTaskUseCase),
             taskController: container.resolve(TaskController),
             getRunnableTaskDefinition: container.resolve(GetRunnableTaskDefinitionUseCase)
         };

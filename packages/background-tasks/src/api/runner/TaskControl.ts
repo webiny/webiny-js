@@ -16,7 +16,9 @@ import {
     TaskDefinition,
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { TasksCrud } from "~/api/TasksCrud.js";
+import type { TaskLogsRepository, TasksRepository } from "~/api/domain/task/abstractions.js";
+import type { UpdateTaskUseCase } from "~/api/features/UpdateTask/index.js";
+import { TaskLogNotFoundError, TaskNotFoundError } from "~/api/domain/errors.js";
 import { GetRunnableTaskDefinitionUseCase } from "~/api/features/GetRunnableTaskDefinition/abstractions.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/abstractions.js";
@@ -39,7 +41,9 @@ export interface ITaskControlDependencies {
     logger: Logger.Interface;
     identityContext: IdentityContext.Interface;
     taskExecutionContext: TaskExecutionContext.Interface;
-    tasksCrud: TasksCrud.Interface;
+    tasks: TasksRepository.Interface;
+    logs: TaskLogsRepository.Interface;
+    updateTask: UpdateTaskUseCase.Interface;
     taskController: TaskController.Interface;
     getRunnableTaskDefinition: GetRunnableTaskDefinitionUseCase.Interface;
 }
@@ -159,7 +163,9 @@ export class TaskControl implements ITaskControl {
 
         const store = new TaskManagerStore({
             context: this.context,
-            tasksCrud: this.deps.tasksCrud,
+            tasks: this.deps.tasks,
+            logs: this.deps.logs,
+            updateTask: this.deps.updateTask,
             task,
             log: taskLog,
             databaseLogs
@@ -238,18 +244,17 @@ export class TaskControl implements ITaskControl {
     }
 
     private async getTask<T extends TaskDefinition.TaskInput>(id: string): Promise<ITask<T>> {
-        try {
-            const task = await this.deps.tasksCrud.getTask<T>(id);
-            if (task) {
-                return task;
-            }
-        } catch (ex) {
+        const result = await this.deps.tasks.get<T>(id);
+        if (result.isOk()) {
+            return result.value;
+        } else if (!(result.error instanceof TaskNotFoundError)) {
+            const error = result.error;
             throw this.response.error({
                 error: {
-                    message: ex.message,
-                    code: ex.code || "TASK_ERROR",
-                    stack: ex.stack,
-                    data: ex.data
+                    message: error.message,
+                    code: error.code || "TASK_ERROR",
+                    stack: error.stack,
+                    data: error.data
                 }
             });
         }
@@ -281,33 +286,27 @@ export class TaskControl implements ITaskControl {
         /**
          * First we are trying to get existing latest log.
          */
-        try {
-            taskLog = await this.deps.tasksCrud.getLatestLog(task.id);
-        } catch (error) {
-            /**
-             * If error is not the NotFoundError, we need to throw it.
-             */
-            if (error.code !== "NOT_FOUND") {
-                throw this.response.error({
-                    error
-                });
-            }
-            /**
-             * Otherwise just continue and create a new log.
-             */
+        const latest = await this.deps.logs.getLatest(task.id);
+        if (latest.isOk()) {
+            taskLog = latest.value;
+        } else if (!(latest.error instanceof TaskLogNotFoundError)) {
+            // A task without a log yet is fine; any other failure is not.
+            throw this.response.error({
+                error: latest.error
+            });
         }
 
         const currentIteration = taskLog?.iteration || 0;
 
-        try {
-            return await this.deps.tasksCrud.createLog(task, {
-                executionName: this.response.event.executionName,
-                iteration: currentIteration + 1
-            });
-        } catch (error) {
+        const created = await this.deps.logs.create(task, {
+            executionName: this.response.event.executionName,
+            iteration: currentIteration + 1
+        });
+        if (created.isFail()) {
             throw this.response.error({
-                error
+                error: created.error
             });
         }
+        return created.value;
     }
 }

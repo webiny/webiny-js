@@ -5,7 +5,6 @@ import { TaskController } from "./features/TaskController/index.js";
 import { TaskPrivateModel } from "./crud/TaskPrivateModel.js";
 import { TaskLogPrivateModel } from "./crud/TaskLogPrivateModel.js";
 import { BackgroundTaskSettingsModel } from "./models/BackgroundTaskSettingsModel.js";
-import { TasksCrudAdapter } from "./crud/TasksCrudAdapter.js";
 import { TaskModelProvider } from "./domain/task/TaskModelProvider.js";
 import { TaskLogModelProvider } from "./domain/task/TaskLogModelProvider.js";
 import { TasksRepository } from "./domain/task/TasksRepository.js";
@@ -66,9 +65,6 @@ export const BackgroundTasksFeature = createFeature({
         BackgroundTaskServiceFeature.register(container);
         TriggerTaskFeature.register(container);
         AbortTaskFeature.register(container);
-
-        // The old all-in-one TasksCrud API, for the callers that still use it.
-        container.register(TasksCrudAdapter);
 
         // Execution context (singleton), controller, and the built-in test task.
         TaskExecutionContextFeature.register(container);

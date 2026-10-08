@@ -31,7 +31,7 @@ export const useHandler = (params: Params = {}) => {
             ...[params.legacyPlugins].flat(Infinity as 1).filter(Boolean)
         ],
         setup: container => {
-            // All DI-native now: background tasks (wbyTask model + TasksCrud + GraphQL) and website
+            // All DI-native now: background tasks (wbyTask model + task use cases + GraphQL) and website
             // builder (models + features + schema). The mock TaskService override must come after.
             BackgroundTasksFeature.register(container);
             WebsiteBuilderFeature.register(container);
