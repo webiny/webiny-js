@@ -23,6 +23,13 @@ export interface EntityDefinition {
     id: string;
     /** Display title for the UI renderer (e.g. "Files", "Settings"). */
     title?: string;
+    /**
+     * What this permission does and does not cover, shown to whoever is configuring a role.
+     *
+     * Use it when a permission's scope has a limit that is not obvious from its name — someone
+     * granting it should not have to read a design document to find out what it leaves exposed.
+     */
+    description?: string;
     /** Permission name emitted for this entity (e.g. "fm.file"). */
     permission: string;
     /** Available access scopes. */
