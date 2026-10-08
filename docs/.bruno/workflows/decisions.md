@@ -548,3 +548,7 @@ Saving a workflow with no steps is rejected on the server and in the editor ("Ad
 ## D109. AI instructions are required
 
 An AI step's Instructions (the reviewer prompt) must be non-empty, enforced on the server and in the editor. No minimum length and no default prompt. Resolves gap A8 from the design review.
+
+## D110. Exclusion end dates across timezones
+
+Extends D73. The timezone used when saving is the browser's (there is no profile timezone). Active or Expired is computed from the stored UTC instant, the same for every viewer. The list shows the end date in the viewer's local time; hovering shows the full local time and timezone name, e.g. "Until 3 Nov 2026, 23:59 (Europe/Zagreb)". The saving admin's timezone is not stored. Resolves gap A9 from the design review.
