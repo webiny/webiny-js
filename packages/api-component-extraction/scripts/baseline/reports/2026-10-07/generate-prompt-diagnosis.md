@@ -63,7 +63,7 @@ earlier measure was got wrong too. Describe the source from the source artifact.
 
 1. Image on the refine path — done, `cf6b7088c7`.
 2. Rule 11 against input-driven backgrounds (#8) — done, `bcb0b9b36b`.
-3. Data defects: #2 (done, `7bac68a985`, below), then #3 (done, `ebbc2893bb`, below), then #1 and #7, then #6 and #5.
+3. Data defects: #2 (done, `7bac68a985`, below), then #3 (done, `ebbc2893bb`, below), then #1 and #7 (done, `95eb1116db`, below), then #6 and #5.
 4. Ablation of the prohibitions, widened, including components where a prohibition should not bind.
 
 The token list and the worked examples are not cut: they are shared with the general system prompt and
@@ -134,3 +134,48 @@ reported as the section's background — and the carousel case is the larger of 
 - Carousel slides positioned off-canvas: 3 thevibe components (Carousel/Slider, Hero Intro, Image
   Slideshow) list 19 slide images that sit wholly or partly outside the section box as "the section's
   background".
+
+## #1 and #7 result: Generate shows only the values its own section has
+
+Fix `95eb1116db`. Plan's model writes a text prop's values from every copy's text, and Generate showed
+the first three as examples. The model built them in. Measured on text props across 95 components
+(the representative's texts read from its full page tree, so the 40-text digest cap could not bias
+it; editor metadata such as input labels and `aiContext` excluded from the output check): 25 strings
+from other copies in 8 components, all 25 through the examples. They include another page's address,
+phone number and lead form on check-run Tulane's hero, other buildings' names and disclaimers on
+Westland's intro, and another page's feature bullets on Tulane's description. That is a migrated site
+showing another property's content, not a fidelity blemish.
+
+- Each value is attributed to a copy from the texts the plan holds. A value only another copy has is
+  no longer an example; a prop the representative has no value for is told to default to empty.
+- **#2 was in effect on 1 of 8 runs.** Its member tags exist only on plans made after `7bac68a985`,
+  and `representativeValues` read an untagged value as the representative's. Only Park City has been
+  re-planned since. Untagged values are now attributed by their text (label, alt, item fields).
+- Freehill's "(346) 489-6939" is not another property's number: the representative writes the same
+  number as 346-489-6939, the privacy-policy page with brackets.
+- Replay, all 95: the 20 predicted change (17 named first, 3 more named before the run once untagged
+  defaults were included), the other 75 are byte-identical. The replay also caught nulls in saved item
+  fields that would have crashed Generate.
+- Generate twice each on check-run Tulane Hero Section, Westland Intro/Explore and Tulane Property
+  Description with Scores: 6 of 6 contain none of their other-copy strings (before: 8, 6, 4). One run
+  of the last failed validation on invented `--wby-space-*` variables and two of its own texts missing,
+  unrelated to other copies' values and not attributable from one occurrence.
+
+**The two strings that did not come through examples** were both "phone number", and both are
+artifacts of the first measure, which matched editor metadata: one is Park City Contact/Apply Bar's
+`aiContext` description, the other an input's `label`. So no path from outside the prompt was found.
+Truncation to three examples can still hide a value, but no leak in this data went that way.
+
+**Examples that match no copy.** 56 of 676 text examples across all 95 components; 48 are
+configuration values the page holds as attributes (`tel:` links, `_blank`, colours, booleans). Of the
+8 prose values, 3 are on the page outside the capped per-copy texts; 5 are not on any stored page tree,
+but only representatives' pages are stored, so they are unproven as invented. Not worth its own pass
+at this size; checking those 5 against every member's page would settle it.
+
+Found on the way:
+
+- `next`'s audit logs were written to the main table (`AuditLogsDdbFeature` passed `DB_TABLE`), so
+  every audited write failed after the merge was deployed, file creation included; every generation
+  was a silent no-op logged as info. Fixed in `81c5d0ad6e`; belongs upstream.
+- Cluster grouped check-run Tulane's photo carousel with heroes that carry a lead form, which is why
+  its contract has address, phone and form props at all.
