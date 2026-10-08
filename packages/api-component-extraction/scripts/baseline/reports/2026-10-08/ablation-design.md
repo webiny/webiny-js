@@ -1,5 +1,47 @@
 # Ablation of the Generate prompt's prohibitions: design
 
+## Decisions (2026-10-08)
+
+- Order approved: five independent prohibitions now, the depth-cap fix next, the three content
+  prohibitions after it.
+- **The three content prohibitions (10, 11, 12) are unmeasured, not assumed working.** Measured
+  against today's clusters they would describe the clusters rather than the lines, and after the
+  depth-cap fix some may be unnecessary rather than cuttable. Their deferral is not a backlog item: no
+  claim about whether they work exists until they are measured on re-clustered runs.
+- Harness: the dry-run mode (option 1). What is measured is what the deployed prompt does.
+- Budget: 3 runs per arm, not 6, and five prohibitions, not ten. 3 components x 3 runs = 9 runs per
+  arm, which catches a 1-in-6 failure about 81% of the time. That is enough for a delete decision; a
+  line cut at that power that later matters comes back cheaply. The "dead" rule below reads 9 runs
+  where it says 17.
+- **The five, chosen as suspected stale or contradicting:**
+  1. **Do not write a hex where a variable is given (1).** It contradicts lines the same prompt now
+     carries: "no theme variable is near this colour, use the hex directly" and, since #6, "the theme
+     has this colour only as ..., use the hex directly". Contradiction surface.
+  2. **Do not substitute a default heading size (2).** Written against the house-heading reflex
+     before the type scale stated each step's size and variable; the scale now says the largest step is
+     the heading at N px. Suspected redundant.
+  3. **Do not centre text this section does not centre (3).** Sits next to "Set text-align explicitly
+     to match" and the measured alignments, which brought centring errors to 2 of 90. Suspected
+     redundant.
+  4. **Rule 17: `list: true`, never `multiple: true` (6).** `multiple` is not an option on any input
+     factory in the SDK; the rule forbids a parameter that does not exist, and 0 of 93 outputs use it.
+     Suspected stale.
+  5. **Use ONLY these theme variables (8).** Validator-backed and suspected ineffective: first
+     attempts still invent `--wby-space-*` names in most runs (5 of the 6 latest first attempts). Judged
+     on first-attempt failures and attempts.
+- Left unmeasured as cheap, uncontested and plausibly load-bearing: rule 11 (just revised and
+  verified), rule 13 (`&&`: 0 of 93 outputs render JSX behind it), reading file inputs as `.url`
+  (validator-backed, fixed a real defect), the background-image line (new, 15 components), name and
+  label.
+- Components, one with-arm shared by all five, single-copy so bad clusters cannot contaminate the
+  result, three sites and themes: thevibe Hero Intro, Freehill Amenities Highlights, check-run Tulane
+  FAQ Section. All three carry every trigger (variable colours, a type scale, non-centred text, list
+  props).
+- Cost: with-arm 9 generations shared, five without-arms of 9: 54 generations, about $24 at $0.45
+  each (range about $20-35 with retries).
+
+## Original design
+
 Design only. Nothing has run, and nothing is cut by this document. It settles, before any run, what
 counts as a prohibition surviving, what is measured, on which components, at what cost, and in which
 order relative to the clustering fix.
