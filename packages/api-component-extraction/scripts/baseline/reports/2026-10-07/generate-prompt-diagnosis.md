@@ -178,4 +178,8 @@ Found on the way:
   every audited write failed after the merge was deployed, file creation included; every generation
   was a silent no-op logged as info. Fixed in `81c5d0ad6e`; belongs upstream.
 - Cluster grouped check-run Tulane's photo carousel with heroes that carry a lead form, which is why
-  its contract has address, phone and form props at all.
+  its contract has address, phone and form props at all. Clustering is upstream of defects fixed
+  downstream. The threshold could not have separated them: the fingerprint's type tree stops at depth
+  6 and their content starts at 8-9, so it sees only wrappers (tree similarity 1.00). Filed as
+  `ai-context/issues/a-depth-capped-fingerprint-sees-only-wrappers.md`; 34 of 95 representatives are
+  exposed, concentrated on the G5 template.
