@@ -5,7 +5,8 @@
 > **Severity:** high. On the check-run re-cluster (2026-10-08), 3 of 21 components produced nothing:
 > the Site Header and the Footer, which are on every page, and Floor Plan Filter. A demo-site re-cluster
 > after the demo would meet the same risk.
-> **Status:** open. Diagnosed as far as the evidence allows; the cause is not established.
+> **Status:** open. Cause established 2026-10-08: unstreamed model thinking, not the answer and not a
+> stall (see "Reproduction").
 
 ## What happens
 
@@ -52,8 +53,39 @@ the others flat), nothing like the six-fold growth a runaway would need.
 that legitimately needs 28-30K output tokens is at the ceiling by nature. If the header or footer turns
 out to be writing that much legitimately, the per-call limit is what is wrong, not the component.
 
+## Reproduction (2026-10-08, dry-run, streamed call)
+
+The call now streams, so an aborted call keeps what it wrote and when its chunks arrived. Site Header
+and Footer were run in dry-run mode, with Social Media Links at the same moment as a control
+(`anthropic/claude-sonnet-5`, no thinking setting, so the model's default thinking applies):
+
+| Component          | Attempt | Outcome   | Duration | First text chunk | Answer       | Output tokens billed |
+| ------------------ | ------- | --------- | -------- | ---------------- | ------------ | -------------------- |
+| Site Header        | 1       | timed out | 300s     | none             | 0 characters | not reported         |
+| Site Header        | 2       | passed    | 268s     | 244.6s           | 9,413 chars  | 26,318               |
+| Footer             | 1       | passed    | 259s     | 214.8s           | 17,254 chars | 25,687               |
+| Social Media Links | 1       | passed    | 54s      | 34.3s            | 6,772 chars  | 5,497                |
+
+- **Not a runaway answer.** The answers are the size they were on 2026-10-06 (header 9.4K against
+  7.1K characters, footer 17.3K against 16.2K). The six-fold growth is not in the answer.
+- **The time is thinking.** Each call is silent until shortly before it ends, then writes its answer in
+  20-45 seconds. The billed output is 26K tokens for a 9.4K-character header; roughly nine tenths of
+  it is thinking the stream does not carry as text (no reasoning text arrives either).
+- **Not a stall, provider or call path.** Billed output over duration is 98-99 tokens a second on both
+  long calls, the rate of every completed call on the check run: the model was generating throughout.
+  The control streamed normally through the same path at the same moment. The timed-out header attempt
+  is the same call thinking past 300 seconds (about 30K tokens at that rate).
+- **So the limit is not the defect in itself.** The header does not legitimately need 28-30K tokens to
+  write a 9K-character component; it needs them only because thinking is unbounded. What bounds the
+  call is the model's default thinking, which the call does not set. Thinking also counts against
+  `MAX_OUTPUT_TOKENS` (32K), so a call that is not cut off by time is cut off at the token cap.
+
+Not decided here: bounding thinking (effort or a thinking setting on the generation call), raising the
+per-call limit, or both. Either changes cost and possibly quality, so it is measured before it ships.
+Also open: whether thinking was this long on 2026-10-06 cannot be read from what is stored.
+
 ## Next
 
-Record what an aborted call had produced (stream the call, keep the partial text and token count on
-abort), then reproduce on the Site Header and Footer in dry-run mode. That tells a runaway from a stall,
-and shows what a runaway is writing.
+Done: the call streams and the log keeps partial output and chunk timing (the provider reports no
+token count for a cut-off call). Next: measure a bounded-thinking setting on these three components
+against the current default, for duration, answer quality and cost, before choosing.
