@@ -540,3 +540,7 @@ Saving the exclusion list writes the whole settings record; the last save wins. 
 ## D107. Automated steps are named by their step title
 
 Wherever the UI or a notification names who decided or who owns a step, AI and Automation steps are shown by their step title (e.g. "Notify web team"), never by the automation's or model's name, because one automation can back several steps. People steps show the person. A rejection without a comment drops the quote: "Rejected at {step} by {decider}." Resolves gaps A6 and F11 from the design review.
+
+## D108. A workflow needs at least one step
+
+Saving a workflow with no steps is rejected on the server and in the editor ("Add at least one step."). The editor still lets the admin delete the last step while editing. To stop requiring reviews for a model, delete its workflow. Resolves gap A7 from the design review.

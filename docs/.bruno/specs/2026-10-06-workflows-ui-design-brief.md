@@ -122,6 +122,7 @@ The server computes which actions the current viewer may take; the UI shows exac
 **States and edge cases.**
 - No workflow for the selected model: empty state inviting the admin to create one.
 - Model already has another workflow (one workflow per model for now): save error on the model.
+- No steps: Save is rejected with "Add at least one step." [D108].
 - Save errors appear on the exact step, rule or field.
 - Someone else changed or deleted this workflow while it was open: the save fails; explain and offer to reload (the admin's unsaved edits are lost on reload, so say so).
 - Warnings shown without saving:
