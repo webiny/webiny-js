@@ -18,7 +18,10 @@ class FrontendGetSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new NotAuthorizedError());
         }
 
-        if (!this.identityContext.getPermission("dev-tools.frontend-settings.*")) {
+        const permission = await this.identityContext.getPermission(
+            "dev-tools.frontend-settings.*"
+        );
+        if (!permission) {
             return Result.fail(new NotAuthorizedError());
         }
 
