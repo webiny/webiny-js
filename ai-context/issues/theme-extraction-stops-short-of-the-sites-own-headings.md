@@ -7,6 +7,7 @@
 > largest type in the theme's vocabulary, so it falls back to a plain value and the theme stops being
 > the single place that type is defined.
 > **Status:** open.
+> **Part of:** [theme extraction captures less than the site uses](./theme-extraction-captures-less-than-the-site-uses.md), with the type and spacing instances.
 
 ## What happens
 

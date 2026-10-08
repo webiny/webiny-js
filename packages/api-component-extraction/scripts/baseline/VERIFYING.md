@@ -42,3 +42,11 @@ nothing failed to say so.
 The replay would have caught it had it included the plans as stored. So a replay of a change that
 reads a field another change writes includes artifacts made before that field existed, and reports
 how many of them the change actually reaches.
+
+## Re-measure what looked load-bearing after fixing anything upstream of it
+
+A measurement can be right and its conclusion wrong for a reason outside what it measured. Removing
+"Use ONLY these theme variables" first raised hex literals, failed runs and cost, and the line was kept.
+After the prompt's vocabulary was made to match the validator's, the same ablation changed nothing: the
+line had been absorbing the mismatched lists' consequences (`reports/2026-10-08/line5-result.md`).
+Record what a "load-bearing" result was measured against, and re-measure it when that changes.

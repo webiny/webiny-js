@@ -5,6 +5,7 @@
 > and every one of those becomes a hardcoded hex in a generated component.
 > **Status:** open. Measured in the colour-fix acceptance,
 > `plans/component-extraction-colour-placement-background-report.md`.
+> **Part of:** [theme extraction captures less than the site uses](./theme-extraction-captures-less-than-the-site-uses.md), with the type and spacing instances.
 
 ## What happens
 
@@ -19,8 +20,8 @@ Measured on the four demo sites:
 | --------- | -----------------------------------: |
 | Park city |                         0 of 42 (0%) |
 | Tulane    |                      17 of 100 (17%) |
-| Westland  |                        2 of 39 (5%)  |
-| Freehill  |                       7 of 25 (28%)  |
+| Westland  |                         2 of 39 (5%) |
+| Freehill  |                        7 of 25 (28%) |
 
 The colours that fall through are not incidental. Tulane's are `#366748` (its green), `#e0e299` (its
 specials yellow) and `#e08b81` (its pink) — the site's own palette. Freehill's are near-black.
