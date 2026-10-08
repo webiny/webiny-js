@@ -520,3 +520,7 @@ Supersedes the per-step model role in D40. When creating or editing an AI step, 
 ## D102. In-app notification is a toast
 
 An in-app notification is shown as a toast through the existing admin `Notifications` feature (`packages/app-admin/src/features/notifications/`) while the recipient has the admin open. Clicking it opens the content or Review details. No list, history or read/unread state: notifications are not stored (D60), and the Content Reviews tabs show the work. Resolves gap A1 from the design review.
+
+## D103. Which step's channels apply to review-level events
+
+Every notification uses the "Notify via" channels of the step where its event happened: Review approved uses the last step (the one that approved), Review rejected the step that rejected, Review cancelled the step the review was on, A step failed the failed step. Step events (reached, started, reassigned) use their own step as before. No workflow-level channel setting. Resolves gap A2 from the design review.
