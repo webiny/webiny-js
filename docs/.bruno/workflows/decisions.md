@@ -604,3 +604,7 @@ Revises D91: in Add step, every step type is listed. AI without the `aiPowerups`
 ## D123. Deleted-while-editing dialog without who and when
 
 No tombstone is kept for deleted workflows. When a save finds the workflow gone, the dialog reads "“{workflow}” was deleted while you were editing, so your changes were not saved. Save them as a new workflow for {model}, or discard them." with Discard changes / Save as new workflow. The server only reports that the workflow no longer exists. Resolves final-check item H3.
+
+## D124. Exclusion end date display and editing
+
+Refines D110. The list cell shows "End of {date}" when the stored instant falls at 23:59 in the viewer's timezone, otherwise date and time ("4 Nov 2026, 06:59"); hover shows the full time with the timezone. The Edit dialog pre-fills the viewer's local date. If the date is not changed, the stored instant is kept exactly; only a changed date is recomputed to the end of the newly picked local day. Resolves final-check item H4.
