@@ -51,12 +51,22 @@ export const isWorkflowValidationError = (error: unknown): error is WorkflowVali
     );
 };
 
-export class WorkflowPersistenceError extends BaseError {
+export interface WorkflowPersistenceErrorCause {
+    code?: string;
+    message: string;
+}
+
+export interface WorkflowPersistenceErrorData {
+    cause: WorkflowPersistenceErrorCause;
+}
+
+export class WorkflowPersistenceError extends BaseError<WorkflowPersistenceErrorData> {
     override readonly code = "Workflows/Workflow/Persistence" as const;
 
-    constructor(error: Error) {
+    constructor(error: Error & { code?: string }) {
         super({
-            message: error.message
+            message: error.message,
+            data: { cause: { code: error.code, message: error.message } }
         });
     }
 }

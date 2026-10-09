@@ -95,8 +95,13 @@ export class WorkflowValidator {
             return Result.fail(config.error);
         }
 
+        // Normalise to what the mapper returns on read, so stored values equal returned values.
+        const { description, ...rest } = step;
+        const trimmedDescription = description?.trim();
         return Result.ok({
-            ...step,
+            ...rest,
+            color: step.color ?? "",
+            ...(trimmedDescription ? { description: trimmedDescription } : {}),
             notifications: step.notifications ?? [],
             config: config.value
         });

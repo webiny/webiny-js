@@ -6,6 +6,7 @@ import {
     recordedEvents,
     workflowEventTypes
 } from "~tests/__helpers/RecordingEventPublisher.js";
+import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
 import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
 import { ListWorkflowsUseCase } from "~/features/workflow/ListWorkflows/index.js";
@@ -30,6 +31,66 @@ const createUseCases = async () => {
 };
 
 describe("Workflow use cases", () => {
+    it("returns an empty list for an empty models_in without querying the CMS", async () => {
+        let cmsListCalls = 0;
+        const { context } = await createContextHandler({
+            setup: container => {
+                container.registerDecorator(
+                    ListLatestEntriesUseCase.createDecorator({
+                        decorator: class {
+                            constructor(private decoratee: ListLatestEntriesUseCase.Interface) {}
+                            async execute(
+                                ...args: Parameters<ListLatestEntriesUseCase.Interface["execute"]>
+                            ) {
+                                cmsListCalls++;
+                                return this.decoratee.execute(...args);
+                            }
+                        } as never,
+                        dependencies: []
+                    })
+                );
+            }
+        });
+        const storeWorkflow = context.container.resolve(StoreWorkflowUseCase);
+        const listWorkflows = context.container.resolve(ListWorkflowsUseCase);
+        await storeWorkflow.execute({ workflow: createWorkflowValues() });
+        cmsListCalls = 0;
+
+        const listed = await listWorkflows.execute({ where: { models_in: [] } });
+
+        expect(listed.isOk()).toBe(true);
+        expect(listed.value.items).toEqual([]);
+        expect(listed.value.meta).toEqual({ cursor: null, hasMoreItems: false, totalCount: 0 });
+        expect(cmsListCalls).toBe(0);
+    });
+
+    it("stores exactly what it returns and what events carry", async () => {
+        const { storeWorkflow, getWorkflow } = await createUseCases();
+        const base = createWorkflowValues();
+        const [first, second] = base.steps;
+        const { color: _color, ...withoutColor } = first;
+        const values = createWorkflowValues({
+            steps: [{ ...withoutColor, description: "  " } as typeof first, second]
+        });
+
+        const created = await storeWorkflow.execute({ workflow: values });
+        expect(created.isOk()).toBe(true);
+        const read = await getWorkflow.execute({ id: values.id });
+        expect(read.value).toEqual(created.value);
+
+        const before = recordedEvents.find(e => e.eventType === "Workflows/Workflow/BeforeCreate");
+        const after = recordedEvents.find(e => e.eventType === "Workflows/Workflow/AfterCreate");
+        const afterWorkflow = after!.payload.workflow;
+        expect(before!.payload.workflow).toEqual({
+            id: afterWorkflow.id,
+            name: afterWorkflow.name,
+            models: afterWorkflow.models,
+            steps: afterWorkflow.steps
+        });
+        expect(created.value.steps[0]).not.toHaveProperty("description");
+        expect(created.value.steps[0].color).toBe("");
+    });
+
     it("creates, reads, lists, updates and deletes a workflow", async () => {
         const { storeWorkflow, getWorkflow, listWorkflows, deleteWorkflow } =
             await createUseCases();

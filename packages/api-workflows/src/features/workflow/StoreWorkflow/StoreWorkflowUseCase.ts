@@ -39,6 +39,7 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
         }
         const existing = existingResult.isOk() ? existingResult.value : null;
 
+        // Read-then-write: two concurrent saves with the same `savedOn` can both pass; accepted (D131, admin edits are rare).
         if (existing && existing.savedOn !== input.savedOn) {
             return Result.fail(
                 new WorkflowConflictError({
@@ -106,6 +107,7 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
     private async ensureModelIsFree(
         values: WorkflowValues
     ): Promise<Result<void, WorkflowValidationError | WorkflowPersistenceError>> {
+        // On OpenSearch the list lags DynamoDB, widening the accepted D41 race to saves within the refresh window.
         const result = await this.repository.list({
             where: { models_in: values.models },
             limit: 10

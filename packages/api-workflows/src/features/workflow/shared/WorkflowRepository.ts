@@ -44,8 +44,15 @@ class WorkflowRepositoryImpl implements Abstraction.Interface {
     async list(
         params: Abstraction.ListParams
     ): Promise<Result<Abstraction.ListResult, WorkflowPersistenceError>> {
+        // An empty `In` list throws on OpenSearch (DDB returns nothing): answer without querying.
+        if (params.where?.models_in && params.where.models_in.length === 0) {
+            return Result.ok({
+                items: [],
+                meta: { cursor: null, hasMoreItems: false, totalCount: 0 }
+            });
+        }
         const model = await this.modelProvider.get();
-        const where: CmsEntryListWhere | undefined = params.where?.models_in
+        const where: CmsEntryListWhere | undefined = params.where?.models_in?.length
             ? { values: { models_in: params.where.models_in } }
             : undefined;
 
