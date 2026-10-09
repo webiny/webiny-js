@@ -10,14 +10,19 @@ export class BaseAutocompletePresenter {
     searchOptions: IRefEntryOption[] = [];
     modelIds: string[] = [];
     searchQuery = "";
+    private lastSearchId = 0;
 
     constructor(
         private searchUseCase: SearchContentEntriesUseCase.Interface,
         private getEntriesUseCase: GetContentEntriesUseCase.Interface
     ) {
-        makeAutoObservable<BaseAutocompletePresenter, "searchUseCase" | "getEntriesUseCase">(this, {
+        makeAutoObservable<
+            BaseAutocompletePresenter,
+            "searchUseCase" | "getEntriesUseCase" | "lastSearchId"
+        >(this, {
             searchUseCase: false,
-            getEntriesUseCase: false
+            getEntriesUseCase: false,
+            lastSearchId: false
         });
     }
 
@@ -26,9 +31,13 @@ export class BaseAutocompletePresenter {
     }
 
     async search(query: string): Promise<void> {
+        // Every keystroke starts a search, and responses can arrive out of order.
+        // Only the latest search may write its results, or an older, shorter query overwrites them.
+        const searchId = ++this.lastSearchId;
         this.searchQuery = query;
         if (!query) {
             this.searchOptions = [];
+            this.loading = false;
             return;
         }
 
@@ -39,13 +48,18 @@ export class BaseAutocompletePresenter {
                 query,
                 limit: 10
             });
+            if (searchId !== this.lastSearchId) {
+                return;
+            }
             runInAction(() => {
                 this.searchOptions = result.data.map(toOption);
             });
         } finally {
-            runInAction(() => {
-                this.loading = false;
-            });
+            if (searchId === this.lastSearchId) {
+                runInAction(() => {
+                    this.loading = false;
+                });
+            }
         }
     }
 
@@ -86,6 +100,7 @@ export class BaseAutocompletePresenter {
     }
 
     clearSearch(): void {
+        this.lastSearchId++;
         this.searchQuery = "";
         this.searchOptions = [];
     }
