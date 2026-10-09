@@ -3,9 +3,16 @@ import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
 
 /**
- * DbRegistry is container scoped, so every request (child) container gets its own registry. This
- * decorator is registered once in the root and runs for each new registry, registering the CMS
- * entities the DDB to OpenSearch sync stages.
+ * Adds the CMS entities to every request's DbRegistry.
+ *
+ * DbRegistry is container scoped: each request (child) container builds its own, empty registry. The
+ * DDB to OpenSearch sync looks up two CMS entities in it (the DynamoDB entries entity and the
+ * OpenSearch entries entity), so every one of those registries needs them.
+ *
+ * The CMS storage feature runs once, in the root, before any request exists, so it can't register into
+ * per-request registries directly. Instead it registers this decorator in the root. Decorators on a
+ * container-scoped registration apply to every instance as it is built, so this constructor runs once
+ * per request registry and adds the two entities. Every other call passes through to the registry.
  */
 class CmsEntitiesDbRegistryDecoratorImpl implements DbRegistry.Interface {
     public constructor(
