@@ -21,6 +21,7 @@ Bugs found during discovery that get fixed separately, before or alongside the r
 - `packages/api-core-ddb/src/adminUsers/index.ts:109-131` queries all tenant users and never applies `where.id_in`, so it returns every user. SQL applies it in memory (`api-core-sql/src/adminUsers/index.ts:92-112`).
 - Callers mostly re-find by id (`loaders.ts:45`), which hides the bug.
 - Fix: apply `id_in` in the DDB implementation, together with the new `teams_in` filter (D48, D50).
+- Fixed in Phase 0 Task 3.
 
 ## B4. CMS folder delete guard may report "not authorized" instead of "not empty" (to verify)
 

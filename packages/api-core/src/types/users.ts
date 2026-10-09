@@ -1,3 +1,5 @@
+import type { ListUsersWhere } from "~/features/users/shared/types.js";
+
 export interface CreatedBy {
     id: string;
     displayName: string | null;
@@ -54,9 +56,7 @@ export interface GetUserParams {
 }
 
 export interface ListUsersParams {
-    where?: {
-        id_in?: string[];
-    };
+    where?: ListUsersWhere;
     sort?: string[];
 }
 
