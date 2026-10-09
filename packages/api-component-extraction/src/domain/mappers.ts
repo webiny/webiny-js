@@ -33,6 +33,7 @@ export class EntryToJobMapper {
             siteUrl: entry.values.siteUrl ?? "",
             themeEntryId: entry.values.themeEntryId ?? "",
             themeVersion: entry.values.themeVersion ?? 0,
+            themeExtraction: entry.values.themeExtraction ?? null,
             pageCap: entry.values.pageCap ?? DEFAULT_PAGE_CAP,
             gateConfig,
             pinned: entry.values.pinned ?? false,

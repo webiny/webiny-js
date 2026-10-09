@@ -28,6 +28,8 @@ class JobModelFactory implements ModelFactory.Interface {
             // route uses.
             themeEntryId: fields.text().label("Theme entry id"),
             themeVersion: fields.number().label("Theme version"),
+            // A job's own theme extraction, when it was created from a URL alone.
+            themeExtraction: fields.json().label("Theme extraction"),
             pageCap: fields.number().label("Page cap"),
             gateConfig: fields.json().label("Gate configuration"),
             pinned: fields.boolean().label("Pinned"),

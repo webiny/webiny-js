@@ -48,6 +48,7 @@ import { ComponentRenderServiceImplementation } from "~/features/shared/Componen
 import { RenderComponentsTask } from "~/features/render/RenderComponentsTask.js";
 import { RegenerateComponentTask } from "~/features/render/RegenerateComponentTask.js";
 import { RegeneratePlanTask } from "~/features/stages/plan/RegeneratePlanTask.js";
+import { JobThemeTask } from "~/features/theme/JobThemeTask.js";
 import { GenerateComponentTask } from "~/features/stages/generate/GenerateComponentTask.js";
 import { ComponentExtractionAiService } from "~/features/shared/ai.js";
 import { ComponentExtractionCapabilityImplementation } from "~/features/shared/capability.js";
@@ -120,6 +121,7 @@ export const ComponentExtractionFeature = createFeature({
         container.register(RegenerateComponentTask);
         // Single-component Plan regeneration (W8): a fresh contract proposal for one component.
         container.register(RegeneratePlanTask);
+        container.register(JobThemeTask);
         // Generate fan-out (W-fanout): one child task per component, coordinated by the Generate stage.
         container.register(GenerateComponentTask);
 

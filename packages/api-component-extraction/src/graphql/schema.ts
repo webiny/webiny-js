@@ -2,6 +2,12 @@ import type { GenerationEffort } from "@webiny/remote-components/api/features/ge
 import { ErrorResponse, Response } from "@webiny/api-graphql";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import {
+    needsThemeExtraction,
+    THEME_READING_STAGES,
+    themeGateMessage
+} from "~/features/theme/themeStep.js";
+import { startJobTheme } from "~/features/theme/startJobTheme.js";
 import { TasksCrud } from "@webiny/background-tasks/api/TasksCrud.js";
 import { componentExtractionTypeDefs } from "./typeDefs.js";
 import { ComponentExtractionPermissions } from "~/features/permissions.js";
@@ -34,7 +40,8 @@ import type {
     ClusterArtifact,
     ComponentDecision,
     GenerateArtifact,
-    PlanArtifact
+    PlanArtifact,
+    SpacingEntry
 } from "~/domain/artifacts.js";
 import { readComponent } from "~/domain/generatedComponents.js";
 import {
@@ -79,6 +86,7 @@ import {
 import { checkReachability } from "~/features/shared/reachability.js";
 import type { ThemeManifest } from "@webiny/theme-common";
 import { loadRepresentativeNode } from "~/features/stages/generate/representativeNode.js";
+import { themeFit } from "~/features/theme/themeFit.js";
 import { sectionSpacing } from "~/features/stages/plan/sectionSpacing.js";
 import { ListRemoteComponentsUseCase } from "@webiny/remote-components/api/features/listComponents/abstractions.js";
 
@@ -183,12 +191,19 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
 
     builder.addResolver({
         path: "Mutation.componentExtractionCreateRun",
-        dependencies: [ComponentExtractionPermissions, JobRepository, RunRepository, RunLock],
+        dependencies: [
+            ComponentExtractionPermissions,
+            JobRepository,
+            RunRepository,
+            RunLock,
+            TaskService
+        ],
         resolver(
             permissions: ComponentExtractionPermissions.Interface,
             jobRepository: JobRepository.Interface,
             runRepository: RunRepository.Interface,
-            runLock: RunLock.Interface
+            runLock: RunLock.Interface,
+            taskService: TaskService.Interface
         ) {
             return ({ args }: { args: { jobId: string; note?: string } }) =>
                 resolve(async () => {
@@ -240,7 +255,119 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         throw acquired.error;
                     }
 
+                    // A job created from a URL alone extracts its theme alongside Discover, Capture and
+                    // Segment; Cluster waits for it at the gate.
+                    if (needsThemeExtraction(job)) {
+                        await startJobTheme({ jobs: jobRepository, taskService }, job, run.id);
+                    }
+
                     return run;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionRetryJobTheme",
+        dependencies: [ComponentExtractionPermissions, JobRepository, RunRepository, TaskService],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            jobRepository: JobRepository.Interface,
+            runRepository: RunRepository.Interface,
+            taskService: TaskService.Interface
+        ) {
+            return ({ args }: { args: { jobId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+                    const jobResult = await jobRepository.get(args.jobId);
+                    if (jobResult.isFail()) {
+                        throw jobResult.error;
+                    }
+                    const job = jobResult.value;
+                    const status = job.themeExtraction?.status;
+                    if (status === "running" || status === "waiting") {
+                        throw new Error("This job's theme is already being extracted.");
+                    }
+                    const latest = await runRepository.listByJob(job.id, {
+                        limit: 1,
+                        sort: ["runNumber_DESC"]
+                    });
+                    const runId = latest.isOk() ? latest.value.runs[0]?.id : undefined;
+                    if (!runId) {
+                        throw new Error(
+                            "Start a run for this job first: the theme is extracted for a run."
+                        );
+                    }
+                    // On a job that has a theme, a retry re-extracts, re-pins and marks Cluster onward
+                    // stale for the latest run; the admin asks for confirmation before calling this.
+                    await startJobTheme(
+                        { jobs: jobRepository, taskService },
+                        job,
+                        runId,
+                        Boolean(job.themeEntryId)
+                    );
+                    const updated = await jobRepository.get(job.id);
+                    if (updated.isFail()) {
+                        throw updated.error;
+                    }
+                    return updated.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionUseExistingTheme",
+        dependencies: [ComponentExtractionPermissions, JobRepository, RunRepository],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            jobRepository: JobRepository.Interface,
+            runRepository: RunRepository.Interface
+        ) {
+            return ({
+                args
+            }: {
+                args: { jobId: string; themeEntryId: string; themeVersion: number };
+            }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+                    const jobResult = await jobRepository.get(args.jobId);
+                    if (jobResult.isFail()) {
+                        throw jobResult.error;
+                    }
+                    const job = jobResult.value;
+                    const status = job.themeExtraction?.status;
+                    if (status === "running" || status === "waiting") {
+                        throw new Error(
+                            "This job's theme is still being extracted. Wait for it, or for it to fail."
+                        );
+                    }
+                    const changed =
+                        job.themeEntryId !== args.themeEntryId ||
+                        job.themeVersion !== args.themeVersion;
+                    const updated = await jobRepository.update(job.id, {
+                        themeEntryId: args.themeEntryId,
+                        themeVersion: args.themeVersion
+                    });
+                    if (updated.isFail()) {
+                        throw updated.error;
+                    }
+                    // A different theme replaces what Cluster onward of the latest run was built on.
+                    if (changed && job.themeEntryId) {
+                        const latest = await runRepository.listByJob(job.id, {
+                            limit: 1,
+                            sort: ["runNumber_DESC"]
+                        });
+                        const run = latest.isOk() ? latest.value.runs[0] : undefined;
+                        if (run) {
+                            await runRepository.update(run.id, {
+                                stages: markStaleFrom(run.stages, "cluster")
+                            });
+                        }
+                    }
+                    return updated.value;
                 });
         }
     });
@@ -391,12 +518,19 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
 
     builder.addResolver({
         path: "Mutation.componentExtractionRunStage",
-        dependencies: [ComponentExtractionPermissions, RunRepository, TaskService, TasksCrud],
+        dependencies: [
+            ComponentExtractionPermissions,
+            RunRepository,
+            TaskService,
+            TasksCrud,
+            JobRepository
+        ],
         resolver(
             permissions: ComponentExtractionPermissions.Interface,
             runRepository: RunRepository.Interface,
             taskService: TaskService.Interface,
-            tasks: TasksCrud.Interface
+            tasks: TasksCrud.Interface,
+            jobRepository: JobRepository.Interface
         ) {
             return ({ args }: { args: { runId: string; stage: string } }) =>
                 resolve(async () => {
@@ -424,6 +558,18 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         throw new Error(
                             "This run was cancelled. Start a new run for the job rather than restarting this one."
                         );
+                    }
+
+                    // A job extracting its own theme: the stages that read it wait until it is pinned.
+                    if (THEME_READING_STAGES.has(stage)) {
+                        const jobResult = await jobRepository.get(run.jobId);
+                        if (jobResult.isFail()) {
+                            throw jobResult.error;
+                        }
+                        const waiting = themeGateMessage(jobResult.value);
+                        if (waiting) {
+                            throw new Error(waiting);
+                        }
                     }
 
                     /*
@@ -559,8 +705,8 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     data: {
                         name: string;
                         siteUrl: string;
-                        themeEntryId: string;
-                        themeVersion: number;
+                        themeEntryId?: string | null;
+                        themeVersion?: number | null;
                         pageCap?: number;
                         stopAfter?: string[];
                         note?: string;
@@ -572,6 +718,16 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         throw new Error("You do not have permission to run component extraction.");
                     }
                     const data = args.data;
+                    // An existing theme pins as before; none means the job extracts its own on its
+                    // first run (theme-in-pipeline-build-plan.md).
+                    const hasTheme = Boolean(data.themeEntryId);
+                    if (
+                        hasTheme !== (data.themeVersion !== undefined && data.themeVersion !== null)
+                    ) {
+                        throw new Error(
+                            "Give both a theme and its version, or neither to extract one."
+                        );
+                    }
                     const pageCap = Math.min(
                         Math.max(1, data.pageCap ?? DEFAULT_PAGE_CAP),
                         MAX_PAGE_CAP
@@ -584,8 +740,9 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     const created = await jobRepository.create({
                         name: data.name,
                         siteUrl: data.siteUrl,
-                        themeEntryId: data.themeEntryId,
-                        themeVersion: data.themeVersion,
+                        themeEntryId: hasTheme ? data.themeEntryId! : "",
+                        themeVersion: hasTheme ? data.themeVersion! : 0,
+                        themeExtraction: null,
                         pageCap,
                         gateConfig: { stopAfter },
                         pinned: false,
@@ -809,6 +966,68 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         /** Null unless the theme could not be resolved, in which case the prompt has no variables. */
                         themeError
                     };
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionGetThemeFit",
+        dependencies: [
+            ComponentExtractionPermissions,
+            RunRepository,
+            JobRepository,
+            StageArtifactStore,
+            ThemeManifestResolver,
+            BlobStore
+        ],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            jobRepository: JobRepository.Interface,
+            store: StageArtifactStore.Interface,
+            manifestResolver: ThemeManifestResolver.Interface,
+            blobs: BlobStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+                    // Measured after Plan: before it there is nothing to compare the theme against.
+                    const planKey = stageEntry(run.stages, "plan")?.artifacts.plan;
+                    if (!planKey) {
+                        return null;
+                    }
+                    const plan = await store.getJson<PlanArtifact>(planKey);
+                    if (plan.isFail() || !plan.value) {
+                        return null;
+                    }
+                    const job = await jobRepository.get(run.jobId);
+                    const manifest = job.isOk()
+                        ? await manifestResolver.resolve(
+                              job.value.themeEntryId,
+                              job.value.themeVersion
+                          )
+                        : null;
+                    const sectionManifest = manifest?.isOk() ? manifest.value : null;
+                    // Spacing is measured where Generate measures it: off the representative section.
+                    const spacing = new Map<string, SpacingEntry[]>();
+                    for (const planned of plan.value.components) {
+                        const node = await loadRepresentativeNode(
+                            { store, blobs },
+                            run.stages,
+                            planned
+                        );
+                        if (node) {
+                            spacing.set(planned.name, sectionSpacing(node, sectionManifest));
+                        }
+                    }
+                    return themeFit(plan.value.components, spacing);
                 });
         }
     });

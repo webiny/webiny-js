@@ -91,6 +91,7 @@ export const REGENERATE_COMPONENT_TASK_ID = "componentExtractionRegenerateCompon
  * its prop edits. Model-backed, so it runs as a task rather than inline.
  */
 export const REGENERATE_PLAN_TASK_ID = "componentExtractionRegeneratePlan";
+export const JOB_THEME_TASK_ID = "componentExtractionJobTheme";
 
 /**
  * The background-task id for generating ONE planned component. Generate fans out one of these per

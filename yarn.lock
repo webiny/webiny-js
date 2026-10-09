@@ -10723,6 +10723,7 @@ __metadata:
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-theme": "npm:0.0.0"
+    "@webiny/api-theme-extraction": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"

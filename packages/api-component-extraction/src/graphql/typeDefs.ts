@@ -66,8 +66,11 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         id: ID!
         name: String!
         siteUrl: String!
+        "The pinned theme; empty while the job is still extracting its own."
         themeEntryId: String!
         themeVersion: Int!
+        "The job's own theme extraction, when it was created from a URL alone."
+        themeExtraction: JSON
         pageCap: Int!
         gateConfig: JSON!
         pinned: Boolean!
@@ -113,8 +116,9 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
     input ComponentExtractionCreateJobInput {
         name: String!
         siteUrl: String!
-        themeEntryId: String!
-        themeVersion: Int!
+        "An existing theme to pin. Leave both out to extract the job's theme from the site."
+        themeEntryId: String
+        themeVersion: Int
         "Defaults to 40, clamped to a hard maximum of 150."
         pageCap: Int
         "The stages the run pauses at. Defaults to every stage."
@@ -152,6 +156,8 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             signature: String!
         ): ComponentExtractionArtifactResponse!
         "The structured artifact a stage produced, for the visibility screens. Image refs are served by the run-image route. Pass machine:true for the un-overridden (machine) artifact (W8)."
+        "How well the job's theme fits what was measured on the site, after Plan: colours, type sizes and spacing with a token, of those measured."
+        componentExtractionGetThemeFit(runId: ID!): JSON
         componentExtractionGetStageArtifact(
             runId: ID!
             stage: String!
@@ -206,6 +212,14 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         to free.
         """
         componentExtractionCancelRun(runId: ID!): ComponentExtractionRunResponse!
+        "Extract the job's theme again from its site: after a failure, or to replace a theme it already has (re-pins it and marks Cluster onward of the latest run stale)."
+        componentExtractionRetryJobTheme(jobId: ID!): ComponentExtractionJobResponse!
+        "Pin an existing published theme on the job instead of extracting one (marks Cluster onward of the latest run stale when it replaces a theme)."
+        componentExtractionUseExistingTheme(
+            jobId: ID!
+            themeEntryId: String!
+            themeVersion: Int!
+        ): ComponentExtractionJobResponse!
         "Mark a stale stage current without re-running it, recording the reason on the run's ledger (development only)."
         componentExtractionMarkStageCurrent(
             runId: ID!

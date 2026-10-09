@@ -129,11 +129,37 @@ export interface ThemePin {
 
 // ----- Job ---------------------------------------------------------------------------------------
 
+/**
+ * A job's own theme, extracted from its site (theme-in-pipeline, 2026-10-09). Absent on a job created
+ * with an existing theme: those pin `themeEntryId`/`themeVersion` at creation, as before.
+ */
+export interface JobThemeExtraction {
+    status: "waiting" | "running" | "done" | "failed";
+    /** What it is doing now, as the user reads it ("read 2 of 5 pages, now reading /floor-plans"). */
+    step: string;
+    taskId: string | null;
+    /** The run that started it; Retry on a successful theme marks this run's later stages stale. */
+    runId: string;
+    startedOn: string;
+    finishedOn: string | null;
+    /** The published theme, once there is one. */
+    themeEntryId: string | null;
+    themeVersion: number | null;
+    /** Extraction's own report, shown, never thresholded: six of six themes so far said "medium". */
+    confidence: string | null;
+    uncertain: { path?: string; reason: string }[];
+    pagesSampled: number;
+    slotsApplied: number;
+    error: string | null;
+}
+
 export interface JobValues {
     name: string;
     siteUrl: string;
+    /** The pinned theme. Empty (and version 0) on a job still extracting its own. */
     themeEntryId: string;
     themeVersion: number;
+    themeExtraction: JobThemeExtraction | null;
     pageCap: number;
     gateConfig: GateConfig;
     pinned: boolean;
