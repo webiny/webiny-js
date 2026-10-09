@@ -23,7 +23,9 @@ describe(
             });
 
             // Saving a new entry leaves the form open, and the Install action lives on the list.
-            await app.open("/cms/content-entries/wbyTenant");
+            // Go back through the sidebar: the save rewrites the URL client-side, and a full page
+            // load started at that moment is aborted.
+            await screen.getByRole("link", "Tenant Manager", { exact: false }).tap();
             const row = screen.getByRole("row").filter({ hasText: tenantName });
             await row.getByRole("button", "Install").tap();
 
