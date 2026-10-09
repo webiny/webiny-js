@@ -19,7 +19,7 @@ mark Capture stale). It is a job-level step with its own visible state, and one 
    (crawl, analyse, under its `ExtractionLock`): extraction code is unchanged. Then it **publishes**
    the draft (`PublishThemeUseCase`) and **pins** the published version on the job.
 3. **State on the job:** `themeExtraction = { status: running | done | failed, taskId, step,
-   themeId, version, confidence, uncertain[], pagesSampled, slotsApplied, error }`, written as it
+themeId, version, confidence, uncertain[], pagesSampled, slotsApplied, error }`, written as it
    goes, read by the run view.
 4. **The gate.** Cluster is the first stage that reads the theme. `componentExtractionRunStage` refuses
    Cluster while the job has no pinned theme, with a message that says why (below). Discover, Capture
@@ -97,3 +97,31 @@ About 2 days of work; the end-to-end run about $5.
 
 Option B (the theme built from the pipeline's own measurements), removing the second crawl, and
 per-run re-extraction. The theme-fit figure is the bridge: it measures, on every run, the gap B closes.
+
+## Built (2026-10-09) and verified so far
+
+Backend `12484ed2e0` (and `3cb442f508`, below); admin `b197c9b04b`. Unit tests: the theme step
+(publish and pin on success; extraction's reason and no pin on a crawl or publish failure; the lock
+wait; a retry re-pins and marks Cluster onward stale), the gate's messages, the crawl wording, the
+theme fit.
+
+**Verification 3, the failure path, deployed.** A job on an unreachable URL
+(`unreachable-theme-check.invalid`, job `6ac8ab10…#0001`, safe to delete): created with no theme;
+starting its run started the theme task; the task recorded extraction's own reason ("could not read
+… net::ERR_NAME_NOT_RESOLVED"); Cluster refused with "This job's theme could not be extracted (…).
+Retry it, or pick an existing theme."; Use an existing theme pinned one, and the gate then let Cluster
+through to its ordinary predecessor check. This also verified the new dependency deployed: the
+background function loaded the task and ran extraction's crawl.
+
+**Verification 4.** The 22 existing jobs read with their pinned themes and no theme extraction.
+
+**Theme fit on stored runs:** colours 69-93%, type 91-100%, spacing 8-21% (2424 check run, Freehill,
+Westland). Spacing has five semantic slots and counts a value fitted within 15% of its slot: the
+filed spacing gap, now a number on every run.
+
+**One incident on the way.** The first backend deploy took the whole GraphQL API down: the theme-fit
+query's description sat between another field's description and its field. Invalid SDL builds,
+type-checks and passes every test; nothing parsed the schema before the deployed API did. Fixed in
+`3cb442f508`, with a test that parses the schema and fails on that exact mistake.
+
+**Open: verification 2**, first-time extraction on a site never extracted, needs a site.
