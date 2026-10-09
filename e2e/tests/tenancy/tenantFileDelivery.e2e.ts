@@ -22,6 +22,8 @@ describe(
                 params: { name: unique(tenantName) }
             });
 
+            // Saving a new entry leaves the form open, and the Install action lives on the list.
+            await app.open("/cms/content-entries/wbyTenant");
             const row = screen.getByRole("row").filter({ hasText: tenantName });
             await row.getByRole("button", "Install").tap();
 
