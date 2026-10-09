@@ -1,6 +1,5 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
-import { PageWorkflowsFeature } from "./features/PageWorkflows/feature.js";
 import { WebsiteBuilderPageSchemaFactory } from "./WebsiteBuilderPageSchemaFactory.js";
 
 export const WebsiteBuilderWorkflowsFeature = createFeature({
@@ -12,7 +11,8 @@ export const WebsiteBuilderWorkflowsFeature = createFeature({
             return;
         }
 
-        PageWorkflowsFeature.register(container);
+        // Page handlers (system.workflow sync, publish and move rules, target delete) are rebuilt
+        // as the `wb.page` target adapter in phase 2.
         container.register(WebsiteBuilderPageSchemaFactory);
     }
 });
