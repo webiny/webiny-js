@@ -23,14 +23,9 @@ describe(
             });
 
             // Saving a new entry leaves the form open, and the Install action lives on the list.
-            // The agent can finish before the save does. Wait for its toast: the save rewrites the
-            // URL client-side just before it, and a page load started earlier is aborted.
-            await expect(screen.getByText(`${tenantName} saved successfully!`).first()).toBeVisible(
-                {
-                    timeout: 30_000
-                }
-            );
-            await app.open("/cms/content-entries/wbyTenant");
+            // Go back in-app: the open form keeps a beforeunload prompt, so a page load from it is
+            // aborted.
+            await screen.getByRole("button", "Back").tap();
             const row = screen.getByRole("row").filter({ hasText: tenantName });
             await row.getByRole("button", "Install").tap();
 
