@@ -1,5 +1,15 @@
 # The three content prohibitions: result
 
+> **Correction (2026-10-09), read first.** "Send" was reported below as text the model wrote that the
+> site lacks. It is the site's own label: both forms' submit buttons read **SEND** in the captured
+> screenshots. The capture records an `<input>`'s tag, box and styles, not its `type` or `value`, so
+> the label never reaches Plan, and the measure ("rendered text not in the prompt") counts text missing
+> from the prompt, not text missing from the site. Read in the outputs: Contact Form writes "Send" from
+> the crop in every arm (correct). **Schedule Tour Form ships with no submit button in all 4 runs that
+> have "Show no other text"**: its code renders the button only when the prop has a label, and the
+> default has none. Without the line it writes the real label (2 of 2). The corrected reading of
+> `no-other-text` is in its section.
+
 Design and predictions: `prohibitions-design.md` (committed before the runs). Re-clustered check run,
 dry-run, medium effort (logged on every call), two repeats: 134 generation runs, $18.31 reported
 against an estimate of about $23. Each arm ran only on the components where its line is shown.
@@ -17,14 +27,15 @@ from other copies (the validator's pool includes them). Dropdown options are exc
 excludes form content: they are the site's, uncaptured. Every flag was read in the output and checked
 against the captured page before it was counted.
 
-## `no-other-text`: live. Keep.
+## `no-other-text`: live, with a cost the data causes
 
 Without it, the model wrote what prediction 1 named, on the valueless props:
 
 - the carousel's valueless call to action as **"Schedule a Tour"** (Hero Section), and the Footer's
   accessibility badge as visible text, **"W3C WAI WCAG 2.2 AA"**. Both caught by the validator and
   retried away; neither occurs in 42 base runs;
-- **"Send"** on the tour form's valueless submit button (2 of 2 runs; 0 of 2 at base);
+- the tour form's submit button, labelled **"Send"** (2 of 2 runs; at base the button is missing: see
+  the correction above, this is the site's label, not an invention);
 - a mock **"I'm not a robot" / "reCAPTCHA"** widget (1 of 2 runs). The tour section does have that
   widget (a 304x78 reCAPTCHA iframe in the capture), so this is visible text the capture cannot read,
   not invention in the line's sense. The line also suppresses that, which is the right outcome here.
@@ -32,11 +43,14 @@ Without it, the model wrote what prediction 1 named, on the valueless props:
 The 3 extra "missing text" failures in this arm are the converse of what the line guards, and are not
 attributed to it.
 
-**What the line does not stop.** "Send" on Contact Form's valueless submit button ships in every arm,
-base included (4 of 4 runs on one form, and on the other in both arms without a prohibition). A single
-word on a button with no captured label is invisible to the validator and not prevented by the line.
-That is wrong data in the prompt (Plan captured no label for the button), fixed in the data, not by
-wording.
+**What the line costs, with the data as it is.** Plan captured no label for either form's submit
+button (above). With the line, the model is told to show no text the prompt does not list, and on the
+tour form it drops the button: 4 of 4 runs ship a form with no submit control. Without the line it
+writes the real "Send". The mock reCAPTCHA is the same case: visible on the site, unreadable by the
+capture. So the line stops two real inventions (both also caught by the validator and retried away)
+and, where the prompt is missing real text, suppresses it. The second cost belongs to the data, not
+the line: once the capture records an input's label, the prompt lists it and the line has nothing real
+to suppress. Filed as `ai-context/issues/capture-reads-no-input-labels.md`.
 
 ## `no-invented-urls`: its image case is gone; its link case is real and the line does not stop it.
 
