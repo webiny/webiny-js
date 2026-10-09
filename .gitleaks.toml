@@ -18,6 +18,8 @@ description = "Example and test values"
 regexes = [
   # L01: made-up Entra ID client secret in skills/user-skills/configure-entraid/SKILL.md
   '''^~Gp7Q~97MAzTAUyeTLzTVzX31DRTY28chehU6c_a$''',
+  # L02: dummy WCP environment API key in packages/api-core/__tests__/wcp/utils.test.ts
+  '''^0fc47574-ce3c-49ea-a34b-905ba3e0b242$''',
   # L17: HTML data-key attribute in prerendering tests
   '''^GfT8AoRsYT-1238102521$''',
   # L28: placeholder API token in docs, tests and extensions
@@ -58,8 +60,9 @@ commits = [
 #   Where:    .npmrc, commit 1b8335aa7a (2018-06-11). Token for private registry //webiny-npm:4873/.
 #   URLs:
 #             https://github.com/webiny/webiny-js/blob/1b8335aa7a9a4d0e819c6dd63bc630258be52959/.npmrc#L2
-#   Verified: TODO
-#   Action:   TODO (confirm the registry is gone or the token is revoked)
+#   Verified: 2026-10-09. Token is for http://webiny-npm:4873/, a bare internal hostname on the default
+#             Verdaccio port. It does not resolve on the internet. Added in a "WIP" commit.
+#   Action:   none. Registry is internal and long gone.
 [[allowlists]]
 description = "L15 npm auth token (2018)"
 commits = ["1b8335aa7a9a4d0e819c6dd63bc630258be52959"]
@@ -72,8 +75,9 @@ commits = ["1b8335aa7a9a4d0e819c6dd63bc630258be52959"]
 #             https://github.com/webiny/webiny-js/blob/63487120aa660ee0ae03b7dd4080adac6b608020/packages/webiny-api-headless/IDEAS.md#L23
 #             https://github.com/webiny/webiny-js/blob/b597aa7945a4b52325072158f64ed7d5c122b4a0/packages/api-headless-cms/IDEAS.md#L23
 #             https://github.com/webiny/webiny-js/blob/f07e856a3bc99332d26c0888252a63195107f406/packages/api-headless-cms/IDEAS.md#L23
-#   Verified: TODO
-#   Action:   TODO (confirm the Contentful space or token no longer exists)
+#   Verified: 2026-10-09. Token is STILL ACTIVE: the entry URL returns HTTP 200.
+#             It is a Content Delivery API token (read-only, published content only).
+#   Action:   TODO revoke the token in Contentful space ia4gyn59esy0 (owner: Pavel, scratch notes).
 [[allowlists]]
 description = "L14 Contentful access token (2019-2020)"
 commits = [
@@ -86,8 +90,9 @@ commits = [
 #   Where:    packages/api-wcp/src/utils.ts, commit 5584544a48 (2022-05-24).
 #   URLs:
 #             https://github.com/webiny/webiny-js/blob/5584544a48cc82ddfbc1936614b5a196353ef6b0/packages/api-wcp/src/utils.ts#L7
-#   Verified: TODO
-#   Action:   TODO (confirm the key is revoked in WCP)
+#   Verified: 2026-10-09. Key is part of a base64 WCP_PROJECT_ENVIRONMENT for a dev environment,
+#             with WCP_APP_URL=http://localhost:3000. Local development value.
+#   Action:   TODO confirm with the WCP team that this dev environment no longer exists.
 [[allowlists]]
 description = "L04 WCP API key (2022)"
 commits = ["5584544a48cc82ddfbc1936614b5a196353ef6b0"]
@@ -105,8 +110,9 @@ commits = ["5584544a48cc82ddfbc1936614b5a196353ef6b0"]
 #             https://github.com/webiny/webiny-js/blob/8ae7ef62735b7c0dca7caeecfbe9e85c7d52edfb/apps/site/code/app/build-ssr/renderer.js#L84
 #             https://github.com/webiny/webiny-js/blob/348126bcc49fa3c74e60b0b3f91fdf94c82be38b/apps/site/code/app/build-ssr/renderer.js#L48500
 #             https://github.com/webiny/webiny-js/blob/a764e854c5da0ebcb99038e9b9aaf3184202edc3/packages/telemetry/index.js#L4
-#   Verified: TODO
-#   Action:   TODO (confirm the key is rotated or the endpoint is retired)
+#   Verified: 2026-10-09. Write-only telemetry key, public by design (shipped in npm packages).
+#             Removed in commit 16b0da12a4 (2024-03-19). Current @webiny/wts-client sends no API key.
+#   Action:   none. Key is no longer used.
 [[allowlists]]
 description = "L19 telemetry API key (2020-2021)"
 commits = [
@@ -127,8 +133,8 @@ commits = [
 #             https://github.com/webiny/webiny-js/blob/583cd695357cad2654f30d36d15a8c4d7d5ab523/packages/cli-plugin-scaffold-ci/src/index.ts#L77
 #             https://github.com/webiny/webiny-js/blob/bc38044581f1744611085fc600faffe4745b74ae/packages/cli-plugin-scaffold-ci/src/githubActions/index.ts#L37
 #             https://github.com/webiny/webiny-js/blob/00138158dbe41f8983373b26bde6f1c2c06df61a/packages/cli-plugin-scaffold-ci/src/githubActions/index.ts#L73
-#   Verified: TODO
-#   Action:   TODO (confirm the tokens are revoked)
+#   Verified: 2026-10-09. GET https://api.github.com/user with each token returns HTTP 401. All revoked.
+#   Action:   none. Tokens revoked.
 [[allowlists]]
 description = "L30-L33 GitHub PATs (2021)"
 commits = [
@@ -169,7 +175,7 @@ commits = ["cb17a12f6902243ac4d217e4976b2873b78a933b", "658972a8695ef6f0c9d023e1
 #             2022-06-15 and 2022-06-27 (userMock.ts). All expired.
 #             userMock.ts refreshTokenExpiration values: 2022-06-16 and 2022-06-28. Expired.
 #             postman.json value is the Marketo tracking cookie (_mkto_trk), not a credential.
-#   Action:   TODO (confirm Kibo app credentials used to mint these tokens are rotated)
+#   Action:   TODO confirm with Pavel that the Kibo app credentials used to mint these tokens are rotated.
 [[allowlists]]
 description = "L20, L22, L34, L35, L38, L39 Kibo Commerce tokens (expired)"
 commits = ["2b9830fd10014d173b4aca58c50bd078c0754fb1", "e7d277c945c5baf26dbc6463ea0a1d425c370bb5"]
@@ -184,8 +190,8 @@ commits = ["2b9830fd10014d173b4aca58c50bd078c0754fb1", "e7d277c945c5baf26dbc6463
 #             https://github.com/webiny/webiny-js/blob/17dc16ac71bcb86d9bde8d46b72a25acb392438c/packages/app-website-builder/planning/pageWithDataSource.js#L14
 #             https://github.com/webiny/webiny-js/blob/c8c9498ee69a0b0cd42c872416702121e444778c/packages/app-website-builder/planning/pageFromTemplate.js#L37
 #             https://github.com/webiny/webiny-js/blob/c8c9498ee69a0b0cd42c872416702121e444778c/packages/app-website-builder/planning/pageWithDataSource.js#L15
-#   Verified: TODO (SpaceX API v5 is public and needs no key, so the value looks like a placeholder)
-#   Action:   TODO
+#   Verified: 2026-10-09. SpaceX API v5 is public and needs no key. Value is a placeholder.
+#   Action:   2026-10-09. Replaced with "your-api-key" in the codebase. History stays allowlisted.
 [[allowlists]]
 description = "L25 planning example API key"
-regexes = ['''^f1a790f8c3204b3b8c5c1795aeac4660$''']
+commits = ["17dc16ac71bcb86d9bde8d46b72a25acb392438c", "c8c9498ee69a0b0cd42c872416702121e444778c"]
