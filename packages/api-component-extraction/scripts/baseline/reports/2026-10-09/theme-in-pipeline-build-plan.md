@@ -124,4 +124,29 @@ query's description sat between another field's description and its field. Inval
 type-checks and passes every test; nothing parsed the schema before the deployed API did. Fixed in
 `3cb442f508`, with a test that parses the schema and fails on that exact mistake.
 
-**Open: verification 2**, first-time extraction on a site never extracted, needs a site.
+**Verification 2, first-time extraction on webiny.com, deployed** (job `6ac8ac6d…#0001`, run
+`6ac8ac6e…#0001`). Never a job's theme; its Theme-app crawl from 2026-09-21 was past the 7-day cache,
+so the crawl ran fresh: the real first-time path.
+
+- **Alongside the pipeline.** Created from the URL alone; the run started the theme step at once. It
+  reported per page as checked ("read 0 of 5 pages, now reading /", then /features, /pricing, /blog,
+  /docs; then "analysing the crawled pages"), and was published and pinned 2m33s in, while Capture
+  was still running (Capture finished 25s later).
+- **The extracted theme:** confidence "medium", 13 uncertainties, 5 pages, 49 tokens.
+- **The gate:** Cluster was accepted the moment Segment finished, because the theme was already
+  pinned. So the "still being extracted" refusal was not exercised live on this run; it is covered by
+  the unit tests, and the failure-path refusal was exercised deployed (verification 3).
+- **Downstream:** Cluster through Generate ran against the new theme. 24 of 25 components generated,
+  **0 token-binding failures**: the auto-published theme resolves and binds. 6 failed checks, none
+  about the theme: 5 text preservation (3 missing source text, 2 invented filler such as "Amazing
+  product"), 1 with no output ("the component task did not finish").
+- **Theme fit:** colours 88/113 (78%), type 71/88 (81%), **spacing 5/52 (10%)**: the same spacing gap
+  on a different CMS from the five customer sites.
+- **Retry on the successful theme:** the site was crawled again from page 1 (not the cached crawl), a
+  theme published and pinned, and Cluster through Generate marked stale; Assemble and Promote, never
+  run, left pending. **One difference from the plan's wording:** a retry pins a **new theme**
+  (`6ac8b7c9…` v1), not a new version of the first (`6ac8ad0a…`): extraction always creates a theme.
+  Both stay in the Theme app.
+- **Cost:** $3.18 of recorded model calls (Classify, Plan, Generate; 34 Generate calls recorded, so
+  the stream-recording fix holds on a full run). Extraction's own vision calls are not in the run's
+  record: they run outside its model-call scope.
