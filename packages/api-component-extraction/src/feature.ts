@@ -21,6 +21,8 @@ import {
 import { ModelCallScopeService } from "~/features/shared/modelCallScope.js";
 import {
     ModelCallErrorRecorder,
+    ModelCallStreamErrorRecorder,
+    ModelCallStreamSuccessRecorder,
     ModelCallSuccessRecorder
 } from "~/features/shared/modelCallRecorder.js";
 import { RunLock } from "~/storage/RunLock.js";
@@ -96,6 +98,8 @@ export const ComponentExtractionFeature = createFeature({
         container.register(ModelCallScopeService);
         container.register(ModelCallSuccessRecorder);
         container.register(ModelCallErrorRecorder);
+        container.register(ModelCallStreamSuccessRecorder);
+        container.register(ModelCallStreamErrorRecorder);
         container.register(KeyValueStageArtifactStore);
         container.register(S3BlobStore);
         // Override application (W8.1): turns a stage's machine output into its effective output.

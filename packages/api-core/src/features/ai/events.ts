@@ -110,3 +110,65 @@ export namespace AiBeforeStreamTextEventHandler {
     export type Interface = IEventHandler<AiBeforeStreamTextEvent>;
     export type Event = AiBeforeStreamTextEvent;
 }
+
+// ============================================================================
+// AfterStreamText
+// ============================================================================
+
+/**
+ * A stream that finished. Published once its last chunk has arrived, with the whole call's usage —
+ * the counterpart of `AiAfterGenerateTextEvent`, so a consumer recording usage sees streamed calls too.
+ */
+export interface AiAfterStreamTextPayload {
+    requestId: string;
+    params: AiStreamTextParams;
+    usage: unknown;
+    finishReason: string;
+    duration: number;
+}
+
+export class AiAfterStreamTextEvent extends DomainEvent<AiAfterStreamTextPayload> {
+    eventType = "ai.afterStreamText" as const;
+
+    getHandlerAbstraction() {
+        return AiAfterStreamTextEventHandler;
+    }
+}
+
+export const AiAfterStreamTextEventHandler = createAbstraction<
+    IEventHandler<AiAfterStreamTextEvent>
+>("AiAfterStreamTextEventHandler");
+
+export namespace AiAfterStreamTextEventHandler {
+    export type Interface = IEventHandler<AiAfterStreamTextEvent>;
+    export type Event = AiAfterStreamTextEvent;
+}
+
+// ============================================================================
+// StreamTextError
+// ============================================================================
+
+/** A stream that failed or was aborted. The provider reports no usage for either. */
+export interface AiStreamTextErrorPayload {
+    requestId: string;
+    params: AiStreamTextParams;
+    error: Error;
+    duration: number;
+}
+
+export class AiStreamTextErrorEvent extends DomainEvent<AiStreamTextErrorPayload> {
+    eventType = "ai.streamTextError" as const;
+
+    getHandlerAbstraction() {
+        return AiStreamTextErrorEventHandler;
+    }
+}
+
+export const AiStreamTextErrorEventHandler = createAbstraction<
+    IEventHandler<AiStreamTextErrorEvent>
+>("AiStreamTextErrorEventHandler");
+
+export namespace AiStreamTextErrorEventHandler {
+    export type Interface = IEventHandler<AiStreamTextErrorEvent>;
+    export type Event = AiStreamTextErrorEvent;
+}

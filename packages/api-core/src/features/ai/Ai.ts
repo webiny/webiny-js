@@ -17,7 +17,9 @@ import {
     AiBeforeGenerateTextEvent,
     AiAfterGenerateTextEvent,
     AiGenerateTextErrorEvent,
-    AiBeforeStreamTextEvent
+    AiBeforeStreamTextEvent,
+    AiAfterStreamTextEvent,
+    AiStreamTextErrorEvent
 } from "./events.js";
 
 /**
@@ -91,8 +93,107 @@ class AiImpl implements AiAbstraction.Interface {
 
         await this.eventPublisher.publish(new AiBeforeStreamTextEvent({ params }));
 
+        const requestId = mdbid();
+        const start = performance.now();
+        const { onEnd, onFinish, onError, onAbort } = rest as {
+            onEnd?: (event: unknown) => unknown;
+            onFinish?: (event: unknown) => unknown;
+            onError?: (event: { error: unknown }) => unknown;
+            onAbort?: (event: unknown) => unknown;
+        };
+        // One call ends once: finished, or failed. Whichever is seen first is published.
+        let settled = false;
+        const settle = async (publish: () => Promise<void>) => {
+            if (settled) {
+                return;
+            }
+            settled = true;
+            await publish();
+        };
+        const failed = (error: unknown) =>
+            settle(() =>
+                this.eventPublisher.publish(
+                    new AiStreamTextErrorEvent({
+                        requestId,
+                        params,
+                        error: error instanceof Error ? error : new Error(String(error)),
+                        duration: performance.now() - start
+                    })
+                )
+            );
+
         // Cast required: spreading the discriminated Prompt union loses its narrowing.
-        return streamText({ model: resolvedModel, ...rest } as Parameters<typeof streamText>[0]);
+        const result = streamText({
+            model: resolvedModel,
+            ...rest,
+            // The stream's own callbacks publish the after and error events `generateText` publishes,
+            // so whoever records usage sees streamed calls too. The caller's callbacks run first.
+            onEnd: async (event: unknown) => {
+                await onEnd?.(event);
+                await onFinish?.(event);
+                const finished = event as {
+                    totalUsage?: unknown;
+                    usage?: unknown;
+                    finishReason?: unknown;
+                };
+                await settle(() =>
+                    this.eventPublisher.publish(
+                        new AiAfterStreamTextEvent({
+                            requestId,
+                            params,
+                            usage: finished.totalUsage ?? finished.usage,
+                            finishReason: String(finished.finishReason ?? ""),
+                            duration: performance.now() - start
+                        })
+                    )
+                );
+            },
+            onError: async (event: { error: unknown }) => {
+                await onError?.(event);
+                await failed(event.error);
+            },
+            onAbort: async (event: unknown) => {
+                await onAbort?.(event);
+                await failed(new Error("The stream was aborted."));
+            }
+        } as Parameters<typeof streamText>[0]);
+
+        /*
+         * A provider request aborted mid-stream (a call cut off at its time limit) throws out of the
+         * stream the caller reads, and the SDK calls none of the callbacks above. So the streams handed
+         * to the caller are watched: an error there, or the caller cancelling, is the call failing.
+         */
+        const watch = <T>(stream: ReadableStream<T>): ReadableStream<T> => {
+            const reader = stream.getReader();
+            return new ReadableStream<T>({
+                async pull(controller) {
+                    try {
+                        const { done, value } = await reader.read();
+                        if (done) {
+                            controller.close();
+                        } else {
+                            controller.enqueue(value);
+                        }
+                    } catch (error) {
+                        await failed(error);
+                        controller.error(error);
+                    }
+                },
+                async cancel(reason) {
+                    await failed(reason ?? new Error("The stream was cancelled."));
+                    await reader.cancel(reason);
+                }
+            });
+        };
+        return new Proxy(result, {
+            get(target, property, receiver) {
+                const value = Reflect.get(target, property, receiver);
+                if (property === "fullStream" || property === "textStream") {
+                    return watch(value as ReadableStream<unknown>);
+                }
+                return typeof value === "function" ? value.bind(target) : value;
+            }
+        });
     }
 
     listModels(): Promise<AiModel[]> {

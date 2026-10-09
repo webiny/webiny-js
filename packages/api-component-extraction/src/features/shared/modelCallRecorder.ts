@@ -1,6 +1,8 @@
 import {
     AiAfterGenerateTextEventHandler,
-    AiGenerateTextErrorEventHandler
+    AiAfterStreamTextEventHandler,
+    AiGenerateTextErrorEventHandler,
+    AiStreamTextErrorEventHandler
 } from "@webiny/api-core/features/ai/index.js";
 import { ModelCallRepository } from "~/domain/abstractions.js";
 import type { Stage } from "~/constants.js";
@@ -136,5 +138,59 @@ class ModelCallErrorRecorderImpl implements AiGenerateTextErrorEventHandler.Inte
 
 export const ModelCallErrorRecorder = AiGenerateTextErrorEventHandler.createImplementation({
     implementation: ModelCallErrorRecorderImpl,
+    dependencies: [ModelCallScope, ModelCallRepository]
+});
+
+/*
+ * Generate streams its call (so a call cut off at its limit keeps what it wrote), and a stream publishes
+ * its own after and error events, not the generate ones. Without these two, Generate's calls went
+ * unrecorded from the switch to streaming (2026-10-08) until this was added: the run's model usage and
+ * cost silently lost them.
+ */
+class ModelCallStreamSuccessRecorderImpl implements AiAfterStreamTextEventHandler.Interface {
+    constructor(
+        private scope: ModelCallScope.Interface,
+        private modelCalls: ModelCallRepository.Interface
+    ) {}
+
+    async handle(event: AiAfterStreamTextEventHandler.Event): Promise<void> {
+        const scope = this.scope.current();
+        if (!scope) {
+            return;
+        }
+        const { params, usage, duration } = event.payload;
+        await record(scope, this.modelCalls, modelIdOf(params), readUsage(usage), duration, true);
+    }
+}
+
+export const ModelCallStreamSuccessRecorder = AiAfterStreamTextEventHandler.createImplementation({
+    implementation: ModelCallStreamSuccessRecorderImpl,
+    dependencies: [ModelCallScope, ModelCallRepository]
+});
+
+class ModelCallStreamErrorRecorderImpl implements AiStreamTextErrorEventHandler.Interface {
+    constructor(
+        private scope: ModelCallScope.Interface,
+        private modelCalls: ModelCallRepository.Interface
+    ) {}
+
+    async handle(event: AiStreamTextErrorEventHandler.Event): Promise<void> {
+        const scope = this.scope.current();
+        if (!scope) {
+            return;
+        }
+        await record(
+            scope,
+            this.modelCalls,
+            modelIdOf(event.payload.params),
+            { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 },
+            event.payload.duration,
+            false
+        );
+    }
+}
+
+export const ModelCallStreamErrorRecorder = AiStreamTextErrorEventHandler.createImplementation({
+    implementation: ModelCallStreamErrorRecorderImpl,
     dependencies: [ModelCallScope, ModelCallRepository]
 });

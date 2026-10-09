@@ -26,12 +26,18 @@ export {
     AiGenerateTextErrorEvent,
     AiGenerateTextErrorEventHandler,
     AiBeforeStreamTextEvent,
-    AiBeforeStreamTextEventHandler
+    AiBeforeStreamTextEventHandler,
+    AiAfterStreamTextEvent,
+    AiAfterStreamTextEventHandler,
+    AiStreamTextErrorEvent,
+    AiStreamTextErrorEventHandler
 } from "./events.js";
 export type {
     AiBeforeGenerateTextPayload,
     AiAfterGenerateTextPayload,
     AiGenerateTextErrorPayload,
-    AiBeforeStreamTextPayload
+    AiBeforeStreamTextPayload,
+    AiAfterStreamTextPayload,
+    AiStreamTextErrorPayload
 } from "./events.js";
 export { AiFeature } from "./feature.js";
