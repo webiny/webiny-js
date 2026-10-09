@@ -128,18 +128,19 @@ export interface GenerationDeps {
  * `scripts/baseline/reports/2026-10-08/ablation-design.md`). The extraction prompt's own lines, plus the
  * shared system prompt's (`SYSTEM_PROMPT_LINE_IDS`). Nothing else can be removed.
  */
-// Two content prohibitions (prohibitions-result.md): no-other-text measured live; no-invented-urls
-// pending a rewording to the link case. "Use these URLs exactly as given" measured dead and removed.
+// The two content prohibitions: no-other-text measured live (prohibitions-result.md); empty-destination
+// replaced "Do NOT invent image URLs" after measuring both against no line (link-wording-result.md).
+// "Use these URLs exactly as given" measured dead and removed.
 export const EXTRACTION_PROMPT_LINE_IDS = [
-    "extraction.no-invented-urls",
+    "extraction.empty-destination",
     "extraction.no-other-text"
 ] as const;
 
 /**
  * Candidate lines a prompt experiment may add, by id. Never shown otherwise: a candidate ships only
- * once it is measured and made a default line.
+ * once it is measured and made a default line. None is pending.
  */
-export const OPT_IN_PROMPT_LINE_IDS: readonly string[] = ["extraction.empty-destination"];
+export const OPT_IN_PROMPT_LINE_IDS: readonly string[] = [];
 
 /**
  * The shared system prompt's lines this pipeline leaves out on every call: its own override of the
@@ -594,7 +595,8 @@ const buildPrompt = (
     slotVariables: Map<string, string[]>,
     feedback: string[] = [],
     ablate: Ablation = NO_ABLATION,
-    include: Ablation = NO_ABLATION
+    // Candidate lines read it (`include.has(id)`); none is pending (OPT_IN_PROMPT_LINE_IDS).
+    _include: Ablation = NO_ABLATION
 ): string => {
     const attribute = createCopyAttribution(component);
     const propLines = (prop: PlannedComponent["props"][number], indent: string): string[] => {
@@ -720,20 +722,15 @@ const buildPrompt = (
             "These are the images and destinations the section itself used. Put them in the manifest's",
             "`defaults` as the default values for those inputs, exactly as given:",
             ...observed,
-            ...(ablate.has("extraction.no-invented-urls")
+            // Replaced "Do NOT invent image URLs…": with it, 1 invented destination in 8 runs; with this, 0
+            // in 8; with neither, 2 (a social link and a stock photograph). link-wording-result.md.
+            ...(ablate.has("extraction.empty-destination")
                 ? []
                 : [
                       "",
-                      "Do NOT invent image URLs. No stock photography, no placeholder services, no URL that is",
-                      "not in the list above — a component that ships one puts it in the customer's library."
-                  ]),
-            ...(include.has("extraction.empty-destination")
-                ? [
-                      "",
                       "A link this section shows with no destination in the list above keeps an empty destination",
-                      '(`""`). Do not write one for it: not the site\'s home page, not a social network\'s home page.'
-                  ]
-                : []),
+                      "(`\"\"`). Do not write one for it: not the site's home page, not a social network's home page."
+                  ]),
             "",
             "An image is a `createFileInput`, and its value is an object, not a URL: its default is",
             '`{ url: "..." }`, and the component reads `.url` everywhere it uses it — `src={image.url}`,',
