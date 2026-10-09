@@ -2,7 +2,6 @@ import { Result } from "@webiny/feature/api";
 import { createIdentifier } from "@webiny/utils";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import {
     NotificationMapper,
     type INotificationValues
@@ -18,8 +17,7 @@ class GetNotificationRepositoryImpl implements Repository.Interface {
     constructor(
         private getEntryById: GetEntryByIdUseCase.Interface,
         private getModel: GetModelUseCase.Interface,
-        private mapper: NotificationMapper.Interface,
-        private identityContext: IdentityContext.Interface
+        private mapper: NotificationMapper.Interface
     ) {}
 
     async execute(id: string): Repository.Return {
@@ -30,8 +28,9 @@ class GetNotificationRepositoryImpl implements Repository.Interface {
 
         const revisionId = createIdentifier({ id, version: 1 });
 
-        const result = await this.identityContext.withoutAuthorization(() =>
-            this.getEntryById.execute<INotificationValues>(modelResult.value, revisionId)
+        const result = await this.getEntryById.execute<INotificationValues>(
+            modelResult.value,
+            revisionId
         );
 
         if (result.isFail()) {
@@ -47,5 +46,5 @@ class GetNotificationRepositoryImpl implements Repository.Interface {
 
 export const GetNotificationRepository = Repository.createImplementation({
     implementation: GetNotificationRepositoryImpl,
-    dependencies: [GetEntryByIdUseCase, GetModelUseCase, NotificationMapper, IdentityContext]
+    dependencies: [GetEntryByIdUseCase, GetModelUseCase, NotificationMapper]
 });

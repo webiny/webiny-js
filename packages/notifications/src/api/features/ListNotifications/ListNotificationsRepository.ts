@@ -2,7 +2,6 @@ import { Result } from "@webiny/feature/api";
 import { CmsWhereMapper } from "@webiny/api-headless-cms";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import {
     NotificationMapper,
     type INotificationListParams,
@@ -20,8 +19,7 @@ class ListNotificationsRepositoryImpl implements Repository.Interface {
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private getModel: GetModelUseCase.Interface,
         private mapper: NotificationMapper.Interface,
-        private cmsWhereMapper: CmsWhereMapper.Interface,
-        private identityContext: IdentityContext.Interface
+        private cmsWhereMapper: CmsWhereMapper.Interface
     ) {}
 
     async execute(params: INotificationListParams): Repository.Return {
@@ -37,14 +35,12 @@ class ListNotificationsRepositoryImpl implements Repository.Interface {
             fields: model.fields
         });
 
-        const result = await this.identityContext.withoutAuthorization(() =>
-            this.listLatestEntries.execute<INotificationValues>(model, {
-                sort: SORT,
-                limit: params.limit ?? 50,
-                after: params.after ?? undefined,
-                where
-            })
-        );
+        const result = await this.listLatestEntries.execute<INotificationValues>(model, {
+            sort: SORT,
+            limit: params.limit ?? 50,
+            after: params.after ?? undefined,
+            where
+        });
 
         if (result.isFail()) {
             return Result.fail(new NotificationPersistenceError(result.error));
@@ -70,11 +66,5 @@ function buildWhere(where: INotificationWhere): Record<string, unknown> {
 
 export const ListNotificationsRepository = Repository.createImplementation({
     implementation: ListNotificationsRepositoryImpl,
-    dependencies: [
-        ListLatestEntriesUseCase,
-        GetModelUseCase,
-        NotificationMapper,
-        CmsWhereMapper,
-        IdentityContext
-    ]
+    dependencies: [ListLatestEntriesUseCase, GetModelUseCase, NotificationMapper, CmsWhereMapper]
 });

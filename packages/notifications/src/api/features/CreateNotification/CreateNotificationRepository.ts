@@ -2,7 +2,6 @@ import { Result } from "@webiny/feature/api";
 import { mdbid } from "@webiny/utils";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import {
     NotificationMapper,
     type INotificationValues
@@ -15,8 +14,7 @@ class CreateNotificationRepositoryImpl implements Repository.Interface {
     constructor(
         private createEntry: CreateEntryUseCase.Interface,
         private getModel: GetModelUseCase.Interface,
-        private mapper: NotificationMapper.Interface,
-        private identityContext: IdentityContext.Interface
+        private mapper: NotificationMapper.Interface
     ) {}
 
     async execute(values: INotificationValues): Repository.Return {
@@ -26,12 +24,10 @@ class CreateNotificationRepositoryImpl implements Repository.Interface {
                 return Result.fail(new NotificationPersistenceError(modelResult.error));
             }
 
-            const created = await this.identityContext.withoutAuthorization(() =>
-                this.createEntry.execute<INotificationValues>(modelResult.value, {
-                    id: mdbid(),
-                    values
-                })
-            );
+            const created = await this.createEntry.execute<INotificationValues>(modelResult.value, {
+                id: mdbid(),
+                values
+            });
             if (created.isFail()) {
                 return Result.fail(new NotificationPersistenceError(created.error));
             }
@@ -44,5 +40,5 @@ class CreateNotificationRepositoryImpl implements Repository.Interface {
 
 export const CreateNotificationRepository = Repository.createImplementation({
     implementation: CreateNotificationRepositoryImpl,
-    dependencies: [CreateEntryUseCase, GetModelUseCase, NotificationMapper, IdentityContext]
+    dependencies: [CreateEntryUseCase, GetModelUseCase, NotificationMapper]
 });

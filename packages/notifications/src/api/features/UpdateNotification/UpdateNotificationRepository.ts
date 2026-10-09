@@ -2,7 +2,6 @@ import { Result } from "@webiny/feature/api";
 import { createIdentifier } from "@webiny/utils";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { INotification, INotificationValues } from "~/api/domain/notification/abstractions.js";
 import {
     NotificationNotFoundError,
@@ -14,8 +13,7 @@ import { UpdateNotificationRepository as Repository } from "./abstractions.js";
 class UpdateNotificationRepositoryImpl implements Repository.Interface {
     constructor(
         private updateEntry: UpdateEntryUseCase.Interface,
-        private getModel: GetModelUseCase.Interface,
-        private identityContext: IdentityContext.Interface
+        private getModel: GetModelUseCase.Interface
     ) {}
 
     async execute(notification: INotification): Repository.Return {
@@ -39,10 +37,12 @@ class UpdateNotificationRepositoryImpl implements Repository.Interface {
         };
 
         try {
-            const result = await this.identityContext.withoutAuthorization(() =>
-                this.updateEntry.execute<INotificationValues>(modelResult.value, revisionId, {
+            const result = await this.updateEntry.execute<INotificationValues>(
+                modelResult.value,
+                revisionId,
+                {
                     values
-                })
+                }
             );
             if (result.isFail()) {
                 if (result.error.code === "Cms/Entry/NotFound") {
@@ -59,5 +59,5 @@ class UpdateNotificationRepositoryImpl implements Repository.Interface {
 
 export const UpdateNotificationRepository = Repository.createImplementation({
     implementation: UpdateNotificationRepositoryImpl,
-    dependencies: [UpdateEntryUseCase, GetModelUseCase, IdentityContext]
+    dependencies: [UpdateEntryUseCase, GetModelUseCase]
 });

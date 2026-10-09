@@ -2,7 +2,6 @@ import { Result } from "@webiny/feature/api";
 import { CmsWhereMapper } from "@webiny/api-headless-cms";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import {
     type INotificationValues,
     type INotificationWhere
@@ -15,8 +14,7 @@ class CountNotificationsRepositoryImpl implements Repository.Interface {
     constructor(
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private getModel: GetModelUseCase.Interface,
-        private cmsWhereMapper: CmsWhereMapper.Interface,
-        private identityContext: IdentityContext.Interface
+        private cmsWhereMapper: CmsWhereMapper.Interface
     ) {}
 
     async execute(where: INotificationWhere): Repository.Return {
@@ -32,12 +30,10 @@ class CountNotificationsRepositoryImpl implements Repository.Interface {
             fields: model.fields
         });
 
-        const result = await this.identityContext.withoutAuthorization(() =>
-            this.listLatestEntries.execute<INotificationValues>(model, {
-                limit: 1,
-                where: mapped
-            })
-        );
+        const result = await this.listLatestEntries.execute<INotificationValues>(model, {
+            limit: 1,
+            where: mapped
+        });
 
         if (result.isFail()) {
             return Result.fail(new NotificationPersistenceError(result.error));
@@ -60,5 +56,5 @@ function buildWhere(where: INotificationWhere): Record<string, unknown> {
 
 export const CountNotificationsRepository = Repository.createImplementation({
     implementation: CountNotificationsRepositoryImpl,
-    dependencies: [ListLatestEntriesUseCase, GetModelUseCase, CmsWhereMapper, IdentityContext]
+    dependencies: [ListLatestEntriesUseCase, GetModelUseCase, CmsWhereMapper]
 });
