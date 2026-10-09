@@ -87,6 +87,7 @@ Binding for this plan. Where they refine the spec, the ruling wins for phase 1a.
 - A9. OpenSearch is not available locally. Every task still lists `yarn test:os`; if it cannot run, say so in the task report and leave it to CI.
 - A10. When several `ReviewTargetLoader`s match a model, the last registered wins (the same rule as resolving a single registration).
 - A11. `ReviewTargetSync.sync` fails with a plain `Error` (`Result<void, Error>`); phase 2 adapters may return any `BaseError`.
+- A12. Carried to later phases: phase 3 input validation should require full ISO datetimes with offset or `Z` for `endsOn`, because a date-only value parses to start of day UTC, not the end of the picked day (D110). Phase 4 may widen the assignment `userId` filter to `string | null`, and round-robin must skip pool records (`userId: null`).
 
 ## Sub-phases
 
@@ -120,6 +121,7 @@ Every task leaves all three packages building and green.
 ```
 WorkflowsFeature.ts  constants.ts  types.ts  index.ts
 domain/
+  PersistenceErrorSource.ts
   workflow/   types.ts  errors.ts  reviewStepConfigSchema.ts  WorkflowValidator.ts  workflow.model.ts
               abstractions/WorkflowModelProvider.ts  abstractions/WorkflowRepository.ts
   review/     types.ts  facts.ts  errors.ts  Review.ts  review.model.ts
@@ -145,7 +147,7 @@ features/
 
 Use case folders contain `abstractions.ts`, `<Name>UseCase.ts`, `feature.ts`, `index.ts` (plus `events.ts` for `StoreWorkflow` and `DeleteWorkflow`). `index.ts` exports the use case abstraction, its input and result types, and (for workflow use cases) the event handler abstractions and payload types; `WorkflowsFeature` imports `feature.ts` directly. `src/index.ts` exports `WorkflowsFeature` and `export type * from "./types.js"`. Review shared input types (`ReviewActorInput`, `ReviewDecisionInput`, `CancelReviewInput`) live in `features/review/shared/types.ts`.
 
-Test helpers (`__tests__/__helpers/`): `handler.ts`, `fixtures.ts` (incl. `expectOk`), `RecordingEventPublisher.ts`, `RecordingReviewTargetSync.ts`, `FailingReviewTargetSync.ts`, `FakeReviewTargetLoader.ts`, `reviewContext.ts`.
+Test helpers (`__tests__/__helpers/`): `handler.ts`, `fixtures.ts` (incl. `expectOk`), `RecordingEventPublisher.ts`, `RecordingReviewTargetSync.ts`, `FailingReviewTargetSync.ts`, `FakeReviewTargetLoader.ts`, `ScopedReviewTargetSync.ts`, `ThrowingReviewTargetLoader.ts`, `ThrowingReviewTargetSync.ts`, `callLog.ts`, `reviewContext.ts`.
 
 ---
 
