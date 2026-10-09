@@ -1585,6 +1585,7 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         include?: string[];
                         effort?: GenerationEffort;
                     } | null;
+                    installEntryId?: string | null;
                 };
             }) =>
                 resolve(async () => {
@@ -1592,6 +1593,19 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         throw new Error("You do not have permission to run component extraction.");
                     }
                     const experiment = args.experiment ?? undefined;
+                    const installEntryId = args.installEntryId ?? undefined;
+                    if (installEntryId) {
+                        if (process.env.WEBINY_ENV !== "dev") {
+                            throw new Error(
+                                "Installing a logged attempt runs only in a development environment."
+                            );
+                        }
+                        if (experiment || args.signatures.length !== 1) {
+                            throw new Error(
+                                "Install one component's logged attempt at a time, without an experiment."
+                            );
+                        }
+                    }
                     if (experiment) {
                         if (process.env.WEBINY_ENV !== "dev") {
                             throw new Error(
@@ -1656,7 +1670,9 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                             definition: GENERATE_COMPONENT_TASK_ID,
                             name: experiment
                                 ? `Experiment ${experiment.label}: ${planned.get(signature)!.name}`
-                                : `Generate again: ${planned.get(signature)!.name}`,
+                                : installEntryId
+                                  ? `Install logged attempt: ${planned.get(signature)!.name}`
+                                  : `Generate again: ${planned.get(signature)!.name}`,
                             input: {
                                 runId: run.id,
                                 signature,
@@ -1675,7 +1691,10 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                                                   : {})
                                           }
                                       }
-                                    : { replaceInto: { componentsKey } })
+                                    : {
+                                          replaceInto: { componentsKey },
+                                          ...(installEntryId ? { installEntryId } : {})
+                                      })
                             }
                         });
                         if (triggered.isFail()) {

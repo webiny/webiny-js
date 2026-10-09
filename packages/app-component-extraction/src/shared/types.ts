@@ -527,7 +527,7 @@ export interface GenerationLogEntryDto {
     id: string;
     recordedOn: string;
     stageVersion: number;
-    trigger: "generate" | "generate-again" | "refine" | "experiment";
+    trigger: "generate" | "generate-again" | "refine" | "experiment" | "install";
     /** Set on a prompt experiment's attempts: its label and the prompt lines it left out. */
     experiment?: {
         label: string;

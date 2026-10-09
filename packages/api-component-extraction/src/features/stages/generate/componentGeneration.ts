@@ -1,3 +1,4 @@
+import { Result } from "@webiny/feature/api";
 import { createHash, randomUUID } from "node:crypto";
 import { createS3, PutObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { GenerateRemoteComponentUseCase } from "@webiny/remote-components/api/features/generateComponent/abstractions.js";
@@ -169,6 +170,11 @@ export interface GenerationInput {
     ablate?: readonly string[];
     /** Candidate prompt lines to add, by id (`OPT_IN_PROMPT_LINE_IDS`), for a prompt experiment. */
     include?: readonly string[];
+    /**
+     * Install this output instead of calling the model: one attempt, validated and stored like any
+     * other. For taking an earlier logged attempt (an experiment's, say) as the component.
+     */
+    install?: { source: string; css: string };
     /** How much the model may think, for an effort experiment. Unset: GENERATION_EFFORT. */
     effort?: GenerationEffort;
     /** The theme's own vocabulary for the shared system prompt; see `systemPromptOverride`. */
@@ -929,7 +935,9 @@ export const generateComponentAttempts = async (
     let previousFailures: string[] | null = null;
     let attempts = 0;
 
-    while (attempts < MAX_ATTEMPTS) {
+    // An install is one attempt: the output is fixed, so a second would only repeat the first.
+    const maxAttempts = input.install ? 1 : MAX_ATTEMPTS;
+    while (attempts < maxAttempts) {
         const budget = attemptBudget(Date.now(), input.deadline);
         if (!budget.proceed) {
             await input.log(
@@ -938,36 +946,47 @@ export const generateComponentAttempts = async (
             break;
         }
         attempts++;
-        await input.beat(`"${planned.name}": generation attempt ${attempts}/${MAX_ATTEMPTS}…`);
+        await input.beat(`"${planned.name}": generation attempt ${attempts}/${maxAttempts}…`);
         const feedback = previousFailures
             ? buildRetryFeedback(previousFailures, validVariables)
             : [];
         let trace: GenerationTrace | null = null;
-        const generated = await deps.generateComponent.execute({
-            prompt: buildPrompt(
-                planned,
-                slotVariables,
-                feedback,
-                new Set(input.ablate ?? []),
-                new Set(input.include ?? [])
-            ),
-            name: planned.name,
-            ablate: [...SYSTEM_PROMPT_OVERRIDE, ...(input.ablate ?? [])],
-            effort: input.effort ?? GENERATION_EFFORT,
-            ...(input.systemOverride ?? {}),
-            additionalFileIds,
-            abortSignal: AbortSignal.timeout(budget.timeoutMs),
-            onTrace: recorded => {
-                trace = recorded;
-            }
-        });
+        const install = input.install;
+        const generated: Awaited<ReturnType<GenerateRemoteComponentUseCase.Interface["execute"]>> =
+            install
+                ? Result.ok({
+                      source: install.source,
+                      css: install.css,
+                      name: planned.name,
+                      label: planned.name,
+                      description: "",
+                      aiContext: ""
+                  })
+                : await deps.generateComponent.execute({
+                      prompt: buildPrompt(
+                          planned,
+                          slotVariables,
+                          feedback,
+                          new Set(input.ablate ?? []),
+                          new Set(input.include ?? [])
+                      ),
+                      name: planned.name,
+                      ablate: [...SYSTEM_PROMPT_OVERRIDE, ...(input.ablate ?? [])],
+                      effort: input.effort ?? GENERATION_EFFORT,
+                      ...(input.systemOverride ?? {}),
+                      additionalFileIds,
+                      abortSignal: AbortSignal.timeout(budget.timeoutMs),
+                      onTrace: recorded => {
+                          trace = recorded;
+                      }
+                  });
         if (generated.isFail()) {
             await input.log(
                 `Generate attempt ${attempts} failed for "${planned.name}": ${generated.error.message}`
             );
             await input.recordAttempt?.({
                 attempt: attempts,
-                maxAttempts: MAX_ATTEMPTS,
+                maxAttempts,
                 trace,
                 outcome: "call-failed",
                 failures: [generated.error.message]
@@ -1087,7 +1106,7 @@ export const generateComponentAttempts = async (
         };
         await input.recordAttempt?.({
             attempt: attempts,
-            maxAttempts: MAX_ATTEMPTS,
+            maxAttempts,
             trace,
             outcome: failures.length === 0 ? "passed" : "failed-checks",
             failures,

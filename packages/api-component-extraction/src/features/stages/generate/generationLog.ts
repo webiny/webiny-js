@@ -25,7 +25,13 @@ const MAX_ENTRIES = 60;
 /** Enough failures to see the pattern; the full list is the prompt of the next attempt. */
 const MAX_FAILURES = 20;
 
-export type GenerationTrigger = "generate" | "generate-again" | "refine" | "experiment";
+export type GenerationTrigger =
+    | "generate"
+    | "generate-again"
+    | "refine"
+    | "experiment"
+    /** An earlier logged attempt's output installed as the component, with no model call. */
+    | "install";
 
 export interface GenerationLogEntry {
     id: string;

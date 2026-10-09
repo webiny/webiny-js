@@ -20,7 +20,8 @@ const TRIGGER: Record<GenerationLogEntryDto["trigger"], string> = {
     generate: "Generate",
     "generate-again": "Generate again",
     refine: "Regenerate with instruction",
-    experiment: "Prompt experiment"
+    experiment: "Prompt experiment",
+    install: "Installed logged attempt"
 };
 
 const subtitle = (entry: GenerationLogEntryDto): string => {

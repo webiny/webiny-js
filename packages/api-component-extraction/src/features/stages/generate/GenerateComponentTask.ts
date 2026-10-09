@@ -23,7 +23,7 @@ import { replaceGeneratedComponent } from "./replaceGeneratedComponent.js";
 import { loadRepresentativeNode } from "./representativeNode.js";
 import { systemPromptOverride, type SystemPromptOverride } from "./themeVocabulary.js";
 import { sectionSpacing } from "~/features/stages/plan/sectionSpacing.js";
-import { appendGenerationLog } from "./generationLog.js";
+import { appendGenerationLog, readGenerationPrompt } from "./generationLog.js";
 
 // Left at the end of the invocation to write the result after the last attempt.
 const DEADLINE_MARGIN_MS = 20 * 1000;
@@ -49,6 +49,12 @@ export interface GenerateComponentTaskInput {
      * result. The outputs are read back from the generation log.
      */
     experiment?: { label: string; ablate: string[]; include?: string[]; effort?: GenerationEffort };
+    /**
+     * Install the output of this generation-log entry (of the same component) instead of calling the
+     * model (development only): validated and stored like any generation. Takes an experiment's
+     * attempt as the component.
+     */
+    installEntryId?: string;
 }
 
 type RunParams = TaskHandler.RunParams<GenerateComponentTaskInput>;
@@ -162,6 +168,22 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
             });
         }
 
+        let install: { source: string; css: string } | undefined;
+        if (input.installEntryId) {
+            const logged = await readGenerationPrompt(this.artifactStore, this.blobs, {
+                runId: input.runId,
+                signature: input.signature,
+                entryId: input.installEntryId
+            });
+            const output = logged.isOk() ? logged.value?.output : undefined;
+            if (!output) {
+                return controller.response.error(
+                    `Generation-log entry ${input.installEntryId} has no output to install.`
+                );
+            }
+            install = output;
+        }
+
         // Run inside the generate model-call scope so the child's model calls (via remote-components) are
         // attributed to the run's Generate stage — exactly as the inline stage did — keeping the token
         // panel's per-stage accounting correct now that the calls happen in per-component child tasks.
@@ -191,6 +213,7 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
                         ...(input.experiment ? { ablate: input.experiment.ablate } : {}),
                         ...(input.experiment?.include ? { include: input.experiment.include } : {}),
                         ...(input.experiment?.effort ? { effort: input.experiment.effort } : {}),
+                        ...(install ? { install } : {}),
                         log: (message, error) =>
                             log.error({ message, ...(error instanceof Error ? { error } : {}) }),
                         beat: message => log.info({ message }),
@@ -205,9 +228,11 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
                                     stageVersion: input.stageVersion,
                                     trigger: input.experiment
                                         ? "experiment"
-                                        : input.replaceInto
-                                          ? "generate-again"
-                                          : "generate",
+                                        : install
+                                          ? "install"
+                                          : input.replaceInto
+                                            ? "generate-again"
+                                            : "generate",
                                     record,
                                     ...(input.experiment ? { experiment: input.experiment } : {})
                                 }

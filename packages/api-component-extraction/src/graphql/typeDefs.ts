@@ -255,6 +255,8 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             left out, without replacing anything in the run. Results are read from the generation log.
             """
             experiment: ComponentExtractionExperimentInput
+            "Install this generation-log entry's output as the component instead of calling the model (one component, development only)."
+            installEntryId: String
         ): ComponentExtractionArtifactResponse!
         "Regenerate one component's Plan contract (W8) — a fresh model proposal of its props and token bindings, optionally steered by an instruction, clearing that component's prop edits."
         componentExtractionRegeneratePlan(

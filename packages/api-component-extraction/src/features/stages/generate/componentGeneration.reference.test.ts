@@ -133,3 +133,19 @@ describe("generateComponentAttempts — effort", () => {
         expect(sent(generate)).toBe("high");
     });
 });
+
+describe("generateComponentAttempts — install", () => {
+    it("installs the given output without calling the model, in one attempt", async () => {
+        const { deps, generate } = await setup({});
+        const records: { attempt: number; maxAttempts: number }[] = [];
+        await generateComponentAttempts(deps, {
+            ...input("crop.png"),
+            install: { source: "export default function Hero() { return null; }", css: "" },
+            recordAttempt: async record => {
+                records.push({ attempt: record.attempt, maxAttempts: record.maxAttempts });
+            }
+        });
+        expect(generate).not.toHaveBeenCalled();
+        expect(records).toEqual([{ attempt: 1, maxAttempts: 1 }]);
+    });
+});
