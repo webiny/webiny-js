@@ -13,8 +13,9 @@ medium effort, $2.86 (priced with `src/domain/modelCost.ts`).
 before the run, it beat no line (0 against 2); no line did not beat both, so the line is reworded, not
 cut.
 
-- **The reading that the current line invites URLs by discussing them is not supported.** No line
-  invented more than the current line. The earlier 2 of 4 against 0 of 2 was noise at that size.
+- **The hypothesis that the current line invites URLs by discussing them was wrong.** It was read from
+  2 of 4 runs against 0 of 2: the second case, after line 5, of reasoning from too few runs
+  (`VERIFYING.md`). Measured on purpose, no line invented more than the current line.
 - **The image case is rare, not gone.** With no URL line at all, 1 stock photograph in 44 runs (this
   arm's 8 and the prohibitions pass's 36). The new wording has no image clause; its 8 runs had no image
   invention, which is too few to tell a 1-in-44 rate from zero. Watch for it, and measure an image

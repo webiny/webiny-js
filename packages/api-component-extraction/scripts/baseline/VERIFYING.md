@@ -51,6 +51,15 @@ After the prompt's vocabulary was made to match the validator's, the same ablati
 line had been absorbing the mismatched lists' consequences (`reports/2026-10-08/line5-result.md`).
 Record what a "load-bearing" result was measured against, and re-measure it when that changes.
 
+## Do not read a mechanism into a handful of runs
+
+Twice now a small count was read as a cause. Line 5's first ablation was one measurement on one prompt,
+read as a permanent property of the line. In the prohibitions pass, invented social links appeared in
+2 of 4 runs with "Do NOT invent image URLs" and 0 of 2 without it, read as "the line invites URLs by
+discussing them". Measured on purpose, 8 runs per arm, no line was the worst arm (2 invented, against 1
+and 0): the 2-of-4 was noise (`reports/2026-10-08/link-wording-result.md`). Before a count of a few
+becomes an explanation, run the arms that would show it wrong, and say how many runs a claim rests on.
+
 ## Look at what a fix changes, not only the totals
 
 A deeper cluster fingerprint separated mixed clusters and kept every genuine copy together, which the

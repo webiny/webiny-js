@@ -1,4 +1,4 @@
-# Capture reads no input labels, so the prompt is confident about a button it knows nothing of
+# A prohibition and a capture gap together ship forms with no submit button
 
 > **Package:** `@webiny/site-capture` (the captured tree), then `@webiny/api-component-extraction`
 > (Plan's binding, Generate's prompt)
