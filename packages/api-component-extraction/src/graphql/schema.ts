@@ -1579,7 +1579,12 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                 args: {
                     runId: string;
                     signatures: string[];
-                    experiment?: { label: string; ablate: string[]; include?: string[]; effort?: GenerationEffort } | null;
+                    experiment?: {
+                        label: string;
+                        ablate: string[];
+                        include?: string[];
+                        effort?: GenerationEffort;
+                    } | null;
                 };
             }) =>
                 resolve(async () => {
@@ -1694,11 +1699,14 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
             return ({
                 args
             }: {
-                args: { runId: string; signature: string; instruction?: string };
+                args: { runId: string; signature: string; instruction?: string; rebind?: boolean };
             }) =>
                 resolve(async () => {
                     if (!(await permissions.canCreate("componentExtraction"))) {
                         throw new Error("You do not have permission to run component extraction.");
+                    }
+                    if (args.rebind && process.env.WEBINY_ENV !== "dev") {
+                        throw new Error("Re-binding runs only in a development environment.");
                     }
                     const runResult = await runRepository.get(args.runId);
                     if (runResult.isFail()) {
@@ -1716,10 +1724,16 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         runId: string;
                         signature: string;
                         instruction?: string;
+                        rebind?: boolean;
                     }>({
                         definition: REGENERATE_PLAN_TASK_ID,
-                        name: `Component extraction — regenerate plan (run ${run.runNumber})`,
-                        input: { runId: run.id, signature: args.signature, instruction }
+                        name: `Component extraction — ${args.rebind ? "re-bind" : "regenerate"} plan (run ${run.runNumber})`,
+                        input: {
+                            runId: run.id,
+                            signature: args.signature,
+                            instruction,
+                            ...(args.rebind ? { rebind: true } : {})
+                        }
                     });
                     if (triggered.isFail()) {
                         throw triggered.error;

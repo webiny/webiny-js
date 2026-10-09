@@ -4,9 +4,17 @@ import {
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { REGENERATE_PLAN_TASK_ID, stageArtifactKey, stagesAfter } from "~/constants.js";
 import { RunRepository, JobRepository, OverrideRepository } from "~/domain/abstractions.js";
-import { StageArtifactStore } from "~/domain/stage.js";
+import { BlobStore, StageArtifactStore } from "~/domain/stage.js";
 import { stageEntry, markStaleFrom } from "~/domain/ledger.js";
-import type { ClassifyArtifact, PlanArtifact } from "~/domain/artifacts.js";
+import type { Run } from "~/domain/types.js";
+import type {
+    CapturedNode,
+    ClassifyArtifact,
+    PlanArtifact,
+    SegmentArtifact
+} from "~/domain/artifacts.js";
+import { findNodeByBox } from "../cluster/sectionNode.js";
+import { rebindComponent } from "./rebindComponent.js";
 import { ComponentExtractionAi } from "~/features/shared/ai.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import { OverrideApplicator } from "~/features/shared/OverrideApplicator.js";
@@ -23,7 +31,15 @@ export interface RegeneratePlanTaskInput {
     signature: string;
     /** Optional operator guidance to steer the new contract; a plain re-roll when absent. */
     instruction?: string;
+    /**
+     * Re-bind instead of re-plan: no model call, the contract kept, its observed values bound again from
+     * the member sections as they are now (`rebindComponent`). A repair for stored runs.
+     */
+    rebind?: boolean;
 }
+
+/** As in the Plan stage: the representative first, then up to this many members in all. */
+const MAX_MEMBERS_HARVESTED = 12;
 
 type RunParams = TaskHandler.RunParams<RegeneratePlanTaskInput>;
 type RunResult = Promise<TaskHandler.Result<RegeneratePlanTaskInput>>;
@@ -44,7 +60,8 @@ class RegeneratePlanTaskHandlerImpl implements TaskHandler.Interface<RegenerateP
         readonly manifestResolver: ThemeManifestResolver.Interface,
         readonly overrides: OverrideRepository.Interface,
         readonly applicator: OverrideApplicator.Interface,
-        readonly modelCallScope: ModelCallScope.Interface
+        readonly modelCallScope: ModelCallScope.Interface,
+        readonly blobs: BlobStore.Interface
     ) {}
 
     async run({ input, controller }: RunParams): RunResult {
@@ -87,6 +104,26 @@ class RegeneratePlanTaskHandlerImpl implements TaskHandler.Interface<RegenerateP
             return controller.response.error("The component to regenerate was not found.");
         }
         const component = planArtifact.components[index];
+
+        if (input.rebind) {
+            const nodes = await this.memberNodes(run.stages, component);
+            const { component: rebound, moved } = rebindComponent(component, nodes);
+            const components = [...planArtifact.components];
+            components[index] = rebound;
+            const written = await this.artifactStore.putJson(machineKey, {
+                ...planArtifact,
+                components
+            });
+            if (written.isFail()) {
+                return controller.response.error(written.error.message);
+            }
+            await this.reapply(run, plan);
+            // Every bound value that moved, so the repair can be read for what it changed beyond its target.
+            await log.info({
+                message: `Re-bound "${component.name}" from ${nodes.length} member section(s); ${moved.length} prop(s) changed: ${JSON.stringify(moved)}`
+            });
+            return controller.response.done(`Re-bound ${moved.length} prop(s).`);
+        }
 
         // The cluster to re-plan comes from the EFFECTIVE classify artifact, so the fresh contract honours
         // any name/type correction the operator has made.
@@ -207,7 +244,68 @@ class RegeneratePlanTaskHandlerImpl implements TaskHandler.Interface<RegenerateP
             }
         }
 
-        // Re-apply the plan stage against the mutated machine, and cascade staleness downstream.
+        await this.reapply(run, plan);
+
+        await log.info({
+            message: `Regenerated "${component.name}" — ${contract.props.length} prop(s) proposed.`
+        });
+        return controller.response.done("Plan contract regenerated.");
+    }
+
+    /** The member sections Plan binds from, the representative first, read from their page trees. */
+    private async memberNodes(
+        stages: Parameters<typeof stageEntry>[0],
+        component: PlanArtifact["components"][number]
+    ): Promise<CapturedNode[]> {
+        const segmentRef = stageEntry(stages, "segment")?.artifacts?.sections;
+        const segment = segmentRef
+            ? await this.artifactStore.getJson<SegmentArtifact>(segmentRef)
+            : null;
+        const pages = segment?.isOk() && segment.value ? segment.value.pages : [];
+        const members = [
+            component.representative,
+            ...component.members.filter(
+                member =>
+                    member.url !== component.representative.url ||
+                    member.sectionIndex !== component.representative.sectionIndex
+            )
+        ].slice(0, MAX_MEMBERS_HARVESTED);
+        const trees = new Map<string, CapturedNode | null>();
+        const nodes: CapturedNode[] = [];
+        for (const member of members) {
+            const page = pages.find(candidate => candidate.url === member.url);
+            const section = page?.sections.find(
+                candidate => candidate.index === member.sectionIndex
+            );
+            if (!page || !section) {
+                continue;
+            }
+            if (!trees.has(page.treeRef)) {
+                const blob = await this.blobs.get(page.treeRef);
+                let tree: CapturedNode | null = null;
+                if (blob.isOk()) {
+                    try {
+                        tree = JSON.parse(new TextDecoder().decode(blob.value)) as CapturedNode;
+                    } catch {
+                        tree = null;
+                    }
+                }
+                trees.set(page.treeRef, tree);
+            }
+            const tree = trees.get(page.treeRef);
+            const node = tree ? findNodeByBox(tree, section.box) : null;
+            if (node) {
+                nodes.push(node);
+            }
+        }
+        return nodes;
+    }
+
+    /** Re-apply the plan stage against the mutated machine, and cascade staleness downstream. */
+    private async reapply(
+        run: Run,
+        plan: NonNullable<ReturnType<typeof stageEntry>>
+    ): Promise<void> {
         const applied = await this.applicator.apply({
             stage: "plan",
             jobId: run.jobId,
@@ -228,11 +326,6 @@ class RegeneratePlanTaskHandlerImpl implements TaskHandler.Interface<RegenerateP
             stages = markStaleFrom(stages, downstream);
         }
         await this.runRepository.update(run.id, { stages });
-
-        await log.info({
-            message: `Regenerated "${component.name}" — ${contract.props.length} prop(s) proposed.`
-        });
-        return controller.response.done("Plan contract regenerated.");
     }
 }
 
@@ -246,7 +339,8 @@ const RegeneratePlanTaskHandler = TaskHandler.createImplementation({
         ThemeManifestResolver,
         OverrideRepository,
         OverrideApplicator,
-        ModelCallScope
+        ModelCallScope,
+        BlobStore
     ]
 });
 

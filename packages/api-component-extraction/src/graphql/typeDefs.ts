@@ -261,6 +261,8 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             runId: ID!
             signature: String!
             instruction: String
+            "Re-bind the component's observed values against its member sections, keeping its contract: no model call. A repair for stored runs, development environments only."
+            rebind: Boolean
         ): ComponentExtractionTaskResponse!
         "Set (upsert) a job override from a run (W8.1). Re-corrects in place, marks downstream stale, and appends to the correction log. Returns the job's overrides."
         componentExtractionSetOverride(

@@ -131,7 +131,7 @@ const fillItem = (
 };
 
 /** Every string a structured value contributes, so the text path sees it without knowing the type. */
-const textsOf = (value: ObservedStructuredValue): string[] => {
+export const textsOf = (value: ObservedStructuredValue): string[] => {
     if (value.kind === "link") {
         return value.label ? [value.label] : [];
     }
@@ -199,6 +199,8 @@ const bindOneSection = (
      * thing to both rules.
      */
     const claimed = new Set<CapturedNode>();
+    // Submit controls bound to a submit prop, apart from `claimed`: list items may claim them first.
+    const submitsTaken = new Set<CapturedNode>();
 
     const bind = (prop: ComponentProp): void => {
         const values: ObservedStructuredValue[] = [];
@@ -259,9 +261,19 @@ const bindOneSection = (
              * A prop named for a form's submit takes the section's submit control when it has one.
              * Positionally it took the next link instead: on three G5 forms, a "Please Call" phone link
              * that sits before the submit, so the form shipped a phone number as its submit button.
+             *
+             * Looked up past the claims: a form's field list (bound first, in contract order) claims the
+             * form's children as its items, the submit input among them, and on Freehill's form that
+             * hid the submit from this prop. A field list never binds a submit control as a field;
+             * a submit control still goes to one submit prop only.
              */
-            const submits = isSubmitProp(prop) ? links.filter(link => !link.href) : [];
+            const submits = isSubmitProp(prop)
+                ? collectLinks(node).filter(link => !link.href && !submitsTaken.has(link.node))
+                : [];
             for (const link of (submits.length > 0 ? submits : links).slice(0, take)) {
+                if (submits.length > 0) {
+                    submitsTaken.add(link.node);
+                }
                 values.push({ kind: "link", label: link.label, href: link.href });
                 claimed.add(link.node);
                 summary.linksBound++;
