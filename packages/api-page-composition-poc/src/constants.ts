@@ -6,7 +6,10 @@ export const COMPOSE_PAGES_TASK_ID = "pageCompositionPocComposePages";
  * CMS model. The run entity belongs to the pipeline; this PoC is a consumer and keeps its own state,
  * so deleting the package leaves no field behind. W10.3 and the discard log read this.
  */
-export const pageMapKey = (runId: string): string => `pageCompositionPoc:pageMap:${runId}`;
+export const pageMapKey = (runId: string, tenantId?: string): string =>
+    tenantId
+        ? `pageCompositionPoc:pageMap:${runId}:tenant:${tenantId}`
+        : `pageCompositionPoc:pageMap:${runId}`;
 
 /**
  * The composed-screenshot record for a run — a LOCAL capture's output, kept apart from the page map.
@@ -52,3 +55,9 @@ export const COMPOSED_IMAGE_ROUTE = "/_webiny/page-composition-poc/run/:runId/im
 
 /** How long a harness upload URL stays usable. One screenshot on a slow uplink, not a lasting grant. */
 export const UPLOAD_URL_SECONDS = 900;
+
+/** The background task that builds a job's site in its own tenant (compose-tenant-promotion-design.md). */
+export const BUILD_SITE_TASK_ID = "pageCompositionPocBuildSite";
+
+/** A job's site: its tenant and the last build, in the extraction tenant's key-value store. */
+export const siteKey = (jobId: string): string => `pageCompositionPoc:site:${jobId}`;

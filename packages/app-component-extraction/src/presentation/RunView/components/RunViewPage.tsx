@@ -53,6 +53,8 @@ interface StageEvent extends IncomingGenericData {
         current?: number;
         total?: number;
         message?: string;
+        /** A bookkeeping line ("checkpointed; continuing"): logged, but not shown on the waiting screen. */
+        held?: boolean;
         data?: StageProgress["data"];
     };
 }
@@ -199,12 +201,16 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                 return;
             }
             if (event.action === STAGE_PROGRESS_ACTION && data.stage && data.message) {
-                presenter.applyProgress(data.stage, {
-                    current: data.current ?? 0,
-                    total: data.total ?? 0,
-                    message: data.message,
-                    ...(data.data ? { data: data.data } : {})
-                });
+                presenter.applyProgress(
+                    data.stage,
+                    {
+                        current: data.current ?? 0,
+                        total: data.total ?? 0,
+                        message: data.message,
+                        ...(data.data ? { data: data.data } : {})
+                    },
+                    data.held === true
+                );
                 return;
             }
             void presenter.refresh();
@@ -274,16 +280,27 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
 
     // The primary action adapts to state: run the selected stage if it hasn't produced output yet;
     // once it's done, continue to the next stage (Promote is the finishing action on stage 9).
-    const primaryAction: { text: string; target: Stage } | null = !selectedDone
-        ? selected === "promote"
-            ? { text: "Promote and finish run", target: "promote" }
-            : { text: `Run ${meta.number} · ${meta.label}`, target: selected }
-        : nextStage
-          ? {
-                text: `Continue to ${stageMeta(nextStage).number} · ${stageMeta(nextStage).label}`,
-                target: nextStage
-            }
-          : null;
+    /*
+     * At the Plan gate the Plan view's "Approve plan and generate" card is the action: it carries the
+     * estimate and the spend warning. A header "Continue to 7 · Generate" beside it was a second button
+     * for the same thing.
+     */
+    const approveCardOwnsGate =
+        selected === "plan" &&
+        selectedDone &&
+        (stageEntry(run, "generate")?.status ?? "pending") === "pending";
+    const primaryAction: { text: string; target: Stage } | null = approveCardOwnsGate
+        ? null
+        : !selectedDone
+          ? selected === "promote"
+              ? { text: "Promote and finish run", target: "promote" }
+              : { text: `Run ${meta.number} · ${meta.label}`, target: selected }
+          : nextStage
+            ? {
+                  text: `Continue to ${stageMeta(nextStage).number} · ${stageMeta(nextStage).label}`,
+                  target: nextStage
+              }
+            : null;
 
     return (
         <div className="flex h-main-content flex-col">
@@ -402,20 +419,6 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                                                     />
                                                 ))}
                                             </DropdownMenu>
-                                        ) : null}
-                                        {status === "running" ? (
-                                            <Button
-                                                variant="secondary"
-                                                size="sm"
-                                                text={
-                                                    vm.actionStage === selected
-                                                        ? "Re-running…"
-                                                        : "Re-run stage"
-                                                }
-                                                title="Re-trigger this stage. It resumes from its checkpoint — use this to recover a stage whose background task was interrupted and left it stuck 'running'."
-                                                disabled={vm.actionStage !== null}
-                                                onClick={() => void runStage(selected)}
-                                            />
                                         ) : null}
                                         {hasRun ? (
                                             <Button

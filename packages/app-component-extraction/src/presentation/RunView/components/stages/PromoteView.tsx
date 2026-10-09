@@ -11,6 +11,7 @@ import {
     cn
 } from "@webiny/admin-ui";
 import { Routes } from "~/routes.js";
+import { SiteCard } from "./SiteCard.js";
 import { namespaceSegment, qualify } from "~/shared/naming.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type {
@@ -259,6 +260,11 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
                         Promoted {promoted} component{promoted === 1 ? "" : "s"} to the Library
                         {skipped > 0 ? ` · ${skipped} skipped` : ""}. Open the Library to use them.
                     </Alert>
+                </div>
+            ) : null}
+            {promoted > 0 ? (
+                <div className="px-md pt-sm">
+                    <SiteCard presenter={presenter} />
                 </div>
             ) : null}
 

@@ -48,7 +48,13 @@ export interface StageActivityEntry {
 /** The stage task's output JSON, as read back from `backgroundTasks.getTask`. */
 export interface StageTaskOutput {
     activity?: StageActivityEntry[];
-    progress?: { stage: string; current: number; total: number; message: string };
+    progress?: { stage: string } & StageProgress;
+}
+
+/** A stage task's activity trail and its latest progress snapshot, as polled from the task output. */
+export interface StageTaskTrail {
+    logs: StageLogItem[];
+    progress: ({ stage: string } & StageProgress) | null;
 }
 
 /** Live progress for the running stage, delivered over the websocket. */
@@ -743,4 +749,28 @@ export interface ComposedCapturePageDto {
     /** Why this page has no screenshot, in the harness's own words. */
     reason?: string;
     viewportWidth?: number;
+}
+
+export type SiteBuildStep = "tenant" | "theme" | "components" | "images" | "pages";
+
+/** A job's site in its own tenant, as the page-composition PoC records it (`SiteRecord` in the API). */
+export interface SiteDto {
+    jobId: string;
+    tenantId: string;
+    tenantName: string;
+    createdOn: string;
+    lastBuild?: {
+        runId: string;
+        taskId?: string;
+        status: "running" | "done" | "failed";
+        startedOn: string;
+        finishedOn?: string;
+        steps: Array<{
+            step: SiteBuildStep;
+            status: "running" | "done" | "failed";
+            detail: string;
+            at: string;
+        }>;
+        error?: string;
+    };
 }

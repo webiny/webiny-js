@@ -3,8 +3,9 @@ import { Button, Loader, Text } from "@webiny/admin-ui";
 import type { StageLogItem } from "~/shared/types.js";
 
 /**
- * The stage's activity log, kept and hidden: closed by default, open by default when the stage failed
- * or finished with per-item failures, where the log is what the user needs (waiting-screens-plan.md).
+ * The stage's activity log, kept and hidden: closed by default, open by default when the stage failed,
+ * where the log is what the user needs (waiting-screens-plan.md). Per-item failures keep their reasons
+ * in the stage's view, not here, so they do not open it.
  */
 interface Props {
     items: StageLogItem[];
@@ -15,7 +16,7 @@ interface Props {
 
 export const ActivityLog = ({ items, loading, openByDefault, renderLine }: Props) => {
     const [open, setOpen] = useState(openByDefault);
-    // A stage that turns failed or degraded while on screen opens its log then.
+    // A stage that turns failed while on screen opens its log then.
     useEffect(() => {
         if (openByDefault) {
             setOpen(true);

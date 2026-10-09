@@ -274,7 +274,8 @@ const GenerateCard = ({
             <div className="flex min-w-0">
                 <div className="flex min-w-0 flex-1 flex-col gap-sm p-md">
                     <div className="flex items-start justify-between gap-sm">
-                        <div className="min-w-0">
+                        {/* A column: Text renders a span, so the type and retry lines ran together. */}
+                        <div className="flex min-w-0 flex-col">
                             <Heading level={6}>
                                 <span className="font-mono">{component.name}</span>
                             </Heading>

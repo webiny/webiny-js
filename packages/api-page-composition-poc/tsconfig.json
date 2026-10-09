@@ -6,11 +6,13 @@
     { "path": "../api-core" },
     { "path": "../api-file-manager" },
     { "path": "../api-graphql" },
+    { "path": "../api-theme" },
     { "path": "../api-website-builder" },
     { "path": "../background-tasks" },
     { "path": "../event-handler-core" },
     { "path": "../feature" },
     { "path": "../remote-components" },
+    { "path": "../tenant-manager" },
     { "path": "../website-builder-sdk" }
   ],
   "compilerOptions": {
@@ -28,6 +30,8 @@
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/api-theme/*": ["../api-theme/src/*"],
+      "@webiny/api-theme": ["../api-theme/src"],
       "@webiny/api-website-builder/*": ["../api-website-builder/src/*"],
       "@webiny/api-website-builder": ["../api-website-builder/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
@@ -38,6 +42,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/remote-components/*": ["../remote-components/src/*"],
       "@webiny/remote-components": ["../remote-components/src"],
+      "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
+      "@webiny/tenant-manager": ["../tenant-manager/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
       "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
     }

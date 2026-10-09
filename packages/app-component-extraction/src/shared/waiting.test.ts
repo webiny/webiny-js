@@ -12,10 +12,21 @@ describe("formatElapsed", () => {
 describe("degradedSummary", () => {
     it("names per-item failures of a finished capture or generate", () => {
         expect(degradedSummary("capture", { failed: ["a", "b"] })).toBe(
-            "2 pages could not be captured."
+            "2 pages could not be captured. They are listed first below, with the reason."
         );
         expect(degradedSummary("generate", { failed: ["x"] })).toBe(
-            "1 component did not pass its checks."
+            "1 component did not pass its checks. The failed checks are on its card below."
+        );
+        expect(
+            degradedSummary("generate", {
+                failed: ["x", "y"],
+                components: [
+                    { signature: "x", name: "Site Header" },
+                    { signature: "y", name: "Footer" }
+                ]
+            })
+        ).toBe(
+            "2 components did not pass their checks: Site Header, Footer. The failed checks are on their cards below."
         );
     });
 

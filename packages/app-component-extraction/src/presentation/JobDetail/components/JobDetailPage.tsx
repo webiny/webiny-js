@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { DiContainerProvider, useContainer, useFeature, useRoute } from "@webiny/app";
 import { createReactiveComponent, useRouter } from "@webiny/app-admin";
 import {
     Button,
     Checkbox,
+    Dialog,
     Heading,
     Icon,
     ProgressBar,
@@ -111,14 +112,21 @@ const CurrentRunPanel = ({
     run,
     starting,
     onStart,
+    onReplace,
     onOpenRun
 }: {
     run: RunDto | null;
     starting: boolean;
     onStart: () => void;
+    /** A new run in place of the paused or failed one, which is cancelled first. */
+    onReplace: () => void;
     onOpenRun: () => void;
 }) => {
     const overall = runOverallStatus(run);
+    const [confirmReplace, setConfirmReplace] = useState(false);
+    // A paused or failed run holds the job's one run slot; a new run replaces it, after asking.
+    const replaceable = !!run && (overall === "paused" || overall === "failed");
+    const atStage = run ? currentStage(run) : null;
     const failed = run?.stages.filter(entry => entry.status === "failed") ?? [];
 
     const action =
@@ -194,9 +202,52 @@ const CurrentRunPanel = ({
                 </div>
             ) : null}
 
-            <div>
+            <div className="flex items-center gap-sm">
                 <Button variant="primary" size="sm" text={action.text} onClick={action.onClick} />
+                {replaceable ? (
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        text={starting ? "Starting…" : "Start new run"}
+                        disabled={starting}
+                        onClick={() => setConfirmReplace(true)}
+                    />
+                ) : null}
             </div>
+
+            {confirmReplace && run ? (
+                <Dialog
+                    open={true}
+                    onOpenChange={open => {
+                        if (!open) {
+                            setConfirmReplace(false);
+                        }
+                    }}
+                    size="sm"
+                    title="Start a new run?"
+                    actions={
+                        <>
+                            <Dialog.CancelAction text="Cancel" />
+                            <Dialog.ConfirmAction
+                                text="Start new run"
+                                onClick={() => {
+                                    setConfirmReplace(false);
+                                    onReplace();
+                                }}
+                            />
+                        </>
+                    }
+                >
+                    <Text size="sm">
+                        {runLabel(run)}{" "}
+                        {overall === "failed"
+                            ? "has failed"
+                            : `is waiting at ${atStage ? STAGE_LABELS[atStage] : "a gate"}`}
+                        . A job runs one at a time, so starting a new run cancels it. Its results
+                        stay readable in the run history.
+                    </Text>
+                </Dialog>
+            ) : null}
         </div>
     );
 };
@@ -402,6 +453,22 @@ const JobDetailContent = createReactiveComponent(function JobDetailContent() {
         }
     };
 
+    const replaceRun = async () => {
+        if (!run) {
+            return;
+        }
+        try {
+            const runId = await presenter.replaceRun(run.id);
+            toast.showSuccessToast({ title: "Extraction run started." });
+            goToRoute(Routes.Run, { runId });
+        } catch (error) {
+            toast.showWarningToast({
+                title: "Could not start a new run",
+                description: (error as Error).message
+            });
+        }
+    };
+
     const railRows = useMemo(
         () => STAGES.map((stage, index) => ({ stage, status: runStageStatuses(run)[index] })),
         [run]
@@ -488,6 +555,7 @@ const JobDetailContent = createReactiveComponent(function JobDetailContent() {
                         run={run}
                         starting={vm.startingRun}
                         onStart={() => void startRun()}
+                        onReplace={() => void replaceRun()}
                         onOpenRun={openRun}
                     />
                     <SelectedStageSummary

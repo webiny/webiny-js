@@ -25,6 +25,8 @@ export interface IAssetUrlResolver {
     prime(sourceUrls: Iterable<string>): Promise<void>;
     /** The migrated url for a captured url, or null when this migration has no copy. */
     resolve(sourceUrl: string): string | null;
+    /** Forget every lookup: the next composition may run in another tenant, with its own map. */
+    clear(): void;
 }
 
 export const AssetUrlResolver = createAbstraction<IAssetUrlResolver>(
@@ -53,6 +55,10 @@ class AssetUrlResolverImpl implements IAssetUrlResolver {
 
     resolve(sourceUrl: string): string | null {
         return this.urls.get(sourceUrl) ?? null;
+    }
+
+    clear(): void {
+        this.urls.clear();
     }
 
     private async lookup(sourceUrl: string): Promise<string | null> {

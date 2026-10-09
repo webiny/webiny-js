@@ -583,7 +583,7 @@ export const GET_WEBSITE_DOMAIN = /* GraphQL */ `
         websiteBuilder {
             getSettings {
                 data {
-                    previewDomain
+                    domain
                 }
                 error {
                     message
@@ -629,5 +629,46 @@ export const USE_EXISTING_THEME = /* GraphQL */ `
 export const GET_THEME_FIT = /* GraphQL */ `
     query GetThemeFit($runId: ID!) {
         componentExtractionGetThemeFit(runId: $runId)
+    }
+`;
+
+/** Build the run's job's site in a tenant of its own (compose-tenant-promotion-design.md). */
+export const BUILD_SITE = /* GraphQL */ `
+    mutation BuildSite($runId: ID!) {
+        pageCompositionPocBuildSite(runId: $runId) {
+            data {
+                taskId
+                runId
+            }
+            error {
+                message
+                code
+            }
+        }
+    }
+`;
+
+/** A job's site in its own tenant and its last build; null when it has none. */
+export const GET_SITE = /* GraphQL */ `
+    query GetSite($jobId: ID!) {
+        pageCompositionPocSite(jobId: $jobId) {
+            data
+            error {
+                message
+                code
+            }
+        }
+    }
+`;
+
+/** Cancel a run that is waiting or failed, freeing the job's one run slot. Its results stay readable. */
+export const CANCEL_RUN = /* GraphQL */ `
+    mutation CancelRun($runId: ID!) {
+        componentExtractionCancelRun(runId: $runId) {
+            error {
+                message
+                code
+            }
+        }
     }
 `;

@@ -6,7 +6,14 @@ import { ComponentExtractionPermissions } from "@webiny/api-component-extraction
 import { stageEntry } from "@webiny/api-component-extraction/domain/ledger.js";
 import { BlobStore } from "@webiny/api-component-extraction/domain/stage.js";
 import { ComposedCaptureStore, PageMapStore } from "~/domain/abstractions.js";
-import { COMPOSE_PAGES_TASK_ID, composedScreenshotKey, UPLOAD_URL_SECONDS } from "~/constants.js";
+import {
+    BUILD_SITE_TASK_ID,
+    COMPOSE_PAGES_TASK_ID,
+    composedScreenshotKey,
+    UPLOAD_URL_SECONDS
+} from "~/constants.js";
+import type { BuildSiteTaskInput } from "~/features/site/BuildSiteTask.js";
+import { SiteStore } from "~/storage/SiteStore.js";
 import type { ComposedCapture, ComposedCapturePage } from "~/domain/types.js";
 import { pageCompositionTypeDefs } from "./typeDefs.js";
 import type { ComposePagesTaskInput } from "~/features/ComposePagesTask.js";
@@ -72,19 +79,90 @@ export const addPageCompositionSchema = (builder: IGraphQLSchemaBuilder): void =
     });
 
     builder.addResolver({
+        path: "Mutation.pageCompositionPocBuildSite",
+        dependencies: [ComponentExtractionPermissions, RunRepository, TaskService, SiteStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            taskService: TaskService.Interface,
+            sites: SiteStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+                    for (const stage of ["assemble", "promote"] as const) {
+                        if (stageEntry(run.stages, stage)?.status !== "done") {
+                            throw new Error(`Building the site requires ${stage} to be done.`);
+                        }
+                    }
+                    const site = await sites.get(run.jobId);
+                    if (site?.lastBuild?.status === "running") {
+                        throw new Error("This job's site is already being built.");
+                    }
+
+                    const triggered = await taskService.trigger<BuildSiteTaskInput>({
+                        definition: BUILD_SITE_TASK_ID,
+                        name: `Build site (PoC) — run ${run.runNumber}`,
+                        input: { runId: run.id }
+                    });
+                    if (triggered.isFail()) {
+                        throw triggered.error;
+                    }
+                    if (site) {
+                        await sites.set({
+                            ...site,
+                            lastBuild: {
+                                runId: run.id,
+                                taskId: triggered.value.id,
+                                status: "running",
+                                startedOn: new Date().toISOString(),
+                                steps: []
+                            }
+                        });
+                    }
+                    return { taskId: triggered.value.id, runId: run.id };
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.pageCompositionPocSite",
+        dependencies: [ComponentExtractionPermissions, SiteStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            sites: SiteStore.Interface
+        ) {
+            return ({ args }: { args: { jobId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to read component extraction.");
+                    }
+                    return sites.get(args.jobId);
+                });
+        }
+    });
+
+    builder.addResolver({
         path: "Query.pageCompositionPocPageMap",
         dependencies: [ComponentExtractionPermissions, PageMapStore],
         resolver(
             permissions: ComponentExtractionPermissions.Interface,
             pageMaps: PageMapStore.Interface
         ) {
-            return ({ args }: { args: { runId: string } }) =>
+            return ({ args }: { args: { runId: string; tenantId?: string | null } }) =>
                 resolve(async () => {
                     if (!(await permissions.canRead("componentExtraction"))) {
                         throw new Error("You do not have permission to read component extraction.");
                     }
 
-                    const result = await pageMaps.get(args.runId);
+                    const result = await pageMaps.get(args.runId, args.tenantId ?? undefined);
                     if (result.isFail()) {
                         throw result.error;
                     }

@@ -7,10 +7,11 @@ import type {
     ComposedCaptureDto,
     OverrideDto,
     PageMapDto,
+    SiteDto,
     ReachabilityDto,
     ReattachmentDto,
     RunDto,
-    StageLogItem,
+    StageTaskTrail,
     StageTaskOutput,
     ThemeOptionDto,
     ReviewInputDto,
@@ -22,6 +23,8 @@ import type {
 import {
     CHECK_REACHABILITY,
     CLEAR_OVERRIDE,
+    BUILD_SITE,
+    CANCEL_RUN,
     COMPOSE_PAGES,
     CREATE_JOB,
     CREATE_RUN,
@@ -33,6 +36,7 @@ import {
     RETRY_JOB_THEME,
     USE_EXISTING_THEME,
     GET_PAGE_MAP,
+    GET_SITE,
     GET_REATTACHMENTS,
     GET_RENDERS,
     GET_RUN,
@@ -189,7 +193,7 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         return unwrap(response.componentExtractionCheckReachability) as ReachabilityDto;
     }
 
-    async listStageLogs(taskId: string): Promise<StageLogItem[]> {
+    async listStageLogs(taskId: string): Promise<StageTaskTrail> {
         const response = await this.client.execute<{
             backgroundTasks: {
                 getTask: GqlEnvelope<{ id: string; output: StageTaskOutput | null }>;
@@ -198,11 +202,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
 
         const task = unwrap(response.backgroundTasks.getTask);
         const activity = task?.output?.activity ?? [];
-        return activity.map(entry => ({
-            message: entry.message,
-            type: "info",
-            createdOn: entry.at
-        }));
+        return {
+            logs: activity.map(entry => ({
+                message: entry.message,
+                type: "info",
+                createdOn: entry.at
+            })),
+            progress: task?.output?.progress ?? null
+        };
     }
 
     async getStageArtifact(runId: string, stage: string, machine?: boolean): Promise<unknown> {
@@ -309,6 +316,32 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         return unwrap(response.pageCompositionPocComposePages);
     }
 
+    async cancelRun(runId: string): Promise<void> {
+        const response = await this.client.execute<{
+            componentExtractionCancelRun: { error: { message: string } | null };
+        }>({ query: CANCEL_RUN, variables: { runId } });
+
+        if (response.componentExtractionCancelRun.error) {
+            throw new Error(response.componentExtractionCancelRun.error.message);
+        }
+    }
+
+    async buildSite(runId: string): Promise<{ taskId: string; runId: string }> {
+        const response = await this.client.execute<{
+            pageCompositionPocBuildSite: GqlEnvelope<{ taskId: string; runId: string }>;
+        }>({ query: BUILD_SITE, variables: { runId } });
+
+        return unwrap(response.pageCompositionPocBuildSite);
+    }
+
+    async getSite(jobId: string): Promise<SiteDto | null> {
+        const response = await this.client.execute<{
+            pageCompositionPocSite: GqlEnvelope<SiteDto | null>;
+        }>({ query: GET_SITE, variables: { jobId } });
+
+        return unwrap(response.pageCompositionPocSite) ?? null;
+    }
+
     async getLivePageIds(paths: string[]): Promise<Record<string, string | null>> {
         if (paths.length === 0) {
             return {};
@@ -345,12 +378,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
 
     async getWebsiteDomain(): Promise<string | null> {
         const response = await this.client.execute<{
-            websiteBuilder: { getSettings: GqlEnvelope<{ previewDomain: string } | null> };
+            websiteBuilder: { getSettings: GqlEnvelope<{ domain: string } | null> };
         }>({ query: GET_WEBSITE_DOMAIN });
 
         // Trailing slashes removed here, where the value is read, so joining it with a page path
         // (which always starts with "/") can never produce a double slash.
-        const domain = unwrap(response.websiteBuilder.getSettings)?.previewDomain ?? "";
+        // `domain` since the frontend-settings port (it was `previewDomain`; the old field name made
+        // this query fail and every "Open" link go nowhere).
+        const domain = unwrap(response.websiteBuilder.getSettings)?.domain ?? "";
         return domain.replace(/\/+$/, "") || null;
     }
 

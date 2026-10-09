@@ -190,10 +190,15 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
                       stage?: string;
                       current?: number;
                       total?: number;
+                      message?: string;
                       data?: Record<string, unknown>;
                   }
                 | undefined;
             const keep = opts.total === undefined && previous?.stage === stage;
+            // The waiting screen's line keeps the last real one too: it showed "Stage "generate"
+            // checkpointed; continuing in a new run…" under Generate's counts (2026-10-09). The
+            // activity trail still records the line itself.
+            const shown = keep ? (previous?.message ?? message) : message;
             const current = keep ? previous?.current : opts.current;
             const total = keep ? previous?.total : opts.total;
             const data = opts.data ?? (keep ? previous?.data : undefined);
@@ -211,7 +216,7 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
                         stage,
                         current: current ?? 0,
                         total: total ?? 0,
-                        message,
+                        message: shown,
                         ...(data ? { data } : {})
                     }
                 });
@@ -230,6 +235,8 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
                 message,
                 current,
                 total,
+                // A bookkeeping line: the admin appends it to the log but keeps the waiting screen's.
+                ...(keep ? { held: true } : {}),
                 // A stage's structured detail (Generate's counts), for the waiting screen.
                 ...(data ? { data } : {})
             });

@@ -8,8 +8,11 @@ import { pageMapKey } from "~/constants.js";
 class PageMapStoreImpl implements Abstraction.Interface {
     constructor(private store: KeyValueStore.Interface) {}
 
-    async get(runId: string): Promise<Result<PageMap | null, PageCompositionError>> {
-        const result = await this.store.get<PageMap>(pageMapKey(runId));
+    async get(
+        runId: string,
+        tenantId?: string
+    ): Promise<Result<PageMap | null, PageCompositionError>> {
+        const result = await this.store.get<PageMap>(pageMapKey(runId, tenantId));
         // A run that has never been composed has no map; that is a state, not a failure.
         if (result.isFail()) {
             return Result.ok(null);
@@ -18,7 +21,7 @@ class PageMapStoreImpl implements Abstraction.Interface {
     }
 
     async set(map: PageMap): Promise<Result<void, PageCompositionError>> {
-        const result = await this.store.set(pageMapKey(map.runId), map);
+        const result = await this.store.set(pageMapKey(map.runId, map.tenantId), map);
         if (result.isFail()) {
             return Result.fail(
                 new PageCompositionError("Could not store the page map.", { runId: map.runId })

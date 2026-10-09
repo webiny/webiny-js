@@ -82,6 +82,11 @@ export const Extensions = () => {
                 Builder pages so a migrated site can be browsed for a demo. Not the migration path —
                 see the README of @webiny/api-page-composition-poc. */}
             <Api.Extension src={"@/extensions/pageCompositionPoc/PageCompositionPocExtension.ts"} />
+            {/* Shares root's "frontend-integration" key, a website-read key, with every tenant, so the
+                website app's one key reads any tenant's published pages. Without it a new tenant's
+                site answers "Not authorized!". Per-tenant keys are the end state for a customer-facing
+                deployment (2026-10-09, tenant-spike-result.md). */}
+            <Api.Extension src={"@/extensions/SharedRootTenantApiKey.ts"} />
             <Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />
             {/* Written with `:orderId` on purpose: API Gateway needs `{orderId}` and the router
                 needs `:orderId`, and the extension converts for each. Either spelling should work. */}

@@ -4,6 +4,7 @@ import type {
     AssembleArtifactDto,
     ComposedCaptureDto,
     PageMapDto,
+    SiteDto,
     ComponentDecisionDto,
     GeneratedComponentDto,
     JobDto,
@@ -46,6 +47,11 @@ export interface IRunViewVm {
     selectedStage: string | null;
     /** The stage currently being triggered, so its Run button can show a busy state. */
     actionStage: string | null;
+    /**
+     * A stage the ledger calls running whose background task has stopped (failed, aborted, or ended
+     * without finishing the stage). The only state where resuming the stage is offered.
+     */
+    stalledStage: { stage: string; taskStatus: string } | null;
     /** Live progress per stage, delivered over the websocket, keyed by stage name. */
     progressByStage: Record<string, StageProgress>;
     /** The selected stage's task log trail. */
@@ -151,6 +157,10 @@ export interface IRunViewVm {
      * page map changing is the only thing that says it finished, which is what the presenter polls.
      */
     composing: boolean;
+    /** The job's site in its own tenant, once the Promote gate has looked; null when it has none. */
+    site: SiteDto | null;
+    /** A site build was started from this screen and has not reported done or failed yet. */
+    buildingSite: boolean;
     /** A re-capture of selected pages is in flight. */
     recapturing: boolean;
     /** The composed page the comparison is open on, by its Website Builder path. */
@@ -176,7 +186,7 @@ export interface IRunViewPresenter {
     runStage(stage: string): Promise<void>;
     selectStage(stage: string): void;
     /** Apply a live progress update pushed over the websocket for a stage. */
-    applyProgress(stage: string, progress: StageProgress): void;
+    applyProgress(stage: string, progress: StageProgress, held?: boolean): void;
     /** Exclude or re-include a discovered URL, as a discover.url override that reattaches across runs. */
     setDiscoverExclusion(url: string, excluded: boolean): Promise<void>;
     /** Add a manual URL to Discover's list, as a discover.url override. */
@@ -218,6 +228,8 @@ export interface IRunViewPresenter {
     openComposed(open: boolean, comparedPath: string | null): void;
     /** Compose this run's pages, then reload the map. Gated on Assemble and Promote being done. */
     composePages(): Promise<void>;
+    /** Build the job's site in its own tenant, following the build until it finishes. */
+    buildSite(): Promise<void>;
     /** Toggle a cluster's selection for a bulk correction (W8.3). */
     toggleClusterSelection(signature: string): void;
     /** Clear the cluster selection (W8.3). */

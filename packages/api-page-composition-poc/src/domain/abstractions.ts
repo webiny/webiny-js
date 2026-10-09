@@ -1,13 +1,20 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ComposedCapture, ComposePagesResult, PageMap } from "~/domain/types.js";
 import type { PageCompositionError } from "~/domain/errors.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { PromotedReference } from "~/features/composition/CompositionSource.js";
 
 /**
  * The run's source-URL → page map. On the tenant key-value store, keyed by run id, so this PoC keeps
  * its own state and adds no field to the extraction run's model.
  */
 export interface IPageMapStore {
-    get(runId: string): Promise<Result<PageMap | null, PageCompositionError>>;
+    /**
+     * A run's page map in one tenant: without `tenantId`, its composition into the run's own tenant;
+     * with it, its composition into that site tenant. Kept apart, so building a site never loses track
+     * of the pages the run published in its own tenant (which a later composition there must retire).
+     */
+    get(runId: string, tenantId?: string): Promise<Result<PageMap | null, PageCompositionError>>;
     set(map: PageMap): Promise<Result<void, PageCompositionError>>;
 }
 
@@ -36,9 +43,20 @@ export namespace ComposedCaptureStore {
     export type Interface = IComposedCaptureStore;
 }
 
+/** Where a composition writes, when it is not the run's own tenant. */
+export interface CompositionTarget {
+    tenant: Tenant;
+    /** The run's components as promoted INTO that tenant: ids are its Library records. */
+    promoted: PromotedReference[];
+}
+
 /** Turns a finished run's Assemble output into published Website Builder pages. */
 export interface IComposePagesService {
-    execute(runId: string): Promise<Result<ComposePagesResult, PageCompositionError>>;
+    /** Without a target, into the run's own tenant from its Promote output, as before. */
+    execute(
+        runId: string,
+        target?: CompositionTarget
+    ): Promise<Result<ComposePagesResult, PageCompositionError>>;
 }
 
 export const ComposePagesService = createAbstraction<IComposePagesService>(

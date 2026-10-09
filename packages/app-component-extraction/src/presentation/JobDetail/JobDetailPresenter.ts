@@ -82,6 +82,27 @@ class JobDetailPresenterImpl implements PresenterAbstraction.Interface {
         });
     }
 
+    /**
+     * A new run in place of one that is waiting at a gate or failed: a job runs one at a time, so the
+     * current one is cancelled first. Its results stay readable in the run history.
+     */
+    async replaceRun(runId: string): Promise<string> {
+        runInAction(() => {
+            this.vm.startingRun = true;
+            this.vm.error = null;
+        });
+        try {
+            await this.gateway.cancelRun(runId);
+        } catch (error) {
+            runInAction(() => {
+                this.vm.startingRun = false;
+                this.vm.error = (error as Error).message;
+            });
+            throw error;
+        }
+        return this.startRun();
+    }
+
     async startRun(): Promise<string> {
         const jobId = this.vm.job?.id;
         if (!jobId) {

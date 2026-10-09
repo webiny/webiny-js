@@ -11579,6 +11579,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
+    "@webiny/api-theme": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -11586,7 +11587,9 @@ __metadata:
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/remote-components": "npm:0.0.0"
+    "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
+    graphql: "npm:^16.14.2"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"
   languageName: unknown

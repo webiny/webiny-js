@@ -1,6 +1,6 @@
 import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Alert, Scrollbar, Text, TimeAgo } from "@webiny/admin-ui";
+import { Alert, Button, Scrollbar, Text, TimeAgo } from "@webiny/admin-ui";
 import { STAGES, type Stage } from "~/constants.js";
 import { degradedSummary } from "~/shared/waiting.js";
 import { ActivityLog } from "./ActivityLog.js";
@@ -119,14 +119,19 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
     const next = STAGES[STAGES.indexOf(stage) + 1] as Stage | undefined;
     const nextEntry = next ? stageEntry(run, next) : undefined;
     const idle = !run.stages.some(candidate => candidate.status === "running");
+    // Not at Plan: its view's approve card is that gate's panel and its action.
     const showNext =
-        entry?.status === "done" && next && (!nextEntry || nextEntry.status === "pending") && idle;
+        stage !== "plan" &&
+        entry?.status === "done" &&
+        next &&
+        (!nextEntry || nextEntry.status === "pending") &&
+        idle;
 
     const log = (
         <ActivityLog
             items={logsForStage}
             loading={vm.logsLoading}
-            openByDefault={failed || Boolean(degraded)}
+            openByDefault={failed}
             renderLine={(item, index) => <LogLine key={index} item={item} />}
         />
     );
@@ -142,20 +147,32 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
             ) : null}
             {showNext && next ? (
                 <div className="px-md pt-sm">
-                    <NextStep
-                        stage={stage}
-                        next={next}
-                        counts={run.counts}
-                        busy={vm.actionStage !== null}
-                        onRun={() => void presenter.runStage(next)}
-                    />
+                    <NextStep stage={stage} next={next} counts={run.counts} />
+                </div>
+            ) : null}
+            {vm.stalledStage?.stage === stage ? (
+                <div className="px-md pt-sm">
+                    <Alert type="danger">
+                        <div className="flex flex-wrap items-center justify-between gap-sm">
+                            <span>
+                                This stage is marked running, but its background task has stopped (
+                                {vm.stalledStage.taskStatus}). Resuming continues from its last
+                                checkpoint.
+                            </span>
+                            <Button
+                                size="sm"
+                                variant="secondary"
+                                text={vm.actionStage === stage ? "Resuming…" : "Resume stage"}
+                                disabled={vm.actionStage !== null}
+                                onClick={() => void presenter.runStage(stage)}
+                            />
+                        </div>
+                    </Alert>
                 </div>
             ) : null}
             {degraded ? (
                 <div className="px-md pt-sm">
-                    <Alert type="warning">
-                        {degraded} The reasons are in the activity log below.
-                    </Alert>
+                    <Alert type="warning">{degraded}</Alert>
                 </div>
             ) : null}
             {showView ? (
@@ -170,10 +187,13 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
             ) : (
                 <Scrollbar>
                     <div className="flex flex-col gap-sm px-md py-sm">
-                        {entry?.status === "running" ? (
+                        {/* Starting counts as running: between the click and the task picking the
+                            stage up, the header already says Running, and "hasn't run yet" here
+                            contradicted it. */}
+                        {entry?.status === "running" || vm.actionStage === stage ? (
                             <StageWaiting
                                 stage={stage}
-                                startedOn={entry.startedOn}
+                                startedOn={entry?.status === "running" ? entry.startedOn : null}
                                 progress={vm.progressByStage[stage]}
                             />
                         ) : !entry || entry.status === "pending" ? (

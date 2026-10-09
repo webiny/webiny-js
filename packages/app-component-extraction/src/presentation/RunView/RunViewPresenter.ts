@@ -20,6 +20,7 @@ import type {
     CaptureArtifactDto,
     ReviewInputDto,
     ReviewsDto,
+    SiteDto,
     ThemeFitDto
 } from "~/shared/types.js";
 
@@ -32,7 +33,10 @@ import type {
 const RENDER_STALL_TIMEOUT_MS = 5 * 60 * 1000;
 const STARTING_TIMEOUT_MS = 30000;
 
-class RunViewPresenterImpl implements PresenterAbstraction.Interface {
+/** How often a running stage's task is checked for having stopped underneath it. */
+const STALL_CHECK_MS = 30000;
+
+export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     vm: PresenterAbstraction.ViewModel = {
         loading: false,
         run: null,
@@ -40,6 +44,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         error: null,
         selectedStage: null,
         actionStage: null,
+        stalledStage: null,
         progressByStage: {},
         logs: [],
         logsLoading: false,
@@ -82,6 +87,8 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         websiteDomain: null,
         livePageByPath: {},
         composing: false,
+        site: null,
+        buildingSite: false,
         recapturing: false,
         comparedPath: null,
         reattachments: [],
@@ -105,6 +112,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
 
     /** When the current "starting" indication began, so it can't hang if the task never progresses. */
     private pendingActionSince: number | null = null;
+
+    /** When the running stage's task was last checked, and how many checks in a row found it stopped. */
+    private stallCheckedAt = 0;
+    private stoppedReadings = 0;
 
     /** `stage:stageVersion` of the loaded artifact, so a re-run to a new version refetches it. */
     private loadedArtifactKey: string | null = null;
@@ -282,6 +293,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                     });
                 }
             }
+            await this.checkStall(run);
             // Reload the open stage's trail while it runs (live), and whenever its task id changes —
             // a re-run mints a new task, so the old task's trail must be replaced.
             const stage = this.vm.selectedStage;
@@ -392,6 +404,11 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 this.loadedArtifactKey = null;
                 this.vm.artifact = null;
                 this.vm.artifactStage = stage;
+                // Every caller loads the artifact next, and on first open only after the log fetch.
+                // Until then the view must read "loading", not its empty state: Plan's said "Run Plan
+                // to produce a component plan" on a finished Plan, with its approve card missing.
+                // `loadArtifact` clears this on every path.
+                this.vm.artifactLoading = stage !== null;
             }
             this.vm.selectedStage = stage;
         });
@@ -982,6 +999,74 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
      * the map is reloaded in full afterwards: the liveness of every path can change, not just this
      * run's own pages.
      */
+    /** The job's site record, and the website domain its "Open site" link needs. */
+    private async loadSite(run: RunDto) {
+        try {
+            const [site, websiteDomain] = await Promise.all([
+                this.gateway.getSite(run.jobId),
+                this.vm.websiteDomain
+                    ? Promise.resolve(this.vm.websiteDomain)
+                    : this.gateway.getWebsiteDomain()
+            ]);
+            runInAction(() => {
+                this.vm.site = site;
+                this.vm.websiteDomain = websiteDomain;
+            });
+        } catch (error) {
+            console.warn("[component-extraction] Could not load the site:", error);
+        }
+    }
+
+    async buildSite(): Promise<void> {
+        const run = this.vm.run;
+        if (!run || this.vm.buildingSite) {
+            return;
+        }
+        runInAction(() => {
+            this.vm.buildingSite = true;
+            this.vm.error = null;
+        });
+        const startedAt = Date.now();
+        try {
+            await this.gateway.buildSite(run.id);
+        } catch (error) {
+            runInAction(() => {
+                this.vm.buildingSite = false;
+                this.vm.error = (error as Error).message;
+            });
+            return;
+        }
+
+        // Followed through the site record, which the build writes after every step, so the card shows
+        // each step as it lands. A build of a ten-page site takes well under a minute.
+        for (let attempt = 0; attempt < 100; attempt++) {
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            let site: SiteDto | null = null;
+            try {
+                site = await this.gateway.getSite(run.jobId);
+            } catch {
+                continue;
+            }
+            const build = site?.lastBuild;
+            const ours =
+                build?.runId === run.id && Date.parse(build.startedOn) >= startedAt - 60_000;
+            runInAction(() => {
+                this.vm.site = site;
+            });
+            if (ours && build && build.status !== "running") {
+                runInAction(() => {
+                    this.vm.buildingSite = false;
+                });
+                return;
+            }
+        }
+        runInAction(() => {
+            this.vm.buildingSite = false;
+            this.vm.error =
+                "The site build was started but has not finished after five minutes. It may still be running — reopen Promote to check.";
+        });
+    }
+
     async composePages(): Promise<void> {
         const run = this.vm.run;
         if (!run || this.vm.composing) {
@@ -1593,6 +1678,11 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         });
         try {
             const artifact = await this.gateway.getStageArtifact(run.id, stage);
+            // The user moved to another stage while this was in flight: its result would overwrite
+            // that stage's view with this stage's artifact and a cleared loading flag.
+            if (this.vm.selectedStage !== stage) {
+                return;
+            }
             // Tag the loaded artifact with the stage version it came from, so a later re-run to a new
             // version (whose artifacts — screenshots, crops — live under new keys) is refetched.
             this.loadedArtifactKey = `${stage}:${entry.stageVersion}`;
@@ -1629,8 +1719,12 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             // detection against the Library (W8.6).
             if (stage === "promote") {
                 void this.loadPromoteGate(run);
+                void this.loadSite(run);
             }
         } catch {
+            if (this.vm.selectedStage !== stage) {
+                return;
+            }
             runInAction(() => {
                 this.vm.artifact = null;
                 this.vm.artifactStage = stage;
@@ -1639,19 +1733,63 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
-    applyProgress(stage: string, progress: StageProgress) {
+    /**
+     * The stuck case "Re-run stage" was for: the ledger says running, the task has stopped. Checked
+     * every 30 s, and flagged only on two stopped readings in a row, so the moment between a task's
+     * last write and the ledger turning "done" never shows it.
+     */
+    private async checkStall(run: RunDto) {
+        const running = run.stages.find(entry => entry.status === "running");
+        if (!running?.taskId) {
+            this.stoppedReadings = 0;
+            if (this.vm.stalledStage) {
+                runInAction(() => {
+                    this.vm.stalledStage = null;
+                });
+            }
+            return;
+        }
+        if (Date.now() - this.stallCheckedAt < STALL_CHECK_MS) {
+            return;
+        }
+        this.stallCheckedAt = Date.now();
+        const status = await this.gateway.getTaskStatus(running.taskId).catch(() => null);
+        const stopped = status !== null && !["pending", "running"].includes(status);
+        this.stoppedReadings = stopped ? this.stoppedReadings + 1 : 0;
         runInAction(() => {
-            // An update with no count keeps the stage's last count and detail: a bookkeeping line
-            // ("checkpointed; continuing") must not reset the waiting screen's bar.
-            const previous = this.vm.progressByStage[stage];
-            this.vm.progressByStage[stage] =
-                progress.total === 0 && previous && previous.total > 0
-                    ? {
-                          ...previous,
-                          message: progress.message,
-                          ...(progress.data ? { data: progress.data } : {})
-                      }
-                    : progress;
+            this.vm.stalledStage =
+                stopped && this.stoppedReadings >= 2
+                    ? { stage: running.stage, taskStatus: status! }
+                    : null;
+        });
+    }
+
+    /** Must run inside an action. */
+    private setProgress(stage: string, progress: StageProgress, held = false) {
+        // An update with no count keeps the stage's last count and detail: a bookkeeping line
+        // ("checkpointed; continuing") must not reset the waiting screen's bar. A held line (the API
+        // has kept the count for it) keeps the last real message too; it still goes to the log.
+        const previous = this.vm.progressByStage[stage];
+        if (held && previous) {
+            this.vm.progressByStage[stage] = {
+                ...previous,
+                ...(progress.data ? { data: progress.data } : {})
+            };
+            return;
+        }
+        this.vm.progressByStage[stage] =
+            progress.total === 0 && previous && previous.total > 0
+                ? {
+                      ...previous,
+                      message: progress.message,
+                      ...(progress.data ? { data: progress.data } : {})
+                  }
+                : progress;
+    }
+
+    applyProgress(stage: string, progress: StageProgress, held = false) {
+        runInAction(() => {
+            this.setProgress(stage, progress, held);
             // Live-append to the visible trail when this is the open stage; the poll's fetch from the
             // task output later replaces it with the authoritative list, healing any gaps.
             if (this.vm.logsStage === stage) {
@@ -1680,8 +1818,14 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             this.vm.logsLoading = true;
         });
         try {
-            const logs = await this.gateway.listStageLogs(taskId);
+            const { logs, progress } = await this.gateway.listStageLogs(taskId);
             runInAction(() => {
+                // The websocket push reaches only whoever started the stage; for everyone else this
+                // poll is the waiting screen's only source of progress.
+                if (progress?.stage === stage && stageEntry(run, stage)?.status === "running") {
+                    const { stage: _stage, ...rest } = progress;
+                    this.setProgress(stage, rest);
+                }
                 // On a same-task refresh, only GROW the trail. The websocket already appends every
                 // activity line live, and the task-output snapshot can come back shorter mid-run (a fresh
                 // continuation iteration has not re-accumulated it yet) — replacing with it would collapse

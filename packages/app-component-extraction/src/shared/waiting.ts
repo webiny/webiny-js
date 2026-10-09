@@ -36,11 +36,23 @@ export const degradedSummary = (stage: Stage, artifact: unknown): string | null 
     if (count === 0) {
         return null;
     }
+    // Each stage keeps its reasons in its view, not the activity log, so the alert says where.
     if (stage === "capture") {
-        return `${count} page${count === 1 ? "" : "s"} could not be captured.`;
+        return `${count} page${count === 1 ? "" : "s"} could not be captured. ${
+            count === 1 ? "It is" : "They are"
+        } listed first below, with the reason.`;
     }
     if (stage === "generate") {
-        return `${count} component${count === 1 ? " did not pass its" : "s did not pass their"} checks.`;
+        // The cards are ordered by page count, so a failed one is named rather than "below".
+        const components = (artifact as { components?: { signature: string; name: string }[] })
+            .components;
+        const names = failed!
+            .map(signature => components?.find(c => c.signature === signature)?.name)
+            .filter((name): name is string => Boolean(name));
+        const which = names.length === count ? `: ${names.join(", ")}` : "";
+        return `${count} component${count === 1 ? " did not pass its" : "s did not pass their"} checks${which}. The failed checks are on ${
+            count === 1 ? "its card" : "their cards"
+        } below.`;
     }
     return null;
 };

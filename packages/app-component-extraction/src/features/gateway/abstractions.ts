@@ -6,10 +6,11 @@ import type {
     OverrideDto,
     ComposedCaptureDto,
     PageMapDto,
+    SiteDto,
     ReachabilityDto,
     ReattachmentDto,
     RunDto,
-    StageLogItem,
+    StageTaskTrail,
     ThemeOptionDto,
     ReviewInputDto,
     ReviewsDto,
@@ -42,7 +43,12 @@ export interface IComponentExtractionGateway {
     /** Pre-flight check of a site URL for the Create-job screen (W9.3). */
     checkReachability(url: string): Promise<ReachabilityDto>;
     /** The full log trail of a stage's background task, oldest first. */
-    listStageLogs(taskId: string): Promise<StageLogItem[]>;
+    /**
+     * A stage task's activity trail and latest progress. The progress is what the poll shows: the
+     * websocket push reaches only the identity that started the stage, so anyone else watching the run
+     * (or an API-started stage) would otherwise see a waiting screen that never moves.
+     */
+    listStageLogs(taskId: string): Promise<StageTaskTrail>;
     /** The structured artifact a stage produced, for the visibility views. Null if the stage has no output. */
     getStageArtifact(runId: string, stage: string, machine?: boolean): Promise<unknown>;
     /**
@@ -119,6 +125,12 @@ export interface IComponentExtractionGateway {
     getComposedCapture(runId: string): Promise<ComposedCaptureDto | null>;
     /** Compose this run's pages. Background task; the page map changing is how it reports done. */
     composePages(runId: string): Promise<{ taskId: string; runId: string }>;
+    /** Cancel a waiting or failed run; its results stay readable. */
+    cancelRun(runId: string): Promise<void>;
+    /** Build the job's site in its own tenant: tenant, theme, promoted components, images, pages. */
+    buildSite(runId: string): Promise<{ taskId: string; runId: string }>;
+    /** A job's site in its own tenant and its last build, or null when it has none. */
+    getSite(jobId: string): Promise<SiteDto | null>;
     /** Where the migrated site is served from — Website Builder's preview domain. Null if unset. */
     getWebsiteDomain(): Promise<string | null>;
     /**

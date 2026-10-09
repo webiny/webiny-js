@@ -1,6 +1,10 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { ComposePagesService } from "~/features/ComposePagesService.js";
+import { CompositionReader } from "~/features/composition/CompositionReader.js";
+import { CompositionWriter } from "~/features/composition/CompositionWriter.js";
 import { ComposePagesTask } from "~/features/ComposePagesTask.js";
+import { BuildSiteTask } from "~/features/site/BuildSiteTask.js";
+import { SiteStoreImplementation } from "~/storage/SiteStore.js";
 import { PageMapStore } from "~/storage/PageMapStore.js";
 import { ComposedCaptureStore } from "~/storage/ComposedCaptureStore.js";
 import { registerPageCompositionGraphQL } from "~/graphql/createGraphQL.js";
@@ -19,7 +23,11 @@ export const PageCompositionPocFeature = createFeature({
         container.register(AssetUrlResolverImplementation);
         container.register(PageMapStore);
         container.register(ComposedCaptureStore);
+        container.register(CompositionReader);
+        container.register(CompositionWriter);
         container.register(ComposePagesService);
+        container.register(SiteStoreImplementation);
+        container.register(BuildSiteTask);
         container.register(ComposePagesTask);
 
         registerPageCompositionGraphQL(container);

@@ -31,6 +31,8 @@ export interface IJobDetailPresenter {
     toggleRunSelection(runId: string): void;
     /** Starts a new run and returns its id. Throws on failure. */
     startRun(): Promise<string>;
+    /** Cancel the waiting or failed run, then start a new one. */
+    replaceRun(runId: string): Promise<string>;
 }
 
 export const JobDetailPresenter = createAbstraction<IJobDetailPresenter>(

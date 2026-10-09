@@ -16,6 +16,11 @@ export const pageCompositionTypeDefs = /* GraphQL */ `
         runId: String!
     }
 
+    type PageCompositionPocSiteResponse {
+        data: JSON
+        error: PageCompositionPocError
+    }
+
     type PageCompositionPocTriggerResponse {
         data: PageCompositionPocTriggerData
         error: PageCompositionPocError
@@ -74,13 +79,17 @@ export const pageCompositionTypeDefs = /* GraphQL */ `
     }
 
     extend type Query {
-        pageCompositionPocPageMap(runId: ID!): PageCompositionPocPageMapResponse
+        pageCompositionPocPageMap(runId: ID!, tenantId: String): PageCompositionPocPageMapResponse
         "Screenshots of this run's composed pages, from a local harness run. Null until someone runs it."
         pageCompositionPocComposedCapture(runId: ID!): PageCompositionPocComposedCaptureResponse
+        "A job's site in its own tenant and its last build, or null when it has none."
+        pageCompositionPocSite(jobId: ID!): PageCompositionPocSiteResponse
     }
 
     extend type Mutation {
         pageCompositionPocComposePages(runId: ID!): PageCompositionPocTriggerResponse
+        "Builds the run's job's site in its own tenant: tenant, theme, promoted components, images, pages."
+        pageCompositionPocBuildSite(runId: ID!): PageCompositionPocTriggerResponse
         """
         Pre-signed PUT URLs for a local harness to upload composed screenshots to.
 

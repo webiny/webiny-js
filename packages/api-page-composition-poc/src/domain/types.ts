@@ -163,6 +163,12 @@ export interface PageMap {
      * read those as 0.
      */
     composeVersion: number;
+    /**
+     * The tenant the pages were written to. Absent for a composition into the run's own tenant, which
+     * is every map written before sites got tenants of their own (2026-10-09). Retiring a run's pages
+     * enters this tenant, never the one the retiring composition happens to run in.
+     */
+    tenantId?: string;
     pages: PageMapEntry[];
     failed: PageMapFailure[];
     links: PageMapLinks;
