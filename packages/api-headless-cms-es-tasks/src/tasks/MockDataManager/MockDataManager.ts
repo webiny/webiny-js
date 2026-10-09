@@ -106,14 +106,17 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
     }
 
     private async listChildTasksNotDone(context: Context, id: string): Promise<TaskService.Task[]> {
-        const { items } = await context.container.resolve(ListTasksUseCase).execute({
+        const result = await context.container.resolve(ListTasksUseCase).execute({
             where: {
                 parentId: id,
                 taskStatus_in: [TaskDataStatus.PENDING, TaskDataStatus.RUNNING]
             },
             limit: 10000
         });
-        return items;
+        if (result.isFail()) {
+            throw result.error;
+        }
+        return result.value.items;
     }
 
     private async abortChildTasks(context: Context, id: string): Promise<void> {

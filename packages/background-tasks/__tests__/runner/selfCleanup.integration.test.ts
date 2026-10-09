@@ -10,6 +10,7 @@ import { CreateTaskUseCase } from "~/api/features/CreateTask/index.js";
 import { GetTaskUseCase } from "~/api/features/GetTask/index.js";
 import { ListTasksUseCase } from "~/api/features/ListTasks/index.js";
 import { TaskLogsRepository } from "~/api/domain/task/abstractions.js";
+import { TaskNotFoundError } from "~/api/domain/errors.js";
 
 const runTask = async (
     context: Awaited<ReturnType<ReturnType<typeof createLiveContextFactory>>>,
@@ -46,7 +47,9 @@ describe("selfCleanup integration", () => {
 
         const task = await runTask(context, "cleanupOnSuccess");
 
-        expect(await context.container.resolve(GetTaskUseCase).execute(task.id)).toBeNull();
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(task.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
     });
 
     it("selfCleanup='onSuccess' does NOT delete on ERROR", async () => {
@@ -62,7 +65,9 @@ describe("selfCleanup integration", () => {
 
         const task = await runTask(context, "cleanupErrOnlyOnSuccess");
 
-        expect(await context.container.resolve(GetTaskUseCase).execute(task.id)).not.toBeNull();
+        expect((await context.container.resolve(GetTaskUseCase).execute(task.id)).isOk()).toBe(
+            true
+        );
     });
 
     it("selfCleanup='always' deletes the task and writes no logs", async () => {
@@ -78,7 +83,9 @@ describe("selfCleanup integration", () => {
 
         const task = await runTask(context, "cleanupAlways");
 
-        expect(await context.container.resolve(GetTaskUseCase).execute(task.id)).toBeNull();
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(task.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
 
         const { items } = (
             await context.container.resolve(TaskLogsRepository).list({ where: { task: task.id } })
@@ -135,10 +142,14 @@ describe("selfCleanup integration", () => {
             })
         );
 
-        expect(await context.container.resolve(GetTaskUseCase).execute(parent.id)).toBeNull();
-        const remaining = await context.container.resolve(ListTasksUseCase).execute({
-            where: { parentId: parent.id }
-        });
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(parent.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
+        const remaining = (
+            await context.container.resolve(ListTasksUseCase).execute({
+                where: { parentId: parent.id }
+            })
+        ).value;
         expect(remaining.items).toHaveLength(0);
     });
 
@@ -163,7 +174,9 @@ describe("selfCleanup integration", () => {
             .resolve(AbortTaskUseCase)
             .execute({ id: task.id, message: "testing cleanup on abort" });
 
-        expect(await context.container.resolve(GetTaskUseCase).execute(task.id)).toBeNull();
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(task.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
     });
 
     it("selfCleanup='onError' deletes the task on ERROR", async () => {
@@ -179,7 +192,9 @@ describe("selfCleanup integration", () => {
 
         const task = await runTask(context, "cleanupOnError");
 
-        expect(await context.container.resolve(GetTaskUseCase).execute(task.id)).toBeNull();
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(task.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
     });
 
     it("selfCleanup array form cleans up on any matching event", async () => {
@@ -202,8 +217,12 @@ describe("selfCleanup integration", () => {
         const doneTask = await runTask(context, "cleanupArrayDone");
         const errTask = await runTask(context, "cleanupArrayError");
 
-        expect(await context.container.resolve(GetTaskUseCase).execute(doneTask.id)).toBeNull();
-        expect(await context.container.resolve(GetTaskUseCase).execute(errTask.id)).toBeNull();
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(doneTask.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(errTask.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
     });
 
     it("user's onDone runs before cleanup fires", async () => {
@@ -222,7 +241,7 @@ describe("selfCleanup integration", () => {
                 const live = await contextRef
                     .current!.container.resolve(GetTaskUseCase)
                     .execute(task.id);
-                order.push(live ? "user-saw-task" : "user-task-gone");
+                order.push(live.isOk() ? "user-saw-task" : "user-task-gone");
             }
         });
         const contextFactory = createLiveContextFactory({ plugins: [plugin] });
@@ -233,7 +252,9 @@ describe("selfCleanup integration", () => {
 
         // After the run finishes: user hook observed the task, cleanup then removed it.
         expect(order).toEqual(["user-saw-task"]);
-        expect(await context.container.resolve(GetTaskUseCase).execute(task.id)).toBeNull();
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(task.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
     });
 
     it("cascade deletes grandchildren (3 levels deep)", async () => {
@@ -291,9 +312,15 @@ describe("selfCleanup integration", () => {
             })
         );
 
-        expect(await context.container.resolve(GetTaskUseCase).execute(p.id)).toBeNull();
-        expect(await context.container.resolve(GetTaskUseCase).execute(c.id)).toBeNull();
-        expect(await context.container.resolve(GetTaskUseCase).execute(g.id)).toBeNull();
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(p.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(c.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(g.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
     });
 
     it("cascade sweeps child logs when the child definition has databaseLogs=true", async () => {
@@ -344,8 +371,12 @@ describe("selfCleanup integration", () => {
             })
         );
 
-        expect(await context.container.resolve(GetTaskUseCase).execute(p.id)).toBeNull();
-        expect(await context.container.resolve(GetTaskUseCase).execute(c.id)).toBeNull();
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(p.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(c.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
 
         const { items } = (
             await context.container.resolve(TaskLogsRepository).list({ where: { task: c.id } })
@@ -365,6 +396,8 @@ describe("selfCleanup integration", () => {
 
         const task = await runTask(context, "cleanupNever");
 
-        expect(await context.container.resolve(GetTaskUseCase).execute(task.id)).not.toBeNull();
+        expect((await context.container.resolve(GetTaskUseCase).execute(task.id)).isOk()).toBe(
+            true
+        );
     });
 });

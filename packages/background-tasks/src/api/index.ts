@@ -19,4 +19,5 @@ export { DeleteTaskLogUseCase } from "./features/DeleteTaskLog/abstractions.js";
 export { GetLatestTaskLogUseCase } from "./features/GetLatestTaskLog/abstractions.js";
 export { ListTaskLogsUseCase } from "./features/ListTaskLogs/abstractions.js";
 export { GetRunnableTaskDefinitionUseCase } from "./features/GetRunnableTaskDefinition/abstractions.js";
+export { TaskNotFoundError } from "./domain/errors.js";
 export { CleanupTaskSubtreeUseCase } from "./features/CleanupTaskSubtree/abstractions.js";

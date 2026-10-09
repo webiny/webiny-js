@@ -34,13 +34,17 @@ export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecutePara
     public async execute(params: IChildTasksCleanupExecuteParams): Promise<void> {
         const { listTasks, listTaskLogs, deleteTaskLog, deleteTask, task } = params;
 
-        const { items: childTasks } = await listTasks.execute({
+        const tasksResult = await listTasks.execute({
             where: {
                 parentId: task.id
             },
             // Really doubtful there will be more than 10k of child tasks.
             limit: 10000
         });
+        if (tasksResult.isFail()) {
+            throw tasksResult.error;
+        }
+        const childTasks = tasksResult.value.items;
 
         if (childTasks.length === 0) {
             return;

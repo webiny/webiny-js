@@ -14,6 +14,7 @@ import { ListTaskLogsUseCase } from "~/api/features/ListTaskLogs/index.js";
 import { GetTaskUseCase } from "~/api/features/GetTask/index.js";
 import { ListTasksUseCase } from "~/api/features/ListTasks/index.js";
 import { DeleteTaskUseCase } from "~/api/features/DeleteTask/index.js";
+import { TaskNotFoundError } from "~/api/domain/errors.js";
 import { ListTaskDefinitionsUseCase } from "~/api/features/ListTaskDefinitions/abstractions.js";
 import { TriggerTaskUseCase } from "~/api/features/TriggerTask/abstractions.js";
 import { AbortTaskUseCase } from "~/api/features/AbortTask/abstractions.js";
@@ -22,6 +23,17 @@ import { UpdateBackgroundTaskSettingsUseCase } from "~/api/features/UpdateBackgr
 import type { IUpdateBackgroundTaskSettingsInput } from "~/api/features/UpdateBackgroundTaskSettings/abstractions.js";
 import { emptyResolver, resolve, resolveList } from "./utils.js";
 import { checkPermissions } from "./checkPermissions.js";
+
+// The API answers `null` for a task that doesn't exist; any other failure is an error.
+const findTask = async (getTask: GetTaskUseCase.Interface, id: string) => {
+    const result = await getTask.execute(id);
+    if (result.isOk()) {
+        return result.value;
+    } else if (result.error instanceof TaskNotFoundError) {
+        return null;
+    }
+    throw result.error;
+};
 
 interface IGetTaskQueryParams {
     id: string;
@@ -66,7 +78,7 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
             return ({ args, context }: IResolverParams<IGetTaskQueryParams>) => {
                 return resolve(async () => {
                     await checkPermissions(context, { rwd: "r" });
-                    return await getTask.execute(args.id);
+                    return await findTask(getTask, args.id);
                 });
             };
         }
@@ -79,7 +91,11 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
             return ({ args, context }: IResolverParams<IListTaskParams>) => {
                 return resolveList(async () => {
                     await checkPermissions(context, { rwd: "r" });
-                    return await listTasks.execute(args);
+                    const result = await listTasks.execute(args);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return result.value;
                 });
             };
         }
@@ -240,7 +256,7 @@ function addFieldResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
         dependencies: [GetTaskUseCase],
         resolver: (getTask: GetTaskUseCase.Interface) => {
             return async ({ parent }: IResolverParams<unknown, ITaskLog>) => {
-                return await getTask.execute(parent.task);
+                return await findTask(getTask, parent.task);
             };
         }
     });

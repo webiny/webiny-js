@@ -135,7 +135,7 @@ describe("Create index task", () => {
         });
         expect(result.status).toBe("done");
 
-        const doneTask = await context.container.resolve(GetTaskUseCase).execute(task.id);
+        const doneTask = (await context.container.resolve(GetTaskUseCase).execute(task.id)).value;
         expect(doneTask?.output).toEqual({
             done
         });

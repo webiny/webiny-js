@@ -6,6 +6,19 @@ import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js"
 import { RequestContainer } from "@webiny/event-handler-core";
 import { AwsLambdaContext } from "@webiny/event-handler-aws/abstractions/AwsLambdaContext.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+
+const createNoopLogger = () => {
+    const noop = () => {};
+    return {
+        info: noop,
+        warn: noop,
+        error: noop,
+        debug: noop,
+        trace: noop,
+        fatal: noop
+    } as unknown as Logger.Interface;
+};
 
 describe("BackgroundTasksAwsFeature", () => {
     it("should register BackgroundTaskLambdaHandler under BackgroundTaskEventHandler", () => {
@@ -40,6 +53,7 @@ describe("BackgroundTasksAwsFeature", () => {
             getTenant: () => ({ id: "root" }),
             setTenant: () => {}
         });
+        container.registerInstance(Logger, createNoopLogger());
 
         BackgroundTasksAwsFeature.register(container);
 

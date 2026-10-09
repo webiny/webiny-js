@@ -126,7 +126,7 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
         input: TaskService.Task | string
     ): Promise<Result<IServiceInfo, BaseError>> {
         const transport = this.getTransport();
-        const task = typeof input === "object" ? input : await this.getTask.execute(input);
+        const task = typeof input === "object" ? input : await this.findTask(input);
         if (!task && typeof input === "string") {
             throw new NotFoundError(`Task "${input}" was not found!`);
         } else if (!task) {
@@ -148,10 +148,11 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
     async abort<I extends TaskInput = TaskInput, O extends TaskOutput = TaskOutput>(
         params: ITaskAbortParams
     ): Promise<Result<TaskService.Task<I, O>, BaseError<any>>> {
-        const task = await this.getTask.execute<I, O>(params.id);
-        if (!task) {
-            return Result.fail(new TaskNotFoundError());
+        const taskResult = await this.getTask.execute<I, O>(params.id);
+        if (taskResult.isFail()) {
+            return Result.fail(taskResult.error);
         }
+        const task = taskResult.value;
 
         const definitionResult = this.getDefinition.execute<I, O>(task.definitionId);
         if (definitionResult.isFail()) {
@@ -196,6 +197,17 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
                 message: ex.message
             });
         }
+    }
+
+    // A missing task is null; any other failure is thrown, so it isn't mistaken for a missing one.
+    private async findTask(id: string): Promise<TaskService.Task | null> {
+        const result = await this.getTask.execute(id);
+        if (result.isOk()) {
+            return result.value;
+        } else if (result.error instanceof TaskNotFoundError) {
+            return null;
+        }
+        throw result.error;
     }
 
     private getTransport(): TaskTransport.Interface {
