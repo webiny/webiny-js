@@ -7,6 +7,7 @@ import { ReactComponent as ContentCopyIcon } from "@webiny/icons/content_copy.sv
 import { ReactComponent as LaptopIcon } from "@webiny/icons/laptop.svg";
 import { ReactComponent as SmartphoneIcon } from "@webiny/icons/smartphone.svg";
 import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
+import { PreviewDomainMenu } from "@webiny/frontend-settings/exports/admin.js";
 import { useLivePreviewPresenter } from "./useLivePreviewPresenter.js";
 import { buildEditorUrl, buildDisplayUrl } from "./resolvePreviewUrl.js";
 
@@ -173,6 +174,7 @@ export const PreviewPane = ({
     return (
         <div className="relative border border-neutral-dimmed rounded-t-lg flex flex-col flex-1 h-full overflow-hidden">
             <div className="flex p-md items-center bg-white border-b border-neutral-dimmed">
+                <PreviewDomainMenu className={"mr-xs"} />
                 <div className="w-full">
                     <Input
                         value={address}
@@ -234,7 +236,7 @@ export const PreviewPane = ({
                 </Alert>
             ) : null}
 
-            <div className="block box-border h-full w-full overflow-auto fill-grid">
+            <div className="relative block box-border h-full w-full overflow-auto fill-grid">
                 {loading && !timedOut ? (
                     <OverlayLoader text="Connecting to Live Preview..." />
                 ) : null}
