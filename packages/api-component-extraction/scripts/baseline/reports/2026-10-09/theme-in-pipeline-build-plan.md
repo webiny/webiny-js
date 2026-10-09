@@ -49,17 +49,43 @@ behaviour: **publish regardless**, and make the risk visible where the user is a
   the signal confidence is not: the issues behind option B come from exactly that mismatch (26 of 206
   colours with no token near them).
 
+**Re-extraction on a successful theme.** Pinning once would fix a theme from a bad crawl, or from a
+site that has since changed, for the life of the job. So the theme card offers **Retry extraction** on
+a successful theme too (the same action as after a failure), behind a confirmation: it extracts again,
+publishes, re-pins, and marks every stage from Cluster on stale for the job's current run. The
+previous theme stays in the Theme app; nothing is deleted.
+
 So a bad theme is published, but not quietly: the card says what extraction was unsure of, and the run
 says, after Plan, how well the theme fits what was measured. Re-extracting or switching themes is then
 the user's call.
+
+## What the gate message can say (checked against the crawl)
+
+The crawl reports per page: after the entry page, then before each page it reads, with the pages done,
+the total and the URL. So, while crawling, the message reads **"read 2 of 5 pages, now reading
+/floor-plans"**: the count is pages finished, not the page in hand. The total starts at the crawl
+limit (5) and is revised to the pages actually chosen (2 on Freehill), so it can drop; the message
+shows the latest. Analysis is one model call with no progress inside it, and is the longer phase, so
+it reads **"analysing the crawled pages"** with no count. A cached crawl (a site extracted before)
+skips straight to analysis.
+
+## Known limit: one extraction per tenant
+
+`ExtractionLock` lets one theme extraction run at a time per tenant. Two jobs created together
+serialise: tolerable for two at 79-317 seconds each, not for twenty. A second job's theme step waits
+for the lock and says so ("waiting for another theme extraction to finish") rather than failing. Not a
+demo problem; written here so a batch of jobs does not discover it.
 
 ## Verification, before the demo
 
 1. Unit: the job's theme step (publish and pin on success; failed state on error; no pin on failure);
    the gate's three messages (running, failed, pinned); create-job with and without a theme.
-2. Deployed, end to end: a new job from a URL only (Park City Place, a demo site, as a new job; its
-   demo job untouched): extraction runs alongside Capture, the theme is published and pinned, Cluster
-   is refused until then, and the run goes through Generate binding against that theme.
+2. Deployed, end to end, on **a site never extracted before**: first-time extraction on an unknown
+   site is what this changes. (A demo site would reuse its cached crawl and an existing theme's
+   lineage, and pass without exercising the new path.) Extraction runs alongside Capture, the theme is
+   published and pinned, Cluster is refused until then with the running message, and the run goes
+   through Generate binding against that theme. Then Retry extraction on the successful theme: the
+   confirmation, a new published version pinned, Cluster onward stale.
 3. Deployed, failure: a new job on an unreachable URL: the theme card shows the failure and both
    actions; "Use an existing theme" pins one and Cluster proceeds.
 4. Existing jobs: the five demo jobs and the check job, unchanged: their runs read the same pinned
