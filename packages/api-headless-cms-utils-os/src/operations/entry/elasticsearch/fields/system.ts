@@ -40,6 +40,8 @@ const createWorkflowField = (): CmsModelField => {
     });
 };
 
+const workflowField = createWorkflowField();
+
 const workflowTextFields = WORKFLOW_TEXT_FIELDS.reduce<ModelFields>((result, fieldId) => {
     result[`system.workflow.${fieldId}`] = {
         type: "text",
@@ -48,7 +50,6 @@ const workflowTextFields = WORKFLOW_TEXT_FIELDS.reduce<ModelFields>((result, fie
         sortable: false,
         parents: [systemParent, workflowParent],
         field: createSystemField({
-            id: fieldId,
             fieldId,
             storageId: fieldId,
             type: "text",
@@ -73,7 +74,7 @@ export const systemFields: ModelFields = {
             fieldId: "system",
             type: "object",
             settings: {
-                fields: [createWorkflowField()]
+                fields: [workflowField]
             }
         }),
         parents: []
@@ -87,15 +88,7 @@ export const systemFields: ModelFields = {
         searchable: true,
         sortable: false,
         parents: [systemParent],
-        field: createSystemField({
-            id: "workflow",
-            fieldId: "workflow",
-            storageId: "workflow",
-            type: "object",
-            settings: {
-                fields: WORKFLOW_TEXT_FIELDS.map(createWorkflowTextField)
-            }
-        })
+        field: workflowField
     },
     ...workflowTextFields
 };
