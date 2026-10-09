@@ -15,15 +15,15 @@ each page's full HTML is stored (`capture/page-N/dom.html.gz`), and there it is,
 Labelled submit and button inputs appear on 7 of the 8 stored runs: every G5 site ("Send" on its
 forms, one "Get Directions"). thevibe submits with a hidden `<button>`; its two forms are left out.
 
-| Run      | Form                       | Submit, as generated and stored                        | Against "Send"    |
-| -------- | -------------------------- | ------------------------------------------------------ | ----------------- |
-| 6ac4f6bd | Contact Form               | a "Submit" link                                        | label invented    |
-| 6ac50186 | Contact Form with Map View | "Please Call (346) 489-6939", bound as the submit      | wrong text bound  |
-| 6ac5f4a5 | Contact Form               | "Please Call 346-489-6939"                             | wrong text bound  |
-| 6ac62af1 | Contact Form               | "Please Call 346-489-6939"                             | wrong text bound  |
-| 6ac5f9a1 | Contact Form (7 props)     | a "Submit" button                                      | label invented    |
-| 6ac5f9a1 | Contact Form (11 props)    | no submit control                                      | missing           |
-| 6ac5f9a1 | Schedule Tour Form         | "Send"                                                 | right             |
+| Run      | Form                       | Submit, as generated and stored                   | Against "Send"   |
+| -------- | -------------------------- | ------------------------------------------------- | ---------------- |
+| 6ac4f6bd | Contact Form               | a "Submit" link                                   | label invented   |
+| 6ac50186 | Contact Form with Map View | "Please Call (346) 489-6939", bound as the submit | wrong text bound |
+| 6ac5f4a5 | Contact Form               | "Please Call 346-489-6939"                        | wrong text bound |
+| 6ac62af1 | Contact Form               | "Please Call 346-489-6939"                        | wrong text bound |
+| 6ac5f9a1 | Contact Form (7 props)     | a "Submit" button                                 | label invented   |
+| 6ac5f9a1 | Contact Form (11 props)    | no submit control                                 | missing          |
+| 6ac5f9a1 | Schedule Tour Form         | "Send"                                            | right            |
 
 **1 of 7 right.** Three ways wrong, one cause: with no label in the tree, Plan's binder either leaves
 `submitButton` empty (then Generate invents "Submit", or, with "Show no other text", drops the button)
@@ -52,3 +52,22 @@ invented-text validator cannot see it. These are stored components on the runs t
 2. Generated forms render "Send" as their submit on 3 of 3, including the tour form with "Show no
    other text" in the prompt (the interaction removed).
 3. No other component's text changes: the fix adds text only to labelled inputs.
+
+## Result on the check run (re-captured with the fix, 2026-10-09)
+
+All three predictions held.
+
+1. **Plan:** the three check-run forms bind `submitButton` to "Send", with no destination, and none to
+   a phone link. "Send" is in each form's section texts, so text preservation now requires it.
+2. **Generate:** 3 of 3 forms render "Send" as their submit, including the tour form with "Show no
+   other text" in its prompt: the interaction that dropped its button (4 of 4 before) is gone.
+3. **Nothing else:** 16 of 21 components have identical section texts; the three forms gained exactly
+   "Send". The other two differences come from re-capturing a live site, not from the fix: a
+   third-party widget that failed to load on 2026-10-07 ("Unable to load widget…") loaded this time,
+   and one intro's representative section changed with the re-cluster.
+
+Two findings outside this fix: all 21 components generated (18 on the 2026-10-08 run, where the header,
+footer and Floor Plan Filter timed out: medium effort, end to end); and one Contact Form failed text
+preservation on "Message (1750 character limit)", the label of the form's message box, which the
+stored Westland form also failed before it was regenerated: a recurring G5 form gap of its own.
+Verified deployed: the re-captured trees carry `inputType` on 29 inputs, 3 labelled.
