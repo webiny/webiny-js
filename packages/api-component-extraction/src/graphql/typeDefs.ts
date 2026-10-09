@@ -104,6 +104,7 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
     input ComponentExtractionExperimentInput {
         label: String!
         ablate: [String!]!
+        include: [String!]
         effort: ComponentExtractionGenerationEffort
     }
 

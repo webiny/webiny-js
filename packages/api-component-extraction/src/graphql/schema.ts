@@ -39,6 +39,7 @@ import type {
 import { readComponent } from "~/domain/generatedComponents.js";
 import {
     buildComponentPrompt,
+    OPT_IN_PROMPT_LINE_IDS,
     PROMPT_LINE_IDS,
     withRoleAwareTypeTokens
 } from "~/features/stages/generate/componentGeneration.js";
@@ -1578,7 +1579,7 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                 args: {
                     runId: string;
                     signatures: string[];
-                    experiment?: { label: string; ablate: string[]; effort?: GenerationEffort } | null;
+                    experiment?: { label: string; ablate: string[]; include?: string[]; effort?: GenerationEffort } | null;
                 };
             }) =>
                 resolve(async () => {
@@ -1598,6 +1599,14 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         if (unknownLines.length > 0) {
                             throw new Error(
                                 `Unknown prompt line id(s): ${unknownLines.join(", ")}. Known: ${PROMPT_LINE_IDS.join(", ")}.`
+                            );
+                        }
+                        const unknownIncludes = (experiment.include ?? []).filter(
+                            id => !OPT_IN_PROMPT_LINE_IDS.includes(id)
+                        );
+                        if (unknownIncludes.length > 0) {
+                            throw new Error(
+                                `Unknown candidate line id(s): ${unknownIncludes.join(", ")}. Known: ${OPT_IN_PROMPT_LINE_IDS.join(", ")}.`
                             );
                         }
                     }
@@ -1653,6 +1662,9 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                                           experiment: {
                                               label: experiment.label,
                                               ablate: experiment.ablate,
+                                              ...(experiment.include?.length
+                                                  ? { include: experiment.include }
+                                                  : {}),
                                               ...(experiment.effort
                                                   ? { effort: experiment.effort }
                                                   : {})

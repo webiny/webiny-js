@@ -128,13 +128,18 @@ export interface GenerationDeps {
  * `scripts/baseline/reports/2026-10-08/ablation-design.md`). The extraction prompt's own lines, plus the
  * shared system prompt's (`SYSTEM_PROMPT_LINE_IDS`). Nothing else can be removed.
  */
-// The three content prohibitions, unmeasured until scripts/baseline/reports/2026-10-08/
-// prohibitions-design.md. Every extraction line measured before them has been removed.
+// Two content prohibitions (prohibitions-result.md): no-other-text measured live; no-invented-urls
+// pending a rewording to the link case. "Use these URLs exactly as given" measured dead and removed.
 export const EXTRACTION_PROMPT_LINE_IDS = [
-    "extraction.no-other-text",
     "extraction.no-invented-urls",
-    "extraction.urls-exactly"
+    "extraction.no-other-text"
 ] as const;
+
+/**
+ * Candidate lines a prompt experiment may add, by id. Never shown otherwise: a candidate ships only
+ * once it is measured and made a default line.
+ */
+export const OPT_IN_PROMPT_LINE_IDS: readonly string[] = ["extraction.empty-destination"];
 
 /**
  * The shared system prompt's lines this pipeline leaves out on every call: its own override of the
@@ -148,6 +153,7 @@ export const PROMPT_LINE_IDS: readonly string[] = [
     ...SYSTEM_PROMPT_LINE_IDS
 ];
 
+/** The prompt lines an experiment leaves out (`ablate`) and the candidate lines it adds (`include`). */
 type Ablation = ReadonlySet<string>;
 const NO_ABLATION: Ablation = new Set();
 
@@ -160,6 +166,8 @@ export interface GenerationInput {
     slotVariables: Map<string, string[]>;
     /** Prompt lines to leave out, by id, for a prompt experiment. Never set outside one. */
     ablate?: readonly string[];
+    /** Candidate prompt lines to add, by id (`OPT_IN_PROMPT_LINE_IDS`), for a prompt experiment. */
+    include?: readonly string[];
     /** How much the model may think, for an effort experiment. Unset: GENERATION_EFFORT. */
     effort?: GenerationEffort;
     /** The theme's own vocabulary for the shared system prompt; see `systemPromptOverride`. */
@@ -287,7 +295,7 @@ const alignmentLines = (component: PlannedComponent): string[] => {
  * The URL is given as the page's own, exactly as the observed `<img>` values are, and with the same
  * instruction not to substitute anything else.
  */
-const backgroundImageLines = (component: PlannedComponent, ablate: Ablation): string[] => {
+const backgroundImageLines = (component: PlannedComponent): string[] => {
     const all = component.backgroundImages ?? [];
     const sizing = (image: (typeof all)[number]) => {
         const how = [image.size, image.position, image.repeat].filter(Boolean).join(" / ");
@@ -301,18 +309,13 @@ const backgroundImageLines = (component: PlannedComponent, ablate: Ablation): st
             "",
             "This section's background is painted with an image, not a colour. Set it as a CSS",
             "background-image on the section, with the sizing given:",
-            ...covers.map(sizing),
-            ...(ablate.has("extraction.urls-exactly")
-                ? []
-                : [
-                      "",
-                      "Use these URLs exactly as given. Do not substitute a stock photograph, and do not replace the",
-                      "image with a flat background colour."
-                  ])
+            // "Use these URLs exactly as given…" was measured dead (prohibitions-result.md): 14 of 14
+            // used the URL verbatim, as a background, without it.
+            ...covers.map(sizing)
         );
     }
     if (tints.length > 0) {
-        lines.push("", ...tintLines(tints, sizing, ablate));
+        lines.push("", ...tintLines(tints, sizing));
     }
     return lines;
 };
@@ -329,8 +332,7 @@ const backgroundImageLines = (component: PlannedComponent, ablate: Ablation): st
  */
 const tintLines = (
     tints: NonNullable<PlannedComponent["backgroundImages"]>,
-    sizing: (image: NonNullable<PlannedComponent["backgroundImages"]>[number]) => string,
-    ablate: Ablation
+    sizing: (image: NonNullable<PlannedComponent["backgroundImages"]>[number]) => string
 ): string[] =>
     tints.flatMap(image => {
         const opacity = `about ${Math.round((image.opacity ?? 0) * 100)}% opaque`;
@@ -348,13 +350,7 @@ const tintLines = (
                       "Paint the colour the reference image shows through it, and set the image over it as a",
                       "CSS background-image:"
                   ]),
-            sizing(image),
-            ...(ablate.has("extraction.urls-exactly")
-                ? []
-                : [
-                      "",
-                      "Use the URL exactly as given, and keep both the colour and the image over it."
-                  ])
+            sizing(image)
         ];
     });
 
@@ -589,14 +585,16 @@ export const buildComponentPrompt = (
     component: PlannedComponent,
     slotVariables: Map<string, string[]>,
     feedback: string[] = [],
-    ablate: Ablation = NO_ABLATION
-): string => buildPrompt(component, slotVariables, feedback, ablate);
+    ablate: Ablation = NO_ABLATION,
+    include: Ablation = NO_ABLATION
+): string => buildPrompt(component, slotVariables, feedback, ablate, include);
 
 const buildPrompt = (
     component: PlannedComponent,
     slotVariables: Map<string, string[]>,
     feedback: string[] = [],
-    ablate: Ablation = NO_ABLATION
+    ablate: Ablation = NO_ABLATION,
+    include: Ablation = NO_ABLATION
 ): string => {
     const attribute = createCopyAttribution(component);
     const propLines = (prop: PlannedComponent["props"][number], indent: string): string[] => {
@@ -692,7 +690,7 @@ const buildPrompt = (
               ]
             : []),
         ...colourLines(component),
-        ...backgroundImageLines(component, ablate),
+        ...backgroundImageLines(component),
         ...unboundImageLines(component),
         ...iconLines(component),
         ...typeScaleLines(component),
@@ -729,6 +727,13 @@ const buildPrompt = (
                       "Do NOT invent image URLs. No stock photography, no placeholder services, no URL that is",
                       "not in the list above — a component that ships one puts it in the customer's library."
                   ]),
+            ...(include.has("extraction.empty-destination")
+                ? [
+                      "",
+                      "A link this section shows with no destination in the list above keeps an empty destination",
+                      '(`""`). Do not write one for it: not the site\'s home page, not a social network\'s home page.'
+                  ]
+                : []),
             "",
             "An image is a `createFileInput`, and its value is an object, not a URL: its default is",
             '`{ url: "..." }`, and the component reads `.url` everywhere it uses it — `src={image.url}`,',
@@ -939,7 +944,13 @@ export const generateComponentAttempts = async (
             : [];
         let trace: GenerationTrace | null = null;
         const generated = await deps.generateComponent.execute({
-            prompt: buildPrompt(planned, slotVariables, feedback, new Set(input.ablate ?? [])),
+            prompt: buildPrompt(
+                planned,
+                slotVariables,
+                feedback,
+                new Set(input.ablate ?? []),
+                new Set(input.include ?? [])
+            ),
             name: planned.name,
             ablate: [...SYSTEM_PROMPT_OVERRIDE, ...(input.ablate ?? [])],
             effort: input.effort ?? GENERATION_EFFORT,

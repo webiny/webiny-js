@@ -48,7 +48,7 @@ export interface GenerateComponentTaskInput {
      * attempts marked as the experiment, and keep the result out of the run — no replacement, no stage
      * result. The outputs are read back from the generation log.
      */
-    experiment?: { label: string; ablate: string[]; effort?: GenerationEffort };
+    experiment?: { label: string; ablate: string[]; include?: string[]; effort?: GenerationEffort };
 }
 
 type RunParams = TaskHandler.RunParams<GenerateComponentTaskInput>;
@@ -189,6 +189,7 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
                         manifestAvailable,
                         slotVariables,
                         ...(input.experiment ? { ablate: input.experiment.ablate } : {}),
+                        ...(input.experiment?.include ? { include: input.experiment.include } : {}),
                         ...(input.experiment?.effort ? { effort: input.experiment.effort } : {}),
                         log: (message, error) =>
                             log.error({ message, ...(error instanceof Error ? { error } : {}) }),

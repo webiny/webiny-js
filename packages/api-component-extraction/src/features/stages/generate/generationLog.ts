@@ -50,7 +50,7 @@ export interface GenerationLogEntry {
     failures: string[];
     promptRef: string;
     /** Set on a prompt experiment's attempts: its label and the prompt lines it left out. */
-    experiment?: { label: string; ablate: string[]; effort?: GenerationEffort };
+    experiment?: { label: string; ablate: string[]; include?: string[]; effort?: GenerationEffort };
 }
 
 export interface GenerationLog {
