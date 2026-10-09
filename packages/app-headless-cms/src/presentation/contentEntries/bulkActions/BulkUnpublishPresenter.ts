@@ -9,7 +9,9 @@ import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import { BulkUnpublishPresenter as Abstraction } from "./abstractions.js";
 
 class BulkUnpublishPresenterImpl implements Abstraction.Interface {
-    private runner = new BulkActionRunner<CmsContentEntry>();
+    private runner = new BulkActionRunner<CmsContentEntry>({
+        getItemTitle: entry => entry.meta.title
+    });
 
     constructor(
         private unpublishEntryUseCase: UnpublishEntryUseCase.Interface,

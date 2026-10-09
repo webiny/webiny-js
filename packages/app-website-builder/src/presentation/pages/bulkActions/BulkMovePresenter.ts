@@ -7,7 +7,9 @@ import { MovePageUseCase } from "~/features/pages/movePage/abstractions.js";
 import { BulkMovePresenter as Abstraction } from "./abstractions.js";
 
 class BulkMovePresenterImpl implements Abstraction.Interface {
-    private runner = new BulkActionRunner<Page>();
+    private runner = new BulkActionRunner<Page>({
+        getItemTitle: page => page.properties.title
+    });
 
     constructor(private movePageUseCase: MovePageUseCase.Interface) {}
 

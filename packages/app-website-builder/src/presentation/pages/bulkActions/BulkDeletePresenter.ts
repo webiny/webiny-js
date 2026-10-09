@@ -7,7 +7,9 @@ import { DeletePageUseCase } from "~/features/pages/deletePage/abstractions.js";
 import { BulkDeletePresenter as Abstraction } from "./abstractions.js";
 
 class BulkDeletePresenterImpl implements Abstraction.Interface {
-    private runner = new BulkActionRunner<Page>();
+    private runner = new BulkActionRunner<Page>({
+        getItemTitle: page => page.properties.title
+    });
 
     constructor(private deletePageUseCase: DeletePageUseCase.Interface) {}
 

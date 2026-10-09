@@ -10,7 +10,9 @@ import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import { BulkDeletePresenter as Abstraction } from "./abstractions.js";
 
 class BulkDeletePresenterImpl implements Abstraction.Interface {
-    private runner = new BulkActionRunner<CmsContentEntry>();
+    private runner = new BulkActionRunner<CmsContentEntry>({
+        getItemTitle: entry => entry.meta.title
+    });
 
     constructor(
         private deleteEntryUseCase: DeleteEntryUseCase.Interface,

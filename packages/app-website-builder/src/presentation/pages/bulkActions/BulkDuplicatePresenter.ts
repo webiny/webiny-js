@@ -7,7 +7,9 @@ import { DuplicatePageUseCase } from "~/features/pages/duplicatePage/abstraction
 import { BulkDuplicatePresenter as Abstraction } from "./abstractions.js";
 
 class BulkDuplicatePresenterImpl implements Abstraction.Interface {
-    private runner = new BulkActionRunner<Page>();
+    private runner = new BulkActionRunner<Page>({
+        getItemTitle: page => page.properties.title
+    });
 
     constructor(private duplicatePageUseCase: DuplicatePageUseCase.Interface) {}
 
