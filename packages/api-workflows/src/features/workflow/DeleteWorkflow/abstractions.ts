@@ -1,6 +1,10 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { Workflow } from "~/domain/workflow/types.js";
-import type { WorkflowNotFoundError, WorkflowPersistenceError } from "~/domain/workflow/errors.js";
+import type {
+    WorkflowHasActiveReviewsError,
+    WorkflowNotFoundError,
+    WorkflowPersistenceError
+} from "~/domain/workflow/errors.js";
 
 export interface DeleteWorkflowInput {
     id: string;
@@ -8,6 +12,7 @@ export interface DeleteWorkflowInput {
 
 export interface IDeleteWorkflowUseCaseErrors {
     notFound: WorkflowNotFoundError;
+    hasActiveReviews: WorkflowHasActiveReviewsError;
     persistence: WorkflowPersistenceError;
 }
 
@@ -17,7 +22,7 @@ export interface IDeleteWorkflowUseCase {
     execute(input: DeleteWorkflowInput): Promise<Result<Workflow, UseCaseError>>;
 }
 
-/** Delete a workflow. No permission check in 1a (phase 1b). */
+/** Delete a workflow unless any of its reviews is in progress. No permission check in 1a. */
 export const DeleteWorkflowUseCase =
     createAbstraction<IDeleteWorkflowUseCase>("DeleteWorkflowUseCase");
 

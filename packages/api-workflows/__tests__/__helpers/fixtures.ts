@@ -2,6 +2,7 @@ import type { Result } from "@webiny/feature/api";
 import { Review } from "~/domain/review/Review.js";
 import type {
     Actor,
+    ReviewData,
     ReviewPick,
     StepAssignmentResolution,
     TargetContext
@@ -152,4 +153,11 @@ export const createStartedReview = (params: RequestedReviewParams = {}): Review 
     );
     review.pullFacts();
     return review;
+};
+
+/** What the save path persists: prepared for save, facts discarded. */
+export const toSaveData = (review: Review): ReviewData => {
+    review.prepareForSave();
+    review.pullFacts();
+    return review.toData();
 };

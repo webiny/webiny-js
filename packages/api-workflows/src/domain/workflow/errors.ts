@@ -71,3 +71,19 @@ export class WorkflowPersistenceError extends BaseError<WorkflowPersistenceError
         });
     }
 }
+
+export interface WorkflowHasActiveReviewsErrorData {
+    count: number;
+}
+
+/** D81. Phase 3 adds up to 5 readable blocking reviews to the data (D115). */
+export class WorkflowHasActiveReviewsError extends BaseError<WorkflowHasActiveReviewsErrorData> {
+    override readonly code = "Workflows/Workflow/HasActiveReviews" as const;
+
+    constructor(data: WorkflowHasActiveReviewsErrorData) {
+        super({
+            message: `The workflow cannot be deleted while ${data.count} review(s) are in progress.`,
+            data
+        });
+    }
+}
