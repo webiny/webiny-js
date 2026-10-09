@@ -246,6 +246,67 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
     });
 
     builder.addResolver({
+        path: "Mutation.componentExtractionMarkStageCurrent",
+        dependencies: [ComponentExtractionPermissions, RunRepository],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface
+        ) {
+            return ({ args }: { args: { runId: string; stage: Stage; reason: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+                    if (process.env.WEBINY_ENV !== "dev") {
+                        throw new Error(
+                            "Marking a stage current runs only in a development environment."
+                        );
+                    }
+                    const reason = args.reason.trim();
+                    if (!reason) {
+                        throw new Error(
+                            "Say why the stage is current: the reason is recorded on the run."
+                        );
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+                    const entry = stageEntry(run.stages, args.stage);
+                    if (!entry || entry.status !== "stale") {
+                        throw new Error(
+                            `Only a stale stage can be marked current; "${args.stage}" is ${entry?.status ?? "missing"}.`
+                        );
+                    }
+                    /*
+                     * Narrow by design: this stage only, its artifacts untouched, nothing downstream
+                     * changed. For a stage whose components were brought current one at a time — a
+                     * per-component regenerate never clears the stage's stale mark.
+                     */
+                    const stages = run.stages.map(current =>
+                        current.stage === args.stage
+                            ? {
+                                  ...current,
+                                  status: "done" as const,
+                                  markedCurrent: {
+                                      on: new Date().toISOString(),
+                                      reason,
+                                      previousStatus: current.status
+                                  }
+                              }
+                            : current
+                    );
+                    const updated = await runRepository.update(run.id, { stages });
+                    if (updated.isFail()) {
+                        throw updated.error;
+                    }
+                    return updated.value;
+                });
+        }
+    });
+
+    builder.addResolver({
         path: "Mutation.componentExtractionCancelRun",
         dependencies: [ComponentExtractionPermissions, RunRepository, RunLock, TaskService],
         resolver(

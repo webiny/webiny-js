@@ -24,6 +24,8 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         taskId: String
         "Model-usage totals for a model-backed stage (input/output tokens, calls, latency); null otherwise."
         modelUsage: JSON
+        "Set when the stage was marked current without a re-run: when, why, and the status it had."
+        markedCurrent: JSON
     }
 
     type ComponentExtractionArtifactResponse {
@@ -204,6 +206,12 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         to free.
         """
         componentExtractionCancelRun(runId: ID!): ComponentExtractionRunResponse!
+        "Mark a stale stage current without re-running it, recording the reason on the run's ledger (development only)."
+        componentExtractionMarkStageCurrent(
+            runId: ID!
+            stage: String!
+            reason: String!
+        ): ComponentExtractionRunResponse!
         """
         Read selected pages again and replace them in the capture artifact.
 
