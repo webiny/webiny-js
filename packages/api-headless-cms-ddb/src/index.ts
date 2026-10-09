@@ -10,20 +10,16 @@ import { CmsDdbTable } from "~/abstractions/CmsDdbTable.js";
 import { CmsDdbGroupEntity } from "~/abstractions/CmsDdbGroupEntity.js";
 import { CmsDdbModelEntity } from "~/abstractions/CmsDdbModelEntity.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
-
-export { HeadlessCmsDdbRequestFeature } from "~/requestFeature.js";
+import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
+import { DdbGroupStorageOpsFeature } from "~/operations/group/feature.js";
+import { DdbModelStorageOpsFeature } from "~/operations/model/feature.js";
+import { DdbEntryStorageOpsFeature } from "~/operations/entry/feature.js";
 
 /**
- * Root half of the DynamoDB CMS storage: the table and entity definitions, built once per process.
- * The storage operations are per request, in `HeadlessCmsDdbRequestFeature`.
+ * DynamoDB CMS storage. Register it once, in the root container. Tables and entities are built once
+ * per process; the storage operations are transient, and per-request state (the entry DataLoaders,
+ * the filter registries) is container scoped, so each request (child) container gets its own.
  * Requires DynamoDBClient to be registered in the container first (via DbFeature).
- *
- * Usage:
- *   DbFeature.register(container, { documentClient, table });
- *   HeadlessCmsDdbFeature.register(container);
- *   // then in request:
- *   HeadlessCmsDdbRequestFeature.register(requestContainer);
- *   HeadlessCmsFeature.register(requestContainer, { type: "manage" });
  */
 export const HeadlessCmsDdbFeature = createFeature({
     name: "cms.storageOperations.ddb",
@@ -58,5 +54,10 @@ export const HeadlessCmsDdbFeature = createFeature({
                 table: tableInstance
             })
         );
+
+        FilterRegistriesFeature.register(container);
+        DdbGroupStorageOpsFeature.register(container);
+        DdbModelStorageOpsFeature.register(container);
+        DdbEntryStorageOpsFeature.register(container);
     }
 });

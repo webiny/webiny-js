@@ -12,11 +12,19 @@ import { CmsDdbEsGroupEntity } from "~/abstractions/CmsDdbEsGroupEntity.js";
 import { CmsDdbEsModelEntity } from "~/abstractions/CmsDdbEsModelEntity.js";
 import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
+import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os";
+import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
+import { CreateElasticsearchIndexTask } from "~/tasks/CreateElasticsearchIndexTask.js";
+import { CmsEntitiesDbRegistryDecorator } from "~/registry/CmsEntitiesDbRegistryDecorator.js";
+import { DdbEsGroupStorageOpsFeature } from "~/operations/group/feature.js";
+import { DdbEsModelStorageOpsFeature } from "~/operations/model/feature.js";
+import { DdbEsEntryStorageOpsFeature } from "~/operations/entry/feature.js";
 
 /**
- * Root half of the DynamoDB+OpenSearch CMS storage: the table and entity definitions, built once per
- * process. The storage operations and OpenSearch extension points are per request, in
- * `HeadlessCmsDdbEsRequestFeature`.
+ * DynamoDB+OpenSearch CMS storage. Register it once, in the root container. Tables and entities are
+ * built once per process; the storage operations are transient, and per-request state (the entry
+ * DataLoaders, the filter registries, the OpenSearch field indexes and model index cache) is
+ * container scoped, so each request (child) container gets its own.
  */
 export const HeadlessCmsDdbEsFeature = createFeature({
     name: "cms.storageOperations.openSearch",
@@ -59,5 +67,17 @@ export const HeadlessCmsDdbEsFeature = createFeature({
         container.registerInstance(CmsDdbEsModelEntity, modelEntity);
         container.registerInstance(CmsDdbEsEntryEntity, entryEntity);
         container.registerInstance(CmsDdbEsEntriesEsEntity, entriesEsEntity);
+
+        CmsEntryOpenSearchUtilsFeature.register(container);
+        FilterRegistriesFeature.register(container);
+
+        container.register(CreateElasticsearchIndexTask);
+
+        // Adds the CMS entities to every request's DbRegistry, for the DDB to OpenSearch sync.
+        container.registerDecorator(CmsEntitiesDbRegistryDecorator);
+
+        DdbEsGroupStorageOpsFeature.register(container);
+        DdbEsModelStorageOpsFeature.register(container);
+        DdbEsEntryStorageOpsFeature.register(container);
     }
 });

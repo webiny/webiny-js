@@ -50,11 +50,6 @@ export interface CreateWebinyApiHandlerConfig {
      * IdP assumption — the variant supplies the complete storage + auth wiring.
      */
     registerRootStorage: (container: Container) => void | Promise<void>;
-    /**
-     * Register the per-request storage features (e.g. the CMS storage operations) in the request
-     * container, before `HeadlessCmsFeature` builds its storage. Optional.
-     */
-    registerRequestStorage?: (container: Container) => void | Promise<void>;
 }
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
@@ -132,7 +127,6 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // transport here — it's a root singleton wired in `root` + `onServer` (see above).
             await registerApiRequestStack(container, {
                 extensions: config.extensions,
-                registerRequestStorage: config.registerRequestStorage,
                 // Why hooks (and not just registering the transports ourselves): `.register()` calls
                 // are otherwise order-independent — you can register Features in any order, because
                 // they only REGISTER, they don't RESOLVE during registration (resolution happens

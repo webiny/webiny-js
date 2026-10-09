@@ -3,9 +3,9 @@
  *
  * Thin variant over the storage-agnostic base (@webiny/api-event-handler-aws): same DynamoDB storage as the
  * `-ddb` variant for core/audit-logs/ACO/websockets, but CMS uses the DynamoDB+OpenSearch storage
- * operations (`HeadlessCmsDdbEsFeature` in the root, `HeadlessCmsDdbEsRequestFeature` per request),
- * the OpenSearch core is registered in the root, and `DbRegistryFeature` is registered per request
- * before the CMS storage, which registers the entities the DDB→ES sync stages into it.
+ * operations (`HeadlessCmsDdbEsFeature`), and the OpenSearch core and `DbRegistryFeature` are
+ * registered in the root too. Per-request state (the DataLoaders, the OpenSearch field indexes, each
+ * request's DbRegistry) is container scoped, so every request still gets its own.
  */
 import {
     createWebinyApiHandler as createBaseHandler,
@@ -14,7 +14,6 @@ import {
 } from "@webiny/api-event-handler-aws";
 import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
 import { HeadlessCmsDdbEsFeature } from "@webiny/api-headless-cms-ddb-es";
-import { HeadlessCmsDdbEsRequestFeature } from "@webiny/api-headless-cms-ddb-es";
 import { AuditLogsDdbFeature } from "@webiny/api-audit-logs-ddb";
 import { AcoDdbFeature } from "@webiny/api-aco-ddb";
 import { WebsocketsDdbFeature } from "@webiny/api-websockets-aws";
@@ -61,10 +60,7 @@ const openSearchClientFromEnv = () => {
  */
 function storageConfig(
     config: CreateAwsDdbOsApiHandlerConfig
-): Pick<
-    BaseConfig,
-    "extensions" | "documentClient" | "registerRootStorage" | "registerRequestStorage"
-> {
+): Pick<BaseConfig, "extensions" | "documentClient" | "registerRootStorage"> {
     return {
         extensions: config.extensions,
         documentClient: config.documentClient,
@@ -81,21 +77,16 @@ function storageConfig(
             OpenSearchFieldFeature.register(container);
             OpenSearchIndexFeature.register(container);
 
+            // DbRegistry holds the DDB entities the DDB+ES CMS storage stages for OpenSearch sync. It is
+            // container scoped; the CMS storage adds its entities to every request's registry.
+            DbRegistryFeature.register(container);
+
             ApiCoreDdbFeature.register(container, { documentClient });
             // CMS uses the DynamoDB+OpenSearch storage operations; the rest stay DynamoDB-only.
             HeadlessCmsDdbEsFeature.register(container);
             AuditLogsDdbFeature.register(container, {});
             AcoDdbFeature.register(container);
             WebsocketsDdbFeature.register(container);
-        },
-        registerRequestStorage: container => {
-            // DbRegistry holds the DDB entities the DDB+ES CMS storage stages for OpenSearch sync.
-            // Must be registered before HeadlessCmsDdbEsRequestFeature, which registers into it.
-            DbRegistryFeature.register(container);
-            // The CMS storage operations and OpenSearch extension points are per request, so
-            // extension decorators apply to them and the entry DataLoader cache lives for one
-            // request only. Registers the CMS entities into the DbRegistry above.
-            HeadlessCmsDdbEsRequestFeature.register(container);
         }
     };
 }
