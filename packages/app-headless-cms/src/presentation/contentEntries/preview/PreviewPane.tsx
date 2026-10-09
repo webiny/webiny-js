@@ -1,9 +1,17 @@
 import React, { useRef, useEffect, useCallback, useState } from "react";
 import { Messenger, MessageOrigin } from "@webiny/cms-sdk/messenger";
 import { jsonPatch } from "@webiny/cms-sdk";
-import { Alert, IconButton, Input, OverlayLoader, SegmentedControl } from "@webiny/admin-ui";
+import {
+    Alert,
+    CopyButton,
+    IconButton,
+    OverlayLoader,
+    SegmentedControl,
+    Text,
+    Tooltip,
+    useToast
+} from "@webiny/admin-ui";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
-import { ReactComponent as ContentCopyIcon } from "@webiny/icons/content_copy.svg";
 import { ReactComponent as LaptopIcon } from "@webiny/icons/laptop.svg";
 import { ReactComponent as SmartphoneIcon } from "@webiny/icons/smartphone.svg";
 import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
@@ -53,16 +61,11 @@ export const PreviewPane = ({
     const [iframeKey, setIframeKey] = useState(0);
     const [viewport, setViewport] = useState<ViewportMode>("desktop");
     const presenter = useLivePreviewPresenter();
+    const { showToast } = useToast();
 
     entryDataRef.current = entryData;
 
     const displayUrl = buildDisplayUrl(domain, previewPath, urlEntryData || {});
-
-    const [address, setAddress] = useState(displayUrl);
-
-    useEffect(() => {
-        setAddress(displayUrl);
-    }, [displayUrl]);
 
     const iframeSrc = (() => {
         const editorPath = buildEditorUrl(domain, previewPath);
@@ -163,9 +166,9 @@ export const PreviewPane = ({
         return url.toString();
     }, [displayUrl, entryId]);
 
-    const copyUrl = useCallback(() => {
-        navigator.clipboard.writeText(getDraftUrl());
-    }, [getDraftUrl]);
+    const confirmCopy = useCallback(() => {
+        showToast({ title: "Preview link copied to clipboard!" });
+    }, []);
 
     const openInNewTab = useCallback(() => {
         window.open(getDraftUrl(), "_blank");
@@ -173,33 +176,52 @@ export const PreviewPane = ({
 
     return (
         <div className="relative border border-neutral-dimmed rounded-t-lg flex flex-col flex-1 h-full overflow-hidden">
-            <div className="flex p-md items-center bg-white border-b border-neutral-dimmed">
-                <PreviewDomainMenu className={"mr-xs"} />
-                <div className="w-full">
-                    <Input
-                        value={address}
-                        onChange={setAddress}
-                        readOnly
-                        size="md"
-                        variant={"secondary"}
-                        className="bg-gray-100"
-                    />
+            <div className="flex flex-row items-center gap-sm p-sm bg-neutral-base border-b-sm border-neutral-dimmed">
+                <div className="relative flex-auto min-w-0 h-[32px]">
+                    <div className="w-full absolute -top-px py-xs-plus pl-xl pr-[112px] border-sm text-md truncate cursor-not-allowed rounded-md border-neutral-subtle bg-neutral-disabled text-neutral-disabled">
+                        <PreviewDomainMenu className={"absolute left-0 top-0"} />
+                        {displayUrl}
+                    </div>
+                    <div className="absolute right-0 top-0 flex">
+                        <Tooltip
+                            content={<Text size="md">Refresh preview</Text>}
+                            side="bottom"
+                            trigger={
+                                <IconButton
+                                    icon={<RefreshIcon />}
+                                    size="md"
+                                    onClick={reload}
+                                    variant={"ghost"}
+                                />
+                            }
+                        />
+                        <Tooltip
+                            content={<Text size="md">Copy preview link</Text>}
+                            side="bottom"
+                            trigger={
+                                <CopyButton
+                                    size="md"
+                                    value={getDraftUrl()}
+                                    onCopy={confirmCopy}
+                                    variant={"ghost"}
+                                />
+                            }
+                        />
+                        <Tooltip
+                            content={<Text size="md">Preview entry in a new tab</Text>}
+                            side="bottom"
+                            trigger={
+                                <IconButton
+                                    icon={<OpenInNewIcon />}
+                                    size="md"
+                                    onClick={openInNewTab}
+                                    variant={"ghost"}
+                                />
+                            }
+                        />
+                    </div>
                 </div>
-
-                <div className="flex items-center gap-xxs ml-sm">
-                    <IconButton
-                        onClick={openInNewTab}
-                        icon={<OpenInNewIcon />}
-                        variant="ghost"
-                        size="md"
-                    />
-                    <IconButton
-                        onClick={copyUrl}
-                        icon={<ContentCopyIcon />}
-                        variant="ghost"
-                        size="sm"
-                    />
-                    <IconButton onClick={reload} icon={<RefreshIcon />} variant="ghost" size="sm" />
+                <div className="shrink-0">
                     <SegmentedControl
                         value={viewport}
                         onChange={(value: string) => setViewport(value as ViewportMode)}
