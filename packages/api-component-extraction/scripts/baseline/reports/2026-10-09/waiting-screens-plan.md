@@ -40,7 +40,6 @@ I would make so the screen does not depend on wording).
 ## Verification
 
 The user verifies in the running admin (a real run on the check job, watching Capture, Plan and
-Generate wait). Unit tests for the estimate (no estimate before two items; it never goes below zero
-or grows past the elapsed time) and the Generate counts.
+Generate wait). Unit tests for the estimate (no estimate before two items; never below zero) and the Generate counts.
 
 About a day.
