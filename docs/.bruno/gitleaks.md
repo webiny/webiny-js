@@ -1,0 +1,357 @@
+# Gitleaks findings
+
+Scan: `gitleaks git --verbose` (gitleaks 8.30.1), branch `next`, 2026-10-09.
+21,834 commits scanned, **109 findings**, **39 unique values**.
+
+> Note: the current `.gitleaks.toml` fails to load
+> (`[[allowlists]] must contain at least one check for: commits, paths, regexes, or stopwords`).
+> The `exclude` key is not a valid allowlist field. The scan used a temporary config with only
+> `[extend] useDefault = true`. The fix is to use `regexes`, `paths`, `stopwords` or `commits`.
+
+Secret values in this file are cut to 8 characters. Run gitleaks locally to see full values.
+
+"Verdict" is a first guess only. We confirm each one together.
+
+## Summary
+
+| ID | Rule | Hits | Where | In HEAD | Verdict (guess) |
+|----|------|------|-------|---------|-----------------|
+| L01 | azure-ad-client-secret | 5 | `skills/user-skills/configure-entraid/SKILL.md` (5 commits) | yes | False positive. Doc says "made up example values". |
+| L02 | generic-api-key | 1 | `packages/api-wcp/__tests__/utils.test.ts` | no | False positive. Test UUID. |
+| L03 | generic-api-key | 2 | `packages-utils/webiny-file-storage-s3/tests/s3MockResponses.js` | no | False positive. S3 mock continuation token (already in old `exclude`). |
+| L04 | generic-api-key | 1 | `packages/api-wcp/src/utils.ts` | no | Check. WCP API key UUID in source (2022). |
+| L05 | generic-api-key | 6 | `api-security-*/__tests__/mocks/securityUser.js` | no | False positive. File key (`*.jpg`). |
+| L06 | generic-api-key | 1 | `apps/admin/code/src/App.editor.tsx` | no | False positive. File key (`*.jpg`). |
+| L07–L13 | generic-api-key | 8 | `api-page-builder/.../welcome-to-webiny-page-data.ts`, `api-file-manager/.../v5.0.0` | no | False positive. File keys (`*.svg`, `*.jpg`). |
+| L14 | generic-api-key | 3 | `packages/api-headless-cms/IDEAS.md`, `packages/webiny-api-headless/IDEAS.md` | no | Check. `access_token=` in example URL (2020). |
+| L15 | generic-api-key | 1 | `.npmrc` | no | **Likely real.** npm `_authToken` committed 2018. Verify revoked. |
+| L16 | generic-api-key | 1 | `packages/api-mailer/__tests__/password.test.ts` | no | False positive. Test password. |
+| L17 | generic-api-key | 6 | `api-prerendering-service/__tests__/.../extractPeLoaderDataFromHtml.test.ts` | no | False positive. HTML `data-key` attribute. |
+| L18 | generic-api-key | 3 | `.yarn/releases/yarn-3.6.*.cjs`, `create-webiny-project/utils/binaries/yarn-3.6.4.cjs` | no | False positive. Minified Yarn bundle. |
+| L19 | generic-api-key | 6 | telemetry/tracking (`packages/telemetry`, `packages/tracking`, `app-template`, `apps/site`) | no | Check. Telemetry write key; probably public by design. |
+| L20 | generic-api-key | 2 | `postman.json` | no | **Likely real.** Kibo/Mozu token in Postman export (wip ecommerce commit, 2025). |
+| L21 | generic-api-key | 6 | `pagesFilesData.json/.js` (page builder install data) | no | False positive. File key (`*.jpeg`). |
+| L22 | generic-api-key | 1 | `nextjs/__mocks__/stories/userMock.ts` | no | **Check.** Kibo `refreshToken` in mock (same wip commit as L20). |
+| L23 | generic-api-key | 2 | `api-security/__tests__/{personalAccessTokens,validateAccessToken}.test.js` | no | False positive. Test PAT. |
+| L24 | generic-api-key | 1 | `.yarn/releases/yarn-3.1.0.cjs` | no | False positive. Minified Yarn bundle. |
+| L25 | generic-api-key | 4 | `packages/app-website-builder/planning/*.js` | yes | Check. `apiKey` + Bearer for SpaceX example data source. Likely dummy. |
+| L26 | generic-api-key | 1 | `project-utils/__tests__/bundling/function/telemetryFunction.test.ts` | no | False positive. Test constant `VALID_API_KEY`. |
+| L27 | generic-api-key | 1 | `packages/pulumi-aws/src/apps/api/ApiCloudfront.ts` | no | False positive. Resource name `fm-bucket-…`. |
+| L28 | generic-api-key | 6 | `extensions/MyApiKey.ts`, `MarkdownContentBuilder.test.ts`, `webiny-sdk` skill docs | yes | False positive. Placeholder `wat_12345678`. |
+| L29 | generic-api-key | 31 | `packages/webhooks/__tests__/**`, `docs/superpowers/plans/*webhook*` | yes | False positive. Test signing secret (base64 of `testsecret`). |
+| L30–L33 | github-pat | 4 | `packages/cli-plugin-scaffold-ci/src/**` | no | **Likely real.** `ghp_` tokens (2021). Verify revoked. |
+| L34–L35 | jwt | 2 | `kiboAuthToken.ts`, `app-website-builder/.../useGetEcommerceSettings.ts` | no | **Check.** Kibo commerce JWT (2025). Probably expired. |
+| L36 | jwt | 1 | `packages/api-headless-cms/src/content/plugins/authentication.ts` | no | Check. Webiny user JWT (2020). Probably dev token, expired. |
+| L37 | jwt | 1 | `examples/spa/NewClient/Frontend/app.js` | no | Check. Webiny user JWT (2018). Probably dev token, expired. |
+| L38–L39 | jwt | 2 | `nextjs/__mocks__/stories/userMock.ts` | no | **Check.** Kibo JWTs in mock (same wip commit as L20). |
+
+"In HEAD" = file still exists on `next`. "no" = only in history.
+
+## Details
+
+Each fingerprint (`commit:file:rule:line`) can go to `.gitleaksignore` as-is.
+
+### L01 — `azure-ad-client-secret` — 5 hit(s)
+
+- Match: `=~Gp7Q~97…`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `a145f9ed5d7a0e26ffb4d4885ea3b4a9d59ce1fa:skills/user-skills/configure-entraid/SKILL.md:azure-ad-client-secret:61` (2026-07-07, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/a145f9ed5d7a0e26ffb4d4885ea3b4a9d59ce1fa/skills/user-skills/configure-entraid/SKILL.md#L61)
+  - `f95501c5136dabc42f716ffaed4e3aa52b34df55:skills/user-skills/configure-entraid/SKILL.md:azure-ad-client-secret:99` (2026-07-08, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/f95501c5136dabc42f716ffaed4e3aa52b34df55/skills/user-skills/configure-entraid/SKILL.md#L99)
+  - `c6222c67d7f8c181d637b920e091d5663bdd025d:skills/user-skills/configure-entraid/SKILL.md:azure-ad-client-secret:99` (2026-07-08, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/c6222c67d7f8c181d637b920e091d5663bdd025d/skills/user-skills/configure-entraid/SKILL.md#L99)
+  - `1d272f5636f8b5832fa4ba8847d2529602a6b2c6:skills/user-skills/configure-entraid/SKILL.md:azure-ad-client-secret:99` (2026-07-12, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/1d272f5636f8b5832fa4ba8847d2529602a6b2c6/skills/user-skills/configure-entraid/SKILL.md#L99)
+  - `9f196e021a3117abffb180b2e7f3ec0fae49cf45:skills/user-skills/configure-entraid/SKILL.md:azure-ad-client-secret:99` (2026-07-13, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/9f196e021a3117abffb180b2e7f3ec0fae49cf45/skills/user-skills/configure-entraid/SKILL.md#L99)
+
+### L02 — `generic-api-key` — 1 hit(s)
+
+- Match: `apiKey: "0fc47574…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `8d258aa2ebd8562b79e395d7aeea6316405f7f4e:packages/api-wcp/__tests__/utils.test.ts:generic-api-key:5` (2022-08-16, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/8d258aa2ebd8562b79e395d7aeea6316405f7f4e/packages/api-wcp/__tests__/utils.test.ts#L5)
+
+### L03 — `generic-api-key` — 2 hit(s)
+
+- Match: `NextContinuationToken: "1w41l63U…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `4b3ef9d890ef313694d39b8c0c0df21d76e5d096:packages-utils/webiny-file-storage-s3/tests/s3MockResponses.js:generic-api-key:57` (2018-01-27, SvenAlHamad) [view](https://github.com/webiny/webiny-js/blob/4b3ef9d890ef313694d39b8c0c0df21d76e5d096/packages-utils/webiny-file-storage-s3/tests/s3MockResponses.js#L57)
+  - `4f98ecb47fbb2358e912e7945d95c464df14d82f:packages-utils/webiny-file-storage-s3/tests/s3MockResponses.js:generic-api-key:87` (2018-02-10, Pavel910) [view](https://github.com/webiny/webiny-js/blob/4f98ecb47fbb2358e912e7945d95c464df14d82f/packages-utils/webiny-file-storage-s3/tests/s3MockResponses.js#L87)
+
+### L04 — `generic-api-key` — 1 hit(s)
+
+- Match: `apiKey":"5d155766…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `5584544a48cc82ddfbc1936614b5a196353ef6b0:packages/api-wcp/src/utils.ts:generic-api-key:7` (2022-05-24, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/5584544a48cc82ddfbc1936614b5a196353ef6b0/packages/api-wcp/src/utils.ts#L7)
+
+### L05 — `generic-api-key` — 6 hit(s)
+
+- Match: `key: "8kgvqs3i…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `e76121574fd232826617bca48aead55ad5cb48a4:packages/api-security-tenancy/__tests__/mocks/securityUser.js:generic-api-key:5` (2020-11-12, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/e76121574fd232826617bca48aead55ad5cb48a4/packages/api-security-tenancy/__tests__/mocks/securityUser.js#L5)
+  - `e76121574fd232826617bca48aead55ad5cb48a4:packages/api-security-tenancy/__tests__/mocks/securityUser.js:generic-api-key:14` (2020-11-12, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/e76121574fd232826617bca48aead55ad5cb48a4/packages/api-security-tenancy/__tests__/mocks/securityUser.js#L14)
+  - `e76121574fd232826617bca48aead55ad5cb48a4:packages/api-security-tenancy/__tests__/mocks/securityUser.js:generic-api-key:23` (2020-11-12, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/e76121574fd232826617bca48aead55ad5cb48a4/packages/api-security-tenancy/__tests__/mocks/securityUser.js#L23)
+  - `3b6a18f94afde4cacb32f3f7b8b9b7e1f9902231:packages/api-security-user-management/__tests__/mocks/securityUser.js:generic-api-key:5` (2020-10-30, Ashutosh) [view](https://github.com/webiny/webiny-js/blob/3b6a18f94afde4cacb32f3f7b8b9b7e1f9902231/packages/api-security-user-management/__tests__/mocks/securityUser.js#L5)
+  - `3b6a18f94afde4cacb32f3f7b8b9b7e1f9902231:packages/api-security-user-management/__tests__/mocks/securityUser.js:generic-api-key:14` (2020-10-30, Ashutosh) [view](https://github.com/webiny/webiny-js/blob/3b6a18f94afde4cacb32f3f7b8b9b7e1f9902231/packages/api-security-user-management/__tests__/mocks/securityUser.js#L14)
+  - `3b6a18f94afde4cacb32f3f7b8b9b7e1f9902231:packages/api-security-user-management/__tests__/mocks/securityUser.js:generic-api-key:23` (2020-10-30, Ashutosh) [view](https://github.com/webiny/webiny-js/blob/3b6a18f94afde4cacb32f3f7b8b9b7e1f9902231/packages/api-security-user-management/__tests__/mocks/securityUser.js#L23)
+
+### L06 — `generic-api-key` — 1 hit(s)
+
+- Match: `key: "8kgw5rpy…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `7bf1eab0aa25c1d70d2991e84d213a8ee5102b26:apps/admin/code/src/App.editor.tsx:generic-api-key:30` (2020-10-31, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/7bf1eab0aa25c1d70d2991e84d213a8ee5102b26/apps/admin/code/src/App.editor.tsx#L30)
+
+### L07 — `generic-api-key` — 1 hit(s)
+
+- Match: `key: "8kkxzkhv…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `12aaebae4e4d5f19aebee478d81a33ac9b249c53:packages/api-page-builder/src/graphql/graphql/install/welcome-to-webiny-page-data.ts:generic-api-key:3521` (2021-02-12, Ashutosh) [view](https://github.com/webiny/webiny-js/blob/12aaebae4e4d5f19aebee478d81a33ac9b249c53/packages/api-page-builder/src/graphql/graphql/install/welcome-to-webiny-page-data.ts#L3521)
+
+### L08 — `generic-api-key` — 1 hit(s)
+
+- Match: `key: "8kkxzki0…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `12aaebae4e4d5f19aebee478d81a33ac9b249c53:packages/api-page-builder/src/graphql/graphql/install/welcome-to-webiny-page-data.ts:generic-api-key:1710` (2021-02-12, Ashutosh) [view](https://github.com/webiny/webiny-js/blob/12aaebae4e4d5f19aebee478d81a33ac9b249c53/packages/api-page-builder/src/graphql/graphql/install/welcome-to-webiny-page-data.ts#L1710)
+
+### L09 — `generic-api-key` — 1 hit(s)
+
+- Match: `key: "8kkxzki2…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `50c2e2d134d2b7eac8dbdcb05754ff761a903aff:packages/api-page-builder/src/graphql/crud/install/welcome-to-webiny-page-data.ts:generic-api-key:2557` (2021-08-02, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/50c2e2d134d2b7eac8dbdcb05754ff761a903aff/packages/api-page-builder/src/graphql/crud/install/welcome-to-webiny-page-data.ts#L2557)
+
+### L10 — `generic-api-key` — 2 hit(s)
+
+- Match: `key: "8kkxzki3…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `12aaebae4e4d5f19aebee478d81a33ac9b249c53:packages/api-page-builder/src/graphql/graphql/install/welcome-to-webiny-page-data.ts:generic-api-key:2361` (2021-02-12, Ashutosh) [view](https://github.com/webiny/webiny-js/blob/12aaebae4e4d5f19aebee478d81a33ac9b249c53/packages/api-page-builder/src/graphql/graphql/install/welcome-to-webiny-page-data.ts#L2361)
+  - `12aaebae4e4d5f19aebee478d81a33ac9b249c53:packages/api-page-builder/src/graphql/graphql/install/welcome-to-webiny-page-data.ts:generic-api-key:4037` (2021-02-12, Ashutosh) [view](https://github.com/webiny/webiny-js/blob/12aaebae4e4d5f19aebee478d81a33ac9b249c53/packages/api-page-builder/src/graphql/graphql/install/welcome-to-webiny-page-data.ts#L4037)
+
+### L11 — `generic-api-key` — 1 hit(s)
+
+- Match: `key: "8kkxzki4…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `50c2e2d134d2b7eac8dbdcb05754ff761a903aff:packages/api-page-builder/src/graphql/crud/install/welcome-to-webiny-page-data.ts:generic-api-key:2119` (2021-08-02, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/50c2e2d134d2b7eac8dbdcb05754ff761a903aff/packages/api-page-builder/src/graphql/crud/install/welcome-to-webiny-page-data.ts#L2119)
+
+### L12 — `generic-api-key` — 1 hit(s)
+
+- Match: `key: "8klunupd…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `f4d2b5e73c899077cb1207940f2ab169a880aec9:packages/api-file-manager/src/plugins/upgrades/v5.0.0/index.ts:generic-api-key:112` (2021-03-08, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/f4d2b5e73c899077cb1207940f2ab169a880aec9/packages/api-file-manager/src/plugins/upgrades/v5.0.0/index.ts#L112)
+
+### L13 — `generic-api-key` — 1 hit(s)
+
+- Match: `key: "9kkxzki5…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `12aaebae4e4d5f19aebee478d81a33ac9b249c53:packages/api-page-builder/src/graphql/graphql/install/welcome-to-webiny-page-data.ts:generic-api-key:140` (2021-02-12, Ashutosh) [view](https://github.com/webiny/webiny-js/blob/12aaebae4e4d5f19aebee478d81a33ac9b249c53/packages/api-page-builder/src/graphql/graphql/install/welcome-to-webiny-page-data.ts#L140)
+
+### L14 — `generic-api-key` — 3 hit(s)
+
+- Match: `access_token=FD1uQl5i…`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `b597aa7945a4b52325072158f64ed7d5c122b4a0:packages/api-headless-cms/IDEAS.md:generic-api-key:23` (2020-01-28, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/b597aa7945a4b52325072158f64ed7d5c122b4a0/packages/api-headless-cms/IDEAS.md#L23)
+  - `f07e856a3bc99332d26c0888252a63195107f406:packages/api-headless-cms/IDEAS.md:generic-api-key:23` (2020-01-28, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/f07e856a3bc99332d26c0888252a63195107f406/packages/api-headless-cms/IDEAS.md#L23)
+  - `63487120aa660ee0ae03b7dd4080adac6b608020:packages/webiny-api-headless/IDEAS.md:generic-api-key:23` (2019-06-27, Pavel910) [view](https://github.com/webiny/webiny-js/blob/63487120aa660ee0ae03b7dd4080adac6b608020/packages/webiny-api-headless/IDEAS.md#L23)
+
+### L15 — `generic-api-key` — 1 hit(s)
+
+- Match: `_authToken=FbK1wDkC…`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `1b8335aa7a9a4d0e819c6dd63bc630258be52959:.npmrc:generic-api-key:2` (2018-06-11, Pavel910) [view](https://github.com/webiny/webiny-js/blob/1b8335aa7a9a4d0e819c6dd63bc630258be52959/.npmrc#L2)
+
+### L16 — `generic-api-key` — 1 hit(s)
+
+- Match: `password = "GZPJWYVI…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `3337e33e11780d045c1a65141dd95701db0e3592:packages/api-mailer/__tests__/password.test.ts:generic-api-key:4` (2022-10-25, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/3337e33e11780d045c1a65141dd95701db0e3592/packages/api-mailer/__tests__/password.test.ts#L4)
+
+### L17 — `generic-api-key` — 6 hit(s)
+
+- Match: `key: "GfT8AoRs…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `005dc9feda17c8deb93cfca332148184c5cde150:packages/api-prerendering-service/__tests__/render/extractPeLoaderDataFromHtml.test.ts:generic-api-key:9` (2024-12-05, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/005dc9feda17c8deb93cfca332148184c5cde150/packages/api-prerendering-service/__tests__/render/extractPeLoaderDataFromHtml.test.ts#L9)
+  - `005dc9feda17c8deb93cfca332148184c5cde150:packages/api-prerendering-service/__tests__/render/extractPeLoaderDataFromHtml.test.ts:generic-api-key:45` (2024-12-05, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/005dc9feda17c8deb93cfca332148184c5cde150/packages/api-prerendering-service/__tests__/render/extractPeLoaderDataFromHtml.test.ts#L45)
+  - `bd1354d8ee670ec47eebfcbcfd8cf09c24b8efc0:packages/api-prerendering-service/__tests__/render/extractPeLoaderDataFromHtml.test.ts:generic-api-key:9` (2024-12-05, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/bd1354d8ee670ec47eebfcbcfd8cf09c24b8efc0/packages/api-prerendering-service/__tests__/render/extractPeLoaderDataFromHtml.test.ts#L9)
+  - `bd1354d8ee670ec47eebfcbcfd8cf09c24b8efc0:packages/api-prerendering-service/__tests__/render/extractPeLoaderDataFromHtml.test.ts:generic-api-key:45` (2024-12-05, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/bd1354d8ee670ec47eebfcbcfd8cf09c24b8efc0/packages/api-prerendering-service/__tests__/render/extractPeLoaderDataFromHtml.test.ts#L45)
+  - `92a9b5498798ee248db97ce174a370dc9d9b2664:packages/api-prerendering-service/__tests__/render/extractPeLoaderDataFromHtml.test.ts:generic-api-key:17` (2024-12-12, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/92a9b5498798ee248db97ce174a370dc9d9b2664/packages/api-prerendering-service/__tests__/render/extractPeLoaderDataFromHtml.test.ts#L17)
+  - `91cf386db2a381d54c584efc6a53d5897a41922c:packages/api-prerendering-service/__tests__/render/extractPeLoaderDataFromHtml.test.ts:generic-api-key:17` (2024-12-12, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/91cf386db2a381d54c584efc6a53d5897a41922c/packages/api-prerendering-service/__tests__/render/extractPeLoaderDataFromHtml.test.ts#L17)
+
+### L18 — `generic-api-key` — 3 hit(s)
+
+- Match: `In.MismatchedTokenException=In.isRec… `
+- Occurrences (`commit:file:line` = fingerprint):
+  - `12029b4ee322a0b8ad859a193ad57629165df6e4:.yarn/releases/yarn-3.6.3.cjs:generic-api-key:127` (2023-09-13, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/12029b4ee322a0b8ad859a193ad57629165df6e4/.yarn/releases/yarn-3.6.3.cjs#L127)
+  - `5f045fc16360b859aaf70d39d818eccdeba2d64d:.yarn/releases/yarn-3.6.4.cjs:generic-api-key:127` (2023-10-24, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/5f045fc16360b859aaf70d39d818eccdeba2d64d/.yarn/releases/yarn-3.6.4.cjs#L127)
+  - `c06ae3884feffb20586f08913d2f2ea9debc77fa:packages/create-webiny-project/utils/binaries/yarn-3.6.4.cjs:generic-api-key:127` (2023-10-24, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/c06ae3884feffb20586f08913d2f2ea9debc77fa/packages/create-webiny-project/utils/binaries/yarn-3.6.4.cjs#L127)
+
+### L19 — `generic-api-key` — 6 hit(s)
+
+- Match: `api_key:"ZdDZgkeO…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `8ae7ef62735b7c0dca7caeecfbe9e85c7d52edfb:apps/site/code/app/build-ssr/renderer.js:generic-api-key:84` (2020-09-17, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/8ae7ef62735b7c0dca7caeecfbe9e85c7d52edfb/apps/site/code/app/build-ssr/renderer.js#L84)
+  - `348126bcc49fa3c74e60b0b3f91fdf94c82be38b:apps/site/code/app/build-ssr/renderer.js:generic-api-key:48500` (2020-09-18, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/348126bcc49fa3c74e60b0b3f91fdf94c82be38b/apps/site/code/app/build-ssr/renderer.js#L48500)
+  - `ad828e19a930be5fa835c040837a0b0d24aa1cd6:packages/app-template/src/telemetry/Telemetry.tsx:generic-api-key:7` (2020-06-28, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/ad828e19a930be5fa835c040837a0b0d24aa1cd6/packages/app-template/src/telemetry/Telemetry.tsx#L7)
+  - `a764e854c5da0ebcb99038e9b9aaf3184202edc3:packages/telemetry/index.js:generic-api-key:4` (2021-08-22, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/a764e854c5da0ebcb99038e9b9aaf3184202edc3/packages/telemetry/index.js#L4)
+  - `f36768eeb4c07fc8379e93cadc7a8feec3990b9f:packages/tracking/api.js:generic-api-key:2` (2020-09-08, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/f36768eeb4c07fc8379e93cadc7a8feec3990b9f/packages/tracking/api.js#L2)
+  - `ffa453a305ec2dbce49ee4872ea2744dab7539da:packages/tracking/index.js:generic-api-key:23` (2020-07-07, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/ffa453a305ec2dbce49ee4872ea2744dab7539da/packages/tracking/index.js#L23)
+
+### L20 — `generic-api-key` — 2 hit(s)
+
+- Match: `token:_mch-moz…;`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `2b9830fd10014d173b4aca58c50bd078c0754fb1:postman.json:generic-api-key:64` (2025-06-12, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/postman.json#L64)
+  - `2b9830fd10014d173b4aca58c50bd078c0754fb1:postman.json:generic-api-key:124` (2025-06-12, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/postman.json#L124)
+
+### L21 — `generic-api-key` — 6 hit(s)
+
+- Match: `key": "blonde-6…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `de75c4ca5f6f742e0be96cb8688607387ea2f966:components/serverless-page-builder/installation/importData/pagesFilesData.json:generic-api-key:42` (2019-10-28, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/de75c4ca5f6f742e0be96cb8688607387ea2f966/components/serverless-page-builder/installation/importData/pagesFilesData.json#L42)
+  - `de75c4ca5f6f742e0be96cb8688607387ea2f966:components/serverless-page-builder/installation/importData/pagesFilesData.json:generic-api-key:51` (2019-10-28, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/de75c4ca5f6f742e0be96cb8688607387ea2f966/components/serverless-page-builder/installation/importData/pagesFilesData.json#L51)
+  - `92b6ba9acb5e5c478f2884aba4dbea0692d158f7:packages/api-page-builder/src/installation/data/pagesFilesData.json:generic-api-key:42` (2020-04-28, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/92b6ba9acb5e5c478f2884aba4dbea0692d158f7/packages/api-page-builder/src/installation/data/pagesFilesData.json#L42)
+  - `92b6ba9acb5e5c478f2884aba4dbea0692d158f7:packages/api-page-builder/src/installation/data/pagesFilesData.json:generic-api-key:51` (2020-04-28, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/92b6ba9acb5e5c478f2884aba4dbea0692d158f7/packages/api-page-builder/src/installation/data/pagesFilesData.json#L51)
+  - `333305660278d906224f907e7e733aa16a0b71bd:packages/api-page-builder/src/plugins/graphql/installResolver/importData/pagesFilesData.js:generic-api-key:42` (2019-10-25, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/333305660278d906224f907e7e733aa16a0b71bd/packages/api-page-builder/src/plugins/graphql/installResolver/importData/pagesFilesData.js#L42)
+  - `333305660278d906224f907e7e733aa16a0b71bd:packages/api-page-builder/src/plugins/graphql/installResolver/importData/pagesFilesData.js:generic-api-key:51` (2019-10-25, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/333305660278d906224f907e7e733aa16a0b71bd/packages/api-page-builder/src/plugins/graphql/installResolver/importData/pagesFilesData.js#L51)
+
+### L22 — `generic-api-key` — 1 hit(s)
+
+- Match: `refreshToken: 'cf20cb21…'`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `2b9830fd10014d173b4aca58c50bd078c0754fb1:nextjs/__mocks__/stories/userMock.ts:generic-api-key:47` (2025-06-12, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/nextjs/__mocks__/stories/userMock.ts#L47)
+
+### L23 — `generic-api-key` — 2 hit(s)
+
+- Match: `token = "ddbdaade…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `54cdf3b3c3ac7c3a5615d7bcf2317daab2ba7bd2:packages/api-security/__tests__/personalAccessTokens.test.js:generic-api-key:8` (2020-04-16, Fsalker) [view](https://github.com/webiny/webiny-js/blob/54cdf3b3c3ac7c3a5615d7bcf2317daab2ba7bd2/packages/api-security/__tests__/personalAccessTokens.test.js#L8)
+  - `0ee998a7cacc80916307bb00289df094bdb983d9:packages/api-security/__tests__/validateAccessToken.test.js:generic-api-key:6` (2020-04-16, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/0ee998a7cacc80916307bb00289df094bdb983d9/packages/api-security/__tests__/validateAccessToken.test.js#L6)
+
+### L24 — `generic-api-key` — 1 hit(s)
+
+- Match: `dn.MismatchedTokenException=dn.isRec… `
+- Occurrences (`commit:file:line` = fingerprint):
+  - `fc2f0dafbb036bf26f1c24cce46edbcfcf38cca7:.yarn/releases/yarn-3.1.0.cjs:generic-api-key:92` (2021-12-02, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/fc2f0dafbb036bf26f1c24cce46edbcfcf38cca7/.yarn/releases/yarn-3.1.0.cjs#L92)
+
+### L25 — `generic-api-key` — 4 hit(s)
+
+- Match: `apiKey: 'f1a790f8…'`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `17dc16ac71bcb86d9bde8d46b72a25acb392438c:packages/app-website-builder/planning/pageFromTemplate.js:generic-api-key:36` (2025-05-26, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/17dc16ac71bcb86d9bde8d46b72a25acb392438c/packages/app-website-builder/planning/pageFromTemplate.js#L36)
+  - `c8c9498ee69a0b0cd42c872416702121e444778c:packages/app-website-builder/planning/pageFromTemplate.js:generic-api-key:37` (2025-07-29, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/c8c9498ee69a0b0cd42c872416702121e444778c/packages/app-website-builder/planning/pageFromTemplate.js#L37)
+  - `17dc16ac71bcb86d9bde8d46b72a25acb392438c:packages/app-website-builder/planning/pageWithDataSource.js:generic-api-key:14` (2025-05-26, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/17dc16ac71bcb86d9bde8d46b72a25acb392438c/packages/app-website-builder/planning/pageWithDataSource.js#L14)
+  - `c8c9498ee69a0b0cd42c872416702121e444778c:packages/app-website-builder/planning/pageWithDataSource.js:generic-api-key:15` (2025-07-29, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/c8c9498ee69a0b0cd42c872416702121e444778c/packages/app-website-builder/planning/pageWithDataSource.js#L15)
+
+### L26 — `generic-api-key` — 1 hit(s)
+
+- Match: `VALID_API_KEY = "f79af720…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `a036766272a71b5fc9d355ce2ec1607d2e670020:packages/project-utils/__tests__/bundling/function/telemetryFunction.test.ts:generic-api-key:8` (2022-04-01, Ewan) [view](https://github.com/webiny/webiny-js/blob/a036766272a71b5fc9d355ce2ec1607d2e670020/packages/project-utils/__tests__/bundling/function/telemetryFunction.test.ts#L8)
+
+### L27 — `generic-api-key` — 1 hit(s)
+
+- Match: `DataAccessPointAccount": "fm-bucke…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `9df0fd2ff32b9adb89ee853fed1d54d52a124dd4:packages/pulumi-aws/src/apps/api/ApiCloudfront.ts:generic-api-key:202` (2023-07-05, adrians5j) [view](https://github.com/webiny/webiny-js/blob/9df0fd2ff32b9adb89ee853fed1d54d52a124dd4/packages/pulumi-aws/src/apps/api/ApiCloudfront.ts#L202)
+
+### L28 — `generic-api-key` — 6 hit(s)
+
+- Match: `token: "wat_1234…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `783e017fd38892dcbdf4241de9254720ed80b8e2:extensions/MyApiKey.ts:generic-api-key:8` (2026-01-12, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/783e017fd38892dcbdf4241de9254720ed80b8e2/extensions/MyApiKey.ts#L8)
+  - `bf6459ea0b67c262391b82f24312eaca8320ef4b:packages/api-website-builder/src/features/nextjs/MarkdownContentBuilder.test.ts:generic-api-key:225` (2026-01-17, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/bf6459ea0b67c262391b82f24312eaca8320ef4b/packages/api-website-builder/src/features/nextjs/MarkdownContentBuilder.test.ts#L225)
+  - `81787d12df2a1f439b07418974fc9855ae7645bb:packages/mcp/src/skills/webiny-sdk.md:generic-api-key:218` (2026-03-07, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/81787d12df2a1f439b07418974fc9855ae7645bb/packages/mcp/src/skills/webiny-sdk.md#L218)
+  - `eff151073be651c3a93cdd18a69b7fa24615bf50:skills/user-skills/webiny-sdk/SKILL.md:generic-api-key:231` (2026-03-27, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/eff151073be651c3a93cdd18a69b7fa24615bf50/skills/user-skills/webiny-sdk/SKILL.md#L231)
+  - `0e130a8f74790c5a596199c465a14bb09d1f2da5:skills/user-skills/webiny-sdk/SKILL.md:generic-api-key:333` (2026-05-04, Sven) [view](https://github.com/webiny/webiny-js/blob/0e130a8f74790c5a596199c465a14bb09d1f2da5/skills/user-skills/webiny-sdk/SKILL.md#L333)
+  - `4726e699350febb5c063b1b3e54092037a22d7db:skills/user-skills/webiny-sdk/SKILL.md:generic-api-key:333` (2026-05-04, adrians5j) [view](https://github.com/webiny/webiny-js/blob/4726e699350febb5c063b1b3e54092037a22d7db/skills/user-skills/webiny-sdk/SKILL.md#L333)
+
+### L29 — `generic-api-key` — 31 hit(s)
+
+- Match: `signingSecret: "whsec_dG…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `eecafb9dac77a5bf051cce8ef7b258517bbc852d:docs/superpowers/plans/2026-05-17-webhooks-graphql-tests.md:generic-api-key:422` (2026-05-20, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/eecafb9dac77a5bf051cce8ef7b258517bbc852d/docs/superpowers/plans/2026-05-17-webhooks-graphql-tests.md#L422)
+  - `eecafb9dac77a5bf051cce8ef7b258517bbc852d:docs/superpowers/plans/2026-05-17-webhooks-graphql-tests.md:generic-api-key:832` (2026-05-20, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/eecafb9dac77a5bf051cce8ef7b258517bbc852d/docs/superpowers/plans/2026-05-17-webhooks-graphql-tests.md#L832)
+  - `eecafb9dac77a5bf051cce8ef7b258517bbc852d:docs/superpowers/plans/2026-05-17-webhooks-graphql-tests.md:generic-api-key:1072` (2026-05-20, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/eecafb9dac77a5bf051cce8ef7b258517bbc852d/docs/superpowers/plans/2026-05-17-webhooks-graphql-tests.md#L1072)
+  - `4d5533f4513a099c85ad7d535d3324898c4bf9a0:docs/superpowers/plans/2026-05-20-webhook-deliveries-page.md:generic-api-key:145` (2026-05-21, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/4d5533f4513a099c85ad7d535d3324898c4bf9a0/docs/superpowers/plans/2026-05-20-webhook-deliveries-page.md#L145)
+  - `4d5533f4513a099c85ad7d535d3324898c4bf9a0:docs/superpowers/plans/2026-05-21-webhook-delivery-retention-setting.md:generic-api-key:635` (2026-05-21, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/4d5533f4513a099c85ad7d535d3324898c4bf9a0/docs/superpowers/plans/2026-05-21-webhook-delivery-retention-setting.md#L635)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/SendWebhookTask.test.ts:generic-api-key:22` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/SendWebhookTask.test.ts#L22)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/WebhookSignPayload.test.ts:generic-api-key:7` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/WebhookSignPayload.test.ts#L7)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/WebhookVerifyPayload.test.ts:generic-api-key:10` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/WebhookVerifyPayload.test.ts#L10)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/graphql/webhookCrud.test.ts:generic-api-key:13` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/graphql/webhookCrud.test.ts#L13)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/graphql/webhookDeliveries.test.ts:generic-api-key:13` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/graphql/webhookDeliveries.test.ts#L13)
+  - `4d8df81cb57f0879399342831df30266dc223162:packages/webhooks/__tests__/graphql/webhookPersistenceError.test.ts:generic-api-key:13` (2026-06-07, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/4d8df81cb57f0879399342831df30266dc223162/packages/webhooks/__tests__/graphql/webhookPersistenceError.test.ts#L13)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/graphql/webhookTrigger.test.ts:generic-api-key:10` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/graphql/webhookTrigger.test.ts#L10)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/createWebhook.test.ts:generic-api-key:18` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/createWebhook.test.ts#L18)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/createWebhook.test.ts:generic-api-key:46` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/createWebhook.test.ts#L46)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/createWebhook.test.ts:generic-api-key:62` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/createWebhook.test.ts#L62)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/createWebhook.test.ts:generic-api-key:77` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/createWebhook.test.ts#L77)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/createWebhook.test.ts:generic-api-key:86` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/createWebhook.test.ts#L86)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/createWebhook.test.ts:generic-api-key:101` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/createWebhook.test.ts#L101)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/createWebhook.test.ts:generic-api-key:116` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/createWebhook.test.ts#L116)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/createWebhook.test.ts:generic-api-key:130` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/createWebhook.test.ts#L130)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/createWebhook.test.ts:generic-api-key:148` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/createWebhook.test.ts#L148)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/deleteWebhook.test.ts:generic-api-key:16` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/deleteWebhook.test.ts#L16)
+  - `eecafb9dac77a5bf051cce8ef7b258517bbc852d:packages/webhooks/__tests__/useCases/deliveryCompression.test.ts:generic-api-key:27` (2026-05-20, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/eecafb9dac77a5bf051cce8ef7b258517bbc852d/packages/webhooks/__tests__/useCases/deliveryCompression.test.ts#L27)
+  - `eecafb9dac77a5bf051cce8ef7b258517bbc852d:packages/webhooks/__tests__/useCases/deliveryCompression.test.ts:generic-api-key:83` (2026-05-20, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/eecafb9dac77a5bf051cce8ef7b258517bbc852d/packages/webhooks/__tests__/useCases/deliveryCompression.test.ts#L83)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/listWebhooks.test.ts:generic-api-key:16` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/listWebhooks.test.ts#L16)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/resendWebhookDelivery.test.ts:generic-api-key:20` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/resendWebhookDelivery.test.ts#L20)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/triggerWebhook.test.ts:generic-api-key:21` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/triggerWebhook.test.ts#L21)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/triggerWebhook.test.ts:generic-api-key:57` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/triggerWebhook.test.ts#L57)
+  - `4d5533f4513a099c85ad7d535d3324898c4bf9a0:packages/webhooks/__tests__/useCases/triggerWebhook.test.ts:generic-api-key:107` (2026-05-21, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/4d5533f4513a099c85ad7d535d3324898c4bf9a0/packages/webhooks/__tests__/useCases/triggerWebhook.test.ts#L107)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/updateWebhook.test.ts:generic-api-key:16` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/updateWebhook.test.ts#L16)
+  - `cb6561ad5059748cd55b5d3d6a87f869e261e10a:packages/webhooks/__tests__/useCases/updateWebhookDelivery.test.ts:generic-api-key:19` (2026-05-18, Bruno Zorić) [view](https://github.com/webiny/webiny-js/blob/cb6561ad5059748cd55b5d3d6a87f869e261e10a/packages/webhooks/__tests__/useCases/updateWebhookDelivery.test.ts#L19)
+
+### L30 — `github-pat` — 1 hit(s)
+
+- Match: `ghp_58o4…`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `00138158dbe41f8983373b26bde6f1c2c06df61a:packages/cli-plugin-scaffold-ci/src/githubActions/index.ts:github-pat:73` (2021-05-20, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/00138158dbe41f8983373b26bde6f1c2c06df61a/packages/cli-plugin-scaffold-ci/src/githubActions/index.ts#L73)
+
+### L31 — `github-pat` — 1 hit(s)
+
+- Match: `ghp_HCFc…`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `1a220a8b72a5b9319049a2f30a13f5153bb7cebc:packages/cli-plugin-scaffold-ci/src/index.ts:github-pat:74` (2021-05-10, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/1a220a8b72a5b9319049a2f30a13f5153bb7cebc/packages/cli-plugin-scaffold-ci/src/index.ts#L74)
+
+### L32 — `github-pat` — 1 hit(s)
+
+- Match: `ghp_jGU3…`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `583cd695357cad2654f30d36d15a8c4d7d5ab523:packages/cli-plugin-scaffold-ci/src/index.ts:github-pat:77` (2021-05-10, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/583cd695357cad2654f30d36d15a8c4d7d5ab523/packages/cli-plugin-scaffold-ci/src/index.ts#L77)
+
+### L33 — `github-pat` — 1 hit(s)
+
+- Match: `ghp_rGD2…`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `bc38044581f1744611085fc600faffe4745b74ae:packages/cli-plugin-scaffold-ci/src/githubActions/index.ts:github-pat:37` (2021-05-12, Adrian Smijulj) [view](https://github.com/webiny/webiny-js/blob/bc38044581f1744611085fc600faffe4745b74ae/packages/cli-plugin-scaffold-ci/src/githubActions/index.ts#L37)
+
+### L34 — `jwt` — 1 hit(s)
+
+- Match: `eyJhbGci…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `e7d277c945c5baf26dbc6463ea0a1d425c370bb5:packages/app-website-builder/src/ecommerce/features/settings/getSettings/useGetEcommerceSettings.ts:jwt:22` (2025-07-10, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/e7d277c945c5baf26dbc6463ea0a1d425c370bb5/packages/app-website-builder/src/ecommerce/features/settings/getSettings/useGetEcommerceSettings.ts#L22)
+
+### L35 — `jwt` — 1 hit(s)
+
+- Match: `eyJhbGci…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `2b9830fd10014d173b4aca58c50bd078c0754fb1:kiboAuthToken.ts:jwt:2` (2025-06-12, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/kiboAuthToken.ts#L2)
+
+### L36 — `jwt` — 1 hit(s)
+
+- Match: `eyJhbGci…`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `658972a8695ef6f0c9d023e113608616b315aa00:packages/api-headless-cms/src/content/plugins/authentication.ts:jwt:14` (2020-06-30, Fsalker) [view](https://github.com/webiny/webiny-js/blob/658972a8695ef6f0c9d023e113608616b315aa00/packages/api-headless-cms/src/content/plugins/authentication.ts#L14)
+
+### L37 — `jwt` — 1 hit(s)
+
+- Match: `eyJhbGci…"`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `cb17a12f6902243ac4d217e4976b2873b78a933b:examples/spa/NewClient/Frontend/app.js:jwt:18` (2018-03-22, Pavel910) [view](https://github.com/webiny/webiny-js/blob/cb17a12f6902243ac4d217e4976b2873b78a933b/examples/spa/NewClient/Frontend/app.js#L18)
+
+### L38 — `jwt` — 1 hit(s)
+
+- Match: `eyJhbGci…'`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `2b9830fd10014d173b4aca58c50bd078c0754fb1:nextjs/__mocks__/stories/userMock.ts:jwt:26` (2025-06-12, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/nextjs/__mocks__/stories/userMock.ts#L26)
+
+### L39 — `jwt` — 1 hit(s)
+
+- Match: `eyJhbGci…'`
+- Occurrences (`commit:file:line` = fingerprint):
+  - `2b9830fd10014d173b4aca58c50bd078c0754fb1:nextjs/__mocks__/stories/userMock.ts:jwt:50` (2025-06-12, Pavel Denisjuk) [view](https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/nextjs/__mocks__/stories/userMock.ts#L50)
+

@@ -1,0 +1,191 @@
+# Gitleaks config. Findings report: docs/.bruno/gitleaks.md (IDs L01..L39).
+#
+# Each real-looking key has its own allowlist with:
+#   Where:    file(s) and commit(s)
+#   URLs:
+#   Verified: what we checked to make sure the key is not real or not active
+#   Action:   what we did about it (rotation, revocation, ...)
+#
+# Note: a "commits" allowlist skips every rule for that commit.
+# All findings in these commits are listed in docs/.bruno/gitleaks.md.
+
+[extend]
+useDefault = true
+
+# Made-up example values and test fixtures still in the codebase.
+[[allowlists]]
+description = "Example and test values"
+regexes = [
+  # L01: made-up Entra ID client secret in skills/user-skills/configure-entraid/SKILL.md
+  '''^~Gp7Q~97MAzTAUyeTLzTVzX31DRTY28chehU6c_a$''',
+  # L17: HTML data-key attribute in prerendering tests
+  '''^GfT8AoRsYT-1238102521$''',
+  # L28: placeholder API token in docs, tests and extensions
+  '''^wat_12345678$''',
+  # L29: webhook test signing secret (base64 of "testsecret")
+  '''^whsec_dGVzdHNlY3JldA==$'''
+]
+
+# Minified Yarn bundles (L18, L24).
+[[allowlists]]
+description = "Vendored Yarn releases"
+paths = ['''(^|/)\.yarn/releases/''', '''(^|/)yarn-[0-9.]+\.cjs$''']
+
+# Old commits with test fixtures and file keys only (L02, L03, L05-L13, L16, L21, L23, L26, L27).
+[[allowlists]]
+description = "Old test fixtures and file keys"
+commits = [
+  "4b3ef9d890ef313694d39b8c0c0df21d76e5d096", # 2018-01-27 generic-api-key packages-utils/webiny-file-storage-s3/tests/s3MockResponses.js
+  "4f98ecb47fbb2358e912e7945d95c464df14d82f", # 2018-02-10 generic-api-key packages-utils/webiny-file-storage-s3/tests/s3MockResponses.js
+  "333305660278d906224f907e7e733aa16a0b71bd", # 2019-10-25 generic-api-key packages/api-page-builder/src/plugins/graphql/installResolver/importData/pagesFilesData.js
+  "de75c4ca5f6f742e0be96cb8688607387ea2f966", # 2019-10-28 generic-api-key components/serverless-page-builder/installation/importData/pagesFilesData.json
+  "54cdf3b3c3ac7c3a5615d7bcf2317daab2ba7bd2", # 2020-04-16 generic-api-key packages/api-security/__tests__/personalAccessTokens.test.js
+  "0ee998a7cacc80916307bb00289df094bdb983d9", # 2020-04-16 generic-api-key packages/api-security/__tests__/validateAccessToken.test.js
+  "92b6ba9acb5e5c478f2884aba4dbea0692d158f7", # 2020-04-28 generic-api-key packages/api-page-builder/src/installation/data/pagesFilesData.json
+  "3b6a18f94afde4cacb32f3f7b8b9b7e1f9902231", # 2020-10-30 generic-api-key packages/api-security-user-management/__tests__/mocks/securityUser.js
+  "7bf1eab0aa25c1d70d2991e84d213a8ee5102b26", # 2020-10-31 generic-api-key apps/admin/code/src/App.editor.tsx
+  "e76121574fd232826617bca48aead55ad5cb48a4", # 2020-11-12 generic-api-key packages/api-security-tenancy/__tests__/mocks/securityUser.js
+  "12aaebae4e4d5f19aebee478d81a33ac9b249c53", # 2021-02-12 generic-api-key packages/api-page-builder/src/graphql/graphql/install/welcome-to-webiny-page-data.ts
+  "f4d2b5e73c899077cb1207940f2ab169a880aec9", # 2021-03-08 generic-api-key packages/api-file-manager/src/plugins/upgrades/v5.0.0/index.ts
+  "50c2e2d134d2b7eac8dbdcb05754ff761a903aff", # 2021-08-02 generic-api-key packages/api-page-builder/src/graphql/crud/install/welcome-to-webiny-page-data.ts
+  "a036766272a71b5fc9d355ce2ec1607d2e670020", # 2022-04-01 generic-api-key packages/project-utils/__tests__/bundling/function/telemetryFunction.test.ts
+  "8d258aa2ebd8562b79e395d7aeea6316405f7f4e", # 2022-08-16 generic-api-key packages/api-wcp/__tests__/utils.test.ts
+  "3337e33e11780d045c1a65141dd95701db0e3592", # 2022-10-25 generic-api-key packages/api-mailer/__tests__/password.test.ts
+  "9df0fd2ff32b9adb89ee853fed1d54d52a124dd4" # 2023-07-05 generic-api-key packages/pulumi-aws/src/apps/api/ApiCloudfront.ts
+]
+
+# L15: npm auth token
+#   Where:    .npmrc, commit 1b8335aa7a (2018-06-11). Token for private registry //webiny-npm:4873/.
+#   URLs:
+#             https://github.com/webiny/webiny-js/blob/1b8335aa7a9a4d0e819c6dd63bc630258be52959/.npmrc#L2
+#   Verified: TODO
+#   Action:   TODO (confirm the registry is gone or the token is revoked)
+[[allowlists]]
+description = "L15 npm auth token (2018)"
+commits = ["1b8335aa7a9a4d0e819c6dd63bc630258be52959"]
+
+# L14: Contentful delivery access_token
+#   Where:    packages/webiny-api-headless/IDEAS.md, packages/api-headless-cms/IDEAS.md,
+#             commits 63487120aa (2019-06-27), b597aa7945, f07e856a3b (2020-01-28).
+#             Example URL for Contentful space ia4gyn59esy0.
+#   URLs:
+#             https://github.com/webiny/webiny-js/blob/63487120aa660ee0ae03b7dd4080adac6b608020/packages/webiny-api-headless/IDEAS.md#L23
+#             https://github.com/webiny/webiny-js/blob/b597aa7945a4b52325072158f64ed7d5c122b4a0/packages/api-headless-cms/IDEAS.md#L23
+#             https://github.com/webiny/webiny-js/blob/f07e856a3bc99332d26c0888252a63195107f406/packages/api-headless-cms/IDEAS.md#L23
+#   Verified: TODO
+#   Action:   TODO (confirm the Contentful space or token no longer exists)
+[[allowlists]]
+description = "L14 Contentful access token (2019-2020)"
+commits = [
+  "63487120aa660ee0ae03b7dd4080adac6b608020",
+  "b597aa7945a4b52325072158f64ed7d5c122b4a0",
+  "f07e856a3bc99332d26c0888252a63195107f406"
+]
+
+# L04: WCP API key
+#   Where:    packages/api-wcp/src/utils.ts, commit 5584544a48 (2022-05-24).
+#   URLs:
+#             https://github.com/webiny/webiny-js/blob/5584544a48cc82ddfbc1936614b5a196353ef6b0/packages/api-wcp/src/utils.ts#L7
+#   Verified: TODO
+#   Action:   TODO (confirm the key is revoked in WCP)
+[[allowlists]]
+description = "L04 WCP API key (2022)"
+commits = ["5584544a48cc82ddfbc1936614b5a196353ef6b0"]
+
+# L19: telemetry API key
+#   Where:    packages/app-template/src/telemetry/Telemetry.tsx, packages/tracking/{api,index}.js,
+#             apps/site/code/app/build-ssr/renderer.js, packages/telemetry/index.js,
+#             commits ad828e19a9, ffa453a305, f36768eeb4, 8ae7ef6273, 348126bcc4, a764e854c5 (2020-2021).
+#             Write key for Webiny's own telemetry endpoint https://t.webiny.com.
+#             Shipped in public npm packages by design.
+#   URLs:
+#             https://github.com/webiny/webiny-js/blob/ad828e19a930be5fa835c040837a0b0d24aa1cd6/packages/app-template/src/telemetry/Telemetry.tsx#L7
+#             https://github.com/webiny/webiny-js/blob/ffa453a305ec2dbce49ee4872ea2744dab7539da/packages/tracking/index.js#L23
+#             https://github.com/webiny/webiny-js/blob/f36768eeb4c07fc8379e93cadc7a8feec3990b9f/packages/tracking/api.js#L2
+#             https://github.com/webiny/webiny-js/blob/8ae7ef62735b7c0dca7caeecfbe9e85c7d52edfb/apps/site/code/app/build-ssr/renderer.js#L84
+#             https://github.com/webiny/webiny-js/blob/348126bcc49fa3c74e60b0b3f91fdf94c82be38b/apps/site/code/app/build-ssr/renderer.js#L48500
+#             https://github.com/webiny/webiny-js/blob/a764e854c5da0ebcb99038e9b9aaf3184202edc3/packages/telemetry/index.js#L4
+#   Verified: TODO
+#   Action:   TODO (confirm the key is rotated or the endpoint is retired)
+[[allowlists]]
+description = "L19 telemetry API key (2020-2021)"
+commits = [
+  "ad828e19a930be5fa835c040837a0b0d24aa1cd6",
+  "ffa453a305ec2dbce49ee4872ea2744dab7539da",
+  "f36768eeb4c07fc8379e93cadc7a8feec3990b9f",
+  "8ae7ef62735b7c0dca7caeecfbe9e85c7d52edfb",
+  "348126bcc49fa3c74e60b0b3f91fdf94c82be38b",
+  "a764e854c5da0ebcb99038e9b9aaf3184202edc3"
+]
+
+# L30-L33: GitHub personal access tokens
+#   Where:    packages/cli-plugin-scaffold-ci/src/index.ts, packages/cli-plugin-scaffold-ci/src/githubActions/index.ts,
+#             commits 1a220a8b72, 583cd69535 (2021-05-10), bc38044581 (2021-05-12), 00138158db (2021-05-20).
+#             Hardcoded in a CLI prompt validator ("TODO: remove this").
+#   URLs:
+#             https://github.com/webiny/webiny-js/blob/1a220a8b72a5b9319049a2f30a13f5153bb7cebc/packages/cli-plugin-scaffold-ci/src/index.ts#L74
+#             https://github.com/webiny/webiny-js/blob/583cd695357cad2654f30d36d15a8c4d7d5ab523/packages/cli-plugin-scaffold-ci/src/index.ts#L77
+#             https://github.com/webiny/webiny-js/blob/bc38044581f1744611085fc600faffe4745b74ae/packages/cli-plugin-scaffold-ci/src/githubActions/index.ts#L37
+#             https://github.com/webiny/webiny-js/blob/00138158dbe41f8983373b26bde6f1c2c06df61a/packages/cli-plugin-scaffold-ci/src/githubActions/index.ts#L73
+#   Verified: TODO
+#   Action:   TODO (confirm the tokens are revoked)
+[[allowlists]]
+description = "L30-L33 GitHub PATs (2021)"
+commits = [
+  "1a220a8b72a5b9319049a2f30a13f5153bb7cebc",
+  "583cd695357cad2654f30d36d15a8c4d7d5ab523",
+  "bc38044581f1744611085fc600faffe4745b74ae",
+  "00138158dbe41f8983373b26bde6f1c2c06df61a"
+]
+
+# L36, L37: Webiny user JWTs
+#   Where:    examples/spa/NewClient/Frontend/app.js, commit cb17a12f69 (2018-03-22);
+#             packages/api-headless-cms/src/content/plugins/authentication.ts, commit 658972a869 (2020-06-30).
+#   URLs:
+#             https://github.com/webiny/webiny-js/blob/cb17a12f6902243ac4d217e4976b2873b78a933b/examples/spa/NewClient/Frontend/app.js#L18
+#             https://github.com/webiny/webiny-js/blob/658972a8695ef6f0c9d023e113608616b315aa00/packages/api-headless-cms/src/content/plugins/authentication.ts#L14
+#   Verified: decoded the payload (no signature check). "exp" claims: 2018-04-17 and 2020-07-23. Both expired.
+#   Action:   none needed. Tokens expired.
+[[allowlists]]
+description = "L36-L37 Webiny user JWTs (expired)"
+commits = ["cb17a12f6902243ac4d217e4976b2873b78a933b", "658972a8695ef6f0c9d023e113608616b315aa00"]
+
+# L20, L22, L34, L35, L38, L39: Kibo Commerce ecommerce plugin
+#   Where:    commit 2b9830fd10 (2025-06-12, "wip: ecommerce plugin"):
+#               kiboAuthToken.ts (JWT), nextjs/__mocks__/stories/userMock.ts (2 JWTs + refreshToken),
+#               postman.json (_mch-mozu.com token);
+#             commit e7d277c945 (2025-07-10):
+#               packages/app-website-builder/src/ecommerce/features/settings/getSettings/useGetEcommerceSettings.ts (JWT).
+#   URLs:
+#             https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/kiboAuthToken.ts#L2
+#             https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/nextjs/__mocks__/stories/userMock.ts#L26
+#             https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/nextjs/__mocks__/stories/userMock.ts#L47
+#             https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/nextjs/__mocks__/stories/userMock.ts#L50
+#             https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/postman.json#L64
+#             https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/postman.json#L124
+#             https://github.com/webiny/webiny-js/blob/e7d277c945c5baf26dbc6463ea0a1d425c370bb5/packages/app-website-builder/src/ecommerce/features/settings/getSettings/useGetEcommerceSettings.ts#L22
+#   Verified: decoded the JWT payloads (no signature check). All are 1-hour Kibo access tokens.
+#             "exp" claims: 2025-06-12 (kiboAuthToken.ts), 2025-07-10 (useGetEcommerceSettings.ts),
+#             2022-06-15 and 2022-06-27 (userMock.ts). All expired.
+#             userMock.ts refreshTokenExpiration values: 2022-06-16 and 2022-06-28. Expired.
+#             postman.json value is the Marketo tracking cookie (_mkto_trk), not a credential.
+#   Action:   TODO (confirm Kibo app credentials used to mint these tokens are rotated)
+[[allowlists]]
+description = "L20, L22, L34, L35, L38, L39 Kibo Commerce tokens (expired)"
+commits = ["2b9830fd10014d173b4aca58c50bd078c0754fb1", "e7d277c945c5baf26dbc6463ea0a1d425c370bb5"]
+
+# L25: apiKey / Bearer value in website builder planning examples
+#   Where:    packages/app-website-builder/planning/pageFromTemplate.js,
+#             packages/app-website-builder/planning/pageWithDataSource.js (still in the codebase),
+#             commits 17dc16ac71 (2025-05-26), c8c9498ee6 (2025-07-29).
+#             Used as a query param and Bearer header for https://api.spacexdata.com/v5/launches.
+#   URLs:
+#             https://github.com/webiny/webiny-js/blob/17dc16ac71bcb86d9bde8d46b72a25acb392438c/packages/app-website-builder/planning/pageFromTemplate.js#L36
+#             https://github.com/webiny/webiny-js/blob/17dc16ac71bcb86d9bde8d46b72a25acb392438c/packages/app-website-builder/planning/pageWithDataSource.js#L14
+#             https://github.com/webiny/webiny-js/blob/c8c9498ee69a0b0cd42c872416702121e444778c/packages/app-website-builder/planning/pageFromTemplate.js#L37
+#             https://github.com/webiny/webiny-js/blob/c8c9498ee69a0b0cd42c872416702121e444778c/packages/app-website-builder/planning/pageWithDataSource.js#L15
+#   Verified: TODO (SpaceX API v5 is public and needs no key, so the value looks like a placeholder)
+#   Action:   TODO
+[[allowlists]]
+description = "L25 planning example API key"
+regexes = ['''^f1a790f8c3204b3b8c5c1795aeac4660$''']
