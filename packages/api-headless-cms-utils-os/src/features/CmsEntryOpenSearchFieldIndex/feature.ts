@@ -13,17 +13,20 @@ import { TextEncryptedFieldIndex } from "./fields/TextEncryptedFieldIndex.js";
 export const CmsEntryOpenSearchFieldIndexFeature = createFeature({
     name: "Cms/Entry/OpenSearch/FieldIndexFeature",
     register: container => {
-        container.register(RichTextFieldIndex).inSingletonScope();
-        container.register(JsonFieldIndex).inSingletonScope();
-        container.register(LongTextFieldIndex).inSingletonScope();
-        container.register(NumberFieldIndex).inSingletonScope();
-        container.register(DefaultFieldIndex).inSingletonScope();
-        container.register(DateTimeFieldIndex).inSingletonScope();
-        container.register(ObjectFieldIndex).inSingletonScope();
-        container.register(TextCompressedFieldIndex).inSingletonScope();
-        container.register(TextEncryptedFieldIndex).inSingletonScope();
+        // Container scoped, so registering the feature once in the root still builds these per request:
+        // several field indexes depend on the per-request CmsModelFieldToGraphQLRegistry, and the
+        // registry collects field indexes that extensions register per request.
+        container.register(RichTextFieldIndex).inContainerScope();
+        container.register(JsonFieldIndex).inContainerScope();
+        container.register(LongTextFieldIndex).inContainerScope();
+        container.register(NumberFieldIndex).inContainerScope();
+        container.register(DefaultFieldIndex).inContainerScope();
+        container.register(DateTimeFieldIndex).inContainerScope();
+        container.register(ObjectFieldIndex).inContainerScope();
+        container.register(TextCompressedFieldIndex).inContainerScope();
+        container.register(TextEncryptedFieldIndex).inContainerScope();
 
         // must be registered last
-        container.register(CmsEntryOpenSearchFieldIndexRegistry).inSingletonScope();
+        container.register(CmsEntryOpenSearchFieldIndexRegistry).inContainerScope();
     }
 });

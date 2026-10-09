@@ -6,7 +6,7 @@
  * transport-specific — database, identity providers, storage, and the transport-AGNOSTIC per-request
  * feature stack — lives in `composition/`, shared with the response-streaming handler
  * (`createWebinyStreamApiHandler`) so the two roots cannot drift. The storage variant is injected via
- * `registerRootStorage` / `registerRequestStorage` by a thin variant package
+ * `registerRootStorage` by a thin variant package
  * (`@webiny/api-event-handler-aws-ddb`, `-aws-ddb-os`). Keeping the wiring in real packages (not an app
  * template) is what makes it unit/integration testable.
  */
