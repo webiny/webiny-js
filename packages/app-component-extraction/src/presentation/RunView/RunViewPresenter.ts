@@ -1641,7 +1641,17 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
 
     applyProgress(stage: string, progress: StageProgress) {
         runInAction(() => {
-            this.vm.progressByStage[stage] = progress;
+            // An update with no count keeps the stage's last count and detail: a bookkeeping line
+            // ("checkpointed; continuing") must not reset the waiting screen's bar.
+            const previous = this.vm.progressByStage[stage];
+            this.vm.progressByStage[stage] =
+                progress.total === 0 && previous && previous.total > 0
+                    ? {
+                          ...previous,
+                          message: progress.message,
+                          ...(progress.data ? { data: progress.data } : {})
+                      }
+                    : progress;
             // Live-append to the visible trail when this is the open stage; the poll's fetch from the
             // task output later replaces it with the authoritative list, healing any gaps.
             if (this.vm.logsStage === stage) {

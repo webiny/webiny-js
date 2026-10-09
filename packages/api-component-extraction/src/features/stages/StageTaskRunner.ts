@@ -179,6 +179,24 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
             message: string,
             opts: { current?: number; total?: number; data?: Record<string, unknown> } = {}
         ): Promise<void> => {
+            /*
+             * A line with no count of its own ("started", "resuming", "checkpointed; continuing", "done")
+             * keeps the stage's last count and detail. They used to write 0 of 0, and since every
+             * continuation writes one, the waiting screen's bar reset after every Plan batch and every
+             * Generate poll (2026-10-09).
+             */
+            const previous = controller.state.getOutput()?.progress as
+                | {
+                      stage?: string;
+                      current?: number;
+                      total?: number;
+                      data?: Record<string, unknown>;
+                  }
+                | undefined;
+            const keep = opts.total === undefined && previous?.stage === stage;
+            const current = keep ? previous?.current : opts.current;
+            const total = keep ? previous?.total : opts.total;
+            const data = opts.data ?? (keep ? previous?.data : undefined);
             try {
                 const existingActivity =
                     (controller.state.getOutput()?.activity as StageActivityEntry[] | undefined) ??
@@ -191,10 +209,10 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
                     activity,
                     progress: {
                         stage,
-                        current: opts.current ?? 0,
-                        total: opts.total ?? 0,
+                        current: current ?? 0,
+                        total: total ?? 0,
                         message,
-                        ...(opts.data ? { data: opts.data } : {})
+                        ...(data ? { data } : {})
                     }
                 });
             } catch (error) {
@@ -210,10 +228,10 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
                 stage,
                 status: "running",
                 message,
-                current: opts.current,
-                total: opts.total,
+                current,
+                total,
                 // A stage's structured detail (Generate's counts), for the waiting screen.
-                ...(opts.data ? { data: opts.data } : {})
+                ...(data ? { data } : {})
             });
         };
 
