@@ -49,20 +49,25 @@ export const NavigateFolderWithRouterProvider = ({
      */
     const navigateToFolder = useCallback(
         (newFolderId: string): void => {
-            if (newFolderId === currentFolderId) {
-                return;
-            }
             const query = new URLSearchParams(location.search);
             query.delete("new");
             query.delete("id");
             query.delete("entryId");
             query.delete("search");
             query.set(folderIdQueryString, newFolderId);
-            return history.push({
-                search: query.toString()
-            });
+            const search = query.toString();
+
+            /**
+             * Skip only when the URL would not change. Going back from an open entry targets
+             * the current folder too, but it still has to clear the entry params.
+             */
+            if (search === new URLSearchParams(location.search).toString()) {
+                return;
+            }
+
+            return history.push({ search });
         },
-        [location, folderIdQueryString, currentFolderId]
+        [location, folderIdQueryString]
     );
 
     /**
