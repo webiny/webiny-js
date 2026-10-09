@@ -160,6 +160,36 @@ export const createSystemFields = (): CmsModelField[] => {
                     })
                 ]
             }
+        }),
+        createModelField({
+            id: "system",
+            type: "object",
+            storageId: "system",
+            fieldId: "system",
+            label: "System",
+            settings: {
+                fields: [
+                    createModelField({
+                        id: "workflow",
+                        type: "object",
+                        storageId: "workflow",
+                        fieldId: "workflow",
+                        label: "Workflow",
+                        settings: {
+                            fields: ["workflowId", "reviewState", "stepId", "stepState"].map(
+                                fieldId =>
+                                    createModelField({
+                                        id: fieldId,
+                                        type: "text",
+                                        storageId: fieldId,
+                                        fieldId,
+                                        label: lodashStartCase(fieldId)
+                                    })
+                            )
+                        }
+                    })
+                ]
+            }
         })
     ];
 };

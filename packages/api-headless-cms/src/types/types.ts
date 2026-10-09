@@ -533,6 +533,31 @@ export interface CmsEntryListWhereValues {
         | CmsEntryListWhereRef;
 }
 /**
+ * Filterable workflow state stored in `entry.system.workflow`.
+ *
+ * @category CmsEntry
+ */
+export interface CmsEntryListWhereSystemWorkflow {
+    workflowId?: string;
+    workflowId_in?: string[];
+    reviewState?: string;
+    reviewState_in?: string[];
+    stepId?: string;
+    stepId_in?: string[];
+    stepState?: string;
+    stepState_in?: string[];
+}
+
+/**
+ * Filterable keys of `entry.system`.
+ *
+ * @category CmsEntry
+ */
+export interface CmsEntryListWhereSystem {
+    workflow?: CmsEntryListWhereSystemWorkflow;
+}
+
+/**
  * Entry listing where params.
  *
  * @category CmsEntry
@@ -603,6 +628,10 @@ export interface CmsEntryListWhere
     };
 
     values?: CmsEntryListWhereValues;
+    /**
+     * Entry system data, stored as-is on the entry.
+     */
+    system?: CmsEntryListWhereSystem;
     /**
      * Is the entry in the bin?
      */

@@ -1082,6 +1082,350 @@ export const expectedSystemFields: Record<string, Field> = {
         ],
         system: true
     },
+    system: {
+        id: "system",
+        storageId: "system",
+        createPath: expect.any(Function),
+        transform: expect.any(Function),
+        fieldId: "system",
+        label: "System",
+        type: "object",
+        settings: {
+            fields: [
+                {
+                    id: "workflow",
+                    storageId: "workflow",
+                    fieldId: "workflow",
+                    label: "Workflow",
+                    type: "object",
+                    settings: {
+                        fields: [
+                            {
+                                id: "workflowId",
+                                storageId: "workflowId",
+                                fieldId: "workflowId",
+                                label: "Workflow Id",
+                                type: "text",
+                                settings: {},
+                                listValidation: [],
+                                validation: [],
+                                list: false,
+                                predefinedValues: {
+                                    values: [],
+                                    enabled: false
+                                },
+                                help: null,
+                                placeholder: null,
+                                renderer: null
+                            },
+                            {
+                                id: "reviewState",
+                                storageId: "reviewState",
+                                fieldId: "reviewState",
+                                label: "Review State",
+                                type: "text",
+                                settings: {},
+                                listValidation: [],
+                                validation: [],
+                                list: false,
+                                predefinedValues: {
+                                    values: [],
+                                    enabled: false
+                                },
+                                help: null,
+                                placeholder: null,
+                                renderer: null
+                            },
+                            {
+                                id: "stepId",
+                                storageId: "stepId",
+                                fieldId: "stepId",
+                                label: "Step Id",
+                                type: "text",
+                                settings: {},
+                                listValidation: [],
+                                validation: [],
+                                list: false,
+                                predefinedValues: {
+                                    values: [],
+                                    enabled: false
+                                },
+                                help: null,
+                                placeholder: null,
+                                renderer: null
+                            },
+                            {
+                                id: "stepState",
+                                storageId: "stepState",
+                                fieldId: "stepState",
+                                label: "Step State",
+                                type: "text",
+                                settings: {},
+                                listValidation: [],
+                                validation: [],
+                                list: false,
+                                predefinedValues: {
+                                    values: [],
+                                    enabled: false
+                                },
+                                help: null,
+                                placeholder: null,
+                                renderer: null
+                            }
+                        ]
+                    },
+                    listValidation: [],
+                    validation: [],
+                    list: false,
+                    predefinedValues: {
+                        values: [],
+                        enabled: false
+                    },
+                    help: null,
+                    placeholder: null,
+                    renderer: null
+                }
+            ]
+        },
+        listValidation: [],
+        validation: [],
+        list: false,
+        predefinedValues: {
+            values: [],
+            enabled: false
+        },
+        help: null,
+        placeholder: null,
+        renderer: null,
+        parents: [],
+        system: true
+    },
+    "system.workflow": {
+        id: "workflow",
+        storageId: "workflow",
+        createPath: expect.any(Function),
+        transform: expect.any(Function),
+        fieldId: "workflow",
+        label: "Workflow",
+        type: "object",
+        settings: {
+            fields: [
+                {
+                    id: "workflowId",
+                    storageId: "workflowId",
+                    fieldId: "workflowId",
+                    label: "Workflow Id",
+                    type: "text",
+                    settings: {},
+                    listValidation: [],
+                    validation: [],
+                    list: false,
+                    predefinedValues: {
+                        values: [],
+                        enabled: false
+                    },
+                    help: null,
+                    placeholder: null,
+                    renderer: null
+                },
+                {
+                    id: "reviewState",
+                    storageId: "reviewState",
+                    fieldId: "reviewState",
+                    label: "Review State",
+                    type: "text",
+                    settings: {},
+                    listValidation: [],
+                    validation: [],
+                    list: false,
+                    predefinedValues: {
+                        values: [],
+                        enabled: false
+                    },
+                    help: null,
+                    placeholder: null,
+                    renderer: null
+                },
+                {
+                    id: "stepId",
+                    storageId: "stepId",
+                    fieldId: "stepId",
+                    label: "Step Id",
+                    type: "text",
+                    settings: {},
+                    listValidation: [],
+                    validation: [],
+                    list: false,
+                    predefinedValues: {
+                        values: [],
+                        enabled: false
+                    },
+                    help: null,
+                    placeholder: null,
+                    renderer: null
+                },
+                {
+                    id: "stepState",
+                    storageId: "stepState",
+                    fieldId: "stepState",
+                    label: "Step State",
+                    type: "text",
+                    settings: {},
+                    listValidation: [],
+                    validation: [],
+                    list: false,
+                    predefinedValues: {
+                        values: [],
+                        enabled: false
+                    },
+                    help: null,
+                    placeholder: null,
+                    renderer: null
+                }
+            ]
+        },
+        listValidation: [],
+        validation: [],
+        list: false,
+        predefinedValues: {
+            values: [],
+            enabled: false
+        },
+        help: null,
+        placeholder: null,
+        renderer: null,
+        parents: [
+            {
+                fieldId: "system",
+                list: false
+            }
+        ],
+        system: true
+    },
+    "system.workflow.workflowId": {
+        id: "workflowId",
+        storageId: "workflowId",
+        createPath: expect.any(Function),
+        transform: expect.any(Function),
+        fieldId: "workflowId",
+        label: "Workflow Id",
+        type: "text",
+        settings: {},
+        listValidation: [],
+        validation: [],
+        list: false,
+        predefinedValues: {
+            values: [],
+            enabled: false
+        },
+        help: null,
+        placeholder: null,
+        renderer: null,
+        parents: [
+            {
+                fieldId: "system",
+                list: false
+            },
+            {
+                fieldId: "workflow",
+                list: false
+            }
+        ],
+        system: true
+    },
+    "system.workflow.reviewState": {
+        id: "reviewState",
+        storageId: "reviewState",
+        createPath: expect.any(Function),
+        transform: expect.any(Function),
+        fieldId: "reviewState",
+        label: "Review State",
+        type: "text",
+        settings: {},
+        listValidation: [],
+        validation: [],
+        list: false,
+        predefinedValues: {
+            values: [],
+            enabled: false
+        },
+        help: null,
+        placeholder: null,
+        renderer: null,
+        parents: [
+            {
+                fieldId: "system",
+                list: false
+            },
+            {
+                fieldId: "workflow",
+                list: false
+            }
+        ],
+        system: true
+    },
+    "system.workflow.stepId": {
+        id: "stepId",
+        storageId: "stepId",
+        createPath: expect.any(Function),
+        transform: expect.any(Function),
+        fieldId: "stepId",
+        label: "Step Id",
+        type: "text",
+        settings: {},
+        listValidation: [],
+        validation: [],
+        list: false,
+        predefinedValues: {
+            values: [],
+            enabled: false
+        },
+        help: null,
+        placeholder: null,
+        renderer: null,
+        parents: [
+            {
+                fieldId: "system",
+                list: false
+            },
+            {
+                fieldId: "workflow",
+                list: false
+            }
+        ],
+        system: true
+    },
+    "system.workflow.stepState": {
+        id: "stepState",
+        storageId: "stepState",
+        createPath: expect.any(Function),
+        transform: expect.any(Function),
+        fieldId: "stepState",
+        label: "Step State",
+        type: "text",
+        settings: {},
+        listValidation: [],
+        validation: [],
+        list: false,
+        predefinedValues: {
+            values: [],
+            enabled: false
+        },
+        help: null,
+        placeholder: null,
+        renderer: null,
+        parents: [
+            {
+                fieldId: "system",
+                list: false
+            },
+            {
+                fieldId: "workflow",
+                list: false
+            }
+        ],
+        system: true
+    },
     values: {
         id: "values",
         storageId: "values",
