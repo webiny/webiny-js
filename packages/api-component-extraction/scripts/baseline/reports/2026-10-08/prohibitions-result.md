@@ -14,12 +14,12 @@ Design and predictions: `prohibitions-design.md` (committed before the runs). Re
 dry-run, medium effort (logged on every call), two repeats: 134 generation runs, $18.31 reported
 against an estimate of about $23. Each arm ran only on the components where its line is shown.
 
-| Arm                       | Runs | First-attempt pass | Invented-text validator (1st attempt) | Rendered text not in the prompt | URLs not in the prompt | Background URL verbatim, as a background |
-| ------------------------- | ---- | ------------------ | ------------------------------------- | ------------------------------- | ---------------------- | ---------------------------------------- |
-| base                      | 42   | 38/42              | 0                                     | 2 runs                          | 1 run (a link)         | 14/14                                    |
-| without `no-other-text`   | 42   | 34/42              | **2**                                 | **6 runs**                      | 1 run (a link)         | 14/14                                    |
-| without `no-invented-urls`| 36   | 33/36              | 0                                     | 3 runs                          | **0**                  | 10/10                                    |
-| without `urls-exactly`    | 14   | 14/14              | 0                                     | 2 runs                          | 0                      | **14/14**                                |
+| Arm                        | Runs | First-attempt pass | Invented-text validator (1st attempt) | Rendered text not in the prompt | URLs not in the prompt | Background URL verbatim, as a background |
+| -------------------------- | ---- | ------------------ | ------------------------------------- | ------------------------------- | ---------------------- | ---------------------------------------- |
+| base                       | 42   | 38/42              | 0                                     | 2 runs                          | 1 run (a link)         | 14/14                                    |
+| without `no-other-text`    | 42   | 34/42              | **2**                                 | **6 runs**                      | 1 run (a link)         | 14/14                                    |
+| without `no-invented-urls` | 36   | 33/36              | 0                                     | 3 runs                          | **0**                  | 10/10                                    |
+| without `urls-exactly`     | 14   | 14/14              | 0                                     | 2 runs                          | 0                      | **14/14**                                |
 
 "Rendered text not in the prompt" renders each output's defaults and lists text that appears nowhere in
 its prompt. It sees what the validator cannot: single words (the validator needs two or more) and text
@@ -86,3 +86,13 @@ background-image" does the work.
   5, and what a failed request started is read from the log before anything is retried.
 - The progress monitor's process check matched its own command line, so "runner exited" could never
   fire. Fixed to match only the runner.
+
+## A data point from a different kind of site (2026-10-09)
+
+On webiny.com (first-time theme verification, run `6ac8ac6e…#0001`, medium effort, the shipped prompt
+with "Show no other text"), 2 of 25 components failed on invented filler: **"Amazing product"** in a
+testimonials component and **"Feature description text."** in an architecture component. Caught by the
+invented-text validator; the first invented text seen since the prohibition work. The prohibitions were
+measured on one kind of site (the G5 apartment template); webiny.com's content (testimonials, feature
+grids, docs) is not that kind. Noted, not acted on: the measurement above holds for the sites it was
+taken on, and this says it may not carry to others.

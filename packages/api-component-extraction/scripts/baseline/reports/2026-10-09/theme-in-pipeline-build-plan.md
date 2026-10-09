@@ -134,7 +134,8 @@ so the crawl ran fresh: the real first-time path.
   was still running (Capture finished 25s later).
 - **The extracted theme:** confidence "medium", 13 uncertainties, 5 pages, 49 tokens.
 - **The gate:** Cluster was accepted the moment Segment finished, because the theme was already
-  pinned. So the "still being extracted" refusal was not exercised live on this run; it is covered by
+  pinned, which is what the timing predicted: extraction at 79-317 seconds usually beats Capture.
+  **The "still being extracted" refusal may rarely fire in practice;** it exists for the slow case. So the "still being extracted" refusal was not exercised live on this run; it is covered by
   the unit tests, and the failure-path refusal was exercised deployed (verification 3).
 - **Downstream:** Cluster through Generate ran against the new theme. 24 of 25 components generated,
   **0 token-binding failures**: the auto-published theme resolves and binds. 6 failed checks, none
@@ -146,7 +147,8 @@ so the crawl ran fresh: the real first-time path.
   theme published and pinned, and Cluster through Generate marked stale; Assemble and Promote, never
   run, left pending. **One difference from the plan's wording:** a retry pins a **new theme**
   (`6ac8b7c9…` v1), not a new version of the first (`6ac8ad0a…`): extraction always creates a theme.
-  Both stay in the Theme app.
+  Both stay in the Theme app. Kept deliberately: filed as
+  `ai-context/issues/each-theme-retry-creates-a-new-theme-entry.md`.
 - **Cost:** $3.18 of recorded model calls (Classify, Plan, Generate; 34 Generate calls recorded, so
   the stream-recording fix holds on a full run). Extraction's own vision calls are not in the run's
   record: they run outside its model-call scope.
