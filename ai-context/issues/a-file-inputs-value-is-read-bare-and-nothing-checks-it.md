@@ -42,14 +42,14 @@ invisible to all four**, and the component is recorded `ok: true` with a render 
 
 Only a component that declares a file input can get its shape wrong, so that is the denominator.
 
-| site                | components | declare a file input | every URL resolves | **a URL that cannot** |
-| ------------------- | ---------: | -------------------: | -----------------: | --------------------: |
-| Park city (current) |          8 |                    6 |                  4 |                 **2** |
-| Park city (demo)    |         10 |                    7 |                  5 |                 **2** |
-| 2424 Tulane         |         23 |                   13 |                 11 |                 **2** |
-| 71 Westland         |          9 |                    4 |                  3 |                 **1** |
-| Freehill            |          6 |                    5 |                  4 |                 **1** |
-| **total**           |     **56** |               **35** |             **27** |                 **8** |
+| site | components | declare a file input | every URL resolves | **a URL that cannot** |
+| --- | ---: | ---: | ---: | ---: |
+| Park city (current) | 8 | 6 | 4 | **2** |
+| Park city (demo) | 10 | 7 | 5 | **2** |
+| 2424 Tulane | 23 | 13 | 11 | **2** |
+| 71 Westland | 9 | 4 | 3 | **1** |
+| Freehill | 6 | 5 | 4 | **1** |
+| **total** | **56** | **35** | **27** | **8** |
 
 Every site is affected, and a Hero Banner is among them on three of the five.
 
@@ -66,7 +66,7 @@ because each produced a confident wrong number first.
    destinations — Contact Bar's "contact-us", the footer's Google Maps link. Scoping the scan to
    fields declared `createFileInput` removed all three and left the two real cases.
 3. **Classifying by the consuming line alone.** Most components bind the URL first — `const imageUrl
-= image.src.url` — and use the local in the JSX. Checking only the consuming line called every one
+   = image.src.url` — and use the local in the JSX. Checking only the consuming line called every one
    of those broken and reported 17. One hop of variable resolution brought it to 10, and reading the
    last two showed both were sound: one reads `backgroundImage.url` directly, the other resolves the
    shape inside a helper function the hop could not follow.
@@ -91,7 +91,7 @@ deliberately rather than inherited from adding a check.
 ### Why the third reading had to be added
 
 **Neither of the first two can see the case that started this.** `background-image:
-url([object Object])` is a CSS _parse error_ — an unquoted url token containing a space — so Chrome
+url([object Object])` is a CSS *parse error* — an unquoted url token containing a space — so Chrome
 drops the declaration, computes `none` and requests nothing. Verified in a browser:
 
 ```
@@ -104,8 +104,8 @@ So the `<img>` form leaves a marker and the CSS form leaves nothing at all: no s
 failed request, just an element with no background — indistinguishable from one never given an image.
 That is precisely the Hero Banner that renders flat navy. Only "declared and never used" sees it.
 
-Verified on Park city: _Hero Banner #1_ reports `declaredButUnused: 3` and nothing else, _Neighborhood
-/Location Highlight_ reports both a stringified `<img src>` and one unused URL, and the other six
+Verified on Park city: *Hero Banner #1* reports `declaredButUnused: 3` and nothing else, *Neighborhood
+/Location Highlight* reports both a stringified `<img src>` and one unused URL, and the other six
 components report nothing — matching the static analysis exactly.
 
 ## What a validator would take
