@@ -4,6 +4,23 @@ The first of the open questions in `footer-per-call-limit.md`. No model spend: t
 answers on check-job run 3 were each installed back as the component (the dev-only install path),
 rendered, and compared with the Footer's source crop.
 
+## Two findings that outrank the thinking question
+
+1. **Wrong-slot text is upstream of the model, and survives the per-copy and alignment work.** C and D
+   render "Copyright © 2026 Copyright ©" and put "Office Hours" or "2424 Tulane Apartments" among the
+   bottom links. All four answers carry those entries in their link-list defaults, A and B included.
+   They come from the run's Plan contract, whose observed values for the Footer's link lists are
+   `legalLinks`: "2424 Tulane Apartments", ",", "Office Hours" and `socialLinks`: "2424 Tulane
+   Apartments", "Corporate Logo", "Copyright ©", "Privacy Policy". A rendered the links correctly only by
+   ignoring its own list. Not a thinking artefact, and every check passes it. Noted against
+   `a-fifth-of-derived-props-show-another-slots-text.md` and
+   `every-instance-of-a-component-gets-the-same-text.md`.
+2. **Regenerate is a draw the operator cannot score.** The answer generated last stands, nothing compares
+   it with the one it replaced, and the checks cannot tell them apart: here the original answer A was
+   the best, and three regenerations replaced it with worse ones under the same green checks. Filed as
+   `regenerating-can-replace-a-better-component-with-a-worse-one.md`, with the height ratio as a free
+   partial signal (catches B at 2.03×, misses C and D) for after the 16th. It is not a quality measure.
+
 ## Method
 
 - **Every answer was recorded before anything was installed.** The four stored answers, their attempt,
@@ -45,8 +62,9 @@ housing icons.
    and the checks did not see it.** An unsized image, a lost row of buttons, rearranged columns and a
    wrong link set all pass. That is the shape the 63% finding warned about: checks green, component
    wrong.
-2. **The long-thinking answers are not uniformly good either.** C and D carry the text-in-the-wrong-slot
-   errors (link labels taken from headings, a doubled copyright) that the checks also pass. So "more
+2. **The long-thinking answers are not uniformly good either.** C and D render text in the wrong slot
+   (heading and copyright text among the links, a doubled copyright), which the checks also pass. It
+   comes from the Plan contract's observed values, not from the model (finding 1 above), so "more
    thinking" is not "correct". The short answer differs in kind: layout collapse, not wrong text in
    the right place.
 3. **The run's final answer, D, is not its best.** A is closer to the source. Whichever answer was

@@ -75,3 +75,33 @@ Two sub-questions to settle first:
    needs a per-member model call, or can reuse the structural signature the cluster was built from.
 2. What happens when a member genuinely lacks a prop the representative has — an optional subtitle on
    seven of eight pages. Today it silently inherits one; it should probably be absent.
+
+## Seen again after the fixes, upstream of them (2026-10-09)
+
+Check-job run 3 (2424 Tulane) ran after the per-copy and alignment work. Its Footer was generated four
+times from one identical prompt (`reports/2026-10-09/footer-thinking-quality.md`). All four passed every
+check. Two of the three long-thinking answers render text in the wrong slot: "Copyright © 2026
+Copyright ©", and "Office Hours" or "2424 Tulane Apartments" among the bottom links.
+
+**The source of it is the Plan contract, not the model and not composition.** The run's Plan records
+these observed values for the Footer's link lists:
+
+- `legalLinks`: "2424 Tulane Apartments", ",", "Office Hours";
+- `socialLinks`: "2424 Tulane Apartments", "Corporate Logo", "Copyright ©", "Privacy Policy".
+
+The model reproduces them as the lists' defaults. The one answer that rendered the bottom links
+correctly (A) did so by writing "Privacy Policy" and "Accessibility Statement" into its markup and
+ignoring its own list.
+
+**So this class:**
+
+- **is not a thinking artefact.** It appears in long-thinking answers, and the short-thinking one has
+  it too;
+- **is not fixed by the per-copy and alignment work.** That work derives instance values at composition
+  and binds observed scalars. This is the Plan's observed values for _Link-list_ props, which reach the
+  component as its defaults and so appear on every render and every instance that falls back to them;
+- **passes every check.** The texts are present, so text preservation is satisfied; the props exist,
+  so the contract is satisfied.
+
+Not yet measured: how many Link-list props across the demo runs carry observed values from outside
+their own list. The Plan artifacts hold the answer offline.
