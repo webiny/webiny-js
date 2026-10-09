@@ -89,7 +89,7 @@ Binding for this plan. Where they refine the spec, the ruling wins for phase 1a.
 
 ## Sub-phases
 
-Phase 1a runs as four sub-phases. Each has its own folder, its own `00-overview.md` (the `PLAN_FILE` for superpowers:subagent-driven-development), its own SDD run and final review, and a stop for the user before the next one starts. This file holds everything that binds all of them; every sub-phase overview tells the executor to read it first. Task numbers stay global (1-11) so cross-references between tasks keep working.
+Phase 1a runs as four sub-phases. Each has its own folder, its own `00-<sub-phase>.md` overview (the `PLAN_FILE` for superpowers:subagent-driven-development), its own SDD run and final review, and a stop for the user before the next one starts. This file holds everything that binds all of them; every sub-phase overview tells the executor to read it first. Task numbers stay global (1-11) so cross-references between tasks keep working.
 
 | Sub-phase | Folder | Tasks | Ends with |
 |---|---|---|---|
@@ -100,7 +100,7 @@ Phase 1a runs as four sub-phases. Each has its own folder, its own `00-overview.
 
 Order is strict: 1a.2 builds on 1a.1's workflow types, 1a.3 on both, 1a.4 on 1a.3's feature wiring.
 
-Executing a sub-phase: pass its `00-overview.md` as `PLAN_FILE` (it owns the ledger workspace) and give each task file to `task-brief` with an explicit output path, e.g. `task-brief docs/.bruno/plans/2026-10-09-workflows-phase-1a/1a.1-workflow/task-03-workflow-model-repository-use-cases.md 3 <workspace>/task-3-brief.md`. Reviewers get this file's Global Constraints and the rulings relevant to the task.
+Executing a sub-phase: pass its `00-<sub-phase>.md` overview as `PLAN_FILE` (it owns the ledger workspace) and give each task file to `task-brief` with an explicit output path, e.g. `task-brief docs/.bruno/plans/2026-10-09-workflows-phase-1a/1a.1-workflow/task-03-workflow-model-repository-use-cases.md 3 <workspace>/task-3-brief.md`. Reviewers get this file's Global Constraints and the rulings relevant to the task.
 
 ## Task order
 
