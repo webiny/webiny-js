@@ -62,4 +62,31 @@ describe("Deleting Website Builder page folders", () => {
 
         expect(result.isOk()).toBe(true);
     });
+
+    it("blocks deleting a wb:page folder whose pages are hidden by own-scope permissions", async () => {
+        const identityA = { id: "identity-a", type: "admin" as const, displayName: "User A" };
+        const identityB = { id: "identity-b", type: "admin" as const, displayName: "User B" };
+
+        const handlerA = useHandler({ identity: identityA, legacyPlugins: [registerAco] });
+        const contextA = await handlerA.handler();
+        const folder = await createFolder(contextA);
+        const createPage = contextA.container.resolve(CreatePageUseCase);
+        const pageResult = await createPage.execute({
+            ...pageMocks.pageA,
+            location: { folderId: folder.id }
+        });
+        expect(pageResult.isOk()).toBe(true);
+
+        const handlerB = useHandler({
+            identity: identityB,
+            permissions: [{ name: "wb.page", own: true }, { name: "aco.folder" }],
+            legacyPlugins: [registerAco]
+        });
+        const contextB = await handlerB.handler();
+        const deleteFolder = contextB.container.resolve(DeleteFolderUseCase);
+        const result = await deleteFolder.execute(folder.id);
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Aco/Folder/NotEmpty");
+    });
 });
