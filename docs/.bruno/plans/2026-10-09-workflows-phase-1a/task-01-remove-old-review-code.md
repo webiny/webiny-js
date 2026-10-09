@@ -248,13 +248,13 @@ export const WebsiteBuilderWorkflowsFeature = createFeature({
 
 - [ ] **Step 7: Align package dependencies**
 
-Run: `yarn adio 2>&1 | tail -40`
-Remove every dependency it reports as unused and move test-only ones to `devDependencies`. Expected (verify against the output):
-- `packages/api-workflows/package.json`: remove `@webiny/api-graphql` and `graphql`.
-- `packages/api-headless-cms-workflows/package.json`: remove `@webiny/api`, `@webiny/error`, `@webiny/shared-aco`; move `@webiny/api-aco` to `devDependencies` (used by `__tests__/__handler/context.ts`).
-- `packages/api-website-builder-workflows/package.json`: remove `@webiny/api`, `@webiny/api-aco`, `@webiny/api-workflows`, `@webiny/error`, `@webiny/shared-aco`.
+Make these edits by hand first. `yarn adio` cannot drive them: it ignores `graphql` (listed in `.adiorc.js` `ignore.dependencies`) and ignores `devDependencies` entirely.
+- `packages/api-workflows/package.json`: remove `@webiny/api-graphql` and `graphql` from `dependencies`. **Keep `zod`** (`"zod": "4.4.3"`): after this task nothing imports it, so adio reports it as unused, but Task 2 imports it in `reviewStepConfigSchema.ts`. Ignore that one adio finding until Task 2.
+- `packages/api-headless-cms-workflows/package.json`: remove `@webiny/api`, `@webiny/error`, `@webiny/shared-aco` from `dependencies`; move `@webiny/api-aco` from `dependencies` to `devDependencies` (used only by `__tests__/__handler/context.ts`).
+- `packages/api-website-builder-workflows/package.json`: remove `@webiny/api`, `@webiny/api-aco`, `@webiny/api-workflows`, `@webiny/error`, `@webiny/shared-aco` from `dependencies`.
 
-Then run `node scripts/generateTsConfigsInPackages.js` and `yarn adio 2>&1 | tail -20` again; expected: no findings for these packages.
+Then run `node scripts/generateTsConfigsInPackages.js` and `yarn adio 2>&1 | tail -40`.
+Expected: the only finding for these three packages is `zod` unused in `packages/api-workflows` (kept on purpose, see above). If adio reports any other unused dependency in these packages, remove it by hand and rerun.
 
 - [ ] **Step 8: Run the tests**
 
@@ -283,7 +283,8 @@ Run the Global Constraints chain, then:
 ```bash
 git commit -m "refactor(api-workflows): remove the old review state domain and GraphQL schema
 
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn"
 ```
 
 ---

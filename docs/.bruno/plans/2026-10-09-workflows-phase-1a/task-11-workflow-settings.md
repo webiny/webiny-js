@@ -16,6 +16,7 @@
 - Create: `packages/api-workflows/src/features/settings/GetWorkflowSettings/{abstractions.ts,GetWorkflowSettingsUseCase.ts,feature.ts,index.ts}`
 - Create: `packages/api-workflows/src/features/settings/SaveWorkflowSettings/{abstractions.ts,SaveWorkflowSettingsUseCase.ts,feature.ts,index.ts}`
 - Modify: `packages/api-workflows/src/WorkflowsFeature.ts`
+- Modify: `packages/api-workflows/__tests__/registration.test.ts` (every 1a abstraction registered once, D18)
 - Create: `packages/api-workflows/__tests__/domain/WorkflowSettingsValidator.test.ts`
 - Create: `packages/api-workflows/__tests__/settings/WorkflowSettings.test.ts`
 
@@ -26,7 +27,8 @@
   - `WorkflowExclusion { userId: string; reason?: string; endsOn?: string }`, `WorkflowSettings { exclusions: WorkflowExclusion[] }`.
   - `WorkflowSettingsValidator.validate(settings: WorkflowSettings): Result<WorkflowSettings, WorkflowSettingsValidationError>`; `filterActiveExclusions(exclusions: WorkflowExclusion[], now: Date): WorkflowExclusion[]`.
   - `WorkflowSettingsValidationError` (`Workflows/Settings/Validation`, data `{ userId }`), `WorkflowSettingsPersistenceError` (`Workflows/Settings/Persistence`).
-  - `GetWorkflowSettingsUseCase.execute(input?: { includeExpired?: boolean })`, `SaveWorkflowSettingsUseCase.execute(input: WorkflowSettings)`; both return `Promise<Result<WorkflowSettings, …>>`. No `editor` check in 1a (phase 1b).
+  - `GetWorkflowSettingsUseCase.execute(input?: { includeExpired?: boolean })`, `SaveWorkflowSettingsUseCase.execute(input: WorkflowSettings)`; both return `Promise<Result<WorkflowSettings, …>>`. No `editor` check in 1a (phase 1b). Both `index.ts` files export the settings types (`WorkflowSettings`, `WorkflowExclusion`).
+  - Tenant isolation relies on CMS entry tenancy (the entry id `settings` repeats per tenant). `createCmsTestHandler` seeds only the root tenant and `getContext()` always sends `x-tenant: root`, so 1a has no tenant-isolation test.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -38,11 +40,11 @@ import { WorkflowSettingsValidator } from "~/domain/settings/WorkflowSettingsVal
 import { filterActiveExclusions } from "~/domain/settings/filterActiveExclusions.js";
 
 describe("WorkflowSettingsValidator", () => {
-    it("normalizes end dates to UTC and drops empty optionals", () => {
+    it("normalizes end dates to UTC, trims reasons and drops empty optionals", () => {
         const result = WorkflowSettingsValidator.validate({
             exclusions: [
-                { userId: "user-a", reason: "On leave", endsOn: "2026-10-09T23:59:59+02:00" },
-                { userId: "user-b", reason: "" }
+                { userId: "user-a", reason: " On leave ", endsOn: "2026-10-09T23:59:59+02:00" },
+                { userId: "user-b", reason: "   " }
             ]
         });
 
@@ -100,6 +102,7 @@ Create `packages/api-workflows/__tests__/settings/WorkflowSettings.test.ts`:
 ```ts
 import { describe, expect, it } from "vitest";
 import { createContextHandler } from "~tests/__helpers/handler.js";
+import { expectOk } from "~tests/__helpers/fixtures.js";
 import { GetWorkflowSettingsUseCase } from "~/features/settings/GetWorkflowSettings/index.js";
 import { SaveWorkflowSettingsUseCase } from "~/features/settings/SaveWorkflowSettings/index.js";
 
@@ -150,8 +153,10 @@ describe("Workflow settings use cases", () => {
         ]);
     });
 
-    it("rejects a second entry for the same user", async () => {
+    it("rejects a second entry for the same user and keeps the stored record", async () => {
         const { saveSettings, getSettings } = await createUseCases();
+        const stored = { exclusions: [{ userId: "user-z", reason: "Parental leave" }] };
+        expectOk(await saveSettings.execute(stored));
 
         const result = await saveSettings.execute({
             exclusions: [{ userId: "user-a" }, { userId: "user-a", endsOn: FUTURE }]
@@ -159,17 +164,19 @@ describe("Workflow settings use cases", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Settings/Validation");
-        expect((await getSettings.execute()).value).toEqual({ exclusions: [] });
+        expect(expectOk(await getSettings.execute({ includeExpired: true }))).toEqual(stored);
     });
 
     it("lets the last save win", async () => {
         const { getSettings, saveSettings } = await createUseCases();
-        await saveSettings.execute({ exclusions: [{ userId: "user-a" }] });
+        expectOk(await saveSettings.execute({ exclusions: [{ userId: "user-a" }] }));
 
-        await saveSettings.execute({ exclusions: [{ userId: "user-b", reason: "Training" }] });
+        expectOk(
+            await saveSettings.execute({ exclusions: [{ userId: "user-b", reason: "Training" }] })
+        );
 
-        const result = await getSettings.execute({ includeExpired: true });
-        expect(result.value).toEqual({ exclusions: [{ userId: "user-b", reason: "Training" }] });
+        const result = expectOk(await getSettings.execute({ includeExpired: true }));
+        expect(result).toEqual({ exclusions: [{ userId: "user-b", reason: "Training" }] });
     });
 });
 ```
@@ -273,9 +280,10 @@ export class WorkflowSettingsValidator {
                 endsOn = new Date(time).toISOString();
             }
 
+            const reason = exclusion.reason?.trim();
             exclusions.push({
                 userId,
-                ...(exclusion.reason ? { reason: exclusion.reason } : {}),
+                ...(reason ? { reason } : {}),
                 ...(endsOn ? { endsOn } : {})
             });
         }
@@ -526,6 +534,9 @@ class WorkflowSettingsRepositoryImpl implements Abstraction.Interface {
             return Result.ok(WorkflowSettingsEntryMapper.fromEntry(updated.value));
         }
 
+        // Two concurrent first saves of a tenant can both reach this point; the second create fails
+        // with Persistence (duplicate id) instead of winning (D106). Accepted: settings are edited
+        // rarely, by editors, and a retry succeeds as an update.
         const created = await this.createEntry.execute<WorkflowSettingsEntryValues>(model, {
             id: WORKFLOW_SETTINGS_ENTRY_ID,
             values
@@ -651,6 +662,7 @@ Create `packages/api-workflows/src/features/settings/GetWorkflowSettings/index.t
 ```ts
 export { GetWorkflowSettingsUseCase } from "./abstractions.js";
 export type { GetWorkflowSettingsInput } from "./abstractions.js";
+export type { WorkflowExclusion, WorkflowSettings } from "~/domain/settings/types.js";
 ```
 
 - [ ] **Step 6: Add `SaveWorkflowSettings`**
@@ -733,6 +745,7 @@ Create `packages/api-workflows/src/features/settings/SaveWorkflowSettings/index.
 
 ```ts
 export { SaveWorkflowSettingsUseCase } from "./abstractions.js";
+export type { WorkflowExclusion, WorkflowSettings } from "~/domain/settings/types.js";
 ```
 
 - [ ] **Step 7: Register settings (final `WorkflowsFeature`)**
@@ -816,10 +829,74 @@ export const WorkflowsFeature = createFeature({
 });
 ```
 
+Replace `packages/api-workflows/__tests__/registration.test.ts` with:
+
+```ts
+import { describe, expect, it } from "vitest";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { createContextHandler } from "~tests/__helpers/handler.js";
+import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
+import { ListWorkflowsUseCase } from "~/features/workflow/ListWorkflows/index.js";
+import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
+import { DeleteWorkflowUseCase } from "~/features/workflow/DeleteWorkflow/index.js";
+import { RequestReviewUseCase } from "~/features/review/RequestReview/index.js";
+import { GetReviewUseCase } from "~/features/review/GetReview/index.js";
+import { StartReviewStepUseCase } from "~/features/review/StartReviewStep/index.js";
+import { TakeOverReviewStepUseCase } from "~/features/review/TakeOverReviewStep/index.js";
+import { ApproveReviewStepUseCase } from "~/features/review/ApproveReviewStep/index.js";
+import { RejectReviewStepUseCase } from "~/features/review/RejectReviewStep/index.js";
+import { CancelReviewUseCase } from "~/features/review/CancelReview/index.js";
+import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
+import { ReviewStepReacher } from "~/features/review/ReviewStepReacher/abstractions.js";
+import { ReviewTargetSync } from "~/features/review/ReviewTargetSync/index.js";
+import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/index.js";
+import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
+import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
+import { GetWorkflowSettingsUseCase } from "~/features/settings/GetWorkflowSettings/index.js";
+import { SaveWorkflowSettingsUseCase } from "~/features/settings/SaveWorkflowSettings/index.js";
+
+describe("WorkflowsFeature registration", () => {
+    it("registers every workflows abstraction once (D18)", async () => {
+        const { context } = await createContextHandler();
+        const { container } = context;
+
+        expect(container.resolveAll(GetWorkflowUseCase)).toHaveLength(1);
+        expect(container.resolveAll(ListWorkflowsUseCase)).toHaveLength(1);
+        expect(container.resolveAll(StoreWorkflowUseCase)).toHaveLength(1);
+        expect(container.resolveAll(DeleteWorkflowUseCase)).toHaveLength(1);
+        expect(container.resolveAll(RequestReviewUseCase)).toHaveLength(1);
+        expect(container.resolveAll(GetReviewUseCase)).toHaveLength(1);
+        expect(container.resolveAll(StartReviewStepUseCase)).toHaveLength(1);
+        expect(container.resolveAll(TakeOverReviewStepUseCase)).toHaveLength(1);
+        expect(container.resolveAll(ApproveReviewStepUseCase)).toHaveLength(1);
+        expect(container.resolveAll(RejectReviewStepUseCase)).toHaveLength(1);
+        expect(container.resolveAll(CancelReviewUseCase)).toHaveLength(1);
+        expect(container.resolveAll(ReviewSaver)).toHaveLength(1);
+        expect(container.resolveAll(ReviewStepReacher)).toHaveLength(1);
+        expect(container.resolveAll(ReviewTargetSync)).toHaveLength(1);
+        expect(container.resolveAll(StepAssignmentResolver)).toHaveLength(1);
+        expect(container.resolveAll(ReviewRepository)).toHaveLength(1);
+        expect(container.resolveAll(AssignmentRepository)).toHaveLength(1);
+        expect(container.resolveAll(GetWorkflowSettingsUseCase)).toHaveLength(1);
+        expect(container.resolveAll(SaveWorkflowSettingsUseCase)).toHaveLength(1);
+    });
+
+    it("does not register the old workflow state model", async () => {
+        const { context } = await createContextHandler();
+
+        const result = await context.container.resolve(GetModelUseCase).execute("wbyWorkflowState");
+
+        expect(result.isFail()).toBe(true);
+    });
+});
+```
+
 - [ ] **Step 8: Run every suite**
 
 Run: `yarn test packages/api-workflows/__tests__/domain/WorkflowSettingsValidator.test.ts packages/api-workflows/__tests__/settings/WorkflowSettings.test.ts 2>&1 | tail -50`
 Expected: PASS (8 tests).
+Run: `yarn test packages/api-workflows/__tests__/registration.test.ts 2>&1 | tail -50`
+Expected: PASS (2 tests).
 Run: `yarn test packages/api-workflows 2>&1 | tail -50` and `yarn test:os packages/api-workflows 2>&1 | tail -50`
 Expected: PASS.
 Run: `yarn test packages/api-headless-cms-workflows 2>&1 | tail -50` and `yarn test:os packages/api-headless-cms-workflows 2>&1 | tail -50`
@@ -836,7 +913,8 @@ Run the Global Constraints chain, then:
 ```bash
 git commit -m "feat(api-workflows): add workflow settings with exclusion list
 
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn"
 ```
 
 ---

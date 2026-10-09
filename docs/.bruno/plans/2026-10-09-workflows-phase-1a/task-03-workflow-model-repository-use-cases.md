@@ -10,7 +10,8 @@
 - Create: `packages/api-workflows/src/features/workflow/shared/WorkflowModelProvider.ts`
 - Create: `packages/api-workflows/src/features/workflow/shared/WorkflowRepository.ts`
 - Create: `packages/api-workflows/src/features/workflow/shared/feature.ts`
-- Create: `packages/api-workflows/src/features/workflow/events.ts`
+- Create: `packages/api-workflows/src/features/workflow/StoreWorkflow/events.ts` (create and update Before/After events)
+- Create: `packages/api-workflows/src/features/workflow/DeleteWorkflow/events.ts` (delete Before/After events)
 - Create: `packages/api-workflows/src/features/workflow/GetWorkflow/{abstractions.ts,GetWorkflowUseCase.ts,feature.ts,index.ts}`
 - Create: `packages/api-workflows/src/features/workflow/ListWorkflows/{abstractions.ts,ListWorkflowsUseCase.ts,feature.ts,index.ts}`
 - Create: `packages/api-workflows/src/features/workflow/StoreWorkflow/{abstractions.ts,StoreWorkflowUseCase.ts,feature.ts,index.ts}`
@@ -18,7 +19,7 @@
 - Create: `packages/api-workflows/__tests__/__helpers/RecordingEventPublisher.ts`
 - Create: `packages/api-workflows/__tests__/workflow/WorkflowUseCases.test.ts`
 - Modify (CMS): `packages/api-headless-cms-workflows/src/features/Workflows/handlers/DisallowUnpublishableModelsOnBeforeCreate.ts`, `packages/api-headless-cms-workflows/src/features/Workflows/feature.ts`, `packages/api-headless-cms-workflows/__tests__/__workflows/workflow.ts`, `packages/api-headless-cms-workflows/__tests__/workflows/disallowUnpublishableModels.test.ts`, `packages/api-headless-cms-workflows/__tests__/registration.test.ts`
-- Create (CMS): `packages/api-headless-cms-workflows/src/features/Workflows/assertModelsPublishable.ts`, `packages/api-headless-cms-workflows/src/features/Workflows/handlers/DisallowUnpublishableModelsOnBeforeUpdate.ts`
+- Create (CMS): `packages/api-headless-cms-workflows/src/features/Workflows/assertModelsBindable.ts`, `packages/api-headless-cms-workflows/src/features/Workflows/handlers/DisallowUnpublishableModelsOnBeforeUpdate.ts`
 
 **Interfaces:**
 - Consumes: `WorkflowValidator`, workflow types (Task 2); CMS `CreateEntryUseCase`, `UpdateEntryUseCase`, `GetEntryByIdUseCase`, `ListLatestEntriesUseCase`, `DeleteEntryUseCase` (`@webiny/api-headless-cms/features/contentEntry/{CreateEntry,UpdateEntry,GetEntryById,ListEntries,DeleteEntry}/index.js`), `GetModelUseCase`, `ModelFactory`, `EventPublisher`, `DomainEvent`, `IEventHandler`, `createIdentifier` / `parseIdentifier` (`@webiny/utils`), `CmsEntry`, `CmsEntryMeta`, `CmsIdentity`, `CmsModel` (`@webiny/api-headless-cms/types/index.js`).
@@ -27,8 +28,8 @@
   - `WorkflowModelProvider.Interface { get(): Promise<CmsModel> }`.
   - `WorkflowRepository.Interface { get(id); list(params: WorkflowRepository.ListParams); create(values: WorkflowValues); update(values: WorkflowValues); delete(id) }`.
   - Use cases: `GetWorkflowUseCase.execute({ id })`, `ListWorkflowsUseCase.execute({ where?: { models_in? }, limit?, after? })` → `{ items: Workflow[]; meta: CmsEntryMeta }`, `StoreWorkflowUseCase.execute({ workflow: WorkflowValues; savedOn?: string | null })`, `DeleteWorkflowUseCase.execute({ id })`; all return `Result<…>`.
-  - Events in `@webiny/api-workflows/features/workflow/events.js`: `WorkflowBeforeCreateEvent` / `WorkflowAfterCreateEvent` / `WorkflowBeforeUpdateEvent` / `WorkflowAfterUpdateEvent` / `WorkflowBeforeDeleteEvent` / `WorkflowAfterDeleteEvent` and their `…EventHandler` abstractions.
-  - CMS: `assertModelsPublishable(getModel, models): Promise<void>`; handlers `DisallowUnpublishableModelsOnBeforeCreate`, `DisallowUnpublishableModelsOnBeforeUpdate`.
+  - Events, one `events.ts` per use case folder (repo convention, e.g. CMS `CreateEntry/events.ts`): `StoreWorkflow/events.ts` holds `WorkflowBeforeCreateEvent` / `WorkflowAfterCreateEvent` / `WorkflowBeforeUpdateEvent` / `WorkflowAfterUpdateEvent`; `DeleteWorkflow/events.ts` holds `WorkflowBeforeDeleteEvent` / `WorkflowAfterDeleteEvent`; each with its `…EventHandler` abstraction. The handler abstractions and payload types are exported from the use case's `index.ts` (`@webiny/api-workflows/features/workflow/StoreWorkflow/index.js`, `…/DeleteWorkflow/index.js`), as CMS `CreateEntry/index.ts` does. Workflow events carry no actor in 1a (1b adds it).
+  - CMS: `assertModelsBindable(getModel, models): Promise<void>` (throws `WorkflowValidationError` when a `cms.*` model does not exist or is unpublishable); handlers `DisallowUnpublishableModelsOnBeforeCreate`, `DisallowUnpublishableModelsOnBeforeUpdate`.
 
 - [ ] **Step 1: Write the event recorder used by tests**
 
@@ -274,7 +275,7 @@ describe("WorkflowsFeature registration", () => {
 - [ ] **Step 3: Run them to verify they fail**
 
 Run: `yarn test packages/api-workflows/__tests__/workflow/WorkflowUseCases.test.ts 2>&1 | tail -50`
-Expected: FAIL. The old `StoreWorkflowUseCase` expects `{ app, id, name, steps }`, so the first test fails on `expect(created.isOk()).toBe(true)` (`expected false to be true`), and the other tests fail on their first assertion.
+Expected: FAIL (the old use case cannot handle the new input shape; it expects `{ app, id, name, steps }`, so tests fail on an assertion or with a TypeError inside the old get/create path).
 
 - [ ] **Step 4: Delete the old workflow code**
 
@@ -743,7 +744,9 @@ export const WorkflowSharedFeature = createFeature({
 
 - [ ] **Step 8: Add the workflow events**
 
-Create `packages/api-workflows/src/features/workflow/events.ts`:
+One `events.ts` per use case folder, holding that use case's Before/After pairs (repo convention: old `CreateWorkflow/events.ts`, CMS `contentEntry/CreateEntry/events.ts`).
+
+Create `packages/api-workflows/src/features/workflow/StoreWorkflow/events.ts`:
 
 ```ts
 import { createAbstraction } from "@webiny/feature/api";
@@ -751,14 +754,30 @@ import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { Workflow, WorkflowValues } from "~/domain/workflow/types.js";
 
-// ============================================================================
-// WorkflowBeforeCreate
-// ============================================================================
-
+/**
+ * Event payloads. No actor in 1a: workflow use cases take no actor until phase 1b adds one.
+ */
 export interface WorkflowBeforeCreatePayload {
     workflow: WorkflowValues;
 }
 
+export interface WorkflowAfterCreatePayload {
+    workflow: Workflow;
+}
+
+export interface WorkflowBeforeUpdatePayload {
+    original: Workflow;
+    workflow: WorkflowValues;
+}
+
+export interface WorkflowAfterUpdatePayload {
+    original: Workflow;
+    workflow: Workflow;
+}
+
+/**
+ * WorkflowBeforeCreateEvent - published before a workflow is created.
+ */
 export class WorkflowBeforeCreateEvent extends DomainEvent<WorkflowBeforeCreatePayload> {
     eventType = "Workflows/Workflow/BeforeCreate" as const;
 
@@ -777,14 +796,9 @@ export namespace WorkflowBeforeCreateEventHandler {
     export type Event = WorkflowBeforeCreateEvent;
 }
 
-// ============================================================================
-// WorkflowAfterCreate
-// ============================================================================
-
-export interface WorkflowAfterCreatePayload {
-    workflow: Workflow;
-}
-
+/**
+ * WorkflowAfterCreateEvent - published after a workflow is created.
+ */
 export class WorkflowAfterCreateEvent extends DomainEvent<WorkflowAfterCreatePayload> {
     eventType = "Workflows/Workflow/AfterCreate" as const;
 
@@ -803,15 +817,9 @@ export namespace WorkflowAfterCreateEventHandler {
     export type Event = WorkflowAfterCreateEvent;
 }
 
-// ============================================================================
-// WorkflowBeforeUpdate
-// ============================================================================
-
-export interface WorkflowBeforeUpdatePayload {
-    original: Workflow;
-    workflow: WorkflowValues;
-}
-
+/**
+ * WorkflowBeforeUpdateEvent - published before a workflow is updated.
+ */
 export class WorkflowBeforeUpdateEvent extends DomainEvent<WorkflowBeforeUpdatePayload> {
     eventType = "Workflows/Workflow/BeforeUpdate" as const;
 
@@ -830,15 +838,9 @@ export namespace WorkflowBeforeUpdateEventHandler {
     export type Event = WorkflowBeforeUpdateEvent;
 }
 
-// ============================================================================
-// WorkflowAfterUpdate
-// ============================================================================
-
-export interface WorkflowAfterUpdatePayload {
-    original: Workflow;
-    workflow: Workflow;
-}
-
+/**
+ * WorkflowAfterUpdateEvent - published after a workflow is updated.
+ */
 export class WorkflowAfterUpdateEvent extends DomainEvent<WorkflowAfterUpdatePayload> {
     eventType = "Workflows/Workflow/AfterUpdate" as const;
 
@@ -856,15 +858,31 @@ export namespace WorkflowAfterUpdateEventHandler {
     export type Interface = IEventHandler<WorkflowAfterUpdateEvent>;
     export type Event = WorkflowAfterUpdateEvent;
 }
+```
 
-// ============================================================================
-// WorkflowBeforeDelete
-// ============================================================================
+Create `packages/api-workflows/src/features/workflow/DeleteWorkflow/events.ts`:
 
+```ts
+import { createAbstraction } from "@webiny/feature/api";
+import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
+import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
+import type { Workflow } from "~/domain/workflow/types.js";
+
+/**
+ * Event payloads. `workflow.savedBy` is the last editor, not the person deleting; phase 1b adds
+ * an `actor` to the workflow events.
+ */
 export interface WorkflowBeforeDeletePayload {
     workflow: Workflow;
 }
 
+export interface WorkflowAfterDeletePayload {
+    workflow: Workflow;
+}
+
+/**
+ * WorkflowBeforeDeleteEvent - published before a workflow is deleted.
+ */
 export class WorkflowBeforeDeleteEvent extends DomainEvent<WorkflowBeforeDeletePayload> {
     eventType = "Workflows/Workflow/BeforeDelete" as const;
 
@@ -883,14 +901,9 @@ export namespace WorkflowBeforeDeleteEventHandler {
     export type Event = WorkflowBeforeDeleteEvent;
 }
 
-// ============================================================================
-// WorkflowAfterDelete
-// ============================================================================
-
-export interface WorkflowAfterDeletePayload {
-    workflow: Workflow;
-}
-
+/**
+ * WorkflowAfterDeleteEvent - published after a workflow is deleted.
+ */
 export class WorkflowAfterDeleteEvent extends DomainEvent<WorkflowAfterDeletePayload> {
     eventType = "Workflows/Workflow/AfterDelete" as const;
 
@@ -1150,7 +1163,7 @@ import {
     WorkflowAfterUpdateEvent,
     WorkflowBeforeCreateEvent,
     WorkflowBeforeUpdateEvent
-} from "../events.js";
+} from "./events.js";
 import { StoreWorkflowUseCase as UseCase } from "./abstractions.js";
 
 const WORKFLOW_NOT_FOUND = "Workflows/Workflow/NotFound";
@@ -1232,7 +1245,10 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
         return Result.ok(result.value);
     }
 
-    /** v1: one workflow per model; the race between two saves is accepted (D41). */
+    /**
+     * v1: one workflow per model; the race between two saves is accepted (D41). `limit: 10` is
+     * enough because the v1 invariant allows at most one other workflow per model.
+     */
     private async ensureModelIsFree(
         values: WorkflowValues
     ): Promise<Result<void, WorkflowValidationError | WorkflowPersistenceError>> {
@@ -1297,6 +1313,18 @@ Create `packages/api-workflows/src/features/workflow/StoreWorkflow/index.ts`:
 ```ts
 export { StoreWorkflowUseCase } from "./abstractions.js";
 export type { StoreWorkflowInput } from "./abstractions.js";
+export {
+    WorkflowAfterCreateEventHandler,
+    WorkflowAfterUpdateEventHandler,
+    WorkflowBeforeCreateEventHandler,
+    WorkflowBeforeUpdateEventHandler
+} from "./events.js";
+export type {
+    WorkflowAfterCreatePayload,
+    WorkflowAfterUpdatePayload,
+    WorkflowBeforeCreatePayload,
+    WorkflowBeforeUpdatePayload
+} from "./events.js";
 ```
 
 - [ ] **Step 12: Add `DeleteWorkflow`**
@@ -1344,7 +1372,7 @@ Create `packages/api-workflows/src/features/workflow/DeleteWorkflow/DeleteWorkfl
 import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
-import { WorkflowAfterDeleteEvent, WorkflowBeforeDeleteEvent } from "../events.js";
+import { WorkflowAfterDeleteEvent, WorkflowBeforeDeleteEvent } from "./events.js";
 import { DeleteWorkflowUseCase as UseCase } from "./abstractions.js";
 
 class DeleteWorkflowUseCaseImpl implements UseCase.Interface {
@@ -1397,6 +1425,8 @@ Create `packages/api-workflows/src/features/workflow/DeleteWorkflow/index.ts`:
 ```ts
 export { DeleteWorkflowUseCase } from "./abstractions.js";
 export type { DeleteWorkflowInput } from "./abstractions.js";
+export { WorkflowAfterDeleteEventHandler, WorkflowBeforeDeleteEventHandler } from "./events.js";
+export type { WorkflowAfterDeletePayload, WorkflowBeforeDeletePayload } from "./events.js";
 ```
 
 - [ ] **Step 13: Register the new workflow features**
@@ -1537,6 +1567,19 @@ describe("Disallow unpublishable models", () => {
         expect(result.error.message).toBe(expectedMessage);
     });
 
+    it("rejects a workflow bound to a model that does not exist", async () => {
+        const { context } = createContextHandler();
+
+        const result = await storeWorkflow(
+            await context(),
+            createWorkflowValues(["cms.doesNotExist"])
+        );
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe('The model "doesNotExist" does not exist.');
+    });
+
     it("allows a workflow for a publishable model", async () => {
         const { context } = createContextHandler();
 
@@ -1565,23 +1608,26 @@ describe("CmsWorkflowsFeature registration", () => {
 ```
 
 Run: `yarn test packages/api-headless-cms-workflows 2>&1 | tail -50`
-Expected: FAIL to compile/run `src/features/Workflows/handlers/DisallowUnpublishableModelsOnBeforeCreate.ts`: `@webiny/api-workflows/features/workflow/CreateWorkflow/events.js` no longer exists.
+Expected: FAIL to compile/run `src/features/Workflows/handlers/DisallowUnpublishableModelsOnBeforeCreate.ts`: `@webiny/api-workflows/features/workflow/CreateWorkflow/events.js` no longer exists. (The new "model that does not exist" test is part of this suite and must pass after Step 16.)
 
 - [ ] **Step 16: Implement the CMS handlers on the new events**
 
-Create `packages/api-headless-cms-workflows/src/features/Workflows/assertModelsPublishable.ts`:
+Create `packages/api-headless-cms-workflows/src/features/Workflows/assertModelsBindable.ts`:
 
 ```ts
 import type { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { WorkflowValidationError } from "@webiny/api-workflows/domain/workflow/errors.js";
 import { getModelIdFromAppName } from "~/utils/appName.js";
 
+const MODEL_NOT_FOUND = "Cms/Model/NotFound";
+
 /**
- * Spec 4.1: a workflow can only bind publishable models. Throws `WorkflowValidationError`, which
- * `StoreWorkflowUseCase` returns as a failed result. Non-CMS namespaces (e.g. `wb.page`) are
- * skipped.
+ * Spec 4.1, D41: a workflow can only bind an existing, publishable CMS model. Throws
+ * `WorkflowValidationError`, which `StoreWorkflowUseCase` returns as a failed result. Non-CMS
+ * namespaces (`wb.page`) are skipped; the namespace format itself is checked by
+ * `WorkflowValidator` before any event is published. Other model read errors propagate.
  */
-export const assertModelsPublishable = async (
+export const assertModelsBindable = async (
     getModel: GetModelUseCase.Interface,
     models: string[]
 ): Promise<void> => {
@@ -1592,7 +1638,10 @@ export const assertModelsPublishable = async (
         }
         const model = await getModel.execute(modelId);
         if (model.isFail()) {
-            continue;
+            if (model.error.code === MODEL_NOT_FOUND) {
+                throw new WorkflowValidationError(`The model "${modelId}" does not exist.`);
+            }
+            throw model.error;
         }
         const tags = model.value.tags || [];
         if (!tags.includes("$publishing:false")) {
@@ -1608,9 +1657,9 @@ export const assertModelsPublishable = async (
 Replace `packages/api-headless-cms-workflows/src/features/Workflows/handlers/DisallowUnpublishableModelsOnBeforeCreate.ts` with:
 
 ```ts
-import { WorkflowBeforeCreateEventHandler } from "@webiny/api-workflows/features/workflow/events.js";
+import { WorkflowBeforeCreateEventHandler } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { assertModelsPublishable } from "../assertModelsPublishable.js";
+import { assertModelsBindable } from "../assertModelsBindable.js";
 
 class DisallowUnpublishableModelsOnBeforeCreateImpl
     implements WorkflowBeforeCreateEventHandler.Interface
@@ -1618,7 +1667,7 @@ class DisallowUnpublishableModelsOnBeforeCreateImpl
     public constructor(private getModel: GetModelUseCase.Interface) {}
 
     public async handle(event: WorkflowBeforeCreateEventHandler.Event): Promise<void> {
-        await assertModelsPublishable(this.getModel, event.payload.workflow.models);
+        await assertModelsBindable(this.getModel, event.payload.workflow.models);
     }
 }
 
@@ -1632,9 +1681,9 @@ export const DisallowUnpublishableModelsOnBeforeCreate =
 Create `packages/api-headless-cms-workflows/src/features/Workflows/handlers/DisallowUnpublishableModelsOnBeforeUpdate.ts`:
 
 ```ts
-import { WorkflowBeforeUpdateEventHandler } from "@webiny/api-workflows/features/workflow/events.js";
+import { WorkflowBeforeUpdateEventHandler } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { assertModelsPublishable } from "../assertModelsPublishable.js";
+import { assertModelsBindable } from "../assertModelsBindable.js";
 
 class DisallowUnpublishableModelsOnBeforeUpdateImpl
     implements WorkflowBeforeUpdateEventHandler.Interface
@@ -1642,7 +1691,7 @@ class DisallowUnpublishableModelsOnBeforeUpdateImpl
     public constructor(private getModel: GetModelUseCase.Interface) {}
 
     public async handle(event: WorkflowBeforeUpdateEventHandler.Event): Promise<void> {
-        await assertModelsPublishable(this.getModel, event.payload.workflow.models);
+        await assertModelsBindable(this.getModel, event.payload.workflow.models);
     }
 }
 
@@ -1672,7 +1721,7 @@ export const WorkflowsFeature = createFeature({
 - [ ] **Step 17: Run every affected suite**
 
 Run: `yarn test packages/api-headless-cms-workflows 2>&1 | tail -50`
-Expected: PASS (3 tests in `disallowUnpublishableModels.test.ts`, plus `registration.test.ts`, `entrySystemSchema.test.ts`).
+Expected: PASS (4 tests in `disallowUnpublishableModels.test.ts`, plus `registration.test.ts`, `entrySystemSchema.test.ts`).
 Run: `yarn test:os packages/api-headless-cms-workflows 2>&1 | tail -50`
 Expected: PASS.
 Run: `yarn test packages/api-workflows 2>&1 | tail -50` and `yarn test:os packages/api-workflows 2>&1 | tail -50`
@@ -1687,7 +1736,8 @@ Run the Global Constraints chain (build `@webiny/api-workflows`, `@webiny/api-he
 ```bash
 git commit -m "feat(api-workflows): replace workflow model, use cases and events
 
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn"
 ```
 
 ---

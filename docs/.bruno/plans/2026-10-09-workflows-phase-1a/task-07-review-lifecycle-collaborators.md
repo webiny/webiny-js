@@ -8,21 +8,23 @@
 - Create: `packages/api-workflows/src/features/review/ReviewSaver/abstractions.ts`, `packages/api-workflows/src/features/review/ReviewSaver/ReviewSaver.ts`
 - Create: `packages/api-workflows/src/features/review/events.ts`
 - Create: `packages/api-workflows/src/features/review/ReviewLifecycleFeature.ts`
-- Modify: `packages/api-workflows/src/types.ts`
+- Modify: `packages/api-workflows/src/types.ts`, `packages/api-workflows/src/index.ts` (load the `ICmsEntrySystem` augmentation for consumers)
 - Modify: `packages/api-workflows/src/WorkflowsFeature.ts`
 - Create: `packages/api-workflows/__tests__/__helpers/RecordingReviewTargetSync.ts`
+- Create: `packages/api-workflows/__tests__/__helpers/FailingReviewTargetSync.ts`
 - Create: `packages/api-workflows/__tests__/review/ReviewSaver.test.ts`
+- Create: `packages/api-workflows/__tests__/types.test.ts`
 
 **Interfaces:**
-- Consumes: `Review`, `ReviewData`, `ReviewFact`, `ReviewSystemWorkflow`, `StepAssignmentResolution`, `TargetContext` (Tasks 4-5), `ReviewRepository` (Task 6), `parseReviewStepConfig` (Task 2), `EventPublisher`, `DomainEvent`, `IEventHandler`.
+- Consumes: `Review`, `ReviewData`, `ReviewFact`, `ReviewSystemWorkflow`, `StepAssignmentResolution`, `TargetContext`, `ReviewTargetSyncError` (Tasks 4-5), `ReviewRepository` (Task 6), `parseReviewStepConfig` (Task 2), `EventPublisher`, `DomainEvent`, `IEventHandler`.
 - Produces:
   - `ReviewTargetLoader.Interface { canLoad(model: string): boolean; load(params: { model; targetId; targetRevisionId }): Promise<{ title: string; context: TargetContext } | null> }` (no implementation in 1a).
-  - `ReviewTargetSync.Interface { sync(params: { review: ReviewData; systemWorkflow: ReviewSystemWorkflow | null }): Promise<void> }`; default `NoopReviewTargetSync`.
+  - `ReviewTargetSync.Interface { sync(params: { review: ReviewData; systemWorkflow: ReviewSystemWorkflow | null }): Promise<Result<void, Error>> }` (R16); default `NoopReviewTargetSync` returns `Result.ok()`.
   - `StepAssignmentResolver.Interface { resolve(params: { review: ReviewData; step: ReviewStep }): Promise<StepAssignmentResolution> }`; default `PoolStepAssignmentResolver`.
   - `ReviewStepReacher.Interface { reach(params: { review: Review; actor: Actor; now: string }): Promise<Result<void, ReviewInvalidStateError>> }`.
-  - `ReviewSaver.Interface { save(review: Review): Promise<Result<ReviewData, ReviewPersistenceError>> }`.
+  - `ReviewSaver.Interface { save(review: Review): Promise<Result<ReviewData, ReviewPersistenceError | ReviewTargetSyncError>> }`. Order: prepare, persist, sync, publish events. A failed sync does not undo the save: events are still published and `save` returns `ReviewTargetSyncError` with the saved review in `error.data.review` (R16). Event handler exceptions propagate.
   - Events in `@webiny/api-workflows/features/review/events.js`: `ReviewRequestedEvent`, `ReviewStepReachedEvent`, `ReviewStepStartedEvent`, `ReviewStepTakenOverEvent`, `ReviewStepApprovedEvent`, `ReviewStepRejectedEvent`, `ReviewCancelledEvent`, `ReviewApprovedEvent` (payload `ReviewEventPayload<TFact> { review: ReviewData; fact: TFact }`), handler abstractions `…EventHandler`, union `ReviewEvent`.
-  - `ICmsEntrySystem.workflow?: ReviewSystemWorkflow | null` (module augmentation of `@webiny/api-headless-cms/types/types.js`).
+  - `ICmsEntrySystem.workflow?: ReviewSystemWorkflow | null` (module augmentation of `@webiny/api-headless-cms/types/types.js`), loaded by every consumer of `@webiny/api-workflows` through `export type * from "./types.js"` in `src/index.ts` (the pattern `api-websockets` and `website-builder-sdk` use).
 
 - [ ] **Step 1: Write the sync recorder used by tests**
 
@@ -37,14 +39,38 @@ export const recordedSyncs: ReviewTargetSync.Params[] = [];
 class RecordingReviewTargetSyncImpl implements ReviewTargetSync.Interface {
     constructor(private decoratee: ReviewTargetSync.Interface) {}
 
-    async sync(params: ReviewTargetSync.Params): Promise<void> {
+    async sync(params: ReviewTargetSync.Params): ReviewTargetSync.Return {
         recordedSyncs.push(structuredClone(params));
-        await this.decoratee.sync(params);
+        return this.decoratee.sync(params);
     }
 }
 
 export const RecordingReviewTargetSync = ReviewTargetSync.createDecorator({
     decorator: RecordingReviewTargetSyncImpl,
+    dependencies: []
+});
+```
+
+Create `packages/api-workflows/__tests__/__helpers/FailingReviewTargetSync.ts`:
+
+```ts
+import { Result } from "@webiny/feature/api";
+import { ReviewTargetSync } from "~/features/review/ReviewTargetSync/index.js";
+
+export const TARGET_SYNC_FAILURE = "The target revision is locked.";
+
+/** A target adapter whose write fails (R16), e.g. the target revision was deleted meanwhile. */
+class FailingReviewTargetSyncImpl implements ReviewTargetSync.Interface {
+    constructor(private decoratee: ReviewTargetSync.Interface) {}
+
+    async sync(params: ReviewTargetSync.Params): ReviewTargetSync.Return {
+        await this.decoratee.sync(params);
+        return Result.fail(new Error(TARGET_SYNC_FAILURE));
+    }
+}
+
+export const FailingReviewTargetSync = ReviewTargetSync.createDecorator({
+    decorator: FailingReviewTargetSyncImpl,
     dependencies: []
 });
 ```
@@ -60,6 +86,7 @@ import {
     ARTICLE_MODEL,
     createRequestedReview,
     createWorkflow,
+    expectOk,
     NOW,
     requester,
     REVIEW_TEAM_ID,
@@ -74,6 +101,10 @@ import {
     RecordingReviewTargetSync,
     recordedSyncs
 } from "~tests/__helpers/RecordingReviewTargetSync.js";
+import {
+    FailingReviewTargetSync,
+    TARGET_SYNC_FAILURE
+} from "~tests/__helpers/FailingReviewTargetSync.js";
 import { Review } from "~/domain/review/Review.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
@@ -145,11 +176,11 @@ describe("ReviewSaver", () => {
     it("hands null to the target sync after cancel", async () => {
         const context = await createRecordingContext();
         const saver = context.container.resolve(ReviewSaver);
-        const saved = await saver.save(createRequestedReview());
+        const saved = expectOk(await saver.save(createRequestedReview()));
         recordedSyncs.length = 0;
         recordedEvents.length = 0;
-        const review = Review.fromData(saved.value);
-        review.cancel({ actor: requester, now: LATER });
+        const review = Review.fromData(saved);
+        expectOk(review.cancel({ actor: requester, now: LATER }));
 
         const result = await saver.save(review);
 
@@ -162,6 +193,35 @@ describe("ReviewSaver", () => {
         expect(recordedSyncs.map(sync => sync.systemWorkflow)).toEqual([null]);
         expect(workflowEventTypes()).toEqual(["Workflows/Review/Cancelled"]);
     });
+
+    it("keeps the review saved and publishes events when the target sync fails", async () => {
+        recordedEvents.length = 0;
+        recordedSyncs.length = 0;
+        const { context } = await createContextHandler({
+            setup: container => {
+                container.registerDecorator(RecordingReviewTargetSync);
+                container.registerDecorator(FailingReviewTargetSync);
+                container.registerDecorator(RecordingEventPublisher);
+            }
+        });
+        const review = createRequestedReview();
+
+        const result = await context.container.resolve(ReviewSaver).save(review);
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/TargetSync");
+        expect(result.error.message).toBe(
+            `The review was saved, but updating its content failed: ${TARGET_SYNC_FAILURE}`
+        );
+        const stored = expectOk(await context.container.resolve(ReviewRepository).get(review.id));
+        expect(result.error.data).toEqual({ review: stored });
+        expect(stored).toMatchObject({ currentStepId: "legal", currentStepState: "awaiting" });
+        expect(recordedSyncs).toHaveLength(1);
+        expect(workflowEventTypes()).toEqual([
+            "Workflows/Review/Requested",
+            "Workflows/Review/StepReached"
+        ]);
+    });
 });
 
 describe("Review lifecycle defaults", () => {
@@ -171,9 +231,10 @@ describe("Review lifecycle defaults", () => {
             picks: [{ stepId: "legal", userId: "user-picked" }]
         }).toData();
 
-        await expect(
-            context.container.resolve(ReviewTargetSync).sync({ review, systemWorkflow: null })
-        ).resolves.toBeUndefined();
+        const synced = await context.container
+            .resolve(ReviewTargetSync)
+            .sync({ review, systemWorkflow: null });
+        expect(synced.isOk()).toBe(true);
         expect(context.container.resolveAll(ReviewTargetLoader)).toEqual([]);
 
         const resolution = await context.container
@@ -189,18 +250,20 @@ describe("Review lifecycle defaults", () => {
 
     it("reaches the current pending step through the resolver once", async () => {
         const { context } = await createContextHandler();
-        const review = Review.request({
-            id: "review-1",
-            workflow: createWorkflow(),
-            model: ARTICLE_MODEL,
-            targetId: "article-1",
-            targetRevisionId: "article-1#0001",
-            title: "Article 1",
-            targetContext,
-            picks: [],
-            requester,
-            now: NOW
-        }).value;
+        const review = expectOk(
+            Review.request({
+                id: "review-1",
+                workflow: createWorkflow(),
+                model: ARTICLE_MODEL,
+                targetId: "article-1",
+                targetRevisionId: "article-1#0001",
+                title: "Article 1",
+                targetContext,
+                picks: [],
+                requester,
+                now: NOW
+            })
+        );
         const reacher = context.container.resolve(ReviewStepReacher);
 
         const first = await reacher.reach({ review, actor: requester, now: NOW });
@@ -271,7 +334,7 @@ export type { ReviewTarget, ReviewTargetLoadParams } from "./abstractions.js";
 Create `packages/api-workflows/src/features/review/ReviewTargetSync/abstractions.ts`:
 
 ```ts
-import { createAbstraction } from "@webiny/feature/api";
+import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData, ReviewSystemWorkflow } from "~/domain/review/types.js";
 
 export interface ReviewTargetSyncParams {
@@ -282,7 +345,8 @@ export interface ReviewTargetSyncParams {
 }
 
 export interface IReviewTargetSync {
-    sync(params: ReviewTargetSyncParams): Promise<void>;
+    /** Fails with the adapter's error; the review stays saved (R16). */
+    sync(params: ReviewTargetSyncParams): Promise<Result<void, Error>>;
 }
 
 /**
@@ -294,18 +358,20 @@ export const ReviewTargetSync = createAbstraction<IReviewTargetSync>("ReviewTarg
 export namespace ReviewTargetSync {
     export type Interface = IReviewTargetSync;
     export type Params = ReviewTargetSyncParams;
+    export type Return = Promise<Result<void, Error>>;
 }
 ```
 
 Create `packages/api-workflows/src/features/review/ReviewTargetSync/NoopReviewTargetSync.ts`:
 
 ```ts
+import { Result } from "@webiny/feature/api";
 import { ReviewTargetSync } from "./abstractions.js";
 
 /** Default until phase 2 registers the target adapters' sync. */
 class NoopReviewTargetSyncImpl implements ReviewTargetSync.Interface {
-    async sync(): Promise<void> {
-        // Intentionally empty.
+    async sync(): ReviewTargetSync.Return {
+        return Result.ok();
     }
 }
 
@@ -365,6 +431,8 @@ import { StepAssignmentResolver } from "./abstractions.js";
 /** Every review step goes to its teams' pool; picks are stored but ignored until phase 4 (R3). */
 class PoolStepAssignmentResolverImpl implements StepAssignmentResolver.Interface {
     async resolve(params: StepAssignmentResolver.Params): Promise<StepAssignmentResolver.Resolution> {
+        // Save-time validation guarantees a parsable config. An unparsable one (edited storage)
+        // leaves an empty pool; phase 5 fails such steps ("fail on invalid settings").
         const config = parseReviewStepConfig(params.step.config);
         return {
             owner: null,
@@ -670,21 +738,25 @@ Create `packages/api-workflows/src/features/review/ReviewSaver/abstractions.ts`:
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { Review } from "~/domain/review/Review.js";
 import type { ReviewData } from "~/domain/review/types.js";
-import type { ReviewPersistenceError } from "~/domain/review/errors.js";
+import type { ReviewPersistenceError, ReviewTargetSyncError } from "~/domain/review/errors.js";
+
+export type ReviewSaverError = ReviewPersistenceError | ReviewTargetSyncError;
 
 export interface IReviewSaver {
-    save(review: Review): Promise<Result<ReviewData, ReviewPersistenceError>>;
+    save(review: Review): Promise<Result<ReviewData, ReviewSaverError>>;
 }
 
 /**
  * The single save path for reviews (R10, D19, D52): prepare the review-level fields, persist
- * (create or update), sync `system.workflow`, then publish one event per recorded fact.
+ * (create or update), sync `system.workflow`, then publish one event per recorded fact. A failed
+ * sync keeps the save and the events and returns `ReviewTargetSyncError` (R16).
  */
 export const ReviewSaver = createAbstraction<IReviewSaver>("ReviewSaver");
 
 export namespace ReviewSaver {
     export type Interface = IReviewSaver;
-    export type Return = Promise<Result<ReviewData, ReviewPersistenceError>>;
+    export type Error = ReviewSaverError;
+    export type Return = Promise<Result<ReviewData, ReviewSaverError>>;
 }
 ```
 
@@ -696,6 +768,7 @@ import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.j
 import { Review } from "~/domain/review/Review.js";
 import type { ReviewFact } from "~/domain/review/facts.js";
 import type { ReviewData } from "~/domain/review/types.js";
+import { ReviewTargetSyncError } from "~/domain/review/errors.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewTargetSync } from "../ReviewTargetSync/abstractions.js";
 import {
@@ -720,6 +793,8 @@ class ReviewSaverImpl implements Abstraction.Interface {
 
     async save(review: Review): Abstraction.Return {
         review.prepareForSave();
+        // Facts are pulled before persisting. If the save fails they are lost from this instance,
+        // which is fine: every use case discards the instance after a failed save.
         const facts = review.pullFacts();
 
         // No optimistic locking on reviews (D27).
@@ -729,15 +804,20 @@ class ReviewSaverImpl implements Abstraction.Interface {
         }
         const saved = result.value;
 
-        await this.targetSync.sync({
+        const synced = await this.targetSync.sync({
             review: saved,
             systemWorkflow: Review.fromData(saved).getSystemWorkflow()
         });
 
+        // The review is saved, so its facts happened: publish them even when the sync failed
+        // (R16). Handler exceptions propagate, as everywhere else in the repo.
         for (const fact of facts) {
             await this.eventPublisher.publish(this.createEvent(saved, fact));
         }
 
+        if (synced.isFail()) {
+            return Result.fail(new ReviewTargetSyncError({ review: saved, error: synced.error }));
+        }
         return Result.ok(saved);
     }
 
@@ -795,6 +875,37 @@ export const ReviewLifecycleFeature = createFeature({
 
 - [ ] **Step 8: Type `system.workflow` on CMS entries**
 
+Create `packages/api-workflows/__tests__/types.test.ts`:
+
+```ts
+import { describe, expect, expectTypeOf, it } from "vitest";
+import type { ICmsEntrySystem } from "@webiny/api-headless-cms/types/types.js";
+import type { ReviewSystemWorkflow } from "~/domain/review/types.js";
+// Consumers see the augmentation through the package entry point, which re-exports `types.ts`.
+import type { IWorkflowsSecurityPermission } from "~/index.js";
+
+describe("ICmsEntrySystem augmentation", () => {
+    it("types system.workflow as the review's system value", () => {
+        expectTypeOf<ICmsEntrySystem["workflow"]>().toEqualTypeOf<
+            ReviewSystemWorkflow | null | undefined
+        >();
+        expectTypeOf<IWorkflowsSecurityPermission["editor"]>().toEqualTypeOf<boolean>();
+
+        const system: ICmsEntrySystem = {
+            workflow: {
+                workflowId: "workflow-1",
+                reviewState: "inProgress",
+                stepId: "legal",
+                stepName: "Legal review",
+                stepState: "awaiting"
+            }
+        };
+
+        expect(system.workflow?.stepState).toBe("awaiting");
+    });
+});
+```
+
 Replace `packages/api-workflows/src/types.ts` with:
 
 ```ts
@@ -816,6 +927,14 @@ declare module "@webiny/api-headless-cms/types/types.js" {
 }
 ```
 
+Replace `packages/api-workflows/src/index.ts` with:
+
+```ts
+export { WorkflowsFeature } from "./WorkflowsFeature.js";
+// Loads the `ICmsEntrySystem` augmentation for every consumer of the package.
+export type * from "./types.js";
+```
+
 - [ ] **Step 9: Register the lifecycle**
 
 In `packages/api-workflows/src/WorkflowsFeature.ts`, add the import
@@ -834,8 +953,10 @@ and replace the `// Reviews` block with:
 
 - [ ] **Step 10: Run the tests**
 
-Run: `yarn test packages/api-workflows/__tests__/review/ReviewSaver.test.ts 2>&1 | tail -50`
-Expected: PASS (4 tests).
+Run: `yarn test packages/api-workflows/__tests__/review/ReviewSaver.test.ts packages/api-workflows/__tests__/types.test.ts 2>&1 | tail -50`
+Expected: PASS (5 tests in `ReviewSaver.test.ts`, 1 in `types.test.ts`).
+Run: `npx tsc --noEmit -p packages/api-workflows/tsconfig.json 2>&1 | grep "__tests__/types.test.ts" | head -20`
+Expected: no output (`expectTypeOf` is checked by the compiler, not at runtime; the package tsconfig includes `__tests__`).
 Run: `yarn test packages/api-workflows 2>&1 | tail -50`
 Expected: PASS.
 Run: `yarn test:os packages/api-workflows 2>&1 | tail -50`
@@ -853,7 +974,8 @@ Run the Global Constraints chain, then:
 ```bash
 git commit -m "feat(api-workflows): add the single review save path, target and assignment extension points
 
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn"
 ```
 
 ---

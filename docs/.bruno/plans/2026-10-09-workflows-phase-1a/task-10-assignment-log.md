@@ -15,11 +15,13 @@
 - Create: `packages/api-workflows/__tests__/assignment/AssignmentRepository.test.ts`
 
 **Interfaces:**
-- Consumes: `Actor` (Task 4), `toIsoString` (Task 6), CMS `CreateEntryUseCase`, `ListLatestEntriesUseCase`, `GetModelUseCase`, `ModelFactory`.
+- Consumes: `Actor` (Task 4), `toIsoString`, `ActorEntryMapper` / `ActorEntryValues` (Task 6), CMS `CreateEntryUseCase`, `ListLatestEntriesUseCase`, `GetModelUseCase`, `ModelFactory`, `CmsEntryMeta`.
 - Produces:
   - `ASSIGNMENT_MODEL_ID = "wbyWorkflowAssignment"`; `AssignmentModel`.
   - `AssignmentRecordValues { reviewId; workflowId; stepId; userId: string | null; assignedOn: string; source: string; by: Actor | null; reason: string | null }`, `AssignmentRecord extends AssignmentRecordValues { id: string }`.
-  - `AssignmentRepository.Interface { create(values: AssignmentRecordValues): Promise<Result<AssignmentRecord, AssignmentPersistenceError>>; list(params: { where: { reviewId?; workflowId?; stepId? }; limit?: number }): Promise<Result<AssignmentRecord[], AssignmentPersistenceError>> }` (newest `assignedOn` first).
+  - `AssignmentRepository.Interface { create(values: AssignmentRecordValues): Promise<Result<AssignmentRecord, AssignmentPersistenceError>>; list(params: AssignmentRepository.ListParams): Promise<Result<AssignmentRepository.ListResult, AssignmentPersistenceError>> }`.
+    - `ListParams { where: ListWhere; limit?: number; after?: string | null }`; `ListWhere { reviewId?; workflowId?; stepId?; userId?; userId_in?: string[] }` (filters combine with AND; phase 2 deletes a review's records by `reviewId`, phase 4 reads "the latest record per candidate" by `userId_in` (D20) and a step's records by `reviewId` + `stepId` (D127)).
+    - `ListResult { items: AssignmentRecord[]; meta: CmsEntryMeta }` (the same list shape as `WorkflowRepository.list`), newest `assignedOn` first across pages: `create` stores `createdOn = assignedOn`, and the query sorts `createdOn_DESC` in storage (A8).
   - `AssignmentPersistenceError` (`Workflows/Assignment/Persistence`).
   - Nothing outside this task's test writes records in 1a (R3); phase 4 does.
 
@@ -30,51 +32,64 @@ Create `packages/api-workflows/__tests__/assignment/AssignmentRepository.test.ts
 ```ts
 import { describe, expect, it } from "vitest";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import { otherReviewer, reviewer } from "~tests/__helpers/fixtures.js";
+import { expectOk, otherReviewer, reviewer } from "~tests/__helpers/fixtures.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
+import type { AssignmentRecordValues } from "~/domain/assignment/types.js";
 
 const createRepository = async () => {
     const { context } = await createContextHandler();
     return context.container.resolve(AssignmentRepository);
 };
 
+const record = (overrides: Partial<AssignmentRecordValues>): AssignmentRecordValues => {
+    return {
+        reviewId: "review-1",
+        workflowId: "workflow-1",
+        stepId: "legal",
+        userId: null,
+        assignedOn: "2026-10-09T10:00:00.000Z",
+        source: "pool",
+        by: null,
+        reason: null,
+        ...overrides
+    };
+};
+
+/** review-1/legal: pool at 10:00, take over at 11:00; review-2/editorial: pick at 12:00. */
+const createLog = async () => {
+    const repository = await createRepository();
+    const pool = expectOk(
+        await repository.create(record({ reason: "No eligible candidates." }))
+    );
+    expectOk(
+        await repository.create(
+            record({
+                userId: otherReviewer.id,
+                assignedOn: "2026-10-09T11:00:00.000Z",
+                source: "takeOver",
+                by: otherReviewer
+            })
+        )
+    );
+    expectOk(
+        await repository.create(
+            record({
+                reviewId: "review-2",
+                stepId: "editorial",
+                userId: reviewer.id,
+                assignedOn: "2026-10-09T12:00:00.000Z",
+                source: "picked"
+            })
+        )
+    );
+    return { repository, pool };
+};
+
 describe("AssignmentRepository", () => {
-    it("records assignment decisions and lists them newest first", async () => {
-        const repository = await createRepository();
+    it("records assignment decisions and lists a review's records newest first", async () => {
+        const { repository, pool } = await createLog();
 
-        const pool = await repository.create({
-            reviewId: "review-1",
-            workflowId: "workflow-1",
-            stepId: "legal",
-            userId: null,
-            assignedOn: "2026-10-09T10:00:00.000Z",
-            source: "pool",
-            by: null,
-            reason: "No eligible candidates."
-        });
-        await repository.create({
-            reviewId: "review-1",
-            workflowId: "workflow-1",
-            stepId: "legal",
-            userId: otherReviewer.id,
-            assignedOn: "2026-10-09T11:00:00.000Z",
-            source: "takeOver",
-            by: otherReviewer,
-            reason: null
-        });
-        await repository.create({
-            reviewId: "review-2",
-            workflowId: "workflow-1",
-            stepId: "editorial",
-            userId: reviewer.id,
-            assignedOn: "2026-10-09T12:00:00.000Z",
-            source: "picked",
-            by: null,
-            reason: null
-        });
-
-        expect(pool.isOk()).toBe(true);
-        expect(pool.value).toEqual({
+        expect(pool).toEqual({
             id: expect.any(String),
             reviewId: "review-1",
             workflowId: "workflow-1",
@@ -86,15 +101,66 @@ describe("AssignmentRepository", () => {
             reason: "No eligible candidates."
         });
 
-        const byReview = await repository.list({ where: { reviewId: "review-1" } });
-        expect(byReview.isOk()).toBe(true);
-        expect(byReview.value.map(record => record.source)).toEqual(["takeOver", "pool"]);
-        expect(byReview.value[0].by).toEqual(otherReviewer);
+        const byReview = expectOk(await repository.list({ where: { reviewId: "review-1" } }));
+        expect(byReview.items.map(item => item.source)).toEqual(["takeOver", "pool"]);
+        expect(byReview.items[0].by).toEqual(otherReviewer);
+        expect(byReview.meta.hasMoreItems).toBe(false);
+    });
 
-        const byStep = await repository.list({
-            where: { workflowId: "workflow-1", stepId: "editorial" }
-        });
-        expect(byStep.value.map(record => record.userId)).toEqual([reviewer.id]);
+    it("filters by workflow and step, and by review and step", async () => {
+        const { repository } = await createLog();
+
+        const byWorkflowStep = expectOk(
+            await repository.list({ where: { workflowId: "workflow-1", stepId: "editorial" } })
+        );
+        const byReviewStep = expectOk(
+            await repository.list({ where: { reviewId: "review-1", stepId: "legal" } })
+        );
+
+        expect(byWorkflowStep.items.map(item => item.userId)).toEqual([reviewer.id]);
+        expect(byReviewStep.items.map(item => item.source)).toEqual(["takeOver", "pool"]);
+    });
+
+    it("filters by one user or a set of users, newest first", async () => {
+        const { repository } = await createLog();
+
+        const byUser = expectOk(await repository.list({ where: { userId: reviewer.id } }));
+        const byUsers = expectOk(
+            await repository.list({ where: { userId_in: [reviewer.id, otherReviewer.id] } })
+        );
+
+        expect(byUser.items.map(item => item.source)).toEqual(["picked"]);
+        expect(byUsers.items.map(item => item.userId)).toEqual([reviewer.id, otherReviewer.id]);
+    });
+
+    it("pages past one page with a cursor", async () => {
+        const repository = await createRepository();
+        for (const hour of ["10", "11", "12"]) {
+            expectOk(
+                await repository.create(
+                    record({ reviewId: "review-3", assignedOn: `2026-10-09T${hour}:00:00.000Z` })
+                )
+            );
+        }
+
+        const first = expectOk(
+            await repository.list({ where: { reviewId: "review-3" }, limit: 2 })
+        );
+        expect(first.items.map(item => item.assignedOn)).toEqual([
+            "2026-10-09T12:00:00.000Z",
+            "2026-10-09T11:00:00.000Z"
+        ]);
+        expect(first.meta.hasMoreItems).toBe(true);
+
+        const second = expectOk(
+            await repository.list({
+                where: { reviewId: "review-3" },
+                limit: 2,
+                after: first.meta.cursor
+            })
+        );
+        expect(second.items.map(item => item.assignedOn)).toEqual(["2026-10-09T10:00:00.000Z"]);
+        expect(second.meta.hasMoreItems).toBe(false);
     });
 });
 ```
@@ -221,28 +287,41 @@ Create `packages/api-workflows/src/domain/assignment/abstractions/AssignmentRepo
 
 ```ts
 import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { CmsEntryMeta } from "@webiny/api-headless-cms/types/index.js";
 import type { AssignmentRecord, AssignmentRecordValues } from "../types.js";
 import type { AssignmentPersistenceError } from "../errors.js";
 
+/** Filters combine with AND; omitted filters do not restrict. */
 export interface AssignmentRepositoryListWhere {
     reviewId?: string;
     workflowId?: string;
     stepId?: string;
+    userId?: string;
+    /** Records of any of these users (phase 4: latest record per candidate, D20). */
+    userId_in?: string[];
 }
 
 export interface AssignmentRepositoryListParams {
     where: AssignmentRepositoryListWhere;
+    /** Page size; default 100. */
     limit?: number;
+    /** `meta.cursor` of the previous page. */
+    after?: string | null;
+}
+
+export interface AssignmentRepositoryListResult {
+    items: AssignmentRecord[];
+    meta: CmsEntryMeta;
 }
 
 export interface IAssignmentRepository {
     create(
         values: AssignmentRecordValues
     ): Promise<Result<AssignmentRecord, AssignmentPersistenceError>>;
-    /** Newest `assignedOn` first. */
+    /** Newest `assignedOn` first, across pages. */
     list(
         params: AssignmentRepositoryListParams
-    ): Promise<Result<AssignmentRecord[], AssignmentPersistenceError>>;
+    ): Promise<Result<AssignmentRepositoryListResult, AssignmentPersistenceError>>;
 }
 
 /** The assignment log (`wbyWorkflowAssignment`). */
@@ -253,6 +332,7 @@ export namespace AssignmentRepository {
     export type Interface = IAssignmentRepository;
     export type ListParams = AssignmentRepositoryListParams;
     export type ListWhere = AssignmentRepositoryListWhere;
+    export type ListResult = AssignmentRepositoryListResult;
 }
 ```
 
@@ -263,16 +343,9 @@ Create `packages/api-workflows/src/features/assignment/shared/AssignmentEntryMap
 ```ts
 import { parseIdentifier } from "@webiny/utils";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
-import type { Actor, ActorType } from "~/domain/review/types.js";
 import type { AssignmentRecord, AssignmentRecordValues } from "~/domain/assignment/types.js";
 import { toIsoString } from "~/features/shared/toIsoString.js";
-
-export interface AssignmentEntryActor {
-    type: string;
-    id: string;
-    displayName: string;
-    identityType: string | null;
-}
+import { ActorEntryMapper, type ActorEntryValues } from "~/features/shared/ActorEntryMapper.js";
 
 export interface AssignmentEntryValues {
     reviewId: string;
@@ -281,33 +354,9 @@ export interface AssignmentEntryValues {
     userId: string | null;
     assignedOn: string | Date | null;
     source: string;
-    by: AssignmentEntryActor | null;
+    by: ActorEntryValues | null;
     reason: string | null;
 }
-
-const toEntryActor = (actor: Actor | null): AssignmentEntryActor | null => {
-    if (!actor) {
-        return null;
-    }
-    return {
-        type: actor.type,
-        id: actor.id,
-        displayName: actor.displayName,
-        identityType: actor.identityType ?? null
-    };
-};
-
-const fromEntryActor = (value: AssignmentEntryActor | null | undefined): Actor | null => {
-    if (!value?.id) {
-        return null;
-    }
-    return {
-        type: value.type as ActorType,
-        id: value.id,
-        displayName: value.displayName ?? "",
-        ...(value.identityType ? { identityType: value.identityType } : {})
-    };
-};
 
 export class AssignmentEntryMapper {
     public static toValues(values: AssignmentRecordValues): AssignmentEntryValues {
@@ -318,7 +367,7 @@ export class AssignmentEntryMapper {
             userId: values.userId,
             assignedOn: values.assignedOn,
             source: values.source,
-            by: toEntryActor(values.by),
+            by: values.by ? ActorEntryMapper.toEntry(values.by) : null,
             reason: values.reason
         };
     }
@@ -333,7 +382,7 @@ export class AssignmentEntryMapper {
             userId: entry.values.userId ?? null,
             assignedOn: toIsoString(entry.values.assignedOn) ?? entry.createdOn,
             source: entry.values.source,
-            by: fromEntryActor(entry.values.by),
+            by: ActorEntryMapper.fromEntry(entry.values.by),
             reason: entry.values.reason ?? null
         };
     }
@@ -371,6 +420,7 @@ Create `packages/api-workflows/src/features/assignment/shared/AssignmentReposito
 
 ```ts
 import { Result } from "@webiny/feature/api";
+import type { CmsEntryListWhereValues } from "@webiny/api-headless-cms/types/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { AssignmentModelProvider } from "~/domain/assignment/abstractions/AssignmentModelProvider.js";
@@ -379,7 +429,7 @@ import { AssignmentPersistenceError } from "~/domain/assignment/errors.js";
 import type { AssignmentRecord, AssignmentRecordValues } from "~/domain/assignment/types.js";
 import { AssignmentEntryMapper, type AssignmentEntryValues } from "./AssignmentEntryMapper.js";
 
-type WhereValues = Record<string, string>;
+const DEFAULT_LIMIT = 100;
 
 class AssignmentRepositoryImpl implements Abstraction.Interface {
     constructor(
@@ -393,6 +443,9 @@ class AssignmentRepositoryImpl implements Abstraction.Interface {
     ): Promise<Result<AssignmentRecord, AssignmentPersistenceError>> {
         const model = await this.modelProvider.get();
         const result = await this.createEntry.execute<AssignmentEntryValues>(model, {
+            // `createdOn = assignedOn`, so the storage sort on `createdOn` is the `assignedOn`
+            // order across pages (A8).
+            createdOn: values.assignedOn,
             values: AssignmentEntryMapper.toValues(values)
         });
         if (result.isFail()) {
@@ -403,31 +456,40 @@ class AssignmentRepositoryImpl implements Abstraction.Interface {
 
     async list(
         params: Abstraction.ListParams
-    ): Promise<Result<AssignmentRecord[], AssignmentPersistenceError>> {
+    ): Promise<Result<Abstraction.ListResult, AssignmentPersistenceError>> {
         const model = await this.modelProvider.get();
-        const values: WhereValues = {};
-        if (params.where.reviewId) {
-            values.reviewId = params.where.reviewId;
+        const { where } = params;
+        const values: CmsEntryListWhereValues = {};
+        if (where.reviewId) {
+            values.reviewId = where.reviewId;
         }
-        if (params.where.workflowId) {
-            values.workflowId = params.where.workflowId;
+        if (where.workflowId) {
+            values.workflowId = where.workflowId;
         }
-        if (params.where.stepId) {
-            values.stepId = params.where.stepId;
+        if (where.stepId) {
+            values.stepId = where.stepId;
+        }
+        if (where.userId) {
+            values.userId = where.userId;
+        }
+        if (where.userId_in) {
+            values.userId_in = [...where.userId_in];
         }
 
         const result = await this.listLatestEntries.execute<AssignmentEntryValues>(model, {
             where: { values },
             sort: ["createdOn_DESC"],
-            limit: params.limit ?? 100
+            limit: params.limit ?? DEFAULT_LIMIT,
+            after: params.after ?? null
         });
         if (result.isFail()) {
             return Result.fail(new AssignmentPersistenceError(result.error));
         }
 
-        const records = result.value.entries.map(entry => AssignmentEntryMapper.fromEntry(entry));
-        records.sort((a, b) => b.assignedOn.localeCompare(a.assignedOn));
-        return Result.ok(records);
+        return Result.ok({
+            items: result.value.entries.map(entry => AssignmentEntryMapper.fromEntry(entry)),
+            meta: result.value.meta
+        });
     }
 }
 
@@ -473,7 +535,7 @@ add `container.register(AssignmentModel);` after `container.register(ReviewModel
 - [ ] **Step 6: Run the tests**
 
 Run: `yarn test packages/api-workflows/__tests__/assignment/AssignmentRepository.test.ts 2>&1 | tail -50`
-Expected: PASS (1 test).
+Expected: PASS (4 tests).
 Run: `yarn test packages/api-workflows 2>&1 | tail -50`
 Expected: PASS.
 Run: `yarn test:os packages/api-workflows 2>&1 | tail -50`
@@ -486,7 +548,8 @@ Run the Global Constraints chain (build `@webiny/api-workflows`), then:
 ```bash
 git commit -m "feat(api-workflows): add the assignment log model and repository
 
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn"
 ```
 
 ---

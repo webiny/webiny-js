@@ -6,6 +6,7 @@
 - Create: `packages/api-workflows/src/domain/review/abstractions/ReviewModelProvider.ts`
 - Create: `packages/api-workflows/src/domain/review/abstractions/ReviewRepository.ts`
 - Create: `packages/api-workflows/src/features/shared/toIsoString.ts`
+- Create: `packages/api-workflows/src/features/shared/ActorEntryMapper.ts` (shared with the assignment log, Task 10)
 - Create: `packages/api-workflows/src/features/review/shared/ReviewEntryMapper.ts`
 - Create: `packages/api-workflows/src/features/review/shared/ReviewModelProvider.ts`
 - Create: `packages/api-workflows/src/features/review/shared/ReviewRepository.ts`
@@ -24,10 +25,11 @@
   - `ReviewModelProvider.Interface { get(): Promise<CmsModel> }`.
   - `ReviewRepository.Interface`:
     - `get(id: string): Promise<Result<ReviewData, ReviewNotFoundError | ReviewPersistenceError>>`
-    - `getActiveByTarget(params: { model: string; targetRevisionId: string }): Promise<Result<ReviewData | null, ReviewPersistenceError>>`
-    - `countInProgressByWorkflow(workflowId: string): Promise<Result<number, ReviewPersistenceError>>`
-    - `save(review: ReviewData): Promise<Result<ReviewData, ReviewPersistenceError>>` (create or update; the only review write path)
+    - `getActiveByTarget(params: { model: string; targetRevisionId: string }): Promise<Result<ReviewData | null, ReviewPersistenceError>>` (lists through the CMS list, which reads OpenSearch on ddb-os, then confirms each hit with a primary-storage `GetEntryByIdUseCase` read before trusting `isActive`, R18)
+    - `countInProgressByWorkflow(workflowId: string): Promise<Result<number, ReviewPersistenceError>>` (pages through every listed hit and counts only those whose primary-storage read is still `inProgress`, R18)
+    - `save(review: ReviewData): Promise<Result<ReviewData, ReviewPersistenceError>>` (create or update; the only review write path; passes `createdOn: review.createdOn` on create so the stored `createdOn` matches the `requested` fact)
   - `toIsoString(value: unknown): string | null`.
+  - `ActorEntryValues { type; id; displayName; identityType: string | null }`, `ActorEntryMapper.toEntry(actor: Actor): ActorEntryValues`, `ActorEntryMapper.fromEntry(value: ActorEntryValues | null | undefined): Actor | null`.
   - `WorkflowHasActiveReviewsError` (`Workflows/Workflow/HasActiveReviews`, data `{ count }`); `DeleteWorkflowUseCase` returns it.
 
 - [ ] **Step 1: Add the fixture helper**
@@ -66,6 +68,7 @@ import {
     ARTICLE_MODEL,
     createRequestedReview,
     createWorkflow,
+    expectOk,
     NOW,
     requester,
     REVIEW_TEAM_ID,
@@ -90,11 +93,12 @@ describe("ReviewRepository", () => {
         const saved = await repository.save(data);
 
         expect(saved.isOk()).toBe(true);
+        // `createdOn` is passed on create, so it equals the aggregate's `now` (A5).
         expect(saved.value).toEqual({
             ...data,
-            createdOn: saved.value.createdOn,
             savedOn: saved.value.savedOn
         });
+        expect(saved.value.createdOn).toBe(NOW);
         const read = await repository.get(data.id);
         expect(read.value).toEqual(saved.value);
     });
@@ -103,7 +107,14 @@ describe("ReviewRepository", () => {
         const repository = await createRepository();
         const saved = await repository.save(toSaveData(createRequestedReview()));
         const review = Review.fromData(saved.value);
-        review.start({ actor: reviewer, actorTeamIds: [REVIEW_TEAM_ID], now: LATER });
+        expectOk(
+            review.start({
+                stepId: "legal",
+                actor: reviewer,
+                actorTeamIds: [REVIEW_TEAM_ID],
+                now: LATER
+            })
+        );
 
         const updated = await repository.save(toSaveData(review));
 
@@ -133,8 +144,8 @@ describe("ReviewRepository", () => {
         expect(active.value?.id).toBe("review-1");
 
         const cancelled = Review.fromData(first.value);
-        cancelled.cancel({ actor: requester, now: LATER });
-        await repository.save(toSaveData(cancelled));
+        expectOk(cancelled.cancel({ actor: requester, now: LATER }));
+        expectOk(await repository.save(toSaveData(cancelled)));
 
         const afterCancel = await repository.getActiveByTarget({
             model: ARTICLE_MODEL,
@@ -155,8 +166,8 @@ describe("ReviewRepository", () => {
             id: "review-3",
             targetRevisionId: "article-3#0001"
         });
-        cancelled.cancel({ actor: requester, now: NOW });
-        await repository.save(toSaveData(cancelled));
+        expectOk(cancelled.cancel({ actor: requester, now: NOW }));
+        expectOk(await repository.save(toSaveData(cancelled)));
         await repository.save(
             toSaveData(
                 createRequestedReview({
@@ -194,6 +205,8 @@ import {
     createRequestedReview,
     createStartedReview,
     createWorkflowValues,
+    expectOk,
+    poolResolution,
     requester,
     REVIEW_TEAM_ID,
     reviewer,
@@ -208,21 +221,49 @@ const LATER = "2026-10-09T11:00:00.000Z";
 describe("Delete workflow with reviews", () => {
     it("blocks deleting a workflow while reviews are in progress", async () => {
         const { context } = await createContextHandler();
-        const stored = await context.container
-            .resolve(StoreWorkflowUseCase)
-            .execute({ workflow: createWorkflowValues() });
-        const workflow = stored.value;
+        const workflow = expectOk(
+            await context.container
+                .resolve(StoreWorkflowUseCase)
+                .execute({ workflow: createWorkflowValues() })
+        );
         const repository = context.container.resolve(ReviewRepository);
         const deleteWorkflow = context.container.resolve(DeleteWorkflowUseCase);
 
         const first = createRequestedReview({ id: "review-1", workflow });
-        await repository.save(toSaveData(first));
+        expectOk(await repository.save(toSaveData(first)));
         const second = createStartedReview({
             id: "review-2",
             targetRevisionId: "article-2#0001",
             workflow
         });
-        await repository.save(toSaveData(second));
+        expectOk(await repository.save(toSaveData(second)));
+
+        // An approved review stays `isActive: true` but is finished, so it never blocks (D81).
+        const approved = createStartedReview({
+            id: "review-3",
+            targetRevisionId: "article-3#0001",
+            workflow
+        });
+        const decide = (stepId: string) => ({
+            stepId,
+            actor: reviewer,
+            actorTeamIds: [REVIEW_TEAM_ID],
+            comment: null,
+            now: LATER
+        });
+        expectOk(approved.approve(decide("legal")));
+        expectOk(approved.reach({ resolution: poolResolution(), actor: reviewer, now: LATER }));
+        expectOk(
+            approved.start({
+                stepId: "editorial",
+                actor: reviewer,
+                actorTeamIds: [REVIEW_TEAM_ID],
+                now: LATER
+            })
+        );
+        expectOk(approved.approve(decide("editorial")));
+        const approvedData = expectOk(await repository.save(toSaveData(approved)));
+        expect(approvedData).toMatchObject({ state: "approved", isActive: true });
 
         const blocked = await deleteWorkflow.execute({ id: workflow.id });
 
@@ -231,15 +272,18 @@ describe("Delete workflow with reviews", () => {
         expect(blocked.error.data).toEqual({ count: 2 });
 
         // Finished reviews (cancelled, rejected) do not block the delete (D81).
-        first.cancel({ actor: requester, now: LATER });
-        await repository.save(toSaveData(first));
-        second.reject({
-            actor: reviewer,
-            actorTeamIds: [REVIEW_TEAM_ID],
-            comment: "Not this time.",
-            now: LATER
-        });
-        await repository.save(toSaveData(second));
+        expectOk(first.cancel({ actor: requester, now: LATER }));
+        expectOk(await repository.save(toSaveData(first)));
+        expectOk(
+            second.reject({
+                stepId: "legal",
+                actor: reviewer,
+                actorTeamIds: [REVIEW_TEAM_ID],
+                comment: "Not this time.",
+                now: LATER
+            })
+        );
+        expectOk(await repository.save(toSaveData(second)));
 
         const deleted = await deleteWorkflow.execute({ id: workflow.id });
 
@@ -466,6 +510,44 @@ export const toIsoString = (value: unknown): string | null => {
 };
 ```
 
+Create `packages/api-workflows/src/features/shared/ActorEntryMapper.ts`:
+
+```ts
+import type { Actor, ActorType } from "~/domain/review/types.js";
+
+/** How an `Actor` is stored in an object field of a private model. */
+export interface ActorEntryValues {
+    type: string;
+    id: string;
+    displayName: string;
+    identityType: string | null;
+}
+
+/** Maps actors to and from object fields; used by the review and assignment-log mappers. */
+export class ActorEntryMapper {
+    public static toEntry(actor: Actor): ActorEntryValues {
+        return {
+            type: actor.type,
+            id: actor.id,
+            displayName: actor.displayName,
+            identityType: actor.identityType ?? null
+        };
+    }
+
+    public static fromEntry(value: ActorEntryValues | null | undefined): Actor | null {
+        if (!value?.id) {
+            return null;
+        }
+        return {
+            type: value.type as ActorType,
+            id: value.id,
+            displayName: value.displayName ?? "",
+            ...(value.identityType ? { identityType: value.identityType } : {})
+        };
+    }
+}
+```
+
 Create `packages/api-workflows/src/features/review/shared/ReviewEntryMapper.ts`:
 
 ```ts
@@ -473,8 +555,6 @@ import { parseIdentifier } from "@webiny/utils";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import type { WorkflowStepNotification } from "~/domain/workflow/types.js";
 import type {
-    Actor,
-    ActorType,
     ReviewData,
     ReviewState,
     ReviewStep,
@@ -484,19 +564,13 @@ import type {
     TargetContextFolder
 } from "~/domain/review/types.js";
 import { toIsoString } from "~/features/shared/toIsoString.js";
-
-export interface ReviewEntryActor {
-    type: string;
-    id: string;
-    displayName: string;
-    identityType: string | null;
-}
+import { ActorEntryMapper, type ActorEntryValues } from "~/features/shared/ActorEntryMapper.js";
 
 export interface ReviewEntryStepAssignment {
     source: string;
     ruleId: string | null;
     reason: string | null;
-    by: ReviewEntryActor | null;
+    by: ActorEntryValues | null;
 }
 
 export interface ReviewEntryStep {
@@ -508,7 +582,7 @@ export interface ReviewEntryStep {
     notifications: WorkflowStepNotification[] | null;
     config: unknown;
     state: string;
-    owner: ReviewEntryActor | null;
+    owner: ActorEntryValues | null;
     comment: string | null;
     pickedUserId: string | null;
     candidateTeamIds: string[] | null;
@@ -546,30 +620,9 @@ export interface ReviewEntryValues {
     targetContext: ReviewEntryTargetContext | null;
     workflow: ReviewEntryWorkflow | null;
     steps: ReviewEntryStep[] | null;
-    requester: ReviewEntryActor | null;
+    requester: ActorEntryValues | null;
     lastChangedOn: string | Date | null;
 }
-
-const toEntryActor = (actor: Actor): ReviewEntryActor => {
-    return {
-        type: actor.type,
-        id: actor.id,
-        displayName: actor.displayName,
-        identityType: actor.identityType ?? null
-    };
-};
-
-const fromEntryActor = (value: ReviewEntryActor | null | undefined): Actor | null => {
-    if (!value?.id) {
-        return null;
-    }
-    return {
-        type: value.type as ActorType,
-        id: value.id,
-        displayName: value.displayName ?? "",
-        ...(value.identityType ? { identityType: value.identityType } : {})
-    };
-};
 
 /** Maps reviews to and from `wbyWorkflowReview` entries; nulls in storage become absent optionals. */
 export class ReviewEntryMapper {
@@ -597,7 +650,7 @@ export class ReviewEntryMapper {
                 models: [...review.workflow.models]
             },
             steps: review.steps.map(step => ReviewEntryMapper.stepToEntry(step)),
-            requester: toEntryActor(review.createdBy),
+            requester: ActorEntryMapper.toEntry(review.createdBy),
             lastChangedOn: review.lastChangedOn
         };
     }
@@ -633,7 +686,7 @@ export class ReviewEntryMapper {
                 models: values.workflow?.models ?? []
             },
             steps: (values.steps ?? []).map(step => ReviewEntryMapper.stepFromEntry(step)),
-            createdBy: fromEntryActor(values.requester) ?? {
+            createdBy: ActorEntryMapper.fromEntry(values.requester) ?? {
                 type: "user",
                 id: "",
                 displayName: ""
@@ -654,7 +707,7 @@ export class ReviewEntryMapper {
             notifications: step.notifications.map(notification => ({ id: notification.id })),
             config: step.config,
             state: step.state,
-            owner: step.owner ? toEntryActor(step.owner) : null,
+            owner: step.owner ? ActorEntryMapper.toEntry(step.owner) : null,
             comment: step.comment,
             pickedUserId: step.pickedUserId,
             candidateTeamIds: [...step.candidateTeamIds],
@@ -664,7 +717,7 @@ export class ReviewEntryMapper {
                       source: step.assignment.source,
                       ruleId: step.assignment.ruleId ?? null,
                       reason: step.assignment.reason ?? null,
-                      by: step.assignment.by ? toEntryActor(step.assignment.by) : null
+                      by: step.assignment.by ? ActorEntryMapper.toEntry(step.assignment.by) : null
                   }
                 : null,
             reachedOn: step.reachedOn,
@@ -685,7 +738,7 @@ export class ReviewEntryMapper {
             })),
             config: step.config ?? null,
             state: step.state as StepState,
-            owner: fromEntryActor(step.owner),
+            owner: ActorEntryMapper.fromEntry(step.owner),
             comment: step.comment ?? null,
             pickedUserId: step.pickedUserId ?? null,
             candidateTeamIds: step.candidateTeamIds ?? [],
@@ -703,7 +756,7 @@ export class ReviewEntryMapper {
         if (!value?.source) {
             return null;
         }
-        const by = fromEntryActor(value.by);
+        const by = ActorEntryMapper.fromEntry(value.by);
         return {
             source: value.source,
             ...(value.ruleId ? { ruleId: value.ruleId } : {}),
@@ -746,6 +799,7 @@ Create `packages/api-workflows/src/features/review/shared/ReviewRepository.ts`:
 ```ts
 import { Result } from "@webiny/feature/api";
 import { createIdentifier } from "@webiny/utils";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
@@ -757,7 +811,18 @@ import type { ReviewData } from "~/domain/review/types.js";
 import { ReviewEntryMapper, type ReviewEntryValues } from "./ReviewEntryMapper.js";
 
 const ENTRY_NOT_FOUND = "Cms/Entry/NotFound";
+/** At most one review per revision is active (D23); a few extra hits cover stale list results. */
+const ACTIVE_BY_TARGET_LIMIT = 10;
+const COUNT_PAGE_SIZE = 100;
 
+/**
+ * Lists go through `ListLatestEntriesUseCase`, which reads OpenSearch on ddb-os. OpenSearch is
+ * filled asynchronously, so a listed hit can be stale (a cancelled review still `isActive: true`)
+ * and a just-written review can be missing. Every hit is confirmed with a primary-storage read
+ * before `isActive` or `state` is trusted (R18). A review written but not yet indexed is still
+ * missed: two concurrent requests on one revision can both pass, and a delete can pass while a
+ * request is in flight. That race is accepted, like D27 and D15.
+ */
 class ReviewRepositoryImpl implements Abstraction.Interface {
     constructor(
         private modelProvider: ReviewModelProvider.Interface,
@@ -795,32 +860,68 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
                 }
             },
             sort: ["createdOn_DESC"],
-            limit: 1
+            limit: ACTIVE_BY_TARGET_LIMIT
         });
         if (result.isFail()) {
             return Result.fail(new ReviewPersistenceError(result.error));
         }
-        const [entry] = result.value.entries;
-        return Result.ok(entry ? ReviewEntryMapper.fromEntry(entry) : null);
+
+        for (const entry of result.value.entries) {
+            const confirmed = await this.readPrimary(model, entry.id);
+            if (confirmed.isFail()) {
+                return Result.fail(confirmed.error);
+            }
+            const review = confirmed.value;
+            if (
+                review &&
+                review.isActive &&
+                review.model === params.model &&
+                review.targetRevisionId === params.targetRevisionId
+            ) {
+                return Result.ok(review);
+            }
+        }
+        return Result.ok(null);
     }
 
     async countInProgressByWorkflow(
         workflowId: string
     ): Promise<Result<number, ReviewPersistenceError>> {
         const model = await this.modelProvider.get();
-        const result = await this.listLatestEntries.execute<ReviewEntryValues>(model, {
-            where: {
-                values: {
-                    workflowId,
-                    state: "inProgress"
+        let count = 0;
+        let after: string | null = null;
+        do {
+            const result = await this.listLatestEntries.execute<ReviewEntryValues>(model, {
+                where: {
+                    values: {
+                        workflowId,
+                        state: "inProgress"
+                    }
+                },
+                sort: ["createdOn_ASC"],
+                limit: COUNT_PAGE_SIZE,
+                after
+            });
+            if (result.isFail()) {
+                return Result.fail(new ReviewPersistenceError(result.error));
+            }
+
+            for (const entry of result.value.entries) {
+                const confirmed = await this.readPrimary(model, entry.id);
+                if (confirmed.isFail()) {
+                    return Result.fail(confirmed.error);
                 }
-            },
-            limit: 1
-        });
-        if (result.isFail()) {
-            return Result.fail(new ReviewPersistenceError(result.error));
-        }
-        return Result.ok(result.value.meta.totalCount);
+                const review = confirmed.value;
+                if (review && review.workflowId === workflowId && review.state === "inProgress") {
+                    count++;
+                }
+            }
+
+            const { meta } = result.value;
+            after = meta.hasMoreItems ? meta.cursor : null;
+        } while (after);
+
+        return Result.ok(count);
     }
 
     async save(review: ReviewData): Promise<Result<ReviewData, ReviewPersistenceError>> {
@@ -845,12 +946,29 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
 
         const created = await this.createEntry.execute<ReviewEntryValues>(model, {
             id: review.id,
+            // The aggregate's `now`, so `createdOn` matches the `requested` fact (A5).
+            createdOn: review.createdOn,
             values
         });
         if (created.isFail()) {
             return Result.fail(new ReviewPersistenceError(created.error));
         }
         return Result.ok(ReviewEntryMapper.fromEntry(created.value));
+    }
+
+    /** Primary-storage read of a listed entry; `null` when it was deleted after it was listed. */
+    private async readPrimary(
+        model: CmsModel,
+        entryId: string
+    ): Promise<Result<ReviewData | null, ReviewPersistenceError>> {
+        const result = await this.getEntryById.execute<ReviewEntryValues>(model, entryId);
+        if (result.isFail()) {
+            if (result.error.code === ENTRY_NOT_FOUND) {
+                return Result.ok(null);
+            }
+            return Result.fail(new ReviewPersistenceError(result.error));
+        }
+        return Result.ok(ReviewEntryMapper.fromEntry(result.value));
     }
 }
 
@@ -954,7 +1072,7 @@ import {
     WorkflowHasActiveReviewsError,
     WorkflowPersistenceError
 } from "~/domain/workflow/errors.js";
-import { WorkflowAfterDeleteEvent, WorkflowBeforeDeleteEvent } from "../events.js";
+import { WorkflowAfterDeleteEvent, WorkflowBeforeDeleteEvent } from "./events.js";
 import { DeleteWorkflowUseCase as UseCase } from "./abstractions.js";
 
 class DeleteWorkflowUseCaseImpl implements UseCase.Interface {
@@ -1054,7 +1172,7 @@ Expected: PASS (6 tests).
 Run: `yarn test packages/api-workflows 2>&1 | tail -50`
 Expected: PASS.
 Run: `yarn test:os packages/api-workflows 2>&1 | tail -50`
-Expected: PASS (the list queries in `getActiveByTarget` and `countInProgressByWorkflow` run against OpenSearch here).
+Expected: PASS (the list queries in `getActiveByTarget` and `countInProgressByWorkflow` run against OpenSearch here; each hit is re-read from primary storage). Local runs index synchronously, so they cannot reproduce the OpenSearch lag; the primary read is the guard (R18).
 
 - [ ] **Step 9: Commit**
 
@@ -1063,7 +1181,8 @@ Run the Global Constraints chain (build `@webiny/api-workflows`), then:
 ```bash
 git commit -m "feat(api-workflows): add review model and repository, block deleting workflows with active reviews
 
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn"
 ```
 
 ---

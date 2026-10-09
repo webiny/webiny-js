@@ -11,7 +11,8 @@
 **Interfaces:**
 - Consumes: `WorkflowRepository` (Task 3), `ReviewRepository` (Task 6), `ReviewTargetLoader`, `ReviewStepReacher`, `ReviewSaver` (Task 7), `Review` (Tasks 4-5), `mdbid` (`@webiny/utils`).
 - Produces:
-  - `RequestReviewUseCase.execute(input: RequestReviewInput): Promise<Result<ReviewData, RequestReviewUseCase.Error>>` with `RequestReviewInput { model: string; targetId: string; targetRevisionId: string; picks?: ReviewPick[]; actor: Actor }`. Errors: `Workflows/Review/WorkflowNotFound`, `AlreadyActive`, `TargetNotFound`, `Validation`, `InvalidState`, `Persistence`.
+  - `RequestReviewUseCase.execute(input: RequestReviewInput): Promise<Result<ReviewData, RequestReviewUseCase.Error>>` with `RequestReviewInput { model: string; targetId: string; targetRevisionId: string; picks?: ReviewPick[]; actor: Actor }`. Errors: `Workflows/Review/WorkflowNotFound`, `AlreadyActive`, `TargetNotFound`, `Validation`, `InvalidState`, `Persistence`, `TargetSync` (R16: the review is saved and its events published; `error.data.review` holds it).
+  - Target loader choice: when several loaders' `canLoad` match, the last registered wins (same rule as single-registration DI resolve).
   - `GetReviewUseCase.execute(input: { id: string }): Promise<Result<ReviewData, ReviewNotFoundError | ReviewPersistenceError>>`.
   - Test helpers: `FakeReviewTargetLoader`, `MISSING_TARGET_ID`, `createReviewContext(params?)`, `createRequestInput(overrides?)`.
 
@@ -116,10 +117,12 @@ import { describe, expect, it } from "vitest";
 import { createRequestInput, createReviewContext } from "~tests/__helpers/reviewContext.js";
 import { MISSING_TARGET_ID } from "~tests/__helpers/FakeReviewTargetLoader.js";
 import { recordedSyncs } from "~tests/__helpers/RecordingReviewTargetSync.js";
+import { FailingReviewTargetSync } from "~tests/__helpers/FailingReviewTargetSync.js";
 import { workflowEventTypes } from "~tests/__helpers/RecordingEventPublisher.js";
 import {
     ARTICLE_MODEL,
     createWorkflowValues,
+    expectOk,
     otherReviewer,
     requester,
     REVIEW_TEAM_ID,
@@ -252,6 +255,36 @@ describe("RequestReviewUseCase", () => {
         expect(noLoader.error.code).toBe("Workflows/Review/TargetNotFound");
     });
 
+    it("keeps the requested review when the target sync fails", async () => {
+        const { context } = await createReviewContext({
+            setup: container => {
+                container.registerDecorator(FailingReviewTargetSync);
+            }
+        });
+        const requestReview = context.container.resolve(RequestReviewUseCase);
+
+        const result = await requestReview.execute(createRequestInput());
+
+        expect(result.isFail()).toBe(true);
+        const error = result.error;
+        if (error.code !== "Workflows/Review/TargetSync") {
+            throw error;
+        }
+        const read = expectOk(
+            await context.container.resolve(GetReviewUseCase).execute({ id: error.data.review.id })
+        );
+        expect(error.data).toEqual({ review: read });
+        expect(read).toMatchObject({ isActive: true, currentStepState: "awaiting" });
+        expect(workflowEventTypes()).toEqual([
+            "Workflows/Review/Requested",
+            "Workflows/Review/StepReached"
+        ]);
+
+        // The saved review is active, so a retry is refused instead of creating a second one.
+        const retry = await requestReview.execute(createRequestInput());
+        expect(retry.error.code).toBe("Workflows/Review/AlreadyActive");
+    });
+
     it("fails when no workflow is bound to the model", async () => {
         const { context } = await createReviewContext();
 
@@ -294,6 +327,7 @@ import type {
     ReviewInvalidStateError,
     ReviewPersistenceError,
     ReviewTargetNotFoundError,
+    ReviewTargetSyncError,
     ReviewValidationError,
     ReviewWorkflowNotFoundError
 } from "~/domain/review/errors.js";
@@ -316,6 +350,7 @@ export interface IRequestReviewUseCaseErrors {
     validation: ReviewValidationError;
     invalidState: ReviewInvalidStateError;
     persistence: ReviewPersistenceError;
+    targetSync: ReviewTargetSyncError;
 }
 
 type UseCaseError = IRequestReviewUseCaseErrors[keyof IRequestReviewUseCaseErrors];
@@ -394,7 +429,9 @@ class RequestReviewUseCaseImpl implements UseCase.Interface {
             );
         }
 
-        const loader = this.targetLoaders.find(item => item.canLoad(input.model));
+        // Several loaders may match (e.g. a generic "cms.*" one and a specific one); the last
+        // registered wins, the same rule as resolving a single registration.
+        const loader = [...this.targetLoaders].reverse().find(item => item.canLoad(input.model));
         const target = loader
             ? await loader.load({
                   model: input.model,
@@ -569,7 +606,7 @@ and replace the `// Reviews` block with:
 - [ ] **Step 7: Run the tests**
 
 Run: `yarn test packages/api-workflows/__tests__/review/RequestReview.test.ts 2>&1 | tail -50`
-Expected: PASS (7 tests).
+Expected: PASS (8 tests).
 Run: `yarn test packages/api-workflows 2>&1 | tail -50`
 Expected: PASS.
 Run: `yarn test:os packages/api-workflows 2>&1 | tail -50`
@@ -582,7 +619,8 @@ Run the Global Constraints chain (build `@webiny/api-workflows`), then:
 ```bash
 git commit -m "feat(api-workflows): add request and get review use cases
 
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn"
 ```
 
 ---

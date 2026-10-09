@@ -6,13 +6,15 @@
 - Create: `packages/api-workflows/src/domain/workflow/WorkflowValidator.ts`
 - Create: `packages/api-workflows/__tests__/__helpers/fixtures.ts`
 - Create: `packages/api-workflows/__tests__/domain/WorkflowValidator.test.ts`
+- Unchanged on purpose: `packages/api-workflows/package.json` keeps `"zod": "4.4.3"` (Task 1 left it in place for this task); after this task `yarn adio` must report no findings for `packages/api-workflows`.
 
 **Interfaces:**
 - Consumes: `WorkflowValidationError` (`~/domain/workflow/errors.js`, existing, constructor `(message: string)`, code `Workflows/Workflow/Validation`), `Result` (`@webiny/feature/api`), `zod`.
 - Produces:
   - Types `Workflow`, `WorkflowValues`, `WorkflowStep`, `WorkflowStepNotification`, `WorkflowIdentity`, `ReviewStepConfig`, `ReviewStepAssignmentConfig`, `RoutingRule`, `RoutingRuleConditions`, `RoutingRuleFolderCondition`, `RoutingRuleTarget`, `RoutingStrategy`, `RoutingRuleTargetType`.
   - `reviewStepConfigSchema` (zod) and `parseReviewStepConfig(config: unknown): ReviewStepConfig | null`.
-  - `REVIEW_STEP_TYPE = "review"`, `WorkflowValidator.validate(values: WorkflowValues): Result<WorkflowValues, WorkflowValidationError>`.
+  - `REVIEW_STEP_TYPE = "review"`, `MODEL_NAMESPACE_PATTERN` (`/^(cms\.[A-Za-z0-9_-]+|wb\.page)$/`), `WorkflowValidator.validate(values: WorkflowValues): Result<WorkflowValues, WorkflowValidationError>`.
+  - Validation messages owned here: name, exactly one model, model namespace format, at least one step, unique step ids, step type, teams, rule target present, team target among the step's teams, zod config errors. Whether a `cms.*` model exists and is publishable is checked by the CMS package handlers (Task 3).
 
 - [ ] **Step 1: Write the test fixtures**
 
@@ -74,7 +76,12 @@ Create `packages/api-workflows/__tests__/domain/WorkflowValidator.test.ts`:
 import { describe, expect, it } from "vitest";
 import { WorkflowValidator } from "~/domain/workflow/WorkflowValidator.js";
 import type { WorkflowValues } from "~/domain/workflow/types.js";
-import { createReviewStep, createWorkflowValues } from "~tests/__helpers/fixtures.js";
+import {
+    createReviewStep,
+    createWorkflowValues,
+    OTHER_TEAM_ID,
+    REVIEW_TEAM_ID
+} from "~tests/__helpers/fixtures.js";
 
 const validationMessage = (values: WorkflowValues): string => {
     const result = WorkflowValidator.validate(values);
@@ -106,6 +113,21 @@ describe("WorkflowValidator", () => {
         expect(validationMessage(createWorkflowValues({ models: [] }))).toBe(expected);
         expect(validationMessage(createWorkflowValues({ models: ["cms.a", "cms.b"] }))).toBe(
             expected
+        );
+    });
+
+    it("accepts only cms.<modelId> and wb.page namespace ids", () => {
+        expect(validationMessage(createWorkflowValues({ models: ["foo"] }))).toBe(
+            'Model "foo" is not a valid model ID. Use "cms.<modelId>" or "wb.page".'
+        );
+        expect(validationMessage(createWorkflowValues({ models: ["cms."] }))).toBe(
+            'Model "cms." is not a valid model ID. Use "cms.<modelId>" or "wb.page".'
+        );
+        expect(validationMessage(createWorkflowValues({ models: ["wb.block"] }))).toBe(
+            'Model "wb.block" is not a valid model ID. Use "cms.<modelId>" or "wb.page".'
+        );
+        expect(WorkflowValidator.validate(createWorkflowValues({ models: ["wb.page"] })).isOk()).toBe(
+            true
         );
     });
 
@@ -154,6 +176,43 @@ describe("WorkflowValidator", () => {
         expect(validationMessage(createWorkflowValues({ steps }))).toBe(
             'Every routing rule in step "Legal review" needs a target.'
         );
+    });
+
+    it("requires a team target to be one of the step's teams", () => {
+        const steps = [
+            createReviewStep({
+                id: "legal",
+                title: "Legal review",
+                teams: [REVIEW_TEAM_ID],
+                rules: [
+                    {
+                        id: "rule-1",
+                        conditions: {},
+                        target: { type: "team", id: OTHER_TEAM_ID }
+                    }
+                ]
+            })
+        ];
+
+        expect(validationMessage(createWorkflowValues({ steps }))).toBe(
+            'Routing rule "rule-1" in step "Legal review" targets a team that is not one of the step\'s teams.'
+        );
+    });
+
+    it("accepts a team target that is one of the step's teams and any user target", () => {
+        const steps = [
+            createReviewStep({
+                id: "legal",
+                title: "Legal review",
+                teams: [REVIEW_TEAM_ID],
+                rules: [
+                    { id: "rule-1", conditions: {}, target: { type: "team", id: REVIEW_TEAM_ID } },
+                    { id: "rule-2", conditions: {}, target: { type: "user", id: "user-anyone" } }
+                ]
+            })
+        ];
+
+        expect(WorkflowValidator.validate(createWorkflowValues({ steps })).isOk()).toBe(true);
     });
 
     it("rejects an invalid review config", () => {
@@ -326,6 +385,12 @@ import type { ReviewStepConfig, WorkflowStep, WorkflowValues } from "./types.js"
 /** The only step type phase 1a accepts; phase 5 replaces this check with the `StepType` registry. */
 export const REVIEW_STEP_TYPE = "review";
 
+/**
+ * Valid namespace ids in v1: `cms.<modelId>` and `wb.page` (spec 3). Whether a `cms.*` model exists
+ * and is publishable is checked by the CMS workflows package on `WorkflowBeforeCreate|Update`.
+ */
+export const MODEL_NAMESPACE_PATTERN = /^(cms\.[A-Za-z0-9_-]+|wb\.page)$/;
+
 type UnknownRecord = Record<string, unknown>;
 
 const isRecord = (value: unknown): value is UnknownRecord => {
@@ -352,6 +417,10 @@ export class WorkflowValidator {
         }
         if (values.models.length !== 1 || !values.models[0]) {
             return fail("A workflow must be bound to exactly one model.");
+        }
+        const [model] = values.models;
+        if (!MODEL_NAMESPACE_PATTERN.test(model)) {
+            return fail(`Model "${model}" is not a valid model ID. Use "cms.<modelId>" or "wb.page".`);
         }
         if (values.steps.length === 0) {
             return fail("Add at least one step.");
@@ -433,6 +502,16 @@ export class WorkflowValidator {
             );
         }
 
+        // Spec 6: team targets must be among the step's teams. User targets need team lookups
+        // and are validated in phase 4 (A7).
+        for (const rule of parsed.data.assignment.rules) {
+            if (rule.target.type === "team" && !parsed.data.teams.includes(rule.target.id)) {
+                return fail(
+                    `Routing rule "${rule.id}" in step "${step.title}" targets a team that is not one of the step's teams.`
+                );
+            }
+        }
+
         return Result.ok(parsed.data);
     }
 }
@@ -441,7 +520,7 @@ export class WorkflowValidator {
 - [ ] **Step 7: Run the test**
 
 Run: `yarn test packages/api-workflows/__tests__/domain/WorkflowValidator.test.ts 2>&1 | tail -50`
-Expected: PASS (9 tests).
+Expected: PASS (12 tests).
 Run: `yarn test packages/api-workflows 2>&1 | tail -50`
 Expected: PASS.
 Run: `yarn test:os packages/api-workflows 2>&1 | tail -50`
@@ -454,7 +533,8 @@ Run the Global Constraints chain (build `@webiny/api-workflows`), then:
 ```bash
 git commit -m "feat(api-workflows): add workflow domain types and validator
 
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn"
 ```
 
 ---

@@ -13,21 +13,25 @@
 - Produces:
   - Types: `ReviewState`, `StepState`, `ActorType`, `Actor`, `ReviewStepAssignment`, `ReviewStep`, `ReviewWorkflowSnapshot`, `TargetContext`, `TargetContextFolder`, `TargetContextAuthor`, `ReviewData`, `ReviewPick`, `StepAssignmentResolution`, `ReviewSystemWorkflow`.
   - Facts: `ReviewFact` union (`requested`, `stepReached`, `stepStarted`, `stepTakenOver`, `stepApproved`, `stepRejected`, `cancelled`, `approved`) and `ReviewStepChange`.
-  - Errors (`Workflows/Review/...`): `NotFound`, `Persistence`, `Validation`, `InvalidState`, `RequesterCannotReview`, `NotCandidate`, `AlreadyOwner`, `NotOwner`, `StepNotTakeable`, `AlreadyActive`, `WorkflowNotFound`, `TargetNotFound`.
+  - Errors (`Workflows/Review/...`): `NotFound`, `Persistence`, `Validation`, `InvalidState`, `StepNotCurrent` (data `{ reviewId, stepId, currentStepId }`, R17), `ActorNotUser` (data `{ reviewId, stepId, actorType }`), `RequesterCannotReview`, `NotCandidate`, `AlreadyOwner`, `NotOwner`, `StepNotTakeable`, `AlreadyActive`, `WorkflowNotFound`, `TargetNotFound`, `TargetSync` (class `ReviewTargetSyncError`, data `{ review: ReviewData }`, R16; used by Task 7).
+  - `ReviewActorParams { stepId: string; actor: Actor; actorTeamIds: string[]; now: string }` (R17: `stepId` must be the current step).
+  - `ReviewReviewerError = ReviewInvalidStateError | ReviewStepNotCurrentError | ReviewActorNotUserError | ReviewRequesterCannotReviewError | ReviewNotCandidateError`; `ReviewTakeOverError = ReviewReviewerError | ReviewAlreadyOwnerError | ReviewStepNotTakeableError`.
   - `class Review`:
-    - `static request(params: ReviewRequestParams): Result<Review, ReviewValidationError>`
+    - `static request(params: ReviewRequestParams): Result<Review, ReviewValidationError>` (fails when `params.model` is not in `workflow.models`, the workflow has no steps, or a pick is invalid or duplicated)
     - `static fromData(data: ReviewData): Review`, `toData(): ReviewData`, `get id(): string`
     - `getStepToReach(): ReviewStep | null`
-    - `reach(params: ReviewReachParams): Result<void, ReviewInvalidStateError>`
-    - `start(params: ReviewActorParams): Result<void, ReviewReviewerError>`
-    - `takeOver(params: ReviewActorParams): Result<void, ReviewTakeOverError>`
+    - `reach(params: ReviewReachParams): Result<void, ReviewInvalidStateError>` (a resolved `user` owner who is the requester falls back to the pool with a `reason`)
+    - `start(params: ReviewActorParams): Result<void, ReviewReviewerError>` (user actors only)
+    - `takeOver(params: ReviewActorParams): Result<void, ReviewTakeOverError>` (user actors only)
     - `pullFacts(): ReviewFact[]`
+  - Fixture helper `expectOk(result)`: returns the value or throws the error, so setup steps fail at their cause.
 
 - [ ] **Step 1: Extend the fixtures**
 
 Replace `packages/api-workflows/__tests__/__helpers/fixtures.ts` with:
 
 ```ts
+import type { Result } from "@webiny/feature/api";
 import { Review } from "~/domain/review/Review.js";
 import type {
     Actor,
@@ -41,6 +45,14 @@ export const NOW = "2026-10-09T10:00:00.000Z";
 export const REVIEW_TEAM_ID = "team-reviewers";
 export const OTHER_TEAM_ID = "team-other";
 export const ARTICLE_MODEL = "cms.article";
+
+/** Returns the value of an ok result; throws the error otherwise, so setup fails at its cause. */
+export const expectOk = <TValue, TError>(result: Result<TValue, TError>): TValue => {
+    if (result.isFail()) {
+        throw result.error;
+    }
+    return result.value;
+};
 
 export interface ReviewStepFixtureParams {
     id: string;
@@ -142,36 +154,35 @@ export interface RequestedReviewParams {
 /** A review whose first step was reached into the pool. Facts are left in place. */
 export const createRequestedReview = (params: RequestedReviewParams = {}): Review => {
     const targetRevisionId = params.targetRevisionId ?? "article-1#0001";
-    const result = Review.request({
-        id: params.id ?? "review-1",
-        workflow: params.workflow ?? createWorkflow(),
-        model: ARTICLE_MODEL,
-        targetId: targetRevisionId.split("#")[0],
-        targetRevisionId,
-        title: "Article 1",
-        targetContext,
-        picks: params.picks ?? [],
-        requester,
-        now: NOW
-    });
-    if (result.isFail()) {
-        throw result.error;
-    }
-    const review = result.value;
-    const reached = review.reach({ resolution: poolResolution(), actor: requester, now: NOW });
-    if (reached.isFail()) {
-        throw reached.error;
-    }
+    const review = expectOk(
+        Review.request({
+            id: params.id ?? "review-1",
+            workflow: params.workflow ?? createWorkflow(),
+            model: ARTICLE_MODEL,
+            targetId: targetRevisionId.split("#")[0],
+            targetRevisionId,
+            title: "Article 1",
+            targetContext,
+            picks: params.picks ?? [],
+            requester,
+            now: NOW
+        })
+    );
+    expectOk(review.reach({ resolution: poolResolution(), actor: requester, now: NOW }));
     return review;
 };
 
-/** A review whose first step was started by `reviewer`. Facts are cleared. */
+/** A review whose first step ("legal") was started by `reviewer`. Facts are cleared. */
 export const createStartedReview = (params: RequestedReviewParams = {}): Review => {
     const review = createRequestedReview(params);
-    const started = review.start({ actor: reviewer, actorTeamIds: [REVIEW_TEAM_ID], now: NOW });
-    if (started.isFail()) {
-        throw started.error;
-    }
+    expectOk(
+        review.start({
+            stepId: "legal",
+            actor: reviewer,
+            actorTeamIds: [REVIEW_TEAM_ID],
+            now: NOW
+        })
+    );
     review.pullFacts();
     return review;
 };
@@ -184,12 +195,14 @@ Create `packages/api-workflows/__tests__/domain/Review.request.test.ts`:
 ```ts
 import { describe, expect, it } from "vitest";
 import { Review, type ReviewRequestParams } from "~/domain/review/Review.js";
+import type { Actor } from "~/domain/review/types.js";
 import {
     aiActor,
     ARTICLE_MODEL,
     createRequestedReview,
     createStartedReview,
     createWorkflow,
+    expectOk,
     NOW,
     OTHER_TEAM_ID,
     otherReviewer,
@@ -201,6 +214,13 @@ import {
 } from "~tests/__helpers/fixtures.js";
 
 const LATER = "2026-10-09T11:00:00.000Z";
+
+/** A non-user actor that is not the requester, so only the actor-type rule can reject it. */
+const automationActor: Actor = {
+    type: "automation",
+    id: "user-reviewer",
+    displayName: "Automation"
+};
 
 const requestParams = (overrides: Partial<ReviewRequestParams> = {}): ReviewRequestParams => {
     return {
@@ -219,11 +239,11 @@ const requestParams = (overrides: Partial<ReviewRequestParams> = {}): ReviewRequ
 };
 
 const requestReview = (overrides: Partial<ReviewRequestParams> = {}): Review => {
-    const result = Review.request(requestParams(overrides));
-    if (result.isFail()) {
-        throw result.error;
-    }
-    return result.value;
+    return expectOk(Review.request(requestParams(overrides)));
+};
+
+const onLegal = (actor: Actor, actorTeamIds: string[] = [REVIEW_TEAM_ID]) => {
+    return { stepId: "legal", actor, actorTeamIds, now: LATER };
 };
 
 describe("Review.request", () => {
@@ -283,6 +303,39 @@ describe("Review.request", () => {
             'Step "Editorial review" does not allow picking a reviewer.'
         );
     });
+
+    it("rejects two picks for the same step", () => {
+        const result = Review.request(
+            requestParams({
+                picks: [
+                    { stepId: "legal", userId: reviewer.id },
+                    { stepId: "legal", userId: otherReviewer.id }
+                ]
+            })
+        );
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/Validation");
+        expect(result.error.message).toBe('Step "Legal review" has more than one pick.');
+    });
+
+    it("rejects a model the workflow is not bound to", () => {
+        const result = Review.request(requestParams({ model: "cms.other" }));
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/Validation");
+        expect(result.error.message).toBe(
+            'The workflow "Article review" is not bound to the model "cms.other".'
+        );
+    });
+
+    it("rejects a workflow without steps", () => {
+        const result = Review.request(requestParams({ workflow: createWorkflow({ steps: [] }) }));
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/Validation");
+        expect(result.error.message).toBe('The workflow "Article review" has no steps.');
+    });
 });
 
 describe("Review.reach", () => {
@@ -317,15 +370,17 @@ describe("Review.reach", () => {
     it("starts the step when an owner resolves", () => {
         const review = requestReview();
 
-        review.reach({
-            resolution: {
-                owner: reviewer,
-                candidateTeamIds: [REVIEW_TEAM_ID],
-                assignment: { source: "picked" }
-            },
-            actor: requester,
-            now: NOW
-        });
+        expectOk(
+            review.reach({
+                resolution: {
+                    owner: reviewer,
+                    candidateTeamIds: [REVIEW_TEAM_ID],
+                    assignment: { source: "picked" }
+                },
+                actor: requester,
+                now: NOW
+            })
+        );
 
         expect(review.toData().steps[0]).toMatchObject({
             state: "inReview",
@@ -334,6 +389,45 @@ describe("Review.reach", () => {
             reachedOn: NOW,
             startedOn: NOW
         });
+    });
+
+    it("falls back to the pool when the resolved owner is the requester", () => {
+        const review = requestReview();
+        review.pullFacts();
+
+        expectOk(
+            review.reach({
+                resolution: {
+                    owner: requester,
+                    candidateTeamIds: [REVIEW_TEAM_ID],
+                    assignment: { source: "picked" }
+                },
+                actor: requester,
+                now: NOW
+            })
+        );
+
+        const expectedAssignment = {
+            source: "pool",
+            reason: "The resolved owner is the requester, who cannot review their own content."
+        };
+        expect(review.toData().steps[0]).toMatchObject({
+            state: "awaiting",
+            owner: null,
+            candidateTeamIds: [REVIEW_TEAM_ID],
+            assignmentSource: "pool",
+            assignment: expectedAssignment,
+            startedOn: null
+        });
+        expect(review.pullFacts()).toEqual([
+            {
+                type: "stepReached",
+                occurredOn: NOW,
+                actor: requester,
+                change: { stepId: "legal", fromState: "pending", toState: "awaiting" },
+                assignment: expectedAssignment
+            }
+        ]);
     });
 
     it("fails when the current step is not pending", () => {
@@ -358,11 +452,7 @@ describe("Review.start", () => {
         const review = createRequestedReview();
         review.pullFacts();
 
-        const result = review.start({
-            actor: reviewer,
-            actorTeamIds: [REVIEW_TEAM_ID],
-            now: LATER
-        });
+        const result = review.start(onLegal(reviewer));
 
         expect(result.isOk()).toBe(true);
         expect(review.toData().steps[0]).toMatchObject({
@@ -386,11 +476,7 @@ describe("Review.start", () => {
         const review = createRequestedReview();
         review.pullFacts();
 
-        const result = review.start({
-            actor: requester,
-            actorTeamIds: [REVIEW_TEAM_ID],
-            now: LATER
-        });
+        const result = review.start(onLegal(requester));
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Review/RequesterCannotReview");
@@ -401,25 +487,47 @@ describe("Review.start", () => {
     it("does not let a user outside the candidate teams start", () => {
         const review = createRequestedReview();
 
-        const result = review.start({
-            actor: reviewer,
-            actorTeamIds: [OTHER_TEAM_ID],
-            now: LATER
-        });
+        const result = review.start(onLegal(reviewer, [OTHER_TEAM_ID]));
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Review/NotCandidate");
         expect(result.error.data).toEqual({ reviewId: "review-1", stepId: "legal" });
     });
 
+    it("does not let a non-user actor start", () => {
+        const review = createRequestedReview();
+
+        const result = review.start(onLegal(automationActor));
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/ActorNotUser");
+        expect(result.error.data).toEqual({
+            reviewId: "review-1",
+            stepId: "legal",
+            actorType: "automation"
+        });
+    });
+
+    it("fails when the step is not the current step", () => {
+        const review = createRequestedReview();
+        review.pullFacts();
+
+        const result = review.start({ ...onLegal(reviewer), stepId: "editorial" });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/StepNotCurrent");
+        expect(result.error.data).toEqual({
+            reviewId: "review-1",
+            stepId: "editorial",
+            currentStepId: "legal"
+        });
+        expect(review.pullFacts()).toEqual([]);
+    });
+
     it("cannot start a step that is already in review", () => {
         const review = createStartedReview();
 
-        const result = review.start({
-            actor: otherReviewer,
-            actorTeamIds: [REVIEW_TEAM_ID],
-            now: LATER
-        });
+        const result = review.start(onLegal(otherReviewer));
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Review/InvalidState");
@@ -430,11 +538,7 @@ describe("Review.takeOver", () => {
     it("moves a human step to another candidate", () => {
         const review = createStartedReview();
 
-        const result = review.takeOver({
-            actor: otherReviewer,
-            actorTeamIds: [REVIEW_TEAM_ID],
-            now: LATER
-        });
+        const result = review.takeOver(onLegal(otherReviewer));
 
         expect(result.isOk()).toBe(true);
         expect(review.toData().steps[0]).toMatchObject({
@@ -457,11 +561,7 @@ describe("Review.takeOver", () => {
     it("does not let the current owner take over", () => {
         const review = createStartedReview();
 
-        const result = review.takeOver({
-            actor: reviewer,
-            actorTeamIds: [REVIEW_TEAM_ID],
-            now: LATER
-        });
+        const result = review.takeOver(onLegal(reviewer));
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Review/AlreadyOwner");
@@ -470,33 +570,56 @@ describe("Review.takeOver", () => {
     it("does not let the requester take over", () => {
         const review = createStartedReview();
 
-        const result = review.takeOver({
-            actor: requester,
-            actorTeamIds: [REVIEW_TEAM_ID],
-            now: LATER
-        });
+        const result = review.takeOver(onLegal(requester));
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Review/RequesterCannotReview");
     });
 
+    it("does not let a user outside the candidate teams take over", () => {
+        const review = createStartedReview();
+
+        const result = review.takeOver(onLegal(otherReviewer, [OTHER_TEAM_ID]));
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/NotCandidate");
+        expect(review.toData().steps[0].owner).toEqual(reviewer);
+    });
+
+    it("does not let a non-user actor take over", () => {
+        const review = createStartedReview();
+
+        const result = review.takeOver(onLegal(automationActor));
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/ActorNotUser");
+    });
+
+    it("fails when the step is not the current step", () => {
+        const review = createStartedReview();
+
+        const result = review.takeOver({ ...onLegal(otherReviewer), stepId: "editorial" });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/StepNotCurrent");
+        expect(review.toData().steps[0].owner).toEqual(reviewer);
+    });
+
     it("does not take over an AI step", () => {
         const review = requestReview();
-        review.reach({
-            resolution: {
-                owner: aiActor,
-                candidateTeamIds: [REVIEW_TEAM_ID],
-                assignment: { source: "strategy" }
-            },
-            actor: requester,
-            now: NOW
-        });
+        expectOk(
+            review.reach({
+                resolution: {
+                    owner: aiActor,
+                    candidateTeamIds: [REVIEW_TEAM_ID],
+                    assignment: { source: "strategy" }
+                },
+                actor: requester,
+                now: NOW
+            })
+        );
 
-        const result = review.takeOver({
-            actor: reviewer,
-            actorTeamIds: [REVIEW_TEAM_ID],
-            now: LATER
-        });
+        const result = review.takeOver(onLegal(reviewer));
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Review/StepNotTakeable");
@@ -510,11 +633,7 @@ describe("Review.takeOver", () => {
     it("cannot take over an awaiting step", () => {
         const review = createRequestedReview();
 
-        const result = review.takeOver({
-            actor: reviewer,
-            actorTeamIds: [REVIEW_TEAM_ID],
-            now: LATER
-        });
+        const result = review.takeOver(onLegal(reviewer));
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Review/InvalidState");
@@ -736,7 +855,7 @@ Create `packages/api-workflows/src/domain/review/errors.ts`:
 
 ```ts
 import { BaseError } from "@webiny/feature/api";
-import type { ActorType, ReviewState, StepState } from "./types.js";
+import type { ActorType, ReviewData, ReviewState, StepState } from "./types.js";
 
 export type ReviewTransitionName = "reach" | "start" | "takeOver" | "approve" | "reject" | "cancel";
 
@@ -787,9 +906,41 @@ export class ReviewInvalidStateError extends BaseError<ReviewInvalidStateErrorDa
     }
 }
 
+export interface ReviewStepNotCurrentErrorData {
+    reviewId: string;
+    /** The step the caller acted on. */
+    stepId: string;
+    currentStepId: string | null;
+}
+
+/** The caller acted on a step that is no longer (or not yet) the current step (R17). */
+export class ReviewStepNotCurrentError extends BaseError<ReviewStepNotCurrentErrorData> {
+    override readonly code = "Workflows/Review/StepNotCurrent" as const;
+
+    constructor(data: ReviewStepNotCurrentErrorData) {
+        super({
+            message: `Step "${data.stepId}" is not the current step of review "${data.reviewId}". Reload the review.`,
+            data
+        });
+    }
+}
+
 export interface ReviewStepErrorData {
     reviewId: string;
     stepId: string;
+}
+
+export interface ReviewActorNotUserErrorData extends ReviewStepErrorData {
+    actorType: ActorType;
+}
+
+/** Start and take over make a user the owner (spec 5.1); AI and automation never do them. */
+export class ReviewActorNotUserError extends BaseError<ReviewActorNotUserErrorData> {
+    override readonly code = "Workflows/Review/ActorNotUser" as const;
+
+    constructor(data: ReviewActorNotUserErrorData) {
+        super({ message: "Only users can start or take over a step.", data });
+    }
 }
 
 export class ReviewRequesterCannotReviewError extends BaseError<ReviewStepErrorData> {
@@ -879,6 +1030,32 @@ export class ReviewTargetNotFoundError extends BaseError<ReviewTargetNotFoundErr
         });
     }
 }
+
+export interface ReviewTargetSyncErrorData {
+    /** The review as saved; the save is not rolled back (R16). */
+    review: ReviewData;
+}
+
+export interface ReviewTargetSyncErrorParams {
+    review: ReviewData;
+    /** The sync failure. */
+    error: Error;
+}
+
+/**
+ * The review was saved and its events were published, but writing `system.workflow` to the target
+ * failed (R16). Returned by `ReviewSaver`; phase 2 adapters produce the underlying errors.
+ */
+export class ReviewTargetSyncError extends BaseError<ReviewTargetSyncErrorData> {
+    override readonly code = "Workflows/Review/TargetSync" as const;
+
+    constructor(params: ReviewTargetSyncErrorParams) {
+        super({
+            message: `The review was saved, but updating its content failed: ${params.error.message}`,
+            data: { review: params.review }
+        });
+    }
+}
 ```
 
 - [ ] **Step 7: Add the aggregate**
@@ -900,14 +1077,20 @@ import type {
 } from "./types.js";
 import type { ReviewFact } from "./facts.js";
 import {
+    ReviewActorNotUserError,
     ReviewAlreadyOwnerError,
     ReviewInvalidStateError,
     ReviewNotCandidateError,
     ReviewRequesterCannotReviewError,
+    ReviewStepNotCurrentError,
     ReviewStepNotTakeableError,
     type ReviewTransitionName,
     ReviewValidationError
 } from "./errors.js";
+
+/** `reason` on the pool assignment when a resolver returns the requester as owner (spec 5.1). */
+const REQUESTER_OWNER_REASON =
+    "The resolved owner is the requester, who cannot review their own content.";
 
 export interface ReviewRequestParams {
     id: string;
@@ -930,6 +1113,8 @@ export interface ReviewReachParams {
 }
 
 export interface ReviewActorParams {
+    /** The step the caller acted on; must be the current step (R17). */
+    stepId: string;
     actor: Actor;
     /** Teams of the actor, resolved by the caller (the aggregate never reads identity, D5). */
     actorTeamIds: string[];
@@ -938,6 +1123,8 @@ export interface ReviewActorParams {
 
 export type ReviewReviewerError =
     | ReviewInvalidStateError
+    | ReviewStepNotCurrentError
+    | ReviewActorNotUserError
     | ReviewRequesterCannotReviewError
     | ReviewNotCandidateError;
 
@@ -961,6 +1148,21 @@ export class Review {
     }
 
     public static request(params: ReviewRequestParams): Result<Review, ReviewValidationError> {
+        // Callers guarantee both (RequestReview queries by `models_in`, the validator requires a
+        // step); checked here so the aggregate never holds a review it cannot progress.
+        if (!params.workflow.models.includes(params.model)) {
+            return Result.fail(
+                new ReviewValidationError(
+                    `The workflow "${params.workflow.name}" is not bound to the model "${params.model}".`
+                )
+            );
+        }
+        if (params.workflow.steps.length === 0) {
+            return Result.fail(
+                new ReviewValidationError(`The workflow "${params.workflow.name}" has no steps.`)
+            );
+        }
+
         const picks = new Map<string, string>();
         for (const pick of params.picks) {
             const step = params.workflow.steps.find(item => item.id === pick.stepId);
@@ -1055,7 +1257,7 @@ export class Review {
             return Result.fail(current.error);
         }
         const step = current.value;
-        const { resolution } = params;
+        const resolution = this.withoutRequesterOwner(params.resolution);
 
         step.candidateTeamIds = [...resolution.candidateTeamIds];
         step.assignment = structuredClone(resolution.assignment);
@@ -1081,7 +1283,7 @@ export class Review {
     }
 
     public start(params: ReviewActorParams): Result<void, ReviewReviewerError> {
-        const current = this.getCurrentStepIn("start", "awaiting");
+        const current = this.getRequestedStepIn("start", "awaiting", params.stepId);
         if (current.isFail()) {
             return Result.fail(current.error);
         }
@@ -1107,7 +1309,7 @@ export class Review {
     }
 
     public takeOver(params: ReviewActorParams): Result<void, ReviewTakeOverError> {
-        const current = this.getCurrentStepIn("takeOver", "inReview");
+        const current = this.getRequestedStepIn("takeOver", "inReview", params.stepId);
         if (current.isFail()) {
             return Result.fail(current.error);
         }
@@ -1176,11 +1378,60 @@ export class Review {
         return Result.ok(step);
     }
 
-    /** Human actions: not the requester, member of the step's candidate teams (spec 5.1). */
+    /**
+     * Like `getCurrentStepIn`, for transitions that name the step they act on (R17). While the
+     * review is in progress, a `stepId` other than the current step fails with `StepNotCurrent`.
+     */
+    private getRequestedStepIn(
+        transition: ReviewTransitionName,
+        stepState: StepState,
+        stepId: string
+    ): Result<ReviewStep, ReviewInvalidStateError | ReviewStepNotCurrentError> {
+        const current = this.findCurrentStep();
+        if (this.data.state === "inProgress" && current && current.id !== stepId) {
+            return Result.fail(
+                new ReviewStepNotCurrentError({
+                    reviewId: this.data.id,
+                    stepId,
+                    currentStepId: current.id
+                })
+            );
+        }
+        return this.getCurrentStepIn(transition, stepState);
+    }
+
+    /** The requester never reviews their own content (spec 5.1): such an owner goes to the pool. */
+    private withoutRequesterOwner(
+        resolution: StepAssignmentResolution
+    ): StepAssignmentResolution {
+        const owner = resolution.owner;
+        if (!owner || owner.type !== "user" || owner.id !== this.data.createdBy.id) {
+            return resolution;
+        }
+        return {
+            owner: null,
+            candidateTeamIds: [...resolution.candidateTeamIds],
+            assignment: { source: "pool", reason: REQUESTER_OWNER_REASON }
+        };
+    }
+
+    /** Human actions: a user, not the requester, member of the step's candidate teams (spec 5.1). */
     private checkReviewer(
         step: ReviewStep,
         params: ReviewActorParams
-    ): Result<void, ReviewRequesterCannotReviewError | ReviewNotCandidateError> {
+    ): Result<
+        void,
+        ReviewActorNotUserError | ReviewRequesterCannotReviewError | ReviewNotCandidateError
+    > {
+        if (params.actor.type !== "user") {
+            return Result.fail(
+                new ReviewActorNotUserError({
+                    reviewId: this.data.id,
+                    stepId: step.id,
+                    actorType: params.actor.type
+                })
+            );
+        }
         if (params.actor.id === this.data.createdBy.id) {
             return Result.fail(
                 new ReviewRequesterCannotReviewError({ reviewId: this.data.id, stepId: step.id })
@@ -1202,7 +1453,7 @@ export class Review {
 - [ ] **Step 8: Run the test**
 
 Run: `yarn test packages/api-workflows/__tests__/domain/Review.request.test.ts 2>&1 | tail -50`
-Expected: PASS (15 tests).
+Expected: PASS (24 tests).
 Run: `yarn test packages/api-workflows 2>&1 | tail -50`
 Expected: PASS.
 Run: `yarn test:os packages/api-workflows 2>&1 | tail -50`
@@ -1215,7 +1466,8 @@ Run the Global Constraints chain (build `@webiny/api-workflows`), then:
 ```bash
 git commit -m "feat(api-workflows): add review aggregate with request, reach, start and take over
 
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn"
 ```
 
 ---

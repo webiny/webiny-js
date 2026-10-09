@@ -13,8 +13,8 @@
 **Interfaces:**
 - Consumes: `ReviewRepository` (Task 6), `ReviewStepReacher`, `ReviewSaver` (Task 7), `Review` transitions (Tasks 4-5), test helpers (Task 8).
 - Produces:
-  - `ReviewActorInput { reviewId: string; actor: Actor; actorTeamIds: string[] }`, `ReviewDecisionInput extends ReviewActorInput { comment?: string | null }`, `CancelReviewInput { reviewId: string; actor: Actor }`.
-  - `StartReviewStepUseCase.execute(input: ReviewActorInput)`, `TakeOverReviewStepUseCase.execute(input: ReviewActorInput)`, `ApproveReviewStepUseCase.execute(input: ReviewDecisionInput)`, `RejectReviewStepUseCase.execute(input: ReviewDecisionInput)`, `CancelReviewUseCase.execute(input: CancelReviewInput)`; each returns `Promise<Result<ReviewData, …>>` and persists only through `ReviewSaver`. None reads `IdentityContext` (R6).
+  - `ReviewActorInput { reviewId: string; stepId: string; actor: Actor; actorTeamIds: string[] }`, `ReviewDecisionInput extends ReviewActorInput { comment?: string | null }` (R17), `CancelReviewInput { reviewId: string; actor: Actor }` (cancel stays review-level). All three live in `review/shared/types.ts`.
+  - `StartReviewStepUseCase.execute(input: ReviewActorInput)`, `TakeOverReviewStepUseCase.execute(input: ReviewActorInput)`, `ApproveReviewStepUseCase.execute(input: ReviewDecisionInput)`, `RejectReviewStepUseCase.execute(input: ReviewDecisionInput)`, `CancelReviewUseCase.execute(input: CancelReviewInput)`; each returns `Promise<Result<ReviewData, …>>` and persists only through `ReviewSaver`. Error unions add `Workflows/Review/StepNotCurrent` (start, take over, approve, reject), `Workflows/Review/ActorNotUser` (start, take over) and `Workflows/Review/TargetSync` (all five, R16). None reads `IdentityContext` (R6).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -26,6 +26,7 @@ import { createRequestInput, createReviewContext } from "~tests/__helpers/review
 import { recordedSyncs } from "~tests/__helpers/RecordingReviewTargetSync.js";
 import { recordedEvents, workflowEventTypes } from "~tests/__helpers/RecordingEventPublisher.js";
 import {
+    expectOk,
     OTHER_TEAM_ID,
     otherReviewer,
     requester,
@@ -34,6 +35,7 @@ import {
 } from "~tests/__helpers/fixtures.js";
 import type { Actor } from "~/domain/review/types.js";
 import type {
+    ReviewStepApprovedEvent,
     ReviewStepStartedEvent,
     ReviewStepTakenOverEvent
 } from "~/features/review/events.js";
@@ -49,19 +51,16 @@ const resetRecorders = (): void => {
     recordedEvents.length = 0;
 };
 
-const lastSyncedValue = () => {
-    return recordedSyncs[recordedSyncs.length - 1]?.systemWorkflow;
+const syncedValues = () => {
+    return recordedSyncs.map(sync => sync.systemWorkflow);
 };
 
 const setup = async () => {
     const { context, workflow } = await createReviewContext();
     const requestReview = context.container.resolve(RequestReviewUseCase);
-    const requested = await requestReview.execute(createRequestInput());
-    if (requested.isFail()) {
-        throw requested.error;
-    }
+    const requested = expectOk(await requestReview.execute(createRequestInput()));
     resetRecorders();
-    const reviewId = requested.value.id;
+    const reviewId = requested.id;
 
     return {
         workflow,
@@ -72,7 +71,12 @@ const setup = async () => {
         approve: context.container.resolve(ApproveReviewStepUseCase),
         reject: context.container.resolve(RejectReviewStepUseCase),
         cancel: context.container.resolve(CancelReviewUseCase),
-        actorInput: (actor: Actor = reviewer) => ({ reviewId, actor, actorTeamIds: [REVIEW_TEAM_ID] })
+        actorInput: (actor: Actor = reviewer, stepId = "legal") => ({
+            reviewId,
+            stepId,
+            actor,
+            actorTeamIds: [REVIEW_TEAM_ID]
+        })
     };
 };
 
@@ -91,7 +95,7 @@ describe("Review transitions", () => {
             owner: reviewer,
             assignment: { source: "poolStart" }
         });
-        expect(recordedSyncs.map(sync => sync.systemWorkflow)).toEqual([
+        expect(syncedValues()).toEqual([
             {
                 workflowId: workflow.id,
                 reviewState: "inProgress",
@@ -108,25 +112,30 @@ describe("Review transitions", () => {
         expect(event.payload.review).toEqual(result.value);
     });
 
-    it("does not let the requester or a non-member start the step", async () => {
+    it("does not let the requester, a non-member or a non-user start the step", async () => {
         const { start, actorInput, reviewId } = await setup();
 
         const byRequester = await start.execute(actorInput(requester));
         const byOutsider = await start.execute({
             reviewId,
+            stepId: "legal",
             actor: reviewer,
             actorTeamIds: [OTHER_TEAM_ID]
         });
+        const byAutomation = await start.execute(
+            actorInput({ type: "automation", id: "user-reviewer", displayName: "Automation" })
+        );
 
         expect(byRequester.error.code).toBe("Workflows/Review/RequesterCannotReview");
         expect(byOutsider.error.code).toBe("Workflows/Review/NotCandidate");
+        expect(byAutomation.error.code).toBe("Workflows/Review/ActorNotUser");
         expect(recordedSyncs).toEqual([]);
         expect(workflowEventTypes()).toEqual([]);
     });
 
-    it("takes over a step from its owner", async () => {
-        const { start, takeOver, actorInput } = await setup();
-        await start.execute(actorInput());
+    it("takes over a step from its owner and syncs it once", async () => {
+        const { start, takeOver, actorInput, workflow } = await setup();
+        expectOk(await start.execute(actorInput()));
         resetRecorders();
 
         const result = await takeOver.execute(actorInput(otherReviewer));
@@ -137,6 +146,15 @@ describe("Review transitions", () => {
             source: "takeOver",
             by: otherReviewer
         });
+        expect(syncedValues()).toEqual([
+            {
+                workflowId: workflow.id,
+                reviewState: "inProgress",
+                stepId: "legal",
+                stepName: "Legal review",
+                stepState: "inReview"
+            }
+        ]);
         expect(workflowEventTypes()).toEqual(["Workflows/Review/StepTakenOver"]);
         const event = recordedEvents.find(
             item => item.eventType === "Workflows/Review/StepTakenOver"
@@ -147,9 +165,28 @@ describe("Review transitions", () => {
         expect(again.error.code).toBe("Workflows/Review/AlreadyOwner");
     });
 
+    it("does not let the requester or a non-member take over", async () => {
+        const { start, takeOver, actorInput, reviewId } = await setup();
+        expectOk(await start.execute(actorInput()));
+        resetRecorders();
+
+        const byRequester = await takeOver.execute(actorInput(requester));
+        const byOutsider = await takeOver.execute({
+            reviewId,
+            stepId: "legal",
+            actor: otherReviewer,
+            actorTeamIds: [OTHER_TEAM_ID]
+        });
+
+        expect(byRequester.error.code).toBe("Workflows/Review/RequesterCannotReview");
+        expect(byOutsider.error.code).toBe("Workflows/Review/NotCandidate");
+        expect(recordedSyncs).toEqual([]);
+        expect(workflowEventTypes()).toEqual([]);
+    });
+
     it("approving a step reaches the next one", async () => {
         const { start, approve, actorInput, workflow } = await setup();
-        await start.execute(actorInput());
+        expectOk(await start.execute(actorInput()));
         const notOwner = await approve.execute({ ...actorInput(otherReviewer), comment: "Fine." });
         expect(notOwner.error.code).toBe("Workflows/Review/NotOwner");
         resetRecorders();
@@ -164,27 +201,51 @@ describe("Review transitions", () => {
             currentOwnerId: null
         });
         expect(result.value.steps[0]).toMatchObject({ state: "approved", comment: "Looks good." });
-        expect(lastSyncedValue()).toEqual({
-            workflowId: workflow.id,
-            reviewState: "inProgress",
-            stepId: "editorial",
-            stepName: "Editorial review",
-            stepState: "awaiting"
-        });
+        expect(syncedValues()).toEqual([
+            {
+                workflowId: workflow.id,
+                reviewState: "inProgress",
+                stepId: "editorial",
+                stepName: "Editorial review",
+                stepState: "awaiting"
+            }
+        ]);
         expect(workflowEventTypes()).toEqual([
             "Workflows/Review/StepApproved",
             "Workflows/Review/StepReached"
         ]);
+        const event = recordedEvents.find(
+            item => item.eventType === "Workflows/Review/StepApproved"
+        ) as ReviewStepApprovedEvent;
+        expect(event.payload.fact.comment).toBe("Looks good.");
+        expect(event.payload.fact.actor).toEqual(reviewer);
+    });
+
+    it("refuses a stale approve for a step that is no longer current", async () => {
+        const { start, approve, actorInput } = await setup();
+        expectOk(await start.execute(actorInput()));
+        expectOk(await approve.execute(actorInput()));
+        expectOk(await start.execute(actorInput(reviewer, "editorial")));
+        resetRecorders();
+
+        // A repeated "approve legal" must not approve "editorial", which the same user now holds.
+        const stale = await approve.execute(actorInput());
+
+        expect(stale.isFail()).toBe(true);
+        expect(stale.error.code).toBe("Workflows/Review/StepNotCurrent");
+        expect(stale.error.data).toMatchObject({ stepId: "legal", currentStepId: "editorial" });
+        expect(recordedSyncs).toEqual([]);
+        expect(workflowEventTypes()).toEqual([]);
     });
 
     it("approving the last step approves the review", async () => {
         const { start, approve, cancel, actorInput, reviewId, workflow } = await setup();
-        await start.execute(actorInput());
-        await approve.execute(actorInput());
-        await start.execute(actorInput());
+        expectOk(await start.execute(actorInput()));
+        expectOk(await approve.execute(actorInput()));
+        expectOk(await start.execute(actorInput(reviewer, "editorial")));
         resetRecorders();
 
-        const result = await approve.execute(actorInput());
+        const result = await approve.execute(actorInput(reviewer, "editorial"));
 
         expect(result.isOk()).toBe(true);
         expect(result.value).toMatchObject({
@@ -194,13 +255,15 @@ describe("Review transitions", () => {
             currentStepState: "approved",
             currentOwnerId: reviewer.id
         });
-        expect(lastSyncedValue()).toEqual({
-            workflowId: workflow.id,
-            reviewState: "approved",
-            stepId: "editorial",
-            stepName: "Editorial review",
-            stepState: "approved"
-        });
+        expect(syncedValues()).toEqual([
+            {
+                workflowId: workflow.id,
+                reviewState: "approved",
+                stepId: "editorial",
+                stepName: "Editorial review",
+                stepState: "approved"
+            }
+        ]);
         expect(workflowEventTypes()).toEqual([
             "Workflows/Review/StepApproved",
             "Workflows/Review/Approved"
@@ -212,7 +275,7 @@ describe("Review transitions", () => {
 
     it("rejecting a step rejects the review for good", async () => {
         const { start, reject, approve, cancel, actorInput, reviewId, workflow } = await setup();
-        await start.execute(actorInput());
+        expectOk(await start.execute(actorInput()));
         resetRecorders();
 
         const result = await reject.execute({ ...actorInput(), comment: "Needs another pass." });
@@ -225,13 +288,15 @@ describe("Review transitions", () => {
             currentStepState: "rejected",
             currentOwnerId: reviewer.id
         });
-        expect(lastSyncedValue()).toEqual({
-            workflowId: workflow.id,
-            reviewState: "rejected",
-            stepId: "legal",
-            stepName: "Legal review",
-            stepState: "rejected"
-        });
+        expect(syncedValues()).toEqual([
+            {
+                workflowId: workflow.id,
+                reviewState: "rejected",
+                stepId: "legal",
+                stepName: "Legal review",
+                stepState: "rejected"
+            }
+        ]);
         expect(workflowEventTypes()).toEqual(["Workflows/Review/StepRejected"]);
         expect((await approve.execute(actorInput())).error.code).toBe("Workflows/Review/InvalidState");
         expect((await cancel.execute({ reviewId, actor: requester })).error.code).toBe(
@@ -241,7 +306,7 @@ describe("Review transitions", () => {
 
     it("cancelling clears the current step, unlocks the target and allows a new request", async () => {
         const { start, cancel, actorInput, reviewId, requestReview } = await setup();
-        await start.execute(actorInput());
+        expectOk(await start.execute(actorInput()));
         resetRecorders();
 
         const result = await cancel.execute({ reviewId, actor: requester });
@@ -255,7 +320,7 @@ describe("Review transitions", () => {
             currentOwnerId: null,
             currentCandidateTeamIds: []
         });
-        expect(recordedSyncs.map(sync => sync.systemWorkflow)).toEqual([null]);
+        expect(syncedValues()).toEqual([null]);
         expect(workflowEventTypes()).toEqual(["Workflows/Review/Cancelled"]);
 
         const again = await requestReview.execute(createRequestInput());
@@ -268,6 +333,7 @@ describe("Review transitions", () => {
 
         const result = await start.execute({
             reviewId: "missing",
+            stepId: "legal",
             actor: reviewer,
             actorTeamIds: [REVIEW_TEAM_ID]
         });
@@ -290,16 +356,25 @@ Create `packages/api-workflows/src/features/review/shared/types.ts`:
 ```ts
 import type { Actor } from "~/domain/review/types.js";
 
-/** Input of human step transitions. 1a takes the actor explicitly; 1b adds permission checks. */
+/** Input of step transitions. 1a takes the actor explicitly; 1b adds permission checks. */
 export interface ReviewActorInput {
     reviewId: string;
+    /** The step the caller acted on; fails with `StepNotCurrent` when it is not current (R17). */
+    stepId: string;
     actor: Actor;
-    /** The actor's teams, checked against the step's `candidateTeamIds`. */
+    /** The actor's teams, checked against the step's `candidateTeamIds` on start and take over. */
     actorTeamIds: string[];
 }
 
 export interface ReviewDecisionInput extends ReviewActorInput {
     comment?: string | null;
+}
+
+/** Cancel is review-level: no `stepId` (R17). */
+export interface CancelReviewInput {
+    reviewId: string;
+    /** Requester or a user with `workflows.reassign`; checked in phase 1b. */
+    actor: Actor;
 }
 ```
 
@@ -311,20 +386,26 @@ Create `packages/api-workflows/src/features/review/StartReviewStep/abstractions.
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData } from "~/domain/review/types.js";
 import type {
+    ReviewActorNotUserError,
     ReviewInvalidStateError,
     ReviewNotCandidateError,
     ReviewNotFoundError,
     ReviewPersistenceError,
-    ReviewRequesterCannotReviewError
+    ReviewRequesterCannotReviewError,
+    ReviewStepNotCurrentError,
+    ReviewTargetSyncError
 } from "~/domain/review/errors.js";
 import type { ReviewActorInput } from "../shared/types.js";
 
 export interface IStartReviewStepUseCaseErrors {
     notFound: ReviewNotFoundError;
     invalidState: ReviewInvalidStateError;
+    stepNotCurrent: ReviewStepNotCurrentError;
+    actorNotUser: ReviewActorNotUserError;
     requesterCannotReview: ReviewRequesterCannotReviewError;
     notCandidate: ReviewNotCandidateError;
     persistence: ReviewPersistenceError;
+    targetSync: ReviewTargetSyncError;
 }
 
 type UseCaseError = IStartReviewStepUseCaseErrors[keyof IStartReviewStepUseCaseErrors];
@@ -368,6 +449,7 @@ class StartReviewStepUseCaseImpl implements UseCase.Interface {
         const review = Review.fromData(loaded.value);
 
         const started = review.start({
+            stepId: input.stepId,
             actor: input.actor,
             actorTeamIds: input.actorTeamIds,
             now: new Date().toISOString()
@@ -415,24 +497,30 @@ Create `packages/api-workflows/src/features/review/TakeOverReviewStep/abstractio
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData } from "~/domain/review/types.js";
 import type {
+    ReviewActorNotUserError,
     ReviewAlreadyOwnerError,
     ReviewInvalidStateError,
     ReviewNotCandidateError,
     ReviewNotFoundError,
     ReviewPersistenceError,
     ReviewRequesterCannotReviewError,
-    ReviewStepNotTakeableError
+    ReviewStepNotCurrentError,
+    ReviewStepNotTakeableError,
+    ReviewTargetSyncError
 } from "~/domain/review/errors.js";
 import type { ReviewActorInput } from "../shared/types.js";
 
 export interface ITakeOverReviewStepUseCaseErrors {
     notFound: ReviewNotFoundError;
     invalidState: ReviewInvalidStateError;
+    stepNotCurrent: ReviewStepNotCurrentError;
+    actorNotUser: ReviewActorNotUserError;
     requesterCannotReview: ReviewRequesterCannotReviewError;
     notCandidate: ReviewNotCandidateError;
     alreadyOwner: ReviewAlreadyOwnerError;
     stepNotTakeable: ReviewStepNotTakeableError;
     persistence: ReviewPersistenceError;
+    targetSync: ReviewTargetSyncError;
 }
 
 type UseCaseError = ITakeOverReviewStepUseCaseErrors[keyof ITakeOverReviewStepUseCaseErrors];
@@ -477,6 +565,7 @@ class TakeOverReviewStepUseCaseImpl implements UseCase.Interface {
         const review = Review.fromData(loaded.value);
 
         const takenOver = review.takeOver({
+            stepId: input.stepId,
             actor: input.actor,
             actorTeamIds: input.actorTeamIds,
             now: new Date().toISOString()
@@ -527,15 +616,19 @@ import type {
     ReviewInvalidStateError,
     ReviewNotFoundError,
     ReviewNotOwnerError,
-    ReviewPersistenceError
+    ReviewPersistenceError,
+    ReviewStepNotCurrentError,
+    ReviewTargetSyncError
 } from "~/domain/review/errors.js";
 import type { ReviewDecisionInput } from "../shared/types.js";
 
 export interface IApproveReviewStepUseCaseErrors {
     notFound: ReviewNotFoundError;
     invalidState: ReviewInvalidStateError;
+    stepNotCurrent: ReviewStepNotCurrentError;
     notOwner: ReviewNotOwnerError;
     persistence: ReviewPersistenceError;
+    targetSync: ReviewTargetSyncError;
 }
 
 type UseCaseError = IApproveReviewStepUseCaseErrors[keyof IApproveReviewStepUseCaseErrors];
@@ -582,6 +675,7 @@ class ApproveReviewStepUseCaseImpl implements UseCase.Interface {
         const now = new Date().toISOString();
 
         const approved = review.approve({
+            stepId: input.stepId,
             actor: input.actor,
             actorTeamIds: input.actorTeamIds,
             comment: input.comment ?? null,
@@ -639,15 +733,19 @@ import type {
     ReviewInvalidStateError,
     ReviewNotFoundError,
     ReviewNotOwnerError,
-    ReviewPersistenceError
+    ReviewPersistenceError,
+    ReviewStepNotCurrentError,
+    ReviewTargetSyncError
 } from "~/domain/review/errors.js";
 import type { ReviewDecisionInput } from "../shared/types.js";
 
 export interface IRejectReviewStepUseCaseErrors {
     notFound: ReviewNotFoundError;
     invalidState: ReviewInvalidStateError;
+    stepNotCurrent: ReviewStepNotCurrentError;
     notOwner: ReviewNotOwnerError;
     persistence: ReviewPersistenceError;
+    targetSync: ReviewTargetSyncError;
 }
 
 type UseCaseError = IRejectReviewStepUseCaseErrors[keyof IRejectReviewStepUseCaseErrors];
@@ -691,6 +789,7 @@ class RejectReviewStepUseCaseImpl implements UseCase.Interface {
         const review = Review.fromData(loaded.value);
 
         const rejected = review.reject({
+            stepId: input.stepId,
             actor: input.actor,
             actorTeamIds: input.actorTeamIds,
             comment: input.comment ?? null,
@@ -737,23 +836,20 @@ Create `packages/api-workflows/src/features/review/CancelReview/abstractions.ts`
 
 ```ts
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { Actor, ReviewData } from "~/domain/review/types.js";
+import type { ReviewData } from "~/domain/review/types.js";
 import type {
     ReviewInvalidStateError,
     ReviewNotFoundError,
-    ReviewPersistenceError
+    ReviewPersistenceError,
+    ReviewTargetSyncError
 } from "~/domain/review/errors.js";
-
-export interface CancelReviewInput {
-    reviewId: string;
-    /** Requester or a user with `workflows.reassign`; checked in phase 1b. */
-    actor: Actor;
-}
+import type { CancelReviewInput } from "../shared/types.js";
 
 export interface ICancelReviewUseCaseErrors {
     notFound: ReviewNotFoundError;
     invalidState: ReviewInvalidStateError;
     persistence: ReviewPersistenceError;
+    targetSync: ReviewTargetSyncError;
 }
 
 type UseCaseError = ICancelReviewUseCaseErrors[keyof ICancelReviewUseCaseErrors];
@@ -828,7 +924,7 @@ Create `packages/api-workflows/src/features/review/CancelReview/index.ts`:
 
 ```ts
 export { CancelReviewUseCase } from "./abstractions.js";
-export type { CancelReviewInput } from "./abstractions.js";
+export type { CancelReviewInput } from "../shared/types.js";
 ```
 
 - [ ] **Step 9: Register the use cases**
@@ -861,7 +957,7 @@ and replace the `// Reviews` block with:
 - [ ] **Step 10: Run the tests**
 
 Run: `yarn test packages/api-workflows/__tests__/review/ReviewTransitions.test.ts 2>&1 | tail -50`
-Expected: PASS (8 tests).
+Expected: PASS (10 tests).
 Run: `yarn test packages/api-workflows 2>&1 | tail -50`
 Expected: PASS.
 Run: `yarn test:os packages/api-workflows 2>&1 | tail -50`
@@ -874,7 +970,8 @@ Run the Global Constraints chain (build `@webiny/api-workflows`), then:
 ```bash
 git commit -m "feat(api-workflows): add start, take over, approve, reject and cancel review use cases
 
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn"
 ```
 
 ---
