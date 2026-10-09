@@ -3,6 +3,7 @@ import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstraction
 import { WorkflowModel } from "~/domain/workflow/workflow.model.js";
 import { ReviewModel } from "~/domain/review/review.model.js";
 import { AssignmentModel } from "~/domain/assignment/assignment.model.js";
+import { WorkflowSettingsModel } from "~/domain/settings/settings.model.js";
 import { ListNotificationTypesFeature } from "~/features/notifications/ListNotificationTypes/index.js";
 import { NotificationTransportFeature } from "~/features/notifications/NotificationTransport/index.js";
 import { WorkflowSharedFeature } from "~/features/workflow/shared/feature.js";
@@ -20,6 +21,9 @@ import { ApproveReviewStepFeature } from "~/features/review/ApproveReviewStep/fe
 import { RejectReviewStepFeature } from "~/features/review/RejectReviewStep/feature.js";
 import { CancelReviewFeature } from "~/features/review/CancelReview/feature.js";
 import { AssignmentSharedFeature } from "~/features/assignment/shared/feature.js";
+import { WorkflowSettingsSharedFeature } from "~/features/settings/shared/feature.js";
+import { GetWorkflowSettingsFeature } from "~/features/settings/GetWorkflowSettings/feature.js";
+import { SaveWorkflowSettingsFeature } from "~/features/settings/SaveWorkflowSettings/feature.js";
 
 export const WorkflowsFeature = createFeature({
     name: "Workflows",
@@ -35,6 +39,7 @@ export const WorkflowsFeature = createFeature({
         container.register(WorkflowModel);
         container.register(ReviewModel);
         container.register(AssignmentModel);
+        container.register(WorkflowSettingsModel);
 
         // Notifications (unchanged until phase 7)
         ListNotificationTypesFeature.register(container);
@@ -60,5 +65,10 @@ export const WorkflowsFeature = createFeature({
 
         // Assignment log (written from phase 4)
         AssignmentSharedFeature.register(container);
+
+        // Settings
+        WorkflowSettingsSharedFeature.register(container);
+        GetWorkflowSettingsFeature.register(container);
+        SaveWorkflowSettingsFeature.register(container);
     }
 });
