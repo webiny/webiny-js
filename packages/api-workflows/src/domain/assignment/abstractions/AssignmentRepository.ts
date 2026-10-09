@@ -3,7 +3,11 @@ import type { CmsEntryMeta } from "@webiny/api-headless-cms/types/index.js";
 import type { AssignmentRecord, AssignmentRecordValues } from "../types.js";
 import type { AssignmentPersistenceError } from "../errors.js";
 
-/** Filters combine with AND; omitted filters do not restrict. */
+/**
+ * Filters combine with AND; omitted (`undefined`) filters do not restrict, an empty string is a
+ * real filter value. An empty `userId_in` matches nothing. Pool records (`userId` null) are
+ * reachable only via the `reviewId`, `workflowId` and `stepId` filters.
+ */
 export interface AssignmentRepositoryListWhere {
     reviewId?: string;
     workflowId?: string;

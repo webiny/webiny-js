@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { expectOk, otherReviewer, reviewer } from "~tests/__helpers/fixtures.js";
+import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import type { AssignmentRecordValues } from "~/domain/assignment/types.js";
 
@@ -127,5 +128,43 @@ describe("AssignmentRepository", () => {
         );
         expect(second.items.map(item => item.assignedOn)).toEqual(["2026-10-09T10:00:00.000Z"]);
         expect(second.meta.hasMoreItems).toBe(false);
+    });
+
+    it("returns an empty list for an empty userId_in without querying the CMS", async () => {
+        let cmsListCalls = 0;
+        const { context } = await createContextHandler({
+            setup: container => {
+                container.registerDecorator(
+                    ListLatestEntriesUseCase.createDecorator({
+                        decorator: class {
+                            constructor(private decoratee: ListLatestEntriesUseCase.Interface) {}
+                            async execute(
+                                ...args: Parameters<ListLatestEntriesUseCase.Interface["execute"]>
+                            ) {
+                                cmsListCalls++;
+                                return this.decoratee.execute(...args);
+                            }
+                        } as never,
+                        dependencies: []
+                    })
+                );
+            }
+        });
+        const repository = context.container.resolve(AssignmentRepository);
+        expectOk(await repository.create(record({ userId: reviewer.id })));
+
+        const listed = expectOk(await repository.list({ where: { userId_in: [] } }));
+
+        expect(listed.items).toEqual([]);
+        expect(listed.meta).toEqual({ cursor: null, hasMoreItems: false, totalCount: 0 });
+        expect(cmsListCalls).toBe(0);
+    });
+
+    it("does not drop an empty-string filter", async () => {
+        const { repository } = await createLog();
+
+        const listed = expectOk(await repository.list({ where: { reviewId: "" } }));
+
+        expect(listed.items).toEqual([]);
     });
 });

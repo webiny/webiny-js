@@ -36,22 +36,29 @@ class AssignmentRepositoryImpl implements Abstraction.Interface {
     async list(
         params: Abstraction.ListParams
     ): Promise<Result<Abstraction.ListResult, AssignmentPersistenceError>> {
-        const model = await this.modelProvider.get();
         const { where } = params;
+        // An empty `In` list throws on OpenSearch (DDB returns nothing): answer without querying.
+        if (where.userId_in && where.userId_in.length === 0) {
+            return Result.ok({
+                items: [],
+                meta: { cursor: null, hasMoreItems: false, totalCount: 0 }
+            });
+        }
+        const model = await this.modelProvider.get();
         const values: CmsEntryListWhereValues = {};
-        if (where.reviewId) {
+        if (where.reviewId !== undefined) {
             values.reviewId = where.reviewId;
         }
-        if (where.workflowId) {
+        if (where.workflowId !== undefined) {
             values.workflowId = where.workflowId;
         }
-        if (where.stepId) {
+        if (where.stepId !== undefined) {
             values.stepId = where.stepId;
         }
-        if (where.userId) {
+        if (where.userId !== undefined) {
             values.userId = where.userId;
         }
-        if (where.userId_in) {
+        if (where.userId_in !== undefined) {
             values.userId_in = [...where.userId_in];
         }
 
