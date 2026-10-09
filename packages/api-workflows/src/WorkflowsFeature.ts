@@ -11,6 +11,8 @@ import { StoreWorkflowFeature } from "~/features/workflow/StoreWorkflow/feature.
 import { DeleteWorkflowFeature } from "~/features/workflow/DeleteWorkflow/feature.js";
 import { ReviewSharedFeature } from "~/features/review/shared/feature.js";
 import { ReviewLifecycleFeature } from "~/features/review/ReviewLifecycleFeature.js";
+import { RequestReviewFeature } from "~/features/review/RequestReview/feature.js";
+import { GetReviewFeature } from "~/features/review/GetReview/feature.js";
 
 export const WorkflowsFeature = createFeature({
     name: "Workflows",
@@ -40,5 +42,7 @@ export const WorkflowsFeature = createFeature({
         // Reviews
         ReviewSharedFeature.register(container);
         ReviewLifecycleFeature.register(container);
+        RequestReviewFeature.register(container);
+        GetReviewFeature.register(container);
     }
 });
