@@ -22,7 +22,7 @@ import { ReviewSaver as Abstraction } from "./abstractions.js";
 class ReviewSaverImpl implements Abstraction.Interface {
     constructor(
         private repository: ReviewRepository.Interface,
-        private targetSync: ReviewTargetSync.Interface,
+        private targetSyncs: ReviewTargetSync.Interface[],
         private eventPublisher: EventPublisher.Interface
     ) {}
 
@@ -39,10 +39,7 @@ class ReviewSaverImpl implements Abstraction.Interface {
         }
         const saved = result.value;
 
-        const synced = await this.targetSync.sync({
-            review: saved,
-            systemWorkflow: Review.fromData(saved).getSystemWorkflow()
-        });
+        const synced = await this.sync(saved);
 
         // The review is saved, so its facts happened: publish them even when the sync failed
         // (R16). Handler exceptions propagate, as everywhere else in the repo.
@@ -54,6 +51,22 @@ class ReviewSaverImpl implements Abstraction.Interface {
             return Result.fail(new ReviewTargetSyncError({ review: saved, error: synced.error }));
         }
         return Result.ok(saved);
+    }
+
+    private async sync(saved: ReviewData): Promise<Result<void, Error>> {
+        // One sync per namespace; the last registered match wins. No match: nothing to sync.
+        const targetSync = [...this.targetSyncs].reverse().find(item => item.canSync(saved.model));
+        if (!targetSync) {
+            return Result.ok();
+        }
+        try {
+            return await targetSync.sync({
+                review: saved,
+                systemWorkflow: Review.fromData(saved).getSystemWorkflow()
+            });
+        } catch (error) {
+            return Result.fail(error instanceof Error ? error : new Error(String(error)));
+        }
     }
 
     private createEvent(review: ReviewData, fact: ReviewFact): ReviewEvent {
@@ -80,5 +93,5 @@ class ReviewSaverImpl implements Abstraction.Interface {
 
 export const ReviewSaver = Abstraction.createImplementation({
     implementation: ReviewSaverImpl,
-    dependencies: [ReviewRepository, ReviewTargetSync, EventPublisher]
+    dependencies: [ReviewRepository, [ReviewTargetSync, { multiple: true }], EventPublisher]
 });

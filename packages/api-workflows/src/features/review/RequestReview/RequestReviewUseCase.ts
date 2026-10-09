@@ -56,13 +56,24 @@ class RequestReviewUseCaseImpl implements UseCase.Interface {
         // Several loaders may match (e.g. a generic "cms.*" one and a specific one); the last
         // registered wins, the same rule as resolving a single registration.
         const loader = [...this.targetLoaders].reverse().find(item => item.canLoad(input.model));
-        const target = loader
-            ? await loader.load({
-                  model: input.model,
-                  targetId: input.targetId,
-                  targetRevisionId: input.targetRevisionId
-              })
-            : null;
+        let target: ReviewTargetLoader.Target | null = null;
+        if (loader) {
+            try {
+                target = await loader.load({
+                    model: input.model,
+                    targetId: input.targetId,
+                    targetRevisionId: input.targetRevisionId
+                });
+            } catch (error) {
+                // A crashing loader is an infrastructure failure, not a missing target: reporting
+                // it as "not found" would hide the cause.
+                return Result.fail(
+                    new ReviewPersistenceError(
+                        error instanceof Error ? error : new Error(String(error))
+                    )
+                );
+            }
+        }
         if (!target) {
             return Result.fail(
                 new ReviewTargetNotFoundError({
