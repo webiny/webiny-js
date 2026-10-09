@@ -15,8 +15,11 @@
   "dependencies": {
     "@webiny/ai-powerups": "0.0.0",
     "@webiny/bug-reporter": "0.0.0",
+    "@webiny/collaboration": "0.0.0",
     "@webiny/frontend-settings": "0.0.0",
     "@webiny/languages": "0.0.0",
+    "@webiny/notifications": "0.0.0",
+    "@webiny/notifications-integrations": "0.0.0",
     "@webiny/tenant-manager": "0.0.0",
     "react": "18.3.1"
   },
