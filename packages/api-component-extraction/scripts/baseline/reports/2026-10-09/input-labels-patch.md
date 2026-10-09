@@ -69,3 +69,29 @@ The deeper problem is the component: one section holding a contact form, a map a
 Neither generation renders all of it. That is clustering and segmentation, not the input labels.
 
 Generate, Assemble and Promote remain marked stale on both runs.
+
+## Freehill: best of three, installed
+
+A third draw, made as a dry run, compared with the two stored versions on the same evidence: the
+section's own texts in the render, the form's submit, the floor-plan card, and the renders side by side.
+
+|                                          | Draw 1 (stored 2026-10-06)     | Draw 2 (stored after re-bind) | Draw 3     |
+| ---------------------------------------- | ------------------------------ | ----------------------------- | ---------- |
+| Section texts present (of 37)            | 17                             | 18                            | **26**     |
+| Form submit                              | four "Please Call" phone links | "Send"                        | **"Send"** |
+| Consent sentence with privacy link       | sentence, link to the phone    | link only                     | **both**   |
+| "Contact Us", "Meet Your Match" headings | yes                            | no                            | **yes**    |
+| Floor-plan card's "coming soon" content  | yes                            | no                            | no         |
+
+No draw has both a working form and the floor-plan card's content; by the rule set before drawing, the
+best of three is taken and the matter stops there. Draw 3 was installed (`installEntryId`, `8a3c9e1450`):
+the stored source and CSS equal draw 3's output, and it passes all four validators. (The install ran
+twice, identically.)
+
+## Assemble: blocked, not run
+
+Assemble refuses to run while Generate is stale, and the re-bind's re-apply marked Generate stale on
+both runs. A per-component regenerate replaces that component but does not clear the stage's
+staleness: the same gap any plan correction followed by "generate again" meets. Unblocking it means
+either re-running the whole Generate stage (model calls on every component of both demo runs) or
+marking Generate current again (a ledger override); neither was approved, so Assemble waits.
