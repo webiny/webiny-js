@@ -3,7 +3,6 @@ import { CmsGraphQLSchemaFactory } from "@webiny/api-headless-cms";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { EntryWorkflowsFeature } from "./features/EntryWorkflows/feature.js";
 import { WorkflowsFeature as CmsLocalWorkflowsFeature } from "./features/Workflows/index.js";
-import { WorkflowsFeature } from "@webiny/api-workflows";
 import { createEntrySystemSchemaExtension } from "./graphql/entrySystemSchema.js";
 
 export const CmsWorkflowsFeature = createFeature({
@@ -17,7 +16,6 @@ export const CmsWorkflowsFeature = createFeature({
 
         EntryWorkflowsFeature.register(container);
         CmsLocalWorkflowsFeature.register(container);
-        WorkflowsFeature.register(container);
 
         // Add the `workflow` field to CmsEntrySystem on the CMS endpoint. (api-workflows extends
         // CmsEntrySystem on the base /graphql schema via WorkflowsSchemaFactory, but CMS entries are

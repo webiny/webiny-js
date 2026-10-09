@@ -5,6 +5,7 @@ import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { NoopFolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import { createModelsPlugins, type ICreateModelsPluginsParams } from "../__cms/models.js";
+import { WorkflowsFeature } from "@webiny/api-workflows";
 import { CmsWorkflowsFeature } from "~/index.js";
 
 const registerNoopFlp = createRegisterExtensionPlugin(context => {
@@ -23,8 +24,12 @@ export const createContextHandler = (
             registerNoopFlp,
             params?.legacyPlugins || []
         ],
-        // CmsWorkflowsFeature registers WorkflowsFeature + the CMS entry-workflow wiring.
-        setup: container => CmsWorkflowsFeature.register(container),
+        // Mirror the production stack (registerApiRequestStack.ts): core workflows first, then the
+        // CMS integration.
+        setup: container => {
+            WorkflowsFeature.register(container);
+            CmsWorkflowsFeature.register(container);
+        },
         testProjectLicense: testLicence
     });
 
