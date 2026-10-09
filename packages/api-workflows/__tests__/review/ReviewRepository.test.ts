@@ -11,6 +11,8 @@ import {
     reviewer,
     toSaveData
 } from "~tests/__helpers/fixtures.js";
+import { Result } from "@webiny/feature/api";
+import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { Review } from "~/domain/review/Review.js";
 
@@ -19,6 +21,39 @@ const LATER = "2026-10-09T11:00:00.000Z";
 const createRepository = async () => {
     const { context } = await createContextHandler();
     return context.container.resolve(ReviewRepository);
+};
+
+type ListArgs = Parameters<ListLatestEntriesUseCase.Interface["execute"]>;
+type ListResult = Awaited<ReturnType<ListLatestEntriesUseCase.Interface["execute"]>>;
+type ListOverride = (args: ListArgs, decoratee: ListLatestEntriesUseCase.Interface) => ListResult;
+
+/** Repository whose CMS list call can be replaced per test, to simulate OpenSearch lag (R18). */
+const createStubbedRepository = async () => {
+    let override: ListOverride | null = null;
+    const { context } = await createContextHandler({
+        setup: container => {
+            container.registerDecorator(
+                ListLatestEntriesUseCase.createDecorator({
+                    decorator: class {
+                        constructor(private decoratee: ListLatestEntriesUseCase.Interface) {}
+                        async execute(...args: ListArgs) {
+                            if (override) {
+                                return override(args, this.decoratee);
+                            }
+                            return this.decoratee.execute(...args);
+                        }
+                    } as never,
+                    dependencies: []
+                })
+            );
+        }
+    });
+    return {
+        repository: context.container.resolve(ReviewRepository),
+        stub: (value: ListOverride | null) => {
+            override = value;
+        }
+    };
 };
 
 describe("ReviewRepository", () => {
@@ -177,5 +212,86 @@ describe("ReviewRepository", () => {
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Review/NotFound");
         expect(result.error.data).toEqual({ id: "missing" });
+    });
+
+    describe("OpenSearch lag (R18)", () => {
+        it("ignores a listed hit whose primary record is no longer active", async () => {
+            const { repository, stub } = await createStubbedRepository();
+            const saved = expectOk(await repository.save(toSaveData(createRequestedReview())));
+            const where = { model: ARTICLE_MODEL, targetRevisionId: "article-1#0001" };
+
+            // The index still lists the review as active, as it does before it catches up.
+            let stale: ListResult | null = null;
+            stub(async (args, decoratee) => {
+                stale = await decoratee.execute(...args);
+                return stale;
+            });
+            expect(expectOk(await repository.getActiveByTarget(where))?.id).toBe(saved.id);
+            const staleList = stale as unknown as ListResult;
+
+            const cancelled = Review.fromData(saved);
+            expectOk(cancelled.cancel({ actor: requester, now: LATER }));
+            expectOk(await repository.save(toSaveData(cancelled)));
+            stub(async () => staleList);
+
+            expect(expectOk(await repository.getActiveByTarget(where))).toBeNull();
+        });
+
+        it("does not count a listed hit whose primary record is no longer in progress", async () => {
+            const { repository, stub } = await createStubbedRepository();
+            const saved = expectOk(await repository.save(toSaveData(createRequestedReview())));
+
+            let stale: ListResult | null = null;
+            stub(async (args, decoratee) => {
+                stale = await decoratee.execute(...args);
+                return stale;
+            });
+            expect(expectOk(await repository.countInProgressByWorkflow("workflow-1"))).toBe(1);
+            const staleList = stale as unknown as ListResult;
+
+            const cancelled = Review.fromData(saved);
+            expectOk(cancelled.cancel({ actor: requester, now: LATER }));
+            expectOk(await repository.save(toSaveData(cancelled)));
+            stub(async () => staleList);
+
+            expect(expectOk(await repository.countInProgressByWorkflow("workflow-1"))).toBe(0);
+        });
+
+        it("follows the cursor across pages when counting in-progress reviews", async () => {
+            const { repository, stub } = await createStubbedRepository();
+            for (const index of [1, 2, 3]) {
+                expectOk(
+                    await repository.save(
+                        toSaveData(
+                            createRequestedReview({
+                                id: `review-${index}`,
+                                targetRevisionId: `article-${index}#0001`
+                            })
+                        )
+                    )
+                );
+            }
+            const afters: Array<string | null | undefined> = [];
+            stub(async (args, decoratee) => {
+                const [model, params] = args;
+                afters.push(params?.after);
+                const all = expectOk(await decoratee.execute(model, { ...params, after: null }));
+                const firstPage = !params?.after;
+                return Result.ok({
+                    ...all,
+                    entries: firstPage ? all.entries.slice(0, 2) : all.entries.slice(2),
+                    meta: {
+                        ...all.meta,
+                        hasMoreItems: firstPage,
+                        cursor: firstPage ? "page-2" : null
+                    }
+                });
+            });
+
+            const count = await repository.countInProgressByWorkflow("workflow-1");
+
+            expect(expectOk(count)).toBe(3);
+            expect(afters).toEqual([null, "page-2"]);
+        });
     });
 });

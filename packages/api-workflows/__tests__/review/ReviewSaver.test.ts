@@ -23,6 +23,12 @@ import {
     FailingReviewTargetSync,
     TARGET_SYNC_FAILURE
 } from "~tests/__helpers/FailingReviewTargetSync.js";
+import {
+    ThrowingReviewTargetSync,
+    TARGET_SYNC_THROW
+} from "~tests/__helpers/ThrowingReviewTargetSync.js";
+import { createScopedReviewTargetSync } from "~tests/__helpers/ScopedReviewTargetSync.js";
+import { callLog } from "~tests/__helpers/callLog.js";
 import { Review } from "~/domain/review/Review.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
@@ -39,7 +45,7 @@ const createRecordingContext = async () => {
     recordedSyncs.length = 0;
     const { context } = await createContextHandler({
         setup: container => {
-            container.registerDecorator(RecordingReviewTargetSync);
+            container.register(RecordingReviewTargetSync);
             container.registerDecorator(RecordingEventPublisher);
         }
     });
@@ -113,13 +119,98 @@ describe("ReviewSaver", () => {
         expect(workflowEventTypes()).toEqual(["Workflows/Review/Cancelled"]);
     });
 
+    it("syncs before it publishes the first event", async () => {
+        callLog.length = 0;
+        const context = await createRecordingContext();
+
+        expectOk(await context.container.resolve(ReviewSaver).save(createRequestedReview()));
+
+        const ownCalls = callLog.filter(
+            call => call === "sync" || call.startsWith("event:Workflows/")
+        );
+        expect(ownCalls).toEqual([
+            "sync",
+            "event:Workflows/Review/Requested",
+            "event:Workflows/Review/StepReached"
+        ]);
+    });
+
+    it("calls only the sync whose canSync matches the review model", async () => {
+        callLog.length = 0;
+        const { context } = await createContextHandler({
+            setup: container => {
+                container.register(createScopedReviewTargetSync("article", ARTICLE_MODEL));
+                container.register(createScopedReviewTargetSync("page", "wb.page"));
+            }
+        });
+
+        expectOk(await context.container.resolve(ReviewSaver).save(createRequestedReview()));
+
+        expect(callLog).toEqual(["sync:article"]);
+    });
+
+    it("calls the last registered sync when several match the model", async () => {
+        callLog.length = 0;
+        const { context } = await createContextHandler({
+            setup: container => {
+                container.register(createScopedReviewTargetSync("first", ARTICLE_MODEL));
+                container.register(createScopedReviewTargetSync("second", ARTICLE_MODEL));
+            }
+        });
+
+        expectOk(await context.container.resolve(ReviewSaver).save(createRequestedReview()));
+
+        expect(callLog).toEqual(["sync:second"]);
+    });
+
+    it("saves and publishes events when no sync matches the model", async () => {
+        recordedEvents.length = 0;
+        const { context } = await createContextHandler({
+            setup: container => {
+                container.register(createScopedReviewTargetSync("page", "wb.page"));
+                container.registerDecorator(RecordingEventPublisher);
+            }
+        });
+
+        const result = await context.container.resolve(ReviewSaver).save(createRequestedReview());
+
+        expect(result.isOk()).toBe(true);
+        expect(workflowEventTypes()).toEqual([
+            "Workflows/Review/Requested",
+            "Workflows/Review/StepReached"
+        ]);
+    });
+
+    it("turns a throwing target sync into a target sync error and still publishes events", async () => {
+        recordedEvents.length = 0;
+        const { context } = await createContextHandler({
+            setup: container => {
+                container.register(ThrowingReviewTargetSync);
+                container.registerDecorator(RecordingEventPublisher);
+            }
+        });
+        const review = createRequestedReview();
+
+        const result = await context.container.resolve(ReviewSaver).save(review);
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/TargetSync");
+        expect(result.error.message).toContain(TARGET_SYNC_THROW);
+        const stored = expectOk(await context.container.resolve(ReviewRepository).get(review.id));
+        expect(result.error.data).toEqual({ review: stored });
+        expect(workflowEventTypes()).toEqual([
+            "Workflows/Review/Requested",
+            "Workflows/Review/StepReached"
+        ]);
+    });
+
     it("keeps the review saved and publishes events when the target sync fails", async () => {
         recordedEvents.length = 0;
         recordedSyncs.length = 0;
         const { context } = await createContextHandler({
             setup: container => {
-                container.registerDecorator(RecordingReviewTargetSync);
-                container.registerDecorator(FailingReviewTargetSync);
+                container.register(RecordingReviewTargetSync);
+                container.register(FailingReviewTargetSync);
                 container.registerDecorator(RecordingEventPublisher);
             }
         });
@@ -144,16 +235,13 @@ describe("ReviewSaver", () => {
 });
 
 describe("Review lifecycle defaults", () => {
-    it("ships a no-op target sync, no target loaders and a pool-only resolver", async () => {
+    it("ships no target sync, no target loaders and a pool-only resolver", async () => {
         const { context } = await createContextHandler();
         const review = createRequestedReview({
             picks: [{ stepId: "legal", userId: "user-picked" }]
         }).toData();
 
-        const synced = await context.container
-            .resolve(ReviewTargetSync)
-            .sync({ review, systemWorkflow: null });
-        expect(synced.isOk()).toBe(true);
+        expect(context.container.resolveAll(ReviewTargetSync)).toEqual([]);
         expect(context.container.resolveAll(ReviewTargetLoader)).toEqual([]);
 
         const resolution = await context.container

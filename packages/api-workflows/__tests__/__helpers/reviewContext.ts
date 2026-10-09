@@ -5,6 +5,7 @@ import { createContextHandler } from "./handler.js";
 import { FakeReviewTargetLoader } from "./FakeReviewTargetLoader.js";
 import { RecordingReviewTargetSync, recordedSyncs } from "./RecordingReviewTargetSync.js";
 import { RecordingEventPublisher, recordedEvents } from "./RecordingEventPublisher.js";
+import { callLog } from "./callLog.js";
 import { ARTICLE_MODEL, createWorkflowValues, requester } from "./fixtures.js";
 
 /**
@@ -16,7 +17,7 @@ export const createReviewContext = async (params: CmsTestHandlerParams = {}) => 
         ...params,
         setup: async container => {
             container.register(FakeReviewTargetLoader);
-            container.registerDecorator(RecordingReviewTargetSync);
+            container.register(RecordingReviewTargetSync);
             container.registerDecorator(RecordingEventPublisher);
             await params.setup?.(container);
         }
@@ -31,6 +32,7 @@ export const createReviewContext = async (params: CmsTestHandlerParams = {}) => 
 
     recordedSyncs.length = 0;
     recordedEvents.length = 0;
+    callLog.length = 0;
 
     return {
         context,

@@ -3,6 +3,12 @@ import { createRequestInput, createReviewContext } from "~tests/__helpers/review
 import { MISSING_TARGET_ID } from "~tests/__helpers/FakeReviewTargetLoader.js";
 import { recordedSyncs } from "~tests/__helpers/RecordingReviewTargetSync.js";
 import { FailingReviewTargetSync } from "~tests/__helpers/FailingReviewTargetSync.js";
+import {
+    ThrowingReviewTargetLoader,
+    TARGET_LOAD_THROW
+} from "~tests/__helpers/ThrowingReviewTargetLoader.js";
+import { ReviewTargetLoader } from "~/features/review/ReviewTargetLoader/index.js";
+import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { workflowEventTypes } from "~tests/__helpers/RecordingEventPublisher.js";
 import {
     ARTICLE_MODEL,
@@ -146,10 +152,79 @@ describe("RequestReviewUseCase", () => {
         expect(noLoader.error.code).toBe("Workflows/Review/TargetNotFound");
     });
 
+    it("uses the last registered loader when several can load the model", async () => {
+        class FirstLoaderImpl implements ReviewTargetLoader.Interface {
+            canLoad(): boolean {
+                return true;
+            }
+            async load(): Promise<ReviewTargetLoader.Target | null> {
+                return { title: "From first", context: { ...targetContext, title: "From first" } };
+            }
+        }
+        class SecondLoaderImpl implements ReviewTargetLoader.Interface {
+            canLoad(): boolean {
+                return true;
+            }
+            async load(): Promise<ReviewTargetLoader.Target | null> {
+                return {
+                    title: "From second",
+                    context: { ...targetContext, title: "From second" }
+                };
+            }
+        }
+        const { context } = await createReviewContext({
+            setup: container => {
+                container.register(
+                    ReviewTargetLoader.createImplementation({
+                        implementation: FirstLoaderImpl,
+                        dependencies: []
+                    })
+                );
+                container.register(
+                    ReviewTargetLoader.createImplementation({
+                        implementation: SecondLoaderImpl,
+                        dependencies: []
+                    })
+                );
+            }
+        });
+
+        const result = await context.container
+            .resolve(RequestReviewUseCase)
+            .execute(createRequestInput());
+
+        expect(expectOk(result).title).toBe("From second");
+    });
+
+    it("fails with a persistence error and saves nothing when the loader throws", async () => {
+        const { context } = await createReviewContext({
+            setup: container => {
+                container.register(ThrowingReviewTargetLoader);
+            }
+        });
+
+        const result = await context.container
+            .resolve(RequestReviewUseCase)
+            .execute(createRequestInput());
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/Persistence");
+        expect(result.error.message).toContain(TARGET_LOAD_THROW);
+        const active = expectOk(
+            await context.container.resolve(ReviewRepository).getActiveByTarget({
+                model: ARTICLE_MODEL,
+                targetRevisionId: "article-1#0001"
+            })
+        );
+        expect(active).toBeNull();
+        expect(recordedSyncs).toEqual([]);
+        expect(workflowEventTypes()).toEqual([]);
+    });
+
     it("keeps the requested review when the target sync fails", async () => {
         const { context } = await createReviewContext({
             setup: container => {
-                container.registerDecorator(FailingReviewTargetSync);
+                container.register(FailingReviewTargetSync);
             }
         });
         const requestReview = context.container.resolve(RequestReviewUseCase);
