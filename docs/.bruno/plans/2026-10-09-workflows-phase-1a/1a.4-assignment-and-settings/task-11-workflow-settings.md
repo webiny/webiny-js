@@ -886,7 +886,8 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(CancelReviewUseCase)).toHaveLength(1);
         expect(container.resolveAll(ReviewSaver)).toHaveLength(1);
         expect(container.resolveAll(ReviewStepReacher)).toHaveLength(1);
-        expect(container.resolveAll(ReviewTargetSync)).toHaveLength(1);
+        // No default sync: phase 2 registers one per namespace.
+        expect(container.resolveAll(ReviewTargetSync)).toHaveLength(0);
         expect(container.resolveAll(StepAssignmentResolver)).toHaveLength(1);
         expect(container.resolveAll(ReviewRepository)).toHaveLength(1);
         expect(container.resolveAll(AssignmentRepository)).toHaveLength(1);
