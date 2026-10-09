@@ -5,7 +5,9 @@ import type {
     Actor,
     ReviewData,
     ReviewPick,
+    ReviewState,
     ReviewStep,
+    ReviewSystemWorkflow,
     StepAssignmentResolution,
     StepState,
     TargetContext
@@ -16,6 +18,7 @@ import {
     ReviewAlreadyOwnerError,
     ReviewInvalidStateError,
     ReviewNotCandidateError,
+    ReviewNotOwnerError,
     ReviewRequesterCannotReviewError,
     ReviewStepNotCurrentError,
     ReviewStepNotTakeableError,
@@ -56,6 +59,19 @@ export interface ReviewActorParams {
     now: string;
 }
 
+/**
+ * `stepId` must be the current step (R17). `actorTeamIds` is not read by approve or reject in 1a
+ * (only the owner decides); it is reserved for the 1b permission checks.
+ */
+export interface ReviewDecisionParams extends ReviewActorParams {
+    comment: string | null;
+}
+
+export interface ReviewCancelParams {
+    actor: Actor;
+    now: string;
+}
+
 export type ReviewReviewerError =
     | ReviewInvalidStateError
     | ReviewStepNotCurrentError
@@ -67,6 +83,11 @@ export type ReviewTakeOverError =
     | ReviewReviewerError
     | ReviewAlreadyOwnerError
     | ReviewStepNotTakeableError;
+
+export type ReviewDecisionError =
+    | ReviewInvalidStateError
+    | ReviewStepNotCurrentError
+    | ReviewNotOwnerError;
 
 /**
  * One run of a workflow on one target revision (spec 3, 4.2, 5.1). Transitions take an explicit
@@ -288,6 +309,132 @@ export class Review {
         return Result.ok();
     }
 
+    /** Owner (user, AI or automation) approves; the next step is reached by the caller (D6). */
+    public approve(params: ReviewDecisionParams): Result<void, ReviewDecisionError> {
+        const current = this.getOwnedStep("approve", params);
+        if (current.isFail()) {
+            return Result.fail(current.error);
+        }
+        const step = current.value;
+
+        step.state = "approved";
+        step.comment = params.comment;
+        step.finishedOn = params.now;
+        this.facts.push({
+            type: "stepApproved",
+            occurredOn: params.now,
+            actor: { ...params.actor },
+            change: { stepId: step.id, fromState: "inReview", toState: "approved" },
+            comment: params.comment
+        });
+
+        if (this.data.steps.every(item => item.state === "approved")) {
+            this.data.state = "approved";
+            this.facts.push({
+                type: "approved",
+                occurredOn: params.now,
+                actor: { ...params.actor }
+            });
+        }
+        return Result.ok();
+    }
+
+    /** Owner rejects; reject is final for the revision (D10). */
+    public reject(params: ReviewDecisionParams): Result<void, ReviewDecisionError> {
+        const current = this.getOwnedStep("reject", params);
+        if (current.isFail()) {
+            return Result.fail(current.error);
+        }
+        const step = current.value;
+
+        step.state = "rejected";
+        step.comment = params.comment;
+        step.finishedOn = params.now;
+        this.data.state = "rejected";
+        this.facts.push({
+            type: "stepRejected",
+            occurredOn: params.now,
+            actor: { ...params.actor },
+            change: { stepId: step.id, fromState: "inReview", toState: "rejected" },
+            comment: params.comment
+        });
+        return Result.ok();
+    }
+
+    /** Allowed while the review is in progress (D25, D75). Who may cancel is checked in 1b. */
+    public cancel(params: ReviewCancelParams): Result<void, ReviewInvalidStateError> {
+        const step = this.findCurrentStep();
+        if (this.data.state !== "inProgress") {
+            return Result.fail(
+                new ReviewInvalidStateError({
+                    reviewId: this.data.id,
+                    transition: "cancel",
+                    reviewState: this.data.state,
+                    stepId: step?.id ?? null,
+                    stepState: step?.state ?? null
+                })
+            );
+        }
+
+        this.data.state = "cancelled";
+        this.facts.push({
+            type: "cancelled",
+            occurredOn: params.now,
+            actor: { ...params.actor },
+            stepId: step?.id ?? null,
+            stepState: step?.state ?? null
+        });
+        return Result.ok();
+    }
+
+    /**
+     * Called by the single save path before persisting (D19). Derives the review-level fields from
+     * the steps; `lastChangedOn` moves only when a review event happened (D119). Cancel moves it
+     * too: D119 does not list cancel, but a cancelled review leaves every list (`isActive: false`),
+     * so this is harmless and keeps the field monotonic.
+     */
+    public prepareForSave(): void {
+        const lastFact = this.facts[this.facts.length - 1];
+        if (lastFact) {
+            this.data.lastChangedOn = lastFact.occurredOn;
+        }
+
+        const current = this.resolveCurrentStep();
+        if (!current) {
+            // Cancelled (D75): the review leaves every list and the target is unlocked.
+            this.data.isActive = false;
+            this.data.currentStepId = null;
+            this.data.currentStepState = null;
+            this.data.currentOwnerId = null;
+            this.data.currentCandidateTeamIds = [];
+            return;
+        }
+        this.data.isActive = true;
+        this.data.state = Review.deriveState(current);
+        this.data.currentStepId = current.id;
+        this.data.currentStepState = current.state;
+        this.data.currentOwnerId = current.owner?.type === "user" ? current.owner.id : null;
+        this.data.currentCandidateTeamIds = [...current.candidateTeamIds];
+    }
+
+    /**
+     * `system.workflow` for the target revision (spec 4.5). Derived from the steps, so it does not
+     * depend on `prepareForSave` having run.
+     */
+    public getSystemWorkflow(): ReviewSystemWorkflow | null {
+        const current = this.resolveCurrentStep();
+        if (!current) {
+            return null;
+        }
+        return {
+            workflowId: this.data.workflowId,
+            reviewState: Review.deriveState(current),
+            stepId: current.id,
+            stepName: current.title,
+            stepState: current.state
+        };
+    }
+
     /** Returns and clears the facts recorded since the last call. */
     public pullFacts(): ReviewFact[] {
         return this.facts.splice(0, this.facts.length);
@@ -350,6 +497,47 @@ export class Review {
             candidateTeamIds: [...resolution.candidateTeamIds],
             assignment: { source: "pool", reason: REQUESTER_OWNER_REASON }
         };
+    }
+
+    /**
+     * The step the review-level fields and `system.workflow` describe: the first step that is not
+     * approved, else the last step (after approve the last step stays current, after reject the
+     * rejecting step, D75). `null` for cancelled reviews. `request` guarantees at least one step.
+     */
+    private resolveCurrentStep(): ReviewStep | null {
+        if (this.data.state === "cancelled") {
+            return null;
+        }
+        return this.findCurrentStep() ?? this.data.steps.at(-1) ?? null;
+    }
+
+    private getOwnedStep(
+        transition: ReviewTransitionName,
+        params: ReviewDecisionParams
+    ): Result<ReviewStep, ReviewDecisionError> {
+        const current = this.getRequestedStepIn(transition, "inReview", params.stepId);
+        if (current.isFail()) {
+            return Result.fail(current.error);
+        }
+        const step = current.value;
+        const actor = params.actor;
+        const owner = step.owner;
+        if (!owner || owner.type !== actor.type || owner.id !== actor.id) {
+            return Result.fail(
+                new ReviewNotOwnerError({ reviewId: this.data.id, stepId: step.id })
+            );
+        }
+        return Result.ok(step);
+    }
+
+    private static deriveState(current: ReviewStep): ReviewState {
+        if (current.state === "rejected") {
+            return "rejected";
+        }
+        if (current.state === "approved") {
+            return "approved";
+        }
+        return "inProgress";
     }
 
     /** Human actions: a user, not the requester, member of the step's candidate teams (spec 5.1). */

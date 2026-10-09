@@ -194,6 +194,13 @@ describe("Review.reach", () => {
             reachedOn: NOW,
             startedOn: NOW
         });
+        expect(review.pullFacts()).toContainEqual({
+            type: "stepReached",
+            occurredOn: NOW,
+            actor: requester,
+            change: { stepId: "legal", fromState: "pending", toState: "inReview" },
+            assignment: { source: "picked" }
+        });
     });
 
     it("falls back to the pool when the resolved owner is the requester", () => {
@@ -350,7 +357,8 @@ describe("Review.takeOver", () => {
             state: "inReview",
             owner: otherReviewer,
             assignmentSource: "takeOver",
-            assignment: { source: "takeOver", by: otherReviewer }
+            assignment: { source: "takeOver", by: otherReviewer },
+            startedOn: NOW
         });
         expect(review.pullFacts()).toEqual([
             {
