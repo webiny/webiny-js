@@ -10734,6 +10734,7 @@ __metadata:
     "@webiny/remote-components": "npm:0.0.0"
     "@webiny/site-capture": "npm:0.0.0"
     "@webiny/theme-common": "npm:0.0.0"
+    graphql: "npm:^16.14.2"
     sharp: "npm:^0.35.3"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"

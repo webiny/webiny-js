@@ -155,9 +155,9 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             runId: ID!
             signature: String!
         ): ComponentExtractionArtifactResponse!
-        "The structured artifact a stage produced, for the visibility screens. Image refs are served by the run-image route. Pass machine:true for the un-overridden (machine) artifact (W8)."
         "How well the job's theme fits what was measured on the site, after Plan: colours, type sizes and spacing with a token, of those measured."
         componentExtractionGetThemeFit(runId: ID!): JSON
+        "The structured artifact a stage produced, for the visibility screens. Image refs are served by the run-image route. Pass machine:true for the un-overridden (machine) artifact (W8)."
         componentExtractionGetStageArtifact(
             runId: ID!
             stage: String!
