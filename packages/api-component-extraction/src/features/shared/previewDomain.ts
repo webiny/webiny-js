@@ -1,5 +1,6 @@
 import { createAbstraction, createImplementation, Result } from "@webiny/feature/api";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { FrontendGetSettingsRepository } from "@webiny/frontend-settings/api/features/getSettings/abstractions.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 // The Website Builder settings live under this key in the shared key-value store (source of truth:
@@ -25,13 +26,27 @@ export namespace PreviewDomainResolver {
 }
 
 class PreviewDomainResolverImpl implements IPreviewDomainResolver {
-    constructor(private keyValueStore: KeyValueStore.Interface) {}
+    constructor(
+        private keyValueStore: KeyValueStore.Interface,
+        private frontendSettings: FrontendGetSettingsRepository.Interface
+    ) {}
 
     async resolve(): Promise<Result<string, ExtractionError>> {
-        const result = await this.keyValueStore.get<{ previewDomain?: string }>(
-            WEBSITE_BUILDER_SETTINGS
-        );
-        const domain = (result.isOk() && result.value?.previewDomain) || DEFAULT_PREVIEW_DOMAIN;
+        /*
+         * The frontend settings first: since the frontend-settings port they hold the domain the
+         * admin edits and the editor previews against. The old Website Builder key is no longer
+         * written, so reading it alone kept rendering against whatever domain was set before the
+         * port — a dead tunnel, every render failing as "host unreachable" (2026-10-09). It stays as
+         * a fallback for an environment that has not been through the port.
+         */
+        const current = await this.frontendSettings.execute().catch(() => ({ domain: "" }));
+        const legacy = current.domain
+            ? null
+            : await this.keyValueStore.get<{ previewDomain?: string }>(WEBSITE_BUILDER_SETTINGS);
+        const domain =
+            current.domain ||
+            (legacy?.isOk() && legacy.value?.previewDomain) ||
+            DEFAULT_PREVIEW_DOMAIN;
 
         // A trailing slash would double up against the route path; normalise it away.
         const normalized = domain.replace(/\/+$/, "");
@@ -49,5 +64,5 @@ class PreviewDomainResolverImpl implements IPreviewDomainResolver {
 export const PreviewDomainResolverService = createImplementation({
     abstraction: PreviewDomainResolver,
     implementation: PreviewDomainResolverImpl,
-    dependencies: [KeyValueStore]
+    dependencies: [KeyValueStore, FrontendGetSettingsRepository]
 });

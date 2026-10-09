@@ -123,8 +123,9 @@ component's cost and a 4× swing in its time, from one run to the next, with not
 
 **Not established:**
 
-- whether answer quality differs between short- and long-thinking calls beyond passing the checks
-  (that needs the rendered components compared);
+- whether answer quality differs between short- and long-thinking calls beyond passing the checks.
+  Answered for one sample in `footer-thinking-quality.md`: the short-thinking answer was visibly the
+  worst of the four, and every check passed it;
 - how often the short case happens (1 in 4 here is too few to say);
 - whether a lower effort, or a thinking budget, would make the short case the usual one without
   costing quality.

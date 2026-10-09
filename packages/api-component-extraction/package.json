@@ -1,48 +1,49 @@
 {
-    "name": "@webiny/api-component-extraction",
-    "version": "0.0.0",
-    "type": "module",
-    "exports": {
-        ".": "./index.js",
-        "./*": "./*"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/webiny/webiny-js.git",
-        "directory": "packages/api-component-extraction"
-    },
-    "description": "Extracts Webiny components from an existing website: crawl, segment, cluster, classify, plan, generate, promote.",
-    "author": "Webiny Ltd.",
-    "license": "MIT",
-    "publishConfig": {
-        "access": "public"
-    },
-    "dependencies": {
-        "@webiny/ai-powerups": "0.0.0",
-        "@webiny/api-core": "0.0.0",
-        "@webiny/api-file-manager": "0.0.0",
-        "@webiny/api-graphql": "0.0.0",
-        "@webiny/api-headless-cms": "0.0.0",
-        "@webiny/api-theme": "0.0.0",
-        "@webiny/api-theme-extraction": "0.0.0",
-        "@webiny/api-websockets": "0.0.0",
-        "@webiny/aws-sdk": "0.0.0",
-        "@webiny/background-tasks": "0.0.0",
-        "@webiny/di": "^1.0.2",
-        "@webiny/event-handler-core": "0.0.0",
-        "@webiny/feature": "0.0.0",
-        "@webiny/remote-components": "0.0.0",
-        "@webiny/site-capture": "0.0.0",
-        "@webiny/theme-common": "0.0.0",
-        "sharp": "^0.35.3"
-    },
-    "devDependencies": {
-        "@webiny/build-tools": "0.0.0",
-        "graphql": "^16.14.2",
-        "typescript": "^7.0.2",
-        "vitest": "^4.1.10"
-    },
-    "webiny": {
-        "publishFrom": "dist"
-    }
+  "name": "@webiny/api-component-extraction",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-component-extraction"
+  },
+  "description": "Extracts Webiny components from an existing website: crawl, segment, cluster, classify, plan, generate, promote.",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@webiny/ai-powerups": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-file-manager": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-theme": "0.0.0",
+    "@webiny/api-theme-extraction": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
+    "@webiny/background-tasks": "0.0.0",
+    "@webiny/di": "^1.0.2",
+    "@webiny/event-handler-core": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/frontend-settings": "0.0.0",
+    "@webiny/remote-components": "0.0.0",
+    "@webiny/site-capture": "0.0.0",
+    "@webiny/theme-common": "0.0.0",
+    "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "graphql": "^16.14.2",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
 }

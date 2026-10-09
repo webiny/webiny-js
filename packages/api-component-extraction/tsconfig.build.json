@@ -14,6 +14,7 @@
     { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
+    { "path": "../frontend-settings/tsconfig.build.json" },
     { "path": "../remote-components/tsconfig.build.json" },
     { "path": "../site-capture/tsconfig.build.json" },
     { "path": "../theme-common/tsconfig.build.json" }
@@ -49,6 +50,8 @@
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/frontend-settings/*": ["../frontend-settings/src/*"],
+      "@webiny/frontend-settings": ["../frontend-settings/src"],
       "@webiny/remote-components/*": ["../remote-components/src/*"],
       "@webiny/remote-components": ["../remote-components/src"],
       "@webiny/site-capture/*": ["../site-capture/src/*"],
