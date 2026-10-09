@@ -87,23 +87,20 @@ Binding for this plan. Where they refine the spec, the ruling wins for phase 1a.
 - A10. When several `ReviewTargetLoader`s match a model, the last registered wins (the same rule as resolving a single registration).
 - A11. `ReviewTargetSync.sync` fails with a plain `Error` (`Result<void, Error>`); phase 2 adapters may return any `BaseError`.
 
-## Task files
+## Sub-phases
 
-This overview holds everything that binds all tasks. Each task lives in its own file in this folder and is read together with this overview:
+Phase 1a runs as four sub-phases. Each has its own folder, its own `00-overview.md` (the `PLAN_FILE` for superpowers:subagent-driven-development), its own SDD run and final review, and a stop for the user before the next one starts. This file holds everything that binds all of them; every sub-phase overview tells the executor to read it first. Task numbers stay global (1-11) so cross-references between tasks keep working.
 
-1. `task-01-remove-old-review-code.md`
-2. `task-02-workflow-domain-and-validator.md`
-3. `task-03-workflow-model-repository-use-cases.md`
-4. `task-04-review-aggregate-request-start-take-over.md`
-5. `task-05-review-aggregate-approve-reject-cancel.md`
-6. `task-06-review-model-repository-delete-block.md`
-7. `task-07-review-lifecycle-collaborators.md`
-8. `task-08-request-and-get-review.md`
-9. `task-09-review-transition-use-cases.md`
-10. `task-10-assignment-log.md`
-11. `task-11-workflow-settings.md`
+| Sub-phase | Folder | Tasks | Ends with |
+|---|---|---|---|
+| 1a.1 Workflow | `1a.1-workflow/` | 1, 2, 3 | Old review code removed; new workflow model, validator, repository, Get/List/Store/Delete use cases and events |
+| 1a.2 Review aggregate | `1a.2-review-aggregate/` | 4, 5 | Pure `Review` aggregate with all 1a transitions, unit tested |
+| 1a.3 Review persistence and use cases | `1a.3-review-persistence/` | 6, 7, 8, 9 | `wbyWorkflowReview`, repository, delete block, lifecycle collaborators, single save path, request/get and transition use cases |
+| 1a.4 Assignment log and settings | `1a.4-assignment-and-settings/` | 10, 11 | `wbyWorkflowAssignment` and `wbyWorkflowSettings` with their repositories and use cases |
 
-Executing with superpowers:subagent-driven-development: pass this overview as `PLAN_FILE` (it owns the ledger workspace) and give each task file to `task-brief` with an explicit output path, e.g. `task-brief docs/.bruno/plans/2026-10-09-workflows-phase-1a/task-03-workflow-model-repository-use-cases.md 3 <workspace>/task-3-brief.md`.
+Order is strict: 1a.2 builds on 1a.1's workflow types, 1a.3 on both, 1a.4 on 1a.3's feature wiring.
+
+Executing a sub-phase: pass its `00-overview.md` as `PLAN_FILE` (it owns the ledger workspace) and give each task file to `task-brief` with an explicit output path, e.g. `task-brief docs/.bruno/plans/2026-10-09-workflows-phase-1a/1a.1-workflow/task-03-workflow-model-repository-use-cases.md 3 <workspace>/task-3-brief.md`. Reviewers get this file's Global Constraints and the rulings relevant to the task.
 
 ## Task order
 
