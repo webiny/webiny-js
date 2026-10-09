@@ -1,0 +1,9 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Exclude tests and fixture files"
+paths = [
+	'''(?i)(^|/)tests/''',
+    '''(?i)(^|/)__tests__/''',
+]
