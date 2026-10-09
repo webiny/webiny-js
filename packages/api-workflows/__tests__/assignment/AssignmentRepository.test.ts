@@ -130,6 +130,31 @@ describe("AssignmentRepository", () => {
         expect(second.meta.hasMoreItems).toBe(false);
     });
 
+    it("orders by assignedOn, not insertion order, across a page boundary", async () => {
+        const repository = await createRepository();
+        const where = { workflowId: "workflow-ooo", stepId: "legal" };
+        for (const hour of ["12", "10", "11"]) {
+            expectOk(
+                await repository.create(
+                    record({ ...where, assignedOn: `2026-10-09T${hour}:00:00.000Z` })
+                )
+            );
+        }
+
+        const first = expectOk(await repository.list({ where, limit: 2 }));
+        expect(first.items.map(item => item.assignedOn)).toEqual([
+            "2026-10-09T12:00:00.000Z",
+            "2026-10-09T11:00:00.000Z"
+        ]);
+        expect(first.meta.hasMoreItems).toBe(true);
+
+        const second = expectOk(
+            await repository.list({ where, limit: 2, after: first.meta.cursor })
+        );
+        expect(second.items.map(item => item.assignedOn)).toEqual(["2026-10-09T10:00:00.000Z"]);
+        expect(second.meta.hasMoreItems).toBe(false);
+    });
+
     it("returns an empty list for an empty userId_in without querying the CMS", async () => {
         let cmsListCalls = 0;
         const { context } = await createContextHandler({

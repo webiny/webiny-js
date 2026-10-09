@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { MailerService } from "@webiny/api-mailer";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
@@ -21,10 +22,26 @@ import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import { GetWorkflowSettingsUseCase } from "~/features/settings/GetWorkflowSettings/index.js";
 import { SaveWorkflowSettingsUseCase } from "~/features/settings/SaveWorkflowSettings/index.js";
+import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
+import { WorkflowModelProvider } from "~/domain/workflow/abstractions/WorkflowModelProvider.js";
+import { ReviewModelProvider } from "~/domain/review/abstractions/ReviewModelProvider.js";
+import { AssignmentModelProvider } from "~/domain/assignment/abstractions/AssignmentModelProvider.js";
+import { WorkflowSettingsModelProvider } from "~/domain/settings/abstractions/WorkflowSettingsModelProvider.js";
+import { WorkflowSettingsRepository } from "~/domain/settings/abstractions/WorkflowSettingsRepository.js";
+import {
+    ListNotificationTypesRepository,
+    ListNotificationTypesUseCase
+} from "~/features/notifications/ListNotificationTypes/index.js";
+import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
 
 describe("WorkflowsFeature registration", () => {
     it("registers every workflows abstraction once (D18)", async () => {
-        const { context } = await createContextHandler();
+        // `NotificationTransport` depends on the mailer, which the test context does not provide.
+        const { context } = await createContextHandler({
+            setup: container => {
+                container.registerInstance(MailerService, {} as MailerService.Interface);
+            }
+        });
         const { container } = context;
 
         expect(container.resolveAll(GetWorkflowUseCase)).toHaveLength(1);
@@ -48,7 +65,27 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(AssignmentRepository)).toHaveLength(1);
         expect(container.resolveAll(GetWorkflowSettingsUseCase)).toHaveLength(1);
         expect(container.resolveAll(SaveWorkflowSettingsUseCase)).toHaveLength(1);
+        expect(container.resolveAll(WorkflowRepository)).toHaveLength(1);
+        expect(container.resolveAll(WorkflowModelProvider)).toHaveLength(1);
+        expect(container.resolveAll(ReviewModelProvider)).toHaveLength(1);
+        expect(container.resolveAll(AssignmentModelProvider)).toHaveLength(1);
+        expect(container.resolveAll(WorkflowSettingsModelProvider)).toHaveLength(1);
+        expect(container.resolveAll(WorkflowSettingsRepository)).toHaveLength(1);
+        expect(container.resolveAll(ListNotificationTypesUseCase)).toHaveLength(1);
+        expect(container.resolveAll(ListNotificationTypesRepository)).toHaveLength(1);
+        expect(container.resolveAll(NotificationTransport)).toHaveLength(1);
     });
+
+    it.each(["wbyWorkflow", "wbyWorkflowReview", "wbyWorkflowAssignment", "wbyWorkflowSettings"])(
+        "resolves the %s model through GetModelUseCase",
+        async modelId => {
+            const { context } = await createContextHandler();
+
+            const result = await context.container.resolve(GetModelUseCase).execute(modelId);
+
+            expect(result.isOk()).toBe(true);
+        }
+    );
 
     it("does not register the old workflow state model", async () => {
         const { context } = await createContextHandler();
