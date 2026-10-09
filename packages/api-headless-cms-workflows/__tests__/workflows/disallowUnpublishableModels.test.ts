@@ -53,6 +53,22 @@ describe("Disallow unpublishable models", () => {
         expect(result.error.message).toBe('The model "doesNotExist" does not exist.');
     });
 
+    it("rejects a workflow bound to a private model", async () => {
+        const { context } = createContextHandler({
+            modifyModel: model => {
+                return { ...model, isPrivate: true };
+            }
+        });
+
+        const result = await storeWorkflow(await context());
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe(
+            `Cannot bind a workflow to the model "${modelDefinition.modelId}" because it is a private model.`
+        );
+    });
+
     it("allows a workflow for a publishable model", async () => {
         const { context } = createContextHandler();
 
