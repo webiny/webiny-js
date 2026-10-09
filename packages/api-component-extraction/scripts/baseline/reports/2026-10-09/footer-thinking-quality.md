@@ -4,7 +4,7 @@ The first of the open questions in `footer-per-call-limit.md`. No model spend: t
 answers on check-job run 3 were each installed back as the component (the dev-only install path),
 rendered, and compared with the Footer's source crop.
 
-## Two findings that outrank the thinking question
+## Findings that outrank the thinking question
 
 1. **Wrong-slot text is upstream of the model, and survives the per-copy and alignment work.** C and D
    render "Copyright © 2026 Copyright ©" and put "Office Hours" or "2424 Tulane Apartments" among the
@@ -20,6 +20,13 @@ rendered, and compared with the Footer's source crop.
    the best, and three regenerations replaced it with worse ones under the same green checks. Filed as
    `regenerating-can-replace-a-better-component-with-a-worse-one.md`, with the height ratio as a free
    partial signal (catches B at 2.03×, misses C and D) for after the 16th. It is not a quality measure.
+3. **On this component, closest to the source and conforming to the contract pull in opposite
+   directions.** A looked best because it wrote "Privacy Policy" and "Accessibility Statement" straight
+   into its markup and ignored its own link-list prop. Of the four it is the least contract-conformant:
+   those links cannot be edited through the component's inputs. The answers that follow the contract
+   (C, D) render the contract's wrong values. So the visual ranking and conformance are in tension
+   here, and that holds while the contract carries wrong data. "Best by eye" is not "best", and neither
+   is "conforms".
 
 ## Method
 

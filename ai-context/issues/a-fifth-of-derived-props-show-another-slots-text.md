@@ -276,5 +276,13 @@ ignoring its own list.
 - **passes every check.** The texts are present, so text preservation is satisfied; the props exist,
   so the contract is satisfied.
 
-Not yet measured: how many Link-list props across the demo runs carry observed values from outside
-their own list. The Plan artifacts hold the answer offline.
+**The defect's location is upstream by default now, not by elimination.** This is the third time the
+answer to "why did the model write that" has been "it was told to": after the invented images and the
+spacing variables, the prompt was accurate about wrong data and the model followed it. When a generated
+component shows the wrong text, look at what the Plan handed it first.
+
+Measured (`reports/2026-10-09/link-list-observed-values.md`): 49 of 203 link-list props across 19
+runs carry wrong text (15 of 55 on the five demo jobs). On composed pages it shows on Park City only (a
+"Copyright ©" link in every footer of its site tenant; "Explore" on four root pages), because composition
+re-derives link lists from the captured page and masks the Plan's values elsewhere. Component defaults
+are not masked: renders, Library previews and fresh editor drops show them.
