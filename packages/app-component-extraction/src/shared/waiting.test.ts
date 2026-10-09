@@ -31,6 +31,9 @@ describe("finishedSummary", () => {
         const counts = { pages: 5, sections: 37, clusters: 25, components: 24 };
         expect(finishedSummary("capture", counts)).toBe("5 pages captured.");
         expect(finishedSummary("generate", counts)).toBe("24 components.");
-        expect(finishedSummary("discover", counts)).toBeNull();
+        expect(finishedSummary("discover", counts)).toBe("5 pages found to capture.");
+        expect(finishedSummary("classify", counts)).toBe("25 groups named.");
+        expect(finishedSummary("assemble", counts)).toBe("5 pages rebuilt from the components.");
+        expect(finishedSummary("promote", counts)).toBeNull();
     });
 });

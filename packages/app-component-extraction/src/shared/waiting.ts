@@ -48,6 +48,12 @@ export const degradedSummary = (stage: Stage, artifact: unknown): string | null 
 /** What a finished stage produced, from the run's counts, for the step between stages. */
 export const finishedSummary = (stage: Stage, counts: RunDto["counts"]): string | null => {
     switch (stage) {
+        case "discover":
+            return `${counts.pages} page${counts.pages === 1 ? "" : "s"} found to capture.`;
+        case "classify":
+            return `${counts.clusters} group${counts.clusters === 1 ? "" : "s"} named.`;
+        case "assemble":
+            return `${counts.pages} page${counts.pages === 1 ? "" : "s"} rebuilt from the components.`;
         case "capture":
             return `${counts.pages} page${counts.pages === 1 ? "" : "s"} captured.`;
         case "segment":
