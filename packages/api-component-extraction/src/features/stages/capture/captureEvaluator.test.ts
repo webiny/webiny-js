@@ -268,7 +268,7 @@ describe("captureEvaluator — form controls", () => {
                 <input type="email" name="email" data-rect="390,50">
                 <input type="submit" value="Send" data-rect="78,44">
             </form>`);
-        const found = inputs(tree);
+        const found = inputs(tree as CapturedNode);
         expect(found.map(node => node.inputType)).toEqual(["text", "email", "submit"]);
         // The submit's value is the text it shows; a text field's typed value is not page content.
         expect(found.map(node => node.text ?? null)).toEqual([null, null, "Send"]);
@@ -280,6 +280,9 @@ describe("captureEvaluator — form controls", () => {
                 <input type="button" value="Get Directions" data-rect="140,44">
                 <input type="submit" data-rect="78,44">
             </div>`);
-        expect(inputs(tree).map(node => node.text ?? null)).toEqual(["Get Directions", null]);
+        expect(inputs(tree as CapturedNode).map(node => node.text ?? null)).toEqual([
+            "Get Directions",
+            null
+        ]);
     });
 });
