@@ -59,7 +59,15 @@ const MAX_ATTEMPTS = 3;
  */
 export const GENERATION_EFFORT: GenerationEffort = "medium";
 
-const PER_CALL_TIMEOUT_MS = 5 * 60 * 1000;
+/*
+ * Seven minutes, not five (2026-10-09, `reports/2026-10-09/footer-per-call-limit.md`). Five was set when
+ * a cut-off call left nothing; the call streams now, and `attemptBudget` is what guarantees the recorded
+ * result. Measured at 92-142 output tokens a second, a call reaches MAX_OUTPUT_TOKENS (32K) in 230-350
+ * s, so the cap already bounds a runaway; five minutes was cutting off answers the cap would have let
+ * finish (the Footer, 27-28K tokens, timed out on one attempt in two). At seven the cap binds first at
+ * any rate down to about 76 tokens a second.
+ */
+const PER_CALL_TIMEOUT_MS = 7 * 60 * 1000;
 const ATTEMPT_RESERVE_MS = 60 * 1000;
 const MIN_ATTEMPT_MS = 90 * 1000;
 

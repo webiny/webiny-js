@@ -10,11 +10,11 @@ Design and predictions: `effort-design.md` (committed before the runs). 30 dry-r
 
 ## Per arm (10 generation runs each)
 
-| Arm             | First-attempt pass | Generated | Attempts | Timed-out calls | Colour flags | Type flags | Spacing fidelity | Median duration | Output tokens | Cost reported |
-| --------------- | ------------------ | --------- | -------- | --------------- | ------------ | ---------- | ---------------- | --------------- | ------------- | ------------- |
-| high (default)  | 9/10               | 9/10      | 1.20     | 3               | 0            | 1          | 0.94             | 178s            | 146,705       | $2.52         |
-| medium          | 10/10              | 10/10     | 1.00     | 0               | 0            | 1          | 0.93             | 100s            | 108,893       | $2.08         |
-| low             | 10/10              | 10/10     | 1.00     | 0               | 2            | 3          | 0.97             | 28s             | 41,718        | $1.07         |
+| Arm            | First-attempt pass | Generated | Attempts | Timed-out calls | Colour flags | Type flags | Spacing fidelity | Median duration | Output tokens | Cost reported |
+| -------------- | ------------------ | --------- | -------- | --------------- | ------------ | ---------- | ---------------- | --------------- | ------------- | ------------- |
+| high (default) | 9/10               | 9/10      | 1.20     | 3               | 0            | 1          | 0.94             | 178s            | 146,705       | $2.52         |
+| medium         | 10/10              | 10/10     | 1.00     | 0               | 0            | 1          | 0.93             | 100s            | 108,893       | $2.08         |
+| low            | 10/10              | 10/10     | 1.00     | 0               | 2            | 3          | 0.97             | 28s             | 41,718        | $1.07         |
 
 Reported cost excludes the three timed-out calls, which report no usage: at about 30K tokens each,
 roughly $1.35 more on the high arm. Total reported $5.67 against an estimate of $10-14.
@@ -69,11 +69,11 @@ Each of the four control outputs (two per arm) rendered with its own defaults on
 values, at 1440px, and measured in the browser. The site's own geometry is read from the captured page
 tree of the representative section.
 
-|                   | Site                                  | Default (2 runs)                       | Medium (2 runs)          |
-| ----------------- | ------------------------------------- | -------------------------------------- | ------------------------ |
-| Icon circle       | 45px, padding 0                       | 45px                                   | 47px (content-box + 1px border) |
-| Icon glyph        | a font icon at font-size 15-16px      | 13px: squeezed by 15px padding on the link | 18-20px              |
-| Text inset        | 60px                                  | 60px                                   | 60px                     |
+|             | Site                             | Default (2 runs)                           | Medium (2 runs)                 |
+| ----------- | -------------------------------- | ------------------------------------------ | ------------------------------- |
+| Icon circle | 45px, padding 0                  | 45px                                       | 47px (content-box + 1px border) |
+| Icon glyph  | a font icon at font-size 15-16px | 13px: squeezed by 15px padding on the link | 18-20px                         |
+| Text inset  | 60px                             | 60px                                       | 60px                            |
 
 **The difference is visible**: medium's glyphs are clearly larger. Neither arm matches the site: default
 is 2-3px under it, medium 3-4px over, and medium's circle 2px wide.
@@ -88,3 +88,19 @@ the right element, and here that preferred the worse output.
 **Decision: medium.** Neither arm matches the site's icons (default 2-3px under, medium 3-4px over and
 2px on the circle), so the quality difference is a wash. What default costs is a component that does
 not generate.
+
+## Noise in this comparison, recorded 2026-10-09
+
+The Footer, regenerated on one prompt that hashes identically across attempts, billed 8,137 output
+tokens once and 27,462-28,383 three times. The answer was the same size each time (18.6-21.6K
+characters); the difference was thinking, first text after 5 s once against 210-232 s three times. All
+four passed. See `2026-10-09/footer-per-call-limit.md`.
+
+**What that means for this comparison.** One component varied 3.5× in cost and 4× in time run to run on
+identical input, at one effort setting. Part of the medium-versus-default comparison above was that
+noise read as signal: per-component differences between arms smaller than this swing are not evidence
+on their own.
+
+**The decision stands.** Medium rested on timeouts as much as quality: the default ran the Header and
+Footer into the per-call limit, medium did not. This note qualifies the cost and quality figures, not
+the choice.

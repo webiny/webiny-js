@@ -43,14 +43,19 @@ describe("attemptBudget", () => {
     const now = 1_000_000;
 
     it("gives each call the full limit when there is no deadline", () => {
-        expect(attemptBudget(now, undefined)).toEqual({ proceed: true, timeoutMs: 300_000 });
+        expect(attemptBudget(now, undefined)).toEqual({ proceed: true, timeoutMs: 420_000 });
     });
 
     it("gives the full limit when plenty of time is left", () => {
         expect(attemptBudget(now, now + 14 * 60_000)).toEqual({
             proceed: true,
-            timeoutMs: 300_000
+            timeoutMs: 420_000
         });
+    });
+
+    it("still gives a second long attempt enough to finish a Footer", () => {
+        // An 880 s invocation after a full first attempt (420 s call + overhead): 450 s left.
+        expect(attemptBudget(now, now + 450_000)).toEqual({ proceed: true, timeoutMs: 390_000 });
     });
 
     it("shortens the call to leave time to record the result", () => {
