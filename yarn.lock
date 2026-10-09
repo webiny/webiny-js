@@ -11488,6 +11488,7 @@ __metadata:
   resolution: "@webiny/api-website-builder@workspace:packages/api-website-builder"
   dependencies:
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-file-manager-s3": "npm:0.0.0"

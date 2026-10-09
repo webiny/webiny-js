@@ -8,6 +8,7 @@ Bugs found during discovery that get fixed separately, before or alongside the r
 - WB page folders are type `wb:page` (`packages/app-website-builder/src/constants.ts:29`), which resolves modelId `"page"`. The page model is `wbyWbPage`, so the lookup fails and the check is skipped.
 - No guard exists in `api-website-builder` or `api-website-builder-workflows`.
 - Effect: a WB folder holding pages (but no subfolders) can be deleted. Pages keep a dangling `folderId`; workflow folder rules stop matching them.
+- Fixed in Phase 0 Task 4.
 - Fix: add a `FolderBeforeDelete` handler in `api-website-builder` that blocks deleting a `wb:page` folder while it contains pages.
 
 ## B2. WorkflowsFeature registered twice

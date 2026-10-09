@@ -56,6 +56,7 @@ import { RedirectModelProvider } from "~/features/redirects/RedirectModelProvide
 import { VariantModelProvider } from "~/features/variants/VariantModelProvider.js";
 import { ExperimentModelProvider } from "~/features/experiments/ExperimentModelProvider.js";
 import { PageModelProvider } from "~/features/pages/PageModelProvider.js";
+import { EnsurePageFolderIsEmptyOnDeleteFeature } from "~/features/folders/EnsurePageFolderIsEmptyOnDelete/feature.js";
 
 export const WebsiteBuilderFeature = createFeature({
     name: "WebsiteBuilder",
@@ -111,6 +112,7 @@ export const WebsiteBuilderFeature = createFeature({
         DuplicatePageFeature.register(container);
         TranslatePageFeature.register(container);
         MovePageFeature.register(container);
+        EnsurePageFolderIsEmptyOnDeleteFeature.register(container);
 
         // A/B testing — experiments and variants.
         ExperimentFeature.register(container);
