@@ -269,6 +269,21 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
             };
             if (zeroArea) { node.boxDerived = true; }
             var text = directText(el);
+            /*
+             * A submit or button input shows its \`value\` as its label and has no text node, so the
+             * tree held a branded box with nothing in it. Every G5 form submits with
+             * <input type="submit" value="Send">: with no label, Plan bound the next link to the form's
+             * submit (a phone number on three forms) or left it empty, and Generate invented "Submit"
+             * or dropped the button. The label is read as the control's text, and the type is kept so
+             * Plan can tell a submit control from a text field.
+             */
+            if (node.tag === "input") {
+                var inputType = String(el.type || el.getAttribute("type") || "text").toLowerCase();
+                node.inputType = inputType;
+                if (!text && /^(submit|button|reset)$/.test(inputType)) {
+                    text = String(el.value || "").replace(/\\s+/g, " ").trim();
+                }
+            }
             if (text) { node.text = text.slice(0, 2000); }
             var runs = directTextRuns(el);
             if (runs.length > 1) { node.textRuns = runs.map(function (r) { return r.slice(0, 2000); }); }

@@ -639,14 +639,17 @@ const buildPrompt = (
                     `${indent}${prop.name}: ${value.src}${value.alt ? ` (alt: "${value.alt}")` : ""}`
                 );
             } else if (value.kind === "link") {
-                lines.push(`${indent}${prop.name}: "${value.label}" -> ${value.href}`);
+                // A form's submit has a label and no destination; say so rather than print an empty arrow.
+                lines.push(
+                    `${indent}${prop.name}: "${value.label}" -> ${value.href || "(no destination: a form submit)"}`
+                );
             } else {
                 const fields = Object.entries(value.fields)
                     .map(([name, field]) =>
                         typeof field === "string"
                             ? `${name}: "${field}"`
                             : "label" in field
-                              ? `${name}: "${field.label}" -> ${field.href}`
+                              ? `${name}: "${field.label}" -> ${field.href || "(no destination)"}`
                               : `${name}: ${field.src}`
                     )
                     .join(", ");

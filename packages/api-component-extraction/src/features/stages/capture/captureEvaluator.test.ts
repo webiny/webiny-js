@@ -252,3 +252,34 @@ describe("captureEvaluator icon glyphs", () => {
         }
     });
 });
+
+describe("captureEvaluator — form controls", () => {
+    beforeEach(installLayout);
+
+    const inputs = (node: CapturedNode | null): CapturedNode[] =>
+        !node
+            ? []
+            : [...(node.tag === "input" ? [node] : []), ...(node.children ?? []).flatMap(inputs)];
+
+    it("reads a submit input's value as its label, and keeps every input's type", () => {
+        const { tree } = run(`
+            <form data-rect="600,300">
+                <input type="text" name="first" value="typed" data-rect="390,50">
+                <input type="email" name="email" data-rect="390,50">
+                <input type="submit" value="Send" data-rect="78,44">
+            </form>`);
+        const found = inputs(tree);
+        expect(found.map(node => node.inputType)).toEqual(["text", "email", "submit"]);
+        // The submit's value is the text it shows; a text field's typed value is not page content.
+        expect(found.map(node => node.text ?? null)).toEqual([null, null, "Send"]);
+    });
+
+    it("reads a button input's value too, and leaves an unlabelled one without text", () => {
+        const { tree } = run(`
+            <div data-rect="600,100">
+                <input type="button" value="Get Directions" data-rect="140,44">
+                <input type="submit" data-rect="78,44">
+            </div>`);
+        expect(inputs(tree).map(node => node.text ?? null)).toEqual(["Get Directions", null]);
+    });
+});

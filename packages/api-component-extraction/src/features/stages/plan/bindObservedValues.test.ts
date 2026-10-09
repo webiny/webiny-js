@@ -222,3 +222,66 @@ describe("bindObservedValues across members", () => {
         expect(bindObservedValues([nav("A", "/a"), nav("B", "/b")], props).propsBound).toBe(1);
     });
 });
+
+describe("bindObservedValues — a form's submit", () => {
+    // 2424 Tulane's contact form as captured since input labels are read: a privacy link in the
+    // consent text, the submit input, and a "Please Call" phone link after the form.
+    const form = () =>
+        node("div", {
+            children: [
+                node("p", {
+                    children: [
+                        node("a", { text: "privacy policy", href: "https://site.com/privacy" })
+                    ]
+                }),
+                node("input", { inputType: "text" }),
+                node("input", { inputType: "submit", text: "Send" }),
+                node("a", { text: "Please Call (346) 489-6939", href: "tel:+13464896939" })
+            ]
+        });
+
+    it("binds the submit prop to the submit control, not the next link", () => {
+        const props = [prop("privacyLink", "Link"), prop("submitButton", "Link")];
+        bindObservedValues([form()], props);
+        expect(props[0].observedStructured).toEqual([
+            { kind: "link", label: "privacy policy", href: "https://site.com/privacy", member: 0 }
+        ]);
+        expect(props[1].observedStructured).toEqual([
+            { kind: "link", label: "Send", href: "", member: 0 }
+        ]);
+        expect(props[1].observedValues).toEqual(["Send"]);
+    });
+
+    it("binds the submit prop to the submit control even when the phone link comes first", () => {
+        const section = node("div", {
+            children: [
+                node("a", { text: "Please Call (346) 489-6939", href: "tel:+13464896939" }),
+                node("input", { inputType: "submit", text: "Send" })
+            ]
+        });
+        const props = [prop("submitButton", "Link")];
+        bindObservedValues([section], props);
+        expect(props[0].observedValues).toEqual(["Send"]);
+    });
+
+    it("binds a submit prop positionally when the section has no submit control, as before", () => {
+        const section = node("div", {
+            children: [node("a", { text: "Apply", href: "https://site.com/apply" })]
+        });
+        const props = [prop("submitButton", "Link")];
+        bindObservedValues([section], props);
+        expect(props[0].observedValues).toEqual(["Apply"]);
+    });
+
+    it("does not give a submit control to an unlabelled input or a text field", () => {
+        const section = node("div", {
+            children: [
+                node("input", { inputType: "submit" }),
+                node("input", { inputType: "text", text: "x" })
+            ]
+        });
+        const props = [prop("submitButton", "Link")];
+        bindObservedValues([section], props);
+        expect(props[0].observedStructured ?? []).toEqual([]);
+    });
+});

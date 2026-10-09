@@ -107,10 +107,20 @@ export const collectLinks = (
     walk(node, claimed, current => {
         if (current.href) {
             links.push({ label: ownText(current), href: current.href, node: current });
+        } else if (isSubmitControl(current)) {
+            // A form's submit: a call to action with a label and no destination. Without it, a Link prop
+            // for the submit took the next real link in the section — a phone number on three G5 forms.
+            links.push({ label: current.text ?? "", href: "", node: current });
         }
     });
     return links;
 };
+
+/** A labelled `<input type="submit|button">` (`inputType` and its label are captured since 2026-10-09). */
+const isSubmitControl = (node: CapturedNode): boolean =>
+    node.tag === "input" &&
+    /^(submit|button)$/.test(node.inputType ?? "") &&
+    Boolean(node.text?.trim());
 
 /**
  * Text runs in the subtree that are NOT a link's label, in document order.

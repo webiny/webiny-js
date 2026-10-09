@@ -34,6 +34,8 @@ const MAX_VALUES_TOTAL = 40;
 
 const isMediaType = (type: string): boolean => /^(image|media|photo|picture|file)$/i.test(type);
 const isLinkType = (type: string): boolean => /^(link|url|cta|button)$/i.test(type);
+/** A Link prop for a form's submit, by its name (`submitButton`, `sendButton`, `submit`). */
+const isSubmitProp = (prop: ComponentProp): boolean => /submit|send/i.test(prop.name);
 
 type FieldKind = "media" | "link" | "text";
 
@@ -252,7 +254,14 @@ const bindOneSection = (
             }
         } else if (isLinkType(prop.type)) {
             const take = prop.array ? MAX_VALUES_PER_PROP : 1;
-            for (const link of collectLinks(node, claimed).slice(0, take)) {
+            const links = collectLinks(node, claimed);
+            /*
+             * A prop named for a form's submit takes the section's submit control when it has one.
+             * Positionally it took the next link instead: on three G5 forms, a "Please Call" phone link
+             * that sits before the submit, so the form shipped a phone number as its submit button.
+             */
+            const submits = isSubmitProp(prop) ? links.filter(link => !link.href) : [];
+            for (const link of (submits.length > 0 ? submits : links).slice(0, take)) {
                 values.push({ kind: "link", label: link.label, href: link.href });
                 claimed.add(link.node);
                 summary.linksBound++;

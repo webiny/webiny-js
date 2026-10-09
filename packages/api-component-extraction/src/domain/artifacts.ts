@@ -216,6 +216,12 @@ export interface CapturedNode {
      * load-bearing.
      */
     href?: string;
+    /**
+     * An `<input>`'s type (`submit`, `text`, `email`…). Present on inputs only. A submit or button
+     * input's label is its `text`. Absent on trees captured before 2026-10-09, and on the demo runs'
+     * trees until they were patched (`scripts/baseline/reports/2026-10-09/input-labels-patch.md`).
+     */
+    inputType?: string;
     /** A media node's source, absolute. Present on `img`/`source`/`video`/`iframe`/`embed` only. */
     src?: string;
     /** An image's alternative text. Present when the element carries a non-empty `alt`. */
