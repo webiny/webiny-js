@@ -4,6 +4,7 @@ const JOB_FIELDS = /* GraphQL */ `
     siteUrl
     themeEntryId
     themeVersion
+    themeExtraction
     pageCap
     gateConfig
     pinned
@@ -600,5 +601,33 @@ export const GET_COMPOSED_CAPTURE = /* GraphQL */ `
                 message
             }
         }
+    }
+`;
+
+export const RETRY_JOB_THEME = /* GraphQL */ `
+    mutation RetryJobTheme($jobId: ID!) {
+        componentExtractionRetryJobTheme(jobId: $jobId) {
+            data { ${JOB_FIELDS} }
+            error { message code data }
+        }
+    }
+`;
+
+export const USE_EXISTING_THEME = /* GraphQL */ `
+    mutation UseExistingTheme($jobId: ID!, $themeEntryId: String!, $themeVersion: Int!) {
+        componentExtractionUseExistingTheme(
+            jobId: $jobId
+            themeEntryId: $themeEntryId
+            themeVersion: $themeVersion
+        ) {
+            data { ${JOB_FIELDS} }
+            error { message code data }
+        }
+    }
+`;
+
+export const GET_THEME_FIT = /* GraphQL */ `
+    query GetThemeFit($runId: ID!) {
+        componentExtractionGetThemeFit(runId: $runId)
     }
 `;

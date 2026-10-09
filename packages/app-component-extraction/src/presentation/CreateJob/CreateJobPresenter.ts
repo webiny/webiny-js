@@ -1,5 +1,9 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { CreateJobPresenter as PresenterAbstraction, type GatePreset } from "./abstractions.js";
+import {
+    CreateJobPresenter as PresenterAbstraction,
+    EXTRACT_THEME,
+    type GatePreset
+} from "./abstractions.js";
 import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
 import { DEFAULT_PAGE_CAP, STAGES } from "~/constants.js";
 
@@ -12,7 +16,8 @@ const PRESET_STOP_AFTER: Record<Exclude<GatePreset, "custom">, string[]> = {
 const emptyForm = () => ({
     name: "",
     siteUrl: "",
-    themeId: "",
+    // A new job extracts its theme from the site unless an existing one is picked.
+    themeId: EXTRACT_THEME,
     pageCap: String(DEFAULT_PAGE_CAP),
     checkingReachability: false,
     reachability: null,
@@ -129,6 +134,7 @@ class CreateJobPresenterImpl implements PresenterAbstraction.Interface {
     async create(): Promise<string> {
         const name = this.vm.name.trim();
         const siteUrl = this.vm.siteUrl.trim();
+        const extract = this.vm.themeId === EXTRACT_THEME;
         const theme = this.vm.themes.find(candidate => candidate.id === this.vm.themeId);
 
         if (!name) {
@@ -137,12 +143,10 @@ class CreateJobPresenterImpl implements PresenterAbstraction.Interface {
         if (!siteUrl) {
             throw new Error("Enter the site URL to crawl.");
         }
-        if (!theme) {
+        if (!extract && !theme) {
             throw new Error("Choose the theme to bind generated components to.");
         }
 
-        // The theme's revision id is `entryId#version`; the API wants the two apart.
-        const themeEntryId = theme.id.split("#")[0];
         const parsedPageCap = Number.parseInt(this.vm.pageCap, 10);
         const pageCap = Number.isFinite(parsedPageCap) ? parsedPageCap : DEFAULT_PAGE_CAP;
 
@@ -155,8 +159,11 @@ class CreateJobPresenterImpl implements PresenterAbstraction.Interface {
             const job = await this.gateway.createJob({
                 name,
                 siteUrl,
-                themeEntryId,
-                themeVersion: theme.version,
+                // The theme's revision id is `entryId#version`; the API wants the two apart. None means
+                // the job extracts its theme from the site on its first run.
+                ...(theme && !extract
+                    ? { themeEntryId: theme.id.split("#")[0], themeVersion: theme.version }
+                    : {}),
                 pageCap,
                 stopAfter: this.vm.stopAfter
             });

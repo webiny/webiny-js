@@ -20,7 +20,9 @@ import type {
     ReviewInputDto,
     ReviewOptionDto,
     GenerationLogEntryDto,
-    GenerationPromptDto
+    GenerationPromptDto,
+    ThemeFitDto,
+    ThemeOptionDto
 } from "~/shared/types.js";
 
 export interface GenerationLogState {
@@ -87,6 +89,12 @@ export interface IRunViewVm {
     planRegenerating: string[];
     /** The token-usage panel is open (W7.9), replacing the artifact panel. */
     showTokens: boolean;
+    /** How well the job's theme fits what was measured, once Plan has run; null before. */
+    themeFit: ThemeFitDto | null;
+    /** Published themes, for "Use an existing theme"; loaded when that is opened. */
+    themeChoices: ThemeOptionDto[];
+    /** A theme action in flight (retry, use existing), so its buttons can show it. */
+    themeBusy: boolean;
     /** A run's individual model calls for the token panel; null until loaded. */
     modelCalls: ModelCallDto[] | null;
     modelCallsLoading: boolean;
@@ -159,6 +167,12 @@ export interface IRunViewPresenter {
     vm: IRunViewVm;
     init(runId: string): Promise<void>;
     refresh(): Promise<void>;
+    /** Extract the job's theme again: after a failure, or (confirmed) to replace a theme it has. */
+    retryTheme(): Promise<void>;
+    /** Pin an existing published theme instead of the extracted one. */
+    useExistingTheme(themeId: string): Promise<void>;
+    /** Load the published themes the user can pick from. */
+    loadThemeChoices(): Promise<void>;
     runStage(stage: string): Promise<void>;
     selectStage(stage: string): void;
     /** Apply a live progress update pushed over the websocket for a stage. */

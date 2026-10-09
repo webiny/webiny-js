@@ -1,0 +1,258 @@
+import React, { useState } from "react";
+import { createReactiveComponent } from "@webiny/app-admin";
+import { Alert, Button, Dialog, Loader, Select, Tag, Text, useToast } from "@webiny/admin-ui";
+import type { RunViewPresenter } from "../abstractions.js";
+import type { ThemeFitDto } from "~/shared/types.js";
+
+/**
+ * The job's theme, in the run view's rail: what extraction is doing, what it was unsure of, and how well
+ * the theme fits what the pipeline measured (theme-in-pipeline-build-plan.md).
+ *
+ * Review, not a gate: the theme is published automatically, and this is where its risk is made visible.
+ * Extraction's confidence is shown, never thresholded (six of six themes said "medium"); thin evidence
+ * is flagged where the data supports it; the fit is measured by the pipeline, after Plan.
+ */
+interface Props {
+    presenter: RunViewPresenter.Interface;
+}
+
+/** Fewer pages than this is thin evidence: thevibe's theme came from one. */
+const THIN_PAGES = 3;
+
+const percent = (count: { fitted: number; measured: number }) =>
+    count.measured ? `${Math.round((100 * count.fitted) / count.measured)}%` : "none measured";
+
+const FitLine = ({ fit }: { fit: ThemeFitDto }) => (
+    <div className="flex flex-col gap-xxs">
+        <Text size="sm" className="font-medium">
+            Fits what was measured
+        </Text>
+        <Text size="sm" className="text-neutral-strong">
+            Colours {percent(fit.colours)} · type {percent(fit.typeSizes)} · spacing{" "}
+            {percent(fit.spacing)}
+        </Text>
+        <Text size="sm" className="text-neutral-muted">
+            Of the colours, type sizes and spacing measured on the site, how many the theme has a
+            token for. {fit.misses.length} without one.
+        </Text>
+    </div>
+);
+
+export const ThemeCard = createReactiveComponent(({ presenter }: Props) => {
+    const { vm } = presenter;
+    const job = vm.job;
+    const toast = useToast();
+    const [confirmRetry, setConfirmRetry] = useState(false);
+    const [picking, setPicking] = useState(false);
+    const [picked, setPicked] = useState("");
+    const [showUncertain, setShowUncertain] = useState(false);
+
+    if (!job) {
+        return null;
+    }
+    const extraction = job.themeExtraction;
+
+    const run = async (action: () => Promise<void>, failure: string) => {
+        try {
+            await action();
+        } catch (error) {
+            toast.showWarningToast({ title: failure, description: (error as Error).message });
+        }
+    };
+
+    const openPicker = () => {
+        setPicking(true);
+        void run(() => presenter.loadThemeChoices(), "Could not load themes");
+    };
+
+    const picker = picking ? (
+        <div className="flex flex-col gap-xs">
+            <Select
+                label="Existing theme"
+                value={picked}
+                onChange={(value: string) => setPicked(value)}
+                placeholder="Select a published theme"
+                options={vm.themeChoices.map(theme => ({
+                    label: `${theme.name} (v${theme.version})`,
+                    value: theme.id
+                }))}
+            />
+            <div className="flex gap-xs">
+                <Button
+                    size="sm"
+                    text="Use this theme"
+                    disabled={!picked || vm.themeBusy}
+                    onClick={() =>
+                        run(async () => {
+                            await presenter.useExistingTheme(picked);
+                            setPicking(false);
+                        }, "Could not pin the theme")
+                    }
+                />
+                <Button
+                    size="sm"
+                    variant="tertiary"
+                    text="Cancel"
+                    onClick={() => setPicking(false)}
+                />
+            </div>
+        </div>
+    ) : null;
+
+    const retryButton = (
+        <Button
+            size="sm"
+            variant="secondary"
+            text="Retry extraction"
+            disabled={vm.themeBusy}
+            onClick={() =>
+                // On a theme that already works, re-extracting replaces it: confirm first.
+                extraction?.status === "done"
+                    ? setConfirmRetry(true)
+                    : run(() => presenter.retryTheme(), "Could not retry the extraction")
+            }
+        />
+    );
+
+    return (
+        <div className="mb-md flex flex-col gap-sm rounded-md border border-neutral-dimmed p-sm">
+            <Text className="font-medium">Theme</Text>
+
+            {!extraction ? (
+                <Text size="sm" className="text-neutral-strong">
+                    {job.themeEntryId
+                        ? `Pinned when the job was created (v${job.themeVersion}).`
+                        : "No theme yet."}
+                </Text>
+            ) : extraction.status === "running" || extraction.status === "waiting" ? (
+                <div className="flex flex-col gap-xs">
+                    <div className="flex items-center gap-xs">
+                        <Loader size="sm" />
+                        <Text size="sm">Extracting from the site</Text>
+                    </div>
+                    <Text size="sm" className="text-neutral-strong">
+                        {extraction.step || "starting"}
+                    </Text>
+                    <Text size="sm" className="text-neutral-muted">
+                        Discover, Capture and Segment can run meanwhile; Cluster opens once the
+                        theme is published.
+                    </Text>
+                </div>
+            ) : extraction.status === "failed" ? (
+                <div className="flex flex-col gap-sm">
+                    <Alert type="danger">
+                        The theme could not be extracted: {extraction.error ?? "no reason recorded"}
+                    </Alert>
+                    <div className="flex flex-wrap gap-xs">
+                        {retryButton}
+                        <Button
+                            size="sm"
+                            variant="tertiary"
+                            text="Use an existing theme"
+                            onClick={openPicker}
+                        />
+                    </div>
+                    {picker}
+                </div>
+            ) : (
+                <div className="flex flex-col gap-sm">
+                    <Text size="sm" className="text-neutral-strong">
+                        Extracted, published and pinned
+                        {extraction.themeVersion ? ` (v${extraction.themeVersion})` : ""}.
+                    </Text>
+                    <div className="flex flex-wrap items-center gap-xs">
+                        <Tag
+                            content={`Confidence: ${extraction.confidence ?? "not reported"}`}
+                            variant={extraction.confidence === "low" ? "warning" : "neutral-base"}
+                        />
+                        <Text size="sm" className="text-neutral-muted">
+                            {extraction.pagesSampled} page{extraction.pagesSampled === 1 ? "" : "s"}{" "}
+                            · {extraction.slotsApplied} tokens
+                        </Text>
+                    </div>
+                    {extraction.pagesSampled < THIN_PAGES || extraction.confidence === "low" ? (
+                        <Alert type="warning">
+                            Thin evidence:{" "}
+                            {extraction.pagesSampled < THIN_PAGES
+                                ? `the theme was read from ${extraction.pagesSampled} page${extraction.pagesSampled === 1 ? "" : "s"}`
+                                : "extraction reported low confidence"}
+                            . Check it before relying on it.
+                        </Alert>
+                    ) : null}
+                    {extraction.uncertain.length > 0 ? (
+                        <div className="flex flex-col gap-xxs">
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                text={`${showUncertain ? "Hide" : "Show"} what extraction was unsure of (${extraction.uncertain.length})`}
+                                onClick={() => setShowUncertain(!showUncertain)}
+                            />
+                            {showUncertain ? (
+                                <ul className="m-0 flex list-disc flex-col gap-xxs pl-md">
+                                    {extraction.uncertain.map((item, index) => (
+                                        <li key={index}>
+                                            <Text size="sm">
+                                                {item.path ? (
+                                                    <span className="font-medium">
+                                                        {item.path}:{" "}
+                                                    </span>
+                                                ) : null}
+                                                {item.reason}
+                                            </Text>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : null}
+                        </div>
+                    ) : null}
+                    <div className="flex flex-wrap gap-xs">
+                        {retryButton}
+                        <Button
+                            size="sm"
+                            variant="tertiary"
+                            text="Use an existing theme"
+                            onClick={openPicker}
+                        />
+                    </div>
+                    {picker}
+                </div>
+            )}
+
+            {vm.themeFit ? <FitLine fit={vm.themeFit} /> : null}
+
+            {confirmRetry ? (
+                <Dialog
+                    open={true}
+                    onOpenChange={open => {
+                        if (!open) {
+                            setConfirmRetry(false);
+                        }
+                    }}
+                    size="sm"
+                    title="Extract the theme again?"
+                    actions={
+                        <>
+                            <Dialog.CancelAction text="Cancel" />
+                            <Dialog.ConfirmAction
+                                text="Extract again"
+                                onClick={() => {
+                                    setConfirmRetry(false);
+                                    void run(
+                                        () => presenter.retryTheme(),
+                                        "Could not retry the extraction"
+                                    );
+                                }}
+                            />
+                        </>
+                    }
+                >
+                    <Text size="sm">
+                        The site is read again and a new theme published and pinned. Cluster and
+                        every stage after it in this run become stale and need re-running. The
+                        current theme stays in the Theme app.
+                    </Text>
+                </Dialog>
+            ) : null}
+        </div>
+    );
+});

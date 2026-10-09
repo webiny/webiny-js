@@ -18,6 +18,7 @@ import { RunViewFeature } from "../feature.js";
 import { ArtifactPanel } from "./ArtifactPanel.js";
 import { ComposedPagesPanel } from "./composed/ComposedPagesPanel.js";
 import { TokenPanel } from "./TokenPanel.js";
+import { ThemeCard } from "./ThemeCard.js";
 import { OverridesPanel } from "./OverridesPanel.js";
 import { SegmentHeightControl } from "./SegmentHeightControl.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
@@ -336,6 +337,7 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
 
             <div className="flex min-h-0 flex-1">
                 <div className="w-[300px] flex-shrink-0 overflow-y-auto border-r border-neutral-dimmed p-md">
+                    <ThemeCard presenter={presenter} />
                     <StageRail
                         rows={railRows}
                         selected={selected}

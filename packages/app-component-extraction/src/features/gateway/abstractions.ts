@@ -14,7 +14,8 @@ import type {
     ReviewInputDto,
     ReviewsDto,
     GenerationLogDto,
-    GenerationPromptDto
+    GenerationPromptDto,
+    ThemeFitDto
 } from "~/shared/types.js";
 
 export interface StageTriggerResult {
@@ -32,6 +33,12 @@ export interface IComponentExtractionGateway {
     createRun(jobId: string, note?: string): Promise<RunDto>;
     runStage(runId: string, stage: string): Promise<StageTriggerResult>;
     listThemes(): Promise<ThemeOptionDto[]>;
+    /** Extract the job's theme again: after a failure, or to replace a theme it has (re-pins). */
+    retryJobTheme(jobId: string): Promise<JobDto>;
+    /** Pin an existing published theme on the job instead of extracting one. */
+    useExistingTheme(jobId: string, themeEntryId: string, themeVersion: number): Promise<JobDto>;
+    /** How well the job's theme fits what was measured, after Plan; null before Plan. */
+    getThemeFit(runId: string): Promise<ThemeFitDto | null>;
     /** Pre-flight check of a site URL for the Create-job screen (W9.3). */
     checkReachability(url: string): Promise<ReachabilityDto>;
     /** The full log trail of a stage's background task, oldest first. */

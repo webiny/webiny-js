@@ -69,12 +69,39 @@ export interface RunDto {
     createdOn: string;
 }
 
+/** A job's own theme extraction, when it was created from a URL alone. */
+export interface JobThemeExtractionDto {
+    status: "waiting" | "running" | "done" | "failed";
+    step: string;
+    taskId: string | null;
+    runId: string;
+    startedOn: string;
+    finishedOn: string | null;
+    themeEntryId: string | null;
+    themeVersion: number | null;
+    confidence: string | null;
+    uncertain: { path?: string; reason: string }[];
+    pagesSampled: number;
+    slotsApplied: number;
+    error: string | null;
+}
+
+/** How well the job's theme fits what was measured on the site, after Plan. */
+export interface ThemeFitDto {
+    colours: { fitted: number; measured: number };
+    typeSizes: { fitted: number; measured: number };
+    spacing: { fitted: number; measured: number };
+    misses: { component: string; kind: "colour" | "type" | "spacing"; value: string }[];
+}
+
 export interface JobDto {
     id: string;
     name: string;
     siteUrl: string;
+    /** Empty while the job is still extracting its own theme. */
     themeEntryId: string;
     themeVersion: number;
+    themeExtraction: JobThemeExtractionDto | null;
     pageCap: number;
     gateConfig: { stopAfter: string[] };
     pinned: boolean;
@@ -129,8 +156,9 @@ export interface ThemeOptionDto {
 export interface CreateJobData {
     name: string;
     siteUrl: string;
-    themeEntryId: string;
-    themeVersion: number;
+    /** Both, to pin an existing theme; neither, to extract the job's theme from the site. */
+    themeEntryId?: string;
+    themeVersion?: number;
     pageCap?: number;
     stopAfter?: string[];
     note?: string;

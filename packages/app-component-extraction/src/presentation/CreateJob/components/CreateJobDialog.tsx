@@ -4,6 +4,7 @@ import { createReactiveComponent, useRouter, useOpenDialog } from "@webiny/app-a
 import { useDialog } from "@webiny/app-admin/hooks/index.js";
 import { Dialog, Input, Select, useToast } from "@webiny/admin-ui";
 import { CreateJobFeature } from "../feature.js";
+import { EXTRACT_THEME } from "../abstractions.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
 import { Routes } from "~/routes.js";
 
@@ -37,11 +38,14 @@ const CreateJobDialogInner = createReactiveComponent(function CreateJobDialogInn
     }, [presenter, closeDialog, goToRoute, toast]);
 
     const themeOptions = useMemo(
-        () =>
-            vm.themes.map(theme => ({
+        () => [
+            // A new job's default: a URL in, the pipeline extracts and publishes the theme.
+            { label: "Extract from this site", value: EXTRACT_THEME },
+            ...vm.themes.map(theme => ({
                 label: `${theme.name} (v${theme.version})`,
                 value: theme.id
-            })),
+            }))
+        ],
         [vm.themes]
     );
 
@@ -89,6 +93,11 @@ const CreateJobDialogInner = createReactiveComponent(function CreateJobDialogInn
                     onChange={(value: string) => presenter.setTheme(value)}
                     placeholder={vm.loadingThemes ? "Loading themes..." : "Select a theme"}
                     options={themeOptions}
+                    note={
+                        vm.themeId === EXTRACT_THEME
+                            ? "The site's theme is extracted and published while the pages are captured."
+                            : "Generated components bind to this theme."
+                    }
                     required
                 />
                 <Input

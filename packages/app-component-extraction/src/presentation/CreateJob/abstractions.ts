@@ -4,6 +4,9 @@ import type { ReachabilityDto, ThemeOptionDto } from "~/shared/types.js";
 /** The gate-config presets (spec §3): pause at every stage, at the URL list and plan only, or Custom. */
 export type GatePreset = "every" | "urlAndPlan" | "custom";
 
+/** The theme option that extracts the job's theme from its site instead of pinning an existing one. */
+export const EXTRACT_THEME = "__extract-from-site__";
+
 export interface ICreateJobVm {
     name: string;
     siteUrl: string;

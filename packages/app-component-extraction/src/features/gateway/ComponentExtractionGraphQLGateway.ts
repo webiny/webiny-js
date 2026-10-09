@@ -16,7 +16,8 @@ import type {
     ReviewInputDto,
     ReviewsDto,
     GenerationLogDto,
-    GenerationPromptDto
+    GenerationPromptDto,
+    ThemeFitDto
 } from "~/shared/types.js";
 import {
     CHECK_REACHABILITY,
@@ -28,6 +29,9 @@ import {
     GET_DECISIONS,
     GET_COMPOSED_CAPTURE,
     GET_JOB,
+    GET_THEME_FIT,
+    RETRY_JOB_THEME,
+    USE_EXISTING_THEME,
     GET_PAGE_MAP,
     GET_REATTACHMENTS,
     GET_RENDERS,
@@ -88,6 +92,36 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: GET_JOB, variables: { jobId } });
 
         return unwrap(response.componentExtractionGetJob);
+    }
+
+    async retryJobTheme(jobId: string): Promise<JobDto> {
+        const response = await this.client.execute<{
+            componentExtractionRetryJobTheme: GqlEnvelope<JobDto>;
+        }>({ query: RETRY_JOB_THEME, variables: { jobId } });
+
+        return unwrap(response.componentExtractionRetryJobTheme);
+    }
+
+    async useExistingTheme(
+        jobId: string,
+        themeEntryId: string,
+        themeVersion: number
+    ): Promise<JobDto> {
+        const response = await this.client.execute<{
+            componentExtractionUseExistingTheme: GqlEnvelope<JobDto>;
+        }>({ query: USE_EXISTING_THEME, variables: { jobId, themeEntryId, themeVersion } });
+
+        return unwrap(response.componentExtractionUseExistingTheme);
+    }
+
+    async getThemeFit(runId: string): Promise<ThemeFitDto | null> {
+        // A JSON field: the resolver's envelope comes back as the value itself.
+        const response = await this.client.execute<{
+            componentExtractionGetThemeFit: GqlEnvelope<ThemeFitDto | null> | null;
+        }>({ query: GET_THEME_FIT, variables: { runId } });
+
+        const envelope = response.componentExtractionGetThemeFit;
+        return envelope ? unwrap(envelope) : null;
     }
 
     async createJob(data: CreateJobData): Promise<JobDto> {

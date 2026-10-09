@@ -19,7 +19,8 @@ import type {
     StageProgress,
     CaptureArtifactDto,
     ReviewInputDto,
-    ReviewsDto
+    ReviewsDto,
+    ThemeFitDto
 } from "~/shared/types.js";
 
 // How long to hold the optimistic "starting" indication before giving up on it. A stage marks itself
@@ -61,6 +62,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         regenerating: [],
         planRegenerating: [],
         showTokens: false,
+        themeFit: null,
+        themeChoices: [],
+        themeBusy: false,
         modelCalls: null,
         modelCallsLoading: false,
         planProjection: null,
@@ -125,9 +129,11 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             const running = run.stages.find(entry => entry.status === "running");
             const lastRun = [...run.stages].reverse().find(entry => entry.taskId);
             const selected = running?.stage ?? lastRun?.stage ?? run.stages[0]?.stage ?? null;
+            const themeFit = await this.loadThemeFit(run);
             runInAction(() => {
                 this.vm.run = run;
                 this.vm.job = job;
+                this.vm.themeFit = themeFit;
                 this.vm.loading = false;
                 // Nested in this action deliberately: MobX flushes once at the outer boundary, so
                 // observers see the run, the stage and the artifact change together.
@@ -152,6 +158,75 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
      */
     private readonly renderRefAtTrigger = new Map<string, { ref: string | null; since: number }>();
 
+    private async loadThemeFit(run: RunDto): Promise<ThemeFitDto | null> {
+        if (stageEntry(run, "plan")?.status !== "done") {
+            return null;
+        }
+        try {
+            return await this.gateway.getThemeFit(run.id);
+        } catch {
+            // The fit is a reading aid; the run view works without it.
+            return null;
+        }
+    }
+
+    async retryTheme() {
+        const job = this.vm.job;
+        if (!job) {
+            return;
+        }
+        runInAction(() => {
+            this.vm.themeBusy = true;
+        });
+        try {
+            const updated = await this.gateway.retryJobTheme(job.id);
+            runInAction(() => {
+                this.vm.job = updated;
+                this.vm.themeFit = null;
+            });
+            await this.refresh();
+        } finally {
+            runInAction(() => {
+                this.vm.themeBusy = false;
+            });
+        }
+    }
+
+    async useExistingTheme(themeId: string) {
+        const job = this.vm.job;
+        const theme = this.vm.themeChoices.find(candidate => candidate.id === themeId);
+        if (!job || !theme) {
+            return;
+        }
+        runInAction(() => {
+            this.vm.themeBusy = true;
+        });
+        try {
+            // A theme's revision id is `entryId#version`; the API wants the two apart.
+            const updated = await this.gateway.useExistingTheme(
+                job.id,
+                theme.id.split("#")[0],
+                theme.version
+            );
+            runInAction(() => {
+                this.vm.job = updated;
+                this.vm.themeFit = null;
+            });
+            await this.refresh();
+        } finally {
+            runInAction(() => {
+                this.vm.themeBusy = false;
+            });
+        }
+    }
+
+    async loadThemeChoices() {
+        const themes = await this.gateway.listThemes();
+        runInAction(() => {
+            this.vm.themeChoices = themes;
+        });
+    }
+
     async refresh() {
         const runId = this.vm.run?.id;
         if (!runId) {
@@ -162,6 +237,27 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             runInAction(() => {
                 this.vm.run = run;
             });
+            // While the job's theme is being extracted, follow it: the card shows its step, and Cluster
+            // opens the moment it is pinned.
+            const extraction = this.vm.job?.themeExtraction;
+            if (
+                this.vm.job &&
+                (extraction?.status === "running" || extraction?.status === "waiting")
+            ) {
+                const job = await this.gateway.getJob(this.vm.job.id);
+                runInAction(() => {
+                    this.vm.job = job;
+                });
+            }
+            // The theme fit is measured once Plan has run; fetched when that first happens.
+            if (!this.vm.themeFit) {
+                const themeFit = await this.loadThemeFit(run);
+                if (themeFit) {
+                    runInAction(() => {
+                        this.vm.themeFit = themeFit;
+                    });
+                }
+            }
             // Clear the "starting" indication once the triggered stage has picked up its task (the task
             // stamps its id and marks the stage running/failed). The task-id match also covers a stage
             // that ran to completion between polls, where "running" was never observed. And, so it can't
