@@ -2,6 +2,7 @@ import { type Container, createFeature } from "@webiny/feature/api";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { WorkflowModel } from "~/domain/workflow/workflow.model.js";
 import { ReviewModel } from "~/domain/review/review.model.js";
+import { AssignmentModel } from "~/domain/assignment/assignment.model.js";
 import { ListNotificationTypesFeature } from "~/features/notifications/ListNotificationTypes/index.js";
 import { NotificationTransportFeature } from "~/features/notifications/NotificationTransport/index.js";
 import { WorkflowSharedFeature } from "~/features/workflow/shared/feature.js";
@@ -18,6 +19,7 @@ import { TakeOverReviewStepFeature } from "~/features/review/TakeOverReviewStep/
 import { ApproveReviewStepFeature } from "~/features/review/ApproveReviewStep/feature.js";
 import { RejectReviewStepFeature } from "~/features/review/RejectReviewStep/feature.js";
 import { CancelReviewFeature } from "~/features/review/CancelReview/feature.js";
+import { AssignmentSharedFeature } from "~/features/assignment/shared/feature.js";
 
 export const WorkflowsFeature = createFeature({
     name: "Workflows",
@@ -32,6 +34,7 @@ export const WorkflowsFeature = createFeature({
         // it builds the model list during the enhance phase.
         container.register(WorkflowModel);
         container.register(ReviewModel);
+        container.register(AssignmentModel);
 
         // Notifications (unchanged until phase 7)
         ListNotificationTypesFeature.register(container);
@@ -54,5 +57,8 @@ export const WorkflowsFeature = createFeature({
         ApproveReviewStepFeature.register(container);
         RejectReviewStepFeature.register(container);
         CancelReviewFeature.register(container);
+
+        // Assignment log (written from phase 4)
+        AssignmentSharedFeature.register(container);
     }
 });

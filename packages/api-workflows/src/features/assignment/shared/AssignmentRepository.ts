@@ -1,0 +1,78 @@
+import { Result } from "@webiny/feature/api";
+import type { CmsEntryListWhereValues } from "@webiny/api-headless-cms/types/index.js";
+import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
+import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
+import { AssignmentModelProvider } from "~/domain/assignment/abstractions/AssignmentModelProvider.js";
+import { AssignmentRepository as Abstraction } from "~/domain/assignment/abstractions/AssignmentRepository.js";
+import { AssignmentPersistenceError } from "~/domain/assignment/errors.js";
+import type { AssignmentRecord, AssignmentRecordValues } from "~/domain/assignment/types.js";
+import { AssignmentEntryMapper, type AssignmentEntryValues } from "./AssignmentEntryMapper.js";
+
+const DEFAULT_LIMIT = 100;
+
+class AssignmentRepositoryImpl implements Abstraction.Interface {
+    constructor(
+        private modelProvider: AssignmentModelProvider.Interface,
+        private listLatestEntries: ListLatestEntriesUseCase.Interface,
+        private createEntry: CreateEntryUseCase.Interface
+    ) {}
+
+    async create(
+        values: AssignmentRecordValues
+    ): Promise<Result<AssignmentRecord, AssignmentPersistenceError>> {
+        const model = await this.modelProvider.get();
+        const result = await this.createEntry.execute<AssignmentEntryValues>(model, {
+            // `createdOn = assignedOn`, so the storage sort on `createdOn` is the `assignedOn`
+            // order across pages (A8).
+            createdOn: values.assignedOn,
+            values: AssignmentEntryMapper.toValues(values)
+        });
+        if (result.isFail()) {
+            return Result.fail(new AssignmentPersistenceError(result.error));
+        }
+        return Result.ok(AssignmentEntryMapper.fromEntry(result.value));
+    }
+
+    async list(
+        params: Abstraction.ListParams
+    ): Promise<Result<Abstraction.ListResult, AssignmentPersistenceError>> {
+        const model = await this.modelProvider.get();
+        const { where } = params;
+        const values: CmsEntryListWhereValues = {};
+        if (where.reviewId) {
+            values.reviewId = where.reviewId;
+        }
+        if (where.workflowId) {
+            values.workflowId = where.workflowId;
+        }
+        if (where.stepId) {
+            values.stepId = where.stepId;
+        }
+        if (where.userId) {
+            values.userId = where.userId;
+        }
+        if (where.userId_in) {
+            values.userId_in = [...where.userId_in];
+        }
+
+        const result = await this.listLatestEntries.execute<AssignmentEntryValues>(model, {
+            where: { values },
+            sort: ["createdOn_DESC"],
+            limit: params.limit ?? DEFAULT_LIMIT,
+            after: params.after ?? null
+        });
+        if (result.isFail()) {
+            return Result.fail(new AssignmentPersistenceError(result.error));
+        }
+
+        return Result.ok({
+            items: result.value.entries.map(entry => AssignmentEntryMapper.fromEntry(entry)),
+            meta: result.value.meta
+        });
+    }
+}
+
+export const AssignmentRepository = Abstraction.createImplementation({
+    implementation: AssignmentRepositoryImpl,
+    dependencies: [AssignmentModelProvider, ListLatestEntriesUseCase, CreateEntryUseCase]
+});
