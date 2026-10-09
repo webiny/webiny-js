@@ -4,8 +4,11 @@
   "references": [
     { "path": "../ai-powerups/tsconfig.build.json" },
     { "path": "../bug-reporter/tsconfig.build.json" },
+    { "path": "../collaboration/tsconfig.build.json" },
     { "path": "../frontend-settings/tsconfig.build.json" },
     { "path": "../languages/tsconfig.build.json" },
+    { "path": "../notifications/tsconfig.build.json" },
+    { "path": "../notifications-integrations/tsconfig.build.json" },
     { "path": "../tenant-manager/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -19,10 +22,16 @@
       "@webiny/ai-powerups": ["../ai-powerups/src"],
       "@webiny/bug-reporter/*": ["../bug-reporter/src/*"],
       "@webiny/bug-reporter": ["../bug-reporter/src"],
+      "@webiny/collaboration/*": ["../collaboration/src/*"],
+      "@webiny/collaboration": ["../collaboration/src"],
       "@webiny/frontend-settings/*": ["../frontend-settings/src/*"],
       "@webiny/frontend-settings": ["../frontend-settings/src"],
       "@webiny/languages/*": ["../languages/src/*"],
       "@webiny/languages": ["../languages/src"],
+      "@webiny/notifications/*": ["../notifications/src/*"],
+      "@webiny/notifications": ["../notifications/src"],
+      "@webiny/notifications-integrations/*": ["../notifications-integrations/src/*"],
+      "@webiny/notifications-integrations": ["../notifications-integrations/src"],
       "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
       "@webiny/tenant-manager": ["../tenant-manager/src"]
     }

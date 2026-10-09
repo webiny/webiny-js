@@ -1,4 +1,4 @@
-import { HeadlessCms } from "~/features/shared/abstractions.js";
+import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 import { describe, expect, it } from "vitest";
 import { generateSchema } from "~/graphql/generateSchema.js";
 import { useHandler } from "~tests/testHelpers/useHandler.js";
@@ -73,7 +73,7 @@ describe("generate graphql manage schema", () => {
             }
         });
 
-        const models = await context.container.resolve(HeadlessCms).listModels();
+        const models = (await context.container.resolve(ListModelsUseCase).execute()).value;
 
         const schema = await generateSchema({
             context,

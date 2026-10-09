@@ -35,7 +35,7 @@
     "@webiny/app-graphql-playground": "0.0.0",
     "@webiny/app-headless-cms-common": "0.0.0",
     "@webiny/cms-sdk": "0.0.0",
-    "@webiny/di": "^1.1.0",
+    "@webiny/di": "^2.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/frontend-settings": "0.0.0",

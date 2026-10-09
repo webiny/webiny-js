@@ -42,7 +42,7 @@
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/plugins": "0.0.0",
-    "@webiny/stdlib": "^0.0.17",
+    "@webiny/stdlib": "^0.0.21",
     "@webiny/utils": "0.0.0",
     "dataloader": "^2.2.3",
     "lodash": "^4.18.1"
@@ -56,7 +56,7 @@
     "@webiny/api-sync-ddb-to-opensearch": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.1.0",
+    "@webiny/di": "^2.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/wcp": "0.0.0",

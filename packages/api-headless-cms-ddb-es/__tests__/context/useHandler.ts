@@ -9,7 +9,7 @@ import { CreateTenantUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { RegisterExtensionPlugin } from "@webiny/handler";
-import { BackgroundTasksFeature, TasksCrud } from "@webiny/background-tasks/api";
+import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { SearchIndexTasksFeature } from "@webiny/api-search-index-tasks";
 import { SearchIndexTasksDdbOsFeature } from "@webiny/api-search-index-tasks-ddb-os";
 import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
@@ -127,14 +127,6 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
         identityCtx.setIdentity(identity);
 
         const ctx: Record<string, any> = { container };
-
-        // DI-native source for the legacy `context.tasks` service-locator: resolve the CRUD
-        // aggregate from the container and expose it on the captured context. See the "full-DI
-        // tasks" cleanup note to retire this bridge.
-        const [tasksCrud] = container.resolveAll(TasksCrud);
-        if (tasksCrud) {
-            ctx.tasks = tasksCrud;
-        }
 
         return ctx as C;
     };

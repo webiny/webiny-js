@@ -8,6 +8,8 @@ import {
     TaskDefinition,
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { CreateTaskUseCase } from "@webiny/background-tasks/api";
+import { ListTasksUseCase } from "@webiny/background-tasks/api";
 
 function getDataManagerTaskDefinition(
     context: Context
@@ -32,14 +34,16 @@ describe("mock data manager task", () => {
         const context = await handler();
         const definition = getDataManagerTaskDefinition(context);
 
-        const task = await context.tasks.createTask<IMockDataManagerInput>({
-            definitionId: definition.id,
-            name: "Testing of a Mock Data Manager Task",
-            input: {
-                modelId: CARS_MODEL_ID,
-                amount: 1
-            }
-        });
+        const task = (
+            await context.container.resolve(CreateTaskUseCase).execute<IMockDataManagerInput>({
+                definitionId: definition.id,
+                name: "Testing of a Mock Data Manager Task",
+                input: {
+                    modelId: CARS_MODEL_ID,
+                    amount: 1
+                }
+            })
+        ).value;
 
         const runner = createRunner<IMockDataManagerInput, IMockDataManagerOutput>({
             context,
@@ -62,12 +66,14 @@ describe("mock data manager task", () => {
             }
         });
 
-        const childTasks = await context.tasks.listTasks({
-            where: {
-                parentId: task.id
-            },
-            limit: 10000
-        });
+        const childTasks = (
+            await context.container.resolve(ListTasksUseCase).execute({
+                where: {
+                    parentId: task.id
+                },
+                limit: 10000
+            })
+        ).value;
         expect(childTasks).toMatchObject({
             items: [
                 {

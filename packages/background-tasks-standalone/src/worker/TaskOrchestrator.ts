@@ -7,6 +7,7 @@ interface TaskResponse {
     status: string;
     input?: Record<string, unknown>;
     wait?: number;
+    delay?: number;
     [key: string]: unknown;
 }
 
@@ -32,10 +33,13 @@ export class TaskOrchestrator {
         const taskId = this.taskEvent.webinyTaskId;
 
         try {
-            if (this.taskEvent.delay > 0) {
-                await this.wait(this.taskEvent.delay * 1000);
-            }
-
+            /*
+             * The first request carries the trigger's delay, and the runner answers it with `continue`
+             * and `wait: delay` without running anything. Every later request must carry the delay
+             * the runner sent back (-1), as the Step Functions state does on AWS. Resending the
+             * original delay made the runner answer `continue` forever, so a delayed task never ran.
+             */
+            let delay = this.taskEvent.delay;
             let input: Record<string, unknown> = {};
             let continueLoop = true;
 
@@ -51,6 +55,7 @@ export class TaskOrchestrator {
 
                 const payload = {
                     ...this.taskEvent,
+                    delay,
                     input
                 };
 
@@ -59,6 +64,7 @@ export class TaskOrchestrator {
                 switch (response.status) {
                     case "continue": {
                         input = response.input || {};
+                        delay = response.delay ?? -1;
                         if (response.wait && response.wait > 0) {
                             await this.wait(response.wait * 1000);
                         }
@@ -131,14 +137,16 @@ export class TaskOrchestrator {
                     }
                 },
                 res => {
-                    let data = "";
-                    res.on("data", chunk => {
-                        data += chunk;
+                    // Collect raw chunks: decoding each one on its own splits multi-byte characters.
+                    const chunks: Buffer[] = [];
+                    res.on("data", (chunk: Buffer) => {
+                        chunks.push(chunk);
                     });
                     // Where a deadline that fires mid-response surfaces.
                     res.on("error", fail);
                     res.on("end", () => {
                         clearTimeout(deadline);
+                        const data = Buffer.concat(chunks).toString("utf8");
                         if (!res.statusCode || res.statusCode < 200 || res.statusCode >= 300) {
                             reject(new Error(`HTTP ${res.statusCode}: ${data}`));
                             return;

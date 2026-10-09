@@ -8,7 +8,13 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import type { Context, IListTaskLogParams, IListTaskParams, ITask, ITaskLog } from "~/api/types.js";
-import { TasksCrud } from "~/api/TasksCrud.js";
+import { TaskLogModelProvider } from "~/api/domain/task/abstractions.js";
+import { TaskModelProvider } from "~/api/domain/task/abstractions.js";
+import { ListTaskLogsUseCase } from "~/api/features/ListTaskLogs/index.js";
+import { GetTaskUseCase } from "~/api/features/GetTask/index.js";
+import { ListTasksUseCase } from "~/api/features/ListTasks/index.js";
+import { DeleteTaskUseCase } from "~/api/features/DeleteTask/index.js";
+import { TaskNotFoundError } from "~/api/domain/errors.js";
 import { ListTaskDefinitionsUseCase } from "~/api/features/ListTaskDefinitions/abstractions.js";
 import { TriggerTaskUseCase } from "~/api/features/TriggerTask/abstractions.js";
 import { AbortTaskUseCase } from "~/api/features/AbortTask/abstractions.js";
@@ -17,6 +23,17 @@ import { UpdateBackgroundTaskSettingsUseCase } from "~/api/features/UpdateBackgr
 import type { IUpdateBackgroundTaskSettingsInput } from "~/api/features/UpdateBackgroundTaskSettings/abstractions.js";
 import { emptyResolver, resolve, resolveList } from "./utils.js";
 import { checkPermissions } from "./checkPermissions.js";
+
+// The API answers `null` for a task that doesn't exist; any other failure is an error.
+const findTask = async (getTask: GetTaskUseCase.Interface, id: string) => {
+    const result = await getTask.execute(id);
+    if (result.isOk()) {
+        return result.value;
+    } else if (result.error instanceof TaskNotFoundError) {
+        return null;
+    }
+    throw result.error;
+};
 
 interface IGetTaskQueryParams {
     id: string;
@@ -56,12 +73,12 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
 
     builder.addResolver({
         path: "WebinyBackgroundTaskQuery.getTask",
-        dependencies: [TasksCrud],
-        resolver: (tasksCrud: TasksCrud.Interface) => {
+        dependencies: [GetTaskUseCase],
+        resolver: (getTask: GetTaskUseCase.Interface) => {
             return ({ args, context }: IResolverParams<IGetTaskQueryParams>) => {
                 return resolve(async () => {
                     await checkPermissions(context, { rwd: "r" });
-                    return await tasksCrud.getTask(args.id);
+                    return await findTask(getTask, args.id);
                 });
             };
         }
@@ -69,12 +86,16 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
 
     builder.addResolver({
         path: "WebinyBackgroundTaskQuery.listTasks",
-        dependencies: [TasksCrud],
-        resolver: (tasksCrud: TasksCrud.Interface) => {
+        dependencies: [ListTasksUseCase],
+        resolver: (listTasks: ListTasksUseCase.Interface) => {
             return ({ args, context }: IResolverParams<IListTaskParams>) => {
                 return resolveList(async () => {
                     await checkPermissions(context, { rwd: "r" });
-                    return await tasksCrud.listTasks(args);
+                    const result = await listTasks.execute(args);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return result.value;
                 });
             };
         }
@@ -98,12 +119,16 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
 
     builder.addResolver({
         path: "WebinyBackgroundTaskQuery.listLogs",
-        dependencies: [TasksCrud],
-        resolver: (tasksCrud: TasksCrud.Interface) => {
+        dependencies: [ListTaskLogsUseCase],
+        resolver: (listTaskLogs: ListTaskLogsUseCase.Interface) => {
             return ({ args, context }: IResolverParams<IListTaskLogParams>) => {
                 return resolveList(async () => {
                     await checkPermissions(context, { rwd: "r" });
-                    return await tasksCrud.listLogs(args);
+                    const result = await listTaskLogs.execute(args);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return result.value;
                 });
             };
         }
@@ -171,12 +196,16 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
 
     builder.addResolver({
         path: "WebinyBackgroundTaskMutation.deleteTask",
-        dependencies: [TasksCrud],
-        resolver: (tasksCrud: TasksCrud.Interface) => {
+        dependencies: [DeleteTaskUseCase],
+        resolver: (deleteTask: DeleteTaskUseCase.Interface) => {
             return async ({ args, context }: IResolverParams<IDeleteTaskMutationParams>) => {
                 await checkPermissions(context, { rwd: "d" });
                 return resolve(async () => {
-                    return await tasksCrud.deleteTask(args.id);
+                    const result = await deleteTask.execute(args.id);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return true;
                 });
             };
         }
@@ -202,10 +231,10 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
 function addFieldResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
     builder.addResolver({
         path: "WebinyBackgroundTask.logs",
-        dependencies: [TasksCrud],
-        resolver: (tasksCrud: TasksCrud.Interface) => {
+        dependencies: [ListTaskLogsUseCase],
+        resolver: (listTaskLogs: ListTaskLogsUseCase.Interface) => {
             return async ({ parent, args }: IResolverParams<IListTaskLogParams, ITask>) => {
-                const { items } = await tasksCrud.listLogs({
+                const result = await listTaskLogs.execute({
                     sort: ["createdBy_ASC"],
                     limit: 10000,
                     ...args,
@@ -214,17 +243,20 @@ function addFieldResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
                         task: parent.id
                     }
                 });
-                return items;
+                if (result.isFail()) {
+                    throw result.error;
+                }
+                return result.value.items;
             };
         }
     });
 
     builder.addResolver({
         path: "WebinyBackgroundTaskLog.task",
-        dependencies: [TasksCrud],
-        resolver: (tasksCrud: TasksCrud.Interface) => {
+        dependencies: [GetTaskUseCase],
+        resolver: (getTask: GetTaskUseCase.Interface) => {
             return async ({ parent }: IResolverParams<unknown, ITaskLog>) => {
-                return await tasksCrud.getTask(parent.task);
+                return await findTask(getTask, parent.task);
             };
         }
     });
@@ -239,7 +271,8 @@ class BackgroundTasksGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
         private readonly identityContext: IdentityContext.Interface,
-        private readonly tasksCrud: TasksCrud.Interface,
+        private readonly taskModelProvider: TaskModelProvider.Interface,
+        private readonly logModelProvider: TaskLogModelProvider.Interface,
         private readonly listModelsUseCase: ListModelsUseCase.Interface,
         private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface
     ) {}
@@ -272,8 +305,8 @@ class BackgroundTasksGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface
     }
 
     private async loadInputs() {
-        const taskModel = await this.tasksCrud.getTaskModel();
-        const logModel = await this.tasksCrud.getLogModel();
+        const taskModel = await this.taskModelProvider.get();
+        const logModel = await this.logModelProvider.get();
 
         const models = await this.identityContext.withoutAuthorization(async () => {
             const modelsResult = await this.listModelsUseCase.execute({ includePrivate: false });
@@ -504,7 +537,8 @@ export const BackgroundTasksGraphQLSchema = GraphQLSchemaFactory.createImplement
     dependencies: [
         TenantContext,
         IdentityContext,
-        TasksCrud,
+        TaskModelProvider,
+        TaskLogModelProvider,
         ListModelsUseCase,
         CmsModelFieldToGraphQLRegistry
     ]

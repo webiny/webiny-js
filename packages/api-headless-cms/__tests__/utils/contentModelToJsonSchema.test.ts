@@ -1,10 +1,10 @@
 import { useHandler } from "~tests/testHelpers/useHandler";
 import models, { createModelPlugins } from "~tests/contentAPI/mocks/contentModels";
 import { CmsModelToJsonSchemaConverter } from "~/utils";
-import { HeadlessCms } from "~/features/shared/abstractions.js";
+import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
+import { ModelToAstConverter } from "~/features/contentModel/ModelToAstConverter/index.js";
 import type { CmsContext, CmsModelField } from "~/types";
 import { pageModel } from "~tests/contentAPI/mocks/pageWithDynamicZonesModel";
-import type { CmsModelToAstConverter } from "~/utils/contentModelAst";
 import type { CmsModelInput } from "~/plugins";
 import { createModelPlugin } from "~/plugins";
 import type { JsonSchema } from "~/utils/contentModelToJsonSchema";
@@ -19,7 +19,7 @@ describe("CmsModelToJsonSchemaConverter", () => {
     });
 
     let context: CmsContext;
-    let astConverter: CmsModelToAstConverter;
+    let astConverter: ModelToAstConverter.Interface;
 
     beforeEach(async () => {
         context = await handler({
@@ -28,7 +28,7 @@ describe("CmsModelToJsonSchemaConverter", () => {
                 "x-tenant": "root"
             }
         });
-        astConverter = context.container.resolve(HeadlessCms).getModelToAstConverter();
+        astConverter = context.container.resolve(ModelToAstConverter);
     });
 
     describe("simple field types", () => {
@@ -556,7 +556,8 @@ describe("CmsModelToJsonSchemaConverter", () => {
 
     describe("object fields (via real model)", () => {
         it("should convert nested object fields from product model", async () => {
-            const model = await context.container.resolve(HeadlessCms).getModel("product");
+            const model = (await context.container.resolve(GetModelUseCase).execute("product"))
+                .value;
             const ast = astConverter.toAst(model);
             const converter = new CmsModelToJsonSchemaConverter();
 
@@ -585,7 +586,9 @@ describe("CmsModelToJsonSchemaConverter", () => {
 
     describe("dynamic zone fields (via real model)", () => {
         it("should convert dynamic zone from page model", async () => {
-            const model = await context.container.resolve(HeadlessCms).getModel(pageModel.modelId);
+            const model = (
+                await context.container.resolve(GetModelUseCase).execute(pageModel.modelId)
+            ).value;
             const ast = astConverter.toAst(model);
             const converter = new CmsModelToJsonSchemaConverter();
 
@@ -608,7 +611,9 @@ describe("CmsModelToJsonSchemaConverter", () => {
         });
 
         it("should convert list dynamic zone fields as arrays", async () => {
-            const model = await context.container.resolve(HeadlessCms).getModel(pageModel.modelId);
+            const model = (
+                await context.container.resolve(GetModelUseCase).execute(pageModel.modelId)
+            ).value;
             const ast = astConverter.toAst(model);
             const converter = new CmsModelToJsonSchemaConverter();
 
@@ -625,7 +630,8 @@ describe("CmsModelToJsonSchemaConverter", () => {
 
     describe("full model conversion", () => {
         it("should produce valid JSON Schema for the product model", async () => {
-            const model = await context.container.resolve(HeadlessCms).getModel("product");
+            const model = (await context.container.resolve(GetModelUseCase).execute("product"))
+                .value;
             const ast = astConverter.toAst(model);
             const converter = new CmsModelToJsonSchemaConverter();
 
@@ -648,7 +654,9 @@ describe("CmsModelToJsonSchemaConverter", () => {
         });
 
         it("should produce valid JSON Schema for page model with dynamic zones", async () => {
-            const model = await context.container.resolve(HeadlessCms).getModel(pageModel.modelId);
+            const model = (
+                await context.container.resolve(GetModelUseCase).execute(pageModel.modelId)
+            ).value;
             const ast = astConverter.toAst(model);
             const converter = new CmsModelToJsonSchemaConverter();
 

@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Accordion, Button, Tooltip, useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
+import { hasSubtreeFocusRequest } from "~/features/formModel/index.js";
 import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
 import { ReactComponent as PasteIcon } from "@webiny/icons/content_paste.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
@@ -24,6 +25,20 @@ export const SingleValueDynamicZone = observer(
     ({ field, addItemLabel, showContainer = true }: SingleValueDynamicZoneProps) => {
         const toast = useToast();
         const { clipboard } = useFeature(ClipboardFeature);
+
+        // Force both the DZ container and the active-template accordion open
+        // when a focus request lands anywhere in the subtree, so "jump to
+        // field" can cascade through collapsed levels.
+        const focusInside = hasSubtreeFocusRequest(field.fields);
+        const [containerOpen, setContainerOpen] = useState(true);
+        const [templateOpen, setTemplateOpen] = useState(false);
+        useEffect(() => {
+            if (focusInside) {
+                setContainerOpen(true);
+                setTemplateOpen(true);
+            }
+        }, [focusInside]);
+
         const activeTemplate =
             field.activeTemplateId !== null
                 ? field.availableTemplates.find(t => t.id === field.activeTemplateId)
@@ -55,6 +70,8 @@ export const SingleValueDynamicZone = observer(
                     <Accordion background={"base"} variant={"container"}>
                         <Accordion.Item
                             title={activeTemplate.label}
+                            open={templateOpen}
+                            onOpenChange={setTemplateOpen}
                             actions={
                                 field.disabled ? null : (
                                     <>
@@ -145,7 +162,8 @@ export const SingleValueDynamicZone = observer(
                         />
                     }
                     title={field.label}
-                    defaultOpen={true}
+                    open={containerOpen}
+                    onOpenChange={setContainerOpen}
                 >
                     {content}
                 </Accordion.Item>

@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
 import { createTaskDefinition } from "~tests/helpers/createTaskDefinition.js";
+import { TaskDefinitionNotFoundError } from "~/api/domain/errors.js";
+import { GetRunnableTaskDefinitionUseCase } from "~/api/features/GetRunnableTaskDefinition/index.js";
+import { ListTaskDefinitionsUseCase } from "~/api/features/ListTaskDefinitions/abstractions.js";
 
 describe("tasks - definitions crud", () => {
     const handler = useRawHandler({
@@ -32,24 +35,29 @@ describe("tasks - definitions crud", () => {
     it("should get task definition", async () => {
         const context = await handler.handle();
 
-        const definition = context.tasks.getDefinition("testDefinitionNumber1");
+        const definition = context.container
+            .resolve(GetRunnableTaskDefinitionUseCase)
+            .execute("testDefinitionNumber1").value;
         expect(definition).toMatchObject({
             id: "testDefinitionNumber1",
             title: "Test definition #1"
         });
     });
 
-    it("should return null when definition does not exist", async () => {
+    it("should fail when definition does not exist", async () => {
         const context = await handler.handle();
 
-        const definition = context.tasks.getDefinition("non-existing-definition");
-        expect(definition).toBeNull();
+        const result = context.container
+            .resolve(GetRunnableTaskDefinitionUseCase)
+            .execute("non-existing-definition");
+        expect(result.isFail()).toBe(true);
+        expect(result.error).toBeInstanceOf(TaskDefinitionNotFoundError);
     });
 
     it("should list all definitions", async () => {
         const context = await handler.handle();
 
-        const definitions = context.tasks.listDefinitions();
+        const definitions = context.container.resolve(ListTaskDefinitionsUseCase).execute();
 
         expect(definitions).toHaveLength(4);
         expect(definitions).toMatchObject([
