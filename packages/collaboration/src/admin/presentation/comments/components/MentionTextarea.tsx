@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { Avatar, TextareaPrimitive } from "@webiny/admin-ui";
+import { cn } from "@webiny/admin-ui";
 import { avatarColor, initials } from "../styles.js";
 import type { CollabUser } from "~/admin/types.js";
 
@@ -150,7 +151,7 @@ export const MentionTextarea = ({
                 // `forwardEventOnChange` makes the primitive pass the native event (not just the
                 // value) so we can keep reading `event.target.selectionStart` for caret detection.
                 forwardEventOnChange
-                className={`${className ?? ""} min-h-0`}
+                className={cn(className, "min-h-0")}
                 value={value}
                 placeholder={placeholder}
                 autoFocus={autoFocus}

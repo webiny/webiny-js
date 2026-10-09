@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useRef } from "react";
 import { TextareaPrimitive } from "@webiny/admin-ui";
+import { cn } from "@webiny/admin-ui";
 
 interface Props {
     value: string;
@@ -46,7 +47,7 @@ export const AutoTextarea = ({
         <TextareaPrimitive
             textareaRef={ref}
             variant="ghost"
-            className={`${className ?? ""} min-h-0`}
+            className={cn(className, "min-h-0")}
             value={value}
             placeholder={placeholder}
             autoFocus={autoFocus}
