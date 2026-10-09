@@ -211,6 +211,7 @@ Create `packages/api-workflows/src/domain/assignment/errors.ts`:
 
 ```ts
 import { BaseError } from "@webiny/feature/api";
+import type { PersistenceErrorSource } from "~/domain/PersistenceErrorSource.js";
 
 export interface AssignmentPersistenceErrorCause {
     code?: string;
@@ -224,7 +225,7 @@ export interface AssignmentPersistenceErrorData {
 export class AssignmentPersistenceError extends BaseError<AssignmentPersistenceErrorData> {
     override readonly code = "Workflows/Assignment/Persistence" as const;
 
-    constructor(error: Error & { code?: string }) {
+    constructor(error: PersistenceErrorSource) {
         super({
             message: error.message,
             data: { cause: { code: error.code, message: error.message } }

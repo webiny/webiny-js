@@ -168,6 +168,7 @@ describe("ReviewSaver", () => {
             type: "stepReached",
             occurredOn: NOW,
             actor: requester,
+            owner: null,
             change: { stepId: "legal", fromState: "pending", toState: "awaiting" },
             assignment: { source: "pool" }
         });

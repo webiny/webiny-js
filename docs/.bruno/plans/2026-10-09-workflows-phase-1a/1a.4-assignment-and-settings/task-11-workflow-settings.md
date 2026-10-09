@@ -220,6 +220,7 @@ Create `packages/api-workflows/src/domain/settings/errors.ts`:
 
 ```ts
 import { BaseError } from "@webiny/feature/api";
+import type { PersistenceErrorSource } from "~/domain/PersistenceErrorSource.js";
 
 export interface WorkflowSettingsValidationErrorData {
     userId: string;
@@ -245,7 +246,7 @@ export interface WorkflowSettingsPersistenceErrorData {
 export class WorkflowSettingsPersistenceError extends BaseError<WorkflowSettingsPersistenceErrorData> {
     override readonly code = "Workflows/Settings/Persistence" as const;
 
-    constructor(error: Error & { code?: string }) {
+    constructor(error: PersistenceErrorSource) {
         super({
             message: error.message,
             data: { cause: { code: error.code, message: error.message } }
