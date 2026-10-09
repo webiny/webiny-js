@@ -57,7 +57,24 @@ part of the job, so a job starts from a URL.
 - **C. A now, B later.** A gives the demo a URL-only start; B is the follow-on that removes the
   second crawl and addresses the gap with data the pipeline already has.
 
-## Questions for you
+## Decided (2026-10-09)
+
+1. **The item:** a URL in, the pipeline does the rest.
+2. **Publish automatically.** Stopping for review would replace the step being removed. Extraction
+   already reports its confidence and uncertainties: those are surfaced in the pipeline's own review,
+   not as a gate.
+3. **Existing jobs keep their pinned themes;** the new flow is for new jobs only.
+4. **A for the 2026-10-16 demo, B after.**
+
+**B is where the three filed theme-extraction issues get closed rather than patched:**
+`theme-extraction-captures-less-than-the-site-uses.md` (colour, type and spacing, as one finding),
+`an-extracted-theme-cannot-express-its-own-sites-colours.md` and
+`theme-extraction-stops-short-of-the-sites-own-headings.md`. Each describes extraction reading less of
+the site than the site uses. The pipeline already measures type, colour and spacing in Plan, across
+more pages than extraction reads; a theme built from those measurements removes the cause the issues
+describe, where patching extraction would chase each instance.
+
+## Questions that were open
 
 1. Is the reading above the item you meant?
 2. Publish automatically, or stop for the operator to review and publish?

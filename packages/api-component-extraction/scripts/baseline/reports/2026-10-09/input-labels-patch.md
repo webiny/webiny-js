@@ -95,3 +95,20 @@ both runs. A per-component regenerate replaces that component but does not clear
 staleness: the same gap any plan correction followed by "generate again" meets. Unblocking it means
 either re-running the whole Generate stage (model calls on every component of both demo runs) or
 marking Generate current again (a ledger override); neither was approved, so Assemble waits.
+
+## Generate marked current; Assemble run (2026-10-09)
+
+Re-running Generate would have spent model calls on every component of both runs to clear a flag on
+components that were fine. Instead, on each run, Generate alone was marked current
+(`componentExtractionMarkStageCurrent`, `68a3a5e924`), with the reason recorded on the run: the
+stage's ledger entry carries `markedCurrent` (when, why, and that it was `stale`). Its artifacts were
+not touched, and nothing downstream was changed by the mark.
+
+| Run      | Before the mark                   | After Assemble                                  |
+| -------- | --------------------------------- | ----------------------------------------------- |
+| Westland | generate, assemble, promote stale | generate, assemble done (marked); promote stale |
+| Freehill | generate, assemble, promote stale | generate, assemble done (marked); promote stale |
+
+Assemble ran on both with no model calls. The composed pages reference the repaired forms, carry
+"Send", and no longer bind a phone link as a submit. **Promote stays stale on both, for the owner:**
+the Library still holds the forms as they were.

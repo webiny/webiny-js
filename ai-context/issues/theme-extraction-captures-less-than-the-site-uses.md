@@ -5,6 +5,10 @@
 > **Severity:** high as one finding. Each instance makes generated components fall back to plain
 > values, or to variables carrying another value, for things the site plainly has.
 > **Status:** open. One finding with three instances; read them together, not as three bugs.
+> **Planned resolution (2026-10-09):** closed by option B of the in-pipeline theme work: a theme built
+> from the pipeline's own measurements of type, colour and spacing, across more pages than extraction
+> reads (`packages/api-component-extraction/scripts/baseline/reports/2026-10-09/theme-extraction-in-pipeline-investigation.md`).
+> Not patched in extraction.
 
 ## The finding
 

@@ -7,6 +7,10 @@
 > largest type in the theme's vocabulary, so it falls back to a plain value and the theme stops being
 > the single place that type is defined.
 > **Status:** open.
+> **Planned resolution (2026-10-09):** closed by option B of the in-pipeline theme work: a theme built
+> from the pipeline's own measurements of type, colour and spacing, across more pages than extraction
+> reads (`packages/api-component-extraction/scripts/baseline/reports/2026-10-09/theme-extraction-in-pipeline-investigation.md`).
+> Not patched in extraction.
 > **Part of:** [theme extraction captures less than the site uses](./theme-extraction-captures-less-than-the-site-uses.md), with the type and spacing instances.
 
 ## What happens

@@ -10,16 +10,16 @@
 
 `textAlign` is one of the eighteen properties `STYLE_PROPS` records on every captured node. It appears
 as `start`, `center`, `left` and `right` across all four sites' trees. **Nothing reads it**, and
-neither the Plan prompt nor the Generate prompt contains the word *align*.
+neither the Plan prompt nor the Generate prompt contains the word _align_.
 
 Measured by comparing the capture tree's area-weighted dominant alignment against the dominant
 `text-align` the generated CSS declares — DOM on one side, code on the other, no pixels:
 
-| | count |
-| --- | ---: |
-| source and CSS agree | 17 |
-| **CSS centres what the source does not** | **9** |
-| CSS declares nothing | 19, of which **2** have a non-left source |
+|                                          |                                     count |
+| ---------------------------------------- | ----------------------------------------: |
+| source and CSS agree                     |                                        17 |
+| **CSS centres what the source does not** |                                     **9** |
+| CSS declares nothing                     | 19, of which **2** have a non-left source |
 
 **Every one of the nine goes the same way.** Four right-aligned footers, three left-aligned bodies, a
 CTA and a hero intro, all centred. Not one disagreement runs the other direction.

@@ -4,6 +4,10 @@
 > **Severity:** medium — 26 of 206 measured colours across the four sites have no token near them,
 > and every one of those becomes a hardcoded hex in a generated component.
 > **Status:** open. Measured in the colour-fix acceptance,
+> **Planned resolution (2026-10-09):** closed by option B of the in-pipeline theme work: a theme built
+> from the pipeline's own measurements of type, colour and spacing, across more pages than extraction
+> reads (`packages/api-component-extraction/scripts/baseline/reports/2026-10-09/theme-extraction-in-pipeline-investigation.md`).
+> Not patched in extraction.
 > `plans/component-extraction-colour-placement-background-report.md`.
 > **Part of:** [theme extraction captures less than the site uses](./theme-extraction-captures-less-than-the-site-uses.md), with the type and spacing instances.
 
