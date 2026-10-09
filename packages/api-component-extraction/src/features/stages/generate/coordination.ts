@@ -23,7 +23,28 @@ export interface CoordinatorState {
      * attempts without passing (or produced nothing). Absent on checkpoints written before it existed.
      */
     outcomes?: Record<string, "passed" | "not-passed">;
+    /** The background task id of each component's latest trigger, so a failed child is seen at once. */
+    taskIds?: Record<string, string>;
 }
+
+/**
+ * A child task that failed or was aborted will never write a result. Treated as timed out now, so the
+ * next decision retries it (or fails it once out of triggers) instead of waiting out the timeout: on
+ * webiny.com a crashing component cost two 8-minute waits (2026-10-09).
+ */
+export const expireFailedChildren = (
+    state: CoordinatorState,
+    failedSignatures: string[]
+): CoordinatorState => {
+    if (failedSignatures.length === 0) {
+        return state;
+    }
+    const triggeredAt = { ...state.triggeredAt };
+    for (const signature of failedSignatures) {
+        triggeredAt[signature] = 0;
+    }
+    return { ...state, triggeredAt };
+};
 
 export interface CoordinationConfig {
     /** Max children running at once. */
@@ -121,7 +142,8 @@ export const decideCoordination = (
             states,
             triggeredAt,
             triggers,
-            ...(state.outcomes ? { outcomes: state.outcomes } : {})
+            ...(state.outcomes ? { outcomes: state.outcomes } : {}),
+            ...(state.taskIds ? { taskIds: state.taskIds } : {})
         },
         toTrigger,
         done,

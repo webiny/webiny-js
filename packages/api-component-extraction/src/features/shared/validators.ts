@@ -6,7 +6,13 @@ import type { ValidationResult } from "~/domain/artifacts.js";
  * Generate can gate + retry on them and Assemble can re-run the token check across every component.
  */
 
-const normalise = (text: string): string => text.toLowerCase().replace(/\s+/g, " ").trim();
+/*
+ * Tolerates a non-string: a stored plan carried a `null` observed value (webiny.com, 2026-10-09), and
+ * lowercasing it crashed the component's generation after every model call, unlogged, until the
+ * coordinator gave up.
+ */
+const normalise = (text: unknown): string =>
+    (typeof text === "string" ? text : "").toLowerCase().replace(/\s+/g, " ").trim();
 
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -299,7 +305,8 @@ export const sourceTextPool = (planned: {
         }
     };
     fromProps(planned.props);
-    return out;
+    // Only strings: a stored plan can carry a null value, and every reader of the pool lowercases it.
+    return out.filter((text): text is string => typeof text === "string");
 };
 
 const decodeEntities = (text: string): string =>

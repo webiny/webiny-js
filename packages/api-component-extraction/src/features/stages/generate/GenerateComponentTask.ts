@@ -24,6 +24,7 @@ import { loadRepresentativeNode } from "./representativeNode.js";
 import { systemPromptOverride, type SystemPromptOverride } from "./themeVocabulary.js";
 import { sectionSpacing } from "~/features/stages/plan/sectionSpacing.js";
 import { appendGenerationLog, readGenerationPrompt } from "./generationLog.js";
+import { keepStringValues } from "../plan/bindObservedValues.js";
 
 // Left at the end of the invocation to write the result after the last attempt.
 const DEADLINE_MARGIN_MS = 20 * 1000;
@@ -112,10 +113,10 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         if (planResult.isFail() || !planResult.value) {
             return controller.response.error("The plan artifact could not be read.");
         }
-        const planned = planResult.value.components.find(
+        const found = planResult.value.components.find(
             component => component.signature === input.signature
         );
-        if (!planned) {
+        if (!found) {
             // Nothing to generate for a signature the plan no longer has — record an empty result so the
             // coordinator sees this component as resolved rather than waiting on it forever.
             await this.artifactStore.putJson(resultKey, {
@@ -125,6 +126,14 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
             } satisfies ComponentResult);
             return controller.response.done("Planned component not found; nothing to generate.");
         }
+        // Only string observed values and texts: a plan stored before Plan swept them can carry a null,
+        // which crashed this component's validation after every model call (keepStringValues).
+        const planned = {
+            ...found,
+            props: keepStringValues(structuredClone(found.props)),
+            sourceTexts: (found.sourceTexts ?? []).filter(text => typeof text === "string"),
+            clusterTexts: (found.clusterTexts ?? []).filter(text => typeof text === "string")
+        };
 
         // Resolve the theme's css variables for token-binding validation (skipped if unresolved, exactly
         // as the inline stage did — otherwise every var(--wby-*) counts as unknown and all fail).

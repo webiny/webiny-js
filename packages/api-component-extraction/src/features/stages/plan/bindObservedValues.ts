@@ -321,3 +321,23 @@ const bindOneSection = (
         bind(prop);
     }
 };
+
+/**
+ * Drops any observed value that is not a string, through nested fields, in place.
+ *
+ * Every reader lowercases these. A stored plan carried a `null` among a prop's observed values
+ * (webiny.com's "Docs site navigation header", `routeAnnouncer`, 2026-10-09); the invented-text check
+ * lowercased it and crashed the component's generation after every model call. Where the null came in
+ * is not established, so it is removed where the plan is written and where it is read.
+ */
+export const keepStringValues = (props: ComponentProp[]): ComponentProp[] => {
+    for (const prop of props) {
+        prop.observedValues = (prop.observedValues ?? []).filter(
+            (value): value is string => typeof value === "string"
+        );
+        if (prop.fields) {
+            keepStringValues(prop.fields);
+        }
+    }
+    return props;
+};

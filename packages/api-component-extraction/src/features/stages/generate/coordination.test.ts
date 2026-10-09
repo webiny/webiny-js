@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
     decideCoordination,
+    expireFailedChildren,
     initCoordinatorState,
     type CoordinationConfig,
     type CoordinatorState,
@@ -115,5 +116,34 @@ describe("generateProgressDetail", () => {
             maxTriggers: 3
         });
         expect(decision.next.outcomes).toEqual({ a: "passed", b: "not-passed" });
+    });
+});
+
+describe("expireFailedChildren", () => {
+    const config = { concurrency: 4, timeoutMs: 8 * 60_000, maxTriggers: 3 };
+    const now = 10 * 60_000;
+
+    it("retries a failed child at once instead of waiting out the timeout", () => {
+        const state = {
+            states: { a: "triggered" },
+            triggeredAt: { a: now - 2 * 60_000 },
+            triggers: { a: 1 }
+        } as unknown as CoordinatorState;
+        // Two minutes in, well inside the 8-minute timeout: nothing happens on its own.
+        expect(decideCoordination(["a"], state, now, config).toTrigger).toEqual([]);
+        // Its task failed: retried now.
+        expect(
+            decideCoordination(["a"], expireFailedChildren(state, ["a"]), now, config).toTrigger
+        ).toEqual(["a"]);
+    });
+
+    it("fails a failed child once it is out of triggers", () => {
+        const state = {
+            states: { a: "triggered" },
+            triggeredAt: { a: now - 60_000 },
+            triggers: { a: 3 }
+        } as unknown as CoordinatorState;
+        const decision = decideCoordination(["a"], expireFailedChildren(state, ["a"]), now, config);
+        expect(decision.next.states.a).toBe("failed");
     });
 });

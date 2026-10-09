@@ -1,4 +1,5 @@
 import { Result } from "@webiny/feature/api";
+import { TasksCrud } from "@webiny/background-tasks/api/TasksCrud.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { StageHandler, type StageContext, type StageOutcome } from "~/domain/stage.js";
 import type {
@@ -12,6 +13,7 @@ import { ExtractionValidationError, type ExtractionError } from "~/domain/errors
 import { GENERATE_COMPONENT_TASK_ID } from "~/constants.js";
 import {
     decideCoordination,
+    expireFailedChildren,
     generateProgressDetail,
     initCoordinatorState,
     type CoordinatorState
@@ -53,7 +55,10 @@ const allPassed = (component: GeneratedComponent): boolean =>
 class GenerateHandlerImpl implements StageHandler.Interface {
     readonly stage = "generate" as const;
 
-    constructor(private taskService: TaskService.Interface) {}
+    constructor(
+        private taskService: TaskService.Interface,
+        private tasks: TasksCrud.Interface
+    ) {}
 
     async execute(context: StageContext): Promise<Result<StageOutcome, ExtractionError>> {
         const planRef = context.upstream.plan;
@@ -113,11 +118,34 @@ class GenerateHandlerImpl implements StageHandler.Interface {
             }
         }
 
-        const decision = decideCoordination(signatures, state, Date.now(), {
-            concurrency: GENERATE_CONCURRENCY,
-            timeoutMs: CHILD_TIMEOUT_MS,
-            maxTriggers: CHILD_MAX_TRIGGERS
-        });
+        // A child that failed will never write a result: retry it now rather than after the timeout.
+        const failedChildren: string[] = [];
+        for (const signature of signatures) {
+            const taskId = state.taskIds?.[signature];
+            if (state.states[signature] !== "triggered" || !taskId) {
+                continue;
+            }
+            const task = await this.tasks.getTask(taskId).catch(() => null);
+            if (task?.taskStatus === "failed" || task?.taskStatus === "aborted") {
+                failedChildren.push(signature);
+                const reason =
+                    (task.output as { error?: { message?: string } } | undefined)?.error?.message ??
+                    task.taskStatus;
+                await context.log.error({
+                    message: `Generation for "${nameOf.get(signature) ?? signature}" failed (${reason}); retrying without waiting for the timeout.`
+                });
+            }
+        }
+        const decision = decideCoordination(
+            signatures,
+            expireFailedChildren(state, failedChildren),
+            Date.now(),
+            {
+                concurrency: GENERATE_CONCURRENCY,
+                timeoutMs: CHILD_TIMEOUT_MS,
+                maxTriggers: CHILD_MAX_TRIGGERS
+            }
+        );
         const next = decision.next;
 
         // Trigger the components the decision selected. A trigger that fails to enqueue drops back to
@@ -133,6 +161,9 @@ class GenerateHandlerImpl implements StageHandler.Interface {
                     planRef
                 }
             });
+            if (triggered.isOk()) {
+                next.taskIds = { ...next.taskIds, [signature]: triggered.value.id };
+            }
             if (triggered.isFail()) {
                 next.states[signature] = "pending";
                 await context.log.error({
@@ -217,5 +248,5 @@ class GenerateHandlerImpl implements StageHandler.Interface {
 
 export const GenerateHandler = StageHandler.createImplementation({
     implementation: GenerateHandlerImpl,
-    dependencies: [TaskService]
+    dependencies: [TaskService, TasksCrud]
 });

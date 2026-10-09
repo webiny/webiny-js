@@ -15,7 +15,7 @@ import { hasNothingToGenerate } from "./hasNothingToGenerate.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 import { PLAN_SYSTEM, buildPlanPrompt, parsePlanContract } from "./planContract.js";
 import { coverMemberTexts } from "./textCoverage.js";
-import { bindObservedValues } from "./bindObservedValues.js";
+import { bindObservedValues, keepStringValues } from "./bindObservedValues.js";
 import { sectionBackgroundImages } from "./sectionBackgroundImages.js";
 import { sectionUnboundImages } from "./sectionUnboundImages.js";
 import { sectionIcons } from "./sectionIcons.js";
@@ -342,7 +342,7 @@ class PlanHandlerImpl implements StageHandler.Interface {
                             signature: cluster.cluster.signature,
                             name: cluster.name,
                             type: cluster.type,
-                            props: contract.props,
+                            props: keepStringValues(contract.props),
                             tokenBindings: contract.tokenBindings,
                             representative: cluster.cluster.representative,
                             members: cluster.cluster.members,
