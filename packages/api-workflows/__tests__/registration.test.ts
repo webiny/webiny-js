@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import { CreateWorkflowUseCase } from "~/features/workflow/CreateWorkflow/index.js";
-import { UpdateWorkflowUseCase } from "~/features/workflow/UpdateWorkflow/index.js";
+import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
+import { DeleteWorkflowUseCase } from "~/features/workflow/DeleteWorkflow/index.js";
 
 describe("WorkflowsFeature registration", () => {
-    it("registers create and update workflow use cases once", async () => {
+    it("registers the workflow use cases once", async () => {
         const { context } = await createContextHandler();
 
-        expect(context.container.resolveAll(CreateWorkflowUseCase)).toHaveLength(1);
-        expect(context.container.resolveAll(UpdateWorkflowUseCase)).toHaveLength(1);
+        expect(context.container.resolveAll(StoreWorkflowUseCase)).toHaveLength(1);
+        expect(context.container.resolveAll(DeleteWorkflowUseCase)).toHaveLength(1);
     });
 
     it("does not register the old workflow state model", async () => {

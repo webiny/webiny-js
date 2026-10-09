@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CreateWorkflowUseCase } from "@webiny/api-workflows/features/workflow/CreateWorkflow/index.js";
+import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import { createContextHandler } from "./__handler/context.js";
 
 describe("CmsWorkflowsFeature registration", () => {
@@ -7,6 +7,6 @@ describe("CmsWorkflowsFeature registration", () => {
         const { context } = createContextHandler();
         const ctx = await context();
 
-        expect(ctx.container.resolveAll(CreateWorkflowUseCase)).toHaveLength(1);
+        expect(ctx.container.resolveAll(StoreWorkflowUseCase)).toHaveLength(1);
     });
 });

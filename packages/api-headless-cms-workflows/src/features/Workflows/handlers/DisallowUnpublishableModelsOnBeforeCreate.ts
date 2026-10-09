@@ -1,34 +1,19 @@
-import { WorkflowBeforeCreateHandler } from "@webiny/api-workflows/features/workflow/CreateWorkflow/events.js";
-import { getModelIdFromAppName } from "~/utils/appName.js";
+import { WorkflowBeforeCreateEventHandler } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { assertModelsBindable } from "../assertModelsBindable.js";
 
 class DisallowUnpublishableModelsOnBeforeCreateImpl
-    implements WorkflowBeforeCreateHandler.Interface
+    implements WorkflowBeforeCreateEventHandler.Interface
 {
-    public constructor(private getModelUseCase: GetModelUseCase.Interface) {}
+    public constructor(private getModel: GetModelUseCase.Interface) {}
 
-    public async handle(event: WorkflowBeforeCreateHandler.Event): Promise<void> {
-        const { workflow } = event.payload;
-        const modelId = getModelIdFromAppName(workflow.app);
-        if (!modelId) {
-            return;
-        }
-        const model = await this.getModelUseCase.execute(modelId);
-        if (model.isFail()) {
-            return;
-        }
-        const tags = model.value.tags || [];
-        if (tags.includes("$publishing:false") === false) {
-            return;
-        }
-        throw new Error(
-            `Cannot create a workflow for the model "${modelId}" because it is marked as unpublishable.`
-        );
+    public async handle(event: WorkflowBeforeCreateEventHandler.Event): Promise<void> {
+        await assertModelsBindable(this.getModel, event.payload.workflow.models);
     }
 }
 
 export const DisallowUnpublishableModelsOnBeforeCreate =
-    WorkflowBeforeCreateHandler.createImplementation({
+    WorkflowBeforeCreateEventHandler.createImplementation({
         implementation: DisallowUnpublishableModelsOnBeforeCreateImpl,
         dependencies: [GetModelUseCase]
     });

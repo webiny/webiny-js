@@ -1,32 +1,34 @@
 import { BaseError } from "@webiny/feature/api";
+import type { WorkflowIdentity } from "./types.js";
 
-export class WorkflowNotFoundError extends BaseError<{ id: string; app: string }> {
+export interface WorkflowNotFoundErrorData {
+    id: string;
+}
+
+export class WorkflowNotFoundError extends BaseError<WorkflowNotFoundErrorData> {
     override readonly code = "Workflows/Workflow/NotFound" as const;
 
-    constructor(data: { id: string; app: string }) {
+    constructor(data: WorkflowNotFoundErrorData) {
         super({
-            message: `Workflow in app "${data.app}" with id "${data.id}" was not found!`,
+            message: `Workflow "${data.id}" was not found.`,
             data
         });
     }
 }
 
-export class WorkflowNotAuthorizedError extends BaseError {
-    override readonly code = "Workflows/Workflow/NotAuthorized" as const;
-
-    constructor(message?: string) {
-        super({
-            message: message || "Not authorized to access workflow"
-        });
-    }
+export interface WorkflowConflictErrorData {
+    savedOn: string;
+    savedBy: WorkflowIdentity;
 }
 
-export class WorkflowPersistenceError extends BaseError {
-    override readonly code = "Workflows/Workflow/Persistence" as const;
+/** The stored workflow changed after the caller loaded it (D131). */
+export class WorkflowConflictError extends BaseError<WorkflowConflictErrorData> {
+    override readonly code = "Workflows/Workflow/Conflict" as const;
 
-    constructor(error: Error) {
+    constructor(data: WorkflowConflictErrorData) {
         super({
-            message: error.message
+            message: `The workflow was changed by ${data.savedBy.displayName} on ${data.savedOn}. Reload it to see the latest version.`,
+            data
         });
     }
 }
@@ -37,6 +39,24 @@ export class WorkflowValidationError extends BaseError {
     constructor(message: string) {
         super({
             message
+        });
+    }
+}
+
+/** Duck-typed so errors thrown by handlers in other packages are recognised. */
+export const isWorkflowValidationError = (error: unknown): error is WorkflowValidationError => {
+    return (
+        error instanceof Error &&
+        (error as Partial<WorkflowValidationError>).code === "Workflows/Workflow/Validation"
+    );
+};
+
+export class WorkflowPersistenceError extends BaseError {
+    override readonly code = "Workflows/Workflow/Persistence" as const;
+
+    constructor(error: Error) {
+        super({
+            message: error.message
         });
     }
 }
