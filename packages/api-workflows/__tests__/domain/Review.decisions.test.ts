@@ -68,6 +68,22 @@ const requestWithOwner = (owner: Actor): Review => {
     return review;
 };
 
+describe("Review owner type checks", () => {
+    it("does not let the requester approve or reject an AI-owned step", () => {
+        const review = requestWithOwner(aiActor);
+        review.pullFacts();
+
+        const approved = review.approve(decision(requester));
+        const rejected = review.reject(decision(requester));
+
+        expect(approved.isFail()).toBe(true);
+        expect(approved.error.code).toBe("Workflows/Review/NotOwner");
+        expect(rejected.isFail()).toBe(true);
+        expect(rejected.error.code).toBe("Workflows/Review/NotOwner");
+        expect(review.pullFacts()).toEqual([]);
+    });
+});
+
 describe("Review.approve", () => {
     it("approves the current step and leaves the next step to be reached", () => {
         const review = createStartedReview();
@@ -258,10 +274,13 @@ describe("Review.cancel", () => {
         const review = createStartedReview();
         expectOk(review.cancel({ actor: requester, now: LATER }));
 
+        review.pullFacts();
+
         const result = review.cancel({ actor: requester, now: LATER });
 
         expect(result.isFail()).toBe(true);
         expect(result.error.data).toMatchObject({ transition: "cancel", reviewState: "cancelled" });
+        expect(review.pullFacts()).toEqual([]);
     });
 
     it("cannot cancel an approved review", () => {
@@ -279,6 +298,24 @@ describe("Review.cancel", () => {
 });
 
 describe("Review.prepareForSave", () => {
+    it("keeps the stored lastChangedOn when it is later than the newest fact", () => {
+        const review = createRequestedReview();
+        expectOk(
+            review.start({
+                stepId: "legal",
+                actor: reviewer,
+                actorTeamIds: [REVIEW_TEAM_ID],
+                now: EARLIER
+            })
+        );
+        // The stored value (NOW) is later than the fact timestamp (EARLIER).
+        expect(review.toData().lastChangedOn).toBe(NOW);
+
+        review.prepareForSave();
+
+        expect(review.toData().lastChangedOn).toBe(NOW);
+    });
+
     it("sets lastChangedOn from the newest fact and refreshes the current step", () => {
         const review = createRequestedReview();
         expectOk(

@@ -21,6 +21,8 @@ export interface ReviewStepReachedFact {
     occurredOn: string;
     /** Who caused the step to be reached: the requester or the approver of the previous step. */
     actor: Actor;
+    /** Who got the step; `null` when it went to the pool. */
+    owner: Actor | null;
     change: ReviewStepChange;
     assignment: ReviewStepAssignment;
 }

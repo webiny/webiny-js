@@ -1,4 +1,5 @@
 import { BaseError } from "@webiny/feature/api";
+import type { PersistenceErrorSource } from "../PersistenceErrorSource.js";
 import type { WorkflowIdentity } from "./types.js";
 
 export interface WorkflowNotFoundErrorData {
@@ -63,7 +64,7 @@ export interface WorkflowPersistenceErrorData {
 export class WorkflowPersistenceError extends BaseError<WorkflowPersistenceErrorData> {
     override readonly code = "Workflows/Workflow/Persistence" as const;
 
-    constructor(error: Error & { code?: string }) {
+    constructor(error: PersistenceErrorSource) {
         super({
             message: error.message,
             data: { cause: { code: error.code, message: error.message } }

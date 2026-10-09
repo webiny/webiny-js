@@ -236,6 +236,7 @@ export class Review {
             type: "stepReached",
             occurredOn: params.now,
             actor: { ...params.actor },
+            owner: step.owner ? { ...step.owner } : null,
             change: { stepId: step.id, fromState: "pending", toState: step.state },
             assignment: structuredClone(resolution.assignment)
         });
@@ -389,13 +390,14 @@ export class Review {
 
     /**
      * Called by the single save path before persisting (D19). Derives the review-level fields from
-     * the steps; `lastChangedOn` moves only when a review event happened (D119). Cancel moves it
-     * too: D119 does not list cancel, but a cancelled review leaves every list (`isActive: false`),
-     * so this is harmless and keeps the field monotonic.
+     * the steps; `lastChangedOn` moves only when a review event happened (D119), and never
+     * backwards: it becomes the later of the stored value and the newest unpulled fact. Cancel
+     * moves it too: D119 does not list cancel, but a cancelled review leaves every list
+     * (`isActive: false`), so this is harmless and keeps the field monotonic.
      */
     public prepareForSave(): void {
         const lastFact = this.facts[this.facts.length - 1];
-        if (lastFact) {
+        if (lastFact && Date.parse(lastFact.occurredOn) > Date.parse(this.data.lastChangedOn)) {
             this.data.lastChangedOn = lastFact.occurredOn;
         }
 

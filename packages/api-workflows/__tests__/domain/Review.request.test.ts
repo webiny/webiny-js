@@ -166,6 +166,7 @@ describe("Review.reach", () => {
                 type: "stepReached",
                 occurredOn: NOW,
                 actor: requester,
+                owner: null,
                 change: { stepId: "legal", fromState: "pending", toState: "awaiting" },
                 assignment: { source: "pool" }
             }
@@ -198,6 +199,7 @@ describe("Review.reach", () => {
             type: "stepReached",
             occurredOn: NOW,
             actor: requester,
+            owner: reviewer,
             change: { stepId: "legal", fromState: "pending", toState: "inReview" },
             assignment: { source: "picked" }
         });
@@ -236,6 +238,7 @@ describe("Review.reach", () => {
                 type: "stepReached",
                 occurredOn: NOW,
                 actor: requester,
+                owner: null,
                 change: { stepId: "legal", fromState: "pending", toState: "awaiting" },
                 assignment: expectedAssignment
             }

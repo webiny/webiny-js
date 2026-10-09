@@ -1,4 +1,5 @@
 import { BaseError } from "@webiny/feature/api";
+import type { PersistenceErrorSource } from "../PersistenceErrorSource.js";
 import type { ActorType, ReviewData, ReviewState, StepState } from "./types.js";
 
 export type ReviewTransitionName = "reach" | "start" | "takeOver" | "approve" | "reject" | "cancel";
@@ -27,7 +28,7 @@ export interface ReviewPersistenceErrorData {
 export class ReviewPersistenceError extends BaseError<ReviewPersistenceErrorData> {
     override readonly code = "Workflows/Review/Persistence" as const;
 
-    constructor(error: Error & { code?: string }) {
+    constructor(error: PersistenceErrorSource) {
         super({
             message: error.message,
             data: { cause: { code: error.code, message: error.message } }
