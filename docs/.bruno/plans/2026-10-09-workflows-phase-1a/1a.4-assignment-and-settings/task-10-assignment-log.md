@@ -212,11 +212,23 @@ Create `packages/api-workflows/src/domain/assignment/errors.ts`:
 ```ts
 import { BaseError } from "@webiny/feature/api";
 
-export class AssignmentPersistenceError extends BaseError {
+export interface AssignmentPersistenceErrorCause {
+    code?: string;
+    message: string;
+}
+
+export interface AssignmentPersistenceErrorData {
+    cause: AssignmentPersistenceErrorCause;
+}
+
+export class AssignmentPersistenceError extends BaseError<AssignmentPersistenceErrorData> {
     override readonly code = "Workflows/Assignment/Persistence" as const;
 
-    constructor(error: Error) {
-        super({ message: error.message });
+    constructor(error: Error & { code?: string }) {
+        super({
+            message: error.message,
+            data: { cause: { code: error.code, message: error.message } }
+        });
     }
 }
 ```

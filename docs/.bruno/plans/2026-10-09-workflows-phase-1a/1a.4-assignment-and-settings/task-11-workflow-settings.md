@@ -233,11 +233,23 @@ export class WorkflowSettingsValidationError extends BaseError<WorkflowSettingsV
     }
 }
 
-export class WorkflowSettingsPersistenceError extends BaseError {
+export interface WorkflowSettingsPersistenceErrorCause {
+    code?: string;
+    message: string;
+}
+
+export interface WorkflowSettingsPersistenceErrorData {
+    cause: WorkflowSettingsPersistenceErrorCause;
+}
+
+export class WorkflowSettingsPersistenceError extends BaseError<WorkflowSettingsPersistenceErrorData> {
     override readonly code = "Workflows/Settings/Persistence" as const;
 
-    constructor(error: Error) {
-        super({ message: error.message });
+    constructor(error: Error & { code?: string }) {
+        super({
+            message: error.message,
+            data: { cause: { code: error.code, message: error.message } }
+        });
     }
 }
 ```

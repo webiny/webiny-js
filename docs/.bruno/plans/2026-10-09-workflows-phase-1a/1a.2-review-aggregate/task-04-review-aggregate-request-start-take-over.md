@@ -871,11 +871,23 @@ export class ReviewNotFoundError extends BaseError<ReviewNotFoundErrorData> {
     }
 }
 
-export class ReviewPersistenceError extends BaseError {
+export interface ReviewPersistenceErrorCause {
+    code?: string;
+    message: string;
+}
+
+export interface ReviewPersistenceErrorData {
+    cause: ReviewPersistenceErrorCause;
+}
+
+export class ReviewPersistenceError extends BaseError<ReviewPersistenceErrorData> {
     override readonly code = "Workflows/Review/Persistence" as const;
 
-    constructor(error: Error) {
-        super({ message: error.message });
+    constructor(error: Error & { code?: string }) {
+        super({
+            message: error.message,
+            data: { cause: { code: error.code, message: error.message } }
+        });
     }
 }
 
