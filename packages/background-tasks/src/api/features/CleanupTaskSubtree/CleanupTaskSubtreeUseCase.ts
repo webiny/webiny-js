@@ -4,6 +4,11 @@ import { TaskLogsRepository, TasksRepository } from "~/api/domain/task/abstracti
 import { DeleteTaskUseCase } from "~/api/features/DeleteTask/index.js";
 import { GetRunnableTaskDefinitionUseCase } from "~/api/features/GetRunnableTaskDefinition/index.js";
 import type { ITask } from "~/api/types.js";
+import type { ITaskLog } from "~/api/types.js";
+import type { IListTaskParams } from "~/api/types.js";
+import type { IListTaskLogParams } from "~/api/types.js";
+
+const PAGE_SIZE = 100;
 
 /**
  * Deletes the task identified by `rootId`, all its descendants, and their logs (when the owning
@@ -65,12 +70,38 @@ class CleanupTaskSubtreeUseCaseImpl implements UseCaseAbstraction.Interface {
         return order.reverse();
     }
 
+    // Every page, not just the first: a parent can have more children than one page holds.
     private async listChildren(parentId: string): Promise<ITask[]> {
-        const result = await this.tasks.list({ where: { parentId } });
-        if (result.isFail()) {
-            throw result.error;
-        }
-        return result.value.items;
+        const children: ITask[] = [];
+        let after: string | null = null;
+        do {
+            const params: IListTaskParams = { where: { parentId }, limit: PAGE_SIZE, after };
+            const result = await this.tasks.list(params);
+            if (result.isFail()) {
+                throw result.error;
+            }
+            const { items, meta } = result.value;
+            children.push(...items);
+            after = meta.hasMoreItems ? meta.cursor : null;
+        } while (after);
+        return children;
+    }
+
+    // All pages are read before anything is deleted, so deleting doesn't shift what a cursor sees.
+    private async listLogs(taskId: string): Promise<ITaskLog[]> {
+        const logs: ITaskLog[] = [];
+        let after: string | null = null;
+        do {
+            const params: IListTaskLogParams = { where: { task: taskId }, limit: PAGE_SIZE, after };
+            const result = await this.logs.list(params);
+            if (result.isFail()) {
+                throw result.error;
+            }
+            const { items, meta } = result.value;
+            logs.push(...items);
+            after = meta.hasMoreItems ? meta.cursor : null;
+        } while (after);
+        return logs;
     }
 
     private async deleteTaskLogs(task: ITask): Promise<void> {
@@ -78,15 +109,17 @@ class CleanupTaskSubtreeUseCaseImpl implements UseCaseAbstraction.Interface {
         if (definition.isFail() || definition.value.databaseLogs !== true) {
             return;
         }
-        const logs = await this.logs.list({ where: { task: task.id } });
-        if (logs.isFail()) {
+        let logs: ITaskLog[];
+        try {
+            logs = await this.listLogs(task.id);
+        } catch (error) {
             this.logger.warn(
-                { error: logs.error },
+                { error },
                 `cleanupTaskSubtree: failed to list logs for task "${task.id}".`
             );
             return;
         }
-        for (const log of logs.value.items) {
+        for (const log of logs) {
             const result = await this.logs.delete(log.id);
             if (result.isFail()) {
                 this.logger.warn(
