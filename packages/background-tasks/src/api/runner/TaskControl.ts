@@ -23,6 +23,7 @@ import type { GetLatestTaskLogUseCase } from "~/api/features/GetLatestTaskLog/in
 import type { UpdateTaskLogUseCase } from "~/api/features/UpdateTaskLog/index.js";
 import type { UpdateTaskUseCase } from "~/api/features/UpdateTask/index.js";
 import { TaskLogNotFoundError } from "~/api/domain/errors.js";
+import { TaskNotFoundError } from "~/api/domain/errors.js";
 import { GetRunnableTaskDefinitionUseCase } from "~/api/features/GetRunnableTaskDefinition/abstractions.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/abstractions.js";
@@ -173,6 +174,7 @@ export class TaskControl implements ITaskControl {
             listTasks: this.deps.listTasks,
             updateTask: this.deps.updateTask,
             updateTaskLog: this.deps.updateTaskLog,
+            logger: this.deps.logger,
             task,
             log: taskLog,
             databaseLogs
@@ -251,18 +253,17 @@ export class TaskControl implements ITaskControl {
     }
 
     private async getTask<T extends TaskDefinition.TaskInput>(id: string): Promise<ITask<T>> {
-        try {
-            const task = await this.deps.getTask.execute<T>(id);
-            if (task) {
-                return task;
-            }
-        } catch (ex) {
+        const result = await this.deps.getTask.execute<T>(id);
+        if (result.isOk()) {
+            return result.value;
+        } else if (!(result.error instanceof TaskNotFoundError)) {
+            const error = result.error;
             throw this.response.error({
                 error: {
-                    message: ex.message,
-                    code: ex.code || "TASK_ERROR",
-                    stack: ex.stack,
-                    data: ex.data
+                    message: error.message,
+                    code: error.code || "TASK_ERROR",
+                    stack: error.stack,
+                    data: error.data
                 }
             });
         }

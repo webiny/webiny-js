@@ -48,7 +48,7 @@ describe("task runner trigger and end successfully", () => {
             }
         });
 
-        const doneTask = await context.container.resolve(GetTaskUseCase).execute(task.id);
+        const doneTask = (await context.container.resolve(GetTaskUseCase).execute(task.id)).value;
         expect(doneTask?.taskStatus).toBe(TaskDataStatus.SUCCESS);
         expect(doneTask?.output).toEqual({
             myCustomOutput: "yes!"
@@ -122,7 +122,8 @@ describe("task runner trigger and end successfully", () => {
         /**
          * Make sure that the data in the DB is correct.
          */
-        const firstRunTask = await context.container.resolve(GetTaskUseCase).execute(task.id);
+        const firstRunTask = (await context.container.resolve(GetTaskUseCase).execute(task.id))
+            .value;
         expect(firstRunTask).toEqual({
             taskStatus: TaskDataStatus.RUNNING,
             input: {
@@ -163,7 +164,8 @@ describe("task runner trigger and end successfully", () => {
             }
         });
 
-        const secondRunTask = await context.container.resolve(GetTaskUseCase).execute(task.id);
+        const secondRunTask = (await context.container.resolve(GetTaskUseCase).execute(task.id))
+            .value;
         expect(secondRunTask).toEqual({
             taskStatus: TaskDataStatus.SUCCESS,
             input: {

@@ -5,6 +5,7 @@ import { BulkActionOperationByModelAction } from "~/types.js";
 import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 import type { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import type { TriggerTaskUseCase } from "@webiny/background-tasks/api";
+import type { Logger } from "@webiny/api-core/features/logger/index.js";
 
 const MAX_TASK_LIST_LENGTH = 10;
 
@@ -23,10 +24,11 @@ export class CreateTasksByModel {
         triggerTask: TriggerTaskUseCase.Interface,
         bulkAction: EntriesBulkAction.Interface,
         taskDefinition: string,
-        batchSize: number
+        batchSize: number,
+        logger: Logger.Interface
     ) {
         this.getModel = getModel;
-        this.taskCache = new TaskCache(taskDefinition);
+        this.taskCache = new TaskCache(taskDefinition, logger);
         this.batchSize = batchSize;
         this.bulkAction = bulkAction;
         this.triggerTask = triggerTask;

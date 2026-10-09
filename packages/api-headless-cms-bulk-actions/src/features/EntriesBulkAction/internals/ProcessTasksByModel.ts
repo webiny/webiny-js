@@ -28,7 +28,7 @@ export class ProcessTasksByModel {
                 });
             }
 
-            const { items } = await this.listTasks.execute({
+            const result = await this.listTasks.execute({
                 where: {
                     parentId: controller.state.getTask().id,
                     definitionId: this.taskDefinition,
@@ -36,6 +36,10 @@ export class ProcessTasksByModel {
                 },
                 limit: 1
             });
+            if (result.isFail()) {
+                throw result.error;
+            }
+            const { items } = result.value;
 
             // If there are running or pending tasks, continue with a wait.
             if (items.length > 0) {

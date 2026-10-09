@@ -66,12 +66,14 @@ describe("mock data manager task", () => {
             }
         });
 
-        const childTasks = await context.container.resolve(ListTasksUseCase).execute({
-            where: {
-                parentId: task.id
-            },
-            limit: 10000
-        });
+        const childTasks = (
+            await context.container.resolve(ListTasksUseCase).execute({
+                where: {
+                    parentId: task.id
+                },
+                limit: 10000
+            })
+        ).value;
         expect(childTasks).toMatchObject({
             items: [
                 {

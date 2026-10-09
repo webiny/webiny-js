@@ -24,18 +24,18 @@ describe("tasks - store crud", () => {
         ]
     });
 
-    it("should return null when getting task which does not exist", async () => {
+    it("should fail when getting task which does not exist", async () => {
         const context = await handler.handle();
 
         const result = await context.container.resolve(GetTaskUseCase).execute("non-existing-id");
 
-        expect(result).toBeNull();
+        expect(result.error).toBeInstanceOf(TaskNotFoundError);
     });
 
     it("should return empty item array when listing tasks and no tasks are present", async () => {
         const context = await handler.handle();
 
-        const result = await context.container.resolve(ListTasksUseCase).execute();
+        const result = (await context.container.resolve(ListTasksUseCase).execute()).value;
 
         expect(result).toEqual({
             items: [],
@@ -107,10 +107,13 @@ describe("tasks - store crud", () => {
         };
         expect(task).toEqual(expectedCreatedTask);
 
-        const getTaskAfterCreate = await context.container.resolve(GetTaskUseCase).execute(task.id);
+        const getTaskAfterCreate = (
+            await context.container.resolve(GetTaskUseCase).execute(task.id)
+        ).value;
         expect(getTaskAfterCreate).toEqual(expectedCreatedTask);
 
-        const listTasksAfterCreate = await context.container.resolve(ListTasksUseCase).execute();
+        const listTasksAfterCreate = (await context.container.resolve(ListTasksUseCase).execute())
+            .value;
         expect(listTasksAfterCreate).toEqual({
             items: [expectedCreatedTask],
             meta: {
@@ -157,10 +160,13 @@ describe("tasks - store crud", () => {
         };
         expect(updatedTask).toEqual(expectedUpdatedTask);
 
-        const getTaskAfterUpdate = await context.container.resolve(GetTaskUseCase).execute(task.id);
+        const getTaskAfterUpdate = (
+            await context.container.resolve(GetTaskUseCase).execute(task.id)
+        ).value;
         expect(getTaskAfterUpdate).toEqual(expectedUpdatedTask);
 
-        const listTasksAfterUpdate = await context.container.resolve(ListTasksUseCase).execute();
+        const listTasksAfterUpdate = (await context.container.resolve(ListTasksUseCase).execute())
+            .value;
         expect(listTasksAfterUpdate).toEqual({
             items: [expectedUpdatedTask],
             meta: {
@@ -176,9 +182,10 @@ describe("tasks - store crud", () => {
         expect(deletedTask).toBe(true);
 
         const getTaskAfterDelete = await context.container.resolve(GetTaskUseCase).execute(task.id);
-        expect(getTaskAfterDelete).toBeNull();
+        expect(getTaskAfterDelete.error).toBeInstanceOf(TaskNotFoundError);
 
-        const listTasksAfterDelete = await context.container.resolve(ListTasksUseCase).execute();
+        const listTasksAfterDelete = (await context.container.resolve(ListTasksUseCase).execute())
+            .value;
         expect(listTasksAfterDelete).toEqual({
             items: [],
             meta: {

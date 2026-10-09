@@ -23,6 +23,7 @@ import { CreateTasksByModel } from "./internals/CreateTasksByModel.js";
 import { ProcessTasksByModel } from "./internals/ProcessTasksByModel.js";
 import type { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 export const BULK_ACTION_LIST_TASK_ID = "hcmsBulkListEntries";
 export const BULK_ACTION_PROCESS_TASK_ID = "hcmsBulkProcessEntries";
@@ -48,7 +49,8 @@ class BulkActionListTaskHandlerImpl implements TaskHandler.Interface<
         private readonly listTaskLogs: ListTaskLogsUseCase.Interface,
         private readonly deleteTaskLog: DeleteTaskLogUseCase.Interface,
         private readonly deleteTask: DeleteTaskUseCase.Interface,
-        private readonly bulkActionsConfig: EntriesBulkActionConfig.Interface
+        private readonly bulkActionsConfig: EntriesBulkActionConfig.Interface,
+        private readonly logger: Logger.Interface
     ) {}
 
     async run({
@@ -83,7 +85,8 @@ class BulkActionListTaskHandlerImpl implements TaskHandler.Interface<
                         this.triggerTask,
                         bulkAction,
                         BULK_ACTION_PROCESS_TASK_ID,
-                        batchSize
+                        batchSize,
+                        this.logger
                     );
                     return await createTasks.execute({ input, controller, definition });
                 }
@@ -129,7 +132,7 @@ class BulkActionListTaskHandlerImpl implements TaskHandler.Interface<
                 task
             });
         } catch (ex) {
-            console.error(`Error while cleaning bulk action list child tasks.`, ex);
+            this.logger.error({ error: ex }, "Error while cleaning bulk action list child tasks.");
         }
     }
 }
@@ -144,7 +147,8 @@ const BulkActionListTaskHandler = TaskHandler.createImplementation({
         ListTaskLogsUseCase,
         DeleteTaskLogUseCase,
         DeleteTaskUseCase,
-        EntriesBulkActionConfig
+        EntriesBulkActionConfig,
+        Logger
     ]
 });
 
@@ -165,7 +169,8 @@ class BulkActionProcessTaskHandlerImpl implements TaskHandler.Interface<
 > {
     constructor(
         private readonly container: Container,
-        private readonly getModel: GetModelUseCase.Interface
+        private readonly getModel: GetModelUseCase.Interface,
+        private readonly logger: Logger.Interface
     ) {}
 
     async run({
@@ -179,7 +184,7 @@ class BulkActionProcessTaskHandlerImpl implements TaskHandler.Interface<
             }
 
             const bulkAction = resolveBulkAction(this.container, input.actionName);
-            const processTask = new ProcessTask(bulkAction, this.getModel);
+            const processTask = new ProcessTask(bulkAction, this.getModel, this.logger);
             return await processTask.execute({ input, controller, definition });
         } catch (ex) {
             return controller.response.error(
@@ -191,7 +196,7 @@ class BulkActionProcessTaskHandlerImpl implements TaskHandler.Interface<
 
 const BulkActionProcessTaskHandler = TaskHandler.createImplementation({
     implementation: BulkActionProcessTaskHandlerImpl,
-    dependencies: [RequestContainer, GetModelUseCase]
+    dependencies: [RequestContainer, GetModelUseCase, Logger]
 });
 
 class BulkActionProcessTask implements TaskDefinition.Interface {

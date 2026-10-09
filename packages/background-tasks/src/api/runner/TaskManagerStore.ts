@@ -13,6 +13,7 @@ import type {
 import type { ListTasksUseCase } from "~/api/features/ListTasks/index.js";
 import type { UpdateTaskUseCase } from "~/api/features/UpdateTask/index.js";
 import type { UpdateTaskLogUseCase } from "~/api/features/UpdateTaskLog/index.js";
+import type { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { Container } from "@webiny/feature/api";
 import { TaskLogItemType } from "~/api/types.js";
 import type {
@@ -58,6 +59,7 @@ export interface ITaskManagerStoreParams {
     listTasks: ListTasksUseCase.Interface;
     updateTask: UpdateTaskUseCase.Interface;
     updateTaskLog: UpdateTaskLogUseCase.Interface;
+    logger: Logger.Interface;
 }
 
 export class TaskManagerStore<
@@ -68,6 +70,7 @@ export class TaskManagerStore<
     private readonly listTasksUseCase: ListTasksUseCase.Interface;
     private readonly updateTaskUseCase: UpdateTaskUseCase.Interface;
     private readonly updateTaskLogUseCase: UpdateTaskLogUseCase.Interface;
+    private readonly logger: Logger.Interface;
     private task: ITask<T, O>;
     private taskLog: ITaskLog;
     private readonly databaseLogs: boolean;
@@ -80,6 +83,7 @@ export class TaskManagerStore<
         this.listTasksUseCase = params.listTasks;
         this.updateTaskUseCase = params.updateTask;
         this.updateTaskLogUseCase = params.updateTaskLog;
+        this.logger = params.logger;
         this.task = params.task as ITask<T, O>;
         this.taskLog = params.log;
         this.databaseLogs = params.databaseLogs === true;
@@ -108,7 +112,10 @@ export class TaskManagerStore<
             sort: ["createdOn_ASC"],
             limit: 1000000
         });
-        return result.items;
+        if (result.isFail()) {
+            throw result.error;
+        }
+        return result.value.items;
     }
 
     public async updateTask(
@@ -211,10 +218,8 @@ export class TaskManagerStore<
         if (!this.databaseLogs) {
             return;
         }
-        /**
-         * Let's log the error to the console as well.
-         */
-        console.error(log.error);
+        // Log the error as well, not only into the task log.
+        this.logger.error({ error: log.error, taskId: this.task.id }, "Task reported an error.");
         /**
          * Then update the log object.
          */
