@@ -177,7 +177,7 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         // across continuation iterations (same task) without the log's replace-on-write loss.
         const appendActivity = async (
             message: string,
-            opts: { current?: number; total?: number } = {}
+            opts: { current?: number; total?: number; data?: Record<string, unknown> } = {}
         ): Promise<void> => {
             try {
                 const existingActivity =
@@ -193,7 +193,8 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
                         stage,
                         current: opts.current ?? 0,
                         total: opts.total ?? 0,
-                        message
+                        message,
+                        ...(opts.data ? { data: opts.data } : {})
                     }
                 });
             } catch (error) {
@@ -210,7 +211,9 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
                 status: "running",
                 message,
                 current: opts.current,
-                total: opts.total
+                total: opts.total,
+                // A stage's structured detail (Generate's counts), for the waiting screen.
+                ...(opts.data ? { data: opts.data } : {})
             });
         };
 
@@ -302,7 +305,11 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
             total?: number;
             data?: Record<string, unknown>;
         }): Promise<void> =>
-            appendActivity(update.message, { current: update.current, total: update.total });
+            appendActivity(update.message, {
+                current: update.current,
+                total: update.total,
+                ...(update.data ? { data: update.data } : {})
+            });
 
         let outcome;
         try {

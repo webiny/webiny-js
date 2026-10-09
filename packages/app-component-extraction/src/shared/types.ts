@@ -56,6 +56,17 @@ export interface StageProgress {
     current: number;
     total: number;
     message: string;
+    /** A stage's structured detail: Generate sends its counts as `{ generate: GenerateProgressDetail }`. */
+    data?: { generate?: GenerateProgressDetail };
+}
+
+/** Generate's counts, as its coordinator sends them (see `generateProgressDetail` in the API). */
+export interface GenerateProgressDetail {
+    passed: number;
+    notPassed: number;
+    working: number;
+    waiting: number;
+    longestWorking: { name: string; seconds: number; retrying: boolean } | null;
 }
 
 export interface RunDto {

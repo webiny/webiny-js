@@ -44,10 +44,17 @@ import {
     pausedGateStage
 } from "~/presentation/shared/index.js";
 import { Routes } from "~/routes.js";
-import type { RunDto, SegmentArtifactDto } from "~/shared/types.js";
+import type { RunDto, SegmentArtifactDto, StageProgress } from "~/shared/types.js";
 
 interface StageEvent extends IncomingGenericData {
-    data?: { runId?: string; stage?: string; current?: number; total?: number; message?: string };
+    data?: {
+        runId?: string;
+        stage?: string;
+        current?: number;
+        total?: number;
+        message?: string;
+        data?: StageProgress["data"];
+    };
 }
 
 const runLabel = (run: RunDto): string => `run-${String(run.runNumber).padStart(4, "0")}`;
@@ -195,7 +202,8 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                 presenter.applyProgress(data.stage, {
                     current: data.current ?? 0,
                     total: data.total ?? 0,
-                    message: data.message
+                    message: data.message,
+                    ...(data.data ? { data: data.data } : {})
                 });
                 return;
             }

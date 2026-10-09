@@ -1,7 +1,11 @@
 import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Loader, Scrollbar, Text, TimeAgo } from "@webiny/admin-ui";
-import { type Stage } from "~/constants.js";
+import { Alert, Scrollbar, Text, TimeAgo } from "@webiny/admin-ui";
+import { STAGES, type Stage } from "~/constants.js";
+import { degradedSummary } from "~/shared/waiting.js";
+import { ActivityLog } from "./ActivityLog.js";
+import { NextStep } from "./NextStep.js";
+import { StageWaiting } from "./StageWaiting.js";
 import { stageEntry } from "~/shared/ledger.js";
 import type { RunViewPresenter } from "../abstractions.js";
 import type { StageLogItem } from "~/shared/types.js";
@@ -108,6 +112,25 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
     const generateDone = generateEntry?.status === "done" || generateEntry?.status === "stale";
     const showView = VIEW_STAGES.has(stage) && (hasOutput || (stage === "promote" && generateDone));
 
+    const failed = entry?.status === "failed";
+    const degraded =
+        hasOutput && vm.artifactStage === stage ? degradedSummary(stage, vm.artifact) : null;
+    // The step between stages: this stage is done, the next has not run, and nothing is running.
+    const next = STAGES[STAGES.indexOf(stage) + 1] as Stage | undefined;
+    const nextEntry = next ? stageEntry(run, next) : undefined;
+    const idle = !run.stages.some(candidate => candidate.status === "running");
+    const showNext =
+        entry?.status === "done" && next && (!nextEntry || nextEntry.status === "pending") && idle;
+
+    const log = (
+        <ActivityLog
+            items={logsForStage}
+            loading={vm.logsLoading}
+            openByDefault={failed || Boolean(degraded)}
+            renderLine={(item, index) => <LogLine key={index} item={item} />}
+        />
+    );
+
     return (
         <div className="flex flex-col h-full min-h-0">
             {entry?.error ? (
@@ -117,39 +140,49 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
                     </Text>
                 </div>
             ) : null}
-            {showView ? (
-                <div className="relative min-h-0 flex-1 overflow-hidden">
-                    <StageView stage={stage} presenter={presenter} />
+            {showNext && next ? (
+                <div className="px-md pt-sm">
+                    <NextStep
+                        stage={stage}
+                        next={next}
+                        counts={run.counts}
+                        busy={vm.actionStage !== null}
+                        onRun={() => void presenter.runStage(next)}
+                    />
                 </div>
+            ) : null}
+            {degraded ? (
+                <div className="px-md pt-sm">
+                    <Alert type="warning">
+                        {degraded} The reasons are in the activity log below.
+                    </Alert>
+                </div>
+            ) : null}
+            {showView ? (
+                <>
+                    <div className="relative min-h-0 flex-1 overflow-hidden">
+                        <StageView stage={stage} presenter={presenter} />
+                    </div>
+                    <div className="max-h-[40%] overflow-y-auto border-t border-neutral-dimmed px-md py-xs">
+                        {log}
+                    </div>
+                </>
             ) : (
                 <Scrollbar>
                     <div className="flex flex-col gap-sm px-md py-sm">
-                        {!entry || entry.status === "pending" ? (
+                        {entry?.status === "running" ? (
+                            <StageWaiting
+                                stage={stage}
+                                startedOn={entry.startedOn}
+                                progress={vm.progressByStage[stage]}
+                            />
+                        ) : !entry || entry.status === "pending" ? (
                             <Text size="sm" className="text-neutral-strong">
                                 This stage hasn&apos;t run yet. Run it to produce its output — the
                                 raw artifact is always available in the run inspector.
                             </Text>
                         ) : null}
-                        <div>
-                            <Text size="sm" className="font-medium">
-                                Activity log
-                            </Text>
-                            {vm.logsLoading && logsForStage.length === 0 ? (
-                                <div className="py-md">
-                                    <Loader />
-                                </div>
-                            ) : logsForStage.length === 0 ? (
-                                <Text size="sm" className="text-neutral-strong">
-                                    No log entries yet.
-                                </Text>
-                            ) : (
-                                <div className="mt-xs">
-                                    {logsForStage.map((item, index) => (
-                                        <LogLine key={index} item={item} />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                        {log}
                     </div>
                 </Scrollbar>
             )}

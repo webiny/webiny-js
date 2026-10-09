@@ -18,6 +18,11 @@ export interface CoordinatorState {
     triggeredAt: Record<string, number>;
     /** How many times a signature has been (re)triggered, to bound retries on a silent child. */
     triggers: Record<string, number>;
+    /**
+     * How each component ended, recorded once when its result appears: passed every check, or used its
+     * attempts without passing (or produced nothing). Absent on checkpoints written before it existed.
+     */
+    outcomes?: Record<string, "passed" | "not-passed">;
 }
 
 export interface CoordinationConfig {
@@ -109,5 +114,71 @@ export const decideCoordination = (
     };
     const done = counts.running === 0 && counts.pending === 0;
 
-    return { next: { states, triggeredAt, triggers }, toTrigger, done, counts };
+    return {
+        // Outcomes are carried as they are: the next checkpoint is saved from this, and dropping them
+        // would lose every component's passed / did-not-pass.
+        next: {
+            states,
+            triggeredAt,
+            triggers,
+            ...(state.outcomes ? { outcomes: state.outcomes } : {})
+        },
+        toTrigger,
+        done,
+        counts
+    };
+};
+
+/**
+ * What the waiting screen shows for Generate, from the coordinator's own state.
+ *
+ * "Did not pass" counts components that ended without passing: their attempts used up with checks
+ * still failing, no output, or a task that never answered. Never a failed attempt of a component still
+ * working: most components that pass fail one attempt first, and counting those makes a healthy run
+ * look broken.
+ *
+ * No time estimate. Replayed on two runs, a pace-based estimate was within two minutes on one and 20 to
+ * 33 minutes short on the other, where 24 of 25 components settled in 16 minutes and the stage ran to
+ * 36 waiting on one silent component. So the screen names the component still working, and for how
+ * long, instead.
+ */
+export interface GenerateProgressDetail {
+    passed: number;
+    notPassed: number;
+    working: number;
+    waiting: number;
+    /** The component that has been working longest, while any is. */
+    longestWorking: { name: string; seconds: number; retrying: boolean } | null;
+}
+
+export const generateProgressDetail = (
+    state: CoordinatorState,
+    nameOf: (signature: string) => string,
+    now: number
+): GenerateProgressDetail => {
+    const signatures = Object.keys(state.states);
+    const outcomes = state.outcomes ?? {};
+    const working = signatures.filter(signature => state.states[signature] === "triggered");
+    const oldest = working
+        .map(signature => ({ signature, since: state.triggeredAt[signature] ?? now }))
+        .sort((a, b) => a.since - b.since)[0];
+    return {
+        passed: signatures.filter(
+            signature => state.states[signature] === "done" && outcomes[signature] === "passed"
+        ).length,
+        notPassed: signatures.filter(
+            signature =>
+                state.states[signature] === "failed" ||
+                (state.states[signature] === "done" && outcomes[signature] === "not-passed")
+        ).length,
+        working: working.length,
+        waiting: signatures.filter(signature => state.states[signature] === "pending").length,
+        longestWorking: oldest
+            ? {
+                  name: nameOf(oldest.signature),
+                  seconds: Math.max(0, Math.round((now - oldest.since) / 1000)),
+                  retrying: (state.triggers[oldest.signature] ?? 0) > 1
+              }
+            : null
+    };
 };

@@ -3,7 +3,8 @@ import {
     decideCoordination,
     initCoordinatorState,
     type CoordinationConfig,
-    type CoordinatorState
+    type CoordinatorState,
+    generateProgressDetail
 } from "./coordination.js";
 
 const config: CoordinationConfig = { concurrency: 2, timeoutMs: 1000, maxTriggers: 2 };
@@ -83,5 +84,36 @@ describe("decideCoordination", () => {
         const snapshot = JSON.stringify(state);
         decideCoordination(["a"], state, 100, config);
         expect(JSON.stringify(state)).toBe(snapshot);
+    });
+});
+
+describe("generateProgressDetail", () => {
+    const now = 1_000_000;
+    const state = {
+        states: { a: "done", b: "done", c: "failed", d: "triggered", e: "triggered", f: "pending" },
+        triggeredAt: { d: now - 9 * 60_000, e: now - 30_000 },
+        triggers: { d: 2, e: 1 },
+        outcomes: { a: "passed", b: "not-passed" }
+    } as unknown as Parameters<typeof generateProgressDetail>[0];
+
+    it("counts components that ended without passing, never a failed attempt of one still working", () => {
+        const detail = generateProgressDetail(state, signature => signature.toUpperCase(), now);
+        // b used its attempts without passing; c's task never answered. d and e are still working,
+        // whatever their attempts so far.
+        expect(detail).toMatchObject({ passed: 1, notPassed: 2, working: 2, waiting: 1 });
+    });
+
+    it("names the component working longest, for how long, and whether it is being retried", () => {
+        const detail = generateProgressDetail(state, signature => signature.toUpperCase(), now);
+        expect(detail.longestWorking).toEqual({ name: "D", seconds: 540, retrying: true });
+    });
+
+    it("carries outcomes through a coordination pass, so the next checkpoint keeps them", () => {
+        const decision = decideCoordination(Object.keys(state.states), state, now, {
+            concurrency: 4,
+            timeoutMs: 60 * 60_000,
+            maxTriggers: 3
+        });
+        expect(decision.next.outcomes).toEqual({ a: "passed", b: "not-passed" });
     });
 });

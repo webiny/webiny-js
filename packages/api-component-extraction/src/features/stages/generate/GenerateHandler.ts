@@ -10,7 +10,12 @@ import type {
 import { toComponentRef } from "~/domain/generatedComponents.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 import { GENERATE_COMPONENT_TASK_ID } from "~/constants.js";
-import { decideCoordination, initCoordinatorState, type CoordinatorState } from "./coordination.js";
+import {
+    decideCoordination,
+    generateProgressDetail,
+    initCoordinatorState,
+    type CoordinatorState
+} from "./coordination.js";
 import { generateResultKey, type ComponentResult } from "./componentGeneration.js";
 import type { GenerateComponentTaskInput } from "./GenerateComponentTask.js";
 import { noOutputReason } from "./noOutputReason.js";
@@ -99,6 +104,12 @@ class GenerateHandlerImpl implements StageHandler.Interface {
             );
             if (result.isOk() && result.value) {
                 state.states[signature] = "done";
+                // How it ended, recorded once, for the waiting screen's passed / did-not-pass counts.
+                const component = result.value.component;
+                state.outcomes = {
+                    ...state.outcomes,
+                    [signature]: component && allPassed(component) ? "passed" : "not-passed"
+                };
             }
         }
 
@@ -136,10 +147,16 @@ class GenerateHandlerImpl implements StageHandler.Interface {
         }
 
         const settled = decision.counts.done + decision.counts.failed;
+        const detail = generateProgressDetail(
+            next,
+            signature => nameOf.get(signature) ?? signature,
+            Date.now()
+        );
         await context.progress({
-            message: `Generating components — ${decision.counts.done} done, ${decision.counts.running} running, ${decision.counts.pending} pending, ${decision.counts.failed} failed (of ${total}).`,
+            message: `Generating components: ${detail.passed} passed, ${detail.notPassed} did not pass, ${detail.working} working, ${detail.waiting} waiting (of ${total}).`,
             current: settled,
-            total
+            total,
+            data: { generate: detail }
         });
 
         // Still working: yield and poll again shortly.
