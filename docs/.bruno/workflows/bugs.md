@@ -8,7 +8,7 @@ Bugs found during discovery that get fixed separately, before or alongside the r
 - WB page folders are type `wb:page` (`packages/app-website-builder/src/constants.ts:29`), which resolves modelId `"page"`. The page model is `wbyWbPage`, so the lookup fails and the check is skipped.
 - No guard exists in `api-website-builder` or `api-website-builder-workflows`.
 - Effect: a WB folder holding pages (but no subfolders) can be deleted. Pages keep a dangling `folderId`; workflow folder rules stop matching them.
-- Fixed in Phase 0 Task 4.
+- Fixed in Phase 0 Task 4. The existence check runs without authorization, so pages hidden by `wb.page` own scope still block the delete.
 - Fix: add a `FolderBeforeDelete` handler in `api-website-builder` that blocks deleting a `wb:page` folder while it contains pages.
 
 ## B2. WorkflowsFeature registered twice
@@ -30,5 +30,4 @@ Bugs found during discovery that get fixed separately, before or alongside the r
 - `DeleteFolderUseCase.ts:39-43` maps only `err.code === "Aco/Folder/NotEmpty"` to `FolderNotEmptyError`; anything else becomes `FolderNotAuthorizedError`.
 - If `WebinyError.from` overrides the code, deleting a non-empty CMS folder reports "not authorized". The same pattern is in the File Manager guard (`ACO_BEFORE_FOLDER_DELETE_FILE_HANDLER`).
 - The handler also filters with legacy `wbyAco_location` instead of `location`.
-- Not verified yet.
 - Verified: not a bug (Phase 0 Task 8). `WebinyError.from` keeps `err.code` when present, so `Aco/Folder/NotEmpty` survives the wrap.
