@@ -9,6 +9,7 @@ import { usePreviewDomain } from "@webiny/frontend-settings/exports/admin.js";
 import { ContentEntryFormContent } from "~/presentation/contentEntries/views/layout/ContentEntryFormContent.js";
 import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { PreviewPane } from "./PreviewPane.js";
+import { PreviewDomainStatus } from "./PreviewDomainStatus.js";
 import { useLivePreviewPresenter } from "./useLivePreviewPresenter.js";
 import { getPatternRefFieldIds, getRefValues, withRefValues } from "./resolvePreviewUrl.js";
 
@@ -19,7 +20,7 @@ export const PreviewDecorator = ContentEntryFormContent.createDecorator(Original
             const livePreview = useLivePreviewPresenter();
             const model = presenter.vm.model;
             const previewPath = model?.settings?.previewPath as string | undefined;
-            const { previewDomain } = usePreviewDomain();
+            const domain = usePreviewDomain();
 
             const form = presenter.vm.form;
             const entry = presenter.vm.entry;
@@ -63,13 +64,19 @@ export const PreviewDecorator = ContentEntryFormContent.createDecorator(Original
                         className="overflow-hidden p-md"
                         style={{ overflowY: "hidden" }}
                     >
-                        <PreviewPane
-                            domain={previewDomain}
-                            previewPath={previewPath}
-                            entryId={entryId}
-                            entryData={entryData}
-                            urlEntryData={urlEntryData}
-                        />
+                        {domain.previewDomain ? (
+                            <PreviewPane
+                                domain={domain.previewDomain}
+                                settingsDomain={domain.isOverridden ? domain.settingsDomain : null}
+                                onResetDomain={domain.unsetPreviewDomain}
+                                previewPath={previewPath}
+                                entryId={entryId}
+                                entryData={entryData}
+                                urlEntryData={urlEntryData}
+                            />
+                        ) : (
+                            <PreviewDomainStatus error={domain.error} onRetry={domain.retry} />
+                        )}
                     </RightPanel>
                 </SplitView>
             );

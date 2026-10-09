@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback, useState } from "react";
 import { Messenger, MessageOrigin } from "@webiny/cms-sdk/messenger";
 import { jsonPatch } from "@webiny/cms-sdk";
-import { IconButton, Input, OverlayLoader, SegmentedControl } from "@webiny/admin-ui";
+import { Alert, IconButton, Input, OverlayLoader, SegmentedControl } from "@webiny/admin-ui";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { ReactComponent as ContentCopyIcon } from "@webiny/icons/content_copy.svg";
 import { ReactComponent as LaptopIcon } from "@webiny/icons/laptop.svg";
@@ -10,8 +10,18 @@ import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
 import { useLivePreviewPresenter } from "./useLivePreviewPresenter.js";
 import { buildEditorUrl, buildDisplayUrl } from "./resolvePreviewUrl.js";
 
+/**
+ * How long to wait for the frontend to report it is ready before showing troubleshooting hints.
+ */
+const READY_TIMEOUT_MS = 20_000;
+
 interface PreviewPaneProps {
     domain: string;
+    /**
+     * The Frontend Domain setting, passed only when the user overrides it with their own preview domain.
+     */
+    settingsDomain: string | null;
+    onResetDomain: () => void;
     previewPath: string;
     entryId: string;
     entryData: Record<string, unknown> | null;
@@ -25,6 +35,8 @@ type ViewportMode = "desktop" | "mobile";
 
 export const PreviewPane = ({
     domain,
+    settingsDomain,
+    onResetDomain,
     previewPath,
     entryId,
     entryData,
@@ -36,6 +48,7 @@ export const PreviewPane = ({
     const lastSentDataRef = useRef<Record<string, unknown> | null>(null);
     const [ready, setReady] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [timedOut, setTimedOut] = useState(false);
     const [iframeKey, setIframeKey] = useState(0);
     const [viewport, setViewport] = useState<ViewportMode>("desktop");
     const presenter = useLivePreviewPresenter();
@@ -85,9 +98,15 @@ export const PreviewPane = ({
         const messenger = new Messenger(editorOrigin, previewTarget, "wb.editor.*");
         messengerRef.current = messenger;
 
+        setLoading(true);
+        setTimedOut(false);
+        const timeout = setTimeout(() => setTimedOut(true), READY_TIMEOUT_MS);
+
         messenger.on("preview.ready", () => {
+            clearTimeout(timeout);
             setReady(true);
             setLoading(false);
+            setTimedOut(false);
             sendEntryData();
         });
 
@@ -99,6 +118,7 @@ export const PreviewPane = ({
         );
 
         return () => {
+            clearTimeout(timeout);
             messenger.dispose();
             messengerRef.current = null;
             lastSentDataRef.current = null;
@@ -189,8 +209,35 @@ export const PreviewPane = ({
                 </div>
             </div>
 
+            {settingsDomain ? (
+                <Alert
+                    type={"warning"}
+                    variant={"subtle"}
+                    className={"rounded-none"}
+                    actions={<Alert.Action text={"Use Frontend Domain"} onClick={onResetDomain} />}
+                >
+                    Previewing on your custom domain {domain} instead of the Frontend Domain{" "}
+                    {settingsDomain}.
+                </Alert>
+            ) : null}
+
+            {loading && timedOut ? (
+                <Alert
+                    type={"warning"}
+                    variant={"subtle"}
+                    className={"rounded-none"}
+                    actions={<Alert.Action text={"Reload"} onClick={reload} />}
+                >
+                    {new URL(iframeSrc).origin} is not responding to the live preview. Check that
+                    the frontend app is running at that address, that it initializes the Webiny SDK
+                    in editing mode, and that it allows this admin app as a referrer.
+                </Alert>
+            ) : null}
+
             <div className="block box-border h-full w-full overflow-auto fill-grid">
-                {loading ? <OverlayLoader text="Connecting to Live Preview..." /> : null}
+                {loading && !timedOut ? (
+                    <OverlayLoader text="Connecting to Live Preview..." />
+                ) : null}
                 <div
                     className={`mx-auto h-full transition-all duration-300 ${viewport === "mobile" ? "p-md" : ""}`}
                     style={{ width: viewport === "mobile" ? "375px" : "100%" }}
