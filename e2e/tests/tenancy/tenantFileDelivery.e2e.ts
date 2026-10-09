@@ -34,8 +34,11 @@ describe(
             await expect(manage).toBeVisible({ timeout: 120_000 });
             await manage.tap();
 
-            // The header's tenant selector shows the current tenant's name.
-            await expect(screen.getByText(tenantName).first()).toBeVisible({ timeout: 30_000 });
+            // The header's tenant selector shows the current tenant's name, with a "Root tenant"
+            // subtitle nested in the same element, so the match can't be exact.
+            await expect(screen.getByText(tenantName, { exact: false }).first()).toBeVisible({
+                timeout: 30_000
+            });
         });
 
         test("the uploaded image downloads byte for byte", async ({
@@ -49,7 +52,7 @@ describe(
 
             await app.open("/file-manager");
             // Still in the tenant: the switch is kept in localStorage.
-            await expect(screen.getByText(tenantName).first()).toBeVisible();
+            await expect(screen.getByText(tenantName, { exact: false }).first()).toBeVisible();
 
             await browser
                 .locator('input[type="file"]')
