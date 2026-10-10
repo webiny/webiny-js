@@ -88,3 +88,27 @@ _(Corrected before commit: a first draft counted only the 4 new Tulane bindings.
 
 Nothing is built. The harness was a throwaway test, now removed. The fit line on the theme card is
 hidden (deployed), and returns with fix 3 as "N of M matched, K near".
+
+## Addendum: a route the replay did not cover
+
+**The replay measured one stored binding, Cluster's `resolvedColours`. Plan stores a second:** the colour
+under a see-through background image (`backgroundImages[].under`, from `colourUnderImage`), matched once
+with its own token.
+
+**It surfaced after the build.** Regenerating Take 3's Apartment Intro Hero still wrote
+`feedback.info.background`, because its prompt said "Under it, paint
+var(--wby-color-feedback-info-background)". The section's own colour line already said
+`surface.raised`.
+
+**Measured, then fixed.** Across the 33 stored plans there are 21 under-image colours. Prediction,
+written before the change: Take 3's 5 (all `#f7f7f9` on the info colour) move to `surface.raised`, and the
+other 16 (Tulane's `#dce6e2` and one Park City `#f7f7f9`, all on `surface.sunken`) do not move. It held
+exactly. Generate now matches the under-image colour again too, and refuses the same crossings there.
+
+**After both fixes, rendered through the demo site.** The five components' dominant pixel is the site's
+grey `(247,247,249)`: Header 96%, Footer 83%, Contact Us Form 51%, Accessibility Statement 91%. The intro
+hero's pattern sits on that grey. No pale blue remains.
+
+**Four more Take 3 components hold the same under-image binding:** Property Description, Neighborhood
+Overview, Neighborhood Perks Section and Application/Contact Form. They were not regenerated, so their
+current renders still have pale blue under their pattern. Their prompts are now correct.
