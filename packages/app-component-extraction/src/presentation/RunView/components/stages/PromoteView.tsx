@@ -13,6 +13,7 @@ import {
 import { Routes } from "~/routes.js";
 import { SiteCard } from "./SiteCard.js";
 import { namespaceSegment, qualify } from "~/shared/naming.js";
+import { stageEntry } from "~/shared/ledger.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type {
     ComponentDecisionDto,
@@ -176,6 +177,7 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
     const result =
         vm.artifactStage === "promote" ? (vm.artifact as PromoteArtifactDto | null) : null;
     const promoting = vm.actionStage === "promote";
+    const running = vm.run ? stageEntry(vm.run, "promote")?.status === "running" : false;
     const hasDecisions = Object.keys(vm.decisions).length > 0;
     const library = new Set(vm.libraryNames);
     // Promoted components are namespaced under the extraction (see PromoteHandler), so preview and
@@ -244,17 +246,30 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
                             onClick={() => goToRoute(Routes.List)}
                         />
                     ) : null}
+                    {/*
+                     * Secondary once something is promoted: "Build site" below is then the way
+                     * forward, and two primary actions side by side is the duplicate every other gate
+                     * dropped. Re-promoting a changed selection stays possible.
+                     */}
                     <Button
-                        variant="primary"
+                        variant={promoted > 0 ? "secondary" : "primary"}
                         size="sm"
-                        text={promoting ? "Starting…" : "Promote selected"}
-                        disabled={promoting || selectedCount === 0}
+                        text={promoting ? "Starting…" : running ? "Promoting…" : "Promote selected"}
+                        disabled={promoting || running || selectedCount === 0}
                         onClick={() => void presenter.runStage("promote")}
                     />
                 </div>
             </div>
 
-            {promoted > 0 ? (
+            {running ? (
+                <div className="px-md pt-sm">
+                    <Alert type="info" variant="subtle">
+                        Promoting {selectedCount} component{selectedCount === 1 ? "" : "s"} to the
+                        Library…
+                    </Alert>
+                </div>
+            ) : null}
+            {promoted > 0 && !running ? (
                 <div className="px-md pt-sm">
                     <Alert type="success" variant="subtle">
                         Promoted {promoted} component{promoted === 1 ? "" : "s"} to the Library
@@ -262,13 +277,17 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
                     </Alert>
                 </div>
             ) : null}
-            {promoted > 0 ? (
+            {promoted > 0 && !running ? (
                 <div className="px-md pt-sm">
                     <SiteCard presenter={presenter} />
                 </div>
             ) : null}
 
-            {promotable.length === 0 ? (
+            {!vm.promoteGateLoaded ? (
+                <Text size="sm" className="px-md py-sm text-neutral-strong">
+                    Loading the components to promote…
+                </Text>
+            ) : promotable.length === 0 ? (
                 <Text size="sm" className="px-md py-sm text-neutral-strong">
                     No components are eligible — generate and accept components first.
                 </Text>

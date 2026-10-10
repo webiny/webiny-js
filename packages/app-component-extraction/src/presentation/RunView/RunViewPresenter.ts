@@ -93,6 +93,7 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         comparedPath: null,
         reattachments: [],
         promoteComponents: [],
+        promoteGateLoaded: false,
         libraryNames: []
     };
 
@@ -1293,6 +1294,10 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             });
         } catch {
             // A missing gate input just yields an empty gate, not an error.
+        } finally {
+            runInAction(() => {
+                this.vm.promoteGateLoaded = true;
+            });
         }
     }
 
@@ -1671,6 +1676,15 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 this.vm.artifactStage = stage;
                 this.vm.artifactLoading = false;
             });
+            /*
+             * Promote's gate opens before Promote has output — it lists what Generate produced — so
+             * its inputs load here too. Loading them only once Promote was done left the gate, and a
+             * running Promote, saying "No components are eligible" over sixteen accepted components.
+             */
+            if (stage === "promote") {
+                void this.loadPromoteGate(run);
+                void this.loadOverrides(run);
+            }
             return;
         }
         runInAction(() => {

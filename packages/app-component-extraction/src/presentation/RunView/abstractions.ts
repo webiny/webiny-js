@@ -169,6 +169,8 @@ export interface IRunViewVm {
     reattachments: ReattachmentDto[];
     /** The generated components eligible for Promotion, for the Promote gate (W8.6). */
     promoteComponents: GeneratedComponentDto[];
+    /** The Promote gate's inputs have loaded, so an empty `promoteComponents` means none, not "not yet". */
+    promoteGateLoaded: boolean;
     /** Names already in the Library, for Promote collision detection (W8.6). */
     libraryNames: string[];
 }
