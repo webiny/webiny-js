@@ -6,7 +6,6 @@ import { ReactComponent as ExpandLessIcon } from "@webiny/icons/expand_less.svg"
 import { StatusDot } from "~/presentation/shared/StatusIndicator.js";
 import type { RunViewPresenter } from "../abstractions.js";
 import type { ThemeSnapshot } from "../themeSnapshot.js";
-import type { ThemeFitDto } from "~/shared/types.js";
 
 /**
  * The job's theme, at the foot of the run view's rail: what extraction is doing, what it set, and how well
@@ -24,24 +23,13 @@ interface Props {
 /** Fewer pages than this is thin evidence: thevibe's theme came from one. */
 const THIN_PAGES = 3;
 
-const percent = (count: { fitted: number; measured: number }) =>
-    count.measured ? `${Math.round((100 * count.fitted) / count.measured)}%` : "none measured";
-
-const FitLine = ({ fit }: { fit: ThemeFitDto }) => (
-    <div className="flex flex-col gap-xxs">
-        <Text size="sm" className="font-medium">
-            Fits what was measured
-        </Text>
-        <Text size="sm" className="text-neutral-strong">
-            Colours {percent(fit.colours)} · type {percent(fit.typeSizes)} · spacing{" "}
-            {percent(fit.spacing)}
-        </Text>
-        <Text size="sm" className="text-neutral-muted">
-            Of the colours, type sizes and spacing measured on the site, how many the theme has a
-            token for. {fit.misses.length} without one.
-        </Text>
-    </div>
-);
+/*
+ * The fit line ("Fits what was measured") is withheld until the fit compares a token's value with the
+ * measured colour. It counted any token found as a fit and read 57 of 57 on a run with five sections the
+ * wrong colour (ai-context/issues/theme-fit-counts-a-found-token-as-a-fit.md). A number wrong in the
+ * flattering direction, under a reassuring palette, is worse than none. It returns as
+ * "52 of 57 matched, 5 near".
+ */
 
 /**
  * What extraction set, at a glance: the colours its slots resolve to and the type sizes it measured.
@@ -49,6 +37,7 @@ const FitLine = ({ fit }: { fit: ThemeFitDto }) => (
  * Only what extraction changed from the default theme is shown (see `themeSnapshot`), and it is labelled
  * as what was set, not as coverage: how much of the site the theme covers is the fit line beneath it,
  * where spacing has run 8-21%. A full-looking palette must not read as a stronger claim than that.
+ * (That fit line is withheld for now; see the note above.)
  */
 const Snapshot = ({ snapshot }: { snapshot: ThemeSnapshot }) => {
     if (snapshot.colours.length === 0 && snapshot.sizes.length === 0) {
@@ -214,7 +203,6 @@ export const ThemeCard = createReactiveComponent(({ presenter }: Props) => {
                     </div>
 
                     {vm.themeSnapshot ? <Snapshot snapshot={vm.themeSnapshot} /> : null}
-                    {vm.themeFit ? <FitLine fit={vm.themeFit} /> : null}
 
                     {extraction.pagesSampled < THIN_PAGES || extraction.confidence === "low" ? (
                         <Alert type="warning">
@@ -277,8 +265,6 @@ export const ThemeCard = createReactiveComponent(({ presenter }: Props) => {
                     />
                 </div>
             )}
-
-            {extraction?.status !== "done" && vm.themeFit ? <FitLine fit={vm.themeFit} /> : null}
 
             {confirmRetry ? (
                 <Dialog
