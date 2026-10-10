@@ -116,8 +116,14 @@ background function loaded the task and ran extraction's crawl.
 **Verification 4.** The 22 existing jobs read with their pinned themes and no theme extraction.
 
 **Theme fit on stored runs:** colours 69-93%, type 91-100%, spacing 8-21% (2424 check run, Freehill,
-Westland). Spacing has five semantic slots and counts a value fitted within 15% of its slot: the
-filed spacing gap, now a number on every run.
+Westland).
+
+> **Corrected 2026-10-10: the colour figures are an upper bound, not a fit.** The fit counted a colour
+> as fitted whenever it had a token within 24 of an allowed family, without comparing the token's value
+> with the measurement. Across stored runs, 120 of 1,115 such bindings are 6-24 away, and status colours
+> (`feedback.*.background`) passed as surfaces. On ParkCity - Take 3 it read 57 of 57 with five components
+> visibly the wrong colour. See `ai-context/issues/theme-fit-counts-a-found-token-as-a-fit.md`. Spacing has five semantic slots and counts a value fitted within 15% of its slot: the
+> filed spacing gap, now a number on every run.
 
 **One incident on the way.** The first backend deploy took the whole GraphQL API down: the theme-fit
 query's description sat between another field's description and its field. Invalid SDL builds,

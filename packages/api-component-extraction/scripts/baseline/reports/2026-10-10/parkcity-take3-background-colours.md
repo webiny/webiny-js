@@ -33,10 +33,12 @@ its stored `resolvedColours` already carry these tokens.
 - **What is left wins.** Among the remaining "background" candidates, the nearest to `#f7f7f9` is
   `feedback.info.background` (distance 10, against a threshold of 24). `surface.page` is 12.8 away. For
   the footer's `#f2f2f2`, the nearest is `feedback.danger.background` (12.0).
-- **The theme-fit figure inherits it.** Colours fit at **57 of 57 (100%)** on this run, because the fit
-  counts a colour as fitted whenever it has a token of an allowed family. The "26 of 206 colours with no
-  token" is the earlier cross-site figure quoted in `themeFit.ts`, not this run's. This run's figure is
-  wrong the same way the bindings are.
+- **The theme-fit figure inherits it, and is not a fit.** Colours read **57 of 57 (100%)** on this
+  run. That number is withdrawn: the fit counts a colour as fitted whenever it got a token of an allowed
+  family, never comparing the token's value with the measured colour, so five visibly wrong components
+  count as fits. Filed high as `ai-context/issues/theme-fit-counts-a-found-token-as-a-fit.md`. The
+  "26 of 206 colours with no token" is the earlier cross-site figure quoted in `themeFit.ts`, not this
+  run's.
 
 ## 2. Yes, a crossing the exclusion does not cover
 

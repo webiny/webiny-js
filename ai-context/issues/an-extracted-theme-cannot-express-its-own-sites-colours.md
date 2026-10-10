@@ -27,6 +27,13 @@ Measured on the four demo sites:
 | Westland  |                         2 of 39 (5%) |
 | Freehill  |                        7 of 25 (28%) |
 
+> **Corrected 2026-10-10: these counts are a lower bound on what the theme cannot express.** "No token"
+> here means nothing within 24 of any allowed family. A colour bound to a token 6-24 away, or to a status
+> colour such as `feedback.info.background` (pale blue for a grey), counted as expressed. The table
+> below was measured that way. Example: the same site's later theme (ParkCity - Take 3, 2026-10-10)
+> holds its grey `#f7f7f9` only as `#f7f7f9f2`, which the matcher cannot read, so the grey went to pale
+> blue and still counted as expressed. See `theme-fit-counts-a-found-token-as-a-fit.md`.
+
 The colours that fall through are not incidental. Tulane's are `#366748` (its green), `#e0e299` (its
 specials yellow) and `#e08b81` (its pink) — the site's own palette. Freehill's are near-black.
 
