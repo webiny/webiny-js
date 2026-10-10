@@ -312,9 +312,9 @@ One `workflows` permission with custom boolean actions, plus full access:
 | full (`*`, `workflows.*`) | Everything. |
 
 - Security UI gets a "custom" access level with these checkboxes.
-- One shared permission checker in api-workflows replaces the four copied `ensureManageAccess` functions.
+- One shared permission checker in api-workflows replaces the four copied `ensureManageAccess` functions. It is a building block: the checks themselves run in each app's wrapper use cases, not in the api-workflows use cases, which are internal and take an explicit actor [D132].
 - Requesting a review needs write access to the target [D77]. Reviewing needs team membership plus read access to the target.
-- All review operations check permissions on the server (today none do).
+- All review operations check permissions on the server (today none do), in the app wrappers (CMS, Website Builder) that call the internal api-workflows use cases [D132].
 
 Query permissions [D78]:
 
@@ -367,7 +367,7 @@ Not built in this refactor. Until it lands, the assignment log is the only recor
 
 ## 10. GraphQL surface (outline)
 
-Under `workflows { ... }`. Final names are settled in the plan.
+Operations are defined per app (CMS, Website Builder), e.g. `storeWebsiteBuilderPageWorkflow`, each backed by an app wrapper use case that checks identity and permissions and calls the internal api-workflows use case [D132]. The list below names the capabilities, not the final operations; app-neutral ones (settings, users, step types, notification transports) are placed in the phase 3 plan. Final names are settled in the plan.
 
 Queries:
 

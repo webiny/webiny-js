@@ -636,3 +636,16 @@ The editor's model list query (D116) requires `editor`; each row carries the bou
 ## D131. Optimistic check on workflow save
 
 `storeWorkflow` takes the `savedOn` the editor loaded. If the stored workflow's `savedOn` differs, the save fails with `Workflows/Workflow/Conflict` (data: who saved and when, from the stored record); if the workflow no longer exists, with `Workflows/Workflow/NotFound` [D123]. The editor shows the conflict dialog (reload, losing unsaved edits) or the deleted dialog. Reviews keep no optimistic locking (D27). Resolves spec review finding 9.
+
+## D132. api-workflows is an internal engine; apps own checks and GraphQL
+
+The use cases in `api-workflows` are internal. They take an explicit actor, read no identity and check no permissions (as built in phase 1a, R6). Nothing outside the backend calls them directly.
+
+Each app wraps them in its own use cases and GraphQL operations, for example `StoreWebsiteBuilderPageWorkflow` (use case and mutation) and the CMS equivalents. The wrapper reads the identity, builds the actor and the actor's team ids, checks the `workflows` permission and access to the target, then calls the base use case. There is no shared `storeWorkflow` mutation.
+
+AI and automation tasks (phase 5) call the base use cases directly with an `ai` or `automation` actor.
+
+`api-workflows` provides the shared building blocks the wrappers use: the permission checker (`editor`, `reassign`, full access), the current user's team lookup, and viewer-flag computation from actor, teams, permissions and review.
+
+Refines D54, D78 and spec sections 8 and 10. App-neutral operations (settings, `listUsers`, step types, notification transports) are placed in the phase 3 plan. Decided 2026-10-10.
+
