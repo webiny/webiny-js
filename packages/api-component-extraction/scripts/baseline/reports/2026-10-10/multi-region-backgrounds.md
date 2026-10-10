@@ -6,7 +6,9 @@ the navy. The colour work fixed which colour is chosen. It cannot say "this colo
 that image covers that one", because area share cannot express a region.
 
 Built in `generate/backgroundRegions.ts` (commit 3c689d6c69) and deployed. On the four Take 3 components it
-was tried on, it fixed the navy in one and showed two new defects; see "Tried".
+was tried on, it fixed the navy in one and showed two new defects. Fixes 1 and 2 cleared both by every
+check that can fail, and Overview stays narrower than its source because of the capture gap. See "Fixes 1
+and 2".
 
 ## The measure
 
@@ -161,10 +163,100 @@ These four regenerated components are now the run's current Generate output. Tak
 components promoted before this, so nothing deployed shows them. Promoting them from this run would ship
 the defects.
 
-## Not done
+## Fixes 1 and 2 (decided: fix, not revert)
 
-- No fix for the two defects. The likely ones:
-  - the wording: the image is see-through in itself, so draw it at full strength;
-  - stating the boxes as "which element", not as coordinates to draw.
+### What each addresses
 
-  Both await a decision.
+- **Fix 1, the see-through image:** the region line again carries what the section-wide sentence said:
+  "the colour shows through it and is what the section looks like there". The opacity figure is now said
+  to belong to the file. It restores information the first build dropped.
+- **Fix 2, the region's element:** a region above the bottom one is named by the first text its element
+  holds (`the element holding "Park City Place"`), not by its captured box. Coordinates remain only for an
+  element with no text, and for the section's own paint or its backdrop.
+  - **It addresses the symptom, the literal box, and not the cause.** Overview's real problem is that the
+    captured navy element is much smaller than the source's panel. Named, the element is painted at the
+    size the model gives it, and the region is still described smaller than the source's. **Expected to
+    stay partly wrong until the pseudo-element gap closes.**
+- **A third correction found in the replay:** the first version of fix 2 called a backdrop region "an
+  element with no content". No element paints a backdrop region. That was wrong data in the prompt, and
+  the line now says "an element with no content" only where an element is there.
+
+### Replay over all 33 stored plans (the region build against the fix)
+
+| Set                                   | Predicted                            | Result                                               |
+| ------------------------------------- | ------------------------------------ | ---------------------------------------------------- |
+| Sections with regions                 | unchanged                            | identical, 87 components                             |
+| Uniform prompts                       | byte-identical                       | 334 of 334                                           |
+| Changed lines                         | region lines only                    | region lines only                                    |
+| Non-whole regions named by their text | most; under a quarter as coordinates | 81 named; **30 of 111 (27%) as coordinates: missed** |
+| Held text                             | no markup, at most 61 characters     | as predicted                                         |
+
+The 30 coordinate regions are 20 elements with no text and 10 painted by the section or its backdrop.
+
+### The check that replaces the region-centre pixels
+
+The region-centre pixel check could not fail: its points landed on text and photographs. The new check
+renders the component in the website sandbox (the render task's route, with the pinned theme's CSS) and
+measures only background paint. Text is made transparent and images are hidden. Each region is measured
+inside its captured box, inset 10%, minus the regions above it.
+
+- **Colour region:** at least 90% of pixels within 12 of the region's colour.
+- **See-through image region:** texture (the mean luminance step to the next pixel) at least half that of
+  a reference page drawing the under colour with the image over it at full strength.
+- **Legibility:** every text line's background is sampled at its two ends and its middle. A line fails
+  below contrast 3 against its text colour.
+
+**It was calibrated before use, on renders already known to be wrong, and it fails each one as predicted:**
+
+| Render                             | Known defect                  | Result                        |
+| ---------------------------------- | ----------------------------- | ----------------------------- |
+| Property Description, first build  | pattern washed out            | pattern FAIL (0.00)           |
+| Contact Form, first build          | 88% wash                      | pattern FAIL (0.36)           |
+| Perks, first build                 | `opacity: 0.12`               | pattern FAIL (0.25)           |
+| Overview, first build              | text runs out of the navy box | 5 of 9 lines illegible (1.07) |
+| Property Description, this morning | pattern across the navy       | navy FAIL (73% navy)          |
+| Perks, this morning                | none (control)                | all pass                      |
+
+- **A correction made during calibration:** the image measure was luminance spread at first, which passed
+  Perks-now at 1.33 with no pattern visible. Its white card renders taller than the captured box, so the
+  band took in white. Texture replaced spread before any result from the fix was read.
+- **A correction to the first build's account:** in Property Description the pattern was not only washed
+  out but also covered. Both columns were painted navy, so the pattern could not show anywhere.
+- **Limits:**
+  - It reads the captured boxes, so it cannot judge a region's extent: a panel at the capture's size and
+    one at the source's both pass.
+  - The texture floor can be met by another patterned paint inside the band, so it can pass falsely, never
+    fail falsely.
+  - It says nothing about layout.
+
+### Regenerated (the same four; none promoted)
+
+The deployed prompts' region lines were first checked against the offline replay: identical for all four.
+
+| Component                  | Generation checks     | Pattern     | Panel            | Legibility    |
+| -------------------------- | --------------------- | ----------- | ---------------- | ------------- |
+| Property Description       | all pass (2 attempts) | pass (1.00) | navy pass        | 0 of 20 lines |
+| Neighborhood Overview      | all pass              | pass (1.39) | navy pass        | 0 of 10 lines |
+| Neighborhood Perks Section | all pass              | pass (1.02) | white pass       | 0 of 8 lines  |
+| Application/Contact Form   | all pass (2 attempts) | pass (1.00) | white pass (96%) | 0 of 7 lines  |
+
+- **Fix 1, as predicted:** no wash and no opacity on the pattern in any of the four. Perks and Contact
+  Form show the pattern again.
+- **Fix 2, as predicted:** in Property Description and Overview, the navy is on the text column, with no
+  separate box. Overview's text is readable again.
+- **Overview, still partly wrong, as expected.** The navy covers the text column only, with the pattern
+  above and below it, where the source's navy runs from about x 24% at full height. This is the capture
+  gap, which fix 2 does not touch.
+- **Not predicted, Contact Form:**
+  - the photo sits only in the lower half of the left column;
+  - the white form panel reaches the section's top and right edges, so the source's pattern margin is
+    gone;
+  - the eyebrow and heading are swapped.
+
+  The region lines do not speak to any of these, so they are recorded as unattributed. The check does not
+  measure layout and did not catch them.
+
+- **Property Description passes text preservation again.** That is not attributed to either fix.
+
+**None of the four is fit to promote as a whole:** Overview's extent, and Contact Form's layout and slots.
+They stay out of any Promote.

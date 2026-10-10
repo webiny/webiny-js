@@ -206,6 +206,13 @@ export interface BackgroundRegion {
     share: number;
     /** Stacking: 0 is the bottom (the section or what shows behind it). */
     layer: number;
+    /**
+     * The first text inside the element that paints this region, to say which element it is. Absent
+     * for the section's own paint and for an element with no text.
+     */
+    holds?: string;
+    /** An element paints this region and holds no text. Absent where the section or its backdrop paints it. */
+    empty?: true;
 }
 
 export interface BackgroundImage {

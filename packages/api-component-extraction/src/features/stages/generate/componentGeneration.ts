@@ -568,26 +568,35 @@ const regionLines = (component: PlannedComponent): string[] => {
         }
         const how = [p.size, p.position, p.repeat].filter(Boolean).join(" / ");
         if (isTranslucent(p)) {
-            return `a mostly see-through image (about ${Math.round((p.opacity ?? 0) * 100)}% opaque) over ${
+            // The explanation the section-wide sentence carried (`tintLines`). Without it, "about 12%
+            // opaque" read as an instruction: three of Take 3's four faded the already see-through file
+            // again, with an 88% wash or `opacity: 0.12`.
+            return `${
                 p.under
-                    ? colour(p.under.hex, p.under.token)
-                    : "the colour the reference image shows through it"
-            }, as a CSS background-image: ${p.url}${how ? ` — ${how}` : ""}`;
+                    ? `the colour ${colour(p.under.hex, p.under.token)}`
+                    : "the colour the reference image shows through the image"
+            }, with a mostly see-through image drawn over it (the file itself is about ${Math.round(
+                (p.opacity ?? 0) * 100
+            )}% opaque): the colour shows through it and is what the section looks like there. Set the image over the colour as a CSS background-image: ${p.url}${how ? ` — ${how}` : ""}`;
         }
         return `the image ${p.url}${how ? ` — ${how}` : ""}, as a CSS background-image`;
     };
+    // An element is named by the text it holds, not by its captured box: given the box, the model drew a
+    // box of that size, and the capture can be smaller than the source (`holdsOf`).
     const where = (region: (typeof regions)[number]): string => {
         const b = region.box;
         const whole = b.x <= 2 && b.y <= 2 && b.width >= 96 && b.height >= 96;
         const area = whole
             ? "the whole section"
-            : `x ${b.x}-${Math.min(100, b.x + b.width)}%, y ${b.y}-${Math.min(100, b.y + b.height)}% of the section`;
+            : region.holds
+              ? `the element holding "${region.holds}"`
+              : `${region.empty ? "an element with no content, at " : ""}x ${b.x}-${Math.min(100, b.x + b.width)}%, y ${b.y}-${Math.min(100, b.y + b.height)}% of the section`;
         return region.layer === 0 ? area : `on top of it, ${area}`;
     };
     return [
         "",
         `This section's background has ${regions.length} regions, listed bottom first. Paint each on the element`,
-        "that covers its area, and do not put two of them on one element:",
+        "named, and do not put two of them on one element:",
         ...regions.map(region => `- ${where(region)}: ${paint(region)}`)
     ];
 };

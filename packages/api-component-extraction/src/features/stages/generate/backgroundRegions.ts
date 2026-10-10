@@ -128,6 +128,49 @@ const samePaint = (a: RawPaint, b: RawPaint): boolean =>
         ? a.url === b.url
         : a.kind === "colour" && b.kind === "colour" && distance(a.rgb, b.rgb) < SAME_PAINT;
 
+/** The first text inside a node, depth first: a heading, a label, a field's name. */
+const firstText = (node: CapturedNode): string | null => {
+    const own = (node.text ?? node.alt ?? "").replace(/\s+/g, " ").trim();
+    if (own) {
+        return own;
+    }
+    for (const child of node.children ?? []) {
+        const found = firstText(child);
+        if (found) {
+            return found;
+        }
+    }
+    return null;
+};
+
+const HOLDS_LENGTH = 60;
+
+/**
+ * Which element paints a region, said by what it holds.
+ *
+ * The region's box is where the paint shows in the capture, and the capture can be smaller than the
+ * source: Take 3's Neighborhood Overview has one navy element at x 50-95%, y 25-75% where the source's
+ * panel is far wider (a pseudo-element the capture does not record). Given that box as coordinates, the
+ * model drew a navy box of exactly that size and the text ran out of it. Naming the element by its text
+ * says which element carries the paint; it does not make the captured extent right.
+ */
+const holdsOf = (
+    layers: { node: CapturedNode | null; box: CapturedNode["box"] }[]
+): Pick<BackgroundRegion, "holds" | "empty"> => {
+    const largest = layers
+        .filter(layer => layer.node)
+        .sort((a, b) => b.box.width * b.box.height - a.box.width * a.box.height)[0];
+    if (!largest?.node) {
+        // The section's own paint, or its backdrop showing through: no element to name.
+        return {};
+    }
+    const text = firstText(largest.node);
+    if (!text) {
+        return { empty: true };
+    }
+    return { holds: text.length > HOLDS_LENGTH ? `${text.slice(0, HOLDS_LENGTH).trimEnd()}…` : text };
+};
+
 /**
  * The section's background regions, or null when it has one background (the prompt is then unchanged).
  *
@@ -148,16 +191,16 @@ export const sectionBackgroundRegions = (params: {
         return null;
     }
 
-    const layers: { box: CapturedNode["box"]; paint: RawPaint }[] = [];
+    const layers: { box: CapturedNode["box"]; paint: RawPaint; node: CapturedNode | null }[] = [];
     const own = paintOf(section);
     if (own) {
-        layers.push({ box, paint: own });
+        layers.push({ box, paint: own, node: null });
     }
     const walk = (node: CapturedNode): void => {
         for (const child of node.children ?? []) {
             const paint = paintOf(child);
             if (paint && child.box && child.box.width > 0 && child.box.height > 0) {
-                layers.push({ box: child.box, paint });
+                layers.push({ box: child.box, paint, node: child });
             }
             walk(child);
         }
@@ -264,6 +307,7 @@ export const sectionBackgroundRegions = (params: {
                           };
                       })();
             return {
+                ...holdsOf(layers.filter((_, i) => layerIndex[i] === region.index)),
                 paint,
                 box: {
                     x: pct(region.cell.x0),

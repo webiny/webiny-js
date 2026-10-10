@@ -33,6 +33,8 @@ describe("background regions", () => {
         expect(regions[1].paint).toMatchObject({ kind: "colour", hex: "#363f54" });
         expect(regions[1].box.x).toBeGreaterThanOrEqual(45);
         expect(regions[1].share).toBeGreaterThanOrEqual(0.3);
+        expect(regions[0].holds).toBeUndefined();
+        expect(regions[1].holds).toBe("Park City Place");
     });
 
     it("keeps a design two-tone: a white card on the page's light grey", () => {
@@ -77,11 +79,13 @@ describe("the prompt for a section with regions", () => {
         );
         expect(prompt).toContain("This section's background has 2 regions, listed bottom first.");
         expect(prompt).toContain(
-            "- the whole section: a mostly see-through image (about 12% opaque) over var(--wby-color-surface-raised) (#f7f7f9)"
+            "- the whole section: the colour var(--wby-color-surface-raised) (#f7f7f9), with a mostly see-through image drawn over it (the file itself is about 12% opaque): the colour shows through it and is what the section looks like there."
         );
+        // Named by what it holds: given its captured box, the model drew a box that size.
         expect(prompt).toContain(
-            "- on top of it, x 50-95%, y 10-90% of the section: a solid var(--wby-color-surface-sunken) (#363f54)"
+            '- on top of it, the element holding "Park City Place": a solid var(--wby-color-surface-sunken) (#363f54)'
         );
+        expect(prompt).not.toMatch(/x 50-95%/);
         // The three section-wide statements it replaces.
         expect(prompt).not.toMatch(/^- section\.background: /m);
         expect(prompt).not.toMatch(/^- background #363f54 /m);
