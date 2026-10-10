@@ -51,3 +51,36 @@ props in the 33 stored runs' components:
 from `lexicalHtmlInputs`, the function that guards composition, not from a proxy for it. The 157 were
 also searched for any text operation on the value (`.split`, `.map`, concatenation outside `__html`):
 none.
+
+## After the re-bind and regeneration (ParkCity - Take 3, deployed)
+
+- **The re-bind matched the replay.** Each of the four components changed exactly as replayed; `mapLink`
+  (Contact Us Form) and `cta` (Property Description, Neighborhood Perks Section) were removed.
+- **Regeneration exposed a validator bug the fold triggers.** The text check's "is it in the renderable
+  source" path stripped `//…` to the end of the line as a comment, including the `//` in `https://`
+  inside a string. The fold puts a link's URL in the middle of a paragraph's default text, so everything
+  after the link was discarded, and Neighborhood/Location Highlight failed twice on "in Bridgeport. When
+  you call…", text that was there. The morning's version never failed on it. `//` after a colon is no
+  longer treated as a comment. Tested on the real case; the test fails without the fix.
+- **Results:**
+  - **Neighborhood/Location Highlight** now passes every check, first attempt. In its render, "our ideal
+    location" appears **once**, inside the paragraph, as a link. The heading "Explore our ideal location
+    in Bridgeport." is the site's own.
+  - **Contact Us Form:** "By submitting this form, you agree to the privacy policy." with the link in the
+    sentence; passes.
+  - **Neighborhood Perks Section:** "Experience ultimate neighborhood convenience…" with the link inline;
+    passes.
+  - **Property Description:** still fails text preservation, now 3 paragraphs where it was 2 after the
+    colour regeneration. The structural cause (one rich text field observed as four alternative
+    paragraphs, rendered with the first) is the filed wrong-slot class. The fold adds the amenities
+    sentence to it, because that sentence is no longer hardcoded beside the removed `cta`. Its default
+    render shows every paragraph, with "Community amenities" inline.
+- **No markup in any of the four renders**, and every rich text input of the four renders as HTML.
+
+### Not yet seen: composition (c) deployed
+
+Composition's half has not run against anything deployed. It runs at Assemble and site build, and Take 3
+has not been assembled or promoted. For the 49 plain-text rich text inputs, (c) leaves the value unchanged
+by construction (unit-tested), so their pages render as they did before. **That is a claim from the code,
+not a render.** Take 3 holds 2 of the 49 (Contact Form `consentText`, Accessibility Statement
+`paragraphs`). The 71 Westland fallback holds 2 and stays untouched.

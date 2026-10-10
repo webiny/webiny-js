@@ -10,6 +10,32 @@ import {
 } from "./validators.js";
 
 describe("validateTextPreservation", () => {
+    it("reads text after a link's URL inside a string, which is not a comment", () => {
+        // Take 3's location highlight, as regenerated after the inline-link fold: the paragraph is one
+        // string with a link in it, and `//` in `https://` was stripped as a comment to the end of the line.
+        const source =
+            'defaultValue: "you\\u2019ll love <a href=\\"https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood\\">our ideal location</a> in Bridgeport. When you call Park City Place your home."';
+        const result = validateTextPreservation(
+            ["in Bridgeport. When you call Park City Place your home."],
+            "",
+            [],
+            source
+        );
+        expect(result).toEqual({ passed: true, failures: [] });
+    });
+
+    it("still strips a real line comment", () => {
+        const source = "const x = 1; // in Bridgeport. When you call Park City Place your home.";
+        expect(
+            validateTextPreservation(
+                ["in Bridgeport. When you call Park City Place your home."],
+                "",
+                [],
+                source
+            ).passed
+        ).toBe(false);
+    });
+
     it("passes when every source text appears (whitespace-insensitive)", () => {
         const result = validateTextPreservation(
             ["Ready to get started?", "Get Started"],

@@ -99,7 +99,10 @@ const renderableSource = (source: string): string =>
     decodeStringEscapes(
         source
             .replace(/\/\*[\s\S]*?\*\//g, " ")
-            .replace(/\/\/[^\n]*/g, " ")
+            // Not after a colon: `https://` inside a string literal is a URL, not a comment. Stripping it
+            // as one removed the rest of the line, and with it the text after every link in a rich text
+            // default (Take 3's location highlight failed on "in Bridgeport. When you call…").
+            .replace(/(?<!:)\/\/[^\n]*/g, " ")
             .replace(/description:\s*"(?:[^"\\]|\\.)*"/g, " ")
             .replace(/aiContext:\s*"(?:[^"\\]|\\.)*"/g, " ")
     );
