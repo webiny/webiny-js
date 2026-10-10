@@ -1,5 +1,6 @@
 import type { CapturedNode, PlannedComponent } from "~/domain/artifacts.js";
 import { bindObservedValues, textsOf } from "./bindObservedValues.js";
+import { foldInlineLinks } from "./inlineLinks.js";
 import { sectionUnboundImages } from "./sectionUnboundImages.js";
 
 /**
@@ -58,14 +59,21 @@ export const rebindComponent = (
     }
     if (nodes.length > 0) {
         bindObservedValues(nodes, props);
+        // Links inside running text go back into their paragraph (inlineLinks.ts).
+        foldInlineLinks(nodes, props);
     }
-    const moved = props
-        .map(prop => ({
+    const empty = { values: [], structured: [] };
+    const moved = [
+        ...props.map(prop => ({
             prop: prop.name,
-            before: before.get(prop.name) ?? { values: [], structured: [] },
+            before: before.get(prop.name) ?? empty,
             after: snapshot(prop)
-        }))
-        .filter(entry => comparable(entry.before) !== comparable(entry.after));
+        })),
+        // A Link prop the fold removed: every value it held went back into a paragraph.
+        ...[...before.entries()]
+            .filter(([name]) => !props.some(prop => prop.name === name))
+            .map(([name, was]) => ({ prop: name, before: was, after: empty }))
+    ].filter(entry => comparable(entry.before) !== comparable(entry.after));
     return {
         component: {
             ...component,

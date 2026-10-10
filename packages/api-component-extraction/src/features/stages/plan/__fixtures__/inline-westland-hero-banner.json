@@ -1,0 +1,1069 @@
+{
+ "source": {
+  "run": "6ac902f361abbb0002c84963#0001",
+  "component": "Hero Banner",
+  "url": "https://www.71westlandapts.com/"
+ },
+ "section": {
+  "tag": "div",
+  "box": {
+   "x": 0,
+   "y": 801,
+   "width": 1440,
+   "height": 483
+  },
+  "styles": {
+   "backgroundColor": "rgb(255, 255, 255)",
+   "color": "rgb(0, 0, 0)",
+   "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+   "fontSize": "15px",
+   "fontWeight": "400",
+   "lineHeight": "20.625px",
+   "letterSpacing": "normal",
+   "borderTopColor": "rgb(0, 0, 0)",
+   "borderTopWidth": "0px",
+   "borderRadius": "0px",
+   "boxShadow": "none",
+   "paddingTop": "60px",
+   "paddingLeft": "0px",
+   "marginTop": "0px",
+   "gap": "normal",
+   "display": "block",
+   "textAlign": "start",
+   "position": "relative",
+   "overflow": "visible",
+   "textTransform": "none",
+   "fontStyle": "normal"
+  },
+  "children": [
+   {
+    "tag": "div",
+    "box": {
+     "x": 0,
+     "y": 861,
+     "width": 1440,
+     "height": 363
+    },
+    "styles": {
+     "backgroundColor": "rgba(0, 0, 0, 0)",
+     "color": "rgb(0, 0, 0)",
+     "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+     "fontSize": "15px",
+     "fontWeight": "400",
+     "lineHeight": "20.625px",
+     "letterSpacing": "normal",
+     "borderTopColor": "rgb(0, 0, 0)",
+     "borderTopWidth": "0px",
+     "borderRadius": "0px",
+     "boxShadow": "none",
+     "paddingTop": "0px",
+     "paddingLeft": "45px",
+     "marginTop": "0px",
+     "gap": "normal",
+     "display": "block",
+     "textAlign": "start",
+     "position": "relative",
+     "overflow": "visible",
+     "textTransform": "none",
+     "fontStyle": "normal"
+    },
+    "children": [
+     {
+      "tag": "div",
+      "box": {
+       "x": 30,
+       "y": 861,
+       "width": 1380,
+       "height": 363
+      },
+      "styles": {
+       "backgroundColor": "rgba(0, 0, 0, 0)",
+       "color": "rgb(0, 0, 0)",
+       "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+       "fontSize": "15px",
+       "fontWeight": "400",
+       "lineHeight": "20.625px",
+       "letterSpacing": "normal",
+       "borderTopColor": "rgb(0, 0, 0)",
+       "borderTopWidth": "0px",
+       "borderRadius": "0px",
+       "boxShadow": "none",
+       "paddingTop": "0px",
+       "paddingLeft": "0px",
+       "marginTop": "0px",
+       "gap": "normal",
+       "display": "flex",
+       "textAlign": "start",
+       "position": "static",
+       "overflow": "visible",
+       "textTransform": "none",
+       "fontStyle": "normal"
+      },
+      "children": [
+       {
+        "tag": "div",
+        "box": {
+         "x": 30,
+         "y": 861,
+         "width": 690,
+         "height": 363
+        },
+        "styles": {
+         "backgroundColor": "rgba(0, 0, 0, 0)",
+         "color": "rgb(0, 0, 0)",
+         "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+         "fontSize": "15px",
+         "fontWeight": "400",
+         "lineHeight": "20.625px",
+         "letterSpacing": "normal",
+         "borderTopColor": "rgb(0, 0, 0)",
+         "borderTopWidth": "0px",
+         "borderRadius": "0px",
+         "boxShadow": "none",
+         "paddingTop": "0px",
+         "paddingLeft": "15px",
+         "marginTop": "0px",
+         "gap": "normal",
+         "display": "block",
+         "textAlign": "start",
+         "position": "static",
+         "overflow": "visible",
+         "textTransform": "none",
+         "fontStyle": "normal"
+        },
+        "children": [
+         {
+          "tag": "div",
+          "box": {
+           "x": 45,
+           "y": 861,
+           "width": 660,
+           "height": 363
+          },
+          "styles": {
+           "backgroundColor": "rgba(0, 0, 0, 0)",
+           "color": "rgb(0, 0, 0)",
+           "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+           "fontSize": "15px",
+           "fontWeight": "400",
+           "lineHeight": "20.625px",
+           "letterSpacing": "normal",
+           "borderTopColor": "rgb(0, 0, 0)",
+           "borderTopWidth": "0px",
+           "borderRadius": "0px",
+           "boxShadow": "none",
+           "paddingTop": "0px",
+           "paddingLeft": "0px",
+           "marginTop": "0px",
+           "gap": "normal",
+           "display": "block",
+           "textAlign": "start",
+           "position": "static",
+           "overflow": "visible",
+           "textTransform": "none",
+           "fontStyle": "normal"
+          },
+          "children": [
+           {
+            "tag": "div",
+            "box": {
+             "x": 45,
+             "y": 861,
+             "width": 660,
+             "height": 363
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgb(0, 0, 0)",
+             "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+             "fontSize": "15px",
+             "fontWeight": "400",
+             "lineHeight": "20.625px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgb(0, 0, 0)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "start",
+             "position": "static",
+             "overflow": "visible",
+             "textTransform": "none",
+             "fontStyle": "normal"
+            },
+            "children": [
+             {
+              "tag": "div",
+              "box": {
+               "x": 45,
+               "y": 861,
+               "width": 660,
+               "height": 363
+              },
+              "styles": {
+               "backgroundColor": "rgba(0, 0, 0, 0)",
+               "color": "rgb(0, 0, 0)",
+               "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+               "fontSize": "15px",
+               "fontWeight": "400",
+               "lineHeight": "20.625px",
+               "letterSpacing": "normal",
+               "borderTopColor": "rgb(0, 0, 0)",
+               "borderTopWidth": "0px",
+               "borderRadius": "0px",
+               "boxShadow": "none",
+               "paddingTop": "0px",
+               "paddingLeft": "0px",
+               "marginTop": "0px",
+               "gap": "normal",
+               "display": "block",
+               "textAlign": "start",
+               "position": "static",
+               "overflow": "visible",
+               "textTransform": "none",
+               "fontStyle": "normal"
+              },
+              "children": [
+               {
+                "tag": "div",
+                "box": {
+                 "x": 45,
+                 "y": 861,
+                 "width": 660,
+                 "height": 363
+                },
+                "styles": {
+                 "backgroundColor": "rgba(0, 0, 0, 0)",
+                 "color": "rgb(0, 0, 0)",
+                 "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                 "fontSize": "15px",
+                 "fontWeight": "400",
+                 "lineHeight": "20.625px",
+                 "letterSpacing": "normal",
+                 "borderTopColor": "rgb(0, 0, 0)",
+                 "borderTopWidth": "0px",
+                 "borderRadius": "0px",
+                 "boxShadow": "none",
+                 "paddingTop": "0px",
+                 "paddingLeft": "0px",
+                 "marginTop": "0px",
+                 "gap": "normal",
+                 "display": "block",
+                 "textAlign": "start",
+                 "position": "static",
+                 "overflow": "hidden",
+                 "textTransform": "none",
+                 "fontStyle": "normal"
+                },
+                "children": [
+                 {
+                  "tag": "div",
+                  "box": {
+                   "x": 45,
+                   "y": 861,
+                   "width": 660,
+                   "height": 363
+                  },
+                  "styles": {
+                   "backgroundColor": "rgba(0, 0, 0, 0)",
+                   "color": "rgb(0, 0, 0)",
+                   "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                   "fontSize": "15px",
+                   "fontWeight": "400",
+                   "lineHeight": "20.625px",
+                   "letterSpacing": "normal",
+                   "borderTopColor": "rgb(0, 0, 0)",
+                   "borderTopWidth": "0px",
+                   "borderRadius": "0px",
+                   "boxShadow": "none",
+                   "paddingTop": "0px",
+                   "paddingLeft": "0px",
+                   "marginTop": "0px",
+                   "gap": "normal",
+                   "display": "block",
+                   "textAlign": "start",
+                   "position": "relative",
+                   "overflow": "visible",
+                   "textTransform": "none",
+                   "fontStyle": "normal"
+                  },
+                  "children": [
+                   {
+                    "tag": "div",
+                    "box": {
+                     "x": 45,
+                     "y": 861,
+                     "width": 660,
+                     "height": 363
+                    },
+                    "styles": {
+                     "backgroundColor": "rgba(0, 0, 0, 0)",
+                     "color": "rgb(0, 0, 0)",
+                     "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                     "fontSize": "15px",
+                     "fontWeight": "400",
+                     "lineHeight": "20.625px",
+                     "letterSpacing": "normal",
+                     "borderTopColor": "rgb(0, 0, 0)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "0px",
+                     "paddingLeft": "0px",
+                     "marginTop": "0px",
+                     "gap": "0px",
+                     "display": "grid",
+                     "textAlign": "start",
+                     "position": "static",
+                     "overflow": "visible",
+                     "textTransform": "none",
+                     "fontStyle": "normal"
+                    },
+                    "children": [
+                     {
+                      "tag": "div",
+                      "box": {
+                       "x": 45,
+                       "y": 861,
+                       "width": 660,
+                       "height": 363
+                      },
+                      "styles": {
+                       "backgroundColor": "rgba(0, 0, 0, 0)",
+                       "color": "rgb(0, 0, 0)",
+                       "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                       "fontSize": "15px",
+                       "fontWeight": "400",
+                       "lineHeight": "20.625px",
+                       "letterSpacing": "normal",
+                       "borderTopColor": "rgb(0, 0, 0)",
+                       "borderTopWidth": "0px",
+                       "borderRadius": "0px",
+                       "boxShadow": "none",
+                       "paddingTop": "0px",
+                       "paddingLeft": "0px",
+                       "marginTop": "0px",
+                       "gap": "normal",
+                       "display": "block",
+                       "textAlign": "start",
+                       "position": "relative",
+                       "overflow": "hidden",
+                       "textTransform": "none",
+                       "fontStyle": "normal"
+                      },
+                      "children": [
+                       {
+                        "tag": "div",
+                        "box": {
+                         "x": 45,
+                         "y": 861,
+                         "width": 660,
+                         "height": 363
+                        },
+                        "styles": {
+                         "backgroundColor": "rgba(0, 0, 0, 0)",
+                         "color": "rgb(0, 0, 0)",
+                         "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                         "fontSize": "15px",
+                         "fontWeight": "400",
+                         "lineHeight": "20.625px",
+                         "letterSpacing": "normal",
+                         "borderTopColor": "rgb(0, 0, 0)",
+                         "borderTopWidth": "0px",
+                         "borderRadius": "0px",
+                         "boxShadow": "none",
+                         "paddingTop": "0px",
+                         "paddingLeft": "0px",
+                         "marginTop": "0px",
+                         "gap": "normal",
+                         "display": "block",
+                         "textAlign": "start",
+                         "position": "absolute",
+                         "overflow": "hidden",
+                         "textTransform": "none",
+                         "fontStyle": "normal"
+                        },
+                        "children": [
+                         {
+                          "tag": "div",
+                          "box": {
+                           "x": 45,
+                           "y": 861,
+                           "width": 660,
+                           "height": 363
+                          },
+                          "styles": {
+                           "backgroundColor": "rgba(0, 0, 0, 0)",
+                           "color": "rgb(255, 255, 255)",
+                           "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                           "fontSize": "15px",
+                           "fontWeight": "400",
+                           "lineHeight": "20.625px",
+                           "letterSpacing": "normal",
+                           "borderTopColor": "rgb(255, 255, 255)",
+                           "borderTopWidth": "0px",
+                           "borderRadius": "0px",
+                           "boxShadow": "none",
+                           "paddingTop": "10px",
+                           "paddingLeft": "0px",
+                           "marginTop": "0px",
+                           "gap": "normal",
+                           "display": "flex",
+                           "textAlign": "start",
+                           "position": "absolute",
+                           "overflow": "visible",
+                           "textTransform": "none",
+                           "fontStyle": "normal"
+                          },
+                          "children": [
+                           {
+                            "tag": "div",
+                            "box": {
+                             "x": 45,
+                             "y": 1004,
+                             "width": 660,
+                             "height": 79
+                            },
+                            "styles": {
+                             "backgroundColor": "rgba(0, 0, 0, 0)",
+                             "color": "rgb(255, 255, 255)",
+                             "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                             "fontSize": "15px",
+                             "fontWeight": "400",
+                             "lineHeight": "20.625px",
+                             "letterSpacing": "normal",
+                             "borderTopColor": "rgb(255, 255, 255)",
+                             "borderTopWidth": "0px",
+                             "borderRadius": "0px",
+                             "boxShadow": "none",
+                             "paddingTop": "0px",
+                             "paddingLeft": "10px",
+                             "marginTop": "0px",
+                             "gap": "normal",
+                             "display": "block",
+                             "textAlign": "start",
+                             "position": "relative",
+                             "overflow": "hidden auto",
+                             "textTransform": "none",
+                             "fontStyle": "normal"
+                            },
+                            "children": [
+                             {
+                              "tag": "p",
+                              "box": {
+                               "x": 55,
+                               "y": 1004,
+                               "width": 640,
+                               "height": 79
+                              },
+                              "styles": {
+                               "backgroundColor": "rgba(0, 0, 0, 0)",
+                               "color": "rgb(255, 255, 255)",
+                               "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                               "fontSize": "14px",
+                               "fontWeight": "400",
+                               "lineHeight": "31.5px",
+                               "letterSpacing": "normal",
+                               "borderTopColor": "rgb(255, 255, 255)",
+                               "borderTopWidth": "0px",
+                               "borderRadius": "0px",
+                               "boxShadow": "none",
+                               "paddingTop": "0px",
+                               "paddingLeft": "0px",
+                               "marginTop": "0px",
+                               "gap": "normal",
+                               "display": "block",
+                               "textAlign": "center",
+                               "position": "static",
+                               "overflow": "hidden",
+                               "textTransform": "none",
+                               "fontStyle": "normal"
+                              },
+                              "children": [
+                               {
+                                "tag": "span",
+                                "box": {
+                                 "x": 271,
+                                 "y": 1010,
+                                 "width": 208,
+                                 "height": 20
+                                },
+                                "styles": {
+                                 "backgroundColor": "rgba(0, 0, 0, 0)",
+                                 "color": "rgb(255, 255, 255)",
+                                 "fontFamily": "montserrat",
+                                 "fontSize": "20px",
+                                 "fontWeight": "400",
+                                 "lineHeight": "20px",
+                                 "letterSpacing": "1.6px",
+                                 "borderTopColor": "rgb(255, 255, 255)",
+                                 "borderTopWidth": "0px",
+                                 "borderRadius": "0px",
+                                 "boxShadow": "none",
+                                 "paddingTop": "0px",
+                                 "paddingLeft": "0px",
+                                 "marginTop": "0px",
+                                 "gap": "normal",
+                                 "display": "inline",
+                                 "textAlign": "center",
+                                 "position": "static",
+                                 "overflow": "hidden",
+                                 "textTransform": "uppercase",
+                                 "fontStyle": "normal"
+                                },
+                                "children": [],
+                                "text": "Your New Home"
+                               },
+                               {
+                                "tag": "span",
+                                "box": {
+                                 "x": 271,
+                                 "y": 1035,
+                                 "width": 208,
+                                 "height": 47
+                                },
+                                "styles": {
+                                 "backgroundColor": "rgba(0, 0, 0, 0)",
+                                 "color": "rgb(255, 255, 255)",
+                                 "fontFamily": "montserrat",
+                                 "fontSize": "47px",
+                                 "fontWeight": "400",
+                                 "lineHeight": "47px",
+                                 "letterSpacing": "3.76px",
+                                 "borderTopColor": "rgb(255, 255, 255)",
+                                 "borderTopWidth": "0px",
+                                 "borderRadius": "0px",
+                                 "boxShadow": "none",
+                                 "paddingTop": "0px",
+                                 "paddingLeft": "0px",
+                                 "marginTop": "0px",
+                                 "gap": "normal",
+                                 "display": "inline",
+                                 "textAlign": "center",
+                                 "position": "static",
+                                 "overflow": "hidden",
+                                 "textTransform": "uppercase",
+                                 "fontStyle": "normal"
+                                },
+                                "children": [],
+                                "text": "Awaits"
+                               }
+                              ]
+                             }
+                            ]
+                           }
+                          ]
+                         }
+                        ]
+                       }
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "tag": "div",
+        "box": {
+         "x": 720,
+         "y": 895,
+         "width": 690,
+         "height": 296
+        },
+        "styles": {
+         "backgroundColor": "rgba(0, 0, 0, 0)",
+         "color": "rgb(0, 0, 0)",
+         "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+         "fontSize": "15px",
+         "fontWeight": "400",
+         "lineHeight": "20.625px",
+         "letterSpacing": "normal",
+         "borderTopColor": "rgb(0, 0, 0)",
+         "borderTopWidth": "0px",
+         "borderRadius": "0px",
+         "boxShadow": "none",
+         "paddingTop": "0px",
+         "paddingLeft": "15px",
+         "marginTop": "0px",
+         "gap": "normal",
+         "display": "block",
+         "textAlign": "start",
+         "position": "static",
+         "overflow": "visible",
+         "textTransform": "none",
+         "fontStyle": "normal"
+        },
+        "children": [
+         {
+          "tag": "div",
+          "box": {
+           "x": 735,
+           "y": 895,
+           "width": 660,
+           "height": 296
+          },
+          "styles": {
+           "backgroundColor": "rgba(0, 0, 0, 0)",
+           "color": "rgb(0, 0, 0)",
+           "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+           "fontSize": "15px",
+           "fontWeight": "400",
+           "lineHeight": "20.625px",
+           "letterSpacing": "normal",
+           "borderTopColor": "rgb(0, 0, 0)",
+           "borderTopWidth": "0px",
+           "borderRadius": "0px",
+           "boxShadow": "none",
+           "paddingTop": "0px",
+           "paddingLeft": "0px",
+           "marginTop": "0px",
+           "gap": "normal",
+           "display": "block",
+           "textAlign": "start",
+           "position": "static",
+           "overflow": "visible",
+           "textTransform": "none",
+           "fontStyle": "normal"
+          },
+          "children": [
+           {
+            "tag": "div",
+            "box": {
+             "x": 735,
+             "y": 895,
+             "width": 660,
+             "height": 296
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgb(0, 0, 0)",
+             "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+             "fontSize": "15px",
+             "fontWeight": "400",
+             "lineHeight": "20.625px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgb(0, 0, 0)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "start",
+             "position": "static",
+             "overflow": "visible",
+             "textTransform": "none",
+             "fontStyle": "normal"
+            },
+            "children": [
+             {
+              "tag": "div",
+              "box": {
+               "x": 735,
+               "y": 895,
+               "width": 660,
+               "height": 296
+              },
+              "styles": {
+               "backgroundColor": "rgba(0, 0, 0, 0)",
+               "color": "rgb(0, 0, 0)",
+               "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+               "fontSize": "15px",
+               "fontWeight": "400",
+               "lineHeight": "20.625px",
+               "letterSpacing": "normal",
+               "borderTopColor": "rgb(0, 0, 0)",
+               "borderTopWidth": "0px",
+               "borderRadius": "0px",
+               "boxShadow": "none",
+               "paddingTop": "0px",
+               "paddingLeft": "0px",
+               "marginTop": "0px",
+               "gap": "normal",
+               "display": "block",
+               "textAlign": "start",
+               "position": "static",
+               "overflow": "visible",
+               "textTransform": "none",
+               "fontStyle": "normal"
+              },
+              "children": [
+               {
+                "tag": "div",
+                "box": {
+                 "x": 735,
+                 "y": 895,
+                 "width": 660,
+                 "height": 296
+                },
+                "styles": {
+                 "backgroundColor": "rgba(0, 0, 0, 0)",
+                 "color": "rgb(0, 0, 0)",
+                 "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                 "fontSize": "15px",
+                 "fontWeight": "400",
+                 "lineHeight": "20.625px",
+                 "letterSpacing": "normal",
+                 "borderTopColor": "rgb(0, 0, 0)",
+                 "borderTopWidth": "0px",
+                 "borderRadius": "0px",
+                 "boxShadow": "none",
+                 "paddingTop": "0px",
+                 "paddingLeft": "0px",
+                 "marginTop": "0px",
+                 "gap": "normal",
+                 "display": "block",
+                 "textAlign": "start",
+                 "position": "static",
+                 "overflow": "hidden",
+                 "textTransform": "none",
+                 "fontStyle": "normal"
+                },
+                "children": [
+                 {
+                  "tag": "div",
+                  "box": {
+                   "x": 735,
+                   "y": 895,
+                   "width": 660,
+                   "height": 282
+                  },
+                  "styles": {
+                   "backgroundColor": "rgba(0, 0, 0, 0)",
+                   "color": "rgb(0, 0, 0)",
+                   "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                   "fontSize": "15px",
+                   "fontWeight": "400",
+                   "lineHeight": "20.625px",
+                   "letterSpacing": "normal",
+                   "borderTopColor": "rgb(0, 0, 0)",
+                   "borderTopWidth": "0px",
+                   "borderRadius": "0px",
+                   "boxShadow": "none",
+                   "paddingTop": "0px",
+                   "paddingLeft": "45px",
+                   "marginTop": "0px",
+                   "gap": "normal",
+                   "display": "block",
+                   "textAlign": "start",
+                   "position": "static",
+                   "overflow": "visible",
+                   "textTransform": "none",
+                   "fontStyle": "normal"
+                  },
+                  "children": [
+                   {
+                    "tag": "h1",
+                    "box": {
+                     "x": 780,
+                     "y": 895,
+                     "width": 615,
+                     "height": 76
+                    },
+                    "styles": {
+                     "backgroundColor": "rgba(0, 0, 0, 0)",
+                     "color": "rgb(0, 0, 0)",
+                     "fontFamily": "montserrat, Georgia, Cambria, \"Times New Roman\", Times, serif",
+                     "fontSize": "20px",
+                     "fontWeight": "400",
+                     "lineHeight": "28px",
+                     "letterSpacing": "2.4px",
+                     "borderTopColor": "rgb(0, 0, 0)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "0px",
+                     "paddingLeft": "0px",
+                     "marginTop": "0px",
+                     "gap": "normal",
+                     "display": "block",
+                     "textAlign": "start",
+                     "position": "relative",
+                     "overflow": "visible",
+                     "textTransform": "uppercase",
+                     "fontStyle": "normal"
+                    },
+                    "children": [],
+                    "text": "A Refreshing Community: 71 Westland Apartments"
+                   },
+                   {
+                    "tag": "p",
+                    "box": {
+                     "x": 780,
+                     "y": 988,
+                     "width": 615,
+                     "height": 189
+                    },
+                    "styles": {
+                     "backgroundColor": "rgba(0, 0, 0, 0)",
+                     "color": "rgb(0, 0, 0)",
+                     "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                     "fontSize": "14px",
+                     "fontWeight": "400",
+                     "lineHeight": "31.5px",
+                     "letterSpacing": "normal",
+                     "borderTopColor": "rgb(0, 0, 0)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "0px",
+                     "paddingLeft": "0px",
+                     "marginTop": "14px",
+                     "gap": "normal",
+                     "display": "block",
+                     "textAlign": "start",
+                     "position": "static",
+                     "overflow": "visible",
+                     "textTransform": "none",
+                     "fontStyle": "normal"
+                    },
+                    "children": [
+                     {
+                      "tag": "strong",
+                      "box": {
+                       "x": 894,
+                       "y": 994,
+                       "width": 160,
+                       "height": 19
+                      },
+                      "styles": {
+                       "backgroundColor": "rgba(0, 0, 0, 0)",
+                       "color": "rgb(0, 0, 0)",
+                       "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                       "fontSize": "14px",
+                       "fontWeight": "600",
+                       "lineHeight": "31.5px",
+                       "letterSpacing": "normal",
+                       "borderTopColor": "rgb(0, 0, 0)",
+                       "borderTopWidth": "0px",
+                       "borderRadius": "0px",
+                       "boxShadow": "none",
+                       "paddingTop": "0px",
+                       "paddingLeft": "0px",
+                       "marginTop": "0px",
+                       "gap": "normal",
+                       "display": "inline",
+                       "textAlign": "start",
+                       "position": "static",
+                       "overflow": "visible",
+                       "textTransform": "none",
+                       "fontStyle": "normal"
+                      },
+                      "children": [
+                       {
+                        "tag": "a",
+                        "box": {
+                         "x": 894,
+                         "y": 994,
+                         "width": 160,
+                         "height": 19
+                        },
+                        "styles": {
+                         "backgroundColor": "rgba(0, 0, 0, 0)",
+                         "color": "rgb(98, 122, 72)",
+                         "fontFamily": "open-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                         "fontSize": "14px",
+                         "fontWeight": "600",
+                         "lineHeight": "31.5px",
+                         "letterSpacing": "normal",
+                         "borderTopColor": "rgb(98, 122, 72)",
+                         "borderTopWidth": "0px",
+                         "borderRadius": "0px",
+                         "boxShadow": "none",
+                         "paddingTop": "0px",
+                         "paddingLeft": "0px",
+                         "marginTop": "0px",
+                         "gap": "normal",
+                         "display": "inline",
+                         "textAlign": "start",
+                         "position": "static",
+                         "overflow": "visible",
+                         "textTransform": "none",
+                         "fontStyle": "normal"
+                        },
+                        "children": [],
+                        "text": "studio, 1 and 2 bedroom",
+                        "href": "https://www.71westlandapts.com/apartments/ma/boston/floor-plans"
+                       }
+                      ]
+                     }
+                    ],
+                    "text": "Choose from our apartments in Boston, Massachusetts, and have it all. From a spacious layout, light-filled rooms, and convenient features and amenities, simply everything you need is right here at 71 Westland Apartments. Our prime location in Boston puts you in proximity to the best of everything in the area. With a near-perfect neighborhood like this, you’ll be mere moments from restaurants, shopping, major employers, and great schools.",
+                    "textRuns": [
+                     "Choose from our",
+                     "apartments in Boston, Massachusetts, and have it all. From a spacious layout, light-filled rooms, and convenient features and amenities, simply everything you need is right here at 71 Westland Apartments. Our prime location in Boston puts you in proximity to the best of everything in the area. With a near-perfect neighborhood like this, you’ll be mere moments from restaurants, shopping, major employers, and great schools."
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "props": [
+  {
+   "array": false,
+   "name": "eyebrow",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 1,
+    "totalInstances": 1,
+    "valueCounts": null
+   },
+   "observedValues": [
+    "A Refreshing Community: 71 Westland Apartments"
+   ],
+   "optional": true,
+   "type": "string"
+  },
+  {
+   "array": false,
+   "fields": [
+    {
+     "array": false,
+     "name": "line1",
+     "observation": {
+      "countMax": null,
+      "countMin": null,
+      "presentInstances": 1,
+      "totalInstances": 1,
+      "valueCounts": null
+     },
+     "observedValues": [
+      "Your New Home"
+     ],
+     "optional": false,
+     "type": "string"
+    },
+    {
+     "array": false,
+     "name": "line2",
+     "observation": {
+      "countMax": null,
+      "countMin": null,
+      "presentInstances": 1,
+      "totalInstances": 1,
+      "valueCounts": null
+     },
+     "observedValues": [
+      "Awaits"
+     ],
+     "optional": true,
+     "type": "string"
+    }
+   ],
+   "name": "heading",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 1,
+    "totalInstances": 1,
+    "valueCounts": null
+   },
+   "observedValues": [],
+   "optional": false,
+   "type": "object"
+  },
+  {
+   "array": false,
+   "name": "description",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 1,
+    "totalInstances": 1,
+    "valueCounts": null
+   },
+   "observedValues": [
+    "Choose from our studio, 1 and 2 bedroom apartments in Boston, Massachusetts, and have it all. From a spacious layout, light-filled rooms, and convenient features and amenities, simply everything you need is right here at 71 Westland Apartments. Our prime location in Boston puts you in proximity to the best of everything in the area. With a near-perfect neighborhood like this, you’ll be mere moments from restaurants, shopping, major employers, and great schools."
+   ],
+   "optional": false,
+   "type": "richText"
+  },
+  {
+   "array": false,
+   "fields": [
+    {
+     "array": false,
+     "name": "label",
+     "observation": {
+      "countMax": null,
+      "countMin": null,
+      "presentInstances": 1,
+      "totalInstances": 1,
+      "valueCounts": null
+     },
+     "observedValues": [
+      "Learn More"
+     ],
+     "optional": false,
+     "type": "string"
+    },
+    {
+     "array": false,
+     "name": "href",
+     "observation": {
+      "countMax": null,
+      "countMin": null,
+      "presentInstances": 1,
+      "totalInstances": 1,
+      "valueCounts": null
+     },
+     "observedValues": [],
+     "optional": false,
+     "type": "url"
+    }
+   ],
+   "name": "cta",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 1,
+    "totalInstances": 1,
+    "valueCounts": null
+   },
+   "observedStructured": [
+    {
+     "href": "https://www.71westlandapts.com/apartments/ma/boston/floor-plans",
+     "kind": "link",
+     "label": "studio, 1 and 2 bedroom",
+     "member": 0
+    }
+   ],
+   "observedValues": [
+    "studio, 1 and 2 bedroom"
+   ],
+   "optional": false,
+   "type": "Link"
+  }
+ ]
+}

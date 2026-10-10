@@ -58,6 +58,11 @@ right places. The 48 are 31 wrong targets, 16 with no destination, and "Food".
 2. The footer's address and property name, on any page.
 3. "Food" on the location page.
 
+**Also not to show: the home page's intro paragraph.** It reads "Choose from our studio, 1 and 2 bedroom
+studio, 1 and 2 bedroom": the rest of the sentence ("…apartments in Boston, Massachusetts, and have it all…")
+is lost. The inline link was lifted out of its paragraph
+(`ai-context/issues/inline-links-are-lifted-into-standalone-link-props.md`). Added 2026-10-10.
+
 The phone number, the second "Apply Now" and the property cards are wrong but harmless: a Maps tab, the home
 page, nothing.
 

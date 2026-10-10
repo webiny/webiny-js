@@ -50,6 +50,25 @@ export const rewriteDestinations = (params: {
 }): RewriteResult => {
     const { bindings, migratedPaths, sourceHost } = params;
     const outcomes: DestinationOutcome[] = [];
+
+    /** The three-way rule for one destination, as applied to link inputs below. */
+    const classify = (elementId: string, path: string, href: string): DestinationOutcome => {
+        try {
+            const url = new URL(href, `https://${sourceHost}`);
+            if (url.protocol !== "http:" && url.protocol !== "https:") {
+                return { kind: "external", elementId, path, href };
+            }
+            if (url.host !== sourceHost) {
+                return { kind: "external", elementId, path, href };
+            }
+        } catch {
+            return { kind: "external", elementId, path, href };
+        }
+        const target = intendedPath(href);
+        return migratedPaths.has(target)
+            ? { kind: "rewritten", elementId, path, from: href, to: target }
+            : { kind: "unmigrated", elementId, path, href };
+    };
     const rewritten: Record<string, any> = {};
 
     for (const [elementId, element] of Object.entries(bindings)) {
@@ -63,6 +82,26 @@ export const rewriteDestinations = (params: {
 
         for (const [path, binding] of Object.entries(inputs)) {
             const href = (binding as { static?: unknown })?.static;
+
+            /*
+             * A rich text value can carry links inside its HTML: the inline links composition puts back
+             * into their paragraph (lexicalHtml.ts). They get the same three-way rule as a link input,
+             * each recorded as its own destination.
+             */
+            if (
+                (binding as { type?: string })?.type === "lexical" &&
+                typeof href === "string" &&
+                /href="/.test(href)
+            ) {
+                const html = href.replace(/href="([^"]*)"/g, (whole, raw: string) => {
+                    const target = raw.replace(/&amp;/g, "&").replace(/&quot;/g, '"');
+                    const outcome = classify(elementId, `${path}#href`, target);
+                    outcomes.push(outcome);
+                    return outcome.kind === "rewritten" ? `href="${outcome.to}"` : whole;
+                });
+                nextInputs[path] = { ...(binding as object), static: html };
+                continue;
+            }
 
             if (!isDestinationPath(path) || typeof href !== "string" || !href.trim()) {
                 nextInputs[path] = binding;

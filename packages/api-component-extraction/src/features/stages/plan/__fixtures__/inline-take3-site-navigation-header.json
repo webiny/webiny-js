@@ -1,0 +1,1249 @@
+{
+ "source": {
+  "run": "6aca03006edf6700023d80ce#0001",
+  "component": "Site Navigation Header",
+  "url": "https://www.parkcityplace.org/"
+ },
+ "section": {
+  "tag": "header",
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1440,
+   "height": 100
+  },
+  "styles": {
+   "backgroundColor": "rgb(247, 247, 249)",
+   "color": "rgb(68, 68, 68)",
+   "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+   "fontSize": "15px",
+   "fontWeight": "400",
+   "lineHeight": "20.625px",
+   "letterSpacing": "normal",
+   "borderTopColor": "rgb(68, 68, 68)",
+   "borderTopWidth": "0px",
+   "borderRadius": "0px",
+   "boxShadow": "none",
+   "paddingTop": "0px",
+   "paddingLeft": "70px",
+   "marginTop": "0px",
+   "gap": "normal",
+   "display": "flex",
+   "textAlign": "start",
+   "position": "absolute",
+   "overflow": "visible",
+   "textTransform": "none",
+   "fontStyle": "normal"
+  },
+  "children": [
+   {
+    "tag": "div",
+    "box": {
+     "x": 70,
+     "y": 0,
+     "width": 1300,
+     "height": 100
+    },
+    "styles": {
+     "backgroundColor": "rgb(247, 247, 249)",
+     "color": "rgb(68, 68, 68)",
+     "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+     "fontSize": "15px",
+     "fontWeight": "400",
+     "lineHeight": "20.625px",
+     "letterSpacing": "normal",
+     "borderTopColor": "rgb(68, 68, 68)",
+     "borderTopWidth": "0px",
+     "borderRadius": "0px",
+     "boxShadow": "none",
+     "paddingTop": "0px",
+     "paddingLeft": "0px",
+     "marginTop": "0px",
+     "gap": "normal",
+     "display": "block",
+     "textAlign": "start",
+     "position": "relative",
+     "overflow": "visible",
+     "textTransform": "none",
+     "fontStyle": "normal"
+    },
+    "children": [
+     {
+      "tag": "div",
+      "box": {
+       "x": 70,
+       "y": 0,
+       "width": 1300,
+       "height": 100
+      },
+      "styles": {
+       "backgroundColor": "rgba(0, 0, 0, 0)",
+       "color": "rgb(68, 68, 68)",
+       "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+       "fontSize": "15px",
+       "fontWeight": "400",
+       "lineHeight": "20.625px",
+       "letterSpacing": "normal",
+       "borderTopColor": "rgb(68, 68, 68)",
+       "borderTopWidth": "0px",
+       "borderRadius": "0px",
+       "boxShadow": "none",
+       "paddingTop": "0px",
+       "paddingLeft": "0px",
+       "marginTop": "0px",
+       "gap": "normal",
+       "display": "block",
+       "textAlign": "start",
+       "position": "relative",
+       "overflow": "visible",
+       "textTransform": "none",
+       "fontStyle": "normal"
+      },
+      "children": [
+       {
+        "tag": "div",
+        "box": {
+         "x": 70,
+         "y": 0,
+         "width": 1300,
+         "height": 100
+        },
+        "styles": {
+         "backgroundColor": "rgba(0, 0, 0, 0)",
+         "color": "rgb(68, 68, 68)",
+         "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+         "fontSize": "15px",
+         "fontWeight": "400",
+         "lineHeight": "20.625px",
+         "letterSpacing": "normal",
+         "borderTopColor": "rgb(68, 68, 68)",
+         "borderTopWidth": "0px",
+         "borderRadius": "0px",
+         "boxShadow": "none",
+         "paddingTop": "0px",
+         "paddingLeft": "0px",
+         "marginTop": "0px",
+         "gap": "normal",
+         "display": "flex",
+         "textAlign": "start",
+         "position": "static",
+         "overflow": "visible",
+         "textTransform": "none",
+         "fontStyle": "normal"
+        },
+        "children": [
+         {
+          "tag": "div",
+          "box": {
+           "x": 70,
+           "y": 0,
+           "width": 1300,
+           "height": 100
+          },
+          "styles": {
+           "backgroundColor": "rgba(0, 0, 0, 0)",
+           "color": "rgb(68, 68, 68)",
+           "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+           "fontSize": "15px",
+           "fontWeight": "400",
+           "lineHeight": "20.625px",
+           "letterSpacing": "normal",
+           "borderTopColor": "rgb(68, 68, 68)",
+           "borderTopWidth": "0px",
+           "borderRadius": "0px",
+           "boxShadow": "none",
+           "paddingTop": "0px",
+           "paddingLeft": "0px",
+           "marginTop": "0px",
+           "gap": "normal",
+           "display": "flex",
+           "textAlign": "start",
+           "position": "static",
+           "overflow": "visible",
+           "textTransform": "none",
+           "fontStyle": "normal"
+          },
+          "children": [
+           {
+            "tag": "nav",
+            "box": {
+             "x": 197,
+             "y": 0,
+             "width": 1047,
+             "height": 100
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgb(68, 68, 68)",
+             "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+             "fontSize": "15px",
+             "fontWeight": "400",
+             "lineHeight": "20.625px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgb(68, 68, 68)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "table",
+             "textAlign": "start",
+             "position": "static",
+             "overflow": "visible",
+             "textTransform": "none",
+             "fontStyle": "normal"
+            },
+            "children": [
+             {
+              "tag": "ul",
+              "box": {
+               "x": 173,
+               "y": 0,
+               "width": 1047,
+               "height": 100
+              },
+              "styles": {
+               "backgroundColor": "rgba(0, 0, 0, 0)",
+               "color": "rgb(68, 68, 68)",
+               "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+               "fontSize": "15px",
+               "fontWeight": "400",
+               "lineHeight": "20.625px",
+               "letterSpacing": "normal",
+               "borderTopColor": "rgb(68, 68, 68)",
+               "borderTopWidth": "0px",
+               "borderRadius": "0px",
+               "boxShadow": "none",
+               "paddingTop": "0px",
+               "paddingLeft": "0px",
+               "marginTop": "0px",
+               "gap": "normal",
+               "display": "flex",
+               "textAlign": "start",
+               "position": "relative",
+               "overflow": "visible",
+               "textTransform": "none",
+               "fontStyle": "normal"
+              },
+              "children": [
+               {
+                "tag": "li",
+                "box": {
+                 "x": 173,
+                 "y": 0,
+                 "width": 97,
+                 "height": 100
+                },
+                "styles": {
+                 "backgroundColor": "rgba(0, 0, 0, 0)",
+                 "color": "rgb(68, 68, 68)",
+                 "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                 "fontSize": "15px",
+                 "fontWeight": "400",
+                 "lineHeight": "20.625px",
+                 "letterSpacing": "normal",
+                 "borderTopColor": "rgb(68, 68, 68)",
+                 "borderTopWidth": "0px",
+                 "borderRadius": "0px",
+                 "boxShadow": "none",
+                 "paddingTop": "0px",
+                 "paddingLeft": "0px",
+                 "marginTop": "0px",
+                 "gap": "normal",
+                 "display": "list-item",
+                 "textAlign": "left",
+                 "position": "relative",
+                 "overflow": "visible",
+                 "textTransform": "none",
+                 "fontStyle": "normal"
+                },
+                "children": [
+                 {
+                  "tag": "a",
+                  "box": {
+                   "x": 173,
+                   "y": 0,
+                   "width": 97,
+                   "height": 100
+                  },
+                  "styles": {
+                   "backgroundColor": "rgba(0, 0, 0, 0)",
+                   "color": "rgb(54, 63, 84)",
+                   "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                   "fontSize": "15px",
+                   "fontWeight": "500",
+                   "lineHeight": "20.625px",
+                   "letterSpacing": "normal",
+                   "borderTopColor": "rgb(54, 63, 84)",
+                   "borderTopWidth": "0px",
+                   "borderRadius": "0px",
+                   "boxShadow": "none",
+                   "paddingTop": "31px",
+                   "paddingLeft": "25px",
+                   "marginTop": "0px",
+                   "gap": "normal",
+                   "display": "flex",
+                   "textAlign": "left",
+                   "position": "relative",
+                   "overflow": "visible",
+                   "textTransform": "none",
+                   "fontStyle": "normal"
+                  },
+                  "children": [
+                   {
+                    "tag": "span",
+                    "box": {
+                     "x": 198,
+                     "y": 55,
+                     "width": 47,
+                     "height": 21
+                    },
+                    "styles": {
+                     "backgroundColor": "rgba(0, 0, 0, 0)",
+                     "color": "rgb(54, 63, 84)",
+                     "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                     "fontSize": "15px",
+                     "fontWeight": "500",
+                     "lineHeight": "20.625px",
+                     "letterSpacing": "normal",
+                     "borderTopColor": "rgb(54, 63, 84)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "0px",
+                     "paddingLeft": "0px",
+                     "marginTop": "0px",
+                     "gap": "normal",
+                     "display": "block",
+                     "textAlign": "left",
+                     "position": "static",
+                     "overflow": "visible",
+                     "textTransform": "none",
+                     "fontStyle": "normal"
+                    },
+                    "children": [],
+                    "text": "Home"
+                   }
+                  ],
+                  "href": "https://www.parkcityplace.org/"
+                 }
+                ]
+               },
+               {
+                "tag": "li",
+                "box": {
+                 "x": 270,
+                 "y": 0,
+                 "width": 156,
+                 "height": 100
+                },
+                "styles": {
+                 "backgroundColor": "rgba(0, 0, 0, 0)",
+                 "color": "rgb(68, 68, 68)",
+                 "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                 "fontSize": "15px",
+                 "fontWeight": "400",
+                 "lineHeight": "20.625px",
+                 "letterSpacing": "normal",
+                 "borderTopColor": "rgb(68, 68, 68)",
+                 "borderTopWidth": "0px",
+                 "borderRadius": "0px",
+                 "boxShadow": "none",
+                 "paddingTop": "0px",
+                 "paddingLeft": "0px",
+                 "marginTop": "0px",
+                 "gap": "normal",
+                 "display": "list-item",
+                 "textAlign": "left",
+                 "position": "relative",
+                 "overflow": "visible",
+                 "textTransform": "none",
+                 "fontStyle": "normal"
+                },
+                "children": [
+                 {
+                  "tag": "a",
+                  "box": {
+                   "x": 270,
+                   "y": 0,
+                   "width": 156,
+                   "height": 100
+                  },
+                  "styles": {
+                   "backgroundColor": "rgba(0, 0, 0, 0)",
+                   "color": "rgb(54, 63, 84)",
+                   "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                   "fontSize": "15px",
+                   "fontWeight": "500",
+                   "lineHeight": "20.625px",
+                   "letterSpacing": "normal",
+                   "borderTopColor": "rgb(54, 63, 84)",
+                   "borderTopWidth": "0px",
+                   "borderRadius": "0px",
+                   "boxShadow": "none",
+                   "paddingTop": "31px",
+                   "paddingLeft": "25px",
+                   "marginTop": "0px",
+                   "gap": "normal",
+                   "display": "flex",
+                   "textAlign": "left",
+                   "position": "static",
+                   "overflow": "visible",
+                   "textTransform": "none",
+                   "fontStyle": "normal"
+                  },
+                  "children": [
+                   {
+                    "tag": "span",
+                    "box": {
+                     "x": 295,
+                     "y": 55,
+                     "width": 106,
+                     "height": 21
+                    },
+                    "styles": {
+                     "backgroundColor": "rgba(0, 0, 0, 0)",
+                     "color": "rgb(54, 63, 84)",
+                     "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                     "fontSize": "15px",
+                     "fontWeight": "500",
+                     "lineHeight": "20.625px",
+                     "letterSpacing": "normal",
+                     "borderTopColor": "rgb(54, 63, 84)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "0px",
+                     "paddingLeft": "0px",
+                     "marginTop": "0px",
+                     "gap": "normal",
+                     "display": "block",
+                     "textAlign": "left",
+                     "position": "static",
+                     "overflow": "visible",
+                     "textTransform": "none",
+                     "fontStyle": "normal"
+                    },
+                    "children": [],
+                    "text": "Floor Plans"
+                   }
+                  ],
+                  "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/floor-plans"
+                 }
+                ]
+               },
+               {
+                "tag": "li",
+                "box": {
+                 "x": 426,
+                 "y": 0,
+                 "width": 132,
+                 "height": 100
+                },
+                "styles": {
+                 "backgroundColor": "rgba(0, 0, 0, 0)",
+                 "color": "rgb(68, 68, 68)",
+                 "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                 "fontSize": "15px",
+                 "fontWeight": "400",
+                 "lineHeight": "20.625px",
+                 "letterSpacing": "normal",
+                 "borderTopColor": "rgb(68, 68, 68)",
+                 "borderTopWidth": "0px",
+                 "borderRadius": "0px",
+                 "boxShadow": "none",
+                 "paddingTop": "0px",
+                 "paddingLeft": "0px",
+                 "marginTop": "0px",
+                 "gap": "normal",
+                 "display": "list-item",
+                 "textAlign": "left",
+                 "position": "relative",
+                 "overflow": "visible",
+                 "textTransform": "none",
+                 "fontStyle": "normal"
+                },
+                "children": [
+                 {
+                  "tag": "a",
+                  "box": {
+                   "x": 426,
+                   "y": 0,
+                   "width": 132,
+                   "height": 100
+                  },
+                  "styles": {
+                   "backgroundColor": "rgba(0, 0, 0, 0)",
+                   "color": "rgb(54, 63, 84)",
+                   "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                   "fontSize": "15px",
+                   "fontWeight": "500",
+                   "lineHeight": "20.625px",
+                   "letterSpacing": "normal",
+                   "borderTopColor": "rgb(54, 63, 84)",
+                   "borderTopWidth": "0px",
+                   "borderRadius": "0px",
+                   "boxShadow": "none",
+                   "paddingTop": "31px",
+                   "paddingLeft": "25px",
+                   "marginTop": "0px",
+                   "gap": "normal",
+                   "display": "flex",
+                   "textAlign": "left",
+                   "position": "static",
+                   "overflow": "visible",
+                   "textTransform": "none",
+                   "fontStyle": "normal"
+                  },
+                  "children": [
+                   {
+                    "tag": "span",
+                    "box": {
+                     "x": 451,
+                     "y": 55,
+                     "width": 82,
+                     "height": 21
+                    },
+                    "styles": {
+                     "backgroundColor": "rgba(0, 0, 0, 0)",
+                     "color": "rgb(54, 63, 84)",
+                     "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                     "fontSize": "15px",
+                     "fontWeight": "500",
+                     "lineHeight": "20.625px",
+                     "letterSpacing": "normal",
+                     "borderTopColor": "rgb(54, 63, 84)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "0px",
+                     "paddingLeft": "0px",
+                     "marginTop": "0px",
+                     "gap": "normal",
+                     "display": "block",
+                     "textAlign": "left",
+                     "position": "static",
+                     "overflow": "visible",
+                     "textTransform": "none",
+                     "fontStyle": "normal"
+                    },
+                    "children": [],
+                    "text": "Amenities"
+                   }
+                  ],
+                  "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/amenities"
+                 }
+                ]
+               },
+               {
+                "tag": "li",
+                "box": {
+                 "x": 558,
+                 "y": 23,
+                 "width": 320,
+                 "height": 54
+                },
+                "styles": {
+                 "backgroundColor": "rgba(0, 0, 0, 0)",
+                 "color": "rgb(68, 68, 68)",
+                 "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                 "fontSize": "15px",
+                 "fontWeight": "400",
+                 "lineHeight": "20.625px",
+                 "letterSpacing": "normal",
+                 "borderTopColor": "rgb(68, 68, 68)",
+                 "borderTopWidth": "0px",
+                 "borderRadius": "0px",
+                 "boxShadow": "none",
+                 "paddingTop": "0px",
+                 "paddingLeft": "0px",
+                 "marginTop": "23px",
+                 "gap": "normal",
+                 "display": "list-item",
+                 "textAlign": "left",
+                 "position": "relative",
+                 "overflow": "visible",
+                 "textTransform": "none",
+                 "fontStyle": "normal"
+                },
+                "children": [
+                 {
+                  "tag": "a",
+                  "box": {
+                   "x": 558,
+                   "y": 23,
+                   "width": 320,
+                   "height": 54
+                  },
+                  "styles": {
+                   "backgroundColor": "rgba(0, 0, 0, 0)",
+                   "color": "rgb(54, 63, 84)",
+                   "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                   "fontSize": "15px",
+                   "fontWeight": "500",
+                   "lineHeight": "20.625px",
+                   "letterSpacing": "normal",
+                   "borderTopColor": "rgb(54, 63, 84)",
+                   "borderTopWidth": "0px",
+                   "borderRadius": "0px",
+                   "boxShadow": "none",
+                   "paddingTop": "0px",
+                   "paddingLeft": "25px",
+                   "marginTop": "0px",
+                   "gap": "normal",
+                   "display": "flex",
+                   "textAlign": "left",
+                   "position": "static",
+                   "overflow": "visible",
+                   "textTransform": "none",
+                   "fontStyle": "normal"
+                  },
+                  "children": [
+                   {
+                    "tag": "img",
+                    "box": {
+                     "x": 583,
+                     "y": 23,
+                     "width": 270,
+                     "height": 54
+                    },
+                    "styles": {
+                     "backgroundColor": "rgba(0, 0, 0, 0)",
+                     "color": "rgb(54, 63, 84)",
+                     "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                     "fontSize": "15px",
+                     "fontWeight": "500",
+                     "lineHeight": "20.625px",
+                     "letterSpacing": "normal",
+                     "borderTopColor": "rgb(54, 63, 84)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "0px",
+                     "paddingLeft": "0px",
+                     "marginTop": "0px",
+                     "gap": "normal",
+                     "display": "block",
+                     "textAlign": "left",
+                     "position": "static",
+                     "overflow": "clip",
+                     "textTransform": "none",
+                     "fontStyle": "normal"
+                    },
+                    "children": [],
+                    "src": "https://res.cloudinary.com/g5-assets-cld/image/upload/x_0,y_0,h_65,w_325,c_crop/q_auto,f_auto,fl_lossy,g_center,h_65,w_325/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/PC_Logo_wqfpzm.png",
+                    "alt": "Park City Place"
+                   }
+                  ],
+                  "href": "https://www.parkcityplace.org/"
+                 }
+                ]
+               },
+               {
+                "tag": "li",
+                "box": {
+                 "x": 878,
+                 "y": 0,
+                 "width": 177,
+                 "height": 100
+                },
+                "styles": {
+                 "backgroundColor": "rgba(0, 0, 0, 0)",
+                 "color": "rgb(68, 68, 68)",
+                 "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                 "fontSize": "15px",
+                 "fontWeight": "400",
+                 "lineHeight": "20.625px",
+                 "letterSpacing": "normal",
+                 "borderTopColor": "rgb(68, 68, 68)",
+                 "borderTopWidth": "0px",
+                 "borderRadius": "0px",
+                 "boxShadow": "none",
+                 "paddingTop": "0px",
+                 "paddingLeft": "0px",
+                 "marginTop": "0px",
+                 "gap": "normal",
+                 "display": "list-item",
+                 "textAlign": "left",
+                 "position": "relative",
+                 "overflow": "visible",
+                 "textTransform": "none",
+                 "fontStyle": "normal"
+                },
+                "children": [
+                 {
+                  "tag": "a",
+                  "box": {
+                   "x": 878,
+                   "y": 0,
+                   "width": 177,
+                   "height": 100
+                  },
+                  "styles": {
+                   "backgroundColor": "rgba(0, 0, 0, 0)",
+                   "color": "rgb(54, 63, 84)",
+                   "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                   "fontSize": "15px",
+                   "fontWeight": "500",
+                   "lineHeight": "20.625px",
+                   "letterSpacing": "normal",
+                   "borderTopColor": "rgb(54, 63, 84)",
+                   "borderTopWidth": "0px",
+                   "borderRadius": "0px",
+                   "boxShadow": "none",
+                   "paddingTop": "31px",
+                   "paddingLeft": "25px",
+                   "marginTop": "0px",
+                   "gap": "normal",
+                   "display": "flex",
+                   "textAlign": "left",
+                   "position": "static",
+                   "overflow": "visible",
+                   "textTransform": "none",
+                   "fontStyle": "normal"
+                  },
+                  "children": [
+                   {
+                    "tag": "span",
+                    "box": {
+                     "x": 903,
+                     "y": 55,
+                     "width": 127,
+                     "height": 21
+                    },
+                    "styles": {
+                     "backgroundColor": "rgba(0, 0, 0, 0)",
+                     "color": "rgb(54, 63, 84)",
+                     "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                     "fontSize": "15px",
+                     "fontWeight": "500",
+                     "lineHeight": "20.625px",
+                     "letterSpacing": "normal",
+                     "borderTopColor": "rgb(54, 63, 84)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "0px",
+                     "paddingLeft": "0px",
+                     "marginTop": "0px",
+                     "gap": "normal",
+                     "display": "block",
+                     "textAlign": "left",
+                     "position": "static",
+                     "overflow": "visible",
+                     "textTransform": "none",
+                     "fontStyle": "normal"
+                    },
+                    "children": [],
+                    "text": "Neighborhood"
+                   }
+                  ],
+                  "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood"
+                 }
+                ]
+               },
+               {
+                "tag": "li",
+                "box": {
+                 "x": 1055,
+                 "y": 0,
+                 "width": 165,
+                 "height": 100
+                },
+                "styles": {
+                 "backgroundColor": "rgba(0, 0, 0, 0)",
+                 "color": "rgb(68, 68, 68)",
+                 "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                 "fontSize": "15px",
+                 "fontWeight": "400",
+                 "lineHeight": "20.625px",
+                 "letterSpacing": "normal",
+                 "borderTopColor": "rgb(68, 68, 68)",
+                 "borderTopWidth": "0px",
+                 "borderRadius": "0px",
+                 "boxShadow": "none",
+                 "paddingTop": "0px",
+                 "paddingLeft": "0px",
+                 "marginTop": "0px",
+                 "gap": "normal",
+                 "display": "list-item",
+                 "textAlign": "left",
+                 "position": "relative",
+                 "overflow": "visible",
+                 "textTransform": "none",
+                 "fontStyle": "normal"
+                },
+                "children": [
+                 {
+                  "tag": "a",
+                  "box": {
+                   "x": 1055,
+                   "y": 0,
+                   "width": 165,
+                   "height": 100
+                  },
+                  "styles": {
+                   "backgroundColor": "rgba(0, 0, 0, 0)",
+                   "color": "rgb(54, 63, 84)",
+                   "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                   "fontSize": "15px",
+                   "fontWeight": "500",
+                   "lineHeight": "20.625px",
+                   "letterSpacing": "normal",
+                   "borderTopColor": "rgb(54, 63, 84)",
+                   "borderTopWidth": "0px",
+                   "borderRadius": "0px",
+                   "boxShadow": "none",
+                   "paddingTop": "31px",
+                   "paddingLeft": "25px",
+                   "marginTop": "0px",
+                   "gap": "normal",
+                   "display": "flex",
+                   "textAlign": "left",
+                   "position": "static",
+                   "overflow": "visible",
+                   "textTransform": "none",
+                   "fontStyle": "normal"
+                  },
+                  "children": [
+                   {
+                    "tag": "span",
+                    "box": {
+                     "x": 1080,
+                     "y": 55,
+                     "width": 115,
+                     "height": 21
+                    },
+                    "styles": {
+                     "backgroundColor": "rgba(0, 0, 0, 0)",
+                     "color": "rgb(54, 63, 84)",
+                     "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                     "fontSize": "15px",
+                     "fontWeight": "500",
+                     "lineHeight": "20.625px",
+                     "letterSpacing": "normal",
+                     "borderTopColor": "rgb(54, 63, 84)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "0px",
+                     "paddingLeft": "0px",
+                     "marginTop": "0px",
+                     "gap": "normal",
+                     "display": "block",
+                     "textAlign": "left",
+                     "position": "static",
+                     "overflow": "visible",
+                     "textTransform": "none",
+                     "fontStyle": "normal"
+                    },
+                    "children": [],
+                    "text": "Contact Us"
+                   }
+                  ],
+                  "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/contact-us"
+                 },
+                 {
+                  "tag": "div",
+                  "box": {
+                   "x": 1020,
+                   "y": 100,
+                   "width": 200,
+                   "height": 65
+                  },
+                  "styles": {
+                   "backgroundColor": "rgba(0, 0, 0, 0)",
+                   "color": "rgb(68, 68, 68)",
+                   "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                   "fontSize": "15px",
+                   "fontWeight": "400",
+                   "lineHeight": "20.625px",
+                   "letterSpacing": "normal",
+                   "borderTopColor": "rgb(68, 68, 68)",
+                   "borderTopWidth": "0px",
+                   "borderRadius": "0px",
+                   "boxShadow": "none",
+                   "paddingTop": "0px",
+                   "paddingLeft": "0px",
+                   "marginTop": "0px",
+                   "gap": "normal",
+                   "display": "block",
+                   "textAlign": "left",
+                   "position": "absolute",
+                   "overflow": "hidden",
+                   "textTransform": "none",
+                   "fontStyle": "normal"
+                  },
+                  "children": [
+                   {
+                    "tag": "ul",
+                    "box": {
+                     "x": 1020,
+                     "y": 35,
+                     "width": 200,
+                     "height": 65
+                    },
+                    "styles": {
+                     "backgroundColor": "rgba(0, 0, 0, 0)",
+                     "color": "rgb(68, 68, 68)",
+                     "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                     "fontSize": "15px",
+                     "fontWeight": "400",
+                     "lineHeight": "20.625px",
+                     "letterSpacing": "normal",
+                     "borderTopColor": "rgb(68, 68, 68)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "4px",
+                     "paddingLeft": "0px",
+                     "marginTop": "0px",
+                     "gap": "normal",
+                     "display": "block",
+                     "textAlign": "left",
+                     "position": "relative",
+                     "overflow": "visible",
+                     "textTransform": "none",
+                     "fontStyle": "normal"
+                    },
+                    "children": [
+                     {
+                      "tag": "li",
+                      "box": {
+                       "x": 1020,
+                       "y": 39,
+                       "width": 200,
+                       "height": 61
+                      },
+                      "styles": {
+                       "backgroundColor": "rgba(0, 0, 0, 0)",
+                       "color": "rgb(68, 68, 68)",
+                       "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                       "fontSize": "15px",
+                       "fontWeight": "400",
+                       "lineHeight": "20.625px",
+                       "letterSpacing": "normal",
+                       "borderTopColor": "rgb(68, 68, 68)",
+                       "borderTopWidth": "0px",
+                       "borderRadius": "0px",
+                       "boxShadow": "none",
+                       "paddingTop": "0px",
+                       "paddingLeft": "0px",
+                       "marginTop": "0px",
+                       "gap": "normal",
+                       "display": "list-item",
+                       "textAlign": "left",
+                       "position": "static",
+                       "overflow": "visible",
+                       "textTransform": "none",
+                       "fontStyle": "normal"
+                      },
+                      "children": [
+                       {
+                        "tag": "a",
+                        "box": {
+                         "x": 1020,
+                         "y": 39,
+                         "width": 200,
+                         "height": 61
+                        },
+                        "styles": {
+                         "backgroundColor": "rgba(247, 247, 249, 0.95)",
+                         "color": "rgb(54, 63, 84)",
+                         "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                         "fontSize": "15px",
+                         "fontWeight": "500",
+                         "lineHeight": "20.625px",
+                         "letterSpacing": "normal",
+                         "borderTopColor": "rgb(54, 63, 84)",
+                         "borderTopWidth": "0px",
+                         "borderRadius": "0px",
+                         "boxShadow": "none",
+                         "paddingTop": "20px",
+                         "paddingLeft": "25px",
+                         "marginTop": "0px",
+                         "gap": "normal",
+                         "display": "block",
+                         "textAlign": "left",
+                         "position": "static",
+                         "overflow": "visible",
+                         "textTransform": "none",
+                         "fontStyle": "normal"
+                        },
+                        "children": [],
+                        "text": "Residents",
+                        "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/residents"
+                       }
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "props": [
+  {
+   "array": false,
+   "fields": [
+    {
+     "array": false,
+     "name": "image",
+     "observation": {
+      "countMax": null,
+      "countMin": null,
+      "presentInstances": 8,
+      "totalInstances": 8,
+      "valueCounts": null
+     },
+     "observedValues": [],
+     "optional": false,
+     "type": "image"
+    },
+    {
+     "array": false,
+     "name": "href",
+     "observation": {
+      "countMax": null,
+      "countMin": null,
+      "presentInstances": 8,
+      "totalInstances": 8,
+      "valueCounts": null
+     },
+     "observedValues": [
+      "/"
+     ],
+     "optional": false,
+     "type": "url"
+    }
+   ],
+   "name": "logo",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 8,
+    "totalInstances": 8,
+    "valueCounts": null
+   },
+   "observedStructured": [
+    {
+     "href": "https://www.parkcityplace.org/",
+     "kind": "link",
+     "label": "Home",
+     "member": 0
+    }
+   ],
+   "observedValues": [
+    "Home"
+   ],
+   "optional": false,
+   "type": "Link"
+  },
+  {
+   "array": true,
+   "fields": [
+    {
+     "array": false,
+     "name": "label",
+     "observation": {
+      "countMax": null,
+      "countMin": null,
+      "presentInstances": 8,
+      "totalInstances": 8,
+      "valueCounts": [
+       {
+        "count": 8,
+        "value": "Home"
+       },
+       {
+        "count": 8,
+        "value": "Floor Plans"
+       },
+       {
+        "count": 8,
+        "value": "Amenities"
+       },
+       {
+        "count": 8,
+        "value": "Neighborhood"
+       },
+       {
+        "count": 8,
+        "value": "Contact Us"
+       }
+      ]
+     },
+     "observedValues": [
+      "Home",
+      "Floor Plans",
+      "Amenities",
+      "Neighborhood",
+      "Contact Us"
+     ],
+     "optional": false,
+     "type": "string"
+    },
+    {
+     "array": false,
+     "name": "href",
+     "observation": {
+      "countMax": null,
+      "countMin": null,
+      "presentInstances": 8,
+      "totalInstances": 8,
+      "valueCounts": null
+     },
+     "observedValues": [],
+     "optional": false,
+     "type": "url"
+    }
+   ],
+   "name": "navLinks",
+   "observation": {
+    "countMax": 5,
+    "countMin": 5,
+    "presentInstances": 8,
+    "totalInstances": 8,
+    "valueCounts": null
+   },
+   "observedStructured": [
+    {
+     "fields": {
+      "href": {
+       "href": "https://www.parkcityplace.org/",
+       "label": "Home"
+      }
+     },
+     "kind": "item",
+     "member": 0
+    },
+    {
+     "fields": {
+      "href": {
+       "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/floor-plans",
+       "label": "Floor Plans"
+      }
+     },
+     "kind": "item",
+     "member": 0
+    },
+    {
+     "fields": {
+      "href": {
+       "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/amenities",
+       "label": "Amenities"
+      }
+     },
+     "kind": "item",
+     "member": 0
+    },
+    {
+     "fields": {
+      "href": {
+       "href": "https://www.parkcityplace.org/",
+       "label": null
+      }
+     },
+     "kind": "item",
+     "member": 0
+    },
+    {
+     "fields": {
+      "href": {
+       "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood",
+       "label": "Neighborhood"
+      }
+     },
+     "kind": "item",
+     "member": 0
+    },
+    {
+     "fields": {
+      "href": {
+       "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/contact-us",
+       "label": "Contact Us"
+      }
+     },
+     "kind": "item",
+     "member": 0
+    }
+   ],
+   "observedValues": [
+    "Home",
+    "Floor Plans",
+    "Amenities",
+    "Neighborhood",
+    "Contact Us"
+   ],
+   "optional": false,
+   "type": "Link"
+  },
+  {
+   "array": false,
+   "fields": [
+    {
+     "array": false,
+     "name": "label",
+     "observation": {
+      "countMax": null,
+      "countMin": null,
+      "presentInstances": 8,
+      "totalInstances": 8,
+      "valueCounts": [
+       {
+        "count": 8,
+        "value": "Residents"
+       }
+      ]
+     },
+     "observedValues": [
+      "Residents"
+     ],
+     "optional": false,
+     "type": "string"
+    },
+    {
+     "array": false,
+     "name": "href",
+     "observation": {
+      "countMax": null,
+      "countMin": null,
+      "presentInstances": 8,
+      "totalInstances": 8,
+      "valueCounts": null
+     },
+     "observedValues": [],
+     "optional": false,
+     "type": "url"
+    }
+   ],
+   "name": "residentsButton",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 8,
+    "totalInstances": 8,
+    "valueCounts": null
+   },
+   "observedValues": [],
+   "optional": true,
+   "type": "Link"
+  }
+ ]
+}

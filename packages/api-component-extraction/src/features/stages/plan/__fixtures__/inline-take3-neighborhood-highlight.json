@@ -1,0 +1,1094 @@
+{
+ "source": {
+  "run": "6aca03006edf6700023d80ce#0001",
+  "component": "Neighborhood/Location Highlight",
+  "url": "https://www.parkcityplace.org/"
+ },
+ "section": {
+  "tag": "div",
+  "box": {
+   "x": 0,
+   "y": 2885,
+   "width": 1440,
+   "height": 713
+  },
+  "styles": {
+   "backgroundColor": "rgba(0, 0, 0, 0)",
+   "color": "rgb(68, 68, 68)",
+   "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+   "fontSize": "15px",
+   "fontWeight": "400",
+   "lineHeight": "20.625px",
+   "letterSpacing": "normal",
+   "borderTopColor": "rgb(68, 68, 68)",
+   "borderTopWidth": "0px",
+   "borderRadius": "0px",
+   "boxShadow": "none",
+   "paddingTop": "60px",
+   "paddingLeft": "0px",
+   "marginTop": "0px",
+   "gap": "normal",
+   "display": "block",
+   "textAlign": "start",
+   "position": "relative",
+   "overflow": "visible",
+   "textTransform": "none",
+   "fontStyle": "normal"
+  },
+  "children": [
+   {
+    "tag": "div",
+    "box": {
+     "x": 0,
+     "y": 2945,
+     "width": 1440,
+     "height": 593
+    },
+    "styles": {
+     "backgroundColor": "rgba(0, 0, 0, 0)",
+     "color": "rgb(68, 68, 68)",
+     "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+     "fontSize": "15px",
+     "fontWeight": "400",
+     "lineHeight": "20.625px",
+     "letterSpacing": "normal",
+     "borderTopColor": "rgb(68, 68, 68)",
+     "borderTopWidth": "0px",
+     "borderRadius": "0px",
+     "boxShadow": "none",
+     "paddingTop": "0px",
+     "paddingLeft": "0px",
+     "marginTop": "0px",
+     "gap": "normal",
+     "display": "block",
+     "textAlign": "start",
+     "position": "relative",
+     "overflow": "visible",
+     "textTransform": "none",
+     "fontStyle": "normal"
+    },
+    "children": [
+     {
+      "tag": "div",
+      "box": {
+       "x": 0,
+       "y": 2945,
+       "width": 1440,
+       "height": 593
+      },
+      "styles": {
+       "backgroundColor": "rgba(0, 0, 0, 0)",
+       "color": "rgb(68, 68, 68)",
+       "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+       "fontSize": "15px",
+       "fontWeight": "400",
+       "lineHeight": "20.625px",
+       "letterSpacing": "normal",
+       "borderTopColor": "rgb(68, 68, 68)",
+       "borderTopWidth": "0px",
+       "borderRadius": "0px",
+       "boxShadow": "none",
+       "paddingTop": "0px",
+       "paddingLeft": "30px",
+       "marginTop": "0px",
+       "gap": "normal",
+       "display": "flex",
+       "textAlign": "start",
+       "position": "static",
+       "overflow": "visible",
+       "textTransform": "none",
+       "fontStyle": "normal"
+      },
+      "children": [
+       {
+        "tag": "div",
+        "box": {
+         "x": 30,
+         "y": 2947,
+         "width": 460,
+         "height": 589
+        },
+        "styles": {
+         "backgroundColor": "rgba(0, 0, 0, 0)",
+         "color": "rgb(68, 68, 68)",
+         "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+         "fontSize": "15px",
+         "fontWeight": "400",
+         "lineHeight": "20.625px",
+         "letterSpacing": "normal",
+         "borderTopColor": "rgb(68, 68, 68)",
+         "borderTopWidth": "0px",
+         "borderRadius": "0px",
+         "boxShadow": "none",
+         "paddingTop": "0px",
+         "paddingLeft": "15px",
+         "marginTop": "0px",
+         "gap": "normal",
+         "display": "block",
+         "textAlign": "start",
+         "position": "relative",
+         "overflow": "visible",
+         "textTransform": "none",
+         "fontStyle": "normal"
+        },
+        "children": [
+         {
+          "tag": "div",
+          "box": {
+           "x": 45,
+           "y": 2947,
+           "width": 430,
+           "height": 589
+          },
+          "styles": {
+           "backgroundColor": "rgb(255, 255, 255)",
+           "color": "rgb(68, 68, 68)",
+           "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+           "fontSize": "15px",
+           "fontWeight": "400",
+           "lineHeight": "20.625px",
+           "letterSpacing": "normal",
+           "borderTopColor": "rgb(68, 68, 68)",
+           "borderTopWidth": "0px",
+           "borderRadius": "0px",
+           "boxShadow": "none",
+           "paddingTop": "45px",
+           "paddingLeft": "45px",
+           "marginTop": "0px",
+           "gap": "normal",
+           "display": "block",
+           "textAlign": "start",
+           "position": "static",
+           "overflow": "visible",
+           "textTransform": "none",
+           "fontStyle": "normal"
+          },
+          "children": [
+           {
+            "tag": "div",
+            "box": {
+             "x": 90,
+             "y": 2992,
+             "width": 340,
+             "height": 499
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgb(68, 68, 68)",
+             "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+             "fontSize": "15px",
+             "fontWeight": "400",
+             "lineHeight": "20.625px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgb(68, 68, 68)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "start",
+             "position": "static",
+             "overflow": "visible",
+             "textTransform": "none",
+             "fontStyle": "normal"
+            },
+            "children": [
+             {
+              "tag": "div",
+              "box": {
+               "x": 90,
+               "y": 2992,
+               "width": 340,
+               "height": 431
+              },
+              "styles": {
+               "backgroundColor": "rgba(0, 0, 0, 0)",
+               "color": "rgb(68, 68, 68)",
+               "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+               "fontSize": "15px",
+               "fontWeight": "400",
+               "lineHeight": "20.625px",
+               "letterSpacing": "normal",
+               "borderTopColor": "rgb(68, 68, 68)",
+               "borderTopWidth": "0px",
+               "borderRadius": "0px",
+               "boxShadow": "none",
+               "paddingTop": "0px",
+               "paddingLeft": "0px",
+               "marginTop": "0px",
+               "gap": "normal",
+               "display": "block",
+               "textAlign": "start",
+               "position": "static",
+               "overflow": "visible",
+               "textTransform": "none",
+               "fontStyle": "normal"
+              },
+              "children": [
+               {
+                "tag": "div",
+                "box": {
+                 "x": 90,
+                 "y": 2992,
+                 "width": 340,
+                 "height": 431
+                },
+                "styles": {
+                 "backgroundColor": "rgba(0, 0, 0, 0)",
+                 "color": "rgb(68, 68, 68)",
+                 "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                 "fontSize": "15px",
+                 "fontWeight": "400",
+                 "lineHeight": "20.625px",
+                 "letterSpacing": "normal",
+                 "borderTopColor": "rgb(68, 68, 68)",
+                 "borderTopWidth": "0px",
+                 "borderRadius": "0px",
+                 "boxShadow": "none",
+                 "paddingTop": "0px",
+                 "paddingLeft": "0px",
+                 "marginTop": "0px",
+                 "gap": "normal",
+                 "display": "block",
+                 "textAlign": "start",
+                 "position": "static",
+                 "overflow": "hidden",
+                 "textTransform": "none",
+                 "fontStyle": "normal"
+                },
+                "children": [
+                 {
+                  "tag": "div",
+                  "box": {
+                   "x": 90,
+                   "y": 2992,
+                   "width": 340,
+                   "height": 415
+                  },
+                  "styles": {
+                   "backgroundColor": "rgba(0, 0, 0, 0)",
+                   "color": "rgb(68, 68, 68)",
+                   "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                   "fontSize": "15px",
+                   "fontWeight": "400",
+                   "lineHeight": "20.625px",
+                   "letterSpacing": "normal",
+                   "borderTopColor": "rgb(68, 68, 68)",
+                   "borderTopWidth": "0px",
+                   "borderRadius": "0px",
+                   "boxShadow": "none",
+                   "paddingTop": "0px",
+                   "paddingLeft": "0px",
+                   "marginTop": "0px",
+                   "gap": "normal",
+                   "display": "block",
+                   "textAlign": "start",
+                   "position": "static",
+                   "overflow": "visible",
+                   "textTransform": "none",
+                   "fontStyle": "normal"
+                  },
+                  "children": [
+                   {
+                    "tag": "h2",
+                    "box": {
+                     "x": 90,
+                     "y": 2992,
+                     "width": 340,
+                     "height": 135
+                    },
+                    "styles": {
+                     "backgroundColor": "rgba(0, 0, 0, 0)",
+                     "color": "rgb(108, 115, 61)",
+                     "fontFamily": "nobel-condensed, Georgia, Cambria, \"Times New Roman\", Times, serif",
+                     "fontSize": "45px",
+                     "fontWeight": "400",
+                     "lineHeight": "45px",
+                     "letterSpacing": "normal",
+                     "borderTopColor": "rgb(108, 115, 61)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "0px",
+                     "paddingLeft": "0px",
+                     "marginTop": "0px",
+                     "gap": "normal",
+                     "display": "block",
+                     "textAlign": "start",
+                     "position": "relative",
+                     "overflow": "visible",
+                     "textTransform": "uppercase",
+                     "fontStyle": "normal"
+                    },
+                    "children": [
+                     {
+                      "tag": "span",
+                      "box": {
+                       "x": 90,
+                       "y": 3015,
+                       "width": 84,
+                       "height": 18
+                      },
+                      "styles": {
+                       "backgroundColor": "rgba(0, 0, 0, 0)",
+                       "color": "rgb(108, 115, 61)",
+                       "fontFamily": "gravesend-sans",
+                       "fontSize": "18px",
+                       "fontWeight": "300",
+                       "lineHeight": "18px",
+                       "letterSpacing": "normal",
+                       "borderTopColor": "rgb(108, 115, 61)",
+                       "borderTopWidth": "0px",
+                       "borderRadius": "0px",
+                       "boxShadow": "none",
+                       "paddingTop": "0px",
+                       "paddingLeft": "0px",
+                       "marginTop": "0px",
+                       "gap": "normal",
+                       "display": "inline-block",
+                       "textAlign": "start",
+                       "position": "static",
+                       "overflow": "visible",
+                       "textTransform": "uppercase",
+                       "fontStyle": "normal"
+                      },
+                      "children": [],
+                      "text": "Explore"
+                     }
+                    ],
+                    "text": "Bridgeport, Connecticut"
+                   },
+                   {
+                    "tag": "p",
+                    "box": {
+                     "x": 90,
+                     "y": 3143,
+                     "width": 340,
+                     "height": 264
+                    },
+                    "styles": {
+                     "backgroundColor": "rgba(0, 0, 0, 0)",
+                     "color": "rgb(68, 68, 68)",
+                     "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                     "fontSize": "16px",
+                     "fontWeight": "400",
+                     "lineHeight": "22px",
+                     "letterSpacing": "normal",
+                     "borderTopColor": "rgb(68, 68, 68)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "0px",
+                     "paddingLeft": "0px",
+                     "marginTop": "16px",
+                     "gap": "normal",
+                     "display": "block",
+                     "textAlign": "start",
+                     "position": "static",
+                     "overflow": "visible",
+                     "textTransform": "none",
+                     "fontStyle": "normal"
+                    },
+                    "children": [
+                     {
+                      "tag": "strong",
+                      "box": {
+                       "x": 251,
+                       "y": 3166,
+                       "width": 131,
+                       "height": 19
+                      },
+                      "styles": {
+                       "backgroundColor": "rgba(0, 0, 0, 0)",
+                       "color": "rgb(68, 68, 68)",
+                       "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                       "fontSize": "16px",
+                       "fontWeight": "600",
+                       "lineHeight": "22px",
+                       "letterSpacing": "normal",
+                       "borderTopColor": "rgb(68, 68, 68)",
+                       "borderTopWidth": "0px",
+                       "borderRadius": "0px",
+                       "boxShadow": "none",
+                       "paddingTop": "0px",
+                       "paddingLeft": "0px",
+                       "marginTop": "0px",
+                       "gap": "normal",
+                       "display": "inline",
+                       "textAlign": "start",
+                       "position": "static",
+                       "overflow": "visible",
+                       "textTransform": "none",
+                       "fontStyle": "normal"
+                      },
+                      "children": [
+                       {
+                        "tag": "a",
+                        "box": {
+                         "x": 251,
+                         "y": 3166,
+                         "width": 131,
+                         "height": 19
+                        },
+                        "styles": {
+                         "backgroundColor": "rgba(0, 0, 0, 0)",
+                         "color": "rgb(166, 95, 70)",
+                         "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                         "fontSize": "16px",
+                         "fontWeight": "700",
+                         "lineHeight": "22px",
+                         "letterSpacing": "normal",
+                         "borderTopColor": "rgb(166, 95, 70)",
+                         "borderTopWidth": "0px",
+                         "borderRadius": "0px",
+                         "boxShadow": "none",
+                         "paddingTop": "0px",
+                         "paddingLeft": "0px",
+                         "marginTop": "0px",
+                         "gap": "normal",
+                         "display": "inline",
+                         "textAlign": "start",
+                         "position": "static",
+                         "overflow": "visible",
+                         "textTransform": "none",
+                         "fontStyle": "normal"
+                        },
+                        "children": [],
+                        "text": "our ideal location",
+                        "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood"
+                       }
+                      ]
+                     }
+                    ],
+                    "text": "Whether you’re an adventurer or a total homebody, you’ll love in Bridgeport. When you call Park City Place your home, you’ll have all the experiences you crave at your doorstep. Meet up with friends for a bite to eat, grab a beverage at your favorite coffee shop, get some shopping done, or explore the outdoors. Perfectly situated near all the best destinations in Bridgeport, Park City Place puts you close to daily conveniences like shopping, dining, and recreational activities.",
+                    "textRuns": [
+                     "Whether you’re an adventurer or a total homebody, you’ll love",
+                     "in Bridgeport. When you call Park City Place your home, you’ll have all the experiences you crave at your doorstep. Meet up with friends for a bite to eat, grab a beverage at your favorite coffee shop, get some shopping done, or explore the outdoors. Perfectly situated near all the best destinations in Bridgeport, Park City Place puts you close to daily conveniences like shopping, dining, and recreational activities."
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "tag": "div",
+              "box": {
+               "x": 90,
+               "y": 3443,
+               "width": 340,
+               "height": 48
+              },
+              "styles": {
+               "backgroundColor": "rgba(0, 0, 0, 0)",
+               "color": "rgb(68, 68, 68)",
+               "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+               "fontSize": "15px",
+               "fontWeight": "400",
+               "lineHeight": "20.625px",
+               "letterSpacing": "normal",
+               "borderTopColor": "rgb(68, 68, 68)",
+               "borderTopWidth": "0px",
+               "borderRadius": "0px",
+               "boxShadow": "none",
+               "paddingTop": "0px",
+               "paddingLeft": "0px",
+               "marginTop": "0px",
+               "gap": "normal",
+               "display": "block",
+               "textAlign": "start",
+               "position": "static",
+               "overflow": "visible",
+               "textTransform": "none",
+               "fontStyle": "normal"
+              },
+              "children": [
+               {
+                "tag": "span",
+                "box": {
+                 "x": 90,
+                 "y": 3443,
+                 "width": 340,
+                 "height": 48
+                },
+                "styles": {
+                 "backgroundColor": "rgba(0, 0, 0, 0)",
+                 "color": "rgb(68, 68, 68)",
+                 "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                 "fontSize": "15px",
+                 "fontWeight": "400",
+                 "lineHeight": "20.625px",
+                 "letterSpacing": "normal",
+                 "borderTopColor": "rgb(68, 68, 68)",
+                 "borderTopWidth": "0px",
+                 "borderRadius": "0px",
+                 "boxShadow": "none",
+                 "paddingTop": "0px",
+                 "paddingLeft": "0px",
+                 "marginTop": "0px",
+                 "gap": "normal",
+                 "display": "block",
+                 "textAlign": "start",
+                 "position": "static",
+                 "overflow": "visible",
+                 "textTransform": "none",
+                 "fontStyle": "normal"
+                },
+                "children": [
+                 {
+                  "tag": "a",
+                  "box": {
+                   "x": 90,
+                   "y": 3443,
+                   "width": 222,
+                   "height": 48
+                  },
+                  "styles": {
+                   "backgroundColor": "rgba(0, 0, 0, 0)",
+                   "color": "rgb(108, 115, 61)",
+                   "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                   "fontSize": "15px",
+                   "fontWeight": "400",
+                   "lineHeight": "20.625px",
+                   "letterSpacing": "normal",
+                   "borderTopColor": "rgb(108, 115, 61)",
+                   "borderTopWidth": "0px",
+                   "borderRadius": "0px",
+                   "boxShadow": "none",
+                   "paddingTop": "0px",
+                   "paddingLeft": "0px",
+                   "marginTop": "0px",
+                   "gap": "normal",
+                   "display": "inline-block",
+                   "textAlign": "start",
+                   "position": "static",
+                   "overflow": "visible",
+                   "textTransform": "none",
+                   "fontStyle": "normal"
+                  },
+                  "children": [
+                   {
+                    "tag": "span",
+                    "box": {
+                     "x": 90,
+                     "y": 3443,
+                     "width": 222,
+                     "height": 48
+                    },
+                    "styles": {
+                     "backgroundColor": "rgb(108, 115, 61)",
+                     "color": "rgb(255, 255, 255)",
+                     "fontFamily": "gravesend-sans, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                     "fontSize": "15px",
+                     "fontWeight": "600",
+                     "lineHeight": "18px",
+                     "letterSpacing": "1.5px",
+                     "borderTopColor": "rgb(255, 255, 255)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "15px",
+                     "paddingLeft": "20px",
+                     "marginTop": "0px",
+                     "gap": "normal",
+                     "display": "inline-block",
+                     "textAlign": "center",
+                     "position": "relative",
+                     "overflow": "visible",
+                     "textTransform": "uppercase",
+                     "fontStyle": "normal"
+                    },
+                    "children": [],
+                    "text": "See What’s Nearby"
+                   }
+                  ],
+                  "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "tag": "div",
+        "box": {
+         "x": 490,
+         "y": 2945,
+         "width": 920,
+         "height": 593
+        },
+        "styles": {
+         "backgroundColor": "rgba(0, 0, 0, 0)",
+         "color": "rgb(68, 68, 68)",
+         "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+         "fontSize": "15px",
+         "fontWeight": "400",
+         "lineHeight": "20.625px",
+         "letterSpacing": "normal",
+         "borderTopColor": "rgb(68, 68, 68)",
+         "borderTopWidth": "0px",
+         "borderRadius": "0px",
+         "boxShadow": "none",
+         "paddingTop": "0px",
+         "paddingLeft": "0px",
+         "marginTop": "0px",
+         "gap": "normal",
+         "display": "block",
+         "textAlign": "start",
+         "position": "relative",
+         "overflow": "visible",
+         "textTransform": "none",
+         "fontStyle": "normal"
+        },
+        "children": [
+         {
+          "tag": "div",
+          "box": {
+           "x": 490,
+           "y": 2945,
+           "width": 950,
+           "height": 593
+          },
+          "styles": {
+           "backgroundColor": "rgba(0, 0, 0, 0)",
+           "color": "rgb(68, 68, 68)",
+           "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+           "fontSize": "15px",
+           "fontWeight": "400",
+           "lineHeight": "20.625px",
+           "letterSpacing": "normal",
+           "borderTopColor": "rgb(68, 68, 68)",
+           "borderTopWidth": "0px",
+           "borderRadius": "0px",
+           "boxShadow": "none",
+           "paddingTop": "0px",
+           "paddingLeft": "0px",
+           "marginTop": "0px",
+           "gap": "normal",
+           "display": "block",
+           "textAlign": "start",
+           "position": "static",
+           "overflow": "visible",
+           "textTransform": "none",
+           "fontStyle": "normal"
+          },
+          "children": [
+           {
+            "tag": "div",
+            "box": {
+             "x": 490,
+             "y": 2945,
+             "width": 950,
+             "height": 593
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgb(68, 68, 68)",
+             "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+             "fontSize": "15px",
+             "fontWeight": "400",
+             "lineHeight": "20.625px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgb(68, 68, 68)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "start",
+             "position": "static",
+             "overflow": "visible",
+             "textTransform": "none",
+             "fontStyle": "normal"
+            },
+            "children": [
+             {
+              "tag": "div",
+              "box": {
+               "x": 490,
+               "y": 2945,
+               "width": 950,
+               "height": 593
+              },
+              "styles": {
+               "backgroundColor": "rgba(0, 0, 0, 0)",
+               "color": "rgb(68, 68, 68)",
+               "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+               "fontSize": "15px",
+               "fontWeight": "400",
+               "lineHeight": "20.625px",
+               "letterSpacing": "normal",
+               "borderTopColor": "rgb(68, 68, 68)",
+               "borderTopWidth": "0px",
+               "borderRadius": "0px",
+               "boxShadow": "none",
+               "paddingTop": "0px",
+               "paddingLeft": "0px",
+               "marginTop": "0px",
+               "gap": "normal",
+               "display": "block",
+               "textAlign": "start",
+               "position": "static",
+               "overflow": "visible",
+               "textTransform": "none",
+               "fontStyle": "normal"
+              },
+              "children": [
+               {
+                "tag": "figure",
+                "box": {
+                 "x": 490,
+                 "y": 2945,
+                 "width": 950,
+                 "height": 593
+                },
+                "styles": {
+                 "backgroundColor": "rgba(0, 0, 0, 0)",
+                 "color": "rgb(68, 68, 68)",
+                 "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                 "fontSize": "15px",
+                 "fontWeight": "400",
+                 "lineHeight": "20.625px",
+                 "letterSpacing": "normal",
+                 "borderTopColor": "rgb(68, 68, 68)",
+                 "borderTopWidth": "0px",
+                 "borderRadius": "0px",
+                 "boxShadow": "none",
+                 "paddingTop": "0px",
+                 "paddingLeft": "0px",
+                 "marginTop": "0px",
+                 "gap": "normal",
+                 "display": "block",
+                 "textAlign": "center",
+                 "position": "static",
+                 "overflow": "visible",
+                 "textTransform": "none",
+                 "fontStyle": "normal"
+                },
+                "children": [
+                 {
+                  "tag": "div",
+                  "box": {
+                   "x": 490,
+                   "y": 2945,
+                   "width": 950,
+                   "height": 593
+                  },
+                  "styles": {
+                   "backgroundColor": "rgba(0, 0, 0, 0)",
+                   "color": "rgb(68, 68, 68)",
+                   "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                   "fontSize": "15px",
+                   "fontWeight": "400",
+                   "lineHeight": "20.625px",
+                   "letterSpacing": "normal",
+                   "borderTopColor": "rgb(68, 68, 68)",
+                   "borderTopWidth": "0px",
+                   "borderRadius": "0px",
+                   "boxShadow": "none",
+                   "paddingTop": "0px",
+                   "paddingLeft": "0px",
+                   "marginTop": "0px",
+                   "gap": "normal",
+                   "display": "inline-block",
+                   "textAlign": "center",
+                   "position": "relative",
+                   "overflow": "visible",
+                   "textTransform": "none",
+                   "fontStyle": "normal"
+                  },
+                  "children": [
+                   {
+                    "tag": "img",
+                    "box": {
+                     "x": 490,
+                     "y": 2945,
+                     "width": 950,
+                     "height": 593
+                    },
+                    "styles": {
+                     "backgroundColor": "rgba(0, 0, 0, 0)",
+                     "color": "rgb(68, 68, 68)",
+                     "fontFamily": "stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif",
+                     "fontSize": "15px",
+                     "fontWeight": "400",
+                     "lineHeight": "20.625px",
+                     "letterSpacing": "normal",
+                     "borderTopColor": "rgb(68, 68, 68)",
+                     "borderTopWidth": "0px",
+                     "borderRadius": "0px",
+                     "boxShadow": "none",
+                     "paddingTop": "0px",
+                     "paddingLeft": "0px",
+                     "marginTop": "0px",
+                     "gap": "normal",
+                     "display": "inline",
+                     "textAlign": "center",
+                     "position": "static",
+                     "overflow": "clip",
+                     "textTransform": "none",
+                     "fontStyle": "normal"
+                    },
+                    "children": [],
+                    "src": "https://g5-assets-cld-res.cloudinary.com/image/upload/x_0,y_41,h_1250,w_2000,c_crop/q_auto,f_auto,c_fill,g_center,h_748,w_1198/v1773913753/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/GettyImages-1368500085_e30uye.jpg",
+                    "alt": "Resident eating lunch at a restaurant near Park City Place in Bridgeport, Connecticut"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "props": [
+  {
+   "array": false,
+   "name": "eyebrow",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 3,
+    "totalInstances": 3,
+    "valueCounts": null
+   },
+   "observedValues": [
+    "Bridgeport, Connecticut",
+    "Your Neighborhood",
+    "Kick Back"
+   ],
+   "optional": true,
+   "type": "string"
+  },
+  {
+   "array": false,
+   "name": "heading",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 3,
+    "totalInstances": 3,
+    "valueCounts": null
+   },
+   "observedValues": [
+    "Explore our ideal location in Bridgeport.",
+    "Your Neighborhood in Harmony ... your new home.",
+    "Kick Back & Relax ... in-home features"
+   ],
+   "optional": false,
+   "type": "richText"
+  },
+  {
+   "array": false,
+   "name": "body",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 3,
+    "totalInstances": 3,
+    "valueCounts": null
+   },
+   "observedValues": [
+    "Whether you’re an adventurer or a total homebody, you’ll love our ideal location in Bridgeport. When you call Park City Place your home, you’ll have all the experiences you crave at your doorstep...",
+    "Fall in love with where you live. In Bridgeport, Connecticut, Park City Place is surrounded by the daily conveniences and lively social activities you look forward to. Whether you’re sightseeing around town, grabbing lunch with a friend, or picking up your usual coffee order at the cafe down the street, you’ll have everything you’ve come to love right here at your fingertips. You’re sure to find your ideal routine here.",
+    "Our comfortable in-home features and stellar amenity spaces offer the ideal place to rejuvenate or unwind..."
+   ],
+   "optional": false,
+   "type": "richText"
+  },
+  {
+   "array": false,
+   "fields": [
+    {
+     "array": false,
+     "name": "src",
+     "observation": {
+      "totalInstances": 3
+     },
+     "observedValues": [],
+     "optional": false,
+     "type": "image"
+    },
+    {
+     "array": false,
+     "name": "alt",
+     "observation": {
+      "totalInstances": 3
+     },
+     "observedValues": [],
+     "optional": true,
+     "type": "string"
+    }
+   ],
+   "name": "image",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 3,
+    "totalInstances": 3,
+    "valueCounts": null
+   },
+   "observedStructured": [
+    {
+     "alt": "Resident eating lunch at a restaurant near Park City Place in Bridgeport, Connecticut",
+     "kind": "media",
+     "member": 0,
+     "src": "https://g5-assets-cld-res.cloudinary.com/image/upload/x_0,y_41,h_1250,w_2000,c_crop/q_auto,f_auto,c_fill,g_center,h_748,w_1198/v1773913753/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/GettyImages-1368500085_e30uye.jpg"
+    },
+    {
+     "alt": "People crossing road at Park City Place in Bridgeport, Connecticut",
+     "kind": "media",
+     "member": 1,
+     "src": "https://g5-assets-cld-res.cloudinary.com/image/upload/x_0,y_85,h_1250,w_2000,c_crop/q_auto,f_auto,c_fill,g_center,h_748,w_1198/v1773916628/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/GettyImages-1614058752_ipj6r4.jpg"
+    },
+    {
+     "alt": "Residents relaxing on a couch at Park City Place in Bridgeport, Connecticut",
+     "kind": "media",
+     "member": 2,
+     "src": "https://g5-assets-cld-res.cloudinary.com/image/upload/x_0,y_0,h_1250,w_2000,c_crop/q_auto,f_auto,c_fill,g_center,h_748,w_1198/v1775725810/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/GettyImages-1350071405_lho9f7.jpg"
+    }
+   ],
+   "observedValues": [
+    "Resident eating lunch at a restaurant near Park City Place in Bridgeport, Connecticut",
+    "People crossing road at Park City Place in Bridgeport, Connecticut",
+    "Residents relaxing on a couch at Park City Place in Bridgeport, Connecticut"
+   ],
+   "optional": false,
+   "type": "Image"
+  },
+  {
+   "array": false,
+   "fields": [
+    {
+     "array": false,
+     "name": "href",
+     "observation": {
+      "totalInstances": 3
+     },
+     "observedValues": [],
+     "optional": false,
+     "type": "url"
+    }
+   ],
+   "name": "imageLink",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 2,
+    "totalInstances": 3,
+    "valueCounts": null
+   },
+   "observedStructured": [
+    {
+     "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood",
+     "kind": "link",
+     "label": "our ideal location",
+     "member": 0
+    },
+    {
+     "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/floor-plans",
+     "kind": "link",
+     "label": "your new home",
+     "member": 1
+    },
+    {
+     "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/amenities",
+     "kind": "link",
+     "label": "in-home features",
+     "member": 2
+    }
+   ],
+   "observedValues": [
+    "our ideal location",
+    "your new home",
+    "in-home features"
+   ],
+   "optional": true,
+   "type": "Link"
+  },
+  {
+   "array": false,
+   "fields": [
+    {
+     "array": false,
+     "name": "label",
+     "observation": {
+      "totalInstances": 3
+     },
+     "observedValues": [],
+     "optional": false,
+     "type": "string"
+    },
+    {
+     "array": false,
+     "name": "href",
+     "observation": {
+      "totalInstances": 3
+     },
+     "observedValues": [],
+     "optional": false,
+     "type": "url"
+    }
+   ],
+   "name": "ctaButton",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 3,
+    "totalInstances": 3,
+    "valueCounts": [
+     {
+      "count": 1,
+      "value": "Schedule a Tour"
+     },
+     {
+      "count": 1,
+      "value": "See What’s Nearby"
+     }
+    ]
+   },
+   "observedStructured": [
+    {
+     "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood",
+     "kind": "link",
+     "label": "See What’s Nearby",
+     "member": 0
+    },
+    {
+     "href": "https://www.parkcityplace.org/apartments/ct/bridgeport/contact-us",
+     "kind": "link",
+     "label": "Schedule a Tour",
+     "member": 1
+    }
+   ],
+   "observedValues": [
+    "See What’s Nearby",
+    "Schedule a Tour"
+   ],
+   "optional": false,
+   "type": "Link"
+  }
+ ]
+}

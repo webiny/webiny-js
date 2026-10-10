@@ -56,6 +56,7 @@ import {
 } from "~/pages/rewriteDestinations.js";
 import { toPageIdentity } from "~/pages/toPageIdentity.js";
 import { scalarInputNames } from "~/pages/scalarInputNames.js";
+import { lexicalHtmlInputs, withInlineLinks } from "~/pages/lexicalHtml.js";
 import {
     fileInputShapes,
     unresolvedFileInputs,
@@ -167,6 +168,8 @@ interface PlaceableComponent {
      * object form breaks — naming them is the whole point.
      */
     unresolvedFileInputs: string[];
+    /** Rich text inputs this component renders as HTML, so they may carry a link — see `lexicalHtml`. */
+    htmlLexicalInputs: ReadonlySet<string>;
     props: GeneratedComponent["props"];
     /** Text runs of the cluster's reference member, for per-instance alignment. */
     representativeRuns: SectionRun[];
@@ -576,6 +579,7 @@ export class CompositionWriterImpl implements ICompositionWriter {
                 scalarInputs: scalarInputNames(manifest),
                 fileShapes: shapes,
                 unresolvedFileInputs: unresolvedFileInputs(shapes),
+                htmlLexicalInputs: lexicalHtmlInputs(promotedComponent?.source ?? ""),
                 props: component.props,
                 representativeRuns: await this.referenceRuns(component, segmentByUrl, trees)
             });
@@ -919,6 +923,21 @@ export class CompositionWriterImpl implements ICompositionWriter {
                     source: prop.source,
                     value: prop.value
                 });
+            }
+        }
+
+        /*
+         * A link inside running text goes on the page inside its paragraph, with its destination.
+         * Derived rich text is plain text, so without this an inline link reached the page as words
+         * with no destination. Only into inputs the component renders as HTML: one that prints its
+         * value would show the markup.
+         */
+        if (node) {
+            for (const name of component.htmlLexicalInputs) {
+                const value = inputs[name];
+                if (typeof value === "string" && value.trim()) {
+                    inputs[name] = withInlineLinks(value, node);
+                }
             }
         }
 

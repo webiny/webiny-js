@@ -1,0 +1,78 @@
+export default function PropertyDescription({ inputs: { title, sectionLabel, description, amenitiesHeading, images, cta } }) {
+    const items = images && images.length ? images : [];
+    const [active, setActive] = React.useState(0);
+
+    React.useEffect(() => {
+        if (items.length < 2) return;
+        const interval = setInterval(() => {
+            setActive(prev => (prev + 1) % items.length);
+        }, 4000);
+        return () => clearInterval(interval);
+    }, [items.length]);
+
+    return (
+        <section className="property-description">
+            <div className="property-description-carousel">
+                {items.map((image, index) => (
+                    image && image.src && image.src.url ? (
+                        <img
+                            key={index}
+                            src={image.src.url}
+                            alt={image.alt || ""}
+                            className={`property-description-slide${index === active ? " is-active" : ""}`}
+                        />
+                    ) : null
+                ))}
+            </div>
+            <div className="property-description-content">
+                {sectionLabel ? <p className="property-description-label">{sectionLabel}</p> : null}
+                <h2 className="property-description-title">{title}</h2>
+                {description ? (
+                    <div className="property-description-text" dangerouslySetInnerHTML={{ __html: description }} />
+                ) : null}
+                <p className="property-description-amenities-text">
+                    {amenitiesHeading ? (
+                        cta && cta.href ? (
+                            <a href={cta.href} className="property-description-amenities-link">{amenitiesHeading}</a>
+                        ) : (
+                            <strong className="property-description-amenities-heading">{amenitiesHeading}</strong>
+                        )
+                    ) : null}
+                    {" "}include a combined laundry and lounge area, a fitness center, and controlled access. Park City Place offers a convenient lifestyle for those seeking the best of urban living in Bridgeport. A parking garage is also available for residents at a monthly charge.
+                </p>
+            </div>
+        </section>
+    );
+}
+
+export const manifest = {
+    name: "Custom/PropertyDescription",
+    label: "Property Description",
+    applyDefaultStyles: false,
+    aiContext: "A content section describing a residential property, featuring a photo carousel, a title, a short label, descriptive paragraphs, and an amenities link. Use on property or listing pages to introduce a community or building.",
+    inputs: [
+        { name: "title", factory: "createTextInput", params: { label: "Title", defaultValue: "Park City Place" } },
+        { name: "sectionLabel", factory: "createTextInput", params: { label: "Section Label", defaultValue: "A Refreshing Community:" } },
+        { name: "description", factory: "createLexicalInput", params: { label: "Description" } },
+        { name: "amenitiesHeading", factory: "createTextInput", params: { label: "Amenities Heading", defaultValue: "Community amenities" } },
+        { name: "images", factory: "createObjectInput", params: { label: "Images", list: true, fields: [
+            { name: "alt", factory: "createTextInput", params: { label: "Alt Text" } },
+            { name: "src", factory: "createFileInput", params: { label: "Image", allowedFileTypes: ["image/*"] } }
+        ] } },
+        { name: "cta", factory: "createObjectInput", params: { label: "Call to Action", fields: [
+            { name: "label", factory: "createTextInput", params: { label: "Label", defaultValue: "Community amenities" } },
+            { name: "href", factory: "createTextInput", params: { label: "URL", defaultValue: "" } }
+        ] } }
+    ],
+    defaults: {
+        inputs: {
+            description: "<p>Park City Place, formerly the Holiday Inn, is located in downtown Bridgeport. This property features 97 beautifully renovated apartments just moments away from the Metro-North train station, the bus terminal, and the Port Jefferson Ferry, making daily commutes effortless.</p><p>While the units were recently renovated for market-rate rents, in partnership with the Department of Housing, they are now being converted into affordable housing. Upon arrival, you will be welcomed by a beautifully designed lobby. Each apartment features an open-concept living room connected to an eat-in kitchen, complete with granite countertops and top-of-the-line stainless-steel appliances. Additionally, all units are equipped with central air conditioning.</p><p>These apartments will be available in Downtown Bridgeport for households earning at or below 80% of the Area Median Income. The breakdown includes 51 one-bedroom units and 46 two-bedroom units.</p>",
+            images: [
+                { alt: "Breakfast bar in a kitchen at Park City Place in Bridgeport, Connecticut", src: { url: "https://g5-assets-cld-res.cloudinary.com/image/upload/x_0,y_122,h_1875,w_3000,c_crop/q_auto,f_auto,c_fill,g_center,h_748,w_1198/v1773912519/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/GettyImages-172432728_enqdek.jpg" } },
+                { alt: "Couch in living at Park City Place in Bridgeport, Connecticut", src: { url: "https://g5-assets-cld-res.cloudinary.com/image/upload/x_0,y_122,h_1875,w_3000,c_crop/q_auto,f_auto,c_fill,g_center,h_748,w_1198/v1773912557/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/GettyImages-675343744_q7v4uf.jpg" } },
+                { alt: "Bedroom at Park City Place in Bridgeport, Connecticut", src: { url: "https://g5-assets-cld-res.cloudinary.com/image/upload/x_0,y_0,h_1875,w_3000,c_crop/q_auto,f_auto,c_fill,g_center,h_748,w_1198/v1773912588/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/GettyImages-957633616_rbsymv.jpg" } }
+            ],
+            cta: { label: "Community amenities", href: "https://www.parkcityplace.org/apartments/ct/bridgeport/amenities" }
+        }
+    }
+};

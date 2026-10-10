@@ -1,0 +1,1747 @@
+{
+ "source": {
+  "run": "6ac4d615daf3ad0002fc11cd#0001",
+  "component": "Footer with contact info and hours",
+  "url": "https://thevibe-apts.com/",
+  "trimmedTo": "the block holding the address and its Directions link"
+ },
+ "section": {
+  "tag": "div",
+  "box": {
+   "x": 357,
+   "y": 6978,
+   "width": 415,
+   "height": 368
+  },
+  "styles": {
+   "backgroundColor": "rgba(0, 0, 0, 0)",
+   "color": "rgba(255, 255, 255, 0.92)",
+   "fontFamily": "Lato, sans-serif",
+   "fontSize": "16px",
+   "fontWeight": "400",
+   "lineHeight": "22.8571px",
+   "letterSpacing": "normal",
+   "borderTopColor": "rgba(255, 255, 255, 0.3)",
+   "borderTopWidth": "0px",
+   "borderRadius": "0px",
+   "boxShadow": "none",
+   "paddingTop": "12px",
+   "paddingLeft": "48px",
+   "marginTop": "0px",
+   "gap": "normal",
+   "display": "flex",
+   "textAlign": "left",
+   "position": "static"
+  },
+  "children": [
+   {
+    "tag": "div",
+    "box": {
+     "x": 406,
+     "y": 6990,
+     "width": 139,
+     "height": 44
+    },
+    "styles": {
+     "backgroundColor": "rgba(0, 0, 0, 0)",
+     "color": "rgba(255, 255, 255, 0.92)",
+     "fontFamily": "Lato, sans-serif",
+     "fontSize": "16px",
+     "fontWeight": "400",
+     "lineHeight": "24px",
+     "letterSpacing": "normal",
+     "borderTopColor": "rgba(255, 255, 255, 0.92)",
+     "borderTopWidth": "0px",
+     "borderRadius": "0px",
+     "boxShadow": "none",
+     "paddingTop": "0px",
+     "paddingLeft": "0px",
+     "marginTop": "0px",
+     "gap": "normal",
+     "display": "flex",
+     "textAlign": "left",
+     "position": "static"
+    },
+    "children": [
+     {
+      "tag": "div",
+      "box": {
+       "x": 396,
+       "y": 6990,
+       "width": 18,
+       "height": 18
+      },
+      "styles": {
+       "backgroundColor": "rgba(0, 0, 0, 0)",
+       "color": "rgba(255, 255, 255, 0.92)",
+       "fontFamily": "Lato, sans-serif",
+       "fontSize": "16px",
+       "fontWeight": "400",
+       "lineHeight": "24px",
+       "letterSpacing": "normal",
+       "borderTopColor": "rgba(255, 255, 255, 0.92)",
+       "borderTopWidth": "0px",
+       "borderRadius": "0px",
+       "boxShadow": "none",
+       "paddingTop": "0px",
+       "paddingLeft": "0px",
+       "marginTop": "0px",
+       "gap": "normal",
+       "display": "flex",
+       "textAlign": "left",
+       "position": "static"
+      },
+      "children": [
+       {
+        "tag": "em",
+        "box": {
+         "x": 398,
+         "y": 6990,
+         "width": 14,
+         "height": 18
+        },
+        "styles": {
+         "backgroundColor": "rgba(0, 0, 0, 0)",
+         "color": "rgba(255, 255, 255, 0.92)",
+         "fontFamily": "FontAwesome",
+         "fontSize": "18px",
+         "fontWeight": "400",
+         "lineHeight": "18px",
+         "letterSpacing": "normal",
+         "borderTopColor": "rgba(255, 255, 255, 0.92)",
+         "borderTopWidth": "0px",
+         "borderRadius": "0px",
+         "boxShadow": "none",
+         "paddingTop": "0px",
+         "paddingLeft": "0px",
+         "marginTop": "0px",
+         "gap": "normal",
+         "display": "block",
+         "textAlign": "left",
+         "position": "static"
+        },
+        "children": []
+       }
+      ]
+     },
+     {
+      "tag": "div",
+      "box": {
+       "x": 434,
+       "y": 6990,
+       "width": 111,
+       "height": 44
+      },
+      "styles": {
+       "backgroundColor": "rgba(0, 0, 0, 0)",
+       "color": "rgba(255, 255, 255, 0.92)",
+       "fontFamily": "Lato, sans-serif",
+       "fontSize": "16px",
+       "fontWeight": "400",
+       "lineHeight": "24px",
+       "letterSpacing": "normal",
+       "borderTopColor": "rgba(255, 255, 255, 0.92)",
+       "borderTopWidth": "0px",
+       "borderRadius": "0px",
+       "boxShadow": "none",
+       "paddingTop": "0px",
+       "paddingLeft": "0px",
+       "marginTop": "0px",
+       "gap": "normal",
+       "display": "block",
+       "textAlign": "left",
+       "position": "static"
+      },
+      "children": [
+       {
+        "tag": "a",
+        "box": {
+         "x": 434,
+         "y": 6990,
+         "width": 111,
+         "height": 44
+        },
+        "styles": {
+         "backgroundColor": "rgb(22, 35, 55)",
+         "color": "rgb(255, 255, 255)",
+         "fontFamily": "Lato, sans-serif",
+         "fontSize": "16px",
+         "fontWeight": "400",
+         "lineHeight": "24px",
+         "letterSpacing": "normal",
+         "borderTopColor": "rgb(255, 255, 255)",
+         "borderTopWidth": "0px",
+         "borderRadius": "0px",
+         "boxShadow": "none",
+         "paddingTop": "0px",
+         "paddingLeft": "0px",
+         "marginTop": "0px",
+         "gap": "normal",
+         "display": "inline-block",
+         "textAlign": "left",
+         "position": "static"
+        },
+        "children": [
+         {
+          "tag": "span",
+          "box": {
+           "x": 434,
+           "y": 6992,
+           "width": 111,
+           "height": 19
+          },
+          "styles": {
+           "backgroundColor": "rgba(0, 0, 0, 0)",
+           "color": "rgb(255, 255, 255)",
+           "fontFamily": "Lato, sans-serif",
+           "fontSize": "16px",
+           "fontWeight": "400",
+           "lineHeight": "24px",
+           "letterSpacing": "normal",
+           "borderTopColor": "rgb(255, 255, 255)",
+           "borderTopWidth": "0px",
+           "borderRadius": "0px",
+           "boxShadow": "none",
+           "paddingTop": "0px",
+           "paddingLeft": "0px",
+           "marginTop": "0px",
+           "gap": "normal",
+           "display": "inline",
+           "textAlign": "left",
+           "position": "static"
+          },
+          "children": [],
+          "text": "(786) 841-0429"
+         }
+        ],
+        "href": "tel:(786) 841-0429"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "tag": "div",
+    "box": {
+     "x": 406,
+     "y": 7054,
+     "width": 145,
+     "height": 72
+    },
+    "styles": {
+     "backgroundColor": "rgba(0, 0, 0, 0)",
+     "color": "rgba(255, 255, 255, 0.92)",
+     "fontFamily": "Lato, sans-serif",
+     "fontSize": "16px",
+     "fontWeight": "400",
+     "lineHeight": "24px",
+     "letterSpacing": "normal",
+     "borderTopColor": "rgba(255, 255, 255, 0.92)",
+     "borderTopWidth": "0px",
+     "borderRadius": "0px",
+     "boxShadow": "none",
+     "paddingTop": "0px",
+     "paddingLeft": "0px",
+     "marginTop": "0px",
+     "gap": "normal",
+     "display": "flex",
+     "textAlign": "left",
+     "position": "static"
+    },
+    "children": [
+     {
+      "tag": "div",
+      "box": {
+       "x": 396,
+       "y": 7054,
+       "width": 18,
+       "height": 18
+      },
+      "styles": {
+       "backgroundColor": "rgba(0, 0, 0, 0)",
+       "color": "rgba(255, 255, 255, 0.92)",
+       "fontFamily": "Lato, sans-serif",
+       "fontSize": "16px",
+       "fontWeight": "400",
+       "lineHeight": "24px",
+       "letterSpacing": "normal",
+       "borderTopColor": "rgba(255, 255, 255, 0.92)",
+       "borderTopWidth": "0px",
+       "borderRadius": "0px",
+       "boxShadow": "none",
+       "paddingTop": "0px",
+       "paddingLeft": "0px",
+       "marginTop": "0px",
+       "gap": "normal",
+       "display": "flex",
+       "textAlign": "left",
+       "position": "static"
+      },
+      "children": [
+       {
+        "tag": "em",
+        "box": {
+         "x": 400,
+         "y": 7054,
+         "width": 10,
+         "height": 18
+        },
+        "styles": {
+         "backgroundColor": "rgba(0, 0, 0, 0)",
+         "color": "rgba(255, 255, 255, 0.92)",
+         "fontFamily": "FontAwesome",
+         "fontSize": "18px",
+         "fontWeight": "400",
+         "lineHeight": "18px",
+         "letterSpacing": "normal",
+         "borderTopColor": "rgba(255, 255, 255, 0.92)",
+         "borderTopWidth": "0px",
+         "borderRadius": "0px",
+         "boxShadow": "none",
+         "paddingTop": "0px",
+         "paddingLeft": "0px",
+         "marginTop": "0px",
+         "gap": "normal",
+         "display": "block",
+         "textAlign": "left",
+         "position": "static"
+        },
+        "children": []
+       }
+      ]
+     },
+     {
+      "tag": "div",
+      "box": {
+       "x": 434,
+       "y": 7054,
+       "width": 117,
+       "height": 72
+      },
+      "styles": {
+       "backgroundColor": "rgba(0, 0, 0, 0)",
+       "color": "rgba(255, 255, 255, 0.92)",
+       "fontFamily": "Lato, sans-serif",
+       "fontSize": "16px",
+       "fontWeight": "400",
+       "lineHeight": "24px",
+       "letterSpacing": "normal",
+       "borderTopColor": "rgba(255, 255, 255, 0.92)",
+       "borderTopWidth": "0px",
+       "borderRadius": "0px",
+       "boxShadow": "none",
+       "paddingTop": "0px",
+       "paddingLeft": "0px",
+       "marginTop": "0px",
+       "gap": "normal",
+       "display": "block",
+       "textAlign": "left",
+       "position": "static"
+      },
+      "children": [
+       {
+        "tag": "a",
+        "box": {
+         "x": 434,
+         "y": 7102,
+         "width": 117,
+         "height": 24
+        },
+        "styles": {
+         "backgroundColor": "rgb(22, 35, 55)",
+         "color": "rgb(255, 255, 255)",
+         "fontFamily": "Lato, sans-serif",
+         "fontSize": "12px",
+         "fontWeight": "700",
+         "lineHeight": "24px",
+         "letterSpacing": "normal",
+         "borderTopColor": "rgb(255, 255, 255)",
+         "borderTopWidth": "0px",
+         "borderRadius": "0px",
+         "boxShadow": "none",
+         "paddingTop": "0px",
+         "paddingLeft": "0px",
+         "marginTop": "0px",
+         "gap": "normal",
+         "display": "block",
+         "textAlign": "left",
+         "position": "static"
+        },
+        "children": [],
+        "text": "Directions",
+        "href": "http://maps.google.com/?q=700%20SW%201st%20St,%20Miami,%20FL%2033130"
+       }
+      ],
+      "text": "700 SW 1st St Miami, FL 33130"
+     }
+    ]
+   },
+   {
+    "tag": "div",
+    "box": {
+     "x": 406,
+     "y": 7146,
+     "width": 282,
+     "height": 168
+    },
+    "styles": {
+     "backgroundColor": "rgba(0, 0, 0, 0)",
+     "color": "rgba(255, 255, 255, 0.92)",
+     "fontFamily": "Lato, sans-serif",
+     "fontSize": "16px",
+     "fontWeight": "400",
+     "lineHeight": "24px",
+     "letterSpacing": "normal",
+     "borderTopColor": "rgba(255, 255, 255, 0.92)",
+     "borderTopWidth": "0px",
+     "borderRadius": "0px",
+     "boxShadow": "none",
+     "paddingTop": "0px",
+     "paddingLeft": "0px",
+     "marginTop": "0px",
+     "gap": "normal",
+     "display": "flex",
+     "textAlign": "left",
+     "position": "static"
+    },
+    "children": [
+     {
+      "tag": "div",
+      "box": {
+       "x": 396,
+       "y": 7146,
+       "width": 18,
+       "height": 18
+      },
+      "styles": {
+       "backgroundColor": "rgba(0, 0, 0, 0)",
+       "color": "rgba(255, 255, 255, 0.92)",
+       "fontFamily": "Lato, sans-serif",
+       "fontSize": "16px",
+       "fontWeight": "400",
+       "lineHeight": "24px",
+       "letterSpacing": "normal",
+       "borderTopColor": "rgba(255, 255, 255, 0.92)",
+       "borderTopWidth": "0px",
+       "borderRadius": "0px",
+       "boxShadow": "none",
+       "paddingTop": "0px",
+       "paddingLeft": "0px",
+       "marginTop": "0px",
+       "gap": "normal",
+       "display": "flex",
+       "textAlign": "left",
+       "position": "static"
+      },
+      "children": [
+       {
+        "tag": "em",
+        "box": {
+         "x": 397,
+         "y": 7146,
+         "width": 15,
+         "height": 18
+        },
+        "styles": {
+         "backgroundColor": "rgba(0, 0, 0, 0)",
+         "color": "rgba(255, 255, 255, 0.92)",
+         "fontFamily": "FontAwesome",
+         "fontSize": "18px",
+         "fontWeight": "400",
+         "lineHeight": "18px",
+         "letterSpacing": "normal",
+         "borderTopColor": "rgba(255, 255, 255, 0.92)",
+         "borderTopWidth": "0px",
+         "borderRadius": "0px",
+         "boxShadow": "none",
+         "paddingTop": "0px",
+         "paddingLeft": "0px",
+         "marginTop": "0px",
+         "gap": "normal",
+         "display": "block",
+         "textAlign": "left",
+         "position": "static"
+        },
+        "children": []
+       }
+      ]
+     },
+     {
+      "tag": "div",
+      "box": {
+       "x": 434,
+       "y": 7146,
+       "width": 254,
+       "height": 168
+      },
+      "styles": {
+       "backgroundColor": "rgba(0, 0, 0, 0)",
+       "color": "rgba(255, 255, 255, 0.92)",
+       "fontFamily": "Lato, sans-serif",
+       "fontSize": "16px",
+       "fontWeight": "400",
+       "lineHeight": "24px",
+       "letterSpacing": "normal",
+       "borderTopColor": "rgba(255, 255, 255, 0.92)",
+       "borderTopWidth": "0px",
+       "borderRadius": "0px",
+       "boxShadow": "none",
+       "paddingTop": "0px",
+       "paddingLeft": "0px",
+       "marginTop": "0px",
+       "gap": "normal",
+       "display": "block",
+       "textAlign": "left",
+       "position": "static"
+      },
+      "children": [
+       {
+        "tag": "ul",
+        "box": {
+         "x": 434,
+         "y": 7146,
+         "width": 254,
+         "height": 168
+        },
+        "styles": {
+         "backgroundColor": "rgba(0, 0, 0, 0)",
+         "color": "rgba(255, 255, 255, 0.92)",
+         "fontFamily": "Lato, sans-serif",
+         "fontSize": "16px",
+         "fontWeight": "400",
+         "lineHeight": "24px",
+         "letterSpacing": "normal",
+         "borderTopColor": "rgba(255, 255, 255, 0.92)",
+         "borderTopWidth": "0px",
+         "borderRadius": "0px",
+         "boxShadow": "none",
+         "paddingTop": "0px",
+         "paddingLeft": "0px",
+         "marginTop": "0px",
+         "gap": "normal",
+         "display": "block",
+         "textAlign": "left",
+         "position": "static"
+        },
+        "children": [
+         {
+          "tag": "li",
+          "box": {
+           "x": 434,
+           "y": 7146,
+           "width": 254,
+           "height": 24
+          },
+          "styles": {
+           "backgroundColor": "rgba(0, 0, 0, 0)",
+           "color": "rgba(255, 255, 255, 0.92)",
+           "fontFamily": "Lato, sans-serif",
+           "fontSize": "16px",
+           "fontWeight": "400",
+           "lineHeight": "24px",
+           "letterSpacing": "normal",
+           "borderTopColor": "rgba(255, 255, 255, 0.92)",
+           "borderTopWidth": "0px",
+           "borderRadius": "0px",
+           "boxShadow": "none",
+           "paddingTop": "0px",
+           "paddingLeft": "0px",
+           "marginTop": "0px",
+           "gap": "normal",
+           "display": "flex",
+           "textAlign": "left",
+           "position": "static"
+          },
+          "children": [
+           {
+            "tag": "span",
+            "box": {
+             "x": 434,
+             "y": 7146,
+             "width": 100,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "700",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "Monday:"
+           },
+           {
+            "tag": "span",
+            "box": {
+             "x": 544,
+             "y": 7146,
+             "width": 135,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "400",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "9:00AM to 6:00PM"
+           }
+          ]
+         },
+         {
+          "tag": "li",
+          "box": {
+           "x": 434,
+           "y": 7170,
+           "width": 254,
+           "height": 24
+          },
+          "styles": {
+           "backgroundColor": "rgba(0, 0, 0, 0)",
+           "color": "rgba(255, 255, 255, 0.92)",
+           "fontFamily": "Lato, sans-serif",
+           "fontSize": "16px",
+           "fontWeight": "400",
+           "lineHeight": "24px",
+           "letterSpacing": "normal",
+           "borderTopColor": "rgba(255, 255, 255, 0.92)",
+           "borderTopWidth": "0px",
+           "borderRadius": "0px",
+           "boxShadow": "none",
+           "paddingTop": "0px",
+           "paddingLeft": "0px",
+           "marginTop": "0px",
+           "gap": "normal",
+           "display": "flex",
+           "textAlign": "left",
+           "position": "static"
+          },
+          "children": [
+           {
+            "tag": "span",
+            "box": {
+             "x": 434,
+             "y": 7170,
+             "width": 100,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "700",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "Tuesday:"
+           },
+           {
+            "tag": "span",
+            "box": {
+             "x": 544,
+             "y": 7170,
+             "width": 135,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "400",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "9:00AM to 6:00PM"
+           }
+          ]
+         },
+         {
+          "tag": "li",
+          "box": {
+           "x": 434,
+           "y": 7194,
+           "width": 254,
+           "height": 24
+          },
+          "styles": {
+           "backgroundColor": "rgba(0, 0, 0, 0)",
+           "color": "rgba(255, 255, 255, 0.92)",
+           "fontFamily": "Lato, sans-serif",
+           "fontSize": "16px",
+           "fontWeight": "400",
+           "lineHeight": "24px",
+           "letterSpacing": "normal",
+           "borderTopColor": "rgba(255, 255, 255, 0.92)",
+           "borderTopWidth": "0px",
+           "borderRadius": "0px",
+           "boxShadow": "none",
+           "paddingTop": "0px",
+           "paddingLeft": "0px",
+           "marginTop": "0px",
+           "gap": "normal",
+           "display": "flex",
+           "textAlign": "left",
+           "position": "static"
+          },
+          "children": [
+           {
+            "tag": "span",
+            "box": {
+             "x": 434,
+             "y": 7194,
+             "width": 100,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "700",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "Wednesday:"
+           },
+           {
+            "tag": "span",
+            "box": {
+             "x": 544,
+             "y": 7194,
+             "width": 135,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "400",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "9:00AM to 6:00PM"
+           }
+          ]
+         },
+         {
+          "tag": "li",
+          "box": {
+           "x": 434,
+           "y": 7218,
+           "width": 254,
+           "height": 24
+          },
+          "styles": {
+           "backgroundColor": "rgba(0, 0, 0, 0)",
+           "color": "rgba(255, 255, 255, 0.92)",
+           "fontFamily": "Lato, sans-serif",
+           "fontSize": "16px",
+           "fontWeight": "400",
+           "lineHeight": "24px",
+           "letterSpacing": "normal",
+           "borderTopColor": "rgba(255, 255, 255, 0.92)",
+           "borderTopWidth": "0px",
+           "borderRadius": "0px",
+           "boxShadow": "none",
+           "paddingTop": "0px",
+           "paddingLeft": "0px",
+           "marginTop": "0px",
+           "gap": "normal",
+           "display": "flex",
+           "textAlign": "left",
+           "position": "static"
+          },
+          "children": [
+           {
+            "tag": "span",
+            "box": {
+             "x": 434,
+             "y": 7218,
+             "width": 100,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "700",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "Thursday:"
+           },
+           {
+            "tag": "span",
+            "box": {
+             "x": 544,
+             "y": 7218,
+             "width": 135,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "400",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "9:00AM to 6:00PM"
+           }
+          ]
+         },
+         {
+          "tag": "li",
+          "box": {
+           "x": 434,
+           "y": 7242,
+           "width": 254,
+           "height": 24
+          },
+          "styles": {
+           "backgroundColor": "rgba(0, 0, 0, 0)",
+           "color": "rgba(255, 255, 255, 0.92)",
+           "fontFamily": "Lato, sans-serif",
+           "fontSize": "16px",
+           "fontWeight": "400",
+           "lineHeight": "24px",
+           "letterSpacing": "normal",
+           "borderTopColor": "rgba(255, 255, 255, 0.92)",
+           "borderTopWidth": "0px",
+           "borderRadius": "0px",
+           "boxShadow": "none",
+           "paddingTop": "0px",
+           "paddingLeft": "0px",
+           "marginTop": "0px",
+           "gap": "normal",
+           "display": "flex",
+           "textAlign": "left",
+           "position": "static"
+          },
+          "children": [
+           {
+            "tag": "span",
+            "box": {
+             "x": 434,
+             "y": 7242,
+             "width": 100,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "700",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "Friday:"
+           },
+           {
+            "tag": "span",
+            "box": {
+             "x": 544,
+             "y": 7242,
+             "width": 135,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "400",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "9:00AM to 6:00PM"
+           }
+          ]
+         },
+         {
+          "tag": "li",
+          "box": {
+           "x": 434,
+           "y": 7266,
+           "width": 254,
+           "height": 24
+          },
+          "styles": {
+           "backgroundColor": "rgba(0, 0, 0, 0)",
+           "color": "rgba(255, 255, 255, 0.92)",
+           "fontFamily": "Lato, sans-serif",
+           "fontSize": "16px",
+           "fontWeight": "400",
+           "lineHeight": "24px",
+           "letterSpacing": "normal",
+           "borderTopColor": "rgba(255, 255, 255, 0.92)",
+           "borderTopWidth": "0px",
+           "borderRadius": "0px",
+           "boxShadow": "none",
+           "paddingTop": "0px",
+           "paddingLeft": "0px",
+           "marginTop": "0px",
+           "gap": "normal",
+           "display": "flex",
+           "textAlign": "left",
+           "position": "static"
+          },
+          "children": [
+           {
+            "tag": "span",
+            "box": {
+             "x": 434,
+             "y": 7266,
+             "width": 100,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "700",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "Saturday:"
+           },
+           {
+            "tag": "span",
+            "box": {
+             "x": 544,
+             "y": 7266,
+             "width": 144,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "400",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "10:00AM to 5:00PM"
+           }
+          ]
+         },
+         {
+          "tag": "li",
+          "box": {
+           "x": 434,
+           "y": 7290,
+           "width": 254,
+           "height": 24
+          },
+          "styles": {
+           "backgroundColor": "rgba(0, 0, 0, 0)",
+           "color": "rgba(255, 255, 255, 0.92)",
+           "fontFamily": "Lato, sans-serif",
+           "fontSize": "16px",
+           "fontWeight": "400",
+           "lineHeight": "24px",
+           "letterSpacing": "normal",
+           "borderTopColor": "rgba(255, 255, 255, 0.92)",
+           "borderTopWidth": "0px",
+           "borderRadius": "0px",
+           "boxShadow": "none",
+           "paddingTop": "0px",
+           "paddingLeft": "0px",
+           "marginTop": "0px",
+           "gap": "normal",
+           "display": "flex",
+           "textAlign": "left",
+           "position": "static"
+          },
+          "children": [
+           {
+            "tag": "span",
+            "box": {
+             "x": 434,
+             "y": 7290,
+             "width": 100,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "700",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "Sunday:"
+           },
+           {
+            "tag": "span",
+            "box": {
+             "x": 544,
+             "y": 7290,
+             "width": 48,
+             "height": 24
+            },
+            "styles": {
+             "backgroundColor": "rgba(0, 0, 0, 0)",
+             "color": "rgba(255, 255, 255, 0.92)",
+             "fontFamily": "Lato, sans-serif",
+             "fontSize": "16px",
+             "fontWeight": "400",
+             "lineHeight": "24px",
+             "letterSpacing": "normal",
+             "borderTopColor": "rgba(255, 255, 255, 0.92)",
+             "borderTopWidth": "0px",
+             "borderRadius": "0px",
+             "boxShadow": "none",
+             "paddingTop": "0px",
+             "paddingLeft": "0px",
+             "marginTop": "0px",
+             "gap": "normal",
+             "display": "block",
+             "textAlign": "left",
+             "position": "static"
+            },
+            "children": [],
+            "text": "Closed"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "props": [
+  {
+   "type": "Image",
+   "optional": true,
+   "observedValues": [
+    "The Vibe Miami"
+   ],
+   "array": false,
+   "fields": [
+    {
+     "array": false,
+     "name": "src",
+     "observation": {
+      "totalInstances": 9
+     },
+     "observedValues": [],
+     "type": "image",
+     "optional": false
+    },
+    {
+     "observedValues": [],
+     "optional": true,
+     "name": "alt",
+     "type": "string",
+     "array": false,
+     "observation": {
+      "totalInstances": 9
+     }
+    }
+   ],
+   "name": "logo",
+   "observation": {
+    "valueCounts": null,
+    "countMin": null,
+    "countMax": null,
+    "presentInstances": 9,
+    "totalInstances": 9
+   },
+   "observedStructured": [
+    {
+     "kind": "media",
+     "src": "https://capi.myleasestar.com/v2/dimg/154641662/400x400/154641662.png",
+     "alt": "The Vibe Miami"
+    }
+   ]
+  },
+  {
+   "observedValues": [
+    "(786) 841-0429"
+   ],
+   "observation": {
+    "presentInstances": 9,
+    "valueCounts": [
+     {
+      "count": 9,
+      "value": "(786) 841-0429"
+     }
+    ],
+    "countMax": null,
+    "totalInstances": 9,
+    "countMin": null
+   },
+   "fields": [
+    {
+     "optional": false,
+     "type": "string",
+     "observedValues": [],
+     "array": false,
+     "name": "label",
+     "observation": {
+      "totalInstances": 9
+     }
+    },
+    {
+     "type": "url",
+     "optional": false,
+     "name": "href",
+     "array": false,
+     "observedValues": [],
+     "observation": {
+      "totalInstances": 9
+     }
+    }
+   ],
+   "array": false,
+   "name": "phone",
+   "type": "Link",
+   "observedStructured": [
+    {
+     "label": null,
+     "kind": "link",
+     "href": "https://thevibe-apts.com/"
+    }
+   ],
+   "optional": false
+  },
+  {
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 9,
+    "valueCounts": [
+     {
+      "count": 9,
+      "value": "700 SW 1st St Miami, FL 33130"
+     }
+    ],
+    "totalInstances": 9
+   },
+   "optional": false,
+   "fields": [
+    {
+     "observation": {
+      "totalInstances": 9
+     },
+     "name": "label",
+     "array": false,
+     "optional": false,
+     "observedValues": [],
+     "type": "string"
+    },
+    {
+     "name": "href",
+     "observedValues": [],
+     "array": false,
+     "type": "url",
+     "observation": {
+      "totalInstances": 9
+     },
+     "optional": false
+    }
+   ],
+   "observedValues": [
+    "700 SW 1st St Miami, FL 33130"
+   ],
+   "type": "Link",
+   "name": "address",
+   "array": false,
+   "observedStructured": [
+    {
+     "kind": "link",
+     "href": "https://www.facebook.com/TheVibeMiami",
+     "label": null
+    }
+   ]
+  },
+  {
+   "optional": true,
+   "fields": [
+    {
+     "observation": {
+      "totalInstances": 9
+     },
+     "array": false,
+     "optional": false,
+     "name": "label",
+     "observedValues": [],
+     "type": "string"
+    },
+    {
+     "array": false,
+     "observedValues": [],
+     "name": "href",
+     "optional": false,
+     "observation": {
+      "totalInstances": 9
+     },
+     "type": "url"
+    },
+    {
+     "name": "newTab",
+     "type": "boolean",
+     "array": false,
+     "observedValues": [],
+     "observation": {
+      "totalInstances": 9
+     },
+     "optional": true
+    }
+   ],
+   "type": "Link",
+   "observedValues": [
+    "Directions"
+   ],
+   "observation": {
+    "countMin": null,
+    "totalInstances": 9,
+    "countMax": null,
+    "valueCounts": [
+     {
+      "count": 9,
+      "value": "Directions"
+     }
+    ],
+    "presentInstances": 9
+   },
+   "observedStructured": [
+    {
+     "kind": "link",
+     "href": "https://www.instagram.com/thevibemiamiapts/",
+     "label": null
+    }
+   ],
+   "array": false,
+   "name": "directionsLink"
+  },
+  {
+   "array": true,
+   "optional": false,
+   "observedStructured": [
+    {
+     "fields": {
+      "day": "Monday:",
+      "time": "9:00AM to 6:00PM"
+     },
+     "kind": "item"
+    },
+    {
+     "fields": {
+      "day": "Tuesday:",
+      "time": "9:00AM to 6:00PM"
+     },
+     "kind": "item"
+    },
+    {
+     "fields": {
+      "day": "Wednesday:",
+      "time": "9:00AM to 6:00PM"
+     },
+     "kind": "item"
+    },
+    {
+     "kind": "item",
+     "fields": {
+      "day": "Thursday:",
+      "time": "9:00AM to 6:00PM"
+     }
+    },
+    {
+     "kind": "item",
+     "fields": {
+      "time": "9:00AM to 6:00PM",
+      "day": "Friday:"
+     }
+    },
+    {
+     "fields": {
+      "day": "Saturday:",
+      "time": "10:00AM to 5:00PM"
+     },
+     "kind": "item"
+    },
+    {
+     "kind": "item",
+     "fields": {
+      "day": "Sunday:",
+      "time": "Closed"
+     }
+    }
+   ],
+   "type": "Point",
+   "observedValues": [
+    "Monday: 9:00AM to 6:00PM",
+    "Tuesday: 9:00AM to 6:00PM",
+    "Wednesday: 9:00AM to 6:00PM",
+    "Thursday: 9:00AM to 6:00PM",
+    "Friday: 9:00AM to 6:00PM",
+    "Saturday: 10:00AM to 5:00PM",
+    "Sunday: Closed",
+    "Monday:",
+    "9:00AM to 6:00PM",
+    "Tuesday:",
+    "Wednesday:",
+    "Thursday:",
+    "Friday:",
+    "Saturday:",
+    "10:00AM to 5:00PM",
+    "Sunday:",
+    "Closed"
+   ],
+   "observation": {
+    "presentInstances": 9,
+    "totalInstances": 9,
+    "valueCounts": null,
+    "countMin": 7,
+    "countMax": 7
+   },
+   "name": "hours",
+   "fields": [
+    {
+     "observation": {
+      "totalInstances": 9
+     },
+     "name": "day",
+     "type": "string",
+     "observedValues": [],
+     "optional": false,
+     "array": false
+    },
+    {
+     "type": "string",
+     "observation": {
+      "totalInstances": 9
+     },
+     "name": "time",
+     "optional": false,
+     "array": false,
+     "observedValues": []
+    }
+   ]
+  },
+  {
+   "observedStructured": [
+    {
+     "fields": {
+      "href": {
+       "label": "Home",
+       "href": "https://thevibe-apts.com/"
+      }
+     },
+     "kind": "item"
+    },
+    {
+     "kind": "item",
+     "fields": {
+      "href": {
+       "href": "https://thevibe-apts.com/Floor-plans.aspx",
+       "label": "Floor Plans"
+      }
+     }
+    },
+    {
+     "kind": "item",
+     "fields": {
+      "href": {
+       "label": "Gallery",
+       "href": "https://thevibe-apts.com/Gallery.aspx"
+      }
+     }
+    },
+    {
+     "kind": "item",
+     "fields": {
+      "href": {
+       "href": "https://thevibe-apts.com/Amenities.aspx",
+       "label": "Amenities"
+      }
+     }
+    },
+    {
+     "kind": "item",
+     "fields": {
+      "href": {
+       "href": "https://thevibe-apts.com/Location.aspx",
+       "label": "Location"
+      }
+     }
+    },
+    {
+     "fields": {
+      "label": "(opens in a new tab)",
+      "href": {
+       "href": "https://thevibe-apts.loftliving.com/login",
+       "label": "Residents"
+      }
+     },
+     "kind": "item"
+    },
+    {
+     "fields": {
+      "href": {
+       "label": "Contact Us",
+       "href": "https://thevibe-apts.com/Contact.aspx"
+      }
+     },
+     "kind": "item"
+    },
+    {
+     "kind": "item",
+     "fields": {
+      "href": {
+       "label": "Accessibility Statement",
+       "href": "https://thevibe-apts.com/accessibility-statement.aspx"
+      }
+     }
+    }
+   ],
+   "fields": [
+    {
+     "type": "string",
+     "observedValues": [],
+     "name": "label",
+     "array": false,
+     "optional": false,
+     "observation": {
+      "totalInstances": 9
+     }
+    },
+    {
+     "array": false,
+     "observation": {
+      "totalInstances": 9
+     },
+     "optional": false,
+     "observedValues": [],
+     "name": "href",
+     "type": "url"
+    }
+   ],
+   "type": "Link",
+   "array": true,
+   "optional": false,
+   "observedValues": [
+    "Home",
+    "Floor Plans",
+    "Gallery",
+    "Amenities",
+    "Location",
+    "Residents",
+    "(opens in a new tab)",
+    "Contact Us",
+    "Accessibility Statement"
+   ],
+   "observation": {
+    "totalInstances": 9,
+    "countMax": 6,
+    "countMin": 6,
+    "valueCounts": [
+     {
+      "value": "Home",
+      "count": 9
+     },
+     {
+      "value": "Floor Plans",
+      "count": 9
+     },
+     {
+      "value": "Gallery",
+      "count": 9
+     },
+     {
+      "count": 9,
+      "value": "Amenities"
+     },
+     {
+      "count": 9,
+      "value": "Location"
+     },
+     {
+      "count": 9,
+      "value": "Residents"
+     }
+    ],
+    "presentInstances": 9
+   },
+   "name": "navLinks"
+  },
+  {
+   "type": "Link",
+   "observedValues": [
+    "(opens in a new tab)",
+    "Disclosures & Licenses",
+    "DMCA Agent",
+    "Privacy Policy",
+    "Accessibility Statement",
+    "Sitemap"
+   ],
+   "fields": [
+    {
+     "type": "image",
+     "observedValues": [],
+     "optional": false,
+     "observation": {
+      "totalInstances": 9
+     },
+     "array": false,
+     "name": "icon"
+    },
+    {
+     "observation": {
+      "totalInstances": 9
+     },
+     "array": false,
+     "type": "url",
+     "name": "href",
+     "observedValues": [],
+     "optional": false
+    },
+    {
+     "type": "boolean",
+     "observedValues": [],
+     "name": "newTab",
+     "optional": true,
+     "array": false,
+     "observation": {
+      "totalInstances": 9
+     }
+    }
+   ],
+   "observedStructured": [
+    {
+     "fields": {
+      "href": {
+       "label": "Disclosures & Licenses",
+       "href": "https://www.greystar.com/disclosures-and-licenses"
+      },
+      "newTab": "(opens in a new tab)"
+     },
+     "kind": "item"
+    },
+    {
+     "fields": {
+      "href": {
+       "label": "DMCA Agent",
+       "href": "https://www.greystar.com/terms-of-use#Copyright%20Infringement%20Policy"
+      },
+      "newTab": "(opens in a new tab)"
+     },
+     "kind": "item"
+    },
+    {
+     "kind": "item",
+     "fields": {
+      "href": {
+       "label": "Privacy Policy",
+       "href": "https://www.greystar.com/privacy"
+      },
+      "newTab": "(opens in a new tab)"
+     }
+    },
+    {
+     "fields": {
+      "href": {
+       "href": "https://thevibe-apts.com/Accessibility-Statement.aspx",
+       "label": "Accessibility Statement"
+      }
+     },
+     "kind": "item"
+    },
+    {
+     "kind": "item",
+     "fields": {
+      "href": {
+       "href": "https://thevibe-apts.com/site-map.aspx",
+       "label": "Sitemap"
+      }
+     }
+    }
+   ],
+   "optional": true,
+   "observation": {
+    "valueCounts": null,
+    "presentInstances": 9,
+    "countMin": 2,
+    "countMax": 2,
+    "totalInstances": 9
+   },
+   "name": "socialLinks",
+   "array": true
+  }
+ ]
+}

@@ -1,0 +1,36 @@
+export default function FloorPlansIntro({ inputs: { heading, body } }) {
+    return (
+        <section className="floor-plans-intro">
+            <div className="floor-plans-intro-content">
+                <h1 className="floor-plans-intro-heading">{heading}</h1>
+                {body && body.length ? (
+                    <div className="floor-plans-intro-body">
+                        {body.map((paragraph, index) => (
+                            <p key={index} className="floor-plans-intro-paragraph" dangerouslySetInnerHTML={{ __html: paragraph }} />
+                        ))}
+                    </div>
+                ) : null}
+            </div>
+        </section>
+    );
+}
+
+export const manifest = {
+    name: "Custom/FloorPlansIntro",
+    label: "Floor Plans Intro",
+    applyDefaultStyles: false,
+    aiContext: "A hero section with a background image, a large uppercase heading, and body paragraphs. Use as an intro section for a floor plans or apartment listing page.",
+    inputs: [
+        { name: "heading", factory: "createTextInput", params: { label: "Heading", defaultValue: "1 & 2 Bedroom Floor Plans in Tulane-Gravier" } },
+        { name: "body", factory: "createLexicalInput", params: { label: "Body Paragraph", list: true } }
+    ],
+    defaults: {
+        inputs: {
+            heading: "1 & 2 Bedroom Floor Plans in Tulane-Gravier",
+            body: [
+                "At 2424 Tulane Apartments, the future looks bright. Each apartment’s open-concept floor plan and oversized windows allow for abundant amounts of natural light, illuminating the alluring sealed concrete flooring throughout.",
+                "Kitchens boast quartz countertops, custom cabinetry, subway tile backsplashes, stainless-steel appliances, designer fixtures, and large stainless-steel sinks. Baths are surrounded by Calacatta marble tile and equipped with rainfall showerheads and LED-illuminated vanity mirrors. A front-loading washer and dryer set is included in every apartment."
+            ]
+        }
+    }
+};

@@ -15,6 +15,7 @@ import { hasNothingToGenerate } from "./hasNothingToGenerate.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 import { PLAN_SYSTEM, buildPlanPrompt, parsePlanContract } from "./planContract.js";
 import { coverMemberTexts } from "./textCoverage.js";
+import { foldInlineLinks } from "./inlineLinks.js";
 import { bindObservedValues, keepStringValues } from "./bindObservedValues.js";
 import { sectionBackgroundImages } from "./sectionBackgroundImages.js";
 import { sectionUnboundImages } from "./sectionUnboundImages.js";
@@ -327,6 +328,13 @@ class PlanHandlerImpl implements StageHandler.Interface {
 
                         if (nodes.length > 0) {
                             const bound = bindObservedValues(nodes, contract.props);
+                            // Links inside running text go back into their paragraph (inlineLinks.ts).
+                            const fold = foldInlineLinks(nodes, contract.props);
+                            if (fold.folded.length > 0) {
+                                await context.log.info({
+                                    message: `Folded ${fold.folded.length} inline link(s) of "${cluster.name}" back into their paragraph${fold.pruned.length ? `; removed ${fold.pruned.join(", ")}, which held nothing else` : ""}.`
+                                });
+                            }
                             if (bound.propsBound > 0) {
                                 await context.log.info({
                                     message: `Filled ${bound.propsBound} non-text prop(s) of "${cluster.name}" from ${nodes.length} member section(s): ${bound.mediaBound} image(s), ${bound.linksBound} link(s), ${bound.itemsBound} list item(s).`

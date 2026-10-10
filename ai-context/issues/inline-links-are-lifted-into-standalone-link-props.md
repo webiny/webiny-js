@@ -92,6 +92,20 @@ counted.
 
 The reported count is only as good as rule 3, and rule 3 was tested on one known case.
 
+## What the fix cannot reach: paragraphs Plan put in the wrong prop
+
+The fix folds an inline link back into its paragraph only where that paragraph is held in a rich-text prop
+of the same component, the one place the link can go with its href. Across the 33 stored plans (41
+distinct link-and-paragraph cases), **12 cannot be folded** because their paragraph went to a prop that is
+not rich text, or to no prop at all. Among them is Take 3's "your new home", in all three Park City runs,
+whose paragraph went to `heading`. These 12 measure what the wrong-slot work is holding back. The other 2
+kept cases (The Vibe's "Directions", in two runs) are correct as Links: a standalone link beside an
+address.
+
+**The fallback is affected.** The 71 Westland home intro reads "Choose from our studio, 1 and 2 bedroom
+studio, 1 and 2 bedroom". The paragraph's rich text was filled with the link's text, and the rest of the
+sentence is lost. Not shown live on the 16th; the fallback is rebuilt after the demo.
+
 ## Where the fix sits
 
 Upstream, in Plan: a link with sentence text around it belongs to that sentence's rich text, not to a Link
