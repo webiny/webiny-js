@@ -17,7 +17,7 @@ import { CreateJobFeature } from "../feature.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
 import { Breadcrumb, StageKindChip, STAGE_META } from "~/presentation/shared/index.js";
 import { Routes } from "~/routes.js";
-import type { GatePreset } from "../abstractions.js";
+import { EXTRACT_THEME, type GatePreset } from "../abstractions.js";
 
 const GATE_PRESETS: { label: string; value: GatePreset }[] = [
     { label: "Pause at every stage", value: "every" },
@@ -85,15 +85,22 @@ const CreateJobContent = createReactiveComponent(function CreateJobContent() {
     }, [presenter]);
 
     const themeOptions = useMemo(
-        () =>
-            vm.themes.map(theme => ({
+        () => [
+            // A new job's default: a URL in, the pipeline extracts and publishes the theme. It was only
+            // on CreateJobDialog, which nothing opens; this page is what "New extraction" shows, so the
+            // option never reached anyone (found in the 2026-10-09 rehearsal).
+            { label: "Extract from this site", value: EXTRACT_THEME },
+            ...vm.themes.map(theme => ({
                 label: `${theme.name} (v${theme.version})`,
                 value: theme.id
-            })),
+            }))
+        ],
         [vm.themes]
     );
 
-    const noThemes = !vm.loadingThemes && vm.themes.length === 0;
+    const extracting = vm.themeId === EXTRACT_THEME;
+    // Having no theme yet only matters when the job is not extracting one.
+    const noThemes = !extracting && !vm.loadingThemes && vm.themes.length === 0;
     const stopAfter = new Set(vm.stopAfter);
     const blocked =
         !vm.name.trim() ||
@@ -175,7 +182,11 @@ const CreateJobContent = createReactiveComponent(function CreateJobContent() {
                     onChange={(value: string) => presenter.setTheme(value)}
                     placeholder={vm.loadingThemes ? "Loading themes…" : "Select a theme"}
                     options={themeOptions}
-                    note="Generated components bind to this theme version's tokens."
+                    note={
+                        extracting
+                            ? "The site's theme is extracted and published while the pages are captured."
+                            : "Generated components bind to this theme version's tokens."
+                    }
                     required
                 />
 
