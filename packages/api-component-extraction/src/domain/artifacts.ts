@@ -183,6 +183,31 @@ export interface SectionBackgroundImage extends BackgroundImage {
 }
 
 /** A CSS background image, with the three properties that decide how it covers its box. */
+/** What paints one region of a section's background: see `backgroundRegions.ts`. */
+export type RegionPaint =
+    | { kind: "colour"; hex: string; token: ResolvedColour["token"] }
+    | {
+          kind: "image";
+          url: string;
+          size?: string;
+          position?: string;
+          repeat?: string;
+          /** From Plan's measurement of the file, where it has one: a see-through image's opacity. */
+          opacity?: number;
+          /** The colour under a see-through image, where Plan measured one. */
+          under?: { hex: string; token: ResolvedColour["token"] };
+      };
+
+export interface BackgroundRegion {
+    paint: RegionPaint;
+    /** The area where this paint is the one showing, in percent of the section. */
+    box: { x: number; y: number; width: number; height: number };
+    /** Share of the section it covers. */
+    share: number;
+    /** Stacking: 0 is the bottom (the section or what shows behind it). */
+    layer: number;
+}
+
 export interface BackgroundImage {
     url: string;
     /** `cover`, `contain`, a length pair… — absent if the browser reported nothing. */
@@ -826,6 +851,11 @@ export interface PlannedComponent {
      * captured tree (not stored on the plan, so every stored plan gets it).
      */
     spacing?: SpacingEntry[];
+    /**
+     * The section's background as regions, when it has more than one; computed where the prompt is
+     * built, from the representative's captured tree. See `backgroundRegions.ts`.
+     */
+    backgroundRegions?: BackgroundRegion[];
     /**
      * The alignments the reference section's text uses, most text first.
      *

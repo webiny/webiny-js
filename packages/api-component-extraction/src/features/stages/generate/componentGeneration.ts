@@ -26,7 +26,11 @@ import type {
 import { isTranslucent } from "~/features/shared/translucency.js";
 import { createCopyAttribution, ownStructuredValues } from "./copyAttribution.js";
 import type { SystemPromptOverride } from "./themeVocabulary.js";
-import { bindingCrossesFamily, crossesFamily } from "./colourFamilies.js";
+import {
+    bindingCrossesFamily,
+    bindingIsSectionBackground,
+    crossesFamily
+} from "./colourFamilies.js";
 import { rematchColours, rematchUnderImage } from "~/features/stages/cluster/resolvedColours.js";
 import type { ThemeManifest } from "@webiny/theme-common";
 import { roleAwareTypeToken, themeTypeRoles } from "~/features/stages/plan/sectionTypeScale.js";
@@ -539,8 +543,76 @@ export const iconLines = (component: PlannedComponent): string[] => {
  * theme cannot express says so, because omitting it would leave the model to guess exactly the colour
  * this is meant to pin down.
  */
+/**
+ * The section's background as regions, for a section with more than one (`backgroundRegions.ts`).
+ *
+ * Replaces the section-wide background facts rather than adding to them: the colour list's background
+ * lines for the region colours, Plan's whole-section background binding and the section-wide image lines.
+ * Told "the section's background is navy" and "the section's background is this pattern", the model put
+ * both on one element. Replacing also means a wrong region fails visibly instead of being overridden by
+ * a section-wide line.
+ */
+const regionLines = (component: PlannedComponent): string[] => {
+    const regions = component.backgroundRegions;
+    if (!regions || regions.length < 2) {
+        return [];
+    }
+    const colour = (hex: string, token: { cssVariable: string } | null | undefined) =>
+        token
+            ? `var(${token.cssVariable}) (${hex})`
+            : `${hex} (no theme variable expresses it; use it directly)`;
+    const paint = (region: (typeof regions)[number]): string => {
+        const p = region.paint;
+        if (p.kind === "colour") {
+            return `a solid ${colour(p.hex, p.token)}`;
+        }
+        const how = [p.size, p.position, p.repeat].filter(Boolean).join(" / ");
+        if (isTranslucent(p)) {
+            return `a mostly see-through image (about ${Math.round((p.opacity ?? 0) * 100)}% opaque) over ${
+                p.under
+                    ? colour(p.under.hex, p.under.token)
+                    : "the colour the reference image shows through it"
+            }, as a CSS background-image: ${p.url}${how ? ` — ${how}` : ""}`;
+        }
+        return `the image ${p.url}${how ? ` — ${how}` : ""}, as a CSS background-image`;
+    };
+    const where = (region: (typeof regions)[number]): string => {
+        const b = region.box;
+        const whole = b.x <= 2 && b.y <= 2 && b.width >= 96 && b.height >= 96;
+        const area = whole
+            ? "the whole section"
+            : `x ${b.x}-${Math.min(100, b.x + b.width)}%, y ${b.y}-${Math.min(100, b.y + b.height)}% of the section`;
+        return region.layer === 0 ? area : `on top of it, ${area}`;
+    };
+    return [
+        "",
+        `This section's background has ${regions.length} regions, listed bottom first. Paint each on the element`,
+        "that covers its area, and do not put two of them on one element:",
+        ...regions.map(region => `- ${where(region)}: ${paint(region)}`)
+    ];
+};
+
+/** Colours the regions already describe, so the colour list does not state them section-wide again. */
+const regionHexes = (component: PlannedComponent): string[] =>
+    (component.backgroundRegions ?? []).flatMap(region =>
+        region.paint.kind === "colour"
+            ? [region.paint.hex]
+            : region.paint.under
+              ? [region.paint.under.hex]
+              : []
+    );
+
+const nearHex = (a: string, b: string): boolean => {
+    const rgb = (hex: string) => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+    const [x, y] = [rgb(a), rgb(b)];
+    return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]) < 6;
+};
+
 const colourLines = (component: PlannedComponent): string[] => {
-    const colours = component.representative?.resolvedColours ?? [];
+    const described = regionHexes(component);
+    const colours = (component.representative?.resolvedColours ?? []).filter(
+        colour => !(colour.role === "background" && described.some(hex => nearHex(hex, colour.hex)))
+    );
     if (colours.length === 0) {
         return [];
     }
@@ -714,8 +786,10 @@ const buildPrompt = (
     // reference these exact names, not a name derived from the slot path.
     // A binding that puts a text token on a background (or the reverse) is dropped, as the colour
     // list refuses the same mapping — otherwise the two lines would contradict each other.
+    const regioned = (component.backgroundRegions?.length ?? 0) >= 2;
     const bindings = component.tokenBindings
         .filter(binding => !bindingCrossesFamily(binding))
+        .filter(binding => !(regioned && bindingIsSectionBackground(binding)))
         .map(binding => {
             const names = slotVariables.get(binding.token) ?? [];
             return names.length > 0
@@ -746,7 +820,7 @@ const buildPrompt = (
               ]
             : []),
         ...colourLines(component),
-        ...backgroundImageLines(component),
+        ...(regioned ? regionLines(component) : backgroundImageLines(component)),
         ...unboundImageLines(component),
         ...iconLines(component),
         ...typeScaleLines(component),

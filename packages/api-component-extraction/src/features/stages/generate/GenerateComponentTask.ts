@@ -21,7 +21,8 @@ import {
 } from "./componentGeneration.js";
 import { hasRecordedResult, recordResultOnce } from "./recordResultOnce.js";
 import { replaceGeneratedComponent } from "./replaceGeneratedComponent.js";
-import { loadRepresentativeNode } from "./representativeNode.js";
+import { ancestorsOf, loadRepresentativeNode } from "./representativeNode.js";
+import { sectionBackgroundRegions } from "./backgroundRegions.js";
 import { systemPromptOverride, type SystemPromptOverride } from "./themeVocabulary.js";
 import { sectionSpacing } from "~/features/stages/plan/sectionSpacing.js";
 import { appendGenerationLog, readGenerationPrompt } from "./generationLog.js";
@@ -173,7 +174,15 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         if (sectionNode) {
             promptPlanned = {
                 ...promptPlanned,
-                spacing: sectionSpacing(sectionNode, manifest.isOk() ? manifest.value : null)
+                spacing: sectionSpacing(sectionNode, manifest.isOk() ? manifest.value : null),
+                // A background that is more than one thing, as regions (backgroundRegions.ts).
+                backgroundRegions:
+                    sectionBackgroundRegions({
+                        section: sectionNode,
+                        ancestors: ancestorsOf(sectionNode),
+                        manifest: manifest.isOk() ? manifest.value : null,
+                        backgroundImages: promptPlanned.backgroundImages
+                    }) ?? undefined
             };
         } else {
             await log.info({

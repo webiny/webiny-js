@@ -83,3 +83,13 @@ export const bindingCrossesFamily = (binding: { target: string; token: string })
     const role = roleOfTarget(binding.target);
     return role !== null && crossesFamily(role, binding.token);
 };
+
+/**
+ * Whether a Plan binding claims the whole section's background (`section.background`,
+ * `root.backgroundColor`). For a section described as regions these are replaced by the region lines:
+ * left in, the prompt would say the navy is the section's background, the pattern is, and so are the
+ * regions — three statements about one thing.
+ */
+export const bindingIsSectionBackground = (binding: { target: string; token: string }): boolean =>
+    roleOfTarget(binding.target) === "background" &&
+    /^(section|root|container|wrapper|component|outer)\b/i.test(binding.target);

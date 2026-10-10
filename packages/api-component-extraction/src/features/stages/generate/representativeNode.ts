@@ -40,8 +40,37 @@ export const loadRepresentativeNode = async (
     }
     try {
         const tree = JSON.parse(new TextDecoder().decode(blob.value)) as CapturedNode;
-        return findNodeByBox(tree, section.box);
+        const node = findNodeByBox(tree, section.box);
+        if (node) {
+            lastAncestors.set(node, pathTo(tree, node));
+        }
+        return node;
     } catch {
         return null;
     }
 };
+
+/** The chain from the tree's root to `node`, excluding it; empty when it is not in the tree. */
+const pathTo = (root: CapturedNode, node: CapturedNode): CapturedNode[] => {
+    const walk = (current: CapturedNode, trail: CapturedNode[]): CapturedNode[] | null => {
+        if (current === node) {
+            return trail;
+        }
+        for (const child of current.children ?? []) {
+            const found = walk(child, [...trail, current]);
+            if (found) {
+                return found;
+            }
+        }
+        return null;
+    };
+    return walk(root, []) ?? [];
+};
+
+const lastAncestors = new WeakMap<CapturedNode, CapturedNode[]>();
+
+/**
+ * The ancestors of a node `loadRepresentativeNode` returned, nearest last: what shows through where the
+ * section paints nothing (`backgroundRegions.ts`).
+ */
+export const ancestorsOf = (node: CapturedNode): CapturedNode[] => lastAncestors.get(node) ?? [];

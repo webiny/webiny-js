@@ -86,7 +86,11 @@ import {
 } from "~/domain/review.js";
 import { checkReachability } from "~/features/shared/reachability.js";
 import type { ThemeManifest } from "@webiny/theme-common";
-import { loadRepresentativeNode } from "~/features/stages/generate/representativeNode.js";
+import {
+    ancestorsOf,
+    loadRepresentativeNode
+} from "~/features/stages/generate/representativeNode.js";
+import { sectionBackgroundRegions } from "~/features/stages/generate/backgroundRegions.js";
 import { themeFit } from "~/features/theme/themeFit.js";
 import { sectionSpacing } from "~/features/stages/plan/sectionSpacing.js";
 import { ListRemoteComponentsUseCase } from "@webiny/remote-components/api/features/listComponents/abstractions.js";
@@ -959,7 +963,14 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     if (sectionNode) {
                         promptPlanned = {
                             ...promptPlanned,
-                            spacing: sectionSpacing(sectionNode, sectionManifest)
+                            spacing: sectionSpacing(sectionNode, sectionManifest),
+                            backgroundRegions:
+                                sectionBackgroundRegions({
+                                    section: sectionNode,
+                                    ancestors: ancestorsOf(sectionNode),
+                                    manifest: sectionManifest,
+                                    backgroundImages: promptPlanned.backgroundImages
+                                }) ?? undefined
                         };
                     }
 
