@@ -1,0 +1,652 @@
+[
+ {
+  "signature": "81c4a4c71d02",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#f7f7f9",
+    "area": 286200,
+    "token": {
+     "cssVariable": "--wby-color-feedback-info-background",
+     "hex": "#eff6ff",
+     "path": "color.feedback.info.background"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#363f54",
+    "area": 22217,
+    "token": {
+     "cssVariable": "--wby-color-text-secondary",
+     "hex": "#334155",
+     "path": "color.text.secondary"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "9b7a5998b05d",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#363f54",
+    "area": 882720,
+    "token": {
+     "cssVariable": "--wby-color-surface-sunken",
+     "hex": "#363f54",
+     "path": "color.surface.sunken"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#ffffff",
+    "area": 83891,
+    "token": {
+     "cssVariable": "--wby-color-text-inverse",
+     "hex": "#ffffff",
+     "path": "color.text.inverse"
+    }
+   },
+   {
+    "role": "background",
+    "hex": "#a65f46",
+    "area": 19844,
+    "token": {
+     "cssVariable": "--wby-color-action-primary-background",
+     "hex": "#a65f46",
+     "path": "color.action.primary.background"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "68844e309f54",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#6c733d",
+    "area": 86631,
+    "token": {
+     "cssVariable": "--wby-color-action-secondary-background",
+     "hex": "#6c733d",
+     "path": "color.action.secondary.background"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#ffffff",
+    "area": 11249,
+    "token": {
+     "cssVariable": "--wby-color-text-inverse",
+     "hex": "#ffffff",
+     "path": "color.text.inverse"
+    }
+   },
+   {
+    "role": "border",
+    "hex": "#ffffff",
+    "area": 4551,
+    "token": {
+     "cssVariable": "--wby-color-surface-page",
+     "hex": "#ffffff",
+     "path": "color.surface.page"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "76c798fb20ea",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#363f54",
+    "area": 332640,
+    "token": {
+     "cssVariable": "--wby-color-surface-sunken",
+     "hex": "#363f54",
+     "path": "color.surface.sunken"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#ffffff",
+    "area": 281323,
+    "token": {
+     "cssVariable": "--wby-color-text-inverse",
+     "hex": "#ffffff",
+     "path": "color.text.inverse"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "daeab34d57db",
+  "colours": [
+   {
+    "role": "text",
+    "hex": "#6c733d",
+    "area": 58050,
+    "token": {
+     "cssVariable": "--wby-color-action-secondary-background",
+     "hex": "#6c733d",
+     "path": "color.action.secondary.background"
+    }
+   },
+   {
+    "role": "background",
+    "hex": "#6c733d",
+    "area": 28032,
+    "token": {
+     "cssVariable": "--wby-color-action-secondary-background",
+     "hex": "#6c733d",
+     "path": "color.action.secondary.background"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#ffffff",
+    "area": 28032,
+    "token": {
+     "cssVariable": "--wby-color-text-inverse",
+     "hex": "#ffffff",
+     "path": "color.text.inverse"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "d8a764f7c077",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#363f54",
+    "area": 1118880,
+    "token": {
+     "cssVariable": "--wby-color-surface-sunken",
+     "hex": "#363f54",
+     "path": "color.surface.sunken"
+    }
+   },
+   {
+    "role": "background",
+    "hex": "#ffffff",
+    "area": 143850,
+    "token": {
+     "cssVariable": "--wby-color-surface-page",
+     "hex": "#ffffff",
+     "path": "color.surface.page"
+    }
+   },
+   {
+    "role": "border",
+    "hex": "#cacaca",
+    "area": 143850,
+    "token": {
+     "cssVariable": "--wby-color-border-subtle",
+     "hex": "#cacaca",
+     "path": "color.border.subtle"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#ffffff",
+    "area": 40429,
+    "token": {
+     "cssVariable": "--wby-color-text-inverse",
+     "hex": "#ffffff",
+     "path": "color.text.inverse"
+    }
+   },
+   {
+    "role": "background",
+    "hex": "#a65f46",
+    "area": 11088,
+    "token": {
+     "cssVariable": "--wby-color-action-primary-background",
+     "hex": "#a65f46",
+     "path": "color.action.primary.background"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "be6c68f4c485",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#ffffff",
+    "area": 253270,
+    "token": {
+     "cssVariable": "--wby-color-surface-page",
+     "hex": "#ffffff",
+     "path": "color.surface.page"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#444444",
+    "area": 89760,
+    "token": {
+     "cssVariable": "--wby-color-text-primary",
+     "hex": "#444444",
+     "path": "color.text.primary"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#6c733d",
+    "area": 47412,
+    "token": {
+     "cssVariable": "--wby-color-action-secondary-background",
+     "hex": "#6c733d",
+     "path": "color.action.secondary.background"
+    }
+   },
+   {
+    "role": "background",
+    "hex": "#6c733d",
+    "area": 10656,
+    "token": {
+     "cssVariable": "--wby-color-action-secondary-background",
+     "hex": "#6c733d",
+     "path": "color.action.secondary.background"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#ffffff",
+    "area": 10656,
+    "token": {
+     "cssVariable": "--wby-color-text-inverse",
+     "hex": "#ffffff",
+     "path": "color.text.inverse"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#a65f46",
+    "area": 2489,
+    "token": {
+     "cssVariable": "--wby-color-action-primary-background",
+     "hex": "#a65f46",
+     "path": "color.action.primary.background"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "d589b4c6df65",
+  "colours": [
+   {
+    "role": "text",
+    "hex": "#ffffff",
+    "area": 52459,
+    "token": {
+     "cssVariable": "--wby-color-text-inverse",
+     "hex": "#ffffff",
+     "path": "color.text.inverse"
+    }
+   },
+   {
+    "role": "background",
+    "hex": "#a65f46",
+    "area": 15040,
+    "token": {
+     "cssVariable": "--wby-color-action-primary-background",
+     "hex": "#a65f46",
+     "path": "color.action.primary.background"
+    }
+   },
+   {
+    "role": "border",
+    "hex": "#a65f46",
+    "area": 15040,
+    "token": {
+     "cssVariable": "--wby-color-action-primary-background",
+     "hex": "#a65f46",
+     "path": "color.action.primary.background"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "c543e0796d27",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#f2f2f2",
+    "area": 662400,
+    "token": {
+     "cssVariable": "--wby-color-feedback-danger-background",
+     "hex": "#fef2f2",
+     "path": "color.feedback.danger.background"
+    }
+   },
+   {
+    "role": "border",
+    "hex": "#363f54",
+    "area": 98550,
+    "token": {
+     "cssVariable": "--wby-color-surface-sunken",
+     "hex": "#363f54",
+     "path": "color.surface.sunken"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#363f54",
+    "area": 39787,
+    "token": {
+     "cssVariable": "--wby-color-text-secondary",
+     "hex": "#334155",
+     "path": "color.text.secondary"
+    }
+   },
+   {
+    "role": "background",
+    "hex": "#ffffff",
+    "area": 2500,
+    "token": {
+     "cssVariable": "--wby-color-surface-page",
+     "hex": "#ffffff",
+     "path": "color.surface.page"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "208fa521f519",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#363f54",
+    "area": 201960,
+    "token": {
+     "cssVariable": "--wby-color-surface-sunken",
+     "hex": "#363f54",
+     "path": "color.surface.sunken"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#ffffff",
+    "area": 157302,
+    "token": {
+     "cssVariable": "--wby-color-text-inverse",
+     "hex": "#ffffff",
+     "path": "color.text.inverse"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "6bd8423c4848",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#ffffff",
+    "area": 865682,
+    "token": {
+     "cssVariable": "--wby-color-surface-page",
+     "hex": "#ffffff",
+     "path": "color.surface.page"
+    }
+   },
+   {
+    "role": "border",
+    "hex": "#dddddd",
+    "area": 841,
+    "token": {
+     "cssVariable": "--wby-color-border-default",
+     "hex": "#dddddd",
+     "path": "color.border.default"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "40e70716b67e",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#f7f7f9",
+    "area": 949542,
+    "token": {
+     "cssVariable": "--wby-color-feedback-info-background",
+     "hex": "#eff6ff",
+     "path": "color.feedback.info.background"
+    }
+   },
+   {
+    "role": "background",
+    "hex": "#ffffff",
+    "area": 143850,
+    "token": {
+     "cssVariable": "--wby-color-surface-page",
+     "hex": "#ffffff",
+     "path": "color.surface.page"
+    }
+   },
+   {
+    "role": "border",
+    "hex": "#cacaca",
+    "area": 143850,
+    "token": {
+     "cssVariable": "--wby-color-border-subtle",
+     "hex": "#cacaca",
+     "path": "color.border.subtle"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#363f54",
+    "area": 61560,
+    "token": {
+     "cssVariable": "--wby-color-text-secondary",
+     "hex": "#334155",
+     "path": "color.text.secondary"
+    }
+   },
+   {
+    "role": "background",
+    "hex": "#a65f46",
+    "area": 11088,
+    "token": {
+     "cssVariable": "--wby-color-action-primary-background",
+     "hex": "#a65f46",
+     "path": "color.action.primary.background"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#ffffff",
+    "area": 11088,
+    "token": {
+     "cssVariable": "--wby-color-text-inverse",
+     "hex": "#ffffff",
+     "path": "color.text.inverse"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#6c733d",
+    "area": 10846,
+    "token": {
+     "cssVariable": "--wby-color-action-secondary-background",
+     "hex": "#6c733d",
+     "path": "color.action.secondary.background"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "7a84186b7c2a",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#f7f7f9",
+    "area": 496800,
+    "token": {
+     "cssVariable": "--wby-color-feedback-info-background",
+     "hex": "#eff6ff",
+     "path": "color.feedback.info.background"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#ffffff",
+    "area": 181132,
+    "token": {
+     "cssVariable": "--wby-color-text-inverse",
+     "hex": "#ffffff",
+     "path": "color.text.inverse"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "2b84bd1acc28",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#ffffff",
+    "area": 303900,
+    "token": {
+     "cssVariable": "--wby-color-surface-page",
+     "hex": "#ffffff",
+     "path": "color.surface.page"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#6c733d",
+    "area": 85842,
+    "token": {
+     "cssVariable": "--wby-color-action-secondary-background",
+     "hex": "#6c733d",
+     "path": "color.action.secondary.background"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#444444",
+    "area": 81224,
+    "token": {
+     "cssVariable": "--wby-color-text-primary",
+     "hex": "#444444",
+     "path": "color.text.primary"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#a65f46",
+    "area": 3211,
+    "token": {
+     "cssVariable": "--wby-color-action-primary-background",
+     "hex": "#a65f46",
+     "path": "color.action.primary.background"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "7c8307f48911",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#f7f7f9",
+    "area": 689760,
+    "token": {
+     "cssVariable": "--wby-color-feedback-info-background",
+     "hex": "#eff6ff",
+     "path": "color.feedback.info.background"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#444444",
+    "area": 200574,
+    "token": {
+     "cssVariable": "--wby-color-text-primary",
+     "hex": "#444444",
+     "path": "color.text.primary"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#6c733d",
+    "area": 98261,
+    "token": {
+     "cssVariable": "--wby-color-action-secondary-background",
+     "hex": "#6c733d",
+     "path": "color.action.secondary.background"
+    }
+   }
+  ]
+ },
+ {
+  "signature": "6cba315ffb8a",
+  "colours": [
+   {
+    "role": "background",
+    "hex": "#ffffff",
+    "area": 704850,
+    "token": {
+     "cssVariable": "--wby-color-surface-page",
+     "hex": "#ffffff",
+     "path": "color.surface.page"
+    }
+   },
+   {
+    "role": "border",
+    "hex": "#cacaca",
+    "area": 143850,
+    "token": {
+     "cssVariable": "--wby-color-border-subtle",
+     "hex": "#cacaca",
+     "path": "color.border.subtle"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#6c733d",
+    "area": 73582,
+    "token": {
+     "cssVariable": "--wby-color-action-secondary-background",
+     "hex": "#6c733d",
+     "path": "color.action.secondary.background"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#444444",
+    "area": 25080,
+    "token": {
+     "cssVariable": "--wby-color-text-primary",
+     "hex": "#444444",
+     "path": "color.text.primary"
+    }
+   },
+   {
+    "role": "background",
+    "hex": "#a65f46",
+    "area": 11088,
+    "token": {
+     "cssVariable": "--wby-color-action-primary-background",
+     "hex": "#a65f46",
+     "path": "color.action.primary.background"
+    }
+   },
+   {
+    "role": "text",
+    "hex": "#ffffff",
+    "area": 11088,
+    "token": {
+     "cssVariable": "--wby-color-text-inverse",
+     "hex": "#ffffff",
+     "path": "color.text.inverse"
+    }
+   }
+  ]
+ }
+]

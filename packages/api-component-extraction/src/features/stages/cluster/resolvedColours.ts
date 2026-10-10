@@ -1,6 +1,7 @@
 import type { ThemeManifest } from "@webiny/theme-common";
 import type { CapturedNode, ResolvedColour } from "~/domain/artifacts.js";
 import { colorToHex } from "./sectionShape.js";
+import { isStatusColour } from "../generate/colourFamilies.js";
 
 /**
  * The colours a section actually uses, each with the theme token that expresses it.
@@ -86,19 +87,55 @@ interface ThemeColour {
     hex: string;
 }
 
-/** The theme's colour slots with their resolved value and the variable that carries it. */
+/**
+ * The least opacity at which a translucent theme colour is matched as the solid colour of its RGB.
+ *
+ * **Set from two observed values, not derived.** Across the nine themes the jobs pin (2026-10-10),
+ * the colour slots written with an alpha byte that could stand for a section colour were ParkCity -
+ * Take 3's `surface.raised` `#f7f7f9f2` (0.95), the site's own grey, and The Vibe's `surface.overlay`
+ * `#000000b3` (0.70), a translucent overlay that is not the site's black. 0.9 admits the first and
+ * refuses the second; nothing else in the corpus sits between them. A theme with a solid colour written
+ * at, say, 0.85, or an overlay at 0.92, is what would move it. Scrims (0.5) and ghost tints (0.08-0.14)
+ * are translucent by design and stay out at any sensible value.
+ */
+const OPAQUE_ENOUGH = 0.9;
+
+/** `#rrggbb`, or `#rrggbbaa` opaque enough to be matched as `#rrggbb`; null for anything else. */
+const solidHex = (value: string): string | null => {
+    const trimmed = value.trim().toLowerCase();
+    if (/^#[0-9a-f]{6}$/.test(trimmed)) {
+        return trimmed;
+    }
+    if (
+        /^#[0-9a-f]{8}$/.test(trimmed) &&
+        parseInt(trimmed.slice(7, 9), 16) / 255 >= OPAQUE_ENOUGH
+    ) {
+        return trimmed.slice(0, 7);
+    }
+    return null;
+};
+
+/**
+ * The theme's colour slots that can express a measured colour, with their resolved value and the
+ * variable that carries it.
+ *
+ * Status colours (`feedback.*`) are never candidates, for any role: they mean a message's state, and
+ * matched by distance alone they won Take 3's greys — pale blue for the header, pale pink for the
+ * footer. A grey with no surface near it now falls to a surface or to no token at all.
+ */
 export const themeColourRoles = (manifest: ThemeManifest): ThemeColour[] => {
     const roles: ThemeColour[] = [];
     for (const slot of manifest.slots) {
         const value = slot.values?.light;
-        if (typeof value !== "string" || !/^#[0-9a-f]{6}$/i.test(value.trim())) {
+        const hex = typeof value === "string" ? solidHex(value) : null;
+        if (!hex || isStatusColour(String(slot.path))) {
             continue;
         }
         const cssVariable = (slot.cssVariables ?? [])[0];
         if (!cssVariable) {
             continue;
         }
-        roles.push({ path: String(slot.path), cssVariable, hex: value.trim().toLowerCase() });
+        roles.push({ path: String(slot.path), cssVariable, hex });
     }
     return roles;
 };
@@ -156,6 +193,30 @@ const nearest = (
 
     const any = closest(target, roles);
     return any.best && any.bestDistance <= NEAR_COLOUR ? any.best : null;
+};
+
+/**
+ * A section's measured colours matched again against a theme, keeping what was measured.
+ *
+ * Cluster records each colour's token when it runs, and every later reader used that record. So a
+ * matcher fix reached only runs clustered after it, and a theme re-pinned since Cluster ran was matched
+ * against a theme the job no longer uses. Readers that hold the pinned manifest — Generate's prompt,
+ * the theme fit — match again here, which is what the replay measured.
+ */
+export const rematchColours = (
+    colours: ResolvedColour[],
+    manifest: ThemeManifest
+): ResolvedColour[] => {
+    const roles = themeColourRoles(manifest);
+    return colours.map(colour => {
+        const token = nearest(colour.hex, colour.role, roles);
+        return {
+            ...colour,
+            token: token
+                ? { path: token.path, cssVariable: token.cssVariable, hex: token.hex }
+                : null
+        };
+    });
 };
 
 /** Below this share of its area painted by its own backgrounds, a section shows its backdrop. */

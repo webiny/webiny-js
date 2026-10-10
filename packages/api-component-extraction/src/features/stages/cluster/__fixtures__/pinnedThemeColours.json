@@ -1,0 +1,1458 @@
+{
+ "take3": {
+  "slots": [
+   {
+    "path": "color.surface.page",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-surface-page"
+    ]
+   },
+   {
+    "path": "color.surface.raised",
+    "values": {
+     "light": "#f7f7f9f2"
+    },
+    "cssVariables": [
+     "--wby-color-surface-raised"
+    ]
+   },
+   {
+    "path": "color.surface.sunken",
+    "values": {
+     "light": "#363f54"
+    },
+    "cssVariables": [
+     "--wby-color-surface-sunken"
+    ]
+   },
+   {
+    "path": "color.surface.overlay",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-surface-overlay"
+    ]
+   },
+   {
+    "path": "color.surface.scrim",
+    "values": {
+     "light": "rgba(68, 68, 68, 0.5)"
+    },
+    "cssVariables": [
+     "--wby-color-surface-scrim"
+    ]
+   },
+   {
+    "path": "color.text.primary",
+    "values": {
+     "light": "#444444"
+    },
+    "cssVariables": [
+     "--wby-color-text-primary"
+    ]
+   },
+   {
+    "path": "color.text.secondary",
+    "values": {
+     "light": "#334155"
+    },
+    "cssVariables": [
+     "--wby-color-text-secondary"
+    ]
+   },
+   {
+    "path": "color.text.muted",
+    "values": {
+     "light": "#64748B"
+    },
+    "cssVariables": [
+     "--wby-color-text-muted"
+    ]
+   },
+   {
+    "path": "color.text.inverse",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-text-inverse"
+    ]
+   },
+   {
+    "path": "color.text.link",
+    "values": {
+     "light": "#1D4ED8"
+    },
+    "cssVariables": [
+     "--wby-color-text-link"
+    ]
+   },
+   {
+    "path": "color.border.default",
+    "values": {
+     "light": "#dddddd"
+    },
+    "cssVariables": [
+     "--wby-color-border-default"
+    ]
+   },
+   {
+    "path": "color.border.subtle",
+    "values": {
+     "light": "#cacaca"
+    },
+    "cssVariables": [
+     "--wby-color-border-subtle"
+    ]
+   },
+   {
+    "path": "color.border.strong",
+    "values": {
+     "light": "#64748B"
+    },
+    "cssVariables": [
+     "--wby-color-border-strong"
+    ]
+   },
+   {
+    "path": "color.border.focus",
+    "values": {
+     "light": "#2563EB"
+    },
+    "cssVariables": [
+     "--wby-color-border-focus"
+    ]
+   },
+   {
+    "path": "color.action.primary.background",
+    "values": {
+     "light": "#a65f46"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-background"
+    ]
+   },
+   {
+    "path": "color.action.primary.foreground",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-foreground"
+    ]
+   },
+   {
+    "path": "color.action.primary.hover",
+    "values": {
+     "light": "#95563F"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-hover"
+    ]
+   },
+   {
+    "path": "color.action.primary.active",
+    "values": {
+     "light": "#8B503B"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-active"
+    ]
+   },
+   {
+    "path": "color.action.secondary.background",
+    "values": {
+     "light": "#6c733d"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-background"
+    ]
+   },
+   {
+    "path": "color.action.secondary.foreground",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-foreground"
+    ]
+   },
+   {
+    "path": "color.action.secondary.hover",
+    "values": {
+     "light": "#666C39"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-hover"
+    ]
+   },
+   {
+    "path": "color.action.secondary.active",
+    "values": {
+     "light": "#616837"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-active"
+    ]
+   },
+   {
+    "path": "color.action.ghost.background",
+    "values": {
+     "light": "transparent"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-background"
+    ]
+   },
+   {
+    "path": "color.action.ghost.foreground",
+    "values": {
+     "light": "#1D4ED8"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-foreground"
+    ]
+   },
+   {
+    "path": "color.action.ghost.hover",
+    "values": {
+     "light": "rgba(166, 95, 70, 0.08)"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-hover"
+    ]
+   },
+   {
+    "path": "color.action.ghost.active",
+    "values": {
+     "light": "rgba(166, 95, 70, 0.14)"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-active"
+    ]
+   },
+   {
+    "path": "color.action.destructive.background",
+    "values": {
+     "light": "#B91C1C"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-background"
+    ]
+   },
+   {
+    "path": "color.action.destructive.foreground",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-foreground"
+    ]
+   },
+   {
+    "path": "color.action.destructive.hover",
+    "values": {
+     "light": "#A31919"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-hover"
+    ]
+   },
+   {
+    "path": "color.action.destructive.active",
+    "values": {
+     "light": "#981717"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-active"
+    ]
+   },
+   {
+    "path": "color.action.disabled.background",
+    "values": {
+     "light": "#363f54"
+    },
+    "cssVariables": [
+     "--wby-color-action-disabled-background"
+    ]
+   },
+   {
+    "path": "color.action.disabled.foreground",
+    "values": {
+     "light": "#64748B"
+    },
+    "cssVariables": [
+     "--wby-color-action-disabled-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.info.background",
+    "values": {
+     "light": "#EFF6FF"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-info-background"
+    ]
+   },
+   {
+    "path": "color.feedback.info.foreground",
+    "values": {
+     "light": "#1D4ED8"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-info-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.success.background",
+    "values": {
+     "light": "#ECFDF5"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-success-background"
+    ]
+   },
+   {
+    "path": "color.feedback.success.foreground",
+    "values": {
+     "light": "#047857"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-success-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.warning.background",
+    "values": {
+     "light": "#FFFBEB"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-warning-background"
+    ]
+   },
+   {
+    "path": "color.feedback.warning.foreground",
+    "values": {
+     "light": "#B45309"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-warning-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.danger.background",
+    "values": {
+     "light": "#FEF2F2"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-danger-background"
+    ]
+   },
+   {
+    "path": "color.feedback.danger.foreground",
+    "values": {
+     "light": "#B91C1C"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-danger-foreground"
+    ]
+   }
+  ]
+ },
+ "vibe": {
+  "slots": [
+   {
+    "path": "color.surface.page",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-surface-page"
+    ]
+   },
+   {
+    "path": "color.surface.raised",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-surface-raised"
+    ]
+   },
+   {
+    "path": "color.surface.sunken",
+    "values": {
+     "light": "#162337"
+    },
+    "cssVariables": [
+     "--wby-color-surface-sunken"
+    ]
+   },
+   {
+    "path": "color.surface.overlay",
+    "values": {
+     "light": "#000000b3"
+    },
+    "cssVariables": [
+     "--wby-color-surface-overlay"
+    ]
+   },
+   {
+    "path": "color.surface.scrim",
+    "values": {
+     "light": "rgba(43, 43, 43, 0.5)"
+    },
+    "cssVariables": [
+     "--wby-color-surface-scrim"
+    ]
+   },
+   {
+    "path": "color.text.primary",
+    "values": {
+     "light": "#2b2b2b"
+    },
+    "cssVariables": [
+     "--wby-color-text-primary"
+    ]
+   },
+   {
+    "path": "color.text.secondary",
+    "values": {
+     "light": "#595959"
+    },
+    "cssVariables": [
+     "--wby-color-text-secondary"
+    ]
+   },
+   {
+    "path": "color.text.muted",
+    "values": {
+     "light": "#767676"
+    },
+    "cssVariables": [
+     "--wby-color-text-muted"
+    ]
+   },
+   {
+    "path": "color.text.inverse",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-text-inverse"
+    ]
+   },
+   {
+    "path": "color.text.link",
+    "values": {
+     "light": "#1D4ED8"
+    },
+    "cssVariables": [
+     "--wby-color-text-link"
+    ]
+   },
+   {
+    "path": "color.border.default",
+    "values": {
+     "light": "#E2E8F0"
+    },
+    "cssVariables": [
+     "--wby-color-border-default"
+    ]
+   },
+   {
+    "path": "color.border.subtle",
+    "values": {
+     "light": "#efefef"
+    },
+    "cssVariables": [
+     "--wby-color-border-subtle"
+    ]
+   },
+   {
+    "path": "color.border.strong",
+    "values": {
+     "light": "#2b2b2b"
+    },
+    "cssVariables": [
+     "--wby-color-border-strong"
+    ]
+   },
+   {
+    "path": "color.border.focus",
+    "values": {
+     "light": "#2563EB"
+    },
+    "cssVariables": [
+     "--wby-color-border-focus"
+    ]
+   },
+   {
+    "path": "color.action.primary.background",
+    "values": {
+     "light": "#b78f7e"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-background"
+    ]
+   },
+   {
+    "path": "color.action.primary.foreground",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-foreground"
+    ]
+   },
+   {
+    "path": "color.action.primary.hover",
+    "values": {
+     "light": "#A58171"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-hover"
+    ]
+   },
+   {
+    "path": "color.action.primary.active",
+    "values": {
+     "light": "#9A786A"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-active"
+    ]
+   },
+   {
+    "path": "color.action.secondary.background",
+    "values": {
+     "light": "#F1F5F9"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-background"
+    ]
+   },
+   {
+    "path": "color.action.secondary.foreground",
+    "values": {
+     "light": "#0F172A"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-foreground"
+    ]
+   },
+   {
+    "path": "color.action.secondary.hover",
+    "values": {
+     "light": "#E3E6EA"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-hover"
+    ]
+   },
+   {
+    "path": "color.action.secondary.active",
+    "values": {
+     "light": "#D9DDE0"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-active"
+    ]
+   },
+   {
+    "path": "color.action.ghost.background",
+    "values": {
+     "light": "transparent"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-background"
+    ]
+   },
+   {
+    "path": "color.action.ghost.foreground",
+    "values": {
+     "light": "#1D4ED8"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-foreground"
+    ]
+   },
+   {
+    "path": "color.action.ghost.hover",
+    "values": {
+     "light": "rgba(183, 143, 126, 0.08)"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-hover"
+    ]
+   },
+   {
+    "path": "color.action.ghost.active",
+    "values": {
+     "light": "rgba(183, 143, 126, 0.14)"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-active"
+    ]
+   },
+   {
+    "path": "color.action.destructive.background",
+    "values": {
+     "light": "#B91C1C"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-background"
+    ]
+   },
+   {
+    "path": "color.action.destructive.foreground",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-foreground"
+    ]
+   },
+   {
+    "path": "color.action.destructive.hover",
+    "values": {
+     "light": "#A31919"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-hover"
+    ]
+   },
+   {
+    "path": "color.action.destructive.active",
+    "values": {
+     "light": "#981717"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-active"
+    ]
+   },
+   {
+    "path": "color.action.disabled.background",
+    "values": {
+     "light": "#162337"
+    },
+    "cssVariables": [
+     "--wby-color-action-disabled-background"
+    ]
+   },
+   {
+    "path": "color.action.disabled.foreground",
+    "values": {
+     "light": "#767676"
+    },
+    "cssVariables": [
+     "--wby-color-action-disabled-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.info.background",
+    "values": {
+     "light": "#EFF6FF"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-info-background"
+    ]
+   },
+   {
+    "path": "color.feedback.info.foreground",
+    "values": {
+     "light": "#1D4ED8"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-info-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.success.background",
+    "values": {
+     "light": "#ECFDF5"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-success-background"
+    ]
+   },
+   {
+    "path": "color.feedback.success.foreground",
+    "values": {
+     "light": "#047857"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-success-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.warning.background",
+    "values": {
+     "light": "#FFFBEB"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-warning-background"
+    ]
+   },
+   {
+    "path": "color.feedback.warning.foreground",
+    "values": {
+     "light": "#B45309"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-warning-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.danger.background",
+    "values": {
+     "light": "#FEF2F2"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-danger-background"
+    ]
+   },
+   {
+    "path": "color.feedback.danger.foreground",
+    "values": {
+     "light": "#B91C1C"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-danger-foreground"
+    ]
+   }
+  ]
+ },
+ "tulane": {
+  "slots": [
+   {
+    "path": "color.surface.page",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-surface-page"
+    ]
+   },
+   {
+    "path": "color.surface.raised",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-surface-raised"
+    ]
+   },
+   {
+    "path": "color.surface.sunken",
+    "values": {
+     "light": "#dce6e2"
+    },
+    "cssVariables": [
+     "--wby-color-surface-sunken"
+    ]
+   },
+   {
+    "path": "color.surface.overlay",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-surface-overlay"
+    ]
+   },
+   {
+    "path": "color.surface.scrim",
+    "values": {
+     "light": "rgba(38, 38, 38, 0.5)"
+    },
+    "cssVariables": [
+     "--wby-color-surface-scrim"
+    ]
+   },
+   {
+    "path": "color.text.primary",
+    "values": {
+     "light": "#262626"
+    },
+    "cssVariables": [
+     "--wby-color-text-primary"
+    ]
+   },
+   {
+    "path": "color.text.secondary",
+    "values": {
+     "light": "#334155"
+    },
+    "cssVariables": [
+     "--wby-color-text-secondary"
+    ]
+   },
+   {
+    "path": "color.text.muted",
+    "values": {
+     "light": "#64748B"
+    },
+    "cssVariables": [
+     "--wby-color-text-muted"
+    ]
+   },
+   {
+    "path": "color.text.inverse",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-text-inverse"
+    ]
+   },
+   {
+    "path": "color.text.link",
+    "values": {
+     "light": "#2b5c81"
+    },
+    "cssVariables": [
+     "--wby-color-text-link"
+    ]
+   },
+   {
+    "path": "color.border.default",
+    "values": {
+     "light": "#dddddd"
+    },
+    "cssVariables": [
+     "--wby-color-border-default"
+    ]
+   },
+   {
+    "path": "color.border.subtle",
+    "values": {
+     "light": "#efefef"
+    },
+    "cssVariables": [
+     "--wby-color-border-subtle"
+    ]
+   },
+   {
+    "path": "color.border.strong",
+    "values": {
+     "light": "#262626"
+    },
+    "cssVariables": [
+     "--wby-color-border-strong"
+    ]
+   },
+   {
+    "path": "color.border.focus",
+    "values": {
+     "light": "#2563EB"
+    },
+    "cssVariables": [
+     "--wby-color-border-focus"
+    ]
+   },
+   {
+    "path": "color.action.primary.background",
+    "values": {
+     "light": "#a5ccc4"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-background"
+    ]
+   },
+   {
+    "path": "color.action.primary.foreground",
+    "values": {
+     "light": "#262626"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-foreground"
+    ]
+   },
+   {
+    "path": "color.action.primary.hover",
+    "values": {
+     "light": "#95B8B0"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-hover"
+    ]
+   },
+   {
+    "path": "color.action.primary.active",
+    "values": {
+     "light": "#8BABA5"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-active"
+    ]
+   },
+   {
+    "path": "color.action.secondary.background",
+    "values": {
+     "light": "#2b5c81"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-background"
+    ]
+   },
+   {
+    "path": "color.action.secondary.foreground",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-foreground"
+    ]
+   },
+   {
+    "path": "color.action.secondary.hover",
+    "values": {
+     "light": "#285679"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-hover"
+    ]
+   },
+   {
+    "path": "color.action.secondary.active",
+    "values": {
+     "light": "#275374"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-active"
+    ]
+   },
+   {
+    "path": "color.action.ghost.background",
+    "values": {
+     "light": "transparent"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-background"
+    ]
+   },
+   {
+    "path": "color.action.ghost.foreground",
+    "values": {
+     "light": "#2b5c81"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-foreground"
+    ]
+   },
+   {
+    "path": "color.action.ghost.hover",
+    "values": {
+     "light": "rgba(165, 204, 196, 0.08)"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-hover"
+    ]
+   },
+   {
+    "path": "color.action.ghost.active",
+    "values": {
+     "light": "rgba(165, 204, 196, 0.14)"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-active"
+    ]
+   },
+   {
+    "path": "color.action.destructive.background",
+    "values": {
+     "light": "#B91C1C"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-background"
+    ]
+   },
+   {
+    "path": "color.action.destructive.foreground",
+    "values": {
+     "light": "#262626"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-foreground"
+    ]
+   },
+   {
+    "path": "color.action.destructive.hover",
+    "values": {
+     "light": "#A31919"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-hover"
+    ]
+   },
+   {
+    "path": "color.action.destructive.active",
+    "values": {
+     "light": "#981717"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-active"
+    ]
+   },
+   {
+    "path": "color.action.disabled.background",
+    "values": {
+     "light": "#dce6e2"
+    },
+    "cssVariables": [
+     "--wby-color-action-disabled-background"
+    ]
+   },
+   {
+    "path": "color.action.disabled.foreground",
+    "values": {
+     "light": "#64748B"
+    },
+    "cssVariables": [
+     "--wby-color-action-disabled-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.info.background",
+    "values": {
+     "light": "#EFF6FF"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-info-background"
+    ]
+   },
+   {
+    "path": "color.feedback.info.foreground",
+    "values": {
+     "light": "#1D4ED8"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-info-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.success.background",
+    "values": {
+     "light": "#ECFDF5"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-success-background"
+    ]
+   },
+   {
+    "path": "color.feedback.success.foreground",
+    "values": {
+     "light": "#047857"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-success-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.warning.background",
+    "values": {
+     "light": "#FFFBEB"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-warning-background"
+    ]
+   },
+   {
+    "path": "color.feedback.warning.foreground",
+    "values": {
+     "light": "#B45309"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-warning-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.danger.background",
+    "values": {
+     "light": "#FEF2F2"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-danger-background"
+    ]
+   },
+   {
+    "path": "color.feedback.danger.foreground",
+    "values": {
+     "light": "#B91C1C"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-danger-foreground"
+    ]
+   }
+  ]
+ },
+ "freehill": {
+  "slots": [
+   {
+    "path": "color.surface.page",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-surface-page"
+    ]
+   },
+   {
+    "path": "color.surface.raised",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-surface-raised"
+    ]
+   },
+   {
+    "path": "color.surface.sunken",
+    "values": {
+     "light": "#F1F5F9"
+    },
+    "cssVariables": [
+     "--wby-color-surface-sunken"
+    ]
+   },
+   {
+    "path": "color.surface.overlay",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-surface-overlay"
+    ]
+   },
+   {
+    "path": "color.surface.scrim",
+    "values": {
+     "light": "rgba(68, 68, 68, 0.5)"
+    },
+    "cssVariables": [
+     "--wby-color-surface-scrim"
+    ]
+   },
+   {
+    "path": "color.text.primary",
+    "values": {
+     "light": "#444444"
+    },
+    "cssVariables": [
+     "--wby-color-text-primary"
+    ]
+   },
+   {
+    "path": "color.text.secondary",
+    "values": {
+     "light": "#6b695a"
+    },
+    "cssVariables": [
+     "--wby-color-text-secondary"
+    ]
+   },
+   {
+    "path": "color.text.muted",
+    "values": {
+     "light": "#64748B"
+    },
+    "cssVariables": [
+     "--wby-color-text-muted"
+    ]
+   },
+   {
+    "path": "color.text.inverse",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-text-inverse"
+    ]
+   },
+   {
+    "path": "color.text.link",
+    "values": {
+     "light": "#1D4ED8"
+    },
+    "cssVariables": [
+     "--wby-color-text-link"
+    ]
+   },
+   {
+    "path": "color.border.default",
+    "values": {
+     "light": "#cacaca"
+    },
+    "cssVariables": [
+     "--wby-color-border-default"
+    ]
+   },
+   {
+    "path": "color.border.subtle",
+    "values": {
+     "light": "#dddddd"
+    },
+    "cssVariables": [
+     "--wby-color-border-subtle"
+    ]
+   },
+   {
+    "path": "color.border.strong",
+    "values": {
+     "light": "#64748B"
+    },
+    "cssVariables": [
+     "--wby-color-border-strong"
+    ]
+   },
+   {
+    "path": "color.border.focus",
+    "values": {
+     "light": "#2563EB"
+    },
+    "cssVariables": [
+     "--wby-color-border-focus"
+    ]
+   },
+   {
+    "path": "color.action.primary.background",
+    "values": {
+     "light": "#26464b"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-background"
+    ]
+   },
+   {
+    "path": "color.action.primary.foreground",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-foreground"
+    ]
+   },
+   {
+    "path": "color.action.primary.hover",
+    "values": {
+     "light": "#223F44"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-hover"
+    ]
+   },
+   {
+    "path": "color.action.primary.active",
+    "values": {
+     "light": "#203B3F"
+    },
+    "cssVariables": [
+     "--wby-color-action-primary-active"
+    ]
+   },
+   {
+    "path": "color.action.secondary.background",
+    "values": {
+     "light": "#e1cba3"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-background"
+    ]
+   },
+   {
+    "path": "color.action.secondary.foreground",
+    "values": {
+     "light": "#222222"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-foreground"
+    ]
+   },
+   {
+    "path": "color.action.secondary.hover",
+    "values": {
+     "light": "#D4BF99"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-hover"
+    ]
+   },
+   {
+    "path": "color.action.secondary.active",
+    "values": {
+     "light": "#CBB793"
+    },
+    "cssVariables": [
+     "--wby-color-action-secondary-active"
+    ]
+   },
+   {
+    "path": "color.action.ghost.background",
+    "values": {
+     "light": "transparent"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-background"
+    ]
+   },
+   {
+    "path": "color.action.ghost.foreground",
+    "values": {
+     "light": "#1D4ED8"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-foreground"
+    ]
+   },
+   {
+    "path": "color.action.ghost.hover",
+    "values": {
+     "light": "rgba(38, 70, 75, 0.08)"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-hover"
+    ]
+   },
+   {
+    "path": "color.action.ghost.active",
+    "values": {
+     "light": "rgba(38, 70, 75, 0.14)"
+    },
+    "cssVariables": [
+     "--wby-color-action-ghost-active"
+    ]
+   },
+   {
+    "path": "color.action.destructive.background",
+    "values": {
+     "light": "#B91C1C"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-background"
+    ]
+   },
+   {
+    "path": "color.action.destructive.foreground",
+    "values": {
+     "light": "#FFFFFF"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-foreground"
+    ]
+   },
+   {
+    "path": "color.action.destructive.hover",
+    "values": {
+     "light": "#A31919"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-hover"
+    ]
+   },
+   {
+    "path": "color.action.destructive.active",
+    "values": {
+     "light": "#981717"
+    },
+    "cssVariables": [
+     "--wby-color-action-destructive-active"
+    ]
+   },
+   {
+    "path": "color.action.disabled.background",
+    "values": {
+     "light": "#F1F5F9"
+    },
+    "cssVariables": [
+     "--wby-color-action-disabled-background"
+    ]
+   },
+   {
+    "path": "color.action.disabled.foreground",
+    "values": {
+     "light": "#64748B"
+    },
+    "cssVariables": [
+     "--wby-color-action-disabled-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.info.background",
+    "values": {
+     "light": "#EFF6FF"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-info-background"
+    ]
+   },
+   {
+    "path": "color.feedback.info.foreground",
+    "values": {
+     "light": "#1D4ED8"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-info-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.success.background",
+    "values": {
+     "light": "#ECFDF5"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-success-background"
+    ]
+   },
+   {
+    "path": "color.feedback.success.foreground",
+    "values": {
+     "light": "#047857"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-success-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.warning.background",
+    "values": {
+     "light": "#FFFBEB"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-warning-background"
+    ]
+   },
+   {
+    "path": "color.feedback.warning.foreground",
+    "values": {
+     "light": "#B45309"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-warning-foreground"
+    ]
+   },
+   {
+    "path": "color.feedback.danger.background",
+    "values": {
+     "light": "#FEF2F2"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-danger-background"
+    ]
+   },
+   {
+    "path": "color.feedback.danger.foreground",
+    "values": {
+     "light": "#B91C1C"
+    },
+    "cssVariables": [
+     "--wby-color-feedback-danger-foreground"
+    ]
+   }
+  ]
+ }
+}

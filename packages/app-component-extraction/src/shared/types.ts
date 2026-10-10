@@ -112,7 +112,11 @@ export interface ThemeDocumentsDto {
 }
 
 export interface ThemeFitDto {
-    colours: { fitted: number; measured: number };
+    /**
+     * `fitted` counts a colour whose token is the measured colour; `near`, a token close to it but not
+     * it. An API from before 2026-10-10 sends no `near`, and its `fitted` counted any token found.
+     */
+    colours: { fitted: number; measured: number; near?: number };
     typeSizes: { fitted: number; measured: number };
     spacing: { fitted: number; measured: number };
     misses: { component: string; kind: "colour" | "type" | "spacing"; value: string }[];

@@ -16,6 +16,7 @@ import {
     generateComponentAttempts,
     generateResultKey,
     withRoleAwareTypeTokens,
+    withRematchedColours,
     type ComponentResult
 } from "./componentGeneration.js";
 import { hasRecordedResult, recordResultOnce } from "./recordResultOnce.js";
@@ -145,7 +146,10 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
         let systemOverride: SystemPromptOverride | undefined;
         if (manifest.isOk()) {
             manifestAvailable = true;
-            promptPlanned = withRoleAwareTypeTokens(planned, manifest.value);
+            promptPlanned = withRematchedColours(
+                withRoleAwareTypeTokens(planned, manifest.value),
+                manifest.value
+            );
             systemOverride = systemPromptOverride(manifest.value);
             for (const slot of manifest.value.slots) {
                 slotVariables.set(String(slot.path), slot.cssVariables);

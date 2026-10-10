@@ -48,7 +48,8 @@ import {
     buildComponentPrompt,
     OPT_IN_PROMPT_LINE_IDS,
     PROMPT_LINE_IDS,
-    withRoleAwareTypeTokens
+    withRoleAwareTypeTokens,
+    withRematchedColours
 } from "~/features/stages/generate/componentGeneration.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import type { Correction, Run } from "~/domain/types.js";
@@ -937,7 +938,10 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                             for (const slot of manifest.value.slots) {
                                 slotVariables.set(String(slot.path), slot.cssVariables);
                             }
-                            promptPlanned = withRoleAwareTypeTokens(planned, manifest.value);
+                            promptPlanned = withRematchedColours(
+                                withRoleAwareTypeTokens(planned, manifest.value),
+                                manifest.value
+                            );
                             sectionManifest = manifest.value;
                         } else {
                             themeError = manifest.error.message;
@@ -1027,7 +1031,13 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                             spacing.set(planned.name, sectionSpacing(node, sectionManifest));
                         }
                     }
-                    return themeFit(plan.value.components, spacing);
+                    // Matched against the pinned theme now, as Generate's prompt is (withRematchedColours).
+                    const components = sectionManifest
+                        ? plan.value.components.map(planned =>
+                              withRematchedColours(planned, sectionManifest)
+                          )
+                        : plan.value.components;
+                    return themeFit(components, spacing);
                 });
         }
     });

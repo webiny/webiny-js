@@ -27,6 +27,7 @@ import { isTranslucent } from "~/features/shared/translucency.js";
 import { createCopyAttribution, ownStructuredValues } from "./copyAttribution.js";
 import type { SystemPromptOverride } from "./themeVocabulary.js";
 import { bindingCrossesFamily, crossesFamily } from "./colourFamilies.js";
+import { rematchColours } from "~/features/stages/cluster/resolvedColours.js";
 import type { ThemeManifest } from "@webiny/theme-common";
 import { roleAwareTypeToken, themeTypeRoles } from "~/features/stages/plan/sectionTypeScale.js";
 import { stageArtifactKey } from "~/constants.js";
@@ -580,6 +581,30 @@ export const withRoleAwareTypeTokens = (
             ...step,
             token: roleAwareTypeToken(step, roles)
         }))
+    };
+};
+
+/**
+ * The plan's measured colours matched against the pinned theme now, not as Cluster recorded them.
+ *
+ * Applied beside `withRoleAwareTypeTokens` for the same reason: a matcher fix reaches stored plans only
+ * where the theme manifest is at hand. Without it, Take 3's components would be regenerated from
+ * Cluster's record — a grey header still told `feedback.info.background`.
+ */
+export const withRematchedColours = (
+    planned: PlannedComponent,
+    manifest: ThemeManifest
+): PlannedComponent => {
+    const colours = planned.representative?.resolvedColours;
+    if (!planned.representative || !colours?.length) {
+        return planned;
+    }
+    return {
+        ...planned,
+        representative: {
+            ...planned.representative,
+            resolvedColours: rematchColours(colours, manifest)
+        }
     };
 };
 
