@@ -16,7 +16,8 @@ import type {
     ReviewsDto,
     GenerationLogDto,
     GenerationPromptDto,
-    ThemeFitDto
+    ThemeFitDto,
+    ThemeDocumentsDto
 } from "~/shared/types.js";
 
 export interface StageTriggerResult {
@@ -38,6 +39,8 @@ export interface IComponentExtractionGateway {
     retryJobTheme(jobId: string): Promise<JobDto>;
     /** Pin an existing published theme on the job instead of extracting one. */
     useExistingTheme(jobId: string, themeEntryId: string, themeVersion: number): Promise<JobDto>;
+    /** A theme's token document and resolved snapshot, by revision id; null when it cannot be read. */
+    getTheme(id: string): Promise<ThemeDocumentsDto | null>;
     /** How well the job's theme fits what was measured, after Plan; null before Plan. */
     getThemeFit(runId: string): Promise<ThemeFitDto | null>;
     /** Pre-flight check of a site URL for the Create-job screen (W9.3). */

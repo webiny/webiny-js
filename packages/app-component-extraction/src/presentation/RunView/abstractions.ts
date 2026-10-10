@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
+import type { ThemeSnapshot } from "./themeSnapshot.js";
 import type {
     ComponentPromptDto,
     AssembleArtifactDto,
@@ -97,6 +98,8 @@ export interface IRunViewVm {
     showTokens: boolean;
     /** How well the job's theme fits what was measured, once Plan has run; null before. */
     themeFit: ThemeFitDto | null;
+    /** What extraction set on the job's theme, for the theme card's palette; null until loaded. */
+    themeSnapshot: ThemeSnapshot | null;
     /** Published themes, for "Use an existing theme"; loaded when that is opened. */
     themeChoices: ThemeOptionDto[];
     /** A theme action in flight (retry, use existing), so its buttons can show it. */

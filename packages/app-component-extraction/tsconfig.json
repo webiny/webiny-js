@@ -6,7 +6,8 @@
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../app-websockets" },
-    { "path": "../feature" }
+    { "path": "../feature" },
+    { "path": "../theme-common" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -24,7 +25,9 @@
       "@webiny/app-websockets/*": ["../app-websockets/src/*"],
       "@webiny/app-websockets": ["../app-websockets/src"],
       "@webiny/feature/*": ["../feature/src/*"],
-      "@webiny/feature": ["../feature/src"]
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/theme-common/*": ["../theme-common/src/*"],
+      "@webiny/theme-common": ["../theme-common/src"]
     }
   }
 }

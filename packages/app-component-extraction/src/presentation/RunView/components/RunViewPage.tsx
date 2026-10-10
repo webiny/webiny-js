@@ -362,7 +362,6 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
 
             <div className="flex min-h-0 flex-1">
                 <div className="w-[300px] flex-shrink-0 overflow-y-auto border-r border-neutral-dimmed p-md">
-                    <ThemeCard presenter={presenter} />
                     <StageRail
                         rows={railRows}
                         selected={selected}
@@ -378,6 +377,8 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                             ) : undefined
                         }
                     />
+                    {/* Below the stages: a prerequisite already met by the time the run is read. */}
+                    <ThemeCard presenter={presenter} />
                 </div>
 
                 <div className="flex min-w-0 flex-1 flex-col">

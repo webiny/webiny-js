@@ -439,6 +439,25 @@ export const LIST_THEMES = /* GraphQL */ `
     }
 `;
 
+// One theme's token document and its frozen resolved snapshot, for the run view's palette.
+export const GET_THEME = /* GraphQL */ `
+    query GetThemeForComponentExtraction($id: ID!) {
+        theme {
+            getTheme(id: $id) {
+                data {
+                    id
+                    tokens
+                    resolved
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
 // Overrides (W8.1). The data field is a JSON scalar carrying the override / reattachment array.
 export const LIST_OVERRIDES = /* GraphQL */ `
     query ListComponentExtractionOverrides($jobId: ID!) {

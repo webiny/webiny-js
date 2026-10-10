@@ -18,7 +18,8 @@ import type {
     ReviewsDto,
     GenerationLogDto,
     GenerationPromptDto,
-    ThemeFitDto
+    ThemeFitDto,
+    ThemeDocumentsDto
 } from "~/shared/types.js";
 import {
     CHECK_REACHABILITY,
@@ -51,6 +52,7 @@ import {
     LIST_OVERRIDES,
     LIST_RUNS,
     LIST_THEMES,
+    GET_THEME,
     PROJECT_PLAN_COST,
     REGENERATE_COMPONENT,
     REGENERATE_PLAN,
@@ -183,6 +185,20 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
             version: theme.version,
             name: theme.properties?.name || "Untitled theme"
         }));
+    }
+
+    async getTheme(id: string): Promise<ThemeDocumentsDto | null> {
+        const response = await this.client.execute<{
+            theme: { getTheme: GqlEnvelope<ThemeDocumentsDto | null> };
+        }>({ query: GET_THEME, variables: { id } });
+
+        const theme = unwrap(response.theme.getTheme);
+        if (!theme) {
+            return null;
+        }
+        // JSON scalars can arrive as strings depending on the client's parsing.
+        const parse = (value: unknown) => (typeof value === "string" ? JSON.parse(value) : value);
+        return { id: theme.id, tokens: parse(theme.tokens), resolved: parse(theme.resolved) };
     }
 
     async checkReachability(url: string): Promise<ReachabilityDto> {

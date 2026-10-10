@@ -104,6 +104,13 @@ export interface JobThemeExtractionDto {
 }
 
 /** How well the job's theme fits what was measured on the site, after Plan. */
+/** A theme revision's DTCG token document and the resolved snapshot written at publish. */
+export interface ThemeDocumentsDto {
+    id: string;
+    tokens: unknown;
+    resolved: unknown;
+}
+
 export interface ThemeFitDto {
     colours: { fitted: number; measured: number };
     typeSizes: { fitted: number; measured: number };

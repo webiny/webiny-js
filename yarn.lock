@@ -12220,6 +12220,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    "@webiny/theme-common": "npm:0.0.0"
     mobx: "npm:^7.0.0"
     react: "npm:18.3.1"
     typescript: "npm:^7.0.2"

@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { RunViewPresenter as PresenterAbstraction } from "./abstractions.js";
 import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
+import { themeSnapshot } from "./themeSnapshot.js";
 import { stageEntry } from "~/shared/ledger.js";
 import { normalizeUrl } from "~/shared/url.js";
 import type {
@@ -94,6 +95,7 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         reattachments: [],
         promoteComponents: [],
         promoteGateLoaded: false,
+        themeSnapshot: null,
         libraryNames: []
     };
 
@@ -151,6 +153,7 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 // observers see the run, the stage and the artifact change together.
                 this.openStage(selected);
             });
+            void this.loadThemeSnapshot();
             if (selected) {
                 await this.loadLogs(run, selected);
                 await this.loadArtifact(run, selected);
@@ -169,6 +172,31 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
      * Not on the view model: nothing renders it, and it must survive the poll that reads it.
      */
     private readonly renderRefAtTrigger = new Map<string, { ref: string | null; since: number }>();
+
+    /** The pinned theme revision the snapshot was read from, so a retry that re-pins reloads it. */
+    private themeSnapshotOf: string | null = null;
+
+    /** What extraction set on the job's theme, for the theme card. Only for an extracted theme. */
+    private async loadThemeSnapshot(): Promise<void> {
+        const job = this.vm.job;
+        if (job?.themeExtraction?.status !== "done" || !job.themeEntryId || !job.themeVersion) {
+            return;
+        }
+        const id = `${job.themeEntryId}#${String(job.themeVersion).padStart(4, "0")}`;
+        if (id === this.themeSnapshotOf) {
+            return;
+        }
+        this.themeSnapshotOf = id;
+        try {
+            const theme = await this.gateway.getTheme(id);
+            runInAction(() => {
+                this.vm.themeSnapshot = theme ? themeSnapshot(theme) : null;
+            });
+        } catch {
+            // No palette is the honest fallback: the card still says the extraction succeeded.
+            this.themeSnapshotOf = null;
+        }
+    }
 
     private async loadThemeFit(run: RunDto): Promise<ThemeFitDto | null> {
         if (stageEntry(run, "plan")?.status !== "done") {
@@ -261,6 +289,8 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                     this.vm.job = job;
                 });
             }
+            // The palette, once extraction has finished; once per pinned theme revision.
+            void this.loadThemeSnapshot();
             // The theme fit is measured once Plan has run; fetched when that first happens.
             if (!this.vm.themeFit) {
                 const themeFit = await this.loadThemeFit(run);
