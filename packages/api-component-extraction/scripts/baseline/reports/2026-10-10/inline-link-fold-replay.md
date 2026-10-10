@@ -56,7 +56,10 @@ none.
 
 - **The re-bind matched the replay.** Each of the four components changed exactly as replayed; `mapLink`
   (Contact Us Form) and `cta` (Property Description, Neighborhood Perks Section) were removed.
-- **Regeneration exposed a validator bug the fold triggers.** The text check's "is it in the renderable
+- **A latent bug, set off by the fold, failing in the direction that calls a correct component
+  broken.** The bug had no trigger until the fold put a URL in the middle of a paragraph. It is the second
+  this week where a change created the conditions for an existing defect rather than introducing one.
+  Details: The text check's "is it in the renderable
   source" path stripped `//…` to the end of the line as a comment, including the `//` in `https://`
   inside a string. The fold puts a link's URL in the middle of a paragraph's default text, so everything
   after the link was discarded, and Neighborhood/Location Highlight failed twice on "in Bridgeport. When
@@ -84,3 +87,40 @@ has not been assembled or promoted. For the 49 plain-text rich text inputs, (c) 
 by construction (unit-tested), so their pages render as they did before. **That is a claim from the code,
 not a render.** Take 3 holds 2 of the 49 (Contact Form `consentText`, Accessibility Statement
 `paragraphs`). The 71 Westland fallback holds 2 and stays untouched.
+
+## Take 3 built into its own tenant: composition (c) seen deployed
+
+Assemble (8 pages, 46 instances), Promote (15 promoted; Property Description declined, "3 text fragment(s)
+not reproduced", the gate working), Build site into the new tenant `parkcitytake380cd` (theme, 15
+components, 40 images, 8 pages). The run's Generate stage was stale from the re-bind; it was marked current
+with the recorded reason after verifying that the 12 components not re-bound were byte-identical to the
+plan before it, and the 4 re-bound were regenerated after it.
+
+### As predicted
+
+- **Inline links are in their paragraphs, pointing at migrated pages:** "our ideal location" →
+  `/apartments/ct/bridgeport/neighborhood` (home), "in-home features" → `/amenities` (floor plans),
+  "ultimate neighborhood" → `/neighborhood` (amenities). The external privacy policy stays absolute.
+- **Accessibility Statement `paragraphs`** (one of Take 3's two plain-text cases): no link added, no
+  markup.
+
+### Not predicted: four defects, three of them made by this fix
+
+1. **Visible markup on the amenities page.** Contact Us Form shows "By submitting this form, you agree to
+   the `<a href="https://cthousingpartners.org/privacy-policy/">privacy policy</a>`." The regenerated
+   component declares `privacyText` as a plain **text** input. Composition's scalar derivation fell back
+   to Plan's stored sample, which the fold (b) had made HTML, and wrote it into that text input. The guard
+   in (c) covers rich text inputs only, so this route bypassed it. It is the one text input carrying HTML
+   across the site's 8 pages. **Made by the fix.**
+2. **The link twice on the home page's Contact Form** ("…agree to the privacy policy. privacy policy.").
+   `consentText` is one of Take 3's two plain-text cases, but its source renders it as HTML in one branch,
+   so (c) took it. The component was not re-bound, so it still has its own privacy link and appends it.
+   (c) rebuilt the split sentence with the link as well. **Made by the fix:** the split-sentence rebuild
+   must not run where the component still carries the link as its own input.
+3. **"our ideal location" linked in the heading too** ("Explore our ideal location in Bridgeport.", no
+   link on the source). (c) wraps a link's words in any rich text value that contains them; it must only
+   wrap the value that holds the link's paragraph, as Plan's fold does. **Made by the fix.**
+4. **The neighborhood page's Location Highlight body is only "your new home".** The sentence around it is
+   lost, because derivation filled `body` with the link's words alone, the same shape as the 71 Westland
+   intro. (c) then made those words a link. The lost sentence is the existing wrong-slot defect, not this
+   fix.
