@@ -159,7 +159,8 @@ commits = ["cb17a12f6902243ac4d217e4976b2873b78a933b", "658972a8695ef6f0c9d023e1
 # L20, L22, L34, L35, L38, L39: Kibo Commerce ecommerce plugin
 #   Where:    commit 2b9830fd10 (2025-06-12, "wip: ecommerce plugin"):
 #               kiboAuthToken.ts (JWT), nextjs/__mocks__/stories/userMock.ts (2 JWTs + refreshToken),
-#               postman.json (_mch-mozu.com token);
+#               postman.json (_mch-mozu.com token, plus Kibo apihost, applicationKey (client_id) and
+#               sharedSecret (client_secret) at lines 220-234, not flagged by gitleaks);
 #             commit e7d277c945 (2025-07-10):
 #               packages/app-website-builder/src/ecommerce/features/settings/getSettings/useGetEcommerceSettings.ts (JWT).
 #   URLs:
@@ -174,8 +175,10 @@ commits = ["cb17a12f6902243ac4d217e4976b2873b78a933b", "658972a8695ef6f0c9d023e1
 #             "exp" claims: 2025-06-12 (kiboAuthToken.ts), 2025-07-10 (useGetEcommerceSettings.ts),
 #             2022-06-15 and 2022-06-27 (userMock.ts). All expired.
 #             userMock.ts refreshTokenExpiration values: 2022-06-16 and 2022-06-28. Expired.
-#             postman.json value is the Marketo tracking cookie (_mkto_trk), not a credential.
-#   Action:   TODO confirm with Pavel that the Kibo app credentials used to mint these tokens are rotated.
+#             postman.json flagged value is the Marketo tracking cookie (_mkto_trk), not a credential.
+#             postman.json also holds the Kibo client_id/client_secret pair. File deleted in e53eceafb5
+#             (2025-07-29), still in history. Not tested against Kibo.
+#   Action:   accepted as safe (2026-10-10). Pavel confirmed the Kibo keys are old and not in use.
 [[allowlists]]
 description = "L20, L22, L34, L35, L38, L39 Kibo Commerce tokens (expired)"
 commits = ["2b9830fd10014d173b4aca58c50bd078c0754fb1", "e7d277c945c5baf26dbc6463ea0a1d425c370bb5"]
