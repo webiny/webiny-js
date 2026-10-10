@@ -109,6 +109,10 @@ exactly. Generate now matches the under-image colour again too, and refuses the 
 grey `(247,247,249)`: Header 96%, Footer 83%, Contact Us Form 51%, Accessibility Statement 91%. The intro
 hero's pattern sits on that grey. No pale blue remains.
 
-**Four more Take 3 components hold the same under-image binding:** Property Description, Neighborhood
-Overview, Neighborhood Perks Section and Application/Contact Form. They were not regenerated, so their
-current renders still have pale blue under their pattern. Their prompts are now correct.
+**The other four Take 3 components with that binding were regenerated too:** Property Description,
+Neighborhood Overview, Neighborhood Perks Section and Application/Contact Form. None has a pale-blue pixel
+in its render. **Property Description now fails text preservation**, twice in a row, after passing before.
+That is not the colour fix: Plan recorded its one rich-text field as four paragraph values, and the new
+answers keep two of the paragraphs only in a default that a real value replaces. Recorded as an instance in
+`regenerating-can-replace-a-better-component-with-a-worse-one.md`. It is left failing rather than
+regenerated again.

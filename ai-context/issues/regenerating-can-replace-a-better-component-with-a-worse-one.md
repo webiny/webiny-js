@@ -52,3 +52,23 @@ not be presented as a score.
   few), show the new and old renders side by side before replacing, or both.
 - Whether anything should be compared automatically, and if so on what. The height ratio is the only
   free number, and it covers one failure kind.
+
+## Another instance (2026-10-10): ParkCity - Take 3, Property Description
+
+The original Property Description passed every check. It was regenerated for the colour-matcher fix, which
+does not touch text, and twice in a row came back failing text preservation, each time after 2 attempts.
+The missing paragraphs are "While the units were recently renovated…" and "These apartments will be
+available in Downtown…".
+
+**The cause is structural, not chance.**
+
+- Plan recorded the single rich-text `description` prop with four observed values, one per paragraph.
+- The check renders with the first, paragraph 1.
+- The new components hardcode paragraph 4 and keep paragraphs 2 and 3 only in `description`'s default,
+  which a real value replaces.
+
+So on a composed page they would show one paragraph where the site has three. The check is right to fail.
+The original answer happened to be built so that all of them rendered; two regenerations were not.
+
+The fixed colour came with lost text, and nothing offered the earlier answer back. Related: the
+wrong-slot family, since one field's observed values are really consecutive paragraphs of one instance.
