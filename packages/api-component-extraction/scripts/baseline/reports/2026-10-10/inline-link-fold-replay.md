@@ -150,14 +150,14 @@ rule). The rebuild then showed a fourth:
 The served pages were read again 90 seconds after the rebuild. A read straight after it returned the
 previous build's content once, so a page is not read straight after a build.
 
-| Check                                        | Result                                                                                                                                                                                                                                                                                            |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Visible markup, all 8 pages                  | **None.**                                                                                                                                                                                                                                                                                         |
-| Amenities consent                            | "By submitting this form, you agree to the." then the component's own link: once.                                                                                                                                                                                                                 |
-| Home Contact Form consent                    | The component's own link once. The stray " ." before it is in the derived text, and is present on the 71 Westland site built yesterday: not from this work.                                                                                                                                       |
-| Home heading                                 | No link. It reads "Explore", a wrong-slot value.                                                                                                                                                                                                                                                  |
-| Defect 4 (neighborhood body "your new home") | **Still broken and still reported:** plain text, no link; the page map reports "Navigate your daily routine with ease wh…" missing. The home page's "Whether you're an adventurer…" is likewise reported missing.                                                                                 |
-| Contact-us page                              | "privacy policy" twice: `privacyText` holds the link's words alone and the component appends its own link. Present in the first build too; my first check's pattern missed it. Wrong-slot shape; whether it predates the fold is not established, because Take 3 was never composed before today. |
+| Check                                        | Result                                                                                                                                                                                                                                                         |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Visible markup, all 8 pages                  | **None.**                                                                                                                                                                                                                                                      |
+| Amenities consent                            | "By submitting this form, you agree to the." then the component's own link: once.                                                                                                                                                                              |
+| Home Contact Form consent                    | The component's own link once. The stray " ." before it is in the derived text, and is present on the 71 Westland site built yesterday: not from this work.                                                                                                    |
+| Home heading                                 | No link. It reads "Explore", a wrong-slot value. **Unattributable, not a regression:** Take 3 was never composed before today, so there is no before to compare.                                                                                               |
+| Defect 4 (neighborhood body "your new home") | **Still broken and still reported:** plain text, no link; the page map reports "Navigate your daily routine with ease wh…" missing. The home page's "Whether you're an adventurer…" is likewise reported missing.                                              |
+| Contact-us page                              | "privacy policy" twice: `privacyText` holds the link's words alone and the component appends its own link. **Unattributable, not a regression:** a wrong-slot value, present in the first build too, with no earlier composition of Take 3 to compare against. |
 
 ### What this means for the fix
 
@@ -177,3 +177,10 @@ that.
   performs a text operation on the value.
 - **Not checked:** a page composed from any other run after today's change. That needs composing those
   runs.
+
+## The test command reported success for a run it did not perform
+
+`yarn test packages/a packages/b` ran package a's tests only. The test config takes the first argument
+naming a package and ignored the rest without a word. Every "both packages" green run today was partial,
+and api-page-composition-poc's 130 tests did not run in any of them. A run naming two packages now fails
+(exit 1), saying which package it would have skipped. Tests run one package at a time.
