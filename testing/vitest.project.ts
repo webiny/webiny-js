@@ -46,10 +46,30 @@ const getPackageMetaFromPath = async (value: string) => {
 };
 
 export const getPackageMeta = async () => {
-    const target = process.argv.find(param => param.includes("packages/"));
+    const targets = process.argv.filter(param => param.includes("packages/"));
+    const target = targets[0];
 
     if (target) {
-        return getPackageMetaFromPath(target);
+        const meta = await getPackageMetaFromPath(target);
+        /*
+         * One package per run: the config, setup file and test match below are that package's. A second
+         * package path used to be ignored without a word, so `yarn test packages/a packages/b` ran a's
+         * tests and reported them as a green run of both. Measured 2026-10-10: a "both packages" run
+         * left 130 of api-page-composition-poc's tests unrun all day. Refuse instead.
+         */
+        const others = [];
+        for (const other of targets.slice(1)) {
+            const otherMeta = await getPackageMetaFromPath(other);
+            if (otherMeta.packageRoot !== meta.packageRoot) {
+                others.push(otherMeta.packageName);
+            }
+        }
+        if (others.length > 0) {
+            throw new Error(
+                `Tests run one package at a time; this run would test only ${meta.packageName} and skip ${others.join(", ")}. Run each package separately.`
+            );
+        }
+        return meta;
     }
 
     throw new Error(

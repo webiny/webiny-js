@@ -5,6 +5,22 @@
 > in pieces that render whole only if the component puts them back in order, or is held twice and shows twice.
 > **Status:** open, 2026-10-10. Held with the wrong-slot work; measured, not fixed.
 
+## Status, 2026-10-10: the fold is not delivered
+
+**On ParkCity - Take 3's built site the fold links nothing.** Composition never places a paragraph
+containing an inline link into the input meant to hold it, because the wrong-slot defect gets there first:
+the paragraph goes to a heading, or is lost, and the rich text input holds only the link's own words. The
+fold has nothing to put the link into. Do not read the fold as delivered: its visible payoff waits on the
+wrong-slot work.
+
+What exists:
+
+- **A correct fold in Plan:** replayed over 33 stored plans, re-bound and regenerated on Take 3.
+- **Composition no longer writes markup onto pages.**
+- **Four composition defects found and fixed**, some of them older than the fold.
+
+Record: `packages/api-component-extraction/scripts/baseline/reports/2026-10-10/inline-link-fold-replay.md`.
+
 ## What happens
 
 A link inside running text is a phrase of that sentence. Plan makes it a standalone Link prop, in one of two
