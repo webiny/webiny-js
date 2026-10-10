@@ -208,15 +208,31 @@ export const rematchColours = (
     manifest: ThemeManifest
 ): ResolvedColour[] => {
     const roles = themeColourRoles(manifest);
-    return colours.map(colour => {
-        const token = nearest(colour.hex, colour.role, roles);
-        return {
-            ...colour,
-            token: token
-                ? { path: token.path, cssVariable: token.cssVariable, hex: token.hex }
-                : null
-        };
-    });
+    return colours.map(colour => ({ ...colour, token: tokenFor(colour.hex, colour.role, roles) }));
+};
+
+/**
+ * The colour under a see-through background image, matched again against a theme.
+ *
+ * Plan records it once with its own token (`colourUnderImage`), so it is a second stored binding the
+ * same fix has to reach: Take 3's intro hero kept `feedback.info.background` under its pattern after
+ * the section's own colours had been matched again.
+ */
+export const rematchUnderImage = (
+    under: Pick<ResolvedColour, "hex" | "token">,
+    manifest: ThemeManifest
+): Pick<ResolvedColour, "hex" | "token"> => ({
+    ...under,
+    token: tokenFor(under.hex, "background", themeColourRoles(manifest))
+});
+
+const tokenFor = (
+    hex: string,
+    role: ResolvedColour["role"],
+    roles: ThemeColour[]
+): ResolvedColour["token"] => {
+    const token = nearest(hex, role, roles);
+    return token ? { path: token.path, cssVariable: token.cssVariable, hex: token.hex } : null;
 };
 
 /** Below this share of its area painted by its own backgrounds, a section shows its backdrop. */

@@ -27,7 +27,7 @@ import { isTranslucent } from "~/features/shared/translucency.js";
 import { createCopyAttribution, ownStructuredValues } from "./copyAttribution.js";
 import type { SystemPromptOverride } from "./themeVocabulary.js";
 import { bindingCrossesFamily, crossesFamily } from "./colourFamilies.js";
-import { rematchColours } from "~/features/stages/cluster/resolvedColours.js";
+import { rematchColours, rematchUnderImage } from "~/features/stages/cluster/resolvedColours.js";
 import type { ThemeManifest } from "@webiny/theme-common";
 import { roleAwareTypeToken, themeTypeRoles } from "~/features/stages/plan/sectionTypeScale.js";
 import { stageArtifactKey } from "~/constants.js";
@@ -352,8 +352,9 @@ const tintLines = (
 ): string[] =>
     tints.flatMap(image => {
         const opacity = `about ${Math.round((image.opacity ?? 0) * 100)}% opaque`;
+        // A token the colour lines would refuse (a status or border colour) is refused here too.
         const under = image.under
-            ? image.under.token
+            ? image.under.token && !crossesFamily("background", image.under.token.path)
                 ? `var(${image.under.token.cssVariable}) (${image.under.hex})`
                 : `${image.under.hex} (no theme variable is near this colour, use it directly)`
             : null;
@@ -596,15 +597,26 @@ export const withRematchedColours = (
     manifest: ThemeManifest
 ): PlannedComponent => {
     const colours = planned.representative?.resolvedColours;
-    if (!planned.representative || !colours?.length) {
-        return planned;
-    }
     return {
         ...planned,
-        representative: {
-            ...planned.representative,
-            resolvedColours: rematchColours(colours, manifest)
-        }
+        ...(planned.representative && colours?.length
+            ? {
+                  representative: {
+                      ...planned.representative,
+                      resolvedColours: rematchColours(colours, manifest)
+                  }
+              }
+            : {}),
+        // The colour under a see-through image is a second stored binding; see rematchUnderImage.
+        ...(planned.backgroundImages?.length
+            ? {
+                  backgroundImages: planned.backgroundImages.map(image =>
+                      image.under
+                          ? { ...image, under: rematchUnderImage(image.under, manifest) }
+                          : image
+                  )
+              }
+            : {})
     };
 };
 

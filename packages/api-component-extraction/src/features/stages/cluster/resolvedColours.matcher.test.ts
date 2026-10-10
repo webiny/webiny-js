@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { ThemeManifest } from "@webiny/theme-common";
 import type { ResolvedColour } from "~/domain/artifacts.js";
 import { crossesFamily } from "../generate/colourFamilies.js";
-import { rematchColours, themeColourRoles } from "./resolvedColours.js";
+import { rematchColours, rematchUnderImage, themeColourRoles } from "./resolvedColours.js";
 
 /*
  * Every case is from a stored run (colour-matcher-replay-result.md). The fixture holds the colour slots
@@ -85,5 +85,20 @@ describe("matching again against the pinned theme", () => {
             Array(5).fill(expect.stringMatching(/^color\.feedback\./))
         );
         expect(moved.every(({ now }) => now === "color.surface.raised")).toBe(true);
+    });
+});
+
+describe("the colour under a see-through image", () => {
+    it("is matched again too: Take 3's intro hero kept a status colour under its pattern", () => {
+        // As Plan recorded it for the Apartment Intro Hero (and four other Take 3 components).
+        const recorded = {
+            hex: "#f7f7f9",
+            token: {
+                path: "color.feedback.info.background",
+                cssVariable: "--wby-color-feedback-info-background",
+                hex: "#eff6ff"
+            }
+        };
+        expect(rematchUnderImage(recorded, themes.take3).token?.path).toBe("color.surface.raised");
     });
 });
