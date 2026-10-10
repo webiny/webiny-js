@@ -124,3 +124,56 @@ plan before it, and the 4 re-bound were regenerated after it.
    lost, because derivation filled `body` with the link's words alone, the same shape as the 71 Westland
    intro. (c) then made those words a link. The lost sentence is the existing wrong-slot defect, not this
    fix.
+
+## Corrections to the first build's report
+
+- **No inline link sat inside its paragraph on any built page.** On every Location Highlight and Perks
+  instance, `body` held only the link's own words, as a link (a wrong-slot value). On the home page the
+  paragraph had gone into `heading`. The first report said the links were "in their paragraphs, pointing
+  at migrated pages". It checked that each link existed and where it pointed, not what surrounded it.
+- **Take 3 holds 1 of the 49 plain-text inputs, not 2.** Contact Form `consentText` renders as HTML. The
+  "2" came from matching component and prop names across runs: another run's Contact Form `consentText`
+  is plain text.
+- **Test counts.** "All 505/507 tests across both packages" covered only `api-component-extraction`.
+  The combined command does not run `api-page-composition-poc`'s tests; run alone, they pass (130).
+
+## Rebuilt after the three fixes (and a fourth the rebuild showed)
+
+The fixes: link tags are stripped before any input that does not render HTML; a sentence the component
+assembles itself is not rebuilt; a link's words are wrapped only in the value holding its paragraph (Plan's
+rule). The rebuild then showed a fourth:
+
+- **"…agree to the privacy policy. privacy policy." on the amenities page.** The strip kept the link's
+  words, and the component appends its own link. A link the component carries itself now goes with its
+  words.
+
+The served pages were read again 90 seconds after the rebuild. A read straight after it returned the
+previous build's content once, so a page is not read straight after a build.
+
+| Check                                        | Result                                                                                                                                                                                                                                                                                            |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Visible markup, all 8 pages                  | **None.**                                                                                                                                                                                                                                                                                         |
+| Amenities consent                            | "By submitting this form, you agree to the." then the component's own link: once.                                                                                                                                                                                                                 |
+| Home Contact Form consent                    | The component's own link once. The stray " ." before it is in the derived text, and is present on the 71 Westland site built yesterday: not from this work.                                                                                                                                       |
+| Home heading                                 | No link. It reads "Explore", a wrong-slot value.                                                                                                                                                                                                                                                  |
+| Defect 4 (neighborhood body "your new home") | **Still broken and still reported:** plain text, no link; the page map reports "Navigate your daily routine with ease wh…" missing. The home page's "Whether you're an adventurer…" is likewise reported missing.                                                                                 |
+| Contact-us page                              | "privacy policy" twice: `privacyText` holds the link's words alone and the component appends its own link. Present in the first build too; my first check's pattern missed it. Wrong-slot shape; whether it predates the fold is not established, because Take 3 was never composed before today. |
+
+### What this means for the fix
+
+On Take 3's built pages, composition's half adds no link at all. Every paragraph that holds an inline link
+reaches the page in the wrong slot, or not at all, so there is no paragraph value to put the link in.
+The destinations that were visible in the first build were links standing alone, in wrong-slot values;
+fix 3 correctly stopped linking those. The inline-link fix produces linked paragraphs only where
+composition places the paragraph in its rich text input, and on this site the wrong-slot defect prevents
+that.
+
+### The 49 plain-text inputs beyond Take 3, as far as can be checked without composing other runs
+
+- **Plan's HTML samples reach only Take 3.** Across the 33 stored plans, observed values holding `<a` exist
+  only in Take 3's re-bound plan (5 values), and the strip now removes them before any plain-text input.
+- **Composition's classification holds on the sources it reads.** Across the 323 promoted Library
+  components there are 182 rich text inputs: 130 render as HTML, 52 do not, and none of the 130 also
+  performs a text operation on the value.
+- **Not checked:** a page composed from any other run after today's change. That needs composing those
+  runs.

@@ -56,7 +56,12 @@ import {
 } from "~/pages/rewriteDestinations.js";
 import { toPageIdentity } from "~/pages/toPageIdentity.js";
 import { scalarInputNames } from "~/pages/scalarInputNames.js";
-import { lexicalHtmlInputs, withInlineLinks } from "~/pages/lexicalHtml.js";
+import {
+    labelsIn,
+    lexicalHtmlInputs,
+    plainTextDeep,
+    withInlineLinks
+} from "~/pages/lexicalHtml.js";
 import {
     fileInputShapes,
     unresolvedFileInputs,
@@ -936,8 +941,27 @@ export class CompositionWriterImpl implements ICompositionWriter {
             for (const name of component.htmlLexicalInputs) {
                 const value = inputs[name];
                 if (typeof value === "string" && value.trim()) {
-                    inputs[name] = withInlineLinks(value, node);
+                    const ownLabels = new Set<string>();
+                    for (const [other, inner] of Object.entries(inputs)) {
+                        if (other !== name) {
+                            labelsIn(inner, ownLabels);
+                        }
+                    }
+                    inputs[name] = withInlineLinks(value, node, ownLabels);
                 }
+            }
+        }
+
+        // Every other input gets plain text: one that does not render HTML would print the markup.
+        for (const [name, value] of Object.entries(inputs)) {
+            if (!component.htmlLexicalInputs.has(name)) {
+                const ownLabels = new Set<string>();
+                for (const [other, inner] of Object.entries(inputs)) {
+                    if (other !== name) {
+                        labelsIn(inner, ownLabels);
+                    }
+                }
+                inputs[name] = plainTextDeep(value, ownLabels);
             }
         }
 

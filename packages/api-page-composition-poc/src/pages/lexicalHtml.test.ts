@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { lexicalHtmlInputs, withInlineLinks } from "./lexicalHtml.js";
+import { asPlainText, lexicalHtmlInputs, withInlineLinks } from "./lexicalHtml.js";
 import { rewriteDestinations } from "./rewriteDestinations.js";
 
 /*
@@ -80,5 +80,59 @@ describe("destinations inside rich text", () => {
             'You’ll love <a href="/apartments/ct/bridgeport/neighborhood">our ideal location</a>, see the <a href="https://cthousingpartners.org/privacy-policy/">policy</a> and <a href="https://www.parkcityplace.org/old-page">this</a>.'
         );
         expect(result.outcomes.map(o => o.kind)).toEqual(["rewritten", "external", "unmigrated"]);
+    });
+});
+
+/*
+ * The three defects Take 3's built site showed (inline-link-fold-replay.md, "Take 3 built into its own
+ * tenant"), each from the page it was seen on.
+ */
+describe("after building Take 3", () => {
+    it("does not link the words in a value that does not hold the link's paragraph", () => {
+        // The home page heading: "our ideal location" has no link on the source.
+        const heading = "Explore our ideal location in Bridgeport.";
+        expect(withInlineLinks(heading, section("take3-neighborhood-highlight"))).toBe(heading);
+    });
+
+    it("leaves a value that is only the link's words as it is, so the lost sentence stays visible", () => {
+        // The neighborhood page's body was "your new home" alone: a wrong-slot value, not a paragraph.
+        expect(withInlineLinks("our ideal location", section("take3-neighborhood-highlight"))).toBe(
+            "our ideal location"
+        );
+    });
+
+    it("does not rebuild a sentence the component assembles with its own link", () => {
+        // Contact Form appends its own privacy link: the rebuilt sentence showed it twice.
+        expect(
+            withInlineLinks(
+                "By submitting this form, you agree to the",
+                section("take3-contact-us-form"),
+                new Set(["privacy policy"])
+            )
+        ).toBe("By submitting this form, you agree to the");
+    });
+
+    it("writes plain text into an input that does not render HTML", () => {
+        // Contact Us Form's privacyText on the amenities page printed the markup.
+        expect(
+            asPlainText(
+                'By submitting this form, you agree to the <a href="https://cthousingpartners.org/privacy-policy/">privacy policy</a>.'
+            )
+        ).toBe("By submitting this form, you agree to the privacy policy.");
+    });
+
+    it("drops a link's words too when the component renders that link itself", () => {
+        // Contact Us Form appends its own privacy link: keeping the words showed the phrase twice.
+        expect(
+            asPlainText(
+                'By submitting this form, you agree to the <a href="https://cthousingpartners.org/privacy-policy/">privacy policy</a>.',
+                new Set(["privacy policy"])
+            )
+        ).toBe("By submitting this form, you agree to the.");
+    });
+
+    it("leaves other markup in a plain input alone", () => {
+        const icon = '<svg viewBox="0 0 24 24"><path d="M0 0h24v24H0z"/></svg>';
+        expect(asPlainText(icon)).toBe(icon);
     });
 });

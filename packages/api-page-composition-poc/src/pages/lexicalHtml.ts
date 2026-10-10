@@ -1,7 +1,8 @@
 import type { CapturedNode } from "@webiny/api-component-extraction/domain/artifacts.js";
 import {
     findInlineLinks,
-    paragraphText,
+    holdsParagraph,
+    paragraphOwnText,
     paragraphWithLink,
     type InlineLink
 } from "@webiny/api-component-extraction/features/stages/plan/inlineLinks.js";
@@ -62,7 +63,16 @@ const normalise = (text: string): string => text.replace(/\s+/g, " ").trim().toL
  *
  * A value already holding a link, or with nothing to link, is returned unchanged.
  */
-export const withInlineLinks = (value: string, section: CapturedNode): string => {
+export const withInlineLinks = (
+    value: string,
+    section: CapturedNode,
+    /**
+     * Link labels the component already carries as inputs of its own (a `privacyLink` it renders after
+     * the text). A sentence the component assembles itself is not rebuilt: Take 3's Contact Form
+     * appended its own privacy link after the rebuilt sentence's, and showed it twice.
+     */
+    ownLabels: ReadonlySet<string> = new Set()
+): string => {
     if (/<a\s[^>]*href=/i.test(value)) {
         return value;
     }
@@ -75,6 +85,15 @@ export const withInlineLinks = (value: string, section: CapturedNode): string =>
     const placed: { at: number; link: InlineLink }[] = [];
     const lower = value.toLowerCase();
     for (const link of links) {
+        /*
+         * Only in the value that holds the link's paragraph, as Plan's fold does. Wrapping wherever the
+         * words appeared linked Take 3's heading "Explore our ideal location in Bridgeport.", which has
+         * no link on the source. A value that is the link's words alone does not hold the paragraph
+         * either, and stays as it is: that is a wrong-slot value, and linking it would hide it.
+         */
+        if (!holdsParagraph(value, link.paragraph)) {
+            continue;
+        }
         const at = lower.indexOf(link.label.toLowerCase());
         const overlaps = placed.some(
             other => at < other.at + other.link.label.length && other.at < at + link.label.length
@@ -98,7 +117,19 @@ export const withInlineLinks = (value: string, section: CapturedNode): string =>
     // The sentence was split around a link: the value is part of the paragraph, without the link.
     const fragment = normalise(value);
     for (const link of links) {
-        if (fragment && normalise(paragraphText(link.paragraph)).includes(fragment)) {
+        if (ownLabels.has(normalise(link.label))) {
+            continue;
+        }
+        /*
+         * Only a value that is the paragraph's own words split around the link — never the link's words,
+         * which a wrong-slot derivation puts in a body on its own. Rebuilding from those would fill in a
+         * lost sentence silently and hide that defect rather than fix it.
+         */
+        if (
+            fragment &&
+            fragment !== normalise(link.label) &&
+            normalise(paragraphOwnText(link.paragraph)).includes(fragment)
+        ) {
             const rebuilt = paragraphWithLink(link.paragraph, link);
             if (rebuilt) {
                 return rebuilt;
@@ -106,4 +137,77 @@ export const withInlineLinks = (value: string, section: CapturedNode): string =>
         }
     }
     return value;
+};
+
+/**
+ * The link markup the inline-link fold produces. Only anchors: a component may render other markup
+ * from a plain input on purpose (an inline `<svg>` icon in a default), and that is left alone.
+ */
+const ANCHOR_TAGS = /<a\s[^>]*>|<\/a>/gi;
+const HAS_ANCHOR = /<a\s[^>]*>|<\/a>/i;
+
+const decodeEntities = (text: string): string =>
+    text
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&amp;/g, "&");
+
+/**
+ * A value made safe for an input that does not render HTML: link tags removed, entities decoded.
+ *
+ * Composition can write a rich text value into any input — its scalar derivation falls back to Plan's
+ * stored sample — and Plan's rich text samples now carry their inline links as HTML. On Take 3 that put
+ * `<a href="…">privacy policy</a>` into Contact Us Form's plain-text `privacyText`, which printed the
+ * markup on the page. The route existed before the fold; nothing produced HTML to send down it.
+ */
+export const asPlainText = (value: string, ownLabels: ReadonlySet<string> = new Set()): string => {
+    if (!HAS_ANCHOR.test(value)) {
+        return value;
+    }
+    /*
+     * A link the component renders itself as an input of its own goes with its words, as a sentence the
+     * component assembles is not rebuilt (`withInlineLinks`). Keeping the words put "…agree to the
+     * privacy policy. privacy policy." on Take 3's amenities page: the stripped sentence, then the
+     * component's own link.
+     */
+    const withoutOwn = value.replace(/<a\s[^>]*>([\s\S]*?)<\/a>/gi, (_whole, label: string) =>
+        ownLabels.has(normalise(decodeEntities(label))) ? "" : label
+    );
+    return decodeEntities(withoutOwn.replace(ANCHOR_TAGS, ""))
+        .replace(/\s+/g, " ")
+        .replace(/\s+([.,;:!?])/g, "$1")
+        .trim();
+};
+
+/** Every string under an input value made plain, through nested objects and lists. */
+export const plainTextDeep = (
+    value: unknown,
+    ownLabels: ReadonlySet<string> = new Set()
+): unknown => {
+    if (typeof value === "string") {
+        return asPlainText(value, ownLabels);
+    }
+    if (Array.isArray(value)) {
+        return value.map(inner => plainTextDeep(inner, ownLabels));
+    }
+    if (value && typeof value === "object") {
+        return Object.fromEntries(
+            Object.entries(value).map(([key, inner]) => [key, plainTextDeep(inner, ownLabels)])
+        );
+    }
+    return value;
+};
+
+/** Every string label in an input value, normalised: what the component already carries itself. */
+export const labelsIn = (value: unknown, into: Set<string> = new Set()): Set<string> => {
+    if (typeof value === "string") {
+        into.add(normalise(value));
+    } else if (Array.isArray(value)) {
+        value.forEach(inner => labelsIn(inner, into));
+    } else if (value && typeof value === "object") {
+        Object.values(value).forEach(inner => labelsIn(inner, into));
+    }
+    return into;
 };

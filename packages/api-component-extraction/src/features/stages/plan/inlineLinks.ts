@@ -52,6 +52,9 @@ const ownText = (node: CapturedNode): string => runsOf(node).join(" ");
 
 export const paragraphText = (node: CapturedNode): string => allText(node);
 
+/** The paragraph's own words, without the text of the links and other elements inside it. */
+export const paragraphOwnText = (node: CapturedNode): string => ownText(node);
+
 const allText = (node: CapturedNode): string =>
     normalise([ownText(node), ...(node.children ?? []).map(allText)].join(" "));
 
@@ -161,6 +164,10 @@ const holds = (value: string, paragraph: string): boolean => {
     }
     return false;
 };
+
+/** Does this value hold the link's paragraph? The test the fold uses, shared with composition. */
+export const holdsParagraph = (value: string, paragraph: CapturedNode): boolean =>
+    holds(value, allText(paragraph));
 
 const isRichText = (prop: ComponentProp): boolean => /^(rich\s*text|lexical)$/i.test(prop.type);
 const isLinkType = (prop: ComponentProp): boolean => /^(link|url|cta|button)$/i.test(prop.type);
