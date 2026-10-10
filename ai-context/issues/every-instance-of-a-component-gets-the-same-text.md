@@ -113,3 +113,8 @@ runs carry wrong text (15 of 55 on the five demo jobs). On composed pages it sho
 "Copyright ©" link in every footer of its site tenant; "Explore" on four root pages), because composition
 re-derives link lists from the captured page and masks the Plan's values elsewhere. Component defaults
 are not masked: renders, Library previews and fresh editor drops show them.
+
+> **Corrected 2026-10-10: "shows on Park City only" is about labels.** That sweep read link labels, not
+> destinations. Measured on destinations, the 71 Westland rehearsal site has 48 of 110 links wrong or dead
+> ("View Floor Plans" to Facebook; the footer address and property name to a 404 on every page). The other
+> composed sites are unproven on destinations, not clean (`reports/2026-10-10/link-targets-71-westland.md`).

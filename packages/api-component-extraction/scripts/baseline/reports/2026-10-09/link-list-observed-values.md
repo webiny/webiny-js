@@ -1,11 +1,15 @@
 # How widespread is wrong text in link lists?
 
-> **Correction, 2026-10-10: this measures labels only, not destinations.** The page sweep below counts
-> a composed link as wrong only by its label, so a right label pointing at the wrong place passes. The
-> 71 Westland "0" is clean on labels and wrong on targets: the rehearsal site has 48 of 110 links wrong
-> or dead, among them "View Floor Plans" to Facebook and the footer address to a 404
-> (`2026-10-10/link-targets-71-westland.md`). So every "clean" row below (71 Westland, 2424 Tulane,
-> Freehill Street Lofts, The Vibe, webiny.com) is unproven on targets.
+> **Correction, 2026-10-10: this report measured labels, not links, and its "clean" verdict is
+> withdrawn.** The page sweep counts a composed link as wrong only by its label, so a right label
+> pointing at the wrong place passes. It called 71 Westland clean; measured on destinations, the
+> rehearsal site has **48 of 110 links wrong or dead**, including "View Floor Plans" going to Facebook and,
+> in the footer on every page, the address and property name going to a 404
+> (`2026-10-10/link-targets-71-westland.md`).
+>
+> **2424 Tulane, Freehill Street Lofts, The Vibe and webiny.com are unproven on targets, not clean.** The
+> "0" rows below are zero wrong labels and nothing more. The finding about Plans' wrong link text stands;
+> what is withdrawn is the conclusion that composed pages are clean.
 
 The measurement asked for in `footer-thinking-quality.md`, finding 1. It is offline over stored Plan
 artifacts and captured page trees, with no model spend. Scope: every Plan prop typed `Link`, in the latest
@@ -63,31 +67,37 @@ composed page only where that derivation falls back to the component's defaults.
 composed link counts only if its label is one of the wrong values and is not a link label anywhere on
 the same source page.
 
-| Composed site                                            | Pages   | With a wrong link label                                             |
-| -------------------------------------------------------- | ------- | ------------------------------------------------------------------- |
-| **Park City, site tenant** (`parkcityplacebaseline6a3d`) | 8       | **8: "Copyright ©" in every footer**; "& Relax" also on floor plans |
-| **Park city Palace, root** (run 5)                       | 7 live  | **4: "Explore"** (amenities, neighborhood, contact-us, floor-plans) |
-| 71 Westland, site tenant                                 | 10      | 0                                                                   |
-| webiny.com, site tenant                                  | 3       | 0                                                                   |
-| 2424 Tulane, root (run 4)                                | 10 live | 0                                                                   |
-| Freehill Street Lofts, root                              | 1 live  | 0                                                                   |
-| The Vibe, root                                           | 8 live  | 0                                                                   |
-| 71 Westland, root                                        | 9 live  | 0                                                                   |
+| Composed site                                            | Pages   | With a wrong link label                                             | Link destinations (added 2026-10-10)                                   |
+| -------------------------------------------------------- | ------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Park City, site tenant** (`parkcityplacebaseline6a3d`) | 8       | **8: "Copyright ©" in every footer**; "& Relax" also on floor plans | not measured                                                           |
+| **Park city Palace, root** (run 5)                       | 7 live  | **4: "Explore"** (amenities, neighborhood, contact-us, floor-plans) | not measured                                                           |
+| 71 Westland, site tenant                                 | 10      | 0                                                                   | not measured                                                           |
+| **71 Westland, rehearsal tenant** (measured 2026-10-10)  | 10      | not swept                                                           | **48 of 110 wrong or dead**; footer address and name 404 on every page |
+| webiny.com, site tenant                                  | 3       | 0                                                                   | **unproven**                                                           |
+| 2424 Tulane, root (run 4)                                | 10 live | 0                                                                   | **unproven**                                                           |
+| Freehill Street Lofts, root                              | 1 live  | 0                                                                   | **unproven**                                                           |
+| The Vibe, root                                           | 8 live  | 0                                                                   | **unproven**                                                           |
+| 71 Westland, root                                        | 9 live  | 0                                                                   | not measured                                                           |
 
-**So it is widespread in the Plans and narrow on composed pages: today it shows on Park City.** Composition
-masks it elsewhere, which also means the masking is doing work that nothing records.
+**So wrong link text is widespread in the Plans and narrow in composed labels: today it shows on Park
+City.** Composition masks the wrong labels elsewhere. It does not make the links right: where destinations
+were measured, on 71 Westland, nearly half are wrong. _(Corrected 2026-10-10; this line said "narrow on
+composed pages".)_
 
 **Where it is not masked:** the generated components' own defaults. Every render on the Generate card,
 the Library preview, and a component dropped fresh into the editor show the Plan's values. That is where
-the 2424 Tulane Footer's "Copyright © 2026 Copyright ©" was seen, though the composed Tulane pages are
-clean.
+the 2424 Tulane Footer's "Copyright © 2026 Copyright ©" was seen, though the composed Tulane pages carry
+no wrong labels (their destinations are unproven).
 
 ## What it changes for choosing demo pages
 
 - **Park City is the site to avoid or fix.** In its own tenant every page's footer has a "Copyright ©"
   link. In root, four of its pages have an "Explore" link that is a heading fragment.
-- **71 Westland, 2424 Tulane, Freehill Street Lofts, The Vibe and webiny.com composed pages are clean** on
-  this measure.
+- ~~71 Westland, 2424 Tulane, Freehill Street Lofts, The Vibe and webiny.com composed pages are clean on
+  this measure.~~ **Withdrawn 2026-10-10.** They carry no wrong labels. 71 Westland has 48 of 110 links
+  wrong or dead when destinations are checked; the other four are unproven on destinations, not clean.
+  The footer is the risk area: on 71 Westland, two of the four links not to click live are in the footer
+  on every page.
 - **Do not show a component's Library preview or Generate render** as "the migrated footer" for Tulane or
   Park City; those show the defaults.
 

@@ -286,3 +286,24 @@ runs carry wrong text (15 of 55 on the five demo jobs). On composed pages it sho
 "Copyright ©" link in every footer of its site tenant; "Explore" on four root pages), because composition
 re-derives link lists from the captured page and masks the Plan's values elsewhere. Component defaults
 are not masked: renders, Library previews and fresh editor drops show them.
+
+> **Corrected 2026-10-10: "shows on Park City only" is about labels.** That sweep read link labels, not
+> destinations. Measured on destinations, the 71 Westland rehearsal site has 48 of 110 links wrong or dead
+> ("View Floor Plans" to Facebook; the footer address and property name to a 404 on every page). The other
+> composed sites are unproven on destinations, not clean (`reports/2026-10-10/link-targets-71-westland.md`).
+
+## Two more instances, from the 71 Westland rehearsal (2026-10-10), held until after 16 October
+
+Both are the same class: the page builder (`deriveCompositeInputs` in `api-page-composition-poc`) assigns a
+captured value to the wrong slot. As with the link text above, the answer is upstream of the component.
+
+- **Link destinations.** 48 of 110 links on the rehearsal site go to the wrong place or nowhere. A
+  destination lands in another link's slot ("View Floor Plans" takes the Facebook link, the footer address
+  takes the phone number), or something that is not a destination becomes one (`,`, the phone number).
+  Full list: `reports/2026-10-10/link-targets-71-westland.md`.
+- **The logo.** The header's `logo { src, alt, href }` takes the deepest single-link node, which is the
+  "Schedule a Tour" button, two levels deeper than the logo's own link. So the logo comes out with no image
+  and the contact page's link. Preferring a node that shows an image fixed the header logo but turned the
+  header's buttons into one "Menu" button and put a 24 px icon in the footer's logo slot, so it was
+  reverted. Fixing one slot moves the error to the next; the fix has to assign the slots together, not
+  one at a time in manifest order.
