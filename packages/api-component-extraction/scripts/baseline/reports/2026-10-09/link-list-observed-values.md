@@ -1,5 +1,12 @@
 # How widespread is wrong text in link lists?
 
+> **Correction, 2026-10-10: this measures labels only, not destinations.** The page sweep below counts
+> a composed link as wrong only by its label, so a right label pointing at the wrong place passes. The
+> 71 Westland "0" is clean on labels and wrong on targets: the rehearsal site has 48 of 110 links wrong
+> or dead, among them "View Floor Plans" to Facebook and the footer address to a 404
+> (`2026-10-10/link-targets-71-westland.md`). So every "clean" row below (71 Westland, 2424 Tulane,
+> Freehill Street Lofts, The Vibe, webiny.com) is unproven on targets.
+
 The measurement asked for in `footer-thinking-quality.md`, finding 1. It is offline over stored Plan
 artifacts and captured page trees, with no model spend. Scope: every Plan prop typed `Link`, in the latest
 planned run of all 19 jobs.
