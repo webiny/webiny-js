@@ -8,3 +8,17 @@ export class WorkflowsNotAuthenticatedError extends BaseError {
         super({ message: "You must be signed in to use workflows." });
     }
 }
+
+export interface WorkflowsNotAuthorizedErrorData {
+    /** What was refused, e.g. `cancel`. */
+    action: string;
+}
+
+/** Shared by the app wrappers when a workflows permission or target access check refuses an action. */
+export class WorkflowsNotAuthorizedError extends BaseError<WorkflowsNotAuthorizedErrorData> {
+    override readonly code = "Workflows/NotAuthorized" as const;
+
+    constructor(data: WorkflowsNotAuthorizedErrorData) {
+        super({ message: `You are not allowed to ${data.action}.`, data });
+    }
+}
