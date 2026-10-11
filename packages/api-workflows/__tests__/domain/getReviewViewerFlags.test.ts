@@ -99,6 +99,19 @@ const aiOwnedReview = (): ReviewData => {
     return toSaveData(review);
 };
 
+const automationActor: Actor = {
+    type: "automation",
+    id: "user-requester",
+    displayName: "Automation check"
+};
+
+/** "legal" is approved; "editorial" is `pending`, not reached yet. */
+const pendingNextStepReview = (): ReviewData => {
+    const review = createStartedReview();
+    expectOk(review.approve({ ...legal(reviewer), comment: null }));
+    return toSaveData(review);
+};
+
 const approvedReview = (): ReviewData => {
     const review = createStartedReview();
     expectOk(review.approve({ ...legal(reviewer), comment: null }));
@@ -123,7 +136,7 @@ const cancelledReview = (): ReviewData => {
 /** What the transitions themselves allow for the viewer on the current step. */
 const transitionResults = (data: ReviewData, viewer: ReviewViewer) => {
     const params = {
-        stepId: data.currentStepId ?? data.steps[0].id,
+        stepId: Review.fromData(data).actionableStepId ?? data.steps[0].id,
         actor: viewer.actor,
         actorTeamIds: viewer.teamIds,
         now: LATER
@@ -202,6 +215,37 @@ describe("getReviewViewerFlags", () => {
         });
     });
 
+    it("lets an AI owner decide, but not the user requester with the same id (D58)", () => {
+        const data = aiOwnedReview();
+
+        expect(getReviewViewerFlags(data, viewerOf(aiActor))).toEqual({
+            ...NO_FLAGS,
+            canApprove: true,
+            canReject: true
+        });
+        expect(getReviewViewerFlags(data, viewerOf(requester))).toEqual({
+            ...NO_FLAGS,
+            canApprove: false,
+            canReject: false,
+            canCancel: true
+        });
+    });
+
+    it("offers no step action while the next step is still pending", () => {
+        expect(
+            getReviewViewerFlags(
+                pendingNextStepReview(),
+                viewerOf(reviewer, { permissions: REASSIGN })
+            )
+        ).toMatchObject({
+            canStart: false,
+            canTakeOver: false,
+            canApprove: false,
+            canReject: false,
+            canCancel: true
+        });
+    });
+
     it.each([
         ["approved", approvedReview],
         ["rejected", rejectedReview],
@@ -220,6 +264,7 @@ describe("getReviewViewerFlags", () => {
             awaitingReview(),
             inReviewReview(),
             aiOwnedReview(),
+            pendingNextStepReview(),
             approvedReview(),
             rejectedReview(),
             cancelledReview()
@@ -229,6 +274,7 @@ describe("getReviewViewerFlags", () => {
             viewerOf(reviewer),
             viewerOf(otherReviewer),
             viewerOf(aiActor),
+            viewerOf(automationActor),
             outsiderOf(FULL_ACCESS)
         ];
 
@@ -243,7 +289,7 @@ describe("getReviewViewerFlags", () => {
 
     it("treats a review without a current step as having nothing to act on", () => {
         const approved = approvedReview();
-        expect(Review.fromData(approved).currentStepId).toBeNull();
+        expect(Review.fromData(approved).actionableStepId).toBeNull();
         expect(
             getReviewViewerFlags(approved, viewerOf(reviewer, { permissions: FULL_ACCESS }))
         ).toEqual(NO_FLAGS);
@@ -251,7 +297,7 @@ describe("getReviewViewerFlags", () => {
 
     it("keeps the current step after a cancel but offers no action on it", () => {
         const cancelled = cancelledReview();
-        expect(Review.fromData(cancelled).currentStepId).toBe("legal");
+        expect(Review.fromData(cancelled).actionableStepId).toBe("legal");
         expect(
             getReviewViewerFlags(cancelled, viewerOf(reviewer, { permissions: FULL_ACCESS }))
         ).toEqual(NO_FLAGS);

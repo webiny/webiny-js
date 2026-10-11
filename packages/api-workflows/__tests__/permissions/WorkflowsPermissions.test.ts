@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 import type { WorkflowsPermissionSet } from "~/domain/permissions/types.js";
 
@@ -79,5 +80,29 @@ describe("WorkflowsPermissions", () => {
         expect(await checker.canEdit()).toBe(false);
         expect(await checker.canReassign()).toBe(false);
         expect(await checker.getPermissionSet()).toEqual(NONE);
+    });
+
+    it("treats * with editor: false as full access", async () => {
+        const checker = await resolveChecker([{ name: "*", editor: false }]);
+
+        expect(await checker.getPermissionSet()).toEqual(FULL);
+    });
+
+    it("grants nothing for a workflows permission without flags", async () => {
+        const checker = await resolveChecker([{ name: "workflows" }]);
+
+        expect(await checker.getPermissionSet()).toEqual(NONE);
+    });
+
+    it("grants full access when authorization is disabled", async () => {
+        const { context } = await createContextHandler({ permissions: [] });
+        const identityContext = context.container.resolve(IdentityContext);
+        const checker = context.container.resolve(WorkflowsPermissions);
+
+        const permissionSet = await identityContext.withoutAuthorization(() => {
+            return checker.getPermissionSet();
+        });
+
+        expect(permissionSet).toEqual(FULL);
     });
 });

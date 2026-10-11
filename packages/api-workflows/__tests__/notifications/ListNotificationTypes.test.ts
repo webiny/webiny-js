@@ -37,6 +37,6 @@ describe("ListNotificationTypesUseCase (internal, D133)", () => {
         const result = await container.resolve(ListNotificationTypesUseCase).execute();
 
         expect(result.isOk()).toBe(true);
-        expect(result.value).toHaveLength(1);
+        expect(result.value).toContainEqual({ id: "e-mail", title: expect.any(String) });
     });
 });

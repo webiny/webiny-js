@@ -108,6 +108,75 @@ describe("Review checks", () => {
         expect(checked.error.data).toEqual(started.error.data);
     });
 
+    interface ParityCase {
+        name: string;
+        create: () => Review;
+        params: ReturnType<typeof checkParams>;
+    }
+
+    const takeOverCases: ParityCase[] = [
+        { name: "already the owner", create: createStartedReview, params: checkParams(reviewer) },
+        { name: "requester", create: createStartedReview, params: checkParams(requester) },
+        { name: "AI-owned step", create: createAiOwnedReview, params: checkParams(otherReviewer) },
+        {
+            name: "awaiting step",
+            create: createRequestedReview,
+            params: checkParams(otherReviewer)
+        },
+        {
+            name: "stale step",
+            create: createStartedReview,
+            params: checkParams(otherReviewer, { stepId: "editorial" })
+        }
+    ];
+    const decisionCases: ParityCase[] = [
+        { name: "not the owner", create: createStartedReview, params: checkParams(otherReviewer) },
+        { name: "awaiting step", create: createRequestedReview, params: checkParams(reviewer) },
+        {
+            name: "stale step",
+            create: createStartedReview,
+            params: checkParams(reviewer, { stepId: "editorial" })
+        }
+    ];
+
+    it.each(takeOverCases)("takeOver check matches the transition: $name", testCase => {
+        const checked = testCase.create().checkTakeOver(testCase.params);
+        const done = testCase.create().takeOver({ ...testCase.params, now: LATER });
+
+        expect(checked.isFail()).toBe(true);
+        expect(checked.error.code).toBe(done.error.code);
+        expect(checked.error.data).toEqual(done.error.data);
+    });
+
+    it.each(decisionCases)("approve check matches the transition: $name", testCase => {
+        const checked = testCase.create().checkApprove(testCase.params);
+        const done = testCase.create().approve({ ...testCase.params, now: LATER, comment: null });
+
+        expect(checked.isFail()).toBe(true);
+        expect(checked.error.code).toBe(done.error.code);
+        expect(checked.error.data).toEqual(done.error.data);
+    });
+
+    it.each(decisionCases)("reject check matches the transition: $name", testCase => {
+        const checked = testCase.create().checkReject(testCase.params);
+        const done = testCase.create().reject({ ...testCase.params, now: LATER, comment: null });
+
+        expect(checked.isFail()).toBe(true);
+        expect(checked.error.code).toBe(done.error.code);
+        expect(checked.error.data).toEqual(done.error.data);
+    });
+
+    it("cancel check matches the transition on a cancelled review", () => {
+        const review = createStartedReview();
+        expectOk(review.cancel({ actor: requester, now: LATER }));
+
+        const checked = review.checkCancel();
+        const done = review.cancel({ actor: requester, now: LATER });
+
+        expect(checked.error.code).toBe(done.error.code);
+        expect(checked.error.data).toEqual(done.error.data);
+    });
+
     it("lets another candidate take over and fails like take over otherwise", () => {
         const review = createStartedReview();
 
@@ -177,10 +246,10 @@ describe("Review checks", () => {
 
     it("exposes the current step id until every step is approved", () => {
         const review = createStartedReview();
-        expect(review.currentStepId).toBe("legal");
+        expect(review.actionableStepId).toBe("legal");
 
         expectOk(review.approve({ ...checkParams(reviewer), comment: null, now: LATER }));
-        expect(review.currentStepId).toBe("editorial");
+        expect(review.actionableStepId).toBe("editorial");
 
         expectOk(review.reach({ resolution: poolResolution(), actor: reviewer, now: LATER }));
         expectOk(review.start({ ...checkParams(reviewer, { stepId: "editorial" }), now: LATER }));
@@ -191,7 +260,7 @@ describe("Review checks", () => {
                 now: LATER
             })
         );
-        expect(review.currentStepId).toBeNull();
+        expect(review.actionableStepId).toBeNull();
     });
 
     it("treats only the requesting user as the requester", () => {
