@@ -8,7 +8,7 @@
 **Interfaces:**
 - Consumes: the 1a `Review` aggregate and its private guards (`getCurrentStepIn`, `getRequestedStepIn`, `checkReviewer`, `getOwnedStep`, `findCurrentStep`), review errors, fixtures (`createRequestedReview`, `createStartedReview`, `createWorkflow`, `poolResolution`, `requester`, `reviewer`, `otherReviewer`, `aiActor`, `targetContext`, `ARTICLE_MODEL`, `REVIEW_TEAM_ID`, `OTHER_TEAM_ID`, `NOW`, `expectOk`).
 - Produces (on `Review`, all pure: no fact, no mutation):
-  - `get currentStepId(): string | null` (first step not approved; `null` once every step is approved).
+  - `get actionableStepId(): string | null` (first step not approved; `null` once every step is approved).
   - `isRequestedBy(actor: Actor): boolean` (`actor.type === "user"` and the requester's id; an AI or automation actor carries the requester's id (D58) and is never the requester).
   - `checkStart(params: ReviewActorCheckParams): Result<void, ReviewReviewerError>`
   - `checkTakeOver(params: ReviewActorCheckParams): Result<void, ReviewTakeOverError>`
@@ -205,10 +205,10 @@ describe("Review checks", () => {
 
     it("exposes the current step id until every step is approved", () => {
         const review = createStartedReview();
-        expect(review.currentStepId).toBe("legal");
+        expect(review.actionableStepId).toBe("legal");
 
         expectOk(review.approve({ ...checkParams(reviewer), comment: null, now: LATER }));
-        expect(review.currentStepId).toBe("editorial");
+        expect(review.actionableStepId).toBe("editorial");
 
         expectOk(review.reach({ resolution: poolResolution(), actor: reviewer, now: LATER }));
         expectOk(review.start({ ...checkParams(reviewer, { stepId: "editorial" }), now: LATER }));
@@ -219,7 +219,7 @@ describe("Review checks", () => {
                 now: LATER
             })
         );
-        expect(review.currentStepId).toBeNull();
+        expect(review.actionableStepId).toBeNull();
     });
 
     it("treats only the requesting user as the requester", () => {
@@ -236,7 +236,7 @@ describe("Review checks", () => {
 - [ ] **Step 2: Run it to verify it fails**
 
 Run: `yarn test packages/api-workflows/__tests__/domain/Review.checks.test.ts 2>&1 | tail -50`
-Expected: FAIL, `TypeError: review.checkStart is not a function` (and the same for the other checks, `currentStepId` is `undefined`, `review.isRequestedBy is not a function`).
+Expected: FAIL, `TypeError: review.checkStart is not a function` (and the same for the other checks, `actionableStepId` is `undefined`, `review.isRequestedBy is not a function`).
 
 - [ ] **Step 3: Add the reassign error**
 
@@ -501,7 +501,7 @@ export class Review {
     }
 
     /** The step transitions act on: the first step that is not approved; `null` when all are. */
-    public get currentStepId(): string | null {
+    public get actionableStepId(): string | null {
         return this.findCurrentStep()?.id ?? null;
     }
 

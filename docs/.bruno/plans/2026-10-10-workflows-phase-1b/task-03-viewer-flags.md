@@ -12,7 +12,7 @@
 - Create: `packages/api-workflows/__tests__/domain/getReviewViewerFlags.test.ts`
 
 **Interfaces:**
-- Consumes: Task 1 `WorkflowsPermissionSet`; Task 2 `Review.checkStart`, `checkTakeOver`, `checkApprove`, `checkReject`, `checkCancel`, `checkReassign`, `currentStepId`, `isRequestedBy`, `ReviewActorCheckParams`; `parseReviewStepConfig`, `REVIEW_STEP_TYPE` (`domain/workflow/WorkflowValidator.ts`); fixtures (`createReviewStep`, `createRequestedReview`, `createStartedReview`, `createWorkflow`, `toSaveData`, `poolResolution`, actors, team ids, `targetContext`, `ARTICLE_MODEL`, `NOW`, `expectOk`).
+- Consumes: Task 1 `WorkflowsPermissionSet`; Task 2 `Review.checkStart`, `checkTakeOver`, `checkApprove`, `checkReject`, `checkCancel`, `checkReassign`, `actionableStepId`, `isRequestedBy`, `ReviewActorCheckParams`; `parseReviewStepConfig`, `REVIEW_STEP_TYPE` (`domain/workflow/WorkflowValidator.ts`); fixtures (`createReviewStep`, `createRequestedReview`, `createStartedReview`, `createWorkflow`, `toSaveData`, `poolResolution`, actors, team ids, `targetContext`, `ARTICLE_MODEL`, `NOW`, `expectOk`).
 - Produces:
   - `canPickReviewer(step: WorkflowStep): boolean` — `canPick` per step at submit (spec 5.3, D22), computed from the workflow alone; `Review.request` uses it for its pick check, so the request and the flag cannot drift.
   - `interface ReviewPermissionViewer { actor: Actor; permissions: WorkflowsPermissionSet }` and `interface ReviewViewer extends ReviewPermissionViewer { teamIds: string[] }`.
@@ -566,7 +566,7 @@ export const getReviewViewerFlags = (
     const review = Review.fromData(data);
     const canCancel = review.checkCancel().isOk() && canCancelByPermission(data, viewer);
 
-    const stepId = review.currentStepId;
+    const stepId = review.actionableStepId;
     if (!stepId) {
         // Every step is approved: nothing is left to act on.
         return {

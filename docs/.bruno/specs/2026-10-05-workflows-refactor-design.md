@@ -236,7 +236,7 @@ One code path handles step reached for every type. AI and automation steps never
 
 ### 5.3 Viewer flags [D5, D54]
 
-Computed on the server for the reading user only: `canStart`, `canTakeOver`, `canApprove`, `canReject`, `canCancel`, `canReassign`, `canRestart`, and per step at submit `canPick`. The app wrapper computes them with the api-workflows helper from the actor, the actor's team ids, the `workflows` permission set and the review, and ANDs its own target access (read access for start, take over, approve and reject; write access for request and `canPick`) [D132, D133].
+Computed on the server for the reading user only: `canStart`, `canTakeOver`, `canApprove`, `canReject`, `canCancel`, `canReassign`, `canRestart`, and per step at submit `canPick`. The app wrapper computes them with the api-workflows helper from the actor, the actor's team ids, the `workflows` permission set and the review, and ANDs its own target access (read access for every flag: start, take over, approve, reject, cancel, reassign and restart; write access for request and `canPick`) [D132, D133].
 
 ## 6. Assignment resolution (review steps)
 

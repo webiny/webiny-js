@@ -93,7 +93,7 @@ src/
   WorkflowsFeature.ts                        registers the building blocks (Tasks 1, 4); comment (Task 6)
   domain/
     notifications/ errors.ts deleted (Task 1)
-    permissions/  types.ts (Task 1)  errors.ts (Task 4)
+    permissions/  types.ts (Task 1)  errors.ts (Task 4; also `WorkflowsNotAuthorizedError`, final fix wave)
     review/       Review.ts (Tasks 2, 3)  errors.ts (Task 2)  types.ts (Task 3)
                   canCancelByPermission.ts  canReassignByPermission.ts  getReviewViewerFlags.ts (Task 3)
     workflow/     canPickReviewer.ts (Task 3)
