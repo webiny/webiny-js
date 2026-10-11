@@ -252,6 +252,8 @@ Adds top-level `currentCandidateTeamIds` to the review record (alongside D19 fie
 - Team in review: `currentStepState = inReview`, owner is someone else, my teams intersect `currentCandidateTeamIds`.
 - My requests: `createdBy = me`.
 
+_Refined by D133: the lists exist per app (CMS, Website Builder); nothing merges them. The app wrapper supplies the viewer's user id and team ids to the engine's list._
+
 ## D48. User lists owned by workflows
 
 Workflows exposes its own user queries; both run `withoutAuthorization` internally, so no `adminUsers` permission is needed.
@@ -260,6 +262,8 @@ Workflows exposes its own user queries; both run `withoutAuthorization` internal
 - `workflows.listStepCandidates(workflowId, stepId)`: only that step's candidates with `{ id, displayName, excluded, excludedReason }`. Available to anyone who can request a review. Used by the manual picker. Round-robin and least-loaded use the same candidate source.
 
 Team member lookup needs a `teams_in` filter on users storage in api-core, or in-memory filtering. To check: whether users storage can filter on teams.
+
+_Refined by D133: `listUsers` is a shared configuration operation in api-workflows (`editor`); `listStepCandidates` is per app. The `workflows.*` names above are capability names, not final operations._
 
 ## D49. Terminology
 
@@ -297,6 +301,8 @@ One `workflows` permission with custom boolean actions:
 - `reassign`: reassign, restart, and cancel reviews requested by others (refines D25: cancel by requester or `reassign`).
 
 Security UI gets a "custom" access level with these checkboxes. One shared permission checker in api-workflows treats `*` and `workflows.*` as full access and replaces the four copied `ensureManageAccess` functions. Viewer flags (`canCancel`, `canReassign`, `canRestart`, `canPick`) are computed on the server (covers A9). Resolves P3, A1.
+
+_Refined by D132 and D133: the checker is a building block used by the app wrappers and the shared configuration operations; viewer flags are computed in the app wrapper with the api-workflows helper. One `workflows` permission serves every app._
 
 ## D55. Workflow AI tool registry
 
@@ -337,6 +343,8 @@ No stored inbox; D47 lists serve that role. Workflows only sends websocket messa
 ## D61. Candidates must be able to read the target
 
 During resolution (routing, strategy, pick, reassign), candidates without read access to the target (folder access and model read) are dropped; the reason is logged in the assignment log (D20). The rule editor and rule inspector warn when a target user lacks access. Resolves P10.
+
+_Refined by D133: the engine evaluates candidates' read access through the app's target adapter for the namespace (e.g. `canUserRead(userId, target)`); the app supplies the permission logic._
 
 ## D62. Server-side save block
 
@@ -380,6 +388,8 @@ Refines D46: folder condition is `folder?: { id, type, includeDescendants }`; `t
 
 Resolves A8.
 
+_Refined by D133: `folderExists` is per app and takes the folder `type`._
+
 ## D70. Content lists: rename only
 
 Row selectability in CMS and WB lists switches from `system.workflow.state` to `system.workflow.reviewState`. Nothing else: no new status column or filter in content lists. (D53 still registers the filterable fields.) Resolves A10.
@@ -387,6 +397,8 @@ Row selectability in CMS and WB lists switches from `system.workflow.state` to `
 ## D71. Dashboard widgets
 
 Two widgets: "For me to review" (tabs: Assigned to me, Pool) and "My requests". "View all" opens the matching D47 list. "Team in review" is only on the list page. Each widget gets its own presenter instance (no shared singleton). Resolves A11.
+
+_Refined by D133: the widgets exist per app; nothing merges CMS and WB reviews._
 
 ## D72. Workflow pickers
 
@@ -396,6 +408,8 @@ Two custom FormModel field types (like `RolesMultiSelectFieldType`):
 - `WorkflowTeamPicker`: options limited to the step's configured teams (rule team targets).
 
 Resolves A12.
+
+_Refined by D133: `listUsers` is a shared configuration operation, `listStepCandidates` a per-app operation._
 
 ## D73. endsOn conversion
 
@@ -413,6 +427,8 @@ Cancel sets review `state` to the new value `cancelled` and `isActive = false`, 
 
 Review lists keep the folder-level read filter on the target. Pagination is rewritten: fetch pages until `limit` is filled, return the cursor of the last scanned record, no exact `totalCount`. Resolves S3.
 
+_Refined by D133: the app wrapper passes the target-read predicate to the engine's list use case, which runs the fill-the-page loop; lists are per app._
+
 ## D77. Requesting needs write access
 
 Requesting a review requires write access to the target revision. Resolves S4.
@@ -420,6 +436,8 @@ Requesting a review requires write access to the target revision. Resolves S4.
 ## D78. Query permissions
 
 `listWorkflows`, `getWorkflow`: any authenticated admin user. `listStepCandidates`: write access to the workflow's model. `getSettings`, `updateSettings`, `inspectRouting`, `folderExists`, `listUsers`, `listStepTypes`, `listAutomationDefinitions`, `listAiTools`: `editor`. Requesters see exclusion data only through `listStepCandidates` (refines D43). Resolves S5.
+
+_Refined by D132 and D133: the checks run in the app wrappers or, for the shared configuration operations (settings, `listUsers`, step types, transports, automation definitions, AI tools), in api-workflows with `editor` alone. `inspectRouting`, `folderExists` and `listStepCandidates` are per app._
 
 ## D79. Publish requires an approved review on workflow-bound models
 
@@ -461,6 +479,8 @@ v1 ships one built-in automation: "Send webhook" (POST to a URL with a secret si
 
 Supersedes D58's mechanism (the `TaskService.trigger` `identity` parameter). Workflows triggers AI and automation tasks inside `IdentityContext.withIdentity(requesterIdentity, () => taskService.trigger(...))`, so the task's `createdBy` (and the identity restored at run time) is the requester. `TaskService.trigger` keeps its current interface; api-core does not change. The interface shape is not changed just to pass a different identity.
 
+_Refined by D133: one of the engine's two identity touch points; the engine wraps the trigger itself, including for steps reached inside a task._
+
 ## D88. UI: review details view
 
 A review details view, reachable from the review bar, lists and widgets, shows the full step timeline: state, owner and actor type, assignment source and reason, comments, AI issues, earlier automation runs. The review bar stays compact (current step and actions).
@@ -468,6 +488,8 @@ A review details view, reachable from the review bar, lists and widgets, shows t
 ## D89. UI: who sees assignment reasons
 
 Everyone who can see a review sees assignment outcomes ("Assigned by rule X", "Sent to pool: all candidates excluded"). Per-user skip details and free-text exclusion reasons are visible only to `editor` or `reassign`.
+
+_Refined by D133: the engine returns full data; the app wrapper strips per-user skip entries for viewers without `editor` / `reassign`._
 
 ## D90. UI: running and failed automated steps
 
@@ -489,6 +511,8 @@ Always shown. Contains: review title (prefilled from the entry/page title), a re
 
 Four lists as tabs (Assigned to me, Pool, Team in review, My requests). Filters: model, review state, step state; search by title. Columns: title, model, current step, step state, owner, requester, last change. Row actions follow server flags: open, open in new window, view details, start, take over, reassign. No approve/reject from the list.
 
+_Refined by D133: one Content Reviews view per app; see also D112, D113, D119._
+
 ## D95. UI: rule inspector
 
 "Test routing" panel in the review step's assignment section. Inputs: requester user, folder. Output: resulting owner or pool, plus a per-rule trace (matched, not matched, skipped with reason) and the strategy's choice. Evaluates the unsaved step config in the editor, so `inspectRouting` accepts a step config (not only a step id).
@@ -500,6 +524,8 @@ Every step type has the same "Notify via" choice listing registered transports (
 ## D97. Exclusion reasons in pickers
 
 Requesters see excluded users in pickers as "Unavailable" without a reason. Users with "Manage workflows" (`editor`) or "Reassign and operate" (`reassign`) see the reason. `listStepCandidates` returns `excludedReason` only to those users. Narrows D43 and D78.
+
+_Refined by D133: the app wrapper strips `excludedReason` for viewers without `editor` / `reassign`._
 
 ## D98. Human step type is called "People"
 
@@ -561,9 +587,13 @@ The Take over dialog has a checkbox "Notify {name} that you took over", checked 
 
 Content Reviews gets a fifth tab, **Failed steps**, shown only to users with Reassign and operate. It lists every AI or Automation step in state Failed on reviews the user can read, with the same columns, filters (model, title) and incremental loading as the other tabs. Row actions add Restart and Cancel review where allowed (§1.6). One extra list query by step state. Resolves gap A11 from the design review.
 
+_Refined by D133: per app; the app wrapper shows the tab and runs the query only with `reassign`._
+
 ## D113. "Content type" in lists
 
 Content Reviews, its filters and the dashboard widgets call the model column and filter **Content type**, shown as name plus app (e.g. "Article · Headless CMS", "Pages · Website Builder"; Pages listed first). "Model" stays where an admin works with a specific CMS model (workflow editor, model delete). Adopts the designer's UI-9. Resolves gap A12 from the design review.
+
+_Refined by D133: lists are per app, so the app suffix and the WB column and filter (Pages only) are no longer needed; the CMS view keeps the content type column and filter._
 
 ## D114. Start asks for confirmation
 
@@ -573,9 +603,13 @@ Start (taking a step from the team pool) asks for confirmation everywhere it is 
 
 Extends D81. The delete-blocked error carries the exact count of in-progress reviews and up to 5 of them, each with the content reference (model, entry or page id, revision), title, step position ("Step n of N") and step name. Only reviews the admin can read are listed; the count stays exact regardless. The dialog body depends on the viewer's permission (with or without Reassign and operate). From design answer QBZ-19.
 
+_Refined by D133: the engine's error carries the exact count and the blocking reviews; the app wrapper keeps the first 5 the caller can read._
+
 ## D116. Model list in the workflow editor is paged and searched on the server
 
 The editor's model list loads 20 models at a time, sorted by name, with "Load more" and no counts. Search runs on the server; a new search starts again at the first page. The list query used by the editor takes `search`, `limit` and a cursor. From design answer QBZ-20.
+
+_Refined by D133: the editor's model list is a CMS operation; the WB editor has the single item Pages and needs no list._
 
 ## D117. Editor resolves saved references for display
 
@@ -588,6 +622,8 @@ Extends D46. When a routing rule matches but its target person is currently excl
 ## D119. Review "last change" and list sorting
 
 Each review keeps a `lastChangedOn` timestamp, updated on every review event: requested, step reached, started, taken over, reassigned, approved, rejected, failed, restarted, and content updated by a step. Edits made outside the review do not update it. Content Reviews lists sort only by it: oldest first by default in Assigned to me, Team pool, Team in review and Failed steps (work queues), newest first in My requests; the user can toggle the direction, and switching tabs resets it. The list queries take `sort: lastChangedOn asc | desc`; load more continues in the current order. For approved reviews the list shows the last step and its owner; for rejected ones the rejecting step and who rejected it (D107 naming). From design answers QBZ-69 and QBZ-70.
+
+_Refined by D133: sorting and paging apply within one app's list._
 
 ## D120. Step descriptions are shown to users
 
@@ -621,21 +657,31 @@ Refines D107. When the decider is the rejecting step itself (AI and Automation s
 
 Each `ReviewStep` carries `assignment?: { source; ruleId?; reason?; by?: Actor }` (sources: rule id, `strategy`, `picked`, `pool`, `poolStart`, `takeOver`, `reassign`). `by` names who acted for reassign and take over. `getReview` returns the step's assignment-log entries for "why this owner"; per-user skip entries (requester, excluded with reason, can't read) only to users with `editor` or `reassign` [D89]. Resolves spec review finding 1.
 
+_Refined by D133: the engine returns every entry; the app wrapper redacts per-user skip entries._
+
 ## D128. Reviewer candidates for reassign
 
 `listStepCandidates` has two forms: `(workflowId, stepId)` for Request review (write access to the model, live workflow) and `(reviewId, stepId)` for Reassign (`reassign` permission, resolved from the review's snapshot and the step's `candidateTeamIds`). Both return name, `excluded` and, for `editor` / `reassign`, `excludedReason`; no workload counts [D97, D104]. Resolves spec review finding 3.
+
+_Refined by D133: `listStepCandidates` is per app; the wrapper checks write access or `reassign` and redacts `excludedReason`._
 
 ## D129. Transport list for "Notify via"
 
 `listNotificationTransports` returns the registered transports (`id`, `title`, optional `description`), permission `editor`. The editor shows them as the "Notify via" list, or "Only in-app notifications are available." when there are none [D96]. Resolves spec review finding 6.
 
+_Refined by D133: a shared configuration operation in api-workflows (`editor`)._
+
 ## D130. Editor model list and step type availability
 
 The editor's model list query (D116) requires `editor`; each row carries the bound workflow's id and name, if any. `listStepTypes` returns `available: boolean` and `unavailableReason` per type (AI: missing `aiPowerups` licence; Automation: no definition covering the model) for D122. Resolves spec review findings 7 and 8.
 
+_Refined by D133: the model list is CMS-only; `listStepTypes` is a shared configuration operation._
+
 ## D131. Optimistic check on workflow save
 
 `storeWorkflow` takes the `savedOn` the editor loaded. If the stored workflow's `savedOn` differs, the save fails with `Workflows/Workflow/Conflict` (data: who saved and when, from the stored record); if the workflow no longer exists, with `Workflows/Workflow/NotFound` [D123]. The editor shows the conflict dialog (reload, losing unsaved edits) or the deleted dialog. Reviews keep no optimistic locking (D27). Resolves spec review finding 9.
+
+_Refined by D132 and D133: the base `StoreWorkflow` use case takes `savedOn`; each app's store mutation (e.g. `storeWebsiteBuilderPageWorkflow`) passes it through._
 
 ## D132. api-workflows is an internal engine; apps own checks and GraphQL
 
@@ -649,3 +695,17 @@ AI and automation tasks (phase 5) call the base use cases directly with an `ai` 
 
 Refines D54, D78 and spec sections 8 and 10. App-neutral operations (settings, `listUsers`, step types, notification transports) are placed in the phase 3 plan. Decided 2026-10-10.
 
+_Refined by D133: no cross-app reviews; the app-neutral operations are the shared configuration operations in api-workflows (`editor` only); the engine's two identity touch points; API-key actors._
+
+## D133. No cross-app workflows; shared configuration operations; engine identity touch points
+
+Refines D132. Decided 2026-10-11.
+
+1. **No cross-app reviews.** CMS and Website Builder each have their own review lists, Content Reviews view, dashboard widgets and `getReview`. Nothing merges CMS and WB reviews: no combined list, no shared cursor, no cross-app "Content type" filter. Each app checks its own permissions (model, folder and content access) in its own operations. Where D47, D71, D76, D94, D112, D113 and D119 describe one combined list or page, their semantics apply per app.
+2. **Shared configuration operations.** App-neutral configuration is one small set of operations in api-workflows: tenant settings and exclusions, `listUsers`, step types, notification transports, automation definitions and AI tools. They are guarded only by `workflows.editor` (full access included). These are the only api-workflows operations exposed outside the backend; the api-workflows use cases themselves stay internal (D132).
+3. **Per app:** `inspectRouting`, `folderExists` (with the folder `type`) and `listStepCandidates`, because they involve the model, folders and content permissions. Workflow CRUD (store, delete) is also wrapped per app, e.g. `StoreWebsiteBuilderPageWorkflow`; `actor` on workflow events therefore lands with the phase 2 wrappers.
+4. **Engine identity touch points (the only two).** (a) Candidate read access during routing and reassign (D61): the engine asks the app's target adapter for the review's namespace, e.g. `canUserRead(userId, target)`, and each app answers with its own permission logic. (b) The engine triggers AI and automation tasks inside `withIdentity(requester)` (D87), so records the task writes are attributed to the requester. Permission logic is always app-supplied; the engine never checks the caller's permissions.
+5. **API keys may act in reviews.** The app wrapper builds a `user`-type actor with `identityType: "api-key"` (D30 field). The same rules apply: the `workflows` permission, team membership for start and take over, target access. A key with no team cannot start pool steps but can act where teams are not required (request, cancel its own review, act with `reassign`).
+6. `ListNotificationTypesUseCase` (engine) drops its own `editor` check; the shared transports operation (point 2) does the check.
+
+Consequences stated in the spec: the engine's list use case takes the viewer's user id, team ids and a target-read predicate from the app wrapper and runs the fill-the-page pagination (D76); the engine returns full data and the wrapper redacts per-user skip entries and `excludedReason` for viewers without `editor` / `reassign` (D89, D97, D127, D128); the delete-blocked error carries the exact count and the blocking reviews, and the app wrapper keeps the first 5 the caller can read (D115); the base `StoreWorkflow` use case takes `savedOn` and each app's store mutation passes it (D131); the editor's model list is a CMS operation (D116, D130); one `workflows` permission serves every app's wrappers (D54).

@@ -165,7 +165,7 @@ Expected: PASS (7 tests).
 Run: `yarn test packages/api-headless-cms-workflows 2>&1 | tail -50`
 Expected: PASS.
 Run: `yarn test:os packages/api-headless-cms-workflows 2>&1 | tail -50`
-Expected: not runnable locally (A9); record "not run" and leave it to CI.
+Expected: not runnable locally (A9); record "not run" and leave it to CI. The package has no `ci.config.json`, so CI runs only its default storage; the run is kept for the roadmap's OpenSearch rule (D63).
 
 - [ ] **Step 5: Commit**
 

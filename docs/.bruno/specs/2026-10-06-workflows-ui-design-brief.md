@@ -1,6 +1,6 @@
 # Workflows UI: design brief
 
-Status: draft, 2026-10-06. Audience: Claude Design, designing with the Webiny admin design system. This brief describes what each screen is for, who uses it, what it shows, what users can do, and every state it must handle. Layout, component choice and visual treatment are the designer's call.
+Status: draft, 2026-10-06, updated 2026-10-11 (D133: Headless CMS and Website Builder each have their own Content Reviews, widgets and review details; nothing mixes their reviews). Audience: Claude Design, designing with the Webiny admin design system. This brief describes what each screen is for, who uses it, what it shows, what users can do, and every state it must handle. Layout, component choice and visual treatment are the designer's call.
 
 Source of truth for behaviour: `docs/.bruno/specs/2026-10-05-workflows-refactor-design.md` and the decision log `docs/.bruno/workflows/decisions.md` (UI decisions D88-D100).
 
@@ -35,7 +35,7 @@ One person can hold several roles. A requester can never review their own conten
 - **Team pool**: a People step nobody owns yet; any eligible team member can start it. Use "Team pool" everywhere (not "pool" alone, not "waiting").
 - **Picked**: the requester chose the reviewer when requesting.
 - **Routed**: the system chose the reviewer, by a routing rule or a strategy.
-- **Content type**: what lists call the model of an entry or page, shown as name plus app ("Article · Headless CMS", "Pages · Website Builder"). "Model" stays only where an admin configures a specific CMS model [D113].
+- **Content type**: what the Headless CMS review lists call the model of an entry (e.g. "Article"). Website Builder reviews are always Pages, so its lists need no content type. "Model" stays only where an admin configures a specific CMS model [D113, D133].
 - Never use the word "manual" for assignment.
 
 Permission labels (as shown in the role editor, section 11): **Manage workflows** and **Reassign and operate**. Use these labels wherever the brief refers to permissions.
@@ -248,7 +248,7 @@ Common fields for every step type:
 - **Reassign**: pick a person from the step's eligible reviewers (excluded users disabled; reason per section 5). The previous owner (if any) and the new owner are notified. Empty state when nobody is eligible.
 - **Cancel review**: confirm. Say that review progress is lost and a new request starts from the first step. If an AI or automation is running, say it will be stopped.
 - **Restart**: confirm; shows the last failure reason.
-- After an action, a short confirmation naming the step that was acted on (not the next step), with a link to the Content Reviews page.
+- After an action, a short confirmation naming the step that was acted on (not the next step), with a link to that app's Content Reviews.
 
 **Website Builder.** A rejected or approved page revision needs a visible "Create new revision" action that opens the new revision. The WB editor only edits draft revisions; the bar must still show the review state on non-draft revisions.
 
@@ -258,7 +258,7 @@ Common fields for every step type:
 
 **Purpose.** Full history of one review and the answer to "why did this reach me?" [D88].
 
-**Entry points.** From the review bar, from any list row, from dashboard widgets, from notifications.
+**Entry points.** From the review bar, from any list row, from dashboard widgets, from notifications. Each app has its own review details; a review always opens in the app its content belongs to (Headless CMS or Website Builder) [D133].
 
 **Shows.**
 - Header: review title, content (model, link to open it), requester, created, current state.
@@ -273,11 +273,13 @@ Common fields for every step type:
 
 ---
 
-## 8. Content Reviews page and dashboard widgets
+## 8. Content Reviews and dashboard widgets (per app)
 
-### 8.1 Content Reviews page
+Headless CMS and Website Builder each have their own Content Reviews, with the same tabs and behaviour, and their own dashboard widgets. Each lists only its own app's reviews; nothing mixes CMS entries and Website Builder pages in one list [D133]. Where each sits in the menus is the designer's call.
 
-**Entry point.** Main menu "Content Reviews", visible to every user with the workflows licence (reviewing needs no workflows permission). Also linked from action confirmations, widgets and notifications.
+### 8.1 Content Reviews
+
+**Entry point.** "Content Reviews" for each app, visible to every user with the workflows licence (reviewing needs no workflows permission). Also linked from that app's action confirmations, widgets and notifications.
 
 **Tabs.**
 - **Assigned to me**: People steps I own and am reviewing.
@@ -286,9 +288,9 @@ Common fields for every step type:
 - **My requests**: reviews I requested.
 - **Failed steps** (only with Reassign and operate): AI or Automation steps that failed, on any review the user can read; row actions add Restart and Cancel review [D112].
 
-**Filters.** All tabs: content type, search by title. **My requests** only: review state (In progress, Approved, Rejected) and step state. The other tabs have a fixed step state, so no state filter. Cancelled reviews never appear.
+**Filters.** All tabs: search by title; in Headless CMS also content type. **My requests** only: review state (In progress, Approved, Rejected) and step state. The other tabs have a fixed step state, so no state filter. Cancelled reviews never appear.
 
-**Columns.** Title, content type, current step, step state, owner, requester, last change. Only Last change is sortable: oldest first in the work-queue tabs, newest first in My requests, toggleable; it updates on every review event, not on edits outside the review [D119].
+**Columns.** Title, content type (Headless CMS only), current step, step state, owner, requester, last change. Only Last change is sortable: oldest first in the work-queue tabs, newest first in My requests, toggleable; it updates on every review event, not on edits outside the review [D119].
 
 **Row actions** (only where allowed): open content, open in new window, view details, start, take over, reassign. Approve and reject are not available from the list; reviewers open the content first.
 
@@ -296,15 +298,17 @@ Common fields for every step type:
 
 ### 8.2 Dashboard widgets
 
+Each app has its own pair of widgets [D133]:
+
 - **For me to review**, with two tabs: Assigned to me, Team pool.
 - **My requests**.
-- Each shows a few recent items with title, step and state, and "View all" opening the matching Content Reviews tab. No counts.
+- Each shows a few recent items of that app with title, step and state, and "View all" opening the matching tab of that app's Content Reviews. No counts.
 
 ---
 
 ## 9. Notifications (what users receive)
 
-Not a screen, but the designer needs it for copy and in-app notification design. Each notification links to the content or the review details.
+Not a screen, but the designer needs it for copy and in-app notification design. Each notification links to the content or the review details in the app the content belongs to (Headless CMS or Website Builder) [D133].
 
 | Event | Who is notified |
 |---|---|
@@ -366,4 +370,5 @@ Workflows permissions inside the existing role editor [D54]:
 - Comment threads and discussion on reviews (later, via the collaboration feature). For now there is one comment per step decision.
 - Audit log screens for workflows.
 - A notification inbox; the Content Reviews tabs serve that role.
+- A combined list or widget of Headless CMS and Website Builder reviews [D133].
 - Review status columns or filters in the CMS entry list or Website Builder page list. (Those lists only stop bulk actions on revisions locked by a review.)

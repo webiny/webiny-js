@@ -8,6 +8,9 @@
 - Create: `packages/api-workflows/src/features/permissions/WorkflowsPermissions/feature.ts`
 - Create: `packages/api-workflows/src/features/permissions/WorkflowsPermissions/index.ts`
 - Modify: `packages/api-workflows/src/features/notifications/ListNotificationTypes/ListNotificationTypesUseCase.ts`
+- Modify: `packages/api-workflows/src/features/notifications/ListNotificationTypes/abstractions.ts`
+- Modify: `packages/api-workflows/src/features/notifications/ListNotificationTypes/index.ts`
+- Delete: `packages/api-workflows/src/domain/notifications/errors.ts`
 - Modify: `packages/api-workflows/src/WorkflowsFeature.ts`
 - Create: `packages/api-workflows/__tests__/permissions/WorkflowsPermissions.test.ts`
 - Create: `packages/api-workflows/__tests__/notifications/ListNotificationTypes.test.ts`
@@ -15,7 +18,7 @@
 - Modify: `packages/api-workflows/__tests__/types.test.ts`
 
 **Interfaces:**
-- Consumes: `IdentityContext` (`@webiny/api-core/features/security/IdentityContext/index.js`: `getPermission(name)`, `getPermissions(name)`), `WORKFLOWS_PERMISSION` (`~/constants.js`), `SecurityPermission` (`@webiny/api-core/types/security.js`), `createContextHandler` (`~tests/__helpers/handler.js`), `MailerService` (`@webiny/api-mailer`).
+- Consumes: `IdentityContext` (`@webiny/api-core/features/security/IdentityContext/index.js`: `getPermission(name)`, `getPermissions(name)`), `WORKFLOWS_PERMISSION` (`~/constants.js`), `SecurityPermission` (`@webiny/api-core/types/security.js`), `createContextHandler` (`~tests/__helpers/handler.js`), `MailerService` (`@webiny/api-mailer`), `NotificationTransport` (`~/features/notifications/NotificationTransport/index.js`).
 - Produces:
   - `type WorkflowsPermissionAction = "editor" | "reassign"`.
   - `interface WorkflowsPermissionSet { fullAccess: boolean; editor: boolean; reassign: boolean }` (full access sets `editor` and `reassign` too).
@@ -28,7 +31,7 @@
     getPermissionSet(): Promise<WorkflowsPermissionSet>;
     ```
   - `WorkflowsPermissionsFeature` (registered by `WorkflowsFeature`, transient scope).
-  - `ListNotificationTypesUseCase` checks `editor` through the checker (R30).
+  - `ListNotificationTypesUseCase` without a permission check (R40, D133): it reads no identity; the shared transports operation (phase 3/7) checks `editor`. `NotificationAuthorizedError` (`Workflows/Notification/NotAuthorized`) is deleted, it has no other user.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -128,8 +131,9 @@ import { MailerService } from "@webiny/api-mailer";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { ListNotificationTypesUseCase } from "~/features/notifications/ListNotificationTypes/index.js";
+import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
 
-const listNotificationTypes = async (permissions: SecurityPermission[]) => {
+const createNotificationsContext = async (permissions: SecurityPermission[]) => {
     // `NotificationTransport` depends on the mailer, which the test context does not provide.
     const { context } = await createContextHandler({
         permissions,
@@ -137,27 +141,33 @@ const listNotificationTypes = async (permissions: SecurityPermission[]) => {
             container.registerInstance(MailerService, {} as MailerService.Interface);
         }
     });
-    return context.container.resolve(ListNotificationTypesUseCase).execute();
+    return context.container;
 };
 
-describe("ListNotificationTypesUseCase permissions", () => {
-    it("lists notification types for workflows.* (full access, D54)", async () => {
-        const result = await listNotificationTypes([{ name: "workflows.*" }]);
+describe("ListNotificationTypesUseCase (internal, D133)", () => {
+    it("lists the registered transports without a workflows permission", async () => {
+        const container = await createNotificationsContext([]);
+        const transports = container.resolveAll(NotificationTransport);
+
+        const result = await container.resolve(ListNotificationTypesUseCase).execute();
 
         expect(result.isOk()).toBe(true);
+        expect(result.value).toEqual(
+            transports.map(transport => {
+                return { id: transport.id, title: transport.title };
+            })
+        );
     });
 
-    it("lists notification types for an editor", async () => {
-        const result = await listNotificationTypes([{ name: "workflows", editor: true }]);
+    it("lists the registered transports for a user with reassign only", async () => {
+        const container = await createNotificationsContext([
+            { name: "workflows", reassign: true }
+        ]);
+
+        const result = await container.resolve(ListNotificationTypesUseCase).execute();
 
         expect(result.isOk()).toBe(true);
-    });
-
-    it("refuses a user with reassign only", async () => {
-        const result = await listNotificationTypes([{ name: "workflows", reassign: true }]);
-
-        expect(result.isFail()).toBe(true);
-        expect(result.error.code).toBe("Workflows/Notification/NotAuthorized");
+        expect(result.value).toHaveLength(1);
     });
 });
 ```
@@ -165,7 +175,7 @@ describe("ListNotificationTypesUseCase permissions", () => {
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `yarn test packages/api-workflows/__tests__/permissions packages/api-workflows/__tests__/notifications 2>&1 | tail -50`
-Expected: FAIL. `WorkflowsPermissions.test.ts` cannot resolve `~/features/permissions/WorkflowsPermissions/index.js`; in `ListNotificationTypes.test.ts`, "lists notification types for workflows.* (full access, D54)" fails (`isOk()` is `false`: the old copy only accepts `*` and `editor`), the other two pass.
+Expected: FAIL. `WorkflowsPermissions.test.ts` cannot resolve `~/features/permissions/WorkflowsPermissions/index.js`; both `ListNotificationTypes.test.ts` tests fail (`isOk()` is `false`, `Workflows/Notification/NotAuthorized`: the use case still checks `*` or `editor` itself).
 
 - [ ] **Step 3: Add the permission types**
 
@@ -369,50 +379,98 @@ and add after `expect(container.resolveAll(NotificationTransport)).toHaveLength(
         expect(container.resolveAll(WorkflowsPermissions)).toHaveLength(1);
 ```
 
-- [ ] **Step 6: Replace the last copied permission check**
+- [ ] **Step 6: Remove the engine's own permission check**
+
+The last copied check sits in an api-workflows use case. Under D132/D133 the engine checks no permissions: the shared transports operation (phase 3/7) checks `editor` with `WorkflowsPermissions` (R40).
 
 Replace `packages/api-workflows/src/features/notifications/ListNotificationTypes/ListNotificationTypesUseCase.ts` with:
 
 ```ts
-import { Result } from "@webiny/feature/api";
-import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 import {
     ListNotificationTypesRepository,
     ListNotificationTypesUseCase as UseCase
 } from "./abstractions.js";
-import { NotificationAuthorizedError } from "~/domain/notifications/errors.js";
 
-/** Requires `editor` (spec 8), through the shared checker (R30). Notifications move in phase 7. */
+/**
+ * Lists the registered notification transports. Internal (D132): reads no identity and checks no
+ * permission; the shared transports operation checks `editor` (D133, R40).
+ */
 class ListNotificationTypesUseCaseImpl implements UseCase.Interface {
-    public constructor(
-        private permissions: WorkflowsPermissions.Interface,
-        private repository: ListNotificationTypesRepository.Interface
-    ) {}
+    public constructor(private repository: ListNotificationTypesRepository.Interface) {}
 
     public async execute(): UseCase.Return {
-        if (!(await this.permissions.canEdit())) {
-            return Result.fail(new NotificationAuthorizedError("You cannot list notifications."));
-        }
-
-        const result = await this.repository.execute();
-        if (result.isFail()) {
-            return result;
-        }
-
-        return Result.ok(result.value);
+        return this.repository.execute();
     }
 }
 
 export const ListNotificationTypesUseCase = UseCase.createImplementation({
     implementation: ListNotificationTypesUseCaseImpl,
-    dependencies: [WorkflowsPermissions, ListNotificationTypesRepository]
+    dependencies: [ListNotificationTypesRepository]
 });
 ```
+
+Replace `packages/api-workflows/src/features/notifications/ListNotificationTypes/abstractions.ts` with:
+
+```ts
+import type { Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
+import type { INotificationType } from "~/domain/notifications/abstractions.js";
+
+/**
+ * ListNotificationTypes use case interface. Internal (D132): no permission check, so no error of
+ * its own; the shared transports operation checks `editor` (D133).
+ */
+export interface IListNotificationTypesUseCase {
+    execute(): Promise<Result<INotificationType[]>>;
+}
+
+export const ListNotificationTypesUseCase = createAbstraction<IListNotificationTypesUseCase>(
+    "ListNotificationTypesUseCase"
+);
+
+export namespace ListNotificationTypesUseCase {
+    export type Interface = IListNotificationTypesUseCase;
+    export type Return = Promise<Result<INotificationType[]>>;
+}
+
+/**
+ * ListNotificationTypes repository interface
+ */
+export interface IListNotificationTypesRepository {
+    execute(): Promise<Result<INotificationType[]>>;
+}
+
+export const ListNotificationTypesRepository = createAbstraction<IListNotificationTypesRepository>(
+    "ListNotificationTypesRepository"
+);
+
+export namespace ListNotificationTypesRepository {
+    export type Interface = IListNotificationTypesRepository;
+    export type Return = Promise<Result<INotificationType[]>>;
+}
+```
+
+Replace `packages/api-workflows/src/features/notifications/ListNotificationTypes/index.ts` with:
+
+```ts
+export { ListNotificationTypesFeature } from "./feature.js";
+export { ListNotificationTypesRepository, ListNotificationTypesUseCase } from "./abstractions.js";
+export type {
+    IListNotificationTypesUseCase,
+    IListNotificationTypesRepository
+} from "./abstractions.js";
+```
+
+Delete the now unused error (its only user was the removed check):
+
+Run: `git rm packages/api-workflows/src/domain/notifications/errors.ts`
+Run: `grep -rn "NotificationAuthorizedError\|IListNotificationTypesUseCaseErrors\|Notification/NotAuthorized" packages/*/src packages/*/__tests__`
+Expected: no output.
 
 - [ ] **Step 7: Run the tests**
 
 Run: `yarn test packages/api-workflows/__tests__/permissions packages/api-workflows/__tests__/notifications 2>&1 | tail -50`
-Expected: PASS (7 + 3 tests).
+Expected: PASS (7 + 2 tests).
 Run: `yarn test packages/api-workflows 2>&1 | tail -50`
 Expected: PASS (incl. `registration.test.ts` and `types.test.ts`).
 Run: `yarn test:os packages/api-workflows 2>&1 | tail -50`
@@ -424,6 +482,9 @@ Run the Global Constraints chain (build `@webiny/api-workflows`), then:
 
 ```bash
 git commit -m "feat(api-workflows): add the shared workflows permission checker
+
+ListNotificationTypesUseCase drops its own editor check (D133): the engine
+checks no permissions.
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn"

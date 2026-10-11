@@ -12,17 +12,18 @@
 - Create: `packages/api-workflows/src/features/identity/CurrentReviewViewer/index.ts`
 - Modify: `packages/api-workflows/src/WorkflowsFeature.ts`
 - Create: `packages/api-workflows/__tests__/__helpers/FakeListUserTeams.ts`
+- Modify: `packages/api-workflows/__tests__/__helpers/fixtures.ts`
 - Create: `packages/api-workflows/__tests__/identity/CurrentUserTeams.test.ts`
 - Create: `packages/api-workflows/__tests__/identity/CurrentReviewViewer.test.ts`
 - Modify: `packages/api-workflows/__tests__/registration.test.ts`
 
 **Interfaces:**
-- Consumes: `IdentityContext` (`getIdentity()`, `withIdentity(identity, cb)`), `AuthenticatedIdentity`, `AnonymousIdentity` (`@webiny/api-core/features/security/IdentityContext/index.js`); `ListUserTeamsUseCase` (`@webiny/api-core/features/users/ListUserTeams/index.js`: `execute(userId: string): Promise<Result<Team[], ListUserTeamsUseCase.Error>>`, runs without authorization); `UserStorageError` (`@webiny/api-core/features/users/shared/errors.js`); `Team` (`@webiny/api-core/types/security.js`); Task 1 `WorkflowsPermissions`; Task 3 `ReviewViewer`, `getReviewViewerFlags`; fixtures.
+- Consumes: `IdentityContext` (`getIdentity()`, `withIdentity(identity, cb)`), `AuthenticatedIdentity`, `AnonymousIdentity` (`@webiny/api-core/features/security/IdentityContext/index.js`); `ListUserTeamsUseCase` (`@webiny/api-core/features/users/ListUserTeams/index.js`: `execute(userId: string): Promise<Result<Team[], ListUserTeamsUseCase.Error>>`, runs without authorization); `UserStorageError` (`@webiny/api-core/features/users/shared/errors.js`); `Team` (`@webiny/api-core/types/security.js`); Task 1 `WorkflowsPermissions`; Task 3 `ReviewViewer`, `Actor`, `getReviewViewerFlags`, `canCancelByPermission`; fixtures.
 - Produces:
   - `CurrentUserTeams.Interface { getTeamIds(): Promise<string[]> }` — team ids of the current identity over api-core `ListUserTeamsUseCase`; singleton in the request container, cache keyed by identity id; anonymous identity → `[]` without a lookup; failed lookup → `[]`, not cached (R36).
-  - `CurrentReviewViewer.Interface { get(): Promise<Result<ReviewViewer, WorkflowsNotAuthenticatedError>> }` — actor `{ type: "user", id, displayName, identityType: identity.type }`, team ids, permission set (R37).
+  - `CurrentReviewViewer.Interface { getActor(): Result<Actor, WorkflowsNotAuthenticatedError>; get(): Promise<Result<ReviewViewer, WorkflowsNotAuthenticatedError>> }` (R37, R42). The actor is `{ type: "user", id, displayName, identityType: identity.type }` for every non-anonymous identity, API keys included (`identityType: "api-key"`, D133). `getActor()` reads only the identity (no team lookup, no permission read), for wrappers that need just the actor (request, workflow CRUD); `get()` adds team ids and the permission set.
   - `WorkflowsNotAuthenticatedError` (`Workflows/NotAuthenticated`).
-  - Test helper `FakeListUserTeams` and `createTeam(id: string): Team`.
+  - Test helper `FakeListUserTeams` and `createTeam(id: string): Team`; fixture `createRequestedReview` takes an optional `requester`.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -191,6 +192,7 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { ListUserTeamsUseCase } from "@webiny/api-core/features/users/ListUserTeams/index.js";
 import {
     AnonymousIdentity,
+    AuthenticatedIdentity,
     IdentityContext
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
@@ -203,9 +205,19 @@ import {
 } from "~tests/__helpers/fixtures.js";
 import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
 import { getReviewViewerFlags } from "~/domain/review/getReviewViewerFlags.js";
+import { canCancelByPermission } from "~/domain/review/canCancelByPermission.js";
 
 /** The default identity of `createCmsTestHandler`. */
 const DEFAULT_USER_ID = "id-12345678";
+
+/** An API key identity, as api-core's `ApiKeyAuthenticator` builds it (`type: "api-key"`). */
+const apiKeyIdentity = (): AuthenticatedIdentity => {
+    return new AuthenticatedIdentity({
+        id: "api-key-1",
+        displayName: "CI key",
+        type: "api-key"
+    });
+};
 
 const createViewerContext = async (permissions: SecurityPermission[]) => {
     const fake = new FakeListUserTeams(new Map([[DEFAULT_USER_ID, [createTeam(REVIEW_TEAM_ID)]]]));
@@ -216,6 +228,7 @@ const createViewerContext = async (permissions: SecurityPermission[]) => {
         }
     });
     return {
+        fake,
         container: context.container,
         viewer: context.container.resolve(CurrentReviewViewer)
     };
@@ -237,6 +250,18 @@ describe("CurrentReviewViewer", () => {
         });
     });
 
+    it("builds the actor without looking up teams or permissions", async () => {
+        const { fake, viewer } = await createViewerContext([{ name: "workflows", editor: true }]);
+
+        expect(expectOk(viewer.getActor())).toEqual({
+            type: "user",
+            id: DEFAULT_USER_ID,
+            displayName: "John Doe",
+            identityType: "admin"
+        });
+        expect(fake.calls).toEqual([]);
+    });
+
     it("fails for an anonymous identity", async () => {
         const { container, viewer } = await createViewerContext([{ name: "*" }]);
         const identityContext = container.resolve(IdentityContext);
@@ -244,9 +269,38 @@ describe("CurrentReviewViewer", () => {
         const result = await identityContext.withIdentity(new AnonymousIdentity(), () =>
             viewer.get()
         );
+        const actor = await identityContext.withIdentity(new AnonymousIdentity(), async () =>
+            viewer.getActor()
+        );
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/NotAuthenticated");
+        expect(actor.isFail()).toBe(true);
+        expect(actor.error.code).toBe("Workflows/NotAuthenticated");
+    });
+
+    it("lets an API key act as a user actor without teams (D133)", async () => {
+        const { container, viewer } = await createViewerContext([{ name: "workflows" }]);
+        const identityContext = container.resolve(IdentityContext);
+
+        const current = expectOk(
+            await identityContext.withIdentity(apiKeyIdentity(), () => viewer.get())
+        );
+
+        expect(current).toMatchObject({
+            actor: {
+                type: "user",
+                id: "api-key-1",
+                displayName: "CI key",
+                identityType: "api-key"
+            },
+            teamIds: []
+        });
+        // No team: the key cannot start a pool step, but it can cancel the review it requested.
+        const othersReview = toSaveData(createRequestedReview());
+        expect(getReviewViewerFlags(othersReview, current).canStart).toBe(false);
+        const ownReview = toSaveData(createRequestedReview({ requester: current.actor }));
+        expect(canCancelByPermission(ownReview, current)).toBe(true);
     });
 
     it("feeds the viewer flags of a review", async () => {
@@ -260,6 +314,58 @@ describe("CurrentReviewViewer", () => {
         expect(flags.canReassign).toBe(true);
     });
 });
+```
+
+In `packages/api-workflows/__tests__/__helpers/fixtures.ts`, replace
+
+```ts
+export interface RequestedReviewParams {
+    id?: string;
+    targetRevisionId?: string;
+    picks?: ReviewPick[];
+    workflow?: Workflow;
+}
+```
+
+with
+
+```ts
+export interface RequestedReviewParams {
+    id?: string;
+    targetRevisionId?: string;
+    picks?: ReviewPick[];
+    workflow?: Workflow;
+    /** Defaults to the `requester` fixture. */
+    requester?: Actor;
+}
+```
+
+and in `createRequestedReview`, replace
+
+```ts
+            picks: params.picks ?? [],
+            requester,
+            now: NOW
+        })
+    );
+    expectOk(review.reach({ resolution: poolResolution(), actor: requester, now: NOW }));
+```
+
+with
+
+```ts
+            picks: params.picks ?? [],
+            requester: params.requester ?? requester,
+            now: NOW
+        })
+    );
+    expectOk(
+        review.reach({
+            resolution: poolResolution(),
+            actor: params.requester ?? requester,
+            now: NOW
+        })
+    );
 ```
 
 - [ ] **Step 2: Run them to verify they fail**
@@ -385,22 +491,29 @@ Create `packages/api-workflows/src/features/identity/CurrentReviewViewer/abstrac
 
 ```ts
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { ReviewViewer } from "~/domain/review/types.js";
+import type { Actor, ReviewViewer } from "~/domain/review/types.js";
 import type { WorkflowsNotAuthenticatedError } from "~/domain/permissions/errors.js";
 
 export interface ICurrentReviewViewer {
+    /**
+     * The current identity as a `user` actor, API keys included (`identityType: "api-key"`,
+     * D133). Reads only the identity: no team lookup, no permission read.
+     */
+    getActor(): Result<Actor, WorkflowsNotAuthenticatedError>;
     /** The current identity as a review viewer: actor, team ids and workflows permissions. */
     get(): Promise<Result<ReviewViewer, WorkflowsNotAuthenticatedError>>;
 }
 
 /**
  * Builds the reading user for viewer flags and the actor and team ids for the internal review
- * use cases, in one place for every app wrapper (D132, R37).
+ * use cases, in one place for every app wrapper (D132, R37, R42). Only an anonymous identity is
+ * refused.
  */
 export const CurrentReviewViewer = createAbstraction<ICurrentReviewViewer>("CurrentReviewViewer");
 
 export namespace CurrentReviewViewer {
     export type Interface = ICurrentReviewViewer;
+    export type ActorResult = Result<Actor, WorkflowsNotAuthenticatedError>;
     export type Return = Promise<Result<ReviewViewer, WorkflowsNotAuthenticatedError>>;
 }
 ```
@@ -416,7 +529,11 @@ import { WorkflowsNotAuthenticatedError } from "~/domain/permissions/errors.js";
 import type { ReviewViewer } from "~/domain/review/types.js";
 import { CurrentReviewViewer as Abstraction } from "./abstractions.js";
 
-/** Reads the identity on every call (no cache): its parts are cached by their own owners. */
+/**
+ * Reads the identity on every call (no cache): its parts are cached by their own owners. Every
+ * non-anonymous identity is a `user` actor; `identityType` keeps its kind (`admin`, `api-key`,
+ * D30, D133). An API key belongs to no team, so `teamIds` is `[]` for it (A16).
+ */
 class CurrentReviewViewerImpl implements Abstraction.Interface {
     public constructor(
         private identityContext: IdentityContext.Interface,
@@ -424,10 +541,23 @@ class CurrentReviewViewerImpl implements Abstraction.Interface {
         private permissions: WorkflowsPermissions.Interface
     ) {}
 
-    public async get(): Abstraction.Return {
+    public getActor(): Abstraction.ActorResult {
         const identity = this.identityContext.getIdentity();
         if (identity.isAnonymous()) {
             return Result.fail(new WorkflowsNotAuthenticatedError());
+        }
+        return Result.ok({
+            type: "user",
+            id: identity.id,
+            displayName: identity.displayName,
+            identityType: identity.type
+        });
+    }
+
+    public async get(): Abstraction.Return {
+        const actor = this.getActor();
+        if (actor.isFail()) {
+            return Result.fail(actor.error);
         }
 
         const [teamIds, permissions] = await Promise.all([
@@ -435,12 +565,7 @@ class CurrentReviewViewerImpl implements Abstraction.Interface {
             this.permissions.getPermissionSet()
         ]);
         const viewer: ReviewViewer = {
-            actor: {
-                type: "user",
-                id: identity.id,
-                displayName: identity.displayName,
-                identityType: identity.type
-            },
+            actor: actor.value,
             teamIds,
             permissions
         };
@@ -507,7 +632,7 @@ and add after `expect(container.resolveAll(WorkflowsPermissions)).toHaveLength(1
 - [ ] **Step 7: Run the tests**
 
 Run: `yarn test packages/api-workflows/__tests__/identity 2>&1 | tail -50`
-Expected: PASS (6 + 3 tests).
+Expected: PASS (6 + 5 tests).
 Run: `yarn test packages/api-workflows 2>&1 | tail -50`
 Expected: PASS (incl. `registration.test.ts`).
 Run: `yarn test:os packages/api-workflows 2>&1 | tail -50`

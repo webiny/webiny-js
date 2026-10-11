@@ -1,6 +1,6 @@
 # Workflows refactor: design
 
-Status: draft, 2026-10-05, updated 2026-10-08. Consolidates decisions D1-D131 in `docs/.bruno/workflows/decisions.md`; where decisions refine or supersede each other, this document states the final result. Decision ids are given in brackets for traceability. Discovery background lives in `docs/.bruno/workflows/` (`README.md`, `api.md`, `app.md`, `integrations.md`, `infrastructure.md`); the product brief for routing is `docs/.bruno/workflows/routing.md`; the UI design brief is `docs/.bruno/specs/2026-10-06-workflows-ui-design-brief.md` (UI decisions D88-D131).
+Status: draft, 2026-10-05, updated 2026-10-11 (D132: api-workflows is an internal engine, apps own checks and GraphQL; D133: no cross-app reviews, shared configuration operations, engine identity touch points). Consolidates decisions D1-D133 in `docs/.bruno/workflows/decisions.md`; where decisions refine or supersede each other, this document states the final result. Decision ids are given in brackets for traceability. Discovery background lives in `docs/.bruno/workflows/` (`README.md`, `api.md`, `app.md`, `integrations.md`, `infrastructure.md`); the product brief for routing is `docs/.bruno/workflows/routing.md`; the UI design brief is `docs/.bruno/specs/2026-10-06-workflows-ui-design-brief.md` (UI decisions D88-D131).
 
 ## 1. Goals
 
@@ -56,11 +56,11 @@ interface WorkflowStep {
 }
 ```
 
-- v1 validation on create and update (same path): exactly one entry in `models`, the model is publishable, and no other workflow is bound to it. The uniqueness race is accepted [D15, D41].
+- v1 validation on create and update (same path): exactly one entry in `models`, the model is publishable, and no other workflow is bound to it. The uniqueness race is accepted [D15, D41]. "Publishable" is checked by the app package on the engine's workflow before-save events (the CMS workflows package for `cms.*`), so every caller of the base use case gets it.
 - At least one step ("Add at least one step.") [D108]. AI steps need non-empty `instructions` and a `model` [D101, D109]. Every rule needs a target; required automation settings must be present (the same checks run in the editor before Save).
-- Editing is always allowed. Deleting is blocked while any of the workflow's reviews is `inProgress`; the error carries the exact count and up to 5 of those reviews the caller can read (content reference, title, step position and name). Finished reviews do not block it [D81, D115].
+- Editing is always allowed. Deleting is blocked while any of the workflow's reviews is `inProgress`. The engine's error carries the exact count and the blocking reviews (content reference, title, step position and name); the app wrapper filters them to the ones the caller can read and keeps 5. The count stays exact. Finished reviews do not block it [D81, D115, D133].
 - No tombstone: a save that finds the workflow deleted only learns that it no longer exists [D123].
-- Saves are checked optimistically: `storeWorkflow` takes the loaded `savedOn`; a mismatch fails with `Workflows/Workflow/Conflict`, a missing workflow with `Workflows/Workflow/NotFound` [D131].
+- Saves are checked optimistically: the base `StoreWorkflow` use case takes the loaded `savedOn`, and each app's store mutation (e.g. `storeWebsiteBuilderPageWorkflow`) passes it through; a mismatch fails with `Workflows/Workflow/Conflict`, a missing workflow with `Workflows/Workflow/NotFound` [D131, D132].
 - Designed for many-to-many in v2 (several models per workflow, several workflows per model) [D15].
 
 Step type configs:
@@ -150,7 +150,7 @@ interface Actor {
     type: "user" | "ai" | "automation";   // forced enum [D30]
     id: string;                           // user id; for ai/automation the requester's id [D58]
     displayName: string;
-    identityType?: string;                // old identity kind (admin, API key), if needed [D30]
+    identityType?: string;                // identity kind of a user actor, e.g. "admin", "api-key" [D30, D133]
 }
 ```
 
@@ -195,27 +195,32 @@ system.workflow = { workflowId, reviewState, stepId, stepName, stepState } | nul
 
 All transitions live in the review aggregate, take an explicit actor, and never read the current identity, so they run inside background tasks [D5]. Every transition persists through one save path that refreshes the current-step fields and syncs `system.workflow` [D19, D52].
 
-| Transition | From | To | Who |
-|---|---|---|---|
-| request | (no active review) | review `inProgress`, step 1 reached | requester |
-| reach step | `pending` | `awaiting`, or `inReview` if an owner resolves | system |
-| start | `awaiting` | `inReview`, owner = user | member of `candidateTeamIds`, not the requester |
-| take over | human `inReview` | `inReview`, owner = user | member of `candidateTeamIds`, not requester, not current owner [D32] |
-| reassign | `awaiting` or human `inReview` | `inReview`, owner = chosen user | `workflows.reassign` [D33] |
-| approve | `inReview` | `approved`; next step reached, or review `approved` | owner (user, AI or automation) |
-| reject | `inReview` | `rejected`; review `rejected` | owner |
-| fail | AI/automation `inReview`, or on reach (`pending`) when the definition is missing, settings are invalid, or the AI capability/licence is unavailable | `failed` (reason in comment) | system [D8, D28, D37, D40] |
-| restart | `failed` | re-runs step reached (definition lookup, settings re-validation, new task); clears `comment` and `issues`, keeps owner, appends the previous attempt to `runs` [D82] | requester or `workflows.reassign` [D34] |
-| cancel | review `inProgress` | review `cancelled`, `isActive = false`, current-step fields cleared, `system.workflow = null`, running task aborted | requester or `workflows.reassign` [D25, D54, D75] |
+Two layers enforce the rules [D132, D133]. The engine (aggregate and api-workflows use cases) enforces state preconditions and the rules it can decide from the review and the explicit input: owner equals actor, a user actor is not the requester, the actor's team ids (`actorTeamIds`, supplied by the caller) intersect `candidateTeamIds`. The app wrapper (CMS or Website Builder) reads the identity, builds the actor and its team ids, and enforces the `workflows` permission and target access before calling the engine. AI and automation tasks call the engine directly with an `ai` or `automation` actor.
+
+| Transition | From | To | Engine enforces | App wrapper enforces |
+|---|---|---|---|---|
+| request | (no active review) | review `inProgress`, step 1 reached | no active review; picks well-formed | write access to the target [D77] |
+| reach step | `pending` | `awaiting`, or `inReview` if an owner resolves | state; a resolved owner who is the requester goes to the pool | (system, no wrapper) |
+| start | `awaiting` | `inReview`, owner = user | user actor, not the requester, member of `candidateTeamIds` | read access to the target |
+| take over | human `inReview` | `inReview`, owner = user | as start, plus not the current owner, human step only [D9, D32] | read access to the target |
+| reassign | `awaiting` or human `inReview` | `inReview`, owner = chosen user | state, human step; the chosen user is a valid candidate (candidates' read access through the target adapter, D61, D133) | `workflows.reassign`, read access to the target [D33] |
+| approve | `inReview` | `approved`; next step reached, or review `approved` | owner (user, AI or automation) equals actor | read access to the target (user actors) |
+| reject | `inReview` | `rejected`; review `rejected` | owner equals actor | read access to the target (user actors) |
+| fail | AI/automation `inReview`, or on reach (`pending`) when the definition is missing, settings are invalid, or the AI capability/licence is unavailable | `failed` (reason in comment) | system [D8, D28, D37, D40] | (system, no wrapper) |
+| restart | `failed` | re-runs step reached (definition lookup, settings re-validation, new task); clears `comment` and `issues`, keeps owner, appends the previous attempt to `runs` [D82] | state | requester or `workflows.reassign` [D34] |
+| cancel | review `inProgress` | review `cancelled`, `isActive = false`, current-step fields cleared, `system.workflow = null`, running task aborted | state (not approved, rejected or cancelled) | requester or `workflows.reassign` [D25, D54, D75] |
+
+The wrapper authorizes with permission-only predicates from api-workflows (requester or `reassign` for cancel and restart, `reassign` for reassign) and leaves state errors to the engine, so a finished review fails with the engine's `InvalidState`, not with "not authorized".
 
 Rules:
 
-- The requester never reviews their own content.
+- The requester never reviews their own content. This is an engine rule for `user` actors only (AI and automation actors carry the requester's id, D58): it applies to start and take over, and to candidates and picks during routing.
 - Reject is final for that revision. To continue, create a new revision, fix it, request a new review [D10]. A rejected step cannot be restarted [D8].
 - AI and automation steps cannot be taken over [D9].
 - Cancel is allowed at any point unless the review is approved or rejected. After cancel, a new request on the same revision starts from step 1 [D25].
 - The developer-mode "Remove Review Request" action on the rejected bar stays as an escape hatch [D25].
-- Human actions: start and take over require membership of `candidateTeamIds`, not being the requester, and read access to the target. Exclusions do not block them; exclusions only govern automatic assignment and the picker (brief). Reassign validates the chosen user like a pick: candidate, not excluded, not the requester, can read the target [D33, D61].
+- Human actions: start and take over require membership of `candidateTeamIds` and not being the requester (engine; the wrapper supplies the actor's team ids), and read access to the target (app wrapper). Exclusions do not block them; exclusions only govern automatic assignment and the picker (brief). Reassign validates the chosen user like a pick: candidate, not excluded, not the requester, can read the target (engine, through the target adapter) [D33, D61, D133].
+- API keys act as `user` actors with `identityType: "api-key"` under the same rules. A key belongs to no team, so it cannot start or take over pool steps; it can request, cancel its own review, and act where `reassign` suffices [D133].
 - Exclusions govern new assignments only. Work already held by a user who becomes excluded stays with them (brief).
 - An approved revision that was published and later unpublished can be published again without a new review [D121].
 - When the last step is approved the review is `approved` and publish is allowed. On a workflow-bound model, publish requires an approved review on that revision, enforced in the API (not only the UI); a failed lookup blocks publish. Models without a workflow publish normally [D79].
@@ -231,7 +236,7 @@ One code path handles step reached for every type. AI and automation steps never
 
 ### 5.3 Viewer flags [D5, D54]
 
-Computed on the server for the reading user only: `canStart`, `canTakeOver`, `canApprove`, `canReject`, `canCancel`, `canReassign`, `canRestart`, and per step at submit `canPick`.
+Computed on the server for the reading user only: `canStart`, `canTakeOver`, `canApprove`, `canReject`, `canCancel`, `canReassign`, `canRestart`, and per step at submit `canPick`. The app wrapper computes them with the api-workflows helper from the actor, the actor's team ids, the `workflows` permission set and the review, and ANDs its own target access (read access for start, take over, approve and reject; write access for request and `canPick`) [D132, D133].
 
 ## 6. Assignment resolution (review steps)
 
@@ -248,7 +253,7 @@ Assignment never blocks the review. Any error during resolution (identity or tea
 
 If the requester is the only eligible member of the candidate teams, the step sits in `awaiting`; reassign is the way out.
 
-Candidates are members of `candidateTeamIds` (default: the step's teams), minus the requester, minus active exclusions, minus users without read access to the target (folder access and model read) [D21, D61].
+Candidates are members of `candidateTeamIds` (default: the step's teams), minus the requester, minus active exclusions, minus users without read access to the target (folder access and model read) [D21, D61]. The engine asks the target adapter of the review's namespace whether a candidate can read the target (e.g. `canUserRead(userId, target)`); the app supplies the permission logic. This is one of the engine's two identity touch points (the other is task triggers, 7.4) [D133].
 
 Condition inputs:
 
@@ -260,7 +265,7 @@ A rule whose user target is currently excluded is skipped like any invalid targe
 
 Every decision writes an assignment-log record and sets the step's `assignmentSource`. Start from the pool and take over also write a record (sources `poolStart`, `takeOver`), so rotation, tie-breaks and "who holds this and why" stay explainable.
 
-Submit-time validation of picks is lenient: `requestReview` rejects only malformed input (unknown step id, step without `allowManualPick`). Everything else is validated when the step is reached.
+Submit-time validation of picks is lenient: the base `RequestReview` use case rejects only malformed input (unknown step id, step without `allowManualPick`). Everything else is validated when the step is reached.
 
 Rule targets are also validated when the workflow is saved: user targets must be members of the step's teams, team targets must be among the step's teams. Invalid targets reject the save. A later team change can still invalidate a saved rule; evaluation then skips it and the editor flags it.
 
@@ -294,7 +299,7 @@ Rule targets are also validated when the workflow is saved: user targets must be
 ### 7.4 Task execution [D6, D7, D27, D28, D57, D58]
 
 - One background task per AI or automation step run. The step stores the task id; it doubles as the run id.
-- The task always runs as the requester, including restarts, so records it creates or changes are attributed to the requester. Workflows triggers the task inside `IdentityContext.withIdentity(requester, ...)`; `TaskService.trigger` is unchanged [D87].
+- The task always runs as the requester, including restarts, so records it creates or changes are attributed to the requester. The engine's step-reached path triggers the task inside `IdentityContext.withIdentity(requester, ...)`, also when the step is reached inside another task or a base use case with no wrapper; `TaskService.trigger` is unchanged [D87]. This is the engine's only identity write; transitions still use the explicit actor (`ai` or `automation`) [D132, D133].
 - Stale-result guard: on finish the task reloads the review and applies its result only if the review is still active, the step is still current, and the step's task id matches. The same guard applies to failure writes (`onError`, `onMaxIterations`) and to stuck detection, so a late hook from an old task cannot fail a restarted step. The narrow write race is accepted.
 - `onError` and `onMaxIterations` set the step `failed` with the reason; the write is idempotent.
 - Stuck detection on read: only on single-review reads (`getReview`, `getTargetReview`), not in lists. If the task is done, failed or aborted while the step is still `inReview`, the step is set `failed` ("task ended without result").
@@ -303,30 +308,35 @@ Rule targets are also validated when the workflow is saved: user targets must be
 
 ## 8. Permissions [D54]
 
-One `workflows` permission with custom boolean actions, plus full access:
+One `workflows` permission with custom boolean actions, plus full access. The same permission serves every app's wrappers; there is no per-app split [D133]:
 
 | Action | Grants |
 |---|---|
-| `editor` | Create, update, delete workflows; tenant workflow settings (exclusions); `workflows.listUsers`. |
+| `editor` | Create, update, delete workflows; tenant workflow settings (exclusions); the routing tools and user lists (`listUsers`, `inspectRouting`, `folderExists`). |
 | `reassign` | Reassign; restart failed steps; cancel reviews requested by others. |
 | full (`*`, `workflows.*`) | Everything. |
 
 - Security UI gets a "custom" access level with these checkboxes.
-- One shared permission checker in api-workflows replaces the four copied `ensureManageAccess` functions. It is a building block: the checks themselves run in each app's wrapper use cases, not in the api-workflows use cases, which are internal and take an explicit actor [D132].
+- One shared permission checker in api-workflows replaces the four copied `ensureManageAccess` functions. It is a building block: the checks run in each app's wrapper use cases and in the shared configuration operations, never in the api-workflows use cases, which are internal and take an explicit actor [D132, D133].
 - Requesting a review needs write access to the target [D77]. Reviewing needs team membership plus read access to the target.
-- All review operations check permissions on the server (today none do), in the app wrappers (CMS, Website Builder) that call the internal api-workflows use cases [D132].
+- All review operations check permissions on the server (today none do), in the app wrappers (CMS, Website Builder) that call the internal api-workflows use cases [D132]. Each app checks its own model, folder and content permissions [D133].
+- The engine never checks the caller's permissions. It touches identity in two places only: candidates' read access through the app's target adapter (section 6) and `withIdentity(requester)` around task triggers (7.4) [D133].
+- Redaction: the engine returns full data; the wrapper strips per-user skip entries and `excludedReason` for viewers without `editor` / `reassign` [D89, D97, D127, D128].
 
-Query permissions [D78]:
+Query permissions [D78], checked by the operation's layer [D132, D133]:
 
-| Query | Who |
-|---|---|
-| `listWorkflows`, `getWorkflow` | any authenticated admin user |
-| `listStepCandidates(workflowId, stepId)` | write access to the workflow's model (can request a review) |
-| `listStepCandidates(reviewId, stepId)` | `reassign` [D128] |
-| `listNotificationTransports`, editor model list | `editor` [D129, D130] |
-| `getSettings`, `updateSettings` | `editor` |
-| `inspectRouting`, `folderExists`, `listUsers` | `editor` |
-| `listStepTypes`, `listAutomationDefinitions`, `listAiTools` | `editor` |
+| Capability | Layer | Who |
+|---|---|---|
+| list and get workflows | per app | any authenticated admin user |
+| store and delete workflow | per app (e.g. `StoreWebsiteBuilderPageWorkflow`) | `editor` |
+| `listStepCandidates(workflowId, stepId)` | per app | write access to the workflow's model (can request a review) |
+| `listStepCandidates(reviewId, stepId)` | per app | `reassign` [D128] |
+| `inspectRouting`, `folderExists` | per app | `editor` |
+| editor model list | CMS | `editor` [D130] |
+| settings (get, update), `listUsers` | shared configuration operations (api-workflows) | `editor` |
+| step types, notification transports, automation definitions, AI tools | shared configuration operations (api-workflows) | `editor` [D129, D130] |
+
+The shared configuration operations are the only api-workflows operations exposed outside the backend [D133].
 
 Requesters see exclusion data only through `listStepCandidates` (refines D43).
 
@@ -337,7 +347,7 @@ Requesters see exclusion data only through `listStepCandidates` (refines D43).
 - `UpdateEntrySystemUseCase`, modelled on `UpdateRevisionDescription`: load revision, change only `system.*` keys, save via `UpdateEntryRepository`, publish its own narrow events, no meta rebuild. Used for every `system.workflow` write, under `withoutAuthorization` [D52].
 - Filterable `system.workflow.*` fields in the DDB and OpenSearch filter registries [D53].
 
-### 9.2 Workflow handlers on CMS events (in the CMS workflows package)
+### 9.2 Workflow handlers on CMS events (in the CMS workflows package, `api-headless-cms-workflows`)
 
 Each is one handler covering CMS entries and WB pages, because WB pages are CMS entries (`wbyWbPage`):
 
@@ -349,13 +359,14 @@ Adapters that handle other CMS events must match their namespace and model expli
 
 ### 9.3 Target adapters [D42]
 
-One adapter per namespace (`cms.*` for CMS entries, `wb.page` for WB pages), replacing the duplicated CMS/WB handler pairs:
+One adapter per namespace, replacing the duplicated CMS/WB handler pairs: `cms.*` for CMS entries in `api-headless-cms-workflows`, `wb.page` for WB pages in `api-website-builder-workflows`. Each app package also holds that app's wrapper use cases and GraphQL operations [D132]. Each adapter:
 
 - load target revision; produce typed `TargetContext` (folder id and type, model id, title, author);
 - publish blocking (D79) and move blocking: moves are blocked only while the review is `inProgress` [D84];
 - `system.workflow` sync via `UpdateEntrySystemUseCase`;
 - implement the AI tools `readTarget` / `updateTargetFields`;
-- delete the review when the target is permanently deleted.
+- delete the review when the target is permanently deleted;
+- answer whether a user can read the target (`canUserRead(userId, target)`), used by the engine for candidates during routing and reassign [D61, D133].
 
 ### 9.4 api-core
 
@@ -367,28 +378,35 @@ Not built in this refactor. Until it lands, the assignment log is the only recor
 
 ## 10. GraphQL surface (outline)
 
-Operations are defined per app (CMS, Website Builder), e.g. `storeWebsiteBuilderPageWorkflow`, each backed by an app wrapper use case that checks identity and permissions and calls the internal api-workflows use case [D132]. The list below names the capabilities, not the final operations; app-neutral ones (settings, users, step types, notification transports) are placed in the phase 3 plan. Final names are settled in the plan.
+Two kinds of operations [D132, D133]:
 
-Queries:
+- **Per app** (CMS, Website Builder), e.g. `storeWebsiteBuilderPageWorkflow`, each backed by an app wrapper use case that reads the identity, builds the actor, checks permissions and target access, and calls the internal api-workflows use case. Nothing merges CMS and WB reviews.
+- **Shared configuration operations** in api-workflows, guarded only by `editor`: settings, `listUsers`, step types, notification transports, automation definitions, AI tools. These are the only api-workflows operations exposed outside the backend.
 
-- `listWorkflows`, `getWorkflow`
-- `listStepTypes` (with config JSON schemas, `available` and `unavailableReason` per type [D130]), `listNotificationTransports` (`id`, `title`, `description`) [D129], `listAutomationDefinitions` (with scope and settings JSON schemas), `listAiTools`
-- `getReview(id)`, `getTargetReview(model, targetRevisionId)`; each step returns its assignment-log entries, with per-user skip entries only for `editor` / `reassign` [D89, D127]
-- `listReviews(list: assignedToMe | pool | teamInReview | myRequests | failedSteps, where, sort: lastChangedOn_ASC | lastChangedOn_DESC, limit, after)` with `where: { model?, titleContains?, reviewState?, stepState? }` (review and step state only for `myRequests`) [D47, D94, D112, D119]
-- `listUsers` (requires `editor`) [D48]; also accepts a list of ids and reports which do not exist, so the editor can show saved targets as "Deleted user" [D117]
+The lists below name capabilities, not final operations; each per-app capability exists once per app. Final names are settled in the plan.
+
+Per-app queries:
+
+- list and get workflows (the app's namespaces only)
+- `getReview(id)`, `getTargetReview(model, targetRevisionId)`; each step returns its assignment-log entries; the wrapper strips per-user skip entries for viewers without `editor` / `reassign` [D89, D127]
+- `listReviews(list: assignedToMe | pool | teamInReview | myRequests | failedSteps, where, sort: lastChangedOn_ASC | lastChangedOn_DESC, limit, after)` with `where: { model?, titleContains?, reviewState?, stepState? }` (review and step state only for `myRequests`; `model` only where the app has several models, i.e. CMS) [D47, D94, D112, D119, D133]
 - `listStepCandidates(workflowId, stepId)` for Request review, `listStepCandidates(reviewId, stepId)` for Reassign (from the review snapshot) → `{ id, displayName, excluded, excludedReason }`; `excludedReason` only for `editor` / `reassign`; no workload counts [D48, D97, D104, D128]
 - `inspectRouting(stepConfig, model, requesterId, folderId)` → resulting owner, per-rule trace (including skipped rules and why), strategy choice; evaluates unsaved config; returns no per-person load numbers [D45, D95, D104, D118]
-- The workflow editor's model list: `search`, `limit`, cursor; 20 per page, sorted by name; each row carries the bound workflow (id, name) if any; requires `editor` [D116, D130]
-- `folderExists(id)` → boolean [D69]
-- `getSettings`
+- `folderExists(id, type)` → boolean [D69, D133]
+- CMS only: the workflow editor's model list: `search`, `limit`, cursor; 20 per page, sorted by name; each row carries the bound workflow (id, name) if any; requires `editor` [D116, D130]. The WB editor has the single item Pages and needs no list.
 
-Mutations:
+Per-app mutations (base use case in brackets):
 
-- `storeWorkflow(input, savedOn)` (optimistic check, D131), `deleteWorkflow`
-- `requestReview(model, targetRevisionId, title, picks: [{ stepId, userId }])`
-- `startStep`, `takeOverStep(notifyPreviousOwner = true)` [D111], `reassignStep(reviewId, userId)`, `approveStep(comment?)`, `rejectStep(comment)`, `restartStep`, `cancelReview`
+- store workflow (`StoreWorkflow`, with the loaded `savedOn`, optimistic check, D131), delete workflow (`DeleteWorkflow`)
+- request review (`RequestReview`: model, target revision id, title, picks `[{ stepId, userId }]`)
+- start (`StartReviewStep`), take over (`TakeOverReviewStep`, `notifyPreviousOwner = true`) [D111], reassign (`reviewId`, `userId`), approve (`comment?`), reject (`comment`), restart, cancel review
 - Validation: review title at least 5 characters; reject comment at least 10 characters [D100].
-- `updateSettings`
+
+Shared configuration operations (api-workflows, `editor`):
+
+- settings: get, update
+- `listUsers` [D48]; also accepts a list of ids and reports which do not exist, so the editor can show saved targets as "Deleted user" [D117]
+- step types (with config JSON schemas, `available` and `unavailableReason` per type [D130]), notification transports (`id`, `title`, `description`) [D129], automation definitions (with scope and settings JSON schemas), AI tools
 
 Errors return `code`, `message` and `data`; the admin must keep them (today gateways drop them).
 
@@ -396,21 +414,25 @@ Review reads (steps preview, review details) include each step's `description` [
 
 ## 11. Review lists [D47]
 
+Each app has its own lists over its own reviews (CMS: `cms.*`; Website Builder: `wb.page`); nothing merges them [D133].
+
 | List | Filter |
 |---|---|
-| Assigned to me | `currentOwnerId = me`, `currentStepState = inReview` |
-| Pool | `currentStepState = awaiting`, my teams intersect `currentCandidateTeamIds`, I am not the requester |
-| Team in review | `currentStepState = inReview`, owner is not me, my teams intersect `currentCandidateTeamIds` |
-| My requests | `createdBy = me` |
+| Assigned to me | `currentOwnerId = viewerUserId`, `currentStepState = inReview` |
+| Pool | `currentStepState = awaiting`, `viewerTeamIds` intersect `currentCandidateTeamIds`, the viewer is not the requester |
+| Team in review | `currentStepState = inReview`, owner is not the viewer, `viewerTeamIds` intersect `currentCandidateTeamIds` |
+| My requests | `createdBy = viewerUserId` |
 | Failed steps (only with `reassign`) | `currentStepState = failed`, current step type AI or automation [D112] |
+
+The engine's list use case takes `viewerUserId` and `viewerTeamIds` explicitly; the app wrapper supplies them from the identity and offers Failed steps only with `reassign` [D132].
 
 All lists also require `isActive: true` [D75].
 
-Each row carries the viewer flags `canStart`, `canTakeOver`, `canReassign`, `canRestart` and `canCancel`, so row actions follow the server.
+Each row carries the viewer flags `canStart`, `canTakeOver`, `canReassign`, `canRestart` and `canCancel`, computed by the app wrapper (5.3), so row actions follow the server.
 
 Sort only by `lastChangedOn`: oldest first by default in Assigned to me, Pool, Team in review and Failed steps; newest first in My requests; the client can switch the direction [D119].
 
-Lists keep the folder-level read filter on the target (today's `WorkflowStateFilter` decorators), so review titles from restricted folders do not leak. Pagination is rewritten: keep fetching pages until `limit` is filled, return the cursor of the last scanned record, and do not promise an exact `totalCount` [D76].
+Lists keep the folder-level read filter on the target, so review titles from restricted folders do not leak. The app wrapper passes a target-read predicate (its own folder and model permissions for the viewer) to the engine's list use case, which applies it and runs the rewritten pagination: keep fetching pages until `limit` is filled, return the cursor of the last scanned record, and do not promise an exact `totalCount` [D76, D133].
 
 ## 12. Notifications [D44, D60]
 
@@ -428,6 +450,7 @@ Lists keep the folder-level read filter on the target (today's `WorkflowStateFil
 - Channels: transports configured on the step (`notifications[]`, e.g. e-mail via `MailNotificationTransport`) plus a websocket message every time. Each event uses the channels of the step where it happened: approved the last step, rejected the rejecting step, cancelled the current step, failed the failed step [D103].
 - AI and automation steps are named by their step title as decider or owner, never by the automation's name [D107, D126].
 - Workflows only sends the websocket message (`WebsocketsSendToIdentityUseCase`); the websockets layer handles delivery. No stored inbox.
+- A notification links to the content or to the review in its own app (CMS or Website Builder); the message carries the review's namespace so the client opens that app's review [D133].
 - On the client an in-app notification is a toast through the admin `Notifications` feature; every workflow toast, including confirmations of the user's own actions, uses that one stack [D102, D125].
 - On the client every workflow websocket message also fires `WorkflowStateChangedEvent`, so the open bar, lists and editor refetch; the editor reloads the entry when its content changed.
 
@@ -439,6 +462,7 @@ Screens, states and copy are specified in the UI design brief (`docs/.bruno/spec
 
 - Keep the DI + MobX presenter pattern. No shared singleton presenters across independent views: each widget, list and target view gets its own instance [D71].
 - Gateways keep error `code` and `data`; presenters surface action errors.
+- Gateways are per app: the CMS and Website Builder workflow admin packages implement them over their app's operations. Shared presenters in app-workflows depend on a gateway abstraction and are shared only where the behaviour is truly app-neutral (review bar, dialogs, request dialog, editor shell); the shared configuration operations (settings, users, step types, transports) have one gateway [D132, D133].
 - Per-viewer flags come from the server.
 
 ### 13.2 Workflow editor
@@ -447,7 +471,7 @@ Screens, states and copy are specified in the UI design brief (`docs/.bruno/spec
 - Step editor rebuilt on FormModel: a dynamic zone per step type; each step type contributes its editor fields [D56, D66].
 - Automation settings forms are generated from JSON schema through a new JSON-schema → FormModel adapter, with UI hints in zod `.meta()` (user, team, secret, textarea). The client rebuilds validators with `z.fromJSONSchema` to flag invalid stored settings [D66].
 - Review step assignment section: strategy selector, `allowManualPick` toggle, reorderable rule list (`ObjectAccordionMultipleRenderer`), rule inspector.
-- Rule fields: `WorkflowUserPicker` over `workflows.listUsers`; `WorkflowTeamPicker` limited to the step's teams; standard `FolderPicker` filtered by folder permissions. A folder the editor cannot see shows as "restricted folder" and is preserved. The editor flags invalid targets, missing folders (`folderExists`), and targets without read access [D69, D72, D61].
+- Rule fields: `WorkflowUserPicker` over `listUsers` (shared configuration operation); `WorkflowTeamPicker` limited to the step's teams; standard `FolderPicker` filtered by folder permissions. A folder the editor cannot see shows as "restricted folder" and is preserved. The editor flags invalid targets, missing folders (the app's `folderExists`), and targets without read access [D69, D72, D61].
 - The assignment section is shown only for review steps.
 
 ### 13.3 Request review dialog
@@ -463,8 +487,8 @@ Screens, states and copy are specified in the UI design brief (`docs/.bruno/spec
 
 ### 13.5 Lists and dashboard
 
-- Content Reviews page with the five lists (Failed steps only with `reassign`), "Content type" column and filter [D47, D112, D113].
-- Dashboard widgets: "For me to review" (tabs Assigned to me, Pool) and "My requests"; "View all" opens the matching list [D71].
+- Content Reviews per app (CMS, Website Builder), each with the five lists over that app's reviews (Failed steps only with `reassign`); the CMS view has the "Content type" column and filter, the WB view (Pages only) does not need them [D47, D112, D113, D133].
+- Dashboard widgets per app: "For me to review" (tabs Assigned to me, Pool) and "My requests"; "View all" opens the matching list of that app [D71, D133].
 - CMS and WB content lists: row selectability reads `system.workflow.reviewState`; nothing else changes [D70].
 
 ### 13.6 Settings

@@ -18,7 +18,7 @@
   - `checkReassign(params: ReviewStepParams): Result<void, ReviewReassignError>` (step `awaiting` or human `inReview`, D33; phase 4's reassign transition must use the same private guard).
   - Param types: `ReviewStepParams { stepId: string }`, `ReviewActorCheckParams extends ReviewStepParams { actor: Actor; actorTeamIds: string[] }`, `ReviewActorParams extends ReviewActorCheckParams { now: string }` (same fields as in 1a), `ReviewDecisionParams extends ReviewActorParams { comment: string | null }` (unchanged).
   - `ReviewReassignError = ReviewInvalidStateError | ReviewStepNotCurrentError | ReviewStepNotReassignableError`.
-  - `ReviewStepNotReassignableError` (`Workflows/Review/StepNotReassignable`, data `{ reviewId, stepId, ownerType }`); `ReviewTransitionName` gains `"reassign"`.
+  - `ReviewStepNotReassignableError` (`Workflows/Review/StepNotReassignable`, data `ReviewStepNotReassignableErrorData { reviewId, stepId, ownerType }`, its own name rather than the take-over error's data type, R44); `ReviewTransitionName` gains `"reassign"`.
   - Every transition runs the same private guard as its check (R31), so a check passes exactly when the transition would pass its domain rules.
 
 - [ ] **Step 1: Write the failing test**
@@ -263,11 +263,15 @@ and add after the `ReviewStepNotTakeableError` class:
 
 ```ts
 
+export interface ReviewStepNotReassignableErrorData extends ReviewStepErrorData {
+    ownerType: ActorType | null;
+}
+
 /** Reassign needs an `awaiting` or human-owned `inReview` step (D33). */
-export class ReviewStepNotReassignableError extends BaseError<ReviewStepNotTakeableErrorData> {
+export class ReviewStepNotReassignableError extends BaseError<ReviewStepNotReassignableErrorData> {
     override readonly code = "Workflows/Review/StepNotReassignable" as const;
 
-    constructor(data: ReviewStepNotTakeableErrorData) {
+    constructor(data: ReviewStepNotReassignableErrorData) {
         super({ message: "AI and automation steps cannot be reassigned.", data });
     }
 }
@@ -392,7 +396,8 @@ export type ReviewReassignError =
  *
  * Each transition has a pure `check*` twin that runs the same private guard (R31), so viewer
  * flags (spec 5.3) and the transitions cannot drift. Who may cancel or reassign is a permission
- * rule, not a domain rule: the app wrappers decide it (D132).
+ * rule, not a domain rule: the app wrappers decide it with `canCancelByPermission` and
+ * `canReassignByPermission` (D132, R41) and leave the state errors to these guards.
  */
 export class Review {
     private readonly facts: ReviewFact[] = [];
@@ -673,7 +678,7 @@ export class Review {
 
     /**
      * Allowed while the review is in progress (D25, D75). Who may cancel (requester or
-     * `reassign`, D54) is checked by the app wrapper through the `canCancel` viewer flag (D132).
+     * `reassign`, D54) is checked by the app wrapper with `canCancelByPermission` (D132, R41).
      */
     public cancel(params: ReviewCancelParams): Result<void, ReviewInvalidStateError> {
         const guard = this.guardCancel();
@@ -696,7 +701,7 @@ export class Review {
     /**
      * Reassign is possible on an `awaiting` or human-owned `inReview` step (D33). The transition
      * arrives in phase 4 and must use the same guard; who may reassign (`reassign`) is checked by
-     * the app wrapper (D132).
+     * the app wrapper with `canReassignByPermission` (D132, R41).
      */
     public checkReassign(params: ReviewStepParams): Result<void, ReviewReassignError> {
         return Review.toCheck(this.guardReassign(params));

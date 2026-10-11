@@ -4,18 +4,22 @@
 - Create: `packages/api-workflows/src/domain/workflow/canPickReviewer.ts`
 - Modify: `packages/api-workflows/src/domain/review/Review.ts`
 - Modify: `packages/api-workflows/src/domain/review/types.ts`
+- Create: `packages/api-workflows/src/domain/review/canCancelByPermission.ts`
+- Create: `packages/api-workflows/src/domain/review/canReassignByPermission.ts`
 - Create: `packages/api-workflows/src/domain/review/getReviewViewerFlags.ts`
 - Create: `packages/api-workflows/__tests__/domain/canPickReviewer.test.ts`
+- Create: `packages/api-workflows/__tests__/domain/reviewPermissionPredicates.test.ts`
 - Create: `packages/api-workflows/__tests__/domain/getReviewViewerFlags.test.ts`
 
 **Interfaces:**
-- Consumes: Task 1 `WorkflowsPermissionSet`; Task 2 `Review.checkStart`, `checkTakeOver`, `checkApprove`, `checkReject`, `checkCancel`, `checkReassign`, `currentStepId`, `isRequestedBy`, `ReviewActorCheckParams`; `parseReviewStepConfig`; fixtures (`createReviewStep`, `createRequestedReview`, `createStartedReview`, `createWorkflow`, `toSaveData`, `poolResolution`, actors, team ids, `targetContext`, `ARTICLE_MODEL`, `NOW`, `expectOk`).
+- Consumes: Task 1 `WorkflowsPermissionSet`; Task 2 `Review.checkStart`, `checkTakeOver`, `checkApprove`, `checkReject`, `checkCancel`, `checkReassign`, `currentStepId`, `isRequestedBy`, `ReviewActorCheckParams`; `parseReviewStepConfig`, `REVIEW_STEP_TYPE` (`domain/workflow/WorkflowValidator.ts`); fixtures (`createReviewStep`, `createRequestedReview`, `createStartedReview`, `createWorkflow`, `toSaveData`, `poolResolution`, actors, team ids, `targetContext`, `ARTICLE_MODEL`, `NOW`, `expectOk`).
 - Produces:
   - `canPickReviewer(step: WorkflowStep): boolean` — `canPick` per step at submit (spec 5.3, D22), computed from the workflow alone; `Review.request` uses it for its pick check, so the request and the flag cannot drift.
-  - `interface ReviewViewer { actor: Actor; teamIds: string[]; permissions: WorkflowsPermissionSet }`.
+  - `interface ReviewPermissionViewer { actor: Actor; permissions: WorkflowsPermissionSet }` and `interface ReviewViewer extends ReviewPermissionViewer { teamIds: string[] }`.
+  - Permission-only predicates (R41), used by `getReviewViewerFlags` and by the app wrappers: `canCancelByPermission(review: ReviewData, viewer: ReviewPermissionViewer): boolean` (requesting user, or `reassign` / full access; D25, D54) and `canReassignByPermission(viewer: ReviewPermissionViewer): boolean` (`reassign` / full access; D33). Neither reads the review's state: the engine reports state errors.
   - `interface ReviewViewerFlags { canStart: boolean; canTakeOver: boolean; canApprove: boolean; canReject: boolean; canCancel: boolean; canReassign: boolean; canRestart: boolean }`.
   - `getReviewViewerFlags(review: ReviewData, viewer: ReviewViewer): ReviewViewerFlags` — pure; reads a copy (`Review.fromData`), never changes the input.
-  - Rules (R31-R34): start, take over, approve, reject = the aggregate's checks on the current step; `canCancel` = `checkCancel` and (requester or `reassign`); `canReassign` = `reassign` and `checkReassign`; `canRestart` = `false` until phase 5. Target access is not part of any flag (R33).
+  - Rules (R31, R33, R34, R41): start, take over, approve, reject = the aggregate's checks on the current step; `canCancel` = `checkCancel` and `canCancelByPermission`; `canReassign` = `canReassignByPermission` and `checkReassign`; `canRestart` = `false` until phase 5. Target access is not part of any flag (R33).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -55,6 +59,83 @@ describe("canPickReviewer", () => {
         };
 
         expect(canPickReviewer(step)).toBe(false);
+    });
+});
+```
+
+Create `packages/api-workflows/__tests__/domain/reviewPermissionPredicates.test.ts`:
+
+```ts
+import { describe, expect, it } from "vitest";
+import { canCancelByPermission } from "~/domain/review/canCancelByPermission.js";
+import { canReassignByPermission } from "~/domain/review/canReassignByPermission.js";
+import type { Actor, ReviewData, ReviewPermissionViewer } from "~/domain/review/types.js";
+import type { WorkflowsPermissionSet } from "~/domain/permissions/types.js";
+import {
+    aiActor,
+    createRequestedReview,
+    createStartedReview,
+    expectOk,
+    requester,
+    reviewer,
+    toSaveData
+} from "~tests/__helpers/fixtures.js";
+
+const LATER = "2026-10-09T11:00:00.000Z";
+
+const NO_PERMISSIONS: WorkflowsPermissionSet = {
+    fullAccess: false,
+    editor: false,
+    reassign: false
+};
+const EDITOR: WorkflowsPermissionSet = { fullAccess: false, editor: true, reassign: false };
+const REASSIGN: WorkflowsPermissionSet = { fullAccess: false, editor: false, reassign: true };
+const FULL_ACCESS: WorkflowsPermissionSet = { fullAccess: true, editor: true, reassign: true };
+
+const viewerOf = (
+    actor: Actor,
+    permissions: WorkflowsPermissionSet = NO_PERMISSIONS
+): ReviewPermissionViewer => {
+    return { actor, permissions };
+};
+
+const requestedReview = (): ReviewData => toSaveData(createRequestedReview());
+
+const cancelledReview = (): ReviewData => {
+    const review = createStartedReview();
+    expectOk(review.cancel({ actor: requester, now: LATER }));
+    return toSaveData(review);
+};
+
+describe("canCancelByPermission", () => {
+    it("lets the requesting user cancel (D25)", () => {
+        expect(canCancelByPermission(requestedReview(), viewerOf(requester))).toBe(true);
+    });
+
+    it("lets reassign holders and full access cancel any review (D54)", () => {
+        expect(canCancelByPermission(requestedReview(), viewerOf(reviewer, REASSIGN))).toBe(true);
+        expect(canCancelByPermission(requestedReview(), viewerOf(reviewer, FULL_ACCESS))).toBe(
+            true
+        );
+    });
+
+    it("refuses other users, editors and AI actors carrying the requester's id (D58)", () => {
+        expect(canCancelByPermission(requestedReview(), viewerOf(reviewer))).toBe(false);
+        expect(canCancelByPermission(requestedReview(), viewerOf(reviewer, EDITOR))).toBe(false);
+        expect(canCancelByPermission(requestedReview(), viewerOf(aiActor))).toBe(false);
+    });
+
+    it("ignores the review state, which the engine reports (R41)", () => {
+        expect(canCancelByPermission(cancelledReview(), viewerOf(requester))).toBe(true);
+    });
+});
+
+describe("canReassignByPermission", () => {
+    it("grants reassign only with reassign or full access (D33)", () => {
+        expect(canReassignByPermission(viewerOf(reviewer, REASSIGN))).toBe(true);
+        expect(canReassignByPermission(viewerOf(reviewer, FULL_ACCESS))).toBe(true);
+        expect(canReassignByPermission(viewerOf(reviewer, EDITOR))).toBe(false);
+        expect(canReassignByPermission(viewerOf(requester))).toBe(false);
     });
 });
 ```
@@ -319,8 +400,8 @@ describe("getReviewViewerFlags", () => {
 
 - [ ] **Step 2: Run them to verify they fail**
 
-Run: `yarn test packages/api-workflows/__tests__/domain/canPickReviewer.test.ts packages/api-workflows/__tests__/domain/getReviewViewerFlags.test.ts 2>&1 | tail -50`
-Expected: FAIL, cannot resolve `~/domain/workflow/canPickReviewer.js` and `~/domain/review/getReviewViewerFlags.js`.
+Run: `yarn test packages/api-workflows/__tests__/domain/canPickReviewer.test.ts packages/api-workflows/__tests__/domain/reviewPermissionPredicates.test.ts packages/api-workflows/__tests__/domain/getReviewViewerFlags.test.ts 2>&1 | tail -50`
+Expected: FAIL, cannot resolve `~/domain/workflow/canPickReviewer.js`, `~/domain/review/canCancelByPermission.js`, `~/domain/review/canReassignByPermission.js` and `~/domain/review/getReviewViewerFlags.js`.
 
 - [ ] **Step 3: Add the pick predicate and use it in request**
 
@@ -329,6 +410,7 @@ Create `packages/api-workflows/src/domain/workflow/canPickReviewer.ts`:
 ```ts
 import type { WorkflowStep } from "./types.js";
 import { parseReviewStepConfig } from "./reviewStepConfigSchema.js";
+import { REVIEW_STEP_TYPE } from "./WorkflowValidator.js";
 
 /**
  * `canPick` for one step at submit (spec 5.3, D22): a review step whose config allows a manual
@@ -337,7 +419,7 @@ import { parseReviewStepConfig } from "./reviewStepConfigSchema.js";
  * routing (phase 4).
  */
 export const canPickReviewer = (step: WorkflowStep): boolean => {
-    if (step.type !== "review") {
+    if (step.type !== REVIEW_STEP_TYPE) {
         return false;
     }
     const config = parseReviewStepConfig(step.config);
@@ -383,13 +465,20 @@ and append at the end of the file:
 ```ts
 
 /**
+ * The permission side of a reading user (spec 8): who acts and what the `workflows` permission
+ * grants. Enough for the permission-only predicates (R41); no team lookup needed.
+ */
+export interface ReviewPermissionViewer {
+    actor: Actor;
+    permissions: WorkflowsPermissionSet;
+}
+
+/**
  * The reading user (spec 5.3). Built by the app wrapper from the identity (D132), e.g. through
  * `CurrentReviewViewer`; AI and automation callers never need one.
  */
-export interface ReviewViewer {
-    actor: Actor;
+export interface ReviewViewer extends ReviewPermissionViewer {
     teamIds: string[];
-    permissions: WorkflowsPermissionSet;
 }
 
 /**
@@ -409,22 +498,63 @@ export interface ReviewViewerFlags {
 }
 ```
 
-- [ ] **Step 5: Add the flag computation**
+- [ ] **Step 5: Add the permission-only predicates and the flag computation**
+
+Create `packages/api-workflows/src/domain/review/canCancelByPermission.ts`:
+
+```ts
+import { Review } from "./Review.js";
+import type { ReviewData, ReviewPermissionViewer } from "./types.js";
+
+/**
+ * Who may cancel a review (D25, D54): the requesting user, or a viewer with `reassign` (full
+ * access included). Permission only (R41): the review's state is not read. App wrappers authorize
+ * cancel with it and leave state errors (`Workflows/Review/InvalidState`) to the engine;
+ * `getReviewViewerFlags` ANDs it with `Review.checkCancel`. AI and automation actors carry the
+ * requester's id (D58) but are not the requester.
+ */
+export const canCancelByPermission = (
+    review: ReviewData,
+    viewer: ReviewPermissionViewer
+): boolean => {
+    if (viewer.permissions.reassign) {
+        return true;
+    }
+    return Review.fromData(review).isRequestedBy(viewer.actor);
+};
+```
+
+Create `packages/api-workflows/src/domain/review/canReassignByPermission.ts`:
+
+```ts
+import type { ReviewPermissionViewer } from "./types.js";
+
+/**
+ * Who may reassign (D33): a viewer with `reassign` (full access included). Permission only (R41):
+ * whether the step can be reassigned is the engine's `checkReassign` / reassign transition, which
+ * reports its own state errors.
+ */
+export const canReassignByPermission = (viewer: ReviewPermissionViewer): boolean => {
+    return viewer.permissions.reassign;
+};
+```
 
 Create `packages/api-workflows/src/domain/review/getReviewViewerFlags.ts`:
 
 ```ts
 import { Review, type ReviewActorCheckParams } from "./Review.js";
+import { canCancelByPermission } from "./canCancelByPermission.js";
+import { canReassignByPermission } from "./canReassignByPermission.js";
 import type { ReviewData, ReviewViewer, ReviewViewerFlags } from "./types.js";
 
 /**
  * Viewer flags for one review and one reading user (spec 5.3, D5, D54). Pure.
  *
  * Start, take over, approve, reject and the reassign step rule ask the aggregate's own checks
- * (R31), so a flag is true exactly when the transition would pass its domain rules. On top of
- * that come the permission rules the aggregate does not know (D132): cancel by the requester or
- * `reassign` (D25, D54), reassign by `reassign` (D33). The app wrappers authorize cancel and
- * reassign by these flags (R32) and AND their target access check into every flag (R33).
+ * (R31), so a flag is true exactly when the transition would pass its domain rules. Cancel and
+ * reassign add the permission-only predicates (R41) the app wrappers also authorize with, so the
+ * flag and the wrapper's check cannot drift. The wrappers AND their target access check into
+ * every flag (R33).
  *
  * `canRestart` stays `false` until phase 5 adds failed steps; then it is "current step failed,
  * and requester or `reassign`" (D34).
@@ -434,9 +564,7 @@ export const getReviewViewerFlags = (
     viewer: ReviewViewer
 ): ReviewViewerFlags => {
     const review = Review.fromData(data);
-    const canCancel =
-        review.checkCancel().isOk() &&
-        (review.isRequestedBy(viewer.actor) || viewer.permissions.reassign);
+    const canCancel = review.checkCancel().isOk() && canCancelByPermission(data, viewer);
 
     const stepId = review.currentStepId;
     if (!stepId) {
@@ -463,7 +591,7 @@ export const getReviewViewerFlags = (
         canApprove: review.checkApprove(params).isOk(),
         canReject: review.checkReject(params).isOk(),
         canCancel,
-        canReassign: viewer.permissions.reassign && review.checkReassign({ stepId }).isOk(),
+        canReassign: canReassignByPermission(viewer) && review.checkReassign({ stepId }).isOk(),
         canRestart: false
     };
 };
@@ -472,7 +600,7 @@ export const getReviewViewerFlags = (
 - [ ] **Step 6: Run the tests**
 
 Run: `yarn test packages/api-workflows/__tests__/domain 2>&1 | tail -50`
-Expected: PASS (`canPickReviewer.test.ts` 4 tests, `getReviewViewerFlags.test.ts` 12 tests incl. the 3 `it.each` cases, and the 1a `Review.request` pick tests unchanged).
+Expected: PASS (`canPickReviewer.test.ts` 4 tests, `reviewPermissionPredicates.test.ts` 5 tests, `getReviewViewerFlags.test.ts` 12 tests incl. the 3 `it.each` cases, and the 1a `Review.request` pick tests unchanged).
 Run: `yarn test packages/api-workflows 2>&1 | tail -50`
 Expected: PASS.
 Run: `yarn test:os packages/api-workflows 2>&1 | tail -50`
@@ -483,7 +611,7 @@ Expected: not runnable locally (A9); record "not run" and leave it to CI.
 Run the Global Constraints chain (build `@webiny/api-workflows`), then:
 
 ```bash
-git commit -m "feat(api-workflows): compute review viewer flags from the aggregate checks
+git commit -m "feat(api-workflows): compute review viewer flags and permission predicates
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn"
