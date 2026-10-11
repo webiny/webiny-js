@@ -9,7 +9,10 @@ describe("ICmsEntrySystem augmentation", () => {
         expectTypeOf<ICmsEntrySystem["workflow"]>().toEqualTypeOf<
             ReviewSystemWorkflow | null | undefined
         >();
-        expectTypeOf<IWorkflowsSecurityPermission["editor"]>().toEqualTypeOf<boolean>();
+        expectTypeOf<IWorkflowsSecurityPermission["editor"]>().toEqualTypeOf<boolean | undefined>();
+        expectTypeOf<IWorkflowsSecurityPermission["reassign"]>().toEqualTypeOf<
+            boolean | undefined
+        >();
 
         const system: ICmsEntrySystem = {
             workflow: {

@@ -1,20 +1,14 @@
 import type { Result } from "@webiny/feature/api";
 import { createAbstraction } from "@webiny/feature/api";
 import type { INotificationType } from "~/domain/notifications/abstractions.js";
-import { NotificationAuthorizedError } from "~/domain/notifications/errors.js";
 
 /**
- * ListNotificationTypes use case interface
+ * ListNotificationTypes use case interface. Internal (D132): no permission check, so no error of
+ * its own; the shared transports operation checks `editor` (D133).
  */
 export interface IListNotificationTypesUseCase {
-    execute(): Promise<Result<INotificationType[], UseCaseError>>;
+    execute(): Promise<Result<INotificationType[]>>;
 }
-
-export interface IListNotificationTypesUseCaseErrors {
-    notAuthorized: NotificationAuthorizedError;
-}
-
-type UseCaseError = IListNotificationTypesUseCaseErrors[keyof IListNotificationTypesUseCaseErrors];
 
 export const ListNotificationTypesUseCase = createAbstraction<IListNotificationTypesUseCase>(
     "ListNotificationTypesUseCase"
@@ -22,8 +16,7 @@ export const ListNotificationTypesUseCase = createAbstraction<IListNotificationT
 
 export namespace ListNotificationTypesUseCase {
     export type Interface = IListNotificationTypesUseCase;
-    export type Return = Promise<Result<INotificationType[], UseCaseError>>;
-    export type Error = UseCaseError;
+    export type Return = Promise<Result<INotificationType[]>>;
 }
 
 /**

@@ -24,6 +24,7 @@ import { AssignmentSharedFeature } from "~/features/assignment/shared/feature.js
 import { WorkflowSettingsSharedFeature } from "~/features/settings/shared/feature.js";
 import { GetWorkflowSettingsFeature } from "~/features/settings/GetWorkflowSettings/feature.js";
 import { SaveWorkflowSettingsFeature } from "~/features/settings/SaveWorkflowSettings/feature.js";
+import { WorkflowsPermissionsFeature } from "~/features/permissions/WorkflowsPermissions/feature.js";
 
 export const WorkflowsFeature = createFeature({
     name: "Workflows",
@@ -70,5 +71,8 @@ export const WorkflowsFeature = createFeature({
         WorkflowSettingsSharedFeature.register(container);
         GetWorkflowSettingsFeature.register(container);
         SaveWorkflowSettingsFeature.register(container);
+
+        // Building blocks for the app wrappers (D132)
+        WorkflowsPermissionsFeature.register(container);
     }
 });

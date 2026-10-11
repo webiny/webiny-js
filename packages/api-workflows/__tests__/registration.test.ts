@@ -33,6 +33,7 @@ import {
     ListNotificationTypesUseCase
 } from "~/features/notifications/ListNotificationTypes/index.js";
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
+import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 
 describe("WorkflowsFeature registration", () => {
     it("registers every workflows abstraction once (D18)", async () => {
@@ -74,6 +75,7 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(ListNotificationTypesUseCase)).toHaveLength(1);
         expect(container.resolveAll(ListNotificationTypesRepository)).toHaveLength(1);
         expect(container.resolveAll(NotificationTransport)).toHaveLength(1);
+        expect(container.resolveAll(WorkflowsPermissions)).toHaveLength(1);
     });
 
     it.each(["wbyWorkflow", "wbyWorkflowReview", "wbyWorkflowAssignment", "wbyWorkflowSettings"])(
