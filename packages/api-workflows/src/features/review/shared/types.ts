@@ -1,6 +1,9 @@
 import type { Actor } from "~/domain/review/types.js";
 
-/** Input of step transitions. 1a takes the actor explicitly; 1b adds permission checks. */
+/**
+ * Input of step transitions. Internal (D132): the app wrapper builds the actor and team ids
+ * (`CurrentReviewViewer`) and checks target access.
+ */
 export interface ReviewActorInput {
     reviewId: string;
     /** The step the caller acted on; fails with `StepNotCurrent` when it is not current (R17). */
@@ -17,6 +20,9 @@ export interface ReviewDecisionInput extends ReviewActorInput {
 /** Cancel is review-level: no `stepId` (R17). */
 export interface CancelReviewInput {
     reviewId: string;
-    /** Requester or a user with `workflows.reassign`; checked in phase 1b. */
+    /**
+     * Requester or `workflows.reassign`; the app wrapper checks target read access and
+     * `canCancelByPermission` (D132, D133).
+     */
     actor: Actor;
 }

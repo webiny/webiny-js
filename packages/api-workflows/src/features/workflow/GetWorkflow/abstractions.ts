@@ -17,7 +17,7 @@ export interface IGetWorkflowUseCase {
     execute(input: GetWorkflowInput): Promise<Result<Workflow, UseCaseError>>;
 }
 
-/** Get one workflow by id. No permission check in 1a (phase 1b). */
+/** Get one workflow by id. Internal (D132): no permission check. */
 export const GetWorkflowUseCase = createAbstraction<IGetWorkflowUseCase>("GetWorkflowUseCase");
 
 export namespace GetWorkflowUseCase {

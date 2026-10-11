@@ -14,7 +14,8 @@ export const CmsWorkflowsFeature = createFeature({
         }
 
         // Entry handlers (system.workflow sync, publish and move rules, target delete) are rebuilt
-        // as target adapters in phase 2.
+        // as the `cms.*` target adapter in phase 2, next to the CMS wrapper use cases and GraphQL
+        // operations that read the identity and check permissions (D132, D133).
         CmsLocalWorkflowsFeature.register(container);
 
         // Add the `workflow` field to CmsEntrySystem on the CMS endpoint, which is served from the

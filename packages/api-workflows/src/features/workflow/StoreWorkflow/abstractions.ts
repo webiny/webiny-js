@@ -28,7 +28,7 @@ export interface IStoreWorkflowUseCase {
 
 /**
  * Create or update a workflow through one validation path, with an optimistic `savedOn` check
- * on updates. No permission check in 1a (`editor` is enforced in phase 1b).
+ * on updates. Internal (D132): no permission check; each app's store wrapper checks `editor`.
  */
 export const StoreWorkflowUseCase =
     createAbstraction<IStoreWorkflowUseCase>("StoreWorkflowUseCase");

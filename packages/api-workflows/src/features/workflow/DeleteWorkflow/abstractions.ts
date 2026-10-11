@@ -22,7 +22,10 @@ export interface IDeleteWorkflowUseCase {
     execute(input: DeleteWorkflowInput): Promise<Result<Workflow, UseCaseError>>;
 }
 
-/** Delete a workflow unless any of its reviews is in progress. No permission check in 1a. */
+/**
+ * Delete a workflow unless any of its reviews is in progress. Internal (D132): each app's
+ * delete wrapper checks `editor`.
+ */
 export const DeleteWorkflowUseCase =
     createAbstraction<IDeleteWorkflowUseCase>("DeleteWorkflowUseCase");
 

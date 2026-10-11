@@ -28,7 +28,7 @@ export interface IListWorkflowsUseCase {
     execute(input?: ListWorkflowsInput): Promise<Result<ListWorkflowsResult, UseCaseError>>;
 }
 
-/** List workflows, optionally by bound model. No permission check in 1a (phase 1b). */
+/** List workflows, optionally by bound model. Internal (D132): no permission check. */
 export const ListWorkflowsUseCase =
     createAbstraction<IListWorkflowsUseCase>("ListWorkflowsUseCase");
 

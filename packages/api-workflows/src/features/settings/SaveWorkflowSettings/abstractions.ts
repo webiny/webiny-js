@@ -16,7 +16,10 @@ export interface ISaveWorkflowSettingsUseCase {
     execute(input: WorkflowSettings): Promise<Result<WorkflowSettings, UseCaseError>>;
 }
 
-/** Save the whole settings record; last save wins (D106). No `editor` check in 1a (phase 1b). */
+/**
+ * Save the whole settings record; last save wins (D106). Internal (D132): the shared settings
+ * operation checks `editor` (D133).
+ */
 export const SaveWorkflowSettingsUseCase = createAbstraction<ISaveWorkflowSettingsUseCase>(
     "SaveWorkflowSettingsUseCase"
 );

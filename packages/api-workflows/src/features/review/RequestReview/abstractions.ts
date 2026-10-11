@@ -17,7 +17,7 @@ export interface RequestReviewInput {
     targetRevisionId: string;
     /** Reviewer picks per step (D22). Only malformed picks are rejected here (spec 6). */
     picks?: ReviewPick[];
-    /** The requester. 1a takes it explicitly; phase 1b checks permissions and identity. */
+    /** The requester, built by the app wrapper, which also checks write access (D77, D132). */
     actor: Actor;
 }
 

@@ -4,8 +4,8 @@ import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/ind
 import type { Workflow } from "~/domain/workflow/types.js";
 
 /**
- * Event payloads. `workflow.savedBy` is the last editor, not the person deleting; phase 1b adds
- * an `actor` to the workflow events.
+ * Event payloads. `workflow.savedBy` is the last editor, not the person deleting; phase 2 adds
+ * an `actor` to the workflow events (R26).
  */
 export interface WorkflowBeforeDeletePayload {
     workflow: Workflow;

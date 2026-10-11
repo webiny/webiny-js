@@ -17,7 +17,10 @@ export interface IGetReviewUseCase {
     execute(input: GetReviewInput): Promise<Result<ReviewData, UseCaseError>>;
 }
 
-/** Get one review. Viewer flags and read permissions arrive in phase 1b. */
+/**
+ * Get one review. Internal (D132): no read check; the app wrapper checks target access and adds
+ * the viewer flags (`getReviewViewerFlags`).
+ */
 export const GetReviewUseCase = createAbstraction<IGetReviewUseCase>("GetReviewUseCase");
 
 export namespace GetReviewUseCase {

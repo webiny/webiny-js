@@ -44,7 +44,7 @@ export const WorkflowsFeature = createFeature({
         container.register(AssignmentModel);
         container.register(WorkflowSettingsModel);
 
-        // Notifications (unchanged until phase 7)
+        // Notifications (internal, no permission check, D133; recipient rules arrive in phase 7)
         ListNotificationTypesFeature.register(container);
         NotificationTransportFeature.register(container);
 

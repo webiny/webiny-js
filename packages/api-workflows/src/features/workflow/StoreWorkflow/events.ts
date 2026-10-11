@@ -4,7 +4,7 @@ import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/ind
 import type { Workflow, WorkflowValues } from "~/domain/workflow/types.js";
 
 /**
- * Event payloads. No actor in 1a: workflow use cases take no actor until phase 1b adds one.
+ * Event payloads. No actor yet: the phase 2 app wrappers add `actor` to the input and events (R26).
  */
 export interface WorkflowBeforeCreatePayload {
     workflow: WorkflowValues;

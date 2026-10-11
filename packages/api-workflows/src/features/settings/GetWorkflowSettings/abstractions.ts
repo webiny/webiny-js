@@ -17,7 +17,10 @@ export interface IGetWorkflowSettingsUseCase {
     execute(input?: GetWorkflowSettingsInput): Promise<Result<WorkflowSettings, UseCaseError>>;
 }
 
-/** Read the tenant's workflow settings. No `editor` check in 1a (phase 1b). */
+/**
+ * Read the tenant's workflow settings. Internal (D132): the shared settings operation checks
+ * `editor` (D133).
+ */
 export const GetWorkflowSettingsUseCase = createAbstraction<IGetWorkflowSettingsUseCase>(
     "GetWorkflowSettingsUseCase"
 );
