@@ -117,6 +117,8 @@ export interface RequestedReviewParams {
     targetRevisionId?: string;
     picks?: ReviewPick[];
     workflow?: Workflow;
+    /** Defaults to the `requester` fixture. */
+    requester?: Actor;
 }
 
 /** A review whose first step was reached into the pool. Facts are left in place. */
@@ -132,11 +134,17 @@ export const createRequestedReview = (params: RequestedReviewParams = {}): Revie
             title: "Article 1",
             targetContext,
             picks: params.picks ?? [],
-            requester,
+            requester: params.requester ?? requester,
             now: NOW
         })
     );
-    expectOk(review.reach({ resolution: poolResolution(), actor: requester, now: NOW }));
+    expectOk(
+        review.reach({
+            resolution: poolResolution(),
+            actor: params.requester ?? requester,
+            now: NOW
+        })
+    );
     return review;
 };
 

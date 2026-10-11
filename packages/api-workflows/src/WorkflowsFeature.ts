@@ -24,6 +24,8 @@ import { AssignmentSharedFeature } from "~/features/assignment/shared/feature.js
 import { WorkflowSettingsSharedFeature } from "~/features/settings/shared/feature.js";
 import { GetWorkflowSettingsFeature } from "~/features/settings/GetWorkflowSettings/feature.js";
 import { SaveWorkflowSettingsFeature } from "~/features/settings/SaveWorkflowSettings/feature.js";
+import { CurrentUserTeamsFeature } from "~/features/identity/CurrentUserTeams/feature.js";
+import { CurrentReviewViewerFeature } from "~/features/identity/CurrentReviewViewer/feature.js";
 import { WorkflowsPermissionsFeature } from "~/features/permissions/WorkflowsPermissions/feature.js";
 
 export const WorkflowsFeature = createFeature({
@@ -74,5 +76,7 @@ export const WorkflowsFeature = createFeature({
 
         // Building blocks for the app wrappers (D132)
         WorkflowsPermissionsFeature.register(container);
+        CurrentUserTeamsFeature.register(container);
+        CurrentReviewViewerFeature.register(container);
     }
 });

@@ -33,6 +33,8 @@ import {
     ListNotificationTypesUseCase
 } from "~/features/notifications/ListNotificationTypes/index.js";
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
+import { CurrentUserTeams } from "~/features/identity/CurrentUserTeams/index.js";
+import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 
 describe("WorkflowsFeature registration", () => {
@@ -76,6 +78,8 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(ListNotificationTypesRepository)).toHaveLength(1);
         expect(container.resolveAll(NotificationTransport)).toHaveLength(1);
         expect(container.resolveAll(WorkflowsPermissions)).toHaveLength(1);
+        expect(container.resolveAll(CurrentUserTeams)).toHaveLength(1);
+        expect(container.resolveAll(CurrentReviewViewer)).toHaveLength(1);
     });
 
     it.each(["wbyWorkflow", "wbyWorkflowReview", "wbyWorkflowAssignment", "wbyWorkflowSettings"])(
