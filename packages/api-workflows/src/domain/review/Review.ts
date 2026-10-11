@@ -215,8 +215,12 @@ export class Review {
         return this.data.id;
     }
 
-    /** The step transitions act on: the first step that is not approved; `null` when all are. */
-    public get currentStepId(): string | null {
+    /**
+     * The step transitions act on: the first step that is not approved; `null` when all are.
+     * Not the persisted `ReviewData.currentStepId`, which keeps the last step after the final
+     * approval (D75).
+     */
+    public get actionableStepId(): string | null {
         return this.findCurrentStep()?.id ?? null;
     }
 
