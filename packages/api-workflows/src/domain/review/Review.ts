@@ -21,6 +21,7 @@ import {
     ReviewNotOwnerError,
     ReviewRequesterCannotReviewError,
     ReviewStepNotCurrentError,
+    ReviewStepNotReassignableError,
     ReviewStepNotTakeableError,
     type ReviewTransitionName,
     ReviewValidationError
@@ -50,19 +51,23 @@ export interface ReviewReachParams {
     now: string;
 }
 
-export interface ReviewActorParams {
-    /** The step the caller acted on; must be the current step (R17). */
+export interface ReviewStepParams {
+    /** The step the caller acts on; must be the current step (R17). */
     stepId: string;
+}
+
+/** Who acts on the step. The checks take this; the transitions add `now`. */
+export interface ReviewActorCheckParams extends ReviewStepParams {
     actor: Actor;
     /** Teams of the actor, resolved by the caller (the aggregate never reads identity, D5). */
     actorTeamIds: string[];
+}
+
+export interface ReviewActorParams extends ReviewActorCheckParams {
     now: string;
 }
 
-/**
- * `stepId` must be the current step (R17). `actorTeamIds` is not read by approve or reject in 1a
- * (only the owner decides); it is reserved for the 1b permission checks.
- */
+/** `actorTeamIds` is not read by approve or reject: only the owner decides (spec 5.1). */
 export interface ReviewDecisionParams extends ReviewActorParams {
     comment: string | null;
 }
@@ -70,6 +75,12 @@ export interface ReviewDecisionParams extends ReviewActorParams {
 export interface ReviewCancelParams {
     actor: Actor;
     now: string;
+}
+
+/** A human-held `inReview` step and its owner, as the take-over guard found them. */
+interface ReviewHeldStep {
+    step: ReviewStep;
+    owner: Actor;
 }
 
 export type ReviewReviewerError =
@@ -89,10 +100,20 @@ export type ReviewDecisionError =
     | ReviewStepNotCurrentError
     | ReviewNotOwnerError;
 
+export type ReviewReassignError =
+    | ReviewInvalidStateError
+    | ReviewStepNotCurrentError
+    | ReviewStepNotReassignableError;
+
 /**
  * One run of a workflow on one target revision (spec 3, 4.2, 5.1). Transitions take an explicit
  * actor and `now`, never read identity, and record facts; `ReviewSaver` persists the review and
  * publishes one event per fact.
+ *
+ * Each transition has a pure `check*` twin that runs the same private guard (R31), so viewer
+ * flags (spec 5.3) and the transitions cannot drift. Who may cancel or reassign is a permission
+ * rule, not a domain rule: the app wrappers decide it with `canCancelByPermission` and
+ * `canReassignByPermission` (D132, R41) and leave the state errors to these guards.
  */
 export class Review {
     private readonly facts: ReviewFact[] = [];
@@ -195,8 +216,21 @@ export class Review {
         return this.data.id;
     }
 
+    /** The step transitions act on: the first step that is not approved; `null` when all are. */
+    public get currentStepId(): string | null {
+        return this.findCurrentStep()?.id ?? null;
+    }
+
     public toData(): ReviewData {
         return structuredClone(this.data);
+    }
+
+    /**
+     * The requester is a user. AI and automation actors carry the requester's id (D58) but are not
+     * the requester.
+     */
+    public isRequestedBy(actor: Actor): boolean {
+        return actor.type === "user" && actor.id === this.data.createdBy.id;
     }
 
     /** The current step when it still has to be reached (spec 5.2). */
@@ -243,16 +277,16 @@ export class Review {
         return Result.ok();
     }
 
+    public checkStart(params: ReviewActorCheckParams): Result<void, ReviewReviewerError> {
+        return Review.toCheck(this.guardStart(params));
+    }
+
     public start(params: ReviewActorParams): Result<void, ReviewReviewerError> {
-        const current = this.getRequestedStepIn("start", "awaiting", params.stepId);
-        if (current.isFail()) {
-            return Result.fail(current.error);
+        const guard = this.guardStart(params);
+        if (guard.isFail()) {
+            return Result.fail(guard.error);
         }
-        const step = current.value;
-        const reviewer = this.checkReviewer(step, params);
-        if (reviewer.isFail()) {
-            return Result.fail(reviewer.error);
-        }
+        const step = guard.value;
 
         step.owner = { ...params.actor };
         step.state = "inReview";
@@ -269,32 +303,16 @@ export class Review {
         return Result.ok();
     }
 
+    public checkTakeOver(params: ReviewActorCheckParams): Result<void, ReviewTakeOverError> {
+        return Review.toCheck(this.guardTakeOver(params));
+    }
+
     public takeOver(params: ReviewActorParams): Result<void, ReviewTakeOverError> {
-        const current = this.getRequestedStepIn("takeOver", "inReview", params.stepId);
-        if (current.isFail()) {
-            return Result.fail(current.error);
+        const guard = this.guardTakeOver(params);
+        if (guard.isFail()) {
+            return Result.fail(guard.error);
         }
-        const step = current.value;
-        const previousOwner = step.owner;
-        if (!previousOwner || previousOwner.type !== "user") {
-            // AI and automation steps cannot be taken over (D9).
-            return Result.fail(
-                new ReviewStepNotTakeableError({
-                    reviewId: this.data.id,
-                    stepId: step.id,
-                    ownerType: previousOwner?.type ?? null
-                })
-            );
-        }
-        const reviewer = this.checkReviewer(step, params);
-        if (reviewer.isFail()) {
-            return Result.fail(reviewer.error);
-        }
-        if (previousOwner.id === params.actor.id) {
-            return Result.fail(
-                new ReviewAlreadyOwnerError({ reviewId: this.data.id, stepId: step.id })
-            );
-        }
+        const { step, owner: previousOwner } = guard.value;
 
         step.owner = { ...params.actor };
         step.assignmentSource = "takeOver";
@@ -308,6 +326,10 @@ export class Review {
             previousOwner: { ...previousOwner }
         });
         return Result.ok();
+    }
+
+    public checkApprove(params: ReviewActorCheckParams): Result<void, ReviewDecisionError> {
+        return Review.toCheck(this.getOwnedStep("approve", params));
     }
 
     /** Owner (user, AI or automation) approves; the next step is reached by the caller (D6). */
@@ -340,6 +362,10 @@ export class Review {
         return Result.ok();
     }
 
+    public checkReject(params: ReviewActorCheckParams): Result<void, ReviewDecisionError> {
+        return Review.toCheck(this.getOwnedStep("reject", params));
+    }
+
     /** Owner rejects; reject is final for the revision (D10). */
     public reject(params: ReviewDecisionParams): Result<void, ReviewDecisionError> {
         const current = this.getOwnedStep("reject", params);
@@ -362,20 +388,20 @@ export class Review {
         return Result.ok();
     }
 
-    /** Allowed while the review is in progress (D25, D75). Who may cancel is checked in 1b. */
+    public checkCancel(): Result<void, ReviewInvalidStateError> {
+        return Review.toCheck(this.guardCancel());
+    }
+
+    /**
+     * Allowed while the review is in progress (D25, D75). Who may cancel (requester or
+     * `reassign`, D54) is checked by the app wrapper with `canCancelByPermission` (D132, R41).
+     */
     public cancel(params: ReviewCancelParams): Result<void, ReviewInvalidStateError> {
-        const step = this.findCurrentStep();
-        if (this.data.state !== "inProgress") {
-            return Result.fail(
-                new ReviewInvalidStateError({
-                    reviewId: this.data.id,
-                    transition: "cancel",
-                    reviewState: this.data.state,
-                    stepId: step?.id ?? null,
-                    stepState: step?.state ?? null
-                })
-            );
+        const guard = this.guardCancel();
+        if (guard.isFail()) {
+            return Result.fail(guard.error);
         }
+        const step = guard.value;
 
         this.data.state = "cancelled";
         this.facts.push({
@@ -386,6 +412,15 @@ export class Review {
             stepState: step?.state ?? null
         });
         return Result.ok();
+    }
+
+    /**
+     * Reassign is possible on an `awaiting` or human-owned `inReview` step (D33). The transition
+     * arrives in phase 4 and must use the same guard; who may reassign (`reassign`) is checked by
+     * the app wrapper with `canReassignByPermission` (D132, R41).
+     */
+    public checkReassign(params: ReviewStepParams): Result<void, ReviewReassignError> {
+        return Review.toCheck(this.guardReassign(params));
     }
 
     /**
@@ -442,6 +477,97 @@ export class Review {
         return this.facts.splice(0, this.facts.length);
     }
 
+    private guardStart(params: ReviewActorCheckParams): Result<ReviewStep, ReviewReviewerError> {
+        const current = this.getRequestedStepIn("start", "awaiting", params.stepId);
+        if (current.isFail()) {
+            return Result.fail(current.error);
+        }
+        const step = current.value;
+        const reviewer = this.checkReviewer(step, params);
+        if (reviewer.isFail()) {
+            return Result.fail(reviewer.error);
+        }
+        return Result.ok(step);
+    }
+
+    private guardTakeOver(
+        params: ReviewActorCheckParams
+    ): Result<ReviewHeldStep, ReviewTakeOverError> {
+        const current = this.getRequestedStepIn("takeOver", "inReview", params.stepId);
+        if (current.isFail()) {
+            return Result.fail(current.error);
+        }
+        const step = current.value;
+        const owner = step.owner;
+        if (!owner || owner.type !== "user") {
+            // AI and automation steps cannot be taken over (D9).
+            return Result.fail(
+                new ReviewStepNotTakeableError({
+                    reviewId: this.data.id,
+                    stepId: step.id,
+                    ownerType: owner?.type ?? null
+                })
+            );
+        }
+        const reviewer = this.checkReviewer(step, params);
+        if (reviewer.isFail()) {
+            return Result.fail(reviewer.error);
+        }
+        if (owner.id === params.actor.id) {
+            return Result.fail(
+                new ReviewAlreadyOwnerError({ reviewId: this.data.id, stepId: step.id })
+            );
+        }
+        return Result.ok({ step, owner });
+    }
+
+    /** The current step (if any) of a review that can still be cancelled. */
+    private guardCancel(): Result<ReviewStep | null, ReviewInvalidStateError> {
+        const step = this.findCurrentStep();
+        if (this.data.state !== "inProgress") {
+            return Result.fail(
+                new ReviewInvalidStateError({
+                    reviewId: this.data.id,
+                    transition: "cancel",
+                    reviewState: this.data.state,
+                    stepId: step?.id ?? null,
+                    stepState: step?.state ?? null
+                })
+            );
+        }
+        return Result.ok(step);
+    }
+
+    private guardReassign(params: ReviewStepParams): Result<ReviewStep, ReviewReassignError> {
+        const awaiting = this.getRequestedStepIn("reassign", "awaiting", params.stepId);
+        if (awaiting.isOk()) {
+            return Result.ok(awaiting.value);
+        }
+        const inReview = this.getRequestedStepIn("reassign", "inReview", params.stepId);
+        if (inReview.isFail()) {
+            return Result.fail(inReview.error);
+        }
+        const step = inReview.value;
+        if (step.owner?.type !== "user") {
+            return Result.fail(
+                new ReviewStepNotReassignableError({
+                    reviewId: this.data.id,
+                    stepId: step.id,
+                    ownerType: step.owner?.type ?? null
+                })
+            );
+        }
+        return Result.ok(step);
+    }
+
+    /** Turns a guard's result into a check's result: same error, no step. */
+    private static toCheck<TError>(guard: Result<unknown, TError>): Result<void, TError> {
+        if (guard.isFail()) {
+            return Result.fail(guard.error);
+        }
+        return Result.ok();
+    }
+
     /** The first step that is not approved; null when every step is approved. */
     private findCurrentStep(): ReviewStep | null {
         return this.data.steps.find(step => step.state !== "approved") ?? null;
@@ -491,7 +617,7 @@ export class Review {
     /** The requester never reviews their own content (spec 5.1): such an owner goes to the pool. */
     private withoutRequesterOwner(resolution: StepAssignmentResolution): StepAssignmentResolution {
         const owner = resolution.owner;
-        if (!owner || owner.type !== "user" || owner.id !== this.data.createdBy.id) {
+        if (!owner || !this.isRequestedBy(owner)) {
             return resolution;
         }
         return {
@@ -515,7 +641,7 @@ export class Review {
 
     private getOwnedStep(
         transition: ReviewTransitionName,
-        params: ReviewDecisionParams
+        params: ReviewActorCheckParams
     ): Result<ReviewStep, ReviewDecisionError> {
         const current = this.getRequestedStepIn(transition, "inReview", params.stepId);
         if (current.isFail()) {
@@ -545,7 +671,7 @@ export class Review {
     /** Human actions: a user, not the requester, member of the step's candidate teams (spec 5.1). */
     private checkReviewer(
         step: ReviewStep,
-        params: ReviewActorParams
+        params: ReviewActorCheckParams
     ): Result<
         void,
         ReviewActorNotUserError | ReviewRequesterCannotReviewError | ReviewNotCandidateError
@@ -559,7 +685,7 @@ export class Review {
                 })
             );
         }
-        if (params.actor.id === this.data.createdBy.id) {
+        if (this.isRequestedBy(params.actor)) {
             return Result.fail(
                 new ReviewRequesterCannotReviewError({ reviewId: this.data.id, stepId: step.id })
             );

@@ -2,7 +2,14 @@ import { BaseError } from "@webiny/feature/api";
 import type { PersistenceErrorSource } from "../PersistenceErrorSource.js";
 import type { ActorType, ReviewData, ReviewState, StepState } from "./types.js";
 
-export type ReviewTransitionName = "reach" | "start" | "takeOver" | "approve" | "reject" | "cancel";
+export type ReviewTransitionName =
+    | "reach"
+    | "start"
+    | "takeOver"
+    | "approve"
+    | "reject"
+    | "cancel"
+    | "reassign";
 
 export interface ReviewNotFoundErrorData {
     id: string;
@@ -141,6 +148,19 @@ export class ReviewStepNotTakeableError extends BaseError<ReviewStepNotTakeableE
 
     constructor(data: ReviewStepNotTakeableErrorData) {
         super({ message: "AI and automation steps cannot be taken over.", data });
+    }
+}
+
+export interface ReviewStepNotReassignableErrorData extends ReviewStepErrorData {
+    ownerType: ActorType | null;
+}
+
+/** Reassign needs an `awaiting` or human-owned `inReview` step (D33). */
+export class ReviewStepNotReassignableError extends BaseError<ReviewStepNotReassignableErrorData> {
+    override readonly code = "Workflows/Review/StepNotReassignable" as const;
+
+    constructor(data: ReviewStepNotReassignableErrorData) {
+        super({ message: "AI and automation steps cannot be reassigned.", data });
     }
 }
 
