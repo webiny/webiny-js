@@ -1,9 +1,16 @@
+import { Result } from "@webiny/feature/api";
+import type { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { ModelNotAuthorizedError } from "@webiny/api-headless-cms/domain/contentModel/errors.js";
+import { assertModelsBindable } from "~/features/Workflows/assertModelsBindable.js";
 import { describe, expect, it } from "vitest";
 import { createContextHandler } from "~tests/__handler/context.js";
 import { model as modelDefinition } from "~tests/__cms/models.js";
 import { createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow.js";
 
 const expectedMessage = `Cannot bind a workflow to the model "${modelDefinition.modelId}" because it is marked as unpublishable.`;
+
+/** A workflow editor with no CMS permissions, so no read access to the model. */
+const EDITOR_WITHOUT_MODEL_ACCESS = [{ name: "workflows", editor: true }];
 
 const createUnpublishableContext = async () => {
     const { context } = createContextHandler({
@@ -75,5 +82,28 @@ describe("Disallow unpublishable models", () => {
         const result = await storeWorkflow(await context());
 
         expect(result.isOk()).toBe(true);
+    });
+
+    it("fails validation, not a throw, for a model the caller cannot access (R38)", async () => {
+        const { context } = createContextHandler({ permissions: EDITOR_WITHOUT_MODEL_ACCESS });
+
+        const result = await storeWorkflow(await context());
+
+        // Code-defined models the caller cannot access are filtered out by the CMS, so they
+        // look missing.
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe(`The model "${modelDefinition.modelId}" does not exist.`);
+    });
+
+    it("maps a model access failure to a validation error (R38)", async () => {
+        const getModel = {
+            execute: async () => Result.fail(new ModelNotAuthorizedError())
+        } as unknown as GetModelUseCase.Interface;
+
+        await expect(assertModelsBindable(getModel, ["cms.author"])).rejects.toMatchObject({
+            code: "Workflows/Workflow/Validation",
+            message: `You don't have access to the model "author".`
+        });
     });
 });
