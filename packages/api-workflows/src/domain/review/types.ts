@@ -1,3 +1,4 @@
+import type { WorkflowsPermissionSet } from "~/domain/permissions/types.js";
 import type { WorkflowStep } from "~/domain/workflow/types.js";
 
 export type ReviewState = "inProgress" | "approved" | "rejected" | "cancelled";
@@ -104,4 +105,37 @@ export interface ReviewSystemWorkflow {
     stepId: string;
     stepName: string;
     stepState: StepState;
+}
+
+/**
+ * The permission side of a reading user (spec 8): who acts and what the `workflows` permission
+ * grants. Enough for the permission-only predicates (R41); no team lookup needed.
+ */
+export interface ReviewPermissionViewer {
+    actor: Actor;
+    permissions: WorkflowsPermissionSet;
+}
+
+/**
+ * The reading user (spec 5.3). Built by the app wrapper from the identity (D132), e.g. through
+ * `CurrentReviewViewer`; AI and automation callers never need one.
+ */
+export interface ReviewViewer extends ReviewPermissionViewer {
+    teamIds: string[];
+}
+
+/**
+ * Per-viewer flags for one review (spec 5.3, D5, D54). Domain rules and workflows permissions
+ * only: the app wrapper ANDs its target access check (read for start, take over, approve, reject;
+ * spec 5.1) before showing or allowing an action (R33).
+ */
+export interface ReviewViewerFlags {
+    canStart: boolean;
+    canTakeOver: boolean;
+    canApprove: boolean;
+    canReject: boolean;
+    canCancel: boolean;
+    canReassign: boolean;
+    /** Always `false` until phase 5 adds failed steps (D34). */
+    canRestart: boolean;
 }

@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import type { Workflow } from "~/domain/workflow/types.js";
-import { parseReviewStepConfig } from "~/domain/workflow/reviewStepConfigSchema.js";
+import { canPickReviewer } from "~/domain/workflow/canPickReviewer.js";
 import type {
     Actor,
     ReviewData,
@@ -150,8 +150,7 @@ export class Review {
                     )
                 );
             }
-            const config = parseReviewStepConfig(step.config);
-            if (!config || !config.assignment.allowManualPick) {
+            if (!canPickReviewer(step)) {
                 return Result.fail(
                     new ReviewValidationError(
                         `Step "${step.title}" does not allow picking a reviewer.`
