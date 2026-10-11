@@ -2,7 +2,7 @@
 
 Status: draft, 2026-10-06, updated 2026-10-11 (D133: Headless CMS and Website Builder each have their own Content Reviews, widgets and review details; nothing mixes their reviews). Audience: Claude Design, designing with the Webiny admin design system. This brief describes what each screen is for, who uses it, what it shows, what users can do, and every state it must handle. Layout, component choice and visual treatment are the designer's call.
 
-Source of truth for behaviour: `docs/.bruno/specs/2026-10-05-workflows-refactor-design.md` and the decision log `docs/.bruno/workflows/decisions.md` (UI decisions D88-D100).
+Source of truth for behaviour: `docs/.bruno/specs/2026-10-05-workflows-refactor-design.md` and the decision log `docs/.bruno/workflows/decisions.md` (UI decisions D88-D133).
 
 ---
 

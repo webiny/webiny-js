@@ -207,10 +207,10 @@ Two layers enforce the rules [D132, D133]. The engine (aggregate and api-workflo
 | approve | `inReview` | `approved`; next step reached, or review `approved` | owner (user, AI or automation) equals actor | read access to the target (user actors) |
 | reject | `inReview` | `rejected`; review `rejected` | owner equals actor | read access to the target (user actors) |
 | fail | AI/automation `inReview`, or on reach (`pending`) when the definition is missing, settings are invalid, or the AI capability/licence is unavailable | `failed` (reason in comment) | system [D8, D28, D37, D40] | (system, no wrapper) |
-| restart | `failed` | re-runs step reached (definition lookup, settings re-validation, new task); clears `comment` and `issues`, keeps owner, appends the previous attempt to `runs` [D82] | state | requester or `workflows.reassign` [D34] |
-| cancel | review `inProgress` | review `cancelled`, `isActive = false`, current-step fields cleared, `system.workflow = null`, running task aborted | state (not approved, rejected or cancelled) | requester or `workflows.reassign` [D25, D54, D75] |
+| restart | `failed` | re-runs step reached (definition lookup, settings re-validation, new task); clears `comment` and `issues`, keeps owner, appends the previous attempt to `runs` [D82] | state | requester or `workflows.reassign`, and read access to the target (decided 2026-10-11) [D34] |
+| cancel | review `inProgress` | review `cancelled`, `isActive = false`, current-step fields cleared, `system.workflow = null`, running task aborted | state (not approved, rejected or cancelled) | requester or `workflows.reassign`, and read access to the target (decided 2026-10-11) [D25, D54, D75] |
 
-The wrapper authorizes with permission-only predicates from api-workflows (requester or `reassign` for cancel and restart, `reassign` for reassign) and leaves state errors to the engine, so a finished review fails with the engine's `InvalidState`, not with "not authorized".
+The wrapper authorizes with permission-only predicates from api-workflows (requester or `reassign` for cancel and restart, each also needing read access to the target, `reassign` for reassign) and leaves state errors to the engine, so a finished review fails with the engine's `InvalidState`, not with "not authorized".
 
 Rules:
 
@@ -462,7 +462,7 @@ Screens, states and copy are specified in the UI design brief (`docs/.bruno/spec
 
 - Keep the DI + MobX presenter pattern. No shared singleton presenters across independent views: each widget, list and target view gets its own instance [D71].
 - Gateways keep error `code` and `data`; presenters surface action errors.
-- Gateways are per app: the CMS and Website Builder workflow admin packages implement them over their app's operations. Shared presenters in app-workflows depend on a gateway abstraction and are shared only where the behaviour is truly app-neutral (review bar, dialogs, request dialog, editor shell); the shared configuration operations (settings, users, step types, transports) have one gateway [D132, D133].
+- Gateways are per app: the CMS and Website Builder workflow admin packages implement them over their app's operations. Shared presenters in app-workflows depend on a gateway abstraction and are shared only where the behaviour is truly app-neutral (review bar, dialogs, request dialog, editor shell); the six shared configuration operations (settings, users, step types, notification transports, automation definitions, AI tools) have one gateway [D132, D133].
 - Per-viewer flags come from the server.
 
 ### 13.2 Workflow editor
