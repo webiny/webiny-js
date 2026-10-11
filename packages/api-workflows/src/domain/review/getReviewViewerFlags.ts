@@ -9,8 +9,8 @@ import type { ReviewData, ReviewViewer, ReviewViewerFlags } from "./types.js";
  * Start, take over, approve, reject and the reassign step rule ask the aggregate's own checks
  * (R31), so a flag is true exactly when the transition would pass its domain rules. Cancel and
  * reassign add the permission-only predicates (R41) the app wrappers also authorize with, so the
- * flag and the wrapper's check cannot drift. The wrappers AND their target access check into
- * every flag (R33).
+ * flag and the wrapper's check cannot drift. The wrappers AND their target read access into
+ * every flag (R33, D133 point 7), through `applyTargetAccess`.
  *
  * `canRestart` stays `false` until phase 5 adds failed steps; then it is "current step failed,
  * and requester or `reassign`" (D34).
@@ -19,7 +19,7 @@ export const getReviewViewerFlags = (data: ReviewData, viewer: ReviewViewer): Re
     const review = Review.fromData(data);
     const canCancel = review.checkCancel().isOk() && canCancelByPermission(data, viewer);
 
-    const stepId = review.currentStepId;
+    const stepId = review.actionableStepId;
     if (!stepId) {
         // Every step is approved: nothing is left to act on.
         return {

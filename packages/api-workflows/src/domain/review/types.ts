@@ -126,8 +126,9 @@ export interface ReviewViewer extends ReviewPermissionViewer {
 
 /**
  * Per-viewer flags for one review (spec 5.3, D5, D54). Domain rules and workflows permissions
- * only: the app wrapper ANDs its target access check (read for start, take over, approve, reject;
- * spec 5.1) before showing or allowing an action (R33).
+ * only: the app wrapper ANDs its target read access into every flag (start, take over, approve,
+ * reject, cancel, reassign, restart; spec 5.1, D133 point 7) before showing or allowing an action
+ * (R33). Request and `canPick` need write access instead; they are not flags here.
  */
 export interface ReviewViewerFlags {
     canStart: boolean;
@@ -138,4 +139,9 @@ export interface ReviewViewerFlags {
     canReassign: boolean;
     /** Always `false` until phase 5 adds failed steps (D34). */
     canRestart: boolean;
+}
+
+/** What the app wrapper knows about the reading user's access to the review's target. */
+export interface ReviewTargetAccess {
+    canRead: boolean;
 }
