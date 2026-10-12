@@ -1,0 +1,166 @@
+import { describe, expect, it } from "vitest";
+import type { Container } from "@webiny/di";
+import { Result } from "@webiny/feature/api";
+import { DeleteModelUseCase } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/index.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { DeleteModelOperations } from "@webiny/api-headless-cms-tasks/graphql/deleteModel/abstractions.js";
+import { DeleteWorkflowUseCase } from "@webiny/api-workflows/features/workflow/DeleteWorkflow/index.js";
+import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
+import { WorkflowPersistenceError } from "@webiny/api-workflows/domain/workflow/errors.js";
+import { createContextHandler } from "~tests/__handler/context.js";
+import { ADMIN_ACTOR, createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow.js";
+import { createDbModel } from "~tests/__helpers/dbModels.js";
+import { expectOk } from "~tests/__helpers/entries.js";
+import { READER } from "~tests/__helpers/identities.js";
+import { CMS_READER } from "~tests/__helpers/permissions.js";
+import { RecordingDeleteModelOperations } from "~tests/__helpers/RecordingDeleteModelOperations.js";
+
+class FailingListWorkflows implements ListWorkflowsUseCase.Interface {
+    public constructor(private decoratee: ListWorkflowsUseCase.Interface) {}
+
+    public async execute(): ListWorkflowsUseCase.Return {
+        return Result.fail(new WorkflowPersistenceError(new Error("Storage is down.")));
+    }
+}
+
+const failWorkflowLookups = (container: Container) => {
+    container.registerDecorator(
+        ListWorkflowsUseCase.createDecorator({ decorator: FailingListWorkflows, dependencies: [] })
+    );
+};
+
+describe("Model delete block (D41, D64)", () => {
+    it("refuses to delete a model bound to a workflow and lists the workflow", async () => {
+        const { context } = createContextHandler();
+        const ctx = await context();
+        await createDbModel(ctx, "book");
+        const workflow = expectOk(
+            await storeWorkflow(ctx, { ...createWorkflowValues(["cms.book"]), name: "Book review" })
+        );
+
+        const blocked = await ctx.container.resolve(DeleteModelUseCase).execute("book");
+
+        expect(blocked.isFail()).toBe(true);
+        expect(blocked.error.code).toBe("Workflows/Model/BoundToWorkflow");
+        expect(blocked.error.data).toEqual({
+            modelId: "book",
+            workflows: [{ id: workflow.id, name: "Book review" }]
+        });
+        expect(blocked.error.message).toBe(
+            'The model "book" is used by the workflow "Book review". Delete the workflow or remove the model from it first.'
+        );
+        expect((await ctx.container.resolve(GetModelUseCase).execute("book")).isOk()).toBe(true);
+    });
+
+    it("deletes the model once its workflow is gone", async () => {
+        const { context } = createContextHandler();
+        const ctx = await context();
+        await createDbModel(ctx, "book");
+        const workflow = expectOk(await storeWorkflow(ctx, createWorkflowValues(["cms.book"])));
+        expectOk(
+            await ctx.container
+                .resolve(DeleteWorkflowUseCase)
+                .execute({ id: workflow.id, actor: ADMIN_ACTOR })
+        );
+
+        // Under `test:os` the workflow list must not lag behind the delete (A37).
+        const deleted = await ctx.container.resolve(DeleteModelUseCase).execute("book");
+
+        expect(deleted.isOk()).toBe(true);
+    });
+
+    it("deletes a model without a workflow normally", async () => {
+        const { context } = createContextHandler();
+        const ctx = await context();
+        await createDbModel(ctx, "magazine");
+
+        const deleted = await ctx.container.resolve(DeleteModelUseCase).execute("magazine");
+
+        expect(deleted.isOk()).toBe(true);
+    });
+
+    it("reports the CMS's own error to a caller who cannot delete the model", async () => {
+        const admin = createContextHandler();
+        const adminCtx = await admin.context();
+        await createDbModel(adminCtx, "book");
+        expectOk(await storeWorkflow(adminCtx, createWorkflowValues(["cms.book"])));
+        const reader = createContextHandler({ identity: READER, permissions: CMS_READER });
+
+        const refused = await (
+            await reader.context()
+        ).container
+            .resolve(DeleteModelUseCase)
+            .execute("book");
+
+        expect(refused.isFail()).toBe(true);
+        expect(refused.error.code).not.toBe("Workflows/Model/BoundToWorkflow");
+    });
+
+    it("blocks deleting a model when the workflow lookup fails (fail closed)", async () => {
+        const { context } = createContextHandler({ legacyPlugins: [failWorkflowLookups] });
+        const ctx = await context();
+        await createDbModel(ctx, "magazine");
+
+        const blocked = await ctx.container.resolve(DeleteModelUseCase).execute("magazine");
+
+        expect(blocked.isFail()).toBe(true);
+        expect(blocked.error.code).toBe("Workflows/Workflow/Persistence");
+    });
+});
+
+describe("Fully delete model task (D134 point 4)", () => {
+    const createTaskContext = async (legacyPlugins: unknown[] = []) => {
+        const operations = new RecordingDeleteModelOperations();
+        const { context } = createContextHandler({
+            legacyPlugins: [
+                (container: Container) => {
+                    container.registerInstance(DeleteModelOperations, operations);
+                },
+                ...legacyPlugins
+            ]
+        });
+        const ctx = await context();
+        return { context: ctx, operations };
+    };
+
+    it("refuses to start the task for a bound model, before anything is deleted", async () => {
+        const { context, operations } = await createTaskContext();
+        await createDbModel(context, "book");
+        expectOk(
+            await storeWorkflow(context, {
+                ...createWorkflowValues(["cms.book"]),
+                name: "Book review"
+            })
+        );
+
+        await expect(
+            context.container.resolve(DeleteModelOperations).fullyDeleteModel("book")
+        ).rejects.toMatchObject({
+            code: "Workflows/Model/BoundToWorkflow",
+            data: { modelId: "book" }
+        });
+        expect(operations.fullyDeleted).toEqual([]);
+    });
+
+    it("starts the task for a model without a workflow", async () => {
+        const { context, operations } = await createTaskContext();
+        await createDbModel(context, "magazine");
+
+        const task = await context.container
+            .resolve(DeleteModelOperations)
+            .fullyDeleteModel("magazine");
+
+        expect(task.id).toBe("task-1");
+        expect(operations.fullyDeleted).toEqual(["magazine"]);
+    });
+
+    it("refuses to start the task when the workflow lookup fails (fail closed)", async () => {
+        const { context, operations } = await createTaskContext([failWorkflowLookups]);
+        await createDbModel(context, "magazine");
+
+        await expect(
+            context.container.resolve(DeleteModelOperations).fullyDeleteModel("magazine")
+        ).rejects.toMatchObject({ code: "Workflows/Workflow/Persistence" });
+        expect(operations.fullyDeleted).toEqual([]);
+    });
+});
