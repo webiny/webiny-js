@@ -73,6 +73,19 @@ page weight could follow the page. Whether to resolve it on the server per docum
 bundles lazily on the client, is a platform decision about the SDK and the website template, not a
 migration one. It is worth deciding on its own terms, independent of root.
 
+## The floor cleanup cannot go below: 1.4 MB
+
+Root cleanup step 1 (`scripts/baseline/reports/2026-10-12/root-cleanup.md`) took a root page from
+6.1 MB (323 bundles) to 4.3 MB (248).
+
+**Even with everything deletable gone, a root page still carries about 1.4 MB.** That is the 79
+components of the five jobs with site tenants. They stay in root because stage 9 stages approved
+components there, and the site build copies them from root by the ids Promote recorded. Deleting them
+breaks "Publish again" for those sites.
+
+So cleanup cannot fix root's page size; approving into the site tenant can. That is the clearest
+argument for the change below.
+
 ## Related, not MS1: stage 9 stages in root
 
 Stage 9 (Approve components) writes the approved components into the extraction tenant's Library, root,

@@ -1,5 +1,10 @@
 # Root cleanup, step 1: superseded pages and their components (2026-10-12)
 
+> **This was tidiness, not demo speed.** Nothing the demo shows is served from root: both 71 Westland sites
+> are served from their own tenants, and the admin does not get slower with root's size. Do not repeat
+> this cleanup expecting a performance gain. The real fix for root's page size is approving into the site
+> tenant (see `ai-context/issues/every-page-ships-its-tenants-whole-component-library.md`).
+
 Pages and components in root only. No run, job, artifact or tenant was touched, and nothing in any site
 tenant.
 
@@ -56,7 +61,7 @@ what is opened from the composed pages panel, or a live run composed in root.
   bundles**, down from 6.13 MB and 323.
 - **Unchanged:** all five site tenants (pages and components), and the 79 site-job components in root.
 
-## Held for a decision
+## Held (decided 2026-10-12: keep)
 
 - **98 components no root page has ever referenced**, so not "their components":
   - jobs with no pages and no site: 2424Tulane Fixes Check 10, 2424Tulane Baseline 2 10, ParkCityPlace
@@ -64,7 +69,9 @@ what is opened from the composed pages panel, or a live run composed in root.
   - The Vibe 25, 2424 Tulane 8, and 1 each from 71 Westland Apartments and Park city Palace.
 
   Deleting them would leave root at 150 components, about 2.6 MB a page. Those jobs could then not
-  compose or publish without approving again.
+  compose or publish without approving again. **Kept:** they have no pages, belong to jobs with no
+  sites, and cost nothing at demo time. Deletion is permanent, and the gain is a page size nothing in the
+  demo loads.
 
 - **The kept pages and their 71 components.** The floor without them is the 79 site-job components,
   about 1.4 MB a page. Below that, stage 9 would have to approve into the site tenant directly
