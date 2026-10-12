@@ -73,7 +73,7 @@ export const WorkflowsFeature = createFeature({
         RejectReviewStepFeature.register(container);
         CancelReviewFeature.register(container);
 
-        // Target queries for the app adapters (phase 2)
+        // Target queries for the app target adapters and wrappers
         GetTargetReviewFeature.register(container);
         ListTargetReviewsFeature.register(container);
         DeleteTargetReviewsFeature.register(container);

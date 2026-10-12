@@ -4,8 +4,10 @@ import { ReviewStepReacher } from "./ReviewStepReacher/ReviewStepReacher.js";
 import { ReviewSaver } from "./ReviewSaver/ReviewSaver.js";
 
 /**
- * Defaults for the review lifecycle. Phase 2 registers one `ReviewTargetSync` per namespace (the
- * last one whose `canSync` matches wins; none matching means nothing to sync). Phase 4 registers
+ * Defaults for the review lifecycle. The app target adapters register one `ReviewTargetLoader`,
+ * `ReviewTargetSync` and `ReviewTargetReadAccess` per namespace (`cms.*` in
+ * api-headless-cms-workflows, `wb.page` in api-website-builder-workflows); the last registered
+ * match wins and none matching means nothing to load, sync or read (R28, R50). Phase 4 registers
  * its `StepAssignmentResolver` after `WorkflowsFeature`; the last registration wins on resolve.
  */
 export const ReviewLifecycleFeature = createFeature({

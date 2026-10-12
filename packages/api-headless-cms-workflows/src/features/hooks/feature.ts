@@ -22,7 +22,7 @@ import { DeleteModelTaskBoundToWorkflowDecorator } from "./DeleteModelTaskBoundT
 export const CmsHooksFeature = createFeature({
     name: "CmsWorkflows/Hooks",
     register(container) {
-        // Single handlers (CMS entries, and Website Builder pages once 2.4 registers wb.page)
+        // Single handlers (CMS entries, and Website Builder pages, through `WbPageReviewNamespace`)
         container.register(NullReviewStateOnRevisionCreate);
         container.register(BlockUpdateWhileInReview);
 

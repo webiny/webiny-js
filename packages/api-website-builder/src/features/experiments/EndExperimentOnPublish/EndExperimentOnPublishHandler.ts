@@ -12,7 +12,7 @@ import { EntryToVariantMapper } from "~/domain/variant/EntryToVariantMapper.js";
 /**
  * Governance: experiments and variants only serve once they are PUBLISHED, and the only place
  * a publish happens is here — as a cascade of the page publish, which is itself gated by the
- * approval workflow (ValidateWorkflowStateOnPageBeforePublish). So approving + publishing the
+ * approval workflow (RequireApprovedReviewOnPagePublish in api-website-builder-workflows). So approving + publishing the
  * page is what takes its running experiment and ready variants live. Draft edits never serve.
  *
  * This is a system cascade authorised by the (already approved) page publish, so it works

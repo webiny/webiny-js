@@ -17,9 +17,9 @@ export interface IReviewTargetSync {
 
 /**
  * Writes `system.workflow` on the target after every review save (spec 4.5, D52). One
- * implementation per namespace, like `ReviewTargetLoader`; the last registered one whose
- * `canSync` matches wins. 1a registers none (nothing to sync); phase 2 registers the target
- * adapters' implementations (`UpdateEntrySystemUseCase`).
+ * implementation per namespace, registered by the app target adapters with
+ * `UpdateEntrySystemUseCase` (R63); the last registered one whose `canSync` matches wins, none
+ * matching means nothing to sync (R28).
  */
 export const ReviewTargetSync = createAbstraction<IReviewTargetSync>("ReviewTargetSync");
 

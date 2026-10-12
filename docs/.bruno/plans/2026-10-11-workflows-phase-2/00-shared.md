@@ -13,7 +13,7 @@
 
 **Tech Stack:** TypeScript, `@webiny/feature` DI (`createFeature`, `createAbstraction`, `createImplementation`, `createDecorator`), `@webiny/di`, `IdentityContext` / `AuthorizationContext` / `AuthenticationContext` / `TenantContext` from `@webiny/api-core`, CMS use cases and events from `@webiny/api-headless-cms`, `DeleteModelOperations` from `@webiny/api-headless-cms-tasks`, `FolderLevelPermissions` from `@webiny/api-aco`, `WbPermissions` and page events from `@webiny/api-website-builder`, `BaseError` / `Result` from `@webiny/feature/api`, vitest, `@webiny/api-headless-cms-testing` (`createCmsTestHandler`).
 
-**Spec:** `docs/.bruno/specs/2026-10-05-workflows-refactor-design.md` sections 4.5, 5.1 (engine vs wrapper columns), 5.3, 8, 9.2, 9.3, 11 (only the target-read predicate idea, used here for the delete-blocked listing). Decisions: `docs/.bruno/workflows/decisions.md` D41, D52, D59, D61, D62, D64, D77, D79, D80, D84, D115, D121, D131, D132, D133, D134. Roadmap: `docs/.bruno/plans/2026-10-05-workflows-refactor-roadmap.md` (phase 2 row and cross-phase rules). Earlier rules keep applying: `../2026-10-09-workflows-phase-1a/00-shared.md` (R1-R28, A1-A12) and `../2026-10-10-workflows-phase-1b/00-1b-permission-building-blocks.md` (R29-R44, A13-A19). This plan continues with R45-R87 and A20-A38.
+**Spec:** `docs/.bruno/specs/2026-10-05-workflows-refactor-design.md` sections 4.5, 5.1 (engine vs wrapper columns), 5.3, 8, 9.2, 9.3, 11 (only the target-read predicate idea, used here for the delete-blocked listing). Decisions: `docs/.bruno/workflows/decisions.md` D41, D52, D59, D61, D62, D64, D77, D79, D80, D84, D115, D121, D131, D132, D133, D134. Roadmap: `docs/.bruno/plans/2026-10-05-workflows-refactor-roadmap.md` (phase 2 row and cross-phase rules). Earlier rules keep applying: `../2026-10-09-workflows-phase-1a/00-shared.md` (R1-R28, A1-A12) and `../2026-10-10-workflows-phase-1b/00-1b-permission-building-blocks.md` (R29-R44, A13-A19). This plan continues with R45-R87 and A20-A39.
 
 ## Global Constraints
 
@@ -188,12 +188,14 @@ src/
             CmsEntryAccess/ abstractions.ts CmsEntryAccess.ts index.ts
             CmsEntryReviewTargetLoader.ts CmsEntryReviewTargetSync.ts CmsEntryReviewTargetReadAccess.ts (Task 8)
     hooks/ feature.ts NullReviewStateOnRevisionCreate.ts BlockUpdateWhileInReview.ts (Task 9)
-           RequireApprovedReviewOnPublish.ts BlockMoveWhileInReview.ts (Task 10)
+           RequireApprovedReviewOnPublish.ts RequireApprovedReviewOnRepublish.ts
+           BlockMoveWhileInReview.ts BlockFolderChangeWhileInReview.ts (Task 10)
            BlockDeleteWhileInReview.ts BlockRevisionDeleteWhileInReview.ts
            BlockDeleteMultipleWhileInReview.ts DeleteReviewsOnEntryDelete.ts
            DeleteReviewsOnRevisionDelete.ts DeleteReviewsOnEntriesDeleteMultiple.ts (Task 10b)
            DeleteModelBoundToWorkflowDecorator.ts
-           FullyDeleteModelBoundToWorkflowDecorator.ts (Task 11)
+           FullyDeleteModelBoundToWorkflowDecorator.ts
+           DeleteModelTaskBoundToWorkflowDecorator.ts (Task 11)
     wrappers/ feature.ts shared/cmsWorkflows.ts  CmsEntryReviewGuardService/ (no feature.ts)
               StoreCmsEntryWorkflow/ DeleteCmsEntryWorkflow/ ListCmsEntryWorkflows/ GetCmsEntryWorkflow/ (Task 12)
               RequestCmsEntryReview/ GetCmsEntryReview/ (Task 13)
@@ -259,7 +261,7 @@ Executing a sub-phase: pass its overview as `PLAN_FILE` and give each task file 
 
 ## Old code to delete
 
-Verified against `b3a538a556`: the duplicated CMS/WB entry and page handlers were removed in 1a Task 1. What remains: `createWorkflowAppName` in `api-headless-cms-workflows/src/utils/appName.ts` (no importer; removed in Task 7) and a stale comment in `api-website-builder/src/features/experiments/EndExperimentOnPublish/EndExperimentOnPublishHandler.ts` naming the deleted `ValidateWorkflowStateOnPageBeforePublish` (Task 19). Nothing in `api-headless-cms` clears `system.workflow` on publish any more (D85 holds).
+Verified against `b3a538a556`: the duplicated CMS/WB entry and page handlers were removed in 1a Task 1. What remained: `createWorkflowAppName` in `api-headless-cms-workflows/src/utils/appName.ts` (no importer; removed in Task 7; the file stays with the `cms.*` namespace helpers) and a stale comment in `api-website-builder/src/features/experiments/EndExperimentOnPublish/EndExperimentOnPublishHandler.ts` naming the deleted `ValidateWorkflowStateOnPageBeforePublish` (Task 19). Nothing in `api-headless-cms` clears `system.workflow` on publish any more (D85 holds).
 
 ---
 

@@ -21,7 +21,7 @@ export interface IReviewTargetLoader {
 
 /**
  * Loads the content under review (spec 9.3). One implementation per namespace, registered by the
- * target adapters in phase 2; 1a ships none.
+ * app target adapters (`cms.*`, `wb.page`); the last registered match wins (A10).
  */
 export const ReviewTargetLoader = createAbstraction<IReviewTargetLoader>("ReviewTargetLoader");
 

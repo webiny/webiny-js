@@ -15,8 +15,7 @@ export interface IListCmsEntryWorkflowsUseCase {
 }
 
 /**
- * Every Headless CMS workflow, for any signed-in identity (D78). The API takes no paging input in
- * phase 2: v1 binds one model per workflow, so the list is at most the model count (R59, A23); the
+ * Every Headless CMS workflow, for any signed-in identity (D78). The API takes no paging input: v1 binds one model per workflow, so the list is at most the model count (R59, A23); the
  * implementation reads every page of the engine's list.
  */
 export const ListCmsEntryWorkflowsUseCase = createAbstraction<IListCmsEntryWorkflowsUseCase>(

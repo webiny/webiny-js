@@ -242,7 +242,7 @@ export interface ReviewTargetSyncErrorParams {
 
 /**
  * The review was saved and its events were published, but writing `system.workflow` to the target
- * failed (R16). Returned by `ReviewSaver`; phase 2 adapters produce the underlying errors.
+ * failed (R16). Returned by `ReviewSaver`; the app target adapters' syncs produce the underlying errors.
  */
 export class ReviewTargetSyncError extends BaseError<ReviewTargetSyncErrorData> {
     override readonly code = "Workflows/Review/TargetSync" as const;

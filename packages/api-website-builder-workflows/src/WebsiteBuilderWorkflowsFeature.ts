@@ -14,9 +14,9 @@ export const WebsiteBuilderWorkflowsFeature = createFeature({
             return;
         }
 
-        // Page handlers (system.workflow sync, publish and move rules, target delete) are rebuilt
-        // as the `wb.page` target adapter in phase 2, next to the Website Builder wrapper use cases
-        // and GraphQL operations that read the identity and check permissions (D132, D133).
+        // Page handlers (system.workflow sync, publish and move rules, target delete) live in the
+        // `wb.page` target adapter and hooks, next to the Website Builder wrapper use cases that
+        // read the identity and check permissions (D132, D133).
         container.register(WebsiteBuilderPageSchemaFactory);
 
         // The `wb.page` target adapter (spec 9.3).
