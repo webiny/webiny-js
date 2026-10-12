@@ -14,6 +14,9 @@ import {
 } from "~/constants.js";
 import type { BuildSiteTaskInput } from "~/features/site/BuildSiteTask.js";
 import { SiteStore } from "~/storage/SiteStore.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
+import { GetPageByPathUseCase } from "@webiny/api-website-builder/features/pages/GetPageByPath/abstractions.js";
 import type { ComposedCapture, ComposedCapturePage } from "~/domain/types.js";
 import { pageCompositionTypeDefs } from "./typeDefs.js";
 import type { ComposePagesTaskInput } from "~/features/ComposePagesTask.js";
@@ -145,6 +148,53 @@ export const addPageCompositionSchema = (builder: IGraphQLSchemaBuilder): void =
                         throw new Error("You do not have permission to read component extraction.");
                     }
                     return sites.get(args.jobId);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.pageCompositionPocSiteLivePages",
+        dependencies: [
+            ComponentExtractionPermissions,
+            SiteStore,
+            TenantContext,
+            GetTenantByIdUseCase,
+            GetPageByPathUseCase
+        ],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            sites: SiteStore.Interface,
+            tenantContext: TenantContext.Interface,
+            getTenantById: GetTenantByIdUseCase.Interface,
+            getPageByPath: GetPageByPathUseCase.Interface
+        ) {
+            return ({ args }: { args: { jobId: string; paths: string[] } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to read component extraction.");
+                    }
+                    // The tenant comes from the job's site record, never from the caller.
+                    const site = await sites.get(args.jobId);
+                    if (!site) {
+                        return null;
+                    }
+                    const tenant = await getTenantById.execute(site.tenantId);
+                    if (tenant.isFail()) {
+                        throw new Error(`The site's tenant "${site.tenantId}" cannot be read.`);
+                    }
+                    /*
+                     * Inside the site's tenant: asked from the admin's, a path answers with that
+                     * tenant's page at the same path, and the site's pages look superseded or live
+                     * when they are neither.
+                     */
+                    return tenantContext.withTenant(tenant.value, async () => {
+                        const live: Record<string, string | null> = {};
+                        for (const path of args.paths) {
+                            const page = await getPageByPath.execute(path);
+                            live[path] = page.isOk() ? page.value.id : null;
+                        }
+                        return live;
+                    });
                 });
         }
     });

@@ -73,6 +73,7 @@ import {
     type ImageSourceOutcome
 } from "~/pages/rewriteImageSources.js";
 import { AssetUrlResolver } from "~/features/AssetUrlResolver.js";
+import { planRetirement } from "~/pages/planRetirement.js";
 
 /**
  * The write half of composition: everything that happens in the tenant the pages go to.
@@ -100,6 +101,10 @@ export interface CompositionWriteResult {
     failed: PageMapFailure[];
     links: PageMapLinks;
     discarded: DiscardEntry[];
+    /** Earlier pages left published because their page failed to compose this time. */
+    kept: PageMapEntry[];
+    /** Earlier pages unpublished because this run no longer assembles them. */
+    dropped: PageMapEntry[];
 }
 
 export interface ICompositionWriter {
@@ -485,15 +490,13 @@ export class CompositionWriterImpl implements ICompositionWriter {
          * runs of the same job, in THIS writer's tenant), handed in rather than looked up here: the
          * page maps live in the extraction tenant, which this writer has no access to.
          */
-        const retired: string[] = [];
-        const live = new Set(created.map(page => page.entry.pageId));
+        const plan = planRetirement({
+            earlier: retire,
+            created: created.map(page => page.entry),
+            assembledUrls: source.assemble.pages.map(page => page.url)
+        });
 
-        const superseded = retire;
-
-        for (const page of superseded) {
-            if (!page.pageId || live.has(page.pageId) || retired.includes(page.pageId)) {
-                continue;
-            }
+        for (const page of plan.unpublish) {
             /*
              * Failures are deliberately not recorded here.
              *
@@ -503,10 +506,7 @@ export class CompositionWriterImpl implements ICompositionWriter {
              * whether the path ends up answering with this composition's page, and that is asserted
              * below where it can be stated once and exactly.
              */
-            const unpublished = await this.unpublishPage.execute({ id: page.pageId });
-            if (unpublished.isOk()) {
-                retired.push(page.pageId);
-            }
+            await this.unpublishPage.execute({ id: page.pageId });
         }
 
         /*
@@ -536,7 +536,14 @@ export class CompositionWriterImpl implements ICompositionWriter {
             }
         }
 
-        return Result.ok({ created: created.map(page => page.entry), failed, links, discarded });
+        return Result.ok({
+            created: created.map(page => page.entry),
+            failed,
+            links,
+            discarded,
+            kept: plan.kept,
+            dropped: plan.dropped
+        });
     }
 
     /**

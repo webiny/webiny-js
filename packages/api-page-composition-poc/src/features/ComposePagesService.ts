@@ -70,7 +70,7 @@ export class ComposePagesServiceImpl implements Abstraction.Interface {
         if (written.isFail()) {
             return Result.fail(written.error);
         }
-        const { created, failed, links, discarded } = written.value;
+        const { created, failed, links, discarded, kept, dropped } = written.value;
 
         const stored = await this.pageMaps.set({
             runId,
@@ -78,6 +78,8 @@ export class ComposePagesServiceImpl implements Abstraction.Interface {
             composedOn: new Date().toISOString(),
             ...(target ? { tenantId: target.tenant.id } : {}),
             pages: created,
+            ...(kept.length > 0 ? { kept } : {}),
+            ...(dropped.length > 0 ? { dropped } : {}),
             failed,
             links,
             discarded
@@ -86,7 +88,13 @@ export class ComposePagesServiceImpl implements Abstraction.Interface {
             return Result.fail(stored.error);
         }
 
-        return Result.ok({ created: created.length, failed: failed.length, links });
+        return Result.ok({
+            created: created.length,
+            failed: failed.length,
+            links,
+            kept: kept.map(page => page.path),
+            dropped: dropped.map(page => page.path)
+        });
     }
 }
 

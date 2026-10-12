@@ -1,0 +1,135 @@
+{
+ "_source": "ParkCity - Take 3's site tenant parkcitytake380cd, 2026-10-10: the page maps of its first build (composeVersion 1) and its rebuild (composeVersion 2), read from pageCompositionPocPageMap. Signals dropped.",
+ "first": [
+  {
+   "sourceUrl": "https://www.parkcityplace.org/",
+   "normalizedUrl": "https://www.parkcityplace.org/",
+   "path": "/",
+   "title": "Apartments in Bridgeport, CT | Park City Place",
+   "pageId": "6aca2ada80497600027485b6#0001",
+   "entryId": "6aca2ada80497600027485b6"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood",
+   "path": "/apartments/ct/bridgeport/neighborhood",
+   "title": "Neighborhood | Park City Place",
+   "pageId": "6aca2ada80497600027485b8#0001",
+   "entryId": "6aca2ada80497600027485b8"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/contact-us",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/contact-us",
+   "path": "/apartments/ct/bridgeport/contact-us",
+   "title": "Contact Us | Park City Place",
+   "pageId": "6aca2ada80497600027485ba#0001",
+   "entryId": "6aca2ada80497600027485ba"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/floor-plans",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/floor-plans",
+   "path": "/apartments/ct/bridgeport/floor-plans",
+   "title": "Floor Plans | Park City Place",
+   "pageId": "6aca2ada80497600027485bc#0001",
+   "entryId": "6aca2ada80497600027485bc"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/amenities",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/amenities",
+   "path": "/apartments/ct/bridgeport/amenities",
+   "title": "Amenities | Park City Place",
+   "pageId": "6aca2ada80497600027485be#0001",
+   "entryId": "6aca2ada80497600027485be"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/residents",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/residents",
+   "path": "/apartments/ct/bridgeport/residents",
+   "title": "Residents | Park City Place",
+   "pageId": "6aca2ada80497600027485c0#0001",
+   "entryId": "6aca2ada80497600027485c0"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/accessibility-statement",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/accessibility-statement",
+   "path": "/apartments/ct/bridgeport/accessibility-statement",
+   "title": "Accessibility Statement | Park City Place",
+   "pageId": "6aca2ada80497600027485c2#0001",
+   "entryId": "6aca2ada80497600027485c2"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/apply-now",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/apply-now",
+   "path": "/apartments/ct/bridgeport/apply-now",
+   "title": "Apply Now | Park City Place",
+   "pageId": "6aca2ada80497600027485c4#0001",
+   "entryId": "6aca2ada80497600027485c4"
+  }
+ ],
+ "rebuild": [
+  {
+   "sourceUrl": "https://www.parkcityplace.org/",
+   "normalizedUrl": "https://www.parkcityplace.org/",
+   "path": "/",
+   "title": "Apartments in Bridgeport, CT | Park City Place",
+   "pageId": "6aca2cf70a0e4f00021f1fcb#0001",
+   "entryId": "6aca2cf70a0e4f00021f1fcb"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood",
+   "path": "/apartments/ct/bridgeport/neighborhood",
+   "title": "Neighborhood | Park City Place",
+   "pageId": "6aca2cf70a0e4f00021f1fcd#0001",
+   "entryId": "6aca2cf70a0e4f00021f1fcd"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/contact-us",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/contact-us",
+   "path": "/apartments/ct/bridgeport/contact-us",
+   "title": "Contact Us | Park City Place",
+   "pageId": "6aca2cf70a0e4f00021f1fcf#0001",
+   "entryId": "6aca2cf70a0e4f00021f1fcf"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/floor-plans",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/floor-plans",
+   "path": "/apartments/ct/bridgeport/floor-plans",
+   "title": "Floor Plans | Park City Place",
+   "pageId": "6aca2cf70a0e4f00021f1fd1#0001",
+   "entryId": "6aca2cf70a0e4f00021f1fd1"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/amenities",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/amenities",
+   "path": "/apartments/ct/bridgeport/amenities",
+   "title": "Amenities | Park City Place",
+   "pageId": "6aca2cf70a0e4f00021f1fd3#0001",
+   "entryId": "6aca2cf70a0e4f00021f1fd3"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/residents",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/residents",
+   "path": "/apartments/ct/bridgeport/residents",
+   "title": "Residents | Park City Place",
+   "pageId": "6aca2cf70a0e4f00021f1fd5#0001",
+   "entryId": "6aca2cf70a0e4f00021f1fd5"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/accessibility-statement",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/accessibility-statement",
+   "path": "/apartments/ct/bridgeport/accessibility-statement",
+   "title": "Accessibility Statement | Park City Place",
+   "pageId": "6aca2cf70a0e4f00021f1fd7#0001",
+   "entryId": "6aca2cf70a0e4f00021f1fd7"
+  },
+  {
+   "sourceUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/apply-now",
+   "normalizedUrl": "https://www.parkcityplace.org/apartments/ct/bridgeport/apply-now",
+   "path": "/apartments/ct/bridgeport/apply-now",
+   "title": "Apply Now | Park City Place",
+   "pageId": "6aca2cf70a0e4f00021f1fd9#0001",
+   "entryId": "6aca2cf70a0e4f00021f1fd9"
+  }
+ ]
+}

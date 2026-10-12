@@ -125,7 +125,7 @@ class CompositionReaderImpl implements ICompositionReader {
             earlier.push({
                 runId,
                 tenantId: previous.value.tenantId,
-                pages: previous.value.pages
+                pages: [...previous.value.pages, ...(previous.value.kept ?? [])]
             });
         }
         const siblings = await this.runs.listByJob(run.jobId);
@@ -139,7 +139,7 @@ class CompositionReaderImpl implements ICompositionReader {
                     earlier.push({
                         runId: sibling.id,
                         tenantId: map.value.tenantId,
-                        pages: map.value.pages
+                        pages: [...map.value.pages, ...(map.value.kept ?? [])]
                     });
                 }
             }

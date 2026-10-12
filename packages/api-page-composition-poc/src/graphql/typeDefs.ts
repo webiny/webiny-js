@@ -84,6 +84,12 @@ export const pageCompositionTypeDefs = /* GraphQL */ `
         pageCompositionPocComposedCapture(runId: ID!): PageCompositionPocComposedCaptureResponse
         "A job's site in its own tenant and its last build, or null when it has none."
         pageCompositionPocSite(jobId: ID!): PageCompositionPocSiteResponse
+        """
+        Which page each path serves in the job's site tenant, as a map of path to page id (null when the
+        path serves nothing). Read inside the site's tenant: the admin's own requests carry the admin's
+        tenant, where the same path answers with a different page.
+        """
+        pageCompositionPocSiteLivePages(jobId: ID!, paths: [String!]!): PageCompositionPocSiteResponse
     }
 
     extend type Mutation {

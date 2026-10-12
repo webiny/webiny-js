@@ -127,7 +127,9 @@ describe("composition seam", () => {
                         created: [page("site-new")],
                         failed: [],
                         links: {} as never,
-                        discarded: []
+                        discarded: [],
+                        kept: [],
+                        dropped: []
                     });
                 }
             } as never,
@@ -187,7 +189,9 @@ describe("composition seam", () => {
                         created: [],
                         failed: [],
                         links: {} as never,
-                        discarded: []
+                        discarded: [],
+                        kept: [],
+                        dropped: []
                     });
                 }
             } as never,

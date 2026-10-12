@@ -39,9 +39,9 @@ class ComposePagesTaskHandlerImpl implements TaskHandler.Interface<ComposePagesT
             return controller.response.error(result.error.message);
         }
 
-        const { created, failed } = result.value;
+        const { created, failed, kept, dropped } = result.value;
         await controller.logger.info({
-            message: `Created and published ${created} page(s); ${failed} could not be created.`
+            message: `Created and published ${created} page(s); ${failed} could not be created; ${kept.length} earlier page(s) kept live because they could not be rebuilt; ${dropped.length} unpublished because the run no longer has them.`
         });
 
         return controller.response.done(`Composed ${created} page(s).`);

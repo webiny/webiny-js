@@ -77,6 +77,34 @@ export const siteTenantId = (jobName: string, jobId: string): string => {
 const themeRevisionId = (entryId: string, version: number): string =>
     `${entryId}#${String(version).padStart(4, "0")}`;
 
+/**
+ * What the pages step did, including what it did to pages that were already live. "1 with problems"
+ * alone read as if the page were still up, when the old retirement had taken it down
+ * (`a-rebuild-can-unpublish-a-working-page.md`).
+ */
+export const pagesDetail = (result: {
+    created: number;
+    failed: number;
+    kept: string[];
+    dropped: string[];
+}): string => {
+    const parts = [`${result.created} page(s) published`];
+    if (result.failed > 0) {
+        parts.push(`${result.failed} with problems, listed with the composed pages`);
+    }
+    if (result.kept.length > 0) {
+        parts.push(
+            `${result.kept.length} could not be rebuilt, so the earlier version stays live (${result.kept.join(", ")})`
+        );
+    }
+    if (result.dropped.length > 0) {
+        parts.push(
+            `unpublished ${result.dropped.length} page(s) this run no longer has (${result.dropped.join(", ")})`
+        );
+    }
+    return `${parts.join("; ")}.`;
+};
+
 class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInput> {
     constructor(
         private tenantContext: TenantContext.Interface,
@@ -112,7 +140,7 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         const source = read.value;
         if (!source.promoted || source.promoted.length === 0) {
             return controller.response.error(
-                "Building the site requires Promote to be done with at least one component."
+                "Publishing the site requires approved components (stage 9), at least one."
             );
         }
         const jobResult = await this.jobs.get(source.jobId);
@@ -264,15 +292,7 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         if (composed.isFail()) {
             return fail("pages", composed.error.message);
         }
-        await record(
-            "pages",
-            "done",
-            `${composed.value.created} page(s) published${
-                composed.value.failed > 0
-                    ? `; ${composed.value.failed} with problems, listed with the composed pages`
-                    : ""
-            }.`
-        );
+        await record("pages", "done", pagesDetail(composed.value));
 
         site.lastBuild!.status = "done";
         site.lastBuild!.finishedOn = new Date().toISOString();

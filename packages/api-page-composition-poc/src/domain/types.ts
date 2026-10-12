@@ -170,6 +170,14 @@ export interface PageMap {
      */
     tenantId?: string;
     pages: PageMapEntry[];
+    /**
+     * Earlier pages this composition left published because their page failed to compose this time.
+     * Recorded so the next composition still retires them once their path composes again; without it a
+     * kept page would drop out of every map and stay published beside its replacement.
+     */
+    kept?: PageMapEntry[];
+    /** Earlier pages unpublished because this run no longer assembles them. */
+    dropped?: PageMapEntry[];
     failed: PageMapFailure[];
     links: PageMapLinks;
     discarded: DiscardEntry[];
@@ -218,4 +226,8 @@ export interface ComposePagesResult {
     created: number;
     failed: number;
     links: PageMapLinks;
+    /** Paths whose earlier page stays published because the page failed to compose this time. */
+    kept: string[];
+    /** Paths unpublished because this run no longer assembles them. */
+    dropped: string[];
 }
