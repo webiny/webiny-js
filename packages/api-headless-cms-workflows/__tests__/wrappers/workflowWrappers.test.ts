@@ -250,7 +250,7 @@ describe("CMS workflow wrappers", () => {
 
         const listed = expectOk(await list(reader));
 
-        expect(listed.map(workflow => workflow.id)).toEqual(["workflow-1", "workflow-1"]);
+        expect(listed.map(workflow => workflow.id)).toEqual(["workflow-1"]);
         expect(engineCalls).toEqual(["ListWorkflows", "ListWorkflows"]);
     });
 
