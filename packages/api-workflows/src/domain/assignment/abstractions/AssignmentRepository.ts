@@ -38,6 +38,8 @@ export interface IAssignmentRepository {
     list(
         params: AssignmentRepositoryListParams
     ): Promise<Result<AssignmentRepositoryListResult, AssignmentPersistenceError>>;
+    /** Permanently deletes a record (with its review, spec 4.3); a missing record counts as deleted. */
+    delete(id: string): Promise<Result<void, AssignmentPersistenceError>>;
 }
 
 /** The assignment log (`wbyWorkflowAssignment`). */

@@ -31,6 +31,8 @@ export interface IReviewRepository {
     ): Promise<Result<ReviewData[], ReviewPersistenceError>>;
     /** Create or update. Only `ReviewSaver` (the single save path) calls this. */
     save(review: ReviewData): Promise<Result<ReviewData, ReviewPersistenceError>>;
+    /** Permanently deletes a review; a missing review counts as deleted. */
+    delete(id: string): Promise<Result<void, ReviewPersistenceError>>;
 }
 
 /** Reads and writes reviews (entries of the private `wbyWorkflowReview` model, revision 1). */

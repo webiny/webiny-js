@@ -2,6 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { createIdentifier } from "@webiny/utils";
 import type { CmsEntryListWhereValues, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
+import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
@@ -30,7 +31,8 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
         private getEntryById: GetEntryByIdUseCase.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private createEntry: CreateEntryUseCase.Interface,
-        private updateEntry: UpdateEntryUseCase.Interface
+        private updateEntry: UpdateEntryUseCase.Interface,
+        private deleteEntry: DeleteEntryUseCase.Interface
     ) {}
 
     async get(
@@ -220,6 +222,17 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
         return Result.ok(ReviewEntryMapper.fromEntry(created.value));
     }
 
+    async delete(id: string): Promise<Result<void, ReviewPersistenceError>> {
+        const model = await this.modelProvider.get();
+        const result = await this.deleteEntry.execute(model, createIdentifier({ id, version: 1 }), {
+            permanently: true
+        });
+        if (result.isFail() && result.error.code !== ENTRY_NOT_FOUND) {
+            return Result.fail(new ReviewPersistenceError(result.error));
+        }
+        return Result.ok();
+    }
+
     /** Primary-storage read of a listed entry; `null` when it was deleted after it was listed. */
     private async readPrimary(
         model: CmsModel,
@@ -243,6 +256,7 @@ export const ReviewRepository = Abstraction.createImplementation({
         GetEntryByIdUseCase,
         ListLatestEntriesUseCase,
         CreateEntryUseCase,
-        UpdateEntryUseCase
+        UpdateEntryUseCase,
+        DeleteEntryUseCase
     ]
 });

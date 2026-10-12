@@ -1,6 +1,8 @@
 import { Result } from "@webiny/feature/api";
+import { createIdentifier } from "@webiny/utils";
 import type { CmsEntryListWhereValues } from "@webiny/api-headless-cms/types/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
+import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { AssignmentModelProvider } from "~/domain/assignment/abstractions/AssignmentModelProvider.js";
 import { AssignmentRepository as Abstraction } from "~/domain/assignment/abstractions/AssignmentRepository.js";
@@ -9,12 +11,14 @@ import type { AssignmentRecord, AssignmentRecordValues } from "~/domain/assignme
 import { AssignmentEntryMapper, type AssignmentEntryValues } from "./AssignmentEntryMapper.js";
 
 const DEFAULT_LIMIT = 100;
+const ENTRY_NOT_FOUND = "Cms/Entry/NotFound";
 
 class AssignmentRepositoryImpl implements Abstraction.Interface {
     constructor(
         private modelProvider: AssignmentModelProvider.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
-        private createEntry: CreateEntryUseCase.Interface
+        private createEntry: CreateEntryUseCase.Interface,
+        private deleteEntry: DeleteEntryUseCase.Interface
     ) {}
 
     async create(
@@ -77,9 +81,25 @@ class AssignmentRepositoryImpl implements Abstraction.Interface {
             meta: result.value.meta
         });
     }
+
+    async delete(id: string): Promise<Result<void, AssignmentPersistenceError>> {
+        const model = await this.modelProvider.get();
+        const result = await this.deleteEntry.execute(model, createIdentifier({ id, version: 1 }), {
+            permanently: true
+        });
+        if (result.isFail() && result.error.code !== ENTRY_NOT_FOUND) {
+            return Result.fail(new AssignmentPersistenceError(result.error));
+        }
+        return Result.ok();
+    }
 }
 
 export const AssignmentRepository = Abstraction.createImplementation({
     implementation: AssignmentRepositoryImpl,
-    dependencies: [AssignmentModelProvider, ListLatestEntriesUseCase, CreateEntryUseCase]
+    dependencies: [
+        AssignmentModelProvider,
+        ListLatestEntriesUseCase,
+        CreateEntryUseCase,
+        DeleteEntryUseCase
+    ]
 });
