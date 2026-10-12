@@ -350,6 +350,8 @@ _Refined by D133: the engine evaluates candidates' read access through the app's
 
 One CMS handler on `EntryBeforeUpdate` (covers CMS entries and WB pages) rejects updates to a revision whose review is active and not done. Exempt: `system.workflow` sync via `UpdateEntrySystemUseCase` (D52, does not fire `EntryBeforeUpdate`), and automation / AI tool writes, which run inside a workflow bypass context (D36). Resolves P11.
 
+_Refined by D134: the save block first checks whether the model is bound to a workflow; only bound models look up reviews._
+
 ## D63. OpenSearch is the target storage; least-loaded query
 
 Workflows is an enterprise feature; deployments are expected to run OpenSearch. DDB-only performance is not a design constraint. Least-loaded uses one query (`currentOwnerId_in: candidates`, `currentStepState: inReview`, active) grouped by owner in memory. Assignment records are deleted with their review; no time-based retention. Resolves P12.
@@ -357,6 +359,8 @@ Workflows is an enterprise feature; deployments are expected to run OpenSearch. 
 ## D64. Model delete block via use-case decorator
 
 Refines D41. Instead of a throwing `ModelBeforeDelete` handler, a `DeleteModelUseCase` decorator in the CMS workflows package returns a typed `Workflows/Model/BoundToWorkflow` error listing the bound workflows, following `DeleteModelWithEntryCleanup.ts:95-107`. Resolves P13.
+
+_Refined by D134: the CMS "fully delete model" background task is also refused at start for a bound model, before any entry is deleted._
 
 ## D65. Audit logs planned, not built
 
@@ -443,9 +447,13 @@ _Refined by D132 and D133: the checks run in the app wrappers or, for the shared
 
 If a model is bound to a workflow, a revision can only be published when it has an approved review. Enforced in the API publish handler, not only the UI. Today the UI blocks it (`canPublish && (!hasWorkflow || isApproved)`), but the API handler lets publish through when no active review exists or the lookup fails (`ValidateWorkflowStateOnEntryBeforePublish.ts:23-26`), so direct API/SDK publishes bypass the workflow. Lookup failure blocks publish (fail closed). Models without a workflow publish normally. Resolves S6.
 
+_Refined by D134: the rule applies to the publish action only; creating content with `status: "published"` (create, create-from, new revision) stays allowed without a review, for data transfer from other systems._
+
 ## D80. Approved revisions are locked
 
 Refines D62: the save block rejects updates to any revision with an active review, including an approved one. An approved revision stays locked until published; changes need a new revision and a new review. Exemptions unchanged (`UpdateEntrySystemUseCase`, automation / AI tool bypass context). Resolves S7.
+
+_Refined by D134: only on models bound to a workflow; after the workflow is deleted, leftover approved and rejected reviews no longer lock._
 
 ## D81. Full workflow snapshot; delete blocked while in progress
 
@@ -466,6 +474,8 @@ Kept as written in the spec: step timestamps `reachedOn` / `startedOn` / `finish
 ## D84. Move rule
 
 Moving the target to another folder is blocked only while its review is `inProgress`. Allowed when the review is approved, rejected or cancelled (rejected reviews stay active forever, D23; a move does not change content). Resolves S11.
+
+_Extended by D134: trashing or deleting the target is refused while a review is in progress; the admin confirms, which cancels the review first._
 
 ## D85. Publish keeps system.workflow
 
@@ -710,3 +720,16 @@ Refines D132. Decided 2026-10-11.
 7. **Cancel and restart require target read access** in the app wrapper, like every other wrapper action (decided 2026-10-11); a user with `workflows.reassign` and access can cancel on the requester's behalf.
 
 Consequences stated in the spec: the engine's list use case takes the viewer's user id, team ids and a target-read predicate from the app wrapper and runs the fill-the-page pagination (D76); the engine returns full data and the wrapper redacts per-user skip entries and `excludedReason` for viewers without `editor` / `reassign` (D89, D97, D127, D128); the delete-blocked error carries the exact count and the blocking reviews, and the app wrapper keeps the first 5 the caller can read (D115); the base `StoreWorkflow` use case takes `savedOn` and each app's store mutation passes it (D131); the editor's model list is a CMS operation (D116, D130); one `workflows` permission serves every app's wrappers (D54).
+
+## D134. Trash and delete with a review in progress; create as published; bound-model guards
+
+Decided 2026-10-12 (phase 2 plan review).
+
+1. **Trash with a review in progress is refused.** Trashing a CMS entry or a Website Builder page that has an in-progress review fails on the server with `Workflows/Review/ActiveReviewOnTrash` (data: the target, the action and each in-progress review's id, title and current step). The admin shows a warning ("This content has a review in progress. Trashing it cancels the review."): Cancel stops; Confirm continues to the normal trash dialog, and trashing then cancels the review first. The confirm path is the app's own wrapper use case that cancels the target's in-progress reviews for the delete (`CancelCmsEntryReviewsForDelete`, `CancelWebsiteBuilderPageReviewsForDelete`), called by the admin right before the trash. Anyone who may trash the content may confirm, even without cancel rights (requester or `reassign`); the review is recorded as cancelled by that user with reason "content trashed". The admin dialogs are phase 8a; phase 2 delivers the server side.
+2. **Creating content as published stays allowed.** Create, create-from and new revision with `status: "published"` on a workflow-bound model need no review; data transfer from other systems relies on it. The publish rule (D79) applies to the publish action only.
+3. **Delete with a review in progress is refused the same way.** Deleting a single revision, `deleteMultiple`, a permanent delete through the API and a Website Builder page delete fail with the same error (action `delete`) while the target (or the deleted revision) has an in-progress review. The confirm path cancels the review (reason "content deleted") and the delete proceeds; the review and its assignment records are then deleted with the content (spec 9.3). Applies to CMS and Website Builder.
+4. **The CMS "fully delete model" background task is refused at start** for a model bound to a workflow, with `Workflows/Model/BoundToWorkflow`, before anything is deleted (the task deletes every entry before it calls `DeleteModelUseCase`, so the D64 decorator alone comes too late).
+5. **The save block looks up reviews only on bound models.** It first checks whether the model is bound to a workflow; unbound models never look up reviews, so they stay editable when the review lookup fails, and after a workflow is deleted its leftover approved and rejected reviews no longer lock their revisions. Refines D62 and D80.
+6. **The api-core permission fix stays on the workflows branch.** The per-identity permission cache and the new `withAuthorization` land as clearly labelled commits at the start of phase 2.1, with the full api-core suite (DDB and SQL) and the neighbouring package suites run.
+
+Refines D62, D79, D80 and D84 (spec 4.5, 5.1, 9.2, 9.3).

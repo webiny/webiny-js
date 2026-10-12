@@ -1,6 +1,6 @@
-### Task 4: Get and list a target's reviews
+### Task 4: Get and list a target's reviews, get the bound workflow
 
-The CMS and WB handlers (save block R54, publish rule R53, move rule R55) and the delete cleanup (Task 5) need a target's reviews without reaching into the repository. Two internal use cases: the active review of one revision, and every review of a target (all revisions). Both confirm listed hits from primary storage (R18, A29).
+The CMS and WB handlers (save block R54, publish rule R53, move rule R55, trash and delete rules R73) and the delete cleanup (Task 5) need a target's reviews and the namespace's workflow without reaching into the repositories. Three internal use cases: the active review of one revision, every review of a target (all revisions), and the workflow bound to a namespace (v1 binds at most one, D15). The review queries confirm listed hits from primary storage (R18, A29).
 
 **Files:**
 - Modify: `packages/api-workflows/src/domain/review/abstractions/ReviewRepository.ts`
@@ -13,16 +13,21 @@ The CMS and WB handlers (save block R54, publish rule R53, move rule R55) and th
 - Create: `packages/api-workflows/src/features/review/ListTargetReviews/ListTargetReviewsUseCase.ts`
 - Create: `packages/api-workflows/src/features/review/ListTargetReviews/feature.ts`
 - Create: `packages/api-workflows/src/features/review/ListTargetReviews/index.ts`
+- Create: `packages/api-workflows/src/features/workflow/GetBoundWorkflow/abstractions.ts`
+- Create: `packages/api-workflows/src/features/workflow/GetBoundWorkflow/GetBoundWorkflowUseCase.ts`
+- Create: `packages/api-workflows/src/features/workflow/GetBoundWorkflow/feature.ts`
+- Create: `packages/api-workflows/src/features/workflow/GetBoundWorkflow/index.ts`
 - Modify: `packages/api-workflows/src/WorkflowsFeature.ts`
 - Create: `packages/api-workflows/__tests__/review/TargetReviews.test.ts`
 - Modify: `packages/api-workflows/__tests__/registration.test.ts`
 
 **Interfaces:**
-- Consumes: `ReviewRepository.getActiveByTarget` (1a), `readPrimary` (private, 1a).
+- Consumes: `ReviewRepository.getActiveByTarget` (1a), `readPrimary` (private, 1a), `ListWorkflowsUseCase` (1a), `StoreWorkflowUseCase` and the `editor` fixture (Task 2).
 - Produces:
   - `ReviewRepositoryByTargetParams { model: string; targetId: string; targetRevisionId?: string }`; `ReviewRepository.Interface.listByTarget(params): Promise<Result<ReviewData[], ReviewPersistenceError>>` (oldest first, every page).
   - `GetTargetReviewUseCase.Interface.execute(input: GetTargetReviewInput): Promise<Result<ReviewData | null, ReviewPersistenceError>>`, `GetTargetReviewInput { model: string; targetRevisionId: string }`.
   - `ListTargetReviewsUseCase.Interface.execute(input: ListTargetReviewsInput): Promise<Result<ReviewData[], ReviewPersistenceError>>`, `ListTargetReviewsInput { model: string; targetId: string }`.
+  - `GetBoundWorkflowUseCase.Interface.execute(input: GetBoundWorkflowInput): Promise<Result<Workflow | null, WorkflowPersistenceError>>`, `GetBoundWorkflowInput { model: string }`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -34,6 +39,8 @@ import { createContextHandler } from "~tests/__helpers/handler.js";
 import {
     ARTICLE_MODEL,
     createRequestedReview,
+    createWorkflowValues,
+    editor,
     expectOk,
     requester,
     toSaveData
@@ -41,6 +48,8 @@ import {
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { GetTargetReviewUseCase } from "~/features/review/GetTargetReview/index.js";
 import { ListTargetReviewsUseCase } from "~/features/review/ListTargetReviews/index.js";
+import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
+import { GetBoundWorkflowUseCase } from "~/features/workflow/GetBoundWorkflow/index.js";
 
 const LATER = "2026-10-09T11:00:00.000Z";
 
@@ -132,6 +141,24 @@ describe("Target review queries", () => {
 
         expect(otherModel).toEqual([]);
         expect(unknown).toEqual([]);
+    });
+});
+
+describe("Bound workflow query", () => {
+    it("gets the workflow bound to a namespace, or null", async () => {
+        const { context } = await createContextHandler();
+        const stored = expectOk(
+            await context.container
+                .resolve(StoreWorkflowUseCase)
+                .execute({ workflow: createWorkflowValues(), actor: editor })
+        );
+        const getBoundWorkflow = context.container.resolve(GetBoundWorkflowUseCase);
+
+        const bound = expectOk(await getBoundWorkflow.execute({ model: ARTICLE_MODEL }));
+        const unbound = expectOk(await getBoundWorkflow.execute({ model: "wb.page" }));
+
+        expect(bound?.id).toBe(stored.id);
+        expect(unbound).toBeNull();
     });
 });
 ```
@@ -386,13 +413,102 @@ export { ListTargetReviewsUseCase } from "./abstractions.js";
 export type { ListTargetReviewsInput } from "./abstractions.js";
 ```
 
-- [ ] **Step 6: Register and pin the registration**
+- [ ] **Step 6: Add GetBoundWorkflow**
+
+Create `packages/api-workflows/src/features/workflow/GetBoundWorkflow/abstractions.ts`:
+
+```ts
+import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { Workflow } from "~/domain/workflow/types.js";
+import type { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
+
+export interface GetBoundWorkflowInput {
+    /** Namespace id, e.g. "cms.article" or "wb.page". */
+    model: string;
+}
+
+export interface IGetBoundWorkflowUseCaseErrors {
+    persistence: WorkflowPersistenceError;
+}
+
+type UseCaseError = IGetBoundWorkflowUseCaseErrors[keyof IGetBoundWorkflowUseCaseErrors];
+
+export interface IGetBoundWorkflowUseCase {
+    execute(input: GetBoundWorkflowInput): Promise<Result<Workflow | null, UseCaseError>>;
+}
+
+/**
+ * The workflow bound to a namespace, or `null` (v1 binds at most one, D15). Internal (D132): the
+ * app adapters' rules ask it first, so unbound models never look up reviews (D134, R54).
+ */
+export const GetBoundWorkflowUseCase =
+    createAbstraction<IGetBoundWorkflowUseCase>("GetBoundWorkflowUseCase");
+
+export namespace GetBoundWorkflowUseCase {
+    export type Interface = IGetBoundWorkflowUseCase;
+    export type Input = GetBoundWorkflowInput;
+    export type Error = UseCaseError;
+    export type Return = Promise<Result<Workflow | null, UseCaseError>>;
+}
+```
+
+Create `packages/api-workflows/src/features/workflow/GetBoundWorkflow/GetBoundWorkflowUseCase.ts`:
+
+```ts
+import { Result } from "@webiny/feature/api";
+import { ListWorkflowsUseCase } from "~/features/workflow/ListWorkflows/index.js";
+import { GetBoundWorkflowUseCase as UseCase } from "./abstractions.js";
+
+class GetBoundWorkflowUseCaseImpl implements UseCase.Interface {
+    constructor(private listWorkflows: ListWorkflowsUseCase.Interface) {}
+
+    async execute(input: UseCase.Input): UseCase.Return {
+        const listed = await this.listWorkflows.execute({
+            where: { models_in: [input.model] },
+            limit: 1
+        });
+        if (listed.isFail()) {
+            return Result.fail(listed.error);
+        }
+        return Result.ok(listed.value.items[0] ?? null);
+    }
+}
+
+export const GetBoundWorkflowUseCase = UseCase.createImplementation({
+    implementation: GetBoundWorkflowUseCaseImpl,
+    dependencies: [ListWorkflowsUseCase]
+});
+```
+
+Create `packages/api-workflows/src/features/workflow/GetBoundWorkflow/feature.ts`:
+
+```ts
+import { createFeature } from "@webiny/feature/api";
+import { GetBoundWorkflowUseCase } from "./GetBoundWorkflowUseCase.js";
+
+export const GetBoundWorkflowFeature = createFeature({
+    name: "Workflows/GetBoundWorkflow",
+    register(container) {
+        container.register(GetBoundWorkflowUseCase);
+    }
+});
+```
+
+Create `packages/api-workflows/src/features/workflow/GetBoundWorkflow/index.ts`:
+
+```ts
+export { GetBoundWorkflowUseCase } from "./abstractions.js";
+export type { GetBoundWorkflowInput } from "./abstractions.js";
+```
+
+- [ ] **Step 7: Register and pin the registration**
 
 In `packages/api-workflows/src/WorkflowsFeature.ts` import
 
 ```ts
 import { GetTargetReviewFeature } from "~/features/review/GetTargetReview/feature.js";
 import { ListTargetReviewsFeature } from "~/features/review/ListTargetReviews/feature.js";
+import { GetBoundWorkflowFeature } from "~/features/workflow/GetBoundWorkflow/feature.js";
 ```
 
 and register them after `CancelReviewFeature.register(container);`:
@@ -401,26 +517,28 @@ and register them after `CancelReviewFeature.register(container);`:
         // Target queries for the app adapters (phase 2)
         GetTargetReviewFeature.register(container);
         ListTargetReviewsFeature.register(container);
+        GetBoundWorkflowFeature.register(container);
 ```
 
-In `packages/api-workflows/__tests__/registration.test.ts` import `GetTargetReviewUseCase` and `ListTargetReviewsUseCase` from their `index.js` and add after the `CancelReviewUseCase` expectation:
+In `packages/api-workflows/__tests__/registration.test.ts` import `GetTargetReviewUseCase`, `ListTargetReviewsUseCase` and `GetBoundWorkflowUseCase` from their `index.js` and add after the `CancelReviewUseCase` expectation:
 
 ```ts
         expect(container.resolveAll(GetTargetReviewUseCase)).toHaveLength(1);
         expect(container.resolveAll(ListTargetReviewsUseCase)).toHaveLength(1);
+        expect(container.resolveAll(GetBoundWorkflowUseCase)).toHaveLength(1);
 ```
 
-- [ ] **Step 7: Run the tests**
+- [ ] **Step 8: Run the tests**
 
 Run: `yarn test packages/api-workflows 2>&1 | tail -50` Expected: PASS.
 Run: `yarn test:os packages/api-workflows 2>&1 | tail -50` Expected: PASS, or "not run" (A9).
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 9: Commit**
 
 Run the Global Constraints chain (build `@webiny/api-workflows`), then commit:
 
 ```
-feat(api-workflows): add use cases to get and list a target's reviews
+feat(api-workflows): add use cases for a target's reviews and a namespace's workflow
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn

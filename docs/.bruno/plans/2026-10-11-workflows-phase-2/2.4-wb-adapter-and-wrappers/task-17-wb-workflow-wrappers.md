@@ -1,6 +1,6 @@
 ### Task 17: WB workflow store, delete, list and get wrappers
 
-Spec 4.1, 8, D78, D115, D131, D132, D133, R45, R46, R57-R60. The Website Builder mirror of Task 12, for workflows bound to `wb.page` (the only WB namespace in v1). The list needs no paging loop: `models_in: ["wb.page"]` returns at most one workflow (D15).
+Spec 4.1, 8, D78, D115, D131, D132, D133, R45, R46, R57-R60, R76, R78, R80. The Website Builder mirror of Task 12, on the shared building blocks of Task 6b, for workflows bound to `wb.page` (the only WB namespace in v1). The list needs no paging loop: `models_in: ["wb.page"]` returns at most one workflow (D15).
 
 **Files:**
 - Create: `packages/api-website-builder-workflows/src/features/wrappers/shared/wbWorkflows.ts`
@@ -22,22 +22,28 @@ Spec 4.1, 8, D78, D115, D131, D132, D133, R45, R46, R57-R60. The Website Builder
 - Create: `packages/api-website-builder-workflows/src/features/wrappers/GetWebsiteBuilderPageWorkflow/index.ts`
 - Create: `packages/api-website-builder-workflows/src/features/wrappers/feature.ts`
 - Modify: `packages/api-website-builder-workflows/src/WebsiteBuilderWorkflowsFeature.ts`
+- Create: `packages/api-website-builder-workflows/__tests__/__helpers/RecordingEventPublisher.ts`
 - Create: `packages/api-website-builder-workflows/__tests__/wrappers/workflowWrappers.test.ts`
 
 **Interfaces:**
-- Consumes: as Task 12, with `WbPageTargetReader` and `WbPageAccess` (Task 15) instead of the CMS ones.
+- Consumes: as Task 12 (incl. `keepReadableBlockingReviews`, `belongsToApp`, `isAppWorkflow` from Task 6b), with `WbPageTargetReader` and `WbPageAccess` (Task 15) instead of the CMS ones.
 - Produces:
-  - `shared/wbWorkflows.ts`: `belongsToWb(models: string[]): boolean`, `isWbWorkflow(workflow: WorkflowValues): boolean`, `WB_PAGES_ONLY` message, `MAX_BLOCKING_REVIEWS = 5`.
+  - `shared/wbWorkflows.ts`: `isWbPageNamespace(model: string): boolean`, `belongsToWb(models: string[]): boolean`, `isWbWorkflow(workflow: WorkflowValues): boolean`, `WB_PAGES_ONLY` message.
+  - Test helper `RecordingEventPublisher` + `recordedEvents` (same content as the CMS package's, Task 12).
   - `StoreWebsiteBuilderPageWorkflowUseCase` (`StoreWebsiteBuilderPageWorkflowInput { workflow: WorkflowValues; savedOn?: string | null }`), `DeleteWebsiteBuilderPageWorkflowUseCase` (`DeleteWebsiteBuilderPageWorkflowInput { id: string }`), `ListWebsiteBuilderPageWorkflowsUseCase` (`execute(): Promise<Result<Workflow[], Error>>`), `GetWebsiteBuilderPageWorkflowUseCase` (`GetWebsiteBuilderPageWorkflowInput { id: string }`), with the same results and errors as their CMS counterparts.
   - `WbWrappersFeature` (registered by `WebsiteBuilderWorkflowsFeature`); Task 18 adds to it.
 
 - [ ] **Step 1: Write the failing test**
 
+Create `packages/api-website-builder-workflows/__tests__/__helpers/RecordingEventPublisher.ts` with exactly the content of `packages/api-headless-cms-workflows/__tests__/__helpers/RecordingEventPublisher.ts` (Task 12).
+
 Create `packages/api-website-builder-workflows/__tests__/wrappers/workflowWrappers.test.ts`:
 
 ```ts
 import { afterEach, describe, expect, it } from "vitest";
+import type { Container } from "@webiny/di";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
+import type { WorkflowHasActiveReviewsErrorData } from "@webiny/api-workflows/domain/workflow/errors.js";
 import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createPage, expectOk } from "~tests/__helpers/pages.js";
@@ -48,8 +54,15 @@ import {
     WB_ADMIN_ACTOR
 } from "~tests/__helpers/engine.js";
 import { ARTICLE_NAMESPACE } from "~tests/__helpers/cmsModel.js";
-import { EDITOR, READER, WB_READER, WORKFLOWS_EDITOR } from "~tests/__helpers/identities.js";
+import {
+    EDITOR,
+    READER,
+    toActor,
+    WB_READER,
+    WORKFLOWS_EDITOR
+} from "~tests/__helpers/identities.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
+import { RecordingEventPublisher, recordedEvents } from "~tests/__helpers/RecordingEventPublisher.js";
 import { StoreWebsiteBuilderPageWorkflowUseCase } from "~/features/wrappers/StoreWebsiteBuilderPageWorkflow/index.js";
 import { DeleteWebsiteBuilderPageWorkflowUseCase } from "~/features/wrappers/DeleteWebsiteBuilderPageWorkflow/index.js";
 import { ListWebsiteBuilderPageWorkflowsUseCase } from "~/features/wrappers/ListWebsiteBuilderPageWorkflows/index.js";
@@ -57,6 +70,20 @@ import { GetWebsiteBuilderPageWorkflowUseCase } from "~/features/wrappers/GetWeb
 
 const createEditorContext = () => {
     return createUserContext({ identity: EDITOR, permissions: [WORKFLOWS_EDITOR, ...WB_READER] });
+};
+
+/** As `createEditorContext`, recording every published event (R80). */
+const createRecordingEditorContext = () => {
+    recordedEvents.length = 0;
+    return createUserContext({
+        identity: EDITOR,
+        permissions: [WORKFLOWS_EDITOR, ...WB_READER],
+        legacyPlugins: [
+            (container: Container) => {
+                container.registerDecorator(RecordingEventPublisher);
+            }
+        ]
+    });
 };
 
 const createReaderContext = () => {
@@ -111,6 +138,24 @@ describe("WB workflow wrappers", () => {
         expect(created.savedBy.id).toBe(EDITOR.id);
         expect(stale.error.code).toBe("Workflows/Workflow/Conflict");
         expect(updated.isOk()).toBe(true);
+    });
+
+    it("passes the caller as the actor of the store and delete events (R58, R80)", async () => {
+        const editor = await createRecordingEditorContext();
+
+        const created = expectOk(await store(editor));
+        expectOk(await remove(editor, created.id));
+
+        const actors = recordedEvents
+            .filter(event => event.eventType.startsWith("Workflows/Workflow/"))
+            .map(event => [event.eventType, event.payload.actor]);
+        const actor = toActor(EDITOR);
+        expect(actors).toEqual([
+            ["Workflows/Workflow/BeforeCreate", actor],
+            ["Workflows/Workflow/AfterCreate", actor],
+            ["Workflows/Workflow/BeforeDelete", actor],
+            ["Workflows/Workflow/AfterDelete", actor]
+        ]);
     });
 
     it("refuses to store or delete a workflow without editor (R60)", async () => {
@@ -197,14 +242,16 @@ describe("WB workflow wrappers", () => {
     it("lists at most five readable blocking reviews and keeps the exact count (D115)", async () => {
         const admin = await createUserContext();
         await storeWbWorkflow(admin);
+        // Locked and readable pages interleaved, so the result does not depend on list order.
         const lockedRevisionIds: string[] = [];
-        for (const title of ["Locked 1", "Locked 2"]) {
-            const page = await createPage(admin, { title, folderId: "folder-locked" });
-            lockedRevisionIds.push(page.id);
-            await requestPageReview(admin, page);
-        }
-        for (const title of ["A", "B", "C", "D", "E", "F"]) {
-            await requestPageReview(admin, await createPage(admin, { title }));
+        for (let i = 1; i <= 6; i++) {
+            const locked = await createPage(admin, {
+                title: `Locked ${i}`,
+                folderId: "folder-locked"
+            });
+            lockedRevisionIds.push(locked.id);
+            await requestPageReview(admin, locked);
+            await requestPageReview(admin, await createPage(admin, { title: `Open ${i}` }));
         }
         folderLevels.set("folder-locked", new Map([[EDITOR.id, "no-access"]]));
         const editor = await createEditorContext();
@@ -212,11 +259,8 @@ describe("WB workflow wrappers", () => {
         const blocked = await remove(editor, "wb-workflow");
 
         expect(blocked.error.code).toBe("Workflows/Workflow/HasActiveReviews");
-        const data = blocked.error.data as {
-            count: number;
-            reviews: { targetRevisionId: string }[];
-        };
-        expect(data.count).toBe(8);
+        const data = blocked.error.data as WorkflowHasActiveReviewsErrorData;
+        expect(data.count).toBe(12);
         expect(data.reviews).toHaveLength(5);
         expect(data.reviews.some(review => lockedRevisionIds.includes(review.targetRevisionId))).toBe(
             false
@@ -236,21 +280,24 @@ Create `packages/api-website-builder-workflows/src/features/wrappers/shared/wbWo
 
 ```ts
 import type { WorkflowValues } from "@webiny/api-workflows/domain/workflow/types.js";
+import { belongsToApp, isAppWorkflow } from "@webiny/api-workflows/domain/workflow/isAppWorkflow.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
-
-/** At most this many blocking reviews are listed to the caller (D115). */
-export const MAX_BLOCKING_REVIEWS = 5;
 
 export const WB_PAGES_ONLY = 'A Website Builder workflow can only be bound to pages ("wb.page").';
 
+/** The only Website Builder namespace in v1. */
+export const isWbPageNamespace = (model: string): boolean => {
+    return model === WB_PAGE_NAMESPACE;
+};
+
 /** Every model is `wb.page`; an empty list is left to the engine's validation. */
 export const belongsToWb = (models: string[]): boolean => {
-    return models.every(model => model === WB_PAGE_NAMESPACE);
+    return belongsToApp(models, isWbPageNamespace);
 };
 
 /** A stored workflow of the Website Builder app (R46). */
 export const isWbWorkflow = (workflow: WorkflowValues): boolean => {
-    return workflow.models.length > 0 && belongsToWb(workflow.models);
+    return isAppWorkflow(workflow, isWbPageNamespace);
 };
 ```
 
@@ -319,7 +366,6 @@ import {
 import { belongsToWb, isWbWorkflow, WB_PAGES_ONLY } from "../shared/wbWorkflows.js";
 import { StoreWebsiteBuilderPageWorkflowUseCase as UseCase } from "./abstractions.js";
 
-const WORKFLOW_NOT_FOUND = "Workflows/Workflow/NotFound";
 
 class StoreWebsiteBuilderPageWorkflowUseCaseImpl implements UseCase.Interface {
     public constructor(
@@ -343,7 +389,7 @@ class StoreWebsiteBuilderPageWorkflowUseCaseImpl implements UseCase.Interface {
 
         // Never overwrite another app's workflow under the same id (R46).
         const existing = await this.getWorkflow.execute({ id: input.workflow.id });
-        if (existing.isFail() && existing.error.code !== WORKFLOW_NOT_FOUND) {
+        if (existing.isFail() && !(existing.error instanceof WorkflowNotFoundError)) {
             return Result.fail(existing.error);
         }
         if (existing.isOk() && !isWbWorkflow(existing.value)) {
@@ -448,9 +494,10 @@ import {
     WorkflowNotFoundError
 } from "@webiny/api-workflows/domain/workflow/errors.js";
 import type { WorkflowBlockingReview } from "@webiny/api-workflows/domain/workflow/types.js";
+import { keepReadableBlockingReviews } from "@webiny/api-workflows/domain/workflow/keepReadableBlockingReviews.js";
 import { WbPageTargetReader } from "~/features/target/WbPageTargetReader/index.js";
 import { WbPageAccess } from "~/features/target/WbPageAccess/index.js";
-import { isWbWorkflow, MAX_BLOCKING_REVIEWS } from "../shared/wbWorkflows.js";
+import { isWbWorkflow } from "../shared/wbWorkflows.js";
 import { DeleteWebsiteBuilderPageWorkflowUseCase as UseCase } from "./abstractions.js";
 
 class DeleteWebsiteBuilderPageWorkflowUseCaseImpl implements UseCase.Interface {
@@ -482,7 +529,10 @@ class DeleteWebsiteBuilderPageWorkflowUseCaseImpl implements UseCase.Interface {
 
         const deleted = await this.deleteWorkflow.execute({ id: input.id, actor: actor.value });
         if (deleted.isFail() && deleted.error instanceof WorkflowHasActiveReviewsError) {
-            const reviews = await this.keepReadable(deleted.error.data.reviews);
+            // The first 5 the caller can read, at most 50 checked; the count stays exact (D115, R76).
+            const reviews = await keepReadableBlockingReviews(deleted.error.data.reviews, review => {
+                return this.canRead(review);
+            });
             return Result.fail(
                 new WorkflowHasActiveReviewsError({ count: deleted.error.data.count, reviews })
             );
@@ -490,24 +540,13 @@ class DeleteWebsiteBuilderPageWorkflowUseCaseImpl implements UseCase.Interface {
         return deleted;
     }
 
-    /** The first blocking reviews the caller can read, at most 5 (D115). */
-    private async keepReadable(
-        reviews: WorkflowBlockingReview[]
-    ): Promise<WorkflowBlockingReview[]> {
-        const readable: WorkflowBlockingReview[] = [];
-        for (const review of reviews) {
-            if (readable.length === MAX_BLOCKING_REVIEWS) {
-                break;
-            }
-            const target = await this.targets.read({
-                model: review.model,
-                targetRevisionId: review.targetRevisionId
-            });
-            if (target && (await this.access.canRead(target))) {
-                readable.push(review);
-            }
-        }
-        return readable;
+    /** Read access of the caller to one blocking review's page; a failed read throws (unreadable). */
+    private async canRead(review: WorkflowBlockingReview): Promise<boolean> {
+        const target = await this.targets.read({
+            model: review.model,
+            targetRevisionId: review.targetRevisionId
+        });
+        return target !== null && (await this.access.canRead(target));
     }
 }
 
@@ -776,6 +815,7 @@ In `packages/api-website-builder-workflows/src/WebsiteBuilderWorkflowsFeature.ts
 - [ ] **Step 8: Run the tests**
 
 Run: `yarn test packages/api-website-builder-workflows 2>&1 | tail -50` Expected: PASS.
+Run: `yarn check:test:types -p api-website-builder-workflows --report cli 2>&1 | tail -40` Expected: no errors.
 Run: `yarn test:os packages/api-website-builder-workflows 2>&1 | tail -50` Expected: PASS, or "not run" (A9).
 
 - [ ] **Step 9: Commit**

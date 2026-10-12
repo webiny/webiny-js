@@ -1,9 +1,9 @@
 ### Task 12: CMS workflow store, delete, list and get wrappers
 
-Spec 4.1, 8, D78, D115, D131, D132, D133, R45, R46, R57-R60. Four wrappers over the engine's workflow use cases for `cms.*` workflows:
+Spec 4.1, 8, D78, D115, D131, D132, D133, R45, R46, R57-R60, R76, R78, R80. Four wrappers over the engine's workflow use cases for `cms.*` workflows, built on the shared building blocks of Task 6b:
 
 - `StoreCmsEntryWorkflowUseCase`: `editor`; models must be `cms.*`; never stores over another app's workflow; passes `savedOn` and the actor.
-- `DeleteCmsEntryWorkflowUseCase`: `editor`; another app's workflow is not found; on `HasActiveReviews` keeps the first 5 blocking reviews the caller can read, with the exact count (D115).
+- `DeleteCmsEntryWorkflowUseCase`: `editor`; another app's workflow is not found; on `HasActiveReviews` keeps the first 5 blocking reviews the caller can read (checking at most 50, a failed read counts as unreadable), with the exact count (D115, R76).
 - `ListCmsEntryWorkflowsUseCase`, `GetCmsEntryWorkflowUseCase`: any authenticated identity; `cms.*` workflows only.
 
 **Files:**
@@ -28,18 +28,19 @@ Spec 4.1, 8, D78, D115, D131, D132, D133, R45, R46, R57-R60. Four wrappers over 
 - Modify: `packages/api-headless-cms-workflows/src/CmsWorkflowsFeature.ts`
 - Create: `packages/api-headless-cms-workflows/__tests__/__helpers/FakeListUserTeams.ts`
 - Create: `packages/api-headless-cms-workflows/__tests__/__helpers/userContext.ts`
+- Create: `packages/api-headless-cms-workflows/__tests__/__helpers/RecordingEventPublisher.ts`
 - Create: `packages/api-headless-cms-workflows/__tests__/wrappers/workflowWrappers.test.ts`
 
 **Interfaces:**
-- Consumes: `CurrentReviewViewer` (`getActor()`), `WorkflowsPermissions` (`canEdit()`), `GetWorkflowUseCase`, `ListWorkflowsUseCase`, `StoreWorkflowUseCase` (Task 2), `DeleteWorkflowUseCase` (Tasks 2, 3), `CmsEntryTargetReader`, `CmsEntryAccess` (Task 7), errors from `@webiny/api-workflows/domain/{permissions,workflow}/errors.js`.
+- Consumes: `CurrentReviewViewer` (`getActor()`), `WorkflowsPermissions` (`canEdit()`), `GetWorkflowUseCase`, `ListWorkflowsUseCase`, `StoreWorkflowUseCase` (Task 2), `DeleteWorkflowUseCase` (Tasks 2, 3), `keepReadableBlockingReviews`, `belongsToApp`, `isAppWorkflow` (Task 6b), `CmsEntryTargetReader`, `CmsEntryAccess` (Task 7), errors from `@webiny/api-workflows/domain/{permissions,workflow}/errors.js`, `EventPublisher` (test).
 - Produces:
-  - `shared/cmsWorkflows.ts`: `belongsToCms(models: string[]): boolean`, `isCmsWorkflow(workflow: WorkflowValues): boolean`, `CMS_MODELS_ONLY` message, `MAX_BLOCKING_REVIEWS = 5`.
+  - `shared/cmsWorkflows.ts`: `belongsToCms(models: string[]): boolean`, `isCmsWorkflow(workflow: WorkflowValues): boolean` (the Task 6b helpers with `isCmsNamespace`), `CMS_MODELS_ONLY` message.
   - `StoreCmsEntryWorkflowUseCase.Interface.execute(input: StoreCmsEntryWorkflowInput): Promise<Result<Workflow, Error>>`, `StoreCmsEntryWorkflowInput { workflow: WorkflowValues; savedOn?: string | null }`.
   - `DeleteCmsEntryWorkflowUseCase.Interface.execute(input: DeleteCmsEntryWorkflowInput): Promise<Result<Workflow, Error>>`, `DeleteCmsEntryWorkflowInput { id: string }`.
   - `ListCmsEntryWorkflowsUseCase.Interface.execute(): Promise<Result<Workflow[], Error>>`.
   - `GetCmsEntryWorkflowUseCase.Interface.execute(input: GetCmsEntryWorkflowInput): Promise<Result<Workflow, Error>>`, `GetCmsEntryWorkflowInput { id: string }`.
   - `CmsWrappersFeature` (registered by `CmsWorkflowsFeature`); Tasks 13 and 14 add to it.
-  - Test helpers `FakeListUserTeams`, `createUserContext({ identity, permissions, legacyPlugins })`.
+  - Test helpers `FakeListUserTeams`, `createUserContext({ identity, permissions, legacyPlugins })`, `RecordingEventPublisher` + `recordedEvents` (a copy of the api-workflows helper without its call log).
 
 - [ ] **Step 1: Write the test helpers and the failing test**
 
@@ -120,16 +121,43 @@ export const createUserContext = async (params: UserContextParams = {}): Promise
 };
 ```
 
+Create `packages/api-headless-cms-workflows/__tests__/__helpers/RecordingEventPublisher.ts`:
+
+```ts
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import type { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
+
+/** Every event published while the decorator is registered. Reset it at the start of a test. */
+export const recordedEvents: DomainEvent<any>[] = [];
+
+class RecordingEventPublisherImpl implements EventPublisher.Interface {
+    constructor(private decoratee: EventPublisher.Interface) {}
+
+    async publish<TEvent extends DomainEvent<any>>(event: TEvent): Promise<void> {
+        recordedEvents.push(event);
+        await this.decoratee.publish(event);
+    }
+}
+
+export const RecordingEventPublisher = EventPublisher.createDecorator({
+    decorator: RecordingEventPublisherImpl,
+    dependencies: []
+});
+```
+
 Create `packages/api-headless-cms-workflows/__tests__/wrappers/workflowWrappers.test.ts`:
 
 ```ts
 import { afterEach, describe, expect, it } from "vitest";
+import type { Container } from "@webiny/di";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
+import type { WorkflowHasActiveReviewsErrorData } from "@webiny/api-workflows/domain/workflow/errors.js";
 import { createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow.js";
 import { createAuthorEntry, expectOk } from "~tests/__helpers/entries.js";
 import { requestEntryReview } from "~tests/__helpers/engine.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
-import { EDITOR, READER } from "~tests/__helpers/identities.js";
+import { EDITOR, READER, toActor } from "~tests/__helpers/identities.js";
+import { RecordingEventPublisher, recordedEvents } from "~tests/__helpers/RecordingEventPublisher.js";
 import { CMS_READER, WORKFLOWS_EDITOR } from "~tests/__helpers/permissions.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { StoreCmsEntryWorkflowUseCase } from "~/features/wrappers/StoreCmsEntryWorkflow/index.js";
@@ -140,6 +168,27 @@ import { GetCmsEntryWorkflowUseCase } from "~/features/wrappers/GetCmsEntryWorkf
 /** A workflow editor who can read CMS models (binding needs model read access, R38). */
 const createEditorContext = () => {
     return createUserContext({ identity: EDITOR, permissions: [WORKFLOWS_EDITOR, ...CMS_READER] });
+};
+
+/** As `createEditorContext`, recording every published event (R80). */
+const createRecordingEditorContext = () => {
+    recordedEvents.length = 0;
+    return createUserContext({
+        identity: EDITOR,
+        permissions: [WORKFLOWS_EDITOR, ...CMS_READER],
+        legacyPlugins: [
+            (container: Container) => {
+                container.registerDecorator(RecordingEventPublisher);
+            }
+        ]
+    });
+};
+
+/** The `actor` of each recorded workflow event, by event type (R58, R80). */
+const workflowEventActors = () => {
+    return recordedEvents
+        .filter(event => event.eventType.startsWith("Workflows/Workflow/"))
+        .map(event => [event.eventType, event.payload.actor]);
 };
 
 const createReaderContext = () => {
@@ -190,6 +239,26 @@ describe("CMS workflow wrappers", () => {
         expect(created.savedBy.id).toBe(EDITOR.id);
         expect(stale.error.code).toBe("Workflows/Workflow/Conflict");
         expect(updated.isOk()).toBe(true);
+    });
+
+    it("passes the caller as the actor of the store and delete events (R58, R80)", async () => {
+        const editor = await createRecordingEditorContext();
+
+        const created = expectOk(await store(editor));
+        expectOk(
+            await store(editor, { ...createWorkflowValues(), name: "Changed" }, created.savedOn)
+        );
+        expectOk(await remove(editor, created.id));
+
+        const actor = toActor(EDITOR);
+        expect(workflowEventActors()).toEqual([
+            ["Workflows/Workflow/BeforeCreate", actor],
+            ["Workflows/Workflow/AfterCreate", actor],
+            ["Workflows/Workflow/BeforeUpdate", actor],
+            ["Workflows/Workflow/AfterUpdate", actor],
+            ["Workflows/Workflow/BeforeDelete", actor],
+            ["Workflows/Workflow/AfterDelete", actor]
+        ]);
     });
 
     it("refuses to store or delete a workflow without editor (R60)", async () => {
@@ -272,14 +341,16 @@ describe("CMS workflow wrappers", () => {
     it("lists at most five readable blocking reviews and keeps the exact count (D115)", async () => {
         const admin = await createUserContext();
         expectOk(await storeWorkflow(admin));
+        // Locked and readable entries interleaved, so the result does not depend on list order.
         const lockedRevisionIds: string[] = [];
-        for (const name of ["Locked 1", "Locked 2"]) {
-            const entry = await createAuthorEntry(admin, { name, folderId: "folder-locked" });
-            lockedRevisionIds.push(entry.id);
-            await requestEntryReview(admin, entry);
-        }
-        for (const name of ["A", "B", "C", "D", "E", "F"]) {
-            await requestEntryReview(admin, await createAuthorEntry(admin, { name }));
+        for (let i = 1; i <= 6; i++) {
+            const locked = await createAuthorEntry(admin, {
+                name: `Locked ${i}`,
+                folderId: "folder-locked"
+            });
+            lockedRevisionIds.push(locked.id);
+            await requestEntryReview(admin, locked);
+            await requestEntryReview(admin, await createAuthorEntry(admin, { name: `Open ${i}` }));
         }
         folderLevels.set("folder-locked", new Map([[EDITOR.id, "no-access"]]));
         const editor = await createEditorContext();
@@ -287,11 +358,8 @@ describe("CMS workflow wrappers", () => {
         const blocked = await remove(editor, "workflow-1");
 
         expect(blocked.error.code).toBe("Workflows/Workflow/HasActiveReviews");
-        const data = blocked.error.data as {
-            count: number;
-            reviews: { targetRevisionId: string; stepName: string }[];
-        };
-        expect(data.count).toBe(8);
+        const data = blocked.error.data as WorkflowHasActiveReviewsErrorData;
+        expect(data.count).toBe(12);
         expect(data.reviews).toHaveLength(5);
         expect(data.reviews.some(review => lockedRevisionIds.includes(review.targetRevisionId))).toBe(
             false
@@ -312,22 +380,20 @@ Create `packages/api-headless-cms-workflows/src/features/wrappers/shared/cmsWork
 
 ```ts
 import type { WorkflowValues } from "@webiny/api-workflows/domain/workflow/types.js";
+import { belongsToApp, isAppWorkflow } from "@webiny/api-workflows/domain/workflow/isAppWorkflow.js";
 import { isCmsNamespace } from "~/utils/appName.js";
-
-/** At most this many blocking reviews are listed to the caller (D115). */
-export const MAX_BLOCKING_REVIEWS = 5;
 
 export const CMS_MODELS_ONLY =
     'A Headless CMS workflow can only be bound to Headless CMS models ("cms.<modelId>").';
 
 /** Every model is a `cms.<modelId>` namespace; an empty list is left to the engine's validation. */
 export const belongsToCms = (models: string[]): boolean => {
-    return models.every(isCmsNamespace);
+    return belongsToApp(models, isCmsNamespace);
 };
 
 /** A stored workflow of the Headless CMS app (R46). */
 export const isCmsWorkflow = (workflow: WorkflowValues): boolean => {
-    return workflow.models.length > 0 && belongsToCms(workflow.models);
+    return isAppWorkflow(workflow, isCmsNamespace);
 };
 ```
 
@@ -394,8 +460,6 @@ import {
 import { belongsToCms, CMS_MODELS_ONLY, isCmsWorkflow } from "../shared/cmsWorkflows.js";
 import { StoreCmsEntryWorkflowUseCase as UseCase } from "./abstractions.js";
 
-const WORKFLOW_NOT_FOUND = "Workflows/Workflow/NotFound";
-
 class StoreCmsEntryWorkflowUseCaseImpl implements UseCase.Interface {
     public constructor(
         private viewer: CurrentReviewViewer.Interface,
@@ -418,7 +482,7 @@ class StoreCmsEntryWorkflowUseCaseImpl implements UseCase.Interface {
 
         // Never overwrite another app's workflow under the same id (R46).
         const existing = await this.getWorkflow.execute({ id: input.workflow.id });
-        if (existing.isFail() && existing.error.code !== WORKFLOW_NOT_FOUND) {
+        if (existing.isFail() && !(existing.error instanceof WorkflowNotFoundError)) {
             return Result.fail(existing.error);
         }
         if (existing.isOk() && !isCmsWorkflow(existing.value)) {
@@ -522,9 +586,10 @@ import {
     WorkflowNotFoundError
 } from "@webiny/api-workflows/domain/workflow/errors.js";
 import type { WorkflowBlockingReview } from "@webiny/api-workflows/domain/workflow/types.js";
+import { keepReadableBlockingReviews } from "@webiny/api-workflows/domain/workflow/keepReadableBlockingReviews.js";
 import { CmsEntryTargetReader } from "~/features/target/CmsEntryTargetReader/index.js";
 import { CmsEntryAccess } from "~/features/target/CmsEntryAccess/index.js";
-import { isCmsWorkflow, MAX_BLOCKING_REVIEWS } from "../shared/cmsWorkflows.js";
+import { isCmsWorkflow } from "../shared/cmsWorkflows.js";
 import { DeleteCmsEntryWorkflowUseCase as UseCase } from "./abstractions.js";
 
 class DeleteCmsEntryWorkflowUseCaseImpl implements UseCase.Interface {
@@ -556,7 +621,10 @@ class DeleteCmsEntryWorkflowUseCaseImpl implements UseCase.Interface {
 
         const deleted = await this.deleteWorkflow.execute({ id: input.id, actor: actor.value });
         if (deleted.isFail() && deleted.error instanceof WorkflowHasActiveReviewsError) {
-            const reviews = await this.keepReadable(deleted.error.data.reviews);
+            // The first 5 the caller can read, at most 50 checked; the count stays exact (D115, R76).
+            const reviews = await keepReadableBlockingReviews(deleted.error.data.reviews, review => {
+                return this.canRead(review);
+            });
             return Result.fail(
                 new WorkflowHasActiveReviewsError({ count: deleted.error.data.count, reviews })
             );
@@ -564,24 +632,13 @@ class DeleteCmsEntryWorkflowUseCaseImpl implements UseCase.Interface {
         return deleted;
     }
 
-    /** The first blocking reviews the caller can read, at most 5 (D115). */
-    private async keepReadable(
-        reviews: WorkflowBlockingReview[]
-    ): Promise<WorkflowBlockingReview[]> {
-        const readable: WorkflowBlockingReview[] = [];
-        for (const review of reviews) {
-            if (readable.length === MAX_BLOCKING_REVIEWS) {
-                break;
-            }
-            const target = await this.targets.read({
-                model: review.model,
-                targetRevisionId: review.targetRevisionId
-            });
-            if (target && (await this.access.canRead(target))) {
-                readable.push(review);
-            }
-        }
-        return readable;
+    /** Read access of the caller to one blocking review's target; a failed read throws (unreadable). */
+    private async canRead(review: WorkflowBlockingReview): Promise<boolean> {
+        const target = await this.targets.read({
+            model: review.model,
+            targetRevisionId: review.targetRevisionId
+        });
+        return target !== null && (await this.access.canRead(target));
     }
 }
 
@@ -860,6 +917,7 @@ In `packages/api-headless-cms-workflows/src/CmsWorkflowsFeature.ts` import `CmsW
 - [ ] **Step 8: Run the tests**
 
 Run: `yarn test packages/api-headless-cms-workflows 2>&1 | tail -50` Expected: PASS.
+Run: `yarn check:test:types -p api-headless-cms-workflows --report cli 2>&1 | tail -40` Expected: no errors.
 Run: `yarn test:os packages/api-headless-cms-workflows 2>&1 | tail -50` Expected: PASS, or "not run" (A9).
 
 - [ ] **Step 9: Commit**

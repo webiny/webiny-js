@@ -1,26 +1,23 @@
-### Task 10: CMS publish, move and permanent-delete rules
+### Task 10: CMS publish and move rules
 
-Spec 5.1, 9.3, D79, D84, D121, R52, R53, R55, R56, A22, A24, A30. The `cms.*` adapter's rules on CMS entry events. They act only on public CMS models (`getCmsNamespace`), because WB pages are CMS entries too and the WB adapter handles them on the WB page events (Task 16):
+Spec 5.1, 9.3, D79, D84, D121, D134 point 2, R52, R53, R55, R83, A24, A30. The `cms.*` adapter's publish and move rules on CMS entry events (the trash and delete rules are Task 10b). They act only on public CMS models (`getCmsNamespace`), because WB pages are CMS entries too and the WB adapter handles them on the WB page events (Task 16), and only on models bound to a workflow (`GetBoundWorkflowUseCase`):
 
-- `RequireApprovedReviewOnPublish` (`EntryBeforePublish`): on a model bound to a workflow, the revision needs an approved active review; lookups fail closed.
-- `BlockMoveWhileInReview` (`EntryBeforeMove`): no move while any revision of the entry has an in-progress review.
-- `DeleteReviewsOnEntryDelete` (`EntryAfterDelete`, `permanent: true`) and `DeleteReviewsOnRevisionDelete` (`EntryRevisionAfterDelete`): delete the reviews and their assignment records.
+- `RequireApprovedReviewOnPublish` (`EntryBeforePublish`): on a bound model, the revision needs an approved active review; lookups fail closed. Creating an entry or a revision with `status: "published"` is not a publish and stays allowed (D134 point 2, R83); a test pins it.
+- `BlockMoveWhileInReview` (`EntryBeforeMove`): on a bound model, no move while any revision of the entry has an in-progress review.
 
 **Files:**
 - Create: `packages/api-headless-cms-workflows/src/features/hooks/RequireApprovedReviewOnPublish.ts`
 - Create: `packages/api-headless-cms-workflows/src/features/hooks/BlockMoveWhileInReview.ts`
-- Create: `packages/api-headless-cms-workflows/src/features/hooks/DeleteReviewsOnEntryDelete.ts`
-- Create: `packages/api-headless-cms-workflows/src/features/hooks/DeleteReviewsOnRevisionDelete.ts`
 - Modify: `packages/api-headless-cms-workflows/src/features/hooks/feature.ts`
-- Create: `packages/api-headless-cms-workflows/__tests__/hooks/publishMoveDelete.test.ts`
+- Create: `packages/api-headless-cms-workflows/__tests__/hooks/publishAndMove.test.ts`
 
 **Interfaces:**
-- Consumes: `EntryBeforePublishEventHandler`, `EntryBeforeMoveEventHandler`, `EntryAfterDeleteEventHandler`, `EntryRevisionAfterDeleteEventHandler` (api-headless-cms), `ListWorkflowsUseCase` (1a), `GetTargetReviewUseCase`, `ListTargetReviewsUseCase` (Task 4), `DeleteTargetReviewsUseCase` (Task 5), `ReviewPublishBlockedError`, `ReviewTargetLockedError` (Task 6), `getCmsNamespace` (Task 7).
-- Produces: four handlers registered by `CmsHooksFeature`.
+- Consumes: `EntryBeforePublishEventHandler`, `EntryBeforeMoveEventHandler` (api-headless-cms), `GetBoundWorkflowUseCase`, `GetTargetReviewUseCase`, `ListTargetReviewsUseCase` (Task 4), `ReviewPublishBlockedError`, `ReviewTargetLockedError` (Task 6), `getCmsNamespace` (Task 7), `CreateEntryUseCase`, `ListWorkflowsUseCase` (tests).
+- Produces: two handlers registered by `CmsHooksFeature`.
 
 - [ ] **Step 1: Write the failing test**
 
-Create `packages/api-headless-cms-workflows/__tests__/hooks/publishMoveDelete.test.ts`:
+Create `packages/api-headless-cms-workflows/__tests__/hooks/publishAndMove.test.ts`:
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -30,11 +27,9 @@ import type { CmsContext, CmsEntry } from "@webiny/api-headless-cms/types/index.
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
 import { UnpublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/index.js";
 import { MoveEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/MoveEntry/index.js";
-import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
-import { DeleteEntryRevisionUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/index.js";
+import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
 import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
-import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
 import { WorkflowPersistenceError } from "@webiny/api-workflows/domain/workflow/errors.js";
 import { createContextHandler } from "~tests/__handler/context.js";
 import { storeWorkflow } from "~tests/__workflows/workflow.js";
@@ -76,10 +71,6 @@ const publish = async (context: CmsContext, entry: CmsEntry) => {
 const move = async (context: CmsContext, entry: CmsEntry, folderId: string) => {
     const model = await getAuthorModel(context);
     return context.container.resolve(MoveEntryUseCase).execute(model, entry.id, folderId);
-};
-
-const getReview = (context: CmsContext, id: string) => {
-    return context.container.resolve(GetReviewUseCase).execute({ id });
 };
 
 let listWorkflowsCalls = 0;
@@ -179,6 +170,27 @@ describe("CMS publish rule (D79, D121)", () => {
         expect(blocked.error.code).toBe("Workflows/Workflow/Persistence");
     });
 
+    it("creates entries and revisions as published on a bound model without a review (D134, R83)", async () => {
+        const context = await createTestContext();
+        const model = await getAuthorModel(context);
+
+        const created = expectOk(
+            await context.container.resolve(CreateEntryUseCase).execute(model, {
+                values: { name: "Imported" },
+                status: "published",
+                location: { folderId: "root" }
+            })
+        );
+        const revision = expectOk(
+            await context.container
+                .resolve(CreateEntryRevisionFromUseCase)
+                .execute(model, created.id, { values: {}, status: "published" })
+        );
+
+        expect(created.status).toBe("published");
+        expect(revision.status).toBe("published");
+    });
+
     it("ignores private models such as Website Builder pages (R52)", async () => {
         listWorkflowsCalls = 0;
         const context = await createTestContext({
@@ -220,6 +232,15 @@ describe("CMS move rule (D84)", () => {
         expect(moved.isOk()).toBe(true);
     });
 
+    it("moves an entry of an unbound model without looking up reviews", async () => {
+        const context = await createTestContext({ withWorkflow: false });
+        const entry = await createAuthorEntry(context, { name: "Ann", folderId: "folder-1" });
+
+        const moved = await move(context, entry, "folder-2");
+
+        expect(moved.isOk()).toBe(true);
+    });
+
     it("moves a target whose review is approved", async () => {
         const context = await createTestContext();
         const entry = await createAuthorEntry(context, { name: "Ann", folderId: "folder-1" });
@@ -246,65 +267,12 @@ describe("CMS move rule (D84)", () => {
         expect(blocked.error.code).toBe("Workflows/Review/TargetLocked");
     });
 });
-
-describe("CMS permanent delete (R56)", () => {
-    it("deletes the reviews of a permanently deleted entry", async () => {
-        const context = await createTestContext();
-        const entry = await createAuthorEntry(context, { name: "Ann" });
-        const review = await requestEntryReview(context, entry);
-        const model = await getAuthorModel(context);
-
-        expectOk(
-            await context.container
-                .resolve(DeleteEntryUseCase)
-                .execute(model, entry.id, { permanently: true })
-        );
-
-        expect((await getReview(context, review.id)).error.code).toBe("Workflows/Review/NotFound");
-    });
-
-    it("keeps the reviews of an entry moved to the trash", async () => {
-        const context = await createTestContext();
-        const entry = await createAuthorEntry(context, { name: "Ann" });
-        const review = await requestEntryReview(context, entry);
-        const model = await getAuthorModel(context);
-
-        expectOk(
-            await context.container
-                .resolve(DeleteEntryUseCase)
-                .execute(model, entry.id, { permanently: false })
-        );
-
-        expect(expectOk(await getReview(context, review.id)).id).toBe(review.id);
-    });
-
-    it("deletes the reviews of a deleted revision and keeps the others", async () => {
-        const context = await createTestContext();
-        const first = await createAuthorEntry(context, { name: "Ann" });
-        const firstReview = await requestEntryReview(context, first);
-        await cancelEntryReview(context, firstReview);
-        const model = await getAuthorModel(context);
-        const second = expectOk(
-            await context.container
-                .resolve(CreateEntryRevisionFromUseCase)
-                .execute(model, first.id, { values: {} })
-        );
-        const secondReview = await requestEntryReview(context, second);
-
-        expectOk(await context.container.resolve(DeleteEntryRevisionUseCase).execute(model, second.id));
-
-        expect((await getReview(context, secondReview.id)).error.code).toBe(
-            "Workflows/Review/NotFound"
-        );
-        expect(expectOk(await getReview(context, firstReview.id)).id).toBe(firstReview.id);
-    });
-});
 ```
 
 - [ ] **Step 2: Run it to verify it fails**
 
-Run: `yarn test packages/api-headless-cms-workflows/__tests__/hooks/publishMoveDelete.test.ts 2>&1 | tail -50`
-Expected: FAIL. Publishing without a review succeeds; the move under review succeeds; the deleted entry's review is still found. The tests without a workflow, after approval and after a trash move already pass.
+Run: `yarn test packages/api-headless-cms-workflows/__tests__/hooks/publishAndMove.test.ts 2>&1 | tail -50`
+Expected: FAIL. Publishing without a review succeeds; the move under review succeeds. The tests without a workflow, after approval and for create-as-published already pass (the last one must keep passing: nothing in this task may block it).
 
 - [ ] **Step 3: Implement the publish rule**
 
@@ -312,7 +280,7 @@ Create `packages/api-headless-cms-workflows/src/features/hooks/RequireApprovedRe
 
 ```ts
 import { EntryBeforePublishEventHandler } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
-import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
+import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
 import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
 import { ReviewPublishBlockedError } from "@webiny/api-workflows/domain/review/errors.js";
 import { getCmsNamespace } from "~/utils/appName.js";
@@ -322,11 +290,12 @@ import { getCmsNamespace } from "~/utils/appName.js";
  * revision is published only with its active review approved; an approved revision that was
  * unpublished can be published again because approved reviews stay active (D23). Lookup failures
  * block (fail closed). `system.workflow` is not trusted: the update input can set it. Private
- * models (Website Builder pages, R52) are left to their app.
+ * models (Website Builder pages, R52) are left to their app. Only the publish action is guarded:
+ * creating content as published stays allowed for data transfer (D134 point 2, R83).
  */
 class RequireApprovedReviewOnPublishImpl implements EntryBeforePublishEventHandler.Interface {
     public constructor(
-        private listWorkflows: ListWorkflowsUseCase.Interface,
+        private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
         private getTargetReview: GetTargetReviewUseCase.Interface
     ) {}
 
@@ -337,15 +306,11 @@ class RequireApprovedReviewOnPublishImpl implements EntryBeforePublishEventHandl
             return;
         }
 
-        // v1 binds at most one workflow to a model (D15).
-        const workflows = await this.listWorkflows.execute({
-            where: { models_in: [namespace] },
-            limit: 1
-        });
-        if (workflows.isFail()) {
-            throw workflows.error;
+        const bound = await this.getBoundWorkflow.execute({ model: namespace });
+        if (bound.isFail()) {
+            throw bound.error;
         }
-        const [workflow] = workflows.value.items;
+        const workflow = bound.value;
         if (!workflow) {
             return;
         }
@@ -372,7 +337,7 @@ class RequireApprovedReviewOnPublishImpl implements EntryBeforePublishEventHandl
 
 export const RequireApprovedReviewOnPublish = EntryBeforePublishEventHandler.createImplementation({
     implementation: RequireApprovedReviewOnPublishImpl,
-    dependencies: [ListWorkflowsUseCase, GetTargetReviewUseCase]
+    dependencies: [GetBoundWorkflowUseCase, GetTargetReviewUseCase]
 });
 ```
 
@@ -382,22 +347,35 @@ Create `packages/api-headless-cms-workflows/src/features/hooks/BlockMoveWhileInR
 
 ```ts
 import { EntryBeforeMoveEventHandler } from "@webiny/api-headless-cms/features/contentEntry/MoveEntry/index.js";
+import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
 import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
 import { ReviewTargetLockedError } from "@webiny/api-workflows/domain/review/errors.js";
 import { getCmsNamespace } from "~/utils/appName.js";
 
 /**
- * Move rule of the `cms.*` adapter (spec 9.3, D84, R55): no folder move while the review is in
- * progress. The location belongs to the entry, not the revision, so any revision in review blocks
- * (A24). Approved, rejected and cancelled reviews do not block. Lookup failures block.
+ * Move rule of the `cms.*` adapter (spec 9.3, D84, R55): on a bound model, no folder move while
+ * the review is in progress. The location belongs to the entry, not the revision, so any revision
+ * in review blocks (A24). Approved, rejected and cancelled reviews do not block. Unbound models
+ * never look up reviews; lookup failures on bound models block.
  */
 class BlockMoveWhileInReviewImpl implements EntryBeforeMoveEventHandler.Interface {
-    public constructor(private listTargetReviews: ListTargetReviewsUseCase.Interface) {}
+    public constructor(
+        private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
+        private listTargetReviews: ListTargetReviewsUseCase.Interface
+    ) {}
 
     public async handle(event: EntryBeforeMoveEventHandler.Event): Promise<void> {
         const { model, entry } = event.payload;
         const namespace = getCmsNamespace(model);
         if (!namespace) {
+            return;
+        }
+
+        const bound = await this.getBoundWorkflow.execute({ model: namespace });
+        if (bound.isFail()) {
+            throw bound.error;
+        }
+        if (!bound.value) {
             return;
         }
 
@@ -425,116 +403,32 @@ class BlockMoveWhileInReviewImpl implements EntryBeforeMoveEventHandler.Interfac
 
 export const BlockMoveWhileInReview = EntryBeforeMoveEventHandler.createImplementation({
     implementation: BlockMoveWhileInReviewImpl,
-    dependencies: [ListTargetReviewsUseCase]
+    dependencies: [GetBoundWorkflowUseCase, ListTargetReviewsUseCase]
 });
 ```
 
-- [ ] **Step 5: Implement the delete handlers**
+- [ ] **Step 5: Register**
 
-Create `packages/api-headless-cms-workflows/src/features/hooks/DeleteReviewsOnEntryDelete.ts`:
-
-```ts
-import { EntryAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
-import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
-import { getCmsNamespace } from "~/utils/appName.js";
-
-/**
- * Deletes every review of a permanently deleted CMS entry with its assignment records (spec 9.3,
- * R56). Moving to the trash keeps them: the entry can be restored (A22). A failure is thrown; the
- * entry stays deleted.
- */
-class DeleteReviewsOnEntryDeleteImpl implements EntryAfterDeleteEventHandler.Interface {
-    public constructor(private deleteTargetReviews: DeleteTargetReviewsUseCase.Interface) {}
-
-    public async handle(event: EntryAfterDeleteEventHandler.Event): Promise<void> {
-        const { model, entry, permanent } = event.payload;
-        if (!permanent) {
-            return;
-        }
-        const namespace = getCmsNamespace(model);
-        if (!namespace) {
-            return;
-        }
-
-        const deleted = await this.deleteTargetReviews.execute({
-            model: namespace,
-            targetId: entry.entryId
-        });
-        if (deleted.isFail()) {
-            throw deleted.error;
-        }
-    }
-}
-
-export const DeleteReviewsOnEntryDelete = EntryAfterDeleteEventHandler.createImplementation({
-    implementation: DeleteReviewsOnEntryDeleteImpl,
-    dependencies: [DeleteTargetReviewsUseCase]
-});
-```
-
-Create `packages/api-headless-cms-workflows/src/features/hooks/DeleteReviewsOnRevisionDelete.ts`:
-
-```ts
-import { EntryRevisionAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/index.js";
-import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
-import { getCmsNamespace } from "~/utils/appName.js";
-
-/**
- * Deletes the reviews of a deleted CMS revision with their assignment records (spec 9.3, R56).
- * Deleting the last revision deletes the entry, which `DeleteReviewsOnEntryDelete` handles.
- */
-class DeleteReviewsOnRevisionDeleteImpl implements EntryRevisionAfterDeleteEventHandler.Interface {
-    public constructor(private deleteTargetReviews: DeleteTargetReviewsUseCase.Interface) {}
-
-    public async handle(event: EntryRevisionAfterDeleteEventHandler.Event): Promise<void> {
-        const { model, entry } = event.payload;
-        const namespace = getCmsNamespace(model);
-        if (!namespace) {
-            return;
-        }
-
-        const deleted = await this.deleteTargetReviews.execute({
-            model: namespace,
-            targetId: entry.entryId,
-            targetRevisionId: entry.id
-        });
-        if (deleted.isFail()) {
-            throw deleted.error;
-        }
-    }
-}
-
-export const DeleteReviewsOnRevisionDelete =
-    EntryRevisionAfterDeleteEventHandler.createImplementation({
-        implementation: DeleteReviewsOnRevisionDeleteImpl,
-        dependencies: [DeleteTargetReviewsUseCase]
-    });
-```
-
-- [ ] **Step 6: Register**
-
-In `packages/api-headless-cms-workflows/src/features/hooks/feature.ts` import the four handlers and add after `container.register(BlockUpdateWhileInReview);`:
+In `packages/api-headless-cms-workflows/src/features/hooks/feature.ts` import the two handlers and add after `container.register(BlockUpdateWhileInReview);`:
 
 ```ts
 
         // `cms.*` adapter rules (public CMS models only, R52)
         container.register(RequireApprovedReviewOnPublish);
         container.register(BlockMoveWhileInReview);
-        container.register(DeleteReviewsOnEntryDelete);
-        container.register(DeleteReviewsOnRevisionDelete);
 ```
 
-- [ ] **Step 7: Run the tests**
+- [ ] **Step 6: Run the tests**
 
 Run: `yarn test packages/api-headless-cms-workflows 2>&1 | tail -50` Expected: PASS.
 Run: `yarn test:os packages/api-headless-cms-workflows 2>&1 | tail -50` Expected: PASS, or "not run" (A9).
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 7: Commit**
 
 Run the Global Constraints chain (build `@webiny/api-headless-cms-workflows`), then commit:
 
 ```
-feat(api-headless-cms-workflows): enforce publish and move rules and delete reviews with their entries
+feat(api-headless-cms-workflows): enforce the publish and move rules on bound models
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn

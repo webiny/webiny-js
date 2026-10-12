@@ -6,13 +6,16 @@ Comments and docs that still describe phase 2 as future work, plus the one stale
 - Modify: `packages/api-workflows/src/features/review/ReviewLifecycleFeature.ts`
 - Modify: `packages/api-workflows/src/features/review/ReviewTargetLoader/abstractions.ts`
 - Modify: `packages/api-workflows/src/features/review/ReviewTargetSync/abstractions.ts`
+- Modify: `packages/api-workflows/src/domain/review/errors.ts`
+- Modify: `packages/api-workflows/src/domain/workflow/canPickReviewer.ts`
+- Modify: `packages/api-workflows/src/domain/assignment/assignment.model.ts`
 - Modify: `packages/api-website-builder/src/features/experiments/EndExperimentOnPublish/EndExperimentOnPublishHandler.ts`
 - Modify: `docs/.bruno/plans/2026-10-09-workflows-phase-1a/00-shared.md`
 - Modify: `docs/.bruno/plans/2026-10-10-workflows-phase-1b/00-1b-permission-building-blocks.md`
 - Modify: `docs/.bruno/plans/2026-10-05-workflows-refactor-roadmap.md`
 
 **Interfaces:**
-- Consumes: what Tasks 1-18 landed.
+- Consumes: what Tasks 1-18b landed.
 - Produces: no code behaviour change.
 
 - [ ] **Step 1: Find the stale wording (the "failing test")**
@@ -20,10 +23,10 @@ Comments and docs that still describe phase 2 as future work, plus the one stale
 Run:
 
 ```
-grep -rn "phase 2 registers\|in phase 2; 1a ships none\|1a registers none (nothing to sync); phase 2\|ValidateWorkflowStateOnPageBeforePublish" packages/api-workflows/src packages/api-website-builder/src
+grep -rni "phase 2 registers\|in phase 2; 1a ships none\|1a registers none (nothing to sync); phase 2\|phase 2 adapters produce\|app wrapper (phase 2)\|deleted with its review (phase 2)\|ValidateWorkflowStateOnPageBeforePublish" packages/api-workflows/src packages/api-website-builder/src
 ```
 
-Expected: hits in `ReviewLifecycleFeature.ts`, `ReviewTargetLoader/abstractions.ts`, `ReviewTargetSync/abstractions.ts` and `EndExperimentOnPublishHandler.ts`.
+Expected: hits in `ReviewLifecycleFeature.ts` ("Phase 2 registers", matched case-insensitively), `ReviewTargetLoader/abstractions.ts`, `ReviewTargetSync/abstractions.ts`, `domain/review/errors.ts` ("phase 2 adapters produce"), `domain/workflow/canPickReviewer.ts` ("app wrapper (phase 2)"), `domain/assignment/assignment.model.ts` ("Deleted with its review (phase 2)") and `EndExperimentOnPublishHandler.ts`. Then run `grep -rni "phase 2" packages/api-workflows/src packages/api-headless-cms-workflows/src packages/api-website-builder-workflows/src` and fix any other future-tense mention the same way (the `StoreWorkflow` / `DeleteWorkflow` event comments were rewritten by Task 2).
 
 - [ ] **Step 2: Engine comments**
 
@@ -32,10 +35,10 @@ In `packages/api-workflows/src/features/review/ReviewLifecycleFeature.ts` replac
 ```ts
 /**
  * Defaults for the review lifecycle. The app target adapters register one `ReviewTargetLoader`,
- * `ReviewTargetSync` and `ReviewTargetAccess` per namespace (`cms.*` in api-headless-cms-workflows,
- * `wb.page` in api-website-builder-workflows); the last registered match wins and none matching
- * means nothing to load, sync or read (R28, R50). Phase 4 registers its `StepAssignmentResolver`
- * after `WorkflowsFeature`; the last registration wins on resolve.
+ * `ReviewTargetSync` and `ReviewTargetReadAccess` per namespace (`cms.*` in
+ * api-headless-cms-workflows, `wb.page` in api-website-builder-workflows); the last registered
+ * match wins and none matching means nothing to load, sync or read (R28, R50). Phase 4 registers
+ * its `StepAssignmentResolver` after `WorkflowsFeature`; the last registration wins on resolve.
  */
 ```
 
@@ -58,6 +61,12 @@ In `packages/api-workflows/src/features/review/ReviewTargetSync/abstractions.ts`
  * sync (R28).
  */
 ```
+
+In `packages/api-workflows/src/domain/review/errors.ts`, in the doc comment of `ReviewTargetSyncError`, replace `phase 2 adapters produce the underlying errors.` with `the app target adapters' syncs produce the underlying errors.`
+
+In `packages/api-workflows/src/domain/workflow/canPickReviewer.ts`, in the doc comment, replace `belong to the app wrapper (phase 2) and to` with `belong to the app wrappers (request) and to`.
+
+In `packages/api-workflows/src/domain/assignment/assignment.model.ts`, replace `Deleted with its review (phase 2).` with `Deleted with its review (DeleteTargetReviewsUseCase).`
 
 - [ ] **Step 3: The stale WB comment**
 
@@ -83,7 +92,7 @@ In `docs/.bruno/plans/2026-10-05-workflows-refactor-roadmap.md`:
 
 - [ ] **Step 5: Verify**
 
-Run the grep from Step 1 again. Expected: no hits.
+Run the grep from Step 1 again (case-insensitive). Expected: no hits.
 Run: `grep -n "D115" docs/.bruno/plans/2026-10-05-workflows-refactor-roadmap.md` Expected: one hit, in the phase 2 row (plus the decision range in the header if present).
 Run: `yarn test packages/api-workflows 2>&1 | tail -20` Expected: PASS.
 Run: `yarn test packages/api-website-builder 2>&1 | tail -20` Expected: PASS (comment only).

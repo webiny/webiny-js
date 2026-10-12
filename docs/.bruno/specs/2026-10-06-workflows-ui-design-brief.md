@@ -69,6 +69,8 @@ Review states: **In progress**, **Approved**, **Rejected**, **Cancelled**. Cance
 
 Content whose model has no workflow behaves normally; none of the workflow UI appears.
 
+Trashing or deleting content (a CMS entry, one revision, several entries at once, a Website Builder page) is refused by the server while it has a review in progress. The admin warns first and lets the user confirm; confirming cancels the review (section 6, "Trash or delete with a review in progress") [D134]. With an approved, rejected or cancelled review, trash and delete work as usual. Content created directly as published (imports, data transfer through the API) needs no review [D134].
+
 The publish action in both the CMS entry editor and the Website Builder page editor must reflect this table (disabled with an explanation when blocked).
 
 ### 1.6 Actions and who sees them
@@ -248,6 +250,7 @@ Common fields for every step type:
 - **Reassign**: pick a person from the step's eligible reviewers (excluded users disabled; reason per section 5). The previous owner (if any) and the new owner are notified. Empty state when nobody is eligible.
 - **Cancel review**: confirm. Say that review progress is lost and a new request starts from the first step. If an AI or automation is running, say it will be stopped.
 - **Restart**: confirm; shows the last failure reason.
+- **Trash or delete with a review in progress** [D134] (CMS entry list and editor, revision delete, bulk delete; Website Builder page list and editor): shown when the user trashes or deletes content whose `system.workflow.reviewState` is in progress, or when the server refuses the action with "review in progress" (the error names each review's title and current step). Warning: "This content has a review in progress. Trashing it cancels the review." (for delete: "Deleting it cancels the review."), naming the review and its current step. **Cancel** stops; nothing changes. **Confirm** continues to the normal trash or delete dialog; when the user confirms that one, the admin first cancels the review through the app's cancel-for-delete operation, then trashes or deletes. Anyone allowed to trash or delete the content may confirm, also without the right to cancel reviews; the review is recorded as cancelled by that user, "content trashed" or "content deleted". For a bulk delete, list every affected item's review. If the cancel succeeds but the trash then fails, say so: the review stays cancelled.
 - After an action, a short confirmation naming the step that was acted on (not the next step), with a link to that app's Content Reviews.
 
 **Website Builder.** A rejected or approved page revision needs a visible "Create new revision" action that opens the new revision. The WB editor only edits draft revisions; the bar must still show the review state on non-draft revisions.

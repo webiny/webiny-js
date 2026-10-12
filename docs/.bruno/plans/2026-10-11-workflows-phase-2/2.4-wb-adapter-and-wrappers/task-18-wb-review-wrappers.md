@@ -1,6 +1,6 @@
 ### Task 18: WB review guard and review wrappers
 
-Spec 5.1, 5.3, D25, D77, D133 points 1, 5 and 7, 1b R41, R45-R47, R61, R62. The Website Builder mirror of Tasks 13 and 14: `WbPageReviewGuard` (viewer → review → `wb.page` only → read access to the page) and seven wrappers. The request wrapper takes no `model` (Website Builder has the one namespace `wb.page`). A page is readable as a CMS entry for anyone (private model), so a user without `wb.page` permissions is refused with `Workflows/NotAuthorized`, not "target not found" as in the CMS app (A25). Ends with the API-key end-to-end test (A27) and a registration test for the package.
+Spec 5.1, 5.3, D25, D77, D133 points 1, 5 and 7, 1b R41, R45-R47, R61, R62, R75, R79. The Website Builder mirror of Tasks 13 and 14: `WbPageReviewGuard` (viewer → review → `wb.page` only → read access to the page) and seven wrappers. The request wrapper takes no `model` (Website Builder has the one namespace `wb.page`). Like WB's own `UpdatePageUseCase`, it checks the entity-level page write permission (`WbPageAccess.canWriteAnyPage()`) before it loads the page, so a user without page permissions gets `Workflows/NotAuthorized` for a missing and an existing page alike and learns nothing about which pages exist (R75, A25); a user with page permissions gets `Workflows/Review/TargetNotFound` for a missing page. Ends with the API-key end-to-end tests (a real stored key and its token through api-core's `ApiKeyAuthenticator`, R79) and a registration test for the package (Task 18b adds its wrapper to it).
 
 **Files:**
 - Create: `packages/api-website-builder-workflows/src/features/wrappers/WbPageReviewGuard/abstractions.ts`
@@ -20,7 +20,7 @@ Spec 5.1, 5.3, D25, D77, D133 points 1, 5 and 7, 1b R41, R45-R47, R61, R62. The 
 (Each `{...}` line is four files, all given in full below.)
 
 **Interfaces:**
-- Consumes: `CurrentReviewViewer`, `GetReviewUseCase`, `RequestReviewUseCase`, the five transition use cases, `getReviewViewerFlags`, `applyTargetAccess`, `canCancelByPermission`, `WbPageTargetReader`, `WbPageAccess` (Task 15), `ReviewWithViewerFlags` (Task 6).
+- Consumes: `CurrentReviewViewer`, `GetReviewUseCase`, `RequestReviewUseCase`, the five transition use cases, `getReviewViewerFlags`, `applyTargetAccess`, `canCancelByPermission`, `WbPageTargetReader`, `WbPageAccess` incl. `canWriteAnyPage()` (Task 15), `ReviewWithViewerFlags`, `ReviewTargetReadAccess` (Task 6), `CreateApiKeyUseCase`, `AuthenticationContext`, `IdentityContext` (tests).
 - Produces:
   - `WbPageReviewGuard.Interface { authorize(params: WbPageReviewGuardParams): Promise<Result<AuthorizedWbPageReview, WbPageReviewGuard.Error>> }`, `WbPageReviewGuardParams { reviewId: string; action: string }`, `AuthorizedWbPageReview { review: ReviewData; viewer: ReviewViewer }`.
   - `RequestWebsiteBuilderPageReviewUseCase` (`RequestWebsiteBuilderPageReviewInput { targetId: string; targetRevisionId: string; picks?: ReviewPick[] }`), `GetWebsiteBuilderPageReviewUseCase` (`GetWebsiteBuilderPageReviewInput { id: string }` → `ReviewWithViewerFlags`), `StartWebsiteBuilderPageReviewStepUseCase`, `TakeOverWebsiteBuilderPageReviewStepUseCase` (`{ reviewId; stepId }`), `ApproveWebsiteBuilderPageReviewStepUseCase`, `RejectWebsiteBuilderPageReviewStepUseCase` (`{ reviewId; stepId; comment?: string | null }`), `CancelWebsiteBuilderPageReviewUseCase` (`{ reviewId }`).
@@ -37,6 +37,9 @@ import type { IdentityData } from "@webiny/api-core/features/security/IdentityCo
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import type { WbPage } from "@webiny/api-website-builder/domain/page/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
+import { CreateApiKeyUseCase } from "@webiny/api-core/features/security/apiKeys/CreateApiKey/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
@@ -54,7 +57,6 @@ import {
 } from "~tests/__helpers/engine.js";
 import { ARTICLE_NAMESPACE } from "~tests/__helpers/cmsModel.js";
 import {
-    createApiKeyIdentity,
     NOBODY,
     OTHER_REVIEWER,
     READER,
@@ -216,6 +218,25 @@ describe("WB review wrappers", () => {
         expect(missing.error.code).toBe("Workflows/Review/TargetNotFound");
     });
 
+    it("refuses a user without page permissions before loading the page (R75)", async () => {
+        const { admin } = await createScenario();
+        const fresh = await createPage(admin, { title: "Fresh" });
+        const nobody = await asUser(NOBODY, []);
+        const requestReview = nobody.container.resolve(RequestWebsiteBuilderPageReviewUseCase);
+
+        const existing = await requestReview.execute({
+            targetId: fresh.entryId,
+            targetRevisionId: fresh.id
+        });
+        const missing = await requestReview.execute({
+            targetId: fresh.entryId,
+            targetRevisionId: `${fresh.entryId}#0009`
+        });
+
+        expect(existing.error.code).toBe("Workflows/NotAuthorized");
+        expect(missing.error.code).toBe("Workflows/NotAuthorized");
+    });
+
     it("rejects a pick on a step without manual picks (R61)", async () => {
         const { admin } = await createScenario();
         const fresh = await createPage(admin, { title: "Fresh" });
@@ -311,10 +332,13 @@ describe("WB review wrappers", () => {
         const { admin, review } = await createScenario();
         await approvePageReview(admin, review);
         const requester = await asUser(REQUESTER, WB_WRITER);
+        const reassigner = await asUser(REASSIGNER, [WORKFLOWS_REASSIGN, ...WB_READER]);
 
-        const result = await cancel(requester, review.id);
+        const byRequester = await cancel(requester, review.id);
+        const byReassigner = await cancel(reassigner, review.id);
 
-        expect(result.error.code).toBe("Workflows/Review/InvalidState");
+        expect(byRequester.error.code).toBe("Workflows/Review/InvalidState");
+        expect(byReassigner.error.code).toBe("Workflows/Review/InvalidState");
     });
 
     it("reports a Headless CMS review as not found (R46)", async () => {
@@ -349,30 +373,60 @@ describe("WB review wrappers", () => {
     });
 });
 
-describe("API keys in page reviews (D133 point 5)", () => {
-    it("lets an API key request, read and cancel its own review, but not start a pool step", async () => {
+/**
+ * A stored API key (created by the admin) and a request context authenticated by its token through
+ * api-core's real `AuthenticationContext` → `ApiKeyAuthenticator`; its permissions come from
+ * `ApiKeyAuthorizer` (R79).
+ */
+const createApiKeyContext = async (permissions: SecurityPermission[]) => {
+    const admin = await createUserContext();
+    const key = expectOk(
+        await admin.container.resolve(CreateApiKeyUseCase).execute({
+            name: "CI key",
+            slug: "ci-key",
+            description: "Workflows API-key test",
+            permissions
+        })
+    );
+    const context = await createUserContext({ identity: null, permissions: [] });
+    const identity = await context.container
+        .resolve(AuthenticationContext)
+        .authenticate(key.token);
+    context.container.resolve(IdentityContext).setIdentity(identity);
+    return { context, keyId: key.id };
+};
+
+describe("API keys in page reviews (D133 point 5, R79)", () => {
+    it("lets an API key request, read and cancel its own review", async () => {
         const admin = await createUserContext();
         await storeWbWorkflow(admin);
         const page = await createPage(admin, { title: "Page A" });
-        const key = await createUserContext({
-            identity: createApiKeyIdentity(WB_WRITER),
-            permissions: []
-        });
+        const { context: key, keyId } = await createApiKeyContext(WB_WRITER);
 
         const review = expectOk(await request(key, page));
         const read = expectOk(await view(key, review.id));
-        const started = await start(key, review.id);
         const cancelled = expectOk(await cancel(key, review.id));
 
         expect(review.createdBy).toEqual({
             type: "user",
-            id: "api-key-1",
+            id: keyId,
             displayName: "CI key",
             identityType: "api-key"
         });
         expect(read.flags).toMatchObject({ canStart: false, canCancel: true });
-        expect(started.error.code).toBe("Workflows/Review/NotCandidate");
         expect(cancelled.state).toBe("cancelled");
+    });
+
+    it("does not let an API key start a pool step: a key belongs to no team", async () => {
+        const admin = await createUserContext();
+        await storeWbWorkflow(admin);
+        // Requested by REQUESTER, so the key is not the requester (that check comes first).
+        const review = await requestPageReview(admin, await createPage(admin, { title: "Page A" }));
+        const { context: key } = await createApiKeyContext(WB_READER);
+
+        const started = await start(key, review.id);
+
+        expect(started.error.code).toBe("Workflows/Review/NotCandidate");
     });
 });
 ```
@@ -383,7 +437,7 @@ Create `packages/api-website-builder-workflows/__tests__/registration.test.ts`:
 import { describe, expect, it } from "vitest";
 import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
 import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTargetSync/index.js";
-import { ReviewTargetAccess } from "@webiny/api-workflows/features/review/ReviewTargetAccess/index.js";
+import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import { CmsEntryReviewNamespace } from "@webiny/api-headless-cms-workflows/features/target/CmsEntryReviewNamespace/index.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { StoreWebsiteBuilderPageWorkflowUseCase } from "~/features/wrappers/StoreWebsiteBuilderPageWorkflow/index.js";
@@ -405,7 +459,7 @@ describe("WebsiteBuilderWorkflowsFeature registration", () => {
         // One per namespace: `cms.*` from the CMS package, `wb.page` from this one.
         expect(container.resolveAll(ReviewTargetLoader)).toHaveLength(2);
         expect(container.resolveAll(ReviewTargetSync)).toHaveLength(2);
-        expect(container.resolveAll(ReviewTargetAccess)).toHaveLength(2);
+        expect(container.resolveAll(ReviewTargetReadAccess)).toHaveLength(2);
         expect(container.resolveAll(CmsEntryReviewNamespace)).toHaveLength(2);
         expect(container.resolveAll(ReviewTargetLoader).filter(item => item.canLoad("wb.page"))).toHaveLength(1);
         for (const abstraction of [
@@ -622,6 +676,10 @@ class RequestWebsiteBuilderPageReviewUseCaseImpl implements UseCase.Interface {
         const actor = this.viewer.getActor();
         if (actor.isFail()) {
             return Result.fail(actor.error);
+        }
+        // As WB's own UpdatePage: the entity-level permission before loading anything (R75).
+        if (!(await this.access.canWriteAnyPage())) {
+            return Result.fail(new WorkflowsNotAuthorizedError({ action: "request a review" }));
         }
 
         const target = await this.targets.read({

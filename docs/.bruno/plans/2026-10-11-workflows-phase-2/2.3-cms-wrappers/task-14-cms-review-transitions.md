@@ -1,6 +1,6 @@
 ### Task 14: CMS start, take over, approve, reject and cancel wrappers
 
-Spec 5.1 (wrapper column), D25, D54, D133 points 5 and 7, 1b R41, R45. Five wrappers on top of `CmsEntryReviewGuard` (Task 13): the guard establishes the viewer, the `cms.*` review and read access; the wrapper passes the viewer's actor and team ids to the engine. Cancel additionally needs `canCancelByPermission` (requester or `reassign`); state errors stay the engine's (a finished review fails with `Workflows/Review/InvalidState`, not "not authorized"). Ends with the API-key end-to-end test carried from 1b (A27).
+Spec 5.1 (wrapper column), D25, D54, D133 points 5 and 7, 1b R41, R45, R79. Five wrappers on top of `CmsEntryReviewGuard` (Task 13): the guard establishes the viewer, the `cms.*` review and read access; the wrapper passes the viewer's actor and team ids to the engine. Cancel additionally needs `canCancelByPermission` (requester or `reassign`); state errors stay the engine's (a finished review fails with `Workflows/Review/InvalidState`, not "not authorized", for the requester and for a `reassign` holder alike). Ends with the API-key end-to-end tests carried from 1b: a real stored API key, authenticated by its token through api-core's `ApiKeyAuthenticator` and authorized by `ApiKeyAuthorizer` (R79, A27).
 
 **Files:**
 - Create: `packages/api-headless-cms-workflows/src/features/wrappers/StartCmsEntryReviewStep/abstractions.ts`
@@ -27,7 +27,7 @@ Spec 5.1 (wrapper column), D25, D54, D133 points 5 and 7, 1b R41, R45. Five wrap
 - Create: `packages/api-headless-cms-workflows/__tests__/wrappers/reviewTransitions.test.ts`
 
 **Interfaces:**
-- Consumes: `CmsEntryReviewGuard` (Task 13), `StartReviewStepUseCase`, `TakeOverReviewStepUseCase`, `ApproveReviewStepUseCase`, `RejectReviewStepUseCase`, `CancelReviewUseCase` (1a), `canCancelByPermission` (1b).
+- Consumes: `CmsEntryReviewGuard` (Task 13), `StartReviewStepUseCase`, `TakeOverReviewStepUseCase`, `ApproveReviewStepUseCase`, `RejectReviewStepUseCase`, `CancelReviewUseCase` (1a), `canCancelByPermission` (1b), `ReviewTargetReadAccess` (Task 6, registration test), `CreateApiKeyUseCase` (`@webiny/api-core/features/security/apiKeys/CreateApiKey/index.js`), `AuthenticationContext` (`@webiny/api-core/features/security/authentication/AuthenticationContext/index.js`), `IdentityContext` (tests).
 - Produces:
   - `StartCmsEntryReviewStepUseCase`, `TakeOverCmsEntryReviewStepUseCase`: `execute(input: { reviewId: string; stepId: string }): Promise<Result<ReviewData, Error>>` (`StartCmsEntryReviewStepInput`, `TakeOverCmsEntryReviewStepInput`).
   - `ApproveCmsEntryReviewStepUseCase`, `RejectCmsEntryReviewStepUseCase`: `execute(input: { reviewId: string; stepId: string; comment?: string | null })` (`ApproveCmsEntryReviewStepInput`, `RejectCmsEntryReviewStepInput`).
@@ -45,6 +45,9 @@ import type { Result } from "@webiny/feature/api";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
+import { CreateApiKeyUseCase } from "@webiny/api-core/features/security/apiKeys/CreateApiKey/index.js";
 import { RequestReviewUseCase } from "@webiny/api-workflows/features/review/RequestReview/index.js";
 import { createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow.js";
 import { AUTHOR_NAMESPACE, createAuthorEntry, expectOk } from "~tests/__helpers/entries.js";
@@ -56,7 +59,6 @@ import {
 } from "~tests/__helpers/engine.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import {
-    createApiKeyIdentity,
     OTHER_REVIEWER,
     READER,
     REASSIGNER,
@@ -259,10 +261,13 @@ describe("CMS review transition wrappers", () => {
         const { admin, review } = await createScenario();
         await approveEntryReview(admin, review);
         const requester = await asUser(REQUESTER, CMS_WRITER);
+        const reassigner = await asUser(REASSIGNER, [WORKFLOWS_REASSIGN, ...CMS_READER]);
 
-        const result = await cancel(requester, review.id);
+        const byRequester = await cancel(requester, review.id);
+        const byReassigner = await cancel(reassigner, review.id);
 
-        expect(result.error.code).toBe("Workflows/Review/InvalidState");
+        expect(byRequester.error.code).toBe("Workflows/Review/InvalidState");
+        expect(byReassigner.error.code).toBe("Workflows/Review/InvalidState");
     });
 
     it("takes the actor's teams from the identity", async () => {
@@ -301,15 +306,36 @@ describe("CMS review transition wrappers", () => {
     });
 });
 
-describe("API keys in CMS reviews (D133 point 5)", () => {
-    it("lets an API key request, read and cancel its own review, but not start a pool step", async () => {
+/**
+ * A stored API key (created by the admin) and a request context authenticated by its token through
+ * api-core's real `AuthenticationContext` → `ApiKeyAuthenticator`; its permissions come from
+ * `ApiKeyAuthorizer` (R79). The context starts anonymous, so the test harness serves no
+ * permissions of its own.
+ */
+const createApiKeyContext = async (permissions: SecurityPermission[]) => {
+    const admin = await createUserContext();
+    const key = expectOk(
+        await admin.container.resolve(CreateApiKeyUseCase).execute({
+            name: "CI key",
+            slug: "ci-key",
+            description: "Workflows API-key test",
+            permissions
+        })
+    );
+    const context = await createUserContext({ identity: null, permissions: [] });
+    const identity = await context.container
+        .resolve(AuthenticationContext)
+        .authenticate(key.token);
+    context.container.resolve(IdentityContext).setIdentity(identity);
+    return { context, keyId: key.id };
+};
+
+describe("API keys in CMS reviews (D133 point 5, R79)", () => {
+    it("lets an API key request, read and cancel its own review", async () => {
         const admin = await createUserContext();
         expectOk(await storeWorkflow(admin));
         const entry = await createAuthorEntry(admin, { name: "Ann" });
-        const key = await createUserContext({
-            identity: createApiKeyIdentity(CMS_WRITER),
-            permissions: []
-        });
+        const { context: key, keyId } = await createApiKeyContext(CMS_WRITER);
 
         const review = expectOk(
             await key.container.resolve(RequestCmsEntryReviewUseCase).execute({
@@ -319,28 +345,35 @@ describe("API keys in CMS reviews (D133 point 5)", () => {
             })
         );
         const read = expectOk(await view(key, review.id));
-        const started = await start(key, review.id);
         const cancelled = expectOk(await cancel(key, review.id));
 
         expect(review.createdBy).toEqual({
             type: "user",
-            id: "api-key-1",
+            id: keyId,
             displayName: "CI key",
             identityType: "api-key"
         });
         expect(read.flags).toMatchObject({ canStart: false, canCancel: true });
-        expect(started.error.code).toBe("Workflows/Review/NotCandidate");
         expect(cancelled.state).toBe("cancelled");
+    });
+
+    it("does not let an API key start a pool step: a key belongs to no team", async () => {
+        const admin = await createUserContext();
+        expectOk(await storeWorkflow(admin));
+        // Requested by REQUESTER, so the key is not the requester (that check comes first).
+        const review = await requestEntryReview(admin, await createAuthorEntry(admin, { name: "Ann" }));
+        const { context: key } = await createApiKeyContext(CMS_READER);
+
+        const started = await start(key, review.id);
+
+        expect(started.error.code).toBe("Workflows/Review/NotCandidate");
     });
 
     it("lets an API key with reassign cancel another user's review", async () => {
         const admin = await createUserContext();
         expectOk(await storeWorkflow(admin));
         const review = await requestEntryReview(admin, await createAuthorEntry(admin, { name: "Ann" }));
-        const key = await createUserContext({
-            identity: createApiKeyIdentity([WORKFLOWS_REASSIGN, ...CMS_READER]),
-            permissions: []
-        });
+        const { context: key } = await createApiKeyContext([WORKFLOWS_REASSIGN, ...CMS_READER]);
 
         const cancelled = expectOk(await cancel(key, review.id));
 
@@ -901,7 +934,7 @@ import { describe, expect, it } from "vitest";
 import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
 import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTargetSync/index.js";
-import { ReviewTargetAccess } from "@webiny/api-workflows/features/review/ReviewTargetAccess/index.js";
+import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import { createContextHandler } from "./__handler/context.js";
 import { CmsEntryReviewNamespace } from "~/features/target/CmsEntryReviewNamespace/index.js";
 import { StoreCmsEntryWorkflowUseCase } from "~/features/wrappers/StoreCmsEntryWorkflow/index.js";
@@ -930,7 +963,7 @@ describe("CmsWorkflowsFeature registration", () => {
 
         expect(container.resolveAll(ReviewTargetLoader)).toHaveLength(1);
         expect(container.resolveAll(ReviewTargetSync)).toHaveLength(1);
-        expect(container.resolveAll(ReviewTargetAccess)).toHaveLength(1);
+        expect(container.resolveAll(ReviewTargetReadAccess)).toHaveLength(1);
         expect(container.resolveAll(CmsEntryReviewNamespace)).toHaveLength(1);
         for (const abstraction of [
             StoreCmsEntryWorkflowUseCase,

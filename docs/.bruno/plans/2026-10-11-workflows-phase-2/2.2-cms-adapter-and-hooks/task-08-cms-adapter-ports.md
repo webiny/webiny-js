@@ -1,26 +1,27 @@
 ### Task 8: CMS loader, sync and read access for another user
 
-Spec 9.3, R48, R50, R63, R66, A19, A20. The `cms.*` implementations of the three engine ports:
+Spec 9.3, R48, R50, R63, R66, R67-R72, A19, A20. The `cms.*` implementations of the three engine ports:
 
 - `CmsEntryReviewTargetLoader` (`ReviewTargetLoader`): title and typed `TargetContext` of a CMS revision.
 - `CmsEntryReviewTargetSync` (`ReviewTargetSync`): writes `system.workflow` with `UpdateEntrySystemUseCase` inside `withoutAuthorization`, after reading the model as the current identity.
-- `CmsEntryReviewTargetAccess` (`ReviewTargetAccess`): reads the model and revision as the current identity, then evaluates `CmsEntryAccess.canRead` as the other user through `RunAsUser`.
+- `CmsEntryReviewTargetReadAccess` (`ReviewTargetReadAccess`): reads the model, group and revision as the current identity, then evaluates `CmsEntryAccess.canRead` (group read, model read, entry and folder access) as the other user through `CandidateReadAccess`, which only evaluates admin users of the current tenant and enforces authorization even inside `withoutAuthorization`.
 
 **Files:**
 - Create: `packages/api-headless-cms-workflows/src/features/target/toCmsReviewTarget.ts`
 - Create: `packages/api-headless-cms-workflows/src/features/target/CmsEntryReviewTargetLoader.ts`
 - Create: `packages/api-headless-cms-workflows/src/features/target/CmsEntryReviewTargetSync.ts`
-- Create: `packages/api-headless-cms-workflows/src/features/target/CmsEntryReviewTargetAccess.ts`
+- Create: `packages/api-headless-cms-workflows/src/features/target/CmsEntryReviewTargetReadAccess.ts`
 - Modify: `packages/api-headless-cms-workflows/src/features/target/feature.ts`
 - Create: `packages/api-headless-cms-workflows/__tests__/__helpers/engine.ts`
+- Create: `packages/api-headless-cms-workflows/__tests__/__helpers/FakeAdminUsers.ts`
 - Create: `packages/api-headless-cms-workflows/__tests__/target/CmsEntryAdapter.test.ts`
 
 **Interfaces:**
-- Consumes: `CmsEntryTargetReader`, `CmsEntryAccess` (Task 7), `ReviewTargetLoader`, `ReviewTargetSync` (1a), `ReviewTargetAccess`, `RunAsUser` (Task 6), `GetModelUseCase`, `UpdateEntrySystemUseCase`, `IdentityContext`, `getEntryTitle` (`@webiny/api-headless-cms/utils/getEntryTitle.js`).
+- Consumes: `CmsEntryTargetReader`, `CmsEntryAccess` (Task 7), `ReviewTargetLoader`, `ReviewTargetSync` (1a), `ReviewTargetReadAccess`, `CandidateReadAccess` (Task 6), `GetModelUseCase`, `UpdateEntrySystemUseCase`, `IdentityContext`, `GetUserUseCase` (test fake), `getEntryTitle` (`@webiny/api-headless-cms/utils/getEntryTitle.js`).
 - Produces:
-  - `toCmsReviewTarget(target: CmsEntryTarget): ReviewTarget` (R66).
-  - `CmsEntryReviewTargetLoader`, `CmsEntryReviewTargetSync`, `CmsEntryReviewTargetAccess` registered by `CmsTargetFeature`; each answers only `cms.<modelId>` namespaces.
-  - Test helpers (`__tests__/__helpers/engine.ts`): `requestEntryReview(context, entry, requester?)`, `startEntryReview(context, review, reviewer?)`, `approveEntryReview(context, review)`, `rejectEntryReview(context, review)`, `cancelEntryReview(context, review)`, `readEntry(context, revisionId)`; constant `STEP_ID = "step-1"`.
+  - `toCmsReviewTarget(target: CmsEntryTargetReader.Target): ReviewTarget` (R66).
+  - `CmsEntryReviewTargetLoader`, `CmsEntryReviewTargetSync`, `CmsEntryReviewTargetReadAccess` registered by `CmsTargetFeature`; each answers only `cms.<modelId>` namespaces.
+  - Test helpers (`__tests__/__helpers/engine.ts`): `requestEntryReview(context, entry, requester?)`, `startEntryReview(context, review, reviewer?)`, `approveEntryReview(context, review)`, `rejectEntryReview(context, review)`, `cancelEntryReview(context, review)`, `readEntry(context, revisionId)`; constant `STEP_ID = "step-1"`. `FakeAdminUsers` (`__tests__/__helpers/FakeAdminUsers.ts`, a copy of the api-workflows one from Task 6).
 
 - [ ] **Step 1: Write the test helpers and the failing test**
 
@@ -128,16 +129,20 @@ export const readEntry = async (context: CmsContext, revisionId: string): Promis
 };
 ```
 
+Create `packages/api-headless-cms-workflows/__tests__/__helpers/FakeAdminUsers.ts` with exactly the content of `packages/api-workflows/__tests__/__helpers/FakeAdminUsers.ts` (Task 6; test helpers are not shared across packages).
+
 Create `packages/api-headless-cms-workflows/__tests__/target/CmsEntryAdapter.test.ts`:
 
 ```ts
 import { afterEach, describe, expect, it } from "vitest";
 import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
 import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTargetSync/index.js";
-import { ReviewTargetAccess } from "@webiny/api-workflows/features/review/ReviewTargetAccess/index.js";
+import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import { StartReviewStepUseCase } from "@webiny/api-workflows/features/review/StartReviewStep/index.js";
+import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createContextHandler } from "~tests/__handler/context.js";
 import { storeWorkflow } from "~tests/__workflows/workflow.js";
 import { AUTHOR_NAMESPACE, createAuthorEntry, expectOk } from "~tests/__helpers/entries.js";
@@ -147,26 +152,47 @@ import {
     requestEntryReview,
     STEP_ID
 } from "~tests/__helpers/engine.js";
-import { ADMIN, NOBODY, READER, REVIEW_TEAM, REVIEWER, toActor } from "~tests/__helpers/identities.js";
-import { CMS_READER } from "~tests/__helpers/permissions.js";
+import {
+    ADMIN,
+    NOBODY,
+    READER,
+    REVIEW_TEAM,
+    REVIEWER,
+    toActor,
+    WRITER
+} from "~tests/__helpers/identities.js";
+import { CMS_ENTRY_READER_WITHOUT_MODEL, CMS_READER } from "~tests/__helpers/permissions.js";
 import {
     FakeFolderLevelPermissions,
     folderLevels
 } from "~tests/__helpers/FakeFolderLevelPermissions.js";
+import { FakeAdminUsers } from "~tests/__helpers/FakeAdminUsers.js";
 
-const registerFakeFlp = (container: Container) => {
+/** Admin users of the tenant; "user-elsewhere" has CMS read access but is not one of them. */
+const registerFakes = (container: Container) => {
     container.register(FakeFolderLevelPermissions);
+    container.registerInstance(
+        GetUserUseCase,
+        new FakeAdminUsers([READER.id, NOBODY.id, WRITER.id])
+    );
 };
 
 const createAdminContext = async () => {
     const { context } = createContextHandler({
-        legacyPlugins: [registerFakeFlp],
+        legacyPlugins: [registerFakes],
         permissionsByIdentity: {
             [READER.id]: CMS_READER,
-            [NOBODY.id]: []
+            [WRITER.id]: CMS_ENTRY_READER_WITHOUT_MODEL,
+            "user-elsewhere": CMS_READER
         }
     });
     return context();
+};
+
+const getReadAccess = (context: CmsContext): ReviewTargetReadAccess.Interface => {
+    return context.container
+        .resolveAll(ReviewTargetReadAccess)
+        .find(item => item.canHandle(AUTHOR_NAMESPACE))!;
 };
 
 describe("CMS target adapter", () => {
@@ -272,9 +298,7 @@ describe("CMS target adapter", () => {
     it("answers read access for another user with that user's permissions (R48)", async () => {
         const context = await createAdminContext();
         const entry = await createAuthorEntry(context, { name: "Ann", folderId: "folder-1" });
-        const access = context.container
-            .resolveAll(ReviewTargetAccess)
-            .find(item => item.canAccess(AUTHOR_NAMESPACE))!;
+        const access = getReadAccess(context);
         const params = {
             model: AUTHOR_NAMESPACE,
             targetId: entry.entryId,
@@ -294,11 +318,60 @@ describe("CMS target adapter", () => {
         expect(await createAuthorEntry(context, { name: "Still admin" })).toBeTruthy();
     });
 
+    it("denies another user with entry permission but without model read (R72)", async () => {
+        const context = await createAdminContext();
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+
+        const canRead = await getReadAccess(context).canUserRead({
+            userId: WRITER.id,
+            model: AUTHOR_NAMESPACE,
+            targetId: entry.entryId,
+            targetRevisionId: entry.id
+        });
+
+        expect(canRead).toBe(false);
+    });
+
+    it("denies a user who is not an admin user of the current tenant (R68)", async () => {
+        const context = await createAdminContext();
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+
+        const canRead = await getReadAccess(context).canUserRead({
+            userId: "user-elsewhere",
+            model: AUTHOR_NAMESPACE,
+            targetId: entry.entryId,
+            targetRevisionId: entry.id
+        });
+
+        expect(canRead).toBe(false);
+    });
+
+    it("answers with the user's permissions inside withoutAuthorization (R67)", async () => {
+        const context = await createAdminContext();
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+        const params = {
+            model: AUTHOR_NAMESPACE,
+            targetId: entry.entryId,
+            targetRevisionId: entry.id
+        };
+        const identityContext = context.container.resolve(IdentityContext);
+
+        const results = await identityContext.withoutAuthorization(async () => {
+            const access = getReadAccess(context);
+            return {
+                reader: await access.canUserRead({ ...params, userId: READER.id }),
+                nobody: await access.canUserRead({ ...params, userId: NOBODY.id })
+            };
+        });
+
+        expect(results).toEqual({ reader: true, nobody: false });
+    });
+
     it("denies read access to a missing target or another app's namespace", async () => {
         const context = await createAdminContext();
         const entry = await createAuthorEntry(context, { name: "Ann" });
-        const accesses = context.container.resolveAll(ReviewTargetAccess);
-        const access = accesses.find(item => item.canAccess(AUTHOR_NAMESPACE))!;
+        const accesses = context.container.resolveAll(ReviewTargetReadAccess);
+        const access = getReadAccess(context);
 
         const missing = await access.canUserRead({
             userId: READER.id,
@@ -308,7 +381,7 @@ describe("CMS target adapter", () => {
         });
 
         expect(missing).toBe(false);
-        expect(accesses.some(item => item.canAccess("wb.page"))).toBe(false);
+        expect(accesses.some(item => item.canHandle("wb.page"))).toBe(false);
     });
 });
 ```
@@ -324,12 +397,12 @@ Create `packages/api-headless-cms-workflows/src/features/target/toCmsReviewTarge
 
 ```ts
 import { getEntryTitle } from "@webiny/api-headless-cms/utils/getEntryTitle.js";
+import { ROOT_FOLDER } from "@webiny/api-headless-cms/constants.js";
 import type { ReviewTarget } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
-import { ROOT_FOLDER } from "~/constants.js";
-import type { CmsEntryTarget } from "./CmsEntryTargetReader/abstractions.js";
+import type { CmsEntryTargetReader } from "./CmsEntryTargetReader/index.js";
 
 /** Title and typed `TargetContext` of a CMS revision (spec 9.3, R66). Pure. */
-export const toCmsReviewTarget = (target: CmsEntryTarget): ReviewTarget => {
+export const toCmsReviewTarget = (target: CmsEntryTargetReader.Target): ReviewTarget => {
     const { model, entry } = target;
     const title = getEntryTitle(model, entry);
     const folderId = entry.location?.folderId;
@@ -450,32 +523,33 @@ export const CmsEntryReviewTargetSync = ReviewTargetSync.createImplementation({
 
 - [ ] **Step 5: Implement read access for another user**
 
-Create `packages/api-headless-cms-workflows/src/features/target/CmsEntryReviewTargetAccess.ts`:
+Create `packages/api-headless-cms-workflows/src/features/target/CmsEntryReviewTargetReadAccess.ts`:
 
 ```ts
-import { ReviewTargetAccess } from "@webiny/api-workflows/features/review/ReviewTargetAccess/index.js";
-import { RunAsUser } from "@webiny/api-workflows/features/identity/RunAsUser/index.js";
+import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
+import { CandidateReadAccess } from "@webiny/api-workflows/features/identity/CandidateReadAccess/index.js";
 import { isCmsNamespace } from "~/utils/appName.js";
 import { CmsEntryTargetReader } from "./CmsEntryTargetReader/index.js";
 import { CmsEntryAccess } from "./CmsEntryAccess/index.js";
 
 /**
- * `canUserRead` for `cms.*` targets (D61, D133, R48). The model and revision are read as the
- * current identity first, so no model is read as the other user (A19); only the CMS access check
- * runs as that user.
+ * `canUserRead` for `cms.*` targets (D61, D133, R48). The model, group and revision are read as
+ * the current identity first, so nothing is read as the other user (A19); only the CMS access
+ * check (group read, model read, entry and folder access, R72) runs as that user, through
+ * `CandidateReadAccess` (R67).
  */
-class CmsEntryReviewTargetAccessImpl implements ReviewTargetAccess.Interface {
+class CmsEntryReviewTargetReadAccessImpl implements ReviewTargetReadAccess.Interface {
     public constructor(
         private targets: CmsEntryTargetReader.Interface,
         private access: CmsEntryAccess.Interface,
-        private runAsUser: RunAsUser.Interface
+        private candidates: CandidateReadAccess.Interface
     ) {}
 
-    public canAccess(model: string): boolean {
+    public canHandle(model: string): boolean {
         return isCmsNamespace(model);
     }
 
-    public async canUserRead(params: ReviewTargetAccess.UserReadParams): Promise<boolean> {
+    public async canUserRead(params: ReviewTargetReadAccess.UserReadParams): Promise<boolean> {
         const target = await this.targets.read({
             model: params.model,
             targetRevisionId: params.targetRevisionId
@@ -483,13 +557,13 @@ class CmsEntryReviewTargetAccessImpl implements ReviewTargetAccess.Interface {
         if (!target || target.entry.entryId !== params.targetId) {
             return false;
         }
-        return this.runAsUser.run(params.userId, () => this.access.canRead(target));
+        return this.candidates.canUserRead(params.userId, () => this.access.canRead(target));
     }
 }
 
-export const CmsEntryReviewTargetAccess = ReviewTargetAccess.createImplementation({
-    implementation: CmsEntryReviewTargetAccessImpl,
-    dependencies: [CmsEntryTargetReader, CmsEntryAccess, RunAsUser]
+export const CmsEntryReviewTargetReadAccess = ReviewTargetReadAccess.createImplementation({
+    implementation: CmsEntryReviewTargetReadAccessImpl,
+    dependencies: [CmsEntryTargetReader, CmsEntryAccess, CandidateReadAccess]
 });
 ```
 
@@ -504,7 +578,7 @@ import { CmsEntryTargetReader } from "./CmsEntryTargetReader/CmsEntryTargetReade
 import { CmsEntryAccess } from "./CmsEntryAccess/CmsEntryAccess.js";
 import { CmsEntryReviewTargetLoader } from "./CmsEntryReviewTargetLoader.js";
 import { CmsEntryReviewTargetSync } from "./CmsEntryReviewTargetSync.js";
-import { CmsEntryReviewTargetAccess } from "./CmsEntryReviewTargetAccess.js";
+import { CmsEntryReviewTargetReadAccess } from "./CmsEntryReviewTargetReadAccess.js";
 
 /** The `cms.*` target adapter (spec 9.3). */
 export const CmsTargetFeature = createFeature({
@@ -517,7 +591,7 @@ export const CmsTargetFeature = createFeature({
         // Engine ports, one per namespace (R28, R50).
         container.register(CmsEntryReviewTargetLoader);
         container.register(CmsEntryReviewTargetSync);
-        container.register(CmsEntryReviewTargetAccess);
+        container.register(CmsEntryReviewTargetReadAccess);
     }
 });
 ```
@@ -525,6 +599,7 @@ export const CmsTargetFeature = createFeature({
 - [ ] **Step 7: Run the tests**
 
 Run: `yarn test packages/api-headless-cms-workflows 2>&1 | tail -50` Expected: PASS.
+Run: `yarn check:test:types -p api-headless-cms-workflows --report cli 2>&1 | tail -40` Expected: no errors.
 Run: `yarn test:os packages/api-headless-cms-workflows 2>&1 | tail -50` Expected: PASS, or "not run" (A9).
 
 - [ ] **Step 8: Commit**

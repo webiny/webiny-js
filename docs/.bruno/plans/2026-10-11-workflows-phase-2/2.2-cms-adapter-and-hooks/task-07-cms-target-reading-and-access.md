@@ -1,16 +1,16 @@
 ### Task 7: CMS target reading, access checks and review namespace
 
-R47, R51, R65, R66, A25, A28. Three building blocks of the `cms.*` adapter, all evaluated as the current identity:
+R47, R51, R65, R66, R72, R77, R78, A25, A28. Three building blocks of the `cms.*` adapter, all evaluated as the current identity:
 
-- `CmsEntryTargetReader` reads a `cms.<modelId>` target revision (model through `GetModelUseCase`, revision through `GetRevisionByIdUseCase`); a model the user cannot read, a private model or a missing revision is "no target".
-- `CmsEntryAccess` answers read and write access with the CMS's own logic: `AccessControl.canAccessEntry({ model, entry, rwd })` plus folder-level permissions on the entry's folder, as the ACO CMS decorators do.
+- `CmsEntryTargetReader` reads a `cms.<modelId>` target revision (model through `GetModelUseCase`, its group through `GetGroupUseCase`, revision through `GetRevisionByIdUseCase`); a model or group the user cannot read, a private model or a missing revision is "no target".
+- `CmsEntryAccess` answers read, write and delete access with the CMS's own logic: group read (`AccessControl.canAccessGroup`), model read (`canAccessModel`), `canAccessEntry({ model, entry, rwd })`, plus folder-level permissions on the entry's folder, as the ACO CMS decorators do. Group and model read are part of the check because `canAccessEntry` ignores them and another user's access (R48) is evaluated without re-reading the model (R72, D61 "model read").
 - `CmsEntryReviewNamespace` (resolved `multiple`) maps a CMS model to its review namespace for the single CMS handlers; the CMS registers `CmsModelReviewNamespace` (non-private → `cms.<modelId>`), WB adds `wb.page` in Task 15.
 
-Also removes the unused `createWorkflowAppName` and moves `@webiny/api-aco` to `dependencies`.
+The folder check is a shared helper, `canAccessEntryFolder`, which the Website Builder package reuses for pages (they are CMS entries, R78). Also removes the unused `createWorkflowAppName`, moves `@webiny/api-aco` to `dependencies` and adds the package's `ci.config.json` so CI runs the OpenSearch storage too (R77).
 
 **Files:**
 - Modify: `packages/api-headless-cms-workflows/package.json`
-- Create: `packages/api-headless-cms-workflows/src/constants.ts`
+- Create: `packages/api-headless-cms-workflows/ci.config.json`
 - Modify: `packages/api-headless-cms-workflows/src/utils/appName.ts`
 - Create: `packages/api-headless-cms-workflows/src/features/target/CmsEntryReviewNamespace/abstractions.ts`
 - Create: `packages/api-headless-cms-workflows/src/features/target/CmsEntryReviewNamespace/CmsModelReviewNamespace.ts`
@@ -22,6 +22,7 @@ Also removes the unused `createWorkflowAppName` and moves `@webiny/api-aco` to `
 - Create: `packages/api-headless-cms-workflows/src/features/target/CmsEntryAccess/abstractions.ts`
 - Create: `packages/api-headless-cms-workflows/src/features/target/CmsEntryAccess/CmsEntryAccess.ts`
 - Create: `packages/api-headless-cms-workflows/src/features/target/CmsEntryAccess/index.ts`
+- Create: `packages/api-headless-cms-workflows/src/features/target/canAccessEntryFolder.ts`
 - Create: `packages/api-headless-cms-workflows/src/features/target/feature.ts`
 - Modify: `packages/api-headless-cms-workflows/src/CmsWorkflowsFeature.ts`
 - Create: `packages/api-headless-cms-workflows/__tests__/__helpers/identities.ts`
@@ -31,15 +32,15 @@ Also removes the unused `createWorkflowAppName` and moves `@webiny/api-aco` to `
 - Create: `packages/api-headless-cms-workflows/__tests__/target/CmsEntryAccess.test.ts`
 
 **Interfaces:**
-- Consumes: `GetModelUseCase`, `GetRevisionByIdUseCase`, `AccessControl` (`@webiny/api-headless-cms/features/shared/abstractions.js`), `FolderLevelPermissions` (`@webiny/api-aco/features/flp/FolderLevelPermissions/index.js`), `CmsModel`, `CmsEntry`.
+- Consumes: `GetModelUseCase`, `GetGroupUseCase` (`@webiny/api-headless-cms/features/contentModelGroup/GetGroup/index.js`), `GetRevisionByIdUseCase`, `AccessControl` (`@webiny/api-headless-cms/features/shared/abstractions.js`), `FolderLevelPermissions` (`@webiny/api-aco/features/flp/FolderLevelPermissions/index.js`), `ROOT_FOLDER` (`@webiny/api-headless-cms/constants.js`), `CmsModel`, `CmsGroup`, `CmsEntry`.
 - Produces:
   - `utils/appName.ts`: `toCmsNamespace(modelId): string`, `getModelIdFromAppName(app): string | null` (kept), `isCmsNamespace(app): boolean`, `getCmsNamespace(model: Pick<CmsModel, "modelId" | "isPrivate">): string | null`.
-  - `ROOT_FOLDER = "root"` (`src/constants.ts`).
+  - `EntryFolderRwd = "r" | "w" | "d"`, `canAccessEntryFolder(flp: FolderLevelPermissions.Interface, folderId: string | null | undefined, rwd: EntryFolderRwd): Promise<boolean>` (`features/target/canAccessEntryFolder.ts`; also used by the WB package).
   - `CmsEntryReviewNamespace.Interface { resolve(model: CmsModel): string | null }`; `resolveReviewNamespace(namespaces: CmsEntryReviewNamespace.Interface[], model: CmsModel): string | null` (last non-null wins).
-  - `CmsEntryTarget { model: CmsModel; entry: CmsEntry }`, `CmsEntryTargetReadParams { model: string; targetRevisionId: string }`, `CmsEntryTargetReader.Interface { read(params): Promise<CmsEntryTarget | null> }`.
-  - `CmsEntryAccess.Interface { canRead(target: CmsEntryTarget): Promise<boolean>; canWrite(target: CmsEntryTarget): Promise<boolean> }`.
+  - `CmsEntryTarget { model: CmsModel; group: CmsGroup; entry: CmsEntry }`, `CmsEntryTargetReadParams { model: string; targetRevisionId: string }`, `CmsEntryTargetReader.Interface { read(params): Promise<CmsEntryTarget | null> }` (namespace types `CmsEntryTargetReader.Target`, `.Params`; the barrel exports only the abstraction).
+  - `CmsEntryAccess.Interface { canRead(target: CmsEntryTarget): Promise<boolean>; canWrite(target: CmsEntryTarget): Promise<boolean>; canDelete(target: CmsEntryTarget): Promise<boolean> }`.
   - `CmsTargetFeature` registers the three implementations; Task 8 adds the adapter ports to it.
-  - Test helpers: identities (`ADMIN`, `REQUESTER`, `REVIEWER`, `OTHER_REVIEWER`, `READER`, `WRITER`, `REASSIGNER`, `EDITOR`, `NOBODY`, `API_KEY`), permission sets (`CMS_READER`, `CMS_WRITER`, `CMS_OWN_WRITER`), `createAuthorEntry`, `getAuthorModel`, `expectOk`, `FakeFolderLevelPermissions` + `folderLevels`.
+  - Test helpers: identities (`ADMIN`, `REQUESTER`, `REVIEWER`, `OTHER_REVIEWER`, `READER`, `WRITER`, `REASSIGNER`, `EDITOR`, `NOBODY`), permission sets (`CMS_READER`, `CMS_WRITER`, `CMS_DELETER`, `CMS_OWN_WRITER`, `CMS_ENTRY_READER_WITHOUT_MODEL`), `createAuthorEntry`, `getAuthorModel`, `expectOk`, `FakeFolderLevelPermissions` + `folderLevels`.
 
 - [ ] **Step 1: Write the test helpers and the failing test**
 
@@ -77,7 +78,10 @@ export const REASSIGNER: IdentityData = {
 export const EDITOR: IdentityData = { id: "user-editor", type: "admin", displayName: "Eddie Editor" };
 export const NOBODY: IdentityData = { id: "user-nobody", type: "admin", displayName: "Nora Nobody" };
 
-/** An API key identity with embedded permissions, as `TestAuthorizer` serves it (A27). */
+/**
+ * A request identity of type `api-key` with embedded permissions, as `TestAuthorizer` serves it.
+ * Only for target-access unit tests; the wrapper tests use a real stored API key (R79).
+ */
 export const createApiKeyIdentity = (permissions: SecurityPermission[]): IdentityData => {
     return { id: "api-key-1", type: "api-key", displayName: "CI key", permissions };
 };
@@ -115,6 +119,19 @@ export const CMS_WRITER: SecurityPermission[] = [
     GROUP_READ,
     MODEL_READ,
     { name: "cms.contentEntry", rwd: "rw" }
+];
+
+/** Reads, writes and deletes every CMS entry (may trash and delete content, D134). */
+export const CMS_DELETER: SecurityPermission[] = [
+    GROUP_READ,
+    MODEL_READ,
+    { name: "cms.contentEntry", rwd: "rwd" }
+];
+
+/** Entry read without model read: `canAccessEntry` alone would allow it (R72). */
+export const CMS_ENTRY_READER_WITHOUT_MODEL: SecurityPermission[] = [
+    GROUP_READ,
+    { name: "cms.contentEntry", rwd: "r" }
 ];
 
 /** Reads and writes only the entries the identity created. */
@@ -291,7 +308,12 @@ import {
     expectOk,
     getAuthorModel
 } from "~tests/__helpers/entries.js";
-import { CMS_OWN_WRITER, CMS_READER, CMS_WRITER } from "~tests/__helpers/permissions.js";
+import {
+    CMS_DELETER,
+    CMS_OWN_WRITER,
+    CMS_READER,
+    CMS_WRITER
+} from "~tests/__helpers/permissions.js";
 import { createApiKeyIdentity, NOBODY, READER, WRITER } from "~tests/__helpers/identities.js";
 import {
     FakeFolderLevelPermissions,
@@ -353,19 +375,24 @@ describe("CMS target reading and access", () => {
         expect(await access.canWrite(target!)).toBe(false);
     });
 
-    it("lets a writer write", async () => {
+    it("lets a writer write and only a deleter delete", async () => {
         const entry = await createAuthorEntry(await createUserContext(), { name: "Ann" });
-        const { targets, access } = await createAccess({
-            identity: WRITER,
-            permissions: CMS_WRITER
-        });
+        const writer = await createAccess({ identity: WRITER, permissions: CMS_WRITER });
+        const deleter = await createAccess({ identity: WRITER, permissions: CMS_DELETER });
 
-        const target = await targets.read({
+        const writerTarget = await writer.targets.read({
+            model: AUTHOR_NAMESPACE,
+            targetRevisionId: entry.id
+        });
+        const deleterTarget = await deleter.targets.read({
             model: AUTHOR_NAMESPACE,
             targetRevisionId: entry.id
         });
 
-        expect(await access.canWrite(target!)).toBe(true);
+        expect(writerTarget?.group.id).toBe(writerTarget?.model.group);
+        expect(await writer.access.canWrite(writerTarget!)).toBe(true);
+        expect(await writer.access.canDelete(writerTarget!)).toBe(false);
+        expect(await deleter.access.canDelete(deleterTarget!)).toBe(true);
     });
 
     it("finds no target for a user without access to the model", async () => {
@@ -425,7 +452,7 @@ describe("CMS target reading and access", () => {
         folderLevels.set("folder-viewed", new Map([[WRITER.id, "viewer"]]));
         const { targets, access } = await createAccess({
             identity: WRITER,
-            permissions: CMS_WRITER
+            permissions: CMS_DELETER
         });
 
         const lockedTarget = await targets.read({
@@ -440,6 +467,7 @@ describe("CMS target reading and access", () => {
         expect(await access.canRead(lockedTarget!)).toBe(false);
         expect(await access.canRead(viewedTarget!)).toBe(true);
         expect(await access.canWrite(viewedTarget!)).toBe(false);
+        expect(await access.canDelete(viewedTarget!)).toBe(false);
     });
 
     it("does not apply folder-level permissions to API keys", async () => {
@@ -482,15 +510,19 @@ describe("CMS target reading and access", () => {
 Run: `yarn test packages/api-headless-cms-workflows/__tests__/target/CmsEntryAccess.test.ts 2>&1 | tail -50`
 Expected: FAIL, cannot resolve `~/features/target/CmsEntryTargetReader/index.js`.
 
-- [ ] **Step 3: Namespaces, constants and the dependency**
+- [ ] **Step 3: Namespaces, CI storages and the dependency**
 
 In `packages/api-headless-cms-workflows/package.json` move `"@webiny/api-aco": "0.0.0"` from `devDependencies` to `dependencies` (alphabetical, before `@webiny/api-core`).
 
-Create `packages/api-headless-cms-workflows/src/constants.ts`:
+Create `packages/api-headless-cms-workflows/ci.config.json` (same format as `packages/api-workflows/ci.config.json`; workflows assume OpenSearch, D63, R77):
 
-```ts
-/** ACO root folder id; entries in it have no folder in their `TargetContext` (R66). */
-export const ROOT_FOLDER = "root";
+```json
+{
+  "$schema": "../../.github/workflows/ci.config.schema.json",
+  "vitest": {
+    "storageOps": ["ddb", "ddb-os,ddb"]
+  }
+}
 ```
 
 Replace `packages/api-headless-cms-workflows/src/utils/appName.ts` with:
@@ -609,7 +641,7 @@ Create `packages/api-headless-cms-workflows/src/features/target/CmsEntryTargetRe
 
 ```ts
 import { createAbstraction } from "@webiny/feature/api";
-import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsEntry, CmsGroup, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 export interface CmsEntryTargetReadParams {
     /** Namespace id, e.g. "cms.article". */
@@ -619,14 +651,16 @@ export interface CmsEntryTargetReadParams {
 
 export interface CmsEntryTarget {
     model: CmsModel;
+    /** The model's group, read as the current identity; group read is part of entry access (R72). */
+    group: CmsGroup;
     entry: CmsEntry;
 }
 
 export interface ICmsEntryTargetReader {
     /**
      * Reads the revision as the current identity. `null` when the namespace is not `cms.*`, the
-     * model does not exist, is private or cannot be read, or the revision does not exist. Other
-     * failures are thrown.
+     * model or its group does not exist or cannot be read, the model is private, or the revision
+     * does not exist (a trashed revision reads as missing). Other failures are thrown.
      */
     read(params: CmsEntryTargetReadParams): Promise<CmsEntryTarget | null>;
 }
@@ -645,23 +679,28 @@ Create `packages/api-headless-cms-workflows/src/features/target/CmsEntryTargetRe
 
 ```ts
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { GetGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/GetGroup/index.js";
 import { GetRevisionByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionById/index.js";
 import { getModelIdFromAppName } from "~/utils/appName.js";
 import { CmsEntryTargetReader as Abstraction } from "./abstractions.js";
 
 const MODEL_NOT_FOUND = "Cms/Model/NotFound";
 const MODEL_NOT_AUTHORIZED = "Cms/Model/NotAuthorized";
+const GROUP_NOT_FOUND = "Cms/ModelGroup/NotFound";
+const GROUP_NOT_AUTHORIZED = "Cms/ModelGroup/NotAuthorized";
 const ENTRY_NOT_FOUND = "Cms/Entry/NotFound";
 
 /**
  * The model is read through the access-controlled `GetModelUseCase` as the current identity: a
  * model the user cannot read is no target for them, and nothing fills the tenant-keyed model cache
- * without access filtering (A19). The revision itself is read without entry checks; callers decide
- * access with `CmsEntryAccess`.
+ * without access filtering (A19). The group is read the same way, so `CmsEntryAccess` can check
+ * group read for another user without reading anything as them. The revision itself is read
+ * without entry checks; callers decide access with `CmsEntryAccess`.
  */
 class CmsEntryTargetReaderImpl implements Abstraction.Interface {
     public constructor(
         private getModel: GetModelUseCase.Interface,
+        private getGroup: GetGroupUseCase.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface
     ) {}
 
@@ -682,6 +721,14 @@ class CmsEntryTargetReaderImpl implements Abstraction.Interface {
             return null;
         }
 
+        const group = await this.getGroup.execute(model.value.group);
+        if (group.isFail()) {
+            if (group.error.code === GROUP_NOT_FOUND || group.error.code === GROUP_NOT_AUTHORIZED) {
+                return null;
+            }
+            throw group.error;
+        }
+
         const entry = await this.getRevisionById.execute(model.value, params.targetRevisionId);
         if (entry.isFail()) {
             if (entry.error.code === ENTRY_NOT_FOUND) {
@@ -690,13 +737,13 @@ class CmsEntryTargetReaderImpl implements Abstraction.Interface {
             throw entry.error;
         }
 
-        return { model: model.value, entry: entry.value };
+        return { model: model.value, group: group.value, entry: entry.value };
     }
 }
 
 export const CmsEntryTargetReader = Abstraction.createImplementation({
     implementation: CmsEntryTargetReaderImpl,
-    dependencies: [GetModelUseCase, GetRevisionByIdUseCase]
+    dependencies: [GetModelUseCase, GetGroupUseCase, GetRevisionByIdUseCase]
 });
 ```
 
@@ -704,8 +751,9 @@ Create `packages/api-headless-cms-workflows/src/features/target/CmsEntryTargetRe
 
 ```ts
 export { CmsEntryTargetReader } from "./abstractions.js";
-export type { CmsEntryTarget, CmsEntryTargetReadParams } from "./abstractions.js";
 ```
+
+(Consumers use the namespace types `CmsEntryTargetReader.Target` / `.Params`.)
 
 Create `packages/api-headless-cms-workflows/src/features/target/CmsEntryAccess/abstractions.ts`:
 
@@ -718,12 +766,15 @@ export interface ICmsEntryAccess {
     canRead(target: CmsEntryTarget): Promise<boolean>;
     /** Write access of the current identity (request a review, D77). */
     canWrite(target: CmsEntryTarget): Promise<boolean>;
+    /** Delete access of the current identity (trash or delete, cancel-for-delete, D134). */
+    canDelete(target: CmsEntryTarget): Promise<boolean>;
 }
 
 /**
- * The CMS's own entry access logic for the current identity (R47): model, group and entry
- * permissions (incl. own-only) through `AccessControl`, plus folder-level permissions on the
- * entry's folder. Evaluated as another user inside `RunAsUser` for `canUserRead` (R48).
+ * The CMS's own entry access logic for the current identity (R47, R72): group read, model read
+ * and entry permissions (incl. own-only) through `AccessControl`, plus folder-level permissions on
+ * the entry's folder. Evaluated as another user inside `CandidateReadAccess` for `canUserRead`
+ * (R48).
  */
 export const CmsEntryAccess = createAbstraction<ICmsEntryAccess>("CmsEntryAccess");
 
@@ -737,15 +788,14 @@ Create `packages/api-headless-cms-workflows/src/features/target/CmsEntryAccess/C
 ```ts
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
-import { ROOT_FOLDER } from "~/constants.js";
 import type { CmsEntryTarget } from "../CmsEntryTargetReader/abstractions.js";
+import { canAccessEntryFolder, type EntryFolderRwd } from "../canAccessEntryFolder.js";
 import { CmsEntryAccess as Abstraction } from "./abstractions.js";
 
-type EntryAccessRwd = "r" | "w";
-
 /**
- * Mirrors `GetEntryByIdWithFlpDecorator` / `UpdateEntryWithFlpDecorator` (api-aco): FLP applies
- * when it is in use for the identity and the entry is not in the root folder.
+ * Group and model read first (what `GetModelUseCase` and the group cache enforce for the current
+ * identity), then the entry permission, then FLP as `GetEntryByIdWithFlpDecorator`,
+ * `UpdateEntryWithFlpDecorator` and `DeleteEntryWithFlpDecorator` (api-aco) apply it.
  */
 class CmsEntryAccessImpl implements Abstraction.Interface {
     public constructor(
@@ -761,7 +811,17 @@ class CmsEntryAccessImpl implements Abstraction.Interface {
         return this.can(target, "w");
     }
 
-    private async can(target: CmsEntryTarget, rwd: EntryAccessRwd): Promise<boolean> {
+    public canDelete(target: CmsEntryTarget): Promise<boolean> {
+        return this.can(target, "d");
+    }
+
+    private async can(target: CmsEntryTarget, rwd: EntryFolderRwd): Promise<boolean> {
+        if (!(await this.accessControl.canAccessGroup({ group: target.group }))) {
+            return false;
+        }
+        if (!(await this.accessControl.canAccessModel({ model: target.model }))) {
+            return false;
+        }
         const canAccessEntry = await this.accessControl.canAccessEntry({
             model: target.model,
             entry: target.entry,
@@ -770,16 +830,11 @@ class CmsEntryAccessImpl implements Abstraction.Interface {
         if (!canAccessEntry) {
             return false;
         }
-
-        if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
-            return true;
-        }
-        const folderId = target.entry.location?.folderId;
-        if (!folderId || folderId === ROOT_FOLDER) {
-            return true;
-        }
-        const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
-        return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd });
+        return canAccessEntryFolder(
+            this.folderLevelPermissions,
+            target.entry.location?.folderId,
+            rwd
+        );
     }
 }
 
@@ -793,6 +848,36 @@ Create `packages/api-headless-cms-workflows/src/features/target/CmsEntryAccess/i
 
 ```ts
 export { CmsEntryAccess } from "./abstractions.js";
+```
+
+Create `packages/api-headless-cms-workflows/src/features/target/canAccessEntryFolder.ts`:
+
+```ts
+import type { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
+import { ROOT_FOLDER } from "@webiny/api-headless-cms/constants.js";
+
+export type EntryFolderRwd = "r" | "w" | "d";
+
+/**
+ * Folder-level permissions on a CMS entry's folder for the current identity, as the ACO CMS
+ * decorators apply them: skipped when FLP is not in use for the identity (e.g. API keys) or the
+ * entry is in the root folder. Shared with the Website Builder adapter, whose pages are CMS
+ * entries (R78).
+ */
+export const canAccessEntryFolder = async (
+    folderLevelPermissions: FolderLevelPermissions.Interface,
+    folderId: string | null | undefined,
+    rwd: EntryFolderRwd
+): Promise<boolean> => {
+    if (!folderLevelPermissions.canUseFolderLevelPermissions()) {
+        return true;
+    }
+    if (!folderId || folderId === ROOT_FOLDER) {
+        return true;
+    }
+    const permissions = await folderLevelPermissions.getFolderLevelPermissions(folderId);
+    return folderLevelPermissions.canAccessFolderContent({ permissions, rwd });
+};
 ```
 
 - [ ] **Step 5: Register**
@@ -829,6 +914,7 @@ In `packages/api-headless-cms-workflows/src/CmsWorkflowsFeature.ts` import `CmsT
 - [ ] **Step 6: Run the tests**
 
 Run: `yarn test packages/api-headless-cms-workflows 2>&1 | tail -50` Expected: PASS.
+Run: `yarn check:test:types -p api-headless-cms-workflows --report cli 2>&1 | tail -40` Expected: no errors.
 Run: `yarn test:os packages/api-headless-cms-workflows 2>&1 | tail -50` Expected: PASS, or "not run" (A9).
 
 - [ ] **Step 7: Commit**

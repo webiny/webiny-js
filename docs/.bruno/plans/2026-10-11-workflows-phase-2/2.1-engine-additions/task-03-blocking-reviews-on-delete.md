@@ -1,6 +1,6 @@
 ### Task 3: Blocking reviews on the delete-blocked error (D115 engine part)
 
-R57, D115, D133. The engine's `Workflows/Workflow/HasActiveReviews` keeps the exact count and gains every blocking review (content reference, title, step position and name). The engine does not filter by access; each app's delete wrapper keeps the first 5 the caller can read (Tasks 12, 17). The repository already confirms every in-progress hit from primary storage (R18); listing reuses that walk, and the count is its length.
+R57, D115, D133. The engine's `Workflows/Workflow/HasActiveReviews` keeps the exact count and gains every blocking review (content reference, title, step position and name). The engine does not filter by access; each app's delete wrapper keeps the first 5 the caller can read, checking at most 50 (Tasks 6b, 12, 17, R76). The list is not capped in v1 (A36): a workflow with very many in-progress reviews returns all of them in the error. The repository already confirms every in-progress hit from primary storage (R18); listing reuses that walk, and the count is its length.
 
 **Files:**
 - Modify: `packages/api-workflows/src/domain/workflow/types.ts`
@@ -30,10 +30,7 @@ In `packages/api-workflows/__tests__/workflow/DeleteWorkflowWithReviews.test.ts`
 with
 
 ```ts
-        const data = blocked.error.data as {
-            count: number;
-            reviews: { reviewId: string }[];
-        };
+        const data = blocked.error.data as WorkflowHasActiveReviewsErrorData;
         expect(data.count).toBe(2);
         expect([...data.reviews].sort((a, b) => a.reviewId.localeCompare(b.reviewId))).toEqual([
             {
@@ -59,12 +56,12 @@ with
         ]);
 ```
 
-(The fixture title is always "Article 1"; both reviews sit on the first step, "Legal review", of two.)
+and add `import type { WorkflowHasActiveReviewsErrorData } from "~/domain/workflow/errors.js";` to the file's imports. (The fixture title is always "Article 1"; both reviews sit on the first step, "Legal review", of two.)
 
 - [ ] **Step 2: Run it to verify it fails**
 
 Run: `yarn test packages/api-workflows/__tests__/workflow/DeleteWorkflowWithReviews.test.ts 2>&1 | tail -50`
-Expected: FAIL, `data.reviews` is `undefined` (`Cannot read properties of undefined (reading 'sort')` on the spread).
+Expected: FAIL, `data.reviews` is `undefined`, so the spread throws `TypeError: data.reviews is not iterable` (the exact wording depends on the Node version).
 
 - [ ] **Step 3: Add the blocking review type, mapper and error data**
 

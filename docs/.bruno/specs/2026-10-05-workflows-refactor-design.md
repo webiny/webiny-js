@@ -1,6 +1,6 @@
 # Workflows refactor: design
 
-Status: draft, 2026-10-05, updated 2026-10-11 (D132: api-workflows is an internal engine, apps own checks and GraphQL; D133: no cross-app reviews, shared configuration operations, engine identity touch points). Consolidates decisions D1-D133 in `docs/.bruno/workflows/decisions.md`; where decisions refine or supersede each other, this document states the final result. Decision ids are given in brackets for traceability. Discovery background lives in `docs/.bruno/workflows/` (`README.md`, `api.md`, `app.md`, `integrations.md`, `infrastructure.md`); the product brief for routing is `docs/.bruno/workflows/routing.md`; the UI design brief is `docs/.bruno/specs/2026-10-06-workflows-ui-design-brief.md` (UI decisions D88-D131).
+Status: draft, 2026-10-05, updated 2026-10-12 (D132: api-workflows is an internal engine, apps own checks and GraphQL; D133: no cross-app reviews, shared configuration operations, engine identity touch points; D134: trash and delete refused while a review is in progress, create as published allowed, bound-model guards). Consolidates decisions D1-D134 in `docs/.bruno/workflows/decisions.md`; where decisions refine or supersede each other, this document states the final result. Decision ids are given in brackets for traceability. Discovery background lives in `docs/.bruno/workflows/` (`README.md`, `api.md`, `app.md`, `integrations.md`, `infrastructure.md`); the product brief for routing is `docs/.bruno/workflows/routing.md`; the UI design brief is `docs/.bruno/specs/2026-10-06-workflows-ui-design-brief.md` (UI decisions D88-D131).
 
 ## 1. Goals
 
@@ -188,6 +188,7 @@ system.workflow = { workflowId, reviewState, stepId, stepName, stepState } | nul
 - Filterable fields registered in DDB and OpenSearch (SQL reuses the DDB field registry): `workflowId`, `reviewState`, `stepId`, `stepState` [D53]. The legacy `state` system field is untouched.
 - Nulled on every new revision by one `EntryRevisionBeforeCreate` handler [D59].
 - Publishing does not change it; the published revision keeps `reviewState: approved` (today's CMS clearing on publish is removed) [D85].
+- Content created directly with `status: "published"` (create, create-from, new revision) has no review and `system.workflow = null`; this stays allowed on bound models for data transfer from other systems [D134].
 
 ## 5. Lifecycle
 
@@ -208,7 +209,7 @@ Two layers enforce the rules [D132, D133]. The engine (aggregate and api-workflo
 | reject | `inReview` | `rejected`; review `rejected` | owner equals actor | read access to the target (user actors) |
 | fail | AI/automation `inReview`, or on reach (`pending`) when the definition is missing, settings are invalid, or the AI capability/licence is unavailable | `failed` (reason in comment) | system [D8, D28, D37, D40] | (system, no wrapper) |
 | restart | `failed` | re-runs step reached (definition lookup, settings re-validation, new task); clears `comment` and `issues`, keeps owner, appends the previous attempt to `runs` [D82] | state | requester or `workflows.reassign`, and read access to the target (decided 2026-10-11) [D34] |
-| cancel | review `inProgress` | review `cancelled`, `isActive = false`, current-step fields cleared, `system.workflow = null`, running task aborted | state (not approved, rejected or cancelled) | requester or `workflows.reassign`, and read access to the target (decided 2026-10-11) [D25, D54, D75] |
+| cancel | review `inProgress` | review `cancelled`, `isActive = false`, current-step fields cleared, `system.workflow = null`, running task aborted | state (not approved, rejected or cancelled) | requester or `workflows.reassign`, and read access to the target (decided 2026-10-11) [D25, D54, D75]; before trashing or deleting the content, anyone with delete access to it, through the cancel-for-delete wrapper (reason recorded) [D134] |
 
 The wrapper authorizes with permission-only predicates from api-workflows (requester or `reassign` for cancel and restart, each also needing read access to the target, `reassign` for reassign) and leaves state errors to the engine, so a finished review fails with the engine's `InvalidState`, not with "not authorized".
 
@@ -223,7 +224,8 @@ Rules:
 - API keys act as `user` actors with `identityType: "api-key"` under the same rules. A key belongs to no team, so it cannot start or take over pool steps; it can request, cancel its own review, and act where `reassign` suffices [D133].
 - Exclusions govern new assignments only. Work already held by a user who becomes excluded stays with them (brief).
 - An approved revision that was published and later unpublished can be published again without a new review [D121].
-- When the last step is approved the review is `approved` and publish is allowed. On a workflow-bound model, publish requires an approved review on that revision, enforced in the API (not only the UI); a failed lookup blocks publish. Models without a workflow publish normally [D79].
+- When the last step is approved the review is `approved` and publish is allowed. On a workflow-bound model, publish requires an approved review on that revision, enforced in the API (not only the UI); a failed lookup blocks publish. Models without a workflow publish normally [D79]. The rule guards the publish action only: creating content as published (create, create-from, new revision with `status: "published"`) needs no review, for data transfer from other systems [D134].
+- Trashing or deleting content with a review in progress is refused on bound models: CMS trash, permanent delete, single revision delete (that revision's review) and `deleteMultiple`, and WB page trash and delete fail with `Workflows/Review/ActiveReviewOnTrash` (data: the action and each in-progress review's id, target, title and current step). The admin warns ("This content has a review in progress. Trashing it cancels the review."); on confirm it calls the app's cancel-for-delete wrapper (`CancelCmsEntryReviewsForDelete`, `CancelWebsiteBuilderPageReviewsForDelete`) and repeats the action. Anyone who may delete the content may confirm, without cancel rights; the review is recorded as cancelled by that user with reason "content trashed" or "content deleted" (the reason travels on the cancelled event). After a permanent delete the reviews and their assignment records go with the content [D134].
 
 ### 5.2 Step reached [D2]
 
@@ -352,8 +354,8 @@ Requesters see exclusion data only through `listStepCandidates` (refines D43).
 Each is one handler covering CMS entries and WB pages, because WB pages are CMS entries (`wbyWbPage`):
 
 - `EntryRevisionBeforeCreate`: set `system.workflow = null` [D59].
-- `EntryBeforeUpdate`: reject updates to a revision with an active review, including an approved one; an approved revision stays locked until published [D80]. `UpdateEntrySystemUseCase` does not fire this event; automation and AI tool writes run in the bypass context [D62].
-- `DeleteModelUseCase` decorator: return `Workflows/Model/BoundToWorkflow` listing the bound workflows; the workflow must be deleted or the model removed from it first. Replaces `DeleteWorkflowsOnModelAfterDelete` [D41, D64].
+- `EntryBeforeUpdate`: on a model bound to a workflow, reject updates to a revision with an active review, including an approved one; an approved revision stays locked until published [D80]. The binding is checked first, so unbound models never look up reviews (they stay editable when the review lookup fails, and leftover approved or rejected reviews stop locking once their workflow is deleted) [D134]. `UpdateEntrySystemUseCase` does not fire this event; automation and AI tool writes run in the bypass context [D62].
+- `DeleteModelUseCase` decorator: return `Workflows/Model/BoundToWorkflow` listing the bound workflows; the workflow must be deleted or the model removed from it first. Replaces `DeleteWorkflowsOnModelAfterDelete` [D41, D64]. The "fully delete model" background task (`api-headless-cms-tasks`, which deletes every entry before it calls `DeleteModelUseCase`) is refused at start with the same error, before anything is deleted [D134]. A caller who cannot delete the model gets the CMS's own error.
 
 Adapters that handle other CMS events must match their namespace and model explicitly, since WB operations also fire CMS entry events [D59].
 
@@ -362,14 +364,16 @@ Adapters that handle other CMS events must match their namespace and model expli
 One adapter per namespace, replacing the duplicated CMS/WB handler pairs: `cms.*` for CMS entries in `api-headless-cms-workflows`, `wb.page` for WB pages in `api-website-builder-workflows`. Each app package also holds that app's wrapper use cases and GraphQL operations [D132]. Each adapter:
 
 - load target revision; produce typed `TargetContext` (folder id and type, model id, title, author);
-- publish blocking (D79) and move blocking: moves are blocked only while the review is `inProgress` [D84];
+- publish blocking (D79) and move blocking: moves are blocked only while the review is `inProgress` [D84]; both only on bound models;
+- trash and delete refusal while a review is in progress, and the app's cancel-for-delete wrapper as the confirm path [D134];
 - `system.workflow` sync via `UpdateEntrySystemUseCase`;
 - implement the AI tools `readTarget` / `updateTargetFields`;
-- delete the review when the target is permanently deleted;
-- answer whether a user can read the target (`canUserRead(userId, target)`), used by the engine for candidates during routing and reassign [D61, D133].
+- delete the review (and its assignment records) when the target is permanently deleted; a failed cleanup is logged and the delete stands, leaving the review orphaned;
+- answer whether a user can read the target (`canUserRead(userId, target)`), used by the engine for candidates during routing and reassign [D61, D133]. The adapter reads the model (and, for CMS, its group) and the revision as the current identity, then runs its own read check (CMS: group read, model read, entry and folder access; WB: page read and folder access) as the candidate. The candidate must be an admin user of the current tenant (one lookup; no parent-tenant fallback); the check runs with authorization enforced even when the caller runs without authorization (background tasks), and any error answers "cannot read" (fail closed).
 
 ### 9.4 api-core
 
+- Permissions are cached per identity object and tenant, so `IdentityContext.withIdentity` evaluates the other identity's permissions and never leaks them to the outer one; a failed load is not cached. `withAuthorization(cb)` re-enables authorization inside `withoutAuthorization`. Both are needed for candidates' read access (9.3) and for task triggers under `withIdentity(requester)` (7.4) [D134].
 - `ListUsersInput.where.teams_in`, applied in the DDB and SQL `listUsers` (both filter in memory). Fix the DDB implementation ignoring `id_in` at the same time (bug B3) [D48, D50].
 
 ### 9.5 Audit logs [D65]

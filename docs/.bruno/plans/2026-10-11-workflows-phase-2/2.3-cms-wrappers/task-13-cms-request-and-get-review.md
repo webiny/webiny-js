@@ -353,6 +353,8 @@ export const CmsEntryReviewGuard = Abstraction.createImplementation({
 });
 ```
 
+The guard is a shared building block of the CMS wrappers, not a wrapper: its folder has no `feature.ts`, and `CmsWrappersFeature` registers it directly (Step 6). Every review action loads the review twice (here and in the engine use case); both are primary-storage reads, accepted.
+
 Create `packages/api-headless-cms-workflows/src/features/wrappers/CmsEntryReviewGuard/index.ts`:
 
 ```ts
@@ -519,6 +521,9 @@ export interface IGetCmsEntryReviewUseCase {
 
 /**
  * A CMS review with the reading user's flags (spec 5.3, R62); needs read access to the target.
+ * Returns the engine's full review in phase 2. Phase 3 adds the redaction here, in the wrapper and
+ * not in the resolver: per-user skip entries and `excludedReason` are stripped for viewers without
+ * `editor` / `reassign` (spec 8, D89, D127, D128, D133).
  */
 export const GetCmsEntryReviewUseCase =
     createAbstraction<IGetCmsEntryReviewUseCase>("GetCmsEntryReviewUseCase");
@@ -625,6 +630,7 @@ export const CmsWrappersFeature = createFeature({
 - [ ] **Step 7: Run the tests**
 
 Run: `yarn test packages/api-headless-cms-workflows 2>&1 | tail -50` Expected: PASS.
+Run: `yarn check:test:types -p api-headless-cms-workflows --report cli 2>&1 | tail -40` Expected: no errors.
 Run: `yarn test:os packages/api-headless-cms-workflows 2>&1 | tail -50` Expected: PASS, or "not run" (A9).
 
 - [ ] **Step 8: Commit**

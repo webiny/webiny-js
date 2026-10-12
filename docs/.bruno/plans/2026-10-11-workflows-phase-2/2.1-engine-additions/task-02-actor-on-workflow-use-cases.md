@@ -298,7 +298,7 @@ export const storeWorkflow = async (
 };
 ```
 
-Confirm no caller is left: `grep -rn "StoreWorkflowUseCase\|DeleteWorkflowUseCase" packages/*/src packages/*/__tests__ | grep -v "^packages/api-workflows/src"` lists only the files above and the registration tests.
+Confirm no caller is left: `grep -rn "StoreWorkflowUseCase\|DeleteWorkflowUseCase" packages/*/src packages/*/__tests__ | grep -v "^packages/api-workflows/src" | grep -v "^packages/app-workflows/"` lists only the files above and the registration tests (`packages/app-workflows` has its own, unrelated admin `StoreWorkflowUseCase` / `DeleteWorkflowUseCase`).
 
 - [ ] **Step 6: Run the tests and the test type check**
 

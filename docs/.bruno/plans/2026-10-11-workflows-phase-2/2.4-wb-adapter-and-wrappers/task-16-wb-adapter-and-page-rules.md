@@ -1,30 +1,30 @@
-### Task 16: WB loader, sync, read access for another user, publish, move and delete rules
+### Task 16: WB loader, sync, read access for another user, publish and move rules
 
-Spec 4.5, 5.1, 9.3, D59, D62, D79, D84, D121, R48, R52-R56, R63, R66, A26. The `wb.page` implementations of the engine ports and the WB page rules on the WB page events. The single CMS handlers (Task 9) already cover pages through `WbPageReviewNamespace` (Task 15); this task pins that with page tests.
+Spec 4.5, 5.1, 9.3, D59, D62, D79, D84, D121, R48, R52-R55, R63, R66-R69, A26. The `wb.page` implementations of the engine ports and the WB publish and move rules on the WB page events (trash and delete are Task 16b). The single CMS handlers (Task 9) already cover pages through `WbPageReviewNamespace` (Task 15); this task pins that with page tests.
 
-- `WbPageReviewTargetLoader`, `WbPageReviewTargetSync`, `WbPageReviewTargetAccess`: as the CMS ones (Task 8), over `WbPageTargetReader` and `WbPageAccess`.
-- `RequireApprovedReviewOnPagePublish` (`PageBeforePublish`), `BlockPageMoveWhileInReview` (`PageBeforeMove`; WB `MovePage` bypasses CMS `MoveEntryUseCase`), `DeleteReviewsOnPageDelete` (`PageAfterDelete`, the permanent delete of a trashed page).
+- `WbPageReviewTargetLoader`, `WbPageReviewTargetSync`, `WbPageReviewTargetReadAccess`: as the CMS ones (Task 8), over `WbPageTargetReader` and `WbPageAccess`; another user's read check goes through `CandidateReadAccess`.
+- `RequireApprovedReviewOnPagePublish` (`PageBeforePublish`) and `BlockPageMoveWhileInReview` (`PageBeforeMove`; WB `MovePage` bypasses CMS `MoveEntryUseCase`), both only with a pages workflow bound (`GetBoundWorkflowUseCase`).
 
 **Files:**
 - Create: `packages/api-website-builder-workflows/src/features/target/toWbPageReviewTarget.ts`
 - Create: `packages/api-website-builder-workflows/src/features/target/WbPageReviewTargetLoader.ts`
 - Create: `packages/api-website-builder-workflows/src/features/target/WbPageReviewTargetSync.ts`
-- Create: `packages/api-website-builder-workflows/src/features/target/WbPageReviewTargetAccess.ts`
+- Create: `packages/api-website-builder-workflows/src/features/target/WbPageReviewTargetReadAccess.ts`
 - Modify: `packages/api-website-builder-workflows/src/features/target/feature.ts`
 - Create: `packages/api-website-builder-workflows/src/features/hooks/RequireApprovedReviewOnPagePublish.ts`
 - Create: `packages/api-website-builder-workflows/src/features/hooks/BlockPageMoveWhileInReview.ts`
-- Create: `packages/api-website-builder-workflows/src/features/hooks/DeleteReviewsOnPageDelete.ts`
 - Create: `packages/api-website-builder-workflows/src/features/hooks/feature.ts`
 - Modify: `packages/api-website-builder-workflows/src/WebsiteBuilderWorkflowsFeature.ts`
 - Create: `packages/api-website-builder-workflows/__tests__/__helpers/engine.ts`
+- Create: `packages/api-website-builder-workflows/__tests__/__helpers/FakeAdminUsers.ts`
 - Create: `packages/api-website-builder-workflows/__tests__/target/WbPageAdapter.test.ts`
 
 **Interfaces:**
-- Consumes: `WbPageTargetReader`, `WbPageAccess` (Task 15), `ReviewTargetLoader`, `ReviewTargetSync`, `ReviewTargetAccess`, `RunAsUser`, `ListWorkflowsUseCase`, `GetTargetReviewUseCase`, `ListTargetReviewsUseCase`, `DeleteTargetReviewsUseCase`, `ReviewPublishBlockedError`, `ReviewTargetLockedError` (2.1), `PageBeforePublishEventHandler`, `PageBeforeMoveEventHandler`, `PageAfterDeleteEventHandler` (`@webiny/api-website-builder/features/pages/{PublishPage,MovePage,DeletePage}/index.js`), `PageModelProvider`, `UpdateEntrySystemUseCase`, `IdentityContext`.
+- Consumes: `WbPageTargetReader`, `WbPageAccess` (Task 15), `ReviewTargetLoader`, `ReviewTargetSync`, `ReviewTargetReadAccess`, `CandidateReadAccess`, `GetBoundWorkflowUseCase`, `GetTargetReviewUseCase`, `ListTargetReviewsUseCase`, `ReviewPublishBlockedError`, `ReviewTargetLockedError` (2.1), `PageBeforePublishEventHandler`, `PageBeforeMoveEventHandler` (`@webiny/api-website-builder/features/pages/{PublishPage,MovePage}/index.js`), `ROOT_FOLDER` (`@webiny/api-website-builder/constants.js`), `PageModelProvider`, `UpdateEntrySystemUseCase`, `IdentityContext`, `GetUserUseCase` (test fake).
 - Produces:
-  - `toWbPageReviewTarget(target: WbPageTarget): ReviewTarget`.
-  - Three port implementations (answer `wb.page` only) registered by `WbTargetFeature`; three handlers registered by `WbHooksFeature`.
-  - Test helpers (`__tests__/__helpers/engine.ts`): `STEP_ID`, `WB_ADMIN_ACTOR`, `createWbWorkflowValues()`, `storeWbWorkflow(context)`, `requestPageReview(context, page, requester?)`, `startPageReview`, `approvePageReview`, `rejectPageReview`, `cancelPageReview`, `readPage(context, revisionId)`.
+  - `toWbPageReviewTarget(target: WbPageTargetReader.Target): ReviewTarget`.
+  - Three port implementations (answer `wb.page` only) registered by `WbTargetFeature`; two handlers registered by `WbHooksFeature` (Task 16b adds to it).
+  - Test helpers (`__tests__/__helpers/engine.ts`): `STEP_ID`, `WB_ADMIN_ACTOR` (`toActor(ADMIN)`), `createWbWorkflowValues()`, `storeWbWorkflow(context)`, `requestPageReview(context, page, requester?)`, `startPageReview`, `approvePageReview`, `rejectPageReview`, `cancelPageReview`, `readPage(context, revisionId)`; `FakeAdminUsers` (a copy of the api-workflows one, Task 6).
 
 - [ ] **Step 1: Write the test helpers and the failing test**
 
@@ -44,17 +44,12 @@ import { ApproveReviewStepUseCase } from "@webiny/api-workflows/features/review/
 import { RejectReviewStepUseCase } from "@webiny/api-workflows/features/review/RejectReviewStep/index.js";
 import { CancelReviewUseCase } from "@webiny/api-workflows/features/review/CancelReview/index.js";
 import { expectOk, getPageModel } from "./pages.js";
-import { REQUESTER, REVIEW_TEAM, REVIEWER, toActor } from "./identities.js";
+import { ADMIN, REQUESTER, REVIEW_TEAM, REVIEWER, toActor } from "./identities.js";
 
 export const STEP_ID = "step-1";
 
 /** The default identity of `createCmsTestHandler`, as a workflow actor (R58). */
-export const WB_ADMIN_ACTOR: Actor = {
-    type: "user",
-    id: "id-12345678",
-    displayName: "John Doe",
-    identityType: "admin"
-};
+export const WB_ADMIN_ACTOR: Actor = toActor(ADMIN);
 
 export const createWbWorkflowValues = (): WorkflowValues => {
     return {
@@ -168,21 +163,24 @@ export const readPage = async (context: CmsContext, revisionId: string): Promise
 };
 ```
 
+Create `packages/api-website-builder-workflows/__tests__/__helpers/FakeAdminUsers.ts` with exactly the content of `packages/api-workflows/__tests__/__helpers/FakeAdminUsers.ts` (Task 6).
+
 Create `packages/api-website-builder-workflows/__tests__/target/WbPageAdapter.test.ts`:
 
 ```ts
 import { afterEach, describe, expect, it } from "vitest";
+import type { Container } from "@webiny/di";
+import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import { PAGE_MODEL_ID } from "@webiny/api-website-builder/domain/page/page.model.js";
 import { PublishPageUseCase } from "@webiny/api-website-builder/features/pages/PublishPage/index.js";
 import { UnpublishPageUseCase } from "@webiny/api-website-builder/features/pages/UnpublishPage/index.js";
 import { MovePageUseCase } from "@webiny/api-website-builder/features/pages/MovePage/index.js";
 import { UpdatePageUseCase } from "@webiny/api-website-builder/features/pages/UpdatePage/index.js";
-import { TrashPageUseCase } from "@webiny/api-website-builder/features/pages/TrashPage/index.js";
-import { DeletePageUseCase } from "@webiny/api-website-builder/features/pages/DeletePage/index.js";
 import { CreatePageRevisionFromUseCase } from "@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/index.js";
 import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
-import { ReviewTargetAccess } from "@webiny/api-workflows/features/review/ReviewTargetAccess/index.js";
-import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
+import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import { ReviewTargetLockedError } from "@webiny/api-workflows/domain/review/errors.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createPage, expectOk } from "~tests/__helpers/pages.js";
@@ -197,11 +195,27 @@ import {
 } from "~tests/__helpers/engine.js";
 import { ADMIN, NOBODY, READER, WB_READER } from "~tests/__helpers/identities.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
+import { FakeAdminUsers } from "~tests/__helpers/FakeAdminUsers.js";
 
+/** READER and NOBODY are admin users of the tenant; "user-elsewhere" is not (R68). */
 const createAdminContext = () => {
     return createUserContext({
-        permissionsByIdentity: { [READER.id]: WB_READER, [NOBODY.id]: [] }
+        permissionsByIdentity: { [READER.id]: WB_READER, "user-elsewhere": WB_READER },
+        legacyPlugins: [
+            (container: Container) => {
+                container.registerInstance(
+                    GetUserUseCase,
+                    new FakeAdminUsers([READER.id, NOBODY.id])
+                );
+            }
+        ]
     });
+};
+
+const getReadAccess = (context: CmsContext): ReviewTargetReadAccess.Interface => {
+    return context.container
+        .resolveAll(ReviewTargetReadAccess)
+        .find(item => item.canHandle("wb.page"))!;
 };
 
 describe("WB page adapter", () => {
@@ -257,19 +271,37 @@ describe("WB page adapter", () => {
     it("answers read access for another user with that user's permissions (R48)", async () => {
         const context = await createAdminContext();
         const page = await createPage(context, { title: "Page A", folderId: "folder-1" });
-        const access = context.container
-            .resolveAll(ReviewTargetAccess)
-            .find(item => item.canAccess("wb.page"))!;
+        const access = getReadAccess(context);
         const params = { model: "wb.page", targetId: page.entryId, targetRevisionId: page.id };
 
         const reader = await access.canUserRead({ ...params, userId: READER.id });
         const nobody = await access.canUserRead({ ...params, userId: NOBODY.id });
+        const elsewhere = await access.canUserRead({ ...params, userId: "user-elsewhere" });
         folderLevels.set("folder-1", new Map([[READER.id, "no-access"]]));
         const readerWithoutFolder = await access.canUserRead({ ...params, userId: READER.id });
 
         expect(reader).toBe(true);
         expect(nobody).toBe(false);
+        expect(elsewhere).toBe(false);
         expect(readerWithoutFolder).toBe(false);
+    });
+
+    it("answers with the user's permissions inside withoutAuthorization (R67)", async () => {
+        const context = await createAdminContext();
+        const page = await createPage(context, { title: "Page A" });
+        const params = { model: "wb.page", targetId: page.entryId, targetRevisionId: page.id };
+
+        const results = await context.container
+            .resolve(IdentityContext)
+            .withoutAuthorization(async () => {
+                const access = getReadAccess(context);
+                return {
+                    reader: await access.canUserRead({ ...params, userId: READER.id }),
+                    nobody: await access.canUserRead({ ...params, userId: NOBODY.id })
+                };
+            });
+
+        expect(results).toEqual({ reader: true, nobody: false });
     });
 
     it("starts a new page revision without system.workflow (D59)", async () => {
@@ -370,41 +402,26 @@ describe("WB page adapter", () => {
 
         expect(moved.isOk()).toBe(true);
     });
-
-    it("keeps reviews of a trashed page and deletes them with the page (R56)", async () => {
-        const context = await createAdminContext();
-        await storeWbWorkflow(context);
-        const page = await createPage(context, { title: "Page A" });
-        const review = await requestPageReview(context, page);
-        const getReview = context.container.resolve(GetReviewUseCase);
-
-        expectOk(await context.container.resolve(TrashPageUseCase).execute({ id: page.id }));
-        const afterTrash = await getReview.execute({ id: review.id });
-        expectOk(await context.container.resolve(DeletePageUseCase).execute({ id: page.id }));
-        const afterDelete = await getReview.execute({ id: review.id });
-
-        expect(afterTrash.isOk()).toBe(true);
-        expect(afterDelete.error.code).toBe("Workflows/Review/NotFound");
-    });
 });
 ```
 
 - [ ] **Step 2: Run it to verify it fails**
 
 Run: `yarn test packages/api-website-builder-workflows/__tests__/target/WbPageAdapter.test.ts 2>&1 | tail -50`
-Expected: FAIL. No `ReviewTargetLoader` matches `wb.page` (`loader` is `undefined`); the request fails with `Workflows/Review/TargetNotFound`. The save-block and revision-null tests fail at the request for the same reason.
+Expected: FAIL. No `ReviewTargetLoader` matches `wb.page` (`loader` is `undefined`); the request fails with `Workflows/Review/TargetNotFound`. The save-block and revision-null tests fail at the request for the same reason; no `ReviewTargetReadAccess` handles `wb.page`.
 
 - [ ] **Step 3: Implement the ports**
 
 Create `packages/api-website-builder-workflows/src/features/target/toWbPageReviewTarget.ts`:
 
 ```ts
+import { ROOT_FOLDER } from "@webiny/api-website-builder/constants.js";
 import type { ReviewTarget } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
-import { ROOT_FOLDER, WB_PAGE_FOLDER_TYPE } from "~/constants.js";
-import type { WbPageTarget } from "./WbPageTargetReader/abstractions.js";
+import { WB_PAGE_FOLDER_TYPE } from "~/constants.js";
+import type { WbPageTargetReader } from "./WbPageTargetReader/index.js";
 
 /** Title and typed `TargetContext` of a page revision (spec 9.3, R66). Pure. */
-export const toWbPageReviewTarget = (target: WbPageTarget): ReviewTarget => {
+export const toWbPageReviewTarget = (target: WbPageTargetReader.Target): ReviewTarget => {
     const { model, page } = target;
     const title = page.properties.title;
     const folderId = page.location.folderId;
@@ -506,31 +523,31 @@ export const WbPageReviewTargetSync = ReviewTargetSync.createImplementation({
 });
 ```
 
-Create `packages/api-website-builder-workflows/src/features/target/WbPageReviewTargetAccess.ts`:
+Create `packages/api-website-builder-workflows/src/features/target/WbPageReviewTargetReadAccess.ts`:
 
 ```ts
-import { ReviewTargetAccess } from "@webiny/api-workflows/features/review/ReviewTargetAccess/index.js";
-import { RunAsUser } from "@webiny/api-workflows/features/identity/RunAsUser/index.js";
+import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
+import { CandidateReadAccess } from "@webiny/api-workflows/features/identity/CandidateReadAccess/index.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
 import { WbPageTargetReader } from "./WbPageTargetReader/index.js";
 import { WbPageAccess } from "./WbPageAccess/index.js";
 
 /**
  * `canUserRead` for pages (D61, D133, R48): the page is read as the current identity, only the WB
- * access check runs as the other user.
+ * access check runs as the other user, through `CandidateReadAccess` (R67).
  */
-class WbPageReviewTargetAccessImpl implements ReviewTargetAccess.Interface {
+class WbPageReviewTargetReadAccessImpl implements ReviewTargetReadAccess.Interface {
     public constructor(
         private targets: WbPageTargetReader.Interface,
         private access: WbPageAccess.Interface,
-        private runAsUser: RunAsUser.Interface
+        private candidates: CandidateReadAccess.Interface
     ) {}
 
-    public canAccess(model: string): boolean {
+    public canHandle(model: string): boolean {
         return model === WB_PAGE_NAMESPACE;
     }
 
-    public async canUserRead(params: ReviewTargetAccess.UserReadParams): Promise<boolean> {
+    public async canUserRead(params: ReviewTargetReadAccess.UserReadParams): Promise<boolean> {
         const target = await this.targets.read({
             model: params.model,
             targetRevisionId: params.targetRevisionId
@@ -538,13 +555,13 @@ class WbPageReviewTargetAccessImpl implements ReviewTargetAccess.Interface {
         if (!target || target.page.entryId !== params.targetId) {
             return false;
         }
-        return this.runAsUser.run(params.userId, () => this.access.canRead(target));
+        return this.candidates.canUserRead(params.userId, () => this.access.canRead(target));
     }
 }
 
-export const WbPageReviewTargetAccess = ReviewTargetAccess.createImplementation({
-    implementation: WbPageReviewTargetAccessImpl,
-    dependencies: [WbPageTargetReader, WbPageAccess, RunAsUser]
+export const WbPageReviewTargetReadAccess = ReviewTargetReadAccess.createImplementation({
+    implementation: WbPageReviewTargetReadAccessImpl,
+    dependencies: [WbPageTargetReader, WbPageAccess, CandidateReadAccess]
 });
 ```
 
@@ -557,7 +574,7 @@ import { WbPageTargetReader } from "./WbPageTargetReader/WbPageTargetReader.js";
 import { WbPageAccess } from "./WbPageAccess/WbPageAccess.js";
 import { WbPageReviewTargetLoader } from "./WbPageReviewTargetLoader.js";
 import { WbPageReviewTargetSync } from "./WbPageReviewTargetSync.js";
-import { WbPageReviewTargetAccess } from "./WbPageReviewTargetAccess.js";
+import { WbPageReviewTargetReadAccess } from "./WbPageReviewTargetReadAccess.js";
 
 /** The `wb.page` target adapter (spec 9.3). */
 export const WbTargetFeature = createFeature({
@@ -571,7 +588,7 @@ export const WbTargetFeature = createFeature({
         // Engine ports, one per namespace (R28, R50).
         container.register(WbPageReviewTargetLoader);
         container.register(WbPageReviewTargetSync);
-        container.register(WbPageReviewTargetAccess);
+        container.register(WbPageReviewTargetReadAccess);
     }
 });
 ```
@@ -582,7 +599,7 @@ Create `packages/api-website-builder-workflows/src/features/hooks/RequireApprove
 
 ```ts
 import { PageBeforePublishEventHandler } from "@webiny/api-website-builder/features/pages/PublishPage/index.js";
-import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
+import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
 import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
 import { ReviewPublishBlockedError } from "@webiny/api-workflows/domain/review/errors.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
@@ -590,25 +607,24 @@ import { WB_PAGE_NAMESPACE } from "~/constants.js";
 /**
  * Publish rule of the `wb.page` adapter (spec 5.1, D79, D121, R53): with a pages workflow, a page
  * revision is published only with its active review approved. Lookup failures block. The CMS
- * adapter's publish rule skips pages (private model, R52).
+ * adapter's publish rule skips pages (private model, R52). Creating a page revision as published is
+ * not a publish and is not blocked (D134 point 2). The throw rejects `PublishPageUseCase` (A26);
+ * phase 3 maps it in the WB resolvers and the scheduler.
  */
 class RequireApprovedReviewOnPagePublishImpl implements PageBeforePublishEventHandler.Interface {
     public constructor(
-        private listWorkflows: ListWorkflowsUseCase.Interface,
+        private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
         private getTargetReview: GetTargetReviewUseCase.Interface
     ) {}
 
     public async handle(event: PageBeforePublishEventHandler.Event): Promise<void> {
         const { page } = event.payload;
 
-        const workflows = await this.listWorkflows.execute({
-            where: { models_in: [WB_PAGE_NAMESPACE] },
-            limit: 1
-        });
-        if (workflows.isFail()) {
-            throw workflows.error;
+        const bound = await this.getBoundWorkflow.execute({ model: WB_PAGE_NAMESPACE });
+        if (bound.isFail()) {
+            throw bound.error;
         }
-        const [workflow] = workflows.value.items;
+        const workflow = bound.value;
         if (!workflow) {
             return;
         }
@@ -636,7 +652,7 @@ class RequireApprovedReviewOnPagePublishImpl implements PageBeforePublishEventHa
 export const RequireApprovedReviewOnPagePublish =
     PageBeforePublishEventHandler.createImplementation({
         implementation: RequireApprovedReviewOnPagePublishImpl,
-        dependencies: [ListWorkflowsUseCase, GetTargetReviewUseCase]
+        dependencies: [GetBoundWorkflowUseCase, GetTargetReviewUseCase]
     });
 ```
 
@@ -644,20 +660,32 @@ Create `packages/api-website-builder-workflows/src/features/hooks/BlockPageMoveW
 
 ```ts
 import { PageBeforeMoveEventHandler } from "@webiny/api-website-builder/features/pages/MovePage/index.js";
+import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
 import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
 import { ReviewTargetLockedError } from "@webiny/api-workflows/domain/review/errors.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
 
 /**
  * Move rule of the `wb.page` adapter (spec 9.3, D84, R55). WB `MovePage` writes through
- * `MoveEntryRepository`, so no CMS move event fires; this listens to the page event. Any revision
- * in review blocks (A24); lookup failures block.
+ * `MoveEntryRepository`, so no CMS move event fires; this listens to the page event. Only with a
+ * pages workflow bound; any revision in review blocks (A24); lookup failures block.
  */
 class BlockPageMoveWhileInReviewImpl implements PageBeforeMoveEventHandler.Interface {
-    public constructor(private listTargetReviews: ListTargetReviewsUseCase.Interface) {}
+    public constructor(
+        private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
+        private listTargetReviews: ListTargetReviewsUseCase.Interface
+    ) {}
 
     public async handle(event: PageBeforeMoveEventHandler.Event): Promise<void> {
         const { original } = event.payload;
+
+        const bound = await this.getBoundWorkflow.execute({ model: WB_PAGE_NAMESPACE });
+        if (bound.isFail()) {
+            throw bound.error;
+        }
+        if (!bound.value) {
+            return;
+        }
 
         const reviews = await this.listTargetReviews.execute({
             model: WB_PAGE_NAMESPACE,
@@ -683,39 +711,7 @@ class BlockPageMoveWhileInReviewImpl implements PageBeforeMoveEventHandler.Inter
 
 export const BlockPageMoveWhileInReview = PageBeforeMoveEventHandler.createImplementation({
     implementation: BlockPageMoveWhileInReviewImpl,
-    dependencies: [ListTargetReviewsUseCase]
-});
-```
-
-Create `packages/api-website-builder-workflows/src/features/hooks/DeleteReviewsOnPageDelete.ts`:
-
-```ts
-import { PageAfterDeleteEventHandler } from "@webiny/api-website-builder/features/pages/DeletePage/index.js";
-import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
-import { WB_PAGE_NAMESPACE } from "~/constants.js";
-
-/**
- * Deletes every review of a permanently deleted page with its assignment records (spec 9.3, R56).
- * `DeletePage` deletes a page from the trash; trashing keeps the reviews (A22).
- */
-class DeleteReviewsOnPageDeleteImpl implements PageAfterDeleteEventHandler.Interface {
-    public constructor(private deleteTargetReviews: DeleteTargetReviewsUseCase.Interface) {}
-
-    public async handle(event: PageAfterDeleteEventHandler.Event): Promise<void> {
-        const { page } = event.payload;
-        const deleted = await this.deleteTargetReviews.execute({
-            model: WB_PAGE_NAMESPACE,
-            targetId: page.entryId
-        });
-        if (deleted.isFail()) {
-            throw deleted.error;
-        }
-    }
-}
-
-export const DeleteReviewsOnPageDelete = PageAfterDeleteEventHandler.createImplementation({
-    implementation: DeleteReviewsOnPageDeleteImpl,
-    dependencies: [DeleteTargetReviewsUseCase]
+    dependencies: [GetBoundWorkflowUseCase, ListTargetReviewsUseCase]
 });
 ```
 
@@ -725,7 +721,6 @@ Create `packages/api-website-builder-workflows/src/features/hooks/feature.ts`:
 import { createFeature } from "@webiny/feature/api";
 import { RequireApprovedReviewOnPagePublish } from "./RequireApprovedReviewOnPagePublish.js";
 import { BlockPageMoveWhileInReview } from "./BlockPageMoveWhileInReview.js";
-import { DeleteReviewsOnPageDelete } from "./DeleteReviewsOnPageDelete.js";
 
 /**
  * `wb.page` adapter rules on the Website Builder page events (R52). Revision create and the save
@@ -736,7 +731,6 @@ export const WbHooksFeature = createFeature({
     register(container) {
         container.register(RequireApprovedReviewOnPagePublish);
         container.register(BlockPageMoveWhileInReview);
-        container.register(DeleteReviewsOnPageDelete);
     }
 });
 ```
@@ -751,6 +745,7 @@ In `packages/api-website-builder-workflows/src/WebsiteBuilderWorkflowsFeature.ts
 
 Run: `yarn test packages/api-website-builder-workflows 2>&1 | tail -50` Expected: PASS.
 Run: `yarn test packages/api-headless-cms-workflows 2>&1 | tail -50` Expected: PASS.
+Run: `yarn check:test:types -p api-website-builder-workflows --report cli 2>&1 | tail -40` Expected: no errors.
 Run: `yarn test:os packages/api-website-builder-workflows 2>&1 | tail -50` Expected: PASS, or "not run" (A9).
 
 - [ ] **Step 6: Commit**
@@ -758,7 +753,7 @@ Run: `yarn test:os packages/api-website-builder-workflows 2>&1 | tail -50` Expec
 Run the Global Constraints chain (build `@webiny/api-website-builder-workflows`), then commit:
 
 ```
-feat(api-website-builder-workflows): add the page adapter and page publish, move and delete rules
+feat(api-website-builder-workflows): add the page adapter and the page publish and move rules
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn

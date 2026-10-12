@@ -1,6 +1,6 @@
 ### Task 5: Delete a target's reviews and their assignment records
 
-Spec 9.3 ("delete the review when the target is permanently deleted"), 4.3 ("deleted with its review"), R56. One internal use case deletes every review of a target (or of one revision) and each review's assignment-log records, using the 1a.4 cursor paging by `reviewId` (R23). The adapters call it from their after-delete handlers (Tasks 10, 16).
+Spec 9.3 ("delete the review when the target is permanently deleted"), 4.3 ("deleted with its review"), R56. One internal use case deletes every review of a target (or of one revision) and each review's assignment-log records, using the 1a.4 cursor paging by `reviewId` (R23). The adapters call it from their after-delete handlers (Tasks 10b, 16b).
 
 **Files:**
 - Modify: `packages/api-workflows/src/domain/review/abstractions/ReviewRepository.ts`

@@ -1,15 +1,16 @@
 ### Task 15: WB package wiring, test harness, page reading and access
 
-R47, R51, R65, R66, A25, A28. The Website Builder side of the target adapter, evaluated as the current identity:
+R47, R51, R65, R66, R75, R77, R78, R82, A25, A28. The Website Builder side of the target adapter, evaluated as the current identity:
 
 - `WbPageTargetReader` reads a `wb.page` revision (page model through `PageModelProvider`, revision through CMS `GetRevisionByIdUseCase`, mapped with `EntryToPageMapper`).
-- `WbPageAccess`: read = `WbPermissions.canRead("page") && WbPermissions.canAccess("page", page)`, write = `WbPermissions.canEdit("page", page)`, each AND folder-level permissions on the page's folder (pages are CMS entries; the ACO CMS decorators apply to them in production).
+- `WbPageAccess`: read = `WbPermissions.canRead("page") && WbPermissions.canAccess("page", page)`; write = read AND `WbPermissions.canEdit("page", page)` (WB `UpdatePageUseCase` loads the page through `GetPageByIdUseCase` first, R82); delete = read AND `WbPermissions.canDelete("page", page)` (as `TrashPageUseCase`); each AND folder-level permissions on the page's folder through the CMS package's shared `canAccessEntryFolder` (pages are CMS entries; the ACO CMS decorators apply to them in production, R78). `canWriteAnyPage()` is the entity-level `canEdit("page")` check WB itself makes before loading a page; the request wrapper uses it so a user without page permissions learns nothing about which pages exist (R75).
 - `WbPageReviewNamespace` registers `wb.page` for the page model into the CMS package's `CmsEntryReviewNamespace` (R51), so the single CMS handlers (revision null, save block) cover pages.
 
-Also wires the package dependencies (R65) and a test harness mirroring `api-website-builder/__tests__/utils/useHandler.ts` plus the workflows features.
+Also wires the package dependencies (R65), the package's `ci.config.json` (R77: `["ddb", "ddb-os,ddb"]`; the test presets fall back to the DDB preset for WB, `packages/build-tools/testing/presets.js`) and a test harness mirroring `api-website-builder/__tests__/utils/useHandler.ts` plus the workflows features.
 
 **Files:**
 - Modify: `packages/api-website-builder-workflows/package.json`
+- Create: `packages/api-website-builder-workflows/ci.config.json`
 - Create: `packages/api-website-builder-workflows/src/constants.ts`
 - Create: `packages/api-website-builder-workflows/src/features/target/WbPageReviewNamespace.ts`
 - Create: `packages/api-website-builder-workflows/src/features/target/WbPageTargetReader/abstractions.ts`
@@ -31,20 +32,31 @@ Also wires the package dependencies (R65) and a test harness mirroring `api-webs
 - Create: `packages/api-website-builder-workflows/__tests__/target/WbPageAccess.test.ts`
 
 **Interfaces:**
-- Consumes: `PageModelProvider`, `WbPage` (`@webiny/api-website-builder/domain/page/abstractions.js`), `EntryToPageMapper` (`.../domain/page/EntryToPageMapper.js`), `PAGE_MODEL_ID` (`.../domain/page/page.model.js`), `WbPermissions` (`.../features/permissions/abstractions.js`), `GetRevisionByIdUseCase`, `FolderLevelPermissions`, `CmsEntryReviewNamespace` + `resolveReviewNamespace` (Task 7).
+- Consumes: `PageModelProvider`, `WbPage` (`@webiny/api-website-builder/domain/page/abstractions.js`), `EntryToPageMapper` (`.../domain/page/EntryToPageMapper.js`), `PAGE_MODEL_ID` (`.../domain/page/page.model.js`), `ROOT_FOLDER` (`@webiny/api-website-builder/constants.js`), `WbPermissions` (`.../features/permissions/abstractions.js`), `GetRevisionByIdUseCase`, `FolderLevelPermissions`, `CmsEntryReviewNamespace` + `resolveReviewNamespace`, `canAccessEntryFolder` (Task 7).
 - Produces:
-  - `WB_PAGE_NAMESPACE = "wb.page"`, `WB_PAGE_FOLDER_TYPE = "wb:page"`, `ROOT_FOLDER = "root"` (`src/constants.ts`).
+  - `WB_PAGE_NAMESPACE = "wb.page"`, `WB_PAGE_FOLDER_TYPE = "wb:page"` (`src/constants.ts`).
   - `WbPageTarget { model: CmsModel; page: WbPage }`, `WbPageTargetReadParams { model: string; targetRevisionId: string }`, `WbPageTargetReader.Interface { read(params): Promise<WbPageTarget | null> }`.
-  - `WbPageAccess.Interface { canRead(target: WbPageTarget): Promise<boolean>; canWrite(target: WbPageTarget): Promise<boolean> }`.
+  - `WbPageAccess.Interface { canWriteAnyPage(): Promise<boolean>; canRead(target: WbPageTarget): Promise<boolean>; canWrite(target: WbPageTarget): Promise<boolean>; canDelete(target: WbPageTarget): Promise<boolean> }`.
   - `WbPageReviewNamespace` (`CmsEntryReviewNamespace` implementation).
   - `WbTargetFeature` (registered by `WebsiteBuilderWorkflowsFeature`); Task 16 adds the ports and handlers.
-  - Test helpers: `createContextHandler(params)`, `createUserContext({ identity, permissions, permissionsByIdentity, legacyPlugins })`, `createPage(context, { title, folderId? })`, `getPageModel(context)`, `expectOk`, identities and `WB_READER`, `WB_WRITER`, `WB_OWN_WRITER`, `WORKFLOWS_EDITOR`, `WORKFLOWS_REASSIGN`, `FakeFolderLevelPermissions` + `folderLevels`, `FakeListUserTeams`.
+  - Test helpers: `createContextHandler(params)`, `createUserContext({ identity, permissions, permissionsByIdentity, legacyPlugins })`, `createPage(context, { title, folderId? })`, `getPageModel(context)`, `expectOk`, identities and `WB_READER`, `WB_WRITER`, `WB_WRITE_ONLY`, `WB_DELETER`, `WB_OWN_WRITER`, `WORKFLOWS_EDITOR`, `WORKFLOWS_REASSIGN`, `FakeFolderLevelPermissions` + `folderLevels`, `FakeListUserTeams`.
 
 - [ ] **Step 1: Dependencies**
 
 In `packages/api-website-builder-workflows/package.json`:
 - `dependencies`: add `"@webiny/api-aco": "0.0.0"`, `"@webiny/api-headless-cms": "0.0.0"` (moved from `devDependencies`), `"@webiny/api-headless-cms-workflows": "0.0.0"`, `"@webiny/api-workflows": "0.0.0"` (keep the list alphabetical).
-- `devDependencies`: remove `@webiny/api-headless-cms`; add `"@webiny/background-tasks": "0.0.0"`, `"@webiny/di": "^1.1.0"`, `"@webiny/languages": "0.0.0"`, `"@webiny/wcp": "0.0.0"`.
+- `devDependencies`: remove `@webiny/api-headless-cms`; add `"@webiny/background-tasks": "0.0.0"`, `"@webiny/di": "^1.1.0"`, `"@webiny/languages": "0.0.0"`.
+
+Create `packages/api-website-builder-workflows/ci.config.json` (R77):
+
+```json
+{
+  "$schema": "../../.github/workflows/ci.config.schema.json",
+  "vitest": {
+    "storageOps": ["ddb", "ddb-os,ddb"]
+  }
+}
+```
 
 Run `yarn > /dev/null 2>&1 && node scripts/generateTsConfigsInPackages.js && yarn adio` and fix whatever `adio` reports before continuing.
 
@@ -226,14 +238,13 @@ export const REVIEW_TEAM = "team-1";
 
 export const WB_READER: SecurityPermission[] = [{ name: "wb.page", rwd: "r" }];
 export const WB_WRITER: SecurityPermission[] = [{ name: "wb.page", rwd: "rw" }];
+/** Write without read: WB cannot load the page, so it cannot update it (R82). */
+export const WB_WRITE_ONLY: SecurityPermission[] = [{ name: "wb.page", rwd: "w" }];
+/** Reads, writes and deletes pages (may trash and delete them, D134). */
+export const WB_DELETER: SecurityPermission[] = [{ name: "wb.page", rwd: "rwd" }];
 export const WB_OWN_WRITER: SecurityPermission[] = [{ name: "wb.page", rwd: "rw", own: true }];
 export const WORKFLOWS_EDITOR: SecurityPermission = { name: "workflows", editor: true };
 export const WORKFLOWS_REASSIGN: SecurityPermission = { name: "workflows", reassign: true };
-
-/** An API key identity with embedded permissions, as `TestAuthorizer` serves it (A27). */
-export const createApiKeyIdentity = (permissions: SecurityPermission[]): IdentityData => {
-    return { id: "api-key-1", type: "api-key", displayName: "CI key", permissions };
-};
 
 export const toActor = (identity: IdentityData): Actor => {
     return {
@@ -354,8 +365,10 @@ import { createPage, getPageModel } from "~tests/__helpers/pages.js";
 import {
     NOBODY,
     READER,
+    WB_DELETER,
     WB_OWN_WRITER,
     WB_READER,
+    WB_WRITE_ONLY,
     WB_WRITER,
     WRITER
 } from "~tests/__helpers/identities.js";
@@ -403,7 +416,28 @@ describe("WB page reading and access", () => {
         });
 
         expect(await writer.access.canWrite(writerTarget!)).toBe(true);
+        expect(await writer.access.canWriteAnyPage()).toBe(true);
+        expect(await writer.access.canDelete(writerTarget!)).toBe(false);
         expect(await nobody.access.canRead(nobodyTarget!)).toBe(false);
+        expect(await nobody.access.canWriteAnyPage()).toBe(false);
+    });
+
+    it("needs read access to write and delete access to delete (R82, D134)", async () => {
+        const page = await createPage(await createUserContext(), { title: "Page A" });
+        const writeOnly = await createAccess(WRITER, WB_WRITE_ONLY);
+        const deleter = await createAccess(WRITER, WB_DELETER);
+
+        const writeOnlyTarget = await writeOnly.targets.read({
+            model: "wb.page",
+            targetRevisionId: page.id
+        });
+        const deleterTarget = await deleter.targets.read({
+            model: "wb.page",
+            targetRevisionId: page.id
+        });
+
+        expect(await writeOnly.access.canWrite(writeOnlyTarget!)).toBe(false);
+        expect(await deleter.access.canDelete(deleterTarget!)).toBe(true);
     });
 
     it("finds no target for a missing revision or another app's namespace", async () => {
@@ -446,7 +480,7 @@ describe("WB page reading and access", () => {
         const viewed = await createPage(admin, { title: "Viewed", folderId: "folder-viewed" });
         folderLevels.set("folder-locked", new Map([[WRITER.id, "no-access"]]));
         folderLevels.set("folder-viewed", new Map([[WRITER.id, "viewer"]]));
-        const { targets, access } = await createAccess(WRITER, WB_WRITER);
+        const { targets, access } = await createAccess(WRITER, WB_DELETER);
 
         const lockedTarget = await targets.read({ model: "wb.page", targetRevisionId: locked.id });
         const viewedTarget = await targets.read({ model: "wb.page", targetRevisionId: viewed.id });
@@ -454,6 +488,7 @@ describe("WB page reading and access", () => {
         expect(await access.canRead(lockedTarget!)).toBe(false);
         expect(await access.canRead(viewedTarget!)).toBe(true);
         expect(await access.canWrite(viewedTarget!)).toBe(false);
+        expect(await access.canDelete(viewedTarget!)).toBe(false);
     });
 
     it("registers wb.page as the review namespace of pages (R51)", async () => {
@@ -472,15 +507,13 @@ Expected: FAIL, cannot resolve `~/features/target/WbPageTargetReader/index.js`.
 
 - [ ] **Step 4: Constants and the namespace**
 
-Create `packages/api-website-builder-workflows/src/constants.ts`:
+Create `packages/api-website-builder-workflows/src/constants.ts` (the root folder id comes from `@webiny/api-website-builder/constants.js`):
 
 ```ts
 /** The review namespace of Website Builder pages (D15, D42). */
 export const WB_PAGE_NAMESPACE = "wb.page";
 /** ACO folder type of pages; `TargetContext.folder.type` (R66). */
 export const WB_PAGE_FOLDER_TYPE = "wb:page";
-/** ACO root folder id; pages in it have no folder in their `TargetContext`. */
-export const ROOT_FOLDER = "root";
 ```
 
 Create `packages/api-website-builder-workflows/src/features/target/WbPageReviewNamespace.ts`:
@@ -596,8 +629,9 @@ Create `packages/api-website-builder-workflows/src/features/target/WbPageTargetR
 
 ```ts
 export { WbPageTargetReader } from "./abstractions.js";
-export type { WbPageTarget, WbPageTargetReadParams } from "./abstractions.js";
 ```
+
+(Consumers use the namespace types `WbPageTargetReader.Target` / `.Params`.)
 
 Create `packages/api-website-builder-workflows/src/features/target/WbPageAccess/abstractions.ts`:
 
@@ -606,16 +640,24 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { WbPageTarget } from "../WbPageTargetReader/abstractions.js";
 
 export interface IWbPageAccess {
+    /**
+     * Entity-level write permission (any page), as WB checks it before loading a page; lets the
+     * request wrapper refuse before it reads anything (R75).
+     */
+    canWriteAnyPage(): Promise<boolean>;
     /** Read access of the current identity (review actions, get review). */
     canRead(target: WbPageTarget): Promise<boolean>;
-    /** Write access of the current identity (request a review, D77). */
+    /** Write access of the current identity (request a review, D77); includes read (R82). */
     canWrite(target: WbPageTarget): Promise<boolean>;
+    /** Delete access of the current identity (trash, delete, cancel-for-delete, D134). */
+    canDelete(target: WbPageTarget): Promise<boolean>;
 }
 
 /**
  * Website Builder's own page access for the current identity (R47, A25): `wb.page` permissions
- * (incl. own-only) as `GetPageByIdUseCase` and `UpdatePageUseCase` check them, plus folder-level
- * permissions on the page's folder. Evaluated as another user inside `RunAsUser` (R48).
+ * (incl. own-only) as `GetPageByIdUseCase`, `UpdatePageUseCase` and `TrashPageUseCase` check them,
+ * plus folder-level permissions on the page's folder. Evaluated as another user inside
+ * `CandidateReadAccess` (R48).
  */
 export const WbPageAccess = createAbstraction<IWbPageAccess>("WbPageAccess");
 
@@ -628,19 +670,25 @@ Create `packages/api-website-builder-workflows/src/features/target/WbPageAccess/
 
 ```ts
 import { WbPermissions } from "@webiny/api-website-builder/features/permissions/abstractions.js";
-import type { WbPage } from "@webiny/api-website-builder/domain/page/abstractions.js";
 import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
-import { ROOT_FOLDER } from "~/constants.js";
+import { canAccessEntryFolder } from "@webiny/api-headless-cms-workflows/features/target/canAccessEntryFolder.js";
 import type { WbPageTarget } from "../WbPageTargetReader/abstractions.js";
 import { WbPageAccess as Abstraction } from "./abstractions.js";
 
-type PageAccessRwd = "r" | "w";
-
+/**
+ * Write and delete include read, because WB loads the page through `GetPageByIdUseCase` before it
+ * updates or trashes it (R82). Folder-level permissions as the ACO CMS decorators apply them to
+ * page entries, through the CMS package's shared helper (R78).
+ */
 class WbPageAccessImpl implements Abstraction.Interface {
     public constructor(
         private permissions: WbPermissions.Interface,
         private folderLevelPermissions: FolderLevelPermissions.Interface
     ) {}
+
+    public canWriteAnyPage(): Promise<boolean> {
+        return this.permissions.canEdit("page");
+    }
 
     public async canRead(target: WbPageTarget): Promise<boolean> {
         if (!(await this.permissions.canRead("page"))) {
@@ -649,27 +697,27 @@ class WbPageAccessImpl implements Abstraction.Interface {
         if (!(await this.permissions.canAccess("page", target.page))) {
             return false;
         }
-        return this.folderAllows(target.page, "r");
+        return canAccessEntryFolder(this.folderLevelPermissions, target.page.location.folderId, "r");
     }
 
     public async canWrite(target: WbPageTarget): Promise<boolean> {
+        if (!(await this.canRead(target))) {
+            return false;
+        }
         if (!(await this.permissions.canEdit("page", target.page))) {
             return false;
         }
-        return this.folderAllows(target.page, "w");
+        return canAccessEntryFolder(this.folderLevelPermissions, target.page.location.folderId, "w");
     }
 
-    /** As the ACO CMS decorators check page entries (pages are CMS entries). */
-    private async folderAllows(page: WbPage, rwd: PageAccessRwd): Promise<boolean> {
-        if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
-            return true;
+    public async canDelete(target: WbPageTarget): Promise<boolean> {
+        if (!(await this.canRead(target))) {
+            return false;
         }
-        const folderId = page.location.folderId;
-        if (!folderId || folderId === ROOT_FOLDER) {
-            return true;
+        if (!(await this.permissions.canDelete("page", target.page))) {
+            return false;
         }
-        const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
-        return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd });
+        return canAccessEntryFolder(this.folderLevelPermissions, target.page.location.folderId, "d");
     }
 }
 
@@ -719,6 +767,7 @@ In `packages/api-website-builder-workflows/src/WebsiteBuilderWorkflowsFeature.ts
 - [ ] **Step 7: Run the tests**
 
 Run: `yarn test packages/api-website-builder-workflows 2>&1 | tail -50` Expected: PASS (incl. the existing `wbPageSystem.test.ts`).
+Run: `yarn check:test:types -p api-website-builder-workflows --report cli 2>&1 | tail -40` Expected: no errors.
 Run: `yarn test:os packages/api-website-builder-workflows 2>&1 | tail -50` Expected: PASS, or "not run" (A9).
 
 - [ ] **Step 8: Commit**
