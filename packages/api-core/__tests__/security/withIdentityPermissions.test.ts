@@ -91,7 +91,7 @@ interface IdentityContextSetup {
     tenantContext: StubTenantContext;
 }
 
-const createIdentityContext = (): IdentityContextSetup => {
+const createIdentityContext = (overrideTenantContext?: StubTenantContext): IdentityContextSetup => {
     const container = new Container();
     const license = License.fromLicenseDto(createTestWcpLicense());
     const tenantContext = new StubTenantContext();
@@ -103,10 +103,13 @@ const createIdentityContext = (): IdentityContextSetup => {
     AuthorizationContextFeature.register(container);
     IdentityContextFeature.register(container);
     container.register(PerUserAuthorizer);
+    if (overrideTenantContext) {
+        container.registerInstance(TenantContext, overrideTenantContext);
+    }
 
     const identityContext = container.resolve(IdentityContext);
     identityContext.setIdentity(createIdentity("user-a"));
-    return { identityContext, tenantContext };
+    return { identityContext, tenantContext: overrideTenantContext ?? tenantContext };
 };
 
 describe("permissions under withIdentity", () => {
@@ -169,6 +172,21 @@ describe("permissions under withIdentity", () => {
         expect(authorizeCalls).toEqual(["user-b", "user-b"]);
     });
 
+    it("shares one load between concurrent checks for the same identity and tenant", async () => {
+        const { identityContext } = createIdentityContext();
+
+        const [first, second, third] = await Promise.all([
+            identityContext.getPermission("workflows"),
+            identityContext.getPermission("workflows"),
+            identityContext.listPermissions()
+        ]);
+
+        expect(first).toEqual({ name: "workflows", editor: true });
+        expect(second).toEqual(first);
+        expect(third).toEqual([{ name: "workflows", editor: true }]);
+        expect(authorizeCalls).toEqual(["user-a"]);
+    });
+
     it("loads again for the same identity in another tenant (R69)", async () => {
         const { identityContext, tenantContext } = createIdentityContext();
 
@@ -176,6 +194,18 @@ describe("permissions under withIdentity", () => {
         tenantContext.setTenant(toTenant("sub-tenant"));
         await identityContext.getPermission("workflows");
         tenantContext.setTenant(toTenant("root"));
+        await identityContext.getPermission("workflows");
+
+        expect(authorizeCalls).toEqual(["user-a", "user-a"]);
+    });
+
+    it("reads the tenant from the registration that resolve() returns", async () => {
+        const override = new StubTenantContext();
+        const { identityContext, tenantContext } = createIdentityContext(override);
+        expect(tenantContext).toBe(override);
+
+        await identityContext.getPermission("workflows");
+        override.setTenant(toTenant("sub-tenant"));
         await identityContext.getPermission("workflows");
 
         expect(authorizeCalls).toEqual(["user-a", "user-a"]);
@@ -229,6 +259,23 @@ describe("withAuthorization", () => {
         expect(result.bypassed).toEqual({ name: "*" });
         expect(result.enforced).toEqual({ name: "workflows", reassign: true });
         expect(result.bypassedAgain).toEqual({ name: "*" });
+        expect(identityContext.isAuthorizationEnabled()).toBe(true);
+    });
+
+    it("restores the previous state when the callback throws", async () => {
+        const { identityContext } = createIdentityContext();
+
+        await identityContext.withoutAuthorization(async () => {
+            await expect(
+                identityContext.withAuthorization(async () => {
+                    expect(identityContext.isAuthorizationEnabled()).toBe(true);
+                    throw new Error("Callback failed.");
+                })
+            ).rejects.toThrow("Callback failed.");
+
+            expect(identityContext.isAuthorizationEnabled()).toBe(false);
+        });
+
         expect(identityContext.isAuthorizationEnabled()).toBe(true);
     });
 });

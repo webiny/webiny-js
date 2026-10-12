@@ -9,9 +9,11 @@ export const AuthorizationContextFeature = createFeature({
     register(container) {
         const getAuthorizers = () => container.resolveAll(Authorizer);
         const getTransformers = () => container.resolveAll(PermissionTransformer);
-        // Read lazily: the tenant is set after registration, and slim test containers have none.
+        // Read lazily: the tenant is set after registration, and slim test containers have none
+        // (`resolve` would throw there). The last registration is the one `resolve` returns, so a
+        // project override wins over the platform's.
         const getTenantId = (): string | null => {
-            const [tenantContext] = container.resolveAll(TenantContext);
+            const tenantContext = container.resolveAll(TenantContext).at(-1);
             return tenantContext?.getTenant()?.id ?? null;
         };
 
