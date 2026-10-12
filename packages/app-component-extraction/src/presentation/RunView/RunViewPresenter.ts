@@ -94,6 +94,7 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         sitePageMapLoading: false,
         siteLivePageByPath: {},
         siteAssembledCount: null,
+        siteBuiltFrom: null,
         buildingSite: false,
         recapturing: false,
         comparedPath: null,
@@ -1099,6 +1100,14 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             const builtFrom = site?.lastBuild?.runId;
             const map =
                 site && builtFrom ? await this.gateway.getPageMap(builtFrom, site.tenantId) : null;
+            const builtFromNumber = !builtFrom
+                ? null
+                : builtFrom === run.id
+                  ? run.runNumber
+                  : await this.gateway
+                        .getRun(builtFrom)
+                        .then(other => other.runNumber)
+                        .catch(() => null);
             const live =
                 site && map
                     ? await this.gateway
@@ -1110,6 +1119,9 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                     : {};
             runInAction(() => {
                 this.vm.siteAssembledCount = assemble ? assemble.pages.length : null;
+                this.vm.siteBuiltFrom = builtFrom
+                    ? { runId: builtFrom, runNumber: builtFromNumber }
+                    : null;
                 this.vm.sitePageMap = map;
                 this.vm.siteLivePageByPath = live;
                 this.vm.sitePageMapLoading = false;

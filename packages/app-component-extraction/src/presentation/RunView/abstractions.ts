@@ -177,6 +177,12 @@ export interface IRunViewVm {
     siteLivePageByPath: Record<string, string | null>;
     /** How many pages this run assembled, which is what a build publishes; null until known. */
     siteAssembledCount: number | null;
+    /**
+     * The run the site was last built from, by its number. The site's pages are that run's, which need
+     * not be the run on screen: opened on run 5, a site built from run 3 lists run 3's pages, and reads
+     * as broken unless the view says so.
+     */
+    siteBuiltFrom: { runId: string; runNumber: number | null } | null;
     /** A site build was started from this screen and has not reported done or failed yet. */
     buildingSite: boolean;
     /** A re-capture of selected pages is in flight. */

@@ -1,8 +1,9 @@
 import React from "react";
-import { createReactiveComponent } from "@webiny/app-admin";
+import { createReactiveComponent, useRouter } from "@webiny/app-admin";
 import { Alert, Button, Scrollbar, Tag, Text } from "@webiny/admin-ui";
 import { stageEntry } from "~/shared/ledger.js";
 import { StatusDot } from "~/presentation/shared/StatusIndicator.js";
+import { Routes } from "~/routes.js";
 import type { ComposedPageDto } from "~/shared/types.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import { composedStatus, STATUS_TAG } from "../composed/pageStatus.js";
@@ -12,6 +13,9 @@ import { SiteCard } from "./SiteCard.js";
 interface Props {
     presenter: RunViewPresenter.Interface;
 }
+
+const runLabel = (runNumber: number | null): string =>
+    runNumber === null ? "another run" : `run-${String(runNumber).padStart(4, "0")}`;
 
 const pathOf = (url: string): string => {
     try {
@@ -36,7 +40,6 @@ export const SiteView = createReactiveComponent(function SiteView({ presenter }:
     const build = site?.lastBuild;
     const approved = run ? stageEntry(run, "promote")?.status === "done" : false;
     const map = vm.sitePageMap;
-    const builtFromOtherRun = !!build && !!run && build.runId !== run.id;
 
     return (
         <div className="flex min-h-0 flex-1 flex-col">
@@ -49,8 +52,8 @@ export const SiteView = createReactiveComponent(function SiteView({ presenter }:
                     <Text className="font-medium">10 · Site</Text>
                 </div>
                 <Text size="sm" className="text-neutral-strong">
-                    The migrated pages, published into a tenant of their own with the site&apos;s theme,
-                    the approved components and the images.
+                    The migrated pages, published into a tenant of their own with the site&apos;s
+                    theme, the approved components and the images.
                 </Text>
             </div>
 
@@ -77,18 +80,15 @@ export const SiteView = createReactiveComponent(function SiteView({ presenter }:
                         <Text size="sm" className="text-neutral-strong">
                             This run assembled {vm.siteAssembledCount} page
                             {vm.siteAssembledCount === 1 ? "" : "s"}. Publishing creates the
-                            site&apos;s tenant and copies the theme, the approved components, the images
-                            and all of these pages into it.
+                            site&apos;s tenant and copies the theme, the approved components, the
+                            images and all of these pages into it.
                         </Text>
                     ) : null}
 
                     {approved || site ? <SiteCard presenter={presenter} /> : null}
 
-                    {builtFromOtherRun ? (
-                        <Text size="sm" className="text-neutral-strong">
-                            The site was last published from another run of this job. Its pages are
-                            below; publishing from this run replaces them.
-                        </Text>
+                    {build?.status === "done" && vm.siteBuiltFrom ? (
+                        <BuiltFrom presenter={presenter} />
                     ) : null}
 
                     {build?.status === "done" ? (
@@ -106,6 +106,36 @@ export const SiteView = createReactiveComponent(function SiteView({ presenter }:
                     ) : null}
                 </div>
             </Scrollbar>
+        </div>
+    );
+});
+
+/**
+ * Which run the site's pages come from, always, and what that means when it is not the run on screen.
+ */
+const BuiltFrom = createReactiveComponent(function BuiltFrom({ presenter }: Props) {
+    const { vm } = presenter;
+    const { goToRoute } = useRouter();
+    const builtFrom = vm.siteBuiltFrom!;
+    const finished = vm.site?.lastBuild?.finishedOn;
+    const other = builtFrom.runId !== vm.run?.id;
+    return (
+        <div className="flex flex-wrap items-center gap-sm">
+            <Text size="sm" className={other ? "font-medium" : "text-neutral-strong"}>
+                Built from {runLabel(builtFrom.runNumber)}
+                {finished ? `, published ${new Date(finished).toLocaleString()}` : ""}.
+                {other && vm.run
+                    ? ` You are looking at ${runLabel(vm.run.runNumber)}: the pages below are ${runLabel(builtFrom.runNumber)}'s, and publishing from this run replaces them.`
+                    : ""}
+            </Text>
+            {other ? (
+                <Button
+                    variant="tertiary"
+                    size="sm"
+                    text={`Open ${runLabel(builtFrom.runNumber)}`}
+                    onClick={() => goToRoute(Routes.Run, { runId: builtFrom.runId })}
+                />
+            ) : null}
         </div>
     );
 });

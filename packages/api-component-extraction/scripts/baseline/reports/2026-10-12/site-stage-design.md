@@ -211,6 +211,21 @@ page. One that failed this time stays live and is carried in the page map as `ke
 longer has is unpublished and named (`dropped`). The rule is a pure function (`planRetirement`), tested
 on the page maps of Take 3's real build and rebuild. Its tests fail under the old rule.
 
+### Which run the site was built from
+
+The site's page map belongs to the run it was last built from, not the run on screen. Opened on run 5,
+a site built from run 3 lists run 3's pages, and someone meeting it fresh reads that as broken. The view
+always says "Built from run-0003, published <date>". When that is not the run on screen, it adds that the
+pages below are run 3's, that publishing from this run replaces them, and a button to open run 3.
+Presenter-tested; not seen running.
+
+### Before the deployed check: the API key
+
+**The API key the checks used is gone from the scratchpad** (`baseline.env`, cleared with the session's
+temporary files), so nothing can be read from or triggered on the instance from here. It has to be
+provided again before the deployed check. It must not be written into the repo or into any published
+page.
+
 ### What the deployed check has to show (once sequencing is decided)
 
 On a job that is neither 71 Westland nor Take 3:
@@ -219,5 +234,6 @@ On a job that is neither 71 Westland nor Take 3:
   root's;
 - the liveness tags read "live";
 - publish again: the same page set, nothing unpublished that was live;
+- opened on a run other than the one the site was built from, the view names the build's run;
 - the Promote gate shows the pointer and no card;
 - the stage 9 labels read "Approve components".
