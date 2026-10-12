@@ -20,6 +20,10 @@ export interface IGetBoundWorkflowUseCase {
 /**
  * The workflow bound to a namespace, or `null` (v1 binds at most one, D15). Internal (D132): the
  * app adapters' rules ask it first, so unbound models never look up reviews (D134, R54).
+ *
+ * Two accepted races. On OpenSearch a just-created workflow may not be listed yet, so for that
+ * window its model reads as unbound (the callers fail open). If two workflows bind one model, the
+ * oldest wins.
  */
 export const GetBoundWorkflowUseCase =
     createAbstraction<IGetBoundWorkflowUseCase>("GetBoundWorkflowUseCase");

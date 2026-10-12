@@ -42,6 +42,20 @@ describe("keepReadableBlockingReviews (D115)", () => {
         ]);
     });
 
+    it("stops reading once five reviews are readable", async () => {
+        const reviews = createBlockingReviews(12);
+        let checks = 0;
+
+        // Review 2, 4, ... are readable: the fifth one is review 10, so reviews 11 and 12 are never read.
+        const readable = await keepReadableBlockingReviews(reviews, async review => {
+            checks++;
+            return Number(review.reviewId.split("-")[1]) % 2 === 0;
+        });
+
+        expect(readable).toHaveLength(5);
+        expect(checks).toBe(10);
+    });
+
     it("checks at most 50 reviews (R76)", async () => {
         const reviews = createBlockingReviews(80);
         let checks = 0;

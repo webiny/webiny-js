@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { Result } from "@webiny/feature/api";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import {
     ARTICLE_MODEL,
@@ -9,6 +10,7 @@ import {
 } from "~tests/__helpers/fixtures.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
+import { AssignmentPersistenceError } from "~/domain/assignment/errors.js";
 import type { AssignmentRecordValues } from "~/domain/assignment/types.js";
 import { AssignmentPageSize } from "~/features/review/DeleteTargetReviews/AssignmentPageSize.js";
 import { DeleteTargetReviewsUseCase } from "~/features/review/DeleteTargetReviews/index.js";
@@ -37,6 +39,19 @@ const createTargetData = async (pageSize?: number) => {
     }
     const reviews = context.container.resolve(ReviewRepository);
     const assignments = context.container.resolve(AssignmentRepository);
+    const faults = { failDeleteOnce: false };
+    // The use case gets this wrapper; the test keeps using the real repository.
+    context.container.registerInstance(AssignmentRepository, {
+        create: values => assignments.create(values),
+        list: params => assignments.list(params),
+        delete: async id => {
+            if (faults.failDeleteOnce) {
+                faults.failDeleteOnce = false;
+                return Result.fail(new AssignmentPersistenceError(new Error("Storage is down.")));
+            }
+            return assignments.delete(id);
+        }
+    });
 
     expectOk(await reviews.save(toSaveData(createRequestedReview({ id: "review-1" }))));
     expectOk(
@@ -61,6 +76,7 @@ const createTargetData = async (pageSize?: number) => {
     return {
         reviews,
         assignments,
+        faults,
         deleteTargetReviews: context.container.resolve(DeleteTargetReviewsUseCase)
     };
 };
@@ -130,6 +146,31 @@ describe("DeleteTargetReviewsUseCase", () => {
             await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetId: "article-1" })
         );
 
+        const records = expectOk(await assignments.list({ where: { reviewId: "review-1" } }));
+        expect(records.items).toEqual([]);
+    });
+
+    it("fails with a typed error on a partial failure and a re-run finishes the delete", async () => {
+        const { reviews, assignments, faults, deleteTargetReviews } = await createTargetData();
+        faults.failDeleteOnce = true;
+
+        const failed = await deleteTargetReviews.execute({
+            model: ARTICLE_MODEL,
+            targetId: "article-1"
+        });
+
+        expect(failed.isFail()).toBe(true);
+        expect(failed.error?.code).toBe("Workflows/Review/Persistence");
+        // Records go first, so the review is still there for the retry to find.
+        expect(expectOk(await reviews.get("review-1")).id).toBe("review-1");
+
+        const rerun = expectOk(
+            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetId: "article-1" })
+        );
+
+        expect([...rerun.deletedReviewIds].sort()).toEqual(["review-1", "review-2"]);
+        expect((await reviews.get("review-1")).error?.code).toBe("Workflows/Review/NotFound");
+        expect((await reviews.get("review-2")).error?.code).toBe("Workflows/Review/NotFound");
         const records = expectOk(await assignments.list({ where: { reviewId: "review-1" } }));
         expect(records.items).toEqual([]);
     });
