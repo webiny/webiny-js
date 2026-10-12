@@ -3,6 +3,9 @@
 The Website Builder site that renders migrated pages, previews components for the render step, and
 answers "Open site". Deployed 2026-10-09 so the demo does not depend on a laptop or a tunnel.
 
+Jobs created since 2026-10-12 compose drafts in their site tenant and publish differently from older
+jobs; see `component-extraction-two-kinds-of-jobs.md`.
+
 - **URL:** https://cg2vpcghdp.eu-central-1.awsapprunner.com, set as the frontend domain (admin →
   Configure Frontend), which the render step and "Open site" read.
 - **Service:** App Runner `webiny-demo-website`, eu-central-1, account 636962863878, 1 vCPU / 2 GB.

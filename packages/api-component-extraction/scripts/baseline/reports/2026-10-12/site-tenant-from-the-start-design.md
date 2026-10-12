@@ -103,7 +103,8 @@ No longer a copy. It does four things:
 3. **Components:** retire the superseded copies. These are site components no page in the tenant
    references, **published or draft**, and that are not the current approval's. The check is over 10 to
    20 components, inside the tenant, at every publish, so it is part of publishing rather than a job
-   someone has to press, and it acts before the clutter builds up. It is bounded by the site's own size.
+   someone has to press. It is bounded by the site's own size. **It acts at publish, not at approval:
+   between the two the live site carries both sets** (see the stated property below).
 4. **Images:** already in the site from compose.
 
 It collapses from a five-step copy to a three-part publish (theme, pages, components) in one tenant.
@@ -127,6 +128,41 @@ components:** approval writes a draft revision, publish publishes it. That is a 
 `remote-components` and to what the website loads. It is the cleanest end state and worth proposing to
 the platform, but it should not block this milestone.
 
+### A stated property: the live site is heavier between approval and publish
+
+**This design does not keep the live site small throughout. It keeps it small after each publish.**
+
+Every page ships every component bundle in its tenant, and an approval writes into that tenant's live
+Library. From about a minute after an approval finishes (the website's component list refreshes every
+60 seconds) until the next publish, every live page carries the previous approval's components and the
+new one's. Measured on the deployed rehearsal (2026-10-12, two agreeing reads per state, outside the
+cache; `site-tenant-rehearsal.md`):
+
+| State                               | Bundles per page | `/`        | `/docs`    | `/learn`   |
+| ----------------------------------- | ---------------- | ---------- | ---------- | ---------- |
+| before the re-approval              | 17               | 283 KB     | 253 KB     | 241 KB     |
+| **between re-approval and publish** | **33**           | **473 KB** | **443 KB** | **431 KB** |
+| after the publish                   | 17               | 282 KB     | 252 KB     | 240 KB     |
+
+A team iterating (approve, compose, review the drafts, approve again) spends most of its working time
+in this window, so its live site is at about **167% of its size for most of the time it is being worked
+on**, and returns to size only when someone publishes. Only the components grow; pages, images and the
+theme do not.
+
+**What closes it: draft and published states for components.** Neither fix is built.
+
+- **Component drafts close it and keep the draft preview.** An approval writes draft revisions; the
+  live site loads published revisions only; the preview (`wb.preview=true`) loads drafts. The website's
+  loader (`GraphQLRemoteComponentLoader.loadComponents`) makes one call with no preview/live
+  distinction today, so this needs both the platform change in `remote-components` and a mode on the
+  loader.
+- **An approval that stays out of the live Library until publish closes the window too, but it breaks
+  the draft preview.** The preview renders composed drafts with the tenant's Library. Composed drafts
+  name the new approval's components, which would not be in the Library until publish, so the drafts
+  could not be reviewed before publishing, and reviewing them is the point of composing in the site.
+  Making the preview read the held-back approval from somewhere else rebuilds half of component drafts
+  outside the platform.
+
 ### The 26 existing jobs and 5 sites
 
 **Leave them as they are; they keep working.**
@@ -134,7 +170,9 @@ the platform, but it should not block this milestone.
 - The promote artifact gains the tenant its component ids belong to. When it is absent (every existing
   run), publishing uses today's copy path, unchanged.
 - A legacy job that approves again after the change approves into its site tenant (creating it if
-  needed), and from then on it is a new-style job.
+  needed), and from then on it is a new-style job. **As built (2026-10-12), this is not what happens:**
+  the `siteTenantFromStart` flag is set only when a job is created, so an existing job stays old-style
+  however often it is re-approved. See `ai-context/component-extraction-two-kinds-of-jobs.md`.
 - **Nothing needs migrating.** The fresh start, if run, removes most of them anyway; the five site jobs
   keep working either way.
 

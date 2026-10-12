@@ -104,9 +104,11 @@ that agree.
 - **Publishing restores it:** 16 superseded copies were removed, and pages returned to their earlier
   size (about 1 KB smaller each).
 - **How to close it, if it should be closed:** the window exists because components have no draft
-  state, so a new approval is visible to the live site at once. Draft and published states for
-  components (the platform change in the design) would close it. An approval that does not write into
-  the live Library until publish would too. Neither is built.
+  state, so a new approval is visible to the live site at once. **Draft and published states for
+  components close it** (the platform change in the design). An approval that does not write into the
+  live Library until publish would close it too, but would also stop the composed drafts rendering in
+  preview, because they name components the Library would not yet hold. The design states the window
+  as a property and gives the reasoning. Neither fix is built.
 
 ### Also seen
 

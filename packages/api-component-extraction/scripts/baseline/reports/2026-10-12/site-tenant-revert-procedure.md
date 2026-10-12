@@ -39,19 +39,28 @@ stays on each job record, but the old code neither reads nor shows it.
 
 ```graphql
 query {
-    componentExtractionListJobs {
-        data {
-            job { id name siteTenantFromStart createdOn }
-            latestRun { id runNumber }
-        }
+  componentExtractionListJobs {
+    data {
+      job {
+        id
+        name
+        siteTenantFromStart
+        createdOn
+      }
+      latestRun {
+        id
+        runNumber
+      }
     }
+  }
 }
 ```
 
 - **New-style jobs** are those with `siteTenantFromStart: true`.
 - **If step 1 has already been done:** every job created after the feature was deployed is new-style.
-  Compare `createdOn` with the deploy time recorded in `site-tenant-from-the-start` below. The rehearsal
-  job is named "Rehearsal — site tenant (2026-10-12)".
+  Compare `createdOn` with the deploy time, **2026-10-12 09:48 UTC**. At handover, exactly one job was
+  created after it: "Rehearsal — site tenant (2026-10-12)", created 09:49:40 UTC. The newest job before
+  it is "ParkCity - Take 3", created 2026-10-10.
 
 ## 3. Re-run stage 9 on each new-style job's latest run
 
@@ -60,10 +69,14 @@ For each job from step 2, in the admin: open the run, select **9 · Approve comp
 
 ```graphql
 mutation {
-    componentExtractionRunStage(runId: "<latestRun.id>", stage: "promote") {
-        data { taskId }
-        error { message }
+  componentExtractionRunStage(runId: "<latestRun.id>", stage: "promote") {
+    data {
+      taskId
     }
+    error {
+      message
+    }
+  }
 }
 ```
 

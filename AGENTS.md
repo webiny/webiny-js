@@ -89,3 +89,7 @@ When helping with Webiny-related tasks:
 ## CI/CD - GitHub Actions
 
 When working on GitHub Actions workflows, when possible, we always want to make modifications on `.github/workflows/wac` TS files first, and then emit YAML files via `yarn ci-workflows:build`. Only work on YAML files if a corresponding .wac.ts file does not exist.
+
+## Component extraction
+
+Jobs created since 2026-10-12 behave differently from older ones, and the admin does not say which kind a job is. Read `ai-context/component-extraction-two-kinds-of-jobs.md` before changing, re-running or reverting anything in `api-component-extraction`, `api-page-composition-poc` or `app-component-extraction`.

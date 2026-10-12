@@ -2,9 +2,10 @@
  * Which of a site tenant's components a publish removes.
  *
  * A job that approves into its site tenant gets a new copy of a component on every re-approval
- * (stage 9 keeps both, so the live site is untouched until it is published). Once published, the old
- * copies are dead weight: every page of the site carries every component's bundle. A copy is removed
- * only when nothing could still render it:
+ * (stage 9 keeps both, so the live site's pages keep their components until it is published). Every
+ * page of the site carries every component's bundle, so from the approval until the next publish live
+ * pages carry both copies (+67% to +79% measured). Once published, the old copies are dead weight. A
+ * copy is removed only when nothing could still render it:
  *
  * - it is not part of the approval being published;
  * - **no page in the tenant names it, whatever its state**: published, draft or unpublished. A draft
