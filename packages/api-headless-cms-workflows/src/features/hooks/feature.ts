@@ -13,6 +13,7 @@ import { DeleteReviewsOnRevisionDelete } from "./DeleteReviewsOnRevisionDelete.j
 import { DeleteReviewsOnEntriesDeleteMultiple } from "./DeleteReviewsOnEntriesDeleteMultiple.js";
 import { DeleteModelBoundToWorkflowDecorator } from "./DeleteModelBoundToWorkflowDecorator.js";
 import { FullyDeleteModelBoundToWorkflowDecorator } from "./FullyDeleteModelBoundToWorkflowDecorator.js";
+import { DeleteModelTaskBoundToWorkflowDecorator } from "./DeleteModelTaskBoundToWorkflowDecorator.js";
 
 /**
  * Workflow handlers on CMS events (spec 9.2). The single handlers cover every app built on CMS
@@ -40,8 +41,10 @@ export const CmsHooksFeature = createFeature({
         container.register(DeleteReviewsOnEntriesDeleteMultiple);
 
         // Model delete blocks (D64, D134 point 4); the use-case decorator runs before the CMS's
-        // own DeleteModel decorators, the task decorator before the task is triggered.
+        // own DeleteModel decorators, the operations decorator before the task is triggered, and
+        // the task handler decorator on every run, also one started through `triggerTask`.
         container.registerDecorator(DeleteModelBoundToWorkflowDecorator);
         container.registerDecorator(FullyDeleteModelBoundToWorkflowDecorator);
+        container.registerDecorator(DeleteModelTaskBoundToWorkflowDecorator);
     }
 });
