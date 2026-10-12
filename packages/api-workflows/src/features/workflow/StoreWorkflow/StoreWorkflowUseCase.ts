@@ -6,11 +6,8 @@ import {
     isWorkflowValidationError,
     WorkflowConflictError,
     WorkflowNotFoundError,
-    type WorkflowPersistenceError,
     WorkflowValidationError
 } from "~/domain/workflow/errors.js";
-import type { Actor } from "~/domain/review/types.js";
-import type { Workflow, WorkflowValues } from "~/domain/workflow/types.js";
 import {
     WorkflowAfterCreateEvent,
     WorkflowAfterUpdateEvent,
@@ -54,96 +51,74 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
             return Result.fail(new WorkflowNotFoundError({ id: values.id }));
         }
 
-        const modelIsFree = await this.ensureModelIsFree(values);
-        if (modelIsFree.isFail()) {
-            return Result.fail(modelIsFree.error);
-        }
-
-        if (existing) {
-            return this.update(existing, values, input.actor);
-        }
-        return this.create(values, input.actor);
-    }
-
-    private async create(values: WorkflowValues, actor: Actor): UseCase.Return {
-        const before = await this.publishBefore(
-            new WorkflowBeforeCreateEvent({ workflow: values, actor })
-        );
-        if (before.isFail()) {
-            return Result.fail(before.error);
-        }
-
-        const result = await this.repository.create(values);
-        if (result.isFail()) {
-            return Result.fail(result.error);
-        }
-
-        await this.eventPublisher.publish(
-            new WorkflowAfterCreateEvent({ workflow: result.value, actor })
-        );
-        return Result.ok(result.value);
-    }
-
-    private async update(original: Workflow, values: WorkflowValues, actor: Actor): UseCase.Return {
-        const before = await this.publishBefore(
-            new WorkflowBeforeUpdateEvent({ original, workflow: values, actor })
-        );
-        if (before.isFail()) {
-            return Result.fail(before.error);
-        }
-
-        const result = await this.repository.update(values);
-        if (result.isFail()) {
-            return Result.fail(result.error);
-        }
-
-        await this.eventPublisher.publish(
-            new WorkflowAfterUpdateEvent({ original, workflow: result.value, actor })
-        );
-        return Result.ok(result.value);
-    }
-
-    /**
-     * v1: one workflow per model; the race between two saves is accepted (D41). `limit: 10` is
-     * enough because the v1 invariant allows at most one other workflow per model.
-     */
-    private async ensureModelIsFree(
-        values: WorkflowValues
-    ): Promise<Result<void, WorkflowValidationError | WorkflowPersistenceError>> {
+        // v1: one workflow per model; the race between two saves is accepted (D41). `limit: 10` is
+        // enough because the v1 invariant allows at most one other workflow per model.
         // On OpenSearch the list lags DynamoDB, widening the accepted D41 race to saves within the refresh window.
-        const result = await this.repository.list({
+        const sameModel = await this.repository.list({
             where: { models_in: values.models },
             limit: 10
         });
-        if (result.isFail()) {
-            return Result.fail(result.error);
+        if (sameModel.isFail()) {
+            return Result.fail(sameModel.error);
+        }
+        const other = sameModel.value.items.find(item => item.id !== values.id);
+        if (other) {
+            const model =
+                other.models.find(item => values.models.includes(item)) ?? values.models[0];
+            return Result.fail(
+                new WorkflowValidationError(
+                    `The model "${model}" already has a workflow: "${other.name}".`
+                )
+            );
         }
 
-        const other = result.value.items.find(item => item.id !== values.id);
-        if (!other) {
-            return Result.ok();
-        }
-        const model = other.models.find(item => values.models.includes(item)) ?? values.models[0];
-        return Result.fail(
-            new WorkflowValidationError(
-                `The model "${model}" already has a workflow: "${other.name}".`
-            )
-        );
-    }
+        const actor = input.actor;
 
-    /** Before handlers reject a save by throwing `WorkflowValidationError`. */
-    private async publishBefore(
-        event: WorkflowBeforeCreateEvent | WorkflowBeforeUpdateEvent
-    ): Promise<Result<void, WorkflowValidationError>> {
+        if (existing) {
+            // Before handlers reject a save by throwing `WorkflowValidationError`.
+            try {
+                await this.eventPublisher.publish(
+                    new WorkflowBeforeUpdateEvent({ original: existing, workflow: values, actor })
+                );
+            } catch (error) {
+                if (isWorkflowValidationError(error)) {
+                    return Result.fail(error);
+                }
+                throw error;
+            }
+
+            const updated = await this.repository.update(values);
+            if (updated.isFail()) {
+                return Result.fail(updated.error);
+            }
+
+            await this.eventPublisher.publish(
+                new WorkflowAfterUpdateEvent({ original: existing, workflow: updated.value, actor })
+            );
+            return Result.ok(updated.value);
+        }
+
+        // Before handlers reject a save by throwing `WorkflowValidationError`.
         try {
-            await this.eventPublisher.publish(event);
-            return Result.ok();
+            await this.eventPublisher.publish(
+                new WorkflowBeforeCreateEvent({ workflow: values, actor })
+            );
         } catch (error) {
             if (isWorkflowValidationError(error)) {
                 return Result.fail(error);
             }
             throw error;
         }
+
+        const created = await this.repository.create(values);
+        if (created.isFail()) {
+            return Result.fail(created.error);
+        }
+
+        await this.eventPublisher.publish(
+            new WorkflowAfterCreateEvent({ workflow: created.value, actor })
+        );
+        return Result.ok(created.value);
     }
 }
 

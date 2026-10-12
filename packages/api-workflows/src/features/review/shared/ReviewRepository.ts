@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { createIdentifier } from "@webiny/utils";
-import type { CmsEntryListWhereValues, CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsEntryListWhereValues } from "@webiny/api-headless-cms/types/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
@@ -72,11 +72,14 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
         }
 
         for (const entry of result.value.entries) {
-            const confirmed = await this.readPrimary(model, entry.id);
-            if (confirmed.isFail()) {
-                return Result.fail(confirmed.error);
+            // Primary-storage read of a listed entry; `null` when it was deleted after it was listed.
+            const primary = await this.getEntryById.execute<ReviewEntryValues>(model, entry.id);
+            let review: ReviewData | null = null;
+            if (primary.isOk()) {
+                review = ReviewEntryMapper.fromEntry(primary.value);
+            } else if (primary.error.code !== ENTRY_NOT_FOUND) {
+                return Result.fail(new ReviewPersistenceError(primary.error));
             }
-            const review = confirmed.value;
             if (
                 review &&
                 review.isActive &&
@@ -123,11 +126,14 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
             }
 
             for (const entry of result.value.entries) {
-                const confirmed = await this.readPrimary(model, entry.id);
-                if (confirmed.isFail()) {
-                    return Result.fail(confirmed.error);
+                // Primary-storage read of a listed entry; `null` when it was deleted after it was listed.
+                const primary = await this.getEntryById.execute<ReviewEntryValues>(model, entry.id);
+                let review: ReviewData | null = null;
+                if (primary.isOk()) {
+                    review = ReviewEntryMapper.fromEntry(primary.value);
+                } else if (primary.error.code !== ENTRY_NOT_FOUND) {
+                    return Result.fail(new ReviewPersistenceError(primary.error));
                 }
-                const review = confirmed.value;
                 if (review && review.workflowId === workflowId && review.state === "inProgress") {
                     reviews.push(review);
                 }
@@ -167,11 +173,14 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
             }
 
             for (const entry of result.value.entries) {
-                const confirmed = await this.readPrimary(model, entry.id);
-                if (confirmed.isFail()) {
-                    return Result.fail(confirmed.error);
+                // Primary-storage read of a listed entry; `null` when it was deleted after it was listed.
+                const primary = await this.getEntryById.execute<ReviewEntryValues>(model, entry.id);
+                let review: ReviewData | null = null;
+                if (primary.isOk()) {
+                    review = ReviewEntryMapper.fromEntry(primary.value);
+                } else if (primary.error.code !== ENTRY_NOT_FOUND) {
+                    return Result.fail(new ReviewPersistenceError(primary.error));
                 }
-                const review = confirmed.value;
                 if (
                     review &&
                     review.model === params.model &&
@@ -231,21 +240,6 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
             return Result.fail(new ReviewPersistenceError(result.error));
         }
         return Result.ok();
-    }
-
-    /** Primary-storage read of a listed entry; `null` when it was deleted after it was listed. */
-    private async readPrimary(
-        model: CmsModel,
-        entryId: string
-    ): Promise<Result<ReviewData | null, ReviewPersistenceError>> {
-        const result = await this.getEntryById.execute<ReviewEntryValues>(model, entryId);
-        if (result.isFail()) {
-            if (result.error.code === ENTRY_NOT_FOUND) {
-                return Result.ok(null);
-            }
-            return Result.fail(new ReviewPersistenceError(result.error));
-        }
-        return Result.ok(ReviewEntryMapper.fromEntry(result.value));
     }
 }
 

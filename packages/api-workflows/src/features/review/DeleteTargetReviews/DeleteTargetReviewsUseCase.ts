@@ -1,7 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
-import type { AssignmentPersistenceError } from "~/domain/assignment/errors.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
 import { AssignmentPageSize } from "./AssignmentPageSize.js";
 import { DeleteTargetReviewsUseCase as UseCase } from "./abstractions.js";
@@ -26,9 +25,28 @@ class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
         const deletedReviewIds: string[] = [];
         for (const review of listed.value) {
             // Records first: a failure leaves the review in place, so a retry finds it again.
-            const records = await this.deleteAssignmentRecords(review.id);
-            if (records.isFail()) {
-                return Result.fail(new ReviewPersistenceError(records.error));
+            // Every record id is collected first, so deleting does not shift the cursor pages (R23).
+            const recordIds: string[] = [];
+            let after: string | null = null;
+            do {
+                const page: Awaited<ReturnType<AssignmentRepository.Interface["list"]>> =
+                    await this.assignmentRepository.list({
+                        where: { reviewId: review.id },
+                        limit: this.assignmentPageSize.value,
+                        after
+                    });
+                if (page.isFail()) {
+                    return Result.fail(new ReviewPersistenceError(page.error));
+                }
+                recordIds.push(...page.value.items.map(item => item.id));
+                after = page.value.meta.hasMoreItems ? page.value.meta.cursor : null;
+            } while (after);
+
+            for (const recordId of recordIds) {
+                const recordDeleted = await this.assignmentRepository.delete(recordId);
+                if (recordDeleted.isFail()) {
+                    return Result.fail(new ReviewPersistenceError(recordDeleted.error));
+                }
             }
             const deleted = await this.reviewRepository.delete(review.id);
             if (deleted.isFail()) {
@@ -38,35 +56,6 @@ class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
         }
 
         return Result.ok({ deletedReviewIds });
-    }
-
-    /** Collects every record id first, so deleting does not shift the cursor pages (R23). */
-    private async deleteAssignmentRecords(
-        reviewId: string
-    ): Promise<Result<void, AssignmentPersistenceError>> {
-        const ids: string[] = [];
-        let after: string | null = null;
-        do {
-            const page: Awaited<ReturnType<AssignmentRepository.Interface["list"]>> =
-                await this.assignmentRepository.list({
-                    where: { reviewId },
-                    limit: this.assignmentPageSize.value,
-                    after
-                });
-            if (page.isFail()) {
-                return Result.fail(page.error);
-            }
-            ids.push(...page.value.items.map(item => item.id));
-            after = page.value.meta.hasMoreItems ? page.value.meta.cursor : null;
-        } while (after);
-
-        for (const id of ids) {
-            const deleted = await this.assignmentRepository.delete(id);
-            if (deleted.isFail()) {
-                return Result.fail(deleted.error);
-            }
-        }
-        return Result.ok();
     }
 }
 

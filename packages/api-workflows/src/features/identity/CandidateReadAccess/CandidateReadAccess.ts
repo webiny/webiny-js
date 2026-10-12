@@ -32,7 +32,25 @@ class CandidateReadAccessImpl implements Abstraction.Interface {
 
     public async canUserRead(userId: string, check: () => Promise<boolean>): Promise<boolean> {
         try {
-            const identity = await this.getCandidateIdentity(userId);
+            const key = `${this.tenantContext.getTenant().id}:${userId}`;
+            let identity: Identity | null;
+            if (this.identities.has(key)) {
+                identity = this.identities.get(key) ?? null;
+            } else {
+                // A membership lookup, not an access decision: read as the system.
+                const user = await this.identityContext.withoutAuthorization(() => {
+                    return this.getUser.execute({ id: userId });
+                });
+                identity = user.isOk()
+                    ? new AuthenticatedIdentity({
+                          id: user.value.id,
+                          displayName: user.value.displayName,
+                          type: "admin",
+                          context: { canAccessTenant: true }
+                      })
+                    : null;
+                this.identities.set(key, identity);
+            }
             if (!identity) {
                 return false;
             }
@@ -42,28 +60,6 @@ class CandidateReadAccessImpl implements Abstraction.Interface {
         } catch {
             return false;
         }
-    }
-
-    private async getCandidateIdentity(userId: string): Promise<Identity | null> {
-        const key = `${this.tenantContext.getTenant().id}:${userId}`;
-        if (this.identities.has(key)) {
-            return this.identities.get(key) ?? null;
-        }
-
-        // A membership lookup, not an access decision: read as the system.
-        const user = await this.identityContext.withoutAuthorization(() => {
-            return this.getUser.execute({ id: userId });
-        });
-        const identity = user.isOk()
-            ? new AuthenticatedIdentity({
-                  id: user.value.id,
-                  displayName: user.value.displayName,
-                  type: "admin",
-                  context: { canAccessTenant: true }
-              })
-            : null;
-        this.identities.set(key, identity);
-        return identity;
     }
 }
 

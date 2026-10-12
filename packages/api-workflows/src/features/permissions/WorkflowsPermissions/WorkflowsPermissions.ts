@@ -1,10 +1,7 @@
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { WORKFLOWS_PERMISSION } from "~/constants.js";
 import type { IWorkflowsSecurityPermission } from "~/types.js";
-import type {
-    WorkflowsPermissionAction,
-    WorkflowsPermissionSet
-} from "~/domain/permissions/types.js";
+import type { WorkflowsPermissionSet } from "~/domain/permissions/types.js";
 import { WorkflowsPermissions as Abstraction } from "./abstractions.js";
 
 const FULL_ACCESS_PERMISSION = `${WORKFLOWS_PERMISSION}.*`;
@@ -25,11 +22,27 @@ class WorkflowsPermissionsImpl implements Abstraction.Interface {
     }
 
     public async canEdit(): Promise<boolean> {
-        return this.hasAction("editor");
+        // Granted when full access, or when any `workflows` permission (one per role) sets the flag.
+        if (await this.isFullAccess()) {
+            return true;
+        }
+        const permissions =
+            await this.identityContext.getPermissions<IWorkflowsSecurityPermission>(
+                WORKFLOWS_PERMISSION
+            );
+        return permissions.some(permission => permission.editor === true);
     }
 
     public async canReassign(): Promise<boolean> {
-        return this.hasAction("reassign");
+        // Granted when full access, or when any `workflows` permission (one per role) sets the flag.
+        if (await this.isFullAccess()) {
+            return true;
+        }
+        const permissions =
+            await this.identityContext.getPermissions<IWorkflowsSecurityPermission>(
+                WORKFLOWS_PERMISSION
+            );
+        return permissions.some(permission => permission.reassign === true);
     }
 
     public async getPermissionSet(): Promise<WorkflowsPermissionSet> {
@@ -39,18 +52,6 @@ class WorkflowsPermissionsImpl implements Abstraction.Interface {
             this.canReassign()
         ]);
         return { fullAccess, editor, reassign };
-    }
-
-    /** Granted when full access, or when any `workflows` permission (one per role) sets the flag. */
-    private async hasAction(action: WorkflowsPermissionAction): Promise<boolean> {
-        if (await this.isFullAccess()) {
-            return true;
-        }
-        const permissions =
-            await this.identityContext.getPermissions<IWorkflowsSecurityPermission>(
-                WORKFLOWS_PERMISSION
-            );
-        return permissions.some(permission => permission[action] === true);
     }
 }
 
