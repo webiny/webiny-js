@@ -4,6 +4,7 @@ import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/
 import { ReviewActiveOnTrashError } from "@webiny/api-workflows/domain/review/errors.js";
 import { toBlockingReview } from "@webiny/api-workflows/domain/review/toBlockingReview.js";
 import { getCmsNamespace } from "~/utils/appName.js";
+import { findBoundWorkflow } from "./findBoundWorkflow.js";
 import { listInProgressTargetReviews } from "./listInProgressTargetReviews.js";
 
 /**
@@ -24,10 +25,15 @@ class BlockDeleteWhileInReviewImpl implements EntryBeforeDeleteEventHandler.Inte
             return;
         }
 
-        const inProgress = await listInProgressTargetReviews(
-            { getBoundWorkflow: this.getBoundWorkflow, listTargetReviews: this.listTargetReviews },
-            { model: namespace, targetId: entry.entryId }
-        );
+        const workflow = await findBoundWorkflow(this.getBoundWorkflow, namespace);
+        if (!workflow) {
+            return;
+        }
+
+        const inProgress = await listInProgressTargetReviews(this.listTargetReviews, {
+            model: namespace,
+            targetId: entry.entryId
+        });
         if (inProgress.length === 0) {
             return;
         }

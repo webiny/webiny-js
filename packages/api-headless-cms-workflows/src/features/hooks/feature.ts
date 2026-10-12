@@ -4,6 +4,7 @@ import { BlockUpdateWhileInReview } from "./BlockUpdateWhileInReview.js";
 import { RequireApprovedReviewOnPublish } from "./RequireApprovedReviewOnPublish.js";
 import { RequireApprovedReviewOnRepublish } from "./RequireApprovedReviewOnRepublish.js";
 import { BlockMoveWhileInReview } from "./BlockMoveWhileInReview.js";
+import { BlockFolderChangeWhileInReview } from "./BlockFolderChangeWhileInReview.js";
 import { BlockDeleteWhileInReview } from "./BlockDeleteWhileInReview.js";
 import { BlockRevisionDeleteWhileInReview } from "./BlockRevisionDeleteWhileInReview.js";
 import { BlockDeleteMultipleWhileInReview } from "./BlockDeleteMultipleWhileInReview.js";
@@ -28,6 +29,7 @@ export const CmsHooksFeature = createFeature({
         container.register(RequireApprovedReviewOnPublish);
         container.register(RequireApprovedReviewOnRepublish);
         container.register(BlockMoveWhileInReview);
+        container.register(BlockFolderChangeWhileInReview);
 
         // Trash and delete (D134, R73) and review cleanup after a permanent delete (R56, R81)
         container.register(BlockDeleteWhileInReview);

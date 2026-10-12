@@ -5,6 +5,7 @@ import type { CmsContext, CmsEntry } from "@webiny/api-headless-cms/types/index.
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
 import { UnpublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/index.js";
 import { RepublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/RepublishEntry/index.js";
+import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { MoveEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/MoveEntry/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
@@ -201,6 +202,19 @@ describe("CMS publish rule (D79, D121)", () => {
     });
 });
 
+interface UpdateParams {
+    name: string;
+    folderId?: string;
+}
+
+const update = async (context: CmsContext, revisionId: string, params: UpdateParams) => {
+    const model = await getAuthorModel(context);
+    return context.container.resolve(UpdateEntryUseCase).execute(model, revisionId, {
+        values: { name: params.name },
+        wbyAco_location: params.folderId ? { folderId: params.folderId } : undefined
+    });
+};
+
 describe("CMS republish rule (D79, R53)", () => {
     it("refuses to republish an unreviewed draft on a bound model", async () => {
         const context = await createTestContext();
@@ -316,5 +330,46 @@ describe("CMS move rule (D84)", () => {
         const blocked = await move(context, first, "folder-2");
 
         expect(blocked.error.code).toBe("Workflows/Review/TargetLocked");
+    });
+
+    it("blocks a folder change through update while another revision is in review (R55, A24)", async () => {
+        const context = await createTestContext();
+        const first = await createAuthorEntry(context, { name: "Ann", folderId: "folder-1" });
+        const model = await getAuthorModel(context);
+        const second = expectOk(
+            await context.container
+                .resolve(CreateEntryRevisionFromUseCase)
+                .execute(model, first.id, { values: {} })
+        );
+        const review = await requestEntryReview(context, first);
+
+        const blocked = await update(context, second.id, { name: "Moved", folderId: "folder-2" });
+        const sameFolder = await update(context, second.id, {
+            name: "Same folder",
+            folderId: "folder-1"
+        });
+        const noFolder = await update(context, second.id, { name: "No folder" });
+
+        expect(blocked.isFail()).toBe(true);
+        expect(blocked.error.code).toBe("Workflows/Review/TargetLocked");
+        expect(blocked.error.data).toEqual({
+            reviewId: review.id,
+            model: "cms.author",
+            targetRevisionId: first.id,
+            reviewState: "inProgress",
+            action: "move"
+        });
+        expect(sameFolder.isOk()).toBe(true);
+        expect(noFolder.isOk()).toBe(true);
+        expect((await readEntry(context, second.id)).location?.folderId).toBe("folder-1");
+    });
+
+    it("changes the folder through update on a model without a workflow", async () => {
+        const context = await createTestContext({ withWorkflow: false });
+        const entry = await createAuthorEntry(context, { name: "Ann", folderId: "folder-1" });
+
+        const updated = await update(context, entry.id, { name: "Moved", folderId: "folder-2" });
+
+        expect(updated.isOk()).toBe(true);
     });
 });
