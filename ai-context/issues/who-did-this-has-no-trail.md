@@ -25,8 +25,8 @@ included.
 
 ## Before the handover
 
-- **Change the shared admin password.** Done by the owner, not from a script; the agent's notes must be
-  updated with the new one.
+- **Change the shared admin password.** Sven does this himself before the handover. Scripts that use the
+  API token are unaffected; browser checks need the new password.
 - **Decide which trail to turn on.** Any one of these would have answered 08:28:
   - the audit log, with publishes and approvals recorded;
   - request logging with the caller's identity and operation name;
