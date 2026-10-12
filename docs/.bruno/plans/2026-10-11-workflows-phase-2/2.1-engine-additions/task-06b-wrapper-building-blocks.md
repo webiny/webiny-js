@@ -1,3 +1,5 @@
+Superseded in part: `keepReadableBlockingReviews` became `ReadableBlockingReviewsService` (5ab9e893b0).
+
 ### Task 6b: Shared wrapper building blocks
 
 D132 ("api-workflows provides the shared building blocks the wrappers use"), D115, D134, R46, R57, R76, R78. The CMS and Website Builder wrappers (Tasks 12, 14b, 17, 18b) share three app-neutral pieces; they live in api-workflows as pure domain helpers (no DI, no identity):
