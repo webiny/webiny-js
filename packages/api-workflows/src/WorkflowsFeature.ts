@@ -31,6 +31,7 @@ import { GetWorkflowSettingsFeature } from "~/features/settings/GetWorkflowSetti
 import { SaveWorkflowSettingsFeature } from "~/features/settings/SaveWorkflowSettings/feature.js";
 import { CurrentUserTeamsFeature } from "~/features/identity/CurrentUserTeams/feature.js";
 import { CurrentReviewViewerFeature } from "~/features/identity/CurrentReviewViewer/feature.js";
+import { CandidateReadAccessFeature } from "~/features/identity/CandidateReadAccess/feature.js";
 import { WorkflowsPermissionsFeature } from "~/features/permissions/WorkflowsPermissions/feature.js";
 
 export const WorkflowsFeature = createFeature({
@@ -90,5 +91,6 @@ export const WorkflowsFeature = createFeature({
         WorkflowsPermissionsFeature.register(container);
         CurrentUserTeamsFeature.register(container);
         CurrentReviewViewerFeature.register(container);
+        CandidateReadAccessFeature.register(container);
     }
 });

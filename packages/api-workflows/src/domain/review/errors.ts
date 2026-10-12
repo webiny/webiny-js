@@ -1,6 +1,7 @@
 import { BaseError } from "@webiny/feature/api";
 import type { PersistenceErrorSource } from "../PersistenceErrorSource.js";
 import type { ActorType, ReviewData, ReviewState, StepState } from "./types.js";
+import type { WorkflowBlockingReview } from "~/domain/workflow/types.js";
 
 export type ReviewTransitionName =
     | "reach"
@@ -230,6 +231,96 @@ export class ReviewTargetSyncError extends BaseError<ReviewTargetSyncErrorData> 
         super({
             message: `The review was saved, but updating its content failed: ${params.error.message}`,
             data: { review: params.review }
+        });
+    }
+}
+
+export type ReviewTargetLockedAction = "update" | "move";
+
+export interface ReviewTargetLockedErrorData {
+    reviewId: string;
+    /** Namespace id of the target. */
+    model: string;
+    targetRevisionId: string;
+    reviewState: ReviewState;
+    action: ReviewTargetLockedAction;
+}
+
+/**
+ * The target cannot change while its review is active: updates are blocked for any active review,
+ * including approved and rejected ones (D62, D80); moves only while it is in progress (D84).
+ * Thrown by the app adapters' handlers on bound models (R54, R55).
+ */
+export class ReviewTargetLockedError extends BaseError<ReviewTargetLockedErrorData> {
+    override readonly code = "Workflows/Review/TargetLocked" as const;
+
+    constructor(data: ReviewTargetLockedErrorData) {
+        super({
+            message:
+                data.action === "move"
+                    ? "This content cannot be moved to another folder while its review is in progress."
+                    : `This content cannot be changed while its review is active (review state "${data.reviewState}"). Create a new revision to make changes.`,
+            data
+        });
+    }
+}
+
+export interface ReviewPublishBlockedErrorData {
+    /** Namespace id of the target. */
+    model: string;
+    targetRevisionId: string;
+    /** The workflow bound to the model. */
+    workflowId: string;
+    /** State of the revision's active review; `null` when it has none. */
+    reviewState: ReviewState | null;
+}
+
+/**
+ * On a workflow-bound model a revision is published only with an approved review (D79); thrown by
+ * the app adapters' publish handlers (R53). Creating content as published is not a publish and is
+ * not blocked (D134 point 2).
+ */
+export class ReviewPublishBlockedError extends BaseError<ReviewPublishBlockedErrorData> {
+    override readonly code = "Workflows/Review/PublishBlocked" as const;
+
+    constructor(data: ReviewPublishBlockedErrorData) {
+        super({
+            message: data.reviewState
+                ? `This content can only be published after its review is approved. The review is "${data.reviewState}".`
+                : "This content can only be published after its review is approved. Request a review first.",
+            data
+        });
+    }
+}
+
+export type ReviewActiveOnTrashAction = "trash" | "delete";
+
+export interface ReviewActiveOnTrashErrorData {
+    /** Namespace id of the targets. */
+    model: string;
+    action: ReviewActiveOnTrashAction;
+    /**
+     * Every in-progress review the action would end, each with its target, title and current
+     * step; one target for trash and delete, possibly several for `deleteMultiple`.
+     */
+    reviews: WorkflowBlockingReview[];
+}
+
+/**
+ * Trashing or deleting content with a review in progress is refused (D134); the admin warns and,
+ * on confirm, calls the app's cancel-for-delete wrapper and repeats the action (R73, R74). Thrown
+ * by the app adapters' trash and delete handlers on bound models.
+ */
+export class ReviewActiveOnTrashError extends BaseError<ReviewActiveOnTrashErrorData> {
+    override readonly code = "Workflows/Review/ActiveReviewOnTrash" as const;
+
+    constructor(data: ReviewActiveOnTrashErrorData) {
+        super({
+            message:
+                data.action === "trash"
+                    ? "This content has a review in progress. Trashing it cancels the review."
+                    : "This content has a review in progress. Deleting it cancels the review.",
+            data
         });
     }
 }

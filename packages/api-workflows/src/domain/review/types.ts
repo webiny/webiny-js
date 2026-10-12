@@ -145,3 +145,9 @@ export interface ReviewViewerFlags {
 export interface ReviewTargetAccess {
     canRead: boolean;
 }
+
+/** A review read by an app wrapper for one viewer (spec 5.3, R62). */
+export interface ReviewWithViewerFlags {
+    review: ReviewData;
+    flags: ReviewViewerFlags;
+}

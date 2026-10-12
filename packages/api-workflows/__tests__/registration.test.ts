@@ -22,6 +22,7 @@ import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
 import { ReviewStepReacher } from "~/features/review/ReviewStepReacher/abstractions.js";
 import { ReviewTargetLoader } from "~/features/review/ReviewTargetLoader/index.js";
 import { ReviewTargetSync } from "~/features/review/ReviewTargetSync/index.js";
+import { ReviewTargetReadAccess } from "~/features/review/ReviewTargetReadAccess/index.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/index.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
@@ -40,6 +41,7 @@ import {
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
 import { CurrentUserTeams } from "~/features/identity/CurrentUserTeams/index.js";
 import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
+import { CandidateReadAccess } from "~/features/identity/CandidateReadAccess/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 
 describe("WorkflowsFeature registration", () => {
@@ -70,9 +72,11 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(GetBoundWorkflowUseCase)).toHaveLength(1);
         expect(container.resolveAll(ReviewSaver)).toHaveLength(1);
         expect(container.resolveAll(ReviewStepReacher)).toHaveLength(1);
-        // No default loader or sync: phase 2 registers one per namespace.
+        // No default loader, sync or target read access: the app adapters register one per namespace.
         expect(container.resolveAll(ReviewTargetLoader)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetSync)).toHaveLength(0);
+        expect(container.resolveAll(ReviewTargetReadAccess)).toHaveLength(0);
+        expect(container.resolveAll(CandidateReadAccess)).toHaveLength(1);
         expect(container.resolveAll(StepAssignmentResolver)).toHaveLength(1);
         expect(container.resolveAll(ReviewRepository)).toHaveLength(1);
         expect(container.resolveAll(AssignmentRepository)).toHaveLength(1);
