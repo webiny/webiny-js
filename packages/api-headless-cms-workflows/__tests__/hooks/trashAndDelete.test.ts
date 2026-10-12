@@ -11,6 +11,10 @@ import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetRevie
 import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
 import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
 import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
+import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
+import { EntryPersistenceError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { WorkflowPersistenceError } from "@webiny/api-workflows/domain/workflow/errors.js";
 import { ReviewPersistenceError } from "@webiny/api-workflows/domain/review/errors.js";
 import { createContextHandler } from "~tests/__handler/context.js";
 import { storeWorkflow } from "~tests/__workflows/workflow.js";
@@ -86,6 +90,57 @@ class FailingDeleteTargetReviews implements DeleteTargetReviewsUseCase.Interface
         return Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
     }
 }
+
+class FailingGetBoundWorkflow implements GetBoundWorkflowUseCase.Interface {
+    public constructor(private decoratee: GetBoundWorkflowUseCase.Interface) {}
+
+    public async execute(): GetBoundWorkflowUseCase.Return {
+        return Result.fail(new WorkflowPersistenceError(new Error("Storage is down.")));
+    }
+}
+
+class FailingGetLatestRevision {
+    public constructor(private decoratee: unknown) {}
+
+    public async execute() {
+        return Result.fail(new EntryPersistenceError(new Error("Storage is down.")));
+    }
+}
+
+/** Error log messages captured by `CapturingLogger`. */
+const loggedErrors: string[] = [];
+
+class CapturingLogger implements Logger.Interface {
+    public constructor(private decoratee: Logger.Interface) {}
+
+    public trace(objOrMsg: object | string, ...args: any[]): void {
+        this.decoratee.trace(objOrMsg, ...args);
+    }
+    public debug(objOrMsg: object | string, ...args: any[]): void {
+        this.decoratee.debug(objOrMsg, ...args);
+    }
+    public info(objOrMsg: object | string, ...args: any[]): void {
+        this.decoratee.info(objOrMsg, ...args);
+    }
+    public warn(objOrMsg: object | string, ...args: any[]): void {
+        this.decoratee.warn(objOrMsg, ...args);
+    }
+    public error(objOrMsg: object | string, ...args: any[]): void {
+        loggedErrors.push(String(args[0] ?? objOrMsg));
+    }
+    public fatal(objOrMsg: object | string, ...args: any[]): void {
+        this.decoratee.fatal(objOrMsg, ...args);
+    }
+    public log(objOrMsg: object | string, ...args: any[]): void {
+        this.decoratee.log(objOrMsg, ...args);
+    }
+}
+
+const capturingLoggerPlugin = (container: Container) => {
+    container.registerDecorator(
+        Logger.createDecorator({ decorator: CapturingLogger, dependencies: [] })
+    );
+};
 
 /** Engine calls the handlers made, by use case name. */
 const engineCalls: string[] = [];
@@ -212,6 +267,48 @@ describe("CMS trash with a review in progress (D134)", () => {
         const refused = await trash(context, entry);
 
         expect(refused.error.code).toBe("Workflows/Review/Persistence");
+    });
+});
+
+describe("CMS trash and delete when the workflow binding lookup fails (A38)", () => {
+    const failingBinding = [
+        (container: Container) => {
+            container.registerDecorator(
+                GetBoundWorkflowUseCase.createDecorator({
+                    decorator: FailingGetBoundWorkflow,
+                    dependencies: []
+                })
+            );
+        }
+    ];
+
+    it("refuses trash and permanent delete (fail closed)", async () => {
+        const context = await createTestContext({
+            withWorkflow: false,
+            legacyPlugins: failingBinding
+        });
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+
+        const trashed = await trash(context, entry);
+        const deleted = await deletePermanently(context, entry);
+
+        expect(trashed.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(deleted.error.code).toBe("Workflows/Workflow/Persistence");
+    });
+
+    it("refuses deleteMultiple (fail closed)", async () => {
+        const context = await createTestContext({
+            withWorkflow: false,
+            legacyPlugins: failingBinding
+        });
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+        const model = await getAuthorModel(context);
+
+        const refused = await context.container
+            .resolve(DeleteMultipleEntriesUseCase)
+            .execute(model, { entries: [entry.id] });
+
+        expect(refused.error.code).toBe("Workflows/Workflow/Persistence");
     });
 });
 
@@ -381,9 +478,11 @@ describe("CMS review cleanup after a permanent delete (R56, R81)", () => {
         );
     });
 
-    it("keeps the delete when the review cleanup fails (logged, R81)", async () => {
+    it("keeps the delete when the review cleanup fails and logs it (R81)", async () => {
+        loggedErrors.length = 0;
         const context = await createTestContext({
             legacyPlugins: [
+                capturingLoggerPlugin,
                 (container: Container) => {
                     container.registerDecorator(
                         DeleteTargetReviewsUseCase.createDecorator({
@@ -400,7 +499,41 @@ describe("CMS review cleanup after a permanent delete (R56, R81)", () => {
         const deleted = await deletePermanently(context, entry);
 
         expect(deleted.isOk()).toBe(true);
+        expect(loggedErrors).toEqual([
+            "Could not delete the reviews of a deleted entry; they are left orphaned."
+        ]);
         // The review is orphaned (A34).
+        expect(expectOk(await getReview(context, review.id)).id).toBe(review.id);
+    });
+
+    it("keeps the bulk delete and logs when the deleted-entry lookup fails (R81)", async () => {
+        loggedErrors.length = 0;
+        const context = await createTestContext({
+            legacyPlugins: [
+                capturingLoggerPlugin,
+                (container: Container) => {
+                    container.registerDecorator(
+                        GetLatestRevisionByEntryIdIncludingDeletedUseCase.createDecorator({
+                            decorator: FailingGetLatestRevision,
+                            dependencies: []
+                        })
+                    );
+                }
+            ]
+        });
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+        const review = await approveEntryReview(context, await requestEntryReview(context, entry));
+        const model = await getAuthorModel(context);
+        expectOk(await context.container.resolve(PublishEntryUseCase).execute(model, entry.id));
+
+        const deleted = await context.container
+            .resolve(DeleteMultipleEntriesUseCase)
+            .execute(model, { entries: [entry.id] });
+
+        expect(deleted.isOk()).toBe(true);
+        expect(loggedErrors).toEqual([
+            "Could not confirm that an entry is deleted; its reviews are left orphaned."
+        ]);
         expect(expectOk(await getReview(context, review.id)).id).toBe(review.id);
     });
 });

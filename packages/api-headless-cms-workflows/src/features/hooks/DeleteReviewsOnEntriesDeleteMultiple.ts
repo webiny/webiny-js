@@ -34,7 +34,14 @@ class DeleteReviewsOnEntriesDeleteMultipleImpl
             const latest = await this.identityContext.withoutAuthorization(() => {
                 return this.getLatestRevision.execute(model, { id: entry.entryId });
             });
-            if (latest.isOk() || latest.error.code !== ENTRY_NOT_FOUND) {
+            if (latest.isOk()) {
+                continue;
+            }
+            if (latest.error.code !== ENTRY_NOT_FOUND) {
+                this.logger.error(
+                    { error: latest.error, model: namespace, targetId: entry.entryId },
+                    "Could not confirm that an entry is deleted; its reviews are left orphaned."
+                );
                 continue;
             }
 
