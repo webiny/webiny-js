@@ -1,5 +1,6 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
+import { WbHooksFeature } from "./features/hooks/feature.js";
 import { WbTargetFeature } from "./features/target/feature.js";
 import { WebsiteBuilderPageSchemaFactory } from "./WebsiteBuilderPageSchemaFactory.js";
 
@@ -19,5 +20,6 @@ export const WebsiteBuilderWorkflowsFeature = createFeature({
 
         // The `wb.page` target adapter (spec 9.3).
         WbTargetFeature.register(container);
+        WbHooksFeature.register(container);
     }
 });
