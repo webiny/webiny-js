@@ -9,8 +9,8 @@ import { getModelIdFromAppName, isCmsNamespace } from "~/utils/appName.js";
  * Writes `system.workflow` on the CMS revision (spec 4.5, D52, R63). The model is read as the
  * current identity, never without authorization: an access-free read could fill the tenant-keyed
  * CMS model cache with an unfiltered list (A19). Only the system write runs without authorization,
- * so a reviewer with read access can move the review on. `UpdateEntrySystemUseCase` does not
- * publish `EntryBeforeUpdate`, so the save block does not apply (D62).
+ * so a reviewer with read access can move the review on. `UpdateEntrySystemUseCase` publishes
+ * `EntryBeforeUpdateSystem`, not `EntryBeforeUpdate`, so the save block does not apply (D62).
  */
 class CmsEntryReviewTargetSyncImpl implements ReviewTargetSync.Interface {
     public constructor(

@@ -1,8 +1,8 @@
 import { EntryRevisionBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
 
 /**
- * Every new revision starts without a review state (spec 4.5, D59). One handler for CMS entries,
- * Website Builder pages and any app built on CMS entries; CMS copies `original.system` otherwise.
+ * Every new revision starts without a review state (spec 4.5, D59). One handler for CMS entries
+ * and any app built on CMS entries (Website Builder pages once 2.4 registers wb.page); CMS copies `original.system` otherwise.
  * Mutates the entry the use case persists next.
  */
 class NullReviewStateOnRevisionCreateImpl

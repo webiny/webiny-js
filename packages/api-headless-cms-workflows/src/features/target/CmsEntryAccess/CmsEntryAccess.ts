@@ -18,6 +18,10 @@ const UNREADABLE_CODES = [
  * Group and model read first (what `GetModelUseCase` and the group cache enforce for the current
  * identity), then the entry permission, then FLP as `GetEntryByIdWithFlpDecorator`,
  * `UpdateEntryWithFlpDecorator` and `DeleteEntryWithFlpDecorator` (api-aco) apply it.
+ *
+ * Models with `authorization: false` (entry checks disabled) are still refused at the group check
+ * for an identity without group read: `canAccessGroup` does not look at the model's flag. That
+ * fails closed and is stricter than the CMS's own entry use cases.
  */
 class CmsEntryAccessImpl implements Abstraction.Interface {
     public constructor(

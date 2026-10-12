@@ -6,8 +6,8 @@ export type EntryFolderRwd = "r" | "w" | "d";
 /**
  * Folder-level permissions on a CMS entry's folder for the current identity, as the ACO CMS
  * decorators apply them: skipped when FLP is not in use for the identity (e.g. API keys) or the
- * entry is in the root folder. Shared with the Website Builder adapter, whose pages are CMS
- * entries (R78).
+ * entry is in the root folder. To be shared with the Website Builder adapter once 2.4 registers
+ * wb.page, whose pages are CMS entries (R78).
  */
 export const canAccessEntryFolder = async (
     folderLevelPermissions: FolderLevelPermissions.Interface,
