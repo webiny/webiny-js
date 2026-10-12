@@ -25,6 +25,7 @@ import {
     throwingAccessChecks,
     throwOnAccessChecks
 } from "~tests/__helpers/ThrowingWbPageAccess.js";
+import { GetCmsEntryReviewUseCase } from "@webiny/api-headless-cms-workflows/features/wrappers/GetCmsEntryReview/index.js";
 import { RequestWebsiteBuilderPageReviewUseCase } from "~/features/wrappers/RequestWebsiteBuilderPageReview/index.js";
 import { GetWebsiteBuilderPageReviewUseCase } from "~/features/wrappers/GetWebsiteBuilderPageReview/index.js";
 
@@ -197,9 +198,26 @@ describe("WB request and get review wrappers", () => {
     it("reports a Headless CMS review as not found (R46)", async () => {
         const admin = await createUserContext();
         const cmsReview = await createCmsReview(admin);
-        const reviewer = await createUserContext({ identity: REVIEWER, permissions: WB_READER });
+        const reviewer = await createCountingContext({
+            identity: REVIEWER,
+            permissions: WB_READER
+        });
+        engineCalls.length = 0;
 
         const result = await getReview(reviewer, cmsReview.id);
+
+        expect(result.error.code).toBe("Workflows/Review/NotFound");
+        expect(engineCalls).toEqual(["GetReview"]);
+    });
+
+    it("reports a page review as not found through the Headless CMS wrapper (R46)", async () => {
+        const { admin, page } = await createScenario();
+        const review = await requestPageReview(admin, page);
+        const reviewer = await createUserContext({ identity: REVIEWER, permissions: WB_READER });
+
+        const result = await reviewer.container
+            .resolve(GetCmsEntryReviewUseCase)
+            .execute({ id: review.id });
 
         expect(result.error.code).toBe("Workflows/Review/NotFound");
     });
@@ -259,7 +277,8 @@ describe("WB request and get review wrappers", () => {
 
         expect(requested.error.code).toBe("Workflows/Review/Persistence");
         expect(viewed.error.code).toBe("Workflows/Review/Persistence");
-        expect(engineCalls).not.toContain("RequestReview");
+        // The request stops before the engine; the get reads the review, then the page.
+        expect(engineCalls).toEqual(["GetReview"]);
     });
 
     it("fails a request with a persistence error when the entity write check throws (R87)", async () => {

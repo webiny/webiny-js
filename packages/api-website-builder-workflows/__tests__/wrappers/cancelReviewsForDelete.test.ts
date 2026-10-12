@@ -12,6 +12,7 @@ import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import {
     mismatchedTargetRevisions,
+    nullTargetRevisions,
     scriptTargetReads,
     throwingTargetRevisions
 } from "~tests/__helpers/ScriptedWbPageTargetReads.js";
@@ -23,6 +24,8 @@ import {
     RecordingEventPublisher,
     recordedEvents
 } from "~tests/__helpers/RecordingEventPublisher.js";
+import { CancelCmsEntryReviewsForDeleteUseCase } from "@webiny/api-headless-cms-workflows/features/wrappers/CancelCmsEntryReviewsForDelete/index.js";
+import { PAGE_MODEL_ID } from "@webiny/api-website-builder/domain/page/page.model.js";
 import { CancelWebsiteBuilderPageReviewsForDeleteUseCase } from "~/features/wrappers/CancelWebsiteBuilderPageReviewsForDelete/index.js";
 
 /** Admin stores the pages workflow; REQUESTER's review is in progress on one page. */
@@ -69,6 +72,7 @@ describe("WB cancel-for-delete wrapper (D134)", () => {
         folderLevels.clear();
         throwingTargetRevisions.clear();
         mismatchedTargetRevisions.clear();
+        nullTargetRevisions.clear();
         throwingAccessChecks.clear();
     });
 
@@ -200,6 +204,41 @@ describe("WB cancel-for-delete wrapper (D134)", () => {
         expect(otherApp).toEqual([]);
         expect(engineCalls).toEqual(["ListTargetReviews"]);
         expect(unauthenticated.error.code).toBe("Workflows/NotAuthenticated");
+        const stored = expectOk(
+            await admin.container.resolve(GetReviewUseCase).execute({ id: cmsReview.id })
+        );
+        expect(stored.state).toBe("inProgress");
+    });
+
+    it("is not cancelled through the Headless CMS wrapper (R46)", async () => {
+        const { admin, page, review } = await createScenario();
+
+        const result = await admin.container
+            .resolve(CancelCmsEntryReviewsForDeleteUseCase)
+            .execute({ model: `cms.${PAGE_MODEL_ID}`, targetId: page.entryId, action: "trash" });
+
+        // The CMS wrapper does not serve the private page model, so it cancels nothing.
+        expect(result.error.code).toBe("Workflows/NotAuthorized");
+        const stored = expectOk(
+            await admin.container.resolve(GetReviewUseCase).execute({ id: review.id })
+        );
+        expect(stored.state).toBe("inProgress");
+    });
+
+    it("reports a missing target by the page id, and cancels nothing", async () => {
+        const { admin, page, review } = await createScenario();
+        const deleter = await createDeleterContext();
+        nullTargetRevisions.add(page.id);
+
+        const result = await cancelForDelete(deleter, { targetId: page.entryId, action: "trash" });
+
+        expect(result.error.code).toBe("Workflows/Review/TargetNotFound");
+        expect(result.error.data).toEqual({ model: "wb.page", targetId: page.entryId });
+        expect(engineCalls).toEqual(["ListTargetReviews"]);
+        const stored = expectOk(
+            await admin.container.resolve(GetReviewUseCase).execute({ id: review.id })
+        );
+        expect(stored.state).toBe("inProgress");
     });
 
     it("fails with a persistence error when the target read throws, and cancels nothing", async () => {

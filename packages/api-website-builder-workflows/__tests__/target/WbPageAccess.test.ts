@@ -5,6 +5,7 @@ import { CmsEntryReviewNamespace } from "@webiny/api-headless-cms-workflows/feat
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createPage, getPageModel } from "~tests/__helpers/pages.js";
 import {
+    createApiKeyIdentity,
     NOBODY,
     READER,
     WB_DELETE_ONLY,
@@ -16,7 +17,6 @@ import {
     WB_WRITER,
     WRITER
 } from "~tests/__helpers/identities.js";
-import { createApiKeyIdentity } from "~tests/__helpers/identities.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { WbPageTargetReader } from "~/features/target/WbPageTargetReader/index.js";
 import { WbPageAccess } from "~/features/target/WbPageAccess/index.js";

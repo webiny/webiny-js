@@ -6,6 +6,15 @@ import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/Review
 import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTargetSync/index.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import { CmsEntryReviewNamespace } from "@webiny/api-headless-cms-workflows/features/target/CmsEntryReviewNamespace/index.js";
+import { PageBeforePublishEventHandler } from "@webiny/api-website-builder/features/pages/PublishPage/index.js";
+import { PageBeforeMoveEventHandler } from "@webiny/api-website-builder/features/pages/MovePage/index.js";
+import { PageBeforeTrashEventHandler } from "@webiny/api-website-builder/features/pages/TrashPage/index.js";
+import {
+    PageAfterDeleteEventHandler,
+    PageBeforeDeleteEventHandler
+} from "@webiny/api-website-builder/features/pages/DeletePage/index.js";
+import { PAGE_MODEL_ID } from "@webiny/api-website-builder/domain/page/page.model.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { StoreWebsiteBuilderPageWorkflowUseCase } from "~/features/wrappers/StoreWebsiteBuilderPageWorkflow/index.js";
 import { DeleteWebsiteBuilderPageWorkflowUseCase } from "~/features/wrappers/DeleteWebsiteBuilderPageWorkflow/index.js";
@@ -56,13 +65,39 @@ describe("WebsiteBuilderWorkflowsFeature registration", () => {
         }
     });
 
-    it("registers no wrapper and no guard without the advancedPublishingWorkflow license", async () => {
+    it("registers no wrapper, guard, page adapter or page handler without the advancedPublishingWorkflow license", async () => {
         const license = createTestWcpLicense();
         license.package.features[PROJECT_PACKAGE_FEATURE_NAME.APW] = { enabled: false };
         const { container } = await createContextHandler({ testProjectLicense: license }).context();
+        const { container: licensed } = await createContextHandler().context();
 
         for (const abstraction of WRAPPERS) {
             expect(container.resolveAll(abstraction)).toHaveLength(0);
+        }
+        // The engine's own ports, the page adapter and the page namespace are all gated.
+        expect(container.resolveAll(ReviewTargetLoader)).toHaveLength(0);
+        expect(container.resolveAll(ReviewTargetSync)).toHaveLength(0);
+        expect(container.resolveAll(ReviewTargetReadAccess)).toHaveLength(0);
+        expect(container.resolveAll(CmsEntryReviewNamespace)).toHaveLength(0);
+        const pageModel = { modelId: PAGE_MODEL_ID } as CmsModel;
+        expect(
+            container
+                .resolveAll(CmsEntryReviewNamespace)
+                .map((item: CmsEntryReviewNamespace.Interface) => item.resolve(pageModel))
+                .filter(Boolean)
+        ).toEqual([]);
+        // This package's page handlers: one each, none left over without the license.
+        const handlers: Abstraction<unknown>[] = [
+            PageBeforePublishEventHandler,
+            PageBeforeMoveEventHandler,
+            PageBeforeTrashEventHandler,
+            PageBeforeDeleteEventHandler,
+            PageAfterDeleteEventHandler
+        ];
+        for (const handler of handlers) {
+            expect(licensed.resolveAll(handler).length - container.resolveAll(handler).length).toBe(
+                1
+            );
         }
     });
 });

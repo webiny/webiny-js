@@ -5,12 +5,14 @@ import {
     PageBeforeDeleteEventHandler
 } from "@webiny/api-website-builder/features/pages/DeletePage/index.js";
 import { PageBeforeDeleteEvent } from "@webiny/api-website-builder/features/pages/DeletePage/events.js";
+import { CreatePageRevisionFromUseCase } from "@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/index.js";
 import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import {
     failDeleteTargetReviews,
     throwDeleteTargetReviews
 } from "~tests/__helpers/FailingDeleteTargetReviews.js";
+import { failGetBoundWorkflow } from "~tests/__helpers/FailingGetBoundWorkflow.js";
 import { failListTargetReviews } from "~tests/__helpers/FailingListTargetReviews.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createPage, expectOk } from "~tests/__helpers/pages.js";
@@ -60,7 +62,7 @@ describe("WB trash and delete with a review in progress (D134)", () => {
         const context = await createUserContext();
         await storeWbWorkflow(context);
         const page = await createPage(context, { title: "Page A" });
-        await requestPageReview(context, page);
+        const review = await requestPageReview(context, page);
         const handlers = context.container.resolveAll(PageBeforeDeleteEventHandler);
 
         const results = await Promise.allSettled(
@@ -71,8 +73,48 @@ describe("WB trash and delete with a review in progress (D134)", () => {
             status: "rejected",
             reason: expect.objectContaining({
                 code: "Workflows/Review/ActiveReviewOnTrash",
-                data: expect.objectContaining({ action: "delete" })
+                data: {
+                    model: "wb.page",
+                    action: "delete",
+                    reviews: [
+                        expect.objectContaining({
+                            reviewId: review.id,
+                            targetId: page.entryId,
+                            title: "Page A"
+                        })
+                    ]
+                }
             })
+        });
+    });
+
+    it("refuses the trash when the bound workflow lookup fails (A38, fail closed)", async () => {
+        const context = await createUserContext({ legacyPlugins: [failGetBoundWorkflow] });
+        const page = await createPage(context, { title: "Page A" });
+
+        await expect(
+            context.container.resolve(TrashPageUseCase).execute({ id: page.id })
+        ).rejects.toMatchObject({ code: "Workflows/Workflow/Persistence" });
+    });
+
+    it("refuses to trash a newer revision while an older one is in review (A24)", async () => {
+        const context = await createUserContext();
+        await storeWbWorkflow(context);
+        const page = await createPage(context, { title: "Page A" });
+        const review = await requestPageReview(context, page);
+        const revision = expectOk(
+            await context.container.resolve(CreatePageRevisionFromUseCase).execute({ id: page.id })
+        );
+
+        await expect(
+            context.container.resolve(TrashPageUseCase).execute({ id: revision.id })
+        ).rejects.toMatchObject({
+            code: "Workflows/Review/ActiveReviewOnTrash",
+            data: {
+                model: "wb.page",
+                action: "trash",
+                reviews: [{ reviewId: review.id, targetId: page.entryId, title: "Page A" }]
+            }
         });
     });
 

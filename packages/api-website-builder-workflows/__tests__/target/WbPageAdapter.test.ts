@@ -246,6 +246,7 @@ describe("WB page adapter", () => {
         } as unknown as ReviewTargetSync.Params);
 
         expect(result.isFail()).toBe(true);
+        expect(result.error.message).toBe("Storage is down.");
     });
 
     it("starts a new page revision without system.workflow (D59)", async () => {
@@ -303,6 +304,8 @@ describe("WB page adapter", () => {
         const withoutReview = await createPage(context, { title: "No review" });
         const rejected = await createPage(context, { title: "Rejected" });
         await rejectPageReview(context, await requestPageReview(context, rejected));
+        const inProgress = await createPage(context, { title: "In progress" });
+        await requestPageReview(context, inProgress);
         const publishPage = context.container.resolve(PublishPageUseCase);
 
         // WB publishes the before event outside a try, so the handler's error rejects (A26).
@@ -313,6 +316,10 @@ describe("WB page adapter", () => {
         await expect(publishPage.execute({ id: rejected.id })).rejects.toMatchObject({
             code: "Workflows/Review/PublishBlocked",
             data: { reviewState: "rejected" }
+        });
+        await expect(publishPage.execute({ id: inProgress.id })).rejects.toMatchObject({
+            code: "Workflows/Review/PublishBlocked",
+            data: { reviewState: "inProgress" }
         });
     });
 
@@ -362,6 +369,16 @@ describe("WB page adapter", () => {
         });
 
         expect(blocked.isFail()).toBe(true);
+        expect(blocked.error.code).toBe("Workflows/Review/TargetLocked");
+        expect(blocked.error.message).toBe(
+            new ReviewTargetLockedError({
+                reviewId: review.id,
+                model: "wb.page",
+                targetRevisionId: page.id,
+                reviewState: "inProgress",
+                action: "move"
+            }).message
+        );
         expect(allowed.isOk()).toBe(true);
     });
 
@@ -459,5 +476,23 @@ describe("WB page adapter", () => {
         const moved = await movePage.execute({ id: page.id, folderId: "folder-2" });
 
         expect(moved.isOk()).toBe(true);
+    });
+
+    it("blocks moving a newer revision while an older one is in review (A24)", async () => {
+        const context = await createAdminContext();
+        await storeWbWorkflow(context);
+        const page = await createPage(context, { title: "Page A", folderId: "folder-1" });
+        const review = await requestPageReview(context, page);
+        const revision = expectOk(
+            await context.container.resolve(CreatePageRevisionFromUseCase).execute({ id: page.id })
+        );
+        const movePage = context.container.resolve(MovePageUseCase);
+
+        await expect(
+            movePage.execute({ id: revision.id, folderId: "folder-2" })
+        ).rejects.toMatchObject({
+            code: "Workflows/Review/TargetLocked",
+            data: { reviewId: review.id, targetRevisionId: page.id, action: "move" }
+        });
     });
 });

@@ -209,6 +209,22 @@ describe("WB workflow wrappers", () => {
         expect(got.error.code).toBe("Workflows/Workflow/Persistence");
     });
 
+    it("returns the lookup failure of the store pre-check, without storing (R87)", async () => {
+        const editor = await createCountingContext({
+            identity: EDITOR,
+            permissions: [WORKFLOWS_EDITOR, ...WB_READER],
+            legacyPlugins: [failGetWorkflow]
+        });
+        engineCalls.length = 0;
+
+        const result = await store(editor);
+
+        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(engineCalls).not.toContain("StoreWorkflow");
+        const stored = await get(await createEditorContext(), "wb-workflow");
+        expect(stored.error.code).toBe("Workflows/Workflow/NotFound");
+    });
+
     it.each([
         ["store", (context: CmsContext) => store(context)],
         ["delete", (context: CmsContext) => remove(context, "wb-workflow")],
