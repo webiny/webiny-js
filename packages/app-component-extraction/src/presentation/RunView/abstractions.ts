@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { ThemeSnapshot } from "./themeSnapshot.js";
 import type {
+    SiteInventoryDto,
     ComponentPromptDto,
     AssembleArtifactDto,
     ComposedCaptureDto,
@@ -183,6 +184,11 @@ export interface IRunViewVm {
      * as broken unless the view says so.
      */
     siteBuiltFrom: { runId: string; runNumber: number | null } | null;
+    /**
+     * What the site's tenant holds beyond what its live pages use. Builds never delete, and stage 9
+     * keeps both when a name is taken, so every re-approval leaves a component no page uses.
+     */
+    siteInventory: SiteInventoryDto | null;
     /** A site build was started from this screen and has not reported done or failed yet. */
     buildingSite: boolean;
     /** A re-capture of selected pages is in flight. */

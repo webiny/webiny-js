@@ -769,6 +769,16 @@ export interface ComposedCapturePageDto {
 export type SiteBuildStep = "tenant" | "theme" | "components" | "images" | "pages";
 
 /** A job's site in its own tenant, as the page-composition PoC records it (`SiteRecord` in the API). */
+/** What a site's tenant holds beyond what its live pages use. */
+export interface SiteInventoryDto {
+    components: number;
+    /** Components no published page places: left over from earlier builds. */
+    unused: string[];
+    publishedPages: number;
+    /** Earlier builds' copies, superseded at their path. */
+    unpublishedPages: number;
+}
+
 export interface SiteDto {
     jobId: string;
     tenantId: string;

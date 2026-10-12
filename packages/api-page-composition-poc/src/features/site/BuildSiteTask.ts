@@ -270,7 +270,9 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         await record(
             "components",
             "done",
-            `${promoted.length} component(s) in the site's Library.`
+            // Copied by this build, not what the tenant holds: builds never delete, so earlier builds'
+            // components stay (`siteInventory`).
+            `${promoted.length} component(s) copied this build.`
         );
 
         // ---- 4. Images: fetch the bytes over HTTP, migrate them there through Capture's path. ------

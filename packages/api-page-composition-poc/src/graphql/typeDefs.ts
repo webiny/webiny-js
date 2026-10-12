@@ -90,6 +90,11 @@ export const pageCompositionTypeDefs = /* GraphQL */ `
         tenant, where the same path answers with a different page.
         """
         pageCompositionPocSiteLivePages(jobId: ID!, paths: [String!]!): PageCompositionPocSiteResponse
+        """
+        What the job's site tenant holds beyond what its live pages use: its components, those no
+        published page places, and its unpublished pages. Read inside the site's tenant.
+        """
+        pageCompositionPocSiteInventory(jobId: ID!): PageCompositionPocSiteResponse
     }
 
     extend type Mutation {

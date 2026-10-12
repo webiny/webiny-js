@@ -56,6 +56,12 @@ const presenterFor = (record: SiteDto | null, onScreen: RunDto) => {
         getStageArtifact: vi.fn(async () => ({ pages: [{}, {}, {}] })),
         getPageMap: vi.fn(async () => pageMap),
         getSiteLivePageIds: vi.fn(async () => ({ "/": "6aca2cf70a0e#0001" })),
+        getSiteInventory: vi.fn(async () => ({
+            components: 15,
+            unused: [],
+            publishedPages: 8,
+            unpublishedPages: 24
+        })),
         getLivePageIds: vi.fn(async () => ({}))
     };
     const presenter = new RunViewPresenterImpl(gateway as never);
@@ -87,6 +93,9 @@ describe("Site view", () => {
         expect(presenter.vm.siteAssembledCount).toBe(3);
         expect(presenter.vm.siteBuiltFrom).toEqual({ runId: TAKE3_RUN, runNumber: 3 });
         expect(gateway.getRun).not.toHaveBeenCalled();
+        // The inventory is asked of the site's job, which the API resolves to the site's tenant.
+        expect(gateway.getSiteInventory).toHaveBeenCalledWith(TAKE3_JOB);
+        expect(presenter.vm.siteInventory?.unpublishedPages).toBe(24);
     });
 
     it("reads the map of the run the site was built from, not the run on screen", async () => {

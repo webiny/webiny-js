@@ -91,6 +91,10 @@ export const SiteView = createReactiveComponent(function SiteView({ presenter }:
                         <BuiltFrom presenter={presenter} />
                     ) : null}
 
+                    {build?.status === "done" && vm.siteInventory ? (
+                        <TenantInventory presenter={presenter} />
+                    ) : null}
+
                     {build?.status === "done" ? (
                         vm.sitePageMapLoading && !map ? (
                             <Text size="sm" className="text-neutral-strong">
@@ -137,6 +141,41 @@ const BuiltFrom = createReactiveComponent(function BuiltFrom({ presenter }: Prop
                 />
             ) : null}
         </div>
+    );
+});
+
+/**
+ * What the site's tenant holds beyond its live pages.
+ *
+ * Builds never delete, and stage 9 keeps both when a name is taken, so every regenerate, re-approve
+ * and publish leaves a component no page uses, and every build leaves the previous pages unpublished.
+ * Each leftover component still ships with every page and sits in the editor's palette. Said here so
+ * it is seen, not found.
+ */
+const TenantInventory = createReactiveComponent(function TenantInventory({ presenter }: Props) {
+    const inventory = presenter.vm.siteInventory!;
+    const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+    if (inventory.unused.length === 0) {
+        return (
+            <Text size="sm" className="text-neutral-strong">
+                The site&apos;s tenant holds {plural(inventory.components, "component")}, all used by
+                its {plural(inventory.publishedPages, "live page")}
+                {inventory.unpublishedPages > 0
+                    ? `, and ${plural(inventory.unpublishedPages, "unpublished page")} from earlier builds`
+                    : ""}
+                .
+            </Text>
+        );
+    }
+    return (
+        <Alert type="warning" variant="subtle">
+            The site&apos;s tenant holds {plural(inventory.unused.length, "component")} that no live
+            page uses: {inventory.unused.join(", ")}. Publishing does not remove them, and each still
+            ships with every page of the site.
+            {inventory.unpublishedPages > 0
+                ? ` It also holds ${plural(inventory.unpublishedPages, "unpublished page")} from earlier builds.`
+                : ""}
+        </Alert>
     );
 });
 

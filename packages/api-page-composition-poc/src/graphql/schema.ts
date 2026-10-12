@@ -17,6 +17,9 @@ import { SiteStore } from "~/storage/SiteStore.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 import { GetPageByPathUseCase } from "@webiny/api-website-builder/features/pages/GetPageByPath/abstractions.js";
+import { ListPagesUseCase } from "@webiny/api-website-builder/features/pages/ListPages/abstractions.js";
+import { ListRemoteComponentsUseCase } from "@webiny/remote-components/api/features/listComponents/abstractions.js";
+import { siteInventory } from "~/pages/siteInventory.js";
 import type { ComposedCapture, ComposedCapturePage } from "~/domain/types.js";
 import { pageCompositionTypeDefs } from "./typeDefs.js";
 import type { ComposePagesTaskInput } from "~/features/ComposePagesTask.js";
@@ -194,6 +197,74 @@ export const addPageCompositionSchema = (builder: IGraphQLSchemaBuilder): void =
                             live[path] = page.isOk() ? page.value.id : null;
                         }
                         return live;
+                    });
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.pageCompositionPocSiteInventory",
+        dependencies: [
+            ComponentExtractionPermissions,
+            SiteStore,
+            TenantContext,
+            GetTenantByIdUseCase,
+            ListPagesUseCase,
+            ListRemoteComponentsUseCase
+        ],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            sites: SiteStore.Interface,
+            tenantContext: TenantContext.Interface,
+            getTenantById: GetTenantByIdUseCase.Interface,
+            listPages: ListPagesUseCase.Interface,
+            listComponents: ListRemoteComponentsUseCase.Interface
+        ) {
+            return ({ args }: { args: { jobId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to read component extraction.");
+                    }
+                    // The tenant comes from the job's site record, never from the caller.
+                    const site = await sites.get(args.jobId);
+                    if (!site) {
+                        return null;
+                    }
+                    const tenant = await getTenantById.execute(site.tenantId);
+                    if (tenant.isFail()) {
+                        throw new Error(`The site's tenant "${site.tenantId}" cannot be read.`);
+                    }
+                    return tenantContext.withTenant(tenant.value, async () => {
+                        const pages: Array<{ status: string; elements: Record<string, unknown> }> =
+                            [];
+                        let after: string | null = null;
+                        do {
+                            const listed = await listPages.execute({
+                                where: { latest: true },
+                                sort: [],
+                                limit: 100,
+                                after
+                            });
+                            if (listed.isFail()) {
+                                throw new Error(
+                                    `The site's pages cannot be listed: ${listed.error.message}`
+                                );
+                            }
+                            pages.push(...listed.value.pages);
+                            after = listed.value.meta.hasMoreItems
+                                ? listed.value.meta.cursor
+                                : null;
+                        } while (after);
+                        const components = await listComponents.execute();
+                        if (components.isFail()) {
+                            throw new Error(
+                                `The site's components cannot be listed: ${components.error.message}`
+                            );
+                        }
+                        return siteInventory({
+                            pages,
+                            componentNames: components.value.items.map(item => item.name)
+                        });
                     });
                 });
         }
