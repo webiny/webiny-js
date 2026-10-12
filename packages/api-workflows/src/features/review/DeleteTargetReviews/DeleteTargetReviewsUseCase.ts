@@ -7,10 +7,12 @@ import { DeleteTargetReviewsUseCase as UseCase } from "./abstractions.js";
 
 const ASSIGNMENT_PAGE_SIZE = 100;
 
-class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
+export class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
     constructor(
         private reviewRepository: ReviewRepository.Interface,
-        private assignmentRepository: AssignmentRepository.Interface
+        private assignmentRepository: AssignmentRepository.Interface,
+        /** Not injected by the container; tests pass a small page to force several pages. */
+        private pageSize: number = ASSIGNMENT_PAGE_SIZE
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
@@ -50,7 +52,7 @@ class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
             const page: Awaited<ReturnType<AssignmentRepository.Interface["list"]>> =
                 await this.assignmentRepository.list({
                     where: { reviewId },
-                    limit: ASSIGNMENT_PAGE_SIZE,
+                    limit: this.pageSize,
                     after
                 });
             if (page.isFail()) {

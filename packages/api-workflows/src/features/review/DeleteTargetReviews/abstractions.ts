@@ -27,7 +27,12 @@ export interface IDeleteTargetReviewsUseCase {
 
 /**
  * Deletes the reviews of a permanently deleted target and their assignment-log records (spec 4.3,
- * 9.3, R56). Internal (D132): called by the app adapters' after-delete handlers.
+ * 9.3, R56). Internal (D132): called by the app adapters' after-delete handlers, after the target
+ * is already permanently deleted.
+ *
+ * Deletes every review it finds, in progress or not: it never cancels. Callers refuse the delete
+ * while a review is in progress (D134, R73), so only finished reviews normally remain; reviews
+ * left behind by a deleted workflow are removed too.
  */
 export const DeleteTargetReviewsUseCase = createAbstraction<IDeleteTargetReviewsUseCase>(
     "DeleteTargetReviewsUseCase"

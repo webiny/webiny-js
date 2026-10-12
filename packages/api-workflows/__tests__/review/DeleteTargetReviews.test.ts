@@ -10,6 +10,7 @@ import {
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import type { AssignmentRecordValues } from "~/domain/assignment/types.js";
+import { DeleteTargetReviewsUseCaseImpl } from "~/features/review/DeleteTargetReviews/DeleteTargetReviewsUseCase.js";
 import { DeleteTargetReviewsUseCase } from "~/features/review/DeleteTargetReviews/index.js";
 
 const record = (reviewId: string, assignedOn: string): AssignmentRecordValues => {
@@ -117,5 +118,15 @@ describe("DeleteTargetReviewsUseCase", () => {
 
         expect(again.isOk()).toBe(true);
         expect(missingRecord.isOk()).toBe(true);
+    });
+
+    it("deletes every assignment record when they span several pages", async () => {
+        const { reviews, assignments } = await createTargetData();
+        const paged = new DeleteTargetReviewsUseCaseImpl(reviews, assignments, 2);
+
+        expectOk(await paged.execute({ model: ARTICLE_MODEL, targetId: "article-1" }));
+
+        const records = expectOk(await assignments.list({ where: { reviewId: "review-1" } }));
+        expect(records.items).toEqual([]);
     });
 });
