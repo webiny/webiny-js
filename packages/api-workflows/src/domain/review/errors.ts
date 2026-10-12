@@ -195,7 +195,10 @@ export class ReviewWorkflowNotFoundError extends BaseError<ReviewWorkflowNotFoun
 
 export interface ReviewTargetNotFoundErrorData {
     model: string;
-    targetRevisionId: string;
+    /** The revision looked for; omitted when only the target (entry) id is known. */
+    targetRevisionId?: string;
+    /** The target (entry) id looked for, when no revision id is known. */
+    targetId?: string;
 }
 
 export class ReviewTargetNotFoundError extends BaseError<ReviewTargetNotFoundErrorData> {
@@ -203,7 +206,7 @@ export class ReviewTargetNotFoundError extends BaseError<ReviewTargetNotFoundErr
 
     constructor(data: ReviewTargetNotFoundErrorData) {
         super({
-            message: `Content "${data.targetRevisionId}" of the model "${data.model}" was not found.`,
+            message: `Content "${data.targetRevisionId ?? data.targetId}" of the model "${data.model}" was not found.`,
             data
         });
     }

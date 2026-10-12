@@ -17,6 +17,7 @@ import { TakeOverCmsEntryReviewStepUseCase } from "~/features/wrappers/TakeOverC
 import { ApproveCmsEntryReviewStepUseCase } from "~/features/wrappers/ApproveCmsEntryReviewStep/index.js";
 import { RejectCmsEntryReviewStepUseCase } from "~/features/wrappers/RejectCmsEntryReviewStep/index.js";
 import { CancelCmsEntryReviewUseCase } from "~/features/wrappers/CancelCmsEntryReview/index.js";
+import { CancelCmsEntryReviewsForDeleteUseCase } from "~/features/wrappers/CancelCmsEntryReviewsForDelete/index.js";
 
 describe("CmsWorkflowsFeature registration", () => {
     it("registers the core workflows feature only once", async () => {
@@ -45,7 +46,8 @@ describe("CmsWorkflowsFeature registration", () => {
             TakeOverCmsEntryReviewStepUseCase,
             ApproveCmsEntryReviewStepUseCase,
             RejectCmsEntryReviewStepUseCase,
-            CancelCmsEntryReviewUseCase
+            CancelCmsEntryReviewUseCase,
+            CancelCmsEntryReviewsForDeleteUseCase
         ];
         for (const abstraction of wrappers) {
             expect(container.resolveAll(abstraction)).toHaveLength(1);

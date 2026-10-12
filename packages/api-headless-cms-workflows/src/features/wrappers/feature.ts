@@ -11,6 +11,7 @@ import { TakeOverCmsEntryReviewStepFeature } from "./TakeOverCmsEntryReviewStep/
 import { ApproveCmsEntryReviewStepFeature } from "./ApproveCmsEntryReviewStep/feature.js";
 import { RejectCmsEntryReviewStepFeature } from "./RejectCmsEntryReviewStep/feature.js";
 import { CancelCmsEntryReviewFeature } from "./CancelCmsEntryReview/feature.js";
+import { CancelCmsEntryReviewsForDeleteFeature } from "./CancelCmsEntryReviewsForDelete/feature.js";
 
 /**
  * The Headless CMS wrapper use cases (D132, D133, R45): identity, `workflows` permission and target
@@ -35,5 +36,8 @@ export const CmsWrappersFeature = createFeature({
         ApproveCmsEntryReviewStepFeature.register(container);
         RejectCmsEntryReviewStepFeature.register(container);
         CancelCmsEntryReviewFeature.register(container);
+
+        // Confirm path for trash and delete with a review in progress (D134)
+        CancelCmsEntryReviewsForDeleteFeature.register(container);
     }
 });
