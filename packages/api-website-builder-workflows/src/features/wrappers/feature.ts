@@ -11,6 +11,7 @@ import { TakeOverWebsiteBuilderPageReviewStepFeature } from "./TakeOverWebsiteBu
 import { ApproveWebsiteBuilderPageReviewStepFeature } from "./ApproveWebsiteBuilderPageReviewStep/feature.js";
 import { RejectWebsiteBuilderPageReviewStepFeature } from "./RejectWebsiteBuilderPageReviewStep/feature.js";
 import { CancelWebsiteBuilderPageReviewFeature } from "./CancelWebsiteBuilderPageReview/feature.js";
+import { CancelWebsiteBuilderPageReviewsForDeleteFeature } from "./CancelWebsiteBuilderPageReviewsForDelete/feature.js";
 
 /**
  * The Website Builder wrapper use cases (D132, D133, R45): identity, `workflows` permission and page
@@ -35,5 +36,8 @@ export const WbWrappersFeature = createFeature({
         ApproveWebsiteBuilderPageReviewStepFeature.register(container);
         RejectWebsiteBuilderPageReviewStepFeature.register(container);
         CancelWebsiteBuilderPageReviewFeature.register(container);
+
+        // Confirm path for trash and delete with a review in progress (D134)
+        CancelWebsiteBuilderPageReviewsForDeleteFeature.register(container);
     }
 });
