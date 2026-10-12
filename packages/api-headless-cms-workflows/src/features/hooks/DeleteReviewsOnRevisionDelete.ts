@@ -6,7 +6,7 @@ import { getCmsNamespace } from "~/utils/appName.js";
 /**
  * Deletes the reviews of a deleted CMS revision with their assignment records (spec 9.3, R56).
  * Deleting the last revision deletes the entry, which `DeleteReviewsOnEntryDelete` handles.
- * Failures are logged (R81).
+ * Failures, failed results and throws alike, are logged, never thrown (R81).
  */
 class DeleteReviewsOnRevisionDeleteImpl implements EntryRevisionAfterDeleteEventHandler.Interface {
     public constructor(
@@ -21,17 +21,25 @@ class DeleteReviewsOnRevisionDeleteImpl implements EntryRevisionAfterDeleteEvent
             return;
         }
 
-        const deleted = await this.deleteTargetReviews.execute({
-            model: namespace,
-            targetId: entry.entryId,
-            targetRevisionId: entry.id
-        });
-        if (deleted.isFail()) {
-            this.logger.error(
-                { error: deleted.error, model: namespace, targetRevisionId: entry.id },
-                "Could not delete the reviews of a deleted revision; they are left orphaned."
-            );
+        try {
+            const deleted = await this.deleteTargetReviews.execute({
+                model: namespace,
+                targetId: entry.entryId,
+                targetRevisionId: entry.id
+            });
+            if (deleted.isFail()) {
+                this.logOrphaned(deleted.error, namespace, entry.id);
+            }
+        } catch (error) {
+            this.logOrphaned(error, namespace, entry.id);
         }
+    }
+
+    private logOrphaned(error: unknown, model: string, targetRevisionId: string): void {
+        this.logger.error(
+            { error, model, targetRevisionId },
+            "Could not delete the reviews of a deleted revision; they are left orphaned."
+        );
     }
 }
 

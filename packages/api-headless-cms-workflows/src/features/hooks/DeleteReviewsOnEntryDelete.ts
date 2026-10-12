@@ -5,7 +5,7 @@ import { getCmsNamespace } from "~/utils/appName.js";
 
 /**
  * Deletes every review of a permanently deleted CMS entry with its assignment records (spec 9.3,
- * R56). Trashing keeps them: the entry can be restored. A failure is logged, not thrown: the entry
+ * R56). Trashing keeps them: the entry can be restored. A failure (a failed result or a throw) is logged, not thrown: the entry
  * is already deleted, and a throw would make the use case report a failure and publish its error
  * event for a delete that happened (R81). The reviews then stay orphaned (A34).
  */
@@ -25,16 +25,24 @@ class DeleteReviewsOnEntryDeleteImpl implements EntryAfterDeleteEventHandler.Int
             return;
         }
 
-        const deleted = await this.deleteTargetReviews.execute({
-            model: namespace,
-            targetId: entry.entryId
-        });
-        if (deleted.isFail()) {
-            this.logger.error(
-                { error: deleted.error, model: namespace, targetId: entry.entryId },
-                "Could not delete the reviews of a deleted entry; they are left orphaned."
-            );
+        try {
+            const deleted = await this.deleteTargetReviews.execute({
+                model: namespace,
+                targetId: entry.entryId
+            });
+            if (deleted.isFail()) {
+                this.logOrphaned(deleted.error, namespace, entry.entryId);
+            }
+        } catch (error) {
+            this.logOrphaned(error, namespace, entry.entryId);
         }
+    }
+
+    private logOrphaned(error: unknown, model: string, targetId: string): void {
+        this.logger.error(
+            { error, model, targetId },
+            "Could not delete the reviews of a deleted entry; they are left orphaned."
+        );
     }
 }
 

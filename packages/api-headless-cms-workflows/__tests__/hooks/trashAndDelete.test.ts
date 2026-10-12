@@ -5,6 +5,7 @@ import type { CmsContext, CmsEntry } from "@webiny/api-headless-cms/types/index.
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { DeleteEntryRevisionUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/index.js";
 import { DeleteMultipleEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteMultipleEntries/index.js";
+import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
 import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
@@ -88,6 +89,14 @@ class FailingDeleteTargetReviews implements DeleteTargetReviewsUseCase.Interface
 
     public async execute(): DeleteTargetReviewsUseCase.Return {
         return Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
+    }
+}
+
+class ThrowingDeleteTargetReviews implements DeleteTargetReviewsUseCase.Interface {
+    public constructor(private decoratee: DeleteTargetReviewsUseCase.Interface) {}
+
+    public async execute(): DeleteTargetReviewsUseCase.Return {
+        throw new Error("Storage is down.");
     }
 }
 
@@ -535,5 +544,51 @@ describe("CMS review cleanup after a permanent delete (R56, R81)", () => {
             "Could not confirm that an entry is deleted; its reviews are left orphaned."
         ]);
         expect(expectOk(await getReview(context, review.id)).id).toBe(review.id);
+    });
+
+    it("keeps every delete when the review cleanup throws and logs it (R81)", async () => {
+        loggedErrors.length = 0;
+        const context = await createTestContext({
+            legacyPlugins: [
+                capturingLoggerPlugin,
+                (container: Container) => {
+                    container.registerDecorator(
+                        DeleteTargetReviewsUseCase.createDecorator({
+                            decorator: ThrowingDeleteTargetReviews,
+                            dependencies: []
+                        })
+                    );
+                }
+            ]
+        });
+        const model = await getAuthorModel(context);
+        const single = await createAuthorEntry(context, { name: "Single" });
+        const revised = await createAuthorEntry(context, { name: "Revised" });
+        const revision = await createSecondRevision(context, revised);
+        // OpenSearch deleteMultiple needs a published record; created as published (R83).
+        const bulk = expectOk(
+            await context.container.resolve(CreateEntryUseCase).execute(model, {
+                values: { name: "Bulk" },
+                status: "published",
+                location: { folderId: "root" }
+            })
+        );
+
+        const deleted = await deletePermanently(context, single);
+        const revisionDeleted = await context.container
+            .resolve(DeleteEntryRevisionUseCase)
+            .execute(model, revision.id);
+        const bulkDeleted = await context.container
+            .resolve(DeleteMultipleEntriesUseCase)
+            .execute(model, { entries: [bulk.id] });
+
+        expect(deleted.isOk()).toBe(true);
+        expect(revisionDeleted.isOk()).toBe(true);
+        expect(bulkDeleted.isOk()).toBe(true);
+        expect(loggedErrors).toEqual([
+            "Could not delete the reviews of a deleted entry; they are left orphaned.",
+            "Could not delete the reviews of a deleted revision; they are left orphaned.",
+            "Could not delete the reviews of a deleted entry; they are left orphaned."
+        ]);
     });
 });
