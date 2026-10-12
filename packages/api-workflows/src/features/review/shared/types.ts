@@ -25,4 +25,9 @@ export interface CancelReviewInput {
      * `canCancelByPermission` (D132, D133).
      */
     actor: Actor;
+    /**
+     * Why the review is cancelled, recorded on the cancelled event; set when content is trashed or
+     * deleted with the review in progress (D134), omitted otherwise.
+     */
+    reason?: string | null;
 }

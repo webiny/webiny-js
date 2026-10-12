@@ -17,7 +17,11 @@ class CancelReviewUseCaseImpl implements UseCase.Interface {
         }
         const review = Review.fromData(loaded.value);
 
-        const cancelled = review.cancel({ actor: input.actor, now: new Date().toISOString() });
+        const cancelled = review.cancel({
+            actor: input.actor,
+            now: new Date().toISOString(),
+            reason: input.reason
+        });
         if (cancelled.isFail()) {
             return Result.fail(cancelled.error);
         }

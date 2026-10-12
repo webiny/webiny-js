@@ -65,6 +65,8 @@ export interface ReviewCancelledFact {
     /** The step that was current when the review was cancelled. */
     stepId: string | null;
     stepState: StepState | null;
+    /** Why the review was cancelled, e.g. "content trashed" (D134); `null` for a normal cancel. */
+    reason: string | null;
 }
 
 export interface ReviewApprovedFact {

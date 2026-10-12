@@ -75,6 +75,8 @@ export interface ReviewDecisionParams extends ReviewActorParams {
 export interface ReviewCancelParams {
     actor: Actor;
     now: string;
+    /** Recorded on the cancelled fact (D134); omitted for a normal cancel. */
+    reason?: string | null;
 }
 
 /** A human-held `inReview` step and its owner, as the take-over guard found them. */
@@ -412,7 +414,8 @@ export class Review {
             occurredOn: params.now,
             actor: { ...params.actor },
             stepId: step?.id ?? null,
-            stepState: step?.state ?? null
+            stepState: step?.state ?? null,
+            reason: params.reason ?? null
         });
         return Result.ok();
     }

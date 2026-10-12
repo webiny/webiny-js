@@ -265,7 +265,25 @@ describe("Review.cancel", () => {
                 occurredOn: LATER,
                 actor: requester,
                 stepId: "legal",
-                stepState: "inReview"
+                stepState: "inReview",
+                reason: null
+            }
+        ]);
+    });
+
+    it("records the cancel reason on the fact", () => {
+        const review = createStartedReview();
+
+        expectOk(review.cancel({ actor: requester, now: LATER, reason: "content trashed" }));
+
+        expect(review.pullFacts()).toEqual([
+            {
+                type: "cancelled",
+                occurredOn: LATER,
+                actor: requester,
+                stepId: "legal",
+                stepState: "inReview",
+                reason: "content trashed"
             }
         ]);
     });
