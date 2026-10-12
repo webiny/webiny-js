@@ -35,7 +35,7 @@ Each real-looking key has a Where / URLs / Verified / Action comment in `.gitlea
 | L21 | generic-api-key | 6 | `pagesFilesData.json/.js` | no | File keys (`*.jpeg`). Old fixtures. |
 | L22 | generic-api-key | 1 | `nextjs/__mocks__/stories/userMock.ts` (2025) | no | Kibo refresh token, expired 2022. See "Kibo" below. |
 | L23 | generic-api-key | 2 | `api-security/__tests__/*.test.js` | no | Test PAT. |
-| L25 | generic-api-key | 4 | `packages/app-website-builder/planning/*.js` | yes | Placeholder (SpaceX API v5 needs no key). Replaced with `your-api-key`. History allowlisted by commit. |
+| L25 | generic-api-key | 4 | `packages/app-website-builder/planning/*.js` | yes | Example value. SpaceX API v5 needs no key, and the API fails anyway. Files are not imported. Kept as is, allowlisted by value. |
 | L26 | generic-api-key | 1 | `project-utils/__tests__/.../telemetryFunction.test.ts` | no | Test constant. |
 | L27 | generic-api-key | 1 | `packages/pulumi-aws/src/apps/api/ApiCloudfront.ts` | no | Resource name, not a secret. |
 | L28 | generic-api-key | 6 | `extensions/MyApiKey.ts`, SDK skill docs, tests | yes | Placeholder `wat_12345678`. Allowlisted by value. |

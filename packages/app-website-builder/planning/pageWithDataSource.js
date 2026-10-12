@@ -11,10 +11,10 @@ const pageWithDataSource = {
                 method: "GET",
                 queryParams: {
                     limit: 1,
-                    apiKey: "your-api-key"
+                    apiKey: "f1a790f8c3204b3b8c5c1795aeac4660"
                 },
                 headers: {
-                    Authorization: "Bearer your-api-key"
+                    Authorization: "Bearer f1a790f8c3204b3b8c5c1795aeac4660"
                 }
             }
         },
@@ -39,7 +39,7 @@ const pageWithDataSource = {
                     limit: 1
                 },
                 headers: {
-                    Authorization: "Bearer your-api-key"
+                    Authorization: "Bearer f1a790f8c3204b3b8c5c1795aeac4660"
                 }
             }
         }
