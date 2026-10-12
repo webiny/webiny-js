@@ -237,3 +237,51 @@ On a job that is neither 71 Westland nor Take 3:
 - opened on a run other than the one the site was built from, the view names the build's run;
 - the Promote gate shows the pointer and no card;
 - the stage 9 labels read "Approve components".
+
+## MS1 deployed check (2026-10-12, 07:51–07:59 UTC)
+
+API and admin deployed at 07:51 after checking `dist`. Checked on the webiny.com validation job (site
+tenant `validationwebinycom0001`). Neither 71 Westland nor Take 3 was touched. Predictions:
+`scratchpad/ms1/PREDICTIONS.md`.
+
+### The main question: the site tenant's pages, not the extraction tenant's
+
+- **Page list:** the Site view lists the site tenant's 3 pages. The ids come from the site's page map,
+  and none is root's id for the same path.
+- **Liveness:** `pageCompositionPocSiteLivePages` answers each path with the site's page id. An
+  independent read with the site tenant's `x-tenant` header (API key, not the admin) agrees. Root answers
+  every path with its own, different page.
+- **Links:** "View page" and "View site" open `…/<path>?wb.tenant=validationwebinycom0001`. Recorded from
+  the running admin by capturing `window.open`.
+- **Served pages:** fetched from the website, each path with the tenant parameter contains the site's
+  page id and not root's. Without it, each contains root's id and not the site's. Told apart by page id,
+  not content.
+
+### As predicted
+
+- **Publish again from the Site view:** tenant reused, theme already in the tenant, 6 components, 0
+  images, "3 page(s) published." Nothing kept, nothing dropped. Compose version 1 → 2, with new page ids
+  at all 3 paths. Root's page map and root's live pages unchanged.
+- **Opened on run-0002:** the view reads "Built from run-0001, published …. You are looking at run-0002:
+  the pages below are run-0001's, and publishing from this run replaces them", with "Open run-0001".
+- **Promote gate:** labelled "9 · Approve components", with "Approve selected" and "Approved" tags. The
+  pointer "Components approved. Next: the site…" and "Go to Site" replace the card. The rail has "Site"
+  after the stages.
+
+### Not predicted
+
+1. **Root's served pages are about 30 times larger than the site's:** 6.1 MB against 0.2 MB per page.
+   Root's page carries 323 component bundles (every job's components in root's Library); the site's
+   carries 6. Whatever loads the components sends the tenant's whole Library with every page. Not made
+   by MS1. It means a per-tenant site is about 30 times lighter, and every page served from root, demo
+   pages included, carries every job's components.
+2. **"Publish again" is enabled on a run that cannot publish.** On run-0002 (paused at Cluster), the
+   mutation refuses before writing anything, with "Building the site requires promote to be done." So
+   the button's only effect is an error, and the error still says "promote" and "Building". Read from
+   the code; the button was not pressed.
+3. **The Site entry shows "not built" for a few seconds** on opening a run whose site exists, until the
+   site record loads. A newcomer can see that first.
+4. **A read about 50 seconds after the publish served the previous build's pages.** At about 100
+   seconds, every path served the new ones. The responses are `no-store`, so the staleness is further
+   upstream. Same as the earlier stale-read note: do not read a page straight after a build.
+5. **Seen, not MS1:** the Approve components rows show "pages" with no number in front of it.
