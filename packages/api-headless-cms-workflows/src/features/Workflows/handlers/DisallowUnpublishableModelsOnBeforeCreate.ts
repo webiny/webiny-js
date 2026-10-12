@@ -1,14 +1,59 @@
 import { WorkflowBeforeCreateEventHandler } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { assertModelsBindable } from "../assertModelsBindable.js";
+import { WorkflowValidationError } from "@webiny/api-workflows/domain/workflow/errors.js";
+import { getModelIdFromAppName } from "~/utils/appName.js";
 
+const MODEL_NOT_FOUND = "Cms/Model/NotFound";
+const MODEL_NOT_AUTHORIZED = "Cms/Model/NotAuthorized";
+
+/**
+ * Spec 4.1, D41: a workflow can only bind an existing, public, publishable CMS model. Throws
+ * `WorkflowValidationError`, which `StoreWorkflowUseCase` returns as a failed result. Non-CMS
+ * namespaces (`wb.page`) are skipped; the namespace format itself is checked by
+ * `WorkflowValidator` before any event is published. Other model read errors propagate.
+ *
+ * Binding requires read access to the model (R38): a model the caller cannot access fails
+ * validation instead of throwing `Cms/Model/NotAuthorized` out of `StoreWorkflowUseCase`. The CMS
+ * hides code-defined models the caller cannot access, so those report as not found. The read stays
+ * access-controlled on purpose: `GetModelRepository` or an elevated identity would fill the CMS
+ * tenant-keyed model cache with a list other callers must not see.
+ */
 class DisallowUnpublishableModelsOnBeforeCreateImpl
     implements WorkflowBeforeCreateEventHandler.Interface
 {
     public constructor(private getModel: GetModelUseCase.Interface) {}
 
     public async handle(event: WorkflowBeforeCreateEventHandler.Event): Promise<void> {
-        await assertModelsBindable(this.getModel, event.payload.workflow.models);
+        for (const namespaceId of event.payload.workflow.models) {
+            const modelId = getModelIdFromAppName(namespaceId);
+            if (!modelId) {
+                continue;
+            }
+            const model = await this.getModel.execute(modelId);
+            if (model.isFail()) {
+                if (model.error.code === MODEL_NOT_FOUND) {
+                    throw new WorkflowValidationError(`The model "${modelId}" does not exist.`);
+                }
+                if (model.error.code === MODEL_NOT_AUTHORIZED) {
+                    throw new WorkflowValidationError(
+                        `You don't have access to the model "${modelId}".`
+                    );
+                }
+                throw model.error;
+            }
+            if (model.value.isPrivate) {
+                throw new WorkflowValidationError(
+                    `Cannot bind a workflow to the model "${modelId}" because it is a private model.`
+                );
+            }
+            const tags = model.value.tags || [];
+            if (!tags.includes("$publishing:false")) {
+                continue;
+            }
+            throw new WorkflowValidationError(
+                `Cannot bind a workflow to the model "${modelId}" because it is marked as unpublishable.`
+            );
+        }
     }
 }
 

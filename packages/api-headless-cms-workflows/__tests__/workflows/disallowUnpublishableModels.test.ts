@@ -1,7 +1,8 @@
 import { Result } from "@webiny/feature/api";
 import type { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { ModelNotAuthorizedError } from "@webiny/api-headless-cms/domain/contentModel/errors.js";
-import { assertModelsBindable } from "~/features/Workflows/assertModelsBindable.js";
+import type { WorkflowBeforeCreateEventHandler } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
+import { DisallowUnpublishableModelsOnBeforeCreate } from "~/features/Workflows/handlers/DisallowUnpublishableModelsOnBeforeCreate.js";
 import { describe, expect, it } from "vitest";
 import { createContextHandler } from "~tests/__handler/context.js";
 import { model as modelDefinition } from "~tests/__cms/models.js";
@@ -101,7 +102,12 @@ describe("Disallow unpublishable models", () => {
             execute: async () => Result.fail(new ModelNotAuthorizedError())
         } as unknown as GetModelUseCase.Interface;
 
-        await expect(assertModelsBindable(getModel, ["cms.author"])).rejects.toMatchObject({
+        const handler = new DisallowUnpublishableModelsOnBeforeCreate(getModel);
+        const event = {
+            payload: { workflow: { models: ["cms.author"] } }
+        } as unknown as WorkflowBeforeCreateEventHandler.Event;
+
+        await expect(handler.handle(event)).rejects.toMatchObject({
             code: "Workflows/Workflow/Validation",
             message: `You don't have access to the model "author".`
         });

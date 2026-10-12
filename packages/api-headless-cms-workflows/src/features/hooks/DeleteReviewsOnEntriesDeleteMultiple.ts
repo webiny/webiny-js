@@ -3,7 +3,6 @@ import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "@webiny/api-h
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { getCmsNamespace } from "~/utils/appName.js";
 
 const ENTRY_NOT_FOUND = "Cms/Entry/NotFound";
@@ -34,44 +33,36 @@ class DeleteReviewsOnEntriesDeleteMultipleImpl
 
         for (const entry of entries) {
             try {
-                await this.deleteReviewsOfDeletedEntry(model, namespace, entry.entryId);
+                const latest = await this.identityContext.withoutAuthorization(() => {
+                    return this.getLatestRevision.execute(model, { id: entry.entryId });
+                });
+                if (latest.isOk()) {
+                    continue;
+                }
+                if (latest.error.code !== ENTRY_NOT_FOUND) {
+                    this.logger.error(
+                        { error: latest.error, model: namespace, targetId: entry.entryId },
+                        "Could not confirm that an entry is deleted; its reviews are left orphaned."
+                    );
+                    continue;
+                }
+
+                const deleted = await this.deleteTargetReviews.execute({
+                    model: namespace,
+                    targetId: entry.entryId
+                });
+                if (deleted.isFail()) {
+                    this.logger.error(
+                        { error: deleted.error, model: namespace, targetId: entry.entryId },
+                        "Could not delete the reviews of a deleted entry; they are left orphaned."
+                    );
+                }
             } catch (error) {
                 this.logger.error(
                     { error, model: namespace, targetId: entry.entryId },
                     "Could not delete the reviews of a deleted entry; they are left orphaned."
                 );
             }
-        }
-    }
-
-    private async deleteReviewsOfDeletedEntry(
-        model: CmsModel,
-        namespace: string,
-        entryId: string
-    ): Promise<void> {
-        const latest = await this.identityContext.withoutAuthorization(() => {
-            return this.getLatestRevision.execute(model, { id: entryId });
-        });
-        if (latest.isOk()) {
-            return;
-        }
-        if (latest.error.code !== ENTRY_NOT_FOUND) {
-            this.logger.error(
-                { error: latest.error, model: namespace, targetId: entryId },
-                "Could not confirm that an entry is deleted; its reviews are left orphaned."
-            );
-            return;
-        }
-
-        const deleted = await this.deleteTargetReviews.execute({
-            model: namespace,
-            targetId: entryId
-        });
-        if (deleted.isFail()) {
-            this.logger.error(
-                { error: deleted.error, model: namespace, targetId: entryId },
-                "Could not delete the reviews of a deleted entry; they are left orphaned."
-            );
         }
     }
 }

@@ -27,7 +27,22 @@ class DeleteModelTaskBoundToWorkflowDecoratorImpl implements TaskHandler.Interfa
         return async params => {
             if (params.definition.id === DELETE_MODEL_TASK) {
                 const input: Partial<IDeleteModelTaskInput> = params.input;
-                await this.assertNotBound(String(input.modelId));
+                const modelId = String(input.modelId);
+                const workflows = await this.listWorkflows.execute({
+                    where: { models_in: [toCmsNamespace(modelId)] },
+                    limit: BOUND_WORKFLOWS_LIMIT
+                });
+                if (workflows.isFail()) {
+                    throw workflows.error;
+                }
+                if (workflows.value.items.length > 0) {
+                    throw new ModelBoundToWorkflowError({
+                        modelId,
+                        workflows: workflows.value.items.map(workflow => {
+                            return { id: workflow.id, name: workflow.name };
+                        })
+                    });
+                }
             }
             return this.decoratee.run(params);
         };
@@ -55,24 +70,6 @@ class DeleteModelTaskBoundToWorkflowDecoratorImpl implements TaskHandler.Interfa
 
     public get createInputValidation(): TaskHandler.Interface["createInputValidation"] {
         return this.decoratee.createInputValidation?.bind(this.decoratee);
-    }
-
-    private async assertNotBound(modelId: string): Promise<void> {
-        const workflows = await this.listWorkflows.execute({
-            where: { models_in: [toCmsNamespace(modelId)] },
-            limit: BOUND_WORKFLOWS_LIMIT
-        });
-        if (workflows.isFail()) {
-            throw workflows.error;
-        }
-        if (workflows.value.items.length > 0) {
-            throw new ModelBoundToWorkflowError({
-                modelId,
-                workflows: workflows.value.items.map(workflow => {
-                    return { id: workflow.id, name: workflow.name };
-                })
-            });
-        }
     }
 }
 
