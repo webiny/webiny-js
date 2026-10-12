@@ -169,7 +169,7 @@ describe("AssignmentRepository", () => {
                                 cmsListCalls++;
                                 return this.decoratee.execute(...args);
                             }
-                        } as never,
+                        },
                         dependencies: []
                     })
                 );

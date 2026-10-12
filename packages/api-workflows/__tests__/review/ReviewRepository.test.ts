@@ -25,7 +25,10 @@ const createRepository = async () => {
 
 type ListArgs = Parameters<ListLatestEntriesUseCase.Interface["execute"]>;
 type ListResult = Awaited<ReturnType<ListLatestEntriesUseCase.Interface["execute"]>>;
-type ListOverride = (args: ListArgs, decoratee: ListLatestEntriesUseCase.Interface) => ListResult;
+type ListOverride = (
+    args: ListArgs,
+    decoratee: ListLatestEntriesUseCase.Interface
+) => Promise<ListResult>;
 
 /** Repository whose CMS list call can be replaced per test, to simulate OpenSearch lag (R18). */
 const createStubbedRepository = async () => {
@@ -42,7 +45,7 @@ const createStubbedRepository = async () => {
                             }
                             return this.decoratee.execute(...args);
                         }
-                    } as never,
+                    },
                     dependencies: []
                 })
             );
