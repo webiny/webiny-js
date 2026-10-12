@@ -63,8 +63,10 @@ deploy build:
 - The domain is set in **Configure Frontend** (frontend-settings). Website Builder's own
   `UpdateSettingsGateway` is registered but no screen calls it. It was corrected to send
   `frontend.updateSettings`, but it was never the way the domain is set.
-- **A page read straight after a site build can be the previous build.** On 2026-10-10 a read
-  immediately after rebuilding Take 3's site still showed markup the rebuild had removed; the same
-  request 90 seconds later did not. The responses carry `no-store`, so the stale copy is the website's own
-  short-lived cache of API responses. A check that passes or fails on timing is one you would otherwise
-  believe: read again after a pause, and compare two reads, before believing either.
+- **A page read after a site build can be the previous build, for minutes.** On 2026-10-10 a read
+  straight after rebuilding Take 3's site still showed markup the rebuild had removed, and a read 90
+  seconds later did not. On 2026-10-12 the validation site served the previous build for about 2–3
+  minutes: at 110 seconds it was still the old page. The responses carry `no-store`, so the stale copy is
+  the website's own short-lived cache of API responses (component lists revalidate every 60 seconds).
+  **No fixed wait is safe. Read twice, at least a minute apart, and compare.** Believe a result only when
+  both reads show the new build (its page ids or component names), and keep reading until they agree.
