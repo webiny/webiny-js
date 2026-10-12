@@ -795,6 +795,16 @@ export interface TokenBinding {
     token: string;
 }
 
+/** A heading element in a section, as the source page marks it up. See `sectionHeadings`. */
+export interface SectionHeading {
+    /** 1–6, from the element's tag. */
+    level: number;
+    /** The heading's own text. */
+    text: string;
+    /** Text of elements inside the heading (an eyebrow span), in tree order. */
+    inner: string[];
+}
+
 /** The spacing a section measured, by kind. See `sectionSpacing`. */
 export type SpacingKind = "gap" | "container" | "section" | "control-y" | "control-x";
 
@@ -863,6 +873,12 @@ export interface PlannedComponent {
      * built, from the representative's captured tree. See `backgroundRegions.ts`.
      */
     backgroundRegions?: BackgroundRegion[];
+    /**
+     * The section's headings as the source marks them up (`h1`–`h6`), computed where the prompt is
+     * built, from the representative's captured tree, so every stored plan gets them. See
+     * `sectionHeadings.ts`.
+     */
+    headings?: SectionHeading[];
     /**
      * The alignments the reference section's text uses, most text first.
      *

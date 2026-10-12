@@ -265,6 +265,30 @@ const typeScaleLines = (component: PlannedComponent): string[] => {
 };
 
 /**
+ * The section's headings as the source marks them up: the level each `h1`–`h6` declares and its
+ * text, in page order. Data only, with no instruction attached. A section the source marks up with
+ * no heading gets no lines. Text inside a heading's child elements is listed apart from its own text,
+ * because the captured tree does not record which comes first.
+ */
+const headingLines = (component: PlannedComponent): string[] => {
+    const headings = component.headings ?? [];
+    if (headings.length === 0) {
+        return [];
+    }
+    return [
+        "",
+        "The section's headings, as the source page marks them up, in page order:",
+        ...headings.map(heading => {
+            const inner = heading.inner.map(text => `"${text}"`).join(", ");
+            if (!heading.text) {
+                return `- h${heading.level} ${inner}`;
+            }
+            return `- h${heading.level} "${heading.text}"${inner ? `, with ${inner} inside it` : ""}`;
+        })
+    ];
+};
+
+/**
  * The alignments the section's text uses.
  *
  * Measured across the four demo sites: 9 of 26 comparable sections centre text their source does not
@@ -504,7 +528,7 @@ export const imageFactLines = (component: PlannedComponent): string[] => {
         "The pictures in this section, largest first — the part each plays and the size it is drawn at:",
         ...images.map(
             image =>
-                `- ${image.url} — ${role[image.role]}, ${image.width}x${image.height}px (${Math.round(image.coverage * 100)}% of the section)${tone(image)}`
+                `- ${image.url}${image.alt ? ` (alt: "${image.alt}")` : ""} — ${role[image.role]}, ${image.width}x${image.height}px (${Math.round(image.coverage * 100)}% of the section)${tone(image)}`
         )
     ];
 };
@@ -782,7 +806,7 @@ const buildPrompt = (
                             ? `${name}: "${field}"`
                             : "label" in field
                               ? `${name}: "${field.label}" -> ${field.href || "(no destination)"}`
-                              : `${name}: ${field.src}`
+                              : `${name}: ${field.src}${field.alt ? ` (alt: "${field.alt}")` : ""}`
                     )
                     .join(", ");
                 lines.push(`${indent}${prop.name}[]: { ${fields} }`);
@@ -833,6 +857,7 @@ const buildPrompt = (
         ...unboundImageLines(component),
         ...iconLines(component),
         ...typeScaleLines(component),
+        ...headingLines(component),
         ...alignmentLines(component),
         ...layoutLines(component),
         ...spacingLines(component),

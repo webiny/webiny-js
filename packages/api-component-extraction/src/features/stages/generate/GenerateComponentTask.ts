@@ -23,6 +23,7 @@ import { hasRecordedResult, recordResultOnce } from "./recordResultOnce.js";
 import { replaceGeneratedComponent } from "./replaceGeneratedComponent.js";
 import { ancestorsOf, loadRepresentativeNode } from "./representativeNode.js";
 import { sectionBackgroundRegions } from "./backgroundRegions.js";
+import { sectionHeadings } from "./sectionHeadings.js";
 import { systemPromptOverride, type SystemPromptOverride } from "./themeVocabulary.js";
 import { sectionSpacing } from "~/features/stages/plan/sectionSpacing.js";
 import { appendGenerationLog, readGenerationPrompt } from "./generationLog.js";
@@ -175,6 +176,8 @@ class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<Generate
             promptPlanned = {
                 ...promptPlanned,
                 spacing: sectionSpacing(sectionNode, manifest.isOk() ? manifest.value : null),
+                // The source's heading levels, from its markup (sectionHeadings.ts).
+                headings: sectionHeadings(sectionNode),
                 // A background that is more than one thing, as regions (backgroundRegions.ts).
                 backgroundRegions:
                     sectionBackgroundRegions({
