@@ -103,9 +103,9 @@ const Section = ({
     aside?: React.ReactNode;
     children: React.ReactNode;
 }) => (
-    <div className="flex flex-col gap-xs border-t border-neutral-dimmed pt-sm">
+    <div className="flex flex-col gap-sm border-t border-neutral-dimmed px-md py-sm-extra">
         <div className="flex items-baseline justify-between gap-xs">
-            <Text size="sm" className="font-semibold uppercase text-neutral-muted">
+            <Text size="sm" className="font-semibold uppercase tracking-wider text-neutral-muted">
                 {label}
             </Text>
             {aside}
@@ -293,22 +293,34 @@ export const ThemeCard = createReactiveComponent(({ presenter }: Props) => {
     );
 
     return (
-        <div className="mt-md flex flex-col gap-sm rounded-md border border-neutral-dimmed p-sm">
-            <div className="flex items-center justify-between gap-xs">
-                <Text className="font-medium">Theme</Text>
-                {extraction?.status === "done" && extraction.themeVersion ? (
-                    <Tag variant="neutral-light" content={`v${extraction.themeVersion}`} />
+        <div className="mt-md flex flex-col overflow-hidden rounded-lg border border-neutral-dimmed bg-neutral-base shadow-sm">
+            <div className="flex flex-col gap-xs px-md py-sm-extra">
+                <div className="flex items-center justify-between gap-xs">
+                    <Text size="lg" className="font-semibold text-neutral-primary">
+                        Theme
+                    </Text>
+                    {extraction?.status === "done" && extraction.themeVersion ? (
+                        <Tag variant="neutral-light" content={`v${extraction.themeVersion}`} />
+                    ) : null}
+                </div>
+                {extraction?.status === "done" ? (
+                    <div className="flex items-center gap-xs">
+                        <StatusDot status="complete" />
+                        <Text size="sm" className="text-neutral-strong">
+                            Extracted from the site
+                        </Text>
+                    </div>
                 ) : null}
             </div>
 
             {!extraction ? (
-                <Text size="sm" className="text-neutral-strong">
+                <Text size="sm" className="px-md pb-sm-extra text-neutral-strong">
                     {job.themeEntryId
                         ? `Pinned when the job was created (v${job.themeVersion}).`
                         : "No theme yet."}
                 </Text>
             ) : extraction.status === "running" || extraction.status === "waiting" ? (
-                <div className="flex flex-col gap-xs">
+                <div className="flex flex-col gap-xs px-md pb-sm-extra">
                     <div className="flex items-center gap-xs">
                         <Loader size="sm" />
                         <Text size="sm">Extracting from the site</Text>
@@ -322,7 +334,7 @@ export const ThemeCard = createReactiveComponent(({ presenter }: Props) => {
                     </Text>
                 </div>
             ) : extraction.status === "failed" ? (
-                <div className="flex flex-col gap-sm">
+                <div className="flex flex-col gap-sm px-md pb-sm-extra">
                     <Alert type="danger">
                         The theme could not be extracted: {extraction.error ?? "no reason recorded"}
                     </Alert>
@@ -338,18 +350,11 @@ export const ThemeCard = createReactiveComponent(({ presenter }: Props) => {
                     {picker}
                 </div>
             ) : (
-                <div className="flex flex-col gap-sm">
-                    <div className="flex items-center gap-xs">
-                        <StatusDot status="complete" />
-                        <Text size="sm" className="text-neutral-strong">
-                            Extracted from the site
-                        </Text>
-                    </div>
-
+                <div className="flex flex-col">
                     <Snapshot snapshot={vm.themeSnapshot} />
                     {vm.themeFit ? <FitLine fit={vm.themeFit} /> : null}
 
-                    <div className="flex flex-col gap-xs border-t border-neutral-dimmed pt-sm">
+                    <div className="flex flex-col gap-sm border-t border-neutral-dimmed px-md py-sm-extra">
                         {extraction.pagesSampled < THIN_PAGES || extraction.confidence === "low" ? (
                             <Alert type="warning">
                                 Thin evidence:{" "}

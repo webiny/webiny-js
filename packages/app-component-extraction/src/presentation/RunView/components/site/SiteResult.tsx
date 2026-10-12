@@ -1,17 +1,6 @@
 import React, { useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import {
-    BetaBadge,
-    Button,
-    Card,
-    cn,
-    Heading,
-    Icon,
-    Table,
-    Tag,
-    Text,
-    Tooltip
-} from "@webiny/admin-ui";
+import { BetaBadge, Button, cn, Heading, Icon, Table, Tag, Text, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as UpdateIcon } from "@webiny/icons/update.svg";
 import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
 import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
@@ -59,6 +48,34 @@ const Why = ({ note }: { note: string }) => (
             </span>
         }
     />
+);
+
+/**
+ * A card with the design's own padding. The design system's Card pads its body to 32px and always
+ * renders a footer, so a card whose header and rows set their own spacing cannot use it; this keeps
+ * its surface (radius, border, shadow) from the same tokens.
+ */
+const Panel = ({ className, children }: { className?: string; children: React.ReactNode }) => (
+    <div
+        className={cn(
+            "overflow-hidden rounded-lg border border-neutral-dimmed bg-neutral-base shadow-sm",
+            className
+        )}
+    >
+        {children}
+    </div>
+);
+
+/** A panel's title row: the design's 14px by 16px, a title and what sits beside it. */
+const PanelHeader = ({ children, bordered }: { children: React.ReactNode; bordered?: boolean }) => (
+    <div
+        className={cn(
+            "flex flex-wrap items-center justify-between gap-sm px-md py-sm-extra",
+            bordered && "border-b border-neutral-dimmed"
+        )}
+    >
+        {children}
+    </div>
 );
 
 /** The not-yet state wherever it is shown: the same icon and words as on the quality cards. */
@@ -150,17 +167,17 @@ export const SiteOverview = createReactiveComponent(function SiteOverview({
     ];
 
     return (
-        <Card padding="lg" elevation="small">
-            <div className="flex flex-col gap-md">
-                <div className="flex flex-wrap items-start justify-between gap-md">
-                    <div className="flex min-w-0 flex-col gap-xs">
+        <Panel className="px-lg pb-md-plus pt-lg">
+            <div className="flex flex-col gap-md-plus">
+                <div className="flex flex-wrap items-start justify-between gap-lg">
+                    <div className="flex min-w-0 flex-col">
                         <span>
                             <Tag variant="success-light" content="Published" />
                         </span>
-                        <Heading level={3}>
+                        <Heading level={3} className="mb-xs mt-sm-plus">
                             {plural(pages, "page")}, live in their own tenant
                         </Heading>
-                        <Text size="sm" className="text-neutral-strong">
+                        <Text size="md" className="text-neutral-strong">
                             {subline}
                         </Text>
                     </div>
@@ -190,20 +207,25 @@ export const SiteOverview = createReactiveComponent(function SiteOverview({
                         />
                     </div>
                 </div>
-                <div className="grid grid-cols-2 rounded-md border border-neutral-dimmed lg:grid-cols-4">
+                <div className="grid grid-cols-2 rounded-lg border border-neutral-dimmed lg:grid-cols-4">
                     {stats.map((stat, index) => (
                         <div
                             key={stat.label}
                             className={cn(
-                                "flex min-w-0 flex-col gap-xxs px-md py-sm",
+                                "flex min-w-0 flex-col px-md py-sm-extra",
                                 index < stats.length - 1 && "lg:border-r lg:border-neutral-dimmed"
                             )}
                             title={stat.title}
                         >
-                            <Text size="sm" className="font-semibold uppercase text-neutral-muted">
+                            <Text
+                                size="sm"
+                                className="font-semibold uppercase tracking-wide text-neutral-muted"
+                            >
                                 {stat.label}
                             </Text>
-                            <Heading level={5}>{stat.value}</Heading>
+                            <Heading level={4} className="mt-xxs">
+                                {stat.value}
+                            </Heading>
                             <Text size="sm" className="truncate text-neutral-strong">
                                 {stat.sub}
                             </Text>
@@ -211,15 +233,17 @@ export const SiteOverview = createReactiveComponent(function SiteOverview({
                     ))}
                 </div>
             </div>
-        </Card>
+        </Panel>
     );
 });
 
 const QualityCard = ({ item }: { item: QualityItem }) => (
     <div
         className={cn(
-            "flex min-w-0 flex-col gap-xxs rounded-md border border-neutral-dimmed px-sm py-sm",
-            item.done ? "bg-neutral-base" : "bg-neutral-subtle"
+            "flex min-w-0 flex-col gap-xs rounded-lg border px-sm-extra py-sm-extra",
+            item.done
+                ? "border-neutral-dimmed bg-neutral-base"
+                : "border-dashed border-neutral-muted bg-neutral-subtle"
         )}
     >
         <div className="flex items-center gap-xs">
@@ -228,7 +252,7 @@ const QualityCard = ({ item }: { item: QualityItem }) => (
             ) : (
                 <Icon icon={<UpdateIcon />} label="Not yet" size="sm" color="neutral-light" />
             )}
-            <Text size="sm" className="font-semibold">
+            <Text size="md" className="font-semibold text-neutral-primary">
                 {item.label}
             </Text>
             {item.note ? <Why note={item.note} /> : null}
@@ -281,10 +305,10 @@ const QualityRow = ({
     beta?: boolean;
     items: QualityItem[];
 }) => (
-    <div className="grid grid-cols-1 gap-sm border-t border-neutral-dimmed px-md py-sm lg:grid-cols-[180px_repeat(3,minmax(0,1fr))]">
-        <div className="flex flex-col gap-xxs">
+    <div className="grid grid-cols-1 gap-sm-extra border-b border-neutral-dimmed px-md py-sm-extra last:border-b-0 lg:grid-cols-[200px_repeat(3,minmax(0,1fr))]">
+        <div className="flex flex-col gap-xxs pt-xxs">
             <div className="flex items-center gap-xs">
-                <Text size="sm" className="font-semibold">
+                <Text size="md" className="font-semibold text-neutral-primary">
                     {label}
                 </Text>
                 {beta ? <BetaBadge /> : null}
@@ -308,23 +332,25 @@ export const SiteQualities = createReactiveComponent(function SiteQualities({ pr
     const result = vm.siteResult;
     if (!result) {
         return (
-            <Card padding="md" elevation="small">
+            <Panel className="px-md py-sm-extra">
                 <Text size="sm" className="text-neutral-strong">
                     {vm.sitePageMapLoading
                         ? "Reading what the migration produced…"
                         : "What the migration produced could not be read."}
                 </Text>
-            </Card>
+            </Panel>
         );
     }
     const groups = qualityGroups(result);
     const summary = qualitySummary(groups);
     return (
-        <Card padding="md" elevation="small" bodyPadding={false}>
-            <div className="flex flex-wrap items-center justify-between gap-sm px-md pb-sm">
-                <div className="flex flex-wrap items-baseline gap-sm">
-                    <Heading level={5}>What the migration produced</Heading>
-                    <Text size="sm" className="text-neutral-strong">
+        <Panel>
+            <PanelHeader bordered>
+                <div className="flex flex-wrap items-baseline gap-sm-plus">
+                    <Text size="lg" className="font-semibold text-neutral-primary">
+                        What the migration produced
+                    </Text>
+                    <Text size="md" className="text-neutral-strong">
                         {summary.text}
                     </Text>
                 </div>
@@ -343,7 +369,7 @@ export const SiteQualities = createReactiveComponent(function SiteQualities({ pr
                         />
                     </div>
                 ) : null}
-            </div>
+            </PanelHeader>
             <QualityRow label="Facts" sub="Counted from the published site." items={groups.facts} />
             <QualityRow
                 label="Passes applied in generation"
@@ -351,7 +377,7 @@ export const SiteQualities = createReactiveComponent(function SiteQualities({ pr
                 beta
                 items={groups.passes}
             />
-        </Card>
+        </Panel>
     );
 });
 
@@ -389,17 +415,19 @@ export const SitePagesTable = createReactiveComponent(function SitePagesTable({
     const view = (page: ComposedPageDto) => siteUrl(vm.websiteDomain, page.path, tenantId);
 
     return (
-        <Card padding="md" elevation="small" bodyPadding={false}>
-            <div className="flex flex-wrap items-baseline justify-between gap-sm px-md pb-sm">
-                <Heading level={5}>{plural(rows, "page")}</Heading>
+        <Panel>
+            <PanelHeader>
+                <Text size="lg" className="font-semibold text-neutral-primary">
+                    {plural(rows, "page")}
+                </Text>
                 <Text size="sm" className="text-neutral-muted">
                     Pass columns: components on the page that carried the pass
                 </Text>
-            </div>
+            </PanelHeader>
 
             {allCaveat ? (
                 <div className="flex flex-col border-t border-neutral-dimmed bg-neutral-subtle">
-                    <div className="flex items-center gap-xs px-md py-xs">
+                    <div className="flex items-center gap-sm px-md py-xs">
                         <Icon icon={<InfoIcon />} label="Caveat" size="sm" color="neutral-light" />
                         <Text size="sm">All {plural(rows, "page")} composed, with a caveat</Text>
                         <span className="ml-auto">
@@ -414,7 +442,7 @@ export const SitePagesTable = createReactiveComponent(function SitePagesTable({
                     {caveatOpen ? (
                         <Text
                             size="sm"
-                            className="border-t border-neutral-dimmed px-md py-xs text-neutral-strong"
+                            className="border-t border-neutral-dimmed px-md py-sm-plus pl-xl text-neutral-strong"
                         >
                             Something from the source page is missing from the composed page: a
                             section with no approved component, fewer sections than the source,
@@ -490,7 +518,8 @@ export const SitePagesTable = createReactiveComponent(function SitePagesTable({
                                         <Text className="truncate" title={page.title}>
                                             {page.title || page.path}
                                         </Text>
-                                        <span className="flex flex-wrap items-center gap-xs">
+                                        {/* One line: the path gives way, the notes stay beside it. */}
+                                        <span className="flex min-w-0 items-center gap-xs">
                                             <Text
                                                 size="sm"
                                                 className="min-w-0 truncate font-mono text-neutral-muted"
@@ -498,37 +527,44 @@ export const SitePagesTable = createReactiveComponent(function SitePagesTable({
                                             >
                                                 {page.path}
                                             </Text>
-                                            {status !== "composed" &&
-                                            !(allCaveat && status === "caveat") ? (
-                                                <Tag
-                                                    variant={STATUS_TAG[status].variant as never}
-                                                    content={STATUS_TAG[status].content}
-                                                />
-                                            ) : null}
-                                            {notLive ? (
-                                                <Tag
-                                                    variant={"warning" as never}
-                                                    content="not the live page"
-                                                />
-                                            ) : null}
-                                            {reasons.length > 0 ? (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    text={plural(reasons.length, "note")}
-                                                    icon={
-                                                        noteOpen ? (
-                                                            <ExpandLessIcon />
-                                                        ) : (
-                                                            <ExpandMoreIcon />
-                                                        )
-                                                    }
-                                                    iconPosition="end"
-                                                    onClick={() =>
-                                                        setOpen({ ...open, [page.path]: !noteOpen })
-                                                    }
-                                                />
-                                            ) : null}
+                                            <span className="flex flex-shrink-0 items-center gap-xs">
+                                                {status !== "composed" &&
+                                                !(allCaveat && status === "caveat") ? (
+                                                    <Tag
+                                                        variant={
+                                                            STATUS_TAG[status].variant as never
+                                                        }
+                                                        content={STATUS_TAG[status].content}
+                                                    />
+                                                ) : null}
+                                                {notLive ? (
+                                                    <Tag
+                                                        variant={"warning" as never}
+                                                        content="not the live page"
+                                                    />
+                                                ) : null}
+                                                {reasons.length > 0 ? (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        text={plural(reasons.length, "note")}
+                                                        icon={
+                                                            noteOpen ? (
+                                                                <ExpandLessIcon />
+                                                            ) : (
+                                                                <ExpandMoreIcon />
+                                                            )
+                                                        }
+                                                        iconPosition="end"
+                                                        onClick={() =>
+                                                            setOpen({
+                                                                ...open,
+                                                                [page.path]: !noteOpen
+                                                            })
+                                                        }
+                                                    />
+                                                ) : null}
+                                            </span>
                                         </span>
                                         {noteOpen ? (
                                             <ul className="m-0 flex list-disc flex-col gap-xxs pl-md">
@@ -648,6 +684,6 @@ export const SitePagesTable = createReactiveComponent(function SitePagesTable({
                     })}
                 </Table.Body>
             </Table>
-        </Card>
+        </Panel>
     );
 });

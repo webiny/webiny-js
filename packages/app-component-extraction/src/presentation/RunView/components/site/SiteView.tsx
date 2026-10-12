@@ -43,22 +43,22 @@ export const SiteView = createReactiveComponent(function SiteView({ presenter }:
 
     return (
         <div className="flex min-h-0 flex-1 flex-col">
-            <div className="flex flex-col gap-xxs border-b border-neutral-dimmed px-md py-sm">
-                <div className="flex items-center gap-sm">
-                    <StatusDot
-                        status={build?.status === "done" ? "complete" : "not-started"}
-                        stageNumber={10}
-                    />
-                    <Text className="font-medium">10 · Site</Text>
-                </div>
-                <Text size="sm" className="text-neutral-strong">
-                    The migrated pages, published into a tenant of their own with the site&apos;s
-                    theme, the approved components and the images.
-                </Text>
-            </div>
-
             <Scrollbar>
-                <div className="flex flex-col gap-sm p-md">
+                <div className="flex flex-col gap-md-plus px-lg pt-md-plus pb-xl">
+                    {/* The step's name and what it is, on one line, as the first row of the page. */}
+                    <div className="flex flex-wrap items-center gap-x-sm-plus gap-y-xxs">
+                        <StatusDot
+                            status={build?.status === "done" ? "complete" : "not-started"}
+                            stageNumber={10}
+                        />
+                        <Text size="lg" className="font-semibold text-neutral-primary">
+                            10 · Site
+                        </Text>
+                        <Text size="md" className="text-neutral-strong">
+                            The migrated pages, published into a tenant of their own with the
+                            site&apos;s theme, the approved components and the images.
+                        </Text>
+                    </div>
                     {!approved && !site ? (
                         <Alert type="info" variant="subtle">
                             <div className="flex flex-wrap items-center justify-between gap-sm">
