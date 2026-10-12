@@ -16,6 +16,7 @@ import {
 import { harnessCommand } from "./harnessCommand.js";
 import { pageEditorUrl } from "./pageEditorUrl.js";
 import { websiteUrl } from "./websiteUrl.js";
+import { siteUrl } from "../site/siteUrl.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
@@ -47,6 +48,14 @@ const composeBlockedBecause = (run: RunDto | null): string | null => {
         return "Components must be approved first — a composed page addresses a component by the name it was approved under.";
     }
     return null;
+};
+
+/** A draft in the site's tenant, through the website's draft-mode route. */
+const draftPreviewUrl = (domain: string | null, path: string, tenantId: string): string | null => {
+    const base = websiteUrl(domain, "/api/preview");
+    return base
+        ? `${base}?wb.path=${encodeURIComponent(path)}&wb.tenant=${encodeURIComponent(tenantId)}`
+        : null;
 };
 
 const pathOf = (url: string): string => {
@@ -170,7 +179,16 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                         const tag = STATUS_TAG[status];
                         const signals = page.signals;
                         const composed = pageCapture(capture, page.path);
-                        const liveUrl = websiteUrl(vm.websiteDomain, page.path);
+                        /*
+                         * A job that composes in its site tenant: a draft opens through the website's
+                         * draft preview, a published page at the site's address. Either way with the
+                         * site's tenant; without it the path opens the admin tenant's page.
+                         */
+                        const liveUrl = vm.composedIn
+                            ? vm.composedIn.drafts
+                                ? draftPreviewUrl(vm.websiteDomain, page.path, vm.composedIn.tenantId)
+                                : siteUrl(vm.websiteDomain, page.path, vm.composedIn.tenantId)
+                            : websiteUrl(vm.websiteDomain, page.path);
                         const live = vm.livePageByPath[page.path];
                         // Undefined means the check has not answered yet; null or a different id
                         // means this row's page is not the one the path serves.
@@ -239,7 +257,8 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                                         text="Compare"
                                         onClick={() => onCompare(true, page.path)}
                                     />
-                                    <Button
+                                    {/* The editor link opens the admin's own tenant: wrong for a site's page. */}
+                                    {vm.composedIn ? null : <Button
                                         variant="tertiary"
                                         size="sm"
                                         text="Edit"
@@ -253,11 +272,11 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                                                 "noopener"
                                             )
                                         }
-                                    />
+                                    />}
                                     <Button
                                         variant="tertiary"
                                         size="sm"
-                                        text="Open"
+                                        text={vm.composedIn?.drafts ? "Preview" : "Open"}
                                         /*
                                          * The migrated page as a visitor gets it.
                                          *
@@ -316,18 +335,32 @@ const ComposeButton = ({
     const { vm } = presenter;
     const blocked = composeBlockedBecause(vm.run);
     const busy = vm.composing;
+    // A job that composes in its site tenant composes drafts there: a preview, nothing published.
+    const inSite = Boolean(vm.job?.siteTenantFromStart);
 
     return (
         <Button
             variant={again ? "secondary" : "primary"}
             size="sm"
-            text={busy ? "Composing…" : again ? "Compose again" : "Compose pages"}
+            text={
+                busy
+                    ? "Composing…"
+                    : inSite
+                      ? again
+                          ? "Compose the drafts again"
+                          : "Compose drafts in the site"
+                      : again
+                        ? "Compose again"
+                        : "Compose pages"
+            }
             disabled={Boolean(blocked) || busy}
             title={
                 blocked ??
-                (again
-                    ? "Compose this run again. It becomes the live composition of its job, and the other runs' pages are retired."
-                    : "Build published Website Builder pages from this run's components.")
+                (inSite
+                    ? "Compose this run's pages as drafts in the site's own tenant, to preview them. Nothing is published until the site is."
+                    : again
+                      ? "Compose this run again. It becomes the live composition of its job, and the other runs' pages are retired."
+                      : "Build published Website Builder pages from this run's components.")
             }
             onClick={() => void presenter.composePages()}
         />

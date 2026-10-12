@@ -24,6 +24,11 @@ import { PublishThemeUseCase } from "@webiny/api-theme/features/PublishTheme/ind
 import { ActivateThemeUseCase } from "@webiny/api-theme/features/ActivateTheme/index.js";
 import { BUILD_SITE_TASK_ID } from "~/constants.js";
 import { planComponentCopy } from "./planComponentCopy.js";
+import { planComponentRemoval } from "./planComponentRemoval.js";
+import { TrashPageUseCase } from "@webiny/api-website-builder/features/pages/TrashPage/abstractions.js";
+import { ListPagesUseCase } from "@webiny/api-website-builder/features/pages/ListPages/abstractions.js";
+import { DeleteRemoteComponentUseCase } from "@webiny/remote-components/api/features/deleteComponent/abstractions.js";
+import { PageMapStore } from "~/domain/abstractions.js";
 import { ComposePagesService } from "~/domain/abstractions.js";
 import { CompositionReaderAbstraction } from "~/features/composition/CompositionReader.js";
 import type { PromotedReference, RunImage } from "~/features/composition/CompositionSource.js";
@@ -129,7 +134,11 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         private createTheme: CreateThemeUseCase.Interface,
         private publishTheme: PublishThemeUseCase.Interface,
         private activateTheme: ActivateThemeUseCase.Interface,
-        private imageAssets: ImageAssetService.Interface
+        private imageAssets: ImageAssetService.Interface,
+        private pageMaps: PageMapStore.Interface,
+        private trashPage: TrashPageUseCase.Interface,
+        private listPages: ListPagesUseCase.Interface,
+        private deleteComponent: DeleteRemoteComponentUseCase.Interface
     ) {}
 
     async run({ input, controller }: TaskHandler.RunParams<BuildSiteTaskInput>) {
@@ -330,7 +339,9 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         await record(
             "images",
             "done",
-            `${images.copied} image(s) in the site's File Manager${
+            // Files, not copy outcomes: several captured images can be the same file, so "19 images"
+            // used to stand for 14 files in the File Manager.
+            `${images.files} image file(s) in the site's File Manager, for ${images.copied} captured image(s)${
                 images.failed > 0
                     ? `; ${images.failed} could not be copied and stay on their original host`
                     : ""
@@ -338,6 +349,24 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         );
 
         // ---- 5. Pages: compose with the writer inside the target. ------------------------------
+        /*
+         * A job that approves into its site tenant (`promotedTenantId`) keeps the site tenant tidy as it
+         * goes: the drafts of the last preview and the pages a publish supersedes go to the bin, and a
+         * publish removes the component copies no page names any more. Older jobs: as before.
+         */
+        const tidies = Boolean(source.promotedTenantId);
+        const previousDrafts = tidies
+            ? await this.pageMaps.get(input.runId, tenant.id, true)
+            : null;
+        const previousPublished =
+            tidies && !preview ? await this.pageMaps.get(input.runId, tenant.id) : null;
+        const draftIds = (previousDrafts?.isOk() ? previousDrafts.value?.pages : [])?.map(
+            page => page.pageId
+        );
+        const publishedIds = (previousPublished?.isOk() ? previousPublished.value?.pages : [])?.map(
+            page => page.pageId
+        );
+
         await record(
             "pages",
             "running",
@@ -351,20 +380,148 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         if (composed.isFail()) {
             return fail("pages", composed.error.message);
         }
+
+        let tidied = "";
+        if (tidies) {
+            const binned = await toTarget(() =>
+                this.binSuperseded({
+                    drafts: draftIds ?? [],
+                    published: preview ? [] : (publishedIds ?? [])
+                })
+            );
+            tidied = binned > 0 ? ` ${binned} superseded page(s) moved to the bin.` : "";
+        }
         await record(
             "pages",
             "done",
-            preview
+            (preview
                 ? `${composed.value.created} page(s) composed as drafts${
                       composed.value.failed > 0 ? `; ${composed.value.failed} with problems` : ""
                   }. Nothing was published.`
-                : pagesDetail(composed.value)
+                : pagesDetail(composed.value)) + tidied
         );
+
+        if (tidies && !preview) {
+            // The last preview's drafts are in the bin now: an empty drafts map, so the composed pages
+            // panel shows the published pages rather than drafts that are gone.
+            await this.pageMaps.set({
+                runId: input.runId,
+                composedOn: new Date().toISOString(),
+                composeVersion: 0,
+                tenantId: tenant.id,
+                drafts: true,
+                pages: [],
+                failed: [],
+                links: composed.value.links,
+                discarded: []
+            });
+            const removed = await toTarget(() =>
+                this.removeSupersededComponents(promoted.map(item => item.componentId))
+            );
+            if (typeof removed === "string") {
+                return fail("components", removed);
+            }
+            await record(
+                "components",
+                "done",
+                `${promoted.length} component(s) approved into this tenant${
+                    removed.length > 0
+                        ? `; removed ${removed.length} superseded copy(ies) no page names: ${removed.join(", ")}`
+                        : "; nothing superseded to remove"
+                }.`
+            );
+        }
 
         current.status = "done";
         current.finishedOn = new Date().toISOString();
         await save();
         return controller.response.done(`Built the site in tenant "${tenant.id}".`);
+    }
+
+    /**
+     * Inside the target: move to the bin the previous preview's pages still in draft, and the pages a
+     * publish replaced, now unpublished. A page someone has since published or edited into another
+     * state is left alone. The bin can be restored; a page outside these two sets is never touched.
+     */
+    private async binSuperseded(params: {
+        drafts: string[];
+        published: string[];
+    }): Promise<number> {
+        const status = await this.pageStatuses();
+        let binned = 0;
+        const candidates = [
+            ...params.drafts.filter(id => status.get(id) === "draft"),
+            ...params.published.filter(id => status.get(id) === "unpublished")
+        ];
+        for (const id of new Set(candidates)) {
+            const trashed = await this.trashPage.execute({ id });
+            if (trashed.isOk()) {
+                binned += 1;
+            }
+        }
+        return binned;
+    }
+
+    /**
+     * Inside the target: remove the component copies a publish leaves behind, by `planComponentRemoval`:
+     * not in the approval being published, and named by no page in the tenant, published, draft or
+     * unpublished. Returns the names removed, or a string on failure.
+     */
+    private async removeSupersededComponents(approvedIds: string[]): Promise<string[] | string> {
+        const pages = await this.allPages();
+        if (typeof pages === "string") {
+            return pages;
+        }
+        const listed = await this.listComponents.execute();
+        if (listed.isFail()) {
+            return `Could not list the site's components: ${listed.error.message}`;
+        }
+        const removable = planComponentRemoval({
+            pages,
+            components: listed.value.items.map(item => ({ id: item.id, name: item.name })),
+            approvedIds
+        });
+        const removed: string[] = [];
+        for (const component of removable) {
+            const deleted = await this.deleteComponent.execute(component.id);
+            if (deleted.isOk()) {
+                removed.push(component.name);
+            }
+        }
+        return removed;
+    }
+
+    /** Every page in the tenant, its latest revision in any state, with its elements. */
+    private async allPages(): Promise<
+        Array<{ id: string; status: string; elements: Record<string, unknown> }> | string
+    > {
+        const pages: Array<{ id: string; status: string; elements: Record<string, unknown> }> = [];
+        let after: string | null = null;
+        do {
+            const listed = await this.listPages.execute({
+                where: { latest: true },
+                sort: [],
+                limit: 100,
+                after
+            });
+            if (listed.isFail()) {
+                return `Could not list the site's pages: ${listed.error.message}`;
+            }
+            pages.push(
+                ...listed.value.pages.map(page => ({
+                    id: page.id,
+                    status: page.status,
+                    elements: page.elements
+                }))
+            );
+            after = listed.value.meta.hasMoreItems ? listed.value.meta.cursor : null;
+        } while (after);
+        return pages;
+    }
+
+    private async pageStatuses(): Promise<Map<string, string>> {
+        const pages = await this.allPages();
+        return new Map(typeof pages === "string" ? [] : pages.map(page => [page.id, page.status]));
     }
 
     /** The job's tenant: the one on record, or created now. A string is the reason it failed. */
@@ -454,9 +611,10 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
     private async copyImages(
         images: RunImage[],
         toTarget: <T>(cb: () => Promise<T>) => Promise<T>
-    ): Promise<{ copied: number; failed: number }> {
+    ): Promise<{ copied: number; failed: number; files: number }> {
         let copied = 0;
         let failed = 0;
+        const fileIds = new Set<string>();
         for (let start = 0; start < images.length; start += IMAGE_BATCH) {
             const batch = images.slice(start, start + IMAGE_BATCH);
             const fetched: Array<{
@@ -509,12 +667,13 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
             for (const outcome of outcomes) {
                 if (outcome.kind === "migrated" || outcome.kind === "deduplicated") {
                     copied += 1;
+                    fileIds.add(outcome.fileId);
                 } else {
                     failed += 1;
                 }
             }
         }
-        return { copied, failed };
+        return { copied, failed, files: fileIds.size };
     }
 }
 
@@ -537,7 +696,11 @@ const BuildSiteTaskHandler = TaskHandler.createImplementation({
         CreateThemeUseCase,
         PublishThemeUseCase,
         ActivateThemeUseCase,
-        ImageAssetService
+        ImageAssetService,
+        PageMapStore,
+        TrashPageUseCase,
+        ListPagesUseCase,
+        DeleteRemoteComponentUseCase
     ]
 });
 

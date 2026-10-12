@@ -191,7 +191,7 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         "A run's override reattachment outcomes (W8.1): applied, not-applicable or conflicting, for the panel."
         componentExtractionGetReattachments(runId: ID!): ComponentExtractionArtifactResponse!
         "The names of the components already in the Library, for Promote collision detection (W8.6)."
-        componentExtractionListLibraryNames: ComponentExtractionArtifactResponse!
+        componentExtractionListLibraryNames(jobId: ID): ComponentExtractionArtifactResponse!
         "Pre-flight reachability for the Create-job screen (W9.3): resolves the URL and looks for a sitemap. Data carries normalizedUrl, reachable, status, sitemapFound, sitemapUrlCount and error."
         componentExtractionCheckReachability(url: String!): ComponentExtractionArtifactResponse!
     }

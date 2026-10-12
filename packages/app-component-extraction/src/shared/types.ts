@@ -134,6 +134,8 @@ export interface JobDto {
     gateConfig: { stopAfter: string[] };
     pinned: boolean;
     note: string | null;
+    /** Approves into and composes in its site tenant. False (or absent) for jobs created before. */
+    siteTenantFromStart?: boolean | null;
     createdOn: string;
 }
 

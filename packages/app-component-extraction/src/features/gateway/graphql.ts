@@ -9,6 +9,7 @@ const JOB_FIELDS = /* GraphQL */ `
     gateConfig
     pinned
     note
+    siteTenantFromStart
     createdOn
 `;
 
@@ -522,8 +523,8 @@ export const CLEAR_OVERRIDE = /* GraphQL */ `
 `;
 
 export const LIST_LIBRARY_NAMES = /* GraphQL */ `
-    query ListComponentExtractionLibraryNames {
-        componentExtractionListLibraryNames {
+    query ListComponentExtractionLibraryNames($jobId: ID) {
+        componentExtractionListLibraryNames(jobId: $jobId) {
             data
             error {
                 code
@@ -553,8 +554,8 @@ export const CHECK_REACHABILITY = /* GraphQL */ `
  * which are absent on maps composed before they shipped.
  */
 export const GET_PAGE_MAP = /* GraphQL */ `
-    query GetPageMap($runId: ID!, $tenantId: String) {
-        pageCompositionPocPageMap(runId: $runId, tenantId: $tenantId) {
+    query GetPageMap($runId: ID!, $tenantId: String, $drafts: Boolean) {
+        pageCompositionPocPageMap(runId: $runId, tenantId: $tenantId, drafts: $drafts) {
             data
             error {
                 message

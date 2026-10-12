@@ -311,10 +311,17 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         return unwrap(response.componentExtractionGetReattachments) ?? [];
     }
 
-    async getPageMap(runId: string, tenantId?: string): Promise<PageMapDto | null> {
+    async getPageMap(
+        runId: string,
+        tenantId?: string,
+        drafts?: boolean
+    ): Promise<PageMapDto | null> {
         const response = await this.client.execute<{
             pageCompositionPocPageMap: GqlEnvelope<PageMapDto | null>;
-        }>({ query: GET_PAGE_MAP, variables: { runId, tenantId: tenantId ?? null } });
+        }>({
+            query: GET_PAGE_MAP,
+            variables: { runId, tenantId: tenantId ?? null, drafts: drafts ?? null }
+        });
 
         return unwrap(response.pageCompositionPocPageMap) ?? null;
     }
@@ -451,10 +458,10 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         return unwrap(response.componentExtractionClearOverride) ?? [];
     }
 
-    async listLibraryNames(): Promise<string[]> {
+    async listLibraryNames(jobId?: string): Promise<string[]> {
         const response = await this.client.execute<{
             componentExtractionListLibraryNames: GqlEnvelope<string[]>;
-        }>({ query: LIST_LIBRARY_NAMES });
+        }>({ query: LIST_LIBRARY_NAMES, variables: { jobId: jobId ?? null } });
 
         return unwrap(response.componentExtractionListLibraryNames) ?? [];
     }

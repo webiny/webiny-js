@@ -125,6 +125,12 @@ export interface IRunViewVm {
     showComposed: boolean;
     /** The run's page map, null until loaded or when the run has never been composed. */
     pageMap: PageMapDto | null;
+    /**
+     * Where `pageMap` lives, for a job that composes in its site tenant: that tenant, and whether the
+     * map is the drafts of a preview or the published site. Null for older jobs, whose composition is in
+     * the extraction tenant.
+     */
+    composedIn: { tenantId: string; drafts: boolean } | null;
     pageMapLoading: boolean;
     /**
      * The run's Assemble artifact, loaded with the page map. It carries each source page's capture

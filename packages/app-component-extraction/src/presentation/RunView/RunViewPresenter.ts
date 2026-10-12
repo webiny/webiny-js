@@ -5,6 +5,7 @@ import { themeSnapshot } from "./themeSnapshot.js";
 import { stageEntry } from "~/shared/ledger.js";
 import { normalizeUrl } from "~/shared/url.js";
 import type {
+    PageMapDto,
     ComponentPromptDto,
     AssembleArtifactDto,
     DecisionsDto,
@@ -82,6 +83,7 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         showOverrides: false,
         showComposed: false,
         pageMap: null,
+        composedIn: null,
         pageMapLoading: false,
         composedAssemble: null,
         composedCapture: null,
@@ -1197,6 +1199,7 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
 
         const before = this.vm.pageMap?.composeVersion ?? 0;
+        const startedAt = Date.now();
         runInAction(() => {
             this.vm.composing = true;
             this.vm.error = null;
@@ -1217,12 +1220,19 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         for (let attempt = 0; attempt < 60; attempt++) {
             await new Promise(resolve => setTimeout(resolve, 3000));
             let map;
+            let drafts = false;
             try {
-                map = await this.gateway.getPageMap(run.id);
+                const found = await this.composedMap(run);
+                map = found.map;
+                drafts = found.in?.drafts ?? false;
             } catch {
                 continue;
             }
-            if (map && (map.composeVersion ?? 0) > before) {
+            // A preview's drafts keep the version of the published map, so they are recognised by time.
+            const fresh = drafts
+                ? !!map && Date.parse(map.composedOn) >= startedAt - 5_000
+                : !!map && (map.composeVersion ?? 0) > before;
+            if (fresh) {
                 runInAction(() => {
                     this.vm.composing = false;
                     // Dropped so the reload below refetches everything, liveness included.
@@ -1241,6 +1251,31 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         });
     }
 
+    /**
+     * The run's composition and where it lives. A job that composes in its site tenant: the preview's
+     * drafts when there are any, else the site's published map. Any other job: the extraction tenant's
+     * composition, as before.
+     */
+    private async composedMap(
+        run: RunDto
+    ): Promise<{ map: PageMapDto | null; in: { tenantId: string; drafts: boolean } | null }> {
+        if (!this.vm.job?.siteTenantFromStart) {
+            return { map: await this.gateway.getPageMap(run.id), in: null };
+        }
+        const site = await this.gateway.getSite(run.jobId);
+        if (!site) {
+            return { map: null, in: null };
+        }
+        const drafts = await this.gateway.getPageMap(run.id, site.tenantId, true);
+        if (drafts && drafts.pages.length > 0) {
+            return { map: drafts, in: { tenantId: site.tenantId, drafts: true } };
+        }
+        return {
+            map: await this.gateway.getPageMap(run.id, site.tenantId),
+            in: { tenantId: site.tenantId, drafts: false }
+        };
+    }
+
     /** The run's composed pages. Absent is a normal answer — most runs are never composed. */
     private async loadPageMap(run: RunDto): Promise<void> {
         runInAction(() => {
@@ -1256,15 +1291,17 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
              * The capture is null for almost every run, which is the resting state rather than a
              * failure: nothing here can photograph a composed page on its own.
              */
-            const [pageMap, assemble, composedCapture, websiteDomain] = await Promise.all([
-                this.gateway.getPageMap(run.id),
+            const [composed, assemble, composedCapture, websiteDomain] = await Promise.all([
+                this.composedMap(run),
                 this.gateway.getStageArtifact(run.id, "assemble"),
                 this.gateway.getComposedCapture(run.id),
                 // Where the composed pages are actually served, so the panel can link to one.
                 this.gateway.getWebsiteDomain().catch(() => null)
             ]);
+            const pageMap = composed.map;
             runInAction(() => {
                 this.vm.pageMap = pageMap;
+                this.vm.composedIn = composed.in;
                 this.vm.composedAssemble = (assemble as AssembleArtifactDto | null) ?? null;
                 this.vm.composedCapture = composedCapture;
                 this.vm.websiteDomain = websiteDomain;
@@ -1277,9 +1314,14 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
              * liveness unknown rather than blocking the pages themselves.
              */
             if (pageMap) {
-                const live = await this.gateway
-                    .getLivePageIds(pageMap.pages.map(page => page.path))
-                    .catch(() => ({}));
+                // Drafts answer no path. A site's published pages are asked inside the site's tenant;
+                // asked here, the admin's tenant would answer with its own pages.
+                const paths = pageMap.pages.map(page => page.path);
+                const live = composed.in
+                    ? composed.in.drafts
+                        ? {}
+                        : await this.gateway.getSiteLivePageIds(run.jobId, paths).catch(() => ({}))
+                    : await this.gateway.getLivePageIds(paths).catch(() => ({}));
                 runInAction(() => {
                     this.vm.livePageByPath = live;
                 });
@@ -1407,7 +1449,7 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                     run.id,
                     "generate"
                 ) as Promise<GenerateArtifactDto | null>,
-                this.gateway.listLibraryNames(),
+                this.gateway.listLibraryNames(run.jobId),
                 this.gateway.getDecisions(run.id) as Promise<DecisionsDto | null>
             ]);
             runInAction(() => {

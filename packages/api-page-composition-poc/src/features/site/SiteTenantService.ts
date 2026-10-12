@@ -49,6 +49,15 @@ class SiteTenantServiceImpl implements SiteTenant.Interface {
         return Result.ok(tenant);
     }
 
+    async find(job: Job): Promise<Tenant | null> {
+        const site = await this.sites.get(job.id);
+        if (!site) {
+            return null;
+        }
+        const found = await this.getTenantById.execute(site.tenantId);
+        return found.isOk() ? found.value : null;
+    }
+
     /** The tenant: the one on record, or created now. A string is the reason it failed. */
     async ensureTenant(tenantId: string, tenantName: string): Promise<Tenant | string> {
         const found = await this.getTenantById.execute(tenantId);

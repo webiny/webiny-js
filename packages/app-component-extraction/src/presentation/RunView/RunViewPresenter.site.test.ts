@@ -62,7 +62,8 @@ const presenterFor = (record: SiteDto | null, onScreen: RunDto) => {
             publishedPages: 8,
             unpublishedPages: 24
         })),
-        getLivePageIds: vi.fn(async () => ({}))
+        getLivePageIds: vi.fn(async () => ({})),
+        getComposedCapture: vi.fn(async () => null)
     };
     const presenter = new RunViewPresenterImpl(gateway as never);
     runInAction(() => {
@@ -129,5 +130,30 @@ describe("Site view", () => {
         presenter.selectStage("promote");
 
         expect(presenter.vm.showSite).toBe(false);
+    });
+});
+
+describe("composed pages panel, for a job that composes in its site tenant", () => {
+    it("reads the site's drafts, and never the extraction tenant's map or liveness", async () => {
+        const drafts = { ...pageMap, drafts: true, composedOn: new Date().toISOString() };
+        const { presenter, gateway } = presenterFor(site(TAKE3_RUN), run(TAKE3_RUN));
+        gateway.getPageMap.mockImplementation((async (
+            _r: string,
+            tenantId?: string,
+            isDrafts?: boolean
+        ) => (tenantId && isDrafts ? drafts : null)) as never);
+        runInAction(() => {
+            presenter.vm.job = { id: TAKE3_JOB, siteTenantFromStart: true } as never;
+        });
+
+        presenter.openComposed(true, null);
+        await settle();
+
+        expect(presenter.vm.error).toBeNull();
+        expect(gateway.getPageMap).toHaveBeenCalledWith(TAKE3_RUN, TAKE3_TENANT, true);
+        expect(gateway.getPageMap).not.toHaveBeenCalledWith(TAKE3_RUN);
+        expect(gateway.getLivePageIds).not.toHaveBeenCalled();
+        expect(presenter.vm.composedIn).toEqual({ tenantId: TAKE3_TENANT, drafts: true });
+        expect(presenter.vm.pageMap?.pages).toHaveLength(1);
     });
 });

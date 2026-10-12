@@ -17,8 +17,10 @@ import {
     ModelCallRepository,
     OverrideRepository,
     RunLock,
-    RunRepository
+    RunRepository,
+    SiteTenant
 } from "~/domain/abstractions.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { BlobStore, StageArtifactStore } from "~/domain/stage.js";
 import {
     readGenerationLog,
@@ -1129,18 +1131,42 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
 
     builder.addResolver({
         path: "Query.componentExtractionListLibraryNames",
-        dependencies: [ComponentExtractionPermissions, ListRemoteComponentsUseCase],
+        dependencies: [
+            ComponentExtractionPermissions,
+            ListRemoteComponentsUseCase,
+            JobRepository,
+            TenantContext,
+            [SiteTenant, { optional: true }]
+        ],
         resolver(
             permissions: ComponentExtractionPermissions.Interface,
-            listComponents: ListRemoteComponentsUseCase.Interface
+            listComponents: ListRemoteComponentsUseCase.Interface,
+            jobs: JobRepository.Interface,
+            tenantContext: TenantContext.Interface,
+            siteTenant: SiteTenant.Interface | undefined
         ) {
-            return () =>
+            return ({ args }: { args: { jobId?: string | null } }) =>
                 resolve(async () => {
                     if (!(await permissions.canRead("componentExtraction"))) {
                         throw new Error("You do not have permission to view component extraction.");
                     }
-                    const result = await listComponents.execute();
-                    return result.isOk() ? result.value.items.map(item => item.name) : [];
+                    const list = async () => {
+                        const result = await listComponents.execute();
+                        return result.isOk() ? result.value.items.map(item => item.name) : [];
+                    };
+                    /*
+                     * A job that approves into its site tenant collides with that tenant's Library, not
+                     * the extraction tenant's. Before its first approval it has no tenant and so no
+                     * names: nothing is taken.
+                     */
+                    if (args.jobId && siteTenant) {
+                        const job = await jobs.get(args.jobId);
+                        if (job.isOk() && job.value.siteTenantFromStart) {
+                            const tenant = await siteTenant.find(job.value);
+                            return tenant ? tenantContext.withTenant(tenant, list) : [];
+                        }
+                    }
+                    return list();
                 });
         }
     });

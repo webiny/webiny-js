@@ -128,7 +128,7 @@ export interface IComponentExtractionGateway {
      * A run's page map. With `tenantId`, the composition written into that site tenant; without, the
      * composition in the run's own (extraction) tenant.
      */
-    getPageMap(runId: string, tenantId?: string): Promise<PageMapDto | null>;
+    getPageMap(runId: string, tenantId?: string, drafts?: boolean): Promise<PageMapDto | null>;
     /** Which page each path serves inside the job's site tenant (path → page id, or null). */
     getSiteLivePageIds(jobId: string, paths: string[]): Promise<Record<string, string | null>>;
     /** What the job's site tenant holds beyond what its live pages use; null without a site. */
@@ -162,7 +162,8 @@ export interface IComponentExtractionGateway {
     /** Clear an override, reverting that item to machine output (W8.1). */
     clearOverride(runId: string, overrideId: string): Promise<OverrideDto[]>;
     /** Names of the components already in the Library, for Promote collision detection (W8.6). */
-    listLibraryNames(): Promise<string[]>;
+    /** The Library's names; with a job that approves into its site tenant, that tenant's Library. */
+    listLibraryNames(jobId?: string): Promise<string[]>;
 }
 
 export const ComponentExtractionGateway = createAbstraction<IComponentExtractionGateway>(

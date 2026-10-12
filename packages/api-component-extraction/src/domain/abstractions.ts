@@ -194,6 +194,8 @@ export namespace RunLock {
 export interface ISiteTenant {
     /** The job's site tenant, created, installed and recorded on first use; reused after that. */
     ensure(job: Job): Promise<Result<Tenant, ExtractionError>>;
+    /** The job's site tenant if it has one; null otherwise. Reads only, never creates. */
+    find(job: Job): Promise<Tenant | null>;
 }
 
 export const SiteTenant = createAbstraction<ISiteTenant>("ComponentExtraction/SiteTenant");
