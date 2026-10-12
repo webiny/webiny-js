@@ -1,6 +1,4 @@
-import { describe, expect, it } from "vitest";
-import type { Container } from "@webiny/di";
-import { Result } from "@webiny/feature/api";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { CmsContext, CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
 import { UnpublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/index.js";
@@ -9,11 +7,13 @@ import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEnt
 import { MoveEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/MoveEntry/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
-import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
-import { WorkflowPersistenceError } from "@webiny/api-workflows/domain/workflow/errors.js";
-import { createContextHandler } from "~tests/__handler/context.js";
-import { storeWorkflow } from "~tests/__workflows/workflow.js";
 import { createAuthorEntry, expectOk, getAuthorModel } from "~tests/__helpers/entries.js";
+import { createTestContext } from "~tests/__helpers/testContext.js";
+import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
+import { failListWorkflows } from "~tests/__helpers/FailingListWorkflows.js";
+import { failGetBoundWorkflow } from "~tests/__helpers/FailingGetBoundWorkflow.js";
+import { failGetTargetReview } from "~tests/__helpers/FailingGetTargetReview.js";
+import { failListTargetReviews } from "~tests/__helpers/FailingListTargetReviews.js";
 import {
     approveEntryReview,
     cancelEntryReview,
@@ -21,28 +21,6 @@ import {
     rejectEntryReview,
     requestEntryReview
 } from "~tests/__helpers/engine.js";
-
-interface ContextParams {
-    withWorkflow?: boolean;
-    legacyPlugins?: unknown[];
-    privateModel?: boolean;
-}
-
-const createTestContext = async (params: ContextParams = {}) => {
-    const { context } = createContextHandler({
-        legacyPlugins: params.legacyPlugins ?? [],
-        modifyModel: params.privateModel
-            ? model => {
-                  return { ...model, isPrivate: true };
-              }
-            : undefined
-    });
-    const ctx = await context();
-    if (params.withWorkflow !== false) {
-        expectOk(await storeWorkflow(ctx));
-    }
-    return ctx;
-};
 
 const publish = async (context: CmsContext, entry: CmsEntry) => {
     const model = await getAuthorModel(context);
@@ -59,26 +37,31 @@ const move = async (context: CmsContext, entry: CmsEntry, folderId: string) => {
     return context.container.resolve(MoveEntryUseCase).execute(model, entry.id, folderId);
 };
 
-let listWorkflowsCalls = 0;
-
-class CountingListWorkflows implements ListWorkflowsUseCase.Interface {
-    public constructor(private decoratee: ListWorkflowsUseCase.Interface) {}
-
-    public async execute(input?: ListWorkflowsUseCase.Input): ListWorkflowsUseCase.Return {
-        listWorkflowsCalls++;
-        return this.decoratee.execute(input);
-    }
-}
-
-class FailingListWorkflows implements ListWorkflowsUseCase.Interface {
-    public constructor(private decoratee: ListWorkflowsUseCase.Interface) {}
-
-    public async execute(): ListWorkflowsUseCase.Return {
-        return Result.fail(new WorkflowPersistenceError(new Error("Storage is down.")));
-    }
-}
+beforeEach(() => {
+    engineCalls.length = 0;
+});
 
 describe("CMS publish rule (D79, D121)", () => {
+    it("blocks publishing when the review lookup fails (fail closed)", async () => {
+        const context = await createTestContext({ legacyPlugins: [failGetTargetReview] });
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+
+        const blocked = await publish(context, entry);
+
+        expect(blocked.error.code).toBe("Workflows/Review/Persistence");
+    });
+
+    it("blocks publishing after the review was cancelled", async () => {
+        const context = await createTestContext();
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+        await cancelEntryReview(context, await requestEntryReview(context, entry));
+
+        const blocked = await publish(context, entry);
+
+        expect(blocked.error.code).toBe("Workflows/Review/PublishBlocked");
+        expect(blocked.error.data).toMatchObject({ reviewState: null });
+    });
+
     it("publishes normally on a model without a workflow", async () => {
         const context = await createTestContext({ withWorkflow: false });
         const entry = await createAuthorEntry(context, { name: "Ann" });
@@ -136,16 +119,7 @@ describe("CMS publish rule (D79, D121)", () => {
 
     it("blocks publishing when the workflow lookup fails (fail closed)", async () => {
         const context = await createTestContext({
-            legacyPlugins: [
-                (container: Container) => {
-                    container.registerDecorator(
-                        ListWorkflowsUseCase.createDecorator({
-                            decorator: FailingListWorkflows,
-                            dependencies: []
-                        })
-                    );
-                }
-            ],
+            legacyPlugins: [failListWorkflows],
             withWorkflow: false
         });
         const entry = await createAuthorEntry(context, { name: "Ann" });
@@ -178,27 +152,17 @@ describe("CMS publish rule (D79, D121)", () => {
     });
 
     it("ignores private models such as Website Builder pages (R52)", async () => {
-        listWorkflowsCalls = 0;
         const context = await createTestContext({
             privateModel: true,
             withWorkflow: false,
-            legacyPlugins: [
-                (container: Container) => {
-                    container.registerDecorator(
-                        ListWorkflowsUseCase.createDecorator({
-                            decorator: CountingListWorkflows,
-                            dependencies: []
-                        })
-                    );
-                }
-            ]
+            legacyPlugins: [countEngineCalls]
         });
         const entry = await createAuthorEntry(context, { name: "Ann" });
 
         const published = await publish(context, entry);
 
         expect(published.isOk()).toBe(true);
-        expect(listWorkflowsCalls).toBe(0);
+        expect(engineCalls).toEqual([]);
     });
 });
 
@@ -330,6 +294,31 @@ describe("CMS move rule (D84)", () => {
         const blocked = await move(context, first, "folder-2");
 
         expect(blocked.error.code).toBe("Workflows/Review/TargetLocked");
+        expect(blocked.error.data).toMatchObject({
+            action: "move",
+            targetRevisionId: second.id
+        });
+    });
+
+    it("blocks a move when the review lookup fails (fail closed)", async () => {
+        const context = await createTestContext({ legacyPlugins: [failListTargetReviews] });
+        const entry = await createAuthorEntry(context, { name: "Ann", folderId: "folder-1" });
+
+        const blocked = await move(context, entry, "folder-2");
+
+        expect(blocked.error.code).toBe("Workflows/Review/Persistence");
+    });
+
+    it("blocks a move when the binding lookup fails (fail closed, A38)", async () => {
+        const context = await createTestContext({
+            withWorkflow: false,
+            legacyPlugins: [failGetBoundWorkflow]
+        });
+        const entry = await createAuthorEntry(context, { name: "Ann", folderId: "folder-1" });
+
+        const blocked = await move(context, entry, "folder-2");
+
+        expect(blocked.error.code).toBe("Workflows/Workflow/Persistence");
     });
 
     it("blocks a folder change through update while another revision is in review (R55, A24)", async () => {

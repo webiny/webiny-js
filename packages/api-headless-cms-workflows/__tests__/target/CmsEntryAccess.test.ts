@@ -16,6 +16,7 @@ import {
     CMS_READER,
     CMS_WRITER
 } from "~tests/__helpers/permissions.js";
+import { CMS_READER_WITHOUT_GROUP_READ } from "~tests/__helpers/permissions.js";
 import { createApiKeyIdentity, NOBODY, READER, WRITER } from "~tests/__helpers/identities.js";
 import {
     FakeFolderLevelPermissions,
@@ -221,5 +222,39 @@ describe("CMS target reading and access", () => {
         );
         // The workflows' own private models (and WB pages without the WB package) have none.
         expect(resolveReviewNamespace(namespaces, reviewModel)).toBeNull();
+    });
+
+    it("refuses a user who can read the model and entries but not the group (R72)", async () => {
+        const entry = await createAuthorEntry(await createUserContext(), { name: "Ann" });
+        const admin = await createAccess({});
+        const target = await admin.targets.read({
+            model: AUTHOR_NAMESPACE,
+            targetRevisionId: entry.id
+        });
+        const { access } = await createAccess({
+            identity: READER,
+            permissions: CMS_READER_WITHOUT_GROUP_READ
+        });
+
+        expect(await admin.access.canRead(target!)).toBe(true);
+        expect(await access.canRead(target!)).toBe(false);
+    });
+
+    it("finds no target in a private model's cms.* namespace (R52)", async () => {
+        const { context } = createContextHandler({
+            legacyPlugins: [registerFakeFlp],
+            modifyModel: model => {
+                return { ...model, isPrivate: true };
+            }
+        });
+        const ctx = await context();
+        const entry = await createAuthorEntry(ctx, { name: "Ann" });
+
+        const target = await ctx.container.resolve(CmsEntryTargetReader).read({
+            model: AUTHOR_NAMESPACE,
+            targetRevisionId: entry.id
+        });
+
+        expect(target).toBeNull();
     });
 });

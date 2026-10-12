@@ -30,11 +30,25 @@ export const CMS_ENTRY_READER_WITHOUT_MODEL: SecurityPermission[] = [
     { name: "cms.contentEntry", rwd: "r" }
 ];
 
+/** Model and entry read, but the group permission lacks read: only the group check refuses. */
+export const CMS_READER_WITHOUT_GROUP_READ: SecurityPermission[] = [
+    { name: "cms.contentModelGroup", rwd: "w" },
+    MODEL_READ,
+    { name: "cms.contentEntry", rwd: "r" }
+];
+
 /** Reads and writes only the entries the identity created. */
 export const CMS_OWN_WRITER: SecurityPermission[] = [
     GROUP_READ,
     MODEL_READ,
     { name: "cms.contentEntry", rwd: "rw", own: true }
+];
+
+/** Reads, writes, publishes and deletes only the entries the identity created. */
+export const CMS_OWN_DELETER: SecurityPermission[] = [
+    GROUP_READ,
+    MODEL_READ,
+    { name: "cms.contentEntry", rwd: "rwd", pw: "p", own: true }
 ];
 
 export const WORKFLOWS_EDITOR: SecurityPermission = { name: "workflows", editor: true };

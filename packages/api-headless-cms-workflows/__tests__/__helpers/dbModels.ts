@@ -7,7 +7,11 @@ import { expectOk } from "./entries.js";
  * Creates a database model (not a code model) with one "title" field, in its own group. Needs a
  * context with CMS write access to groups and models (the default `*`).
  */
-export const createDbModel = async (context: CmsContext, modelId: string): Promise<CmsModel> => {
+export const createDbModel = async (
+    context: CmsContext,
+    modelId: string,
+    tags: string[] = []
+): Promise<CmsModel> => {
     const group = expectOk(
         await context.container.resolve(CreateGroupUseCase).execute({
             name: `${modelId} group`,
@@ -25,6 +29,7 @@ export const createDbModel = async (context: CmsContext, modelId: string): Promi
             pluralApiName: `${singular}s`,
             group: group.id,
             titleFieldId: "title",
+            tags,
             fields: [
                 {
                     id: "title",

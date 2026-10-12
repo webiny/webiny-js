@@ -6,7 +6,8 @@ import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/Review
 import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTargetSync/index.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import { StartReviewStepUseCase } from "@webiny/api-workflows/features/review/StartReviewStep/index.js";
-import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsContext, CmsEntryValues } from "@webiny/api-headless-cms/types/index.js";
+import { UpdateEntrySystemUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntrySystem/index.js";
 import { createContextHandler } from "~tests/__handler/context.js";
 import { storeWorkflow } from "~tests/__workflows/workflow.js";
 import { AUTHOR_NAMESPACE, createAuthorEntry, expectOk } from "~tests/__helpers/entries.js";
@@ -32,6 +33,16 @@ import {
 } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { FakeAdminUsers } from "~tests/__helpers/FakeAdminUsers.js";
 import { CmsEntryTargetReader } from "~/features/target/CmsEntryTargetReader/index.js";
+
+class ThrowingUpdateEntrySystem implements UpdateEntrySystemUseCase.Interface {
+    public constructor(private decoratee: UpdateEntrySystemUseCase.Interface) {}
+
+    public async execute<
+        T extends CmsEntryValues = CmsEntryValues
+    >(): UpdateEntrySystemUseCase.Return<T> {
+        throw new Error("Storage is down.");
+    }
+}
 
 class ThrowingTargetReader implements CmsEntryTargetReader.Interface {
     public constructor(private decoratee: CmsEntryTargetReader.Interface) {}
@@ -152,6 +163,35 @@ describe("CMS target adapter", () => {
         expect(
             context.container.resolveAll(ReviewTargetSync).some(item => item.canSync("wb.page"))
         ).toBe(false);
+    });
+
+    it("returns a failed result when the system write throws", async () => {
+        const { context } = createContextHandler({
+            legacyPlugins: [
+                registerFakes,
+                (container: Container) => {
+                    container.registerDecorator(
+                        UpdateEntrySystemUseCase.createDecorator({
+                            decorator: ThrowingUpdateEntrySystem,
+                            dependencies: []
+                        })
+                    );
+                }
+            ]
+        });
+        const admin = await createAdminContext();
+        expectOk(await storeWorkflow(admin));
+        const entry = await createAuthorEntry(admin, { name: "Ann" });
+        const review = await requestEntryReview(admin, entry);
+        const ctx = await context();
+        const sync = ctx.container
+            .resolveAll(ReviewTargetSync)
+            .find(item => item.canSync(AUTHOR_NAMESPACE))!;
+
+        const synced = await sync.sync({ review, systemWorkflow: null });
+
+        expect(synced.isFail()).toBe(true);
+        expect(synced.error.message).toBe("Storage is down.");
     });
 
     it("syncs a transition made by a reviewer who can only read the entry (R63)", async () => {

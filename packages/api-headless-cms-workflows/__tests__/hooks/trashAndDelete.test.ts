@@ -1,6 +1,4 @@
-import { describe, expect, it } from "vitest";
-import type { Container } from "@webiny/di";
-import { Result } from "@webiny/feature/api";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { CmsContext, CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { DeleteEntryRevisionUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/index.js";
@@ -9,45 +7,25 @@ import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEnt
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
 import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
-import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
-import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
-import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
-import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
-import { EntryPersistenceError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
-import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { WorkflowPersistenceError } from "@webiny/api-workflows/domain/workflow/errors.js";
-import { ReviewPersistenceError } from "@webiny/api-workflows/domain/review/errors.js";
-import { createContextHandler } from "~tests/__handler/context.js";
-import { storeWorkflow } from "~tests/__workflows/workflow.js";
 import { createAuthorEntry, expectOk, getAuthorModel } from "~tests/__helpers/entries.js";
+import { createTestContext } from "~tests/__helpers/testContext.js";
+import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
+import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { failGetBoundWorkflow } from "~tests/__helpers/FailingGetBoundWorkflow.js";
+import { failListTargetReviews } from "~tests/__helpers/FailingListTargetReviews.js";
+import { failGetLatestRevision } from "~tests/__helpers/FailingGetLatestRevision.js";
+import {
+    failDeleteTargetReviews,
+    throwDeleteTargetReviews
+} from "~tests/__helpers/FailingDeleteTargetReviews.js";
+import { WRITER } from "~tests/__helpers/identities.js";
+import { CMS_OWN_DELETER } from "~tests/__helpers/permissions.js";
 import {
     approveEntryReview,
     cancelEntryReview,
     readEntry,
     requestEntryReview
 } from "~tests/__helpers/engine.js";
-
-interface ContextParams {
-    withWorkflow?: boolean;
-    legacyPlugins?: unknown[];
-    privateModel?: boolean;
-}
-
-const createTestContext = async (params: ContextParams = {}) => {
-    const { context } = createContextHandler({
-        legacyPlugins: params.legacyPlugins ?? [],
-        modifyModel: params.privateModel
-            ? model => {
-                  return { ...model, isPrivate: true };
-              }
-            : undefined
-    });
-    const ctx = await context();
-    if (params.withWorkflow !== false) {
-        expectOk(await storeWorkflow(ctx));
-    }
-    return ctx;
-};
 
 const trash = async (context: CmsContext, entry: CmsEntry) => {
     const model = await getAuthorModel(context);
@@ -76,114 +54,10 @@ const getReview = (context: CmsContext, id: string) => {
     return context.container.resolve(GetReviewUseCase).execute({ id });
 };
 
-class FailingListTargetReviews implements ListTargetReviewsUseCase.Interface {
-    public constructor(private decoratee: ListTargetReviewsUseCase.Interface) {}
-
-    public async execute(): ListTargetReviewsUseCase.Return {
-        return Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
-    }
-}
-
-class FailingDeleteTargetReviews implements DeleteTargetReviewsUseCase.Interface {
-    public constructor(private decoratee: DeleteTargetReviewsUseCase.Interface) {}
-
-    public async execute(): DeleteTargetReviewsUseCase.Return {
-        return Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
-    }
-}
-
-class ThrowingDeleteTargetReviews implements DeleteTargetReviewsUseCase.Interface {
-    public constructor(private decoratee: DeleteTargetReviewsUseCase.Interface) {}
-
-    public async execute(): DeleteTargetReviewsUseCase.Return {
-        throw new Error("Storage is down.");
-    }
-}
-
-class FailingGetBoundWorkflow implements GetBoundWorkflowUseCase.Interface {
-    public constructor(private decoratee: GetBoundWorkflowUseCase.Interface) {}
-
-    public async execute(): GetBoundWorkflowUseCase.Return {
-        return Result.fail(new WorkflowPersistenceError(new Error("Storage is down.")));
-    }
-}
-
-class FailingGetLatestRevision {
-    public constructor(private decoratee: unknown) {}
-
-    public async execute() {
-        return Result.fail(new EntryPersistenceError(new Error("Storage is down.")));
-    }
-}
-
-/** Error log messages captured by `CapturingLogger`. */
-const loggedErrors: string[] = [];
-
-class CapturingLogger implements Logger.Interface {
-    public constructor(private decoratee: Logger.Interface) {}
-
-    public trace(objOrMsg: object | string, ...args: any[]): void {
-        this.decoratee.trace(objOrMsg, ...args);
-    }
-    public debug(objOrMsg: object | string, ...args: any[]): void {
-        this.decoratee.debug(objOrMsg, ...args);
-    }
-    public info(objOrMsg: object | string, ...args: any[]): void {
-        this.decoratee.info(objOrMsg, ...args);
-    }
-    public warn(objOrMsg: object | string, ...args: any[]): void {
-        this.decoratee.warn(objOrMsg, ...args);
-    }
-    public error(objOrMsg: object | string, ...args: any[]): void {
-        loggedErrors.push(String(args[0] ?? objOrMsg));
-    }
-    public fatal(objOrMsg: object | string, ...args: any[]): void {
-        this.decoratee.fatal(objOrMsg, ...args);
-    }
-    public log(objOrMsg: object | string, ...args: any[]): void {
-        this.decoratee.log(objOrMsg, ...args);
-    }
-}
-
-const capturingLoggerPlugin = (container: Container) => {
-    container.registerDecorator(
-        Logger.createDecorator({ decorator: CapturingLogger, dependencies: [] })
-    );
-};
-
-/** Engine calls the handlers made, by use case name. */
-const engineCalls: string[] = [];
-
-class CountingGetBoundWorkflow implements GetBoundWorkflowUseCase.Interface {
-    public constructor(private decoratee: GetBoundWorkflowUseCase.Interface) {}
-
-    public async execute(input: GetBoundWorkflowUseCase.Input): GetBoundWorkflowUseCase.Return {
-        engineCalls.push("GetBoundWorkflow");
-        return this.decoratee.execute(input);
-    }
-}
-
-class CountingListTargetReviews implements ListTargetReviewsUseCase.Interface {
-    public constructor(private decoratee: ListTargetReviewsUseCase.Interface) {}
-
-    public async execute(
-        input: Parameters<ListTargetReviewsUseCase.Interface["execute"]>[0]
-    ): ListTargetReviewsUseCase.Return {
-        engineCalls.push("ListTargetReviews");
-        return this.decoratee.execute(input);
-    }
-}
-
-class CountingDeleteTargetReviews implements DeleteTargetReviewsUseCase.Interface {
-    public constructor(private decoratee: DeleteTargetReviewsUseCase.Interface) {}
-
-    public async execute(
-        input: DeleteTargetReviewsUseCase.Input
-    ): DeleteTargetReviewsUseCase.Return {
-        engineCalls.push("DeleteTargetReviews");
-        return this.decoratee.execute(input);
-    }
-}
+beforeEach(() => {
+    engineCalls.length = 0;
+    loggedErrors.length = 0;
+});
 
 describe("CMS trash with a review in progress (D134)", () => {
     it("refuses to trash an entry with a review in progress", async () => {
@@ -240,16 +114,7 @@ describe("CMS trash with a review in progress (D134)", () => {
     it("trashes entries of an unbound model without looking up reviews", async () => {
         const context = await createTestContext({
             withWorkflow: false,
-            legacyPlugins: [
-                (container: Container) => {
-                    container.registerDecorator(
-                        ListTargetReviewsUseCase.createDecorator({
-                            decorator: FailingListTargetReviews,
-                            dependencies: []
-                        })
-                    );
-                }
-            ]
+            legacyPlugins: [failListTargetReviews]
         });
         const entry = await createAuthorEntry(context, { name: "Ann" });
 
@@ -260,16 +125,7 @@ describe("CMS trash with a review in progress (D134)", () => {
 
     it("refuses the trash when the review lookup fails on a bound model (fail closed)", async () => {
         const context = await createTestContext({
-            legacyPlugins: [
-                (container: Container) => {
-                    container.registerDecorator(
-                        ListTargetReviewsUseCase.createDecorator({
-                            decorator: FailingListTargetReviews,
-                            dependencies: []
-                        })
-                    );
-                }
-            ]
+            legacyPlugins: [failListTargetReviews]
         });
         const entry = await createAuthorEntry(context, { name: "Ann" });
 
@@ -280,16 +136,7 @@ describe("CMS trash with a review in progress (D134)", () => {
 });
 
 describe("CMS trash and delete when the workflow binding lookup fails (A38)", () => {
-    const failingBinding = [
-        (container: Container) => {
-            container.registerDecorator(
-                GetBoundWorkflowUseCase.createDecorator({
-                    decorator: FailingGetBoundWorkflow,
-                    dependencies: []
-                })
-            );
-        }
-    ];
+    const failingBinding = [failGetBoundWorkflow];
 
     it("refuses trash and permanent delete (fail closed)", async () => {
         const context = await createTestContext({
@@ -379,39 +226,68 @@ describe("CMS delete with a review in progress (D134)", () => {
         });
         expect((await readEntry(context, free.id)).id).toBe(free.id);
     });
+
+    it("refuses deleteMultiple when a non-latest revision has the review in progress", async () => {
+        const context = await createTestContext();
+        const model = await getAuthorModel(context);
+        const first = await createAuthorEntry(context, { name: "Ann" });
+        // OpenSearch deleteMultiple needs a published record; created as published (R83).
+        const latest = expectOk(
+            await context.container
+                .resolve(CreateEntryRevisionFromUseCase)
+                .execute(model, first.id, { values: {}, status: "published" })
+        );
+        const review = await requestEntryReview(context, first);
+
+        const refused = await context.container
+            .resolve(DeleteMultipleEntriesUseCase)
+            .execute(model, { entries: [latest.id] });
+
+        expect(refused.error.code).toBe("Workflows/Review/ActiveReviewOnTrash");
+        expect(refused.error.data).toMatchObject({
+            action: "delete",
+            reviews: [{ reviewId: review.id, targetRevisionId: first.id }]
+        });
+    });
+
+    it("neither blocks on nor cleans up an entry the caller cannot access in deleteMultiple", async () => {
+        const admin = await createTestContext();
+        const hidden = await createAuthorEntry(admin, { name: "Hidden" });
+        const hiddenReview = await requestEntryReview(admin, hidden);
+        const writer = await createTestContext({
+            withWorkflow: false,
+            identity: WRITER,
+            permissions: CMS_OWN_DELETER
+        });
+        const model = await getAuthorModel(writer);
+        // OpenSearch deleteMultiple needs a published record; created as published (R83).
+        const own = expectOk(
+            await writer.container.resolve(CreateEntryUseCase).execute(model, {
+                values: { name: "Own" },
+                status: "published",
+                location: { folderId: "root" }
+            })
+        );
+
+        const deleted = await writer.container
+            .resolve(DeleteMultipleEntriesUseCase)
+            .execute(model, { entries: [hidden.id, own.id] });
+
+        expect(deleted.isOk()).toBe(true);
+        expect((await readEntry(admin, hidden.id)).id).toBe(hidden.id);
+        expect(expectOk(await getReview(admin, hiddenReview.id)).state).toBe("inProgress");
+    });
 });
 
 describe("CMS trash and delete on a private model (R52)", () => {
     it("neither blocks nor cleans up: the engine deletes its own review and assignment entries", async () => {
-        engineCalls.length = 0;
         // The workflow, review and assignment models are private. Their entries fire the same CMS
         // events, and the engine deletes them through `DeleteEntryUseCase`, so the handlers must
         // skip private models or the engine would call itself.
         const context = await createTestContext({
             privateModel: true,
             withWorkflow: false,
-            legacyPlugins: [
-                (container: Container) => {
-                    container.registerDecorator(
-                        GetBoundWorkflowUseCase.createDecorator({
-                            decorator: CountingGetBoundWorkflow,
-                            dependencies: []
-                        })
-                    );
-                    container.registerDecorator(
-                        ListTargetReviewsUseCase.createDecorator({
-                            decorator: CountingListTargetReviews,
-                            dependencies: []
-                        })
-                    );
-                    container.registerDecorator(
-                        DeleteTargetReviewsUseCase.createDecorator({
-                            decorator: CountingDeleteTargetReviews,
-                            dependencies: []
-                        })
-                    );
-                }
-            ]
+            legacyPlugins: [countEngineCalls]
         });
         const model = await getAuthorModel(context);
         const trashed = await createAuthorEntry(context, { name: "Trashed" });
@@ -488,19 +364,8 @@ describe("CMS review cleanup after a permanent delete (R56, R81)", () => {
     });
 
     it("keeps the delete when the review cleanup fails and logs it (R81)", async () => {
-        loggedErrors.length = 0;
         const context = await createTestContext({
-            legacyPlugins: [
-                capturingLoggerPlugin,
-                (container: Container) => {
-                    container.registerDecorator(
-                        DeleteTargetReviewsUseCase.createDecorator({
-                            decorator: FailingDeleteTargetReviews,
-                            dependencies: []
-                        })
-                    );
-                }
-            ]
+            legacyPlugins: [captureLoggedErrors, failDeleteTargetReviews]
         });
         const entry = await createAuthorEntry(context, { name: "Ann" });
         const review = await approveEntryReview(context, await requestEntryReview(context, entry));
@@ -509,26 +374,18 @@ describe("CMS review cleanup after a permanent delete (R56, R81)", () => {
 
         expect(deleted.isOk()).toBe(true);
         expect(loggedErrors).toEqual([
-            "Could not delete the reviews of a deleted entry; they are left orphaned."
+            {
+                message: "Could not delete the reviews of a deleted entry; they are left orphaned.",
+                fields: expect.objectContaining({ model: "cms.author", targetId: entry.entryId })
+            }
         ]);
         // The review is orphaned (A34).
         expect(expectOk(await getReview(context, review.id)).id).toBe(review.id);
     });
 
     it("keeps the bulk delete and logs when the deleted-entry lookup fails (R81)", async () => {
-        loggedErrors.length = 0;
         const context = await createTestContext({
-            legacyPlugins: [
-                capturingLoggerPlugin,
-                (container: Container) => {
-                    container.registerDecorator(
-                        GetLatestRevisionByEntryIdIncludingDeletedUseCase.createDecorator({
-                            decorator: FailingGetLatestRevision,
-                            dependencies: []
-                        })
-                    );
-                }
-            ]
+            legacyPlugins: [captureLoggedErrors, failGetLatestRevision]
         });
         const entry = await createAuthorEntry(context, { name: "Ann" });
         const review = await approveEntryReview(context, await requestEntryReview(context, entry));
@@ -541,25 +398,18 @@ describe("CMS review cleanup after a permanent delete (R56, R81)", () => {
 
         expect(deleted.isOk()).toBe(true);
         expect(loggedErrors).toEqual([
-            "Could not confirm that an entry is deleted; its reviews are left orphaned."
+            {
+                message:
+                    "Could not confirm that an entry is deleted; its reviews are left orphaned.",
+                fields: expect.objectContaining({ model: "cms.author", targetId: entry.entryId })
+            }
         ]);
         expect(expectOk(await getReview(context, review.id)).id).toBe(review.id);
     });
 
     it("keeps every delete when the review cleanup throws and logs it (R81)", async () => {
-        loggedErrors.length = 0;
         const context = await createTestContext({
-            legacyPlugins: [
-                capturingLoggerPlugin,
-                (container: Container) => {
-                    container.registerDecorator(
-                        DeleteTargetReviewsUseCase.createDecorator({
-                            decorator: ThrowingDeleteTargetReviews,
-                            dependencies: []
-                        })
-                    );
-                }
-            ]
+            legacyPlugins: [captureLoggedErrors, throwDeleteTargetReviews]
         });
         const model = await getAuthorModel(context);
         const single = await createAuthorEntry(context, { name: "Single" });
@@ -585,10 +435,15 @@ describe("CMS review cleanup after a permanent delete (R56, R81)", () => {
         expect(deleted.isOk()).toBe(true);
         expect(revisionDeleted.isOk()).toBe(true);
         expect(bulkDeleted.isOk()).toBe(true);
-        expect(loggedErrors).toEqual([
+        expect(loggedErrors.map(logged => logged.message)).toEqual([
             "Could not delete the reviews of a deleted entry; they are left orphaned.",
             "Could not delete the reviews of a deleted revision; they are left orphaned.",
             "Could not delete the reviews of a deleted entry; they are left orphaned."
+        ]);
+        expect(loggedErrors.map(logged => logged.fields)).toEqual([
+            expect.objectContaining({ model: "cms.author", targetId: single.entryId }),
+            expect.objectContaining({ model: "cms.author", targetRevisionId: revision.id }),
+            expect.objectContaining({ model: "cms.author", targetId: bulk.entryId })
         ]);
     });
 });
