@@ -2,14 +2,14 @@
 
 Spec 5.1, 5.3, D77, D133 point 7, R46, R47, R61, R62. One shared guard for every review action of the CMS app, and the first two review wrappers:
 
-- `CmsEntryReviewGuard.authorize({ reviewId, action })`: viewer (actor, teams, permissions) → review → `cms.*` only (another app's review is not found) → read access to the target, else `Workflows/NotAuthorized` with the action.
+- `CmsEntryReviewGuardService.authorize({ reviewId, action })`: viewer (actor, teams, permissions) → review → `cms.*` only (another app's review is not found) → read access to the target, else `Workflows/NotAuthorized` with the action.
 - `RequestCmsEntryReviewUseCase`: write access to the target (D77); picks are the engine's (R61).
 - `GetCmsEntryReviewUseCase`: the review and the viewer's flags (`getReviewViewerFlags` + `applyTargetAccess`, R62).
 
 **Files:**
-- Create: `packages/api-headless-cms-workflows/src/features/wrappers/CmsEntryReviewGuard/abstractions.ts`
-- Create: `packages/api-headless-cms-workflows/src/features/wrappers/CmsEntryReviewGuard/CmsEntryReviewGuard.ts`
-- Create: `packages/api-headless-cms-workflows/src/features/wrappers/CmsEntryReviewGuard/index.ts`
+- Create: `packages/api-headless-cms-workflows/src/features/wrappers/CmsEntryReviewGuardService/abstractions.ts`
+- Create: `packages/api-headless-cms-workflows/src/features/wrappers/CmsEntryReviewGuardService/CmsEntryReviewGuardService.ts`
+- Create: `packages/api-headless-cms-workflows/src/features/wrappers/CmsEntryReviewGuardService/index.ts`
 - Create: `packages/api-headless-cms-workflows/src/features/wrappers/RequestCmsEntryReview/abstractions.ts`
 - Create: `packages/api-headless-cms-workflows/src/features/wrappers/RequestCmsEntryReview/RequestCmsEntryReviewUseCase.ts`
 - Create: `packages/api-headless-cms-workflows/src/features/wrappers/RequestCmsEntryReview/feature.ts`
@@ -25,7 +25,7 @@ Spec 5.1, 5.3, D77, D133 point 7, R46, R47, R61, R62. One shared guard for every
 **Interfaces:**
 - Consumes: `CurrentReviewViewer` (`get()`, `getActor()`), `GetReviewUseCase`, `RequestReviewUseCase`, `getReviewViewerFlags`, `applyTargetAccess` (1b), `CmsEntryTargetReader`, `CmsEntryAccess` (Task 7), `isCmsNamespace` (Task 7), `ReviewWithViewerFlags` (Task 6).
 - Produces:
-  - `CmsEntryReviewGuard.Interface { authorize(params: CmsEntryReviewGuardParams): Promise<Result<AuthorizedCmsEntryReview, CmsEntryReviewGuard.Error>> }`, `CmsEntryReviewGuardParams { reviewId: string; action: string }`, `AuthorizedCmsEntryReview { review: ReviewData; viewer: ReviewViewer }`; errors `Workflows/NotAuthenticated`, `Workflows/NotAuthorized`, `Workflows/Review/NotFound`, `Workflows/Review/Persistence`.
+  - `CmsEntryReviewGuardService.Interface { authorize(params: CmsEntryReviewGuardServiceParams): Promise<Result<AuthorizedCmsEntryReview, CmsEntryReviewGuardService.Error>> }`, `CmsEntryReviewGuardServiceParams { reviewId: string; action: string }`, `AuthorizedCmsEntryReview { review: ReviewData; viewer: ReviewViewer }`; errors `Workflows/NotAuthenticated`, `Workflows/NotAuthorized`, `Workflows/Review/NotFound`, `Workflows/Review/Persistence`.
   - `RequestCmsEntryReviewUseCase.Interface.execute(input: RequestCmsEntryReviewInput): Promise<Result<ReviewData, Error>>`, `RequestCmsEntryReviewInput { model: string; targetId: string; targetRevisionId: string; picks?: ReviewPick[] }`.
   - `GetCmsEntryReviewUseCase.Interface.execute(input: GetCmsEntryReviewInput): Promise<Result<ReviewWithViewerFlags, Error>>`, `GetCmsEntryReviewInput { id: string }`.
   - Guard action texts: `"request a review"` (request), `"view this review"` (get).
@@ -244,7 +244,7 @@ Expected: FAIL, cannot resolve `~/features/wrappers/RequestCmsEntryReview/index.
 
 - [ ] **Step 3: The review guard**
 
-Create `packages/api-headless-cms-workflows/src/features/wrappers/CmsEntryReviewGuard/abstractions.ts`:
+Create `packages/api-headless-cms-workflows/src/features/wrappers/CmsEntryReviewGuardService/abstractions.ts`:
 
 ```ts
 import { createAbstraction, type Result } from "@webiny/feature/api";
@@ -258,7 +258,7 @@ import type {
     ReviewPersistenceError
 } from "@webiny/api-workflows/domain/review/errors.js";
 
-export interface CmsEntryReviewGuardParams {
+export interface CmsEntryReviewGuardServiceParams {
     reviewId: string;
     /** What the caller tries to do, e.g. "start this step"; named in `Workflows/NotAuthorized`. */
     action: string;
@@ -269,18 +269,18 @@ export interface AuthorizedCmsEntryReview {
     viewer: ReviewViewer;
 }
 
-export interface ICmsEntryReviewGuardErrors {
+export interface ICmsEntryReviewGuardServiceErrors {
     notAuthenticated: WorkflowsNotAuthenticatedError;
     notAuthorized: WorkflowsNotAuthorizedError;
     notFound: ReviewNotFoundError;
     persistence: ReviewPersistenceError;
 }
 
-type GuardError = ICmsEntryReviewGuardErrors[keyof ICmsEntryReviewGuardErrors];
+type GuardError = ICmsEntryReviewGuardServiceErrors[keyof ICmsEntryReviewGuardServiceErrors];
 
-export interface ICmsEntryReviewGuard {
+export interface ICmsEntryReviewGuardService {
     authorize(
-        params: CmsEntryReviewGuardParams
+        params: CmsEntryReviewGuardServiceParams
     ): Promise<Result<AuthorizedCmsEntryReview, GuardError>>;
 }
 
@@ -289,18 +289,18 @@ export interface ICmsEntryReviewGuard {
  * of a `cms.*` namespace (another app's review is not found, R46) and read access to its target
  * with the CMS's own logic (R47). Permission rules per action (cancel) stay in the wrapper.
  */
-export const CmsEntryReviewGuard = createAbstraction<ICmsEntryReviewGuard>("CmsEntryReviewGuard");
+export const CmsEntryReviewGuardService = createAbstraction<ICmsEntryReviewGuardService>("CmsEntryReviewGuardService");
 
-export namespace CmsEntryReviewGuard {
-    export type Interface = ICmsEntryReviewGuard;
-    export type Params = CmsEntryReviewGuardParams;
+export namespace CmsEntryReviewGuardService {
+    export type Interface = ICmsEntryReviewGuardService;
+    export type Params = CmsEntryReviewGuardServiceParams;
     export type Authorized = AuthorizedCmsEntryReview;
     export type Error = GuardError;
     export type Return = Promise<Result<AuthorizedCmsEntryReview, GuardError>>;
 }
 ```
 
-Create `packages/api-headless-cms-workflows/src/features/wrappers/CmsEntryReviewGuard/CmsEntryReviewGuard.ts`:
+Create `packages/api-headless-cms-workflows/src/features/wrappers/CmsEntryReviewGuardService/CmsEntryReviewGuardService.ts`:
 
 ```ts
 import { Result } from "@webiny/feature/api";
@@ -311,9 +311,9 @@ import { ReviewNotFoundError } from "@webiny/api-workflows/domain/review/errors.
 import { CmsEntryTargetReader } from "~/features/target/CmsEntryTargetReader/index.js";
 import { CmsEntryAccess } from "~/features/target/CmsEntryAccess/index.js";
 import { isCmsNamespace } from "~/utils/appName.js";
-import { CmsEntryReviewGuard as Abstraction } from "./abstractions.js";
+import { CmsEntryReviewGuardService as Abstraction } from "./abstractions.js";
 
-class CmsEntryReviewGuardImpl implements Abstraction.Interface {
+class CmsEntryReviewGuardServiceImpl implements Abstraction.Interface {
     public constructor(
         private viewer: CurrentReviewViewer.Interface,
         private getReview: GetReviewUseCase.Interface,
@@ -347,18 +347,18 @@ class CmsEntryReviewGuardImpl implements Abstraction.Interface {
     }
 }
 
-export const CmsEntryReviewGuard = Abstraction.createImplementation({
-    implementation: CmsEntryReviewGuardImpl,
+export const CmsEntryReviewGuardService = Abstraction.createImplementation({
+    implementation: CmsEntryReviewGuardServiceImpl,
     dependencies: [CurrentReviewViewer, GetReviewUseCase, CmsEntryTargetReader, CmsEntryAccess]
 });
 ```
 
 The guard is a shared building block of the CMS wrappers, not a wrapper: its folder has no `feature.ts`, and `CmsWrappersFeature` registers it directly (Step 6). Every review action loads the review twice (here and in the engine use case); both are primary-storage reads, accepted.
 
-Create `packages/api-headless-cms-workflows/src/features/wrappers/CmsEntryReviewGuard/index.ts`:
+Create `packages/api-headless-cms-workflows/src/features/wrappers/CmsEntryReviewGuardService/index.ts`:
 
 ```ts
-export { CmsEntryReviewGuard } from "./abstractions.js";
+export { CmsEntryReviewGuardService } from "./abstractions.js";
 ```
 
 - [ ] **Step 4: RequestCmsEntryReview**
@@ -503,14 +503,14 @@ Create `packages/api-headless-cms-workflows/src/features/wrappers/GetCmsEntryRev
 ```ts
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewWithViewerFlags } from "@webiny/api-workflows/domain/review/types.js";
-import type { CmsEntryReviewGuard } from "../CmsEntryReviewGuard/index.js";
+import type { CmsEntryReviewGuardService } from "../CmsEntryReviewGuardService/index.js";
 
 export interface GetCmsEntryReviewInput {
     id: string;
 }
 
 export interface IGetCmsEntryReviewUseCaseErrors {
-    guard: CmsEntryReviewGuard.Error;
+    guard: CmsEntryReviewGuardService.Error;
 }
 
 type UseCaseError = IGetCmsEntryReviewUseCaseErrors[keyof IGetCmsEntryReviewUseCaseErrors];
@@ -542,11 +542,11 @@ Create `packages/api-headless-cms-workflows/src/features/wrappers/GetCmsEntryRev
 import { Result } from "@webiny/feature/api";
 import { getReviewViewerFlags } from "@webiny/api-workflows/domain/review/getReviewViewerFlags.js";
 import { applyTargetAccess } from "@webiny/api-workflows/domain/review/applyTargetAccess.js";
-import { CmsEntryReviewGuard } from "../CmsEntryReviewGuard/index.js";
+import { CmsEntryReviewGuardService } from "../CmsEntryReviewGuardService/index.js";
 import { GetCmsEntryReviewUseCase as UseCase } from "./abstractions.js";
 
 class GetCmsEntryReviewUseCaseImpl implements UseCase.Interface {
-    public constructor(private guard: CmsEntryReviewGuard.Interface) {}
+    public constructor(private guard: CmsEntryReviewGuardService.Interface) {}
 
     public async execute(input: UseCase.Input): UseCase.Return {
         const authorized = await this.guard.authorize({
@@ -566,7 +566,7 @@ class GetCmsEntryReviewUseCaseImpl implements UseCase.Interface {
 
 export const GetCmsEntryReviewUseCase = UseCase.createImplementation({
     implementation: GetCmsEntryReviewUseCaseImpl,
-    dependencies: [CmsEntryReviewGuard]
+    dependencies: [CmsEntryReviewGuardService]
 });
 ```
 
@@ -597,7 +597,7 @@ Replace `packages/api-headless-cms-workflows/src/features/wrappers/feature.ts` w
 
 ```ts
 import { createFeature } from "@webiny/feature/api";
-import { CmsEntryReviewGuard } from "./CmsEntryReviewGuard/CmsEntryReviewGuard.js";
+import { CmsEntryReviewGuardService } from "./CmsEntryReviewGuardService/CmsEntryReviewGuardService.js";
 import { StoreCmsEntryWorkflowFeature } from "./StoreCmsEntryWorkflow/feature.js";
 import { DeleteCmsEntryWorkflowFeature } from "./DeleteCmsEntryWorkflow/feature.js";
 import { ListCmsEntryWorkflowsFeature } from "./ListCmsEntryWorkflows/feature.js";
@@ -612,7 +612,7 @@ import { GetCmsEntryReviewFeature } from "./GetCmsEntryReview/feature.js";
 export const CmsWrappersFeature = createFeature({
     name: "CmsWorkflows/Wrappers",
     register(container) {
-        container.register(CmsEntryReviewGuard);
+        container.register(CmsEntryReviewGuardService);
 
         // Workflows
         StoreCmsEntryWorkflowFeature.register(container);

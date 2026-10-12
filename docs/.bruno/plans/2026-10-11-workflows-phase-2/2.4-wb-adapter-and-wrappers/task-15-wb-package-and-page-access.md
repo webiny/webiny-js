@@ -3,7 +3,7 @@
 R47, R51, R65, R66, R75, R77, R78, R82, A25, A28. The Website Builder side of the target adapter, evaluated as the current identity:
 
 - `WbPageTargetReader` reads a `wb.page` revision (page model through `PageModelProvider`, revision through CMS `GetRevisionByIdUseCase`, mapped with `EntryToPageMapper`).
-- `WbPageAccess`: read = `WbPermissions.canRead("page") && WbPermissions.canAccess("page", page)`; write = read AND `WbPermissions.canEdit("page", page)` (WB `UpdatePageUseCase` loads the page through `GetPageByIdUseCase` first, R82); delete = read AND `WbPermissions.canDelete("page", page)` (as `TrashPageUseCase`); each AND folder-level permissions on the page's folder through the CMS package's shared `canAccessEntryFolder` (pages are CMS entries; the ACO CMS decorators apply to them in production, R78). `canWriteAnyPage()` is the entity-level `canEdit("page")` check WB itself makes before loading a page; the request wrapper uses it so a user without page permissions learns nothing about which pages exist (R75). `canDeleteAnyPage()` is the entity-level delete check (`canDelete("page", { createdBy: <current identity> })`, so an own-only delete permission passes); the cancel-for-delete wrapper uses it before it reads a page or lists reviews (R86).
+- `WbPageAccess`: read = `WbPermissions.canRead("page") && WbPermissions.canAccess("page", page)`; write = read AND `WbPermissions.canEdit("page", page)` (WB `UpdatePageUseCase` loads the page through `GetPageByIdUseCase` first, R82); delete = read AND `WbPermissions.canDelete("page", page)` (as `TrashPageUseCase`); each AND folder-level permissions on the page's folder inline in each check, as `CmsEntryAccess` does (pages are CMS entries; the ACO CMS decorators apply to them in production, R78). `canWriteAnyPage()` is the entity-level `canEdit("page")` check WB itself makes before loading a page; the request wrapper uses it so a user without page permissions learns nothing about which pages exist (R75). `canDeleteAnyPage()` is the entity-level delete check (`canDelete("page", { createdBy: <current identity> })`, so an own-only delete permission passes); the cancel-for-delete wrapper uses it before it reads a page or lists reviews (R86).
 - `WbPageReviewNamespace` registers `wb.page` for the page model into the CMS package's `CmsEntryReviewNamespace` (R51), so the single CMS handlers (revision null, save block) cover pages.
 
 Also wires the package dependencies (R65), the package's `ci.config.json` (R77: `["ddb", "ddb-os,ddb"]`; the test presets fall back to the DDB preset for WB, `packages/build-tools/testing/presets.js`) and a test harness mirroring `api-website-builder/__tests__/utils/useHandler.ts` plus the workflows features.
@@ -32,7 +32,7 @@ Also wires the package dependencies (R65), the package's `ci.config.json` (R77: 
 - Create: `packages/api-website-builder-workflows/__tests__/target/WbPageAccess.test.ts`
 
 **Interfaces:**
-- Consumes: `PageModelProvider`, `WbPage` (`@webiny/api-website-builder/domain/page/abstractions.js`), `EntryToPageMapper` (`.../domain/page/EntryToPageMapper.js`), `PAGE_MODEL_ID` (`.../domain/page/page.model.js`), `ROOT_FOLDER` (`@webiny/api-website-builder/constants.js`), `WbPermissions` (`.../features/permissions/abstractions.js`), `IdentityContext` (`@webiny/api-core/features/security/IdentityContext/index.js`), `GetRevisionByIdUseCase`, `FolderLevelPermissions`, `CmsEntryReviewNamespace` + `resolveReviewNamespace`, `canAccessEntryFolder` (Task 7).
+- Consumes: `PageModelProvider`, `WbPage` (`@webiny/api-website-builder/domain/page/abstractions.js`), `EntryToPageMapper` (`.../domain/page/EntryToPageMapper.js`), `PAGE_MODEL_ID` (`.../domain/page/page.model.js`), `ROOT_FOLDER` (`@webiny/api-website-builder/constants.js`), `WbPermissions` (`.../features/permissions/abstractions.js`), `IdentityContext` (`@webiny/api-core/features/security/IdentityContext/index.js`), `GetRevisionByIdUseCase`, `FolderLevelPermissions`, `CmsEntryReviewNamespace` (Task 7; the test resolves the namespace inline).
 - Produces:
   - `WB_PAGE_NAMESPACE = "wb.page"`, `WB_PAGE_FOLDER_TYPE = "wb:page"` (`src/constants.ts`).
   - `WbPageTarget { model: CmsModel; page: WbPage }`, `WbPageTargetReadParams { model: string; targetRevisionId: string }`, `WbPageTargetReader.Interface { read(params): Promise<WbPageTarget | null> }`.
@@ -356,10 +356,7 @@ Create `packages/api-website-builder-workflows/__tests__/target/WbPageAccess.tes
 import { afterEach, describe, expect, it } from "vitest";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import {
-    CmsEntryReviewNamespace,
-    resolveReviewNamespace
-} from "@webiny/api-headless-cms-workflows/features/target/CmsEntryReviewNamespace/index.js";
+import { CmsEntryReviewNamespace } from "@webiny/api-headless-cms-workflows/features/target/CmsEntryReviewNamespace/index.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createPage, getPageModel } from "~tests/__helpers/pages.js";
 import {
@@ -498,7 +495,14 @@ describe("WB page reading and access", () => {
         const context = await createUserContext();
         const namespaces = context.container.resolveAll(CmsEntryReviewNamespace);
 
-        expect(resolveReviewNamespace(namespaces, await getPageModel(context))).toBe("wb.page");
+        const model = await getPageModel(context);
+        // The last registered non-null namespace wins (R51).
+        const resolved = [...namespaces]
+            .reverse()
+            .map(namespace => namespace.resolve(model))
+            .find(Boolean);
+
+        expect(resolved).toBe("wb.page");
     });
 });
 ```
@@ -680,14 +684,14 @@ Create `packages/api-website-builder-workflows/src/features/target/WbPageAccess/
 import { WbPermissions } from "@webiny/api-website-builder/features/permissions/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
-import { canAccessEntryFolder } from "@webiny/api-headless-cms-workflows/features/target/canAccessEntryFolder.js";
+import { ROOT_FOLDER } from "@webiny/api-website-builder/constants.js";
 import type { WbPageTarget } from "../WbPageTargetReader/abstractions.js";
 import { WbPageAccess as Abstraction } from "./abstractions.js";
 
 /**
  * Write and delete include read, because WB loads the page through `GetPageByIdUseCase` before it
  * updates or trashes it (R82). Folder-level permissions as the ACO CMS decorators apply them to
- * page entries, through the CMS package's shared helper (R78).
+ * page entries, inline in each check, as `CmsEntryAccess` does (R78).
  */
 class WbPageAccessImpl implements Abstraction.Interface {
     public constructor(
@@ -714,7 +718,17 @@ class WbPageAccessImpl implements Abstraction.Interface {
         if (!(await this.permissions.canAccess("page", target.page))) {
             return false;
         }
-        return canAccessEntryFolder(this.folderLevelPermissions, target.page.location.folderId, "r");
+        // Folder-level permissions are skipped when FLP is not in use for the identity (e.g. API
+        // keys) or the page is in the root folder, as the ACO CMS decorators do.
+        if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
+            return true;
+        }
+        const folderId = target.page.location.folderId;
+        if (!folderId || folderId === ROOT_FOLDER) {
+            return true;
+        }
+        const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
+        return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "r" });
     }
 
     public async canWrite(target: WbPageTarget): Promise<boolean> {
@@ -724,7 +738,17 @@ class WbPageAccessImpl implements Abstraction.Interface {
         if (!(await this.permissions.canEdit("page", target.page))) {
             return false;
         }
-        return canAccessEntryFolder(this.folderLevelPermissions, target.page.location.folderId, "w");
+        // Folder-level permissions are skipped when FLP is not in use for the identity (e.g. API
+        // keys) or the page is in the root folder, as the ACO CMS decorators do.
+        if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
+            return true;
+        }
+        const folderId = target.page.location.folderId;
+        if (!folderId || folderId === ROOT_FOLDER) {
+            return true;
+        }
+        const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
+        return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "w" });
     }
 
     public async canDelete(target: WbPageTarget): Promise<boolean> {
@@ -734,7 +758,17 @@ class WbPageAccessImpl implements Abstraction.Interface {
         if (!(await this.permissions.canDelete("page", target.page))) {
             return false;
         }
-        return canAccessEntryFolder(this.folderLevelPermissions, target.page.location.folderId, "d");
+        // Folder-level permissions are skipped when FLP is not in use for the identity (e.g. API
+        // keys) or the page is in the root folder, as the ACO CMS decorators do.
+        if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
+            return true;
+        }
+        const folderId = target.page.location.folderId;
+        if (!folderId || folderId === ROOT_FOLDER) {
+            return true;
+        }
+        const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
+        return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "d" });
     }
 }
 

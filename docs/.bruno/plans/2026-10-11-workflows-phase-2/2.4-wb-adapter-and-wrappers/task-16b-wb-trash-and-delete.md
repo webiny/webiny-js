@@ -2,7 +2,7 @@
 
 Spec 9.3, D134 points 1 and 3, R52, R56, R73, R81, A26, A34. The `wb.page` mirror of Task 10b, on the Website Builder page events (WB trashes and deletes pages through CMS `DeleteEntryUseCase`, but the CMS rules skip the private page model, R52):
 
-- `BlockPageTrashWhileInReview` (`PageBeforeTrash`) and `BlockPageDeleteWhileInReview` (`PageBeforeDelete`, the permanent delete of a trashed page): with a pages workflow bound, refused with `Workflows/Review/ActiveReviewOnTrash` (action `trash` / `delete`) while any revision of the page has an in-progress review; lookups fail closed. They reuse the CMS package's `listInProgressTargetReviews` (Task 10b). WB publishes these events outside a `try`, so the refusal rejects the use case's promise (A26); phase 3 maps it in the WB resolvers. On OpenSearch a just-created workflow may not be listed yet (A29), so for that window the model reads as unbound and the rule fails open (an accepted race, like D15): the bound-workflow lookup fails closed on a read error (A38), not on lag.
+- `BlockPageTrashWhileInReview` (`PageBeforeTrash`) and `BlockPageDeleteWhileInReview` (`PageBeforeDelete`, the permanent delete of a trashed page): with a pages workflow bound, refused with `Workflows/Review/ActiveReviewOnTrash` (action `trash` / `delete`) while any revision of the page has an in-progress review; lookups fail closed. Each handler asks `GetBoundWorkflowUseCase` first and then lists the page's reviews inline, as the CMS handlers do (Task 10b); lookup failures are thrown. WB publishes these events outside a `try`, so the refusal rejects the use case's promise (A26); phase 3 maps it in the WB resolvers. On OpenSearch a just-created workflow may not be listed yet (A29), so for that window the model reads as unbound and the rule fails open (an accepted race, like D15): the bound-workflow lookup fails closed on a read error (A38), not on lag.
 - `DeleteReviewsOnPageDelete` (`PageAfterDelete`): deletes every review of the page with its assignment records; a failure is logged and the delete stands (R81). `DeletePage` is the only permanent delete of a page: `EmptyTrashBinTask` lists non-private models only (`packages/api-headless-cms-bulk-actions/src/tasks/EmptyTrashBinTask.ts`), so a future bin purge for pages must call this cleanup too (said in the handler's doc).
 
 With D134 a page cannot reach the trash with a review in progress, so the `PageBeforeDelete` refusal only guards races; it is pinned by calling the registered handler directly.
@@ -15,7 +15,7 @@ With D134 a page cannot reach the trash with a review in progress, so the `PageB
 - Create: `packages/api-website-builder-workflows/__tests__/target/WbPageTrashAndDelete.test.ts`
 
 **Interfaces:**
-- Consumes: `PageBeforeTrashEventHandler` (`@webiny/api-website-builder/features/pages/TrashPage/index.js`), `PageBeforeDeleteEventHandler`, `PageAfterDeleteEventHandler` (`.../DeletePage/index.js`), `PageBeforeDeleteEvent` (`.../DeletePage/events.js`, test), `TrashPageUseCase`, `DeletePageUseCase`, `listInProgressTargetReviews` (`@webiny/api-headless-cms-workflows/features/hooks/listInProgressTargetReviews.js`, Task 10b), `GetBoundWorkflowUseCase`, `ListTargetReviewsUseCase`, `DeleteTargetReviewsUseCase`, `ReviewActiveOnTrashError`, `toBlockingReview`, `Logger`.
+- Consumes: `PageBeforeTrashEventHandler` (`@webiny/api-website-builder/features/pages/TrashPage/index.js`), `PageBeforeDeleteEventHandler`, `PageAfterDeleteEventHandler` (`.../DeletePage/index.js`), `PageBeforeDeleteEvent` (`.../DeletePage/events.js`, test), `TrashPageUseCase`, `DeletePageUseCase`, `GetBoundWorkflowUseCase`, `ListTargetReviewsUseCase`, `DeleteTargetReviewsUseCase`, `ReviewActiveOnTrashError`, `toBlockingReview`, `Logger`.
 - Produces: three handlers registered by `WbHooksFeature`.
 
 - [ ] **Step 1: Write the failing test**
@@ -210,7 +210,6 @@ import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow
 import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
 import { ReviewActiveOnTrashError } from "@webiny/api-workflows/domain/review/errors.js";
 import { toBlockingReview } from "@webiny/api-workflows/domain/review/toBlockingReview.js";
-import { listInProgressTargetReviews } from "@webiny/api-headless-cms-workflows/features/hooks/listInProgressTargetReviews.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
 
 /**
@@ -226,10 +225,22 @@ class BlockPageTrashWhileInReviewImpl implements PageBeforeTrashEventHandler.Int
 
     public async handle(event: PageBeforeTrashEventHandler.Event): Promise<void> {
         const { page } = event.payload;
-        const inProgress = await listInProgressTargetReviews(
-            { getBoundWorkflow: this.getBoundWorkflow, listTargetReviews: this.listTargetReviews },
-            { model: WB_PAGE_NAMESPACE, targetId: page.entryId }
-        );
+        const bound = await this.getBoundWorkflow.execute({ model: WB_PAGE_NAMESPACE });
+        if (bound.isFail()) {
+            throw bound.error;
+        }
+        if (!bound.value) {
+            return;
+        }
+
+        const reviews = await this.listTargetReviews.execute({
+            model: WB_PAGE_NAMESPACE,
+            targetId: page.entryId
+        });
+        if (reviews.isFail()) {
+            throw reviews.error;
+        }
+        const inProgress = reviews.value.filter(review => review.state === "inProgress");
         if (inProgress.length === 0) {
             return;
         }
@@ -256,7 +267,6 @@ import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow
 import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
 import { ReviewActiveOnTrashError } from "@webiny/api-workflows/domain/review/errors.js";
 import { toBlockingReview } from "@webiny/api-workflows/domain/review/toBlockingReview.js";
-import { listInProgressTargetReviews } from "@webiny/api-headless-cms-workflows/features/hooks/listInProgressTargetReviews.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
 
 /**
@@ -271,10 +281,22 @@ class BlockPageDeleteWhileInReviewImpl implements PageBeforeDeleteEventHandler.I
 
     public async handle(event: PageBeforeDeleteEventHandler.Event): Promise<void> {
         const { page } = event.payload;
-        const inProgress = await listInProgressTargetReviews(
-            { getBoundWorkflow: this.getBoundWorkflow, listTargetReviews: this.listTargetReviews },
-            { model: WB_PAGE_NAMESPACE, targetId: page.entryId }
-        );
+        const bound = await this.getBoundWorkflow.execute({ model: WB_PAGE_NAMESPACE });
+        if (bound.isFail()) {
+            throw bound.error;
+        }
+        if (!bound.value) {
+            return;
+        }
+
+        const reviews = await this.listTargetReviews.execute({
+            model: WB_PAGE_NAMESPACE,
+            targetId: page.entryId
+        });
+        if (reviews.isFail()) {
+            throw reviews.error;
+        }
+        const inProgress = reviews.value.filter(review => review.state === "inProgress");
         if (inProgress.length === 0) {
             return;
         }

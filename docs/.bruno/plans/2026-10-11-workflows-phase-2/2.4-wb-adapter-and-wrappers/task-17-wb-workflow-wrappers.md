@@ -26,7 +26,7 @@ Spec 4.1, 8, D78, D115, D131, D132, D133, R45, R46, R57-R60, R76, R78, R80. The 
 - Create: `packages/api-website-builder-workflows/__tests__/wrappers/workflowWrappers.test.ts`
 
 **Interfaces:**
-- Consumes: as Task 12 (incl. `keepReadableBlockingReviews`, `belongsToApp`, `isAppWorkflow` from Task 6b), with `WbPageTargetReader` and `WbPageAccess` (Task 15) instead of the CMS ones.
+- Consumes: as Task 12 (incl. `ReadableBlockingReviewsService` (`MAX_BLOCKING_REVIEWS`, `MAX_BLOCKING_REVIEW_CHECKS`), `belongsToApp`, `isAppWorkflow` from Task 6b), with `WbPageTargetReader` and `WbPageAccess` (Task 15) instead of the CMS ones.
 - Produces:
   - `shared/wbWorkflows.ts`: `isWbPageNamespace(model: string): boolean`, `belongsToWb(models: string[]): boolean`, `isWbWorkflow(workflow: WorkflowValues): boolean`, `WB_PAGES_ONLY` message.
   - Test helper `RecordingEventPublisher` + `recordedEvents` (same content as the CMS package's, Task 12).
@@ -493,8 +493,7 @@ import {
     WorkflowHasActiveReviewsError,
     WorkflowNotFoundError
 } from "@webiny/api-workflows/domain/workflow/errors.js";
-import type { WorkflowBlockingReview } from "@webiny/api-workflows/domain/workflow/types.js";
-import { keepReadableBlockingReviews } from "@webiny/api-workflows/domain/workflow/keepReadableBlockingReviews.js";
+import { ReadableBlockingReviewsService } from "@webiny/api-workflows/features/workflow/ReadableBlockingReviews/index.js";
 import { WbPageTargetReader } from "~/features/target/WbPageTargetReader/index.js";
 import { WbPageAccess } from "~/features/target/WbPageAccess/index.js";
 import { isWbWorkflow } from "../shared/wbWorkflows.js";
@@ -507,7 +506,8 @@ class DeleteWebsiteBuilderPageWorkflowUseCaseImpl implements UseCase.Interface {
         private getWorkflow: GetWorkflowUseCase.Interface,
         private deleteWorkflow: DeleteWorkflowUseCase.Interface,
         private targets: WbPageTargetReader.Interface,
-        private access: WbPageAccess.Interface
+        private access: WbPageAccess.Interface,
+        private readableBlockingReviews: ReadableBlockingReviewsService.Interface
     ) {}
 
     public async execute(input: UseCase.Input): UseCase.Return {
@@ -530,23 +530,22 @@ class DeleteWebsiteBuilderPageWorkflowUseCaseImpl implements UseCase.Interface {
         const deleted = await this.deleteWorkflow.execute({ id: input.id, actor: actor.value });
         if (deleted.isFail() && deleted.error instanceof WorkflowHasActiveReviewsError) {
             // The first 5 the caller can read, at most 50 checked; the count stays exact (D115, R76).
-            const reviews = await keepReadableBlockingReviews(deleted.error.data.reviews, review => {
-                return this.canRead(review);
-            });
+            // A failed read throws, which the service counts as unreadable.
+            const reviews = await this.readableBlockingReviews.filter(
+                deleted.error.data.reviews,
+                async review => {
+                    const target = await this.targets.read({
+                        model: review.model,
+                        targetRevisionId: review.targetRevisionId
+                    });
+                    return target !== null && (await this.access.canRead(target));
+                }
+            );
             return Result.fail(
                 new WorkflowHasActiveReviewsError({ count: deleted.error.data.count, reviews })
             );
         }
         return deleted;
-    }
-
-    /** Read access of the caller to one blocking review's page; a failed read throws (unreadable). */
-    private async canRead(review: WorkflowBlockingReview): Promise<boolean> {
-        const target = await this.targets.read({
-            model: review.model,
-            targetRevisionId: review.targetRevisionId
-        });
-        return target !== null && (await this.access.canRead(target));
     }
 }
 
@@ -558,7 +557,8 @@ export const DeleteWebsiteBuilderPageWorkflowUseCase = UseCase.createImplementat
         GetWorkflowUseCase,
         DeleteWorkflowUseCase,
         WbPageTargetReader,
-        WbPageAccess
+        WbPageAccess,
+        ReadableBlockingReviewsService
     ]
 });
 ```

@@ -1,6 +1,6 @@
 ### Task 14: CMS start, take over, approve, reject and cancel wrappers
 
-Spec 5.1 (wrapper column), D25, D54, D133 points 5 and 7, 1b R41, R45, R79. Five wrappers on top of `CmsEntryReviewGuard` (Task 13): the guard establishes the viewer, the `cms.*` review and read access; the wrapper passes the viewer's actor and team ids to the engine. Cancel additionally needs `canCancelByPermission` (requester or `reassign`); state errors stay the engine's (a finished review fails with `Workflows/Review/InvalidState`, not "not authorized", for the requester and for a `reassign` holder alike). Ends with the API-key end-to-end tests carried from 1b: a real stored API key, authenticated by its token through api-core's `ApiKeyAuthenticator` and authorized by `ApiKeyAuthorizer` (R79, A27).
+Spec 5.1 (wrapper column), D25, D54, D133 points 5 and 7, 1b R41, R45, R79. Five wrappers on top of `CmsEntryReviewGuardService` (Task 13): the guard establishes the viewer, the `cms.*` review and read access; the wrapper passes the viewer's actor and team ids to the engine. Cancel additionally needs `canCancelByPermission` (requester or `reassign`); state errors stay the engine's (a finished review fails with `Workflows/Review/InvalidState`, not "not authorized", for the requester and for a `reassign` holder alike). Ends with the API-key end-to-end tests carried from 1b: a real stored API key, authenticated by its token through api-core's `ApiKeyAuthenticator` and authorized by `ApiKeyAuthorizer` (R79, A27).
 
 **Files:**
 - Create: `packages/api-headless-cms-workflows/src/features/wrappers/StartCmsEntryReviewStep/abstractions.ts`
@@ -27,7 +27,7 @@ Spec 5.1 (wrapper column), D25, D54, D133 points 5 and 7, 1b R41, R45, R79. Five
 - Create: `packages/api-headless-cms-workflows/__tests__/wrappers/reviewTransitions.test.ts`
 
 **Interfaces:**
-- Consumes: `CmsEntryReviewGuard` (Task 13), `StartReviewStepUseCase`, `TakeOverReviewStepUseCase`, `ApproveReviewStepUseCase`, `RejectReviewStepUseCase`, `CancelReviewUseCase` (1a), `canCancelByPermission` (1b), `ReviewTargetReadAccess` (Task 6, registration test), `CreateApiKeyUseCase` (`@webiny/api-core/features/security/apiKeys/CreateApiKey/index.js`), `AuthenticationContext` (`@webiny/api-core/features/security/authentication/AuthenticationContext/index.js`), `IdentityContext` (tests).
+- Consumes: `CmsEntryReviewGuardService` (Task 13), `StartReviewStepUseCase`, `TakeOverReviewStepUseCase`, `ApproveReviewStepUseCase`, `RejectReviewStepUseCase`, `CancelReviewUseCase` (1a), `canCancelByPermission` (1b), `ReviewTargetReadAccess` (Task 6, registration test), `CreateApiKeyUseCase` (`@webiny/api-core/features/security/apiKeys/CreateApiKey/index.js`), `AuthenticationContext` (`@webiny/api-core/features/security/authentication/AuthenticationContext/index.js`), `IdentityContext` (tests).
 - Produces:
   - `StartCmsEntryReviewStepUseCase`, `TakeOverCmsEntryReviewStepUseCase`: `execute(input: { reviewId: string; stepId: string }): Promise<Result<ReviewData, Error>>` (`StartCmsEntryReviewStepInput`, `TakeOverCmsEntryReviewStepInput`).
   - `ApproveCmsEntryReviewStepUseCase`, `RejectCmsEntryReviewStepUseCase`: `execute(input: { reviewId: string; stepId: string; comment?: string | null })` (`ApproveCmsEntryReviewStepInput`, `RejectCmsEntryReviewStepInput`).
@@ -395,7 +395,7 @@ Create `packages/api-headless-cms-workflows/src/features/wrappers/StartCmsEntryR
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import type { StartReviewStepUseCase } from "@webiny/api-workflows/features/review/StartReviewStep/index.js";
-import type { CmsEntryReviewGuard } from "../CmsEntryReviewGuard/index.js";
+import type { CmsEntryReviewGuardService } from "../CmsEntryReviewGuardService/index.js";
 
 export interface StartCmsEntryReviewStepInput {
     reviewId: string;
@@ -403,7 +403,7 @@ export interface StartCmsEntryReviewStepInput {
 }
 
 export interface IStartCmsEntryReviewStepUseCaseErrors {
-    guard: CmsEntryReviewGuard.Error;
+    guard: CmsEntryReviewGuardService.Error;
     start: StartReviewStepUseCase.Error;
 }
 
@@ -435,12 +435,12 @@ Create `packages/api-headless-cms-workflows/src/features/wrappers/StartCmsEntryR
 ```ts
 import { Result } from "@webiny/feature/api";
 import { StartReviewStepUseCase } from "@webiny/api-workflows/features/review/StartReviewStep/index.js";
-import { CmsEntryReviewGuard } from "../CmsEntryReviewGuard/index.js";
+import { CmsEntryReviewGuardService } from "../CmsEntryReviewGuardService/index.js";
 import { StartCmsEntryReviewStepUseCase as UseCase } from "./abstractions.js";
 
 class StartCmsEntryReviewStepUseCaseImpl implements UseCase.Interface {
     public constructor(
-        private guard: CmsEntryReviewGuard.Interface,
+        private guard: CmsEntryReviewGuardService.Interface,
         private startStep: StartReviewStepUseCase.Interface
     ) {}
 
@@ -465,7 +465,7 @@ class StartCmsEntryReviewStepUseCaseImpl implements UseCase.Interface {
 
 export const StartCmsEntryReviewStepUseCase = UseCase.createImplementation({
     implementation: StartCmsEntryReviewStepUseCaseImpl,
-    dependencies: [CmsEntryReviewGuard, StartReviewStepUseCase]
+    dependencies: [CmsEntryReviewGuardService, StartReviewStepUseCase]
 });
 ```
 
@@ -498,7 +498,7 @@ Create `packages/api-headless-cms-workflows/src/features/wrappers/TakeOverCmsEnt
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import type { TakeOverReviewStepUseCase } from "@webiny/api-workflows/features/review/TakeOverReviewStep/index.js";
-import type { CmsEntryReviewGuard } from "../CmsEntryReviewGuard/index.js";
+import type { CmsEntryReviewGuardService } from "../CmsEntryReviewGuardService/index.js";
 
 export interface TakeOverCmsEntryReviewStepInput {
     reviewId: string;
@@ -506,7 +506,7 @@ export interface TakeOverCmsEntryReviewStepInput {
 }
 
 export interface ITakeOverCmsEntryReviewStepUseCaseErrors {
-    guard: CmsEntryReviewGuard.Error;
+    guard: CmsEntryReviewGuardService.Error;
     takeOver: TakeOverReviewStepUseCase.Error;
 }
 
@@ -537,12 +537,12 @@ Create `packages/api-headless-cms-workflows/src/features/wrappers/TakeOverCmsEnt
 ```ts
 import { Result } from "@webiny/feature/api";
 import { TakeOverReviewStepUseCase } from "@webiny/api-workflows/features/review/TakeOverReviewStep/index.js";
-import { CmsEntryReviewGuard } from "../CmsEntryReviewGuard/index.js";
+import { CmsEntryReviewGuardService } from "../CmsEntryReviewGuardService/index.js";
 import { TakeOverCmsEntryReviewStepUseCase as UseCase } from "./abstractions.js";
 
 class TakeOverCmsEntryReviewStepUseCaseImpl implements UseCase.Interface {
     public constructor(
-        private guard: CmsEntryReviewGuard.Interface,
+        private guard: CmsEntryReviewGuardService.Interface,
         private takeOverStep: TakeOverReviewStepUseCase.Interface
     ) {}
 
@@ -567,7 +567,7 @@ class TakeOverCmsEntryReviewStepUseCaseImpl implements UseCase.Interface {
 
 export const TakeOverCmsEntryReviewStepUseCase = UseCase.createImplementation({
     implementation: TakeOverCmsEntryReviewStepUseCaseImpl,
-    dependencies: [CmsEntryReviewGuard, TakeOverReviewStepUseCase]
+    dependencies: [CmsEntryReviewGuardService, TakeOverReviewStepUseCase]
 });
 ```
 
@@ -600,7 +600,7 @@ Create `packages/api-headless-cms-workflows/src/features/wrappers/ApproveCmsEntr
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import type { ApproveReviewStepUseCase } from "@webiny/api-workflows/features/review/ApproveReviewStep/index.js";
-import type { CmsEntryReviewGuard } from "../CmsEntryReviewGuard/index.js";
+import type { CmsEntryReviewGuardService } from "../CmsEntryReviewGuardService/index.js";
 
 export interface ApproveCmsEntryReviewStepInput {
     reviewId: string;
@@ -609,7 +609,7 @@ export interface ApproveCmsEntryReviewStepInput {
 }
 
 export interface IApproveCmsEntryReviewStepUseCaseErrors {
-    guard: CmsEntryReviewGuard.Error;
+    guard: CmsEntryReviewGuardService.Error;
     approve: ApproveReviewStepUseCase.Error;
 }
 
@@ -637,12 +637,12 @@ Create `packages/api-headless-cms-workflows/src/features/wrappers/ApproveCmsEntr
 ```ts
 import { Result } from "@webiny/feature/api";
 import { ApproveReviewStepUseCase } from "@webiny/api-workflows/features/review/ApproveReviewStep/index.js";
-import { CmsEntryReviewGuard } from "../CmsEntryReviewGuard/index.js";
+import { CmsEntryReviewGuardService } from "../CmsEntryReviewGuardService/index.js";
 import { ApproveCmsEntryReviewStepUseCase as UseCase } from "./abstractions.js";
 
 class ApproveCmsEntryReviewStepUseCaseImpl implements UseCase.Interface {
     public constructor(
-        private guard: CmsEntryReviewGuard.Interface,
+        private guard: CmsEntryReviewGuardService.Interface,
         private approveStep: ApproveReviewStepUseCase.Interface
     ) {}
 
@@ -668,7 +668,7 @@ class ApproveCmsEntryReviewStepUseCaseImpl implements UseCase.Interface {
 
 export const ApproveCmsEntryReviewStepUseCase = UseCase.createImplementation({
     implementation: ApproveCmsEntryReviewStepUseCaseImpl,
-    dependencies: [CmsEntryReviewGuard, ApproveReviewStepUseCase]
+    dependencies: [CmsEntryReviewGuardService, ApproveReviewStepUseCase]
 });
 ```
 
@@ -699,7 +699,7 @@ Create `packages/api-headless-cms-workflows/src/features/wrappers/RejectCmsEntry
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import type { RejectReviewStepUseCase } from "@webiny/api-workflows/features/review/RejectReviewStep/index.js";
-import type { CmsEntryReviewGuard } from "../CmsEntryReviewGuard/index.js";
+import type { CmsEntryReviewGuardService } from "../CmsEntryReviewGuardService/index.js";
 
 export interface RejectCmsEntryReviewStepInput {
     reviewId: string;
@@ -708,7 +708,7 @@ export interface RejectCmsEntryReviewStepInput {
 }
 
 export interface IRejectCmsEntryReviewStepUseCaseErrors {
-    guard: CmsEntryReviewGuard.Error;
+    guard: CmsEntryReviewGuardService.Error;
     reject: RejectReviewStepUseCase.Error;
 }
 
@@ -737,12 +737,12 @@ Create `packages/api-headless-cms-workflows/src/features/wrappers/RejectCmsEntry
 ```ts
 import { Result } from "@webiny/feature/api";
 import { RejectReviewStepUseCase } from "@webiny/api-workflows/features/review/RejectReviewStep/index.js";
-import { CmsEntryReviewGuard } from "../CmsEntryReviewGuard/index.js";
+import { CmsEntryReviewGuardService } from "../CmsEntryReviewGuardService/index.js";
 import { RejectCmsEntryReviewStepUseCase as UseCase } from "./abstractions.js";
 
 class RejectCmsEntryReviewStepUseCaseImpl implements UseCase.Interface {
     public constructor(
-        private guard: CmsEntryReviewGuard.Interface,
+        private guard: CmsEntryReviewGuardService.Interface,
         private rejectStep: RejectReviewStepUseCase.Interface
     ) {}
 
@@ -768,7 +768,7 @@ class RejectCmsEntryReviewStepUseCaseImpl implements UseCase.Interface {
 
 export const RejectCmsEntryReviewStepUseCase = UseCase.createImplementation({
     implementation: RejectCmsEntryReviewStepUseCaseImpl,
-    dependencies: [CmsEntryReviewGuard, RejectReviewStepUseCase]
+    dependencies: [CmsEntryReviewGuardService, RejectReviewStepUseCase]
 });
 ```
 
@@ -802,14 +802,14 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import type { WorkflowsNotAuthorizedError } from "@webiny/api-workflows/domain/permissions/errors.js";
 import type { CancelReviewUseCase } from "@webiny/api-workflows/features/review/CancelReview/index.js";
-import type { CmsEntryReviewGuard } from "../CmsEntryReviewGuard/index.js";
+import type { CmsEntryReviewGuardService } from "../CmsEntryReviewGuardService/index.js";
 
 export interface CancelCmsEntryReviewInput {
     reviewId: string;
 }
 
 export interface ICancelCmsEntryReviewUseCaseErrors {
-    guard: CmsEntryReviewGuard.Error;
+    guard: CmsEntryReviewGuardService.Error;
     notAuthorized: WorkflowsNotAuthorizedError;
     cancel: CancelReviewUseCase.Error;
 }
@@ -844,12 +844,12 @@ import { Result } from "@webiny/feature/api";
 import { CancelReviewUseCase } from "@webiny/api-workflows/features/review/CancelReview/index.js";
 import { canCancelByPermission } from "@webiny/api-workflows/domain/review/canCancelByPermission.js";
 import { WorkflowsNotAuthorizedError } from "@webiny/api-workflows/domain/permissions/errors.js";
-import { CmsEntryReviewGuard } from "../CmsEntryReviewGuard/index.js";
+import { CmsEntryReviewGuardService } from "../CmsEntryReviewGuardService/index.js";
 import { CancelCmsEntryReviewUseCase as UseCase } from "./abstractions.js";
 
 class CancelCmsEntryReviewUseCaseImpl implements UseCase.Interface {
     public constructor(
-        private guard: CmsEntryReviewGuard.Interface,
+        private guard: CmsEntryReviewGuardService.Interface,
         private cancelReview: CancelReviewUseCase.Interface
     ) {}
 
@@ -878,7 +878,7 @@ class CancelCmsEntryReviewUseCaseImpl implements UseCase.Interface {
 
 export const CancelCmsEntryReviewUseCase = UseCase.createImplementation({
     implementation: CancelCmsEntryReviewUseCaseImpl,
-    dependencies: [CmsEntryReviewGuard, CancelReviewUseCase]
+    dependencies: [CmsEntryReviewGuardService, CancelReviewUseCase]
 });
 ```
 

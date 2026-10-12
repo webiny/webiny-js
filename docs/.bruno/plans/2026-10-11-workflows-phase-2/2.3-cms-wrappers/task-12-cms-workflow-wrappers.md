@@ -32,7 +32,7 @@ Spec 4.1, 8, D78, D115, D131, D132, D133, R45, R46, R57-R60, R76, R78, R80. Four
 - Create: `packages/api-headless-cms-workflows/__tests__/wrappers/workflowWrappers.test.ts`
 
 **Interfaces:**
-- Consumes: `CurrentReviewViewer` (`getActor()`), `WorkflowsPermissions` (`canEdit()`), `GetWorkflowUseCase`, `ListWorkflowsUseCase`, `StoreWorkflowUseCase` (Task 2), `DeleteWorkflowUseCase` (Tasks 2, 3), `keepReadableBlockingReviews`, `belongsToApp`, `isAppWorkflow` (Task 6b), `CmsEntryTargetReader`, `CmsEntryAccess` (Task 7), errors from `@webiny/api-workflows/domain/{permissions,workflow}/errors.js`, `EventPublisher` (test).
+- Consumes: `CurrentReviewViewer` (`getActor()`), `WorkflowsPermissions` (`canEdit()`), `GetWorkflowUseCase`, `ListWorkflowsUseCase`, `StoreWorkflowUseCase` (Task 2), `DeleteWorkflowUseCase` (Tasks 2, 3), `ReadableBlockingReviewsService` (`MAX_BLOCKING_REVIEWS`, `MAX_BLOCKING_REVIEW_CHECKS`), `belongsToApp`, `isAppWorkflow` (Task 6b), `CmsEntryTargetReader`, `CmsEntryAccess` (Task 7), errors from `@webiny/api-workflows/domain/{permissions,workflow}/errors.js`, `EventPublisher` (test).
 - Produces:
   - `shared/cmsWorkflows.ts`: `belongsToCms(models: string[]): boolean`, `isCmsWorkflow(workflow: WorkflowValues): boolean` (the Task 6b helpers with `isCmsNamespace`), `CMS_MODELS_ONLY` message.
   - `StoreCmsEntryWorkflowUseCase.Interface.execute(input: StoreCmsEntryWorkflowInput): Promise<Result<Workflow, Error>>`, `StoreCmsEntryWorkflowInput { workflow: WorkflowValues; savedOn?: string | null }`.
@@ -585,8 +585,7 @@ import {
     WorkflowHasActiveReviewsError,
     WorkflowNotFoundError
 } from "@webiny/api-workflows/domain/workflow/errors.js";
-import type { WorkflowBlockingReview } from "@webiny/api-workflows/domain/workflow/types.js";
-import { keepReadableBlockingReviews } from "@webiny/api-workflows/domain/workflow/keepReadableBlockingReviews.js";
+import { ReadableBlockingReviewsService } from "@webiny/api-workflows/features/workflow/ReadableBlockingReviews/index.js";
 import { CmsEntryTargetReader } from "~/features/target/CmsEntryTargetReader/index.js";
 import { CmsEntryAccess } from "~/features/target/CmsEntryAccess/index.js";
 import { isCmsWorkflow } from "../shared/cmsWorkflows.js";
@@ -599,7 +598,8 @@ class DeleteCmsEntryWorkflowUseCaseImpl implements UseCase.Interface {
         private getWorkflow: GetWorkflowUseCase.Interface,
         private deleteWorkflow: DeleteWorkflowUseCase.Interface,
         private targets: CmsEntryTargetReader.Interface,
-        private access: CmsEntryAccess.Interface
+        private access: CmsEntryAccess.Interface,
+        private readableBlockingReviews: ReadableBlockingReviewsService.Interface
     ) {}
 
     public async execute(input: UseCase.Input): UseCase.Return {
@@ -622,23 +622,22 @@ class DeleteCmsEntryWorkflowUseCaseImpl implements UseCase.Interface {
         const deleted = await this.deleteWorkflow.execute({ id: input.id, actor: actor.value });
         if (deleted.isFail() && deleted.error instanceof WorkflowHasActiveReviewsError) {
             // The first 5 the caller can read, at most 50 checked; the count stays exact (D115, R76).
-            const reviews = await keepReadableBlockingReviews(deleted.error.data.reviews, review => {
-                return this.canRead(review);
-            });
+            // A failed read throws, which the service counts as unreadable.
+            const reviews = await this.readableBlockingReviews.filter(
+                deleted.error.data.reviews,
+                async review => {
+                    const target = await this.targets.read({
+                        model: review.model,
+                        targetRevisionId: review.targetRevisionId
+                    });
+                    return target !== null && (await this.access.canRead(target));
+                }
+            );
             return Result.fail(
                 new WorkflowHasActiveReviewsError({ count: deleted.error.data.count, reviews })
             );
         }
         return deleted;
-    }
-
-    /** Read access of the caller to one blocking review's target; a failed read throws (unreadable). */
-    private async canRead(review: WorkflowBlockingReview): Promise<boolean> {
-        const target = await this.targets.read({
-            model: review.model,
-            targetRevisionId: review.targetRevisionId
-        });
-        return target !== null && (await this.access.canRead(target));
     }
 }
 
@@ -650,7 +649,8 @@ export const DeleteCmsEntryWorkflowUseCase = UseCase.createImplementation({
         GetWorkflowUseCase,
         DeleteWorkflowUseCase,
         CmsEntryTargetReader,
-        CmsEntryAccess
+        CmsEntryAccess,
+        ReadableBlockingReviewsService
     ]
 });
 ```

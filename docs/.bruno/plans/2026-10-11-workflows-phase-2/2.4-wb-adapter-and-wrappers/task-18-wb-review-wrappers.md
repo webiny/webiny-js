@@ -1,11 +1,11 @@
 ### Task 18: WB review guard and review wrappers
 
-Spec 5.1, 5.3, D25, D77, D133 points 1, 5 and 7, 1b R41, R45-R47, R61, R62, R75, R79. The Website Builder mirror of Tasks 13 and 14: `WbPageReviewGuard` (viewer → review → `wb.page` only → read access to the page) and seven wrappers. The request wrapper takes no `model` (Website Builder has the one namespace `wb.page`). Like WB's own `UpdatePageUseCase`, it checks the entity-level page write permission (`WbPageAccess.canWriteAnyPage()`) before it loads the page, so a user without page permissions gets `Workflows/NotAuthorized` for a missing and an existing page alike and learns nothing about which pages exist (R75, A25); a user with page permissions gets `Workflows/Review/TargetNotFound` for a missing page. Ends with the API-key end-to-end tests (a real stored key and its token through api-core's `ApiKeyAuthenticator`, R79) and a registration test for the package (Task 18b adds its wrapper to it).
+Spec 5.1, 5.3, D25, D77, D133 points 1, 5 and 7, 1b R41, R45-R47, R61, R62, R75, R79. The Website Builder mirror of Tasks 13 and 14: `WbPageReviewGuardService` (viewer → review → `wb.page` only → read access to the page) and seven wrappers. The request wrapper takes no `model` (Website Builder has the one namespace `wb.page`). Like WB's own `UpdatePageUseCase`, it checks the entity-level page write permission (`WbPageAccess.canWriteAnyPage()`) before it loads the page, so a user without page permissions gets `Workflows/NotAuthorized` for a missing and an existing page alike and learns nothing about which pages exist (R75, A25); a user with page permissions gets `Workflows/Review/TargetNotFound` for a missing page. Ends with the API-key end-to-end tests (a real stored key and its token through api-core's `ApiKeyAuthenticator`, R79) and a registration test for the package (Task 18b adds its wrapper to it).
 
 **Files:**
-- Create: `packages/api-website-builder-workflows/src/features/wrappers/WbPageReviewGuard/abstractions.ts`
-- Create: `packages/api-website-builder-workflows/src/features/wrappers/WbPageReviewGuard/WbPageReviewGuard.ts`
-- Create: `packages/api-website-builder-workflows/src/features/wrappers/WbPageReviewGuard/index.ts`
+- Create: `packages/api-website-builder-workflows/src/features/wrappers/WbPageReviewGuardService/abstractions.ts`
+- Create: `packages/api-website-builder-workflows/src/features/wrappers/WbPageReviewGuardService/WbPageReviewGuardService.ts`
+- Create: `packages/api-website-builder-workflows/src/features/wrappers/WbPageReviewGuardService/index.ts`
 - Create: `packages/api-website-builder-workflows/src/features/wrappers/RequestWebsiteBuilderPageReview/{abstractions.ts,RequestWebsiteBuilderPageReviewUseCase.ts,feature.ts,index.ts}`
 - Create: `packages/api-website-builder-workflows/src/features/wrappers/GetWebsiteBuilderPageReview/{abstractions.ts,GetWebsiteBuilderPageReviewUseCase.ts,feature.ts,index.ts}`
 - Create: `packages/api-website-builder-workflows/src/features/wrappers/StartWebsiteBuilderPageReviewStep/{abstractions.ts,StartWebsiteBuilderPageReviewStepUseCase.ts,feature.ts,index.ts}`
@@ -22,7 +22,7 @@ Spec 5.1, 5.3, D25, D77, D133 points 1, 5 and 7, 1b R41, R45-R47, R61, R62, R75,
 **Interfaces:**
 - Consumes: `CurrentReviewViewer`, `GetReviewUseCase`, `RequestReviewUseCase`, the five transition use cases, `getReviewViewerFlags`, `applyTargetAccess`, `canCancelByPermission`, `WbPageTargetReader`, `WbPageAccess` incl. `canWriteAnyPage()` (Task 15), `ReviewWithViewerFlags`, `ReviewTargetReadAccess` (Task 6), `CreateApiKeyUseCase`, `AuthenticationContext`, `IdentityContext` (tests).
 - Produces:
-  - `WbPageReviewGuard.Interface { authorize(params: WbPageReviewGuardParams): Promise<Result<AuthorizedWbPageReview, WbPageReviewGuard.Error>> }`, `WbPageReviewGuardParams { reviewId: string; action: string }`, `AuthorizedWbPageReview { review: ReviewData; viewer: ReviewViewer }`.
+  - `WbPageReviewGuardService.Interface { authorize(params: WbPageReviewGuardServiceParams): Promise<Result<AuthorizedWbPageReview, WbPageReviewGuardService.Error>> }`, `WbPageReviewGuardServiceParams { reviewId: string; action: string }`, `AuthorizedWbPageReview { review: ReviewData; viewer: ReviewViewer }`.
   - `RequestWebsiteBuilderPageReviewUseCase` (`RequestWebsiteBuilderPageReviewInput { targetId: string; targetRevisionId: string; picks?: ReviewPick[] }`), `GetWebsiteBuilderPageReviewUseCase` (`GetWebsiteBuilderPageReviewInput { id: string }` → `ReviewWithViewerFlags`), `StartWebsiteBuilderPageReviewStepUseCase`, `TakeOverWebsiteBuilderPageReviewStepUseCase` (`{ reviewId; stepId }`), `ApproveWebsiteBuilderPageReviewStepUseCase`, `RejectWebsiteBuilderPageReviewStepUseCase` (`{ reviewId; stepId; comment?: string | null }`), `CancelWebsiteBuilderPageReviewUseCase` (`{ reviewId }`).
   - Action texts as in Task 14.
 
@@ -488,7 +488,7 @@ Expected: FAIL, cannot resolve `~/features/wrappers/RequestWebsiteBuilderPageRev
 
 - [ ] **Step 3: The review guard**
 
-Create `packages/api-website-builder-workflows/src/features/wrappers/WbPageReviewGuard/abstractions.ts`:
+Create `packages/api-website-builder-workflows/src/features/wrappers/WbPageReviewGuardService/abstractions.ts`:
 
 ```ts
 import { createAbstraction, type Result } from "@webiny/feature/api";
@@ -502,7 +502,7 @@ import type {
     ReviewPersistenceError
 } from "@webiny/api-workflows/domain/review/errors.js";
 
-export interface WbPageReviewGuardParams {
+export interface WbPageReviewGuardServiceParams {
     reviewId: string;
     /** What the caller tries to do, e.g. "start this step"; named in `Workflows/NotAuthorized`. */
     action: string;
@@ -513,35 +513,35 @@ export interface AuthorizedWbPageReview {
     viewer: ReviewViewer;
 }
 
-export interface IWbPageReviewGuardErrors {
+export interface IWbPageReviewGuardServiceErrors {
     notAuthenticated: WorkflowsNotAuthenticatedError;
     notAuthorized: WorkflowsNotAuthorizedError;
     notFound: ReviewNotFoundError;
     persistence: ReviewPersistenceError;
 }
 
-type GuardError = IWbPageReviewGuardErrors[keyof IWbPageReviewGuardErrors];
+type GuardError = IWbPageReviewGuardServiceErrors[keyof IWbPageReviewGuardServiceErrors];
 
-export interface IWbPageReviewGuard {
-    authorize(params: WbPageReviewGuardParams): Promise<Result<AuthorizedWbPageReview, GuardError>>;
+export interface IWbPageReviewGuardService {
+    authorize(params: WbPageReviewGuardServiceParams): Promise<Result<AuthorizedWbPageReview, GuardError>>;
 }
 
 /**
  * The checks every page review action shares (spec 5.1, D133 point 7): a signed-in viewer, a
  * `wb.page` review (another app's review is not found, R46) and read access to the page (R47).
  */
-export const WbPageReviewGuard = createAbstraction<IWbPageReviewGuard>("WbPageReviewGuard");
+export const WbPageReviewGuardService = createAbstraction<IWbPageReviewGuardService>("WbPageReviewGuardService");
 
-export namespace WbPageReviewGuard {
-    export type Interface = IWbPageReviewGuard;
-    export type Params = WbPageReviewGuardParams;
+export namespace WbPageReviewGuardService {
+    export type Interface = IWbPageReviewGuardService;
+    export type Params = WbPageReviewGuardServiceParams;
     export type Authorized = AuthorizedWbPageReview;
     export type Error = GuardError;
     export type Return = Promise<Result<AuthorizedWbPageReview, GuardError>>;
 }
 ```
 
-Create `packages/api-website-builder-workflows/src/features/wrappers/WbPageReviewGuard/WbPageReviewGuard.ts`:
+Create `packages/api-website-builder-workflows/src/features/wrappers/WbPageReviewGuardService/WbPageReviewGuardService.ts`:
 
 ```ts
 import { Result } from "@webiny/feature/api";
@@ -552,9 +552,9 @@ import { ReviewNotFoundError } from "@webiny/api-workflows/domain/review/errors.
 import { WbPageTargetReader } from "~/features/target/WbPageTargetReader/index.js";
 import { WbPageAccess } from "~/features/target/WbPageAccess/index.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
-import { WbPageReviewGuard as Abstraction } from "./abstractions.js";
+import { WbPageReviewGuardService as Abstraction } from "./abstractions.js";
 
-class WbPageReviewGuardImpl implements Abstraction.Interface {
+class WbPageReviewGuardServiceImpl implements Abstraction.Interface {
     public constructor(
         private viewer: CurrentReviewViewer.Interface,
         private getReview: GetReviewUseCase.Interface,
@@ -588,16 +588,16 @@ class WbPageReviewGuardImpl implements Abstraction.Interface {
     }
 }
 
-export const WbPageReviewGuard = Abstraction.createImplementation({
-    implementation: WbPageReviewGuardImpl,
+export const WbPageReviewGuardService = Abstraction.createImplementation({
+    implementation: WbPageReviewGuardServiceImpl,
     dependencies: [CurrentReviewViewer, GetReviewUseCase, WbPageTargetReader, WbPageAccess]
 });
 ```
 
-Create `packages/api-website-builder-workflows/src/features/wrappers/WbPageReviewGuard/index.ts`:
+Create `packages/api-website-builder-workflows/src/features/wrappers/WbPageReviewGuardService/index.ts`:
 
 ```ts
-export { WbPageReviewGuard } from "./abstractions.js";
+export { WbPageReviewGuardService } from "./abstractions.js";
 ```
 
 - [ ] **Step 4: RequestWebsiteBuilderPageReview**
@@ -742,14 +742,14 @@ Create `packages/api-website-builder-workflows/src/features/wrappers/GetWebsiteB
 ```ts
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewWithViewerFlags } from "@webiny/api-workflows/domain/review/types.js";
-import type { WbPageReviewGuard } from "../WbPageReviewGuard/index.js";
+import type { WbPageReviewGuardService } from "../WbPageReviewGuardService/index.js";
 
 export interface GetWebsiteBuilderPageReviewInput {
     id: string;
 }
 
 export interface IGetWebsiteBuilderPageReviewUseCaseErrors {
-    guard: WbPageReviewGuard.Error;
+    guard: WbPageReviewGuardService.Error;
 }
 
 type UseCaseError =
@@ -779,11 +779,11 @@ Create `packages/api-website-builder-workflows/src/features/wrappers/GetWebsiteB
 import { Result } from "@webiny/feature/api";
 import { getReviewViewerFlags } from "@webiny/api-workflows/domain/review/getReviewViewerFlags.js";
 import { applyTargetAccess } from "@webiny/api-workflows/domain/review/applyTargetAccess.js";
-import { WbPageReviewGuard } from "../WbPageReviewGuard/index.js";
+import { WbPageReviewGuardService } from "../WbPageReviewGuardService/index.js";
 import { GetWebsiteBuilderPageReviewUseCase as UseCase } from "./abstractions.js";
 
 class GetWebsiteBuilderPageReviewUseCaseImpl implements UseCase.Interface {
-    public constructor(private guard: WbPageReviewGuard.Interface) {}
+    public constructor(private guard: WbPageReviewGuardService.Interface) {}
 
     public async execute(input: UseCase.Input): UseCase.Return {
         const authorized = await this.guard.authorize({
@@ -803,7 +803,7 @@ class GetWebsiteBuilderPageReviewUseCaseImpl implements UseCase.Interface {
 
 export const GetWebsiteBuilderPageReviewUseCase = UseCase.createImplementation({
     implementation: GetWebsiteBuilderPageReviewUseCaseImpl,
-    dependencies: [WbPageReviewGuard]
+    dependencies: [WbPageReviewGuardService]
 });
 ```
 
@@ -836,7 +836,7 @@ Create `packages/api-website-builder-workflows/src/features/wrappers/StartWebsit
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import type { StartReviewStepUseCase } from "@webiny/api-workflows/features/review/StartReviewStep/index.js";
-import type { WbPageReviewGuard } from "../WbPageReviewGuard/index.js";
+import type { WbPageReviewGuardService } from "../WbPageReviewGuardService/index.js";
 
 export interface StartWebsiteBuilderPageReviewStepInput {
     reviewId: string;
@@ -844,7 +844,7 @@ export interface StartWebsiteBuilderPageReviewStepInput {
 }
 
 export interface IStartWebsiteBuilderPageReviewStepUseCaseErrors {
-    guard: WbPageReviewGuard.Error;
+    guard: WbPageReviewGuardService.Error;
     start: StartReviewStepUseCase.Error;
 }
 
@@ -876,12 +876,12 @@ Create `packages/api-website-builder-workflows/src/features/wrappers/StartWebsit
 ```ts
 import { Result } from "@webiny/feature/api";
 import { StartReviewStepUseCase } from "@webiny/api-workflows/features/review/StartReviewStep/index.js";
-import { WbPageReviewGuard } from "../WbPageReviewGuard/index.js";
+import { WbPageReviewGuardService } from "../WbPageReviewGuardService/index.js";
 import { StartWebsiteBuilderPageReviewStepUseCase as UseCase } from "./abstractions.js";
 
 class StartWebsiteBuilderPageReviewStepUseCaseImpl implements UseCase.Interface {
     public constructor(
-        private guard: WbPageReviewGuard.Interface,
+        private guard: WbPageReviewGuardService.Interface,
         private startStep: StartReviewStepUseCase.Interface
     ) {}
 
@@ -906,7 +906,7 @@ class StartWebsiteBuilderPageReviewStepUseCaseImpl implements UseCase.Interface 
 
 export const StartWebsiteBuilderPageReviewStepUseCase = UseCase.createImplementation({
     implementation: StartWebsiteBuilderPageReviewStepUseCaseImpl,
-    dependencies: [WbPageReviewGuard, StartReviewStepUseCase]
+    dependencies: [WbPageReviewGuardService, StartReviewStepUseCase]
 });
 ```
 
@@ -937,7 +937,7 @@ Create `packages/api-website-builder-workflows/src/features/wrappers/TakeOverWeb
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import type { TakeOverReviewStepUseCase } from "@webiny/api-workflows/features/review/TakeOverReviewStep/index.js";
-import type { WbPageReviewGuard } from "../WbPageReviewGuard/index.js";
+import type { WbPageReviewGuardService } from "../WbPageReviewGuardService/index.js";
 
 export interface TakeOverWebsiteBuilderPageReviewStepInput {
     reviewId: string;
@@ -945,7 +945,7 @@ export interface TakeOverWebsiteBuilderPageReviewStepInput {
 }
 
 export interface ITakeOverWebsiteBuilderPageReviewStepUseCaseErrors {
-    guard: WbPageReviewGuard.Error;
+    guard: WbPageReviewGuardService.Error;
     takeOver: TakeOverReviewStepUseCase.Error;
 }
 
@@ -977,12 +977,12 @@ Create `packages/api-website-builder-workflows/src/features/wrappers/TakeOverWeb
 ```ts
 import { Result } from "@webiny/feature/api";
 import { TakeOverReviewStepUseCase } from "@webiny/api-workflows/features/review/TakeOverReviewStep/index.js";
-import { WbPageReviewGuard } from "../WbPageReviewGuard/index.js";
+import { WbPageReviewGuardService } from "../WbPageReviewGuardService/index.js";
 import { TakeOverWebsiteBuilderPageReviewStepUseCase as UseCase } from "./abstractions.js";
 
 class TakeOverWebsiteBuilderPageReviewStepUseCaseImpl implements UseCase.Interface {
     public constructor(
-        private guard: WbPageReviewGuard.Interface,
+        private guard: WbPageReviewGuardService.Interface,
         private takeOverStep: TakeOverReviewStepUseCase.Interface
     ) {}
 
@@ -1007,7 +1007,7 @@ class TakeOverWebsiteBuilderPageReviewStepUseCaseImpl implements UseCase.Interfa
 
 export const TakeOverWebsiteBuilderPageReviewStepUseCase = UseCase.createImplementation({
     implementation: TakeOverWebsiteBuilderPageReviewStepUseCaseImpl,
-    dependencies: [WbPageReviewGuard, TakeOverReviewStepUseCase]
+    dependencies: [WbPageReviewGuardService, TakeOverReviewStepUseCase]
 });
 ```
 
@@ -1040,7 +1040,7 @@ Create `packages/api-website-builder-workflows/src/features/wrappers/ApproveWebs
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import type { ApproveReviewStepUseCase } from "@webiny/api-workflows/features/review/ApproveReviewStep/index.js";
-import type { WbPageReviewGuard } from "../WbPageReviewGuard/index.js";
+import type { WbPageReviewGuardService } from "../WbPageReviewGuardService/index.js";
 
 export interface ApproveWebsiteBuilderPageReviewStepInput {
     reviewId: string;
@@ -1049,7 +1049,7 @@ export interface ApproveWebsiteBuilderPageReviewStepInput {
 }
 
 export interface IApproveWebsiteBuilderPageReviewStepUseCaseErrors {
-    guard: WbPageReviewGuard.Error;
+    guard: WbPageReviewGuardService.Error;
     approve: ApproveReviewStepUseCase.Error;
 }
 
@@ -1081,12 +1081,12 @@ Create `packages/api-website-builder-workflows/src/features/wrappers/ApproveWebs
 ```ts
 import { Result } from "@webiny/feature/api";
 import { ApproveReviewStepUseCase } from "@webiny/api-workflows/features/review/ApproveReviewStep/index.js";
-import { WbPageReviewGuard } from "../WbPageReviewGuard/index.js";
+import { WbPageReviewGuardService } from "../WbPageReviewGuardService/index.js";
 import { ApproveWebsiteBuilderPageReviewStepUseCase as UseCase } from "./abstractions.js";
 
 class ApproveWebsiteBuilderPageReviewStepUseCaseImpl implements UseCase.Interface {
     public constructor(
-        private guard: WbPageReviewGuard.Interface,
+        private guard: WbPageReviewGuardService.Interface,
         private approveStep: ApproveReviewStepUseCase.Interface
     ) {}
 
@@ -1112,7 +1112,7 @@ class ApproveWebsiteBuilderPageReviewStepUseCaseImpl implements UseCase.Interfac
 
 export const ApproveWebsiteBuilderPageReviewStepUseCase = UseCase.createImplementation({
     implementation: ApproveWebsiteBuilderPageReviewStepUseCaseImpl,
-    dependencies: [WbPageReviewGuard, ApproveReviewStepUseCase]
+    dependencies: [WbPageReviewGuardService, ApproveReviewStepUseCase]
 });
 ```
 
@@ -1143,7 +1143,7 @@ Create `packages/api-website-builder-workflows/src/features/wrappers/RejectWebsi
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import type { RejectReviewStepUseCase } from "@webiny/api-workflows/features/review/RejectReviewStep/index.js";
-import type { WbPageReviewGuard } from "../WbPageReviewGuard/index.js";
+import type { WbPageReviewGuardService } from "../WbPageReviewGuardService/index.js";
 
 export interface RejectWebsiteBuilderPageReviewStepInput {
     reviewId: string;
@@ -1152,7 +1152,7 @@ export interface RejectWebsiteBuilderPageReviewStepInput {
 }
 
 export interface IRejectWebsiteBuilderPageReviewStepUseCaseErrors {
-    guard: WbPageReviewGuard.Error;
+    guard: WbPageReviewGuardService.Error;
     reject: RejectReviewStepUseCase.Error;
 }
 
@@ -1184,12 +1184,12 @@ Create `packages/api-website-builder-workflows/src/features/wrappers/RejectWebsi
 ```ts
 import { Result } from "@webiny/feature/api";
 import { RejectReviewStepUseCase } from "@webiny/api-workflows/features/review/RejectReviewStep/index.js";
-import { WbPageReviewGuard } from "../WbPageReviewGuard/index.js";
+import { WbPageReviewGuardService } from "../WbPageReviewGuardService/index.js";
 import { RejectWebsiteBuilderPageReviewStepUseCase as UseCase } from "./abstractions.js";
 
 class RejectWebsiteBuilderPageReviewStepUseCaseImpl implements UseCase.Interface {
     public constructor(
-        private guard: WbPageReviewGuard.Interface,
+        private guard: WbPageReviewGuardService.Interface,
         private rejectStep: RejectReviewStepUseCase.Interface
     ) {}
 
@@ -1215,7 +1215,7 @@ class RejectWebsiteBuilderPageReviewStepUseCaseImpl implements UseCase.Interface
 
 export const RejectWebsiteBuilderPageReviewStepUseCase = UseCase.createImplementation({
     implementation: RejectWebsiteBuilderPageReviewStepUseCaseImpl,
-    dependencies: [WbPageReviewGuard, RejectReviewStepUseCase]
+    dependencies: [WbPageReviewGuardService, RejectReviewStepUseCase]
 });
 ```
 
@@ -1249,14 +1249,14 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import type { WorkflowsNotAuthorizedError } from "@webiny/api-workflows/domain/permissions/errors.js";
 import type { CancelReviewUseCase } from "@webiny/api-workflows/features/review/CancelReview/index.js";
-import type { WbPageReviewGuard } from "../WbPageReviewGuard/index.js";
+import type { WbPageReviewGuardService } from "../WbPageReviewGuardService/index.js";
 
 export interface CancelWebsiteBuilderPageReviewInput {
     reviewId: string;
 }
 
 export interface ICancelWebsiteBuilderPageReviewUseCaseErrors {
-    guard: WbPageReviewGuard.Error;
+    guard: WbPageReviewGuardService.Error;
     notAuthorized: WorkflowsNotAuthorizedError;
     cancel: CancelReviewUseCase.Error;
 }
@@ -1292,12 +1292,12 @@ import { Result } from "@webiny/feature/api";
 import { CancelReviewUseCase } from "@webiny/api-workflows/features/review/CancelReview/index.js";
 import { canCancelByPermission } from "@webiny/api-workflows/domain/review/canCancelByPermission.js";
 import { WorkflowsNotAuthorizedError } from "@webiny/api-workflows/domain/permissions/errors.js";
-import { WbPageReviewGuard } from "../WbPageReviewGuard/index.js";
+import { WbPageReviewGuardService } from "../WbPageReviewGuardService/index.js";
 import { CancelWebsiteBuilderPageReviewUseCase as UseCase } from "./abstractions.js";
 
 class CancelWebsiteBuilderPageReviewUseCaseImpl implements UseCase.Interface {
     public constructor(
-        private guard: WbPageReviewGuard.Interface,
+        private guard: WbPageReviewGuardService.Interface,
         private cancelReview: CancelReviewUseCase.Interface
     ) {}
 
@@ -1326,7 +1326,7 @@ class CancelWebsiteBuilderPageReviewUseCaseImpl implements UseCase.Interface {
 
 export const CancelWebsiteBuilderPageReviewUseCase = UseCase.createImplementation({
     implementation: CancelWebsiteBuilderPageReviewUseCaseImpl,
-    dependencies: [WbPageReviewGuard, CancelReviewUseCase]
+    dependencies: [WbPageReviewGuardService, CancelReviewUseCase]
 });
 ```
 
@@ -1357,7 +1357,7 @@ Replace `packages/api-website-builder-workflows/src/features/wrappers/feature.ts
 
 ```ts
 import { createFeature } from "@webiny/feature/api";
-import { WbPageReviewGuard } from "./WbPageReviewGuard/WbPageReviewGuard.js";
+import { WbPageReviewGuardService } from "./WbPageReviewGuardService/WbPageReviewGuardService.js";
 import { StoreWebsiteBuilderPageWorkflowFeature } from "./StoreWebsiteBuilderPageWorkflow/feature.js";
 import { DeleteWebsiteBuilderPageWorkflowFeature } from "./DeleteWebsiteBuilderPageWorkflow/feature.js";
 import { ListWebsiteBuilderPageWorkflowsFeature } from "./ListWebsiteBuilderPageWorkflows/feature.js";
@@ -1377,7 +1377,7 @@ import { CancelWebsiteBuilderPageReviewFeature } from "./CancelWebsiteBuilderPag
 export const WbWrappersFeature = createFeature({
     name: "WebsiteBuilderWorkflows/Wrappers",
     register(container) {
-        container.register(WbPageReviewGuard);
+        container.register(WbPageReviewGuardService);
 
         // Workflows
         StoreWebsiteBuilderPageWorkflowFeature.register(container);
