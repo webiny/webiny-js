@@ -3,49 +3,61 @@
 Scan: `gitleaks git --verbose` (gitleaks 8.30.1), branch `next`, 2026-10-09.
 21,834 commits scanned, **109 findings**, **39 unique values**.
 
-> Note: the current `.gitleaks.toml` fails to load
-> (`[[allowlists]] must contain at least one check for: commits, paths, regexes, or stopwords`).
-> The `exclude` key is not a valid allowlist field. The scan used a temporary config with only
-> `[extend] useDefault = true`. The fix is to use `regexes`, `paths`, `stopwords` or `commits`.
+Status (2026-10-12): **all findings reviewed and resolved.** `gitleaks git` with `.gitleaks.toml` reports no leaks.
+`gitleaks dir` reports no leaks in tracked files.
 
 Secret values in this file are cut to 8 characters. Run gitleaks locally to see full values.
+Each real-looking key has a Where / URLs / Verified / Action comment in `.gitleaks.toml`.
 
-"Verdict" is a first guess only. We confirm each one together.
+## How findings are allowlisted
+
+- **Made-up and test values still in the codebase:** exact-value `regexes` (L01, L02, L17, L28, L29).
+- **Vendored Yarn bundles:** `paths` (L18, L24).
+- **Old commits with test fixtures and file keys only:** one `commits` list.
+- **Real-looking keys:** one `[[allowlists]]` block per key, by `commits`.
 
 ## Summary
 
-| ID | Rule | Hits | Where | In HEAD | Verdict (guess) |
-|----|------|------|-------|---------|-----------------|
-| L01 | azure-ad-client-secret | 5 | `skills/user-skills/configure-entraid/SKILL.md` (5 commits) | yes | False positive. Doc says "made up example values". |
-| L02 | generic-api-key | 1 | `packages/api-wcp/__tests__/utils.test.ts` | no | False positive. Test UUID. |
-| L03 | generic-api-key | 2 | `packages-utils/webiny-file-storage-s3/tests/s3MockResponses.js` | no | False positive. S3 mock continuation token (already in old `exclude`). |
-| L04 | generic-api-key | 1 | `packages/api-wcp/src/utils.ts` | no | Check. WCP API key UUID in source (2022). |
-| L05 | generic-api-key | 6 | `api-security-*/__tests__/mocks/securityUser.js` | no | False positive. File key (`*.jpg`). |
-| L06 | generic-api-key | 1 | `apps/admin/code/src/App.editor.tsx` | no | False positive. File key (`*.jpg`). |
-| L07–L13 | generic-api-key | 8 | `api-page-builder/.../welcome-to-webiny-page-data.ts`, `api-file-manager/.../v5.0.0` | no | False positive. File keys (`*.svg`, `*.jpg`). |
-| L14 | generic-api-key | 3 | `packages/api-headless-cms/IDEAS.md`, `packages/webiny-api-headless/IDEAS.md` | no | Check. `access_token=` in example URL (2020). |
-| L15 | generic-api-key | 1 | `.npmrc` | no | **Likely real.** npm `_authToken` committed 2018. Verify revoked. |
-| L16 | generic-api-key | 1 | `packages/api-mailer/__tests__/password.test.ts` | no | False positive. Test password. |
-| L17 | generic-api-key | 6 | `api-prerendering-service/__tests__/.../extractPeLoaderDataFromHtml.test.ts` | no | False positive. HTML `data-key` attribute. |
-| L18 | generic-api-key | 3 | `.yarn/releases/yarn-3.6.*.cjs`, `create-webiny-project/utils/binaries/yarn-3.6.4.cjs` | no | False positive. Minified Yarn bundle. |
-| L19 | generic-api-key | 6 | telemetry/tracking (`packages/telemetry`, `packages/tracking`, `app-template`, `apps/site`) | no | Check. Telemetry write key; probably public by design. |
-| L20 | generic-api-key | 2 | `postman.json` | no | **Likely real.** Kibo/Mozu token in Postman export (wip ecommerce commit, 2025). |
-| L21 | generic-api-key | 6 | `pagesFilesData.json/.js` (page builder install data) | no | False positive. File key (`*.jpeg`). |
-| L22 | generic-api-key | 1 | `nextjs/__mocks__/stories/userMock.ts` | no | **Check.** Kibo `refreshToken` in mock (same wip commit as L20). |
-| L23 | generic-api-key | 2 | `api-security/__tests__/{personalAccessTokens,validateAccessToken}.test.js` | no | False positive. Test PAT. |
-| L24 | generic-api-key | 1 | `.yarn/releases/yarn-3.1.0.cjs` | no | False positive. Minified Yarn bundle. |
-| L25 | generic-api-key | 4 | `packages/app-website-builder/planning/*.js` | yes | Check. `apiKey` + Bearer for SpaceX example data source. Likely dummy. |
-| L26 | generic-api-key | 1 | `project-utils/__tests__/bundling/function/telemetryFunction.test.ts` | no | False positive. Test constant `VALID_API_KEY`. |
-| L27 | generic-api-key | 1 | `packages/pulumi-aws/src/apps/api/ApiCloudfront.ts` | no | False positive. Resource name `fm-bucket-…`. |
-| L28 | generic-api-key | 6 | `extensions/MyApiKey.ts`, `MarkdownContentBuilder.test.ts`, `webiny-sdk` skill docs | yes | False positive. Placeholder `wat_12345678`. |
-| L29 | generic-api-key | 31 | `packages/webhooks/__tests__/**`, `docs/superpowers/plans/*webhook*` | yes | False positive. Test signing secret (base64 of `testsecret`). |
-| L30–L33 | github-pat | 4 | `packages/cli-plugin-scaffold-ci/src/**` | no | **Likely real.** `ghp_` tokens (2021). Verify revoked. |
-| L34–L35 | jwt | 2 | `kiboAuthToken.ts`, `app-website-builder/.../useGetEcommerceSettings.ts` | no | **Check.** Kibo commerce JWT (2025). Probably expired. |
-| L36 | jwt | 1 | `packages/api-headless-cms/src/content/plugins/authentication.ts` | no | Check. Webiny user JWT (2020). Probably dev token, expired. |
-| L37 | jwt | 1 | `examples/spa/NewClient/Frontend/app.js` | no | Check. Webiny user JWT (2018). Probably dev token, expired. |
-| L38–L39 | jwt | 2 | `nextjs/__mocks__/stories/userMock.ts` | no | **Check.** Kibo JWTs in mock (same wip commit as L20). |
+| ID | Rule | Hits | Where | In HEAD | Result |
+|----|------|------|-------|---------|--------|
+| L01 | azure-ad-client-secret | 5 | `skills/user-skills/configure-entraid/SKILL.md` | yes | Made-up example value. Allowlisted by value. |
+| L02 | generic-api-key | 1 | `packages/api-wcp/__tests__/utils.test.ts` (now `packages/api-core/__tests__/wcp/utils.test.ts`) | yes | Dummy test value. Allowlisted by value. |
+| L03 | generic-api-key | 2 | `packages-utils/webiny-file-storage-s3/tests/s3MockResponses.js` | no | S3 mock token. Old test fixture. |
+| L04 | generic-api-key | 1 | `packages/api-wcp/src/utils.ts` (`5584544a48`, 2022) | no | Safe. WCP dev environment key, removed 2 hours later in `1ebc376880`. Dev endpoint `d16nfk35w3a3cu.cloudfront.net` no longer resolves. |
+| L05–L13 | generic-api-key | 15 | security mocks, `App.editor.tsx`, page builder install data, file manager upgrade | no | File keys (`*.jpg`, `*.svg`). Old fixtures. |
+| L14 | generic-api-key | 3 | `packages/{webiny-api-headless,api-headless-cms}/IDEAS.md` (2019–2020) | no | Safe. Contentful delivery token is still active (HTTP 200), but read-only and for a test space. Accepted. |
+| L15 | generic-api-key | 1 | `.npmrc` (`1b8335aa7a`, 2018) | no | Safe. Token for internal Verdaccio registry `webiny-npm:4873`, long gone. |
+| L16 | generic-api-key | 1 | `packages/api-mailer/__tests__/password.test.ts` | no | Test password. |
+| L17 | generic-api-key | 6 | `api-prerendering-service/__tests__/.../extractPeLoaderDataFromHtml.test.ts` | yes | HTML `data-key` attribute. Allowlisted by value. |
+| L18, L24 | generic-api-key | 4 | `.yarn/releases/*.cjs`, `create-webiny-project/utils/binaries/yarn-*.cjs` | no | Minified Yarn bundles. Allowlisted by path. |
+| L19 | generic-api-key | 6 | telemetry / tracking packages (2020–2021) | no | Safe. Write-only telemetry key, public by design. Removed in `16b0da12a4` (2024-03). Current `@webiny/wts-client` sends no key. |
+| L20 | generic-api-key | 2 | `postman.json` (`2b9830fd10`, 2025) | no | Flagged value is a Marketo tracking cookie. See "Kibo" below. |
+| L21 | generic-api-key | 6 | `pagesFilesData.json/.js` | no | File keys (`*.jpeg`). Old fixtures. |
+| L22 | generic-api-key | 1 | `nextjs/__mocks__/stories/userMock.ts` (2025) | no | Kibo refresh token, expired 2022. See "Kibo" below. |
+| L23 | generic-api-key | 2 | `api-security/__tests__/*.test.js` | no | Test PAT. |
+| L25 | generic-api-key | 4 | `packages/app-website-builder/planning/*.js` | yes | Placeholder (SpaceX API v5 needs no key). Replaced with `your-api-key`. History allowlisted by commit. |
+| L26 | generic-api-key | 1 | `project-utils/__tests__/.../telemetryFunction.test.ts` | no | Test constant. |
+| L27 | generic-api-key | 1 | `packages/pulumi-aws/src/apps/api/ApiCloudfront.ts` | no | Resource name, not a secret. |
+| L28 | generic-api-key | 6 | `extensions/MyApiKey.ts`, SDK skill docs, tests | yes | Placeholder `wat_12345678`. Allowlisted by value. |
+| L29 | generic-api-key | 31 | `packages/webhooks/__tests__/**`, webhook plan docs | yes | Test signing secret. Allowlisted by value. |
+| L30–L33 | github-pat | 4 | `packages/cli-plugin-scaffold-ci/src/**` (2021) | no | Safe. GitHub API returns 401 for all 4 tokens (checked 2026-10-09). Revoked. |
+| L34–L35 | jwt | 2 | `kiboAuthToken.ts`, `useGetEcommerceSettings.ts` (2025) | no | Kibo access tokens, expired 2025-06-12 and 2025-07-10. See "Kibo" below. |
+| L36–L37 | jwt | 2 | `api-headless-cms/.../authentication.ts`, `examples/spa/.../app.js` | no | Webiny user JWTs, expired 2020-07-23 and 2018-04-17. |
+| L38–L39 | jwt | 2 | `nextjs/__mocks__/stories/userMock.ts` (2025) | no | Kibo access tokens, expired 2022. See "Kibo" below. |
 
 "In HEAD" = file still exists on `next`. "no" = only in history.
+
+## Kibo credentials (not flagged by gitleaks)
+
+`postman.json` in commit `2b9830fd10` (Pavel, 2025-06-12, "wip: ecommerce plugin") also holds a Kibo
+OAuth credential pair at lines 220–234: `apihost`, `applicationKey` (client_id) and `sharedSecret` (client_secret).
+Gitleaks does not flag it because the key name and the value are on separate JSON lines.
+The file was deleted in `e53eceafb5` (2025-07-29). It stays in public history.
+
+- Commit: https://github.com/webiny/webiny-js/commit/2b9830fd10014d173b4aca58c50bd078c0754fb1
+- File: https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/postman.json#L220-L234
+
+Result: accepted as safe (2026-10-10). Pavel confirmed the Kibo keys are old and not in use.
 
 ## Details
 
