@@ -62,7 +62,8 @@ Result: accepted as safe (2026-10-10). Pavel confirmed the Kibo keys are old and
 ## TruffleHog cross-check
 
 Scan: `trufflehog git file://. --no-verification --json` (trufflehog 3.99.2), 2026-10-12.
-195 hits, 0 verified (no network calls). Gitleaks does not flag any of these, so `.gitleaks.toml` needs no change.
+195 hits, 0 verified (no network calls). The default gitleaks rules do not flag T01-T03. The custom rules below now do,
+and T01-T03 are allowlisted by commit in `.gitleaks.toml`.
 
 ### Real credentials missed by gitleaks (all dead)
 
@@ -93,6 +94,23 @@ T03 was not flagged by TruffleHog either. It was found while inspecting the zip 
 - `URI` (19): `user:pass@` example URLs in library docs inside the zips, and test URLs in `packages/validation/__tests__/url.test.js`.
 - `Box` (4): Adobe `mbox=session#...` cookie in `postman.json`, and random strings in an SVG and `package-lock.json`.
 - `Circle` (2), `Sirv` (1), `Netlify` (1): random strings in `node_modules.zip`, an SVG and `Comments.tsx`.
+
+## Custom gitleaks rules
+
+Added 2026-10-12 to `.gitleaks.toml`. They cover secret formats the default rules missed in this review.
+Tested against full history before adding.
+
+| Rule | Catches | Would have caught | Allowlist |
+|------|---------|-------------------|-----------|
+| `json-key-value-secret` | `{"key": "...secret/token/password/apiKey/clientId...", "value": "..."}` pairs, also across lines (Postman environments) | Kibo `applicationKey` and `sharedSecret` in `postman.json` | entropy >= 3.0 |
+| `connection-string-credentials` | `mongodb`, `postgres`, `mysql`, `mariadb`, `redis`, `amqp` URIs with `user:password@` | T01, T02 | placeholders `{...}`, `<...>`, `${...}` |
+| `config-password` | `password: "..."` / `password = "..."` with 8+ characters | T03 | entropy >= 3.5; skips `__tests__/`, `__mocks__/`, `*.test.*` |
+
+Test run before tuning: 16 new hits. 6 real (T01, T02, T03 in 3 commits, all dead), 10 false positives
+(test files for `config-password`, and the `CONTRIBUTING.md` placeholder for `connection-string-credentials`).
+After tuning and allowlisting T01-T03: `gitleaks git` and `gitleaks dir` report no leaks.
+
+Tradeoff: `config-password` ignores test files, so a real password in a test file is not caught by that rule.
 
 ## Details
 

@@ -202,3 +202,78 @@ commits = ["2b9830fd10014d173b4aca58c50bd078c0754fb1", "e7d277c945c5baf26dbc6463
 [[allowlists]]
 description = "L25 planning example API key"
 regexes = ["""^f1a790f8c3204b3b8c5c1795aeac4660$"""]
+
+# T01: MongoDB Atlas connection string (found by TruffleHog and rule connection-string-credentials)
+#   Where:    scripts/setupCiCypress.js L14, commit 12bf97a40c (Adrian, 2020-08-02). User adrian, cluster adriantest-kvgdz.
+#   URLs:
+#             https://github.com/webiny/webiny-js/blob/12bf97a40c52518c0983746a0f95c877b4025f42/scripts/setupCiCypress.js#L14
+#   Verified: 2026-10-12. SRV record _mongodb._tcp.adriantest-kvgdz.mongodb.net returns NXDOMAIN. Cluster deleted.
+#   Action:   accepted as safe (2026-10-12).
+[[allowlists]]
+description = "T01 MongoDB Atlas test cluster (deleted)"
+commits = ["12bf97a40c52518c0983746a0f95c877b4025f42"]
+
+# T02: MongoDB Atlas connection string (found by TruffleHog and rule connection-string-credentials)
+#   Where:    serverless.yaml L32, commit 4281032220 (Pavel, 2019-08-04). User webiny-sls, cluster webiny-sls-ddei2.
+#   URLs:
+#             https://github.com/webiny/webiny-js/blob/4281032220eb2a2c2a04083ab343129c2d0c4cbf/serverless.yaml#L32
+#   Verified: 2026-10-12. SRV record _mongodb._tcp.webiny-sls-ddei2.mongodb.net returns NXDOMAIN. Cluster deleted.
+#   Action:   accepted as safe (2026-10-12).
+[[allowlists]]
+description = "T02 MongoDB Atlas cluster (deleted)"
+commits = ["4281032220eb2a2c2a04083ab343129c2d0c4cbf"]
+
+# T03: RDS MySQL production password (found while checking TruffleHog hits, and by rule config-password)
+#   Where:    examples/api/src/configs/database.js, examples/graphql/src/configs/database.js,
+#             packages/webiny-api/src/setup/database.js, and inside examples/{api,graphql}/.serverless/webiny-demo.zip.
+#             Commits e5f8cb603a (2018-03-26), c653187fa6 (2018-04-07), 1f1f584fd6 (2018-05-16).
+#             Host webiny.c8xvs8v5ria6.eu-west-1.rds.amazonaws.com. Removed in d2e3c254fa (2018-06-25).
+#   URLs:
+#             https://github.com/webiny/webiny-js/blob/e5f8cb603acd7eaeaac337750565e3c5b0b14f81/examples/api/src/configs/database.js#L20
+#             https://github.com/webiny/webiny-js/blob/c653187fa6915a782cb5226e5f7950052b41e50b/examples/graphql/src/configs/database.js#L20
+#             https://github.com/webiny/webiny-js/blob/1f1f584fd6e68c96933b131cbd0f8a30ab852143/packages/webiny-api/src/setup/database.js#L20
+#   Verified: 2026-10-12. RDS host returns NXDOMAIN. Instance deleted.
+#   Action:   accepted as safe (2026-10-12).
+[[allowlists]]
+description = "T03 RDS MySQL instance (deleted)"
+commits = [
+  "e5f8cb603acd7eaeaac337750565e3c5b0b14f81",
+  "c653187fa6915a782cb5226e5f7950052b41e50b",
+  "1f1f584fd6e68c96933b131cbd0f8a30ab852143"
+]
+
+# Custom rules. They cover secret formats the default rules miss (found in the 2026-10 review).
+
+# Postman-style {"key": "...", "value": "..."} pairs. Key name and value are on separate lines.
+[[rules]]
+id = "json-key-value-secret"
+description = "Secret in a JSON {key, value} pair (Postman environment style)"
+regex = '''"key"\s*:\s*"[^"]*(?i:secret|password|passwd|token|api_?key|applicationkey|client_?id)[^"]*"\s*,\s*"value"\s*:\s*"([^"]{8,})"'''
+secretGroup = 1
+entropy = 3.0
+keywords = ["\"key\""]
+
+# Database and service URIs with an embedded password.
+[[rules]]
+id = "connection-string-credentials"
+description = "Database or service URI with an embedded password"
+regex = '''(?i)\b(?:mongodb(?:\+srv)?|postgres(?:ql)?|mysql|mariadb|redis|amqps?)://[^:\s/"']+:([^@\s/"']{6,})@[^\s"']+'''
+secretGroup = 1
+keywords = ["mongodb", "postgres", "mysql", "mariadb", "redis", "amqp"]
+
+[[rules.allowlists]]
+description = "Placeholders such as {YOUR_PASSWORD}, <password> or ${DB_PASSWORD}"
+regexes = ['''^\{.*\}$''', '''^<.*>$''', '''^\$\{.*\}$''']
+
+# Hardcoded password property in a config object.
+[[rules]]
+id = "config-password"
+description = "Hardcoded password property in a config object"
+regex = '''(?i)\bpassword\s*[:=]\s*["']([^"'\s]{8,})["']'''
+secretGroup = 1
+entropy = 3.5
+keywords = ["password"]
+
+[[rules.allowlists]]
+description = "Test files and mocks"
+paths = ['''(^|/)__tests__/''', '''(^|/)__mocks__/''', '''\.test\.[cm]?[jt]sx?$''']
