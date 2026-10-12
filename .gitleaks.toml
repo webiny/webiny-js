@@ -92,7 +92,10 @@ commits = [
 #             https://github.com/webiny/webiny-js/blob/5584544a48cc82ddfbc1936614b5a196353ef6b0/packages/api-wcp/src/utils.ts#L7
 #   Verified: 2026-10-09. Key is part of a base64 WCP_PROJECT_ENVIRONMENT for a dev environment,
 #             with WCP_APP_URL=http://localhost:3000. Local development value.
-#   Action:   TODO confirm with the WCP team that this dev environment no longer exists.
+#             Removed ~2 hours later in 1ebc376880 ("fix: remove temp env vars").
+#             WCP_API_URL was https://d16nfk35w3a3cu.cloudfront.net (dev endpoint). On 2026-10-10 the host
+#             does not resolve. Current WCP API is https://api.webiny.com.
+#   Action:   accepted as safe (2026-10-12). Key belonged to a dev WCP setup that no longer exists.
 [[allowlists]]
 description = "L04 WCP API key (2022)"
 commits = ["5584544a48cc82ddfbc1936614b5a196353ef6b0"]
