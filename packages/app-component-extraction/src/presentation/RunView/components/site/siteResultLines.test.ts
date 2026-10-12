@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { PassCountsDto, SiteResultDto } from "~/shared/types.js";
-import { pageCells, siteWideLines } from "./siteResultLines.js";
+import {
+    pageCells,
+    qualityGroups,
+    qualitySummary,
+    siteWideNotYet,
+    WCAG_QUALIFIER
+} from "./siteResultLines.js";
 
 const none = (components: number): PassCountsDto => ({
     components,
@@ -10,9 +16,17 @@ const none = (components: number): PassCountsDto => ({
     responsiveness: 0
 });
 
+const page = (path: string, seo: boolean, components: number) => ({
+    pageId: path,
+    path,
+    seo,
+    images: { files: 1, bytes: 1, byType: [{ type: "image/svg+xml", files: 1 }] },
+    passes: none(components)
+});
+
 /*
- * 71 Westland as the Site step reads it on 2026-10-12: published 2026-10-09, before sitemaps, SEO and
- * the generation passes existed. 48 image files, 2,482,229 bytes; 10 pages; 16 components.
+ * 71 Westland as the deployed query returned it on 2026-10-12: published 2026-10-09, before sitemaps,
+ * SEO and the generation passes existed. 48 image files, 2,482,229 bytes; 10 pages; 16 components.
  */
 const westland: SiteResultDto = {
     runId: "6ac902f361abbb0002c84963#0001",
@@ -43,100 +57,126 @@ const westland: SiteResultDto = {
                 ]
             },
             passes: none(7)
-        }
+        },
+        page("/apartments/ma/boston/amenities", false, 6)
     ]
 };
 
-const text = (result: SiteResultDto | null) => siteWideLines(result).map(line => line.text);
+/* The site-tenant rehearsal on 2026-10-12: a sitemap from before the source domain, SEO on 3 of 3. */
+const rehearsal: SiteResultDto = {
+    ...westland,
+    runId: "6accad34e2d54000029b484c#0001",
+    sitemap: {
+        fileId: "afce7538-907b-436b-a036-729bb098741a",
+        pages: 3,
+        url: "https://d1mp23blxyssy7.cloudfront.net/files/afce7538-907b-436b-a036-729bb098741a/sitemap.xml"
+    },
+    seo: { pages: 3, carried: 3 },
+    pages: [page("/", true, 13), page("/docs", true, 2), page("/learn", true, 1)]
+};
 
-describe("the site-wide result", () => {
-    it("says, for a site published before each item existed, that it was not done and what does it", () => {
-        expect(text(westland)).toEqual([
-            "Sitemap: not generated. Published before this was added. Publishing again generates it.",
-            "Images: 48 files, 2.4 MB (43 WebP, 2 PNG, 2 SVG, 1 GIF), kept in the format the source site served.",
-            "Page titles and descriptions: not carried over. Published before this was added. Publishing again carries them.",
-            "Accessibility pass: not applied. This site's components were generated before it existed.",
-            "Performance pass: not applied. This site's components were generated before it existed.",
-            "Responsiveness pass: not applied. This site's components were generated before it existed."
+const states = (result: SiteResultDto) => {
+    const groups = qualityGroups(result);
+    return [...groups.facts, ...groups.passes].map(item => [item.key, item.done, item.state]);
+};
+
+describe("the six qualities", () => {
+    it("on a site published before most of it existed, say which arrive at the next publish", () => {
+        expect(states(westland)).toEqual([
+            ["sitemap", false, "Arrives when you publish again"],
+            ["images", true, "48 files"],
+            ["seo", false, "Arrives when you publish again"],
+            ["accessibility", false, "Not yet"],
+            ["performance", false, "Not yet"],
+            ["responsiveness", false, "Not yet"]
         ]);
-    });
-
-    it("names the sitemap's domain: the source site's, live once it points here", () => {
-        const [sitemap] = siteWideLines({
-            ...westland,
-            sitemap: {
-                pages: 10,
-                fileId: "f",
-                url: "https://cdn.example/files/f/sitemap.xml",
-                domain: "www.71westlandapts.com"
-            }
-        });
-        expect(sitemap).toEqual({
-            key: "sitemap",
-            text: "Sitemap for www.71westlandapts.com: 10 pages, live once the domain points at this site.",
-            link: { label: "View sitemap", url: "https://cdn.example/files/f/sitemap.xml" }
+        expect(qualitySummary(qualityGroups(westland))).toEqual({
+            text: "1 of 6 on this site · 5 not yet",
+            publishPrompt: "Publishing again brings 2 of these."
         });
     });
 
-    it("says a sitemap written before it used the site's domain lists preview addresses", () => {
-        const [sitemap] = siteWideLines({
-            ...westland,
-            sitemap: { pages: 3, fileId: "f", url: "https://cdn.example/files/f/sitemap.xml" }
+    it("never promise the passes at the next publish, and name regeneration as what adds them", () => {
+        for (const item of qualityGroups(westland).passes) {
+            expect(item.arrivesOnPublish).toBeUndefined();
+            expect(item.state).not.toMatch(/publish/i);
+            expect(item.detail).toBe("The components were generated before this pass existed.");
+            expect(item.action).toBe(
+                "Regenerating the components with its instruction on adds it."
+            );
+        }
+    });
+
+    it("on the rehearsal, count a preview-address sitemap as not yet, with its link kept", () => {
+        const [sitemap, , seo] = qualityGroups(rehearsal).facts;
+        expect(sitemap).toMatchObject({
+            done: false,
+            arrivesOnPublish: true,
+            detail: "The current one lists preview addresses, not the site's own domain.",
+            link: { label: "View sitemap" }
         });
-        expect(sitemap!.text).toBe(
-            "Sitemap: lists preview addresses, not the site's own domain. Publishing again regenerates it."
+        expect(seo).toMatchObject({ done: true, detail: "From the source site, on 3 of 3 pages." });
+        expect(qualitySummary(qualityGroups(rehearsal))).toEqual({
+            text: "2 of 6 on this site · 4 not yet",
+            publishPrompt: "Publishing again brings one of these."
+        });
+    });
+
+    it("keep the WCAG qualifier on the accessibility card when the pass is applied", () => {
+        const applied = qualityGroups({
+            ...westland,
+            passes: { ...none(13), accessibility: 13, performance: 13, responsiveness: 13 }
+        }).passes;
+        expect(applied[0]).toMatchObject({
+            done: true,
+            state: "Applied in generation",
+            qualifier: WCAG_QUALIFIER
+        });
+        expect(applied[0]!.detail).toMatch(/^To 13 of 13 components\./);
+        expect(applied.map(item => item.detail).join(" ")).not.toMatch(/optimi[sz]|complian/i);
+    });
+
+    it("say responsiveness is generic wherever it is shown", () => {
+        expect(qualityGroups(westland).passes[2]!.note).toMatch(
+            /^Generic: .*No mobile capture of the source stands behind it\./
         );
-    });
-
-    it("says how many components carried a pass, with the beta label, and never calls the image line optimised", () => {
-        const lines = siteWideLines({
-            ...westland,
-            passes: { ...none(16), accessibility: 12, performance: 16, responsiveness: 16 }
-        });
-        const beta = lines.filter(line => line.beta).map(line => line.text);
-        expect(beta).toEqual([
-            "Accessibility pass applied in generation to 12 of 16 components: semantic elements, alt text from the source site, form labels, heading levels. Not checked against WCAG.",
-            "Performance pass applied in generation: image dimensions set.",
-            "Responsiveness pass applied in generation: fluid widths, no sideways scrolling, stacking at narrow widths, tap targets."
-        ]);
-        expect(lines.map(line => line.text).join(" ")).not.toMatch(/optimi[sz]/i);
-    });
-
-    it("says responsiveness is generic wherever it is shown", () => {
-        const line = siteWideLines(westland).find(item => item.key === "responsiveness")!;
-        expect(line.note).toMatch(/^Generic: .*No mobile capture of the source stands behind it\./);
-    });
-
-    it("before the first publish, says only that the sitemap comes with it", () => {
-        expect(text(null)).toEqual(["Sitemap: generated when the site is published."]);
     });
 });
 
-describe("a page's cells", () => {
-    it("say zero with why, for 71 Westland's home page", () => {
-        const cells = pageCells(westland.pages[0]!);
-        expect(cells.seo).toEqual({
-            label: "Not carried over",
-            full: "Not carried over: published before this was added. Publishing again carries them.",
-            muted: true
+describe("the page table", () => {
+    it("say a column once when it is not yet on every page", () => {
+        expect(siteWideNotYet(westland)).toEqual({
+            seo: true,
+            passes: { accessibility: true, performance: true, responsiveness: true },
+            allPasses: true
         });
-        expect(cells.images.label).toBe("11 · 10 WebP, 1 SVG");
-        expect(cells.passes.accessibility).toEqual({
-            label: "0 of 7",
-            full: "Accessibility pass: not applied. This page's components were generated before it existed.",
-            muted: true
+        expect(siteWideNotYet(rehearsal).seo).toBe(false);
+    });
+
+    it("keep per-cell states where pages differ", () => {
+        const mixed = {
+            ...westland,
+            pages: [
+                { ...westland.pages[0]!, passes: { ...none(7), accessibility: 5 } },
+                westland.pages[1]!
+            ]
+        };
+        expect(siteWideNotYet(mixed).passes).toEqual({
+            accessibility: false,
+            performance: true,
+            responsiveness: true
+        });
+        expect(pageCells(mixed.pages[0]!).passes.accessibility).toMatchObject({
+            label: "5 of 7",
+            notYet: false
+        });
+        expect(pageCells(mixed.pages[1]!).passes.accessibility).toMatchObject({
+            label: "Not yet",
+            notYet: true
         });
     });
 
-    it("count the components on this page that carried a pass", () => {
-        const cells = pageCells({
-            ...westland.pages[0]!,
-            passes: { ...none(7), accessibility: 5 }
-        });
-        expect(cells.passes.accessibility).toEqual({
-            label: "5 of 7",
-            full: "Accessibility pass applied to 5 of 7 components on this page.",
-            muted: false
-        });
+    it("write a page's images as a count with its formats", () => {
+        expect(pageCells(westland.pages[0]!).images.label).toBe("11 (10 WebP, 1 SVG)");
     });
 });

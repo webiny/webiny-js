@@ -53,7 +53,9 @@ export const caveatReasons = (signals: PageSignalsDto): string[] => {
     const reasons: string[] = [];
     if (signals.unplaced.length > 0) {
         reasons.push(
-            `${signals.unplaced.length} section${signals.unplaced.length === 1 ? "" : "s"} had no promoted component and is absent from the page`
+            signals.unplaced.length === 1
+                ? "1 section had no approved component and is absent from the page"
+                : `${signals.unplaced.length} sections had no approved component and are absent from the page`
         );
     }
     if (signals.composedInstances < signals.sourceSections) {

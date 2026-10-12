@@ -1,6 +1,18 @@
 import React, { useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Alert, Button, Dialog, Loader, Select, Text, useToast } from "@webiny/admin-ui";
+import {
+    Alert,
+    Button,
+    Dialog,
+    Loader,
+    ProgressBar,
+    Select,
+    Tag,
+    Text,
+    Tooltip,
+    useToast
+} from "@webiny/admin-ui";
+import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { ReactComponent as ExpandMoreIcon } from "@webiny/icons/expand_more.svg";
 import { ReactComponent as ExpandLessIcon } from "@webiny/icons/expand_less.svg";
 import { StatusDot } from "~/presentation/shared/StatusIndicator.js";
@@ -37,26 +49,65 @@ const FitLine = ({ fit }: { fit: ThemeFitDto }) => {
     if (fit.colours.near === undefined) {
         return null;
     }
+    const rows = [
+        {
+            label: "Colours",
+            ...fit.colours,
+            text: `${fit.colours.fitted} of ${fit.colours.measured} matched, ${fit.colours.near} near`
+        },
+        {
+            label: "Type",
+            ...fit.typeSizes,
+            text: `${fit.typeSizes.fitted} of ${fit.typeSizes.measured} matched`
+        },
+        {
+            label: "Spacing",
+            ...fit.spacing,
+            text: `${fit.spacing.fitted} of ${fit.spacing.measured} matched`
+        }
+    ];
     return (
-        <div className="flex flex-col gap-xxs">
-            <Text size="sm" className="font-medium">
-                Fits what was measured
-            </Text>
-            <Text size="sm" className="text-neutral-strong">
-                Colours {fit.colours.fitted} of {fit.colours.measured} matched, {fit.colours.near}{" "}
-                near
-            </Text>
-            <Text size="sm" className="text-neutral-strong">
-                Type {fit.typeSizes.fitted} of {fit.typeSizes.measured} · spacing{" "}
-                {fit.spacing.fitted} of {fit.spacing.measured}
-            </Text>
+        <Section label="Fits what was measured">
+            {rows.map(row => (
+                <div key={row.label} className="flex flex-col">
+                    <div className="flex items-baseline justify-between gap-xs">
+                        <Text size="sm">{row.label}</Text>
+                        <Text size="sm" className="text-neutral-strong">
+                            {row.text}
+                        </Text>
+                    </div>
+                    {/* Matched only: "near" is said in words, a second bar segment has no primitive. */}
+                    <ProgressBar value={row.fitted} max={Math.max(row.measured, 1)} />
+                </div>
+            ))}
             <Text size="sm" className="text-neutral-muted">
                 Matched: the theme has the colour the site uses. Near: it has one close to it, not
                 it.
             </Text>
-        </div>
+        </Section>
     );
 };
+
+/** One block of the card, under a small uppercase label. */
+const Section = ({
+    label,
+    aside,
+    children
+}: {
+    label: string;
+    aside?: React.ReactNode;
+    children: React.ReactNode;
+}) => (
+    <div className="flex flex-col gap-xs border-t border-neutral-dimmed pt-sm">
+        <div className="flex items-baseline justify-between gap-xs">
+            <Text size="sm" className="font-semibold uppercase text-neutral-muted">
+                {label}
+            </Text>
+            {aside}
+        </div>
+        {children}
+    </div>
+);
 
 /**
  * What extraction set, at a glance: the colours its slots resolve to and the type sizes it measured.
@@ -65,40 +116,98 @@ const FitLine = ({ fit }: { fit: ThemeFitDto }) => {
  * as what was set, not as coverage: how much of the site the theme covers is the fit line beneath it,
  * where spacing has run 8-21%. A full-looking palette must not read as a stronger claim than that.
  */
-const Snapshot = ({ snapshot }: { snapshot: ThemeSnapshot }) => {
-    if (snapshot.colours.length === 0 && snapshot.sizes.length === 0) {
+const Snapshot = ({ snapshot }: { snapshot: ThemeSnapshot | null }) => {
+    // Null while the theme loads, or if it could not be: nothing is said rather than a guess.
+    if (!snapshot) {
         return null;
     }
+    const fontLine = snapshot?.font
+        ? snapshot.font.extracted
+            ? `Font: ${snapshot.font.family}`
+            : `Font not extracted (default ${snapshot.font.family})`
+        : null;
     return (
-        <div className="flex flex-col gap-xs">
-            {snapshot.colours.length > 0 ? (
-                <div className="flex flex-col gap-xxs">
-                    <div className="flex flex-wrap gap-xxs">
-                        {snapshot.colours.map(colour => (
-                            <span
-                                key={colour.value}
-                                className="size-6 rounded-sm border border-neutral-dimmed"
-                                style={{ backgroundColor: colour.value }}
-                                title={`${colour.value} · ${colour.slots.map(slot => slot.replace(/^color\./, "")).join(", ")}`}
-                            />
+        <>
+            <Section label="Colours">
+                {snapshot.colours.length === 0 ? (
+                    <Text size="sm" className="text-neutral-strong">
+                        No colour slot differs from the default theme, so none is shown as set from
+                        the site.
+                    </Text>
+                ) : (
+                    <>
+                        <div className="flex flex-wrap gap-xxs">
+                            {snapshot.colours.map(colour => (
+                                <Tooltip
+                                    key={colour.value}
+                                    content={colour.slots
+                                        .map(slot => slot.replace(/^color\./, ""))
+                                        .join(", ")}
+                                    trigger={
+                                        <span className="cursor-default">
+                                            <Tag
+                                                variant="neutral-base-outline"
+                                                swatchColor={colour.value}
+                                                content={
+                                                    <span className="font-mono">
+                                                        {colour.value.toUpperCase()}
+                                                    </span>
+                                                }
+                                            />
+                                        </span>
+                                    }
+                                />
+                            ))}
+                        </div>
+                        <Text size="sm" className="text-neutral-strong">
+                            Colours set from the site.
+                        </Text>
+                    </>
+                )}
+            </Section>
+            {snapshot.sizes.length > 0 || fontLine ? (
+                <Section
+                    label="Type"
+                    aside={
+                        fontLine ? (
+                            <Text
+                                size="sm"
+                                className="truncate text-neutral-muted"
+                                title={fontLine}
+                            >
+                                {fontLine}
+                            </Text>
+                        ) : null
+                    }
+                >
+                    <div className="flex flex-col">
+                        {snapshot.sizes.map(({ label, size }) => (
+                            <div
+                                key={label}
+                                className="flex items-baseline justify-between gap-xs border-b border-dotted border-neutral-dimmed py-xxs"
+                            >
+                                {/* Real size, capped by the rail's width rather than scaled down. */}
+                                <span
+                                    className="min-w-0 truncate leading-tight"
+                                    style={{
+                                        fontSize: size,
+                                        fontWeight: label === "Body" ? 400 : 600
+                                    }}
+                                >
+                                    {label === "Body" ? "The quick brown fox" : "Heading"}
+                                </span>
+                                <Text
+                                    size="sm"
+                                    className="flex-shrink-0 font-mono text-neutral-muted"
+                                >
+                                    {label} {size}
+                                </Text>
+                            </div>
                         ))}
                     </div>
-                    <Text size="sm" className="text-neutral-muted">
-                        Colours set from the site
-                    </Text>
-                </div>
+                </Section>
             ) : null}
-            {snapshot.sizes.length > 0 || snapshot.font ? (
-                <Text size="sm" className="text-neutral-strong">
-                    {snapshot.sizes.map(({ label, size }) => `${label} ${size}`).join(" · ")}
-                    {snapshot.font && !snapshot.font.extracted
-                        ? `${snapshot.sizes.length > 0 ? " · " : ""}font not extracted (default ${snapshot.font.family})`
-                        : snapshot.font
-                          ? `${snapshot.sizes.length > 0 ? " · " : ""}${snapshot.font.family}`
-                          : ""}
-                </Text>
-            ) : null}
-        </div>
+        </>
     );
 };
 
@@ -180,7 +289,12 @@ export const ThemeCard = createReactiveComponent(({ presenter }: Props) => {
 
     return (
         <div className="mt-md flex flex-col gap-sm rounded-md border border-neutral-dimmed p-sm">
-            <Text className="font-medium">Theme</Text>
+            <div className="flex items-center justify-between gap-xs">
+                <Text className="font-medium">Theme</Text>
+                {extraction?.status === "done" && extraction.themeVersion ? (
+                    <Tag variant="neutral-light" content={`v${extraction.themeVersion}`} />
+                ) : null}
+            </div>
 
             {!extraction ? (
                 <Text size="sm" className="text-neutral-strong">
@@ -222,74 +336,85 @@ export const ThemeCard = createReactiveComponent(({ presenter }: Props) => {
                 <div className="flex flex-col gap-sm">
                     <div className="flex items-center gap-xs">
                         <StatusDot status="complete" />
-                        <Text size="sm" className="font-medium">
+                        <Text size="sm" className="text-neutral-strong">
                             Extracted from the site
-                            {extraction.themeVersion ? ` · v${extraction.themeVersion}` : ""}
                         </Text>
                     </div>
 
-                    {vm.themeSnapshot ? <Snapshot snapshot={vm.themeSnapshot} /> : null}
+                    <Snapshot snapshot={vm.themeSnapshot} />
                     {vm.themeFit ? <FitLine fit={vm.themeFit} /> : null}
 
-                    {extraction.pagesSampled < THIN_PAGES || extraction.confidence === "low" ? (
-                        <Alert type="warning">
-                            Thin evidence:{" "}
-                            {extraction.pagesSampled < THIN_PAGES
-                                ? `the theme was read from ${extraction.pagesSampled} page${extraction.pagesSampled === 1 ? "" : "s"}`
-                                : "extraction reported low confidence"}
-                            . Check it before relying on it.
-                        </Alert>
-                    ) : null}
+                    <div className="flex flex-col gap-xs border-t border-neutral-dimmed pt-sm">
+                        {extraction.pagesSampled < THIN_PAGES || extraction.confidence === "low" ? (
+                            <Alert type="warning">
+                                Thin evidence:{" "}
+                                {extraction.pagesSampled < THIN_PAGES
+                                    ? `the theme was read from ${extraction.pagesSampled} page${extraction.pagesSampled === 1 ? "" : "s"}`
+                                    : "extraction reported low confidence"}
+                                . Check it before relying on it.
+                            </Alert>
+                        ) : null}
 
-                    <Text size="sm" className="text-neutral-muted">
-                        Confidence {extraction.confidence ?? "not reported"} ·{" "}
-                        {extraction.pagesSampled} page{extraction.pagesSampled === 1 ? "" : "s"} ·{" "}
-                        {extraction.slotsApplied} tokens
-                    </Text>
-
-                    {/*
-                     * Every theme extracted so far reports 9 or 10 of these, so they are the normal
-                     * state, not a warning queue: notes, collapsed.
-                     */}
-                    {extraction.uncertain.length > 0 ? (
-                        <div className="flex flex-col gap-xxs">
-                            <Button
-                                size="sm"
-                                variant="ghost"
-                                className="self-start"
-                                text={`${extraction.uncertain.length} note${extraction.uncertain.length === 1 ? "" : "s"}`}
-                                icon={showUncertain ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                                iconPosition="end"
-                                onClick={() => setShowUncertain(!showUncertain)}
+                        <div className="flex flex-wrap gap-xxs">
+                            <Tag
+                                variant="neutral-light"
+                                content={`Confidence ${extraction.confidence ?? "not reported"}`}
                             />
-                            {showUncertain ? (
-                                <ul className="m-0 flex list-disc flex-col gap-xxs pl-md">
-                                    {extraction.uncertain.map((item, index) => (
-                                        <li key={index}>
-                                            <Text size="sm">
-                                                {item.path ? (
-                                                    <span className="font-medium">
-                                                        {item.path}:{" "}
-                                                    </span>
-                                                ) : null}
-                                                {item.reason}
-                                            </Text>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : null}
+                            <Tag
+                                variant="neutral-light"
+                                content={`${extraction.pagesSampled} page${extraction.pagesSampled === 1 ? "" : "s"} sampled`}
+                            />
+                            <Tag
+                                variant="neutral-light"
+                                content={`${extraction.slotsApplied} tokens`}
+                            />
                         </div>
-                    ) : null}
 
-                    {/* Quiet: it re-pins and marks Cluster onward stale, so it is not an invitation. */}
-                    <Button
-                        size="sm"
-                        variant="ghost"
-                        className="self-start"
-                        text="Retry extraction"
-                        disabled={vm.themeBusy}
-                        onClick={() => setConfirmRetry(true)}
-                    />
+                        {/*
+                         * Every theme extracted so far reports 9 or 10 of these, so they are the normal
+                         * state, not a warning queue: notes, collapsed.
+                         */}
+                        {extraction.uncertain.length > 0 ? (
+                            <div className="flex flex-col gap-xxs">
+                                <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="self-start"
+                                    text={`${extraction.uncertain.length} note${extraction.uncertain.length === 1 ? "" : "s"}`}
+                                    icon={showUncertain ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                                    iconPosition="end"
+                                    onClick={() => setShowUncertain(!showUncertain)}
+                                />
+                                {showUncertain ? (
+                                    <ul className="m-0 flex list-disc flex-col gap-xxs pl-md">
+                                        {extraction.uncertain.map((item, index) => (
+                                            <li key={index}>
+                                                <Text size="sm">
+                                                    {item.path ? (
+                                                        <span className="font-medium">
+                                                            {item.path}:{" "}
+                                                        </span>
+                                                    ) : null}
+                                                    {item.reason}
+                                                </Text>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : null}
+                            </div>
+                        ) : null}
+
+                        {/* Quiet: it re-pins and marks Cluster onward stale, so it is not an invitation. */}
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            className="self-start"
+                            text="Retry extraction"
+                            icon={<RefreshIcon />}
+                            disabled={vm.themeBusy}
+                            onClick={() => setConfirmRetry(true)}
+                        />
+                    </div>
                 </div>
             )}
 

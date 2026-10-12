@@ -5,8 +5,8 @@ import { stageEntry } from "~/shared/ledger.js";
 import { StatusDot } from "~/presentation/shared/StatusIndicator.js";
 import { Routes } from "~/routes.js";
 import type { RunViewPresenter } from "../../abstractions.js";
-import { SiteCard } from "./SiteCard.js";
-import { SiteResultPages, SiteResultSummary } from "./SiteResult.js";
+import { BuildSteps, SiteCard } from "./SiteCard.js";
+import { SiteOverview, SitePagesTable, SiteQualities } from "./SiteResult.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
@@ -38,6 +38,8 @@ export const SiteView = createReactiveComponent(function SiteView({ presenter }:
     const build = site?.lastBuild;
     const approved = run ? stageEntry(run, "promote")?.status === "done" : false;
     const map = vm.sitePageMap;
+    // How it was built: folded away once published, on request.
+    const [stepsOpen, setStepsOpen] = React.useState(false);
 
     return (
         <div className="flex min-h-0 flex-1 flex-col">
@@ -83,32 +85,43 @@ export const SiteView = createReactiveComponent(function SiteView({ presenter }:
                         </Text>
                     ) : null}
 
-                    {/* The result first: what the migration produced, site-wide, then per page. */}
-                    {approved || site ? <SiteResultSummary presenter={presenter} /> : null}
-
-                    {/* Before the first publish the action is the point, so it comes first. */}
+                    {/* Before the first publish, while one runs, or after one failed, the action is the point. */}
                     {(approved || site) && build?.status !== "done" ? (
                         <SiteCard presenter={presenter} />
                     ) : null}
 
+                    {/* Published: the site at a glance, what it produced, then its pages. */}
                     {build?.status === "done" ? (
-                        vm.sitePageMapLoading && !map ? (
-                            <Text size="sm" className="text-neutral-strong">
-                                Loading the site&apos;s pages…
-                            </Text>
-                        ) : map ? (
-                            <SitePages presenter={presenter} />
-                        ) : (
-                            <Text size="sm" className="text-neutral-strong">
-                                The site&apos;s page list could not be read.
-                            </Text>
-                        )
+                        <>
+                            <SiteOverview
+                                presenter={presenter}
+                                stepsOpen={stepsOpen}
+                                onToggleSteps={() => setStepsOpen(!stepsOpen)}
+                            />
+                            {stepsOpen ? (
+                                <div className="rounded-md border border-neutral-dimmed px-md py-sm">
+                                    <BuildSteps build={build} building={false} />
+                                </div>
+                            ) : null}
+                            <SiteQualities presenter={presenter} />
+                            {vm.sitePageMapLoading && !map ? (
+                                <Text size="sm" className="text-neutral-strong">
+                                    Loading the site&apos;s pages…
+                                </Text>
+                            ) : map ? (
+                                <SitePages presenter={presenter} />
+                            ) : (
+                                <Text size="sm" className="text-neutral-strong">
+                                    The site&apos;s page list could not be read.
+                                </Text>
+                            )}
+                        </>
                     ) : null}
 
-                    {/* How it was built, after the result: publishing, the run, the tenant's contents. */}
-                    {build?.status === "done" ? <SiteCard presenter={presenter} /> : null}
-
-                    {build?.status === "done" && vm.siteBuiltFrom ? (
+                    {/* The overview names the run; this says what it means when it is not the run on screen. */}
+                    {build?.status === "done" &&
+                    vm.siteBuiltFrom &&
+                    vm.siteBuiltFrom.runId !== vm.run?.id ? (
                         <BuiltFrom presenter={presenter} />
                     ) : null}
 
@@ -176,6 +189,10 @@ const TenantInventory = createReactiveComponent(function TenantInventory({ prese
             ? ` ${plural(pending.length, "newly approved component")} ${pending.length === 1 ? "goes" : "go"} live at the next publish.`
             : "";
     if (inventory.unused.length === 0) {
+        // The overview already says how many components the pages use; only what it does not say.
+        if (!alsoHolds && !waiting) {
+            return null;
+        }
         return (
             <Text size="sm" className="text-neutral-strong">
                 The site&apos;s tenant holds {plural(inventory.components, "component")}
@@ -194,8 +211,12 @@ const TenantInventory = createReactiveComponent(function TenantInventory({ prese
             The site&apos;s tenant holds {plural(inventory.unused.length, "component")} that no live
             page uses and the current approval does not hold: {inventory.unused.join(", ")}.{" "}
             {removesAtPublish
-                ? "Publishing keeps them while a draft or an unpublished page still names them, and each ships with every page of the site."
-                : "Publishing does not remove them, and each still ships with every page of the site."}
+                ? inventory.unused.length === 1
+                    ? "Publishing keeps it while a draft or an unpublished page still names it, and it ships with every page of the site."
+                    : "Publishing keeps them while a draft or an unpublished page still names them, and each ships with every page of the site."
+                : inventory.unused.length === 1
+                  ? "Publishing does not remove it, and it still ships with every page of the site."
+                  : "Publishing does not remove them, and each still ships with every page of the site."}
             {alsoHolds ? ` It also holds ${alsoHolds}.` : ""}
             {waiting}
         </Alert>
@@ -208,7 +229,7 @@ const SitePages = createReactiveComponent(function SitePages({ presenter }: Prop
 
     return (
         <div className="flex flex-col gap-xs">
-            <SiteResultPages presenter={presenter} />
+            <SitePagesTable presenter={presenter} />
 
             {(map.kept ?? []).length > 0 ? (
                 <Alert type="warning" variant="subtle">
