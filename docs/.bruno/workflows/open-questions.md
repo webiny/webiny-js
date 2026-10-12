@@ -95,3 +95,5 @@ S8. ~~Answered in D81.~~
 S9. ~~Answered in D82.~~
 S10. ~~Answered in D83.~~
 S11. ~~Answered in D84.~~
+
+V1. Page experiments and variants go live with an approved page publish but are never reviewed and stay editable during and after review. Owner of experiments/variants to decide; analysis and options in `variants-review-gap.md`.
