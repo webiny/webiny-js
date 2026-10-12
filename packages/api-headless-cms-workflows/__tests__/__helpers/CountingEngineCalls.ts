@@ -4,6 +4,8 @@ import { GetWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetW
 import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import { DeleteWorkflowUseCase } from "@webiny/api-workflows/features/workflow/DeleteWorkflow/index.js";
 import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
+import { RequestReviewUseCase } from "@webiny/api-workflows/features/review/RequestReview/index.js";
+import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
 import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
 import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
 
@@ -55,6 +57,24 @@ class CountingGetBoundWorkflow implements GetBoundWorkflowUseCase.Interface {
     }
 }
 
+class CountingRequestReview implements RequestReviewUseCase.Interface {
+    public constructor(private decoratee: RequestReviewUseCase.Interface) {}
+
+    public async execute(input: RequestReviewUseCase.Input): RequestReviewUseCase.Return {
+        engineCalls.push("RequestReview");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingGetReview implements GetReviewUseCase.Interface {
+    public constructor(private decoratee: GetReviewUseCase.Interface) {}
+
+    public async execute(input: GetReviewUseCase.Input): GetReviewUseCase.Return {
+        engineCalls.push("GetReview");
+        return this.decoratee.execute(input);
+    }
+}
+
 class CountingListTargetReviews implements ListTargetReviewsUseCase.Interface {
     public constructor(private decoratee: ListTargetReviewsUseCase.Interface) {}
 
@@ -99,6 +119,12 @@ export const countEngineCalls = (container: Container) => {
             decorator: CountingGetBoundWorkflow,
             dependencies: []
         })
+    );
+    container.registerDecorator(
+        RequestReviewUseCase.createDecorator({ decorator: CountingRequestReview, dependencies: [] })
+    );
+    container.registerDecorator(
+        GetReviewUseCase.createDecorator({ decorator: CountingGetReview, dependencies: [] })
     );
     container.registerDecorator(
         ListTargetReviewsUseCase.createDecorator({
