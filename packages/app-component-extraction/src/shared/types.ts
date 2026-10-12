@@ -137,6 +137,15 @@ export interface JobDto {
     /** Approves into and composes in its site tenant. False (or absent) for jobs created before. */
     siteTenantFromStart?: boolean | null;
     createdOn: string;
+    /** Who created the job, as the CMS stamped it. Absent from an API without the field. */
+    createdBy?: IdentityDto | null;
+}
+
+/** An identity as the CMS records it: an admin user (`type` "admin") or an API key. */
+export interface IdentityDto {
+    id: string;
+    displayName: string | null;
+    type: string;
 }
 
 /** A job plus its latest run, for the extractions list. */

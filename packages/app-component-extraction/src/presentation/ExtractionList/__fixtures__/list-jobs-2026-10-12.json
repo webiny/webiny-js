@@ -1,0 +1,4021 @@
+{
+ "_note": "componentExtractionListJobs on the dev instance, 2026-10-12 ~16:45 UTC, before createdBy was exposed. Stage artifacts and model usage dropped to keep it small; nothing else changed.",
+ "data": [
+  {
+   "job": {
+    "id": "6accad34e2d54000029b484b#0001",
+    "name": "Rehearsal \u2014 site tenant (2026-10-12)",
+    "siteUrl": "https://www.webiny.com/",
+    "themeEntryId": "6ac8b7c9104eab0002f61f3e",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 3,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "",
+    "siteTenantFromStart": true,
+    "createdOn": "2026-10-12T09:49:40.132Z"
+   },
+   "latestRun": {
+    "id": "6accad34e2d54000029b484c#0001",
+    "jobId": "6accad34e2d54000029b484b#0001",
+    "runNumber": 1,
+    "status": "done",
+    "note": "",
+    "counts": {
+     "pages": 3,
+     "sections": 22,
+     "clusters": 19,
+     "components": 16
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-12T09:49:49.157Z",
+      "finishedOn": "2026-10-12T09:50:39.445Z",
+      "error": null,
+      "taskId": "6accad34e2d54000029b484d",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-12T09:50:49.638Z",
+      "finishedOn": "2026-10-12T09:52:10.749Z",
+      "error": null,
+      "taskId": "6accad70e2d54000029b484e",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-12T09:52:26.109Z",
+      "finishedOn": "2026-10-12T09:52:34.160Z",
+      "error": null,
+      "taskId": "6accadd4e04c4b00020cf2b4",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-12T09:52:44.736Z",
+      "finishedOn": "2026-10-12T09:52:51.164Z",
+      "error": null,
+      "taskId": "6accade7e04c4b00020cf2b5",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-12T09:53:03.568Z",
+      "finishedOn": "2026-10-12T09:53:51.957Z",
+      "error": null,
+      "taskId": "6accadfae04c4b00020cf2b6",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-12T09:54:02.373Z",
+      "finishedOn": "2026-10-12T09:56:44.085Z",
+      "error": null,
+      "taskId": "6accae35e04c4b00020cf2b7",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-12T09:56:53.423Z",
+      "finishedOn": "2026-10-12T10:07:52.158Z",
+      "error": null,
+      "taskId": "6accaee0e2d54000029b484f",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-12T10:08:05.540Z",
+      "finishedOn": "2026-10-12T10:08:09.380Z",
+      "error": null,
+      "taskId": "6accb180461b34000262c582",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "done",
+      "stageVersion": 3,
+      "artifacts": {},
+      "startedOn": "2026-10-12T10:55:12.056Z",
+      "finishedOn": "2026-10-12T10:55:39.730Z",
+      "error": null,
+      "taskId": "6accbc87ccb19f0002160388",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-12T09:49:40.373Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6aca02ff6edf6700023d80cd#0001",
+    "name": "ParkCity - Take 3",
+    "siteUrl": "https://www.parkcityplace.org/",
+    "themeEntryId": "6aca042ec8568b0002a13f86",
+    "themeVersion": 1,
+    "themeExtraction": {
+     "status": "done",
+     "step": "done",
+     "taskId": "6aca03006edf6700023d80cf",
+     "runId": "6aca03006edf6700023d80ce#0001",
+     "startedOn": "2026-10-10T09:18:59.413Z",
+     "finishedOn": "2026-10-10T09:23:58.969Z",
+     "themeEntryId": "6aca042ec8568b0002a13f86",
+     "themeVersion": 1,
+     "confidence": "medium",
+     "uncertain": [
+      {
+       "path": "color.surface.sunken vs color.border.subtle",
+       "reason": "#cacaca (32% share) and #363f54 (near-0% share but visually prominent as footer/section backgrounds in screenshots) are ambiguous \u2014 the measurement tool may be counting text/border pixels rather than background fill area, so the mapping of these two to 'sunken surface' vs 'subtle border' is a judgement call, not a confident read."
+      },
+      {
+       "path": "color.text.link",
+       "reason": "No distinct link color was identified in the inventory; nav and body links appear to use the same primary text or olive/terracotta accent colors depending on context, so no single confident value could be assigned."
+      },
+      {
+       "path": "color.border.focus",
+       "reason": "No focus-state color was present in the inventory or screenshots."
+      },
+      {
+       "path": "color.feedback.*",
+       "reason": "No info/success/warning/danger colors appear anywhere in the measured palette; the site has no visible feedback UI in the crawled pages."
+      },
+      {
+       "path": "type.heading.4 / heading.5 / heading.6",
+       "reason": "Card titles and small eyebrow labels (e.g. 'FLOOR PLANS', 'ANY QUESTIONS?') clearly use a second typeface (gravesend-sans) at smaller sizes, but the exact size/weight pairing was not reliably distinguishable from the aggregated inventory (22px font-size share and 29.6px line-height share didn't cleanly correlate), so these were left unassigned rather than guessed."
+      },
+      {
+       "path": "type.code",
+       "reason": "No monospace font family was observed anywhere in the inventory."
+      },
+      {
+       "path": "space.xs",
+       "reason": "11.5px is an unusual spacing value (likely a computed/rounded flex-gap rather than an intentional design-scale step); it was kept as-is rather than rounded to a cleaner number like 12px, but this is a judgement call."
+      },
+      {
+       "path": "space.sm",
+       "reason": "Both 15px (10% share) and 16px (27% share) appear close together; 16px was chosen as the representative 'sm' step since it's far more prevalent, but 15px may represent a genuinely distinct step that got collapsed."
+      },
+      {
+       "path": "radius.*",
+       "reason": "No corner radius values were observed in the inventory at all, so no radius tokens were assigned."
+      },
+      {
+       "path": "shadow.sm/md/lg/xl",
+       "reason": "No shadows were observed in the inventory; only shadow.none was asserted as a safe default."
+      }
+     ],
+     "pagesSampled": 5,
+     "slotsApplied": 39,
+     "error": null
+    },
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-10T09:18:55.935Z"
+   },
+   "latestRun": {
+    "id": "6aca03006edf6700023d80ce#0001",
+    "jobId": "6aca02ff6edf6700023d80cd#0001",
+    "runNumber": 1,
+    "status": "done",
+    "note": "",
+    "counts": {
+     "pages": 8,
+     "sections": 46,
+     "clusters": 16,
+     "components": 15
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-10T09:19:14.777Z",
+      "finishedOn": "2026-10-10T09:19:24.368Z",
+      "error": null,
+      "taskId": "6aca030a6edf6700023d80d0",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-10T09:19:56.708Z",
+      "finishedOn": "2026-10-10T09:25:52.089Z",
+      "error": null,
+      "taskId": "6aca0337da9bab000225d2f5",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-10T09:27:04.647Z",
+      "finishedOn": "2026-10-10T09:27:21.394Z",
+      "error": null,
+      "taskId": "6aca04e36edf6700023d80d1",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-10T09:27:56.788Z",
+      "finishedOn": "2026-10-10T09:28:10.730Z",
+      "error": null,
+      "taskId": "6aca05176edf6700023d80d2",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-10T09:29:54.396Z",
+      "finishedOn": "2026-10-10T09:30:38.412Z",
+      "error": null,
+      "taskId": "6aca058dda9bab000225d2f6",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-10T09:33:10.680Z",
+      "finishedOn": "2026-10-10T09:35:18.962Z",
+      "error": null,
+      "taskId": "6aca06516edf6700023d80d6",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-10T09:42:46.012Z",
+      "finishedOn": "2026-10-10T09:46:29.134Z",
+      "error": null,
+      "taskId": "6aca088db689000002130ff8",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-10T12:07:23.489Z",
+      "finishedOn": "2026-10-10T12:07:27.448Z",
+      "error": null,
+      "taskId": "6aca2a75439ea40002f9a657",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-10T12:07:50.829Z",
+      "finishedOn": "2026-10-10T12:08:13.184Z",
+      "error": null,
+      "taskId": "6aca2a91439ea40002f9a658",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-10T09:18:56.193Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac902f261abbb0002c84962#0001",
+    "name": "71 Westland \u2014 rehearsal (2026-10-09)",
+    "siteUrl": "https://www.71westlandapts.com/",
+    "themeEntryId": "6ac903bc3aefcf0002f13498",
+    "themeVersion": 1,
+    "themeExtraction": {
+     "status": "done",
+     "step": "done",
+     "taskId": "6ac902f361abbb0002c84964",
+     "runId": "6ac902f361abbb0002c84963#0001",
+     "startedOn": "2026-10-09T15:06:30.540Z",
+     "finishedOn": "2026-10-09T15:09:48.938Z",
+     "themeEntryId": "6ac903bc3aefcf0002f13498",
+     "themeVersion": 1,
+     "confidence": "medium",
+     "uncertain": [
+      {
+       "path": "color.surface.sunken",
+       "reason": "Mapped the black header/footer bars to 'sunken' surface for lack of a better slot, but semantically these read more like inverse/dark brand bands than a recessed surface."
+      },
+      {
+       "path": "color.text.muted / color.border.subtle",
+       "reason": "Both assigned the same measured #cacaca; unclear whether this light gray is primarily used for muted text, hairline borders, or both \u2014 the inventory doesn't distinguish usage context."
+      },
+      {
+       "path": "radius.md",
+       "reason": "Only one corner-radius value (20px) was observed at 100% share, but buttons in the screenshots appear essentially square-cornered at this viewport; unclear which elements (icon buttons, thumbnails?) actually carry this radius."
+      },
+      {
+       "path": "space.sm",
+       "reason": "11.5px is an oddly precise value (possibly a half-pixel artifact of measurement/rounding) rather than a deliberate spacing step; kept as-is but confidence is low."
+      },
+      {
+       "path": "type.heading.3",
+       "reason": "Only weak evidence (18px at 5% share, paired line-height at 1% share) ties this to a heading rather than a lead/secondary paragraph style."
+      },
+      {
+       "path": "darkTokens",
+       "reason": "The brief states the site ships a real dark variant with separately measured colours, but no dark colour list was actually included in the inventory, so no dark tokens could be populated."
+      },
+      {
+       "path": "color.action.secondary.background/foreground",
+       "reason": "Inferred from the 'APPLY NOW' white-button-black-text pattern seen in screenshots; not cross-checked against every instance of a secondary action across the site."
+      }
+     ],
+     "pagesSampled": 5,
+     "slotsApplied": 42,
+     "error": null
+    },
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-09T15:06:26.947Z"
+   },
+   "latestRun": {
+    "id": "6ac902f361abbb0002c84963#0001",
+    "jobId": "6ac902f261abbb0002c84962#0001",
+    "runNumber": 1,
+    "status": "done",
+    "note": "",
+    "counts": {
+     "pages": 10,
+     "sections": 54,
+     "clusters": 16,
+     "components": 16
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T15:06:52.048Z",
+      "finishedOn": "2026-10-09T15:07:00.440Z",
+      "error": null,
+      "taskId": "6ac9030461abbb0002c84965",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T17:07:57.295Z",
+      "finishedOn": "2026-10-09T17:12:45.863Z",
+      "error": null,
+      "taskId": "6ac91f64c615f900023fd895",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T17:21:32.932Z",
+      "finishedOn": "2026-10-09T17:21:52.506Z",
+      "error": null,
+      "taskId": "6ac92294c615f900023fd896",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T17:25:45.386Z",
+      "finishedOn": "2026-10-09T17:26:00.810Z",
+      "error": null,
+      "taskId": "6ac92393c83640000250679b",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T17:28:28.210Z",
+      "finishedOn": "2026-10-09T17:29:08.039Z",
+      "error": null,
+      "taskId": "6ac92436c83640000250679c",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T17:30:04.415Z",
+      "finishedOn": "2026-10-09T17:32:03.316Z",
+      "error": null,
+      "taskId": "6ac92496c615f900023fd897",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T17:37:20.572Z",
+      "finishedOn": "2026-10-09T17:41:01.605Z",
+      "error": null,
+      "taskId": "6ac9264ac615f900023fd898",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T18:19:36.369Z",
+      "finishedOn": "2026-10-09T18:19:40.870Z",
+      "error": null,
+      "taskId": "6ac9302f50e1c60002092b0a",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T18:32:46.572Z",
+      "finishedOn": "2026-10-09T18:33:10.809Z",
+      "error": null,
+      "taskId": "6ac9334629e63800021e519d",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-09T15:06:27.174Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac8ac6dcc85eb0002fbde7f#0001",
+    "name": "webiny.com, theme from the site (2026-10-09)",
+    "siteUrl": "https://www.webiny.com/",
+    "themeEntryId": "6ac8b7c9104eab0002f61f3e",
+    "themeVersion": 1,
+    "themeExtraction": {
+     "status": "done",
+     "step": "done",
+     "taskId": "6ac8b710cc85eb0002fbde89",
+     "runId": "6ac8ac6ecc85eb0002fbde80#0001",
+     "startedOn": "2026-10-09T09:42:43.069Z",
+     "finishedOn": "2026-10-09T09:45:45.512Z",
+     "themeEntryId": "6ac8b7c9104eab0002f61f3e",
+     "themeVersion": 1,
+     "confidence": "medium",
+     "uncertain": [
+      {
+       "path": "color.surface.raised",
+       "reason": "Could not distinguish a distinct 'card' surface colour from the page background in the inventory; cards appear to sit directly on white with just a border, so this slot was left unassigned rather than guessing."
+      },
+      {
+       "path": "color.feedback.*",
+       "reason": "No feedback/status colours (info, success, warning, danger) showed up with any measurable presence in the inventory; the only non-neutral colour seen is the orange brand accent, which isn't clearly a semantic feedback colour, so these slots were left empty."
+      },
+      {
+       "path": "color.border.focus",
+       "reason": "No focus-ring colour was present in the measured data."
+      },
+      {
+       "path": "type.code",
+       "reason": "Monospace font stack appears in the loaded web-fonts list but with no measurable share in the inventory, so size/weight were inferred from the bodySmall pattern rather than observed directly."
+      },
+      {
+       "path": "type.heading.1 through type.heading.4 lineHeight",
+       "reason": "Large display line-heights (64px, 52px, 40px, 32px) were estimated from typical display-type ratios since exact matches for these larger sizes weren't present in the measured line-height list; only heading.5 and heading.6 line-heights matched inventory values directly."
+      },
+      {
+       "path": "radius.lg / radius.full",
+       "reason": "Only two corner-radius values (6px, 10px) were observed; no evidence of a larger or fully-rounded radius step, so these were left unassigned."
+      },
+      {
+       "path": "docs subdomain typography",
+       "reason": "The /docs pages load Roboto and Source Sans Pro fonts, distinct from the Inter-based marketing site \u2014 these appear to be a third-party docs theme rather than part of the core brand system, so they were excluded from the typography tokens."
+      }
+     ],
+     "pagesSampled": 5,
+     "slotsApplied": 50,
+     "error": null
+    },
+    "pageCap": 5,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Verification 2 of theme-in-pipeline: first-time extraction.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-09T08:57:17.585Z"
+   },
+   "latestRun": {
+    "id": "6ac8ac6ecc85eb0002fbde80#0001",
+    "jobId": "6ac8ac6dcc85eb0002fbde7f#0001",
+    "runNumber": 1,
+    "status": "running",
+    "note": "",
+    "counts": {
+     "pages": 5,
+     "sections": 37,
+     "clusters": 25,
+     "components": 24
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T08:57:29.403Z",
+      "finishedOn": "2026-10-09T08:58:14.207Z",
+      "error": null,
+      "taskId": "6ac8ac71cc85eb0002fbde82",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T08:58:22.954Z",
+      "finishedOn": "2026-10-09T09:00:22.718Z",
+      "error": null,
+      "taskId": "6ac8aca6cc85eb0002fbde83",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T09:00:30.054Z",
+      "finishedOn": "2026-10-09T09:00:40.893Z",
+      "error": null,
+      "taskId": "6ac8ad28cc85eb0002fbde84",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "stale",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T09:00:49.223Z",
+      "finishedOn": "2026-10-09T09:00:58.274Z",
+      "error": null,
+      "taskId": "6ac8ad3ccc85eb0002fbde85",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "stale",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T09:01:07.851Z",
+      "finishedOn": "2026-10-09T09:02:08.119Z",
+      "error": null,
+      "taskId": "6ac8ad4ecc85eb0002fbde86",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "stale",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T09:02:16.356Z",
+      "finishedOn": "2026-10-09T09:06:19.093Z",
+      "error": null,
+      "taskId": "6ac8ad93cc85eb0002fbde87",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "stale",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T09:06:27.599Z",
+      "finishedOn": "2026-10-09T09:42:30.383Z",
+      "error": null,
+      "taskId": "6ac8ae8dcc85eb0002fbde88",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-09T08:57:18.026Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac8ab10dcbe060002432aad#0001",
+    "name": "Theme failure check (2026-10-09)",
+    "siteUrl": "https://unreachable-theme-check.invalid/",
+    "themeEntryId": "6ab2534661ea650002f10a72",
+    "themeVersion": 1,
+    "themeExtraction": {
+     "status": "failed",
+     "step": "failed",
+     "taskId": "6ac8ab11dcbe060002432aaf",
+     "runId": "6ac8ab11dcbe060002432aae#0001",
+     "startedOn": "2026-10-09T08:51:32.544Z",
+     "finishedOn": "2026-10-09T08:51:39.470Z",
+     "themeEntryId": null,
+     "themeVersion": null,
+     "confidence": null,
+     "uncertain": [],
+     "pagesSampled": 0,
+     "slotsApplied": 0,
+     "error": "Theme extraction could not read https://unreachable-theme-check.invalid/: net::ERR_NAME_NOT_RESOLVED at https://unreachable-theme-check.invalid/."
+    },
+    "pageCap": 3,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Verification of the theme-in-pipeline failure path. Safe to delete.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-09T08:51:28.808Z"
+   },
+   "latestRun": {
+    "id": "6ac8ab11dcbe060002432aae#0001",
+    "jobId": "6ac8ab10dcbe060002432aad#0001",
+    "runNumber": 1,
+    "status": "pending",
+    "note": "",
+    "counts": {
+     "pages": 0,
+     "sections": 0,
+     "clusters": 0,
+     "components": 0
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-09T08:51:29.167Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac62aef80bbe70002f7aba8#0001",
+    "name": "FreehillStreetLofts Fixes Check 4",
+    "siteUrl": "https://promo.freehillstreetlofts.com/",
+    "themeEntryId": "6ab25f9d74d623000233f463",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-07T11:20:15.622Z"
+   },
+   "latestRun": {
+    "id": "6ac62af180bbe70002f7aba9#0001",
+    "jobId": "6ac62aef80bbe70002f7aba8#0001",
+    "runNumber": 1,
+    "status": "running",
+    "note": "baseline",
+    "counts": {
+     "pages": 2,
+     "sections": 11,
+     "clusters": 8,
+     "components": 8
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T11:20:27.418Z",
+      "finishedOn": "2026-10-07T11:20:33.929Z",
+      "error": null,
+      "taskId": "6ac62af380bbe70002f7abaa",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 2,
+      "artifacts": {},
+      "startedOn": "2026-10-07T12:42:14.286Z",
+      "finishedOn": "2026-10-07T12:45:05.048Z",
+      "error": null,
+      "taskId": "6ac63e1e0bf65800027378ed",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 2,
+      "artifacts": {},
+      "startedOn": "2026-10-07T12:45:12.728Z",
+      "finishedOn": "2026-10-07T12:45:17.755Z",
+      "error": null,
+      "taskId": "6ac63ed30b762e0002a90816",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 2,
+      "artifacts": {},
+      "startedOn": "2026-10-07T12:45:29.272Z",
+      "finishedOn": "2026-10-07T12:45:32.815Z",
+      "error": null,
+      "taskId": "6ac63ee40b762e0002a90817",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 2,
+      "artifacts": {},
+      "startedOn": "2026-10-07T12:45:39.833Z",
+      "finishedOn": "2026-10-07T12:45:57.243Z",
+      "error": null,
+      "taskId": "6ac63eef0b762e0002a90818",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 3,
+      "artifacts": {},
+      "startedOn": "2026-10-07T12:46:08.002Z",
+      "finishedOn": "2026-10-07T12:47:14.578Z",
+      "error": null,
+      "taskId": "6ac63f0b0b762e0002a90819",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "stale",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T11:27:24.960Z",
+      "finishedOn": "2026-10-07T11:36:50.706Z",
+      "error": null,
+      "taskId": "6ac62c9880bbe70002f7abb0",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "stale",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T11:37:09.716Z",
+      "finishedOn": "2026-10-07T11:37:12.696Z",
+      "error": null,
+      "taskId": "6ac62ee080bbe70002f7abb1",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-07T11:20:17.701Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac618d699bb470002e8f5c8#0001",
+    "name": "FreehillStreetLofts Fixes Check 3",
+    "siteUrl": "https://promo.freehillstreetlofts.com/",
+    "themeEntryId": "6ab25f9d74d623000233f463",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-07T10:03:02.333Z"
+   },
+   "latestRun": {
+    "id": "6ac618d899bb470002e8f5c9#0001",
+    "jobId": "6ac618d699bb470002e8f5c8#0001",
+    "runNumber": 1,
+    "status": "running",
+    "note": "baseline",
+    "counts": {
+     "pages": 2,
+     "sections": 11,
+     "clusters": 8,
+     "components": 8
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T10:03:11.269Z",
+      "finishedOn": "2026-10-07T10:03:16.969Z",
+      "error": null,
+      "taskId": "6ac618da99bb470002e8f5ca",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T10:03:27.289Z",
+      "finishedOn": "2026-10-07T10:06:12.485Z",
+      "error": null,
+      "taskId": "6ac618ea99bb470002e8f5cb",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T10:06:27.377Z",
+      "finishedOn": "2026-10-07T10:06:32.361Z",
+      "error": null,
+      "taskId": "6ac6199d99bb470002e8f5cc",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T10:06:42.657Z",
+      "finishedOn": "2026-10-07T10:06:46.084Z",
+      "error": null,
+      "taskId": "6ac619ae99bb470002e8f5cd",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T10:06:58.189Z",
+      "finishedOn": "2026-10-07T10:07:14.418Z",
+      "error": null,
+      "taskId": "6ac619be99bb470002e8f5ce",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T10:07:27.324Z",
+      "finishedOn": "2026-10-07T10:09:17.888Z",
+      "error": null,
+      "taskId": "6ac619db99bb470002e8f5cf",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T10:09:38.189Z",
+      "finishedOn": "2026-10-07T10:22:36.638Z",
+      "error": null,
+      "taskId": "6ac61a5d99bb470002e8f5d0",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T10:22:50.689Z",
+      "finishedOn": "2026-10-07T10:22:53.203Z",
+      "error": null,
+      "taskId": "6ac61d7699bb470002e8f5d1",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-07T10:03:04.713Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac60b24e4ae020002dc25a1#0001",
+    "name": "FreehillStreetLofts Fixes Check 2",
+    "siteUrl": "https://promo.freehillstreetlofts.com/",
+    "themeEntryId": "6ab25f9d74d623000233f463",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-07T09:04:36.955Z"
+   },
+   "latestRun": {
+    "id": "6ac60b27e4ae020002dc25a2#0001",
+    "jobId": "6ac60b24e4ae020002dc25a1#0001",
+    "runNumber": 1,
+    "status": "running",
+    "note": "baseline",
+    "counts": {
+     "pages": 2,
+     "sections": 11,
+     "clusters": 8,
+     "components": 7
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T09:04:49.269Z",
+      "finishedOn": "2026-10-07T09:04:55.453Z",
+      "error": null,
+      "taskId": "6ac60b29e4ae020002dc25a3",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T09:05:02.744Z",
+      "finishedOn": "2026-10-07T09:07:43.290Z",
+      "error": null,
+      "taskId": "6ac60b3ae4ae020002dc25a4",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T09:07:52.096Z",
+      "finishedOn": "2026-10-07T09:07:56.624Z",
+      "error": null,
+      "taskId": "6ac60be3e4ae020002dc25a5",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T09:08:08.036Z",
+      "finishedOn": "2026-10-07T09:08:11.553Z",
+      "error": null,
+      "taskId": "6ac60bf3e4ae020002dc25a6",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T09:08:24.204Z",
+      "finishedOn": "2026-10-07T09:08:41.061Z",
+      "error": null,
+      "taskId": "6ac60c04e4ae020002dc25a7",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T09:08:53.581Z",
+      "finishedOn": "2026-10-07T09:10:43.978Z",
+      "error": null,
+      "taskId": "6ac60c21e4ae020002dc25a8",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T09:11:03.309Z",
+      "finishedOn": "2026-10-07T09:25:08.384Z",
+      "error": null,
+      "taskId": "6ac60ca3e4ae020002dc25a9",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T09:25:21.727Z",
+      "finishedOn": "2026-10-07T09:25:24.492Z",
+      "error": null,
+      "taskId": "6ac60ffde4ae020002dc25aa",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-07T09:04:39.510Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac5f99f42f41b00026d31f8#0001",
+    "name": "2424Tulane Fixes Check",
+    "siteUrl": "https://www.2424tulane.com/",
+    "themeEntryId": "6ab26b4838a369000286400d",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-07T07:49:51.449Z"
+   },
+   "latestRun": {
+    "id": "6ac8ca4e5b62310002491706#0001",
+    "jobId": "6ac5f99f42f41b00026d31f8#0001",
+    "runNumber": 3,
+    "status": "running",
+    "note": "Screen reference set (2026-10-09).",
+    "counts": {
+     "pages": 11,
+     "sections": 60,
+     "clusters": 21,
+     "components": 21
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T11:05:28.949Z",
+      "finishedOn": "2026-10-09T11:05:37.143Z",
+      "error": null,
+      "taskId": "6ac8ca7183960500020a0e7f",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T11:10:14.159Z",
+      "finishedOn": "2026-10-09T11:17:59.658Z",
+      "error": null,
+      "taskId": "6ac8cb9083960500020a0e80",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T11:18:22.643Z",
+      "finishedOn": "2026-10-09T11:18:45.789Z",
+      "error": null,
+      "taskId": "6ac8cd79180eab0002397dde",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T11:19:05.376Z",
+      "finishedOn": "2026-10-09T11:19:21.928Z",
+      "error": null,
+      "taskId": "6ac8cda45b62310002491707",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T11:19:40.583Z",
+      "finishedOn": "2026-10-09T11:20:32.378Z",
+      "error": null,
+      "taskId": "6ac8cdc7180eab0002397ddf",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T11:20:50.694Z",
+      "finishedOn": "2026-10-09T11:23:53.410Z",
+      "error": null,
+      "taskId": "6ac8ce0c5b62310002491708",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-09T11:29:25.620Z",
+      "finishedOn": "2026-10-09T11:40:21.412Z",
+      "error": null,
+      "taskId": "6ac8d00f180eab0002397de0",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 5,
+      "artifacts": {},
+      "startedOn": "2026-10-09T11:45:07.183Z",
+      "finishedOn": "2026-10-09T11:45:10.749Z",
+      "error": null,
+      "taskId": "6ac8d3be4c26bf000211f853",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-09T11:04:46.548Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac5f4a242f41b00026d31ec#0001",
+    "name": "FreehillStreetLofts Fixes Check",
+    "siteUrl": "https://promo.freehillstreetlofts.com/",
+    "themeEntryId": "6ab25f9d74d623000233f463",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-07T07:28:34.754Z"
+   },
+   "latestRun": {
+    "id": "6ac617d899bb470002e8f5c5#0001",
+    "jobId": "6ac5f4a242f41b00026d31ec#0001",
+    "runNumber": 9,
+    "status": "cancelled",
+    "note": "capture-state check (no model calls)",
+    "counts": {
+     "pages": 2,
+     "sections": 0,
+     "clusters": 0,
+     "components": 0
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T09:58:54.393Z",
+      "finishedOn": "2026-10-07T09:59:00.101Z",
+      "error": null,
+      "taskId": "6ac617da99bb470002e8f5c6",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-07T09:59:10.358Z",
+      "finishedOn": "2026-10-07T10:01:56.038Z",
+      "error": null,
+      "taskId": "6ac617ea99bb470002e8f5c7",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-07T09:58:48.888Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac506281a44130002685644#0001",
+    "name": "2424Tulane Baseline 2",
+    "siteUrl": "https://www.2424tulane.com/",
+    "themeEntryId": "6ab26b4838a369000286400d",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-06T14:31:04.401Z"
+   },
+   "latestRun": {
+    "id": "6ac5062a1a44130002685645#0001",
+    "jobId": "6ac506281a44130002685644#0001",
+    "runNumber": 1,
+    "status": "done",
+    "note": "baseline",
+    "counts": {
+     "pages": 11,
+     "sections": 72,
+     "clusters": 11,
+     "components": 10
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:31:12.722Z",
+      "finishedOn": "2026-10-06T14:31:19.187Z",
+      "error": null,
+      "taskId": "6ac5062c1a44130002685646",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:31:28.872Z",
+      "finishedOn": "2026-10-06T14:38:50.338Z",
+      "error": null,
+      "taskId": "6ac5063c1a44130002685647",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:39:03.443Z",
+      "finishedOn": "2026-10-06T14:39:24.164Z",
+      "error": null,
+      "taskId": "6ac508028a994c00026dce55",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:39:31.088Z",
+      "finishedOn": "2026-10-06T14:39:42.883Z",
+      "error": null,
+      "taskId": "6ac5081fe08eb0000277f02d",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:39:58.995Z",
+      "finishedOn": "2026-10-06T14:40:24.592Z",
+      "error": null,
+      "taskId": "6ac5083ae08eb0000277f02e",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:40:48.393Z",
+      "finishedOn": "2026-10-06T14:43:37.638Z",
+      "error": null,
+      "taskId": "6ac5086ce08eb0000277f02f",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:44:11.139Z",
+      "finishedOn": "2026-10-06T15:07:57.552Z",
+      "error": null,
+      "taskId": "6ac50936e08eb0000277f030",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T15:08:15.753Z",
+      "finishedOn": "2026-10-06T15:08:18.140Z",
+      "error": null,
+      "taskId": "6ac50edbe08eb0000277f031",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T15:08:31.535Z",
+      "finishedOn": "2026-10-06T15:08:43.669Z",
+      "error": null,
+      "taskId": "6ac50eebe08eb0000277f032",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-06T14:31:06.099Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac50184236932000221b5d7#0001",
+    "name": "FreehillStreetLofts Baseline 2",
+    "siteUrl": "https://promo.freehillstreetlofts.com/",
+    "themeEntryId": "6ab25f9d74d623000233f463",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-06T14:11:16.035Z"
+   },
+   "latestRun": {
+    "id": "6ac50186236932000221b5d8#0001",
+    "jobId": "6ac50184236932000221b5d7#0001",
+    "runNumber": 1,
+    "status": "running",
+    "note": "baseline",
+    "counts": {
+     "pages": 2,
+     "sections": 11,
+     "clusters": 8,
+     "components": 7
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:11:25.440Z",
+      "finishedOn": "2026-10-06T14:11:31.101Z",
+      "error": null,
+      "taskId": "6ac50188236932000221b5d9",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:11:40.452Z",
+      "finishedOn": "2026-10-06T14:14:17.926Z",
+      "error": null,
+      "taskId": "6ac50198236932000221b5da",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:14:31.365Z",
+      "finishedOn": "2026-10-06T14:14:35.643Z",
+      "error": null,
+      "taskId": "6ac5024384c4530002846260",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:14:47.587Z",
+      "finishedOn": "2026-10-06T14:14:51.013Z",
+      "error": null,
+      "taskId": "6ac5025384c4530002846261",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:15:03.613Z",
+      "finishedOn": "2026-10-06T14:15:20.908Z",
+      "error": null,
+      "taskId": "6ac5026384c4530002846262",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:15:38.489Z",
+      "finishedOn": "2026-10-06T14:17:42.646Z",
+      "error": null,
+      "taskId": "6ac5028684c4530002846263",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:18:15.111Z",
+      "finishedOn": "2026-10-06T14:29:19.669Z",
+      "error": null,
+      "taskId": "6ac503221a44130002685640",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 2,
+      "artifacts": {},
+      "startedOn": "2026-10-09T08:26:15.454Z",
+      "finishedOn": "2026-10-09T08:26:18.805Z",
+      "error": null,
+      "taskId": "6ac8a52217e8c60002271dd8",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "stale",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:30:02.127Z",
+      "finishedOn": "2026-10-06T14:30:10.717Z",
+      "error": null,
+      "taskId": "6ac505e51a44130002685642",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-06T14:11:18.051Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac4fd14a47cf10002f5ebba#0001",
+    "name": "ParkCityPlace Baseline 2",
+    "siteUrl": "https://www.parkcityplace.org/",
+    "themeEntryId": "6ab119a704782f0002001bd6",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-06T13:52:20.682Z"
+   },
+   "latestRun": {
+    "id": "6ac4fd16a47cf10002f5ebbb#0001",
+    "jobId": "6ac4fd14a47cf10002f5ebba#0001",
+    "runNumber": 1,
+    "status": "running",
+    "note": "baseline",
+    "counts": {
+     "pages": 8,
+     "sections": 46,
+     "clusters": 8,
+     "components": 8
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:52:28.940Z",
+      "finishedOn": "2026-10-06T13:52:35.146Z",
+      "error": null,
+      "taskId": "6ac4fd18a47cf10002f5ebbc",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:52:43.722Z",
+      "finishedOn": "2026-10-06T13:57:57.926Z",
+      "error": null,
+      "taskId": "6ac4fd27a47cf10002f5ebbd",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:58:08.238Z",
+      "finishedOn": "2026-10-06T13:58:20.184Z",
+      "error": null,
+      "taskId": "6ac4fe6c8aac820002443fa3",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:58:35.015Z",
+      "finishedOn": "2026-10-06T13:58:43.262Z",
+      "error": null,
+      "taskId": "6ac4fe878aac820002443fa4",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:58:51.139Z",
+      "finishedOn": "2026-10-06T13:59:07.967Z",
+      "error": null,
+      "taskId": "6ac4fe978aac820002443fa5",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 4,
+      "artifacts": {},
+      "startedOn": "2026-10-07T17:49:55.922Z",
+      "finishedOn": "2026-10-07T17:51:01.175Z",
+      "error": null,
+      "taskId": "6ac6863c4b8c4c000295b869",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "stale",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:01:47.881Z",
+      "finishedOn": "2026-10-06T14:09:44.787Z",
+      "error": null,
+      "taskId": "6ac4ff478aac820002443fa7",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "stale",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:10:00.473Z",
+      "finishedOn": "2026-10-06T14:10:02.961Z",
+      "error": null,
+      "taskId": "6ac501348aac820002443fa8",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "stale",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T14:10:16.231Z",
+      "finishedOn": "2026-10-06T14:10:24.120Z",
+      "error": null,
+      "taskId": "6ac501448aac820002443fa9",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-06T13:52:22.359Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac4f6bafa4b3a00028bb8ea#0001",
+    "name": "71Westland Baseline 2",
+    "siteUrl": "https://www.71westlandapts.com/",
+    "themeEntryId": "6ab2534661ea650002f10a72",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-06T13:25:14.936Z"
+   },
+   "latestRun": {
+    "id": "6ac4f6bdfa4b3a00028bb8eb#0001",
+    "jobId": "6ac4f6bafa4b3a00028bb8ea#0001",
+    "runNumber": 1,
+    "status": "running",
+    "note": "baseline",
+    "counts": {
+     "pages": 10,
+     "sections": 54,
+     "clusters": 10,
+     "components": 8
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:25:26.898Z",
+      "finishedOn": "2026-10-06T13:25:32.663Z",
+      "error": null,
+      "taskId": "6ac4f6bffa4b3a00028bb8ec",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:25:40.155Z",
+      "finishedOn": "2026-10-06T13:29:34.025Z",
+      "error": null,
+      "taskId": "6ac4f6d0fa4b3a00028bb8ed",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:29:45.207Z",
+      "finishedOn": "2026-10-06T13:29:58.590Z",
+      "error": null,
+      "taskId": "6ac4f7c5fa4b3a00028bb8ee",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:30:12.646Z",
+      "finishedOn": "2026-10-06T13:30:22.159Z",
+      "error": null,
+      "taskId": "6ac4f7e0fa4b3a00028bb8ef",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:30:39.102Z",
+      "finishedOn": "2026-10-06T13:30:59.864Z",
+      "error": null,
+      "taskId": "6ac4f7fbfa4b3a00028bb8f0",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:31:21.620Z",
+      "finishedOn": "2026-10-06T13:34:26.945Z",
+      "error": null,
+      "taskId": "6ac4f825fa4b3a00028bb8f1",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:34:53.728Z",
+      "finishedOn": "2026-10-06T13:50:18.789Z",
+      "error": null,
+      "taskId": "6ac4f8f94bda7b000294c7ec",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 2,
+      "artifacts": {},
+      "startedOn": "2026-10-09T08:25:58.231Z",
+      "finishedOn": "2026-10-09T08:26:01.966Z",
+      "error": null,
+      "taskId": "6ac8a50e17e8c60002271dd7",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "stale",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:50:49.092Z",
+      "finishedOn": "2026-10-06T13:50:58.467Z",
+      "error": null,
+      "taskId": "6ac4fcb5a47cf10002f5ebb8",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-06T13:25:17.577Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac4ea8ec3738b0002d8e938#0001",
+    "name": "2424Tulane Baseline",
+    "siteUrl": "https://www.2424tulane.com/",
+    "themeEntryId": "6ab26b4838a369000286400d",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-06T12:33:18.884Z"
+   },
+   "latestRun": {
+    "id": "6ac4ea90c3738b0002d8e939#0001",
+    "jobId": "6ac4ea8ec3738b0002d8e938#0001",
+    "runNumber": 1,
+    "status": "done",
+    "note": "baseline",
+    "counts": {
+     "pages": 11,
+     "sections": 72,
+     "clusters": 10,
+     "components": 8
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:33:26.588Z",
+      "finishedOn": "2026-10-06T12:33:32.477Z",
+      "error": null,
+      "taskId": "6ac4ea92c3738b0002d8e93a",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:33:42.334Z",
+      "finishedOn": "2026-10-06T12:41:09.609Z",
+      "error": null,
+      "taskId": "6ac4eaa22d924800026cf90d",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:41:22.330Z",
+      "finishedOn": "2026-10-06T12:41:41.776Z",
+      "error": null,
+      "taskId": "6ac4ec6ea420920002cc2b7c",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:41:49.387Z",
+      "finishedOn": "2026-10-06T12:41:59.719Z",
+      "error": null,
+      "taskId": "6ac4ec89a420920002cc2b7d",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:42:15.429Z",
+      "finishedOn": "2026-10-06T12:42:36.419Z",
+      "error": null,
+      "taskId": "6ac4eca3a420920002cc2b7e",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:43:02.304Z",
+      "finishedOn": "2026-10-06T12:45:39.626Z",
+      "error": null,
+      "taskId": "6ac4ecd2a420920002cc2b7f",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:46:13.824Z",
+      "finishedOn": "2026-10-06T13:10:06.999Z",
+      "error": null,
+      "taskId": "6ac4ed91f69a940002f532f8",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:10:29.436Z",
+      "finishedOn": "2026-10-06T13:10:31.910Z",
+      "error": null,
+      "taskId": "6ac4f341f69a940002f532f9",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T13:10:45.007Z",
+      "finishedOn": "2026-10-06T13:10:52.576Z",
+      "error": null,
+      "taskId": "6ac4f350f69a940002f532fa",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-06T12:33:20.541Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac4e4ccc3738b0002d8e92c#0001",
+    "name": "FreehillStreetLofts Baseline",
+    "siteUrl": "https://promo.freehillstreetlofts.com/",
+    "themeEntryId": "6ab25f9d74d623000233f463",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-06T12:08:44.158Z"
+   },
+   "latestRun": {
+    "id": "6ac4e4cec3738b0002d8e92d#0001",
+    "jobId": "6ac4e4ccc3738b0002d8e92c#0001",
+    "runNumber": 1,
+    "status": "done",
+    "note": "baseline",
+    "counts": {
+     "pages": 2,
+     "sections": 11,
+     "clusters": 8,
+     "components": 6
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:08:53.099Z",
+      "finishedOn": "2026-10-06T12:08:58.635Z",
+      "error": null,
+      "taskId": "6ac4e4d0c3738b0002d8e92e",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:09:08.615Z",
+      "finishedOn": "2026-10-06T12:11:48.167Z",
+      "error": null,
+      "taskId": "6ac4e4e0c3738b0002d8e92f",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:11:58.580Z",
+      "finishedOn": "2026-10-06T12:12:02.998Z",
+      "error": null,
+      "taskId": "6ac4e58ac3738b0002d8e930",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:12:14.200Z",
+      "finishedOn": "2026-10-06T12:12:17.499Z",
+      "error": null,
+      "taskId": "6ac4e59ac3738b0002d8e931",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:12:30.814Z",
+      "finishedOn": "2026-10-06T12:12:47.609Z",
+      "error": null,
+      "taskId": "6ac4e5a9c3738b0002d8e932",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:13:04.434Z",
+      "finishedOn": "2026-10-06T12:14:59.667Z",
+      "error": null,
+      "taskId": "6ac4e5ccc3738b0002d8e933",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:15:26.830Z",
+      "finishedOn": "2026-10-06T12:31:42.467Z",
+      "error": null,
+      "taskId": "6ac4e65bc3738b0002d8e934",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:32:05.485Z",
+      "finishedOn": "2026-10-06T12:32:07.962Z",
+      "error": null,
+      "taskId": "6ac4ea40c3738b0002d8e935",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:32:20.341Z",
+      "finishedOn": "2026-10-06T12:32:27.657Z",
+      "error": null,
+      "taskId": "6ac4ea50c3738b0002d8e936",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-06T12:08:46.052Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac4e0b0c2034c0002286a3d#0001",
+    "name": "ParkCityPlace Baseline",
+    "siteUrl": "https://www.parkcityplace.org/",
+    "themeEntryId": "6ab119a704782f0002001bd6",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-06T11:51:12.094Z"
+   },
+   "latestRun": {
+    "id": "6ac4e0b2c2034c0002286a3e#0001",
+    "jobId": "6ac4e0b0c2034c0002286a3d#0001",
+    "runNumber": 1,
+    "status": "done",
+    "note": "baseline",
+    "counts": {
+     "pages": 8,
+     "sections": 46,
+     "clusters": 8,
+     "components": 8
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:51:20.424Z",
+      "finishedOn": "2026-10-06T11:51:26.409Z",
+      "error": null,
+      "taskId": "6ac4e0b4c2034c0002286a3f",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:51:36.518Z",
+      "finishedOn": "2026-10-06T11:57:00.597Z",
+      "error": null,
+      "taskId": "6ac4e0c4c2034c0002286a40",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:57:08.416Z",
+      "finishedOn": "2026-10-06T11:57:20.379Z",
+      "error": null,
+      "taskId": "6ac4e210c2034c0002286a41",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:57:35.685Z",
+      "finishedOn": "2026-10-06T11:57:43.887Z",
+      "error": null,
+      "taskId": "6ac4e22bc2034c0002286a42",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:57:51.599Z",
+      "finishedOn": "2026-10-06T11:58:08.468Z",
+      "error": null,
+      "taskId": "6ac4e23bc2034c0002286a43",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:58:24.323Z",
+      "finishedOn": "2026-10-06T12:00:53.737Z",
+      "error": null,
+      "taskId": "6ac4e25cc2034c0002286a44",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:01:16.212Z",
+      "finishedOn": "2026-10-06T12:07:06.180Z",
+      "error": null,
+      "taskId": "6ac4e308c2034c0002286a45",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:07:28.649Z",
+      "finishedOn": "2026-10-06T12:07:30.887Z",
+      "error": null,
+      "taskId": "6ac4e47cc2034c0002286a46",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T12:07:43.938Z",
+      "finishedOn": "2026-10-06T12:07:51.247Z",
+      "error": null,
+      "taskId": "6ac4e48cc2034c0002286a47",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-06T11:51:14.071Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac4d613daf3ad0002fc11cc#0001",
+    "name": "TheVibe Baseline",
+    "siteUrl": "https://thevibe-apts.com/",
+    "themeEntryId": "6ab25c89b1d62000028225e5",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-06T11:05:55.062Z"
+   },
+   "latestRun": {
+    "id": "6ac4d615daf3ad0002fc11cd#0001",
+    "jobId": "6ac4d613daf3ad0002fc11cc#0001",
+    "runNumber": 1,
+    "status": "running",
+    "note": "baseline",
+    "counts": {
+     "pages": 9,
+     "sections": 82,
+     "clusters": 33,
+     "components": 31
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:06:04.089Z",
+      "finishedOn": "2026-10-06T11:06:10.255Z",
+      "error": null,
+      "taskId": "6ac4d617daf3ad0002fc11ce",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:06:19.123Z",
+      "finishedOn": "2026-10-06T11:10:43.377Z",
+      "error": null,
+      "taskId": "6ac4d6277ae0080002da9788",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:10:58.694Z",
+      "finishedOn": "2026-10-06T11:11:20.450Z",
+      "error": null,
+      "taskId": "6ac4d73edaf3ad0002fc11cf",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:11:36.570Z",
+      "finishedOn": "2026-10-06T11:11:45.433Z",
+      "error": null,
+      "taskId": "6ac4d764daf3ad0002fc11d0",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:11:52.222Z",
+      "finishedOn": "2026-10-06T11:12:56.542Z",
+      "error": null,
+      "taskId": "6ac4d774daf3ad0002fc11d1",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:13:17.448Z",
+      "finishedOn": "2026-10-06T11:20:13.934Z",
+      "error": null,
+      "taskId": "6ac4d7c9daf3ad0002fc11d2",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:20:37.964Z",
+      "finishedOn": "2026-10-06T11:46:21.603Z",
+      "error": null,
+      "taskId": "6ac4d982daf3ad0002fc11d3",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T17:54:25.103Z",
+      "finishedOn": "2026-10-06T17:54:27.846Z",
+      "error": null,
+      "taskId": "6ac535c97dc5c00002234425",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-06T11:05:57.124Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ac4d11d03fba7000280d555#0001",
+    "name": "71Westland Baseline",
+    "siteUrl": "https://www.71westlandapts.com/",
+    "themeEntryId": "6ab2534661ea650002f10a72",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Pre-demo baseline: automation only, no corrections.",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-06T10:44:45.654Z"
+   },
+   "latestRun": {
+    "id": "6ac4d11f03fba7000280d556#0001",
+    "jobId": "6ac4d11d03fba7000280d555#0001",
+    "runNumber": 1,
+    "status": "done",
+    "note": "baseline",
+    "counts": {
+     "pages": 10,
+     "sections": 54,
+     "clusters": 10,
+     "components": 9
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T10:44:57.131Z",
+      "finishedOn": "2026-10-06T10:45:02.379Z",
+      "error": null,
+      "taskId": "6ac4d12203fba7000280d557",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T10:45:10.380Z",
+      "finishedOn": "2026-10-06T10:48:38.357Z",
+      "error": null,
+      "taskId": "6ac4d13203fba7000280d558",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T10:48:55.255Z",
+      "finishedOn": "2026-10-06T10:49:07.030Z",
+      "error": null,
+      "taskId": "6ac4d21303fba7000280d559",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T10:49:21.760Z",
+      "finishedOn": "2026-10-06T10:49:29.962Z",
+      "error": null,
+      "taskId": "6ac4d22e03fba7000280d55a",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T10:49:37.856Z",
+      "finishedOn": "2026-10-06T10:49:57.166Z",
+      "error": null,
+      "taskId": "6ac4d23e03fba7000280d55b",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T10:50:06.150Z",
+      "finishedOn": "2026-10-06T10:52:38.081Z",
+      "error": null,
+      "taskId": "6ac4d25a03fba7000280d55c",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T10:53:00.562Z",
+      "finishedOn": "2026-10-06T11:04:13.636Z",
+      "error": null,
+      "taskId": "6ac4d30903fba7000280d55d",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:04:25.029Z",
+      "finishedOn": "2026-10-06T11:04:27.139Z",
+      "error": null,
+      "taskId": "6ac4d5b503fba7000280d55e",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-06T11:04:44.180Z",
+      "finishedOn": "2026-10-06T11:04:52.907Z",
+      "error": null,
+      "taskId": "6ac4d5c77ae0080002da9786",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-06T10:44:47.996Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6abfc7bdc8011700027a87b6#0001",
+    "name": "Park city Palace #2",
+    "siteUrl": "https://www.parkcityplace.org/",
+    "themeEntryId": "6ab119a704782f0002001bd6",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-10-02T15:03:25.011Z"
+   },
+   "latestRun": {
+    "id": "6abfc7bec8011700027a87b7#0001",
+    "jobId": "6abfc7bdc8011700027a87b6#0001",
+    "runNumber": 1,
+    "status": "running",
+    "note": "",
+    "counts": {
+     "pages": 8,
+     "sections": 46,
+     "clusters": 8,
+     "components": 8
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-02T15:04:43.255Z",
+      "finishedOn": "2026-10-02T15:04:48.525Z",
+      "error": null,
+      "taskId": "6abfc8052a0b7100022b6bce",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 4,
+      "artifacts": {},
+      "startedOn": "2026-10-05T13:17:39.884Z",
+      "finishedOn": "2026-10-05T13:22:49.719Z",
+      "error": null,
+      "taskId": "6ac3a36d21b0930002ab20b3",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 7,
+      "artifacts": {},
+      "startedOn": "2026-10-05T13:23:00.956Z",
+      "finishedOn": "2026-10-05T13:23:11.758Z",
+      "error": null,
+      "taskId": "6ac3a4b17a9215000204d7fb",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 6,
+      "artifacts": {},
+      "startedOn": "2026-10-05T13:23:20.208Z",
+      "finishedOn": "2026-10-05T13:23:27.259Z",
+      "error": null,
+      "taskId": "6ac3a4c47a9215000204d7fc",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 5,
+      "artifacts": {},
+      "startedOn": "2026-10-05T13:23:40.076Z",
+      "finishedOn": "2026-10-05T13:23:57.888Z",
+      "error": null,
+      "taskId": "6ac3a4d87a9215000204d7fd",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 4,
+      "artifacts": {},
+      "startedOn": "2026-10-05T13:24:16.430Z",
+      "finishedOn": "2026-10-05T13:26:29.419Z",
+      "error": null,
+      "taskId": "6ac3a4fc7a9215000204d7fe",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 4,
+      "artifacts": {},
+      "startedOn": "2026-10-05T13:26:42.779Z",
+      "finishedOn": "2026-10-05T13:36:16.165Z",
+      "error": null,
+      "taskId": "6ac3a58e7a9215000204d7ff",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-02T15:03:26.098Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ab3a64817375d00020e42be#0001",
+    "name": "2424 Tulane (overlay verification)",
+    "siteUrl": "https://www.2424tulane.com/",
+    "themeEntryId": "6ab26b4838a369000286400d",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 20,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-09-23T10:13:28.652Z"
+   },
+   "latestRun": {
+    "id": "6ab3a66017375d00020e42bf#0001",
+    "jobId": "6ab3a64817375d00020e42be#0001",
+    "runNumber": 1,
+    "status": "running",
+    "note": "Overlay pass verification",
+    "counts": {
+     "pages": 11,
+     "sections": 49,
+     "clusters": 0,
+     "components": 0
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-09-23T10:13:56.371Z",
+      "finishedOn": "2026-09-23T10:13:58.308Z",
+      "error": null,
+      "taskId": "6ab3a66217375d00020e42c0",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-09-23T10:14:05.131Z",
+      "finishedOn": "2026-09-23T10:19:52.648Z",
+      "error": null,
+      "taskId": "6ab3a66b17375d00020e42c1",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-09-23T10:19:56.672Z",
+      "finishedOn": "2026-09-23T10:20:05.843Z",
+      "error": null,
+      "taskId": "6ab3a7cbf0a64b00024a9dc2",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-09-23T10:13:52.473Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ab26b5f2fc49500022224ca#0001",
+    "name": "2424 Tulane",
+    "siteUrl": "https://www.2424tulane.com/",
+    "themeEntryId": "6ab26b4838a369000286400d",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 20,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-09-22T11:49:51.869Z"
+   },
+   "latestRun": {
+    "id": "6ab5426e7c4ab700023c79b8#0001",
+    "jobId": "6ab26b5f2fc49500022224ca#0001",
+    "runNumber": 4,
+    "status": "running",
+    "note": "zero-area repair verification (2424tulane)",
+    "counts": {
+     "pages": 11,
+     "sections": 71,
+     "clusters": 24,
+     "components": 23
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-09-24T15:32:04.109Z",
+      "finishedOn": "2026-09-24T15:32:07.141Z",
+      "error": null,
+      "taskId": "6ab5426f7c4ab700023c79b9",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 3,
+      "artifacts": {},
+      "startedOn": "2026-09-28T08:06:32.816Z",
+      "finishedOn": "2026-09-28T08:12:53.231Z",
+      "error": null,
+      "taskId": "6aba20042ac4280002978e0a",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 2,
+      "artifacts": {},
+      "startedOn": "2026-09-28T08:41:51.269Z",
+      "finishedOn": "2026-09-28T08:42:05.040Z",
+      "error": null,
+      "taskId": "6aba284b6784d100022d104e",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 3,
+      "artifacts": {},
+      "startedOn": "2026-10-02T17:34:59.758Z",
+      "finishedOn": "2026-10-02T17:35:08.411Z",
+      "error": null,
+      "taskId": "6abfeb40dd2d1b0002528997",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 3,
+      "artifacts": {},
+      "startedOn": "2026-10-02T17:35:19.007Z",
+      "finishedOn": "2026-10-02T17:36:03.137Z",
+      "error": null,
+      "taskId": "6abfeb54dd2d1b0002528998",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 11,
+      "artifacts": {},
+      "startedOn": "2026-10-05T09:24:09.902Z",
+      "finishedOn": "2026-10-05T09:30:23.045Z",
+      "error": null,
+      "taskId": "6ac36cb6131e3b0002871cd1",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 12,
+      "artifacts": {},
+      "startedOn": "2026-10-05T09:30:35.664Z",
+      "finishedOn": "2026-10-05T10:01:42.343Z",
+      "error": null,
+      "taskId": "6ac36e38131e3b0002871cd2",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "stale",
+      "stageVersion": 2,
+      "artifacts": {},
+      "startedOn": "2026-09-28T08:55:17.968Z",
+      "finishedOn": "2026-09-28T08:55:19.155Z",
+      "error": null,
+      "taskId": "6aba2b74b76e8d0002d2d2ca",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "stale",
+      "stageVersion": 2,
+      "artifacts": {},
+      "startedOn": "2026-09-28T08:55:41.319Z",
+      "finishedOn": "2026-09-28T08:55:47.112Z",
+      "error": null,
+      "taskId": "6aba2b8bb76e8d0002d2d2cb",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-09-24T15:31:58.118Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ab2635d514c4400024a20b2#0001",
+    "name": "Freehill Street Lofts",
+    "siteUrl": "https://promo.freehillstreetlofts.com/",
+    "themeEntryId": "6ab25f9d74d623000233f463",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 20,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-09-22T11:15:41.880Z"
+   },
+   "latestRun": {
+    "id": "6ab2635e514c4400024a20b3#0001",
+    "jobId": "6ab2635d514c4400024a20b2#0001",
+    "runNumber": 1,
+    "status": "running",
+    "note": "Five-site collection",
+    "counts": {
+     "pages": 2,
+     "sections": 9,
+     "clusters": 7,
+     "components": 6
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 5,
+      "artifacts": {},
+      "startedOn": "2026-09-23T10:00:48.516Z",
+      "finishedOn": "2026-09-23T10:00:50.782Z",
+      "error": null,
+      "taskId": "6ab3a34c5a89cc0002ec67c3",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 6,
+      "artifacts": {},
+      "startedOn": "2026-09-28T08:06:37.362Z",
+      "finishedOn": "2026-09-28T08:09:05.890Z",
+      "error": null,
+      "taskId": "6aba20092ac4280002978e0c",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 5,
+      "artifacts": {},
+      "startedOn": "2026-09-28T08:41:51.300Z",
+      "finishedOn": "2026-09-28T08:41:54.098Z",
+      "error": null,
+      "taskId": "6aba284b03cec80002c338f9",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 5,
+      "artifacts": {},
+      "startedOn": "2026-10-02T18:33:47.200Z",
+      "finishedOn": "2026-10-02T18:33:49.965Z",
+      "error": null,
+      "taskId": "6abff907c79c2a0002619c79",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 5,
+      "artifacts": {},
+      "startedOn": "2026-10-02T18:34:06.277Z",
+      "finishedOn": "2026-10-02T18:34:19.273Z",
+      "error": null,
+      "taskId": "6abff91ac79c2a0002619c7a",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 11,
+      "artifacts": {},
+      "startedOn": "2026-10-05T10:03:56.986Z",
+      "finishedOn": "2026-10-05T10:05:20.197Z",
+      "error": null,
+      "taskId": "6ac37608f72cdf0002adc0b0",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 13,
+      "artifacts": {},
+      "startedOn": "2026-10-05T10:05:35.966Z",
+      "finishedOn": "2026-10-05T10:21:51.561Z",
+      "error": null,
+      "taskId": "6ac3766bf72cdf0002adc0b1",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "stale",
+      "stageVersion": 4,
+      "artifacts": {},
+      "startedOn": "2026-09-28T08:47:57.198Z",
+      "finishedOn": "2026-09-28T08:47:58.177Z",
+      "error": null,
+      "taskId": "6aba29bb9930b4000275ec30",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "stale",
+      "stageVersion": 5,
+      "artifacts": {},
+      "startedOn": "2026-09-28T08:48:20.605Z",
+      "finishedOn": "2026-09-28T08:48:23.444Z",
+      "error": null,
+      "taskId": "6aba29d29930b4000275ec31",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-09-22T11:15:42.821Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ab25c98d136870002fa5ba7#0001",
+    "name": "The Vibe Apartments",
+    "siteUrl": "https://thevibe-apts.com/",
+    "themeEntryId": "6ab25c89b1d62000028225e5",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 20,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-09-22T10:46:48.956Z"
+   },
+   "latestRun": {
+    "id": "6ab5147972770d0002eaeeef#0001",
+    "jobId": "6ab25c98d136870002fa5ba7#0001",
+    "runNumber": 2,
+    "status": "done",
+    "note": "generate artifact ceiling verification",
+    "counts": {
+     "pages": 9,
+     "sections": 82,
+     "clusters": 34,
+     "components": 25
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-09-24T12:15:59.346Z",
+      "finishedOn": "2026-09-24T12:16:02.748Z",
+      "error": null,
+      "taskId": "6ab5147b72770d0002eaeef0",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-09-24T12:16:15.567Z",
+      "finishedOn": "2026-09-24T12:18:59.684Z",
+      "error": null,
+      "taskId": "6ab5148d72770d0002eaeef1",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-09-24T12:19:13.368Z",
+      "finishedOn": "2026-09-24T12:19:29.931Z",
+      "error": null,
+      "taskId": "6ab5153f72770d0002eaeef2",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-09-24T12:19:47.561Z",
+      "finishedOn": "2026-09-24T12:19:51.140Z",
+      "error": null,
+      "taskId": "6ab5156272770d0002eaeef3",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-09-24T12:20:05.910Z",
+      "finishedOn": "2026-09-24T12:21:05.305Z",
+      "error": null,
+      "taskId": "6ab51574034f1f0002bdb773",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-09-24T12:21:12.638Z",
+      "finishedOn": "2026-09-24T12:26:19.175Z",
+      "error": null,
+      "taskId": "6ab515b772770d0002eaeef4",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-09-24T12:26:34.029Z",
+      "finishedOn": "2026-09-24T12:36:13.171Z",
+      "error": null,
+      "taskId": "6ab516f872770d0002eaeef5",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-09-24T12:36:27.102Z",
+      "finishedOn": "2026-09-24T12:36:28.217Z",
+      "error": null,
+      "taskId": "6ab5194972770d0002eaeef6",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-09-24T12:36:45.338Z",
+      "finishedOn": "2026-09-24T12:36:57.701Z",
+      "error": null,
+      "taskId": "6ab5195b72770d0002eaeef7",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-09-24T12:15:53.519Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ab2553f1109a6000220f2ac#0001",
+    "name": "71 Westland Apartments",
+    "siteUrl": "https://www.71westlandapts.com/",
+    "themeEntryId": "6ab2534661ea650002f10a72",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 20,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-09-22T10:15:27.595Z"
+   },
+   "latestRun": {
+    "id": "6ab255401109a6000220f2ad#0001",
+    "jobId": "6ab2553f1109a6000220f2ac#0001",
+    "runNumber": 1,
+    "status": "running",
+    "note": "Five-site collection",
+    "counts": {
+     "pages": 10,
+     "sections": 44,
+     "clusters": 9,
+     "components": 9
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 5,
+      "artifacts": {},
+      "startedOn": "2026-09-23T10:00:43.497Z",
+      "finishedOn": "2026-09-23T10:00:45.691Z",
+      "error": null,
+      "taskId": "6ab3a34a17375d00020e42b9",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 6,
+      "artifacts": {},
+      "startedOn": "2026-09-28T08:06:35.162Z",
+      "finishedOn": "2026-09-28T08:10:21.409Z",
+      "error": null,
+      "taskId": "6aba20072ac4280002978e0b",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 5,
+      "artifacts": {},
+      "startedOn": "2026-09-28T08:41:51.025Z",
+      "finishedOn": "2026-09-28T08:41:59.391Z",
+      "error": null,
+      "taskId": "6aba284b9930b4000275ec2b",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 5,
+      "artifacts": {},
+      "startedOn": "2026-10-02T18:15:57.792Z",
+      "finishedOn": "2026-10-02T18:16:06.408Z",
+      "error": null,
+      "taskId": "6abff4da11b77a0002a40414",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 5,
+      "artifacts": {},
+      "startedOn": "2026-10-02T18:16:16.765Z",
+      "finishedOn": "2026-10-02T18:16:34.344Z",
+      "error": null,
+      "taskId": "6abff4ed11b77a0002a40415",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 10,
+      "artifacts": {},
+      "startedOn": "2026-10-05T08:30:21.405Z",
+      "finishedOn": "2026-10-05T08:32:48.546Z",
+      "error": null,
+      "taskId": "6ac360192d75be00022cd78f",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 12,
+      "artifacts": {},
+      "startedOn": "2026-10-05T08:33:03.736Z",
+      "finishedOn": "2026-10-05T08:43:41.865Z",
+      "error": null,
+      "taskId": "6ac360bb2d75be00022cd790",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "stale",
+      "stageVersion": 4,
+      "artifacts": {},
+      "startedOn": "2026-09-28T08:49:42.991Z",
+      "finishedOn": "2026-09-28T08:49:44.206Z",
+      "error": null,
+      "taskId": "6aba2a256784d100022d1052",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "stale",
+      "stageVersion": 4,
+      "artifacts": {},
+      "startedOn": "2026-09-28T08:50:06.128Z",
+      "finishedOn": "2026-09-28T08:50:10.045Z",
+      "error": null,
+      "taskId": "6aba2a3c6784d100022d1053",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-09-22T10:15:28.454Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ab119f173470100026835c0#0001",
+    "name": "Park city Palace",
+    "siteUrl": "https://www.parkcityplace.org/",
+    "themeEntryId": "6ab119a704782f0002001bd6",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 40,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-09-21T11:50:09.333Z"
+   },
+   "latestRun": {
+    "id": "6abe1223629ed10002c9ff1c#0001",
+    "jobId": "6ab119f173470100026835c0#0001",
+    "runNumber": 5,
+    "status": "running",
+    "note": "",
+    "counts": {
+     "pages": 8,
+     "sections": 38,
+     "clusters": 10,
+     "components": 10
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-01T07:56:27.301Z",
+      "finishedOn": "2026-10-01T07:56:30.967Z",
+      "error": null,
+      "taskId": "6abe1228629ed10002c9ff1d",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-01T07:56:40.294Z",
+      "finishedOn": "2026-10-01T08:01:24.265Z",
+      "error": null,
+      "taskId": "6abe1236af75760002147473",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-01T08:04:48.636Z",
+      "finishedOn": "2026-10-01T08:04:56.958Z",
+      "error": null,
+      "taskId": "6abe141eaf75760002147474",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "done",
+      "stageVersion": 3,
+      "artifacts": {},
+      "startedOn": "2026-10-02T17:22:31.872Z",
+      "finishedOn": "2026-10-02T17:22:37.889Z",
+      "error": null,
+      "taskId": "6abfe852dd2d1b0002528992",
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "done",
+      "stageVersion": 2,
+      "artifacts": {},
+      "startedOn": "2026-10-02T17:22:48.759Z",
+      "finishedOn": "2026-10-02T17:23:08.527Z",
+      "error": null,
+      "taskId": "6abfe866dd2d1b0002528993",
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "done",
+      "stageVersion": 12,
+      "artifacts": {},
+      "startedOn": "2026-10-05T09:10:26.652Z",
+      "finishedOn": "2026-10-05T09:13:16.699Z",
+      "error": null,
+      "taskId": "6ac3697cc9ee9c0002407795",
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "done",
+      "stageVersion": 11,
+      "artifacts": {},
+      "startedOn": "2026-10-05T09:13:23.299Z",
+      "finishedOn": "2026-10-05T09:23:01.824Z",
+      "error": null,
+      "taskId": "6ac36a2fc9ee9c0002407796",
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "stale",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-01T08:19:53.169Z",
+      "finishedOn": "2026-10-01T08:19:54.794Z",
+      "error": null,
+      "taskId": "6abe17a6629ed10002c9ff20",
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "stale",
+      "stageVersion": 1,
+      "artifacts": {},
+      "startedOn": "2026-10-01T08:20:16.720Z",
+      "finishedOn": "2026-10-01T08:20:21.502Z",
+      "error": null,
+      "taskId": "6abe17bef9778c0002fbef2c",
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-10-01T07:56:19.031Z"
+   }
+  },
+  {
+   "job": {
+    "id": "6ab0fead6fd9a4000281fca3#0001",
+    "name": "Validation \u2014 webiny.com",
+    "siteUrl": "https://www.webiny.com",
+    "themeEntryId": "6ab0fe976fd9a4000281fca1",
+    "themeVersion": 1,
+    "themeExtraction": null,
+    "pageCap": 3,
+    "gateConfig": {
+     "stopAfter": [
+      "discover",
+      "capture",
+      "segment",
+      "cluster",
+      "classify",
+      "plan",
+      "generate",
+      "assemble",
+      "promote"
+     ]
+    },
+    "pinned": false,
+    "note": "Deployed validation of the capture fields",
+    "siteTenantFromStart": false,
+    "createdOn": "2026-09-21T09:53:49.843Z"
+   },
+   "latestRun": {
+    "id": "6ab146333aa35e00029ffa3b#0001",
+    "jobId": "6ab0fead6fd9a4000281fca3#0001",
+    "runNumber": 2,
+    "status": "running",
+    "note": "Discover hardening validation",
+    "counts": {
+     "pages": 3,
+     "sections": 21,
+     "clusters": 0,
+     "components": 0
+    },
+    "stages": [
+     {
+      "stage": "discover",
+      "status": "done",
+      "stageVersion": 6,
+      "artifacts": {},
+      "startedOn": "2026-09-23T10:00:51.527Z",
+      "finishedOn": "2026-09-23T10:01:28.428Z",
+      "error": null,
+      "taskId": "6ab3a3525a89cc0002ec67c4",
+      "modelUsage": null
+     },
+     {
+      "stage": "capture",
+      "status": "done",
+      "stageVersion": 2,
+      "artifacts": {},
+      "startedOn": "2026-09-23T10:01:35.662Z",
+      "finishedOn": "2026-09-23T10:03:13.182Z",
+      "error": null,
+      "taskId": "6ab3a37ef0a64b00024a9dbb",
+      "modelUsage": null
+     },
+     {
+      "stage": "segment",
+      "status": "done",
+      "stageVersion": 2,
+      "artifacts": {},
+      "startedOn": "2026-09-23T10:03:19.384Z",
+      "finishedOn": "2026-09-23T10:03:22.558Z",
+      "error": null,
+      "taskId": "6ab3a3e617375d00020e42bc",
+      "modelUsage": null
+     },
+     {
+      "stage": "cluster",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "classify",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "plan",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "generate",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "assemble",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     },
+     {
+      "stage": "promote",
+      "status": "pending",
+      "stageVersion": 0,
+      "artifacts": {},
+      "startedOn": null,
+      "finishedOn": null,
+      "error": null,
+      "taskId": null,
+      "modelUsage": null
+     }
+    ],
+    "createdOn": "2026-09-21T14:58:59.142Z"
+   }
+  }
+ ]
+}

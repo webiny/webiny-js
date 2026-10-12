@@ -78,6 +78,18 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         "Approves into and composes in its site tenant. False for jobs created before that existed."
         siteTenantFromStart: Boolean
         createdOn: String!
+        """
+        Who created the job: the identity the CMS stamped on its entry at creation. Not editable; this
+        is ownership, not assignment.
+        """
+        createdBy: ComponentExtractionIdentity
+    }
+
+    "An identity as the CMS records it: an admin user, or an API key."
+    type ComponentExtractionIdentity {
+        id: ID!
+        displayName: String
+        type: String!
     }
 
     "A job plus its latest run, for the extractions list (status, current stage, counts)."

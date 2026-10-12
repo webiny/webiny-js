@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { ExtractionListPresenter as PresenterAbstraction } from "./abstractions.js";
 import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
+import { DEFAULT_ORDER, type BoardColumn } from "./jobBoard.js";
 
 class ExtractionListPresenterImpl implements PresenterAbstraction.Interface {
     vm: PresenterAbstraction.ViewModel = {
@@ -11,6 +12,11 @@ class ExtractionListPresenterImpl implements PresenterAbstraction.Interface {
         search: "",
         statusFilter: "all",
         sort: "lastRun",
+        view: "board",
+        owner: "any",
+        identityId: null,
+        columnOrder: { ...DEFAULT_ORDER },
+        expanded: [],
         libraryCount: 0
     };
 
@@ -57,6 +63,48 @@ class ExtractionListPresenterImpl implements PresenterAbstraction.Interface {
     setSort(sort: PresenterAbstraction.ViewModel["sort"]): void {
         runInAction(() => {
             this.vm.sort = sort;
+        });
+    }
+
+    setView(view: PresenterAbstraction.ViewModel["view"]): void {
+        runInAction(() => {
+            this.vm.view = view;
+        });
+    }
+
+    setOwner(owner: PresenterAbstraction.ViewModel["owner"]): void {
+        runInAction(() => {
+            this.vm.owner = owner;
+        });
+    }
+
+    setIdentityId(id: string | null): void {
+        runInAction(() => {
+            this.vm.identityId = id;
+        });
+    }
+
+    toggleColumnOrder(column: BoardColumn): void {
+        runInAction(() => {
+            this.vm.columnOrder[column] =
+                this.vm.columnOrder[column] === "oldest" ? "newest" : "oldest";
+        });
+    }
+
+    expandColumn(column: BoardColumn): void {
+        runInAction(() => {
+            if (!this.vm.expanded.includes(column)) {
+                this.vm.expanded.push(column);
+            }
+        });
+    }
+
+    showMineWaiting(): void {
+        runInAction(() => {
+            this.vm.owner = "mine";
+            this.vm.search = "";
+            // The board's own column says it; the table needs the filter.
+            this.vm.statusFilter = this.vm.view === "table" ? "needs-review" : "all";
         });
     }
 

@@ -11,6 +11,11 @@ const JOB_FIELDS = /* GraphQL */ `
     note
     siteTenantFromStart
     createdOn
+    createdBy {
+        id
+        displayName
+        type
+    }
 `;
 
 const RUN_FIELDS = /* GraphQL */ `

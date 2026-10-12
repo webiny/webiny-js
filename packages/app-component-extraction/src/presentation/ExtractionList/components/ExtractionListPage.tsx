@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo } from "react";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { createReactiveComponent, Route, useRouter } from "@webiny/app-admin";
+import { createReactiveComponent, Route, useIdentity, useRouter } from "@webiny/app-admin";
 import { DialogsProvider } from "@webiny/app-admin/components/index.js";
 import {
+    Alert,
     Button,
     DataTable,
     DropdownMenu,
@@ -11,6 +12,7 @@ import {
     IconButton,
     Input,
     Scrollbar,
+    SegmentedControl,
     Select,
     Separator,
     Text,
@@ -26,6 +28,10 @@ import { ReactComponent as PlayIcon } from "@webiny/icons/play_arrow.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as DuplicateIcon } from "@webiny/icons/content_copy.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
+import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
+import { ReactComponent as BoardIcon } from "@webiny/icons/view_kanban.svg";
+import { ReactComponent as TableIcon } from "@webiny/icons/table_rows.svg";
+import { ReactComponent as WaitingIcon } from "@webiny/icons/pending_actions.svg";
 import { ExtractionListFeature } from "../feature.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
 import { currentStage } from "~/shared/ledger.js";
@@ -39,7 +45,9 @@ import {
 } from "~/presentation/shared/index.js";
 import { Routes } from "~/routes.js";
 import type { JobListItemDto } from "~/shared/types.js";
-import type { ListSort, StatusFilter } from "../abstractions.js";
+import type { ListSort, ListView, OwnerFilter, StatusFilter } from "../abstractions.js";
+import { boardColumn, isMine, matchesSearch } from "../jobBoard.js";
+import { JobBoard, OwnerBadge } from "./JobBoard.js";
 
 type JobRow = JobListItemDto & { id: string; name: string; siteUrl: string };
 
@@ -49,12 +57,13 @@ type JobRow = JobListItemDto & { id: string; name: string; siteUrl: string };
  */
 const LIBRARY_ROUTE = new Route({ name: "RemoteComponents/List", path: "/remote-components" });
 
+/** The board's columns, as the table's filter: both views group jobs the same way. */
 const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
     { value: "all", label: "Status: all" },
-    { value: "not-started", label: "Never run" },
+    { value: "needs-review", label: "Needs review" },
     { value: "running", label: "Running" },
-    { value: "paused", label: "Paused at gate" },
     { value: "failed", label: "Failed" },
+    { value: "not-started", label: "Not started" },
     { value: "complete", label: "Complete" }
 ];
 
@@ -152,6 +161,13 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
         presenter.init();
     }, [presenter]);
 
+    // "Mine" is the signed-in login's jobs: its id against the id the CMS stamped on each job.
+    const { identity } = useIdentity();
+    const identityId = identity.isAuthenticated ? identity.id : null;
+    useEffect(() => {
+        presenter.setIdentityId(identityId);
+    }, [presenter, identityId]);
+
     const { vm } = presenter;
 
     const openJob = (jobId: string) => goToRoute(Routes.Job, { jobId });
@@ -170,12 +186,19 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
     };
 
     const rows: JobRow[] = useMemo(() => {
-        const query = vm.search.trim().toLowerCase();
         const matched = vm.items.filter(item => {
-            if (query && !`${item.job.name} ${item.job.siteUrl}`.toLowerCase().includes(query)) {
+            if (!matchesSearch(item, vm.search)) {
                 return false;
             }
-            if (vm.statusFilter !== "all" && runOverallStatus(item.latestRun) !== vm.statusFilter) {
+            if (vm.owner === "mine" && !isMine(item, vm.identityId)) {
+                return false;
+            }
+            // Status is the board's own structure; only the table filters by it.
+            if (
+                vm.view === "table" &&
+                vm.statusFilter !== "all" &&
+                boardColumn(item.latestRun) !== vm.statusFilter
+            ) {
                 return false;
             }
             return true;
@@ -195,7 +218,12 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
             name: item.job.name,
             siteUrl: item.job.siteUrl
         }));
-    }, [vm.items, vm.search, vm.statusFilter, vm.sort]);
+    }, [vm.items, vm.search, vm.statusFilter, vm.sort, vm.owner, vm.identityId, vm.view]);
+
+    // The pipeline waiting on the signed-in person: their jobs whose run waits for its next stage.
+    const waitingMine = vm.items.filter(
+        item => isMine(item, vm.identityId) && boardColumn(item.latestRun) === "needs-review"
+    ).length;
 
     const columns = useMemo(
         () => ({
@@ -208,6 +236,12 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
                 header: "Status",
                 cell: (item: JobRow) => <StageStatus status={runOverallStatus(item.latestRun)} />,
                 size: 150,
+                enableSorting: false
+            },
+            owner: {
+                header: "Owner",
+                cell: (item: JobRow) => <OwnerBadge item={item} />,
+                size: 170,
                 enableSorting: false
             },
             stage: {
@@ -325,32 +359,77 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
                 />
             </div>
 
-            <div className="flex items-center gap-sm px-md py-sm">
-                <div className="flex-1">
+            <div className="flex flex-wrap items-center gap-sm px-md py-sm">
+                <div className="min-w-[240px] flex-1">
                     <Input
                         value={vm.search}
                         onChange={(value: string) => presenter.setSearch(value)}
-                        placeholder="Search extractions"
+                        placeholder="Search jobs, URLs or owners"
+                        startIcon={<SearchIcon />}
                     />
                 </div>
-                <div className="w-44">
-                    <Select
-                        value={vm.statusFilter}
-                        options={STATUS_OPTIONS}
-                        onChange={(value: string) =>
-                            presenter.setStatusFilter(value as StatusFilter)
-                        }
+                <div className="flex-none">
+                    <SegmentedControl
+                        value={vm.owner}
+                        onChange={(value: string) => presenter.setOwner(value as OwnerFilter)}
+                        items={[
+                            { label: "Owner: any", value: "any" },
+                            { label: "Mine", value: "mine", disabled: !vm.identityId }
+                        ]}
                     />
                 </div>
-                <div className="w-40">
-                    <Select
-                        value={vm.sort}
-                        options={SORT_OPTIONS}
-                        onChange={(value: string) => presenter.setSort(value as ListSort)}
-                        placeholder="Sort"
+                {vm.view === "table" ? (
+                    <>
+                        <div className="w-44">
+                            <Select
+                                value={vm.statusFilter}
+                                options={STATUS_OPTIONS}
+                                onChange={(value: string) =>
+                                    presenter.setStatusFilter(value as StatusFilter)
+                                }
+                            />
+                        </div>
+                        <div className="w-40">
+                            <Select
+                                value={vm.sort}
+                                options={SORT_OPTIONS}
+                                onChange={(value: string) => presenter.setSort(value as ListSort)}
+                                placeholder="Sort"
+                            />
+                        </div>
+                    </>
+                ) : null}
+                <div className="flex-none">
+                    <SegmentedControl
+                        value={vm.view}
+                        onChange={(value: string) => presenter.setView(value as ListView)}
+                        items={[
+                            { label: "Table", value: "table", icon: <TableIcon /> },
+                            { label: "Board", value: "board", icon: <BoardIcon /> }
+                        ]}
                     />
                 </div>
             </div>
+            {waitingMine > 0 ? (
+                <div className="px-md pb-sm">
+                    <Alert
+                        type="warning"
+                        variant="subtle"
+                        icon={<WaitingIcon />}
+                        actions={
+                            <Alert.Action
+                                text="Show mine"
+                                onClick={() => presenter.showMineWaiting()}
+                            />
+                        }
+                    >
+                        {waitingMine === 1
+                            ? "1 job you own is paused at a gate."
+                            : `${waitingMine} jobs you own are paused at a gate.`}{" "}
+                        A run goes no further until its next stage is run.
+                    </Alert>
+                </div>
+            ) : null}
             <Separator />
 
             {!vm.loading && vm.items.length === 0 ? (
@@ -371,15 +450,21 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
             ) : (
                 <div className="min-h-0 flex-1 overflow-hidden">
                     <Scrollbar>
-                        {/* min-w keeps the columns from clipping; the Scrollbar scrolls it below the breakpoint. */}
-                        <div className="min-w-[900px]">
-                            <DataTable<JobRow>
-                                columns={columns}
-                                data={rows}
-                                loading={vm.loading}
-                                stickyHeader
-                            />
-                        </div>
+                        {vm.view === "board" ? (
+                            <div className="p-md">
+                                <JobBoard presenter={presenter} items={rows} onOpen={openJob} />
+                            </div>
+                        ) : (
+                            /* min-w keeps the columns from clipping; the Scrollbar scrolls it below the breakpoint. */
+                            <div className="min-w-[1040px]">
+                                <DataTable<JobRow>
+                                    columns={columns}
+                                    data={rows}
+                                    loading={vm.loading}
+                                    stickyHeader
+                                />
+                            </div>
+                        )}
                     </Scrollbar>
                 </div>
             )}
