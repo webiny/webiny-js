@@ -48,7 +48,13 @@ class RequestCmsEntryReviewUseCaseImpl implements UseCase.Interface {
                 })
             );
         }
-        if (!(await this.access.canWrite(target))) {
+        let canWrite: boolean;
+        try {
+            canWrite = await this.access.canWrite(target);
+        } catch (error) {
+            return Result.fail(new ReviewPersistenceError(error as Error));
+        }
+        if (!canWrite) {
             return Result.fail(new WorkflowsNotAuthorizedError({ action: "request a review" }));
         }
 

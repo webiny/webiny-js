@@ -33,18 +33,20 @@ class CmsEntryReviewGuardServiceImpl implements Abstraction.Interface {
             return Result.fail(new ReviewNotFoundError({ id: params.reviewId }));
         }
 
-        let target: CmsEntryTargetReader.Target | null;
+        // A target that is missing, hidden or not the review's own entry is unreadable; a failed
+        // read or access check is a persistence error (R87).
+        let canRead: boolean;
         try {
-            target = await this.targets.read({
+            const target = await this.targets.read({
                 model: review.value.model,
                 targetRevisionId: review.value.targetRevisionId
             });
+            const isReviewTarget = target?.entry.entryId === review.value.targetId;
+            canRead = !!target && isReviewTarget && (await this.access.canRead(target));
         } catch (error) {
             return Result.fail(new ReviewPersistenceError(error as Error));
         }
-        // A target that is missing, hidden or not the review's own entry is unreadable.
-        const isReviewTarget = target?.entry.entryId === review.value.targetId;
-        if (!target || !isReviewTarget || !(await this.access.canRead(target))) {
+        if (!canRead) {
             return Result.fail(new WorkflowsNotAuthorizedError({ action: params.action }));
         }
 

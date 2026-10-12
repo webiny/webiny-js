@@ -13,6 +13,10 @@ import {
     scriptTargetReads,
     throwingTargetRevisions
 } from "~tests/__helpers/ScriptedTargetReads.js";
+import {
+    throwingAccessChecks,
+    throwOnAccessChecks
+} from "~tests/__helpers/ThrowingCmsEntryAccess.js";
 import { RequestCmsEntryReviewUseCase } from "~/features/wrappers/RequestCmsEntryReview/index.js";
 import { GetCmsEntryReviewUseCase } from "~/features/wrappers/GetCmsEntryReview/index.js";
 
@@ -28,9 +32,15 @@ const createScenario = async () => {
     return { admin, entry, lockedEntry };
 };
 
-/** A context that counts the engine's calls and can throw on target reads; setup contexts do not. */
+/**
+ * A context that counts the engine's calls and can throw on target reads and access checks; setup
+ * contexts do not.
+ */
 const createCountingContext = (params: UserContextParams) => {
-    return createUserContext({ ...params, legacyPlugins: [countEngineCalls, scriptTargetReads] });
+    return createUserContext({
+        ...params,
+        legacyPlugins: [countEngineCalls, scriptTargetReads, throwOnAccessChecks]
+    });
 };
 
 const request = (context: CmsContext, entry: CmsEntry) => {
@@ -53,6 +63,7 @@ describe("CMS request and get review wrappers", () => {
     afterEach(() => {
         folderLevels.clear();
         throwingTargetRevisions.clear();
+        throwingAccessChecks.clear();
     });
 
     it("requests a review for a user with write access, as that user", async () => {
@@ -214,5 +225,34 @@ describe("CMS request and get review wrappers", () => {
         expect(requested.error.code).toBe("Workflows/Review/Persistence");
         expect(viewed.error.code).toBe("Workflows/Review/Persistence");
         expect(engineCalls).not.toContain("RequestReview");
+    });
+
+    it("fails a request with a persistence error when the write check throws (R87)", async () => {
+        const { entry } = await createScenario();
+        const requester = await createCountingContext({
+            identity: REQUESTER,
+            permissions: CMS_WRITER
+        });
+        throwingAccessChecks.add("canWrite");
+
+        const result = await request(requester, entry);
+
+        expect(result.error.code).toBe("Workflows/Review/Persistence");
+        expect(engineCalls).toEqual([]);
+    });
+
+    it("fails get review with a persistence error when the read check throws (R87)", async () => {
+        const { admin, entry } = await createScenario();
+        const review = await requestEntryReview(admin, entry);
+        const reviewer = await createCountingContext({
+            identity: REVIEWER,
+            permissions: CMS_READER
+        });
+        throwingAccessChecks.add("canRead");
+
+        const result = await getReview(reviewer, review.id);
+
+        expect(result.error.code).toBe("Workflows/Review/Persistence");
+        expect(engineCalls).toEqual(["GetReview"]);
     });
 });

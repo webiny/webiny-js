@@ -26,6 +26,10 @@ import {
 import { CMS_READER, CMS_WRITER, WORKFLOWS_REASSIGN } from "~tests/__helpers/permissions.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { createWbReview } from "~tests/__helpers/wbReview.js";
+import {
+    throwingAccessChecks,
+    throwOnAccessChecks
+} from "~tests/__helpers/ThrowingCmsEntryAccess.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import { RequestCmsEntryReviewUseCase } from "~/features/wrappers/RequestCmsEntryReview/index.js";
 import { GetCmsEntryReviewUseCase } from "~/features/wrappers/GetCmsEntryReview/index.js";
@@ -54,7 +58,11 @@ const createScenario = async () => {
 
 /** A context as the identity that counts the engine's calls; setup contexts do not. */
 const asUser = (identity: IdentityData | null, permissions: SecurityPermission[]) => {
-    return createUserContext({ identity, permissions, legacyPlugins: [countEngineCalls] });
+    return createUserContext({
+        identity,
+        permissions,
+        legacyPlugins: [countEngineCalls, throwOnAccessChecks]
+    });
 };
 
 const start = (context: CmsContext, reviewId: string) => {
@@ -149,6 +157,7 @@ describe("CMS review transition wrappers", () => {
 
     afterEach(() => {
         folderLevels.clear();
+        throwingAccessChecks.clear();
     });
 
     it("lets reviewers start, take over and approve a step", async () => {
@@ -218,6 +227,20 @@ describe("CMS review transition wrappers", () => {
 
             expect(result.error.code).toBe("Workflows/Review/NotFound");
             expect(engineCalls).not.toContain(t.engineCall);
+        }
+    );
+
+    it.each(TRANSITIONS)(
+        "fails $name with a persistence error when the read check throws (R87)",
+        async t => {
+            const { review } = await createScenario();
+            const requester = await asUser(REQUESTER, CMS_WRITER);
+            throwingAccessChecks.add("canRead");
+
+            const result = await t.run(requester, review.id);
+
+            expect(result.error.code).toBe("Workflows/Review/Persistence");
+            expect(engineCalls).toEqual(["GetReview"]);
         }
     );
 

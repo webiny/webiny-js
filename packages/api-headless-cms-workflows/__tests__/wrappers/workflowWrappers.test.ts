@@ -19,6 +19,7 @@ import {
     targetReads,
     throwingTargetRevisions
 } from "~tests/__helpers/ScriptedTargetReads.js";
+import { throwOnWorkflowsPermissions } from "~tests/__helpers/ThrowingWorkflowsPermissions.js";
 import { StoreCmsEntryWorkflowUseCase } from "~/features/wrappers/StoreCmsEntryWorkflow/index.js";
 import { DeleteCmsEntryWorkflowUseCase } from "~/features/wrappers/DeleteCmsEntryWorkflow/index.js";
 import { ListCmsEntryWorkflowsUseCase } from "~/features/wrappers/ListCmsEntryWorkflows/index.js";
@@ -152,6 +153,24 @@ describe("CMS workflow wrappers", () => {
         expect(stored.error.code).toBe("Workflows/NotAuthorized");
         expect(stored.error.data).toEqual({ action: "manage workflows" });
         expect(deleted.error.code).toBe("Workflows/NotAuthorized");
+        expect(engineCalls).toEqual([]);
+    });
+
+    it("fails store and delete with a persistence error when the permission check throws (R87)", async () => {
+        const admin = await createUserContext();
+        expectOk(await storeWorkflow(admin));
+        const editor = await createCountingContext({
+            identity: EDITOR,
+            permissions: [WORKFLOWS_EDITOR, ...CMS_READER],
+            legacyPlugins: [throwOnWorkflowsPermissions]
+        });
+        engineCalls.length = 0;
+
+        const stored = await store(editor);
+        const deleted = await remove(editor, "workflow-1");
+
+        expect(stored.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(deleted.error.code).toBe("Workflows/Workflow/Persistence");
         expect(engineCalls).toEqual([]);
     });
 

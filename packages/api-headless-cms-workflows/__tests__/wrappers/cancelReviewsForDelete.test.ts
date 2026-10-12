@@ -19,9 +19,15 @@ import { CMS_DELETER, CMS_WRITER } from "~tests/__helpers/permissions.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import {
+    mismatchedTargetRevisions,
+    missingTargetRevisions,
     scriptTargetReads,
     throwingTargetRevisions
 } from "~tests/__helpers/ScriptedTargetReads.js";
+import {
+    throwingAccessChecks,
+    throwOnAccessChecks
+} from "~tests/__helpers/ThrowingCmsEntryAccess.js";
 import { createWbReview } from "~tests/__helpers/wbReview.js";
 import {
     RecordingEventPublisher,
@@ -47,6 +53,7 @@ const createDeleterContext = () => {
         legacyPlugins: [
             countEngineCalls,
             scriptTargetReads,
+            throwOnAccessChecks,
             (container: Container) => {
                 container.registerDecorator(RecordingEventPublisher);
             }
@@ -82,6 +89,9 @@ describe("CMS cancel-for-delete wrapper (D134)", () => {
     afterEach(() => {
         folderLevels.clear();
         throwingTargetRevisions.clear();
+        missingTargetRevisions.clear();
+        mismatchedTargetRevisions.clear();
+        throwingAccessChecks.clear();
     });
 
     it("lets a user who may trash the content cancel its review, then trash it", async () => {
@@ -286,5 +296,69 @@ describe("CMS cancel-for-delete wrapper (D134)", () => {
             await admin.container.resolve(GetReviewUseCase).execute({ id: review.id })
         );
         expect(stored.state).toBe("inProgress");
+    });
+
+    it("fails with a persistence error when the model-level delete check throws (R87)", async () => {
+        const { admin, entry, review } = await createScenario();
+        const deleter = await createDeleterContext();
+        throwingAccessChecks.add("canDeleteAnyEntry");
+
+        const result = await cancelForDelete(deleter, {
+            model: AUTHOR_NAMESPACE,
+            targetId: entry.entryId,
+            action: "trash"
+        });
+
+        expect(result.error.code).toBe("Workflows/Review/Persistence");
+        expect(engineCalls).toEqual([]);
+        const stored = expectOk(
+            await admin.container.resolve(GetReviewUseCase).execute({ id: review.id })
+        );
+        expect(stored.state).toBe("inProgress");
+    });
+
+    it("fails with a persistence error when the entry delete check throws (R87)", async () => {
+        const { admin, entry, review } = await createScenario();
+        const deleter = await createDeleterContext();
+        throwingAccessChecks.add("canDelete");
+
+        const result = await cancelForDelete(deleter, {
+            model: AUTHOR_NAMESPACE,
+            targetId: entry.entryId,
+            action: "trash"
+        });
+
+        expect(result.error.code).toBe("Workflows/Review/Persistence");
+        expect(engineCalls).toEqual(["ListTargetReviews"]);
+        const stored = expectOk(
+            await admin.container.resolve(GetReviewUseCase).execute({ id: review.id })
+        );
+        expect(stored.state).toBe("inProgress");
+    });
+
+    it("reports a missing or mismatched target by the entry id, and cancels nothing", async () => {
+        const { entry } = await createScenario();
+        const deleter = await createDeleterContext();
+
+        missingTargetRevisions.add(entry.id);
+        const missing = await cancelForDelete(deleter, {
+            model: AUTHOR_NAMESPACE,
+            targetId: entry.entryId,
+            action: "trash"
+        });
+        missingTargetRevisions.clear();
+        mismatchedTargetRevisions.add(entry.id);
+        const mismatched = await cancelForDelete(deleter, {
+            model: AUTHOR_NAMESPACE,
+            targetId: entry.entryId,
+            action: "trash"
+        });
+
+        const data = { model: AUTHOR_NAMESPACE, targetId: entry.entryId };
+        expect(missing.error.code).toBe("Workflows/Review/TargetNotFound");
+        expect(missing.error.data).toEqual(data);
+        expect(mismatched.error.code).toBe("Workflows/Review/TargetNotFound");
+        expect(mismatched.error.data).toEqual(data);
+        expect(engineCalls).toEqual(["ListTargetReviews", "ListTargetReviews"]);
     });
 });

@@ -193,22 +193,39 @@ export class ReviewWorkflowNotFoundError extends BaseError<ReviewWorkflowNotFoun
     }
 }
 
-export interface ReviewTargetNotFoundErrorData {
+export interface ReviewTargetRevisionNotFoundErrorData {
     model: string;
-    /** The revision looked for; omitted when only the target (entry) id is known. */
-    targetRevisionId?: string;
-    /** The target (entry) id looked for, when no revision id is known. */
-    targetId?: string;
+    /** The revision looked for. */
+    targetRevisionId: string;
 }
+
+export interface ReviewTargetIdNotFoundErrorData {
+    model: string;
+    /** The target (entry) id looked for, when no revision id is known. */
+    targetId: string;
+}
+
+/** Names the revision or, when no revision id is known, the target (entry) looked for. */
+export type ReviewTargetNotFoundErrorData =
+    | ReviewTargetRevisionNotFoundErrorData
+    | ReviewTargetIdNotFoundErrorData;
 
 export class ReviewTargetNotFoundError extends BaseError<ReviewTargetNotFoundErrorData> {
     override readonly code = "Workflows/Review/TargetNotFound" as const;
 
     constructor(data: ReviewTargetNotFoundErrorData) {
-        super({
-            message: `Content "${data.targetRevisionId ?? data.targetId}" of the model "${data.model}" was not found.`,
-            data
-        });
+        // One branch per data shape: `BaseError` takes each union member separately.
+        super(
+            "targetRevisionId" in data
+                ? {
+                      message: `Content "${data.targetRevisionId}" of the model "${data.model}" was not found.`,
+                      data
+                  }
+                : {
+                      message: `Content "${data.targetId}" of the model "${data.model}" was not found.`,
+                      data
+                  }
+        );
     }
 }
 

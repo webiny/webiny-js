@@ -35,7 +35,13 @@ class CancelCmsEntryReviewsForDeleteUseCaseImpl implements UseCase.Interface {
 
         // Model-level check first: the answer must not reveal whether content has a review in
         // progress or exists at all (R86, same as R75).
-        if (!(await this.access.canDeleteAnyEntry(input.model))) {
+        let canDeleteAnyEntry: boolean;
+        try {
+            canDeleteAnyEntry = await this.access.canDeleteAnyEntry(input.model);
+        } catch (error) {
+            return Result.fail(new ReviewPersistenceError(error as Error));
+        }
+        if (!canDeleteAnyEntry) {
             return Result.fail(
                 new WorkflowsNotAuthorizedError({
                     action: "cancel the review to delete this content"
@@ -70,10 +76,16 @@ class CancelCmsEntryReviewsForDeleteUseCaseImpl implements UseCase.Interface {
         }
         if (!target || target.entry.entryId !== input.targetId) {
             return Result.fail(
-                new ReviewTargetNotFoundError({ model: input.model, targetRevisionId })
+                new ReviewTargetNotFoundError({ model: input.model, targetId: input.targetId })
             );
         }
-        if (!(await this.access.canDelete(target))) {
+        let canDelete: boolean;
+        try {
+            canDelete = await this.access.canDelete(target);
+        } catch (error) {
+            return Result.fail(new ReviewPersistenceError(error as Error));
+        }
+        if (!canDelete) {
             return Result.fail(
                 new WorkflowsNotAuthorizedError({
                     action: "cancel the review to delete this content"

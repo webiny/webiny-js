@@ -4,6 +4,7 @@ import type {
     WorkflowsNotAuthenticatedError,
     WorkflowsNotAuthorizedError
 } from "@webiny/api-workflows/domain/permissions/errors.js";
+import type { WorkflowPersistenceError } from "@webiny/api-workflows/domain/workflow/errors.js";
 import type { GetWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetWorkflow/index.js";
 import type { DeleteWorkflowUseCase } from "@webiny/api-workflows/features/workflow/DeleteWorkflow/index.js";
 
@@ -14,6 +15,7 @@ export interface DeleteCmsEntryWorkflowInput {
 export interface IDeleteCmsEntryWorkflowUseCaseErrors {
     notAuthenticated: WorkflowsNotAuthenticatedError;
     notAuthorized: WorkflowsNotAuthorizedError;
+    persistence: WorkflowPersistenceError;
     get: GetWorkflowUseCase.Error;
     delete: DeleteWorkflowUseCase.Error;
 }

@@ -2,6 +2,7 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import type {
     ReviewActiveOnTrashAction,
+    ReviewPersistenceError,
     ReviewTargetNotFoundError
 } from "@webiny/api-workflows/domain/review/errors.js";
 import type {
@@ -26,6 +27,7 @@ export interface ICancelCmsEntryReviewsForDeleteUseCaseErrors {
     notAuthenticated: WorkflowsNotAuthenticatedError;
     notAuthorized: WorkflowsNotAuthorizedError;
     targetNotFound: ReviewTargetNotFoundError;
+    persistence: ReviewPersistenceError;
     list: ListTargetReviewsUseCase.Error;
     cancel: CancelTargetReviewsUseCase.Error;
 }

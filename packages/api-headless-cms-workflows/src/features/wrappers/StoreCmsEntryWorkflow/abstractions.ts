@@ -4,6 +4,7 @@ import type {
     WorkflowsNotAuthenticatedError,
     WorkflowsNotAuthorizedError
 } from "@webiny/api-workflows/domain/permissions/errors.js";
+import type { WorkflowPersistenceError } from "@webiny/api-workflows/domain/workflow/errors.js";
 import type { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 
 export interface StoreCmsEntryWorkflowInput {
@@ -15,6 +16,7 @@ export interface StoreCmsEntryWorkflowInput {
 export interface IStoreCmsEntryWorkflowUseCaseErrors {
     notAuthenticated: WorkflowsNotAuthenticatedError;
     notAuthorized: WorkflowsNotAuthorizedError;
+    persistence: WorkflowPersistenceError;
     store: StoreWorkflowUseCase.Error;
 }
 

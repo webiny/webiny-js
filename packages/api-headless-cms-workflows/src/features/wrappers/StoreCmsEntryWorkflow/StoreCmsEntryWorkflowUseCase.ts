@@ -6,6 +6,7 @@ import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/St
 import { WorkflowsNotAuthorizedError } from "@webiny/api-workflows/domain/permissions/errors.js";
 import {
     WorkflowNotFoundError,
+    WorkflowPersistenceError,
     WorkflowValidationError
 } from "@webiny/api-workflows/domain/workflow/errors.js";
 import { belongsToCms, CMS_MODELS_ONLY, isCmsWorkflow } from "../shared/cmsWorkflows.js";
@@ -24,7 +25,13 @@ class StoreCmsEntryWorkflowUseCaseImpl implements UseCase.Interface {
         if (actor.isFail()) {
             return Result.fail(actor.error);
         }
-        if (!(await this.permissions.canEdit())) {
+        let canEdit: boolean;
+        try {
+            canEdit = await this.permissions.canEdit();
+        } catch (error) {
+            return Result.fail(new WorkflowPersistenceError(error as Error));
+        }
+        if (!canEdit) {
             return Result.fail(new WorkflowsNotAuthorizedError({ action: "manage workflows" }));
         }
         if (!belongsToCms(input.workflow.models)) {
