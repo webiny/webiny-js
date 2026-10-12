@@ -55,6 +55,11 @@ import {
  */
 export interface BuildSiteTaskInput {
     runId: string;
+    /**
+     * Compose drafts into the site tenant instead of publishing: the preview, for a job that approves
+     * into its site tenant (`siteTenantFromStart`). Recorded as `lastPreview`, not `lastBuild`.
+     */
+    preview?: boolean;
 }
 
 const IMAGE_BATCH = 10;
@@ -157,15 +162,21 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
             tenantName: job.name,
             createdOn: new Date().toISOString()
         };
-        site.lastBuild = {
+        const preview = input.preview === true;
+        const previous = preview ? existing?.lastPreview : existing?.lastBuild;
+        const current: NonNullable<SiteRecord["lastBuild"]> = {
             runId: input.runId,
             // The mutation that started this recorded the task id; keep it.
-            taskId:
-                existing?.lastBuild?.runId === input.runId ? existing.lastBuild.taskId : undefined,
+            taskId: previous?.runId === input.runId ? previous.taskId : undefined,
             status: "running",
             startedOn: new Date().toISOString(),
             steps: []
         };
+        if (preview) {
+            site.lastPreview = current;
+        } else {
+            site.lastBuild = current;
+        }
 
         const save = async () => {
             await this.sites.set(site);
@@ -175,17 +186,17 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
             status: SiteBuildStepRecord["status"],
             detail: string
         ) => {
-            const steps = site.lastBuild!.steps.filter(item => item.step !== step);
+            const steps = current.steps.filter(item => item.step !== step);
             steps.push({ step, status, detail, at: new Date().toISOString() });
-            site.lastBuild!.steps = steps;
+            current.steps = steps;
             await save();
             await controller.logger.info({ message: `${step}: ${detail}` });
         };
         const fail = async (step: SiteBuildStep, message: string) => {
             await record(step, "failed", message);
-            site.lastBuild!.status = "failed";
-            site.lastBuild!.error = message;
-            site.lastBuild!.finishedOn = new Date().toISOString();
+            current.status = "failed";
+            current.error = message;
+            current.finishedOn = new Date().toISOString();
             await save();
             return controller.response.error(`${step}: ${message}`);
         };
@@ -254,31 +265,64 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
             await record("theme", "done", "Copied, published and activated the site's theme.");
         }
 
-        // ---- 3. Components: read Promote's records here, create or update them there. ----------
-        await record("components", "running", `Copying ${source.promoted.length} component(s).`);
-        const records: RemoteComponentDto[] = [];
-        for (const item of source.promoted) {
-            const found = await this.getComponent.execute(item.componentId);
-            if (found.isFail()) {
-                return fail("components", `Could not read "${item.name}": ${found.error.message}`);
+        // ---- 3. Components ---------------------------------------------------------------------------
+        /*
+         * A job that approves into its site tenant has its components there already: stage 9 put them
+         * there, and Promote's record says so. Nothing is copied. Every other job copies from the
+         * extraction tenant, as before.
+         */
+        let promoted: PromotedReference[];
+        if (source.promotedTenantId) {
+            if (source.promotedTenantId !== tenant.id) {
+                return fail(
+                    "components",
+                    `The components were approved into tenant "${source.promotedTenantId}", not this site's "${tenant.id}".`
+                );
             }
-            records.push(found.value);
+            promoted = source.promoted;
+            await record(
+                "components",
+                "done",
+                `${promoted.length} component(s) approved into this tenant; nothing to copy.`
+            );
+        } else if (preview) {
+            return fail(
+                "components",
+                "A preview composes into the site tenant, and this job's components were approved into the extraction tenant. Publish the site instead."
+            );
+        } else {
+            await record(
+                "components",
+                "running",
+                `Copying ${source.promoted.length} component(s).`
+            );
+            const records: RemoteComponentDto[] = [];
+            for (const item of source.promoted) {
+                const found = await this.getComponent.execute(item.componentId);
+                if (found.isFail()) {
+                    return fail(
+                        "components",
+                        `Could not read "${item.name}": ${found.error.message}`
+                    );
+                }
+                records.push(found.value);
+            }
+            const copied = await toTarget(async () =>
+                this.copyComponents(source.promoted!, records, site.components ?? {})
+            );
+            if (typeof copied === "string") {
+                return fail("components", copied);
+            }
+            promoted = copied.promoted;
+            site.components = { ...(site.components ?? {}), ...copied.bySignature };
+            await record(
+                "components",
+                "done",
+                // Copied by this build, not what the tenant holds: builds never delete, so earlier builds'
+                // components stay (`siteInventory`).
+                `${promoted.length} component(s) copied this build.`
+            );
         }
-        const copied = await toTarget(async () =>
-            this.copyComponents(source.promoted!, records, site.components ?? {})
-        );
-        if (typeof copied === "string") {
-            return fail("components", copied);
-        }
-        const promoted = copied.promoted;
-        site.components = { ...(site.components ?? {}), ...copied.bySignature };
-        await record(
-            "components",
-            "done",
-            // Copied by this build, not what the tenant holds: builds never delete, so earlier builds'
-            // components stay (`siteInventory`).
-            `${promoted.length} component(s) copied this build.`
-        );
 
         // ---- 4. Images: fetch the bytes over HTTP, migrate them there through Capture's path. ------
         await record("images", "running", `Copying ${source.images.length} image(s).`);
@@ -294,15 +338,31 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         );
 
         // ---- 5. Pages: compose with the writer inside the target. ------------------------------
-        await record("pages", "running", "Composing and publishing the pages.");
-        const composed = await this.composer.execute(input.runId, { tenant, promoted });
+        await record(
+            "pages",
+            "running",
+            preview ? "Composing the pages as drafts." : "Composing and publishing the pages."
+        );
+        const composed = await this.composer.execute(
+            input.runId,
+            { tenant, promoted },
+            { drafts: preview }
+        );
         if (composed.isFail()) {
             return fail("pages", composed.error.message);
         }
-        await record("pages", "done", pagesDetail(composed.value));
+        await record(
+            "pages",
+            "done",
+            preview
+                ? `${composed.value.created} page(s) composed as drafts${
+                      composed.value.failed > 0 ? `; ${composed.value.failed} with problems` : ""
+                  }. Nothing was published.`
+                : pagesDetail(composed.value)
+        );
 
-        site.lastBuild!.status = "done";
-        site.lastBuild!.finishedOn = new Date().toISOString();
+        current.status = "done";
+        current.finishedOn = new Date().toISOString();
         await save();
         return controller.response.done(`Built the site in tenant "${tenant.id}".`);
     }

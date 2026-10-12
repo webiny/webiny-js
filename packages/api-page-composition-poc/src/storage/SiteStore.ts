@@ -32,6 +32,11 @@ export interface SiteRecord {
     /** The theme revision last copied in, so a rebuild does not create another copy of the same one. */
     themeSourceId?: string;
     themeTargetId?: string;
+    /**
+     * The last preview: a composition of drafts into the site tenant, for a job that approves there.
+     * Kept apart from `lastBuild`, which is what the site last published.
+     */
+    lastPreview?: SiteRecord["lastBuild"];
     lastBuild?: {
         runId: string;
         /** The background task, recorded by the mutation that started it. */

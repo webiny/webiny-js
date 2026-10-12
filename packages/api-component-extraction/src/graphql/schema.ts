@@ -751,7 +751,9 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         pageCap,
                         gateConfig: { stopAfter },
                         pinned: false,
-                        note: data.note ?? ""
+                        note: data.note ?? "",
+                        // Every job created from now on approves into and composes in its site tenant.
+                        siteTenantFromStart: true
                     });
                     if (created.isFail()) {
                         throw created.error;

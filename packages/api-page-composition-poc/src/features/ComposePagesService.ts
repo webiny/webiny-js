@@ -29,8 +29,15 @@ export class ComposePagesServiceImpl implements Abstraction.Interface {
 
     async execute(
         runId: string,
-        target?: CompositionTarget
+        target?: CompositionTarget,
+        options?: { drafts?: boolean }
     ): Promise<Result<ComposePagesResult, PageCompositionError>> {
+        const drafts = options?.drafts === true;
+        if (drafts && !target) {
+            return Result.fail(
+                new PageCompositionError("Drafts are composed into a site tenant, and none was given.")
+            );
+        }
         const read = await this.reader.read(runId, target?.tenant.id);
         if (read.isFail()) {
             return Result.fail(read.error);
@@ -51,12 +58,21 @@ export class ComposePagesServiceImpl implements Abstraction.Interface {
 
         // Only pages in the tenant being written to are this composition's to retire. A map without a
         // tenant was written into the run's own tenant.
-        const retire: PageMapEntry[] = source.earlier
-            .filter(earlier => (earlier.tenantId ?? home.id) === writeTenant.id)
-            .flatMap(earlier => earlier.pages);
+        // Drafts retire nothing: the published pages stay until the drafts are published.
+        const retire: PageMapEntry[] = drafts
+            ? []
+            : source.earlier
+                  .filter(earlier => (earlier.tenantId ?? home.id) === writeTenant.id)
+                  .flatMap(earlier => earlier.pages);
 
         const write = () =>
-            this.writer.write({ source, promoted, retire, expectedTenantId: writeTenant.id });
+            this.writer.write({
+                source,
+                promoted,
+                retire,
+                expectedTenantId: writeTenant.id,
+                drafts
+            });
         /*
          * PERMISSIONS, an open decision for a customer-facing deployment: the permission check reads
          * the wrong tenant. Permissions load per identity, not per tenant, so inside `withTenant`
@@ -77,6 +93,7 @@ export class ComposePagesServiceImpl implements Abstraction.Interface {
             composeVersion: source.composeVersion,
             composedOn: new Date().toISOString(),
             ...(target ? { tenantId: target.tenant.id } : {}),
+            ...(drafts ? { drafts: true as const } : {}),
             pages: created,
             ...(kept.length > 0 ? { kept } : {}),
             ...(dropped.length > 0 ? { dropped } : {}),

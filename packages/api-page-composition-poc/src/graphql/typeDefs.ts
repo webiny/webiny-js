@@ -79,7 +79,11 @@ export const pageCompositionTypeDefs = /* GraphQL */ `
     }
 
     extend type Query {
-        pageCompositionPocPageMap(runId: ID!, tenantId: String): PageCompositionPocPageMapResponse
+        pageCompositionPocPageMap(
+            runId: ID!
+            tenantId: String
+            drafts: Boolean
+        ): PageCompositionPocPageMapResponse
         "Screenshots of this run's composed pages, from a local harness run. Null until someone runs it."
         pageCompositionPocComposedCapture(runId: ID!): PageCompositionPocComposedCaptureResponse
         "A job's site in its own tenant and its last build, or null when it has none."
@@ -89,7 +93,10 @@ export const pageCompositionTypeDefs = /* GraphQL */ `
         path serves nothing). Read inside the site's tenant: the admin's own requests carry the admin's
         tenant, where the same path answers with a different page.
         """
-        pageCompositionPocSiteLivePages(jobId: ID!, paths: [String!]!): PageCompositionPocSiteResponse
+        pageCompositionPocSiteLivePages(
+            jobId: ID!
+            paths: [String!]!
+        ): PageCompositionPocSiteResponse
         """
         What the job's site tenant holds beyond what its live pages use: its components, those no
         published page places, and its unpublished pages. Read inside the site's tenant.

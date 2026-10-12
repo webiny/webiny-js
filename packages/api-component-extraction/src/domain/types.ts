@@ -164,6 +164,13 @@ export interface JobValues {
     gateConfig: GateConfig;
     pinned: boolean;
     note: string;
+    /**
+     * Stage 9 approves into the job's site tenant and composition writes drafts there, instead of
+     * staging both in the extraction tenant. Set when the job is created; jobs created before it existed
+     * keep the old path for good, so reverting can only ever touch jobs made after it
+     * (`scripts/baseline/reports/2026-10-12/site-tenant-revert-procedure.md`).
+     */
+    siteTenantFromStart?: boolean;
 }
 
 export interface Job extends JobValues {

@@ -159,6 +159,9 @@ class CompositionReaderImpl implements ICompositionReader {
                       name: item.name
                   }))
                 : null,
+            ...(promote.isOk() && promote.value.tenantId
+                ? { promotedTenantId: promote.value.tenantId }
+                : {}),
             images,
             composeVersion,
             earlier

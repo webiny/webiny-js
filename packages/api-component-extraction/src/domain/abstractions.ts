@@ -1,4 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type {
     CorrectionLogEntry,
@@ -181,4 +182,22 @@ export interface IRunLock {
 export const RunLock = createAbstraction<IRunLock>("ComponentExtraction/RunLock");
 export namespace RunLock {
     export type Interface = IRunLock;
+}
+
+/**
+ * A job's site tenant: its own tenant, where a job created with `siteTenantFromStart` approves its
+ * components and composes its pages, instead of staging both in the extraction tenant.
+ *
+ * Declared here and implemented by the page composition package, which owns the site record: stage 9
+ * reaches it through this abstraction so the dependency points the way the packages already do.
+ */
+export interface ISiteTenant {
+    /** The job's site tenant, created, installed and recorded on first use; reused after that. */
+    ensure(job: Job): Promise<Result<Tenant, ExtractionError>>;
+}
+
+export const SiteTenant = createAbstraction<ISiteTenant>("ComponentExtraction/SiteTenant");
+
+export namespace SiteTenant {
+    export type Interface = ISiteTenant;
 }

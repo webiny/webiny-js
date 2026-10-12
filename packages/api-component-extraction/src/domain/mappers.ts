@@ -37,7 +37,8 @@ export class EntryToJobMapper {
             pageCap: entry.values.pageCap ?? DEFAULT_PAGE_CAP,
             gateConfig,
             pinned: entry.values.pinned ?? false,
-            note: entry.values.note ?? ""
+            note: entry.values.note ?? "",
+            siteTenantFromStart: entry.values.siteTenantFromStart === true
         };
     }
 }

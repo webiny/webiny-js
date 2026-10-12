@@ -1,0 +1,174 @@
+{
+ "attempts": 1,
+ "css": ".nps {\n    background-color: var(--wby-color-surface-raised, #f7f7f9);\n    background-image: url(\"https://g5-assets-cld-res.cloudinary.com/image/upload/x_0,y_0,h_3600,w_6000,c_crop/q_auto,f_auto,fl_lossy,g_center,h_960,w_1600/v1773910860/g5/g5-c-6ab10zxdi-mutual-housing-association-of-southwestern-connecticut-inc/g5-cl-1qv2b33m0t-mutual-housing-association-of-southwestern-connecticut-inc-bridgeport-ct/uploads/Denver_Background_Tertiary_bnx4vk.png\");\n    background-size: cover;\n    background-position: 50% 50%;\n    background-repeat: no-repeat;\n    padding: 60px var(--wby-space-container-padding, 25px);\n    display: flex;\n    justify-content: center;\n    align-items: center;\n}\n\n.nps-card {\n    width: 100%;\n    max-width: 1013px;\n    background-color: var(--wby-color-surface-page, #ffffff);\n    padding: 45px;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    gap: 16px;\n    text-align: center;\n}\n\n.nps-eyebrow {\n    font-family: gravesend-sans, var(--wby-type-heading-5-family, Inter), sans-serif;\n    font-size: var(--wby-type-heading-5-size, 18px);\n    line-height: 18px;\n    font-weight: 300;\n    text-transform: uppercase;\n    letter-spacing: 0.05em;\n    color: var(--wby-color-action-secondary-background, #6c733d);\n    text-align: center;\n}\n\n.nps-heading {\n    font-family: nobel-condensed, Georgia, Cambria, \"Times New Roman\", Times, serif;\n    font-size: var(--wby-type-heading-3-size, 45px);\n    line-height: 45px;\n    font-weight: 400;\n    text-transform: uppercase;\n    color: var(--wby-color-action-secondary-background, #6c733d);\n    text-align: center;\n    max-width: 923px;\n    margin: 0 auto;\n}\n\n.nps-heading :global(a) {\n    color: inherit;\n    text-decoration: none;\n}\n\n.nps-body {\n    font-family: stevie-sans, proxima-nova, \"Helvetica Neue\", Helvetica, Roboto, Arial, sans-serif;\n    font-size: var(--wby-type-body-size, 16px);\n    line-height: var(--wby-type-body-line-height, 22px);\n    font-weight: 400;\n    color: var(--wby-color-text-primary, #444444);\n    text-align: center;\n    max-width: 923px;\n    margin: 0 auto;\n}\n\n.nps-body a {\n    font-weight: 700;\n    color: var(--wby-color-action-primary-background, #a65f46);\n    text-decoration: none;\n}\n\n.nps-body a:hover {\n    text-decoration: underline;\n}\n\n@media (max-width: 768px) {\n    .nps-card {\n        padding: 32px 24px;\n    }\n    .nps-heading {\n        font-size: 2rem;\n        line-height: 1.2;\n    }\n    .nps-body {\n        font-size: 15px;\n    }\n}",
+ "members": [
+  {
+   "box": {
+    "height": 420,
+    "width": 1440,
+    "x": 0,
+    "y": 1496
+   },
+   "cropRef": "component-extraction/6aca03006edf6700023d80ce#0001/segment/v1/4/section-4.png",
+   "digest": {
+    "headingCount": 1,
+    "imageCount": 0,
+    "linkCount": 1,
+    "structure": "div>div>div",
+    "texts": [
+     "in Bridgeport",
+     "Perks of Living",
+     "Experience",
+     "convenience when you choose to live at Park City Place in a coveted neighborhood of Bridgeport. Located just around the corner from major roadways and highway access points, you\u2019ll live just moments from the best destinations in the city. With access to daily conveniences and endless opportunities for play, this neighborhood is where you want to be.",
+     "ultimate neighborhood"
+    ]
+   },
+   "legacySignature": "290f1d1b45ae520090e3c4feea510a78b2c158c443de8c600529733200f3a194",
+   "resolvedColours": [
+    {
+     "area": 303900,
+     "hex": "#ffffff",
+     "role": "background",
+     "token": {
+      "cssVariable": "--wby-color-surface-page",
+      "hex": "#ffffff",
+      "path": "color.surface.page"
+     }
+    },
+    {
+     "area": 85842,
+     "hex": "#6c733d",
+     "role": "text",
+     "token": {
+      "cssVariable": "--wby-color-action-secondary-background",
+      "hex": "#6c733d",
+      "path": "color.action.secondary.background"
+     }
+    },
+    {
+     "area": 81224,
+     "hex": "#444444",
+     "role": "text",
+     "token": {
+      "cssVariable": "--wby-color-text-primary",
+      "hex": "#444444",
+      "path": "color.text.primary"
+     }
+    },
+    {
+     "area": 3211,
+     "hex": "#a65f46",
+     "role": "text",
+     "token": {
+      "cssVariable": "--wby-color-action-primary-background",
+      "hex": "#a65f46",
+      "path": "color.action.primary.background"
+     }
+    }
+   ],
+   "screenshotRef": "component-extraction/6aca03006edf6700023d80ce#0001/capture/page-4/screenshot-v1.png",
+   "sectionIndex": 4,
+   "signature": "2b84bd1acc288e2389ddde9554642d6645461e9f58c8401cb8b753e0e184553e",
+   "url": "https://www.parkcityplace.org/apartments/ct/bridgeport/amenities"
+  }
+ ],
+ "name": "Neighborhood Perks Section",
+ "props": [
+  {
+   "array": false,
+   "name": "eyebrow",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 1,
+    "totalInstances": 1,
+    "valueCounts": null
+   },
+   "observedValues": [
+    "in Bridgeport"
+   ],
+   "optional": true,
+   "type": "string"
+  },
+  {
+   "array": false,
+   "name": "heading",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 1,
+    "totalInstances": 1,
+    "valueCounts": null
+   },
+   "observedValues": [
+    "Experience ultimate neighborhood Perks of Living"
+   ],
+   "optional": false,
+   "type": "richText"
+  },
+  {
+   "array": false,
+   "name": "body",
+   "observation": {
+    "countMax": null,
+    "countMin": null,
+    "presentInstances": 1,
+    "totalInstances": 1,
+    "valueCounts": null
+   },
+   "observedValues": [
+    "Experience <a href=\"https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood\">ultimate neighborhood</a> convenience when you choose to live at Park City Place in a coveted neighborhood of Bridgeport. Located just around the corner from major roadways and highway access points, you\u2019ll live just moments from the best destinations in the city. With access to daily conveniences and endless opportunities for play, this neighborhood is where you want to be."
+   ],
+   "optional": false,
+   "type": "richText"
+  }
+ ],
+ "signature": "2b84bd1acc288e2389ddde9554642d6645461e9f58c8401cb8b753e0e184553e",
+ "source": "export default function NeighborhoodPerksSection({ inputs: { eyebrow, heading, body } }) {\n    return (\n        <section className=\"nps\">\n            <div className=\"nps-card\">\n                {eyebrow ? <div className=\"nps-eyebrow\">{eyebrow}</div> : null}\n                {heading ? (\n                    <div className=\"nps-heading\" dangerouslySetInnerHTML={{ __html: heading }} />\n                ) : null}\n                {body ? (\n                    <div className=\"nps-body\" dangerouslySetInnerHTML={{ __html: body }} />\n                ) : null}\n            </div>\n        </section>\n    );\n}\n\nexport const manifest = {\n    name: \"Custom/NeighborhoodPerksSection\",\n    label: \"Neighborhood Perks Section\",\n    applyDefaultStyles: false,\n    aiContext: \"A neighborhood highlights section with an eyebrow label, large heading, and descriptive body text inside a white card over a textured background. Use to describe local area perks or community amenities.\",\n    inputs: [\n        { name: \"heading\", factory: \"createLexicalInput\", params: { label: \"Heading\", defaultValue: \"in Bridgeport\" } },\n        { name: \"eyebrow\", factory: \"createTextInput\", params: { label: \"Eyebrow\", defaultValue: \"Perks of Living\" } },\n        { name: \"body\", factory: \"createLexicalInput\", params: { label: \"Body\", defaultValue: \"Experience <a href=\\\"https://www.parkcityplace.org/apartments/ct/bridgeport/neighborhood\\\">ultimate neighborhood</a> convenience when you choose to live at Park City Place in a coveted neighborhood of Bridgeport. Located just around the corner from major roadways and highway access points, you\\u2019ll live just moments from the best destinations in the city. With access to daily conveniences and endless opportunities for play, this neighborhood is where you want to be.\" } }\n    ]\n};",
+ "tokenBindings": [
+  {
+   "target": "section.background",
+   "token": "color.surface.page"
+  },
+  {
+   "target": "body",
+   "token": "color.text.primary"
+  },
+  {
+   "target": "heading.accentSecondary",
+   "token": "color.action.secondary.background"
+  },
+  {
+   "target": "heading.accentPrimary",
+   "token": "color.action.primary.background"
+  },
+  {
+   "target": "cta.background",
+   "token": "color.action.primary.background"
+  },
+  {
+   "target": "cta.foreground",
+   "token": "color.action.primary.foreground"
+  }
+ ],
+ "type": "content",
+ "validation": {
+  "bundling": {
+   "failures": [],
+   "passed": true
+  },
+  "contractConformance": {
+   "failures": [],
+   "passed": true
+  },
+  "textPreservation": {
+   "failures": [],
+   "passed": true
+  },
+  "tokenBinding": {
+   "failures": [],
+   "passed": true
+  }
+ },
+ "_source": "ParkCity - Take 3, 'Neighborhood Perks Section' as Generate produced it on 2026-10-10 (run 6aca03006edf6700023d80ce#0001)."
+}

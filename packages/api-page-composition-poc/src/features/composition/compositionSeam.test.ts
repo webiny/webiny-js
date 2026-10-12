@@ -163,6 +163,72 @@ describe("composition seam", () => {
         expect(stored!.composeVersion).toBe(3);
     });
 
+    it("composes drafts into the site tenant: writes them as drafts, retires nothing, keeps them apart", async () => {
+        const tenants = tenantContextAt("root");
+        let writtenWith: { retire: unknown[]; drafts?: boolean; expectedTenantId: string } | null =
+            null;
+        let stored: PageMap | null = null;
+
+        const service = new ComposePagesServiceImpl(
+            tenants as never,
+            {
+                read: async () =>
+                    Result.ok(
+                        source([{ runId: "run-0", tenantId: "site", pages: [page("site-live")] }])
+                    )
+            } as never,
+            {
+                write: async (input: never) => {
+                    writtenWith = input;
+                    return Result.ok({
+                        created: [page("site-draft")],
+                        failed: [],
+                        links: {} as never,
+                        discarded: [],
+                        kept: [],
+                        dropped: []
+                    });
+                }
+            } as never,
+            {
+                get: async () => Result.ok(null),
+                set: async (map: PageMap) => {
+                    stored = map;
+                    return Result.ok(undefined);
+                }
+            } as never
+        );
+
+        const result = await service.execute(
+            "run-1",
+            {
+                tenant: { id: "site" } as never,
+                promoted: [{ signature: "s", componentId: "site-component", name: "Hero" }]
+            },
+            { drafts: true }
+        );
+
+        expect(result.isOk()).toBe(true);
+        expect(writtenWith!.drafts).toBe(true);
+        // The site's live pages stay until the drafts are published.
+        expect(writtenWith!.retire).toEqual([]);
+        expect(writtenWith!.expectedTenantId).toBe("site");
+        // Recorded as drafts, under its own key, never as the site's published map.
+        expect(stored!.drafts).toBe(true);
+        expect(stored!.tenantId).toBe("site");
+    });
+
+    it("refuses drafts without a site tenant to write them into", async () => {
+        const service = new ComposePagesServiceImpl(
+            tenantContextAt("root") as never,
+            {} as never,
+            {} as never,
+            {} as never
+        );
+        const result = await service.execute("run-1", undefined, { drafts: true });
+        expect(result.isFail()).toBe(true);
+    });
+
     it("without a target composes in the run's own tenant, as before", async () => {
         const tenants = tenantContextAt("root");
         let writtenWith: {

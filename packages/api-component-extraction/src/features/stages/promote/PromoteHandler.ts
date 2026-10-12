@@ -4,7 +4,8 @@ import { UpdateRemoteComponentUseCase } from "@webiny/remote-components/api/feat
 import { ListRemoteComponentsUseCase } from "@webiny/remote-components/api/features/listComponents/abstractions.js";
 import { bundleComponent } from "@webiny/remote-components/api/bundler/index.js";
 import { StageHandler, type StageContext, type StageOutcome } from "~/domain/stage.js";
-import { OverrideRepository } from "~/domain/abstractions.js";
+import { OverrideRepository, SiteTenant } from "~/domain/abstractions.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { decisionsFromOverrides, overridesForStage } from "~/domain/overrides.js";
 import { stageEntry } from "~/domain/ledger.js";
 import { readComponents } from "~/domain/generatedComponents.js";
@@ -69,14 +70,16 @@ const uniqueName = (name: string, taken: Set<string>): string => {
  * policy. Permission is dual: the run-stage mutation gated this feature's permission, and
  * `CreateRemoteComponentUseCase` applies the components module's own authorization.
  */
-class PromoteHandlerImpl implements StageHandler.Interface {
+export class PromoteHandlerImpl implements StageHandler.Interface {
     readonly stage = "promote" as const;
 
     constructor(
         private createComponent: CreateRemoteComponentUseCase.Interface,
         private updateComponent: UpdateRemoteComponentUseCase.Interface,
         private listComponents: ListRemoteComponentsUseCase.Interface,
-        private overrides: OverrideRepository.Interface
+        private overrides: OverrideRepository.Interface,
+        private tenantContext: TenantContext.Interface,
+        private siteTenant: SiteTenant.Interface | undefined
     ) {}
 
     async execute(context: StageContext): Promise<Result<StageOutcome, ExtractionError>> {
@@ -106,9 +109,37 @@ class PromoteHandlerImpl implements StageHandler.Interface {
             );
         }
 
+        /*
+         * Where the components go. A job created with `siteTenantFromStart` approves into its own site
+         * tenant, created here on its first approval; every Library call below runs inside it. Older jobs
+         * approve into the extraction tenant, as before. Overrides and artifacts are read and written in
+         * the extraction tenant either way: only the Library moves.
+         */
+        let inLibrary: <T>(cb: () => Promise<T>) => Promise<T> = cb => cb();
+        let libraryTenantId: string | undefined;
+        if (context.job.siteTenantFromStart) {
+            if (!this.siteTenant) {
+                return Result.fail(
+                    new ExtractionValidationError(
+                        "This job approves into its site tenant, and no site tenant service is installed."
+                    )
+                );
+            }
+            const tenant = await this.siteTenant.ensure(context.job);
+            if (tenant.isFail()) {
+                return Result.fail(tenant.error);
+            }
+            const site = tenant.value;
+            libraryTenantId = site.id;
+            inLibrary = cb => this.tenantContext.withTenant(site, cb);
+            await context.log.info({
+                message: `Approving into the site tenant "${site.id}".`
+            });
+        }
+
         // Existing names, so the collision policy can keep both — and their ids, so Replace can update in
         // place.
-        const existing = await this.listComponents.execute();
+        const existing = await inLibrary(() => this.listComponents.execute());
         const existingItems = existing.isOk() ? existing.value.items : [];
         const taken = new Set<string>(existingItems.map(item => item.name));
         const existingIdByName = new Map<string, string>(
@@ -277,12 +308,12 @@ class PromoteHandlerImpl implements StageHandler.Interface {
                         continue;
                     }
 
-                    const updated = await this.updateComponent.execute(existingId, {
+                    const updated = await inLibrary(() => this.updateComponent.execute(existingId, {
                         label: qualifiedName,
                         source: component.source,
                         css: component.css,
                         bundle: replacement
-                    });
+                    }));
                     if (updated.isFail()) {
                         await context.log.error({
                             message: `Could not replace "${qualifiedName}": ${updated.error.message}`
@@ -339,14 +370,16 @@ class PromoteHandlerImpl implements StageHandler.Interface {
                 continue;
             }
 
-            const created = await this.createComponent.execute({
-                name,
-                label: name,
-                description: `Extracted ${component.type} section`,
-                source: component.source,
-                css: component.css,
-                bundle
-            });
+            const created = await inLibrary(() =>
+                this.createComponent.execute({
+                    name,
+                    label: name,
+                    description: `Extracted ${component.type} section`,
+                    source: component.source,
+                    css: component.css,
+                    bundle
+                })
+            );
             if (created.isFail()) {
                 await context.log.error({
                     message: `Could not promote "${name}": ${created.error.message}`
@@ -367,7 +400,11 @@ class PromoteHandlerImpl implements StageHandler.Interface {
             });
         }
 
-        const artifact: PromoteArtifact = { promoted, skipped };
+        const artifact: PromoteArtifact = {
+            ...(libraryTenantId ? { tenantId: libraryTenantId } : {}),
+            promoted,
+            skipped
+        };
         const key = context.artifactKey("promotion");
         const written = await context.store.putJson(key, artifact);
         if (written.isFail()) {
@@ -390,6 +427,8 @@ export const PromoteHandler = StageHandler.createImplementation({
         CreateRemoteComponentUseCase,
         UpdateRemoteComponentUseCase,
         ListRemoteComponentsUseCase,
-        OverrideRepository
+        OverrideRepository,
+        TenantContext,
+        [SiteTenant, { optional: true }]
     ]
 });

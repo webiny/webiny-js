@@ -169,6 +169,11 @@ export interface PageMap {
      * enters this tenant, never the one the retiring composition happens to run in.
      */
     tenantId?: string;
+    /**
+     * A composition written as drafts, previewed in the site tenant before it is published. Kept under
+     * its own key, so a preview never replaces the record of the pages the site publishes.
+     */
+    drafts?: true;
     pages: PageMapEntry[];
     /**
      * Earlier pages this composition left published because their page failed to compose this time.

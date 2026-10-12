@@ -75,6 +75,8 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         gateConfig: JSON!
         pinned: Boolean!
         note: String
+        "Approves into and composes in its site tenant. False for jobs created before that existed."
+        siteTenantFromStart: Boolean
         createdOn: String!
     }
 

@@ -94,6 +94,11 @@ export interface CompositionWriteInput {
     retire: PageMapEntry[];
     /** The tenant this must be running in. Checked first; a mismatch writes nothing. */
     expectedTenantId: string;
+    /**
+     * Write the pages as drafts: created and linked, not published, nothing retired and no path check
+     * (a draft answers no path). The site tenant's preview, before publishing.
+     */
+    drafts?: boolean;
 }
 
 export interface CompositionWriteResult {
@@ -241,7 +246,8 @@ export class CompositionWriterImpl implements ICompositionWriter {
         source,
         promoted,
         retire,
-        expectedTenantId
+        expectedTenantId,
+        drafts
     }: CompositionWriteInput): Promise<Result<CompositionWriteResult, PageCompositionError>> {
         const tenant = this.tenantContext.getTenant().id;
         if (tenant !== expectedTenantId) {
@@ -452,6 +458,9 @@ export class CompositionWriterImpl implements ICompositionWriter {
                 }
             }
 
+            if (drafts) {
+                continue;
+            }
             const published = await this.publishPage.execute({ id: page.entry.pageId });
             if (published.isFail()) {
                 failed.push({
@@ -490,6 +499,17 @@ export class CompositionWriterImpl implements ICompositionWriter {
          * runs of the same job, in THIS writer's tenant), handed in rather than looked up here: the
          * page maps live in the extraction tenant, which this writer has no access to.
          */
+        if (drafts) {
+            return Result.ok({
+                created: created.map(page => page.entry),
+                failed,
+                links,
+                discarded,
+                kept: [],
+                dropped: []
+            });
+        }
+
         const plan = planRetirement({
             earlier: retire,
             created: created.map(page => page.entry),

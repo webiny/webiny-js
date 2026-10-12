@@ -33,7 +33,9 @@ class JobModelFactory implements ModelFactory.Interface {
             pageCap: fields.number().label("Page cap"),
             gateConfig: fields.json().label("Gate configuration"),
             pinned: fields.boolean().label("Pinned"),
-            note: fields.longText().label("Note")
+            note: fields.longText().label("Note"),
+            // Approve into and compose in the site tenant (set at creation; absent on older jobs).
+            siteTenantFromStart: fields.boolean().label("Site tenant from the start")
         }));
 
         return [model];

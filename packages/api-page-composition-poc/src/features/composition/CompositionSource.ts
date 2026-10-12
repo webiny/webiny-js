@@ -47,8 +47,13 @@ export interface CompositionSource {
     segmentByUrl: Map<string, SegmentedPage>;
     /** Every captured page tree composition will touch, keyed by its blob ref. */
     trees: Map<string, CapturedNode>;
-    /** This run's Promote output, in the extraction tenant's Library; null when Promote has not run. */
+    /** This run's Promote output; null when Promote has not run. */
     promoted: PromotedReference[] | null;
+    /**
+     * The tenant `promoted`'s component ids belong to: the job's site tenant when the job approves there
+     * (`siteTenantFromStart`). Absent means the extraction tenant, as for every older job.
+     */
+    promotedTenantId?: string;
     /** Every image the run migrated, for copying into another tenant. */
     images: RunImage[];
     /** The next compose version for this run's page map. */

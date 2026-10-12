@@ -1198,6 +1198,11 @@ export interface SkippedComponent {
 }
 
 export interface PromoteArtifact {
+    /**
+     * The tenant the promoted component ids belong to: the job's site tenant for a job created with
+     * `siteTenantFromStart`. Absent means the extraction tenant, as for every job created before.
+     */
+    tenantId?: string;
     promoted: PromotedComponent[];
     /** Signatures not promoted — failed validation, failed bundling, deselected, or a create error. */
     skipped: SkippedComponent[];

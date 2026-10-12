@@ -4,6 +4,7 @@ import { CompositionReader } from "~/features/composition/CompositionReader.js";
 import { CompositionWriter } from "~/features/composition/CompositionWriter.js";
 import { ComposePagesTask } from "~/features/ComposePagesTask.js";
 import { BuildSiteTask } from "~/features/site/BuildSiteTask.js";
+import { SiteTenantService } from "~/features/site/SiteTenantService.js";
 import { SiteStoreImplementation } from "~/storage/SiteStore.js";
 import { PageMapStore } from "~/storage/PageMapStore.js";
 import { ComposedCaptureStore } from "~/storage/ComposedCaptureStore.js";
@@ -27,6 +28,7 @@ export const PageCompositionPocFeature = createFeature({
         container.register(CompositionWriter);
         container.register(ComposePagesService);
         container.register(SiteStoreImplementation);
+        container.register(SiteTenantService);
         container.register(BuildSiteTask);
         container.register(ComposePagesTask);
 

@@ -1,7 +1,10 @@
 import { ErrorResponse, Response } from "@webiny/api-graphql";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
-import { RunRepository } from "@webiny/api-component-extraction/domain/abstractions.js";
+import {
+    JobRepository,
+    RunRepository
+} from "@webiny/api-component-extraction/domain/abstractions.js";
 import { ComponentExtractionPermissions } from "@webiny/api-component-extraction/features/permissions.js";
 import { stageEntry } from "@webiny/api-component-extraction/domain/ledger.js";
 import { BlobStore } from "@webiny/api-component-extraction/domain/stage.js";
@@ -38,10 +41,11 @@ export const addPageCompositionSchema = (builder: IGraphQLSchemaBuilder): void =
 
     builder.addResolver({
         path: "Mutation.pageCompositionPocComposePages",
-        dependencies: [ComponentExtractionPermissions, RunRepository, TaskService],
+        dependencies: [ComponentExtractionPermissions, RunRepository, JobRepository, TaskService],
         resolver(
             permissions: ComponentExtractionPermissions.Interface,
             runRepository: RunRepository.Interface,
+            jobRepository: JobRepository.Interface,
             taskService: TaskService.Interface
         ) {
             return ({ args }: { args: { runId: string } }) =>
@@ -68,6 +72,24 @@ export const addPageCompositionSchema = (builder: IGraphQLSchemaBuilder): void =
                         throw new Error(
                             "Page composition requires Promote to be done — a page addresses a component by the name it was promoted under."
                         );
+                    }
+
+                    /*
+                     * A job that approves into its site tenant composes there, as drafts: the site
+                     * build's own task with `preview`, which brings the theme and images in too. Older
+                     * jobs compose in the extraction tenant, as before.
+                     */
+                    const job = await jobRepository.get(run.jobId);
+                    if (job.isOk() && job.value.siteTenantFromStart) {
+                        const previewed = await taskService.trigger<BuildSiteTaskInput>({
+                            definition: BUILD_SITE_TASK_ID,
+                            name: `Page composition (PoC) — preview run ${run.runNumber} in the site tenant`,
+                            input: { runId: run.id, preview: true }
+                        });
+                        if (previewed.isFail()) {
+                            throw previewed.error;
+                        }
+                        return { taskId: previewed.value.id, runId: run.id };
                     }
 
                     const triggered = await taskService.trigger<ComposePagesTaskInput>({
@@ -277,13 +299,21 @@ export const addPageCompositionSchema = (builder: IGraphQLSchemaBuilder): void =
             permissions: ComponentExtractionPermissions.Interface,
             pageMaps: PageMapStore.Interface
         ) {
-            return ({ args }: { args: { runId: string; tenantId?: string | null } }) =>
+            return ({
+                args
+            }: {
+                args: { runId: string; tenantId?: string | null; drafts?: boolean | null };
+            }) =>
                 resolve(async () => {
                     if (!(await permissions.canRead("componentExtraction"))) {
                         throw new Error("You do not have permission to read component extraction.");
                     }
 
-                    const result = await pageMaps.get(args.runId, args.tenantId ?? undefined);
+                    const result = await pageMaps.get(
+                        args.runId,
+                        args.tenantId ?? undefined,
+                        args.drafts === true
+                    );
                     if (result.isFail()) {
                         throw result.error;
                     }

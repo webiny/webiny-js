@@ -14,7 +14,11 @@ export interface IPageMapStore {
      * with it, its composition into that site tenant. Kept apart, so building a site never loses track
      * of the pages the run published in its own tenant (which a later composition there must retire).
      */
-    get(runId: string, tenantId?: string): Promise<Result<PageMap | null, PageCompositionError>>;
+    get(
+        runId: string,
+        tenantId?: string,
+        drafts?: boolean
+    ): Promise<Result<PageMap | null, PageCompositionError>>;
     set(map: PageMap): Promise<Result<void, PageCompositionError>>;
 }
 
@@ -55,7 +59,8 @@ export interface IComposePagesService {
     /** Without a target, into the run's own tenant from its Promote output, as before. */
     execute(
         runId: string,
-        target?: CompositionTarget
+        target?: CompositionTarget,
+        options?: { drafts?: boolean }
     ): Promise<Result<ComposePagesResult, PageCompositionError>>;
 }
 
