@@ -4,6 +4,7 @@ import {
     Alert,
     Button,
     Dialog,
+    Icon,
     Loader,
     ProgressBar,
     Select,
@@ -13,6 +14,7 @@ import {
     useToast
 } from "@webiny/admin-ui";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
+import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
 import { ReactComponent as ExpandMoreIcon } from "@webiny/icons/expand_more.svg";
 import { ReactComponent as ExpandLessIcon } from "@webiny/icons/expand_less.svg";
 import { StatusDot } from "~/presentation/shared/StatusIndicator.js";
@@ -141,7 +143,7 @@ const Snapshot = ({ snapshot }: { snapshot: ThemeSnapshot | null }) => {
                     </Text>
                 ) : (
                     <>
-                        <div className="flex flex-wrap gap-xxs">
+                        <div className="grid grid-cols-5 gap-xs">
                             {snapshot.colours.map(colour => (
                                 <Tooltip
                                     key={colour.value}
@@ -149,17 +151,17 @@ const Snapshot = ({ snapshot }: { snapshot: ThemeSnapshot | null }) => {
                                         .map(slot => slot.replace(/^color\./, ""))
                                         .join(", ")}
                                     trigger={
-                                        <span className="cursor-default">
-                                            <Tag
-                                                variant="neutral-base-outline"
-                                                swatchColor={colour.value}
-                                                content={
-                                                    <span className="font-mono">
-                                                        {colour.value.toUpperCase()}
-                                                    </span>
-                                                }
+                                        <div className="flex min-w-0 cursor-default flex-col gap-xs">
+                                            {/* The colour itself is the data: the one inline style. */}
+                                            <div
+                                                className="h-xl rounded-md border border-neutral-dimmed"
+                                                style={{ backgroundColor: colour.value }}
                                             />
-                                        </span>
+                                            {/* The design's 10.5px mono: below the smallest Text size, so the one sized span. */}
+                                            <span className="truncate font-mono text-[10.5px] leading-tight text-neutral-muted">
+                                                {colour.value.toUpperCase()}
+                                            </span>
+                                        </div>
                                     }
                                 />
                             ))}
@@ -293,7 +295,7 @@ export const ThemeCard = createReactiveComponent(({ presenter }: Props) => {
     );
 
     return (
-        <div className="mt-md flex flex-col overflow-hidden rounded-lg border border-neutral-dimmed bg-neutral-base shadow-sm">
+        <div className="flex flex-shrink-0 flex-col overflow-hidden rounded-lg border border-neutral-dimmed bg-neutral-base shadow-sm">
             <div className="flex flex-col gap-xs px-md py-sm-extra">
                 <div className="flex items-center justify-between gap-xs">
                     <Text size="lg" className="font-semibold text-neutral-primary">
@@ -389,10 +391,25 @@ export const ThemeCard = createReactiveComponent(({ presenter }: Props) => {
                                 <Button
                                     size="sm"
                                     variant="ghost"
-                                    className="self-start"
-                                    text={`${extraction.uncertain.length} note${extraction.uncertain.length === 1 ? "" : "s"}`}
-                                    icon={showUncertain ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                                    iconPosition="end"
+                                    className="w-full justify-start"
+                                    icon={<InfoIcon />}
+                                    text={
+                                        <span className="flex flex-1 items-center justify-between gap-xs">
+                                            {`${extraction.uncertain.length} note${extraction.uncertain.length === 1 ? "" : "s"}`}
+                                            <Icon
+                                                icon={
+                                                    showUncertain ? (
+                                                        <ExpandLessIcon />
+                                                    ) : (
+                                                        <ExpandMoreIcon />
+                                                    )
+                                                }
+                                                label={showUncertain ? "Hide notes" : "Show notes"}
+                                                size="sm"
+                                                color="neutral-light"
+                                            />
+                                        </span>
+                                    }
                                     onClick={() => setShowUncertain(!showUncertain)}
                                 />
                                 {showUncertain ? (

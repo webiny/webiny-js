@@ -363,8 +363,9 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
             ) : null}
 
             <div className="flex min-h-0 flex-1">
-                <div className="w-[300px] flex-shrink-0 overflow-y-auto border-r border-neutral-dimmed p-md">
+                <div className="flex w-[320px] flex-shrink-0 flex-col gap-md overflow-y-auto border-r border-neutral-dimmed bg-neutral-subtle p-md">
                     <StageRail
+                        className="flex-shrink-0 shadow-sm"
                         rows={railRows}
                         selected={vm.showSite ? null : selected}
                         onSelect={stage => {
