@@ -15,12 +15,12 @@ Follow the steps in this order. Each one says how to tell it worked.
 
 ## 1. Deploy the old code
 
-The change is commits **`66e2656ce1`**, **`8cc81a4923`** and **`4757ebc07a`** (newest first when reverting), plus any later commit that names "site tenant from the start" on `claude/theme-app` in
+The change is commits **`66e2656ce1`**, **`8cc81a4923`** and **`4757ebc07a`**, **`ad436fe9a5`** (newest first when reverting), plus any later commit that names "site tenant from the start" on `claude/theme-app` in
 `webiny-js-migration-tool`.
 
 ```bash
 cd ~/Dev/webiny-js-migration-tool
-git revert --no-edit 4757ebc07a 8cc81a4923 66e2656ce1
+git revert --no-edit ad436fe9a5 4757ebc07a 8cc81a4923 66e2656ce1
 yarn build -p @webiny/api-component-extraction
 yarn build -p @webiny/api-page-composition-poc
 yarn build -p @webiny/app-component-extraction
