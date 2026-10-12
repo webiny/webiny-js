@@ -56,6 +56,7 @@ import {
 } from "~/pages/rewriteDestinations.js";
 import { toPageIdentity } from "~/pages/toPageIdentity.js";
 import { pageSeo } from "~/pages/sourcePageSeo.js";
+import { headingLevelInput } from "~/pages/headingLevelInput.js";
 import { scalarInputNames } from "~/pages/scalarInputNames.js";
 import {
     labelsIn,
@@ -942,7 +943,9 @@ export class CompositionWriterImpl implements ICompositionWriter {
                     manifest: component.manifest,
                     sourceUrl: page.url,
                     fileShapes: component.fileShapes
-                })
+                }),
+                // The level this page's section gives its heading (headingLevelInput.ts).
+                headingLevelInput({ node, manifest: component.manifest })
             );
         }
 

@@ -151,10 +151,25 @@ export const EXTRACTION_PROMPT_LINE_IDS = [
 ] as const;
 
 /**
- * Candidate lines a prompt experiment may add, by id. Never shown otherwise: a candidate ships only
- * once it is measured and made a default line. None is pending.
+ * The accessibility and performance instructions (site-qualities-scoping.md, item 4), by id. Each
+ * has the data it needs in the prompt: the alt beside every image, the source's heading levels, the
+ * section's form fields. Image width and height is not among them: a file input's value carries only
+ * its URL, so an instruction to read its size would read nothing (item4-instructions.md).
  */
-export const OPT_IN_PROMPT_LINE_IDS: readonly string[] = [];
+export const QUALITY_PROMPT_LINE_IDS = [
+    "quality.alt-input",
+    "quality.semantic-elements",
+    "quality.heading-level",
+    "quality.form-labels",
+    "quality.focus-visible"
+] as const;
+
+/**
+ * Candidate lines a prompt experiment may add, by id. Never shown otherwise: a candidate ships only
+ * once it is measured and made a default line. Pending: the quality instructions, until they are
+ * read, agreed and their generation run is scheduled.
+ */
+export const OPT_IN_PROMPT_LINE_IDS: readonly string[] = [...QUALITY_PROMPT_LINE_IDS];
 
 /**
  * The shared system prompt's lines this pipeline leaves out on every call: its own override of the
@@ -257,11 +272,42 @@ const typeScaleLines = (component: PlannedComponent): string[] => {
         "them, including case: text the page displays in capitals is uppercase through text-transform, not",
         "retyped, so keep the text as given and set the transform.",
         ...lines,
-        "",
         // "Do not substitute a default heading size for it" was measured dead and removed: see
         // `scripts/baseline/reports/2026-10-08/ablation-result.md`.
-        `The largest is the section's heading at ${scale[0].fontSize}px.`
+        ...(largestIsSourceHeading(component)
+            ? ["", `The largest is the section's heading at ${scale[0].fontSize}px.`]
+            : [])
     ];
+};
+
+const comparable = (text: string): string =>
+    text
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase()
+        .replace(/…$/, "")
+        .replace(/^["“”]+|["“”]+$/g, "")
+        .trim();
+
+/**
+ * Whether the section's largest text is one of its source headings: the type scale's largest example
+ * matched against the `h1`–`h6` text the source marks up.
+ *
+ * "The largest is the section's heading" used to be said of every section. Replayed over 385
+ * components (2026-10-12), it named a heading the source does not have for 103 of the 289 with a type
+ * scale (footers, navigation, cards), and for 14 more the largest text was a quote, a statistic ("80")
+ * or a display word, not the heading. It is said only where it can be checked and holds; a plan that
+ * recorded no example cannot be checked, and the heading lines carry the levels either way.
+ */
+const largestIsSourceHeading = (component: PlannedComponent): boolean => {
+    const example = comparable(component.typeScale?.[0]?.example ?? "");
+    if (!example) {
+        return false;
+    }
+    return (component.headings ?? [])
+        .flatMap(heading => [heading.text, ...heading.inner])
+        .map(comparable)
+        .some(text => text !== "" && (text.startsWith(example) || example.startsWith(text)));
 };
 
 /**
@@ -286,6 +332,85 @@ const headingLines = (component: PlannedComponent): string[] => {
             return `- h${heading.level} "${heading.text}"${inner ? `, with ${inner} inside it` : ""}`;
         })
     ];
+};
+
+/** Whether the prompt gives this section any picture: a bound image, an unbound one, or a sized one. */
+const hasImages = (component: PlannedComponent): boolean =>
+    (component.images?.length ?? 0) > 0 ||
+    (component.unboundImages?.length ?? 0) > 0 ||
+    component.props.some(prop => JSON.stringify(prop.observedStructured ?? []).includes('"src"'));
+
+/** Whether the section's layout holds a form field (an input, a select, a text area). */
+const hasFormFields = (component: PlannedComponent): boolean =>
+    (component.layout?.elements ?? []).some(element => element.kind === "field");
+
+/**
+ * The accessibility instructions, each shown only when its id is included (`QUALITY_PROMPT_LINE_IDS`)
+ * and only where the section has what it speaks about. Each refers to data the prompt carries above:
+ * the alt given for each image, the headings the source marks up, the form fields in the layout.
+ */
+const qualityLines = (component: PlannedComponent, include: Ablation): string[] => {
+    const lines: string[] = [];
+    if (include.has("quality.alt-input") && hasImages(component)) {
+        lines.push(
+            "",
+            "Every <img> takes its alt text from an input; none is written into the markup. Beside each",
+            'image input, declare a text input named after it with "Alt" added (`image` → `imageAlt`,',
+            "`logo` → `logoAlt`); inside a list or object item, add the same-named text field beside the",
+            "image field. Default each to the alt given for that image above. An image given no alt above",
+            'defaults to an empty string and renders alt="": it is decoration, and a screen reader skips it.'
+        );
+    }
+    if (include.has("quality.semantic-elements")) {
+        lines.push(
+            "",
+            "Use the element that says what each thing is: <a href> for anything that goes somewhere,",
+            "<button> for an action that stays on the page, <ul> or <ol> around a set of like items (cards,",
+            "links, features), <nav> around a set of navigation links, and <header> or <footer> as the outer",
+            "element when this component is the site's header or footer. Never a <div> or <span> with a",
+            "click handler."
+        );
+    }
+    if (include.has("quality.heading-level")) {
+        const headings = component.headings ?? [];
+        const main = headings[0];
+        lines.push(
+            "",
+            ...(main
+                ? [
+                      "The section's main heading is the first one listed under its headings above. Render it",
+                      "with the element a `headingLevel` input names: declare `headingLevel` as a",
+                      "`createSelectInput` with the options h1, h2, h3, h4, h5 and h6, defaulting to",
+                      `"h${main.level}", and render it as \`const Heading = inputs.headingLevel || "h${main.level}"\`. Each`,
+                      "page sets its own level. Every other listed heading keeps its distance from the main one: a",
+                      "heading listed one level below it renders one level below `headingLevel`, never deeper than",
+                      "h6. Text the list does not name as a heading is not a heading element, however large it is."
+                  ]
+                : [
+                      "The source marks up no heading in this section: render no h1–h6 element, however large",
+                      "its text."
+                  ])
+        );
+    }
+    if (include.has("quality.form-labels") && hasFormFields(component)) {
+        lines.push(
+            "",
+            "Every form field has a <label> tied to it (`htmlFor` on the label, the same `id` on the",
+            "field), carrying that field's label from the text above. Where the crop shows the field with",
+            "no visible label, keep the label and hide it visually (a visually-hidden class), so a screen",
+            "reader still reads it. A placeholder is not a label."
+        );
+    }
+    if (include.has("quality.focus-visible")) {
+        lines.push(
+            "",
+            "Every link, button and form field shows a visible focus indicator when reached with the",
+            "keyboard: keep the browser's outline, or replace it in `:focus-visible` with one at least as",
+            "visible (a 2px outline in the section's text colour). Never set `outline: none` without a",
+            "replacement."
+        );
+    }
+    return lines;
 };
 
 /**
@@ -751,8 +876,8 @@ const buildPrompt = (
     slotVariables: Map<string, string[]>,
     feedback: string[] = [],
     ablate: Ablation = NO_ABLATION,
-    // Candidate lines read it (`include.has(id)`); none is pending (OPT_IN_PROMPT_LINE_IDS).
-    _include: Ablation = NO_ABLATION
+    // Candidate lines read it (`include.has(id)`): the quality instructions (OPT_IN_PROMPT_LINE_IDS).
+    include: Ablation = NO_ABLATION
 ): string => {
     const attribute = createCopyAttribution(component);
     const propLines = (prop: PlannedComponent["props"][number], indent: string): string[] => {
@@ -867,6 +992,7 @@ const buildPrompt = (
         ...textsToPreserve(component.sourceTexts)
             .slice(0, PRESERVED_TEXT_LIMIT)
             .map(text => `- ${text}`),
+        ...qualityLines(component, include),
         ...(ablate.has("extraction.no-other-text")
             ? []
             : [
@@ -1084,6 +1210,7 @@ export const generateComponentAttempts = async (
     }
     const additionalFileIds = [reference.fileId];
     let best: GeneratedComponent | null = null;
+    const qualityIds = QUALITY_PROMPT_LINE_IDS.filter(id => (input.include ?? []).includes(id));
     let bestFailureCount = Number.POSITIVE_INFINITY;
     let previousFailures: string[] | null = null;
     let attempts = 0;
@@ -1255,7 +1382,9 @@ export const generateComponentAttempts = async (
             tokenBindings: planned.tokenBindings,
             members: planned.members,
             attempts,
-            validation
+            validation,
+            // Which quality instructions this prompt carried, so a beta line can say where they ran.
+            ...(qualityIds.length > 0 ? { qualityInstructions: qualityIds } : {})
         };
         await input.recordAttempt?.({
             attempt: attempts,

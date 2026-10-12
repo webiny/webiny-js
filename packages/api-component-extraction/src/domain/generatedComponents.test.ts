@@ -59,6 +59,16 @@ describe("generated component references", () => {
         expect(ref.revision).toBe(3);
     });
 
+    it("carries which quality instructions the prompt held, and nothing for a component without them", () => {
+        const withThem = toComponentRef(
+            component({ qualityInstructions: ["quality.alt-input", "quality.focus-visible"] }),
+            "result-key",
+            1
+        );
+        expect(withThem.qualityInstructions).toEqual(["quality.alt-input", "quality.focus-visible"]);
+        expect(toComponentRef(component(), "result-key", 1)).not.toHaveProperty("qualityInstructions");
+    });
+
     it("counts pages as distinct member urls, not members", () => {
         // Two instances on one page and one on another: 3 members, 2 pages. The Generate and Promote
         // views show the page count, and it is not derivable from the member count.

@@ -970,6 +970,12 @@ export interface GeneratedComponent {
         contractConformance: ValidationResult;
         tokenBinding: ValidationResult;
     };
+    /**
+     * The quality instructions its prompt carried (`QUALITY_PROMPT_LINE_IDS`), by id. Absent when it
+     * carried none: every component generated before they existed, and any generated without them.
+     * The Site step's beta lines read this, so they claim nothing for a run that never had the prompt.
+     */
+    qualityInstructions?: string[];
 }
 
 /**
@@ -999,6 +1005,12 @@ export interface GeneratedComponentRef {
     memberCount: number;
     pageCount: number;
     propCount: number;
+    /**
+     * The quality instructions its prompt carried (`QUALITY_PROMPT_LINE_IDS`), by id. Absent when it
+     * carried none: every component generated before they existed, and any generated without them.
+     * The Site step's beta lines read this, so they claim nothing for a run that never had the prompt.
+     */
+    qualityInstructions?: string[];
     /**
      * Carried whole rather than summarised. A consumer must see the same validator results before and
      * after this change, and the largest validation block measured is 446 bytes — so capping the

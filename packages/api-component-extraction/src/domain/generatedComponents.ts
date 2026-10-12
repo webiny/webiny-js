@@ -68,6 +68,9 @@ export const toComponentRef = (
     memberCount: component.members.length,
     pageCount: new Set(component.members.map(member => member.url)).size,
     propCount: component.props.length,
+    ...(component.qualityInstructions?.length
+        ? { qualityInstructions: component.qualityInstructions }
+        : {}),
     validation: component.validation,
     resultRef,
     revision,

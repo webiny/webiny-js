@@ -497,10 +497,27 @@ export const deriveCompositeInputs = (params: {
          * The fix belongs here, in the path that reads captured images, not in the text path: routing
          * a text run into an image input would be worse than leaving it empty.
          */
-        if (!definition.list && !isComposite(definition) && isImageField(definition)) {
+        // Not an alt field: `imageAlt` matches the image test by name, and would be filled with the
+        // picture's URL. Alt before image, as `buildItem` already does inside items.
+        if (
+            !definition.list &&
+            !isComposite(definition) &&
+            !isAltField(definition) &&
+            isImageField(definition)
+        ) {
             const image = collectImages(node, claimed)[0];
             if (image) {
                 values[definition.name] = fileInputValue(image.src, shapeOf(definition));
+                /*
+                 * Its alt, from this page, into the text input the component pairs with it
+                 * (`<name>Alt`). Without this a top-level image's alt is the component's default:
+                 * the representative page's alt, on every page. Inside list and object items the alt
+                 * field is filled with its image already (`buildItem`).
+                 */
+                const altName = `${definition.name}Alt`;
+                if ((manifest.inputs ?? []).some(input => asDefinition(input).name === altName)) {
+                    values[altName] = image.alt;
+                }
             }
             continue;
         }

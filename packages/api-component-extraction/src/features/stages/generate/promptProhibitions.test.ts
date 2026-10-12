@@ -20,11 +20,14 @@ const REPLACED =
 const EMPTY_DESTINATION =
     "\n\nA link this section shows with no destination in the list above keeps an empty destination\n(`\"\"`). Do not write one for it: not the site's home page, not a social network's home page.";
 
+// "The largest is the section's heading at N px", now said only where the source marks that text up
+// as a heading (item4-data-replay.md). These fixtures carry no source headings, so it is gone.
+const UNVERIFIED_HEADING = /\n\nThe largest is the section's heading at [\d.]+px\./;
+
 const current = (name: string) =>
-    CUT.reduce((prompt, block) => prompt.replace(block, ""), before[name]).replace(
-        REPLACED,
-        EMPTY_DESTINATION
-    );
+    CUT.reduce((prompt, block) => prompt.replace(block, ""), before[name])
+        .replace(REPLACED, EMPTY_DESTINATION)
+        .replace(UNVERIFIED_HEADING, "");
 
 // Each id's line, exactly as the prompt has it, with the blank line before it.
 const BLOCKS: Record<string, string> = {
@@ -43,8 +46,9 @@ describe("the content prohibitions", () => {
             expect(prompt).not.toContain("Use these URLs exactly as given");
             expect(prompt).not.toContain("Do NOT invent image URLs");
         }
-        // The photograph, the see-through pattern, and the logo.
-        expect(changed).toBe(3);
+        // All four: none carries a source heading, so each loses the unverified heading line; the
+        // photograph, the see-through pattern and the logo also changed before that.
+        expect(changed).toBe(4);
     });
 
     it("each id removes exactly its own line, where it is shown, and nothing else", () => {
