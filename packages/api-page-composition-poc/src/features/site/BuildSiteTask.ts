@@ -27,6 +27,16 @@ import { planComponentCopy } from "./planComponentCopy.js";
 import { planComponentRemoval } from "./planComponentRemoval.js";
 import { TrashPageUseCase } from "@webiny/api-website-builder/features/pages/TrashPage/abstractions.js";
 import { ListPagesUseCase } from "@webiny/api-website-builder/features/pages/ListPages/abstractions.js";
+import { GetSettingsUseCase } from "@webiny/api-website-builder/features/pages/GetSettings/abstractions.js";
+import { DeleteFileUseCase } from "@webiny/api-file-manager/features/file/DeleteFile/abstractions.js";
+import { randomUUID } from "node:crypto";
+import {
+    buildSitemap,
+    countSeo,
+    summariseImages,
+    type ImagesSummary,
+    type SiteQualities
+} from "./siteQualities.js";
 import { DeleteRemoteComponentUseCase } from "@webiny/remote-components/api/features/deleteComponent/abstractions.js";
 import { PageMapStore } from "~/domain/abstractions.js";
 import { ComposePagesService } from "~/domain/abstractions.js";
@@ -138,7 +148,9 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         private pageMaps: PageMapStore.Interface,
         private trashPage: TrashPageUseCase.Interface,
         private listPages: ListPagesUseCase.Interface,
-        private deleteComponent: DeleteRemoteComponentUseCase.Interface
+        private deleteComponent: DeleteRemoteComponentUseCase.Interface,
+        private getSettings: GetSettingsUseCase.Interface,
+        private deleteFile: DeleteFileUseCase.Interface
     ) {}
 
     async run({ input, controller }: TaskHandler.RunParams<BuildSiteTaskInput>) {
@@ -432,6 +444,16 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
             );
         }
 
+        if (!preview) {
+            current.qualities = await this.qualities({
+                site,
+                tenant,
+                images: images.summary,
+                toTarget
+            });
+            await save();
+        }
+
         current.status = "done";
         current.finishedOn = new Date().toISOString();
         await save();
@@ -492,6 +514,123 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
     }
 
     /** Every page in the tenant, its latest revision in any state, with its elements. */
+    /**
+     * What this publish produced beyond its steps, for the Site step: the sitemap of the published
+     * pages, written to the site's File Manager; the image files; the pages carrying their source's
+     * title and description. None of it can fail the build: a sitemap that could not be written says
+     * why instead.
+     */
+    private async qualities(params: {
+        site: SiteRecord;
+        tenant: Tenant;
+        images: ImagesSummary;
+        toTarget: <T>(cb: () => Promise<T>) => Promise<T>;
+    }): Promise<SiteQualities> {
+        const { site, tenant, images, toTarget } = params;
+        // The website's domain is a setting of the extraction tenant, where the admin reads it too.
+        const settings = await this.getSettings.execute();
+        const domain = settings.isOk() ? settings.value.domain.replace(/\/+$/, "") : "";
+
+        return toTarget(async () => {
+            const published = await this.publishedPages();
+            if (typeof published === "string") {
+                return { images, sitemap: { error: published } };
+            }
+            const seo = countSeo(published);
+            if (!domain) {
+                return {
+                    images,
+                    seo,
+                    sitemap: {
+                        error: "The website's domain is not set, so the pages have no address to list."
+                    }
+                };
+            }
+            const sitemap = buildSitemap({
+                pages: published.map(page => ({
+                    path: page.properties.path,
+                    savedOn: page.savedOn
+                })),
+                pageUrl: path => `${domain}${path}?wb.tenant=${encodeURIComponent(tenant.id)}`
+            });
+            try {
+                const deps = this.imageAssets.deps(async () => {});
+                const id = randomUUID();
+                const [file] = await deps.uploadBatch([
+                    {
+                        id,
+                        key: `${id}/sitemap.xml`,
+                        bytes: new TextEncoder().encode(sitemap.xml),
+                        contentType: "application/xml",
+                        name: "sitemap.xml"
+                    }
+                ]);
+                if (!file) {
+                    return { images, seo, sitemap: { error: "The sitemap file was not created." } };
+                }
+                // One sitemap per site: the previous publish's is replaced, not kept beside it.
+                const previous = site.sitemapFileId;
+                site.sitemapFileId = file.id;
+                if (previous && previous !== file.id) {
+                    await this.deleteFile.execute(previous);
+                }
+                return {
+                    images,
+                    seo,
+                    sitemap: {
+                        pages: sitemap.pages,
+                        fileId: file.id,
+                        url: await deps.urlOf(file.key)
+                    }
+                };
+            } catch (error) {
+                return {
+                    images,
+                    seo,
+                    sitemap: {
+                        error: `The sitemap could not be written: ${(error as Error).message}`
+                    }
+                };
+            }
+        });
+    }
+
+    /** Inside the target: the site's live pages, with what the sitemap and the SEO count read. */
+    private async publishedPages(): Promise<
+        | Array<{
+              properties: { path: string; seo?: { title?: unknown; description?: unknown } };
+              savedOn?: string;
+          }>
+        | string
+    > {
+        const pages: Array<{
+            properties: { path: string; seo?: { title?: unknown; description?: unknown } };
+            savedOn?: string;
+        }> = [];
+        let after: string | null = null;
+        do {
+            const listed = await this.listPages.execute({
+                where: { latest: true },
+                sort: [],
+                limit: 100,
+                after
+            });
+            if (listed.isFail()) {
+                return `Could not list the site's pages: ${listed.error.message}`;
+            }
+            for (const page of listed.value.pages) {
+                if (page.status === "published") {
+                    pages.push({
+                        properties: page.properties as never,
+                        savedOn: page.savedOn
+                    });
+                }
+            }
+            after = listed.value.meta.hasMoreItems ? listed.value.meta.cursor : null;
+        } while (after);
+        return pages;
+    }
+
     private async allPages(): Promise<
         Array<{ id: string; status: string; elements: Record<string, unknown> }> | string
     > {
@@ -611,10 +750,12 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
     private async copyImages(
         images: RunImage[],
         toTarget: <T>(cb: () => Promise<T>) => Promise<T>
-    ): Promise<{ copied: number; failed: number; files: number }> {
+    ): Promise<{ copied: number; failed: number; files: number; summary: ImagesSummary }> {
         let copied = 0;
         let failed = 0;
         const fileIds = new Set<string>();
+        // Per file, the format and size it is stored as: what the File Manager serves, fetched above.
+        const stored: Array<{ fileId: string; contentType: string; size: number }> = [];
         for (let start = 0; start < images.length; start += IMAGE_BATCH) {
             const batch = images.slice(start, start + IMAGE_BATCH);
             const fetched: Array<{
@@ -664,16 +805,25 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
                     fetched as never
                 )
             );
+            const fetchedByUrl = new Map(fetched.map(item => [item.url, item]));
             for (const outcome of outcomes) {
                 if (outcome.kind === "migrated" || outcome.kind === "deduplicated") {
                     copied += 1;
                     fileIds.add(outcome.fileId);
+                    const item = fetchedByUrl.get(outcome.sourceUrl);
+                    if (item) {
+                        stored.push({
+                            fileId: outcome.fileId,
+                            contentType: item.contentType,
+                            size: item.size
+                        });
+                    }
                 } else {
                     failed += 1;
                 }
             }
         }
-        return { copied, failed, files: fileIds.size };
+        return { copied, failed, files: fileIds.size, summary: summariseImages(stored) };
     }
 }
 
@@ -700,7 +850,9 @@ const BuildSiteTaskHandler = TaskHandler.createImplementation({
         PageMapStore,
         TrashPageUseCase,
         ListPagesUseCase,
-        DeleteRemoteComponentUseCase
+        DeleteRemoteComponentUseCase,
+        GetSettingsUseCase,
+        DeleteFileUseCase
     ]
 });
 

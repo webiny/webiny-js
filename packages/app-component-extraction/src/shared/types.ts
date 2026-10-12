@@ -803,5 +803,13 @@ export interface SiteDto {
             at: string;
         }>;
         error?: string;
+        /** What the publish produced beyond its steps. Absent on builds before 2026-10-12. */
+        qualities?: SiteQualitiesDto;
     };
+}
+
+export interface SiteQualitiesDto {
+    seo?: { pages: number; carried: number };
+    sitemap?: { pages: number; fileId: string; url: string } | { error: string };
+    images?: { files: number; bytes: number; byType: Array<{ type: string; files: number }> };
 }

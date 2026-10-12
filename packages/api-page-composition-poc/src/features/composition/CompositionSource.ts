@@ -56,6 +56,8 @@ export interface CompositionSource {
     promotedTenantId?: string;
     /** Every image the run migrated, for copying into another tenant. */
     images: RunImage[];
+    /** Each source page's meta description, by URL, for the page's SEO fields. */
+    descriptions?: Map<string, string>;
     /** The next compose version for this run's page map. */
     composeVersion: number;
     /** This run's previous composition and the other runs of the same job, for retiring their pages. */

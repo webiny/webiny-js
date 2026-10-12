@@ -3,6 +3,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { PageCompositionError } from "~/domain/errors.js";
 import { siteKey } from "~/constants.js";
+import type { SiteQualities } from "~/features/site/siteQualities.js";
 
 export type SiteBuildStep = "tenant" | "theme" | "components" | "images" | "pages";
 
@@ -32,6 +33,8 @@ export interface SiteRecord {
     /** The theme revision last copied in, so a rebuild does not create another copy of the same one. */
     themeSourceId?: string;
     themeTargetId?: string;
+    /** The sitemap file in the site's File Manager, replaced at each publish. */
+    sitemapFileId?: string;
     /**
      * The last preview: a composition of drafts into the site tenant, for a job that approves there.
      * Kept apart from `lastBuild`, which is what the site last published.
@@ -46,6 +49,8 @@ export interface SiteRecord {
         finishedOn?: string;
         steps: SiteBuildStepRecord[];
         error?: string;
+        /** What a publish produced beyond its steps (sitemap, images, SEO). Absent before 2026-10-12. */
+        qualities?: SiteQualities;
     };
 }
 

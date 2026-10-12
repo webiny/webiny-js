@@ -1,3 +1,4 @@
+import { gunzipSync } from "node:zlib";
 import { Result } from "@webiny/feature/api";
 import { createAbstraction } from "@webiny/feature/api";
 import { RunRepository } from "@webiny/api-component-extraction/domain/abstractions.js";
@@ -18,6 +19,7 @@ import type { AssetOutcome } from "@webiny/api-component-extraction/domain/asset
 import type { Run } from "@webiny/api-component-extraction/domain/types.js";
 import { PageMapStore } from "~/domain/abstractions.js";
 import { PageCompositionError } from "~/domain/errors.js";
+import { readSourceDescription } from "~/pages/sourcePageSeo.js";
 import type {
     CompositionSource,
     EarlierComposition,
@@ -111,7 +113,12 @@ class CompositionReaderImpl implements ICompositionReader {
             }
         }
 
-        const images = await this.runImages(run);
+        const capture = await this.readArtifact<CaptureArtifact>(run, "capture", "pages");
+        const images = await this.runImages(capture);
+        const descriptions = await this.sourceDescriptions(
+            capture,
+            assemble.value.pages.map(page => page.url)
+        );
 
         const previous = await this.pageMaps.get(runId, tenantId);
         const composeVersion = (previous.isOk() ? (previous.value?.composeVersion ?? 0) : 0) + 1;
@@ -163,14 +170,16 @@ class CompositionReaderImpl implements ICompositionReader {
                 ? { promotedTenantId: promote.value.tenantId }
                 : {}),
             images,
+            descriptions,
             composeVersion,
             earlier
         });
     }
 
     /** The run's migrated images, from Capture's per-image outcomes. Empty when it recorded none. */
-    private async runImages(run: Run): Promise<RunImage[]> {
-        const capture = await this.readArtifact<CaptureArtifact>(run, "capture", "pages");
+    private async runImages(
+        capture: Result<CaptureArtifact, PageCompositionError>
+    ): Promise<RunImage[]> {
         const ref = capture.isOk() ? capture.value.assets?.assetOutcomesRef : undefined;
         if (!ref) {
             return [];
@@ -195,6 +204,42 @@ class CompositionReaderImpl implements ICompositionReader {
         } catch {
             return [];
         }
+    }
+
+    /**
+     * Each assembled page's meta description, from the raw HTML Capture stored. Nothing else reads
+     * that HTML; Capture's tree has no `<head>`. A page whose HTML cannot be read, or that declares no
+     * description, is left out.
+     */
+    private async sourceDescriptions(
+        capture: Result<CaptureArtifact, PageCompositionError>,
+        urls: string[]
+    ): Promise<Map<string, string>> {
+        const descriptions = new Map<string, string>();
+        if (capture.isFail()) {
+            return descriptions;
+        }
+        const byUrl = new Map(capture.value.pages.map(page => [page.url, page]));
+        for (const url of urls) {
+            const ref = byUrl.get(url)?.rawDomRef;
+            if (!ref) {
+                continue;
+            }
+            const bytes = await this.blobs.get(ref);
+            if (bytes.isFail()) {
+                continue;
+            }
+            try {
+                const html = gunzipSync(bytes.value).toString("utf8");
+                const description = readSourceDescription(html);
+                if (description) {
+                    descriptions.set(url, description);
+                }
+            } catch {
+                continue;
+            }
+        }
+        return descriptions;
     }
 
     private async pageTree(page: SegmentedPage): Promise<CapturedNode | null> {

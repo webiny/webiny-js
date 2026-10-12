@@ -55,6 +55,7 @@ import {
     type DestinationOutcome
 } from "~/pages/rewriteDestinations.js";
 import { toPageIdentity } from "~/pages/toPageIdentity.js";
+import { pageSeo } from "~/pages/sourcePageSeo.js";
 import { scalarInputNames } from "~/pages/scalarInputNames.js";
 import {
     labelsIn,
@@ -274,7 +275,13 @@ export class CompositionWriterImpl implements ICompositionWriter {
         const failed: PageMapFailure[] = [];
 
         for (const page of source.assemble.pages) {
-            const outcome = await this.composePage({ page, placeable, segmentByUrl, trees });
+            const outcome = await this.composePage({
+                page,
+                placeable,
+                segmentByUrl,
+                trees,
+                description: source.descriptions?.get(page.url)
+            });
             if (outcome.isFail()) {
                 failed.push({ sourceUrl: page.url, reason: outcome.error.message });
                 continue;
@@ -679,6 +686,8 @@ export class CompositionWriterImpl implements ICompositionWriter {
         placeable: Map<string, PlaceableComponent>;
         segmentByUrl: Map<string, SegmentedPage>;
         trees: Map<string, CapturedNode>;
+        /** The source page's meta description, when it declares one. */
+        description?: string;
     }): Promise<Result<CreatedPage, PageCompositionError>> {
         const { page, placeable, segmentByUrl, trees } = params;
         const identity = toPageIdentity(page.url, page.title);
@@ -814,7 +823,12 @@ export class CompositionWriterImpl implements ICompositionWriter {
 
         const createdPage = await this.createPage.execute({
             location: { folderId: ROOT_FOLDER },
-            properties: { title: identity.title, path: identity.path },
+            properties: {
+                title: identity.title,
+                path: identity.path,
+                // The source's title and description; not its canonical URL (see `pageSeo`).
+                seo: pageSeo({ declaredTitle: page.title, description: params.description })
+            },
             metadata: { documentType: "page", pageType: "static" },
             elements,
             bindings,

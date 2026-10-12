@@ -9,6 +9,7 @@ import type { RunViewPresenter } from "../../abstractions.js";
 import { composedStatus, STATUS_TAG } from "../composed/pageStatus.js";
 import { siteUrl } from "./siteUrl.js";
 import { SiteCard } from "./SiteCard.js";
+import { siteQualityLines } from "./siteQualityLines.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
@@ -91,6 +92,8 @@ export const SiteView = createReactiveComponent(function SiteView({ presenter }:
                         <BuiltFrom presenter={presenter} />
                     ) : null}
 
+                    {approved || site ? <SiteQualities presenter={presenter} /> : null}
+
                     {build?.status === "done" && vm.siteInventory ? (
                         <TenantInventory presenter={presenter} />
                     ) : null}
@@ -140,6 +143,43 @@ const BuiltFrom = createReactiveComponent(function BuiltFrom({ presenter }: Prop
                     onClick={() => goToRoute(Routes.Run, { runId: builtFrom.runId })}
                 />
             ) : null}
+        </div>
+    );
+});
+
+/**
+ * What publishing produced beyond its steps: the sitemap, the images, the pages' titles and
+ * descriptions. Each line says what the pipeline did. A site published before these were recorded
+ * shows none of them rather than a guess.
+ */
+const SiteQualities = createReactiveComponent(function SiteQualities({ presenter }: Props) {
+    const build = presenter.vm.site?.lastBuild;
+    const lines = siteQualityLines(build?.qualities, build?.status === "done");
+    if (lines.length === 0) {
+        return null;
+    }
+    return (
+        <div className="flex flex-col gap-xxs">
+            {lines.map(line => (
+                <div key={line.key} className="flex flex-wrap items-center gap-sm">
+                    <Text
+                        size="sm"
+                        className={
+                            line.problem ? "text-destructive-default" : "text-neutral-strong"
+                        }
+                    >
+                        {line.text}
+                    </Text>
+                    {line.link ? (
+                        <Button
+                            variant="tertiary"
+                            size="sm"
+                            text={line.link.label}
+                            onClick={() => window.open(line.link!.url, "_blank", "noopener")}
+                        />
+                    ) : null}
+                </div>
+            ))}
         </div>
     );
 });
