@@ -736,3 +736,43 @@ export const GET_SITE_INVENTORY = /* GraphQL */ `
         }
     }
 `;
+
+/** What deleting a job removes, as last counted, and the delete's steps if one ran. */
+export const GET_JOB_DELETION = /* GraphQL */ `
+    query GetJobDeletion($jobId: ID!) {
+        pageCompositionPocJobDeletion(jobId: $jobId) {
+            data
+            error {
+                message
+            }
+        }
+    }
+`;
+
+/** Count what deleting a job removes. A task; poll GET_JOB_DELETION for the result. */
+export const PLAN_JOB_DELETION = /* GraphQL */ `
+    mutation PlanJobDeletion($jobId: ID!) {
+        pageCompositionPocPlanJobDeletion(jobId: $jobId) {
+            data
+            error {
+                message
+            }
+        }
+    }
+`;
+
+/** Delete a job, permanently; its site too when includeSite is set. */
+export const DELETE_JOB = /* GraphQL */ `
+    mutation DeleteJob($jobId: ID!, $includeSite: Boolean, $confirmedPlanOn: String!) {
+        pageCompositionPocDeleteJob(
+            jobId: $jobId
+            includeSite: $includeSite
+            confirmedPlanOn: $confirmedPlanOn
+        ) {
+            data
+            error {
+                message
+            }
+        }
+    }
+`;

@@ -9,6 +9,7 @@ import type {
     ComposedCaptureDto,
     PageMapDto,
     SiteDto,
+    JobDeletionDto,
     ReachabilityDto,
     ReattachmentDto,
     RunDto,
@@ -146,6 +147,16 @@ export interface IComponentExtractionGateway {
     buildSite(runId: string): Promise<{ taskId: string; runId: string }>;
     /** A job's site in its own tenant and its last build, or null when it has none. */
     getSite(jobId: string): Promise<SiteDto | null>;
+    /** What deleting the job removes as last counted, and the delete's steps; null before any count. */
+    getJobDeletion(jobId: string): Promise<JobDeletionDto | null>;
+    /** Count what deleting the job removes. A background task; poll `getJobDeletion`. */
+    planJobDeletion(jobId: string): Promise<JobDeletionDto>;
+    /** Delete the job permanently, its site too when `includeSite`; `confirmedPlanOn` names the counts shown. */
+    deleteJob(
+        jobId: string,
+        includeSite: boolean,
+        confirmedPlanOn: string
+    ): Promise<JobDeletionDto>;
     /** Where the migrated site is served from — Website Builder's preview domain. Null if unset. */
     getWebsiteDomain(): Promise<string | null>;
     /**

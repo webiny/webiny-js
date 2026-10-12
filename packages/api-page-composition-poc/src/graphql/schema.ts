@@ -32,6 +32,10 @@ import { siteInventory } from "~/pages/siteInventory.js";
 import type { ComposedCapture, ComposedCapturePage } from "~/domain/types.js";
 import { pageCompositionTypeDefs } from "./typeDefs.js";
 import type { ComposePagesTaskInput } from "~/features/ComposePagesTask.js";
+import { DELETE_JOB_TASK_ID } from "~/constants.js";
+import type { DeleteJobTaskInput } from "~/features/deletion/DeleteJobTask.js";
+import { JobDeletionStore } from "~/features/deletion/JobDeletionStore.js";
+import { deletionView } from "~/features/deletion/deletionView.js";
 
 /** Thin resolvers: authorize, delegate, map onto the `{ data, error }` envelope. */
 const resolve = async (fn: () => Promise<unknown>) => {
@@ -162,6 +166,140 @@ export const addPageCompositionSchema = (builder: IGraphQLSchemaBuilder): void =
                         });
                     }
                     return { taskId: triggered.value.id, runId: run.id };
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.pageCompositionPocJobDeletion",
+        dependencies: [ComponentExtractionPermissions, JobDeletionStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            records: JobDeletionStore.Interface
+        ) {
+            return ({ args }: { args: { jobId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to read component extraction.");
+                    }
+                    const record = await records.get(args.jobId);
+                    return record ? deletionView(record) : null;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.pageCompositionPocPlanJobDeletion",
+        dependencies: [
+            ComponentExtractionPermissions,
+            JobRepository,
+            TaskService,
+            JobDeletionStore
+        ],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            jobRepository: JobRepository.Interface,
+            taskService: TaskService.Interface,
+            records: JobDeletionStore.Interface
+        ) {
+            return ({ args }: { args: { jobId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canDelete("componentExtraction"))) {
+                        throw new Error("You do not have permission to delete extraction jobs.");
+                    }
+                    const job = await jobRepository.get(args.jobId);
+                    if (job.isFail()) {
+                        throw job.error;
+                    }
+                    const existing = await records.get(args.jobId);
+                    if (existing?.deletion?.status === "running") {
+                        throw new Error("This job is being deleted.");
+                    }
+                    const triggered = await taskService.trigger<DeleteJobTaskInput>({
+                        definition: DELETE_JOB_TASK_ID,
+                        name: `Delete job (count) — ${job.value.name}`,
+                        input: { jobId: args.jobId, mode: "plan" }
+                    });
+                    if (triggered.isFail()) {
+                        throw triggered.error;
+                    }
+                    const record = {
+                        jobId: args.jobId,
+                        jobName: job.value.name,
+                        plan: {
+                            status: "running" as const,
+                            taskId: triggered.value.id,
+                            startedOn: new Date().toISOString()
+                        },
+                        ...(existing?.deletion ? { deletion: existing.deletion } : {})
+                    };
+                    await records.set(record);
+                    return deletionView(record);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.pageCompositionPocDeleteJob",
+        dependencies: [ComponentExtractionPermissions, TaskService, JobDeletionStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            taskService: TaskService.Interface,
+            records: JobDeletionStore.Interface
+        ) {
+            return ({
+                args
+            }: {
+                args: { jobId: string; includeSite?: boolean | null; confirmedPlanOn: string };
+            }) =>
+                resolve(async () => {
+                    if (!(await permissions.canDelete("componentExtraction"))) {
+                        throw new Error("You do not have permission to delete extraction jobs.");
+                    }
+                    const record = await records.get(args.jobId);
+                    const plan = record?.plan.result;
+                    if (!record || !plan) {
+                        throw new Error("Count what the delete removes first.");
+                    }
+                    if (record.deletion?.status === "running") {
+                        throw new Error("This job is already being deleted.");
+                    }
+                    if (plan.computedOn !== args.confirmedPlanOn) {
+                        throw new Error(
+                            "The counts changed since they were shown. Review them and confirm again."
+                        );
+                    }
+                    // The task checks both again on what it finds; these only answer early.
+                    if (plan.blocked) {
+                        throw new Error(plan.blocked);
+                    }
+                    if (plan.site?.live && !args.includeSite) {
+                        throw new Error(
+                            "This job's site is live. Delete the site with it, or keep the job."
+                        );
+                    }
+                    const triggered = await taskService.trigger<DeleteJobTaskInput>({
+                        definition: DELETE_JOB_TASK_ID,
+                        name: `Delete job — ${plan.jobName}`,
+                        input: {
+                            jobId: args.jobId,
+                            mode: "delete",
+                            includeSite: args.includeSite === true,
+                            confirmedPlanOn: args.confirmedPlanOn
+                        }
+                    });
+                    if (triggered.isFail()) {
+                        throw triggered.error;
+                    }
+                    record.deletion = {
+                        status: "running",
+                        taskId: triggered.value.id,
+                        includeSite: args.includeSite === true,
+                        startedOn: new Date().toISOString(),
+                        steps: []
+                    };
+                    await records.set(record);
+                    return deletionView(record);
                 });
         }
     });

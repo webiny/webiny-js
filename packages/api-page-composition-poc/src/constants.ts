@@ -61,3 +61,6 @@ export const BUILD_SITE_TASK_ID = "pageCompositionPocBuildSite";
 
 /** A job's site: its tenant and the last build, in the extraction tenant's key-value store. */
 export const siteKey = (jobId: string): string => `pageCompositionPoc:site:${jobId}`;
+
+/** The background task that counts what deleting a job removes, or deletes it. */
+export const DELETE_JOB_TASK_ID = "pageCompositionPocDeleteJob";

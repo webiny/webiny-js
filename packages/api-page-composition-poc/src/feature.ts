@@ -11,6 +11,10 @@ import { ComposedCaptureStore } from "~/storage/ComposedCaptureStore.js";
 import { registerPageCompositionGraphQL } from "~/graphql/createGraphQL.js";
 import { AssetUrlResolverImplementation } from "~/features/AssetUrlResolver.js";
 import { ComposedImageRouteDefinition } from "~/rest/ComposedImageRoute.js";
+import { JobDeletionStoreImplementation } from "~/features/deletion/JobDeletionStore.js";
+import { SiteTenantEraserImplementation } from "~/features/deletion/SiteTenantEraser.js";
+import { JobDeletionReaderImplementation } from "~/features/deletion/JobDeletionReader.js";
+import { DeleteJobTask } from "~/features/deletion/DeleteJobTask.js";
 
 /**
  * Page composition — THROWAWAY PROOF OF CONCEPT. See the package README before touching anything here.
@@ -31,6 +35,10 @@ export const PageCompositionPocFeature = createFeature({
         container.register(SiteTenantService);
         container.register(BuildSiteTask);
         container.register(ComposePagesTask);
+        container.register(JobDeletionStoreImplementation);
+        container.register(SiteTenantEraserImplementation);
+        container.register(JobDeletionReaderImplementation);
+        container.register(DeleteJobTask);
 
         registerPageCompositionGraphQL(container);
 

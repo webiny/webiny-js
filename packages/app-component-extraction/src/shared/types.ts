@@ -855,3 +855,70 @@ export interface SiteQualitiesDto {
     sitemap?: { pages: number; fileId: string; url: string; domain?: string } | { error: string };
     images?: { files: number; bytes: number; byType: Array<{ type: string; files: number }> };
 }
+
+/** One step of a job delete, as the task recorded it. */
+export interface JobDeletionStepDto {
+    step:
+        | "check"
+        | "site-content"
+        | "site-tenant"
+        | "pages"
+        | "components"
+        | "images"
+        | "reference-images"
+        | "theme"
+        | "runs"
+        | "job";
+    status: "running" | "done" | "failed" | "skipped";
+    detail: string;
+    at: string;
+}
+
+/**
+ * What deleting a job removes, after the sharing checks, as last counted; and the delete's steps once
+ * one ran. Counts only: the ids stay on the server, which deletes from its own fresh count.
+ */
+export interface JobDeletionDto {
+    jobId: string;
+    jobName: string;
+    plan: {
+        status: "running" | "done" | "failed";
+        error: string | null;
+        computedOn: string | null;
+        blocked: string | null;
+        runs: number;
+        modelCalls: number;
+        corrections: number;
+        root: {
+            pages: number;
+            pagesLive: number;
+            pagesBinned: number;
+            components: number;
+            componentsKeptShared: number;
+            componentsKeptUsed: number;
+            images: number;
+            imagesKeptShared: number;
+            referenceImages: number;
+            themeDeleted: boolean;
+            themeKept: string | null;
+        } | null;
+        site: {
+            tenantId: string;
+            exists: boolean;
+            live: boolean;
+            pages: number;
+            publishedPages: number;
+            components: number;
+            files: number;
+            themes: number;
+        } | null;
+    };
+    deletion: {
+        status: "running" | "done" | "failed";
+        includeSite: boolean;
+        startedOn: string;
+        finishedOn?: string;
+        error?: string;
+        steps: JobDeletionStepDto[];
+    } | null;
+}

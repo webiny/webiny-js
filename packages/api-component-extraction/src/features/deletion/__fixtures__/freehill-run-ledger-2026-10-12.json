@@ -1,0 +1,87 @@
+{
+ "_note": "Run 6ab2635e514c4400024a20b3#0001 (job Freehill Street Lofts) on the dev instance, 2026-10-12, read-only: its stage ledger as componentExtractionListRuns returned it, and the signatures of its current plan.",
+ "runId": "6ab2635e514c4400024a20b3#0001",
+ "stages": [
+  {
+   "stage": "discover",
+   "status": "done",
+   "stageVersion": 5,
+   "artifacts": {
+    "urls": "componentExtraction:artifact:6ab2635e514c4400024a20b3#0001:discover:v5:urls"
+   }
+  },
+  {
+   "stage": "capture",
+   "status": "done",
+   "stageVersion": 6,
+   "artifacts": {
+    "pages": "componentExtraction:artifact:6ab2635e514c4400024a20b3#0001:capture:v6:pages"
+   }
+  },
+  {
+   "stage": "segment",
+   "status": "done",
+   "stageVersion": 5,
+   "artifacts": {
+    "sections": "componentExtraction:artifact:6ab2635e514c4400024a20b3#0001:segment:v5:sections"
+   }
+  },
+  {
+   "stage": "cluster",
+   "status": "done",
+   "stageVersion": 5,
+   "artifacts": {
+    "clusters": "componentExtraction:artifact:6ab2635e514c4400024a20b3#0001:cluster:v5:clusters"
+   }
+  },
+  {
+   "stage": "classify",
+   "status": "done",
+   "stageVersion": 5,
+   "artifacts": {
+    "classifications": "componentExtraction:artifact:6ab2635e514c4400024a20b3#0001:classify:v5:classifications"
+   }
+  },
+  {
+   "stage": "plan",
+   "status": "done",
+   "stageVersion": 11,
+   "artifacts": {
+    "plan": "componentExtraction:artifact:6ab2635e514c4400024a20b3#0001:plan:v11:plan"
+   }
+  },
+  {
+   "stage": "generate",
+   "status": "done",
+   "stageVersion": 13,
+   "artifacts": {
+    "components": "componentExtraction:artifact:6ab2635e514c4400024a20b3#0001:generate:v13:components"
+   }
+  },
+  {
+   "stage": "assemble",
+   "status": "stale",
+   "stageVersion": 4,
+   "artifacts": {
+    "assembly": "componentExtraction:artifact:6ab2635e514c4400024a20b3#0001:assemble:v4:assembly"
+   }
+  },
+  {
+   "stage": "promote",
+   "status": "stale",
+   "stageVersion": 5,
+   "artifacts": {
+    "promotion": "componentExtraction:artifact:6ab2635e514c4400024a20b3#0001:promote:v5:promotion"
+   }
+  }
+ ],
+ "signatures": [
+  "c45f33d6ab9cbb20fd32376ca2261e100a6f7f0536eefa5d9713d1a28947689f",
+  "614b7761c8a17145d30a7d2f19535b26666218d613c448773560d2e5e986a7fc",
+  "e1a5e5abf3cc0f2d278209f053abd826b14af6884e8fb42f4c4c1e2cd4d16f84",
+  "c9a29452611984a9f60cb1517ae0ce94ce108353ee500fe6d757075bafc40809",
+  "6ae06e7d954c760cb3922fe0f7f8f27eb347db4bbb0951da912a78454160b736",
+  "93fbca7f150c8e89dda54a8d1caaff82f4d7ff8cd5c9bb4aa85df2762aad5a4f",
+  "b98c126c59f6f9aa44d6bc31d208d42261c4a08e1b64010750a3ffd90eda2ef0"
+ ]
+}

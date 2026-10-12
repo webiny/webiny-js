@@ -26,6 +26,7 @@ import {
     ModelCallSuccessRecorder
 } from "~/features/shared/modelCallRecorder.js";
 import { RunLock } from "~/storage/RunLock.js";
+import { JobDataEraserImplementation } from "~/features/deletion/JobDataEraser.js";
 import { ComponentExtractionPermissionsFeature } from "~/features/permissions.js";
 import { KeyValueStageArtifactStore } from "~/storage/StageArtifactStore.js";
 import { S3BlobStore } from "~/storage/S3BlobStore.js";
@@ -93,6 +94,7 @@ export const ComponentExtractionFeature = createFeature({
         container.register(ModelCallRepository);
         container.register(CorrectionRepository);
         container.register(RunLock);
+        container.register(JobDataEraserImplementation);
 
         // Model-call accounting (W7.1): the stage scope the runner sets, and the recorder that captures
         // every model call the core `Ai` makes during a stage — covering Classify, Plan and Generate.

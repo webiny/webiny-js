@@ -11580,6 +11580,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-theme": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"

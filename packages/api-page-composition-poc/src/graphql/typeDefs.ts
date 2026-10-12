@@ -104,12 +104,26 @@ export const pageCompositionTypeDefs = /* GraphQL */ `
         pageCompositionPocSiteInventory(jobId: ID!): PageCompositionPocSiteResponse
         "What the Site step shows as the result: site-wide and per page, read from the site's tenant and the run it was published from."
         pageCompositionPocSiteResult(jobId: ID!): PageCompositionPocSiteResponse
+        "What deleting the job removes, as last counted, and the delete's steps if one ran. Null before any count."
+        pageCompositionPocJobDeletion(jobId: ID!): PageCompositionPocSiteResponse
     }
 
     extend type Mutation {
         pageCompositionPocComposePages(runId: ID!): PageCompositionPocTriggerResponse
         "Builds the run's job's site in its own tenant: tenant, theme, promoted components, images, pages."
         pageCompositionPocBuildSite(runId: ID!): PageCompositionPocTriggerResponse
+        "Count what deleting the job removes, after the sharing checks. Runs as a task; read the result with pageCompositionPocJobDeletion."
+        pageCompositionPocPlanJobDeletion(jobId: ID!): PageCompositionPocSiteResponse
+        """
+        Delete the job, permanently: its site too when includeSite is set, which a live site requires.
+        confirmedPlanOn is the computedOn of the counts the person confirmed; the delete stops if what it
+        finds differs.
+        """
+        pageCompositionPocDeleteJob(
+            jobId: ID!
+            includeSite: Boolean
+            confirmedPlanOn: String!
+        ): PageCompositionPocSiteResponse
         """
         Pre-signed PUT URLs for a local harness to upload composed screenshots to.
 

@@ -48,6 +48,8 @@ import type { JobListItemDto } from "~/shared/types.js";
 import type { ListSort, ListView, OwnerFilter, StatusFilter } from "../abstractions.js";
 import { boardColumn, isMine, matchesSearch } from "../jobBoard.js";
 import { JobBoard, OwnerBadge } from "./JobBoard.js";
+import { JobDeletionFeature } from "~/presentation/JobDeletion/feature.js";
+import { DeleteJobDialog } from "~/presentation/JobDeletion/DeleteJobDialog.js";
 
 type JobRow = JobListItemDto & { id: string; name: string; siteUrl: string };
 
@@ -154,6 +156,7 @@ const CurrentStageCell = ({ item }: { item: JobRow }) => {
 
 const ExtractionListContent = createReactiveComponent(function ExtractionListContent() {
     const { presenter } = useFeature(ExtractionListFeature);
+    const { presenter: deletion } = useFeature(JobDeletionFeature);
     const { goToRoute } = useRouter();
     const toast = useToast();
 
@@ -300,9 +303,13 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
                             disabled={vm.startingJobId === item.job.id}
                             text="Start new run"
                         />
-                        {/* Duplicate / delete need a backend mutation (not built — noted for W10). */}
+                        {/* Duplicate needs a backend mutation (not built — noted for W10). */}
                         <DropdownMenu.Item icon={<DuplicateIcon />} text="Duplicate" disabled />
-                        <DropdownMenu.Item icon={<DeleteIcon />} text="Delete" disabled />
+                        <DropdownMenu.Item
+                            icon={<DeleteIcon />}
+                            text="Delete"
+                            onClick={() => void deletion.open(item.job.id, item.job.name)}
+                        />
                     </DropdownMenu>
                 ),
                 size: 56,
@@ -311,7 +318,7 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
                 enableResizing: false
             }
         }),
-        [presenter, vm.startingJobId]
+        [presenter, deletion, vm.startingJobId]
     );
 
     return (
@@ -468,6 +475,7 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
                     </Scrollbar>
                 </div>
             )}
+            <DeleteJobDialog presenter={deletion} onDeleted={() => void presenter.init()} />
         </>
     );
 });
@@ -479,6 +487,7 @@ export const ExtractionListPage = () => {
         const child = container.createChildContainer();
         ComponentExtractionGatewayFeature.register(child);
         ExtractionListFeature.register(child);
+        JobDeletionFeature.register(child);
         return child;
     }, []);
 

@@ -10,6 +10,7 @@ import type {
     OverrideDto,
     PageMapDto,
     SiteDto,
+    JobDeletionDto,
     ReachabilityDto,
     ReattachmentDto,
     RunDto,
@@ -71,7 +72,10 @@ import {
     GET_GENERATION_PROMPT,
     GENERATE_COMPONENTS,
     GET_TASK_STATUS,
-    SET_OVERRIDE
+    SET_OVERRIDE,
+    GET_JOB_DELETION,
+    PLAN_JOB_DELETION,
+    DELETE_JOB
 } from "./graphql.js";
 
 interface GqlEnvelope<T> {
@@ -390,6 +394,34 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: BUILD_SITE, variables: { runId } });
 
         return unwrap(response.pageCompositionPocBuildSite);
+    }
+
+    async getJobDeletion(jobId: string): Promise<JobDeletionDto | null> {
+        const response = await this.client.execute<{
+            pageCompositionPocJobDeletion: GqlEnvelope<JobDeletionDto | null>;
+        }>({ query: GET_JOB_DELETION, variables: { jobId } });
+
+        return unwrap(response.pageCompositionPocJobDeletion) ?? null;
+    }
+
+    async planJobDeletion(jobId: string): Promise<JobDeletionDto> {
+        const response = await this.client.execute<{
+            pageCompositionPocPlanJobDeletion: GqlEnvelope<JobDeletionDto>;
+        }>({ query: PLAN_JOB_DELETION, variables: { jobId } });
+
+        return unwrap(response.pageCompositionPocPlanJobDeletion);
+    }
+
+    async deleteJob(
+        jobId: string,
+        includeSite: boolean,
+        confirmedPlanOn: string
+    ): Promise<JobDeletionDto> {
+        const response = await this.client.execute<{
+            pageCompositionPocDeleteJob: GqlEnvelope<JobDeletionDto>;
+        }>({ query: DELETE_JOB, variables: { jobId, includeSite, confirmedPlanOn } });
+
+        return unwrap(response.pageCompositionPocDeleteJob);
     }
 
     async getSite(jobId: string): Promise<SiteDto | null> {

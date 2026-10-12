@@ -19,7 +19,10 @@ import {
 import { ReactComponent as PinIcon } from "@webiny/icons/push_pin.svg";
 import { ReactComponent as NoteIcon } from "@webiny/icons/sticky_note_2.svg";
 import { ReactComponent as ArrowIcon } from "@webiny/icons/arrow_forward.svg";
+import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { JobDetailFeature } from "../feature.js";
+import { JobDeletionFeature } from "~/presentation/JobDeletion/feature.js";
+import { DeleteJobDialog } from "~/presentation/JobDeletion/DeleteJobDialog.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
 import { currentStage, stageEntry } from "~/shared/ledger.js";
 import { STAGES, STAGE_LABELS, type Stage } from "~/constants.js";
@@ -421,6 +424,7 @@ const PromotedGrid = ({ promoted }: { promoted: { componentId: string; name: str
 
 const JobDetailContent = createReactiveComponent(function JobDetailContent() {
     const { presenter } = useFeature(JobDetailFeature);
+    const { presenter: deletion } = useFeature(JobDeletionFeature);
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.Job);
     const toast = useToast();
@@ -521,6 +525,13 @@ const JobDetailContent = createReactiveComponent(function JobDetailContent() {
                                 />
                             }
                         />
+                        <Button
+                            variant="tertiary"
+                            size="sm"
+                            icon={<DeleteIcon />}
+                            text="Delete"
+                            onClick={() => void deletion.open(job.id, job.name)}
+                        />
                     </div>
                 </div>
                 <Text size="sm" className="text-neutral-strong">
@@ -573,6 +584,7 @@ const JobDetailContent = createReactiveComponent(function JobDetailContent() {
                     <PromotedGrid promoted={vm.promoted} />
                 </div>
             </div>
+            <DeleteJobDialog presenter={deletion} onDeleted={goList} />
         </div>
     );
 });
@@ -584,6 +596,7 @@ export const JobDetailPage = () => {
         const child = container.createChildContainer();
         ComponentExtractionGatewayFeature.register(child);
         JobDetailFeature.register(child);
+        JobDeletionFeature.register(child);
         return child;
     }, []);
 
