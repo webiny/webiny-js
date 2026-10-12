@@ -9,9 +9,9 @@ import { getCmsNamespace } from "~/utils/appName.js";
  * revision is published only with its active review approved; an approved revision that was
  * unpublished can be published again because approved reviews stay active (D23). Lookup failures
  * block (fail closed). `system.workflow` is not trusted: the update input can set it. Private
- * models (Website Builder pages, R52) are left to their app (`RequireApprovedReviewOnPagePublish`). Only the
- * publish actions are guarded (this and `RequireApprovedReviewOnRepublish`): creating content as
- * published stays allowed for data transfer (D134 point 2, R83).
+ * models (Website Builder pages, R52) are left to their app (`RequireApprovedReviewOnPagePublish`).
+ * Only the publish actions are guarded (this and `RequireApprovedReviewOnRepublish`): creating
+ * content as published stays allowed for data transfer (D134 point 2, R83).
  */
 class RequireApprovedReviewOnPublishImpl implements EntryBeforePublishEventHandler.Interface {
     public constructor(

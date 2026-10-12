@@ -1,7 +1,10 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { ASSIGNMENT_MODEL_ID } from "~/constants.js";
 
-/** Private model for the assignment log (spec 4.3). Deleted with its review (DeleteTargetReviewsUseCase). */
+/**
+ * Private model for the assignment log (spec 4.3). Deleted with its review
+ * (DeleteTargetReviewsUseCase).
+ */
 class AssignmentModelImpl implements ModelFactory.Interface {
     public async execute(builder: ModelFactory.Builder) {
         return [

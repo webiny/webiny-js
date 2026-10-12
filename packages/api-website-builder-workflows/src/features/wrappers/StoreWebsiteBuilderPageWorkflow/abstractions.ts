@@ -28,8 +28,9 @@ export interface IStoreWebsiteBuilderPageWorkflowUseCase {
 }
 
 /**
- * Create or update a Headless CMS workflow (spec 4.1, D131, D132): needs `workflows.editor`;
- * models must be `wb.page`; a workflow of another app is never overwritten (R46, R60).
+ * Create or update a Website Builder pages workflow (spec 4.1, D131, D132): needs
+ * `workflows.editor`; models must be `wb.page`; a workflow of another app is never overwritten
+ * (R46, R60).
  */
 export const StoreWebsiteBuilderPageWorkflowUseCase =
     createAbstraction<IStoreWebsiteBuilderPageWorkflowUseCase>(

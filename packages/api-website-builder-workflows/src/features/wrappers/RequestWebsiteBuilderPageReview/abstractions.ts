@@ -34,7 +34,10 @@ export interface IRequestWebsiteBuilderPageReviewUseCase {
     execute(input: RequestWebsiteBuilderPageReviewInput): Promise<Result<ReviewData, UseCaseError>>;
 }
 
-/** Request a review of a page revision; needs write access to it (spec 5.1, D77). */
+/**
+ * Request a review of a page revision; needs write access to it (spec 5.1, D77). A missing page is
+ * not found; a page without write access (including folder access) is not authorized.
+ */
 export const RequestWebsiteBuilderPageReviewUseCase =
     createAbstraction<IRequestWebsiteBuilderPageReviewUseCase>(
         "RequestWebsiteBuilderPageReviewUseCase"
