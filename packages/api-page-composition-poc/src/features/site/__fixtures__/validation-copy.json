@@ -1,0 +1,79 @@
+{
+ "_source": "Validation \u2014 webiny.com, 2026-10-12 after the re-approve-and-publish test: run-0001's approval record (signature, name) and the site tenant validationwebinycom0001's components, 6 live and the 6 left over from the build before.",
+ "approved": [
+  {
+   "signature": "cfa61c08fa8d49c3a2f1ef3c50934d61cb0c9e5c7610cc5bcf986b133d5b9154",
+   "name": "Validationwebinycom/Primary Navigation Header (3)"
+  },
+  {
+   "signature": "ec3b5eaed81bb27ab4dd281e189dc3a326cdedcc6b833cacda477e8838586b27",
+   "name": "Validationwebinycom/Product Hero with CTAs (5)"
+  },
+  {
+   "signature": "90ea44f134a9990efd5ac628f5cfbcc59d13f25156f6dcab86e4dbcdae19ee13",
+   "name": "Validationwebinycom/Three-Column Feature Highlights (6)"
+  },
+  {
+   "signature": "a7ac0e1f063dde2efb9eb765915e6ff76153f2610bc59f5fd8c6dde09eba6ce5",
+   "name": "Validationwebinycom/Headline Hero with CTAs (2)"
+  },
+  {
+   "signature": "3ace0922fcb9cbd75440c5747e4acfd43ddc250de71c62eb32f589d21eeddcfa",
+   "name": "Validationwebinycom/Multi-Column Site Footer (6)"
+  },
+  {
+   "signature": "85053f51c49a140fa64767e968baaabf2eb08f1787d1381acbcc071b5b7064c7",
+   "name": "Validationwebinycom/Email Contact Form (6)"
+  }
+ ],
+ "siteComponents": [
+  {
+   "id": "6acc9df9007e1100020b45f4",
+   "name": "Validationwebinycom/Email Contact Form (6)"
+  },
+  {
+   "id": "6acc9df9007e1100020b45f3",
+   "name": "Validationwebinycom/Multi-Column Site Footer (6)"
+  },
+  {
+   "id": "6acc9df9007e1100020b45f2",
+   "name": "Validationwebinycom/Headline Hero with CTAs (2)"
+  },
+  {
+   "id": "6acc9df9007e1100020b45f1",
+   "name": "Validationwebinycom/Three-Column Feature Highlights (6)"
+  },
+  {
+   "id": "6acc9df8007e1100020b45f0",
+   "name": "Validationwebinycom/Product Hero with CTAs (5)"
+  },
+  {
+   "id": "6acc9df8007e1100020b45ef",
+   "name": "Validationwebinycom/Primary Navigation Header (3)"
+  },
+  {
+   "id": "6ac8ec1ee1ac0d00021795be",
+   "name": "Validationwebinycom/Email Contact Form (5)"
+  },
+  {
+   "id": "6ac8ec1ee1ac0d00021795bd",
+   "name": "Validationwebinycom/Multi-Column Site Footer (5)"
+  },
+  {
+   "id": "6ac8ec1ee1ac0d00021795bc",
+   "name": "Validationwebinycom/Headline Hero with CTAs"
+  },
+  {
+   "id": "6ac8ec1ee1ac0d00021795bb",
+   "name": "Validationwebinycom/Three-Column Feature Highlights (5)"
+  },
+  {
+   "id": "6ac8ec1ee1ac0d00021795ba",
+   "name": "Validationwebinycom/Product Hero with CTAs (4)"
+  },
+  {
+   "id": "6ac8ec1ee1ac0d00021795b9",
+   "name": "Validationwebinycom/Primary Navigation Header (2)"
+  }
+ ]
+}

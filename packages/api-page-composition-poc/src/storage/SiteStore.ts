@@ -23,6 +23,12 @@ export interface SiteRecord {
     tenantId: string;
     tenantName: string;
     createdOn: string;
+    /**
+     * Which site component holds each cluster, by signature, from the builds so far. A re-approved
+     * component arrives with a new name; this is how the build updates the one it already holds
+     * instead of adding a second (`planComponentCopy`). Absent on sites built before it existed.
+     */
+    components?: Record<string, string>;
     /** The theme revision last copied in, so a rebuild does not create another copy of the same one. */
     themeSourceId?: string;
     themeTargetId?: string;

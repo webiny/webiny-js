@@ -23,6 +23,7 @@ import { CreateThemeUseCase } from "@webiny/api-theme/features/CreateTheme/index
 import { PublishThemeUseCase } from "@webiny/api-theme/features/PublishTheme/index.js";
 import { ActivateThemeUseCase } from "@webiny/api-theme/features/ActivateTheme/index.js";
 import { BUILD_SITE_TASK_ID } from "~/constants.js";
+import { planComponentCopy } from "./planComponentCopy.js";
 import { ComposePagesService } from "~/domain/abstractions.js";
 import { CompositionReaderAbstraction } from "~/features/composition/CompositionReader.js";
 import type { PromotedReference, RunImage } from "~/features/composition/CompositionSource.js";
@@ -263,10 +264,14 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
             }
             records.push(found.value);
         }
-        const promoted = await toTarget(async () => this.copyComponents(source.promoted!, records));
-        if (typeof promoted === "string") {
-            return fail("components", promoted);
+        const copied = await toTarget(async () =>
+            this.copyComponents(source.promoted!, records, site.components ?? {})
+        );
+        if (typeof copied === "string") {
+            return fail("components", copied);
         }
+        const promoted = copied.promoted;
+        site.components = { ...(site.components ?? {}), ...copied.bySignature };
         await record(
             "components",
             "done",
@@ -326,19 +331,30 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
     }
 
     /**
-     * Inside the target: create each component, or update it when this site already has one by that
-     * name. Prebuilt bundles, so the bundle and its embedded name are exactly Promote's.
+     * Inside the target: update the site component this cluster already has (by signature, then by
+     * name), or create one (`planComponentCopy`). Prebuilt bundles, so the bundle and its embedded name
+     * are exactly stage 9's.
      */
     private async copyComponents(
         promoted: PromotedReference[],
-        records: RemoteComponentDto[]
-    ): Promise<PromotedReference[] | string> {
+        records: RemoteComponentDto[],
+        bySignature: Record<string, string>
+    ): Promise<{ promoted: PromotedReference[]; bySignature: Record<string, string> } | string> {
         const listed = await this.listComponents.execute();
-        const idByName = new Map(
-            (listed.isOk() ? listed.value.items : []).map(item => [item.name, item.id])
-        );
+        const siteComponents = listed.isOk()
+            ? listed.value.items.map(item => ({ id: item.id, name: item.name }))
+            : [];
+        const plan = planComponentCopy({
+            approved: promoted.map((item, index) => ({
+                signature: item.signature,
+                name: records[index].name
+            })),
+            siteComponents,
+            bySignature
+        });
         const result: PromotedReference[] = [];
-        for (const [index, item] of promoted.entries()) {
+        const mapped: Record<string, string> = {};
+        for (const [index, step] of plan.entries()) {
             const record = records[index];
             const values = {
                 name: record.name,
@@ -354,20 +370,20 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
                     manifest: record.manifest
                 }
             };
-            const existingId = idByName.get(record.name);
-            const written = existingId
-                ? await this.updateComponent.execute(existingId, values)
+            const written = step.updateId
+                ? await this.updateComponent.execute(step.updateId, values)
                 : await this.createComponent.execute(values);
             if (written.isFail()) {
                 return `Could not write "${record.name}": ${written.error.message}`;
             }
+            mapped[step.signature] = written.value.id;
             result.push({
-                signature: item.signature,
+                signature: step.signature,
                 componentId: written.value.id,
                 name: written.value.name
             });
         }
-        return result;
+        return { promoted: result, bySignature: mapped };
     }
 
     /**

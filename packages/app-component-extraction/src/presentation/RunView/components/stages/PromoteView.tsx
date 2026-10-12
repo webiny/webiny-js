@@ -160,6 +160,15 @@ const PromoteRow = ({
     );
 };
 
+/** The name stage 9 will give a taken name: the first free "Name (n)", as `uniqueName` does in the API. */
+const nextFreeName = (name: string, taken: Set<string>): string => {
+    let suffix = 2;
+    while (taken.has(`${name} (${suffix})`)) {
+        suffix++;
+    }
+    return `${name} (${suffix})`;
+};
+
 /**
  * The Promote gate (spec §6.9). Lists the generated components eligible for promotion — checkbox, name
  * (mono), page count — with a summary of how many are selected and how many collide with a Library name.
@@ -194,9 +203,20 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
     const selectedCount = named.filter(item =>
         isSelected(vm.overrides, item.component.signature)
     ).length;
-    // A promoted component's name is expected to be in the Library — don't count it as a conflict.
-    const conflicts = named.filter(
-        item => library.has(item.qualifiedName) && !promotedSignatures.has(item.component.signature)
+    /*
+     * The names approving will change. A taken name gets a suffix unless its collision is set to
+     * Replace, and that includes this run's own earlier approval of the same component. The count
+     * used to leave those out, so the gate read "no name conflicts" while approving renamed all six.
+     */
+    const renamed = named.filter(
+        item =>
+            isSelected(vm.overrides, item.component.signature) &&
+            library.has(item.qualifiedName) &&
+            promoteOverride(vm.overrides, item.component.signature, "promote.collision")?.correction
+                .resolution !== "replace"
+    );
+    const renamedOwn = renamed.filter(item =>
+        promotedSignatures.has(item.component.signature)
     ).length;
     const promoted = result?.promoted.length ?? 0;
     const skipped = result?.skipped.length ?? 0;
@@ -215,10 +235,19 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
             <div className="flex items-start justify-between gap-md border-b border-neutral-dimmed px-md py-sm">
                 <div className="flex min-w-0 flex-col gap-xxs">
                     <Text size="sm" className="font-medium">
-                        {selectedCount} of {promotable.length} selected ·{" "}
-                        {conflicts > 0
-                            ? `${conflicts} name conflict${conflicts === 1 ? "" : "s"} with the Library`
-                            : "no name conflicts"}
+                        {selectedCount} of {promotable.length} selected
+                        {/* Nothing about names until the gate has loaded: before that, "no names taken"
+                            was a claim about an empty list. */}
+                        {!vm.promoteGateLoaded ? "" : " · "}
+                        {!vm.promoteGateLoaded
+                            ? ""
+                            : renamed.length > 0
+                              ? `${renamed.length} name${renamed.length === 1 ? "" : "s"} already taken in the Library${
+                                    renamedOwn > 0
+                                        ? ` (${renamedOwn} by this run's earlier approval)`
+                                        : ""
+                                }: approving adds ${renamed.length === 1 ? "it" : "them"} under a new name, e.g. "${nextFreeName(renamed[0].qualifiedName, library)}"`
+                              : "no names taken in the Library"}
                     </Text>
                     {result ? (
                         <Text size="sm" className="text-neutral-strong">
@@ -263,8 +292,8 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
             {running ? (
                 <div className="px-md pt-sm">
                     <Alert type="info" variant="subtle">
-                        Approving {selectedCount} component{selectedCount === 1 ? "" : "s"}: bundling
-                        them into this workspace&apos;s Library, ready to go into a site…
+                        Approving {selectedCount} component{selectedCount === 1 ? "" : "s"}:
+                        bundling them into this workspace&apos;s Library, ready to go into a site…
                     </Alert>
                 </div>
             ) : null}
