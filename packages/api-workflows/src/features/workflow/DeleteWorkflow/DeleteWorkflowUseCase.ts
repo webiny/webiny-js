@@ -32,14 +32,18 @@ class DeleteWorkflowUseCaseImpl implements UseCase.Interface {
             return Result.fail(new WorkflowHasActiveReviewsError({ count: inProgress.value }));
         }
 
-        await this.eventPublisher.publish(new WorkflowBeforeDeleteEvent({ workflow }));
+        await this.eventPublisher.publish(
+            new WorkflowBeforeDeleteEvent({ workflow, actor: input.actor })
+        );
 
         const result = await this.repository.delete(workflow.id);
         if (result.isFail()) {
             return Result.fail(result.error);
         }
 
-        await this.eventPublisher.publish(new WorkflowAfterDeleteEvent({ workflow }));
+        await this.eventPublisher.publish(
+            new WorkflowAfterDeleteEvent({ workflow, actor: input.actor })
+        );
         return Result.ok(workflow);
     }
 }

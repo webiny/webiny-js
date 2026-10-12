@@ -4,6 +4,7 @@ import {
     createRequestedReview,
     createStartedReview,
     createWorkflowValues,
+    editor,
     expectOk,
     poolResolution,
     requester,
@@ -23,7 +24,7 @@ describe("Delete workflow with reviews", () => {
         const workflow = expectOk(
             await context.container
                 .resolve(StoreWorkflowUseCase)
-                .execute({ workflow: createWorkflowValues() })
+                .execute({ workflow: createWorkflowValues(), actor: editor })
         );
         const repository = context.container.resolve(ReviewRepository);
         const deleteWorkflow = context.container.resolve(DeleteWorkflowUseCase);
@@ -64,7 +65,7 @@ describe("Delete workflow with reviews", () => {
         const approvedData = expectOk(await repository.save(toSaveData(approved)));
         expect(approvedData).toMatchObject({ state: "approved", isActive: true });
 
-        const blocked = await deleteWorkflow.execute({ id: workflow.id });
+        const blocked = await deleteWorkflow.execute({ id: workflow.id, actor: editor });
 
         expect(blocked.isFail()).toBe(true);
         expect(blocked.error.code).toBe("Workflows/Workflow/HasActiveReviews");
@@ -84,7 +85,7 @@ describe("Delete workflow with reviews", () => {
         );
         expectOk(await repository.save(toSaveData(second)));
 
-        const deleted = await deleteWorkflow.execute({ id: workflow.id });
+        const deleted = await deleteWorkflow.execute({ id: workflow.id, actor: editor });
 
         expect(deleted.isOk()).toBe(true);
     });

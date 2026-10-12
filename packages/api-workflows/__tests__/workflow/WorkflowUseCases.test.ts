@@ -1,18 +1,27 @@
 import { describe, expect, it } from "vitest";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import { ARTICLE_MODEL, createWorkflowValues } from "~tests/__helpers/fixtures.js";
+import { ARTICLE_MODEL, createWorkflowValues, editor } from "~tests/__helpers/fixtures.js";
 import {
     RecordingEventPublisher,
     recordedEvents,
     workflowEventTypes
 } from "~tests/__helpers/RecordingEventPublisher.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
-import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
+import {
+    StoreWorkflowUseCase,
+    type StoreWorkflowInput
+} from "~/features/workflow/StoreWorkflow/index.js";
 import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
 import { ListWorkflowsUseCase } from "~/features/workflow/ListWorkflows/index.js";
 import { DeleteWorkflowUseCase } from "~/features/workflow/DeleteWorkflow/index.js";
 
 const STALE_SAVED_ON = "2000-01-01T00:00:00.000Z";
+
+type StoreWithoutActor = Omit<StoreWorkflowInput, "actor">;
+
+interface DeleteWithoutActor {
+    id: string;
+}
 
 const createUseCases = async () => {
     recordedEvents.length = 0;
@@ -22,11 +31,19 @@ const createUseCases = async () => {
         }
     });
 
+    const store = context.container.resolve(StoreWorkflowUseCase);
+    const remove = context.container.resolve(DeleteWorkflowUseCase);
+
     return {
-        storeWorkflow: context.container.resolve(StoreWorkflowUseCase),
+        // The actor is the editor in every test here; WorkflowEventActor.test.ts covers it.
+        storeWorkflow: {
+            execute: (input: StoreWithoutActor) => store.execute({ ...input, actor: editor })
+        },
         getWorkflow: context.container.resolve(GetWorkflowUseCase),
         listWorkflows: context.container.resolve(ListWorkflowsUseCase),
-        deleteWorkflow: context.container.resolve(DeleteWorkflowUseCase)
+        deleteWorkflow: {
+            execute: (input: DeleteWithoutActor) => remove.execute({ ...input, actor: editor })
+        }
     };
 };
 
@@ -53,7 +70,7 @@ describe("Workflow use cases", () => {
         });
         const storeWorkflow = context.container.resolve(StoreWorkflowUseCase);
         const listWorkflows = context.container.resolve(ListWorkflowsUseCase);
-        await storeWorkflow.execute({ workflow: createWorkflowValues() });
+        await storeWorkflow.execute({ workflow: createWorkflowValues(), actor: editor });
         cmsListCalls = 0;
 
         const listed = await listWorkflows.execute({ where: { models_in: [] } });

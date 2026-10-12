@@ -1,18 +1,20 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
+import type { Actor } from "~/domain/review/types.js";
 import type { Workflow } from "~/domain/workflow/types.js";
 
 /**
- * Event payloads. `workflow.savedBy` is the last editor, not the person deleting; phase 2 adds
- * an `actor` to the workflow events (R26).
+ * Event payloads. `actor` is who deletes (R58); `workflow.savedBy` is the last editor.
  */
 export interface WorkflowBeforeDeletePayload {
     workflow: Workflow;
+    actor: Actor;
 }
 
 export interface WorkflowAfterDeletePayload {
     workflow: Workflow;
+    actor: Actor;
 }
 
 /**

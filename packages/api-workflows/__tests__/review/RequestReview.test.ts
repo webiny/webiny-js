@@ -13,6 +13,7 @@ import { workflowEventTypes } from "~tests/__helpers/RecordingEventPublisher.js"
 import {
     ARTICLE_MODEL,
     createWorkflowValues,
+    editor,
     expectOk,
     otherReviewer,
     requester,
@@ -127,7 +128,8 @@ describe("RequestReviewUseCase", () => {
         const { context } = await createReviewContext();
         const requestReview = context.container.resolve(RequestReviewUseCase);
         await context.container.resolve(StoreWorkflowUseCase).execute({
-            workflow: createWorkflowValues({ id: "workflow-pages", models: ["wb.page"] })
+            workflow: createWorkflowValues({ id: "workflow-pages", models: ["wb.page"] }),
+            actor: editor
         });
 
         const missing = await requestReview.execute(

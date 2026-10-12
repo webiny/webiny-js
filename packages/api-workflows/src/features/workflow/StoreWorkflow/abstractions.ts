@@ -1,4 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { Actor } from "~/domain/review/types.js";
 import type { Workflow, WorkflowValues } from "~/domain/workflow/types.js";
 import type {
     WorkflowConflictError,
@@ -11,6 +12,8 @@ export interface StoreWorkflowInput {
     workflow: WorkflowValues;
     /** The `savedOn` the caller loaded. Omit when creating a new workflow (D131). */
     savedOn?: string | null;
+    /** Who saves; built by the app wrapper (D132, R58). Carried on the workflow events. */
+    actor: Actor;
 }
 
 export interface IStoreWorkflowUseCaseErrors {

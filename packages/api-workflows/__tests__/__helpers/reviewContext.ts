@@ -6,7 +6,7 @@ import { FakeReviewTargetLoader } from "./FakeReviewTargetLoader.js";
 import { RecordingReviewTargetSync, recordedSyncs } from "./RecordingReviewTargetSync.js";
 import { RecordingEventPublisher, recordedEvents } from "./RecordingEventPublisher.js";
 import { callLog } from "./callLog.js";
-import { ARTICLE_MODEL, createWorkflowValues, requester } from "./fixtures.js";
+import { ARTICLE_MODEL, createWorkflowValues, editor, requester } from "./fixtures.js";
 
 /**
  * Context with the fake target loader, the sync and event recorders, and the "Article review"
@@ -25,7 +25,7 @@ export const createReviewContext = async (params: CmsTestHandlerParams = {}) => 
 
     const stored = await context.container
         .resolve(StoreWorkflowUseCase)
-        .execute({ workflow: createWorkflowValues() });
+        .execute({ workflow: createWorkflowValues(), actor: editor });
     if (stored.isFail()) {
         throw stored.error;
     }

@@ -90,6 +90,14 @@ export const otherReviewer: Actor = {
     displayName: "Olga Reviewer"
 };
 
+/** The workflow editor who stores and deletes workflows (R58). */
+export const editor: Actor = {
+    type: "user",
+    id: "user-editor",
+    displayName: "Eddie Editor",
+    identityType: "admin"
+};
+
 /** AI owners carry the requester's id (D58) and are named by the step title (D107). */
 export const aiActor: Actor = {
     type: "ai",

@@ -1,27 +1,30 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
+import type { Actor } from "~/domain/review/types.js";
 import type { Workflow, WorkflowValues } from "~/domain/workflow/types.js";
 
-/**
- * Event payloads. No actor yet: the phase 2 app wrappers add `actor` to the input and events (R26).
- */
+/** Event payloads. `actor` is who saved, built by the app wrapper (R58). */
 export interface WorkflowBeforeCreatePayload {
     workflow: WorkflowValues;
+    actor: Actor;
 }
 
 export interface WorkflowAfterCreatePayload {
     workflow: Workflow;
+    actor: Actor;
 }
 
 export interface WorkflowBeforeUpdatePayload {
     original: Workflow;
     workflow: WorkflowValues;
+    actor: Actor;
 }
 
 export interface WorkflowAfterUpdatePayload {
     original: Workflow;
     workflow: Workflow;
+    actor: Actor;
 }
 
 /**

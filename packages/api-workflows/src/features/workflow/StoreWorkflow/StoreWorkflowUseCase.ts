@@ -9,6 +9,7 @@ import {
     type WorkflowPersistenceError,
     WorkflowValidationError
 } from "~/domain/workflow/errors.js";
+import type { Actor } from "~/domain/review/types.js";
 import type { Workflow, WorkflowValues } from "~/domain/workflow/types.js";
 import {
     WorkflowAfterCreateEvent,
@@ -59,14 +60,14 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
         }
 
         if (existing) {
-            return this.update(existing, values);
+            return this.update(existing, values, input.actor);
         }
-        return this.create(values);
+        return this.create(values, input.actor);
     }
 
-    private async create(values: WorkflowValues): UseCase.Return {
+    private async create(values: WorkflowValues, actor: Actor): UseCase.Return {
         const before = await this.publishBefore(
-            new WorkflowBeforeCreateEvent({ workflow: values })
+            new WorkflowBeforeCreateEvent({ workflow: values, actor })
         );
         if (before.isFail()) {
             return Result.fail(before.error);
@@ -77,13 +78,15 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
             return Result.fail(result.error);
         }
 
-        await this.eventPublisher.publish(new WorkflowAfterCreateEvent({ workflow: result.value }));
+        await this.eventPublisher.publish(
+            new WorkflowAfterCreateEvent({ workflow: result.value, actor })
+        );
         return Result.ok(result.value);
     }
 
-    private async update(original: Workflow, values: WorkflowValues): UseCase.Return {
+    private async update(original: Workflow, values: WorkflowValues, actor: Actor): UseCase.Return {
         const before = await this.publishBefore(
-            new WorkflowBeforeUpdateEvent({ original, workflow: values })
+            new WorkflowBeforeUpdateEvent({ original, workflow: values, actor })
         );
         if (before.isFail()) {
             return Result.fail(before.error);
@@ -95,7 +98,7 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
         }
 
         await this.eventPublisher.publish(
-            new WorkflowAfterUpdateEvent({ original, workflow: result.value })
+            new WorkflowAfterUpdateEvent({ original, workflow: result.value, actor })
         );
         return Result.ok(result.value);
     }

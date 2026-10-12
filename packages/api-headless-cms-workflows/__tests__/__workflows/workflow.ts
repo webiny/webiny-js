@@ -1,4 +1,5 @@
 import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
+import type { Actor } from "@webiny/api-workflows/domain/review/types.js";
 import type { WorkflowValues } from "@webiny/api-workflows/domain/workflow/types.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { model } from "~tests/__cms/models.js";
@@ -27,10 +28,20 @@ export const createWorkflowValues = (
     };
 };
 
+/** The default identity of `createCmsTestHandler`, as a workflow actor (R58). */
+export const ADMIN_ACTOR: Actor = {
+    type: "user",
+    id: "id-12345678",
+    displayName: "John Doe",
+    identityType: "admin"
+};
+
 export const storeWorkflow = async (
     context: CmsContext,
     values: WorkflowValues = createWorkflowValues(),
     savedOn?: string
 ) => {
-    return context.container.resolve(StoreWorkflowUseCase).execute({ workflow: values, savedOn });
+    return context.container
+        .resolve(StoreWorkflowUseCase)
+        .execute({ workflow: values, savedOn, actor: ADMIN_ACTOR });
 };

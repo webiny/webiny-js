@@ -1,4 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { Actor } from "~/domain/review/types.js";
 import type { Workflow } from "~/domain/workflow/types.js";
 import type {
     WorkflowHasActiveReviewsError,
@@ -8,6 +9,8 @@ import type {
 
 export interface DeleteWorkflowInput {
     id: string;
+    /** Who deletes; built by the app wrapper (D132, R58). Carried on the workflow events. */
+    actor: Actor;
 }
 
 export interface IDeleteWorkflowUseCaseErrors {
