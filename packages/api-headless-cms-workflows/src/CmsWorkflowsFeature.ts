@@ -4,6 +4,7 @@ import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstraction
 import { WorkflowsFeature as CmsLocalWorkflowsFeature } from "./features/Workflows/index.js";
 import { CmsTargetFeature } from "./features/target/feature.js";
 import { CmsHooksFeature } from "./features/hooks/feature.js";
+import { CmsWrappersFeature } from "./features/wrappers/feature.js";
 import { createEntrySystemSchemaExtension } from "./graphql/entrySystemSchema.js";
 
 export const CmsWorkflowsFeature = createFeature({
@@ -23,6 +24,9 @@ export const CmsWorkflowsFeature = createFeature({
 
         // Workflow handlers on CMS events (spec 9.2).
         CmsHooksFeature.register(container);
+
+        // Wrapper use cases (identity, permission and target checks around the engine).
+        CmsWrappersFeature.register(container);
 
         // Add the `workflow` field to CmsEntrySystem on the CMS endpoint, which is served from the
         // separate CMS schema and needs its own CmsGraphQLSchemaFactory entry.
