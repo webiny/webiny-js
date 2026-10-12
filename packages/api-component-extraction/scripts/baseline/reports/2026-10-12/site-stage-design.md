@@ -275,10 +275,11 @@ tenant `validationwebinycom0001`). Neither 71 Westland nor Take 3 was touched. P
    carries 6. Whatever loads the components sends the tenant's whole Library with every page. Not made
    by MS1. It means a per-tenant site is about 30 times lighter, and every page served from root, demo
    pages included, carries every job's components.
-2. **"Publish again" is enabled on a run that cannot publish.** On run-0002 (paused at Cluster), the
-   mutation refuses before writing anything, with "Building the site requires promote to be done." So
-   the button's only effect is an error, and the error still says "promote" and "Building". Read from
-   the code; the button was not pressed.
+2. **"Publish again" is enabled on a run that cannot publish.** Pressed on run-0002 (paused at Cluster)
+   in the running admin: the view shows "Building the site requires assemble to be done." The site
+   record is unchanged (still built from run-0001, 07:57:19 UTC), so the mutation refused before writing.
+   The button's only effect is an error, and the error still says "Building". (Read from the code first,
+   that was predicted to name Promote. The mutation checks Assemble first.)
 3. **The Site entry shows "not built" for a few seconds** on opening a run whose site exists, until the
    site record loads. A newcomer can see that first.
 4. **A read about 50 seconds after the publish served the previous build's pages.** At about 100
