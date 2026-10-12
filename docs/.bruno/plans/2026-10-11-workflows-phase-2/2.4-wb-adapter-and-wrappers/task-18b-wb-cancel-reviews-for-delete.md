@@ -1,6 +1,6 @@
 ### Task 18b: WB cancel-for-delete wrapper (the confirm path of D134)
 
-D134 points 1 and 3, R45, R73, R74, R85. The Website Builder mirror of Task 14b. Trashing or deleting a page with a review in progress is refused (Task 16b); on confirm the admin calls `CancelWebsiteBuilderPageReviewsForDeleteUseCase` and repeats the trash or delete. The wrapper reads the identity, lists the page's in-progress reviews (none means nothing to do), checks that the caller may delete the page (`WbPageAccess.canDelete`: read, `wb.page` delete, folder `d`) on the first in-progress review's revision, and cancels the reviews as the caller through `CancelTargetReviewsUseCase` with reason "content trashed" or "content deleted". No `workflows` permission and no cancel right is needed. Pages have no single-revision delete, so the input names the page only.
+D134 points 1 and 3, R45, R73, R74, R85. The Website Builder mirror of Task 14b. Trashing or deleting a page with a review in progress is refused (Task 16b); on confirm the admin calls `CancelWebsiteBuilderPageReviewsForDeleteUseCase` and repeats the trash or delete. The wrapper reads the identity, checks the entity-level page delete permission (`WbPageAccess.canDeleteAnyPage()`, `WbPermissions.canDelete("page", { createdBy: identity })`) before it reads the page or lists any review, so a user without page delete rights gets `Workflows/NotAuthorized` for pages with and without a review alike and learns nothing about reviews in progress (R86, same as R75); then lists the page's in-progress reviews (none means nothing to do), checks that the caller may delete the page (`WbPageAccess.canDelete`: read, `wb.page` delete, folder `d`) on the first in-progress review's revision, and cancels the reviews as the caller through `CancelTargetReviewsUseCase` with reason "content trashed" or "content deleted". No `workflows` permission and no cancel right is needed. Pages have no single-revision delete, so the input names the page only.
 
 **Files:**
 - Create: `packages/api-website-builder-workflows/src/features/wrappers/CancelWebsiteBuilderPageReviewsForDelete/abstractions.ts`
@@ -12,7 +12,7 @@ D134 points 1 and 3, R45, R73, R74, R85. The Website Builder mirror of Task 14b.
 - Create: `packages/api-website-builder-workflows/__tests__/wrappers/cancelReviewsForDelete.test.ts`
 
 **Interfaces:**
-- Consumes: `CurrentReviewViewer` (`getActor()`), `ListTargetReviewsUseCase` (Task 4), `CancelTargetReviewsUseCase` (Task 5b), `ReviewActiveOnTrashAction`, `ReviewTargetNotFoundError` (Task 6), `getDeleteCancelReason` (Task 6b), `WbPageTargetReader`, `WbPageAccess.canDelete` (Task 15), `TrashPageUseCase`, `RecordingEventPublisher` (Task 17, test).
+- Consumes: `CurrentReviewViewer` (`getActor()`), `ListTargetReviewsUseCase` (Task 4), `CancelTargetReviewsUseCase` (Task 5b), `ReviewActiveOnTrashAction`, `ReviewTargetNotFoundError` (Task 6), `getDeleteCancelReason` (Task 6b), `WbPageTargetReader`, `WbPageAccess.canDeleteAnyPage` and `.canDelete` (Task 15), `TrashPageUseCase`, `RecordingEventPublisher` (Task 17, test).
 - Produces:
   - `CancelWebsiteBuilderPageReviewsForDeleteUseCase.Interface.execute(input: CancelWebsiteBuilderPageReviewsForDeleteInput): Promise<Result<ReviewData[], CancelWebsiteBuilderPageReviewsForDeleteUseCase.Error>>`, `CancelWebsiteBuilderPageReviewsForDeleteInput { targetId: string; action: ReviewActiveOnTrashAction }`.
   - Action text `"cancel the review to delete this content"`.
@@ -100,6 +100,23 @@ describe("WB cancel-for-delete wrapper (D134)", () => {
             await admin.container.resolve(GetReviewUseCase).execute({ id: review.id })
         );
         expect(stored.state).toBe("inProgress");
+    });
+
+    it("answers a user without page delete permission the same for a page with and without a review (R86)", async () => {
+        const { admin, page } = await createScenario();
+        const idle = await createPage(admin, { title: "Page B" });
+        const writer = await createUserContext({ identity: WRITER, permissions: WB_WRITER });
+        const cancel = writer.container.resolve(CancelWebsiteBuilderPageReviewsForDeleteUseCase);
+
+        const withReview = await cancel.execute({ targetId: page.entryId, action: "trash" });
+        const withoutReview = await cancel.execute({ targetId: idle.entryId, action: "trash" });
+        const missing = await cancel.execute({ targetId: "missing-page", action: "trash" });
+
+        expect(withReview.error.code).toBe("Workflows/NotAuthorized");
+        expect(withoutReview.error.code).toBe(withReview.error.code);
+        expect(withoutReview.error.data).toEqual(withReview.error.data);
+        expect(missing.error.code).toBe(withReview.error.code);
+        expect(missing.error.data).toEqual(withReview.error.data);
     });
 
     it("cancels nothing when no review is in progress", async () => {
@@ -226,6 +243,12 @@ class CancelWebsiteBuilderPageReviewsForDeleteUseCaseImpl implements UseCase.Int
             return Result.fail(actor.error);
         }
 
+        // Entity-level check first: the answer must not reveal whether a page has a review in
+        // progress or exists at all (R86, same as R75).
+        if (!(await this.access.canDeleteAnyPage())) {
+            return Result.fail(this.notAuthorized());
+        }
+
         const reviews = await this.listTargetReviews.execute({
             model: WB_PAGE_NAMESPACE,
             targetId: input.targetId
@@ -252,11 +275,7 @@ class CancelWebsiteBuilderPageReviewsForDeleteUseCaseImpl implements UseCase.Int
             );
         }
         if (!(await this.access.canDelete(target))) {
-            return Result.fail(
-                new WorkflowsNotAuthorizedError({
-                    action: "cancel the review to delete this content"
-                })
-            );
+            return Result.fail(this.notAuthorized());
         }
 
         return this.cancelTargetReviews.execute({
@@ -264,6 +283,12 @@ class CancelWebsiteBuilderPageReviewsForDeleteUseCaseImpl implements UseCase.Int
             targetId: input.targetId,
             actor: actor.value,
             reason: getDeleteCancelReason(input.action)
+        });
+    }
+
+    private notAuthorized(): WorkflowsNotAuthorizedError {
+        return new WorkflowsNotAuthorizedError({
+            action: "cancel the review to delete this content"
         });
     }
 }

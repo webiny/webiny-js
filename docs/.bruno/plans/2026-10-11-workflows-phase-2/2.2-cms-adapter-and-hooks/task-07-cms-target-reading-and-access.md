@@ -3,7 +3,7 @@
 R47, R51, R65, R66, R72, R77, R78, A25, A28. Three building blocks of the `cms.*` adapter, all evaluated as the current identity:
 
 - `CmsEntryTargetReader` reads a `cms.<modelId>` target revision (model through `GetModelUseCase`, its group through `GetGroupUseCase`, revision through `GetRevisionByIdUseCase`); a model or group the user cannot read, a private model or a missing revision is "no target".
-- `CmsEntryAccess` answers read, write and delete access with the CMS's own logic: group read (`AccessControl.canAccessGroup`), model read (`canAccessModel`), `canAccessEntry({ model, entry, rwd })`, plus folder-level permissions on the entry's folder, as the ACO CMS decorators do. Group and model read are part of the check because `canAccessEntry` ignores them and another user's access (R48) is evaluated without re-reading the model (R72, D61 "model read").
+- `CmsEntryAccess` answers read, write and delete access with the CMS's own logic (and `canDeleteAnyEntry(namespace)`, the entity-level delete check the cancel-for-delete wrapper makes before it reads any target or review, R86): group read (`AccessControl.canAccessGroup`), model read (`canAccessModel`), `canAccessEntry({ model, entry, rwd })`, plus folder-level permissions on the entry's folder, as the ACO CMS decorators do. Group and model read are part of the check because `canAccessEntry` ignores them and another user's access (R48) is evaluated without re-reading the model (R72, D61 "model read").
 - `CmsEntryReviewNamespace` (resolved `multiple`) maps a CMS model to its review namespace for the single CMS handlers; the CMS registers `CmsModelReviewNamespace` (non-private → `cms.<modelId>`), WB adds `wb.page` in Task 15.
 
 The folder check is a shared helper, `canAccessEntryFolder`, which the Website Builder package reuses for pages (they are CMS entries, R78). Also removes the unused `createWorkflowAppName`, moves `@webiny/api-aco` to `dependencies` and adds the package's `ci.config.json` so CI runs the OpenSearch storage too (R77).
@@ -38,7 +38,7 @@ The folder check is a shared helper, `canAccessEntryFolder`, which the Website B
   - `EntryFolderRwd = "r" | "w" | "d"`, `canAccessEntryFolder(flp: FolderLevelPermissions.Interface, folderId: string | null | undefined, rwd: EntryFolderRwd): Promise<boolean>` (`features/target/canAccessEntryFolder.ts`; also used by the WB package).
   - `CmsEntryReviewNamespace.Interface { resolve(model: CmsModel): string | null }`; `resolveReviewNamespace(namespaces: CmsEntryReviewNamespace.Interface[], model: CmsModel): string | null` (last non-null wins).
   - `CmsEntryTarget { model: CmsModel; group: CmsGroup; entry: CmsEntry }`, `CmsEntryTargetReadParams { model: string; targetRevisionId: string }`, `CmsEntryTargetReader.Interface { read(params): Promise<CmsEntryTarget | null> }` (namespace types `CmsEntryTargetReader.Target`, `.Params`; the barrel exports only the abstraction).
-  - `CmsEntryAccess.Interface { canRead(target: CmsEntryTarget): Promise<boolean>; canWrite(target: CmsEntryTarget): Promise<boolean>; canDelete(target: CmsEntryTarget): Promise<boolean> }`.
+  - `CmsEntryAccess.Interface { canRead(target: CmsEntryTarget): Promise<boolean>; canWrite(target: CmsEntryTarget): Promise<boolean>; canDelete(target: CmsEntryTarget): Promise<boolean>; canDeleteAnyEntry(namespace: string): Promise<boolean> }`.
   - `CmsTargetFeature` registers the three implementations; Task 8 adds the adapter ports to it.
   - Test helpers: identities (`ADMIN`, `REQUESTER`, `REVIEWER`, `OTHER_REVIEWER`, `READER`, `WRITER`, `REASSIGNER`, `EDITOR`, `NOBODY`), permission sets (`CMS_READER`, `CMS_WRITER`, `CMS_DELETER`, `CMS_OWN_WRITER`, `CMS_ENTRY_READER_WITHOUT_MODEL`), `createAuthorEntry`, `getAuthorModel`, `expectOk`, `FakeFolderLevelPermissions` + `folderLevels`.
 
@@ -393,6 +393,18 @@ describe("CMS target reading and access", () => {
         expect(await writer.access.canWrite(writerTarget!)).toBe(true);
         expect(await writer.access.canDelete(writerTarget!)).toBe(false);
         expect(await deleter.access.canDelete(deleterTarget!)).toBe(true);
+    });
+
+    it("answers the entity-level delete check by namespace (R86)", async () => {
+        const writer = await createAccess({ identity: WRITER, permissions: CMS_WRITER });
+        const deleter = await createAccess({ identity: WRITER, permissions: CMS_DELETER });
+        const nobody = await createAccess({ identity: NOBODY, permissions: [] });
+
+        expect(await deleter.access.canDeleteAnyEntry(AUTHOR_NAMESPACE)).toBe(true);
+        expect(await writer.access.canDeleteAnyEntry(AUTHOR_NAMESPACE)).toBe(false);
+        expect(await nobody.access.canDeleteAnyEntry(AUTHOR_NAMESPACE)).toBe(false);
+        expect(await deleter.access.canDeleteAnyEntry("wb.page")).toBe(false);
+        expect(await deleter.access.canDeleteAnyEntry("cms.missing")).toBe(false);
     });
 
     it("finds no target for a user without access to the model", async () => {
@@ -768,6 +780,13 @@ export interface ICmsEntryAccess {
     canWrite(target: CmsEntryTarget): Promise<boolean>;
     /** Delete access of the current identity (trash or delete, cancel-for-delete, D134). */
     canDelete(target: CmsEntryTarget): Promise<boolean>;
+    /**
+     * Entity-level delete permission for a `cms.*` namespace, as `DeleteEntryUseCase` checks it
+     * before it loads an entry (`canAccessEntry({ model, rwd: "d" })`), plus group and model read.
+     * `false` for another app's namespace, a private, missing or unreadable model or group. Lets
+     * the cancel-for-delete wrapper refuse before it reads anything (R86).
+     */
+    canDeleteAnyEntry(namespace: string): Promise<boolean>;
 }
 
 /**
@@ -787,10 +806,20 @@ Create `packages/api-headless-cms-workflows/src/features/target/CmsEntryAccess/C
 
 ```ts
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { GetGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/GetGroup/index.js";
 import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
+import { getModelIdFromAppName } from "~/utils/appName.js";
 import type { CmsEntryTarget } from "../CmsEntryTargetReader/abstractions.js";
 import { canAccessEntryFolder, type EntryFolderRwd } from "../canAccessEntryFolder.js";
 import { CmsEntryAccess as Abstraction } from "./abstractions.js";
+
+const UNREADABLE_CODES = [
+    "Cms/Model/NotFound",
+    "Cms/Model/NotAuthorized",
+    "Cms/ModelGroup/NotFound",
+    "Cms/ModelGroup/NotAuthorized"
+];
 
 /**
  * Group and model read first (what `GetModelUseCase` and the group cache enforce for the current
@@ -800,6 +829,8 @@ import { CmsEntryAccess as Abstraction } from "./abstractions.js";
 class CmsEntryAccessImpl implements Abstraction.Interface {
     public constructor(
         private accessControl: AccessControl.Interface,
+        private getModel: GetModelUseCase.Interface,
+        private getGroup: GetGroupUseCase.Interface,
         private folderLevelPermissions: FolderLevelPermissions.Interface
     ) {}
 
@@ -813,6 +844,37 @@ class CmsEntryAccessImpl implements Abstraction.Interface {
 
     public canDelete(target: CmsEntryTarget): Promise<boolean> {
         return this.can(target, "d");
+    }
+
+    public async canDeleteAnyEntry(namespace: string): Promise<boolean> {
+        const modelId = getModelIdFromAppName(namespace);
+        if (!modelId) {
+            return false;
+        }
+        const model = await this.getModel.execute(modelId);
+        if (model.isFail()) {
+            if (UNREADABLE_CODES.includes(model.error.code)) {
+                return false;
+            }
+            throw model.error;
+        }
+        if (model.value.isPrivate) {
+            return false;
+        }
+        const group = await this.getGroup.execute(model.value.group);
+        if (group.isFail()) {
+            if (UNREADABLE_CODES.includes(group.error.code)) {
+                return false;
+            }
+            throw group.error;
+        }
+        if (!(await this.accessControl.canAccessGroup({ group: group.value }))) {
+            return false;
+        }
+        if (!(await this.accessControl.canAccessModel({ model: model.value }))) {
+            return false;
+        }
+        return this.accessControl.canAccessEntry({ model: model.value, rwd: "d" });
     }
 
     private async can(target: CmsEntryTarget, rwd: EntryFolderRwd): Promise<boolean> {
@@ -840,7 +902,7 @@ class CmsEntryAccessImpl implements Abstraction.Interface {
 
 export const CmsEntryAccess = Abstraction.createImplementation({
     implementation: CmsEntryAccessImpl,
-    dependencies: [AccessControl, FolderLevelPermissions]
+    dependencies: [AccessControl, GetModelUseCase, GetGroupUseCase, FolderLevelPermissions]
 });
 ```
 

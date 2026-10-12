@@ -3,7 +3,7 @@
 R47, R51, R65, R66, R75, R77, R78, R82, A25, A28. The Website Builder side of the target adapter, evaluated as the current identity:
 
 - `WbPageTargetReader` reads a `wb.page` revision (page model through `PageModelProvider`, revision through CMS `GetRevisionByIdUseCase`, mapped with `EntryToPageMapper`).
-- `WbPageAccess`: read = `WbPermissions.canRead("page") && WbPermissions.canAccess("page", page)`; write = read AND `WbPermissions.canEdit("page", page)` (WB `UpdatePageUseCase` loads the page through `GetPageByIdUseCase` first, R82); delete = read AND `WbPermissions.canDelete("page", page)` (as `TrashPageUseCase`); each AND folder-level permissions on the page's folder through the CMS package's shared `canAccessEntryFolder` (pages are CMS entries; the ACO CMS decorators apply to them in production, R78). `canWriteAnyPage()` is the entity-level `canEdit("page")` check WB itself makes before loading a page; the request wrapper uses it so a user without page permissions learns nothing about which pages exist (R75).
+- `WbPageAccess`: read = `WbPermissions.canRead("page") && WbPermissions.canAccess("page", page)`; write = read AND `WbPermissions.canEdit("page", page)` (WB `UpdatePageUseCase` loads the page through `GetPageByIdUseCase` first, R82); delete = read AND `WbPermissions.canDelete("page", page)` (as `TrashPageUseCase`); each AND folder-level permissions on the page's folder through the CMS package's shared `canAccessEntryFolder` (pages are CMS entries; the ACO CMS decorators apply to them in production, R78). `canWriteAnyPage()` is the entity-level `canEdit("page")` check WB itself makes before loading a page; the request wrapper uses it so a user without page permissions learns nothing about which pages exist (R75). `canDeleteAnyPage()` is the entity-level delete check (`canDelete("page", { createdBy: <current identity> })`, so an own-only delete permission passes); the cancel-for-delete wrapper uses it before it reads a page or lists reviews (R86).
 - `WbPageReviewNamespace` registers `wb.page` for the page model into the CMS package's `CmsEntryReviewNamespace` (R51), so the single CMS handlers (revision null, save block) cover pages.
 
 Also wires the package dependencies (R65), the package's `ci.config.json` (R77: `["ddb", "ddb-os,ddb"]`; the test presets fall back to the DDB preset for WB, `packages/build-tools/testing/presets.js`) and a test harness mirroring `api-website-builder/__tests__/utils/useHandler.ts` plus the workflows features.
@@ -32,11 +32,11 @@ Also wires the package dependencies (R65), the package's `ci.config.json` (R77: 
 - Create: `packages/api-website-builder-workflows/__tests__/target/WbPageAccess.test.ts`
 
 **Interfaces:**
-- Consumes: `PageModelProvider`, `WbPage` (`@webiny/api-website-builder/domain/page/abstractions.js`), `EntryToPageMapper` (`.../domain/page/EntryToPageMapper.js`), `PAGE_MODEL_ID` (`.../domain/page/page.model.js`), `ROOT_FOLDER` (`@webiny/api-website-builder/constants.js`), `WbPermissions` (`.../features/permissions/abstractions.js`), `GetRevisionByIdUseCase`, `FolderLevelPermissions`, `CmsEntryReviewNamespace` + `resolveReviewNamespace`, `canAccessEntryFolder` (Task 7).
+- Consumes: `PageModelProvider`, `WbPage` (`@webiny/api-website-builder/domain/page/abstractions.js`), `EntryToPageMapper` (`.../domain/page/EntryToPageMapper.js`), `PAGE_MODEL_ID` (`.../domain/page/page.model.js`), `ROOT_FOLDER` (`@webiny/api-website-builder/constants.js`), `WbPermissions` (`.../features/permissions/abstractions.js`), `IdentityContext` (`@webiny/api-core/features/security/IdentityContext/index.js`), `GetRevisionByIdUseCase`, `FolderLevelPermissions`, `CmsEntryReviewNamespace` + `resolveReviewNamespace`, `canAccessEntryFolder` (Task 7).
 - Produces:
   - `WB_PAGE_NAMESPACE = "wb.page"`, `WB_PAGE_FOLDER_TYPE = "wb:page"` (`src/constants.ts`).
   - `WbPageTarget { model: CmsModel; page: WbPage }`, `WbPageTargetReadParams { model: string; targetRevisionId: string }`, `WbPageTargetReader.Interface { read(params): Promise<WbPageTarget | null> }`.
-  - `WbPageAccess.Interface { canWriteAnyPage(): Promise<boolean>; canRead(target: WbPageTarget): Promise<boolean>; canWrite(target: WbPageTarget): Promise<boolean>; canDelete(target: WbPageTarget): Promise<boolean> }`.
+  - `WbPageAccess.Interface { canWriteAnyPage(): Promise<boolean>; canDeleteAnyPage(): Promise<boolean>; canRead(target: WbPageTarget): Promise<boolean>; canWrite(target: WbPageTarget): Promise<boolean>; canDelete(target: WbPageTarget): Promise<boolean> }`.
   - `WbPageReviewNamespace` (`CmsEntryReviewNamespace` implementation).
   - `WbTargetFeature` (registered by `WebsiteBuilderWorkflowsFeature`); Task 16 adds the ports and handlers.
   - Test helpers: `createContextHandler(params)`, `createUserContext({ identity, permissions, permissionsByIdentity, legacyPlugins })`, `createPage(context, { title, folderId? })`, `getPageModel(context)`, `expectOk`, identities and `WB_READER`, `WB_WRITER`, `WB_WRITE_ONLY`, `WB_DELETER`, `WB_OWN_WRITER`, `WORKFLOWS_EDITOR`, `WORKFLOWS_REASSIGN`, `FakeFolderLevelPermissions` + `folderLevels`, `FakeListUserTeams`.
@@ -418,6 +418,8 @@ describe("WB page reading and access", () => {
         expect(await writer.access.canWrite(writerTarget!)).toBe(true);
         expect(await writer.access.canWriteAnyPage()).toBe(true);
         expect(await writer.access.canDelete(writerTarget!)).toBe(false);
+        expect(await writer.access.canDeleteAnyPage()).toBe(false);
+        expect(await nobody.access.canDeleteAnyPage()).toBe(false);
         expect(await nobody.access.canRead(nobodyTarget!)).toBe(false);
         expect(await nobody.access.canWriteAnyPage()).toBe(false);
     });
@@ -438,6 +440,7 @@ describe("WB page reading and access", () => {
 
         expect(await writeOnly.access.canWrite(writeOnlyTarget!)).toBe(false);
         expect(await deleter.access.canDelete(deleterTarget!)).toBe(true);
+        expect(await deleter.access.canDeleteAnyPage()).toBe(true);
     });
 
     it("finds no target for a missing revision or another app's namespace", async () => {
@@ -645,6 +648,11 @@ export interface IWbPageAccess {
      * request wrapper refuse before it reads anything (R75).
      */
     canWriteAnyPage(): Promise<boolean>;
+    /**
+     * Entity-level delete permission (any page; an own-only permission passes), checked before
+     * anything is read so the cancel-for-delete wrapper reveals nothing (R86).
+     */
+    canDeleteAnyPage(): Promise<boolean>;
     /** Read access of the current identity (review actions, get review). */
     canRead(target: WbPageTarget): Promise<boolean>;
     /** Write access of the current identity (request a review, D77); includes read (R82). */
@@ -670,6 +678,7 @@ Create `packages/api-website-builder-workflows/src/features/target/WbPageAccess/
 
 ```ts
 import { WbPermissions } from "@webiny/api-website-builder/features/permissions/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import { canAccessEntryFolder } from "@webiny/api-headless-cms-workflows/features/target/canAccessEntryFolder.js";
 import type { WbPageTarget } from "../WbPageTargetReader/abstractions.js";
@@ -683,11 +692,19 @@ import { WbPageAccess as Abstraction } from "./abstractions.js";
 class WbPageAccessImpl implements Abstraction.Interface {
     public constructor(
         private permissions: WbPermissions.Interface,
+        private identityContext: IdentityContext.Interface,
         private folderLevelPermissions: FolderLevelPermissions.Interface
     ) {}
 
     public canWriteAnyPage(): Promise<boolean> {
         return this.permissions.canEdit("page");
+    }
+
+    public canDeleteAnyPage(): Promise<boolean> {
+        // Entity-level `canDelete` treats an own-only permission as "no item, no match"; passing
+        // the current identity as creator makes any delete permission pass.
+        const identity = this.identityContext.getIdentity();
+        return this.permissions.canDelete("page", { createdBy: { id: identity.id } });
     }
 
     public async canRead(target: WbPageTarget): Promise<boolean> {
@@ -723,7 +740,7 @@ class WbPageAccessImpl implements Abstraction.Interface {
 
 export const WbPageAccess = Abstraction.createImplementation({
     implementation: WbPageAccessImpl,
-    dependencies: [WbPermissions, FolderLevelPermissions]
+    dependencies: [WbPermissions, IdentityContext, FolderLevelPermissions]
 });
 ```
 

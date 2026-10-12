@@ -4,9 +4,10 @@ D134 points 1 and 3, R45, R73, R74, R85. Trashing or deleting a CMS entry (or on
 
 1. reads the identity (`CurrentReviewViewer.getActor()`; API keys included);
 2. keeps to `cms.*` namespaces (R46);
-3. lists the target's in-progress reviews (only the deleted revision's when `targetRevisionId` is given); none means nothing to do;
-4. checks that the caller may delete the content (`CmsEntryAccess.canDelete`: group and model read, entry `d`, folder `d`) on the first in-progress review's revision (entry permissions and the folder are entry-level, so one revision answers for all); no `workflows` permission and no cancel right is needed (D134: anyone who may trash the content may confirm);
-5. cancels the reviews through `CancelTargetReviewsUseCase` as the caller, with reason "content trashed" or "content deleted" (`getDeleteCancelReason`).
+3. checks the model-level delete permission (`CmsEntryAccess.canDeleteAnyEntry(model)`: group and model read, `AccessControl.canAccessEntry({ model, rwd: "d" })` as `DeleteEntryUseCase` does) before it reads any entry or lists any review, so the answer never reveals whether content has a review in progress (R86, same as R75);
+4. lists the target's in-progress reviews (only the deleted revision's when `targetRevisionId` is given); none means nothing to do;
+5. checks that the caller may delete the content (`CmsEntryAccess.canDelete`: group and model read, entry `d`, folder `d`) on the first in-progress review's revision (entry permissions and the folder are entry-level, so one revision answers for all); no `workflows` permission and no cancel right is needed (D134: anyone who may trash the content may confirm);
+6. cancels the reviews through `CancelTargetReviewsUseCase` as the caller, with reason "content trashed" or "content deleted" (`getDeleteCancelReason`).
 
 Why a separate wrapper and not a flag on the trash operation (R74): the CMS trash and delete inputs, their GraphQL mutations, the `EntryBeforeDelete` payloads and the bulk-action tasks would all have to carry a workflows option; the wrapper needs no change outside the workflows packages, follows D132 (identity and checks in the app wrapper, engine call after), and covers trash, entry delete, revision delete and `deleteMultiple` alike. The two calls are not atomic: if the trash then fails (e.g. a storage error), the review stays cancelled; the user confirmed losing it, and a new review can be requested (A35).
 
@@ -20,7 +21,7 @@ Why a separate wrapper and not a flag on the trash operation (R74): the CMS tras
 - Create: `packages/api-headless-cms-workflows/__tests__/wrappers/cancelReviewsForDelete.test.ts`
 
 **Interfaces:**
-- Consumes: `CurrentReviewViewer` (`getActor()`), `ListTargetReviewsUseCase` (Task 4), `CancelTargetReviewsUseCase` (Task 5b), `ReviewActiveOnTrashAction`, `ReviewTargetNotFoundError` (Task 6), `getDeleteCancelReason` (Task 6b), `CmsEntryTargetReader`, `CmsEntryAccess.canDelete` (Task 7), `isCmsNamespace`, `RecordingEventPublisher` (Task 12, test).
+- Consumes: `CurrentReviewViewer` (`getActor()`), `ListTargetReviewsUseCase` (Task 4), `CancelTargetReviewsUseCase` (Task 5b), `ReviewActiveOnTrashAction`, `ReviewTargetNotFoundError` (Task 6), `getDeleteCancelReason` (Task 6b), `CmsEntryTargetReader`, `CmsEntryAccess.canDeleteAnyEntry` and `.canDelete` (Task 7), `isCmsNamespace`, `RecordingEventPublisher` (Task 12, test).
 - Produces:
   - `CancelCmsEntryReviewsForDeleteUseCase.Interface.execute(input: CancelCmsEntryReviewsForDeleteInput): Promise<Result<ReviewData[], CancelCmsEntryReviewsForDeleteUseCase.Error>>` (the cancelled reviews), `CancelCmsEntryReviewsForDeleteInput { model: string; targetId: string; targetRevisionId?: string | null; action: ReviewActiveOnTrashAction }`.
   - Action text `"cancel the review to delete this content"` (delete access refused).
@@ -163,6 +164,34 @@ describe("CMS cancel-for-delete wrapper (D134)", () => {
             await admin.container.resolve(GetReviewUseCase).execute({ id: review.id })
         );
         expect(stored.state).toBe("inProgress");
+    });
+
+    it("answers a user without delete permission the same for an entry with and without a review (R86)", async () => {
+        const { admin, entry } = await createScenario();
+        const idle = await createAuthorEntry(admin, { name: "Bob" });
+        const writer = await createUserContext({ identity: WRITER, permissions: CMS_WRITER });
+
+        const withReview = await cancelForDelete(writer, {
+            model: AUTHOR_NAMESPACE,
+            targetId: entry.entryId,
+            action: "trash"
+        });
+        const withoutReview = await cancelForDelete(writer, {
+            model: AUTHOR_NAMESPACE,
+            targetId: idle.entryId,
+            action: "trash"
+        });
+        const missing = await cancelForDelete(writer, {
+            model: AUTHOR_NAMESPACE,
+            targetId: "missing-entry",
+            action: "trash"
+        });
+
+        expect(withReview.error.code).toBe("Workflows/NotAuthorized");
+        expect(withoutReview.error.code).toBe(withReview.error.code);
+        expect(withoutReview.error.data).toEqual(withReview.error.data);
+        expect(missing.error.code).toBe(withReview.error.code);
+        expect(missing.error.data).toEqual(withReview.error.data);
     });
 
     it("refuses a user without folder delete access", async () => {
@@ -325,6 +354,12 @@ class CancelCmsEntryReviewsForDeleteUseCaseImpl implements UseCase.Interface {
             return Result.fail(this.notFound(input));
         }
 
+        // Model-level check first: the answer must not reveal whether content has a review in
+        // progress or exists at all (R86, same as R75).
+        if (!(await this.access.canDeleteAnyEntry(input.model))) {
+            return Result.fail(this.notAuthorized());
+        }
+
         const reviews = await this.listTargetReviews.execute({
             model: input.model,
             targetId: input.targetId
@@ -351,11 +386,7 @@ class CancelCmsEntryReviewsForDeleteUseCaseImpl implements UseCase.Interface {
             return Result.fail(this.notFound(input));
         }
         if (!(await this.access.canDelete(target))) {
-            return Result.fail(
-                new WorkflowsNotAuthorizedError({
-                    action: "cancel the review to delete this content"
-                })
-            );
+            return Result.fail(this.notAuthorized());
         }
 
         return this.cancelTargetReviews.execute({
@@ -364,6 +395,12 @@ class CancelCmsEntryReviewsForDeleteUseCaseImpl implements UseCase.Interface {
             targetRevisionId: input.targetRevisionId ?? null,
             actor: actor.value,
             reason: getDeleteCancelReason(input.action)
+        });
+    }
+
+    private notAuthorized(): WorkflowsNotAuthorizedError {
+        return new WorkflowsNotAuthorizedError({
+            action: "cancel the review to delete this content"
         });
     }
 

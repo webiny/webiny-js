@@ -94,6 +94,7 @@ Binding for this plan. Where they refine the spec, the ruling wins for phase 2.
 - R83. **Create as published stays allowed** (D134 point 2). Create, create-from and new revision with `status: "published"` on a bound model need no review (data transfer from other systems). No handler guards `EntryBeforeCreate` / `EntryRevisionBeforeCreate` for status; a Task 10 test pins it.
 - R84. **Bound model first.** Every rule that looks up reviews on content (save block, publish, move, trash, delete) first asks `GetBoundWorkflowUseCase` for the namespace and does nothing on an unbound model (D134 point 5 for the save block; the same rule for the others keeps unbound models working when the review lookup fails) (confirmed 2026-10-12). The after-delete cleanup runs on every public model and pages (it removes reviews left from a deleted workflow) and only logs failures.
 - R85. **Cancel reason.** `CancelReviewInput.reason?`, `Review.cancel({ reason })` and `ReviewCancelledFact.reason: string | null` record why a review was cancelled (`null` for a normal cancel); `CancelTargetReviewsUseCase` cancels every in-progress review of a target or revision through `CancelReviewUseCase` (save, sync and event as a normal cancel).
+- R86. **Cancel-for-delete wrappers check the entity-level permission first.** `CancelCmsEntryReviewsForDelete` calls `CmsEntryAccess.canDeleteAnyEntry(model)` (group and model read, `AccessControl.canAccessEntry({ model, rwd: "d" })`, as `DeleteEntryUseCase`) and `CancelWebsiteBuilderPageReviewsForDelete` calls `WbPageAccess.canDeleteAnyPage()` (`WbPermissions.canDelete("page", { createdBy: <current identity> })`) before reading the target or listing reviews, so the answer never reveals whether content has a review in progress (same as R75); item-level `canDelete` still follows on the first in-progress review.
 
 ## Assumptions
 
@@ -273,7 +274,7 @@ Verified against `b3a538a556`: the duplicated CMS/WB entry and page handlers wer
 | 5.1 picks lenient at submit; `canPick` = write access + `canPickReviewer` | R61, Tasks 13, 18 |
 | 5.1 / D79 publish requires an approved review on bound models; fail closed; create as published allowed (D134 point 2) | Tasks 10, 16 (R53, R83) |
 | 5.1 / D121 republish of an unpublished approved revision | Tasks 10, 16 |
-| 5.1 / D134 trash and delete refused while a review is in progress; confirm cancels as the trashing user | Task 5b (cancel reason), Tasks 10b, 16b (refusal), Tasks 14b, 18b (confirm path), R73, R74 |
+| 5.1 / D134 trash and delete refused while a review is in progress; confirm cancels as the trashing user | Task 5b (cancel reason), Tasks 10b, 16b (refusal, fail closed), Tasks 14b, 18b (confirm path, permission checked before any review is read, R86), R73, R74, R86 |
 | 5.3 viewer flags AND target read access | Tasks 13, 18 (`GetCmsEntryReview`, `GetWebsiteBuilderPageReview`, R62) |
 | 4.1 / D131 store passes `savedOn`; per-app store mutation (D132) | Tasks 12, 17 |
 | 4.1 / D115 delete-blocked: engine count + blocking reviews; wrapper keeps 5 readable | Task 3 (engine), Task 6b (building block), Tasks 12, 17 (R57, R76) |

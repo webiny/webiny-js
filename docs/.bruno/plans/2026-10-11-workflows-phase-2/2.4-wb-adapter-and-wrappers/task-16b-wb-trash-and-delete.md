@@ -84,6 +84,27 @@ describe("WB trash and delete with a review in progress (D134)", () => {
         expect(trashed.isOk()).toBe(true);
     });
 
+    it("refuses the trash when the review lookup fails on a bound pages workflow (fail closed)", async () => {
+        const context = await createUserContext({
+            legacyPlugins: [
+                (container: Container) => {
+                    container.registerDecorator(
+                        ListTargetReviewsUseCase.createDecorator({
+                            decorator: FailingListTargetReviews,
+                            dependencies: []
+                        })
+                    );
+                }
+            ]
+        });
+        const page = await createPage(context, { title: "Page A" });
+        await storeWbWorkflow(context);
+
+        await expect(
+            context.container.resolve(TrashPageUseCase).execute({ id: page.id })
+        ).rejects.toMatchObject({ code: "Workflows/Review/Persistence" });
+    });
+
     it("refuses a page delete while a review is in progress (handler, races only)", async () => {
         const context = await createUserContext();
         await storeWbWorkflow(context);

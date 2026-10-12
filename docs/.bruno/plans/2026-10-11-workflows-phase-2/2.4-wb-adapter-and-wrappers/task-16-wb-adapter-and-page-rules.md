@@ -20,7 +20,7 @@ Spec 4.5, 5.1, 9.3, D59, D62, D79, D84, D121, R48, R52-R55, R63, R66-R69, A26. T
 - Create: `packages/api-website-builder-workflows/__tests__/target/WbPageAdapter.test.ts`
 
 **Interfaces:**
-- Consumes: `WbPageTargetReader`, `WbPageAccess` (Task 15), `ReviewTargetLoader`, `ReviewTargetSync`, `ReviewTargetReadAccess`, `CandidateReadAccess`, `GetBoundWorkflowUseCase`, `GetTargetReviewUseCase`, `ListTargetReviewsUseCase`, `ReviewPublishBlockedError`, `ReviewTargetLockedError` (2.1), `PageBeforePublishEventHandler`, `PageBeforeMoveEventHandler` (`@webiny/api-website-builder/features/pages/{PublishPage,MovePage}/index.js`), `ROOT_FOLDER` (`@webiny/api-website-builder/constants.js`), `PageModelProvider`, `UpdateEntrySystemUseCase`, `IdentityContext`, `GetUserUseCase` (test fake).
+- Consumes: `WbPageTargetReader`, `WbPageAccess` (Task 15), `ReviewTargetLoader`, `ReviewTargetSync`, `ReviewTargetReadAccess`, `CandidateReadAccess`, `GetBoundWorkflowUseCase`, `GetTargetReviewUseCase`, `ListTargetReviewsUseCase`, `ListWorkflowsUseCase` (tests), `ReviewPublishBlockedError`, `ReviewTargetLockedError`, `ReviewPersistenceError`, `WorkflowPersistenceError` (2.1), `PageBeforePublishEventHandler`, `PageBeforeMoveEventHandler` (`@webiny/api-website-builder/features/pages/{PublishPage,MovePage}/index.js`), `ROOT_FOLDER` (`@webiny/api-website-builder/constants.js`), `PageModelProvider`, `UpdateEntrySystemUseCase`, `IdentityContext`, `GetUserUseCase` (test fake).
 - Produces:
   - `toWbPageReviewTarget(target: WbPageTargetReader.Target): ReviewTarget`.
   - Three port implementations (answer `wb.page` only) registered by `WbTargetFeature`; two handlers registered by `WbHooksFeature` (Task 16b adds to it).
@@ -170,6 +170,7 @@ Create `packages/api-website-builder-workflows/__tests__/target/WbPageAdapter.te
 ```ts
 import { afterEach, describe, expect, it } from "vitest";
 import type { Container } from "@webiny/di";
+import { Result } from "@webiny/feature/api";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
@@ -181,7 +182,13 @@ import { UpdatePageUseCase } from "@webiny/api-website-builder/features/pages/Up
 import { CreatePageRevisionFromUseCase } from "@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/index.js";
 import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
-import { ReviewTargetLockedError } from "@webiny/api-workflows/domain/review/errors.js";
+import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
+import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
+import { WorkflowPersistenceError } from "@webiny/api-workflows/domain/workflow/errors.js";
+import {
+    ReviewPersistenceError,
+    ReviewTargetLockedError
+} from "@webiny/api-workflows/domain/review/errors.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createPage, expectOk } from "~tests/__helpers/pages.js";
 import {
@@ -211,6 +218,22 @@ const createAdminContext = () => {
         ]
     });
 };
+
+class FailingListWorkflows implements ListWorkflowsUseCase.Interface {
+    public constructor(private decoratee: ListWorkflowsUseCase.Interface) {}
+
+    public async execute(): ListWorkflowsUseCase.Return {
+        return Result.fail(new WorkflowPersistenceError(new Error("Storage is down.")));
+    }
+}
+
+class FailingListTargetReviews implements ListTargetReviewsUseCase.Interface {
+    public constructor(private decoratee: ListTargetReviewsUseCase.Interface) {}
+
+    public async execute(): ListTargetReviewsUseCase.Return {
+        return Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
+    }
+}
 
 const getReadAccess = (context: CmsContext): ReviewTargetReadAccess.Interface => {
     return context.container
@@ -372,6 +395,27 @@ describe("WB page adapter", () => {
         });
     });
 
+    it("blocks publishing when the workflow lookup fails (fail closed)", async () => {
+        const context = await createUserContext({
+            legacyPlugins: [
+                (container: Container) => {
+                    container.registerDecorator(
+                        ListWorkflowsUseCase.createDecorator({
+                            decorator: FailingListWorkflows,
+                            dependencies: []
+                        })
+                    );
+                }
+            ]
+        });
+        const page = await createPage(context, { title: "Page A" });
+
+        // WB publishes the before event outside a try, so the handler's error rejects (A26).
+        await expect(
+            context.container.resolve(PublishPageUseCase).execute({ id: page.id })
+        ).rejects.toMatchObject({ code: "Workflows/Workflow/Persistence" });
+    });
+
     it("publishes an approved page and republishes it after unpublishing (D121)", async () => {
         const context = await createAdminContext();
         await storeWbWorkflow(context);
@@ -385,6 +429,28 @@ describe("WB page adapter", () => {
 
         expect(published.isOk()).toBe(true);
         expect(republished.isOk()).toBe(true);
+    });
+
+    it("moves a page of an unbound model without looking up reviews", async () => {
+        const context = await createUserContext({
+            legacyPlugins: [
+                (container: Container) => {
+                    container.registerDecorator(
+                        ListTargetReviewsUseCase.createDecorator({
+                            decorator: FailingListTargetReviews,
+                            dependencies: []
+                        })
+                    );
+                }
+            ]
+        });
+        const page = await createPage(context, { title: "Page A", folderId: "folder-1" });
+
+        const moved = await context.container
+            .resolve(MovePageUseCase)
+            .execute({ id: page.id, folderId: "folder-2" });
+
+        expect(moved.isOk()).toBe(true);
     });
 
     it("blocks moving a page while its review is in progress (D84)", async () => {
