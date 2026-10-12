@@ -13,7 +13,8 @@
     { "path": "../api-workflows" },
     { "path": "../background-tasks" },
     { "path": "../languages" },
-    { "path": "../plugins" }
+    { "path": "../plugins" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -45,7 +46,9 @@
       "@webiny/languages/*": ["../languages/src/*"],
       "@webiny/languages": ["../languages/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     }
   }
 }
