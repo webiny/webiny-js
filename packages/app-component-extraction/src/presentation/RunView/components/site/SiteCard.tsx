@@ -29,6 +29,9 @@ export const SiteCard = createReactiveComponent(function SiteCard({ presenter }:
     const site = vm.site;
     const build = site?.lastBuild;
     const building = vm.buildingSite || build?.status === "running";
+    // A site record exists from the first approval for a job that approves into its site tenant, so the
+    // record alone does not mean the site was ever published.
+    const published = Boolean(build);
     const openUrl = site ? siteUrl(vm.websiteDomain, "/", site.tenantId) : null;
 
     return (
@@ -56,9 +59,11 @@ export const SiteCard = createReactiveComponent(function SiteCard({ presenter }:
                         </a>
                     ) : null}
                     <Button
-                        variant={site ? "secondary" : "primary"}
+                        variant={published ? "secondary" : "primary"}
                         size="sm"
-                        text={building ? "Publishing…" : site ? "Publish again" : "Publish site"}
+                        text={
+                            building ? "Publishing…" : published ? "Publish again" : "Publish site"
+                        }
                         disabled={building}
                         onClick={() => void presenter.buildSite()}
                     />

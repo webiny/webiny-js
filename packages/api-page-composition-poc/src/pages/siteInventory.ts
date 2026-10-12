@@ -4,8 +4,10 @@ export interface SiteInventory {
     /** Components no published page places, by name: left over from earlier builds. */
     unused: string[];
     publishedPages: number;
-    /** Pages that are not published: earlier builds' copies, superseded at their path. */
+    /** Pages taken offline: earlier builds' copies, superseded at their path. */
     unpublishedPages: number;
+    /** Drafts: a preview's, or a page someone is building in the site. Never published. */
+    draftPages: number;
 }
 
 interface InventoryPage {
@@ -37,6 +39,7 @@ export const siteInventory = (params: {
         components: params.componentNames.length,
         unused: params.componentNames.filter(name => !used.has(name)).sort(),
         publishedPages: published.length,
-        unpublishedPages: params.pages.length - published.length
+        unpublishedPages: params.pages.filter(page => page.status === "unpublished").length,
+        draftPages: params.pages.filter(page => page.status === "draft").length
     };
 };

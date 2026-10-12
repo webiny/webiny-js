@@ -779,6 +779,8 @@ export interface SiteInventoryDto {
     publishedPages: number;
     /** Earlier builds' copies, superseded at their path. */
     unpublishedPages: number;
+    /** Drafts: a preview's, or pages someone is building in the site. Absent before 2026-10-12. */
+    draftPages?: number;
 }
 
 export interface SiteDto {

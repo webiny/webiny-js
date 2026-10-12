@@ -17,7 +17,13 @@ describe("siteInventory", () => {
     it("counts the earlier builds' unpublished copies, and no unused component when every one is placed", () => {
         expect(
             siteInventory({ pages: fixture.pages, componentNames: fixture.components })
-        ).toEqual({ components: 6, unused: [], publishedPages: 3, unpublishedPages: 3 });
+        ).toEqual({
+            components: 6,
+            unused: [],
+            publishedPages: 3,
+            unpublishedPages: 3,
+            draftPages: 0
+        });
     });
 
     it("names a component no published page places, as a re-approval leaves one", () => {

@@ -155,26 +155,34 @@ const BuiltFrom = createReactiveComponent(function BuiltFrom({ presenter }: Prop
 const TenantInventory = createReactiveComponent(function TenantInventory({ presenter }: Props) {
     const inventory = presenter.vm.siteInventory!;
     const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+    // Unpublished pages are earlier builds' copies; drafts are a preview's or someone's work in progress.
+    const others = [
+        inventory.unpublishedPages > 0
+            ? `${plural(inventory.unpublishedPages, "unpublished page")} from earlier builds`
+            : null,
+        (inventory.draftPages ?? 0) > 0 ? plural(inventory.draftPages ?? 0, "draft") : null
+    ].filter(Boolean);
+    const alsoHolds = others.length > 0 ? others.join(" and ") : null;
     if (inventory.unused.length === 0) {
         return (
             <Text size="sm" className="text-neutral-strong">
                 The site&apos;s tenant holds {plural(inventory.components, "component")}, all used by
                 its {plural(inventory.publishedPages, "live page")}
-                {inventory.unpublishedPages > 0
-                    ? `, and ${plural(inventory.unpublishedPages, "unpublished page")} from earlier builds`
-                    : ""}
-                .
+                {alsoHolds ? `, and ${alsoHolds}` : ""}.
             </Text>
         );
     }
+    // A site that approves into its tenant removes leftovers when it publishes, unless a page still
+    // names them; an older site never removes them.
+    const removesAtPublish = Boolean(presenter.vm.job?.siteTenantFromStart);
     return (
         <Alert type="warning" variant="subtle">
             The site&apos;s tenant holds {plural(inventory.unused.length, "component")} that no live
-            page uses: {inventory.unused.join(", ")}. Publishing does not remove them, and each still
-            ships with every page of the site.
-            {inventory.unpublishedPages > 0
-                ? ` It also holds ${plural(inventory.unpublishedPages, "unpublished page")} from earlier builds.`
-                : ""}
+            page uses: {inventory.unused.join(", ")}.{" "}
+            {removesAtPublish
+                ? "Publishing keeps them because a draft or an unpublished page still names them, and each still ships with every page of the site."
+                : "Publishing does not remove them, and each still ships with every page of the site."}
+            {alsoHolds ? ` It also holds ${alsoHolds}.` : ""}
         </Alert>
     );
 });

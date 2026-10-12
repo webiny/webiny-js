@@ -50,12 +50,29 @@ const composeBlockedBecause = (run: RunDto | null): string | null => {
     return null;
 };
 
-/** A draft in the site's tenant, through the website's draft-mode route. */
-const draftPreviewUrl = (domain: string | null, path: string, tenantId: string): string | null => {
-    const base = websiteUrl(domain, "/api/preview");
-    return base
-        ? `${base}?wb.path=${encodeURIComponent(path)}&wb.tenant=${encodeURIComponent(tenantId)}`
-        : null;
+/**
+ * A draft in the site's tenant, through the website's preview. The website previews only with
+ * `wb.preview=true` and the page named by type and id; without them it turned draft mode off again and
+ * served the live page at that path, which for a draft is a 404.
+ */
+const draftPreviewUrl = (
+    domain: string | null,
+    path: string,
+    tenantId: string,
+    pageId: string
+): string | null => {
+    const base = websiteUrl(domain, path);
+    if (!base) {
+        return null;
+    }
+    const params = new URLSearchParams({
+        "wb.preview": "true",
+        "wb.type": "page",
+        "wb.id": pageId,
+        "wb.path": path,
+        "wb.tenant": tenantId
+    });
+    return `${base}?${params.toString()}`;
 };
 
 const pathOf = (url: string): string => {
@@ -186,7 +203,12 @@ export const ComposedPagesPanel = createReactiveComponent(function ComposedPages
                          */
                         const liveUrl = vm.composedIn
                             ? vm.composedIn.drafts
-                                ? draftPreviewUrl(vm.websiteDomain, page.path, vm.composedIn.tenantId)
+                                ? draftPreviewUrl(
+                                      vm.websiteDomain,
+                                      page.path,
+                                      vm.composedIn.tenantId,
+                                      page.pageId
+                                  )
                                 : siteUrl(vm.websiteDomain, page.path, vm.composedIn.tenantId)
                             : websiteUrl(vm.websiteDomain, page.path);
                         const live = vm.livePageByPath[page.path];
