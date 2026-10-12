@@ -46,6 +46,8 @@ export const WB_WRITER: SecurityPermission[] = [{ name: "wb.page", rwd: "rw" }];
 export const WB_WRITE_ONLY: SecurityPermission[] = [{ name: "wb.page", rwd: "w" }];
 /** Reads, writes and deletes pages (may trash and delete them, D134). */
 export const WB_DELETER: SecurityPermission[] = [{ name: "wb.page", rwd: "rwd" }];
+export const WB_DELETE_ONLY: SecurityPermission[] = [{ name: "wb.page", rwd: "d" }];
+export const WB_OWN_DELETER: SecurityPermission[] = [{ name: "wb.page", rwd: "d", own: true }];
 export const WB_OWN_WRITER: SecurityPermission[] = [{ name: "wb.page", rwd: "rw", own: true }];
 export const WORKFLOWS_EDITOR: SecurityPermission = { name: "workflows", editor: true };
 export const WORKFLOWS_REASSIGN: SecurityPermission = { name: "workflows", reassign: true };
@@ -57,4 +59,8 @@ export const toActor = (identity: IdentityData): Actor => {
         displayName: identity.displayName,
         identityType: identity.type
     };
+};
+
+export const createApiKeyIdentity = (permissions: SecurityPermission[]): IdentityData => {
+    return { id: "api-key-1", type: "api-key", displayName: "CI key", permissions };
 };

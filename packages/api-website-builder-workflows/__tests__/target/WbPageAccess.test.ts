@@ -7,13 +7,16 @@ import { createPage, getPageModel } from "~tests/__helpers/pages.js";
 import {
     NOBODY,
     READER,
+    WB_DELETE_ONLY,
     WB_DELETER,
+    WB_OWN_DELETER,
     WB_OWN_WRITER,
     WB_READER,
     WB_WRITE_ONLY,
     WB_WRITER,
     WRITER
 } from "~tests/__helpers/identities.js";
+import { createApiKeyIdentity } from "~tests/__helpers/identities.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { WbPageTargetReader } from "~/features/target/WbPageTargetReader/index.js";
 import { WbPageAccess } from "~/features/target/WbPageAccess/index.js";
@@ -57,6 +60,7 @@ describe("WB page reading and access", () => {
             targetRevisionId: page.id
         });
 
+        expect(nobodyTarget).not.toBeNull();
         expect(await writer.access.canWrite(writerTarget!)).toBe(true);
         expect(await writer.access.canWriteAnyPage()).toBe(true);
         expect(await writer.access.canDelete(writerTarget!)).toBe(false);
@@ -134,6 +138,48 @@ describe("WB page reading and access", () => {
         expect(await access.canRead(viewedTarget!)).toBe(true);
         expect(await access.canWrite(viewedTarget!)).toBe(false);
         expect(await access.canDelete(viewedTarget!)).toBe(false);
+    });
+
+    it("refuses read and delete without page read permission", async () => {
+        const page = await createPage(await createUserContext(), { title: "Page A" });
+        const writeOnly = await createAccess(WRITER, WB_WRITE_ONLY);
+        const deleteOnly = await createAccess(WRITER, WB_DELETE_ONLY);
+
+        const writeOnlyTarget = await writeOnly.targets.read({
+            model: "wb.page",
+            targetRevisionId: page.id
+        });
+        const deleteOnlyTarget = await deleteOnly.targets.read({
+            model: "wb.page",
+            targetRevisionId: page.id
+        });
+
+        expect(writeOnlyTarget).not.toBeNull();
+        expect(deleteOnlyTarget).not.toBeNull();
+        expect(await writeOnly.access.canRead(writeOnlyTarget!)).toBe(false);
+        expect(await deleteOnly.access.canDelete(deleteOnlyTarget!)).toBe(false);
+    });
+
+    it("lets an own-only delete permission pass the entity-level delete check (R86)", async () => {
+        const own = await createAccess(WRITER, WB_OWN_DELETER);
+        const writer = await createAccess(WRITER, WB_WRITER);
+
+        expect(await own.access.canDeleteAnyPage()).toBe(true);
+        expect(await writer.access.canDeleteAnyPage()).toBe(false);
+    });
+
+    it("does not apply folder-level permissions to API keys", async () => {
+        const page = await createPage(await createUserContext(), {
+            title: "Locked",
+            folderId: "folder-locked"
+        });
+        folderLevels.set("folder-locked", new Map([["api-key-1", "no-access"]]));
+        const { targets, access } = await createAccess(createApiKeyIdentity(WB_READER), []);
+
+        const target = await targets.read({ model: "wb.page", targetRevisionId: page.id });
+
+        expect(target).not.toBeNull();
+        expect(await access.canRead(target!)).toBe(true);
     });
 
     it("registers wb.page as the review namespace of pages (R51)", async () => {
