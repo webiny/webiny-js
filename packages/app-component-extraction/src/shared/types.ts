@@ -812,4 +812,6 @@ export interface SiteQualitiesDto {
     seo?: { pages: number; carried: number };
     sitemap?: { pages: number; fileId: string; url: string } | { error: string };
     images?: { files: number; bytes: number; byType: Array<{ type: string; files: number }> };
+    /** Of the site's components, how many were generated with each quality pass. */
+    generation?: { components: number; accessibility: number; performance: number };
 }

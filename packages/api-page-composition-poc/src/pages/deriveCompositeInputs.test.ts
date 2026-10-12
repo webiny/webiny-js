@@ -231,8 +231,9 @@ describe("deriveCompositeInputs — other shapes", () => {
         expect(
             deriveCompositeInputs({ node: section, manifest, sourceUrl: SOURCE_URL }).cards
         ).toEqual([
-            { title: "Fast", image: { url: "/a.png" }, imageAlt: "Speed" },
-            { title: "Secure", image: { url: "/b.png" }, imageAlt: "Lock" }
+            // With the size each picture is drawn at, from its box (quality.image-size).
+            { title: "Fast", image: { url: "/a.png", width: box.width, height: box.height }, imageAlt: "Speed" },
+            { title: "Secure", image: { url: "/b.png", width: box.width, height: box.height }, imageAlt: "Lock" }
         ]);
     });
 

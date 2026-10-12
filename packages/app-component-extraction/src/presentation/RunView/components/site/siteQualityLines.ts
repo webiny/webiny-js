@@ -1,12 +1,14 @@
 import type { SiteQualitiesDto } from "~/shared/types.js";
 
 export interface QualityLine {
-    key: "sitemap" | "images" | "seo";
+    key: "sitemap" | "images" | "seo" | "accessibility" | "performance";
     text: string;
     /** Something to open: the sitemap file. */
     link?: { label: string; url: string };
     /** The item could not be produced; the text says why. */
     problem?: boolean;
+    /** Work the pipeline did that nothing checks yet: shown with a beta label. */
+    beta?: boolean;
 }
 
 const FORMAT_NAMES: Record<string, string> = {
@@ -74,6 +76,30 @@ export const siteQualityLines = (
         lines.push({
             key: "seo",
             text: `Page titles and descriptions carried over from the source site: ${seo.carried} of ${plural(seo.pages, "page")}.`
+        });
+    }
+    /*
+     * The generation passes: shown only where they ran, read from each component's own record, so a
+     * site built from components generated before the instructions shows neither line. Where only some
+     * of its components carried a pass, the line says how many.
+     */
+    const generation = qualities.generation;
+    const applied = (count: number) =>
+        count === generation!.components
+            ? "applied in generation"
+            : `applied in generation to ${count} of ${plural(generation!.components, "component")}`;
+    if (generation && generation.accessibility > 0) {
+        lines.push({
+            key: "accessibility",
+            text: `Accessibility pass ${applied(generation.accessibility)}: semantic elements, alt text from the source site, form labels, heading levels. Not checked against WCAG.`,
+            beta: true
+        });
+    }
+    if (generation && generation.performance > 0) {
+        lines.push({
+            key: "performance",
+            text: `Performance pass ${applied(generation.performance)}: image dimensions set.`,
+            beta: true
         });
     }
     return lines;

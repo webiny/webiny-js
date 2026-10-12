@@ -15,6 +15,12 @@ export const HEADING_LEVEL_INPUT = "headingLevel";
  *
  * Nothing is set when the component declares no such input, or when this page's section marks up no
  * heading; the component's default then stands.
+ *
+ * **What one input cannot carry: the sub-headings.** Only the main heading's level is set per page.
+ * The others are rendered at the same distance below it as on the page the component was generated
+ * from. Of the 19 components whose main level differs between pages, that is right for 8. In the
+ * other 11 the sub-headings differ too (one page's h2 cards are another page's h3s), and they come out
+ * at the generated page's distance. See `ai-context/issues/sub-heading-levels-can-differ-between-pages.md`.
  */
 export const headingLevelInput = (params: {
     node: CapturedNode;

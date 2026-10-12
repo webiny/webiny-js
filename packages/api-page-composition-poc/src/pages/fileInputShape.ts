@@ -85,5 +85,19 @@ export const unresolvedFileInputs = (shapes: ReadonlyMap<string, FileInputShape>
  * symptom surfacing somewhere else entirely. A value whose shape is deliberately ambiguous is the
  * problem this project keeps hitting, not the answer to it.
  */
-export const fileInputValue = (src: string, shape: FileInputShape): string | { url: string } =>
-    shape === "string" ? src : { url: src };
+export const fileInputValue = (
+    src: string,
+    shape: FileInputShape,
+    size?: { width?: number; height?: number }
+): string | { url: string; width?: number; height?: number } =>
+    shape === "string"
+        ? src
+        : {
+              url: src,
+              // The size this page draws it at, for a component that sets width and height from its
+              // input (quality.image-size). Drawn size, not the file's: capture does not read the
+              // natural size. A string-shaped input cannot carry it and is left exactly as it was;
+              // across 180 live components with a file input none reads an object's other keys
+              // (item4-instructions.md), so an object gains them safely.
+              ...(size?.width && size?.height ? { width: size.width, height: size.height } : {})
+          };

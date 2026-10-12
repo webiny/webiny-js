@@ -216,7 +216,7 @@ const buildItem = (
             const image = cursors.images[cursors.imageAt];
             if (image) {
                 cursors.imageAt++;
-                item[field.name] = fileInputValue(image.src, shapeOf(field));
+                item[field.name] = fileInputValue(image.src, shapeOf(field), image);
             }
             continue;
         }
@@ -507,7 +507,7 @@ export const deriveCompositeInputs = (params: {
         ) {
             const image = collectImages(node, claimed)[0];
             if (image) {
-                values[definition.name] = fileInputValue(image.src, shapeOf(definition));
+                values[definition.name] = fileInputValue(image.src, shapeOf(definition), image);
                 /*
                  * Its alt, from this page, into the text input the component pairs with it
                  * (`<name>Alt`). Without this a top-level image's alt is the component's default:

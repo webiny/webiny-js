@@ -8,6 +8,9 @@ export interface HarvestedLink {
 export interface HarvestedImage {
     src: string;
     alt: string;
+    /** The size it is drawn at on this page, in CSS px, from its captured box. Absent with no box. */
+    width?: number;
+    height?: number;
 }
 
 /** A group of same-tag siblings, with how deep below the search root it sits. */
@@ -83,7 +86,13 @@ export const collectImages = (
     const images: HarvestedImage[] = [];
     walk(node, claimed, current => {
         if (current.src) {
-            images.push({ src: current.src, alt: current.alt ?? "" });
+            images.push({
+                src: current.src,
+                alt: current.alt ?? "",
+                ...(current.box && current.box.width > 0 && current.box.height > 0
+                    ? { width: Math.round(current.box.width), height: Math.round(current.box.height) }
+                    : {})
+            });
         }
     });
     return images;

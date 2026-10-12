@@ -1,3 +1,4 @@
+import { QUALITY_PROMPT_LINE_IDS } from "~/domain/qualityPasses.js";
 import { Result } from "@webiny/feature/api";
 import { createHash, randomUUID } from "node:crypto";
 import { createS3, PutObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
@@ -152,17 +153,11 @@ export const EXTRACTION_PROMPT_LINE_IDS = [
 
 /**
  * The accessibility and performance instructions (site-qualities-scoping.md, item 4), by id. Each
- * has the data it needs in the prompt: the alt beside every image, the source's heading levels, the
- * section's form fields. Image width and height is not among them: a file input's value carries only
- * its URL, so an instruction to read its size would read nothing (item4-instructions.md).
+ * has the data it needs: the alt beside every image and the source's heading levels in the prompt,
+ * the section's form fields in its layout, and an image's drawn size in its input's value, which
+ * composition writes per page (`fileInputValue`).
  */
-export const QUALITY_PROMPT_LINE_IDS = [
-    "quality.alt-input",
-    "quality.semantic-elements",
-    "quality.heading-level",
-    "quality.form-labels",
-    "quality.focus-visible"
-] as const;
+export { QUALITY_PROMPT_LINE_IDS };
 
 /**
  * Candidate lines a prompt experiment may add, by id. Never shown otherwise: a candidate ships only
@@ -371,6 +366,9 @@ const qualityLines = (component: PlannedComponent, include: Ablation): string[] 
             "click handler."
         );
     }
+    // One input carries the main heading's level per page; the sub-headings keep the generated
+    // page's distance from it, which is wrong for 11 of the 19 components whose levels differ between
+    // pages (ai-context/issues/sub-heading-levels-can-differ-between-pages.md).
     if (include.has("quality.heading-level")) {
         const headings = component.headings ?? [];
         const main = headings[0];
@@ -408,6 +406,14 @@ const qualityLines = (component: PlannedComponent, include: Ablation): string[] 
             "keyboard: keep the browser's outline, or replace it in `:focus-visible` with one at least as",
             "visible (a 2px outline in the section's text colour). Never set `outline: none` without a",
             "replacement."
+        );
+    }
+    if (include.has("quality.image-size") && hasImages(component)) {
+        lines.push(
+            "",
+            "Every <img> sets width and height attributes from its image input (`image.width`,",
+            "`image.height`), so the page keeps its space while the picture loads; size it on screen with",
+            "CSS as the layout needs."
         );
     }
     return lines;

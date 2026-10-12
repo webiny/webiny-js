@@ -40,3 +40,29 @@ describe("a top-level image's alt", () => {
         }
     });
 });
+
+describe("a top-level image's drawn size", () => {
+    it("is the size this page draws the picture at: 430x430 on the home page, 720x450 on the residents page", () => {
+        expect(inputsFor(0).image).toEqual({
+            url: expect.stringContaining("GettyImages-1227235023"),
+            width: 430,
+            height: 430
+        });
+        expect(inputsFor(1).image).toEqual({
+            url: expect.stringContaining("GettyImages-1390905979"),
+            width: 720,
+            height: 450
+        });
+    });
+
+    it("leaves a component that reads the input as a plain string with a plain string", () => {
+        const value = deriveCompositeInputs({
+            node: copies[0]!.node,
+            manifest,
+            sourceUrl: copies[0]!.url,
+            fileShapes: new Map([["image", "string"]])
+        }).image;
+        expect(typeof value).toBe("string");
+        expect(value).toContain("GettyImages-1227235023");
+    });
+});

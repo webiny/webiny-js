@@ -59,3 +59,35 @@ describe("siteQualityLines", () => {
         expect(siteQualityLines(undefined, true)).toEqual([]);
     });
 });
+
+describe("the generation passes", () => {
+    const site = (generation: { components: number; accessibility: number; performance: number }) =>
+        siteQualityLines({ ...westland, generation }, true).filter(line => line.beta);
+
+    it("are said with a beta label where every component carried them", () => {
+        expect(site({ components: 16, accessibility: 16, performance: 16 })).toEqual([
+            {
+                key: "accessibility",
+                text: "Accessibility pass applied in generation: semantic elements, alt text from the source site, form labels, heading levels. Not checked against WCAG.",
+                beta: true
+            },
+            {
+                key: "performance",
+                text: "Performance pass applied in generation: image dimensions set.",
+                beta: true
+            }
+        ]);
+    });
+
+    it("say how many where only some components carried them", () => {
+        expect(site({ components: 16, accessibility: 12, performance: 12 })[0]!.text).toMatch(
+            /^Accessibility pass applied in generation to 12 of 16 components: /
+        );
+    });
+
+    it("are not shown for a site whose components were generated without them", () => {
+        expect(site({ components: 16, accessibility: 0, performance: 0 })).toEqual([]);
+        // 71 Westland today: built before any of this was recorded.
+        expect(siteQualityLines(westland, true).filter(line => line.beta)).toEqual([]);
+    });
+});

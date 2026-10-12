@@ -32,6 +32,7 @@ import { DeleteFileUseCase } from "@webiny/api-file-manager/features/file/Delete
 import { randomUUID } from "node:crypto";
 import {
     buildSitemap,
+    countGenerationPasses,
     countSeo,
     summariseImages,
     type ImagesSummary,
@@ -445,12 +446,18 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         }
 
         if (!preview) {
-            current.qualities = await this.qualities({
-                site,
-                tenant,
-                images: images.summary,
-                toTarget
-            });
+            const approved = new Set(promoted.map(item => item.signature));
+            current.qualities = {
+                ...(await this.qualities({
+                    site,
+                    tenant,
+                    images: images.summary,
+                    toTarget
+                })),
+                generation: countGenerationPasses(
+                    source.generated.filter(component => approved.has(component.signature))
+                )
+            };
             await save();
         }
 

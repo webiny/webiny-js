@@ -170,6 +170,7 @@ const SiteQualities = createReactiveComponent(function SiteQualities({ presenter
                     >
                         {line.text}
                     </Text>
+                    {line.beta ? <Tag variant={"neutral-light" as never} content="beta" /> : null}
                     {line.link ? (
                         <Button
                             variant="tertiary"
