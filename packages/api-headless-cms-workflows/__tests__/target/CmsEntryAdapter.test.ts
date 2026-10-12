@@ -31,6 +31,20 @@ import {
     folderLevels
 } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { FakeAdminUsers } from "~tests/__helpers/FakeAdminUsers.js";
+import { CmsEntryTargetReader } from "~/features/target/CmsEntryTargetReader/index.js";
+
+class ThrowingTargetReader implements CmsEntryTargetReader.Interface {
+    public constructor(private decoratee: CmsEntryTargetReader.Interface) {}
+
+    public async read(): Promise<CmsEntryTargetReader.Target | null> {
+        throw new Error("Storage is down.");
+    }
+}
+
+const ThrowingTargetReaderDecorator = CmsEntryTargetReader.createDecorator({
+    decorator: ThrowingTargetReader,
+    dependencies: []
+});
 
 /** Admin users of the tenant; "user-elsewhere" has CMS read access but is not one of them. */
 const registerFakes = (container: Container) => {
@@ -210,25 +224,53 @@ describe("CMS target adapter", () => {
         expect(canRead).toBe(false);
     });
 
-    it("answers with the user's permissions inside withoutAuthorization (R67)", async () => {
-        const context = await createAdminContext();
-        const entry = await createAuthorEntry(context, { name: "Ann" });
+    it("answers with the user's permissions, not a less privileged caller's (R48, R67)", async () => {
+        const admin = await createAdminContext();
+        const entry = await createAuthorEntry(admin, { name: "Ann" });
         const params = {
             model: AUTHOR_NAMESPACE,
             targetId: entry.entryId,
             targetRevisionId: entry.id
         };
-        const identityContext = context.container.resolve(IdentityContext);
+        // The engine asks as the request identity (here a reader), never from inside
+        // withoutAuthorization: the model and group are read as that caller (SEC-66).
+        const { context } = createContextHandler({
+            identity: READER,
+            permissions: CMS_READER,
+            legacyPlugins: [registerFakes],
+            permissionsByIdentity: { [READER.id]: CMS_READER }
+        });
+        const readerContext = await context();
+        const access = getReadAccess(readerContext);
 
-        const results = await identityContext.withoutAuthorization(async () => {
-            const access = getReadAccess(context);
-            return {
-                reader: await access.canUserRead({ ...params, userId: READER.id }),
-                nobody: await access.canUserRead({ ...params, userId: NOBODY.id })
-            };
+        const reader = await access.canUserRead({ ...params, userId: READER.id });
+        const nobody = await access.canUserRead({ ...params, userId: NOBODY.id });
+
+        expect({ reader, nobody }).toEqual({ reader: true, nobody: false });
+        expect(readerContext.container.resolve(IdentityContext).getIdentity().id).toBe(READER.id);
+    });
+
+    it("denies read access when reading the target throws (R50)", async () => {
+        const { context } = createContextHandler({
+            legacyPlugins: [
+                registerFakes,
+                (container: Container) => {
+                    container.registerDecorator(ThrowingTargetReaderDecorator);
+                }
+            ],
+            permissionsByIdentity: { [READER.id]: CMS_READER }
+        });
+        const ctx = await context();
+        const entry = await createAuthorEntry(ctx, { name: "Ann" });
+
+        const canRead = await getReadAccess(ctx).canUserRead({
+            userId: READER.id,
+            model: AUTHOR_NAMESPACE,
+            targetId: entry.entryId,
+            targetRevisionId: entry.id
         });
 
-        expect(results).toEqual({ reader: true, nobody: false });
+        expect(canRead).toBe(false);
     });
 
     it("denies read access to a missing target or another app's namespace", async () => {
