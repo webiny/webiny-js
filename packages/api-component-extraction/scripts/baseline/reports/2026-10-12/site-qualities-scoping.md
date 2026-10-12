@@ -11,7 +11,68 @@ The data comes from two real runs, read on 2026-10-12:
 For each run I read the capture artifact, every page's element tree, the stored raw HTML and the narrow
 screenshots. The image figures come from 71 Westland's site tenant File Manager.
 
-## What capture holds, measured
+## Decisions (2026-10-12)
+
+- **The wording is approved as written,** including "Images" rather than "Image optimisation", "Not
+  checked against WCAG" on accessibility, and recording the generation passes per run so their lines
+  appear only where they ran.
+- **71 Westland, the demo lead, would show all three generation lines as false today.** Its components
+  were generated before any of the prompt work. The lines are recorded per Generate run, so on 71
+  Westland they do not appear at all, unless it is regenerated.
+- **The sitemap is generated, not served.** It is written to File Manager and linked from the Site step.
+  Serving it is filed as a follow-up: `ai-context/issues/the-sitemap-is-generated-and-not-served.md`.
+- **Mobile stays off the Site step** until the narrow capture work lands. That work is filed as
+  `ai-context/issues/mobile-layout-has-no-capture-behind-it.md`.
+- **Build order:** titles and descriptions; the sitemap; the images line; then the accessibility and
+  performance instructions, after the two alt gaps are fixed. Report before the fourth, because it
+  changes component output.
+
+## Result: SEO was a copy, not prompt work
+
+It was scoped as one of the four prompt items. It turned out to be a deterministic copy at
+composition: every page on all three sites read declares a meta description (21 of 21 pages: 10, 8 and
+3). Nothing read it until now. So it ships without a beta label.
+
+- **The canonical URL is the part that would have shipped silently.** Every captured page declares one,
+  naming the source site's domain (`https://www.71westlandapts.com/…`). A copy of "the page's SEO" that
+  took it would tell search engines each migrated page is a duplicate of the old site's page, and
+  nothing on the page would show it. `pageSeo` takes the title and description only, and a test asserts
+  the canonical is not carried.
+- **Found while building, from a third site's real HTML:** webiny.com is a Next.js site, and its home
+  page carries its `<title>` and meta description at the end of the body, streamed after `</head>`. A
+  head-only read, which I wrote first, found nothing on that page. The two property sites' fixtures
+  would never have shown it. The reader now checks the head first, then the whole document. It finds a
+  description on 21 of 21 real pages.
+
+## Items 1–3 built and deployed (2026-10-12)
+
+The predictions were written before the deploy. They were checked on the rehearsal job only, by
+publishing it twice. 71 Westland, its fallback and the five site jobs were not touched; their site
+records carry no new fields, so their Site steps show none of the new lines.
+
+| Prediction                                                                                                             | Result                                                                         |
+| ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Publish completes, steps as before                                                                                     | held                                                                           |
+| Each page's `seo` holds the source title and description, and no canonical                                             | held, plus `metaTags: []` (see below)                                          |
+| The live pages carry them as `<title>` and meta description, with no canonical (two agreeing reads, outside the cache) | **failed on the first publish**; held after the fix                            |
+| `seo` 3 of 3; sitemap 3 pages; images 14 files, 5.6 MB (6 PNG, 3 AVIF, 2 GIF, 1 JPEG, 1 SVG, 1 WebP)                   | held                                                                           |
+| The sitemap file is XML listing the three pages at their live addresses, each with a `lastmod`                         | held: served as `application/xml`                                              |
+| The Site step shows the three lines in the approved wording, with View sitemap                                         | held, checked in the running admin                                             |
+| A second publish replaces the sitemap                                                                                  | held: one `sitemap.xml` in the tenant, and the first one's URL now returns 404 |
+| Root unchanged at 266 / 99 / 1,509                                                                                     | held                                                                           |
+
+**Not predicted: the first publish took the rehearsal pages' `<title>` away.**
+
+- **The cause:** the website's metadata reads `seo?.metaTags.reduce(...)`. A `seo` with no `metaTags`
+  throws, and Next.js then serves the page body with no metadata at all.
+- **How long:** from the first publish at 12:51:18 UTC until the fixed publish went through the cache.
+  The last render error was at 12:56:30, ten in all, and only on the rehearsal site.
+- **The fix:** composition always writes `metaTags: []`, which is the shape the admin's SEO settings
+  save. A test reads the result the way the website does. Filed as
+  `ai-context/issues/website-metadata-throws-on-seo-without-meta-tags.md`, for a guard in the website at
+  its next redeploy.
+- **Why it matters for the demo:** before the fix, re-publishing 71 Westland would have done the same
+  to the demo lead.
 
 | Fact                                      | 71 Westland           | Take 3               | Reaches Generate?                                                                          |
 | ----------------------------------------- | --------------------- | -------------------- | ------------------------------------------------------------------------------------------ |
