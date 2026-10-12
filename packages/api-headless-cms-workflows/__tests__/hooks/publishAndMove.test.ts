@@ -4,6 +4,7 @@ import { Result } from "@webiny/feature/api";
 import type { CmsContext, CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
 import { UnpublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/index.js";
+import { RepublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/RepublishEntry/index.js";
 import { MoveEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/MoveEntry/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
@@ -15,6 +16,7 @@ import { createAuthorEntry, expectOk, getAuthorModel } from "~tests/__helpers/en
 import {
     approveEntryReview,
     cancelEntryReview,
+    readEntry,
     rejectEntryReview,
     requestEntryReview
 } from "~tests/__helpers/engine.js";
@@ -44,6 +46,11 @@ const createTestContext = async (params: ContextParams = {}) => {
 const publish = async (context: CmsContext, entry: CmsEntry) => {
     const model = await getAuthorModel(context);
     return context.container.resolve(PublishEntryUseCase).execute(model, entry.id);
+};
+
+const republish = async (context: CmsContext, entry: CmsEntry) => {
+    const model = await getAuthorModel(context);
+    return context.container.resolve(RepublishEntryUseCase).execute(model, entry.id);
 };
 
 const move = async (context: CmsContext, entry: CmsEntry, folderId: string) => {
@@ -191,6 +198,72 @@ describe("CMS publish rule (D79, D121)", () => {
 
         expect(published.isOk()).toBe(true);
         expect(listWorkflowsCalls).toBe(0);
+    });
+});
+
+describe("CMS republish rule (D79, R53)", () => {
+    it("refuses to republish an unreviewed draft on a bound model", async () => {
+        const context = await createTestContext();
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+
+        const blocked = await republish(context, entry);
+
+        expect(blocked.isFail()).toBe(true);
+        expect(blocked.error.code).toBe("Workflows/Review/PublishBlocked");
+        expect(blocked.error.data).toEqual({
+            model: "cms.author",
+            targetRevisionId: entry.id,
+            workflowId: "workflow-1",
+            reviewState: null
+        });
+        expect((await readEntry(context, entry.id)).status).toBe("draft");
+    });
+
+    it("refuses to republish a draft whose review is in progress", async () => {
+        const context = await createTestContext();
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+        await requestEntryReview(context, entry);
+
+        const blocked = await republish(context, entry);
+
+        expect(blocked.error.code).toBe("Workflows/Review/PublishBlocked");
+        expect(blocked.error.data).toMatchObject({ reviewState: "inProgress" });
+    });
+
+    it("republishes an approved revision that is not published", async () => {
+        const context = await createTestContext();
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+        await approveEntryReview(context, await requestEntryReview(context, entry));
+
+        const republished = await republish(context, entry);
+
+        expect(republished.isOk()).toBe(true);
+    });
+
+    it("republishes an already published revision (refresh)", async () => {
+        const context = await createTestContext();
+        const model = await getAuthorModel(context);
+        // Created as published without a review (D134 point 2, R83).
+        const created = expectOk(
+            await context.container.resolve(CreateEntryUseCase).execute(model, {
+                values: { name: "Imported" },
+                status: "published",
+                location: { folderId: "root" }
+            })
+        );
+
+        const republished = await republish(context, created);
+
+        expect(republished.isOk()).toBe(true);
+    });
+
+    it("republishes on a model without a workflow", async () => {
+        const context = await createTestContext({ withWorkflow: false });
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+
+        const republished = await republish(context, entry);
+
+        expect(republished.isOk()).toBe(true);
     });
 });
 

@@ -2,6 +2,7 @@ import { createFeature } from "@webiny/feature/api";
 import { NullReviewStateOnRevisionCreate } from "./NullReviewStateOnRevisionCreate.js";
 import { BlockUpdateWhileInReview } from "./BlockUpdateWhileInReview.js";
 import { RequireApprovedReviewOnPublish } from "./RequireApprovedReviewOnPublish.js";
+import { RequireApprovedReviewOnRepublish } from "./RequireApprovedReviewOnRepublish.js";
 import { BlockMoveWhileInReview } from "./BlockMoveWhileInReview.js";
 import { BlockDeleteWhileInReview } from "./BlockDeleteWhileInReview.js";
 import { BlockRevisionDeleteWhileInReview } from "./BlockRevisionDeleteWhileInReview.js";
@@ -25,6 +26,7 @@ export const CmsHooksFeature = createFeature({
 
         // `cms.*` adapter rules (public CMS models only, R52)
         container.register(RequireApprovedReviewOnPublish);
+        container.register(RequireApprovedReviewOnRepublish);
         container.register(BlockMoveWhileInReview);
 
         // Trash and delete (D134, R73) and review cleanup after a permanent delete (R56, R81)
