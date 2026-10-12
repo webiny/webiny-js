@@ -733,3 +733,5 @@ Decided 2026-10-12 (phase 2 plan review).
 6. **The api-core permission fix stays on the workflows branch.** The per-identity permission cache and the new `withAuthorization` land as clearly labelled commits at the start of phase 2.1, with the full api-core suite (DDB and SQL) and the neighbouring package suites run.
 
 Refines D62, D79, D80 and D84 (spec 4.5, 5.1, 9.2, 9.3).
+
+Confirmed 2026-10-12: the bound-workflow lookup fails closed (a failed workflow list refuses updates, moves, trash and delete on bound-or-unknown models); move, trash and delete are refused when any revision of the entry has an in-progress review; the move, trash and delete rules check the workflow binding first, like the save block.
