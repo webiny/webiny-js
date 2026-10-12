@@ -1,0 +1,14 @@
+import { createFeature } from "@webiny/feature/api";
+import { CmsModelReviewNamespace } from "./CmsEntryReviewNamespace/CmsModelReviewNamespace.js";
+import { CmsEntryTargetReader } from "./CmsEntryTargetReader/CmsEntryTargetReader.js";
+import { CmsEntryAccess } from "./CmsEntryAccess/CmsEntryAccess.js";
+
+/** The `cms.*` target adapter (spec 9.3). */
+export const CmsTargetFeature = createFeature({
+    name: "CmsWorkflows/Target",
+    register(container) {
+        container.register(CmsModelReviewNamespace);
+        container.register(CmsEntryTargetReader);
+        container.register(CmsEntryAccess);
+    }
+});

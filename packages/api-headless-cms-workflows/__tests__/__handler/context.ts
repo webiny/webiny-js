@@ -2,6 +2,7 @@ import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.j
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
+import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { NoopFolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import { createModelsPlugins, type ICreateModelsPluginsParams } from "../__cms/models.js";
@@ -37,6 +38,7 @@ export const createContextHandler = (
         identity: { id: "id-12345678", type: "admin", displayName: "John Doe" },
         tenant: { id: "root" },
         opensearch: createTestOpenSearchClient(),
-        context: () => getContext()
+        /** `getContext()` is `Record<string, any>` unless typed; the tests read the CMS context. */
+        context: () => getContext<CmsContext>()
     };
 };

@@ -2,6 +2,7 @@ import { createFeature } from "@webiny/feature/api";
 import { CmsGraphQLSchemaFactory } from "@webiny/api-headless-cms";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { WorkflowsFeature as CmsLocalWorkflowsFeature } from "./features/Workflows/index.js";
+import { CmsTargetFeature } from "./features/target/feature.js";
 import { createEntrySystemSchemaExtension } from "./graphql/entrySystemSchema.js";
 
 export const CmsWorkflowsFeature = createFeature({
@@ -13,10 +14,11 @@ export const CmsWorkflowsFeature = createFeature({
             return;
         }
 
-        // Entry handlers (system.workflow sync, publish and move rules, target delete) are rebuilt
-        // as the `cms.*` target adapter in phase 2, next to the CMS wrapper use cases and GraphQL
-        // operations that read the identity and check permissions (D132, D133).
+        // Bindable-model checks on the engine's workflow before-save events.
         CmsLocalWorkflowsFeature.register(container);
+
+        // The `cms.*` target adapter (spec 9.3).
+        CmsTargetFeature.register(container);
 
         // Add the `workflow` field to CmsEntrySystem on the CMS endpoint, which is served from the
         // separate CMS schema and needs its own CmsGraphQLSchemaFactory entry.
