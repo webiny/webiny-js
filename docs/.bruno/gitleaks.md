@@ -3,7 +3,7 @@
 Scan: `gitleaks git --verbose` (gitleaks 8.30.1), branch `next`, 2026-10-09.
 21,834 commits scanned, **109 findings**, **39 unique values**.
 
-Status (2026-10-12): **all findings reviewed and resolved.** `gitleaks git` with `.gitleaks.toml` reports no leaks.
+Status (2026-10-12): **all findings reviewed and resolved**, including a TruffleHog cross-check (see below). `gitleaks git` with `.gitleaks.toml` reports no leaks.
 `gitleaks dir` reports no leaks in tracked files.
 
 Secret values in this file are cut to 8 characters. Run gitleaks locally to see full values.
@@ -58,6 +58,41 @@ The file was deleted in `e53eceafb5` (2025-07-29). It stays in public history.
 - File: https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/postman.json#L220-L234
 
 Result: accepted as safe (2026-10-10). Pavel confirmed the Kibo keys are old and not in use.
+
+## TruffleHog cross-check
+
+Scan: `trufflehog git file://. --no-verification --json` (trufflehog 3.99.2), 2026-10-12.
+195 hits, 0 verified (no network calls). Gitleaks does not flag any of these, so `.gitleaks.toml` needs no change.
+
+### Real credentials missed by gitleaks (all dead)
+
+| ID | What | Where | Commit | Check | Result |
+|----|------|-------|--------|-------|--------|
+| T01 | MongoDB Atlas, user `adrian`, cluster `adriantest-kvgdz` | `scripts/setupCiCypress.js` L14 | `12bf97a40c` (Adrian, 2020-08-02) | `_mongodb._tcp.adriantest-kvgdz.mongodb.net` SRV: NXDOMAIN | Safe. Cluster deleted. |
+| T02 | MongoDB Atlas, user `webiny-sls`, cluster `webiny-sls-ddei2` | `serverless.yaml` L32 | `4281032220` (Pavel, 2019-08-04) | `_mongodb._tcp.webiny-sls-ddei2.mongodb.net` SRV: NXDOMAIN | Safe. Cluster deleted. |
+| T03 | RDS MySQL production password, host `webiny.c8xvs8v5ria6.eu-west-1.rds.amazonaws.com` | `examples/{api,graphql}/src/configs/database.js` L17, and `dist/configs/database.js` inside `examples/{api,graphql}/.serverless/webiny-demo.zip` | 7 commits, `e5f8cb603a` (2018-03-26) to `d2e3c254fa` (2018-06-25) | host: NXDOMAIN | Safe. Instance deleted. |
+
+T03 was not flagged by TruffleHog either. It was found while inspecting the zip for other hits.
+
+- T01: https://github.com/webiny/webiny-js/blob/12bf97a40c52518c0983746a0f95c877b4025f42/scripts/setupCiCypress.js#L14
+- T02: https://github.com/webiny/webiny-js/blob/4281032220eb2a2c2a04083ab343129c2d0c4cbf/serverless.yaml#L32
+- T03: https://github.com/webiny/webiny-js/blob/e5f8cb603acd7eaeaac337750565e3c5b0b14f81/examples/api/src/configs/database.js#L17
+- T03: https://github.com/webiny/webiny-js/blob/bfb347287726faf8d20f895932fbee47b739756b/examples/graphql/src/configs/database.js#L17
+
+### Already known
+
+- `Github` (4): the L30-L33 PATs. Revoked.
+- `Azure` (6): the L01 made-up Entra value, including its copy in `.gitleaks.toml`.
+
+### Noise
+
+- `FlatIO` (60), `TLy` (1): integrity hashes in `yarn.lock`.
+- `NpmToken` (20), `Gitlab` (14): minified code in `.yarn/releases/yarn-4.*.cjs`.
+- `PrivateKey` (5): library test fixtures inside `webiny-demo.zip` (`jsonwebtoken/test/*.pem`, `h2o2/test`, `http-signature` docs).
+- `GitHubOauth2` (56): commit hashes in `jsonwebtoken/CHANGELOG.md` inside `webiny-demo.zip`.
+- `URI` (19): `user:pass@` example URLs in library docs inside the zips, and test URLs in `packages/validation/__tests__/url.test.js`.
+- `Box` (4): Adobe `mbox=session#...` cookie in `postman.json`, and random strings in an SVG and `package-lock.json`.
+- `Circle` (2), `Sirv` (1), `Netlify` (1): random strings in `node_modules.zip`, an SVG and `Comments.tsx`.
 
 ## Details
 
