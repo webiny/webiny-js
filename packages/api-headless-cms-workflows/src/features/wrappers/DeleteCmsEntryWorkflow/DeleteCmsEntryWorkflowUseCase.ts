@@ -35,7 +35,11 @@ class DeleteCmsEntryWorkflowUseCaseImpl implements UseCase.Interface {
         try {
             canEdit = await this.permissions.canEdit();
         } catch (error) {
-            return Result.fail(new WorkflowPersistenceError(error as Error));
+            return Result.fail(
+                new WorkflowPersistenceError(
+                    error instanceof Error ? error : new Error(String(error))
+                )
+            );
         }
         if (!canEdit) {
             return Result.fail(new WorkflowsNotAuthorizedError({ action: "manage workflows" }));

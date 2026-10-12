@@ -44,7 +44,11 @@ class CmsEntryReviewGuardServiceImpl implements Abstraction.Interface {
             const isReviewTarget = target?.entry.entryId === review.value.targetId;
             canRead = !!target && isReviewTarget && (await this.access.canRead(target));
         } catch (error) {
-            return Result.fail(new ReviewPersistenceError(error as Error));
+            return Result.fail(
+                new ReviewPersistenceError(
+                    error instanceof Error ? error : new Error(String(error))
+                )
+            );
         }
         if (!canRead) {
             return Result.fail(new WorkflowsNotAuthorizedError({ action: params.action }));

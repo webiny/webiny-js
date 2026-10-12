@@ -37,7 +37,11 @@ class RequestCmsEntryReviewUseCaseImpl implements UseCase.Interface {
                     targetRevisionId: input.targetRevisionId
                 });
             } catch (error) {
-                return Result.fail(new ReviewPersistenceError(error as Error));
+                return Result.fail(
+                    new ReviewPersistenceError(
+                        error instanceof Error ? error : new Error(String(error))
+                    )
+                );
             }
         }
         if (!target || target.entry.entryId !== input.targetId) {
@@ -52,7 +56,11 @@ class RequestCmsEntryReviewUseCaseImpl implements UseCase.Interface {
         try {
             canWrite = await this.access.canWrite(target);
         } catch (error) {
-            return Result.fail(new ReviewPersistenceError(error as Error));
+            return Result.fail(
+                new ReviewPersistenceError(
+                    error instanceof Error ? error : new Error(String(error))
+                )
+            );
         }
         if (!canWrite) {
             return Result.fail(new WorkflowsNotAuthorizedError({ action: "request a review" }));

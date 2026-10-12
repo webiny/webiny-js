@@ -39,7 +39,11 @@ class CancelCmsEntryReviewsForDeleteUseCaseImpl implements UseCase.Interface {
         try {
             canDeleteAnyEntry = await this.access.canDeleteAnyEntry(input.model);
         } catch (error) {
-            return Result.fail(new ReviewPersistenceError(error as Error));
+            return Result.fail(
+                new ReviewPersistenceError(
+                    error instanceof Error ? error : new Error(String(error))
+                )
+            );
         }
         if (!canDeleteAnyEntry) {
             return Result.fail(
@@ -72,7 +76,11 @@ class CancelCmsEntryReviewsForDeleteUseCaseImpl implements UseCase.Interface {
         try {
             target = await this.targets.read({ model: input.model, targetRevisionId });
         } catch (error) {
-            return Result.fail(new ReviewPersistenceError(error as Error));
+            return Result.fail(
+                new ReviewPersistenceError(
+                    error instanceof Error ? error : new Error(String(error))
+                )
+            );
         }
         if (!target || target.entry.entryId !== input.targetId) {
             return Result.fail(
@@ -83,7 +91,11 @@ class CancelCmsEntryReviewsForDeleteUseCaseImpl implements UseCase.Interface {
         try {
             canDelete = await this.access.canDelete(target);
         } catch (error) {
-            return Result.fail(new ReviewPersistenceError(error as Error));
+            return Result.fail(
+                new ReviewPersistenceError(
+                    error instanceof Error ? error : new Error(String(error))
+                )
+            );
         }
         if (!canDelete) {
             return Result.fail(

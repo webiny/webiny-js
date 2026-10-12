@@ -4,7 +4,10 @@ import type {
     WorkflowsNotAuthenticatedError,
     WorkflowsNotAuthorizedError
 } from "@webiny/api-workflows/domain/permissions/errors.js";
-import type { ReviewTargetNotFoundError } from "@webiny/api-workflows/domain/review/errors.js";
+import type {
+    ReviewPersistenceError,
+    ReviewTargetNotFoundError
+} from "@webiny/api-workflows/domain/review/errors.js";
 import type { RequestReviewUseCase } from "@webiny/api-workflows/features/review/RequestReview/index.js";
 
 export interface RequestCmsEntryReviewInput {
@@ -20,6 +23,7 @@ export interface IRequestCmsEntryReviewUseCaseErrors {
     notAuthenticated: WorkflowsNotAuthenticatedError;
     notAuthorized: WorkflowsNotAuthorizedError;
     targetNotFound: ReviewTargetNotFoundError;
+    persistence: ReviewPersistenceError;
     request: RequestReviewUseCase.Error;
 }
 

@@ -21,6 +21,7 @@ import {
     targetReads,
     throwingTargetRevisions
 } from "~tests/__helpers/ScriptedTargetReads.js";
+import { repeatListWorkflowsCursor } from "~tests/__helpers/RepeatingCursorListWorkflows.js";
 import { throwOnWorkflowsPermissions } from "~tests/__helpers/ThrowingWorkflowsPermissions.js";
 import { StoreCmsEntryWorkflowUseCase } from "~/features/wrappers/StoreCmsEntryWorkflow/index.js";
 import { DeleteCmsEntryWorkflowUseCase } from "~/features/wrappers/DeleteCmsEntryWorkflow/index.js";
@@ -235,6 +236,22 @@ describe("CMS workflow wrappers", () => {
         expect(listed.map(workflow => workflow.id)).toEqual(["workflow-1"]);
         expect(cms.isOk()).toBe(true);
         expect(wb.error.code).toBe("Workflows/Workflow/NotFound");
+    });
+
+    it("stops listing when the engine returns the same cursor twice", async () => {
+        const admin = await createUserContext();
+        expectOk(await storeWorkflow(admin));
+        const reader = await createCountingContext({
+            identity: READER,
+            permissions: CMS_READER,
+            legacyPlugins: [repeatListWorkflowsCursor]
+        });
+        engineCalls.length = 0;
+
+        const listed = expectOk(await list(reader));
+
+        expect(listed.map(workflow => workflow.id)).toEqual(["workflow-1", "workflow-1"]);
+        expect(engineCalls).toEqual(["ListWorkflows", "ListWorkflows"]);
     });
 
     it("deletes a workflow for an editor and not another app's", async () => {

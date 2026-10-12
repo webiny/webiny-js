@@ -24,6 +24,7 @@ class ListCmsEntryWorkflowsUseCaseImpl implements UseCase.Interface {
         }
 
         const workflows: Workflow[] = [];
+        const seenCursors = new Set<string>();
         let after: string | null = null;
         do {
             const page: Awaited<ListWorkflowsUseCase.Return> = await this.listWorkflows.execute({
@@ -35,6 +36,13 @@ class ListCmsEntryWorkflowsUseCaseImpl implements UseCase.Interface {
             }
             workflows.push(...page.value.items.filter(isCmsWorkflow));
             after = page.value.meta.hasMoreItems ? page.value.meta.cursor : null;
+            // Defensive: stop when the engine returns a cursor it returned before.
+            if (after) {
+                if (seenCursors.has(after)) {
+                    break;
+                }
+                seenCursors.add(after);
+            }
         } while (after);
 
         return Result.ok(workflows);
