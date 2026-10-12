@@ -53,6 +53,10 @@ class IdentityContextImpl implements Abstraction.Interface {
         return this.authorizationContext.withoutAuthorization(cb);
     }
 
+    withAuthorization<T>(cb: () => Promise<T>): Promise<T> {
+        return this.authorizationContext.withAuthorization(cb);
+    }
+
     isAuthorizationEnabled(): boolean {
         return this.authorizationContext.isAuthorizationEnabled();
     }

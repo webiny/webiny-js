@@ -6,6 +6,8 @@ export interface IAuthorizationContext {
     loadPermissions(identity: Identity): Promise<SecurityPermission[]>;
     isAuthorizationEnabled(): boolean;
     withoutAuthorization<T>(cb: () => Promise<T>): Promise<T>;
+    /** Runs `cb` with authorization enabled, also inside `withoutAuthorization`. */
+    withAuthorization<T>(cb: () => Promise<T>): Promise<T>;
     clearPermissionsCache(): void;
 }
 
