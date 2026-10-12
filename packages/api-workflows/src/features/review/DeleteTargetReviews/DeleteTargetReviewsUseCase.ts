@@ -3,16 +3,14 @@ import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import type { AssignmentPersistenceError } from "~/domain/assignment/errors.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
+import { AssignmentPageSize } from "./AssignmentPageSize.js";
 import { DeleteTargetReviewsUseCase as UseCase } from "./abstractions.js";
 
-const ASSIGNMENT_PAGE_SIZE = 100;
-
-export class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
+class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
     constructor(
         private reviewRepository: ReviewRepository.Interface,
         private assignmentRepository: AssignmentRepository.Interface,
-        /** Not injected by the container; tests pass a small page to force several pages. */
-        private pageSize: number = ASSIGNMENT_PAGE_SIZE
+        private assignmentPageSize: AssignmentPageSize.Interface
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
@@ -52,7 +50,7 @@ export class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
             const page: Awaited<ReturnType<AssignmentRepository.Interface["list"]>> =
                 await this.assignmentRepository.list({
                     where: { reviewId },
-                    limit: this.pageSize,
+                    limit: this.assignmentPageSize.value,
                     after
                 });
             if (page.isFail()) {
@@ -74,5 +72,5 @@ export class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
 
 export const DeleteTargetReviewsUseCase = UseCase.createImplementation({
     implementation: DeleteTargetReviewsUseCaseImpl,
-    dependencies: [ReviewRepository, AssignmentRepository]
+    dependencies: [ReviewRepository, AssignmentRepository, AssignmentPageSize]
 });

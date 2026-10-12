@@ -10,7 +10,7 @@ import {
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import type { AssignmentRecordValues } from "~/domain/assignment/types.js";
-import { DeleteTargetReviewsUseCaseImpl } from "~/features/review/DeleteTargetReviews/DeleteTargetReviewsUseCase.js";
+import { AssignmentPageSize } from "~/features/review/DeleteTargetReviews/AssignmentPageSize.js";
 import { DeleteTargetReviewsUseCase } from "~/features/review/DeleteTargetReviews/index.js";
 
 const record = (reviewId: string, assignedOn: string): AssignmentRecordValues => {
@@ -30,8 +30,11 @@ const record = (reviewId: string, assignedOn: string): AssignmentRecordValues =>
  * article-1#0001: review-1 with three assignment records; article-1#0002: review-2;
  * article-2#0001: review-3 with one record.
  */
-const createTargetData = async () => {
+const createTargetData = async (pageSize?: number) => {
     const { context } = await createContextHandler();
+    if (pageSize) {
+        context.container.registerInstance(AssignmentPageSize, { value: pageSize });
+    }
     const reviews = context.container.resolve(ReviewRepository);
     const assignments = context.container.resolve(AssignmentRepository);
 
@@ -121,10 +124,11 @@ describe("DeleteTargetReviewsUseCase", () => {
     });
 
     it("deletes every assignment record when they span several pages", async () => {
-        const { reviews, assignments } = await createTargetData();
-        const paged = new DeleteTargetReviewsUseCaseImpl(reviews, assignments, 2);
+        const { assignments, deleteTargetReviews } = await createTargetData(2);
 
-        expectOk(await paged.execute({ model: ARTICLE_MODEL, targetId: "article-1" }));
+        expectOk(
+            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetId: "article-1" })
+        );
 
         const records = expectOk(await assignments.list({ where: { reviewId: "review-1" } }));
         expect(records.items).toEqual([]);
