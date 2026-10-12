@@ -76,3 +76,21 @@ export interface ReviewStepConfig {
     teams: string[];
     assignment: ReviewStepAssignmentConfig;
 }
+
+/**
+ * A review that blocks deleting its workflow (D115): the content reference, its title and where
+ * the review stands. The engine lists all of them; the app wrapper keeps the first 5 the caller
+ * can read (D133, R57).
+ */
+export interface WorkflowBlockingReview {
+    reviewId: string;
+    /** Namespace id, e.g. "cms.article" or "wb.page". */
+    model: string;
+    targetId: string;
+    targetRevisionId: string;
+    title: string;
+    /** 1-based position of the current step ("Step n of N"). */
+    stepPosition: number;
+    stepCount: number;
+    stepName: string;
+}

@@ -2,6 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
+import { toBlockingReview } from "~/domain/review/toBlockingReview.js";
 import {
     WorkflowHasActiveReviewsError,
     WorkflowPersistenceError
@@ -24,12 +25,17 @@ class DeleteWorkflowUseCaseImpl implements UseCase.Interface {
         const workflow = existing.value;
 
         // Finished reviews keep their snapshot and do not block the delete (D81).
-        const inProgress = await this.reviewRepository.countInProgressByWorkflow(workflow.id);
+        const inProgress = await this.reviewRepository.listInProgressByWorkflow(workflow.id);
         if (inProgress.isFail()) {
             return Result.fail(new WorkflowPersistenceError(inProgress.error));
         }
-        if (inProgress.value > 0) {
-            return Result.fail(new WorkflowHasActiveReviewsError({ count: inProgress.value }));
+        if (inProgress.value.length > 0) {
+            return Result.fail(
+                new WorkflowHasActiveReviewsError({
+                    count: inProgress.value.length,
+                    reviews: inProgress.value.map(toBlockingReview)
+                })
+            );
         }
 
         await this.eventPublisher.publish(

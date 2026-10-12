@@ -12,6 +12,7 @@ import {
     reviewer,
     toSaveData
 } from "~tests/__helpers/fixtures.js";
+import type { WorkflowHasActiveReviewsErrorData } from "~/domain/workflow/errors.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
 import { DeleteWorkflowUseCase } from "~/features/workflow/DeleteWorkflow/index.js";
@@ -69,7 +70,30 @@ describe("Delete workflow with reviews", () => {
 
         expect(blocked.isFail()).toBe(true);
         expect(blocked.error.code).toBe("Workflows/Workflow/HasActiveReviews");
-        expect(blocked.error.data).toEqual({ count: 2 });
+        const data = blocked.error.data as WorkflowHasActiveReviewsErrorData;
+        expect(data.count).toBe(2);
+        expect([...data.reviews].sort((a, b) => a.reviewId.localeCompare(b.reviewId))).toEqual([
+            {
+                reviewId: "review-1",
+                model: "cms.article",
+                targetId: "article-1",
+                targetRevisionId: "article-1#0001",
+                title: "Article 1",
+                stepPosition: 1,
+                stepCount: 2,
+                stepName: "Legal review"
+            },
+            {
+                reviewId: "review-2",
+                model: "cms.article",
+                targetId: "article-2",
+                targetRevisionId: "article-2#0001",
+                title: "Article 1",
+                stepPosition: 1,
+                stepCount: 2,
+                stepName: "Legal review"
+            }
+        ]);
 
         // Finished reviews (cancelled, rejected) do not block the delete (D81).
         expectOk(first.cancel({ actor: requester, now: LATER }));

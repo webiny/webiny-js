@@ -90,8 +90,18 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
     async countInProgressByWorkflow(
         workflowId: string
     ): Promise<Result<number, ReviewPersistenceError>> {
+        const listed = await this.listInProgressByWorkflow(workflowId);
+        if (listed.isFail()) {
+            return Result.fail(listed.error);
+        }
+        return Result.ok(listed.value.length);
+    }
+
+    async listInProgressByWorkflow(
+        workflowId: string
+    ): Promise<Result<ReviewData[], ReviewPersistenceError>> {
         const model = await this.modelProvider.get();
-        let count = 0;
+        const reviews: ReviewData[] = [];
         let after: string | null = null;
         do {
             const result: Awaited<ListLatestEntriesUseCase.Return<ReviewEntryValues>> =
@@ -117,7 +127,7 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
                 }
                 const review = confirmed.value;
                 if (review && review.workflowId === workflowId && review.state === "inProgress") {
-                    count++;
+                    reviews.push(review);
                 }
             }
 
@@ -125,7 +135,7 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
             after = meta.hasMoreItems ? meta.cursor : null;
         } while (after);
 
-        return Result.ok(count);
+        return Result.ok(reviews);
     }
 
     async save(review: ReviewData): Promise<Result<ReviewData, ReviewPersistenceError>> {

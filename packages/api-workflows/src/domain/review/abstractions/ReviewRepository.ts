@@ -14,6 +14,10 @@ export interface IReviewRepository {
         params: ReviewRepositoryActiveByTargetParams
     ): Promise<Result<ReviewData | null, ReviewPersistenceError>>;
     countInProgressByWorkflow(workflowId: string): Promise<Result<number, ReviewPersistenceError>>;
+    /** Every in-progress review of a workflow, confirmed from primary storage (R18). */
+    listInProgressByWorkflow(
+        workflowId: string
+    ): Promise<Result<ReviewData[], ReviewPersistenceError>>;
     /** Create or update. Only `ReviewSaver` (the single save path) calls this. */
     save(review: ReviewData): Promise<Result<ReviewData, ReviewPersistenceError>>;
 }

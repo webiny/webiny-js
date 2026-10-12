@@ -1,6 +1,6 @@
 import { BaseError } from "@webiny/feature/api";
 import type { PersistenceErrorSource } from "../PersistenceErrorSource.js";
-import type { WorkflowIdentity } from "./types.js";
+import type { WorkflowBlockingReview, WorkflowIdentity } from "./types.js";
 
 export interface WorkflowNotFoundErrorData {
     id: string;
@@ -73,10 +73,13 @@ export class WorkflowPersistenceError extends BaseError<WorkflowPersistenceError
 }
 
 export interface WorkflowHasActiveReviewsErrorData {
+    /** Exact number of in-progress reviews, regardless of what the caller can read (D115). */
     count: number;
+    /** The engine returns every blocking review; app wrappers keep the first 5 readable (R57). */
+    reviews: WorkflowBlockingReview[];
 }
 
-/** D81. Phase 3 adds up to 5 readable blocking reviews to the data (D115). */
+/** D81, D115. */
 export class WorkflowHasActiveReviewsError extends BaseError<WorkflowHasActiveReviewsErrorData> {
     override readonly code = "Workflows/Workflow/HasActiveReviews" as const;
 
