@@ -14,12 +14,26 @@ const fixture = JSON.parse(
 };
 
 describe("siteInventory", () => {
+    it("tells the approval waiting for its publish apart from what is left over", () => {
+        const approvedCopy = "Validationwebinycom/Headline Hero with CTAs (3)";
+        const leftover = "Validationwebinycom/Headline Hero with CTAs (2)";
+        const inventory = siteInventory({
+            pages: fixture.pages,
+            componentNames: [...fixture.components, approvedCopy, leftover],
+            approvedNames: [approvedCopy]
+        });
+        expect(inventory.pending).toEqual([approvedCopy]);
+        expect(inventory.unused).toEqual([leftover]);
+    });
+
+
     it("counts the earlier builds' unpublished copies, and no unused component when every one is placed", () => {
         expect(
             siteInventory({ pages: fixture.pages, componentNames: fixture.components })
         ).toEqual({
             components: 6,
             unused: [],
+            pending: [],
             publishedPages: 3,
             unpublishedPages: 3,
             draftPages: 0

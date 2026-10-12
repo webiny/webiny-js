@@ -7,7 +7,8 @@ import {
 } from "@webiny/api-component-extraction/domain/abstractions.js";
 import { ComponentExtractionPermissions } from "@webiny/api-component-extraction/features/permissions.js";
 import { stageEntry } from "@webiny/api-component-extraction/domain/ledger.js";
-import { BlobStore } from "@webiny/api-component-extraction/domain/stage.js";
+import { BlobStore, StageArtifactStore } from "@webiny/api-component-extraction/domain/stage.js";
+import type { PromoteArtifact } from "@webiny/api-component-extraction/domain/artifacts.js";
 import { ComposedCaptureStore, PageMapStore } from "~/domain/abstractions.js";
 import {
     BUILD_SITE_TASK_ID,
@@ -232,7 +233,9 @@ export const addPageCompositionSchema = (builder: IGraphQLSchemaBuilder): void =
             TenantContext,
             GetTenantByIdUseCase,
             ListPagesUseCase,
-            ListRemoteComponentsUseCase
+            ListRemoteComponentsUseCase,
+            RunRepository,
+            StageArtifactStore
         ],
         resolver(
             permissions: ComponentExtractionPermissions.Interface,
@@ -240,7 +243,9 @@ export const addPageCompositionSchema = (builder: IGraphQLSchemaBuilder): void =
             tenantContext: TenantContext.Interface,
             getTenantById: GetTenantByIdUseCase.Interface,
             listPages: ListPagesUseCase.Interface,
-            listComponents: ListRemoteComponentsUseCase.Interface
+            listComponents: ListRemoteComponentsUseCase.Interface,
+            runs: RunRepository.Interface,
+            artifacts: StageArtifactStore.Interface
         ) {
             return ({ args }: { args: { jobId: string } }) =>
                 resolve(async () => {
@@ -255,6 +260,25 @@ export const addPageCompositionSchema = (builder: IGraphQLSchemaBuilder): void =
                     const tenant = await getTenantById.execute(site.tenantId);
                     if (tenant.isFail()) {
                         throw new Error(`The site's tenant "${site.tenantId}" cannot be read.`);
+                    }
+                    /*
+                     * The current approval, when it lives in this tenant: its components are waiting
+                     * for the next publish, not left over. Read in the extraction tenant, before
+                     * entering the site's. The run is the one last previewed or published.
+                     */
+                    const latest = [site.lastPreview, site.lastBuild]
+                        .filter(Boolean)
+                        .sort((a, b) => b!.startedOn.localeCompare(a!.startedOn))[0];
+                    let approvedNames: string[] | undefined;
+                    if (latest) {
+                        const run = await runs.get(latest.runId);
+                        const ref = run.isOk()
+                            ? stageEntry(run.value.stages, "promote")?.artifacts?.promotion
+                            : undefined;
+                        const approval = ref ? await artifacts.getJson<PromoteArtifact>(ref) : null;
+                        if (approval?.isOk() && approval.value?.tenantId === site.tenantId) {
+                            approvedNames = approval.value.promoted.map(item => item.name);
+                        }
                     }
                     return tenantContext.withTenant(tenant.value, async () => {
                         const pages: Array<{ status: string; elements: Record<string, unknown> }> =
@@ -285,7 +309,8 @@ export const addPageCompositionSchema = (builder: IGraphQLSchemaBuilder): void =
                         }
                         return siteInventory({
                             pages,
-                            componentNames: components.value.items.map(item => item.name)
+                            componentNames: components.value.items.map(item => item.name),
+                            approvedNames
                         });
                     });
                 });

@@ -1,8 +1,13 @@
 export interface SiteInventory {
     /** Every component in the site tenant's Library. */
     components: number;
-    /** Components no published page places, by name: left over from earlier builds. */
+    /** Components no published page places and the current approval does not hold: left over. */
     unused: string[];
+    /**
+     * Components of the current approval no published page places yet: they go live at the next
+     * publish. Only for a site whose approval lives in its tenant; empty otherwise.
+     */
+    pending: string[];
     publishedPages: number;
     /** Pages taken offline: earlier builds' copies, superseded at their path. */
     unpublishedPages: number;
@@ -32,12 +37,17 @@ const placedNames = (page: InventoryPage): string[] =>
 export const siteInventory = (params: {
     pages: InventoryPage[];
     componentNames: string[];
+    /** The current approval's component names, when it lives in this tenant. */
+    approvedNames?: string[];
 }): SiteInventory => {
     const published = params.pages.filter(page => page.status === "published");
     const used = new Set(published.flatMap(placedNames));
+    const approved = new Set(params.approvedNames ?? []);
+    const notLive = params.componentNames.filter(name => !used.has(name));
     return {
         components: params.componentNames.length,
-        unused: params.componentNames.filter(name => !used.has(name)).sort(),
+        unused: notLive.filter(name => !approved.has(name)).sort(),
+        pending: notLive.filter(name => approved.has(name)).sort(),
         publishedPages: published.length,
         unpublishedPages: params.pages.filter(page => page.status === "unpublished").length,
         draftPages: params.pages.filter(page => page.status === "draft").length

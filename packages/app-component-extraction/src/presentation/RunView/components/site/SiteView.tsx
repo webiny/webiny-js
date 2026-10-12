@@ -163,12 +163,19 @@ const TenantInventory = createReactiveComponent(function TenantInventory({ prese
         (inventory.draftPages ?? 0) > 0 ? plural(inventory.draftPages ?? 0, "draft") : null
     ].filter(Boolean);
     const alsoHolds = others.length > 0 ? others.join(" and ") : null;
+    const pending = inventory.pending ?? [];
+    const waiting =
+        pending.length > 0
+            ? ` ${plural(pending.length, "newly approved component")} ${pending.length === 1 ? "goes" : "go"} live at the next publish.`
+            : "";
     if (inventory.unused.length === 0) {
         return (
             <Text size="sm" className="text-neutral-strong">
-                The site&apos;s tenant holds {plural(inventory.components, "component")}, all used by
-                its {plural(inventory.publishedPages, "live page")}
-                {alsoHolds ? `, and ${alsoHolds}` : ""}.
+                The site&apos;s tenant holds {plural(inventory.components, "component")}
+                {pending.length > 0
+                    ? `: ${plural(inventory.components - pending.length, "component")} used by its ${plural(inventory.publishedPages, "live page")}`
+                    : `, all used by its ${plural(inventory.publishedPages, "live page")}`}
+                {alsoHolds ? `, and ${alsoHolds}` : ""}.{waiting}
             </Text>
         );
     }
@@ -178,11 +185,12 @@ const TenantInventory = createReactiveComponent(function TenantInventory({ prese
     return (
         <Alert type="warning" variant="subtle">
             The site&apos;s tenant holds {plural(inventory.unused.length, "component")} that no live
-            page uses: {inventory.unused.join(", ")}.{" "}
+            page uses and the current approval does not hold: {inventory.unused.join(", ")}.{" "}
             {removesAtPublish
-                ? "Publishing keeps them because a draft or an unpublished page still names them, and each still ships with every page of the site."
+                ? "Publishing keeps them while a draft or an unpublished page still names them, and each ships with every page of the site."
                 : "Publishing does not remove them, and each still ships with every page of the site."}
             {alsoHolds ? ` It also holds ${alsoHolds}.` : ""}
+            {waiting}
         </Alert>
     );
 });

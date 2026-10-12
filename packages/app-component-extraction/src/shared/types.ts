@@ -774,8 +774,10 @@ export type SiteBuildStep = "tenant" | "theme" | "components" | "images" | "page
 /** What a site's tenant holds beyond what its live pages use. */
 export interface SiteInventoryDto {
     components: number;
-    /** Components no published page places: left over from earlier builds. */
+    /** Components no published page places and the current approval does not hold: left over. */
     unused: string[];
+    /** The current approval's components no live page places yet: live at the next publish. */
+    pending?: string[];
     publishedPages: number;
     /** Earlier builds' copies, superseded at their path. */
     unpublishedPages: number;
