@@ -31,20 +31,24 @@ class CmsEntryReviewTargetSyncImpl implements ReviewTargetSync.Interface {
             );
         }
 
-        const model = await this.getModel.execute(modelId);
-        if (model.isFail()) {
-            return Result.fail(model.error);
-        }
+        try {
+            const model = await this.getModel.execute(modelId);
+            if (model.isFail()) {
+                return Result.fail(model.error);
+            }
 
-        const updated = await this.identityContext.withoutAuthorization(() => {
-            return this.updateEntrySystem.execute(model.value, params.review.targetRevisionId, {
-                workflow: params.systemWorkflow
+            const updated = await this.identityContext.withoutAuthorization(() => {
+                return this.updateEntrySystem.execute(model.value, params.review.targetRevisionId, {
+                    workflow: params.systemWorkflow
+                });
             });
-        });
-        if (updated.isFail()) {
-            return Result.fail(updated.error);
+            if (updated.isFail()) {
+                return Result.fail(updated.error);
+            }
+            return Result.ok();
+        } catch (error) {
+            return Result.fail(error instanceof Error ? error : new Error(String(error)));
         }
-        return Result.ok();
     }
 }
 
