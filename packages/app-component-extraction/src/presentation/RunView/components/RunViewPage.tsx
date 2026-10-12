@@ -19,6 +19,8 @@ import { ArtifactPanel } from "./ArtifactPanel.js";
 import { ComposedPagesPanel } from "./composed/ComposedPagesPanel.js";
 import { TokenPanel } from "./TokenPanel.js";
 import { ThemeCard } from "./ThemeCard.js";
+import { SiteRailEntry } from "./site/SiteRailEntry.js";
+import { SiteView } from "./site/SiteView.js";
 import { OverridesPanel } from "./OverridesPanel.js";
 import { SegmentHeightControl } from "./SegmentHeightControl.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
@@ -293,7 +295,7 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
         ? null
         : !selectedDone
           ? selected === "promote"
-              ? { text: "Promote and finish run", target: "promote" }
+              ? { text: "Approve components", target: "promote" }
               : { text: `Run ${meta.number} · ${meta.label}`, target: selected }
           : nextStage
             ? {
@@ -364,8 +366,15 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                 <div className="w-[300px] flex-shrink-0 overflow-y-auto border-r border-neutral-dimmed p-md">
                     <StageRail
                         rows={railRows}
-                        selected={selected}
-                        onSelect={stage => presenter.selectStage(stage)}
+                        selected={vm.showSite ? null : selected}
+                        onSelect={stage => {
+                            // The composed panel is route-owned; leaving it goes through the route.
+                            if (vm.showComposed) {
+                                openComposedRoute(false, null);
+                            }
+                            presenter.selectStage(stage);
+                        }}
+                        after={<SiteRailEntry presenter={presenter} />}
                         footer={
                             vm.job ? (
                                 <Button
@@ -382,7 +391,9 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                 </div>
 
                 <div className="flex min-w-0 flex-1 flex-col">
-                    {vm.showTokens ? (
+                    {vm.showSite ? (
+                        <SiteView presenter={presenter} />
+                    ) : vm.showTokens ? (
                         <TokenPanel presenter={presenter} />
                     ) : vm.showOverrides ? (
                         <OverridesPanel presenter={presenter} />

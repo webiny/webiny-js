@@ -42,7 +42,7 @@ const STAGE_DESCRIPTIONS: Record<Stage, string> = {
     assemble:
         "For each page, the ordered list of component instances in document order, with the prop values each instance received.",
     promote:
-        "Moves the components that passed validation into the component library, renaming rather than overwriting when a name is already taken."
+        "Bundles the components you approve and holds them in this workspace's Library, ready to go into the site, renaming rather than overwriting when a name is already taken."
 };
 
 export interface StageMeta {

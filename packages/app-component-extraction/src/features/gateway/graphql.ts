@@ -553,8 +553,8 @@ export const CHECK_REACHABILITY = /* GraphQL */ `
  * which are absent on maps composed before they shipped.
  */
 export const GET_PAGE_MAP = /* GraphQL */ `
-    query GetPageMap($runId: ID!) {
-        pageCompositionPocPageMap(runId: $runId) {
+    query GetPageMap($runId: ID!, $tenantId: String) {
+        pageCompositionPocPageMap(runId: $runId, tenantId: $tenantId) {
             data
             error {
                 message
@@ -687,6 +687,22 @@ export const CANCEL_RUN = /* GraphQL */ `
             error {
                 message
                 code
+            }
+        }
+    }
+`;
+
+/**
+ * Which page each path serves in the job's site tenant. Asked of the API rather than with
+ * `getPageByPath` from here, because the admin's requests carry the admin's own tenant, where the same
+ * path answers with a different page.
+ */
+export const GET_SITE_LIVE_PAGES = /* GraphQL */ `
+    query GetSiteLivePages($jobId: ID!, $paths: [String!]!) {
+        pageCompositionPocSiteLivePages(jobId: $jobId, paths: $paths) {
+            data
+            error {
+                message
             }
         }
     }

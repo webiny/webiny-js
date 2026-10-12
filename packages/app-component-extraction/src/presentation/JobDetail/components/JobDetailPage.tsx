@@ -393,10 +393,10 @@ const RunHistory = ({
 /** Promoted-to-Library grid (spec §4), with its empty variant. */
 const PromotedGrid = ({ promoted }: { promoted: { componentId: string; name: string }[] }) => (
     <div className="flex flex-col gap-sm rounded-lg border border-neutral-dimmed bg-neutral-base p-md">
-        <Text className="font-medium">Promoted to Library</Text>
+        <Text className="font-medium">Approved components</Text>
         {promoted.length === 0 ? (
             <Text size="sm" className="text-neutral-strong">
-                Components reach the Library at stage 9, once you promote them.
+                Components reach the Library at stage 9, once you approve them.
             </Text>
         ) : (
             <div className="grid grid-cols-2 gap-sm md:grid-cols-4">

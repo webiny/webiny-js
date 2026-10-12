@@ -730,6 +730,10 @@ export interface PageMapDto {
     /** Which composition this is. Absent on maps written before the counter existed — read as 0. */
     composeVersion?: number;
     pages: ComposedPageDto[];
+    /** Earlier pages left live because their page failed to compose this time. */
+    kept?: ComposedPageDto[];
+    /** Earlier pages unpublished because the run no longer assembles them. */
+    dropped?: ComposedPageDto[];
     failed: ComposedPageFailureDto[];
     links: PageLinksDto;
     discarded: ComposedDiscardDto[];

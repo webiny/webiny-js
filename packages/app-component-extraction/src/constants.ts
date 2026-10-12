@@ -43,7 +43,7 @@ export const STAGE_LABELS: Record<Stage, string> = {
     plan: "Plan",
     generate: "Generate",
     assemble: "Assemble",
-    promote: "Promote"
+    promote: "Approve components"
 };
 
 export const DEFAULT_PAGE_CAP = 40;

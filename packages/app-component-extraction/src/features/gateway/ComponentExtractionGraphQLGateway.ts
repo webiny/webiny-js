@@ -38,6 +38,7 @@ import {
     USE_EXISTING_THEME,
     GET_PAGE_MAP,
     GET_SITE,
+    GET_SITE_LIVE_PAGES,
     GET_REATTACHMENTS,
     GET_RENDERS,
     GET_RUN,
@@ -308,12 +309,26 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         return unwrap(response.componentExtractionGetReattachments) ?? [];
     }
 
-    async getPageMap(runId: string): Promise<PageMapDto | null> {
+    async getPageMap(runId: string, tenantId?: string): Promise<PageMapDto | null> {
         const response = await this.client.execute<{
             pageCompositionPocPageMap: GqlEnvelope<PageMapDto | null>;
-        }>({ query: GET_PAGE_MAP, variables: { runId } });
+        }>({ query: GET_PAGE_MAP, variables: { runId, tenantId: tenantId ?? null } });
 
         return unwrap(response.pageCompositionPocPageMap) ?? null;
+    }
+
+    async getSiteLivePageIds(
+        jobId: string,
+        paths: string[]
+    ): Promise<Record<string, string | null>> {
+        if (paths.length === 0) {
+            return {};
+        }
+        const response = await this.client.execute<{
+            pageCompositionPocSiteLivePages: GqlEnvelope<Record<string, string | null> | null>;
+        }>({ query: GET_SITE_LIVE_PAGES, variables: { jobId, paths } });
+
+        return unwrap(response.pageCompositionPocSiteLivePages) ?? {};
     }
 
     async getComposedCapture(runId: string): Promise<ComposedCaptureDto | null> {

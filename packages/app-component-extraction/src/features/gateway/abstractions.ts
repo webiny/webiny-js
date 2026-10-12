@@ -123,7 +123,13 @@ export interface IComponentExtractionGateway {
     /** A run's override reattachment outcomes (W8.1). */
     getReattachments(runId: string): Promise<ReattachmentDto[]>;
     /** The run's composed pages, or null when composition has not been run for it. */
-    getPageMap(runId: string): Promise<PageMapDto | null>;
+    /**
+     * A run's page map. With `tenantId`, the composition written into that site tenant; without, the
+     * composition in the run's own (extraction) tenant.
+     */
+    getPageMap(runId: string, tenantId?: string): Promise<PageMapDto | null>;
+    /** Which page each path serves inside the job's site tenant (path → page id, or null). */
+    getSiteLivePageIds(jobId: string, paths: string[]): Promise<Record<string, string | null>>;
     /** Screenshots of the composed pages, or null when nobody has run the local harness for it. */
     getComposedCapture(runId: string): Promise<ComposedCaptureDto | null>;
     /** Compose this run's pages. Background task; the page map changing is how it reports done. */

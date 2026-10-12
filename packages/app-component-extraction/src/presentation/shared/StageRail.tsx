@@ -23,10 +23,19 @@ interface StageRailProps {
     onSelect: (stage: Stage) => void;
     /** Footer content under the legend — e.g. a "Back to job" ghost button on stage screens. */
     footer?: React.ReactNode;
+    /** Rows after the stages that are not stages, e.g. the run view's Site entry. */
+    after?: React.ReactNode;
     className?: string;
 }
 
-export const StageRail = ({ rows, selected, onSelect, footer, className }: StageRailProps) => {
+export const StageRail = ({
+    rows,
+    selected,
+    onSelect,
+    footer,
+    after,
+    className
+}: StageRailProps) => {
     const statusByStage = new Map(rows.map(row => [row.stage, row.status]));
     const completed = rows.filter(row => row.status === "complete").length;
 
@@ -78,6 +87,7 @@ export const StageRail = ({ rows, selected, onSelect, footer, className }: Stage
                         </button>
                     );
                 })}
+                {after}
             </div>
 
             <div className="mt-xs border-t border-neutral-dimmed pt-sm">

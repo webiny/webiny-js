@@ -2,6 +2,14 @@ import type { ComposedPageDto, PageSignalsDto } from "~/shared/types.js";
 
 export type ComposedStatus = "composed" | "caveat" | "failed" | "unknown";
 
+/** Each status as the tag a page row shows. */
+export const STATUS_TAG: Record<ComposedStatus, { content: string; variant: string }> = {
+    composed: { content: "composed", variant: "success-light" },
+    caveat: { content: "composed, with a caveat", variant: "warning" },
+    failed: { content: "failed", variant: "destructive" },
+    unknown: { content: "composed, unmeasured", variant: "neutral-light" }
+};
+
 /** Below this share of the source's text runs, a page is worth looking at rather than trusting. */
 const TEXT_COVERAGE_CAVEAT = 0.9;
 

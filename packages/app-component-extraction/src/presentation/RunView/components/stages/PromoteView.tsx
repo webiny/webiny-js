@@ -11,7 +11,6 @@ import {
     cn
 } from "@webiny/admin-ui";
 import { Routes } from "~/routes.js";
-import { SiteCard } from "./SiteCard.js";
 import { namespaceSegment, qualify } from "~/shared/naming.js";
 import { stageEntry } from "~/shared/ledger.js";
 import type { RunViewPresenter } from "../../abstractions.js";
@@ -123,7 +122,7 @@ const PromoteRow = ({
                 <Text size="sm" className="whitespace-nowrap text-neutral-strong">
                     {pages} page{pages === 1 ? "" : "s"}
                 </Text>
-                {promoted ? <Tag variant="success-light" content="Promoted" /> : null}
+                {promoted ? <Tag variant="success-light" content="Approved" /> : null}
             </div>
             {conflict ? (
                 <div className="flex flex-col gap-xs pl-lg">
@@ -223,7 +222,7 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
                     </Text>
                     {result ? (
                         <Text size="sm" className="text-neutral-strong">
-                            Last run: promoted {result.promoted.length}, skipped{" "}
+                            Last run: approved {result.promoted.length}, skipped{" "}
                             {result.skipped.length}
                         </Text>
                     ) : null}
@@ -247,14 +246,14 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
                         />
                     ) : null}
                     {/*
-                     * Secondary once something is promoted: "Build site" below is then the way
+                     * Secondary once something is approved: "Go to Site" below is then the way
                      * forward, and two primary actions side by side is the duplicate every other gate
-                     * dropped. Re-promoting a changed selection stays possible.
+                     * dropped. Re-approving a changed selection stays possible.
                      */}
                     <Button
                         variant={promoted > 0 ? "secondary" : "primary"}
                         size="sm"
-                        text={promoting ? "Starting…" : running ? "Promoting…" : "Promote selected"}
+                        text={promoting ? "Starting…" : running ? "Approving…" : "Approve selected"}
                         disabled={promoting || running || selectedCount === 0}
                         onClick={() => void presenter.runStage("promote")}
                     />
@@ -264,28 +263,37 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
             {running ? (
                 <div className="px-md pt-sm">
                     <Alert type="info" variant="subtle">
-                        Promoting {selectedCount} component{selectedCount === 1 ? "" : "s"} to the
-                        Library…
+                        Approving {selectedCount} component{selectedCount === 1 ? "" : "s"}: bundling
+                        them into this workspace&apos;s Library, ready to go into a site…
                     </Alert>
                 </div>
             ) : null}
             {promoted > 0 && !running ? (
                 <div className="px-md pt-sm">
                     <Alert type="success" variant="subtle">
-                        Promoted {promoted} component{promoted === 1 ? "" : "s"} to the Library
-                        {skipped > 0 ? ` · ${skipped} skipped` : ""}. Open the Library to use them.
+                        Approved {promoted} component{promoted === 1 ? "" : "s"}, held in this
+                        workspace&apos;s Library
+                        {skipped > 0 ? ` · ${skipped} skipped` : ""}.
                     </Alert>
                 </div>
             ) : null}
             {promoted > 0 && !running ? (
-                <div className="px-md pt-sm">
-                    <SiteCard presenter={presenter} />
+                <div className="flex flex-wrap items-center gap-sm px-md pt-sm">
+                    <Text size="sm" className="text-neutral-strong">
+                        Components approved. Next: the site, where the migrated pages are published.
+                    </Text>
+                    <Button
+                        variant="primary"
+                        size="sm"
+                        text="Go to Site"
+                        onClick={() => presenter.openSite()}
+                    />
                 </div>
             ) : null}
 
             {!vm.promoteGateLoaded ? (
                 <Text size="sm" className="px-md py-sm text-neutral-strong">
-                    Loading the components to promote…
+                    Loading the components to approve…
                 </Text>
             ) : promotable.length === 0 ? (
                 <Text size="sm" className="px-md py-sm text-neutral-strong">

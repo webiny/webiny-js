@@ -5,7 +5,7 @@ import { RunImage } from "~/presentation/runImage/RunImage.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type { AssembledPageDto, ComposedPageDto, PageMapDto, RunDto } from "~/shared/types.js";
 import { PageSignals } from "./PageSignals.js";
-import { composedStatus, type ComposedStatus } from "./pageStatus.js";
+import { composedStatus, STATUS_TAG } from "./pageStatus.js";
 import {
     captureState,
     pageCapture,
@@ -26,12 +26,6 @@ interface Props {
     onCompare: (open: boolean, page: string | null) => void;
 }
 
-const STATUS_TAG: Record<ComposedStatus, { content: string; variant: string }> = {
-    composed: { content: "composed", variant: "success-light" },
-    caveat: { content: "composed, with a caveat", variant: "warning" },
-    failed: { content: "failed", variant: "destructive" },
-    unknown: { content: "composed, unmeasured", variant: "neutral-light" }
-};
 
 /**
  * Why composition cannot run yet, or null when it can.
@@ -50,7 +44,7 @@ const composeBlockedBecause = (run: RunDto | null): string | null => {
         return "Assemble must be done first — composition builds pages from what Assemble laid out.";
     }
     if (status("promote") !== "done") {
-        return "Promote must be done first — a composed page addresses a component by the name it was promoted under.";
+        return "Components must be approved first — a composed page addresses a component by the name it was approved under.";
     }
     return null;
 };

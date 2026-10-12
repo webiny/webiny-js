@@ -89,6 +89,11 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         livePageByPath: {},
         composing: false,
         site: null,
+        showSite: false,
+        sitePageMap: null,
+        sitePageMapLoading: false,
+        siteLivePageByPath: {},
+        siteAssembledCount: null,
         buildingSite: false,
         recapturing: false,
         comparedPath: null,
@@ -154,6 +159,8 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 this.openStage(selected);
             });
             void this.loadThemeSnapshot();
+            // The rail's Site entry shows the site's state from the start, not only once opened.
+            void this.loadSite(run);
             if (selected) {
                 await this.loadLogs(run, selected);
                 await this.loadArtifact(run, selected);
@@ -410,6 +417,11 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     }
 
     selectStage(stage: string) {
+        if (this.vm.showSite) {
+            runInAction(() => {
+                this.vm.showSite = false;
+            });
+        }
         this.openStage(stage);
         if (this.vm.run) {
             void this.loadLogs(this.vm.run, stage);
@@ -974,6 +986,7 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             this.vm.showTokens = opening;
             this.vm.showOverrides = false;
             this.vm.showComposed = false;
+            this.vm.showSite = false;
         });
         if (opening && this.vm.run && this.vm.modelCalls === null) {
             void this.loadModelCalls(this.vm.run);
@@ -1000,6 +1013,7 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 if (open) {
                     this.vm.showTokens = false;
                     this.vm.showOverrides = false;
+                    this.vm.showSite = false;
                 }
             });
         }
@@ -1048,6 +1062,66 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
+    openSite(): void {
+        runInAction(() => {
+            this.vm.showSite = true;
+            this.vm.showTokens = false;
+            this.vm.showOverrides = false;
+        });
+        const run = this.vm.run;
+        if (run) {
+            void this.loadSite(run).then(() => this.loadSitePages(run));
+        }
+    }
+
+    /**
+     * The site's pages as its last build published them, and which page each path serves there.
+     *
+     * Both are read in the SITE'S tenant. Read from here without one, the page map is the extraction
+     * tenant's composition and every path answers with that tenant's page: the wrong site, with nothing
+     * on screen to say so. The map is the one of the run the site was last built from, which need not be
+     * the run on screen.
+     */
+    private async loadSitePages(run: RunDto): Promise<void> {
+        runInAction(() => {
+            this.vm.sitePageMapLoading = true;
+        });
+        try {
+            const assembleDone = run.stages.some(
+                entry => entry.stage === "assemble" && entry.status === "done"
+            );
+            const assemble = assembleDone
+                ? ((await this.gateway
+                      .getStageArtifact(run.id, "assemble")
+                      .catch(() => null)) as AssembleArtifactDto | null)
+                : null;
+            const site = this.vm.site;
+            const builtFrom = site?.lastBuild?.runId;
+            const map =
+                site && builtFrom ? await this.gateway.getPageMap(builtFrom, site.tenantId) : null;
+            const live =
+                site && map
+                    ? await this.gateway
+                          .getSiteLivePageIds(
+                              site.jobId,
+                              map.pages.map(page => page.path)
+                          )
+                          .catch(() => ({}))
+                    : {};
+            runInAction(() => {
+                this.vm.siteAssembledCount = assemble ? assemble.pages.length : null;
+                this.vm.sitePageMap = map;
+                this.vm.siteLivePageByPath = live;
+                this.vm.sitePageMapLoading = false;
+            });
+        } catch (error) {
+            runInAction(() => {
+                this.vm.sitePageMapLoading = false;
+                this.vm.error = (error as Error).message;
+            });
+        }
+    }
+
     async buildSite(): Promise<void> {
         const run = this.vm.run;
         if (!run || this.vm.buildingSite) {
@@ -1088,13 +1162,14 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 runInAction(() => {
                     this.vm.buildingSite = false;
                 });
+                await this.loadSitePages(run);
                 return;
             }
         }
         runInAction(() => {
             this.vm.buildingSite = false;
             this.vm.error =
-                "The site build was started but has not finished after five minutes. It may still be running — reopen Promote to check.";
+                "The site build was started but has not finished after five minutes. It may still be running — reopen Site to check.";
         });
     }
 
@@ -1206,6 +1281,7 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             this.vm.showOverrides = opening;
             this.vm.showTokens = false;
             this.vm.showComposed = false;
+            this.vm.showSite = false;
         });
         if (opening && this.vm.run) {
             void this.loadOverrides(this.vm.run);

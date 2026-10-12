@@ -160,8 +160,23 @@ export interface IRunViewVm {
      * page map changing is the only thing that says it finished, which is what the presenter polls.
      */
     composing: boolean;
-    /** The job's site in its own tenant, once the Promote gate has looked; null when it has none. */
+    /** The job's site in its own tenant, loaded with the run; null when it has none. */
     site: SiteDto | null;
+    /**
+     * The Site view is open (the rail entry after the stages). Like the composed pages panel it is not a
+     * stage: the site belongs to the job and has no ledger entry.
+     */
+    showSite: boolean;
+    /**
+     * The page map of the site's last build, read in the SITE'S tenant. The composed pages panel reads
+     * the extraction tenant's composition, which is a different set of pages at the same paths.
+     */
+    sitePageMap: PageMapDto | null;
+    sitePageMapLoading: boolean;
+    /** Which page each of the site's paths serves, asked inside the site's tenant. */
+    siteLivePageByPath: Record<string, string | null>;
+    /** How many pages this run assembled, which is what a build publishes; null until known. */
+    siteAssembledCount: number | null;
     /** A site build was started from this screen and has not reported done or failed yet. */
     buildingSite: boolean;
     /** A re-capture of selected pages is in flight. */
@@ -235,6 +250,8 @@ export interface IRunViewPresenter {
     composePages(): Promise<void>;
     /** Build the job's site in its own tenant, following the build until it finishes. */
     buildSite(): Promise<void>;
+    /** Open the Site view, closing whatever pane or stage view was showing. */
+    openSite(): void;
     /** Toggle a cluster's selection for a bulk correction (W8.3). */
     toggleClusterSelection(signature: string): void;
     /** Clear the cluster selection (W8.3). */
