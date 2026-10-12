@@ -87,7 +87,8 @@ const CellValue = ({ cell }: { cell: Cell }) =>
 
 /**
  * The site at a glance: published, how many pages, and the four facts a newcomer asks first. The
- * actions sit here: how it was built, publishing again, and the preview.
+ * actions sit here: how it was built and the preview. Publishing again sits beside the qualities,
+ * next to the sentence saying what it brings.
  */
 export const SiteOverview = createReactiveComponent(function SiteOverview({
     presenter,
@@ -102,7 +103,6 @@ export const SiteOverview = createReactiveComponent(function SiteOverview({
     const pages = result?.pages.length ?? vm.sitePageMap?.pages.length ?? 0;
     const viewUrl = siteUrl(vm.websiteDomain, "/", site.tenantId);
     const finished = build.finishedOn ? new Date(build.finishedOn) : null;
-    const building = vm.buildingSite;
 
     // "All used" only when nothing is left over and nothing waits for the next publish.
     const placed = inventory
@@ -169,12 +169,6 @@ export const SiteOverview = createReactiveComponent(function SiteOverview({
                             variant="tertiary"
                             text={stepsOpen ? "Hide how it was built" : "How it was built"}
                             onClick={onToggleSteps}
-                        />
-                        <Button
-                            variant="tertiary"
-                            text={building ? "Publishing…" : "Publish again"}
-                            disabled={building}
-                            onClick={() => void presenter.buildSite()}
                         />
                         <Tooltip
                             content={

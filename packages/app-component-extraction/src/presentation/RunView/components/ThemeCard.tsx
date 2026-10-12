@@ -77,7 +77,12 @@ const FitLine = ({ fit }: { fit: ThemeFitDto }) => {
                         </Text>
                     </div>
                     {/* Matched only: "near" is said in words, a second bar segment has no primitive. */}
-                    <ProgressBar value={row.fitted} max={Math.max(row.measured, 1)} />
+                    {/* Neutral, not the brand colour: a fit is a measurement, not a task part done. */}
+                    <ProgressBar
+                        value={row.fitted}
+                        max={Math.max(row.measured, 1)}
+                        className="[&_[data-slot=progress-indicator]]:bg-neutral-strong"
+                    />
                 </div>
             ))}
             <Text size="sm" className="text-neutral-muted">
