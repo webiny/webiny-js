@@ -31,18 +31,17 @@ class DeleteReviewsOnEntryDeleteImpl implements EntryAfterDeleteEventHandler.Int
                 targetId: entry.entryId
             });
             if (deleted.isFail()) {
-                this.logOrphaned(deleted.error, namespace, entry.entryId);
+                this.logger.error(
+                    { error: deleted.error, model: namespace, targetId: entry.entryId },
+                    "Could not delete the reviews of a deleted entry; they are left orphaned."
+                );
             }
         } catch (error) {
-            this.logOrphaned(error, namespace, entry.entryId);
+            this.logger.error(
+                { error, model: namespace, targetId: entry.entryId },
+                "Could not delete the reviews of a deleted entry; they are left orphaned."
+            );
         }
-    }
-
-    private logOrphaned(error: unknown, model: string, targetId: string): void {
-        this.logger.error(
-            { error, model, targetId },
-            "Could not delete the reviews of a deleted entry; they are left orphaned."
-        );
     }
 }
 

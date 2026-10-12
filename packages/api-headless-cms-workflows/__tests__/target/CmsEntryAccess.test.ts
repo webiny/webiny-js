@@ -24,10 +24,7 @@ import {
 } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { CmsEntryTargetReader } from "~/features/target/CmsEntryTargetReader/index.js";
 import { CmsEntryAccess } from "~/features/target/CmsEntryAccess/index.js";
-import {
-    CmsEntryReviewNamespace,
-    resolveReviewNamespace
-} from "~/features/target/CmsEntryReviewNamespace/index.js";
+import { CmsEntryReviewNamespace } from "~/features/target/CmsEntryReviewNamespace/index.js";
 
 const registerFakeFlp = (container: Container) => {
     container.register(FakeFolderLevelPermissions);
@@ -217,11 +214,9 @@ describe("CMS target reading and access", () => {
             await context.container.resolve(GetModelUseCase).execute("wbyWorkflowReview")
         );
 
-        expect(resolveReviewNamespace(namespaces, await getAuthorModel(context))).toBe(
-            AUTHOR_NAMESPACE
-        );
+        expect(namespaces[0].resolve(await getAuthorModel(context))).toBe(AUTHOR_NAMESPACE);
         // The workflows' own private models (and WB pages without the WB package) have none.
-        expect(resolveReviewNamespace(namespaces, reviewModel)).toBeNull();
+        expect(namespaces[0].resolve(reviewModel)).toBeNull();
     });
 
     it("refuses a user who can read the model and entries but not the group (R72)", async () => {

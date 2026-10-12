@@ -28,24 +28,19 @@ class CmsEntryReviewTargetReadAccessImpl implements ReviewTargetReadAccess.Inter
     }
 
     public async canUserRead(params: ReviewTargetReadAccess.UserReadParams): Promise<boolean> {
-        const target = await this.readTarget(params);
-        if (!target || target.entry.entryId !== params.targetId) {
-            return false;
-        }
-        return this.candidates.canUserRead(params.userId, () => this.access.canRead(target));
-    }
-
-    private async readTarget(
-        params: ReviewTargetReadAccess.UserReadParams
-    ): Promise<CmsEntryTargetReader.Target | null> {
+        let target: CmsEntryTargetReader.Target | null;
         try {
-            return await this.targets.read({
+            target = await this.targets.read({
                 model: params.model,
                 targetRevisionId: params.targetRevisionId
             });
         } catch {
-            return null;
+            return false;
         }
+        if (!target || target.entry.entryId !== params.targetId) {
+            return false;
+        }
+        return this.candidates.canUserRead(params.userId, () => this.access.canRead(target));
     }
 }
 

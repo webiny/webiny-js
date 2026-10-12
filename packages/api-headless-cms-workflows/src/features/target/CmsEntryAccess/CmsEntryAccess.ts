@@ -2,9 +2,9 @@ import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstract
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { GetGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/GetGroup/index.js";
 import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
+import { ROOT_FOLDER } from "@webiny/api-headless-cms/constants.js";
 import { getModelIdFromAppName } from "~/utils/appName.js";
 import type { CmsEntryTarget } from "../CmsEntryTargetReader/abstractions.js";
-import { canAccessEntryFolder, type EntryFolderRwd } from "../canAccessEntryFolder.js";
 import { CmsEntryAccess as Abstraction } from "./abstractions.js";
 
 const UNREADABLE_CODES = [
@@ -31,16 +31,88 @@ class CmsEntryAccessImpl implements Abstraction.Interface {
         private folderLevelPermissions: FolderLevelPermissions.Interface
     ) {}
 
-    public canRead(target: CmsEntryTarget): Promise<boolean> {
-        return this.can(target, "r");
+    public async canRead(target: CmsEntryTarget): Promise<boolean> {
+        if (!(await this.accessControl.canAccessGroup({ group: target.group }))) {
+            return false;
+        }
+        if (!(await this.accessControl.canAccessModel({ model: target.model }))) {
+            return false;
+        }
+        const canAccessEntry = await this.accessControl.canAccessEntry({
+            model: target.model,
+            entry: target.entry,
+            rwd: "r"
+        });
+        if (!canAccessEntry) {
+            return false;
+        }
+        // Folder-level permissions are skipped when FLP is not in use for the identity (e.g. API
+        // keys) or the entry is in the root folder, as the ACO CMS decorators do.
+        if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
+            return true;
+        }
+        const folderId = target.entry.location?.folderId;
+        if (!folderId || folderId === ROOT_FOLDER) {
+            return true;
+        }
+        const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
+        return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "r" });
     }
 
-    public canWrite(target: CmsEntryTarget): Promise<boolean> {
-        return this.can(target, "w");
+    public async canWrite(target: CmsEntryTarget): Promise<boolean> {
+        if (!(await this.accessControl.canAccessGroup({ group: target.group }))) {
+            return false;
+        }
+        if (!(await this.accessControl.canAccessModel({ model: target.model }))) {
+            return false;
+        }
+        const canAccessEntry = await this.accessControl.canAccessEntry({
+            model: target.model,
+            entry: target.entry,
+            rwd: "w"
+        });
+        if (!canAccessEntry) {
+            return false;
+        }
+        // Folder-level permissions are skipped when FLP is not in use for the identity (e.g. API
+        // keys) or the entry is in the root folder, as the ACO CMS decorators do.
+        if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
+            return true;
+        }
+        const folderId = target.entry.location?.folderId;
+        if (!folderId || folderId === ROOT_FOLDER) {
+            return true;
+        }
+        const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
+        return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "w" });
     }
 
-    public canDelete(target: CmsEntryTarget): Promise<boolean> {
-        return this.can(target, "d");
+    public async canDelete(target: CmsEntryTarget): Promise<boolean> {
+        if (!(await this.accessControl.canAccessGroup({ group: target.group }))) {
+            return false;
+        }
+        if (!(await this.accessControl.canAccessModel({ model: target.model }))) {
+            return false;
+        }
+        const canAccessEntry = await this.accessControl.canAccessEntry({
+            model: target.model,
+            entry: target.entry,
+            rwd: "d"
+        });
+        if (!canAccessEntry) {
+            return false;
+        }
+        // Folder-level permissions are skipped when FLP is not in use for the identity (e.g. API
+        // keys) or the entry is in the root folder, as the ACO CMS decorators do.
+        if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
+            return true;
+        }
+        const folderId = target.entry.location?.folderId;
+        if (!folderId || folderId === ROOT_FOLDER) {
+            return true;
+        }
+        const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
+        return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "d" });
     }
 
     public async canDeleteAnyEntry(namespace: string): Promise<boolean> {
@@ -72,28 +144,6 @@ class CmsEntryAccessImpl implements Abstraction.Interface {
             return false;
         }
         return this.accessControl.canAccessEntry({ model: model.value, rwd: "d" });
-    }
-
-    private async can(target: CmsEntryTarget, rwd: EntryFolderRwd): Promise<boolean> {
-        if (!(await this.accessControl.canAccessGroup({ group: target.group }))) {
-            return false;
-        }
-        if (!(await this.accessControl.canAccessModel({ model: target.model }))) {
-            return false;
-        }
-        const canAccessEntry = await this.accessControl.canAccessEntry({
-            model: target.model,
-            entry: target.entry,
-            rwd
-        });
-        if (!canAccessEntry) {
-            return false;
-        }
-        return canAccessEntryFolder(
-            this.folderLevelPermissions,
-            target.entry.location?.folderId,
-            rwd
-        );
     }
 }
 

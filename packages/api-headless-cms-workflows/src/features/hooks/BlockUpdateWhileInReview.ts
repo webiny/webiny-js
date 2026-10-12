@@ -2,10 +2,7 @@ import { EntryBeforeUpdateEventHandler } from "@webiny/api-headless-cms/features
 import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
 import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
 import { ReviewTargetLockedError } from "@webiny/api-workflows/domain/review/errors.js";
-import {
-    CmsEntryReviewNamespace,
-    resolveReviewNamespace
-} from "~/features/target/CmsEntryReviewNamespace/index.js";
+import { CmsEntryReviewNamespace } from "~/features/target/CmsEntryReviewNamespace/index.js";
 
 /**
  * The save block (spec 9.2, D62, D80, D134, R54): on a model bound to a workflow, a revision with
@@ -27,7 +24,15 @@ class BlockUpdateWhileInReviewImpl implements EntryBeforeUpdateEventHandler.Inte
 
     public async handle(event: EntryBeforeUpdateEventHandler.Event): Promise<void> {
         const { model, original } = event.payload;
-        const namespace = resolveReviewNamespace(this.namespaces, model);
+        // The last registered non-null namespace for the model wins (R51).
+        let namespace: string | null = null;
+        for (const candidate of [...this.namespaces].reverse()) {
+            const resolved = candidate.resolve(model);
+            if (resolved) {
+                namespace = resolved;
+                break;
+            }
+        }
         if (!namespace) {
             return;
         }
