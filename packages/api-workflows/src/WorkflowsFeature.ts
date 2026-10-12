@@ -25,6 +25,7 @@ import { ListTargetReviewsFeature } from "~/features/review/ListTargetReviews/fe
 import { CancelTargetReviewsFeature } from "~/features/review/CancelTargetReviews/feature.js";
 import { DeleteTargetReviewsFeature } from "~/features/review/DeleteTargetReviews/feature.js";
 import { GetBoundWorkflowFeature } from "~/features/workflow/GetBoundWorkflow/feature.js";
+import { ReadableBlockingReviewsFeature } from "~/features/workflow/ReadableBlockingReviews/feature.js";
 import { AssignmentSharedFeature } from "~/features/assignment/shared/feature.js";
 import { WorkflowSettingsSharedFeature } from "~/features/settings/shared/feature.js";
 import { GetWorkflowSettingsFeature } from "~/features/settings/GetWorkflowSettings/feature.js";
@@ -78,6 +79,7 @@ export const WorkflowsFeature = createFeature({
         DeleteTargetReviewsFeature.register(container);
         CancelTargetReviewsFeature.register(container);
         GetBoundWorkflowFeature.register(container);
+        ReadableBlockingReviewsFeature.register(container);
 
         // Assignment log (written from phase 4)
         AssignmentSharedFeature.register(container);

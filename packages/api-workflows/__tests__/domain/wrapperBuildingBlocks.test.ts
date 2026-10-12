@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { WorkflowBlockingReview } from "~/domain/workflow/types.js";
+import { Container } from "@webiny/feature/api";
 import {
-    keepReadableBlockingReviews,
-    MAX_BLOCKING_REVIEW_CHECKS
-} from "~/domain/workflow/keepReadableBlockingReviews.js";
+    MAX_BLOCKING_REVIEW_CHECKS,
+    ReadableBlockingReviewsService
+} from "~/features/workflow/ReadableBlockingReviews/abstractions.js";
+import { ReadableBlockingReviewsFeature } from "~/features/workflow/ReadableBlockingReviews/feature.js";
 import { belongsToApp, isAppWorkflow } from "~/domain/workflow/isAppWorkflow.js";
 import { getDeleteCancelReason } from "~/domain/review/getDeleteCancelReason.js";
 import { createWorkflowValues } from "~tests/__helpers/fixtures.js";
@@ -23,13 +25,19 @@ const createBlockingReviews = (count: number): WorkflowBlockingReview[] => {
     });
 };
 
+const createService = (): ReadableBlockingReviewsService.Interface => {
+    const container = new Container();
+    ReadableBlockingReviewsFeature.register(container);
+    return container.resolve(ReadableBlockingReviewsService);
+};
+
 const isCms = (model: string): boolean => model.startsWith("cms.");
 
-describe("keepReadableBlockingReviews (D115)", () => {
+describe("ReadableBlockingReviewsService (D115)", () => {
     it("keeps the first five readable reviews in order", async () => {
         const reviews = createBlockingReviews(12);
         // Every odd review is unreadable.
-        const readable = await keepReadableBlockingReviews(reviews, async review => {
+        const readable = await createService().filter(reviews, async review => {
             return Number(review.reviewId.split("-")[1]) % 2 === 0;
         });
 
@@ -47,7 +55,7 @@ describe("keepReadableBlockingReviews (D115)", () => {
         let checks = 0;
 
         // Review 2, 4, ... are readable: the fifth one is review 10, so reviews 11 and 12 are never read.
-        const readable = await keepReadableBlockingReviews(reviews, async review => {
+        const readable = await createService().filter(reviews, async review => {
             checks++;
             return Number(review.reviewId.split("-")[1]) % 2 === 0;
         });
@@ -60,7 +68,7 @@ describe("keepReadableBlockingReviews (D115)", () => {
         const reviews = createBlockingReviews(80);
         let checks = 0;
 
-        const readable = await keepReadableBlockingReviews(reviews, async () => {
+        const readable = await createService().filter(reviews, async () => {
             checks++;
             return false;
         });
@@ -72,7 +80,7 @@ describe("keepReadableBlockingReviews (D115)", () => {
     it("counts a failed check as unreadable", async () => {
         const reviews = createBlockingReviews(3);
 
-        const readable = await keepReadableBlockingReviews(reviews, async review => {
+        const readable = await createService().filter(reviews, async review => {
             if (review.reviewId === "review-2") {
                 throw new Error("Storage is down.");
             }
