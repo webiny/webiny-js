@@ -66,12 +66,12 @@ const setup = (siteTenantFromStart: boolean) => {
         progress: async () => {}
     };
     const handler = new PromoteHandlerImpl(
-        createComponent,
-        updateComponent,
-        listComponents,
-        overrides,
-        tenantContext,
-        siteTenant
+        createComponent as never,
+        updateComponent as never,
+        listComponents as never,
+        overrides as never,
+        tenantContext as never,
+        siteTenant as never
     );
     return { handler, context, calls, written, siteTenant };
 };
@@ -79,7 +79,7 @@ const setup = (siteTenantFromStart: boolean) => {
 describe("stage 9's tenant", () => {
     it("approves into the site tenant for a job created with siteTenantFromStart", async () => {
         const { handler, context, calls, written, siteTenant } = setup(true);
-        const outcome = await handler.execute(context);
+        const outcome = await handler.execute(context as never);
 
         expect(outcome.isOk()).toBe(true);
         expect(siteTenant.ensure).toHaveBeenCalledTimes(1);
@@ -92,7 +92,7 @@ describe("stage 9's tenant", () => {
 
     it("approves into the extraction tenant for any older job, and records no tenant", async () => {
         const { handler, context, calls, written, siteTenant } = setup(false);
-        const outcome = await handler.execute(context);
+        const outcome = await handler.execute(context as never);
 
         expect(outcome.isOk()).toBe(true);
         expect(siteTenant.ensure).not.toHaveBeenCalled();
