@@ -6,6 +6,11 @@ import { ListCmsEntryWorkflowsFeature } from "./ListCmsEntryWorkflows/feature.js
 import { GetCmsEntryWorkflowFeature } from "./GetCmsEntryWorkflow/feature.js";
 import { RequestCmsEntryReviewFeature } from "./RequestCmsEntryReview/feature.js";
 import { GetCmsEntryReviewFeature } from "./GetCmsEntryReview/feature.js";
+import { StartCmsEntryReviewStepFeature } from "./StartCmsEntryReviewStep/feature.js";
+import { TakeOverCmsEntryReviewStepFeature } from "./TakeOverCmsEntryReviewStep/feature.js";
+import { ApproveCmsEntryReviewStepFeature } from "./ApproveCmsEntryReviewStep/feature.js";
+import { RejectCmsEntryReviewStepFeature } from "./RejectCmsEntryReviewStep/feature.js";
+import { CancelCmsEntryReviewFeature } from "./CancelCmsEntryReview/feature.js";
 
 /**
  * The Headless CMS wrapper use cases (D132, D133, R45): identity, `workflows` permission and target
@@ -25,5 +30,10 @@ export const CmsWrappersFeature = createFeature({
         // Reviews
         RequestCmsEntryReviewFeature.register(container);
         GetCmsEntryReviewFeature.register(container);
+        StartCmsEntryReviewStepFeature.register(container);
+        TakeOverCmsEntryReviewStepFeature.register(container);
+        ApproveCmsEntryReviewStepFeature.register(container);
+        RejectCmsEntryReviewStepFeature.register(container);
+        CancelCmsEntryReviewFeature.register(container);
     }
 });

@@ -7,6 +7,11 @@ import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/Li
 import { RequestReviewUseCase } from "@webiny/api-workflows/features/review/RequestReview/index.js";
 import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
 import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
+import { StartReviewStepUseCase } from "@webiny/api-workflows/features/review/StartReviewStep/index.js";
+import { TakeOverReviewStepUseCase } from "@webiny/api-workflows/features/review/TakeOverReviewStep/index.js";
+import { ApproveReviewStepUseCase } from "@webiny/api-workflows/features/review/ApproveReviewStep/index.js";
+import { RejectReviewStepUseCase } from "@webiny/api-workflows/features/review/RejectReviewStep/index.js";
+import { CancelReviewUseCase } from "@webiny/api-workflows/features/review/CancelReview/index.js";
 import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
 
 /** Engine calls the handlers made, by use case name. Clear it in `beforeEach`. */
@@ -97,6 +102,51 @@ class CountingDeleteTargetReviews implements DeleteTargetReviewsUseCase.Interfac
     }
 }
 
+class CountingStartReviewStep implements StartReviewStepUseCase.Interface {
+    public constructor(private decoratee: StartReviewStepUseCase.Interface) {}
+
+    public async execute(input: StartReviewStepUseCase.Input): StartReviewStepUseCase.Return {
+        engineCalls.push("StartReviewStep");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingTakeOverReviewStep implements TakeOverReviewStepUseCase.Interface {
+    public constructor(private decoratee: TakeOverReviewStepUseCase.Interface) {}
+
+    public async execute(input: TakeOverReviewStepUseCase.Input): TakeOverReviewStepUseCase.Return {
+        engineCalls.push("TakeOverReviewStep");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingApproveReviewStep implements ApproveReviewStepUseCase.Interface {
+    public constructor(private decoratee: ApproveReviewStepUseCase.Interface) {}
+
+    public async execute(input: ApproveReviewStepUseCase.Input): ApproveReviewStepUseCase.Return {
+        engineCalls.push("ApproveReviewStep");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingRejectReviewStep implements RejectReviewStepUseCase.Interface {
+    public constructor(private decoratee: RejectReviewStepUseCase.Interface) {}
+
+    public async execute(input: RejectReviewStepUseCase.Input): RejectReviewStepUseCase.Return {
+        engineCalls.push("RejectReviewStep");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingCancelReview implements CancelReviewUseCase.Interface {
+    public constructor(private decoratee: CancelReviewUseCase.Interface) {}
+
+    public async execute(input: CancelReviewUseCase.Input): CancelReviewUseCase.Return {
+        engineCalls.push("CancelReview");
+        return this.decoratee.execute(input);
+    }
+}
+
 /** Records every workflow and review lookup the handlers make in `engineCalls` (`legacyPlugins`). */
 export const countEngineCalls = (container: Container) => {
     container.registerDecorator(
@@ -137,5 +187,32 @@ export const countEngineCalls = (container: Container) => {
             decorator: CountingDeleteTargetReviews,
             dependencies: []
         })
+    );
+    container.registerDecorator(
+        StartReviewStepUseCase.createDecorator({
+            decorator: CountingStartReviewStep,
+            dependencies: []
+        })
+    );
+    container.registerDecorator(
+        TakeOverReviewStepUseCase.createDecorator({
+            decorator: CountingTakeOverReviewStep,
+            dependencies: []
+        })
+    );
+    container.registerDecorator(
+        ApproveReviewStepUseCase.createDecorator({
+            decorator: CountingApproveReviewStep,
+            dependencies: []
+        })
+    );
+    container.registerDecorator(
+        RejectReviewStepUseCase.createDecorator({
+            decorator: CountingRejectReviewStep,
+            dependencies: []
+        })
+    );
+    container.registerDecorator(
+        CancelReviewUseCase.createDecorator({ decorator: CountingCancelReview, dependencies: [] })
     );
 };
