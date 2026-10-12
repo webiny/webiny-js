@@ -6,7 +6,7 @@
     ".": "./index.js",
     "./*": "./*"
   },
-  "description": "Headless CMS Workflows",
+  "description": "Website Builder Workflows",
   "keywords": [
     "api-website-builder-workflows:base"
   ],
@@ -23,11 +23,11 @@
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-workflows": "0.0.0",
     "@webiny/api-website-builder": "0.0.0",
+    "@webiny/api-workflows": "0.0.0",
     "@webiny/feature": "0.0.0"
   },
   "devDependencies": {
     "@webiny/api-headless-cms-testing": "0.0.0",
-    "@webiny/api-workflows": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "0.0.0",
