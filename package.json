@@ -120,7 +120,7 @@
     "lint:fix": "oxlint --fix",
     "mdx-from-folder": "tsx scripts/mdxFromFolder",
     "open": "yarn webiny open",
-    "postinstall": "yarn node ./scripts/linkWorkspaces.js",
+    "postinstall": "yarn node ./scripts/linkWorkspaces.js && (git config core.hooksPath .githooks || true)",
     "prepublishOnly": "tsx scripts/prepublishOnly/src/index.ts",
     "release": "tsx ./scripts/release/src/index.ts",
     "setup-cypress": "tsx scripts/setupCypress/setupCypressAws.js",
