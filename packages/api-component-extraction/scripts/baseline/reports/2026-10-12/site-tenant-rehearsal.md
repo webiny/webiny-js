@@ -60,3 +60,56 @@ Stages 1–8 added 20 files (captured images and Generate's reference crops), as
    design; named here because it is visible.
 6. **First reads after each publish served the previous state** (a 404 on `/` before the first publish
    took). Two later reads agreed each time.
+
+## Follow-up (2026-10-12, 10:50–11:11 UTC)
+
+### The draft preview's 404: the cause was the panel's link, not the key
+
+- **The website previews only when the URL says so.** A request starts preview only with
+  `wb.preview=true` (or `wb.editing=true`). The SDK then loads the page named by `wb.type=page` and
+  `wb.id`.
+- **What the panel's link did:** it opened `/api/preview` with only the path and the tenant. The route
+  turned draft mode on and redirected; the middleware saw draft mode without `wb.preview`, read that as
+  leaving preview, cleared the cookie, and served the live page at the path. For a draft, that is a 404.
+- **Confirmed in a fresh browser session:** the link with `wb.preview`, `wb.type`, `wb.id`, `wb.path`
+  and `wb.tenant` renders the draft, with its page id in the document. That held for the hand-made draft
+  and for a composed draft (the home page, with its content). **The website's own key reads drafts in
+  the site tenant; no key change is needed.** The panel now builds that link (`4757ebc07a`).
+
+### Items 2 and 3, fixed
+
+- **"Publish site" until a publish has run.** "Publish again" follows only after one.
+- **Drafts counted apart from unpublished pages.**
+- **A defect in my first wording fix, found while measuring and fixed before this report.** During the
+  window the inventory called the new approval's 16 components "no live page uses … kept because a draft
+  names them". The inventory now reads the current approval and reports those components as "16 newly
+  approved components go live at the next publish", apart from real leftovers (`ad436fe9a5`). Checked in
+  the running admin in that state: 1 leftover (Media Gallery), 4 drafts, 16 pending.
+
+### Item 4 measured: the live site between a re-approval and the next publish
+
+Every read was taken more than 60 seconds after the change, and each state was confirmed by two reads
+that agree.
+
+| State                               | Bundles per page | `/`        | `/docs`    | `/learn`   |
+| ----------------------------------- | ---------------- | ---------- | ---------- | ---------- |
+| before the re-approval              | 17               | 283 KB     | 253 KB     | 241 KB     |
+| **between re-approval and publish** | **33**           | **473 KB** | **443 KB** | **431 KB** |
+| after the publish                   | 17               | 282 KB     | 252 KB     | 240 KB     |
+
+- **The size of the window:** every live page carries both sets of components, **+67% to +79%** in
+  bytes. That lasts from the moment the approval finishes (the website's component list refreshes within
+  a minute) until the next publish. A team iterating spends most of its time in this window, so its live
+  site is heaviest exactly while it works on it.
+- **Publishing restores it:** 16 superseded copies were removed, and pages returned to their earlier
+  size (about 1 KB smaller each).
+- **How to close it, if it should be closed:** the window exists because components have no draft
+  state, so a new approval is visible to the live site at once. Draft and published states for
+  components (the platform change in the design) would close it. An approval that does not write into
+  the live Library until publish would too. Neither is built.
+
+### Also seen
+
+- **Names freed by a removal are reused.** After the second publish removed `Site Navigation Header`,
+  the next approval took that name back without a suffix.
+- **Root was unchanged throughout, at 266 / 99 / 1,509.**
