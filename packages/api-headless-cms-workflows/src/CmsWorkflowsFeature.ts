@@ -3,6 +3,7 @@ import { CmsGraphQLSchemaFactory } from "@webiny/api-headless-cms";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { WorkflowsFeature as CmsLocalWorkflowsFeature } from "./features/Workflows/index.js";
 import { CmsTargetFeature } from "./features/target/feature.js";
+import { CmsHooksFeature } from "./features/hooks/feature.js";
 import { createEntrySystemSchemaExtension } from "./graphql/entrySystemSchema.js";
 
 export const CmsWorkflowsFeature = createFeature({
@@ -19,6 +20,9 @@ export const CmsWorkflowsFeature = createFeature({
 
         // The `cms.*` target adapter (spec 9.3).
         CmsTargetFeature.register(container);
+
+        // Workflow handlers on CMS events (spec 9.2).
+        CmsHooksFeature.register(container);
 
         // Add the `workflow` field to CmsEntrySystem on the CMS endpoint, which is served from the
         // separate CMS schema and needs its own CmsGraphQLSchemaFactory entry.
