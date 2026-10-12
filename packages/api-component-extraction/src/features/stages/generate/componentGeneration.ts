@@ -408,6 +408,19 @@ const qualityLines = (component: PlannedComponent, include: Ablation): string[] 
             "replacement."
         );
     }
+    // Generic, with no capture data behind it: the weakest of the seven (qualityPasses.ts).
+    if (include.has("quality.responsive")) {
+        lines.push(
+            "",
+            "Make the component work at any width from 320px up without knowing the page around it: size",
+            "its containers with fluid widths (%, fr, minmax, max-width) rather than fixed pixel widths;",
+            "keep everything inside its container, so the page never scrolls sideways at 320px; below",
+            "768px, stack side-by-side columns and rows of cards in reading order; make links and buttons",
+            "at least 44×44px to tap; let text wrap inside its box, breaking long words and URLs",
+            "(`overflow-wrap: anywhere`) rather than spilling out. At wide widths, keep the layout the crop",
+            "shows."
+        );
+    }
     if (include.has("quality.image-size") && hasImages(component)) {
         lines.push(
             "",

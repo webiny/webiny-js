@@ -98,6 +98,7 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         siteAssembledCount: null,
         siteBuiltFrom: null,
         siteInventory: null,
+        siteResult: null,
         buildingSite: false,
         recapturing: false,
         comparedPath: null,
@@ -1123,8 +1124,12 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             const inventory = site
                 ? await this.gateway.getSiteInventory(site.jobId).catch(() => null)
                 : null;
+            const result = site?.lastBuild
+                ? await this.gateway.getSiteResult(site.jobId).catch(() => null)
+                : null;
             runInAction(() => {
                 this.vm.siteInventory = inventory;
+                this.vm.siteResult = result;
                 this.vm.siteAssembledCount = assemble ? assemble.pages.length : null;
                 this.vm.siteBuiltFrom = builtFrom
                     ? { runId: builtFrom, runNumber: builtFromNumber }

@@ -1,5 +1,3 @@
-import { carriesPass } from "@webiny/api-component-extraction/domain/qualityPasses.js";
-
 /**
  * What a publish produced beyond the build steps, as the Site step reports it: the sitemap, the
  * site's images, and the pages that carry their source's title and description.
@@ -11,15 +9,17 @@ export interface SiteQualities {
     /** Published pages carrying both an SEO title and a description, of the published pages. */
     seo?: { pages: number; carried: number };
     /** The sitemap written to the site's File Manager, or why none was. */
-    sitemap?: { pages: number; fileId: string; url: string } | { error: string };
+    sitemap?:
+        | {
+              pages: number;
+              fileId: string;
+              url: string;
+              /** The domain its URLs are on: the source site's. Absent on sitemaps before 2026-10-12. */
+              domain?: string;
+          }
+        | { error: string };
     /** The image files this build put in the site's File Manager, by stored format. */
     images?: ImagesSummary;
-    /**
-     * Of the components this site was built with, how many were generated with each quality pass in
-     * their prompt. Read from each component's own record, so a run that never had the prompt counts
-     * zero and its beta lines are not shown.
-     */
-    generation?: { components: number; accessibility: number; performance: number };
 }
 
 export interface ImagesSummary {
@@ -99,16 +99,6 @@ export const summariseImages = (
             .sort((a, b) => b.files - a.files || a.type.localeCompare(b.type))
     };
 };
-
-/** How many of the site's components were generated with each quality pass. */
-export const countGenerationPasses = (
-    components: Array<{ qualityInstructions?: string[] }>
-): { components: number; accessibility: number; performance: number } => ({
-    components: components.length,
-    accessibility: components.filter(c => carriesPass(c.qualityInstructions, "accessibility"))
-        .length,
-    performance: components.filter(c => carriesPass(c.qualityInstructions, "performance")).length
-});
 
 /** How many published pages carry both an SEO title and a description. */
 export const countSeo = (

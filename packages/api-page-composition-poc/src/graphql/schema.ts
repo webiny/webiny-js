@@ -8,7 +8,12 @@ import {
 import { ComponentExtractionPermissions } from "@webiny/api-component-extraction/features/permissions.js";
 import { stageEntry } from "@webiny/api-component-extraction/domain/ledger.js";
 import { BlobStore, StageArtifactStore } from "@webiny/api-component-extraction/domain/stage.js";
-import type { PromoteArtifact } from "@webiny/api-component-extraction/domain/artifacts.js";
+import type {
+    GenerateArtifact,
+    PromoteArtifact
+} from "@webiny/api-component-extraction/domain/artifacts.js";
+import { ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/abstractions.js";
+import { siteResult } from "~/pages/siteResult.js";
 import { ComposedCaptureStore, PageMapStore } from "~/domain/abstractions.js";
 import {
     BUILD_SITE_TASK_ID,
@@ -312,6 +317,143 @@ export const addPageCompositionSchema = (builder: IGraphQLSchemaBuilder): void =
                             componentNames: components.value.items.map(item => item.name),
                             approvedNames
                         });
+                    });
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.pageCompositionPocSiteResult",
+        dependencies: [
+            ComponentExtractionPermissions,
+            SiteStore,
+            TenantContext,
+            GetTenantByIdUseCase,
+            ListPagesUseCase,
+            ListRemoteComponentsUseCase,
+            ListFilesUseCase,
+            RunRepository,
+            StageArtifactStore
+        ],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            sites: SiteStore.Interface,
+            tenantContext: TenantContext.Interface,
+            getTenantById: GetTenantByIdUseCase.Interface,
+            listPages: ListPagesUseCase.Interface,
+            listComponents: ListRemoteComponentsUseCase.Interface,
+            listFiles: ListFilesUseCase.Interface,
+            runs: RunRepository.Interface,
+            artifacts: StageArtifactStore.Interface
+        ) {
+            return ({ args }: { args: { jobId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to read component extraction.");
+                    }
+                    // The tenant comes from the job's site record, never from the caller.
+                    const site = await sites.get(args.jobId);
+                    if (!site?.lastBuild) {
+                        return null;
+                    }
+                    const tenant = await getTenantById.execute(site.tenantId);
+                    if (tenant.isFail()) {
+                        throw new Error(`The site's tenant "${site.tenantId}" cannot be read.`);
+                    }
+                    /*
+                     * In the extraction tenant first: the run the site was published from, what its
+                     * components' prompts carried (Generate), and which Library id is which component
+                     * (its approval into this tenant, and the site record's own map).
+                     */
+                    const run = await runs.get(site.lastBuild.runId);
+                    const read = async <T>(stage: "generate" | "promote", name: string) => {
+                        const ref = run.isOk()
+                            ? stageEntry(run.value.stages, stage)?.artifacts?.[name]
+                            : undefined;
+                        const artifact = ref ? await artifacts.getJson<T>(ref) : null;
+                        return artifact?.isOk() ? artifact.value : null;
+                    };
+                    const generate = await read<GenerateArtifact>("generate", "components");
+                    const approval = await read<PromoteArtifact>("promote", "promotion");
+                    const signatureById = new Map<string, string>([
+                        ...(approval?.tenantId === site.tenantId
+                            ? approval.promoted.map(
+                                  item => [item.componentId, item.signature] as [string, string]
+                              )
+                            : []),
+                        ...Object.entries(site.components ?? {}).map(
+                            ([signature, id]) => [id, signature] as [string, string]
+                        )
+                    ]);
+                    return tenantContext.withTenant(tenant.value, async () => {
+                        const pages: Parameters<typeof siteResult>[0]["pages"] = [];
+                        let after: string | null = null;
+                        do {
+                            const listed = await listPages.execute({
+                                where: { latest: true },
+                                sort: [],
+                                limit: 100,
+                                after
+                            });
+                            if (listed.isFail()) {
+                                throw new Error(
+                                    `The site's pages cannot be listed: ${listed.error.message}`
+                                );
+                            }
+                            pages.push(...(listed.value.pages as never[]));
+                            after = listed.value.meta.hasMoreItems
+                                ? listed.value.meta.cursor
+                                : null;
+                        } while (after);
+                        const components = await listComponents.execute();
+                        if (components.isFail()) {
+                            throw new Error(
+                                `The site's components cannot be listed: ${components.error.message}`
+                            );
+                        }
+                        const files: Array<{ key: string; type: string; size: number }> = [];
+                        let fileCursor: string | null = null;
+                        do {
+                            const listed = await listFiles.execute({
+                                limit: 500,
+                                after: fileCursor
+                            });
+                            if (listed.isFail()) {
+                                throw new Error(
+                                    `The site's files cannot be listed: ${listed.error.message}`
+                                );
+                            }
+                            files.push(
+                                ...listed.value.items.map(file => ({
+                                    key: file.key,
+                                    type: file.type,
+                                    size: file.size
+                                }))
+                            );
+                            fileCursor = listed.value.meta.hasMoreItems
+                                ? (listed.value.meta.cursor ?? null)
+                                : null;
+                        } while (fileCursor);
+                        return {
+                            runId: site.lastBuild!.runId,
+                            sitemap: site.lastBuild!.qualities?.sitemap ?? null,
+                            ...siteResult({
+                                pages,
+                                components: components.value.items.map(item => ({
+                                    id: item.id,
+                                    name: item.name
+                                })),
+                                files,
+                                generated: (generate?.components ?? []).map(component => ({
+                                    signature: component.signature,
+                                    name: component.name,
+                                    ...(component.qualityInstructions
+                                        ? { qualityInstructions: component.qualityInstructions }
+                                        : {})
+                                })),
+                                signatureById
+                            })
+                        };
                     });
                 });
         }

@@ -27,12 +27,10 @@ import { planComponentCopy } from "./planComponentCopy.js";
 import { planComponentRemoval } from "./planComponentRemoval.js";
 import { TrashPageUseCase } from "@webiny/api-website-builder/features/pages/TrashPage/abstractions.js";
 import { ListPagesUseCase } from "@webiny/api-website-builder/features/pages/ListPages/abstractions.js";
-import { GetSettingsUseCase } from "@webiny/api-website-builder/features/pages/GetSettings/abstractions.js";
 import { DeleteFileUseCase } from "@webiny/api-file-manager/features/file/DeleteFile/abstractions.js";
 import { randomUUID } from "node:crypto";
 import {
     buildSitemap,
-    countGenerationPasses,
     countSeo,
     summariseImages,
     type ImagesSummary,
@@ -150,7 +148,6 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         private trashPage: TrashPageUseCase.Interface,
         private listPages: ListPagesUseCase.Interface,
         private deleteComponent: DeleteRemoteComponentUseCase.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
         private deleteFile: DeleteFileUseCase.Interface
     ) {}
 
@@ -446,18 +443,12 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         }
 
         if (!preview) {
-            const approved = new Set(promoted.map(item => item.signature));
-            current.qualities = {
-                ...(await this.qualities({
-                    site,
-                    tenant,
-                    images: images.summary,
-                    toTarget
-                })),
-                generation: countGenerationPasses(
-                    source.generated.filter(component => approved.has(component.signature))
-                )
-            };
+            current.qualities = await this.qualities({
+                site,
+                images: images.summary,
+                sourceUrl: job.siteUrl,
+                toTarget
+            });
             await save();
         }
 
@@ -520,7 +511,6 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         return removed;
     }
 
-    /** Every page in the tenant, its latest revision in any state, with its elements. */
     /**
      * What this publish produced beyond its steps, for the Site step: the sitemap of the published
      * pages, written to the site's File Manager; the image files; the pages carrying their source's
@@ -529,14 +519,25 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
      */
     private async qualities(params: {
         site: SiteRecord;
-        tenant: Tenant;
         images: ImagesSummary;
+        /** The source site's address: the sitemap lists the migrated pages on its domain. */
+        sourceUrl: string;
         toTarget: <T>(cb: () => Promise<T>) => Promise<T>;
     }): Promise<SiteQualities> {
-        const { site, tenant, images, toTarget } = params;
-        // The website's domain is a setting of the extraction tenant, where the admin reads it too.
-        const settings = await this.getSettings.execute();
-        const domain = settings.isOk() ? settings.value.domain.replace(/\/+$/, "") : "";
+        const { site, images, sourceUrl, toTarget } = params;
+        /*
+         * The sitemap is for the domain the migrated site replaces: the source site's. Every migrated
+         * path is its source page's path (21 of 21 across three sites, site-step-as-result-scoping.md),
+         * so each entry is the old site's URL for the same page. It goes live when the domain points at
+         * the new site, and the URLs search engines already know keep working. Not the App Runner
+         * address "Open site" uses: that is a preview address shared by every site.
+         */
+        let origin = "";
+        try {
+            origin = new URL(sourceUrl).origin;
+        } catch {
+            origin = "";
+        }
 
         return toTarget(async () => {
             const published = await this.publishedPages();
@@ -544,12 +545,12 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
                 return { images, sitemap: { error: published } };
             }
             const seo = countSeo(published);
-            if (!domain) {
+            if (!origin) {
                 return {
                     images,
                     seo,
                     sitemap: {
-                        error: "The website's domain is not set, so the pages have no address to list."
+                        error: "The source site's address could not be read, so the pages have no domain to be listed on."
                     }
                 };
             }
@@ -558,7 +559,7 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
                     path: page.properties.path,
                     savedOn: page.savedOn
                 })),
-                pageUrl: path => `${domain}${path}?wb.tenant=${encodeURIComponent(tenant.id)}`
+                pageUrl: path => `${origin}${path}`
             });
             try {
                 const deps = this.imageAssets.deps(async () => {});
@@ -587,7 +588,8 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
                     sitemap: {
                         pages: sitemap.pages,
                         fileId: file.id,
-                        url: await deps.urlOf(file.key)
+                        url: await deps.urlOf(file.key),
+                        domain: new URL(origin).host
                     }
                 };
             } catch (error) {
@@ -638,6 +640,7 @@ class BuildSiteTaskHandlerImpl implements TaskHandler.Interface<BuildSiteTaskInp
         return pages;
     }
 
+    /** Every page in the tenant, its latest revision in any state, with its elements. */
     private async allPages(): Promise<
         Array<{ id: string; status: string; elements: Record<string, unknown> }> | string
     > {
@@ -858,7 +861,6 @@ const BuildSiteTaskHandler = TaskHandler.createImplementation({
         TrashPageUseCase,
         ListPagesUseCase,
         DeleteRemoteComponentUseCase,
-        GetSettingsUseCase,
         DeleteFileUseCase
     ]
 });

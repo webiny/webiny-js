@@ -1,15 +1,12 @@
 import React from "react";
 import { createReactiveComponent, useRouter } from "@webiny/app-admin";
-import { Alert, Button, Scrollbar, Tag, Text } from "@webiny/admin-ui";
+import { Alert, Button, Scrollbar, Text } from "@webiny/admin-ui";
 import { stageEntry } from "~/shared/ledger.js";
 import { StatusDot } from "~/presentation/shared/StatusIndicator.js";
 import { Routes } from "~/routes.js";
-import type { ComposedPageDto } from "~/shared/types.js";
 import type { RunViewPresenter } from "../../abstractions.js";
-import { composedStatus, STATUS_TAG } from "../composed/pageStatus.js";
-import { siteUrl } from "./siteUrl.js";
 import { SiteCard } from "./SiteCard.js";
-import { siteQualityLines } from "./siteQualityLines.js";
+import { SiteResultPages, SiteResultSummary } from "./SiteResult.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
@@ -86,16 +83,12 @@ export const SiteView = createReactiveComponent(function SiteView({ presenter }:
                         </Text>
                     ) : null}
 
-                    {approved || site ? <SiteCard presenter={presenter} /> : null}
+                    {/* The result first: what the migration produced, site-wide, then per page. */}
+                    {approved || site ? <SiteResultSummary presenter={presenter} /> : null}
 
-                    {build?.status === "done" && vm.siteBuiltFrom ? (
-                        <BuiltFrom presenter={presenter} />
-                    ) : null}
-
-                    {approved || site ? <SiteQualities presenter={presenter} /> : null}
-
-                    {build?.status === "done" && vm.siteInventory ? (
-                        <TenantInventory presenter={presenter} />
+                    {/* Before the first publish the action is the point, so it comes first. */}
+                    {(approved || site) && build?.status !== "done" ? (
+                        <SiteCard presenter={presenter} />
                     ) : null}
 
                     {build?.status === "done" ? (
@@ -110,6 +103,17 @@ export const SiteView = createReactiveComponent(function SiteView({ presenter }:
                                 The site&apos;s page list could not be read.
                             </Text>
                         )
+                    ) : null}
+
+                    {/* How it was built, after the result: publishing, the run, the tenant's contents. */}
+                    {build?.status === "done" ? <SiteCard presenter={presenter} /> : null}
+
+                    {build?.status === "done" && vm.siteBuiltFrom ? (
+                        <BuiltFrom presenter={presenter} />
+                    ) : null}
+
+                    {build?.status === "done" && vm.siteInventory ? (
+                        <TenantInventory presenter={presenter} />
                     ) : null}
                 </div>
             </Scrollbar>
@@ -143,44 +147,6 @@ const BuiltFrom = createReactiveComponent(function BuiltFrom({ presenter }: Prop
                     onClick={() => goToRoute(Routes.Run, { runId: builtFrom.runId })}
                 />
             ) : null}
-        </div>
-    );
-});
-
-/**
- * What publishing produced beyond its steps: the sitemap, the images, the pages' titles and
- * descriptions. Each line says what the pipeline did. A site published before these were recorded
- * shows none of them rather than a guess.
- */
-const SiteQualities = createReactiveComponent(function SiteQualities({ presenter }: Props) {
-    const build = presenter.vm.site?.lastBuild;
-    const lines = siteQualityLines(build?.qualities, build?.status === "done");
-    if (lines.length === 0) {
-        return null;
-    }
-    return (
-        <div className="flex flex-col gap-xxs">
-            {lines.map(line => (
-                <div key={line.key} className="flex flex-wrap items-center gap-sm">
-                    <Text
-                        size="sm"
-                        className={
-                            line.problem ? "text-destructive-default" : "text-neutral-strong"
-                        }
-                    >
-                        {line.text}
-                    </Text>
-                    {line.beta ? <Tag variant={"neutral-light" as never} content="beta" /> : null}
-                    {line.link ? (
-                        <Button
-                            variant="tertiary"
-                            size="sm"
-                            text={line.link.label}
-                            onClick={() => window.open(line.link!.url, "_blank", "noopener")}
-                        />
-                    ) : null}
-                </div>
-            ))}
         </div>
     );
 });
@@ -239,60 +205,10 @@ const TenantInventory = createReactiveComponent(function TenantInventory({ prese
 const SitePages = createReactiveComponent(function SitePages({ presenter }: Props) {
     const { vm } = presenter;
     const map = vm.sitePageMap!;
-    const tenantId = vm.site!.tenantId;
-    const view = (page: ComposedPageDto) => siteUrl(vm.websiteDomain, page.path, tenantId);
 
     return (
         <div className="flex flex-col gap-xs">
-            <Text size="sm" className="font-medium">
-                {map.pages.length} page{map.pages.length === 1 ? "" : "s"} on the site
-            </Text>
-
-            {map.pages.map(page => {
-                const tag = STATUS_TAG[composedStatus(page)];
-                const url = view(page);
-                const live = vm.siteLivePageByPath[page.path];
-                // Undefined: not answered yet. Null or another id: a visitor reaches a different page.
-                const notLive = live !== undefined && live !== page.pageId;
-                return (
-                    <div
-                        key={page.path}
-                        className="flex items-center gap-md rounded-sm border border-neutral-dimmed px-sm py-xs"
-                    >
-                        <div className="flex min-w-0 flex-1 flex-col gap-xxs">
-                            <Text className="truncate font-medium" title={page.title}>
-                                {page.title || page.path}
-                            </Text>
-                            <Text
-                                size="sm"
-                                className="truncate font-mono text-neutral-strong"
-                                title={`${page.sourceUrl} → ${page.path}`}
-                            >
-                                {pathOf(page.sourceUrl)} → {page.path}
-                            </Text>
-                        </div>
-                        <div className="w-[12rem] flex-shrink-0">
-                            <Tag variant={tag.variant as never} content={tag.content} />
-                        </div>
-                        <div className="w-[9rem] flex-shrink-0">
-                            {notLive ? (
-                                <Tag variant={"warning" as never} content="not the live page" />
-                            ) : null}
-                        </div>
-                        <Button
-                            variant="tertiary"
-                            size="sm"
-                            text="View page"
-                            disabled={!url}
-                            title={
-                                url ??
-                                "Website Builder has no preview domain set, so there is no address to open this page at."
-                            }
-                            onClick={() => url && window.open(url, "_blank", "noopener")}
-                        />
-                    </div>
-                );
-            })}
+            <SiteResultPages presenter={presenter} />
 
             {(map.kept ?? []).length > 0 ? (
                 <Alert type="warning" variant="subtle">

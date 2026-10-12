@@ -33,6 +33,10 @@ export const SiteCard = createReactiveComponent(function SiteCard({ presenter }:
     // record alone does not mean the site was ever published.
     const published = Boolean(build);
     const openUrl = site ? siteUrl(vm.websiteDomain, "/", site.tenantId) : null;
+    // The steps are how it was built, not the result: folded away once a build is done, open while
+    // one runs or after one failed, where they are what someone needs to read.
+    const [stepsOpen, setStepsOpen] = React.useState(false);
+    const showSteps = Boolean(build) && (build?.status !== "done" || stepsOpen);
 
     return (
         <div className="flex flex-col gap-sm rounded-md border border-neutral-dimmed px-md py-sm">
@@ -48,15 +52,13 @@ export const SiteCard = createReactiveComponent(function SiteCard({ presenter }:
                     </Text>
                 </div>
                 <div className="flex flex-shrink-0 items-center gap-sm">
-                    {site && build?.status === "done" && openUrl ? (
-                        <a
-                            href={openUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="cursor-pointer text-sm text-primary-default underline"
-                        >
-                            View site
-                        </a>
+                    {build?.status === "done" ? (
+                        <Button
+                            variant="tertiary"
+                            size="sm"
+                            text={stepsOpen ? "Hide how it was built" : "How it was built"}
+                            onClick={() => setStepsOpen(!stepsOpen)}
+                        />
                     ) : null}
                     <Button
                         variant={published ? "secondary" : "primary"}
@@ -70,7 +72,7 @@ export const SiteCard = createReactiveComponent(function SiteCard({ presenter }:
                 </div>
             </div>
 
-            {build ? (
+            {showSteps && build ? (
                 <div className="flex flex-col gap-xxs">
                     {STEPS.map(({ step, label }) => {
                         const record = build.steps.find(item => item.step === step);

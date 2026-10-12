@@ -62,6 +62,7 @@ const presenterFor = (record: SiteDto | null, onScreen: RunDto) => {
             publishedPages: 8,
             unpublishedPages: 24
         })),
+        getSiteResult: vi.fn(async () => null),
         getLivePageIds: vi.fn(async () => ({})),
         getComposedCapture: vi.fn(async () => null)
     };
@@ -96,6 +97,7 @@ describe("Site view", () => {
         expect(gateway.getRun).not.toHaveBeenCalled();
         // The inventory is asked of the site's job, which the API resolves to the site's tenant.
         expect(gateway.getSiteInventory).toHaveBeenCalledWith(TAKE3_JOB);
+        expect(gateway.getSiteResult).toHaveBeenCalledWith(TAKE3_JOB);
         expect(presenter.vm.siteInventory?.unpublishedPages).toBe(24);
     });
 

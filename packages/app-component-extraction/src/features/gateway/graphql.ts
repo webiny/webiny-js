@@ -710,6 +710,17 @@ export const GET_SITE_LIVE_PAGES = /* GraphQL */ `
 `;
 
 /** What the job's site tenant holds beyond what its live pages use, read inside that tenant. */
+export const GET_SITE_RESULT = /* GraphQL */ `
+    query GetSiteResult($jobId: ID!) {
+        pageCompositionPocSiteResult(jobId: $jobId) {
+            data
+            error {
+                message
+            }
+        }
+    }
+`;
+
 export const GET_SITE_INVENTORY = /* GraphQL */ `
     query GetSiteInventory($jobId: ID!) {
         pageCompositionPocSiteInventory(jobId: $jobId) {

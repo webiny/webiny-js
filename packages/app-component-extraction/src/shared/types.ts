@@ -808,10 +808,41 @@ export interface SiteDto {
     };
 }
 
+/** Image files, by stored format, most files first. */
+export interface ImagesSummaryDto {
+    files: number;
+    bytes: number;
+    byType: Array<{ type: string; files: number }>;
+}
+
+/** Of a set of components, how many were generated with each pass. */
+export interface PassCountsDto {
+    components: number;
+    /** Placed components no generated record could be matched to: counted, never applied. */
+    unmatched: number;
+    accessibility: number;
+    performance: number;
+    responsiveness: number;
+}
+
+/** The Site step's result, read from the site's tenant and the run it was published from. */
+export interface SiteResultDto {
+    runId: string;
+    sitemap: SiteQualitiesDto["sitemap"] | null;
+    images: ImagesSummaryDto;
+    seo: { pages: number; carried: number };
+    passes: PassCountsDto;
+    pages: Array<{
+        pageId: string;
+        path: string;
+        seo: boolean;
+        images: ImagesSummaryDto;
+        passes: PassCountsDto;
+    }>;
+}
+
 export interface SiteQualitiesDto {
     seo?: { pages: number; carried: number };
-    sitemap?: { pages: number; fileId: string; url: string } | { error: string };
+    sitemap?: { pages: number; fileId: string; url: string; domain?: string } | { error: string };
     images?: { files: number; bytes: number; byType: Array<{ type: string; files: number }> };
-    /** Of the site's components, how many were generated with each quality pass. */
-    generation?: { components: number; accessibility: number; performance: number };
 }

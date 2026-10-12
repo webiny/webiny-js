@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { buildSitemap, countGenerationPasses, countSeo, summariseImages } from "./siteQualities.js";
+import { buildSitemap, countSeo, summariseImages } from "./siteQualities.js";
 
 /* 71 Westland's site tenant File Manager, read 2026-10-12: 48 files. */
 const westlandFiles = (
@@ -94,31 +94,3 @@ describe("countSeo", () => {
     });
 });
 
-describe("countGenerationPasses", () => {
-    it("counts a pass only where a component's prompt carried every one of its instructions", () => {
-        const all = [
-            "quality.alt-input",
-            "quality.semantic-elements",
-            "quality.heading-level",
-            "quality.form-labels",
-            "quality.focus-visible",
-            "quality.image-size"
-        ];
-        expect(
-            countGenerationPasses([
-                { qualityInstructions: all },
-                { qualityInstructions: ["quality.image-size"] },
-                { qualityInstructions: all.filter(id => id !== "quality.focus-visible") },
-                {}
-            ])
-        ).toEqual({ components: 4, accessibility: 1, performance: 3 });
-    });
-
-    it("counts nothing for components generated before the instructions existed", () => {
-        expect(countGenerationPasses([{}, {}])).toEqual({
-            components: 2,
-            accessibility: 0,
-            performance: 0
-        });
-    });
-});

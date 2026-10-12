@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { ThemeSnapshot } from "./themeSnapshot.js";
 import type {
     SiteInventoryDto,
+    SiteResultDto,
     ComponentPromptDto,
     AssembleArtifactDto,
     ComposedCaptureDto,
@@ -195,6 +196,8 @@ export interface IRunViewVm {
      * keeps both when a name is taken, so every re-approval leaves a component no page uses.
      */
     siteInventory: SiteInventoryDto | null;
+    /** What the Site step shows as the result, site-wide and per page. Null before a publish. */
+    siteResult: SiteResultDto | null;
     /** A site build was started from this screen and has not reported done or failed yet. */
     buildingSite: boolean;
     /** A re-capture of selected pages is in flight. */

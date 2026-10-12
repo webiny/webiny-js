@@ -2,6 +2,7 @@ import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.
 import { ComponentExtractionGateway, type StageTriggerResult } from "./abstractions.js";
 import type {
     SiteInventoryDto,
+    SiteResultDto,
     CreateJobData,
     JobDto,
     JobListItemDto,
@@ -41,6 +42,7 @@ import {
     GET_SITE,
     GET_SITE_LIVE_PAGES,
     GET_SITE_INVENTORY,
+    GET_SITE_RESULT,
     GET_REATTACHMENTS,
     GET_RENDERS,
     GET_RUN,
@@ -324,6 +326,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         });
 
         return unwrap(response.pageCompositionPocPageMap) ?? null;
+    }
+
+    async getSiteResult(jobId: string): Promise<SiteResultDto | null> {
+        const response = await this.client.execute<{
+            pageCompositionPocSiteResult: GqlEnvelope<SiteResultDto | null>;
+        }>({ query: GET_SITE_RESULT, variables: { jobId } });
+
+        return unwrap(response.pageCompositionPocSiteResult) ?? null;
     }
 
     async getSiteInventory(jobId: string): Promise<SiteInventoryDto | null> {

@@ -10,7 +10,8 @@ export const QUALITY_PROMPT_LINE_IDS = [
     "quality.heading-level",
     "quality.form-labels",
     "quality.focus-visible",
-    "quality.image-size"
+    "quality.image-size",
+    "quality.responsive"
 ] as const;
 
 export const QUALITY_PASSES = {
@@ -21,7 +22,13 @@ export const QUALITY_PASSES = {
         "quality.form-labels",
         "quality.focus-visible"
     ],
-    performance: ["quality.image-size"]
+    performance: ["quality.image-size"],
+    /*
+     * Generic: no capture data stands behind it (the narrow capture is a screenshot with no tree), so
+     * it asks for behaviour, like the focus outline. The weakest of the seven; see
+     * ai-context/issues/mobile-layout-has-no-capture-behind-it.md for what would make it stronger.
+     */
+    responsiveness: ["quality.responsive"]
 } as const satisfies Record<string, ReadonlyArray<(typeof QUALITY_PROMPT_LINE_IDS)[number]>>;
 
 /** Whether a component's recorded instructions include every id of a pass. */

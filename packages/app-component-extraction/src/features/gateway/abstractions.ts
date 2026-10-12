@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type {
     SiteInventoryDto,
+    SiteResultDto,
     CreateJobData,
     JobDto,
     JobListItemDto,
@@ -133,6 +134,8 @@ export interface IComponentExtractionGateway {
     getSiteLivePageIds(jobId: string, paths: string[]): Promise<Record<string, string | null>>;
     /** What the job's site tenant holds beyond what its live pages use; null without a site. */
     getSiteInventory(jobId: string): Promise<SiteInventoryDto | null>;
+    /** The Site step's result: site-wide and per page. Null before the site is published. */
+    getSiteResult(jobId: string): Promise<SiteResultDto | null>;
     /** Screenshots of the composed pages, or null when nobody has run the local harness for it. */
     getComposedCapture(runId: string): Promise<ComposedCaptureDto | null>;
     /** Compose this run's pages. Background task; the page map changing is how it reports done. */

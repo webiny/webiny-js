@@ -102,6 +102,8 @@ export const pageCompositionTypeDefs = /* GraphQL */ `
         published page places, and its unpublished pages. Read inside the site's tenant.
         """
         pageCompositionPocSiteInventory(jobId: ID!): PageCompositionPocSiteResponse
+        "What the Site step shows as the result: site-wide and per page, read from the site's tenant and the run it was published from."
+        pageCompositionPocSiteResult(jobId: ID!): PageCompositionPocSiteResponse
     }
 
     extend type Mutation {
