@@ -9,6 +9,37 @@
 - Both decisions from the last report are built: the heading level is an input set per page, and the
   px line is conditional.
 
+## Approved 2026-10-12, and what was built after
+
+The instructions are approved as written. **Not deployed, and nothing generated,** until Sven decides
+whether the generation run comes before or after the 16th.
+
+- **Width and height: (a).** Composition writes the size each page draws the picture at into the image
+  input's value: `{ url, width, height }`. On Take 3's Property Highlights Links that is 430×430 on the
+  home page and 720×450 on the residents page.
+- **What (a) does to older components: nothing, so it is not gated.**
+  - A component that reads the input as a plain string still gets a plain string, unchanged; the
+    string shape cannot carry a size.
+  - An object-shaped value gains two keys. Of the 343 components in root and the six site tenants, 180
+    have a file input. None spreads the value into an element, enumerates its keys, stringifies it, or
+    reads `.width`/`.height`. The 10 that test its type do `typeof x === "string" ? x : x.url`, which two
+    more keys do not change.
+  - Composition's own image rewrite keeps the other keys (`writeUrl` spreads the record).
+- **The sixth instruction** (`quality.image-size`), as proposed:
+
+  > Every <img> sets width and height attributes from its image input (`image.width`, `image.height`),
+  > so the page keeps its space while the picture loads; size it on screen with CSS as the layout needs.
+
+- **The performance line is narrowed** to "Performance pass applied in generation: image dimensions
+  set." No instruction was added to make the old wording true.
+- **The Site step reads the per-run record.**
+  - At publish, the build counts how many of the site's approved components carried each pass.
+  - The accessibility and performance lines appear, with a beta label, only where the count is above
+    zero. When only some components carried a pass, the line says "to 12 of 16 components".
+  - 71 Westland today shows neither line.
+- **The sub-heading limitation is recorded where it will be met:** in `headingLevelInput.ts`, beside the
+  heading instruction, and in `ai-context/issues/sub-heading-levels-can-differ-between-pages.md`.
+
 ## Decided last round, built
 
 **The heading level is an input composition sets per page.**
