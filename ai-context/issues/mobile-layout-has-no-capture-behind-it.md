@@ -25,6 +25,14 @@ writes a mobile layout without having seen one.
 
 This is the fourth measured-then-dropped finding in the project.
 
+## What runs instead, until this lands
+
+A generic responsiveness instruction (`quality.responsive`, proposed 2026-10-12) asks for behaviour
+(fluid widths, no sideways scrolling at 320px, stacking below 768px, 44px tap targets, wrapping text)
+with no capture data behind it, like the focus-outline instruction. It is the weakest of the seven and
+is labelled as generic wherever it is reported. The steps below are what would make it an instruction
+with data.
+
 ## The three steps that make it usable
 
 1. **Record the tree at 390px.** Run the capture evaluator on the narrow pass and store the narrow tree
