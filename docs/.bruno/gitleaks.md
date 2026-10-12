@@ -23,14 +23,14 @@ Each real-looking key has a Where / URLs / Verified / Action comment in `.gitlea
 | L01 | azure-ad-client-secret | 5 | `skills/user-skills/configure-entraid/SKILL.md` | yes | Made-up example value. Allowlisted by value. |
 | L02 | generic-api-key | 1 | `packages/api-wcp/__tests__/utils.test.ts` (now `packages/api-core/__tests__/wcp/utils.test.ts`) | yes | Dummy test value. Allowlisted by value. |
 | L03 | generic-api-key | 2 | `packages-utils/webiny-file-storage-s3/tests/s3MockResponses.js` | no | S3 mock token. Old test fixture. |
-| L04 | generic-api-key | 1 | `packages/api-wcp/src/utils.ts` (`5584544a48`, 2022) | no | Safe. WCP dev environment key, removed 2 hours later in `1ebc376880`. Dev endpoint `d16nfk35w3a3cu.cloudfront.net` no longer resolves. |
+| L04 | generic-api-key | 1 | `packages/api-wcp/src/utils.ts` (`5584544a48`, 2022) | no | Confirmed safe by WCP owner. WCP dev environment key, removed 2 hours later in `1ebc376880`. Dev endpoint `d16nfk35w3a3cu.cloudfront.net` no longer resolves. |
 | L05–L13 | generic-api-key | 15 | security mocks, `App.editor.tsx`, page builder install data, file manager upgrade | no | File keys (`*.jpg`, `*.svg`). Old fixtures. |
 | L14 | generic-api-key | 3 | `packages/{webiny-api-headless,api-headless-cms}/IDEAS.md` (2019–2020) | no | Safe. Contentful delivery token is still active (HTTP 200), but read-only and for a test space. Accepted. |
-| L15 | generic-api-key | 1 | `.npmrc` (`1b8335aa7a`, 2018) | no | Safe. Token for internal Verdaccio registry `webiny-npm:4873`, long gone. |
+| L15 | generic-api-key | 1 | `.npmrc` (`1b8335aa7a`, 2018) | no | Confirmed safe. Token for internal Verdaccio registry `webiny-npm:4873`, long gone. npm tokens rotate every 90 days. |
 | L16 | generic-api-key | 1 | `packages/api-mailer/__tests__/password.test.ts` | no | Test password. |
 | L17 | generic-api-key | 6 | `api-prerendering-service/__tests__/.../extractPeLoaderDataFromHtml.test.ts` | yes | HTML `data-key` attribute. Allowlisted by value. |
 | L18, L24 | generic-api-key | 4 | `.yarn/releases/*.cjs`, `create-webiny-project/utils/binaries/yarn-*.cjs` | no | Minified Yarn bundles. Allowlisted by path. |
-| L19 | generic-api-key | 6 | telemetry / tracking packages (2020–2021) | no | Safe. Write-only telemetry key, public by design. Removed in `16b0da12a4` (2024-03). Current `@webiny/wts-client` sends no key. |
+| L19 | generic-api-key | 6 | telemetry / tracking packages (2020–2021) | no | Confirmed safe by telemetry owner. Write-only telemetry key, public by design. Removed in `16b0da12a4` (2024-03). Current `@webiny/wts-client` sends no key. |
 | L20 | generic-api-key | 2 | `postman.json` (`2b9830fd10`, 2025) | no | Flagged value is a Marketo tracking cookie. See "Kibo" below. |
 | L21 | generic-api-key | 6 | `pagesFilesData.json/.js` | no | File keys (`*.jpeg`). Old fixtures. |
 | L22 | generic-api-key | 1 | `nextjs/__mocks__/stories/userMock.ts` (2025) | no | Kibo refresh token, expired 2022. See "Kibo" below. |
@@ -57,7 +57,7 @@ The file was deleted in `e53eceafb5` (2025-07-29). It stays in public history.
 - Commit: https://github.com/webiny/webiny-js/commit/2b9830fd10014d173b4aca58c50bd078c0754fb1
 - File: https://github.com/webiny/webiny-js/blob/2b9830fd10014d173b4aca58c50bd078c0754fb1/postman.json#L220-L234
 
-Result: accepted as safe (2026-10-10). Pavel confirmed the Kibo keys are old and not in use.
+Result: confirmed dead (2026-10-12). Pavel confirmed the Kibo keys are old and no longer valid.
 
 ## TruffleHog cross-check
 

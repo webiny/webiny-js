@@ -62,7 +62,7 @@ commits = [
 #             https://github.com/webiny/webiny-js/blob/1b8335aa7a9a4d0e819c6dd63bc630258be52959/.npmrc#L2
 #   Verified: 2026-10-09. Token is for http://webiny-npm:4873/, a bare internal hostname on the default
 #             Verdaccio port. It does not resolve on the internet. Added in a "WIP" commit.
-#   Action:   none. Registry is internal and long gone.
+#   Action:   confirmed safe (2026-10-12). Registry is internal and long gone. npm tokens rotate every 90 days.
 [[allowlists]]
 description = "L15 npm auth token (2018)"
 commits = ["1b8335aa7a9a4d0e819c6dd63bc630258be52959"]
@@ -95,7 +95,8 @@ commits = [
 #             Removed ~2 hours later in 1ebc376880 ("fix: remove temp env vars").
 #             WCP_API_URL was https://d16nfk35w3a3cu.cloudfront.net (dev endpoint). On 2026-10-10 the host
 #             does not resolve. Current WCP API is https://api.webiny.com.
-#   Action:   accepted as safe (2026-10-12). Key belonged to a dev WCP setup that no longer exists.
+#   Action:   confirmed safe (2026-10-12). Key belonged to a dev WCP setup that no longer exists.
+#             Confirmed by the WCP owner, including production.
 [[allowlists]]
 description = "L04 WCP API key (2022)"
 commits = ["5584544a48cc82ddfbc1936614b5a196353ef6b0"]
@@ -115,7 +116,7 @@ commits = ["5584544a48cc82ddfbc1936614b5a196353ef6b0"]
 #             https://github.com/webiny/webiny-js/blob/a764e854c5da0ebcb99038e9b9aaf3184202edc3/packages/telemetry/index.js#L4
 #   Verified: 2026-10-09. Write-only telemetry key, public by design (shipped in npm packages).
 #             Removed in commit 16b0da12a4 (2024-03-19). Current @webiny/wts-client sends no API key.
-#   Action:   none. Key is no longer used.
+#   Action:   confirmed safe (2026-10-12) by the telemetry owner. Key is no longer used.
 [[allowlists]]
 description = "L19 telemetry API key (2020-2021)"
 commits = [
@@ -181,7 +182,7 @@ commits = ["cb17a12f6902243ac4d217e4976b2873b78a933b", "658972a8695ef6f0c9d023e1
 #             postman.json flagged value is the Marketo tracking cookie (_mkto_trk), not a credential.
 #             postman.json also holds the Kibo client_id/client_secret pair. File deleted in e53eceafb5
 #             (2025-07-29), still in history. Not tested against Kibo.
-#   Action:   accepted as safe (2026-10-10). Pavel confirmed the Kibo keys are old and not in use.
+#   Action:   confirmed dead (2026-10-12). Pavel confirmed the Kibo keys are old and no longer valid.
 [[allowlists]]
 description = "L20, L22, L34, L35, L38, L39 Kibo Commerce tokens (expired)"
 commits = ["2b9830fd10014d173b4aca58c50bd078c0754fb1", "e7d277c945c5baf26dbc6463ea0a1d425c370bb5"]
