@@ -7,8 +7,10 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
 import { ModelBoundToWorkflowError } from "~/domain/errors.js";
-import { canCallerDeleteModel } from "./canCallerDeleteModel.js";
-import { listBoundWorkflows } from "./listBoundWorkflows.js";
+import { toCmsNamespace } from "~/utils/appName.js";
+
+/** v1 binds one workflow per model (D15); a few extra cover the accepted save race (D41). */
+const BOUND_WORKFLOWS_LIMIT = 10;
 
 /**
  * Refuses to start the "fully delete model" background task for a model bound to a workflow
@@ -34,16 +36,30 @@ class FullyDeleteModelBoundToWorkflowDecoratorImpl implements DeleteModelOperati
     }
 
     public async fullyDeleteModel(modelId: string): Promise<IDeleteCmsModelTask> {
-        if (!(await canCallerDeleteModel(this.getModel, this.accessControl, modelId))) {
+        // A caller who cannot read and delete the model gets the CMS's own error from the decorated
+        // chain, never the bound workflows' ids and names (R64).
+        const model = await this.getModel.execute(modelId);
+        if (model.isFail()) {
+            return this.decoratee.fullyDeleteModel(modelId);
+        }
+        if (!(await this.accessControl.canAccessModel({ model: model.value, rwd: "d" }))) {
             return this.decoratee.fullyDeleteModel(modelId);
         }
 
-        const workflows = await listBoundWorkflows(this.listWorkflows, modelId);
+        const workflows = await this.listWorkflows.execute({
+            where: { models_in: [toCmsNamespace(modelId)] },
+            limit: BOUND_WORKFLOWS_LIMIT
+        });
         if (workflows.isFail()) {
             throw workflows.error;
         }
-        if (workflows.value.length > 0) {
-            throw new ModelBoundToWorkflowError({ modelId, workflows: workflows.value });
+        if (workflows.value.items.length > 0) {
+            throw new ModelBoundToWorkflowError({
+                modelId,
+                workflows: workflows.value.items.map(workflow => {
+                    return { id: workflow.id, name: workflow.name };
+                })
+            });
         }
         return this.decoratee.fullyDeleteModel(modelId);
     }

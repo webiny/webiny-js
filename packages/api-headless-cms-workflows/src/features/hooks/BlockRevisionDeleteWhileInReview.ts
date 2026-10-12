@@ -4,8 +4,6 @@ import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/
 import { ReviewActiveOnTrashError } from "@webiny/api-workflows/domain/review/errors.js";
 import { toBlockingReview } from "@webiny/api-workflows/domain/review/toBlockingReview.js";
 import { getCmsNamespace } from "~/utils/appName.js";
-import { findBoundWorkflow } from "./findBoundWorkflow.js";
-import { listInProgressTargetReviews } from "./listInProgressTargetReviews.js";
 
 /**
  * Deleting one revision is refused while that revision's review is in progress (D134, R73).
@@ -26,15 +24,23 @@ class BlockRevisionDeleteWhileInReviewImpl
             return;
         }
 
-        const workflow = await findBoundWorkflow(this.getBoundWorkflow, namespace);
-        if (!workflow) {
+        const bound = await this.getBoundWorkflow.execute({ model: namespace });
+        if (bound.isFail()) {
+            throw bound.error;
+        }
+        if (!bound.value) {
             return;
         }
 
-        const inProgress = await listInProgressTargetReviews(this.listTargetReviews, {
+        const reviews = await this.listTargetReviews.execute({
             model: namespace,
-            targetId: entry.entryId,
-            targetRevisionId: entry.id
+            targetId: entry.entryId
+        });
+        if (reviews.isFail()) {
+            throw reviews.error;
+        }
+        const inProgress = reviews.value.filter(review => {
+            return review.state === "inProgress" && review.targetRevisionId === entry.id;
         });
         if (inProgress.length === 0) {
             return;

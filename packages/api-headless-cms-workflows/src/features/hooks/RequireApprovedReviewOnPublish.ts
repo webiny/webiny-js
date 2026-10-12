@@ -1,9 +1,8 @@
 import { EntryBeforePublishEventHandler } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
 import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
 import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
+import { ReviewPublishBlockedError } from "@webiny/api-workflows/domain/review/errors.js";
 import { getCmsNamespace } from "~/utils/appName.js";
-import { assertApprovedReview } from "./assertApprovedReview.js";
-import { findBoundWorkflow } from "./findBoundWorkflow.js";
 
 /**
  * Publish rule of the `cms.*` adapter (spec 5.1, D79, D121, R53). On a model bound to a workflow a
@@ -27,15 +26,30 @@ class RequireApprovedReviewOnPublishImpl implements EntryBeforePublishEventHandl
             return;
         }
 
-        const workflow = await findBoundWorkflow(this.getBoundWorkflow, namespace);
-        if (!workflow) {
+        const bound = await this.getBoundWorkflow.execute({ model: namespace });
+        if (bound.isFail()) {
+            throw bound.error;
+        }
+        if (!bound.value) {
             return;
         }
 
-        await assertApprovedReview(this.getTargetReview, {
+        const review = await this.getTargetReview.execute({
+            model: namespace,
+            targetRevisionId: original.id
+        });
+        if (review.isFail()) {
+            throw review.error;
+        }
+        if (review.value?.state === "approved") {
+            return;
+        }
+
+        throw new ReviewPublishBlockedError({
             model: namespace,
             targetRevisionId: original.id,
-            workflow
+            workflowId: bound.value.id,
+            reviewState: review.value?.state ?? null
         });
     }
 }

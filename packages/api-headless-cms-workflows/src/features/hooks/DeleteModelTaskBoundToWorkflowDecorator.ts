@@ -3,7 +3,10 @@ import { DELETE_MODEL_TASK } from "@webiny/api-headless-cms-tasks/constants.js";
 import type { IDeleteModelTaskInput } from "@webiny/api-headless-cms-tasks/features/DeleteModelTask/types.js";
 import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
 import { ModelBoundToWorkflowError } from "~/domain/errors.js";
-import { listBoundWorkflows } from "./listBoundWorkflows.js";
+import { toCmsNamespace } from "~/utils/appName.js";
+
+/** v1 binds one workflow per model (D15); a few extra cover the accepted save race (D41). */
+const BOUND_WORKFLOWS_LIMIT = 10;
 
 /**
  * Refuses every run of the "delete model and entries" task for a model bound to a workflow (D134
@@ -55,12 +58,20 @@ class DeleteModelTaskBoundToWorkflowDecoratorImpl implements TaskHandler.Interfa
     }
 
     private async assertNotBound(modelId: string): Promise<void> {
-        const workflows = await listBoundWorkflows(this.listWorkflows, modelId);
+        const workflows = await this.listWorkflows.execute({
+            where: { models_in: [toCmsNamespace(modelId)] },
+            limit: BOUND_WORKFLOWS_LIMIT
+        });
         if (workflows.isFail()) {
             throw workflows.error;
         }
-        if (workflows.value.length > 0) {
-            throw new ModelBoundToWorkflowError({ modelId, workflows: workflows.value });
+        if (workflows.value.items.length > 0) {
+            throw new ModelBoundToWorkflowError({
+                modelId,
+                workflows: workflows.value.items.map(workflow => {
+                    return { id: workflow.id, name: workflow.name };
+                })
+            });
         }
     }
 }

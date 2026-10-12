@@ -4,14 +4,14 @@ import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow
 import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
 import { ReviewActiveOnTrashError } from "@webiny/api-workflows/domain/review/errors.js";
 import { toBlockingReview } from "@webiny/api-workflows/domain/review/toBlockingReview.js";
-import type { WorkflowBlockingReview } from "@webiny/api-workflows/domain/workflow/types.js";
 import { getCmsNamespace } from "~/utils/appName.js";
 
 /**
  * `deleteMultiple` (permanent, up to 50 entries) is refused while any entry it would delete has an
  * in-progress review (D134, R73). Only the entries the caller may access are considered, with the
  * same check `DeleteMultipleEntriesUseCase` applies, so the error never names a review of content
- * the caller cannot see. Bound models only; the binding is looked up once.
+ * the caller cannot see. Bound models only; the binding is looked up once, the reviews of the
+ * entries in parallel.
  */
 class BlockDeleteMultipleWhileInReviewImpl
     implements EntryBeforeDeleteMultipleEventHandler.Interface
@@ -37,24 +37,23 @@ class BlockDeleteMultipleWhileInReviewImpl
             return;
         }
 
-        const blocking: WorkflowBlockingReview[] = [];
-        for (const entry of entries) {
-            if (!(await this.accessControl.canAccessEntry({ model, entry }))) {
-                continue;
-            }
-            const reviews = await this.listTargetReviews.execute({
-                model: namespace,
-                targetId: entry.entryId
-            });
-            if (reviews.isFail()) {
-                throw reviews.error;
-            }
-            for (const review of reviews.value) {
-                if (review.state === "inProgress") {
-                    blocking.push(toBlockingReview(review));
+        // One lookup per entry, in parallel; any failure rejects, so the delete is refused.
+        const inProgress = await Promise.all(
+            entries.map(async entry => {
+                if (!(await this.accessControl.canAccessEntry({ model, entry }))) {
+                    return [];
                 }
-            }
-        }
+                const reviews = await this.listTargetReviews.execute({
+                    model: namespace,
+                    targetId: entry.entryId
+                });
+                if (reviews.isFail()) {
+                    throw reviews.error;
+                }
+                return reviews.value.filter(review => review.state === "inProgress");
+            })
+        );
+        const blocking = inProgress.flat().map(toBlockingReview);
         if (blocking.length === 0) {
             return;
         }

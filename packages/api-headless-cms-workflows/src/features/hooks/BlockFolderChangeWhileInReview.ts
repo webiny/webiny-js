@@ -3,8 +3,6 @@ import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow
 import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
 import { ReviewTargetLockedError } from "@webiny/api-workflows/domain/review/errors.js";
 import { getCmsNamespace } from "~/utils/appName.js";
-import { findBoundWorkflow } from "./findBoundWorkflow.js";
-import { listInProgressTargetReviews } from "./listInProgressTargetReviews.js";
 
 /**
  * Move rule of the `cms.*` adapter applied to updates (D84, R55, A24). An update can relocate the
@@ -29,15 +27,22 @@ class BlockFolderChangeWhileInReviewImpl implements EntryBeforeUpdateEventHandle
             return;
         }
 
-        const workflow = await findBoundWorkflow(this.getBoundWorkflow, namespace);
-        if (!workflow) {
+        const bound = await this.getBoundWorkflow.execute({ model: namespace });
+        if (bound.isFail()) {
+            throw bound.error;
+        }
+        if (!bound.value) {
             return;
         }
 
-        const [inProgress] = await listInProgressTargetReviews(this.listTargetReviews, {
+        const reviews = await this.listTargetReviews.execute({
             model: namespace,
             targetId: original.entryId
         });
+        if (reviews.isFail()) {
+            throw reviews.error;
+        }
+        const inProgress = reviews.value.find(review => review.state === "inProgress");
         if (!inProgress) {
             return;
         }

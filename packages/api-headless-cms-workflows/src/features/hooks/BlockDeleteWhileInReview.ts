@@ -4,8 +4,6 @@ import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/
 import { ReviewActiveOnTrashError } from "@webiny/api-workflows/domain/review/errors.js";
 import { toBlockingReview } from "@webiny/api-workflows/domain/review/toBlockingReview.js";
 import { getCmsNamespace } from "~/utils/appName.js";
-import { findBoundWorkflow } from "./findBoundWorkflow.js";
-import { listInProgressTargetReviews } from "./listInProgressTargetReviews.js";
 
 /**
  * Trash and permanent delete of a CMS entry are refused while any revision has an in-progress
@@ -25,15 +23,22 @@ class BlockDeleteWhileInReviewImpl implements EntryBeforeDeleteEventHandler.Inte
             return;
         }
 
-        const workflow = await findBoundWorkflow(this.getBoundWorkflow, namespace);
-        if (!workflow) {
+        const bound = await this.getBoundWorkflow.execute({ model: namespace });
+        if (bound.isFail()) {
+            throw bound.error;
+        }
+        if (!bound.value) {
             return;
         }
 
-        const inProgress = await listInProgressTargetReviews(this.listTargetReviews, {
+        const reviews = await this.listTargetReviews.execute({
             model: namespace,
             targetId: entry.entryId
         });
+        if (reviews.isFail()) {
+            throw reviews.error;
+        }
+        const inProgress = reviews.value.filter(review => review.state === "inProgress");
         if (inProgress.length === 0) {
             return;
         }
