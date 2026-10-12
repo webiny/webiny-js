@@ -2,7 +2,7 @@
 
 Spec 9.3, D134 points 1 and 3, R56, R73, R81, A34. The `cms.*` adapter's rules for trashing and deleting entries (public CMS models only, R52):
 
-- **Refusal while a review is in progress** (D134). On a model bound to a workflow (`GetBoundWorkflowUseCase`; unbound models are never looked up), trashing or permanently deleting an entry (`EntryBeforeDelete`, `permanent: false` → action `trash`, `true` → `delete`), deleting one revision (`EntryRevisionBeforeDelete`, that revision's review) and `deleteMultiple` (`EntryBeforeDeleteMultiple`, every entry the caller may access) fail with `Workflows/Review/ActiveReviewOnTrash` listing the in-progress reviews. Lookup failures block (fail closed). The confirm path is the cancel-for-delete wrapper (Task 14b): it cancels the reviews, then the admin repeats the trash or delete, which passes.
+- **Refusal while a review is in progress** (D134). On a model bound to a workflow (`GetBoundWorkflowUseCase`; unbound models are never looked up), trashing or permanently deleting an entry (`EntryBeforeDelete`, `permanent: false` → action `trash`, `true` → `delete`), deleting one revision (`EntryRevisionBeforeDelete`, that revision's review) and `deleteMultiple` (`EntryBeforeDeleteMultiple`, every entry the caller may access) fail with `Workflows/Review/ActiveReviewOnTrash` listing the in-progress reviews. Lookup failures block (fail closed). The confirm path is the cancel-for-delete wrapper (Task 14b): it cancels the reviews, then the admin repeats the trash or delete, which passes. On OpenSearch a just-created workflow may not be listed yet (A29), so for that window the model reads as unbound and the rule fails open (an accepted race, like D15): the bound-workflow lookup fails closed on a read error (A38), not on lag.
 - **Cleanup after a permanent delete** (spec 9.3, R56). `EntryAfterDelete` with `permanent: true` deletes every review of the entry with its assignment records; `EntryRevisionAfterDelete` deletes that revision's reviews; `EntryAfterDeleteMultiple` deletes the reviews of every listed entry that is gone. Trashing keeps the reviews (only finished ones remain, since in-progress ones are refused or cancelled first). A failed cleanup is logged and the delete stands (R81): the content is already deleted and the error event must not fire for a delete that happened; the reviews stay orphaned (accepted, A34).
 
 The CMS bulk actions (`api-headless-cms-bulk-actions`, trash and delete through `DeleteEntryUseCase` per entry) inherit the refusal per entry; their failed items are reported by the bulk action as for any other per-entry failure.
@@ -38,6 +38,7 @@ import { DeleteEntryRevisionUseCase } from "@webiny/api-headless-cms/features/co
 import { DeleteMultipleEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteMultipleEntries/index.js";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
 import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
+import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
 import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
 import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
 import { ReviewPersistenceError } from "@webiny/api-workflows/domain/review/errors.js";
@@ -54,10 +55,18 @@ import {
 interface ContextParams {
     withWorkflow?: boolean;
     legacyPlugins?: unknown[];
+    privateModel?: boolean;
 }
 
 const createTestContext = async (params: ContextParams = {}) => {
-    const { context } = createContextHandler({ legacyPlugins: params.legacyPlugins ?? [] });
+    const { context } = createContextHandler({
+        legacyPlugins: params.legacyPlugins ?? [],
+        modifyModel: params.privateModel
+            ? model => {
+                  return { ...model, isPrivate: true };
+              }
+            : undefined
+    });
     const ctx = await context();
     if (params.withWorkflow !== false) {
         expectOk(await storeWorkflow(ctx));
@@ -105,6 +114,38 @@ class FailingDeleteTargetReviews implements DeleteTargetReviewsUseCase.Interface
 
     public async execute(): DeleteTargetReviewsUseCase.Return {
         return Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
+    }
+}
+
+/** Engine calls the handlers made, by use case name. */
+const engineCalls: string[] = [];
+
+class CountingGetBoundWorkflow implements GetBoundWorkflowUseCase.Interface {
+    public constructor(private decoratee: GetBoundWorkflowUseCase.Interface) {}
+
+    public async execute(input: GetBoundWorkflowUseCase.Input): GetBoundWorkflowUseCase.Return {
+        engineCalls.push("GetBoundWorkflow");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingListTargetReviews implements ListTargetReviewsUseCase.Interface {
+    public constructor(private decoratee: ListTargetReviewsUseCase.Interface) {}
+
+    public async execute(
+        input: Parameters<ListTargetReviewsUseCase.Interface["execute"]>[0]
+    ): ListTargetReviewsUseCase.Return {
+        engineCalls.push("ListTargetReviews");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingDeleteTargetReviews implements DeleteTargetReviewsUseCase.Interface {
+    public constructor(private decoratee: DeleteTargetReviewsUseCase.Interface) {}
+
+    public async execute(input: DeleteTargetReviewsUseCase.Input): DeleteTargetReviewsUseCase.Return {
+        engineCalls.push("DeleteTargetReviews");
+        return this.decoratee.execute(input);
     }
 }
 
@@ -262,6 +303,62 @@ describe("CMS delete with a review in progress (D134)", () => {
     });
 });
 
+describe("CMS trash and delete on a private model (R52)", () => {
+    it("neither blocks nor cleans up: the engine deletes its own review and assignment entries", async () => {
+        engineCalls.length = 0;
+        // The workflow, review and assignment models are private. Their entries fire the same CMS
+        // events, and the engine deletes them through `DeleteEntryUseCase`, so the handlers must
+        // skip private models or the engine would call itself.
+        const context = await createTestContext({
+            privateModel: true,
+            legacyPlugins: [
+                (container: Container) => {
+                    container.registerDecorator(
+                        GetBoundWorkflowUseCase.createDecorator({
+                            decorator: CountingGetBoundWorkflow,
+                            dependencies: []
+                        })
+                    );
+                    container.registerDecorator(
+                        ListTargetReviewsUseCase.createDecorator({
+                            decorator: CountingListTargetReviews,
+                            dependencies: []
+                        })
+                    );
+                    container.registerDecorator(
+                        DeleteTargetReviewsUseCase.createDecorator({
+                            decorator: CountingDeleteTargetReviews,
+                            dependencies: []
+                        })
+                    );
+                }
+            ]
+        });
+        const model = await getAuthorModel(context);
+        const trashed = await createAuthorEntry(context, { name: "Trashed" });
+        const deleted = await createAuthorEntry(context, { name: "Deleted" });
+        const revised = await createAuthorEntry(context, { name: "Revised" });
+        const revision = await createSecondRevision(context, revised);
+        const bulk = await createAuthorEntry(context, { name: "Bulk" });
+        engineCalls.length = 0;
+
+        expect((await trash(context, trashed)).isOk()).toBe(true);
+        expect((await deletePermanently(context, deleted)).isOk()).toBe(true);
+        expect(
+            (await context.container.resolve(DeleteEntryRevisionUseCase).execute(model, revision.id)).isOk()
+        ).toBe(true);
+        expect(
+            (
+                await context.container
+                    .resolve(DeleteMultipleEntriesUseCase)
+                    .execute(model, { entries: [bulk.id] })
+            ).isOk()
+        ).toBe(true);
+
+        expect(engineCalls).toEqual([]);
+    });
+});
+
 describe("CMS review cleanup after a permanent delete (R56, R81)", () => {
     it("deletes the reviews of a permanently deleted entry", async () => {
         const context = await createTestContext();
@@ -327,7 +424,7 @@ describe("CMS review cleanup after a permanent delete (R56, R81)", () => {
 - [ ] **Step 2: Run it to verify it fails**
 
 Run: `yarn test packages/api-headless-cms-workflows/__tests__/hooks/trashAndDelete.test.ts 2>&1 | tail -50`
-Expected: FAIL. Trash and delete under review succeed; the deleted entries' reviews are still found. The tests that trash after cancel or approval, the unbound-model trash and the failing-cleanup test pass already.
+Expected: FAIL. Trash and delete under review succeed; the deleted entries' reviews are still found. The tests that trash after cancel or approval, the unbound-model trash, the private-model test and the failing-cleanup test pass already (the private-model test guards the handlers' `getCmsNamespace` skip: it fails if a handler stops skipping private models).
 
 - [ ] **Step 3: The in-progress lookup**
 

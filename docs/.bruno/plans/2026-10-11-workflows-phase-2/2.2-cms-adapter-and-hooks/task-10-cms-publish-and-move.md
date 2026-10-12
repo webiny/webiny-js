@@ -3,7 +3,7 @@
 Spec 5.1, 9.3, D79, D84, D121, D134 point 2, R52, R53, R55, R83, A24, A30. The `cms.*` adapter's publish and move rules on CMS entry events (the trash and delete rules are Task 10b). They act only on public CMS models (`getCmsNamespace`), because WB pages are CMS entries too and the WB adapter handles them on the WB page events (Task 16), and only on models bound to a workflow (`GetBoundWorkflowUseCase`):
 
 - `RequireApprovedReviewOnPublish` (`EntryBeforePublish`): on a bound model, the revision needs an approved active review; lookups fail closed. Creating an entry or a revision with `status: "published"` is not a publish and stays allowed (D134 point 2, R83); a test pins it.
-- `BlockMoveWhileInReview` (`EntryBeforeMove`): on a bound model, no move while any revision of the entry has an in-progress review.
+- `BlockMoveWhileInReview` (`EntryBeforeMove`): on a bound model, no move while any revision of the entry has an in-progress review. On OpenSearch a just-created workflow may not be listed yet (A29), so for that window the model reads as unbound and the rule fails open (an accepted race, like D15): the bound-workflow lookup fails closed on a read error (A38), not on lag.
 
 **Files:**
 - Create: `packages/api-headless-cms-workflows/src/features/hooks/RequireApprovedReviewOnPublish.ts`

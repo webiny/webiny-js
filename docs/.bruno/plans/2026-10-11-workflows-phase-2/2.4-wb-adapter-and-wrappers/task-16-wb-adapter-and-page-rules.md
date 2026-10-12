@@ -3,7 +3,7 @@
 Spec 4.5, 5.1, 9.3, D59, D62, D79, D84, D121, R48, R52-R55, R63, R66-R69, A26. The `wb.page` implementations of the engine ports and the WB publish and move rules on the WB page events (trash and delete are Task 16b). The single CMS handlers (Task 9) already cover pages through `WbPageReviewNamespace` (Task 15); this task pins that with page tests.
 
 - `WbPageReviewTargetLoader`, `WbPageReviewTargetSync`, `WbPageReviewTargetReadAccess`: as the CMS ones (Task 8), over `WbPageTargetReader` and `WbPageAccess`; another user's read check goes through `CandidateReadAccess`.
-- `RequireApprovedReviewOnPagePublish` (`PageBeforePublish`) and `BlockPageMoveWhileInReview` (`PageBeforeMove`; WB `MovePage` bypasses CMS `MoveEntryUseCase`), both only with a pages workflow bound (`GetBoundWorkflowUseCase`).
+- `RequireApprovedReviewOnPagePublish` (`PageBeforePublish`) and `BlockPageMoveWhileInReview` (`PageBeforeMove`; WB `MovePage` bypasses CMS `MoveEntryUseCase`), both only with a pages workflow bound (`GetBoundWorkflowUseCase`). On OpenSearch a just-created workflow may not be listed yet (A29), so for that window the model reads as unbound and the rule fails open (an accepted race, like D15): the bound-workflow lookup fails closed on a read error (A38), not on lag.
 
 **Files:**
 - Create: `packages/api-website-builder-workflows/src/features/target/toWbPageReviewTarget.ts`
