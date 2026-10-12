@@ -7,6 +7,13 @@ export interface ReviewRepositoryActiveByTargetParams {
     targetRevisionId: string;
 }
 
+export interface ReviewRepositoryByTargetParams {
+    model: string;
+    targetId: string;
+    /** Only the reviews of this revision; every revision when omitted. */
+    targetRevisionId?: string;
+}
+
 export interface IReviewRepository {
     get(id: string): Promise<Result<ReviewData, ReviewNotFoundError | ReviewPersistenceError>>;
     /** At most one active review per target revision (D23). */
@@ -18,6 +25,10 @@ export interface IReviewRepository {
     listInProgressByWorkflow(
         workflowId: string
     ): Promise<Result<ReviewData[], ReviewPersistenceError>>;
+    /** Every review of a target (active or not), confirmed from primary storage (R18). */
+    listByTarget(
+        params: ReviewRepositoryByTargetParams
+    ): Promise<Result<ReviewData[], ReviewPersistenceError>>;
     /** Create or update. Only `ReviewSaver` (the single save path) calls this. */
     save(review: ReviewData): Promise<Result<ReviewData, ReviewPersistenceError>>;
 }
@@ -28,4 +39,5 @@ export const ReviewRepository = createAbstraction<IReviewRepository>("ReviewRepo
 export namespace ReviewRepository {
     export type Interface = IReviewRepository;
     export type ActiveByTargetParams = ReviewRepositoryActiveByTargetParams;
+    export type ByTargetParams = ReviewRepositoryByTargetParams;
 }

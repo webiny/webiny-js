@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { createIdentifier } from "@webiny/utils";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsEntryListWhereValues, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
@@ -127,6 +127,56 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
                 }
                 const review = confirmed.value;
                 if (review && review.workflowId === workflowId && review.state === "inProgress") {
+                    reviews.push(review);
+                }
+            }
+
+            const { meta } = result.value;
+            after = meta.hasMoreItems ? meta.cursor : null;
+        } while (after);
+
+        return Result.ok(reviews);
+    }
+
+    async listByTarget(
+        params: Abstraction.ByTargetParams
+    ): Promise<Result<ReviewData[], ReviewPersistenceError>> {
+        const model = await this.modelProvider.get();
+        const values: CmsEntryListWhereValues = {
+            model: params.model,
+            targetId: params.targetId
+        };
+        if (params.targetRevisionId) {
+            values.targetRevisionId = params.targetRevisionId;
+        }
+
+        const reviews: ReviewData[] = [];
+        let after: string | null = null;
+        do {
+            const result: Awaited<ListLatestEntriesUseCase.Return<ReviewEntryValues>> =
+                await this.listLatestEntries.execute<ReviewEntryValues>(model, {
+                    where: { values },
+                    sort: ["createdOn_ASC"],
+                    limit: COUNT_PAGE_SIZE,
+                    after
+                });
+            if (result.isFail()) {
+                return Result.fail(new ReviewPersistenceError(result.error));
+            }
+
+            for (const entry of result.value.entries) {
+                const confirmed = await this.readPrimary(model, entry.id);
+                if (confirmed.isFail()) {
+                    return Result.fail(confirmed.error);
+                }
+                const review = confirmed.value;
+                if (
+                    review &&
+                    review.model === params.model &&
+                    review.targetId === params.targetId &&
+                    (!params.targetRevisionId ||
+                        review.targetRevisionId === params.targetRevisionId)
+                ) {
                     reviews.push(review);
                 }
             }

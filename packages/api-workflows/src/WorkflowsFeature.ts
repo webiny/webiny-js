@@ -20,6 +20,9 @@ import { TakeOverReviewStepFeature } from "~/features/review/TakeOverReviewStep/
 import { ApproveReviewStepFeature } from "~/features/review/ApproveReviewStep/feature.js";
 import { RejectReviewStepFeature } from "~/features/review/RejectReviewStep/feature.js";
 import { CancelReviewFeature } from "~/features/review/CancelReview/feature.js";
+import { GetTargetReviewFeature } from "~/features/review/GetTargetReview/feature.js";
+import { ListTargetReviewsFeature } from "~/features/review/ListTargetReviews/feature.js";
+import { GetBoundWorkflowFeature } from "~/features/workflow/GetBoundWorkflow/feature.js";
 import { AssignmentSharedFeature } from "~/features/assignment/shared/feature.js";
 import { WorkflowSettingsSharedFeature } from "~/features/settings/shared/feature.js";
 import { GetWorkflowSettingsFeature } from "~/features/settings/GetWorkflowSettings/feature.js";
@@ -65,6 +68,11 @@ export const WorkflowsFeature = createFeature({
         ApproveReviewStepFeature.register(container);
         RejectReviewStepFeature.register(container);
         CancelReviewFeature.register(container);
+
+        // Target queries for the app adapters (phase 2)
+        GetTargetReviewFeature.register(container);
+        ListTargetReviewsFeature.register(container);
+        GetBoundWorkflowFeature.register(container);
 
         // Assignment log (written from phase 4)
         AssignmentSharedFeature.register(container);

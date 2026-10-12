@@ -13,6 +13,9 @@ import { TakeOverReviewStepUseCase } from "~/features/review/TakeOverReviewStep/
 import { ApproveReviewStepUseCase } from "~/features/review/ApproveReviewStep/index.js";
 import { RejectReviewStepUseCase } from "~/features/review/RejectReviewStep/index.js";
 import { CancelReviewUseCase } from "~/features/review/CancelReview/index.js";
+import { GetTargetReviewUseCase } from "~/features/review/GetTargetReview/index.js";
+import { ListTargetReviewsUseCase } from "~/features/review/ListTargetReviews/index.js";
+import { GetBoundWorkflowUseCase } from "~/features/workflow/GetBoundWorkflow/index.js";
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
 import { ReviewStepReacher } from "~/features/review/ReviewStepReacher/abstractions.js";
 import { ReviewTargetLoader } from "~/features/review/ReviewTargetLoader/index.js";
@@ -58,6 +61,9 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(ApproveReviewStepUseCase)).toHaveLength(1);
         expect(container.resolveAll(RejectReviewStepUseCase)).toHaveLength(1);
         expect(container.resolveAll(CancelReviewUseCase)).toHaveLength(1);
+        expect(container.resolveAll(GetTargetReviewUseCase)).toHaveLength(1);
+        expect(container.resolveAll(ListTargetReviewsUseCase)).toHaveLength(1);
+        expect(container.resolveAll(GetBoundWorkflowUseCase)).toHaveLength(1);
         expect(container.resolveAll(ReviewSaver)).toHaveLength(1);
         expect(container.resolveAll(ReviewStepReacher)).toHaveLength(1);
         // No default loader or sync: phase 2 registers one per namespace.
