@@ -30,6 +30,10 @@ import {
     throwingAccessChecks,
     throwOnAccessChecks
 } from "~tests/__helpers/ThrowingCmsEntryAccess.js";
+import {
+    scriptTargetReads,
+    throwingTargetRevisions
+} from "~tests/__helpers/ScriptedTargetReads.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import { RequestCmsEntryReviewUseCase } from "~/features/wrappers/RequestCmsEntryReview/index.js";
 import { GetCmsEntryReviewUseCase } from "~/features/wrappers/GetCmsEntryReview/index.js";
@@ -61,7 +65,7 @@ const asUser = (identity: IdentityData | null, permissions: SecurityPermission[]
     return createUserContext({
         identity,
         permissions,
-        legacyPlugins: [countEngineCalls, throwOnAccessChecks]
+        legacyPlugins: [countEngineCalls, scriptTargetReads, throwOnAccessChecks]
     });
 };
 
@@ -97,10 +101,16 @@ const view = (context: CmsContext, reviewId: string) => {
     return context.container.resolve(GetCmsEntryReviewUseCase).execute({ id: reviewId });
 };
 
+/** What the tests read from any transition's failure. */
+interface TransitionError {
+    code: string;
+    data?: unknown;
+}
+
 interface TransitionCase {
     name: string;
     engineCall: string;
-    run: (context: CmsContext, reviewId: string) => Promise<Result<any, any>>;
+    run: (context: CmsContext, reviewId: string) => Promise<Result<unknown, TransitionError>>;
 }
 
 const TRANSITIONS: TransitionCase[] = [
@@ -158,6 +168,7 @@ describe("CMS review transition wrappers", () => {
     afterEach(() => {
         folderLevels.clear();
         throwingAccessChecks.clear();
+        throwingTargetRevisions.clear();
     });
 
     it("lets reviewers start, take over and approve a step", async () => {
@@ -244,6 +255,20 @@ describe("CMS review transition wrappers", () => {
         }
     );
 
+    it.each(TRANSITIONS)(
+        "fails $name with a persistence error when the target read throws, before the engine",
+        async t => {
+            const { entry, review } = await createScenario();
+            const requester = await asUser(REQUESTER, CMS_WRITER);
+            throwingTargetRevisions.add(entry.id);
+
+            const result = await t.run(requester, review.id);
+
+            expect(result.error.code).toBe("Workflows/Review/Persistence");
+            expect(engineCalls).toEqual(["GetReview"]);
+        }
+    );
+
     it("refuses cancel by a non-requester without reassign, before the engine", async () => {
         const { review } = await createScenario();
         const reviewer = await asUser(REVIEWER, CMS_READER);
@@ -290,7 +315,7 @@ describe("CMS review transition wrappers", () => {
         expect(byReassigner.error.code).toBe("Workflows/Review/InvalidState");
     });
 
-    it("takes the actor's teams from the identity", async () => {
+    it("refuses start by a non-team member in the engine", async () => {
         const { review } = await createScenario();
         const reader = await asUser(READER, CMS_READER);
 
@@ -377,5 +402,22 @@ describe("API keys in CMS reviews (D133 point 5, R79)", () => {
         const cancelled = expectOk(await cancel(key, review.id));
 
         expect(cancelled.state).toBe("cancelled");
+    });
+
+    it("does not let an API key without reassign cancel another user's review", async () => {
+        const admin = await createUserContext();
+        expectOk(await storeWorkflow(admin));
+        const review = await requestEntryReview(
+            admin,
+            await createAuthorEntry(admin, { name: "Ann" })
+        );
+        const { context: key } = await createApiKeyContext(CMS_WRITER);
+
+        const result = await cancel(key, review.id);
+
+        expect(result.error.code).toBe("Workflows/NotAuthorized");
+        expect(result.error.data).toEqual({ action: "cancel a review requested by someone else" });
+        const stored = expectOk(await view(admin, review.id));
+        expect(stored.review.state).toBe("inProgress");
     });
 });

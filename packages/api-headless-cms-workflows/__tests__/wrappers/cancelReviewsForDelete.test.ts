@@ -221,7 +221,7 @@ describe("CMS cancel-for-delete wrapper (D134)", () => {
         });
 
         expect(result.error.code).toBe("Workflows/NotAuthorized");
-        expect(engineCalls).not.toContain("CancelReview");
+        expect(engineCalls).toEqual(["ListTargetReviews"]);
     });
 
     it("cancels nothing when no review is in progress", async () => {
@@ -291,7 +291,7 @@ describe("CMS cancel-for-delete wrapper (D134)", () => {
         });
 
         expect(result.error.code).toBe("Workflows/Review/Persistence");
-        expect(engineCalls).not.toContain("CancelReview");
+        expect(engineCalls).toEqual(["ListTargetReviews"]);
         const stored = expectOk(
             await admin.container.resolve(GetReviewUseCase).execute({ id: review.id })
         );

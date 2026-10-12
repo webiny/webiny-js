@@ -6,6 +6,7 @@ import { createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow
 import { createAuthorEntry, expectOk } from "~tests/__helpers/entries.js";
 import { requestEntryReview } from "~tests/__helpers/engine.js";
 import { createUserContext, type UserContextParams } from "~tests/__helpers/userContext.js";
+import { GetWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetWorkflow/index.js";
 import { EDITOR, READER, toActor } from "~tests/__helpers/identities.js";
 import {
     RecordingEventPublisher,
@@ -15,6 +16,7 @@ import { CMS_READER, WORKFLOWS_EDITOR } from "~tests/__helpers/permissions.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import {
+    mismatchedTargetRevisions,
     scriptTargetReads,
     targetReads,
     throwingTargetRevisions
@@ -99,6 +101,7 @@ describe("CMS workflow wrappers", () => {
     afterEach(() => {
         folderLevels.clear();
         throwingTargetRevisions.clear();
+        mismatchedTargetRevisions.clear();
     });
 
     it("stores a workflow for an editor and passes savedOn through (D131)", async () => {
@@ -200,12 +203,17 @@ describe("CMS workflow wrappers", () => {
     });
 
     it("does not rebind a Website Builder workflow (R46)", async () => {
-        await storeWbWorkflow(await createUserContext());
+        const admin = await createUserContext();
+        const wb = await storeWbWorkflow(admin);
         const editor = await createEditorContext();
 
         const result = await store(editor, { ...createWorkflowValues(), id: "wb-workflow" });
 
         expect(result.error.code).toBe("Workflows/Workflow/NotFound");
+        const stored = expectOk(
+            await admin.container.resolve(GetWorkflowUseCase).execute({ id: "wb-workflow" })
+        );
+        expect(stored).toEqual(wb);
     });
 
     it("lists and gets Headless CMS workflows only", async () => {
@@ -240,6 +248,10 @@ describe("CMS workflow wrappers", () => {
 
         expect(deleted.isOk()).toBe(true);
         expect(wb.error.code).toBe("Workflows/Workflow/NotFound");
+        const stored = expectOk(
+            await admin.container.resolve(GetWorkflowUseCase).execute({ id: "wb-workflow" })
+        );
+        expect(stored.models).toEqual(["wb.page"]);
     });
 
     it("lists at most five readable blocking reviews and keeps the exact count (D115)", async () => {
@@ -318,5 +330,27 @@ describe("CMS workflow wrappers", () => {
         expect(data.count).toBe(2);
         expect(data.reviews.map(review => review.targetRevisionId)).toEqual([open.id]);
         expect(targetReads).toHaveLength(2);
+    });
+
+    it("counts a blocking review whose target is another entry's revision as unreadable", async () => {
+        const admin = await createUserContext();
+        expectOk(await storeWorkflow(admin));
+        const mismatched = await createAuthorEntry(admin, { name: "Mismatched" });
+        const open = await createAuthorEntry(admin, { name: "Open" });
+        await requestEntryReview(admin, mismatched);
+        await requestEntryReview(admin, open);
+        mismatchedTargetRevisions.add(mismatched.id);
+        const editor = await createUserContext({
+            identity: EDITOR,
+            permissions: [WORKFLOWS_EDITOR, ...CMS_READER],
+            legacyPlugins: [scriptTargetReads]
+        });
+
+        const blocked = await remove(editor, "workflow-1");
+
+        const data = blocked.error.data as WorkflowHasActiveReviewsErrorData;
+        expect(blocked.error.code).toBe("Workflows/Workflow/HasActiveReviews");
+        expect(data.count).toBe(2);
+        expect(data.reviews.map(review => review.targetRevisionId)).toEqual([open.id]);
     });
 });

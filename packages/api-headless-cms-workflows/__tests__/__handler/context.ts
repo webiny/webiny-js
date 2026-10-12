@@ -31,7 +31,7 @@ export const createContextHandler = (
             WorkflowsFeature.register(container);
             CmsWorkflowsFeature.register(container);
         },
-        testProjectLicense: testLicence
+        testProjectLicense: params?.testProjectLicense ?? testLicence
     });
 
     return {

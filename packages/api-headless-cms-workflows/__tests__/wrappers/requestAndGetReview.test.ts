@@ -89,11 +89,16 @@ describe("CMS request and get review wrappers", () => {
     it("refuses a request without folder write access", async () => {
         const { lockedEntry } = await createScenario();
         folderLevels.set("folder-locked", new Map([[REQUESTER.id, "viewer"]]));
-        const requester = await createUserContext({ identity: REQUESTER, permissions: CMS_WRITER });
+        const requester = await createCountingContext({
+            identity: REQUESTER,
+            permissions: CMS_WRITER
+        });
 
         const result = await request(requester, lockedEntry);
 
         expect(result.error.code).toBe("Workflows/NotAuthorized");
+        expect(result.error.data).toEqual({ action: "request a review" });
+        expect(engineCalls).toEqual([]);
     });
 
     it("reports a target the user cannot see or of another app as not found (R46)", async () => {
@@ -161,6 +166,7 @@ describe("CMS request and get review wrappers", () => {
         expect(folderDenied.error.code).toBe("Workflows/NotAuthorized");
         expect(folderDenied.error.data).toEqual({ action: "view this review" });
         expect(modelDenied.error.code).toBe("Workflows/NotAuthorized");
+        expect(modelDenied.error.data).toEqual({ action: "view this review" });
     });
 
     it("reports a Website Builder review as not found (R46)", async () => {

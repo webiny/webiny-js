@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Abstraction } from "@webiny/di";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
+import { PROJECT_PACKAGE_FEATURE_NAME } from "@webiny/wcp/types.js";
 import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
 import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTargetSync/index.js";
@@ -18,6 +20,23 @@ import { ApproveCmsEntryReviewStepUseCase } from "~/features/wrappers/ApproveCms
 import { RejectCmsEntryReviewStepUseCase } from "~/features/wrappers/RejectCmsEntryReviewStep/index.js";
 import { CancelCmsEntryReviewUseCase } from "~/features/wrappers/CancelCmsEntryReview/index.js";
 import { CancelCmsEntryReviewsForDeleteUseCase } from "~/features/wrappers/CancelCmsEntryReviewsForDelete/index.js";
+import { CmsEntryReviewGuardService } from "~/features/wrappers/CmsEntryReviewGuardService/index.js";
+
+const WRAPPERS: Abstraction<unknown>[] = [
+    StoreCmsEntryWorkflowUseCase,
+    DeleteCmsEntryWorkflowUseCase,
+    ListCmsEntryWorkflowsUseCase,
+    GetCmsEntryWorkflowUseCase,
+    RequestCmsEntryReviewUseCase,
+    GetCmsEntryReviewUseCase,
+    StartCmsEntryReviewStepUseCase,
+    TakeOverCmsEntryReviewStepUseCase,
+    ApproveCmsEntryReviewStepUseCase,
+    RejectCmsEntryReviewStepUseCase,
+    CancelCmsEntryReviewUseCase,
+    CancelCmsEntryReviewsForDeleteUseCase,
+    CmsEntryReviewGuardService
+];
 
 describe("CmsWorkflowsFeature registration", () => {
     it("registers the core workflows feature only once", async () => {
@@ -35,22 +54,19 @@ describe("CmsWorkflowsFeature registration", () => {
         expect(container.resolveAll(ReviewTargetSync)).toHaveLength(1);
         expect(container.resolveAll(ReviewTargetReadAccess)).toHaveLength(1);
         expect(container.resolveAll(CmsEntryReviewNamespace)).toHaveLength(1);
-        const wrappers: Abstraction<any>[] = [
-            StoreCmsEntryWorkflowUseCase,
-            DeleteCmsEntryWorkflowUseCase,
-            ListCmsEntryWorkflowsUseCase,
-            GetCmsEntryWorkflowUseCase,
-            RequestCmsEntryReviewUseCase,
-            GetCmsEntryReviewUseCase,
-            StartCmsEntryReviewStepUseCase,
-            TakeOverCmsEntryReviewStepUseCase,
-            ApproveCmsEntryReviewStepUseCase,
-            RejectCmsEntryReviewStepUseCase,
-            CancelCmsEntryReviewUseCase,
-            CancelCmsEntryReviewsForDeleteUseCase
-        ];
-        for (const abstraction of wrappers) {
+        for (const abstraction of WRAPPERS) {
             expect(container.resolveAll(abstraction)).toHaveLength(1);
+        }
+    });
+
+    it("registers no wrapper and no guard without the advancedPublishingWorkflow license", async () => {
+        const license = createTestWcpLicense();
+        license.package.features[PROJECT_PACKAGE_FEATURE_NAME.APW] = { enabled: false };
+        const { context } = createContextHandler({ testProjectLicense: license });
+        const { container } = await context();
+
+        for (const abstraction of WRAPPERS) {
+            expect(container.resolveAll(abstraction)).toHaveLength(0);
         }
     });
 });
