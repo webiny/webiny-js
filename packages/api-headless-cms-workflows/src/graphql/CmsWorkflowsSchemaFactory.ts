@@ -24,6 +24,11 @@ import { ApproveCmsEntryReviewStepUseCase } from "~/features/wrappers/ApproveCms
 import { RejectCmsEntryReviewStepUseCase } from "~/features/wrappers/RejectCmsEntryReviewStep/index.js";
 import { CancelCmsEntryReviewUseCase } from "~/features/wrappers/CancelCmsEntryReview/index.js";
 import { CancelCmsEntryReviewsForDeleteUseCase } from "~/features/wrappers/CancelCmsEntryReviewsForDelete/index.js";
+import { ReassignCmsEntryReviewStepUseCase } from "~/features/wrappers/ReassignCmsEntryReviewStep/index.js";
+import { ListCmsEntryStepCandidatesUseCase } from "~/features/wrappers/ListCmsEntryStepCandidates/index.js";
+import { ListCmsEntryReviewStepCandidatesUseCase } from "~/features/wrappers/ListCmsEntryReviewStepCandidates/index.js";
+import { InspectCmsEntryRoutingUseCase } from "~/features/wrappers/InspectCmsEntryRouting/index.js";
+import { CmsEntryFolderExistsUseCase } from "~/features/wrappers/CmsEntryFolderExists/index.js";
 
 interface StoreCmsEntryWorkflowArgs {
     data: WorkflowValues;
@@ -48,6 +53,22 @@ interface CancelCmsEntryReviewsForDeleteArgs {
     entryId: string;
     revisionId?: string | null;
     action: ReviewActiveOnTrashAction;
+}
+
+interface ListCmsEntryStepCandidatesArgs {
+    workflowId: string;
+    stepId: string;
+    modelId: string;
+    revisionId: string;
+}
+
+interface InspectCmsEntryRoutingArgs {
+    /** The unsaved step config (`JSON`); the engine validates it. */
+    stepConfig: unknown;
+    modelId: string;
+    requesterId: string;
+    /** Missing or `null`: the root folder. */
+    folderId?: string | null;
 }
 
 /**
@@ -106,6 +127,16 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         error: WorkflowsError
     }
 
+    type CmsEntryStepCandidateListResponse {
+        data: [WorkflowsStepCandidate!]
+        error: WorkflowsError
+    }
+
+    type CmsEntryRoutingInspectionResponse {
+        data: WorkflowsRoutingInspection
+        error: WorkflowsError
+    }
+
     extend type CmsQuery {
         listCmsEntryWorkflows: CmsEntryWorkflowListResponse!
         getCmsEntryWorkflow(id: ID!): CmsEntryWorkflowResponse!
@@ -123,6 +154,23 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
             limit: Int
             after: String
         ): CmsEntryWorkflowModelListResponse!
+        listCmsEntryStepCandidates(
+            workflowId: ID!
+            stepId: ID!
+            modelId: ID!
+            revisionId: ID!
+        ): CmsEntryStepCandidateListResponse!
+        listCmsEntryReviewStepCandidates(
+            reviewId: ID!
+            stepId: ID!
+        ): CmsEntryStepCandidateListResponse!
+        inspectCmsEntryRouting(
+            stepConfig: JSON!
+            modelId: ID!
+            requesterId: ID!
+            folderId: ID
+        ): CmsEntryRoutingInspectionResponse!
+        cmsEntryFolderExists(id: ID!, type: String!): WorkflowsBooleanResponse!
     }
 
     extend type CmsMutation {
@@ -139,6 +187,7 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         ): CmsEntryReviewResponse!
         startCmsEntryReviewStep(reviewId: ID!, stepId: ID!): CmsEntryReviewResponse!
         takeOverCmsEntryReviewStep(reviewId: ID!, stepId: ID!): CmsEntryReviewResponse!
+        reassignCmsEntryReviewStep(reviewId: ID!, stepId: ID!, userId: ID!): CmsEntryReviewResponse!
         approveCmsEntryReviewStep(
             reviewId: ID!
             stepId: ID!
@@ -367,6 +416,24 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             }
         });
 
+        builder.addResolver<ReassignCmsEntryReviewStepUseCase.Input>({
+            path: "CmsMutation.reassignCmsEntryReviewStep",
+            dependencies: [ReassignCmsEntryReviewStepUseCase],
+            resolver: (reassignStep: ReassignCmsEntryReviewStepUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await reassignStep.execute({
+                        reviewId: args.reviewId,
+                        stepId: args.stepId,
+                        userId: args.userId
+                    });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
         builder.addResolver<ApproveCmsEntryReviewStepUseCase.Input>({
             path: "CmsMutation.approveCmsEntryReviewStep",
             dependencies: [ApproveCmsEntryReviewStepUseCase],
@@ -438,6 +505,83 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         targetRevisionId: args.revisionId,
                         action: args.action
                     });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        // Routing (R120, R121, R124, R125)
+        builder.addResolver<ListCmsEntryStepCandidatesArgs>({
+            path: "CmsQuery.listCmsEntryStepCandidates",
+            dependencies: [ListCmsEntryStepCandidatesUseCase],
+            resolver: (listCandidates: ListCmsEntryStepCandidatesUseCase.Interface) => {
+                return async ({ args }) => {
+                    // A malformed revision id is a validation error, never a throw (R107).
+                    if (!isValidRevisionId(args.revisionId)) {
+                        return new ErrorResponse(
+                            new ReviewValidationError("The revision id is not valid.")
+                        );
+                    }
+                    const result = await listCandidates.execute({
+                        workflowId: args.workflowId,
+                        stepId: args.stepId,
+                        model: toCmsNamespace(args.modelId),
+                        targetId: parseIdentifier(args.revisionId).id,
+                        targetRevisionId: args.revisionId
+                    });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<ListCmsEntryReviewStepCandidatesUseCase.Input>({
+            path: "CmsQuery.listCmsEntryReviewStepCandidates",
+            dependencies: [ListCmsEntryReviewStepCandidatesUseCase],
+            resolver: (listCandidates: ListCmsEntryReviewStepCandidatesUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await listCandidates.execute({
+                        reviewId: args.reviewId,
+                        stepId: args.stepId
+                    });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<InspectCmsEntryRoutingArgs>({
+            path: "CmsQuery.inspectCmsEntryRouting",
+            dependencies: [InspectCmsEntryRoutingUseCase],
+            resolver: (inspectRouting: InspectCmsEntryRoutingUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await inspectRouting.execute({
+                        stepConfig: args.stepConfig,
+                        model: toCmsNamespace(args.modelId),
+                        requesterId: args.requesterId,
+                        folderId: args.folderId
+                    });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<CmsEntryFolderExistsUseCase.Input>({
+            path: "CmsQuery.cmsEntryFolderExists",
+            dependencies: [CmsEntryFolderExistsUseCase],
+            resolver: (folderExists: CmsEntryFolderExistsUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await folderExists.execute({ id: args.id, type: args.type });
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }

@@ -27,7 +27,11 @@ const CMS_QUERY_FIELDS = [
     "getCmsEntryReview",
     "getCmsEntryTargetReview",
     "listCmsEntryReviews",
-    "listCmsEntryWorkflowModels"
+    "listCmsEntryWorkflowModels",
+    "listCmsEntryStepCandidates",
+    "listCmsEntryReviewStepCandidates",
+    "inspectCmsEntryRouting",
+    "cmsEntryFolderExists"
 ];
 
 const CMS_MUTATION_FIELDS = [
@@ -36,6 +40,7 @@ const CMS_MUTATION_FIELDS = [
     "requestCmsEntryReview",
     "startCmsEntryReviewStep",
     "takeOverCmsEntryReviewStep",
+    "reassignCmsEntryReviewStep",
     "approveCmsEntryReviewStep",
     "rejectCmsEntryReviewStep",
     "cancelCmsEntryReview",

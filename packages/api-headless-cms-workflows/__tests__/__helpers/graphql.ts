@@ -13,6 +13,8 @@ export interface GraphQLClientParams {
     identity?: IdentityData | null;
     /** Defaults to `*`. */
     permissions?: SecurityPermission[];
+    /** Permissions of other users, for routing and candidate read checks. */
+    permissionsByIdentity?: Record<string, SecurityPermission[]>;
     testProjectLicense?: DecryptedWcpProjectLicense;
     legacyPlugins?: unknown[];
 }
@@ -40,6 +42,7 @@ export const createGraphQLClient = (params: GraphQLClientParams = {}): GraphQLCl
     const { invoke } = createContextHandler({
         identity: params.identity,
         permissions: params.permissions,
+        permissionsByIdentity: params.permissionsByIdentity,
         testProjectLicense: params.testProjectLicense,
         legacyPlugins: [
             (container: Container) => {
