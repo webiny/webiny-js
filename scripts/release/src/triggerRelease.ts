@@ -20,7 +20,7 @@ interface ReleaseArgs {
 }
 
 /**
- * A simple script that will trigger the "v6 Custom Release" GitHub workflow (`release-v6` event).
+ * A simple script that will trigger the "v5 Custom Release" GitHub workflow (`release` event).
  */
 
 (async () => {
@@ -67,7 +67,7 @@ interface ReleaseArgs {
         await octokit.repos.createDispatchEvent({
             owner: "webiny",
             repo: "webiny-js",
-            event_type: "release-v6",
+            event_type: "release",
             client_payload: {
                 branch,
                 type,
