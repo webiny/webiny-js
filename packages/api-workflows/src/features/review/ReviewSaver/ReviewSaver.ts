@@ -16,6 +16,7 @@ import {
     ReviewRequestedEvent,
     ReviewStepApprovedEvent,
     ReviewStepReachedEvent,
+    ReviewStepReassignedEvent,
     ReviewStepRejectedEvent,
     ReviewStepStartedEvent,
     ReviewStepTakenOverEvent
@@ -112,6 +113,8 @@ class ReviewSaverImpl implements Abstraction.Interface {
                 return new ReviewStepStartedEvent({ review, fact });
             case "stepTakenOver":
                 return new ReviewStepTakenOverEvent({ review, fact });
+            case "stepReassigned":
+                return new ReviewStepReassignedEvent({ review, fact });
             case "stepApproved":
                 return new ReviewStepApprovedEvent({ review, fact });
             case "stepRejected":

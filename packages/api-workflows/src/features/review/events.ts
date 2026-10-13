@@ -9,6 +9,7 @@ import type {
     ReviewRequestedFact,
     ReviewStepApprovedFact,
     ReviewStepReachedFact,
+    ReviewStepReassignedFact,
     ReviewStepRejectedFact,
     ReviewStepStartedFact,
     ReviewStepTakenOverFact
@@ -110,6 +111,29 @@ export namespace ReviewStepTakenOverEventHandler {
 }
 
 // ============================================================================
+// StepReassigned
+// ============================================================================
+
+export class ReviewStepReassignedEvent extends DomainEvent<
+    ReviewEventPayload<ReviewStepReassignedFact>
+> {
+    eventType = "Workflows/Review/StepReassigned" as const;
+
+    getHandlerAbstraction() {
+        return ReviewStepReassignedEventHandler;
+    }
+}
+
+export const ReviewStepReassignedEventHandler = createAbstraction<
+    IEventHandler<ReviewStepReassignedEvent>
+>("ReviewStepReassignedEventHandler");
+
+export namespace ReviewStepReassignedEventHandler {
+    export type Interface = IEventHandler<ReviewStepReassignedEvent>;
+    export type Event = ReviewStepReassignedEvent;
+}
+
+// ============================================================================
 // StepApproved
 // ============================================================================
 
@@ -202,6 +226,7 @@ export type ReviewEvent =
     | ReviewStepReachedEvent
     | ReviewStepStartedEvent
     | ReviewStepTakenOverEvent
+    | ReviewStepReassignedEvent
     | ReviewStepApprovedEvent
     | ReviewStepRejectedEvent
     | ReviewCancelledEvent

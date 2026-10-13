@@ -49,6 +49,20 @@ export interface ReviewStepTakenOverFact {
     records: AssignmentDecision[];
 }
 
+export interface ReviewStepReassignedFact {
+    type: "stepReassigned";
+    occurredOn: string;
+    /** Who reassigned: a user with `workflows.reassign` (the wrapper checked it, D132). */
+    actor: Actor;
+    change: ReviewStepChange;
+    /** The chosen user. */
+    owner: Actor;
+    /** `null` when the step was `awaiting`. */
+    previousOwner: Actor | null;
+    /** One `reassign` outcome with `by` (R117). */
+    records: AssignmentDecision[];
+}
+
 export interface ReviewStepApprovedFact {
     type: "stepApproved";
     occurredOn: string;
@@ -87,6 +101,7 @@ export type ReviewFact =
     | ReviewStepReachedFact
     | ReviewStepStartedFact
     | ReviewStepTakenOverFact
+    | ReviewStepReassignedFact
     | ReviewStepApprovedFact
     | ReviewStepRejectedFact
     | ReviewCancelledFact

@@ -88,6 +88,14 @@ export interface ReviewCancelParams {
     reason?: string | null;
 }
 
+export interface ReviewReassignParams extends ReviewStepParams {
+    /** Who reassigns; recorded as `by` (D127). */
+    actor: Actor;
+    /** The chosen user, validated by the caller (R112, R119). */
+    owner: Actor;
+    now: string;
+}
+
 /** A human-held `inReview` step and its owner, as the take-over guard found them. */
 interface ReviewHeldStep {
     step: ReviewStep;
@@ -118,6 +126,9 @@ export type ReviewReassignError =
     | ReviewInvalidStateError
     | ReviewStepNotCurrentError
     | ReviewStepNotReassignableError;
+
+/** Reassign adds the same-owner rule to the reassign guard. */
+export type ReviewReassignTransitionError = ReviewReassignError | ReviewAlreadyOwnerError;
 
 /**
  * One run of a workflow on one target revision (spec 3, 4.2, 5.1). Transitions take an explicit
@@ -476,12 +487,63 @@ export class Review {
     }
 
     /**
-     * Reassign is possible on an `awaiting` or human-owned `inReview` step (D33). The transition
-     * arrives in phase 4 and must use the same guard; who may reassign (`reassign`) is checked by
-     * the app wrapper with `canReassignByPermission` (D132, R41).
+     * Reassign is possible on an `awaiting` or human-owned `inReview` step (D33). Who may reassign
+     * (`reassign`) is checked by the app wrapper with `canReassignByPermission` (D132, R41).
      */
     public checkReassign(params: ReviewStepParams): Result<void, ReviewReassignError> {
         return Review.toCheck(this.guardReassign(params));
+    }
+
+    /**
+     * Gives the step to the chosen user (spec 5.1, R119), through the same guard as
+     * `checkReassign`. The caller has validated the user like a pick (R112). An `awaiting` step
+     * starts now; an `inReview` step keeps its `startedOn`.
+     */
+    public reassign(params: ReviewReassignParams): Result<void, ReviewReassignTransitionError> {
+        const guard = this.guardReassign(params);
+        if (guard.isFail()) {
+            return Result.fail(guard.error);
+        }
+        const step = guard.value;
+        const previousOwner = step.owner;
+        if (
+            previousOwner &&
+            previousOwner.type === params.owner.type &&
+            previousOwner.id === params.owner.id
+        ) {
+            return Result.fail(
+                new ReviewAlreadyOwnerError({ reviewId: this.data.id, stepId: step.id })
+            );
+        }
+        const fromState = step.state;
+
+        step.owner = { ...params.owner };
+        if (fromState === "awaiting") {
+            step.state = "inReview";
+            step.startedOn = params.now;
+        }
+        step.assignmentSource = "reassign";
+        step.assignment = { source: "reassign", by: { ...params.actor } };
+
+        this.facts.push({
+            type: "stepReassigned",
+            occurredOn: params.now,
+            actor: { ...params.actor },
+            change: { stepId: step.id, fromState, toState: "inReview" },
+            owner: { ...params.owner },
+            previousOwner: previousOwner ? { ...previousOwner } : null,
+            records: [
+                {
+                    kind: "outcome",
+                    userId: params.owner.id,
+                    source: "reassign",
+                    ruleId: null,
+                    by: { ...params.actor },
+                    reason: null
+                }
+            ]
+        });
+        return Result.ok();
     }
 
     /**

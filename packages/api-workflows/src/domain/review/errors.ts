@@ -165,6 +165,21 @@ export class ReviewStepNotReassignableError extends BaseError<ReviewStepNotReass
     }
 }
 
+export interface ReviewReassignTargetInvalidErrorData extends ReviewStepErrorData {
+    userId: string;
+    /** One of the fixed routing reasons (R112), never an exclusion's own text (D89, D97). */
+    reason: string;
+}
+
+/** The chosen user fails the pick rules: requester, not a member, excluded, cannot read (D33, R119). */
+export class ReviewReassignTargetInvalidError extends BaseError<ReviewReassignTargetInvalidErrorData> {
+    override readonly code = "Workflows/Review/ReassignTargetInvalid" as const;
+
+    constructor(data: ReviewReassignTargetInvalidErrorData) {
+        super({ message: `This user cannot review this step: ${data.reason}`, data });
+    }
+}
+
 export interface ReviewAlreadyActiveErrorData {
     reviewId: string;
     targetRevisionId: string;
