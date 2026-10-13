@@ -3,7 +3,14 @@ import type { AdminAssistantPresenter } from "@webiny/app-admin";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
 import { ReactComponent as BackspaceIcon } from "@webiny/icons/backspace.svg";
-import { AiModeBadge, AiSuggestions, AiTurn, HintIcon, type Hint } from "../components/index.js";
+import {
+    AiModeBadge,
+    AiSuggestions,
+    AiTurn,
+    HintIcon,
+    type AiTurnAsker,
+    type Hint
+} from "../components/index.js";
 import type { PaletteMode, PaletteModeKeyContext } from "./PaletteMode.js";
 
 const HINTS: Hint[] = [
@@ -11,6 +18,18 @@ const HINTS: Hint[] = [
     { keys: <HintIcon element={<BackspaceIcon />} />, label: "Commands" },
     { keys: "esc", label: "Close" }
 ];
+
+/**
+ * "anthropic/claude-sonnet-4-5" reads as "claude-sonnet-4-5". The vendor is noise in a footer, and
+ * the model id is what someone checking which model answered will look for.
+ */
+const modelLabel = (model: string | undefined): string => {
+    if (!model) {
+        return "Webiny AI";
+    }
+
+    return `Webiny AI · ${model.slice(model.indexOf("/") + 1)}`;
+};
 
 /**
  * The assistant, as a palette mode.
@@ -22,7 +41,10 @@ const HINTS: Hint[] = [
  * reactive component's render tracks the presenter's observables and re-renders on a new turn, with
  * no dependency arrays to keep honest.
  */
-export const createAiMode = (presenter: AdminAssistantPresenter.Interface): PaletteMode => ({
+export const createAiMode = (
+    presenter: AdminAssistantPresenter.Interface,
+    asker: AiTurnAsker
+): PaletteMode => ({
     get appearance() {
         const started = presenter.vm.turns.length > 0;
 
@@ -32,7 +54,7 @@ export const createAiMode = (presenter: AdminAssistantPresenter.Interface): Pale
             iconLabel: "Ask AI",
             badge: <AiModeBadge />,
             placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
-            footerLabel: "Webiny AI",
+            footerLabel: modelLabel(presenter.vm.model),
             hints: HINTS,
             tall: true
         };
@@ -49,10 +71,11 @@ export const createAiMode = (presenter: AdminAssistantPresenter.Interface): Pale
             <AiTurn
                 key={index}
                 turn={turn}
-                initials="You"
+                asker={asker}
                 busy={busy}
                 onApprove={() => presenter.decide(index, true)}
                 onReject={() => presenter.decide(index, false)}
+                onAsk={question => presenter.ask(question)}
             />
         ));
     },

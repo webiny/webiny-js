@@ -1,31 +1,39 @@
 import React from "react";
-import { Markdown } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
+import { Avatar, Icon, Markdown, Text } from "@webiny/admin-ui";
+import { ReactComponent as ErrorIcon } from "@webiny/icons/error.svg";
 import type { AiTurnViewModel } from "@webiny/app-admin";
 import { ToolChip } from "./ToolChip.js";
+import { ToolTrace } from "./ToolTrace.js";
+import { FollowUps } from "./FollowUps.js";
 import { AnswerSkeleton } from "./AnswerSkeleton.js";
 import { ApprovalPlan } from "./ApprovalPlan.js";
+import { toolState } from "./toolState.js";
+
+/** Who asked, for the avatar beside each question. */
+export interface AiTurnAsker {
+    /** First letter of the name, shown when there is no picture. */
+    initial: string;
+    avatarSrc?: string;
+}
 
 /**
- * Settled only once the tool actually returned or threw. A call awaiting approval still arrives as a
- * `tool-call`, so keying off position would show a write as completed when it has only been proposed.
- *
- * Outcomes are counted together, because a tool called twice can succeed once and fail once and the
- * chips are told apart only by their order.
+ * Its own block rather than red text, so a failure reads as the outcome of the turn and not as part
+ * of an answer. Most messages here name the setting to fix, so they are shown as sent.
  */
-const toolState = (turn: AiTurnViewModel, index: number): "running" | "done" | "failed" => {
-    const name = turn.tools[index];
-    const callsSoFar = turn.tools.slice(0, index + 1).filter(tool => tool === name).length;
-    const resultsSoFar = turn.completed.filter(tool => tool === name).length;
-    const failuresSoFar = turn.failed.filter(tool => tool === name).length;
-
-    if (resultsSoFar + failuresSoFar < callsSoFar) {
-        return "running";
-    }
-
-    // The failures land last, so a call beyond the successful ones is one of them.
-    return callsSoFar > resultsSoFar ? "failed" : "done";
-};
+const AnswerError = ({ message }: { message: string }) => (
+    <div className="flex items-start gap-sm rounded-md border border-destructive-subtle bg-destructive-subtle px-sm py-xs-plus">
+        <Icon
+            icon={<ErrorIcon />}
+            size="sm"
+            label=""
+            color="inherit"
+            className="mt-xxs text-destructive-primary"
+        />
+        <Text as="div" size="sm" className="text-neutral-primary">
+            {message}
+        </Text>
+    </div>
+);
 
 /**
  * One of four things fills the answer slot, in priority order: the failure, the skeleton, the answer,
@@ -39,11 +47,7 @@ const toolState = (turn: AiTurnViewModel, index: number): "running" | "done" | "
  */
 const renderAnswer = (turn: AiTurnViewModel) => {
     if (turn.error) {
-        return (
-            <Text as="div" size="sm" className="text-destructive-primary">
-                {turn.error}
-            </Text>
-        );
+        return <AnswerError message={turn.error} />;
     }
 
     if (!turn.text && !turn.settled) {
@@ -71,29 +75,42 @@ const renderAnswer = (turn: AiTurnViewModel) => {
 
 export interface AiTurnProps {
     turn: AiTurnViewModel;
-    /** Initials of the signed-in user, shown against their question. */
-    initials: string;
+    asker: AiTurnAsker;
     busy: boolean;
     onApprove: () => void;
     onReject: () => void;
+    onAsk: (question: string) => void;
 }
 
-export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProps) => {
+/*
+ * Tools show in two places, never both. While the turn runs, chips above the answer show the work in
+ * progress. Once it settles, they fold into one "Ran" line under it.
+ */
+export const AiTurn = ({ turn, asker, busy, onApprove, onReject, onAsk }: AiTurnProps) => {
+    const showLiveTools = !turn.settled && turn.tools.length > 0;
+    const showFollowUps = turn.settled && !turn.error && turn.pendingApprovals.length === 0;
+
     return (
         <div className="mb-md">
             <div className="flex items-start gap-sm px-sm pb-sm">
-                <span className="mt-xxs grid size-md shrink-0 place-items-center rounded-xl bg-neutral-dimmed">
-                    <Text size="sm" className="text-xs font-bold text-neutral-strong">
-                        {initials}
-                    </Text>
-                </span>
-                <Text as="div" size="md" className="font-semibold text-neutral-primary">
+                <Avatar
+                    size="sm"
+                    variant="light"
+                    className="shrink-0 rounded-full"
+                    image={<Avatar.Image src={asker.avatarSrc} />}
+                    fallback={
+                        <Avatar.Fallback className="text-xs uppercase" delayMs={0}>
+                            {asker.initial}
+                        </Avatar.Fallback>
+                    }
+                />
+                <Text as="div" size="md" className="pt-xxs font-semibold text-neutral-primary">
                     {turn.question}
                 </Text>
             </div>
 
             <div className="px-sm">
-                {turn.tools.length > 0 ? (
+                {showLiveTools ? (
                     <div className="mb-sm flex flex-wrap items-center gap-xs">
                         {turn.tools.map((name, index) => (
                             <ToolChip
@@ -114,6 +131,12 @@ export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProp
                         onApprove={onApprove}
                         onReject={onReject}
                     />
+                ) : null}
+
+                {turn.settled ? <ToolTrace turn={turn} /> : null}
+
+                {showFollowUps ? (
+                    <FollowUps questions={turn.followUps} disabled={busy} onAsk={onAsk} />
                 ) : null}
             </div>
         </div>
