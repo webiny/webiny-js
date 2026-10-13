@@ -46,22 +46,34 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     }
 
     get vm(): IAdminAssistantViewModel {
-        return {
+        const vm: IAdminAssistantViewModel = {
             busy: this.busy,
-            ...(this.model === undefined ? {} : { model: this.model }),
-            turns: this.turns.map(turn => ({
-                question: turn.question,
-                text: turn.text,
-                tools: turn.tools,
-                completed: turn.completed,
-                failed: turn.failed,
-                running: turn.running,
-                pendingApprovals: turn.pendingApprovals,
-                followUps: turn.followUps,
-                settled: turn.settled,
-                ...(turn.error === undefined ? {} : { error: turn.error })
-            }))
+            turns: this.turns.map(turn => {
+                const view: AiTurnViewModel = {
+                    question: turn.question,
+                    text: turn.text,
+                    tools: turn.tools,
+                    completed: turn.completed,
+                    failed: turn.failed,
+                    running: turn.running,
+                    pendingApprovals: turn.pendingApprovals,
+                    followUps: turn.followUps,
+                    settled: turn.settled
+                };
+
+                if (turn.error !== undefined) {
+                    view.error = turn.error;
+                }
+
+                return view;
+            })
         };
+
+        if (this.model !== undefined) {
+            vm.model = this.model;
+        }
+
+        return vm;
     }
 
     ask(question: string): void {

@@ -15,9 +15,16 @@ export interface ApprovalPlanProps {
     onReject: () => void;
 }
 
-/** One line per argument, in the order the model sent them. Strings unquoted, anything else as JSON. */
+/**
+ * One line per argument, in the order the model sent them. Strings unquoted, anything else as JSON.
+ * A tool that takes no arguments gets no lines: its input arrives as `undefined` or `{}`.
+ */
 const toArgumentLines = (input: unknown): string[] => {
-    if (!input || typeof input !== "object" || Array.isArray(input)) {
+    if (input === undefined || input === null) {
+        return [];
+    }
+
+    if (typeof input !== "object" || Array.isArray(input)) {
         return [JSON.stringify(input)];
     }
 
