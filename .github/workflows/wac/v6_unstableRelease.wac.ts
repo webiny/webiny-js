@@ -1,6 +1,6 @@
 import { createWorkflow } from "github-actions-wac";
 import { BUILD_PACKAGES_RUNNER } from "./utils";
-import { createJob, createSlackFailureJob } from "./jobs";
+import { createJob } from "./jobs";
 import {
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
@@ -10,27 +10,22 @@ import {
 } from "./steps";
 
 const BRANCH_NAME = "${{ github.event.inputs.branch }}";
-const DIST_TAG = "${{ github.event.inputs.tag }}";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: BRANCH_NAME });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: BRANCH_NAME });
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: BRANCH_NAME });
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: BRANCH_NAME });
 
-export const release = createWorkflow({
-    name: `📦 Release`,
+export const v6_unstableRelease = createWorkflow({
+    name: `📦 v6 Unstable Release`,
     on: {
         workflow_dispatch: {
             inputs: {
                 branch: {
                     description: "Branch to release from",
                     required: true,
-                    default: "next"
-                },
-                tag: {
-                    description: `NPM tag (in most cases, "beta" is what you need)`,
-                    required: false,
-                    default: "beta"
+                    default: "next",
+                    type: "string"
                 }
             }
         }
@@ -67,13 +62,13 @@ export const release = createWorkflow({
                 ...runBuildCacheSteps
             ]
         }),
-        npmReleaseBeta: createJob({
+        npmReleaseUnstable: createJob({
             needs: ["constants", "build"],
-            name: `NPM release ("${DIST_TAG}" tag)`,
+            name: 'NPM release ("unstable" tag)',
             env: {
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}",
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
-                BETA_VERSION: "${{ vars.BETA_VERSION }}"
+                UNSTABLE_VERSION: "${{ vars.UNSTABLE_VERSION }}"
             },
             checkout: { path: BRANCH_NAME, ref: BRANCH_NAME, "fetch-depth": 0 },
             steps: [
@@ -95,61 +90,14 @@ export const release = createWorkflow({
                             run: 'git config --global user.name "webiny-bot"'
                         },
                         {
-                            name: 'Version and publish "beta" tag to NPM',
+                            name: 'Version and publish "unstable" tag to NPM',
                             "working-directory": BRANCH_NAME,
-                            run: `yarn release --type=beta --tag=${DIST_TAG}`
+                            run: "yarn release --type=unstable"
                         }
                     ],
                     { "working-directory": BRANCH_NAME }
                 )
             ]
-        }),
-        npmReleaseLatest: createJob({
-            needs: ["constants", "npmReleaseBeta"],
-            name: 'NPM release ("latest" tag)',
-            environment: "release",
-            env: {
-                GH_TOKEN: "${{ secrets.GH_TOKEN }}",
-                NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
-                LATEST_VERSION: "${{ vars.LATEST_VERSION }}"
-            },
-            checkout: {
-                path: BRANCH_NAME,
-                ref: BRANCH_NAME,
-                "fetch-depth": 0,
-                token: "${{ secrets.GH_TOKEN }}"
-            },
-            steps: [
-                ...yarnCacheSteps,
-                ...runBuildCacheSteps,
-                ...installBuildSteps,
-                ...withCommonParams(
-                    [
-                        {
-                            name: 'Create ".npmrc" file in the project root',
-                            run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
-                        },
-                        {
-                            name: "Set git email",
-                            run: 'git config --global user.email "webiny-bot@webiny.com"'
-                        },
-                        {
-                            name: "Set git username",
-                            run: 'git config --global user.name "webiny-bot"'
-                        },
-                        {
-                            name: 'Version and publish "latest" tag to NPM',
-                            "working-directory": BRANCH_NAME,
-                            run: `yarn release --type=latest --sourceTag=${DIST_TAG} --createGithubRelease=true`
-                        }
-                    ],
-                    { "working-directory": BRANCH_NAME }
-                )
-            ]
-        }),
-        notifySlackOnFailure: createSlackFailureJob({
-            needs: ["constants", "build", "npmReleaseBeta", "npmReleaseLatest"],
-            label: "📦 Release"
         })
     }
 });

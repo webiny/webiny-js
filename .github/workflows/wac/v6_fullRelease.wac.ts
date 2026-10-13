@@ -9,8 +9,8 @@ const VERSION = "${{ github.event.inputs.version }}";
 const SOURCE_REF = "${{ needs.resolveSource.outputs.source-ref }}";
 const BASE_BRANCH = "${{ needs.resolveSource.outputs.base-branch }}";
 
-export const fullRelease = createWorkflow({
-    name: `🚀 Full Release`,
+export const v6_fullRelease = createWorkflow({
+    name: `📦 v6 Release`,
     on: {
         workflow_dispatch: {
             // Version only. What a release branches off is not a free choice - it follows from
