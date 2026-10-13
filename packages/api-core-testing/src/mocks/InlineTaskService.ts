@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { Result } from "@webiny/feature/api";
+import { createFeature, Result } from "@webiny/feature/api";
 import {
     TaskService,
     type ITaskTriggerParams
@@ -98,7 +98,10 @@ class InlineTaskServiceImpl implements TaskService.Interface {
     }
 }
 
-/** Registers a {@link TaskService} on `container` that runs every triggered task inline. */
-export const registerInlineTaskService = (container: Container): void => {
-    container.registerInstance(TaskService, new InlineTaskServiceImpl(container));
-};
+/** Registers a {@link TaskService} that runs every triggered task inline. */
+export const InlineTaskServiceFeature = createFeature({
+    name: "Testing/InlineTaskService",
+    register(container) {
+        container.registerInstance(TaskService, new InlineTaskServiceImpl(container));
+    }
+});

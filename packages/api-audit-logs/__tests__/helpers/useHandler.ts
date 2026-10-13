@@ -16,7 +16,7 @@ import type { IdentityData } from "@webiny/api-core/features/security/IdentityCo
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
 import { Result } from "@webiny/feature/api";
-import { registerInlineTaskService } from "@webiny/api-core-testing";
+import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
 
 export interface AuditLogsTestContext {
     container: Container;
@@ -59,7 +59,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
                 execute: async () => Result.ok()
             });
             // Tasks run inside trigger(), so a test sees their effects when the call returns.
-            registerInlineTaskService(container);
+            InlineTaskServiceFeature.register(container);
             AuditLogsFeature.register(container);
         }
     };

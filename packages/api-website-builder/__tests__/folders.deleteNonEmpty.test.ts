@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { Container } from "@webiny/di";
 import { AcoFeature } from "@webiny/api-aco";
 import { Result } from "@webiny/feature/api";
-import { registerInlineTaskService } from "@webiny/api-core-testing";
+import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import {
@@ -31,7 +31,7 @@ describe("Deleting Website Builder folders", () => {
             c.registerInstance(WebsocketsSendToIdentityUseCase, {
                 execute: async () => Result.ok()
             });
-            registerInlineTaskService(c);
+            InlineTaskServiceFeature.register(c);
         };
         const handler = useHandler({
             legacyPlugins: [...acoStorage.plugins, registerAco]

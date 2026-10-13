@@ -22,7 +22,7 @@ import type { IdentityData } from "@webiny/api-core/features/security/IdentityCo
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
 import { Result } from "@webiny/feature/api";
-import { registerInlineTaskService } from "@webiny/api-core-testing";
+import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -82,7 +82,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 execute: async () => Result.ok()
             });
             // Tasks run inside trigger(), so a test sees their effects when the call returns.
-            registerInlineTaskService(container);
+            InlineTaskServiceFeature.register(container);
             FileManagerAppFeature.register(container);
             FileManagerAcoFeature.register(container);
             GraphQLEngineFeature.register(container);
