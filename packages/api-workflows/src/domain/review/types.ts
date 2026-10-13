@@ -170,7 +170,7 @@ export type ReviewListSort = "lastChangedOn_ASC" | "lastChangedOn_DESC";
 
 /** List filters. The namespace filter is the app wrapper's `models` input (R91, R94). */
 export interface ReviewListWhere {
-    /** A part of the title, case-insensitive; every list. */
+    /** Every word of it appears in the title, case-insensitive. */
     titleContains?: string | null;
     /** Only `myRequests` (D94); other lists fail with `ReviewValidationError`. */
     reviewState?: ReviewState | null;

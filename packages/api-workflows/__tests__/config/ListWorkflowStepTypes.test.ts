@@ -12,6 +12,15 @@ import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStepTypes/index.js";
 
+/** Throws from the flag read. */
+class ThrowingFeatureFlags implements FeatureFlags.Interface {
+    constructor(private decoratee: FeatureFlags.Interface) {}
+
+    get(): ReturnType<FeatureFlags.Interface["get"]> {
+        throw new Error("Flags are down.");
+    }
+}
+
 /** Turns the `aiPowerups` flag on; every other flag answers as before. */
 class AiPowerupsEnabledFeatureFlags implements FeatureFlags.Interface {
     constructor(private decoratee: FeatureFlags.Interface) {}
@@ -94,6 +103,34 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
             unavailableReason: null,
             configSchema: null
         });
+    });
+
+    it("allows a full-access permission set", async () => {
+        const { listStepTypes } = await createStepTypesContext({
+            permissions: [{ name: "workflows.*" }]
+        });
+
+        const result = await listStepTypes.execute();
+
+        expect(result.isOk()).toBe(true);
+    });
+
+    it("returns the workflow persistence error when the flag read throws", async () => {
+        const { listStepTypes } = await createStepTypesContext({
+            setup: container => {
+                container.registerDecorator(
+                    FeatureFlags.createDecorator({
+                        decorator: ThrowingFeatureFlags,
+                        dependencies: []
+                    })
+                );
+            }
+        });
+
+        const result = await listStepTypes.execute();
+
+        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(result.error.message).toBe("Flags are down.");
     });
 
     it("refuses a user without editor", async () => {

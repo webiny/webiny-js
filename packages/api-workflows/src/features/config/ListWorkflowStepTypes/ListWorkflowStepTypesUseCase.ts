@@ -36,7 +36,16 @@ class ListWorkflowStepTypesUseCaseImpl implements UseCase.Interface {
         }
 
         // AI steps need the AI powerups entitlement (D130).
-        const aiAvailable = this.featureFlags.get().isEnabled("aiPowerups");
+        let aiAvailable: boolean;
+        try {
+            aiAvailable = this.featureFlags.get().isEnabled("aiPowerups");
+        } catch (error) {
+            return Result.fail(
+                new WorkflowPersistenceError(
+                    error instanceof Error ? error : new Error(String(error))
+                )
+            );
+        }
         return Result.ok([
             {
                 type: REVIEW_STEP_TYPE,
