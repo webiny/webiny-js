@@ -51,7 +51,11 @@ export const PreviewDecorator = ContentEntryFormContent.createDecorator(Original
 
             return (
                 <SplitView namespace={"cms-live-preview"} className="h-full">
-                    <LeftPanel span={5} minSize={20} className="bg-white overflow-y-auto">
+                    {/*
+                     * The form keeps at least 420px, so when the comments panel opens beside the
+                     * split, the preview gives up its width first.
+                     */}
+                    <LeftPanel span={5} minSize={420} className="bg-white overflow-y-auto">
                         <Original
                             {...props}
                             width={"100%"}
@@ -60,7 +64,7 @@ export const PreviewDecorator = ContentEntryFormContent.createDecorator(Original
                     </LeftPanel>
                     <RightPanel
                         span={7}
-                        minSize={20}
+                        minSize={"20%"}
                         className="overflow-hidden p-md"
                         style={{ overflowY: "hidden" }}
                     >
