@@ -62,6 +62,7 @@ export interface ReviewEntryValues {
     state: string;
     currentStepId: string | null;
     currentStepState: string | null;
+    currentStepType: string | null;
     currentOwnerId: string | null;
     currentCandidateTeamIds: string[] | null;
     targetContext: ReviewEntryTargetContext | null;
@@ -84,6 +85,7 @@ export class ReviewEntryMapper {
             state: review.state,
             currentStepId: review.currentStepId,
             currentStepState: review.currentStepState,
+            currentStepType: review.currentStepType,
             currentOwnerId: review.currentOwnerId,
             currentCandidateTeamIds: [...review.currentCandidateTeamIds],
             targetContext: {
@@ -117,6 +119,8 @@ export class ReviewEntryMapper {
             state: values.state as ReviewState,
             currentStepId: values.currentStepId ?? null,
             currentStepState: (values.currentStepState ?? null) as StepState | null,
+            // Reviews stored before the field existed read as `null` (R93).
+            currentStepType: values.currentStepType ?? null,
             currentOwnerId: values.currentOwnerId ?? null,
             currentCandidateTeamIds: values.currentCandidateTeamIds ?? [],
             targetContext: {

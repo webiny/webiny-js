@@ -192,6 +192,7 @@ export class Review {
             state: "inProgress",
             currentStepId: null,
             currentStepState: null,
+            currentStepType: null,
             currentOwnerId: null,
             currentCandidateTeamIds: [],
             targetContext: structuredClone(params.targetContext),
@@ -448,6 +449,7 @@ export class Review {
             this.data.isActive = false;
             this.data.currentStepId = null;
             this.data.currentStepState = null;
+            this.data.currentStepType = null;
             this.data.currentOwnerId = null;
             this.data.currentCandidateTeamIds = [];
             return;
@@ -456,6 +458,7 @@ export class Review {
         this.data.state = Review.deriveState(current);
         this.data.currentStepId = current.id;
         this.data.currentStepState = current.state;
+        this.data.currentStepType = current.type;
         this.data.currentOwnerId = current.owner?.type === "user" ? current.owner.id : null;
         this.data.currentCandidateTeamIds = [...current.candidateTeamIds];
     }

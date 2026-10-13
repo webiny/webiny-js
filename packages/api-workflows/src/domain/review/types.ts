@@ -72,6 +72,11 @@ export interface ReviewData {
     state: ReviewState;
     currentStepId: string | null;
     currentStepState: StepState | null;
+    /**
+     * Type of the current step, e.g. "review", "ai" or "automation" (D112): the failed steps list
+     * filters on it. `null` when there is no current step (before the first save, after cancel).
+     */
+    currentStepType: string | null;
     /** Only for `user` owners (D74). */
     currentOwnerId: string | null;
     currentCandidateTeamIds: string[];

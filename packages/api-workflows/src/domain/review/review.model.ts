@@ -24,6 +24,7 @@ class ReviewModelImpl implements ModelFactory.Interface {
                     state: fields.text().label("State"),
                     currentStepId: fields.text().label("Current step ID"),
                     currentStepState: fields.text().label("Current step state"),
+                    currentStepType: fields.text().label("Current step type"),
                     currentOwnerId: fields.text().label("Current owner ID"),
                     currentCandidateTeamIds: fields
                         .text()
