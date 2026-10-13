@@ -180,7 +180,7 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
     createFolder(parentFolderId?: string): void {
         const form = this.formModelFactory.create({
             fields: fields => ({
-                title: fields.text().label("Title").required("Title is required"),
+                title: fields.text().label("Title").required("Title is required").autoFocus(),
                 slug: fields
                     .text()
                     .label("Slug")
@@ -216,7 +216,7 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
 
         const form = this.formModelFactory.create({
             fields: fields => ({
-                title: fields.text().label("Name").required("Name is required"),
+                title: fields.text().label("Name").required("Name is required").autoFocus(),
                 slug: fields
                     .text()
                     .label("Slug")
