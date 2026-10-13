@@ -6,11 +6,16 @@ export const FOLLOW_UPS_TOOL = "suggestFollowUps";
 /** More than this and the chips wrap onto a second row in the palette. */
 const MAX_FOLLOW_UPS = 3;
 
+/*
+ * No `.max()` here. The SDK validates the input against this schema, and a model that sends four
+ * questions would have the whole call rejected. `readFollowUps` keeps the first three instead.
+ */
 const inputSchema = z.object({
     questions: z
         .array(z.string())
-        .max(MAX_FOLLOW_UPS)
-        .describe("Short questions the user is likely to ask next, in their own voice.")
+        .describe(
+            `Up to ${MAX_FOLLOW_UPS} short questions the user is likely to ask next, in their own voice.`
+        )
 });
 
 /**

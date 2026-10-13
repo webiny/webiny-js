@@ -244,4 +244,50 @@ describe("AdminAssistantUseCase", () => {
             text: "3 products are on sale."
         });
     });
+
+    it("keeps only the first three follow-ups when the model sends more", async () => {
+        const { useCase } = setup(undefined, [
+            {
+                type: "tool-call",
+                toolName: "suggestFollowUps",
+                input: { questions: ["One?", "Two?", "Three?", "Four?"] }
+            }
+        ]);
+
+        const events = await run(useCase);
+
+        expect(events.find(event => event.type === "follow-ups")).toEqual({
+            type: "follow-ups",
+            questions: ["One?", "Two?", "Three?"]
+        });
+    });
+
+    /*
+     * Suggestions made next to a proposed change describe the moment before the user decided. They
+     * would still be on screen after the change ran or was rejected.
+     */
+    it("sends no follow-ups when the run ends waiting for approval", async () => {
+        const { useCase } = setup(undefined, [
+            {
+                type: "tool-approval-request",
+                approvalId: "a1",
+                toolCall: { toolName: "createFolder", input: { title: "Products" } }
+            },
+            { type: "tool-call", toolName: "suggestFollowUps", input: { questions: ["Next?"] } }
+        ]);
+
+        const events = await run(useCase);
+
+        expect(events.map(event => event.type)).toEqual(["start", "approval", "done"]);
+    });
+
+    it("does not report a rejected follow-ups call as a failed tool", async () => {
+        const { useCase } = setup(undefined, [
+            { type: "tool-error", toolName: "suggestFollowUps", error: new Error("Invalid input") }
+        ]);
+
+        const events = await run(useCase);
+
+        expect(events.map(event => event.type)).toEqual(["start", "done"]);
+    });
 });

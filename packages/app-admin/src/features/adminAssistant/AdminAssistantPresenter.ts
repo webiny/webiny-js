@@ -102,7 +102,12 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         ];
 
         // Clear the block immediately so the plan cannot be submitted twice.
-        this.patch(turnIndex, { pendingApprovals: [], settled: false, running: true });
+        this.patch(turnIndex, {
+            pendingApprovals: [],
+            followUps: [],
+            settled: false,
+            running: true
+        });
 
         void this.run(turnIndex, { messages, approvals }, true);
     }

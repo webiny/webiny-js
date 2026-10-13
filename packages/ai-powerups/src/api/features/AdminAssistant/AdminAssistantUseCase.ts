@@ -115,6 +115,11 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
          */
         let wroteText = false;
         let toolsSinceText = false;
+        /*
+         * Held until the run ends. Suggestions made alongside a proposed change would be about the
+         * moment before the user decided, and would still be on screen after they ran or rejected it.
+         */
+        let followUps: string[] = [];
 
         yield { type: "start", model: request.model };
 
@@ -135,14 +140,15 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
                  * for, so it gets no chip. Its result is skipped below for the same reason.
                  */
                 if (part.type === "tool-call" && part.toolName === FOLLOW_UPS_TOOL) {
-                    const questions = readFollowUps(part.input);
-                    if (questions.length > 0) {
-                        yield { type: "follow-ups", questions };
-                    }
+                    followUps = readFollowUps(part.input);
                     continue;
                 }
 
-                if (part.type === "tool-result" && part.toolName === FOLLOW_UPS_TOOL) {
+                // A rejected follow-ups call has no bearing on the answer, so it is not a failed step.
+                if (
+                    (part.type === "tool-result" || part.type === "tool-error") &&
+                    part.toolName === FOLLOW_UPS_TOOL
+                ) {
                     continue;
                 }
 
@@ -193,6 +199,8 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
 
             if (pending.length > 0) {
                 yield { type: "approval", approvals: pending };
+            } else if (followUps.length > 0) {
+                yield { type: "follow-ups", questions: followUps };
             }
 
             /*
