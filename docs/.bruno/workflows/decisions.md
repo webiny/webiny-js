@@ -751,3 +751,9 @@ Everything is on the main `/graphql` endpoint, so the shared review UI talks to 
 - Root `cms` (the existing `CmsQuery` / `CmsMutation`, which `getEntry(modelId, ...)` and ai-powerups' `compareEntryRevisions` already use): every Headless CMS workflow and review operation. Operations that address one model take `modelId` as an argument, like the existing `CmsQuery` operations; operations that take a review id (get review, start, take over, approve, reject, cancel) take no model.
 
 Settles spec 10 "final names" placement. Decided 2026-10-13 (first recorded with CMS operations on `/cms/manage`; changed the same day).
+
+## D137. Least loaded counts per app
+
+The `leastLoaded` strategy counts a candidate's load only within the review's app: in-review reviews they own whose namespace belongs to the same app (CMS: every `cms.*` namespace; Website Builder: `wb.page`). The tie-break ("least recently assigned") also looks only at the same app's assignments. Consistent with D133 (nothing crosses apps).
+
+Refines spec 6 (strategy) and D20, D63. Decided 2026-10-13.
