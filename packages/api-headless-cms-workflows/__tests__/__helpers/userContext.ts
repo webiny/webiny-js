@@ -8,6 +8,8 @@ export interface UserContextParams {
     identity?: IdentityData | null;
     /** Defaults to `*`. */
     permissions?: SecurityPermission[];
+    /** Permissions of other users, for routing and candidate read checks. */
+    permissionsByIdentity?: Record<string, SecurityPermission[]>;
     legacyPlugins?: unknown[];
 }
 
@@ -21,6 +23,7 @@ export const createUserContext = (params: UserContextParams = {}): Promise<CmsCo
         withWorkflow: false,
         identity: params.identity,
         permissions: params.permissions,
+        permissionsByIdentity: params.permissionsByIdentity,
         legacyPlugins: params.legacyPlugins,
         fakeTeams: true,
         fakeFolderLevelPermissions: true

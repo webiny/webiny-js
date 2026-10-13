@@ -8,6 +8,7 @@ import { NoopFolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderL
 import { createModelsPlugins, type ICreateModelsPluginsParams } from "../__cms/models.js";
 import { WorkflowsFeature } from "@webiny/api-workflows";
 import { CmsWorkflowsFeature } from "~/index.js";
+import { registerFakeFolders } from "../__helpers/FakeFolders.js";
 
 const registerNoopFlp = createRegisterExtensionPlugin(context => {
     context.container.register(NoopFolderLevelPermissions);
@@ -30,6 +31,8 @@ export const createContextHandler = (
         setup: container => {
             WorkflowsFeature.register(container);
             CmsWorkflowsFeature.register(container);
+            // ACO is not registered; the CMS folder port reads these stand-ins.
+            registerFakeFolders(container);
         },
         testProjectLicense: params?.testProjectLicense ?? testLicence
     });

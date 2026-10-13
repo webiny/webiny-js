@@ -1,5 +1,14 @@
 import { createAbstraction } from "@webiny/feature/api";
+import type { CmsGroup, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { CmsEntryTarget } from "../CmsEntryTargetReader/abstractions.js";
+
+export interface CmsEntryFolderReadParams {
+    /** Read as the current identity before the check (A19). */
+    model: CmsModel;
+    group: CmsGroup;
+    /** `null` or "root": the root folder, no folder-level check. */
+    folderId: string | null;
+}
 
 export interface ICmsEntryAccess {
     /** Read access of the current identity (review actions, get review). */
@@ -15,6 +24,12 @@ export interface ICmsEntryAccess {
      * the cancel-for-delete wrapper refuse before it reads anything (R86).
      */
     canDeleteAnyEntry(namespace: string): Promise<boolean>;
+    /**
+     * Read access of the current identity to the model's entries in a folder, without an entry
+     * (the routing inspector, R121): group read, model read, entity-level entry read and the
+     * folder's content read. Evaluated as another user inside `CandidateReadAccess`.
+     */
+    canReadInFolder(params: CmsEntryFolderReadParams): Promise<boolean>;
 }
 
 /**
@@ -27,4 +42,5 @@ export const CmsEntryAccess = createAbstraction<ICmsEntryAccess>("CmsEntryAccess
 
 export namespace CmsEntryAccess {
     export type Interface = ICmsEntryAccess;
+    export type FolderReadParams = CmsEntryFolderReadParams;
 }

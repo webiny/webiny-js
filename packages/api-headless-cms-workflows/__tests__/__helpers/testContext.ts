@@ -25,6 +25,8 @@ export interface TestContextParams {
     /** `null` makes the request anonymous. */
     identity?: IdentityData | null;
     permissions?: SecurityPermission[];
+    /** Permissions of other users, for routing and candidate read checks (`withIdentity`). */
+    permissionsByIdentity?: Record<string, SecurityPermission[]>;
     /** Registers fixed team lookups (`FakeListUserTeams`). */
     fakeTeams?: boolean;
     /** Registers the fake folder-level permissions (A28). */
@@ -36,6 +38,7 @@ export const createTestContext = async (params: TestContextParams = {}): Promise
     const { context } = createContextHandler({
         identity: params.identity,
         permissions: params.permissions,
+        permissionsByIdentity: params.permissionsByIdentity,
         legacyPlugins: [
             (container: Container) => {
                 if (params.fakeTeams) {

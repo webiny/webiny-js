@@ -115,6 +115,33 @@ class CmsEntryAccessImpl implements Abstraction.Interface {
         return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "d" });
     }
 
+    public async canReadInFolder(params: Abstraction.FolderReadParams): Promise<boolean> {
+        if (!(await this.accessControl.canAccessGroup({ group: params.group }))) {
+            return false;
+        }
+        if (!(await this.accessControl.canAccessModel({ model: params.model }))) {
+            return false;
+        }
+        const canAccessEntries = await this.accessControl.canAccessEntry({
+            model: params.model,
+            rwd: "r"
+        });
+        if (!canAccessEntries) {
+            return false;
+        }
+        // As for an entry: skipped when FLP is not in use for the identity or for the root folder.
+        if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
+            return true;
+        }
+        if (!params.folderId || params.folderId === ROOT_FOLDER) {
+            return true;
+        }
+        const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(
+            params.folderId
+        );
+        return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "r" });
+    }
+
     public async canDeleteAnyEntry(namespace: string): Promise<boolean> {
         const modelId = getModelIdFromAppName(namespace);
         if (!modelId) {

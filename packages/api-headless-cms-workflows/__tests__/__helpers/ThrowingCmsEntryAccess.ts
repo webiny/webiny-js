@@ -2,7 +2,12 @@ import type { Container } from "@webiny/di";
 import { CmsEntryAccess } from "~/features/target/CmsEntryAccess/index.js";
 import type { CmsEntryTarget } from "~/features/target/CmsEntryTargetReader/abstractions.js";
 
-export type CmsEntryAccessCheck = "canRead" | "canWrite" | "canDelete" | "canDeleteAnyEntry";
+export type CmsEntryAccessCheck =
+    | "canRead"
+    | "canWrite"
+    | "canDelete"
+    | "canDeleteAnyEntry"
+    | "canReadInFolder";
 
 /** Access checks that throw, as an FLP lookup or a model read can. Clear it in `afterEach`. */
 export const throwingAccessChecks = new Set<CmsEntryAccessCheck>();
@@ -40,6 +45,13 @@ class ThrowingCmsEntryAccessImpl implements CmsEntryAccess.Interface {
             return fail("canDeleteAnyEntry");
         }
         return this.decoratee.canDeleteAnyEntry(namespace);
+    }
+
+    public async canReadInFolder(params: CmsEntryAccess.FolderReadParams): Promise<boolean> {
+        if (throwingAccessChecks.has("canReadInFolder")) {
+            return fail("canReadInFolder");
+        }
+        return this.decoratee.canReadInFolder(params);
     }
 }
 

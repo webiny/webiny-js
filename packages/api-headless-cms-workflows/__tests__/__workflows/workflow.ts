@@ -1,6 +1,7 @@
 import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import type { Actor } from "@webiny/api-workflows/domain/review/types.js";
 import type { WorkflowValues } from "@webiny/api-workflows/domain/workflow/types.js";
+import type { ReviewStepAssignmentConfig } from "@webiny/api-workflows/domain/workflow/types.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { model } from "~tests/__cms/models.js";
 
@@ -25,6 +26,19 @@ export const createWorkflowValues = (
                 }
             }
         ]
+    };
+};
+
+/** The test workflow with the given routing on its only step (team "team-1"). */
+export const createWorkflowValuesWithAssignment = (
+    assignment: ReviewStepAssignmentConfig
+): WorkflowValues => {
+    const values = createWorkflowValues();
+    return {
+        ...values,
+        steps: values.steps.map(step => {
+            return { ...step, config: { teams: ["team-1"], assignment } };
+        })
     };
 };
 

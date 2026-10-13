@@ -6,6 +6,7 @@ import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/St
 import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
 import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTargetSync/index.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
+import { ReviewTargetFolderChain } from "@webiny/api-workflows/features/review/ReviewTargetFolderChain/index.js";
 import { createContextHandler } from "./__handler/context.js";
 import { CmsEntryReviewNamespace } from "~/features/target/CmsEntryReviewNamespace/index.js";
 import { StoreCmsEntryWorkflowUseCase } from "~/features/wrappers/StoreCmsEntryWorkflow/index.js";
@@ -24,6 +25,7 @@ import { RejectCmsEntryReviewStepUseCase } from "~/features/wrappers/RejectCmsEn
 import { CancelCmsEntryReviewUseCase } from "~/features/wrappers/CancelCmsEntryReview/index.js";
 import { CancelCmsEntryReviewsForDeleteUseCase } from "~/features/wrappers/CancelCmsEntryReviewsForDelete/index.js";
 import { CmsEntryReviewGuardService } from "~/features/wrappers/CmsEntryReviewGuardService/index.js";
+import { CmsEntryFolderExistsService } from "~/features/target/CmsEntryFolderExistsService/index.js";
 
 const WRAPPERS: Abstraction<unknown>[] = [
     StoreCmsEntryWorkflowUseCase,
@@ -41,7 +43,8 @@ const WRAPPERS: Abstraction<unknown>[] = [
     RejectCmsEntryReviewStepUseCase,
     CancelCmsEntryReviewUseCase,
     CancelCmsEntryReviewsForDeleteUseCase,
-    CmsEntryReviewGuardService
+    CmsEntryReviewGuardService,
+    CmsEntryFolderExistsService
 ];
 
 describe("CmsWorkflowsFeature registration", () => {
@@ -59,6 +62,7 @@ describe("CmsWorkflowsFeature registration", () => {
         expect(container.resolveAll(ReviewTargetLoader)).toHaveLength(1);
         expect(container.resolveAll(ReviewTargetSync)).toHaveLength(1);
         expect(container.resolveAll(ReviewTargetReadAccess)).toHaveLength(1);
+        expect(container.resolveAll(ReviewTargetFolderChain)).toHaveLength(1);
         expect(container.resolveAll(CmsEntryReviewNamespace)).toHaveLength(1);
         for (const abstraction of WRAPPERS) {
             expect(container.resolveAll(abstraction)).toHaveLength(1);
@@ -74,5 +78,6 @@ describe("CmsWorkflowsFeature registration", () => {
         for (const abstraction of WRAPPERS) {
             expect(container.resolveAll(abstraction)).toHaveLength(0);
         }
+        expect(container.resolveAll(ReviewTargetFolderChain)).toHaveLength(0);
     });
 });

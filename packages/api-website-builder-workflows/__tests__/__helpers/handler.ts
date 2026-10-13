@@ -10,14 +10,15 @@ import { WorkflowsFeature } from "@webiny/api-workflows";
 import { CmsWorkflowsFeature } from "@webiny/api-headless-cms-workflows";
 import { WebsiteBuilderWorkflowsFeature } from "~/index.js";
 import { NoopInvalidateAssetCacheTaskDefinition } from "./NoopInvalidateAssetCacheTask.js";
+import { registerNoAcoFolders } from "./NoAcoFolders.js";
 import { createArticleModelPlugins } from "./cmsModel.js";
 
 /**
  * Website Builder as in `api-website-builder`'s `useHandler`, plus the workflows features in the
  * production order (`registerApiRequestStack.ts`): WB workflows next to WB, then the engine and
  * the CMS workflows package, whose single handlers cover pages (R51). ACO is not registered, so a
- * no-op FLP stands in; tests replace it with the fake one through `legacyPlugins`. One public CMS
- * model ("article") exists for cross-app tests.
+ * no-op FLP and folder reads without folders stand in; tests replace them with the fake FLP and
+ * real ACO through `legacyPlugins`. One public CMS model ("article") exists for cross-app tests.
  */
 export const createContextHandler = (params: CmsTestHandlerParams = {}) => {
     const { getContext, invoke } = createCmsTestHandler({
@@ -27,6 +28,7 @@ export const createContextHandler = (params: CmsTestHandlerParams = {}) => {
             (container: Container) => {
                 container.register(NoopInvalidateAssetCacheTaskDefinition);
                 container.register(NoopFolderLevelPermissions);
+                registerNoAcoFolders(container);
             },
             ...[params.legacyPlugins].flat(Infinity as 1).filter(Boolean)
         ],
