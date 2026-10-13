@@ -159,7 +159,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
             //   remote: Permission to webiny/webiny-js.git denied to github-actions[bot].
             //
             // Packages are published BEFORE the tag is pushed, so the failure leaves a release on
-            // NPM with no matching tag. Matches what release.wac.ts already does for the same step.
+            // NPM with no matching tag.
             checkout: {
                 path: PR_BRANCH,
                 ref: PR_SHA,
