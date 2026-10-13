@@ -177,6 +177,25 @@ describe("InspectRoutingUseCase (D45, D118, R121)", () => {
         expect(users.calls).toEqual([]);
     });
 
+    it("refuses a step without teams, as save does, before any lookup or read check", async () => {
+        const { inspect, users } = await setup();
+
+        const result = await inspect.execute({
+            stepConfig: { ...stepConfig([userRule("rule-anna", "user-anna")]), teams: [] },
+            model: ARTICLE_MODEL,
+            requesterId: requester.id,
+            folder: null,
+            now: new Date(NOW)
+        });
+
+        expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe(
+            "The step configuration is invalid: the step needs at least one team."
+        );
+        expect(users.calls).toEqual([]);
+        expect(readChecks).toEqual([]);
+    });
+
     it("refuses an invalid step config before any lookup", async () => {
         const { inspect, users } = await setup();
 

@@ -77,6 +77,22 @@ export interface ReviewStepConfig {
     assignment: ReviewStepAssignmentConfig;
 }
 
+/** A step without teams (spec 4.1). */
+export interface ReviewStepConfigNoTeamsProblem {
+    type: "noTeams";
+}
+
+/** A rule whose team target is not one of the step's teams (spec 6). */
+export interface ReviewStepConfigTeamTargetProblem {
+    type: "teamTargetOutsideTeams";
+    ruleId: string;
+}
+
+/** The first problem of a parsed review step config; callers word their own messages. */
+export type ReviewStepConfigProblem =
+    | ReviewStepConfigNoTeamsProblem
+    | ReviewStepConfigTeamTargetProblem;
+
 /**
  * A review that blocks deleting its workflow (D115): the content reference, its title and where
  * the review stands. The engine lists all of them; the app wrapper keeps the first 5 the caller

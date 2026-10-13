@@ -1,6 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { WorkflowValidationError } from "./errors.js";
 import { reviewStepConfigSchema } from "./reviewStepConfigSchema.js";
+import { findReviewStepConfigProblem } from "./findReviewStepConfigProblem.js";
 import type { ReviewStepConfig, WorkflowStep, WorkflowValues } from "./types.js";
 
 /** The only step type phase 1a accepts; phase 5 replaces this check with the `StepType` registry. */
@@ -111,11 +112,6 @@ export class WorkflowValidator {
         step: WorkflowStep
     ): Result<ReviewStepConfig, WorkflowValidationError> {
         const config: UnknownRecord = isRecord(step.config) ? step.config : {};
-        const teams = Array.isArray(config.teams) ? config.teams : [];
-        if (teams.length === 0) {
-            return fail(`Step "${step.title}" needs at least one team.`);
-        }
-
         const assignment: UnknownRecord = isRecord(config.assignment) ? config.assignment : {};
         const rules = Array.isArray(assignment.rules) ? assignment.rules : [];
         for (const rule of rules) {
@@ -132,14 +128,16 @@ export class WorkflowValidator {
             );
         }
 
-        // Spec 6: team targets must be among the step's teams. User targets need a user lookup,
-        // so `StoreWorkflowUseCase` checks them after this validation (R122).
-        for (const rule of parsed.data.assignment.rules) {
-            if (rule.target.type === "team" && !parsed.data.teams.includes(rule.target.id)) {
-                return fail(
-                    `Routing rule "${rule.id}" in step "${step.title}" targets a team that is not one of the step's teams.`
-                );
-            }
+        // At least one team, and team targets among the step's teams (spec 4.1, 6). User targets
+        // need a user lookup, so `StoreWorkflowUseCase` checks them after this validation (R122).
+        const problem = findReviewStepConfigProblem(parsed.data);
+        if (problem?.type === "noTeams") {
+            return fail(`Step "${step.title}" needs at least one team.`);
+        }
+        if (problem?.type === "teamTargetOutsideTeams") {
+            return fail(
+                `Routing rule "${problem.ruleId}" in step "${step.title}" targets a team that is not one of the step's teams.`
+            );
         }
 
         return Result.ok(parsed.data);

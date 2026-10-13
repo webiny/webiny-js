@@ -1,6 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { WorkflowValidationError } from "~/domain/workflow/errors.js";
+import { findReviewStepConfigProblem } from "~/domain/workflow/findReviewStepConfigProblem.js";
 import { RoutingDependencyError } from "~/domain/routing/errors.js";
 import type { RoutingEvaluation } from "~/domain/routing/types.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
@@ -19,15 +20,22 @@ class InspectRoutingUseCaseImpl implements UseCase.Interface {
                 )
             );
         }
-        // Save refuses a team target outside the step's teams (spec 6); the inspector does too.
-        for (const rule of parsed.data.assignment.rules) {
-            if (rule.target.type === "team" && !parsed.data.teams.includes(rule.target.id)) {
-                return Result.fail(
-                    new WorkflowValidationError(
-                        `Routing rule "${rule.id}" targets a team that is not one of the step's teams.`
-                    )
-                );
-            }
+        // Save refuses a step without teams and a team target outside the step's teams
+        // (spec 4.1, 6); the inspector does too, before any lookup.
+        const problem = findReviewStepConfigProblem(parsed.data);
+        if (problem?.type === "noTeams") {
+            return Result.fail(
+                new WorkflowValidationError(
+                    "The step configuration is invalid: the step needs at least one team."
+                )
+            );
+        }
+        if (problem?.type === "teamTargetOutsideTeams") {
+            return Result.fail(
+                new WorkflowValidationError(
+                    `Routing rule "${problem.ruleId}" targets a team that is not one of the step's teams.`
+                )
+            );
         }
 
         // An unsaved config has no stored workflow: no round-robin history, no pick. Read access

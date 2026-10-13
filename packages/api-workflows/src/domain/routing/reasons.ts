@@ -13,8 +13,9 @@ export type RoutingSkipReason = (typeof ROUTING_SKIP_REASONS)[keyof typeof ROUTI
 
 /**
  * The fixed reason for a rule whose team target is not one of the step's teams (spec 6): the rule
- * is skipped with a skip record without a user, and evaluation continues. Save-time validation
- * refuses such a rule; unsaved config (the inspector) can still carry one.
+ * is skipped with a skip record without a user, and evaluation continues. Save-time validation and
+ * the inspector refuse such a rule, so it appears only for a stored workflow whose teams changed or
+ * that was written without validation.
  */
 export const ROUTING_TEAM_TARGET_SKIP_REASON = "Not one of the step's teams.";
 
