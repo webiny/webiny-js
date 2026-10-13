@@ -28,7 +28,10 @@ export type AssignmentSource =
  */
 export interface AssignmentDecision {
     kind: AssignmentRecordKind;
-    /** The owner (outcome) or the person passed over (skip); `null` for the pool. */
+    /**
+     * The owner (outcome) or the person passed over (skip); `null` for the pool and for a skipped
+     * rule whose team target is not one of the step's teams.
+     */
     userId: string | null;
     source: AssignmentSource;
     /** The rule that decided or was skipped; `null` otherwise. */

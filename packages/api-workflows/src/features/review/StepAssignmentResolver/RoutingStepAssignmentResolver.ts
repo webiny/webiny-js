@@ -8,8 +8,10 @@ import { StepAssignmentResolver } from "./abstractions.js";
 
 /**
  * Step reach routing (spec 6, R110): pick, rules, strategy, pool, through
- * `RoutingEvaluatorService`. Never blocks the review (R116): a failed or throwing lookup gives
- * the pool of the step's teams with a fixed reason, and the error is logged.
+ * `RoutingEvaluatorService`. Never blocks the review (R116): a failed lookup gives the pool with a
+ * fixed reason, keeping what the evaluator had decided (the narrowed teams, a team-target rule,
+ * the skips gathered); a throwing read check gives the pool of the step's teams without skips.
+ * The error is logged.
  */
 class RoutingStepAssignmentResolverImpl implements StepAssignmentResolver.Interface {
     public constructor(
@@ -46,6 +48,8 @@ class RoutingStepAssignmentResolverImpl implements StepAssignmentResolver.Interf
                 config,
                 model: params.review.model,
                 workflowId: params.review.workflowId,
+                // Least loaded does not count the review being routed (its previous step).
+                reviewId: params.review.id,
                 stepId: params.step.id,
                 requesterId: params.review.createdBy.id,
                 pickedUserId: params.step.pickedUserId,
@@ -68,7 +72,13 @@ class RoutingStepAssignmentResolverImpl implements StepAssignmentResolver.Interf
                     },
                     ROUTING_FAILED_REASON
                 );
-                return createRoutingFailedResolution(config.teams);
+                return createRoutingFailedResolution(
+                    evaluated.error.decided ?? {
+                        candidateTeamIds: config.teams,
+                        ruleId: null,
+                        skips: []
+                    }
+                );
             }
             return toStepAssignmentResolution(evaluated.value);
         } catch (error) {
@@ -76,7 +86,11 @@ class RoutingStepAssignmentResolverImpl implements StepAssignmentResolver.Interf
                 { error, reviewId: params.review.id, stepId: params.step.id },
                 ROUTING_FAILED_REASON
             );
-            return createRoutingFailedResolution(config.teams);
+            return createRoutingFailedResolution({
+                candidateTeamIds: config.teams,
+                ruleId: null,
+                skips: []
+            });
         }
     }
 }

@@ -64,15 +64,19 @@ export interface RoutingSkippedUser {
     reason: string;
 }
 
-/** What rule conditions are matched against (R113). */
-export interface RoutingRuleFacts {
+/** What rule conditions are matched against without a lookup (R113). */
+export interface RoutingRuleLocalFacts {
     requesterId: string;
-    /** Empty when the lookup failed or the requester is an API key. */
-    requesterTeamIds: string[];
     /** The model id of the review's namespace (`getNamespaceModelId`). */
     modelId: string;
     /** The target's folder; `null` for the root. */
     folder: TargetContextFolder | null;
+}
+
+/** What rule conditions are matched against (R113). */
+export interface RoutingRuleFacts extends RoutingRuleLocalFacts {
+    /** Empty when the lookup failed or the requester is an API key. */
+    requesterTeamIds: string[];
     /** The folder and its ancestors, nearest first; empty when not read. */
     folderChainIds: string[];
 }
@@ -83,6 +87,11 @@ export interface RoutingEvaluateParams {
     model: string;
     /** `null` for a workflow not stored yet: round robin has no history. */
     workflowId: string | null;
+    /**
+     * The review being routed; least loaded does not count it as load. `null` without a review
+     * (the inspector).
+     */
+    reviewId: string | null;
     stepId: string;
     requesterId: string;
     /** The requester's pick for this step; used only when the step allows picks. */

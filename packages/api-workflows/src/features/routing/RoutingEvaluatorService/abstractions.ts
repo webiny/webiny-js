@@ -18,7 +18,10 @@ export interface IRoutingEvaluatorService {
     evaluate(
         params: RoutingEvaluateParams
     ): Promise<Result<RoutingEvaluation, RoutingDependencyError>>;
-    /** Every member of the teams except the requester, by user id, with exclusion and access. */
+    /**
+     * Every member of the teams except the requester, with exclusion and access, sorted by user
+     * id. Callers that show a list re-sort it (for example by display name, R120).
+     */
     listMembers(
         params: RoutingMembersParams
     ): Promise<Result<RoutingMember[], RoutingDependencyError>>;
@@ -31,9 +34,11 @@ export interface IRoutingEvaluatorService {
 /**
  * The routing rules in one place, for the step-reach resolver, the inspector, the candidate lists
  * and reassign (spec 6). Internal: no permission checks (D132). User lookups run without
- * authorization; read checks run as the request identity (SEC-66). A failed lookup fails with
- * `RoutingDependencyError`; a throwing port propagates. Callers decide what a failure means (the
- * resolver falls through to the pool, R116).
+ * authorization; read checks run as the request identity (SEC-66). A failed lookup, including a
+ * throwing folder port, fails with `RoutingDependencyError`; from `evaluate` it carries what was
+ * decided so far (`decided`: candidate teams, a team-target rule, the skips). A throwing read
+ * check propagates. Callers decide what a failure means (the resolver falls through to the pool,
+ * R116).
  */
 export const RoutingEvaluatorService =
     createAbstraction<IRoutingEvaluatorService>("RoutingEvaluatorService");

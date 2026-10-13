@@ -8,7 +8,8 @@ import { ReviewSaver } from "./ReviewSaver/ReviewSaver.js";
  * `ReviewTargetSync`, `ReviewTargetReadAccess` and `ReviewTargetFolderChain` per namespace
  * (`cms.*` in api-headless-cms-workflows, `wb.page` in api-website-builder-workflows); the last
  * registered match wins and none matching means nothing to load, sync or read (R28, R50). Steps
- * are routed by `RoutingStepAssignmentResolver` (spec 6).
+ * are routed by `RoutingStepAssignmentResolver` (spec 6); a `StepAssignmentResolver` registered
+ * later (after `WorkflowsFeature`) wins on resolve.
  */
 export const ReviewLifecycleFeature = createFeature({
     name: "Workflows/ReviewLifecycle",

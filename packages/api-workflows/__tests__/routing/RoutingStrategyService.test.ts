@@ -13,19 +13,55 @@ const BOB = { id: "user-bob", displayName: "Bob" };
 const CARA = { id: "user-cara", displayName: "Cara" };
 const CANDIDATES: RoutingUser[] = [ANNA, BOB, CARA];
 
+/** Every `AssignmentRepository.list` call, in order. Reset per context. */
+const assignmentListCalls: AssignmentRepository.ListParams[] = [];
+
+class RecordingAssignmentListImpl implements AssignmentRepository.Interface {
+    public constructor(private decoratee: AssignmentRepository.Interface) {}
+
+    public create(
+        values: Parameters<AssignmentRepository.Interface["create"]>[0]
+    ): ReturnType<AssignmentRepository.Interface["create"]> {
+        return this.decoratee.create(values);
+    }
+
+    public list(
+        params: AssignmentRepository.ListParams
+    ): ReturnType<AssignmentRepository.Interface["list"]> {
+        assignmentListCalls.push(structuredClone(params));
+        return this.decoratee.list(params);
+    }
+
+    public delete(id: string): ReturnType<AssignmentRepository.Interface["delete"]> {
+        return this.decoratee.delete(id);
+    }
+}
+
 const createStrategyContext = async () => {
-    const { context } = await createContextHandler();
+    assignmentListCalls.length = 0;
+    const { context } = await createContextHandler({
+        setup: container => {
+            container.registerDecorator(
+                AssignmentRepository.createDecorator({
+                    decorator: RecordingAssignmentListImpl,
+                    dependencies: []
+                })
+            );
+        }
+    });
     const strategies = context.container.resolve(RoutingStrategyService);
     const order = async (
         strategy: RoutingStrategyName,
         model = ARTICLE_MODEL,
-        workflowId: string | null = "workflow-1"
+        workflowId: string | null = "workflow-1",
+        reviewId: string | null = "review-routed"
     ): Promise<string[]> => {
         const ordered = await strategies.order({
             strategy,
             candidates: CANDIDATES,
             model,
             workflowId,
+            reviewId,
             stepId: "legal"
         });
         return expectOk(ordered).map(user => user.id);
@@ -181,5 +217,63 @@ describe("RoutingStrategyService: least loaded (R115, D137)", () => {
         }
 
         expect(await order("leastLoaded", "cms.article")).toEqual([CARA.id, BOB.id, ANNA.id]);
+    });
+
+    it("does not count the review being routed as load", async () => {
+        const { order, reviews } = await createStrategyContext();
+        // Anna owns only the routed review (its previous step); Bob owns another one.
+        expectOk(await reviews.save(inReviewData("review-routed", ANNA.id, "cms.article")));
+        expectOk(await reviews.save(inReviewData("review-b1", BOB.id, "cms.article")));
+
+        expect(await order("leastLoaded", "cms.article")).toEqual([ANNA.id, CARA.id, BOB.id]);
+        expect(await order("leastLoaded", "cms.article", "workflow-1", null)).toEqual([
+            CARA.id,
+            ANNA.id,
+            BOB.id
+        ]);
+    });
+
+    it("reads one latest outcome per candidate tied at the lowest load only", async () => {
+        const { order, assignments, reviews, workflows } = await createStrategyContext();
+        expectOk(await workflows.create(createWorkflowValues({ id: "workflow-1" })));
+        expectOk(await reviews.save(inReviewData("review-c1", CARA.id, "cms.article")));
+        const seeds = [
+            assignmentRecord({
+                userId: ANNA.id,
+                source: "leastLoaded",
+                assignedOn: "2026-10-09T08:00:00.000Z"
+            }),
+            assignmentRecord({
+                userId: ANNA.id,
+                source: "leastLoaded",
+                assignedOn: "2026-10-09T11:00:00.000Z"
+            })
+        ];
+        for (const seed of seeds) {
+            expectOk(await assignments.create(seed));
+        }
+        assignmentListCalls.length = 0;
+
+        // Bob was never assigned, so he goes before Anna; Cara has load.
+        expect(await order("leastLoaded", "cms.article")).toEqual([BOB.id, ANNA.id, CARA.id]);
+        expect(assignmentListCalls).toEqual([
+            {
+                where: { userId: ANNA.id, workflowId_in: ["workflow-1"], kind: "outcome" },
+                limit: 1
+            },
+            {
+                where: { userId: BOB.id, workflowId_in: ["workflow-1"], kind: "outcome" },
+                limit: 1
+            }
+        ]);
+    });
+
+    it("reads no history when one candidate has the lowest load", async () => {
+        const { order, reviews } = await createStrategyContext();
+        expectOk(await reviews.save(inReviewData("review-a1", ANNA.id, "cms.article")));
+        expectOk(await reviews.save(inReviewData("review-b1", BOB.id, "cms.article")));
+
+        expect(await order("leastLoaded", "cms.article")).toEqual([CARA.id, ANNA.id, BOB.id]);
+        expect(assignmentListCalls).toEqual([]);
     });
 });

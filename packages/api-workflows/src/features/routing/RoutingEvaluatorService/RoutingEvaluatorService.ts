@@ -9,12 +9,14 @@ import { RoutingDependencyError } from "~/domain/routing/errors.js";
 import {
     ROUTING_NO_CANDIDATE_REASON,
     ROUTING_SKIP_REASONS,
+    ROUTING_TEAM_TARGET_SKIP_REASON,
     type RoutingSkipReason
 } from "~/domain/routing/reasons.js";
 import type {
     RoutingDirectoryUser,
     RoutingMember,
     RoutingRuleFacts,
+    RoutingRuleLocalFacts,
     RoutingSkippedUser,
     RoutingTraceEntry
 } from "~/domain/routing/types.js";
@@ -22,6 +24,7 @@ import { getNamespaceModelId } from "~/domain/routing/getNamespaceModelId.js";
 import { getRoutingUserSkipReason } from "~/domain/routing/getRoutingUserSkipReason.js";
 import { listRoutingCandidates } from "~/domain/routing/listRoutingCandidates.js";
 import { matchRoutingRuleConditions } from "~/domain/routing/matchRoutingRuleConditions.js";
+import { matchRoutingRuleLocalConditions } from "~/domain/routing/matchRoutingRuleLocalConditions.js";
 import { toRoutingEvaluation } from "~/domain/routing/toRoutingEvaluation.js";
 import { GetWorkflowSettingsUseCase } from "~/features/settings/GetWorkflowSettings/abstractions.js";
 import { ReviewTargetReadAccess } from "~/features/review/ReviewTargetReadAccess/abstractions.js";
@@ -68,14 +71,26 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                 return this.listUsers.execute({ where: { teams_in: [...config.teams] } });
             });
             if (listed.isFail()) {
-                return Result.fail(new RoutingDependencyError(listed.error));
+                return Result.fail(
+                    new RoutingDependencyError(listed.error, {
+                        candidateTeamIds: config.teams,
+                        ruleId: null,
+                        skips
+                    })
+                );
             }
             members = listed.value.filter(user => {
                 return config.teams.some(teamId => user.teams?.includes(teamId));
             });
             const settings = await this.getSettings.execute({ includeExpired: true });
             if (settings.isFail()) {
-                return Result.fail(new RoutingDependencyError(settings.error));
+                return Result.fail(
+                    new RoutingDependencyError(settings.error, {
+                        candidateTeamIds: config.teams,
+                        ruleId: null,
+                        skips
+                    })
+                );
             }
             exclusions = filterActiveExclusions(settings.value.exclusions, params.now);
         }
@@ -148,12 +163,24 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
         let candidateTeamIds = [...config.teams];
         let ruleId: string | null = null;
         if (rules.length > 0) {
-            // Read lazily, on the first rule that needs them: an earlier rule decides without
-            // these lookups.
+            // Read lazily, on the first rule that needs them, and at most once: an earlier rule
+            // decides without these lookups.
             let requesterTeamIds: string[] | null = null;
             let folderChainIds: string[] | null = null;
+            const modelId = getNamespaceModelId(params.model);
 
             for (const rule of rules) {
+                // The conditions that need no lookup first: a rule that fails them reads
+                // neither the requester's teams nor the folder chain.
+                const localFacts: RoutingRuleLocalFacts = {
+                    requesterId: params.requesterId,
+                    modelId,
+                    folder: params.folder
+                };
+                if (!matchRoutingRuleLocalConditions(rule.conditions, localFacts)) {
+                    trace.push({ ruleId: rule.id, outcome: "notMatched", reason: null });
+                    continue;
+                }
                 if (rule.conditions.requesterTeamId && requesterTeamIds === null) {
                     // Runs as the system itself; a failure or an API key requester has no teams
                     // (R113).
@@ -167,20 +194,30 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                     if (!folderChain) {
                         return Result.fail(
                             new RoutingDependencyError(
-                                new Error(`No folder chain is registered for "${params.model}".`)
+                                new Error(`No folder chain is registered for "${params.model}".`),
+                                { candidateTeamIds: config.teams, ruleId: null, skips }
                             )
                         );
                     }
-                    folderChainIds = await folderChain.listFolderChainIds({
-                        model: params.model,
-                        folderId: params.folder.id
-                    });
+                    // The port throws when the folders cannot be read: caught here so the
+                    // failure keeps the skips gathered so far (R116).
+                    try {
+                        folderChainIds = await folderChain.listFolderChainIds({
+                            model: params.model,
+                            folderId: params.folder.id
+                        });
+                    } catch (error) {
+                        return Result.fail(
+                            new RoutingDependencyError(
+                                error instanceof Error ? error : new Error(String(error)),
+                                { candidateTeamIds: config.teams, ruleId: null, skips }
+                            )
+                        );
+                    }
                 }
                 const facts: RoutingRuleFacts = {
-                    requesterId: params.requesterId,
+                    ...localFacts,
                     requesterTeamIds: requesterTeamIds ?? [],
-                    modelId: getNamespaceModelId(params.model),
-                    folder: params.folder,
                     folderChainIds: folderChainIds ?? []
                 };
                 if (!matchRoutingRuleConditions(rule.conditions, facts)) {
@@ -188,6 +225,25 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                     continue;
                 }
                 if (rule.target.type === "team") {
+                    // A team target outside the step's teams is not valid (spec 6): the rule is
+                    // skipped and evaluation continues. Save-time validation refuses it; unsaved
+                    // config can carry it.
+                    if (!config.teams.includes(rule.target.id)) {
+                        trace.push({
+                            ruleId: rule.id,
+                            outcome: "skipped",
+                            reason: ROUTING_TEAM_TARGET_SKIP_REASON
+                        });
+                        skips.push({
+                            kind: "skip",
+                            userId: null,
+                            source: "rule",
+                            ruleId: rule.id,
+                            by: null,
+                            reason: ROUTING_TEAM_TARGET_SKIP_REASON
+                        });
+                        continue;
+                    }
                     // A team target narrows the candidates; the strategy picks among them (R109).
                     trace.push({ ruleId: rule.id, outcome: "matched", reason: null });
                     ruleId = rule.id;
@@ -287,10 +343,14 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
             candidates,
             model: params.model,
             workflowId: params.workflowId,
+            reviewId: params.reviewId,
             stepId: params.stepId
         });
         if (ordered.isFail()) {
-            return Result.fail(ordered.error);
+            // Keep what was decided: the narrowed teams, the rule and the skips (R116).
+            return Result.fail(
+                new RoutingDependencyError(ordered.error, { candidateTeamIds, ruleId, skips })
+            );
         }
         // Read access is checked lazily in strategy order, stopping at the first readable
         // candidate (R111, A47).

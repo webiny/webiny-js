@@ -11,6 +11,13 @@ export const ROUTING_SKIP_REASONS = {
 
 export type RoutingSkipReason = (typeof ROUTING_SKIP_REASONS)[keyof typeof ROUTING_SKIP_REASONS];
 
+/**
+ * The fixed reason for a rule whose team target is not one of the step's teams (spec 6): the rule
+ * is skipped with a skip record without a user, and evaluation continues. Save-time validation
+ * refuses such a rule; unsaved config (the inspector) can still carry one.
+ */
+export const ROUTING_TEAM_TARGET_SKIP_REASON = "Not one of the step's teams.";
+
 /** The pool reason when anything in resolution failed (R116). */
 export const ROUTING_FAILED_REASON = "Routing failed; the step went to the pool.";
 

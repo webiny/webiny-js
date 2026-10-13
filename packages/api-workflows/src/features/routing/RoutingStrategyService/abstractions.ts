@@ -10,6 +10,11 @@ export interface RoutingStrategyOrderParams {
     model: string;
     /** `null` for a workflow not stored yet: round robin has no history. */
     workflowId: string | null;
+    /**
+     * The review being routed: least loaded does not count it as load, so a candidate who owned
+     * its previous step is not penalised by this very review. `null` without a review.
+     */
+    reviewId: string | null;
     stepId: string;
 }
 
@@ -21,8 +26,9 @@ export interface IRoutingStrategyService {
 
 /**
  * The order in which a strategy asks the candidates (R115): round robin after the step's last
- * assignee, least loaded by in-review load per app with the least recently assigned first on
- * ties. The evaluator checks read access lazily in this order. Load and history are read from
+ * assignee, least loaded by in-review load per app with the least recently assigned first among
+ * the candidates tied at the lowest load (one latest-outcome read per such candidate). The
+ * evaluator checks read access lazily in this order. Load and history are read from
  * the list index and can lag (A29, A46).
  */
 export const RoutingStrategyService =

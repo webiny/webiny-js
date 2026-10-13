@@ -24,7 +24,9 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
 
         if (params.strategy === "roundRobin") {
             // The step's last assignee: the newest outcome with a user (start, take over and
-            // reassign count too). Pool outcomes have no user, skips are not outcomes.
+            // reassign count too). Pool outcomes have no user, skips are not outcomes. "Newest"
+            // is the repository's `createdOn` order, stored as `assignedOn` (records are written
+            // right after the review save).
             let lastAssigneeId: string | null = null;
             if (params.workflowId) {
                 let after: string | null = null;
@@ -51,7 +53,8 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
             return Result.ok(orderRoundRobin(params.candidates, lastAssigneeId));
         }
 
-        // Least loaded (D137): in-review reviews owned per candidate, in the review's app only.
+        // Least loaded (D137): in-review reviews owned per candidate, in the review's app only,
+        // without the review being routed (a candidate who owned its previous step).
         const app = getNamespaceApp(params.model);
         const candidateIds = params.candidates.map(candidate => candidate.id);
         const owned = await this.reviews.listInReviewByOwners(candidateIds);
@@ -60,16 +63,23 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
         }
         const loads = new Map<string, number>();
         for (const review of owned.value) {
-            if (!review.currentOwnerId || getNamespaceApp(review.model) !== app) {
+            if (
+                !review.currentOwnerId ||
+                review.id === params.reviewId ||
+                getNamespaceApp(review.model) !== app
+            ) {
                 continue;
             }
             loads.set(review.currentOwnerId, (loads.get(review.currentOwnerId) ?? 0) + 1);
         }
 
+        // Ties matter only at the lowest load: the strategy asks those candidates first, the
+        // rest are ordered by load and user id. Ties among higher loads read no history.
+        const lowestLoad = Math.min(...candidateIds.map(id => loads.get(id) ?? 0));
+        const tiedIds = candidateIds.filter(id => (loads.get(id) ?? 0) === lowestLoad);
         const lastAssignedOn = new Map<string, string>();
-        const candidateLoads = candidateIds.map(id => loads.get(id) ?? 0);
-        if (new Set(candidateLoads).size < candidateLoads.length) {
-            // Ties: the latest outcome of each candidate in the workflows of the same app.
+        if (tiedIds.length > 1) {
+            // The latest outcome of each tied candidate in the workflows of the same app.
             const workflowIds: string[] = [];
             let workflowsAfter: string | null = null;
             do {
@@ -91,32 +101,24 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
                 workflowsAfter = next && next !== workflowsAfter ? next : null;
             } while (workflowsAfter);
 
-            const pending = new Set(candidateIds);
-            let after: string | null = null;
-            do {
-                const page: Awaited<ReturnType<AssignmentRepository.Interface["list"]>> =
-                    await this.assignments.list({
-                        where: {
-                            userId_in: candidateIds,
-                            workflowId_in: workflowIds,
-                            kind: "outcome"
-                        },
-                        after
+            // One record per tied candidate. "Latest" is the repository's `createdOn` order,
+            // stored as `assignedOn` (records are written right after the review save). An
+            // empty `workflowId_in` matches nothing, so no read is needed.
+            if (workflowIds.length > 0) {
+                for (const userId of tiedIds) {
+                    const latest = await this.assignments.list({
+                        where: { userId, workflowId_in: workflowIds, kind: "outcome" },
+                        limit: 1
                     });
-                if (page.isFail()) {
-                    return Result.fail(new RoutingDependencyError(page.error));
-                }
-                // Newest first: the first record per candidate is their latest assignment.
-                for (const record of page.value.items) {
-                    if (record.userId && pending.has(record.userId)) {
-                        lastAssignedOn.set(record.userId, record.assignedOn);
-                        pending.delete(record.userId);
+                    if (latest.isFail()) {
+                        return Result.fail(new RoutingDependencyError(latest.error));
+                    }
+                    const record = latest.value.items[0];
+                    if (record) {
+                        lastAssignedOn.set(userId, record.assignedOn);
                     }
                 }
-                const { meta } = page.value;
-                const next = meta.hasMoreItems ? meta.cursor : null;
-                after = pending.size > 0 && next && next !== after ? next : null;
-            } while (after);
+            }
         }
 
         return Result.ok(orderLeastLoaded(params.candidates, loads, lastAssignedOn));

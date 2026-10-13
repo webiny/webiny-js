@@ -1,5 +1,6 @@
 import type { RoutingRuleConditions } from "~/domain/workflow/types.js";
 import type { RoutingRuleFacts } from "./types.js";
+import { matchRoutingRuleLocalConditions } from "./matchRoutingRuleLocalConditions.js";
 
 /**
  * Whether every condition of a rule holds (spec 6, R113). Pure. A rule without conditions
@@ -11,7 +12,7 @@ export const matchRoutingRuleConditions = (
     conditions: RoutingRuleConditions,
     facts: RoutingRuleFacts
 ): boolean => {
-    if (conditions.requesterUserId && conditions.requesterUserId !== facts.requesterId) {
+    if (!matchRoutingRuleLocalConditions(conditions, facts)) {
         return false;
     }
     if (
@@ -20,14 +21,8 @@ export const matchRoutingRuleConditions = (
     ) {
         return false;
     }
-    if (conditions.modelId && conditions.modelId !== facts.modelId) {
-        return false;
-    }
     const folder = conditions.folder;
-    if (folder) {
-        if (!facts.folder || folder.type !== facts.folder.type) {
-            return false;
-        }
+    if (folder && facts.folder) {
         const isTargetFolder = folder.id === facts.folder.id;
         const matches = folder.includeDescendants
             ? isTargetFolder || facts.folderChainIds.includes(folder.id)

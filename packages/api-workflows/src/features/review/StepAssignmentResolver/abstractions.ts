@@ -24,7 +24,7 @@ export interface IStepAssignmentResolver {
 /**
  * Decides who holds a review step when it is reached (spec 5.2, 6). The registered
  * implementation is `RoutingStepAssignmentResolver`: pick, rules, strategy, pool; any failure
- * falls through to the pool (R110, R116).
+ * falls through to the pool (R110, R116). A later registration wins on resolve.
  */
 export const StepAssignmentResolver =
     createAbstraction<IStepAssignmentResolver>("StepAssignmentResolver");

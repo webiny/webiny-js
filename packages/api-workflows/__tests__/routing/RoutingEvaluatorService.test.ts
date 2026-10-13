@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { Result } from "@webiny/feature/api";
 import {
     ARTICLE_MODEL,
     NOW,
@@ -16,7 +17,11 @@ import {
     readChecks,
     throwingReadChecks
 } from "~tests/__helpers/FakeReviewTargetReadAccess.js";
-import { folderChainCalls, folderChains } from "~tests/__helpers/FakeReviewTargetFolderChain.js";
+import {
+    folderChainCalls,
+    folderChainFaults,
+    folderChains
+} from "~tests/__helpers/FakeReviewTargetFolderChain.js";
 import type { AssignmentDecision } from "~/domain/assignment/types.js";
 import type {
     ReviewStepAssignmentConfig,
@@ -24,8 +29,14 @@ import type {
     RoutingRule
 } from "~/domain/workflow/types.js";
 import type { RoutingEvaluateParams } from "~/domain/routing/types.js";
-import { ROUTING_NO_CANDIDATE_REASON, ROUTING_SKIP_REASONS } from "~/domain/routing/reasons.js";
+import {
+    ROUTING_NO_CANDIDATE_REASON,
+    ROUTING_SKIP_REASONS,
+    ROUTING_TEAM_TARGET_SKIP_REASON
+} from "~/domain/routing/reasons.js";
+import { RoutingDependencyError } from "~/domain/routing/errors.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
+import { RoutingStrategyService } from "~/features/routing/RoutingStrategyService/index.js";
 
 const ANNA = { id: "user-anna", displayName: "Anna" };
 const BOB = { id: "user-bob", displayName: "Bob" };
@@ -48,6 +59,7 @@ const evaluateParams = (overrides: Partial<RoutingEvaluateParams> = {}): Routing
         config: stepConfig(),
         model: ARTICLE_MODEL,
         workflowId: "workflow-1",
+        reviewId: "review-1",
         stepId: "legal",
         requesterId: requester.id,
         pickedUserId: null,
@@ -84,8 +96,29 @@ const outcome = (
     return { kind: "outcome", userId, source, ruleId, by: null, reason };
 };
 
-const createEvaluatorContext = async () => {
-    const routing = await createRoutingContext();
+class FailingRoutingStrategyImpl implements RoutingStrategyService.Interface {
+    public async order(): RoutingStrategyService.Return {
+        return Result.fail(new RoutingDependencyError(new Error("Storage is down.")));
+    }
+}
+
+const FailingRoutingStrategy = RoutingStrategyService.createImplementation({
+    implementation: FailingRoutingStrategyImpl,
+    dependencies: []
+});
+
+interface EvaluatorContextOptions {
+    failStrategy?: boolean;
+}
+
+const createEvaluatorContext = async (options: EvaluatorContextOptions = {}) => {
+    const routing = await createRoutingContext({
+        setup: container => {
+            if (options.failStrategy) {
+                container.register(FailingRoutingStrategy);
+            }
+        }
+    });
     return {
         ...routing,
         evaluator: routing.context.container.resolve(RoutingEvaluatorService)
@@ -390,7 +423,10 @@ describe("RoutingEvaluatorService.evaluate: rules", () => {
 
         const result = await evaluator.evaluate(
             evaluateParams({
-                config: stepConfig({ rules: [teamRule("rule-legal", LEGAL_TEAM_ID)] })
+                config: {
+                    ...stepConfig({ rules: [teamRule("rule-legal", LEGAL_TEAM_ID)] }),
+                    teams: [REVIEW_TEAM_ID, LEGAL_TEAM_ID]
+                }
             })
         );
 
@@ -482,6 +518,181 @@ describe("RoutingEvaluatorService.evaluate: rules", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Routing/Dependency");
+    });
+
+    it("skips a team target outside the step's teams and lets the strategy decide (spec 6)", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        readableUsers.add(ANNA.id);
+
+        // Unsaved config, as the inspector sends it: save-time validation has not run.
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                config: stepConfig({
+                    strategy: "roundRobin",
+                    rules: [teamRule("rule-legal", LEGAL_TEAM_ID)]
+                })
+            })
+        );
+
+        expect(result.value).toEqual({
+            owner: ANNA,
+            source: "roundRobin",
+            ruleId: null,
+            strategy: "roundRobin",
+            candidateTeamIds: [REVIEW_TEAM_ID],
+            reason: null,
+            records: [
+                {
+                    kind: "skip",
+                    userId: null,
+                    source: "rule",
+                    ruleId: "rule-legal",
+                    by: null,
+                    reason: ROUTING_TEAM_TARGET_SKIP_REASON
+                },
+                outcome(ANNA.id, "roundRobin")
+            ],
+            trace: [
+                {
+                    ruleId: "rule-legal",
+                    outcome: "skipped",
+                    reason: ROUTING_TEAM_TARGET_SKIP_REASON
+                }
+            ],
+            skipped: []
+        });
+    });
+
+    it("skips an invalid team target and goes to the pool without a strategy", async () => {
+        const { evaluator } = await createEvaluatorContext();
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                config: stepConfig({ rules: [teamRule("rule-legal", LEGAL_TEAM_ID)] })
+            })
+        );
+
+        expect(result.value).toMatchObject({
+            owner: null,
+            source: "pool",
+            ruleId: null,
+            candidateTeamIds: [REVIEW_TEAM_ID],
+            records: [{ kind: "skip", userId: null, ruleId: "rule-legal" }, outcome(null, "pool")]
+        });
+    });
+
+    it("checks the requester, the model and the folder type before reading teams or folders", async () => {
+        const { evaluator, teams } = await createEvaluatorContext();
+        const folder = { id: "folder-1", type: "cms:article", includeDescendants: true };
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                config: stepConfig({
+                    rules: [
+                        teamRule("rule-user", REVIEW_TEAM_ID, {
+                            requesterUserId: "user-someone",
+                            requesterTeamId: "team-other",
+                            folder
+                        }),
+                        teamRule("rule-model", REVIEW_TEAM_ID, {
+                            modelId: "blog",
+                            requesterTeamId: "team-other",
+                            folder
+                        }),
+                        teamRule("rule-type", REVIEW_TEAM_ID, {
+                            requesterTeamId: "team-other",
+                            folder: { ...folder, type: "cms:blog" }
+                        })
+                    ]
+                })
+            })
+        );
+
+        expect(result.value).toMatchObject({
+            source: "pool",
+            trace: [
+                { ruleId: "rule-user", outcome: "notMatched" },
+                { ruleId: "rule-model", outcome: "notMatched" },
+                { ruleId: "rule-type", outcome: "notMatched" }
+            ]
+        });
+        expect(teams.calls).toEqual([]);
+        expect(folderChainCalls).toEqual([]);
+    });
+
+    it("reads the requester's teams and the folder chain at most once", async () => {
+        const { evaluator, teams } = await createEvaluatorContext();
+        const folder = { id: "folder-1", type: "cms:article", includeDescendants: true };
+
+        await evaluator.evaluate(
+            evaluateParams({
+                config: stepConfig({
+                    rules: [
+                        teamRule("rule-1", REVIEW_TEAM_ID, { requesterTeamId: "team-x", folder }),
+                        teamRule("rule-2", REVIEW_TEAM_ID, { requesterTeamId: "team-y", folder })
+                    ]
+                })
+            })
+        );
+
+        expect(teams.calls).toEqual([requester.id]);
+        expect(folderChainCalls).toHaveLength(1);
+    });
+
+    it("keeps the skips gathered so far when the folder port throws (R116)", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        folderChainFaults.throwNext = true;
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                pickedUserId: "user-dan",
+                config: stepConfig({
+                    rules: [
+                        userRule("rule-tree", BOB.id, {
+                            folder: {
+                                id: "folder-1",
+                                type: "cms:article",
+                                includeDescendants: true
+                            }
+                        })
+                    ]
+                })
+            })
+        );
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Routing/Dependency");
+        expect(result.error.decided).toEqual({
+            candidateTeamIds: [REVIEW_TEAM_ID],
+            ruleId: null,
+            skips: [skip("user-dan", "picked", ROUTING_SKIP_REASONS.notMember)]
+        });
+    });
+
+    it("keeps the narrowed teams and the rule when the strategy fails (R116)", async () => {
+        const { evaluator } = await createEvaluatorContext({ failStrategy: true });
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                config: {
+                    ...stepConfig({
+                        strategy: "leastLoaded",
+                        rules: [
+                            userRule("rule-dan", "user-dan"),
+                            teamRule("rule-legal", LEGAL_TEAM_ID)
+                        ]
+                    }),
+                    teams: [REVIEW_TEAM_ID, LEGAL_TEAM_ID]
+                }
+            })
+        );
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.decided).toEqual({
+            candidateTeamIds: [LEGAL_TEAM_ID],
+            ruleId: "rule-legal",
+            skips: [skip("user-dan", "rule", ROUTING_SKIP_REASONS.notMember, "rule-dan")]
+        });
     });
 
     it("treats a failed requester team lookup as no teams", async () => {

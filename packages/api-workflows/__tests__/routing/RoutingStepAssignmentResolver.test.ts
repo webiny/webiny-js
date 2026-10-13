@@ -435,6 +435,97 @@ describe("RoutingStepAssignmentResolver", () => {
         expect(loggedErrors.map(item => item.message)).toEqual([ROUTING_FAILED_REASON]);
     });
 
+    it("keeps a team target's narrowing and rule when the strategy fails (R116)", async () => {
+        const { resolver } = await createResolverContext();
+        readableUsers.add(CARA.id);
+        readFaults.reviewOwners = true;
+        const toLegalStep: WorkflowStep = {
+            ...createReviewStep({ id: "legal", title: "Legal review" }),
+            config: {
+                teams: [REVIEW_TEAM_ID, LEGAL_TEAM_ID],
+                assignment: {
+                    strategy: "leastLoaded",
+                    allowManualPick: true,
+                    rules: [
+                        {
+                            id: "rule-legal",
+                            conditions: {},
+                            target: { type: "team", id: LEGAL_TEAM_ID }
+                        }
+                    ]
+                }
+            }
+        };
+
+        const resolution = await resolver.resolve(
+            reachParams(createWorkflow({ steps: [toLegalStep] }))
+        );
+
+        expect(resolution).toEqual({
+            owner: null,
+            candidateTeamIds: [LEGAL_TEAM_ID],
+            assignment: { source: "pool", ruleId: "rule-legal", reason: ROUTING_FAILED_REASON },
+            records: [
+                {
+                    kind: "outcome",
+                    userId: null,
+                    source: "pool",
+                    ruleId: "rule-legal",
+                    by: null,
+                    reason: ROUTING_FAILED_REASON
+                }
+            ]
+        });
+        expect(loggedErrors.map(item => item.message)).toEqual([ROUTING_FAILED_REASON]);
+    });
+
+    it("keeps an invalid pick's skip when the folder port then fails (R116)", async () => {
+        const { resolver } = await createResolverContext();
+        folderChainFaults.throwNext = true;
+        const step = legalStep({
+            rules: [
+                {
+                    id: "rule-folder",
+                    conditions: {
+                        folder: { id: "folder-1", type: "cms:article", includeDescendants: true }
+                    },
+                    target: { type: "user", id: BOB.id }
+                }
+            ]
+        });
+
+        const resolution = await resolver.resolve(
+            reachParams(createWorkflow({ steps: [step] }), [
+                { stepId: "legal", userId: "user-dan" }
+            ])
+        );
+
+        expect(resolution).toEqual({
+            owner: null,
+            candidateTeamIds: [REVIEW_TEAM_ID],
+            assignment: { source: "pool", reason: ROUTING_FAILED_REASON },
+            records: [
+                {
+                    kind: "skip",
+                    userId: "user-dan",
+                    source: "picked",
+                    ruleId: null,
+                    by: null,
+                    reason: "Not a member of the step's teams."
+                },
+                {
+                    kind: "outcome",
+                    userId: null,
+                    source: "pool",
+                    ruleId: null,
+                    by: null,
+                    reason: ROUTING_FAILED_REASON
+                }
+            ]
+        });
+        expect(loggedErrors.map(item => item.message)).toEqual([ROUTING_FAILED_REASON]);
+    });
+
     it("leaves an empty pool for a step config it cannot parse, without lookups", async () => {
         const { resolver, users } = await createResolverContext();
         const broken = { ...legalStep({}), config: { teams: "not-a-list" } };
