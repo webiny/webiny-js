@@ -51,6 +51,15 @@ const request = (context: CmsContext, entry: CmsEntry) => {
     });
 };
 
+const requestWithTitle = (context: CmsContext, entry: CmsEntry, title: string) => {
+    return context.container.resolve(RequestCmsEntryReviewUseCase).execute({
+        model: AUTHOR_NAMESPACE,
+        targetId: entry.entryId,
+        targetRevisionId: entry.id,
+        title
+    });
+};
+
 const getReview = (context: CmsContext, id: string) => {
     return context.container.resolve(GetCmsEntryReviewUseCase).execute({ id });
 };
@@ -260,5 +269,33 @@ describe("CMS request and get review wrappers", () => {
 
         expect(result.error.code).toBe("Workflows/Review/Persistence");
         expect(engineCalls).toEqual(["GetReview"]);
+    });
+
+    it("requests a review with the given title (R89)", async () => {
+        const { entry } = await createScenario();
+        const requester = await createUserContext({ identity: REQUESTER, permissions: CMS_WRITER });
+
+        const review = expectOk(await requestWithTitle(requester, entry, "  Spring launch  "));
+
+        expect(review.title).toBe("Spring launch");
+    });
+
+    it("rejects a title shorter than 5 characters (R89)", async () => {
+        const { entry } = await createScenario();
+        const requester = await createUserContext({ identity: REQUESTER, permissions: CMS_WRITER });
+
+        const result = await requestWithTitle(requester, entry, " abc ");
+
+        expect(result.error.code).toBe("Workflows/Review/Validation");
+        expect(result.error.message).toBe("The review title must have at least 5 characters.");
+    });
+
+    it("uses the entry title when the title is empty (R89)", async () => {
+        const { entry } = await createScenario();
+        const requester = await createUserContext({ identity: REQUESTER, permissions: CMS_WRITER });
+
+        const review = expectOk(await requestWithTitle(requester, entry, "   "));
+
+        expect(review.title).toBe("Ann");
     });
 });

@@ -70,6 +70,7 @@ class RequestCmsEntryReviewUseCaseImpl implements UseCase.Interface {
             model: input.model,
             targetId: input.targetId,
             targetRevisionId: input.targetRevisionId,
+            title: input.title,
             picks: input.picks,
             actor: actor.value
         });

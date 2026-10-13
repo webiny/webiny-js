@@ -6,6 +6,9 @@ import { DeleteWorkflowUseCase } from "@webiny/api-workflows/features/workflow/D
 import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
 import { RequestReviewUseCase } from "@webiny/api-workflows/features/review/RequestReview/index.js";
 import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
+import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
+import { ListReviewsUseCase } from "@webiny/api-workflows/features/review/ListReviews/index.js";
+import { ListReviewAssignmentsUseCase } from "@webiny/api-workflows/features/assignment/ListReviewAssignments/index.js";
 import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
 import { StartReviewStepUseCase } from "@webiny/api-workflows/features/review/StartReviewStep/index.js";
 import { TakeOverReviewStepUseCase } from "@webiny/api-workflows/features/review/TakeOverReviewStep/index.js";
@@ -76,6 +79,35 @@ class CountingGetReview implements GetReviewUseCase.Interface {
 
     public async execute(input: GetReviewUseCase.Input): GetReviewUseCase.Return {
         engineCalls.push("GetReview");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingGetTargetReview implements GetTargetReviewUseCase.Interface {
+    public constructor(private decoratee: GetTargetReviewUseCase.Interface) {}
+
+    public async execute(input: GetTargetReviewUseCase.Input): GetTargetReviewUseCase.Return {
+        engineCalls.push("GetTargetReview");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingListReviews implements ListReviewsUseCase.Interface {
+    public constructor(private decoratee: ListReviewsUseCase.Interface) {}
+
+    public async execute(input: ListReviewsUseCase.Input): ListReviewsUseCase.Return {
+        engineCalls.push("ListReviews");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingListReviewAssignments implements ListReviewAssignmentsUseCase.Interface {
+    public constructor(private decoratee: ListReviewAssignmentsUseCase.Interface) {}
+
+    public async execute(
+        input: ListReviewAssignmentsUseCase.Input
+    ): ListReviewAssignmentsUseCase.Return {
+        engineCalls.push("ListReviewAssignments");
         return this.decoratee.execute(input);
     }
 }
@@ -214,5 +246,20 @@ export const countEngineCalls = (container: Container) => {
     );
     container.registerDecorator(
         CancelReviewUseCase.createDecorator({ decorator: CountingCancelReview, dependencies: [] })
+    );
+    container.registerDecorator(
+        GetTargetReviewUseCase.createDecorator({
+            decorator: CountingGetTargetReview,
+            dependencies: []
+        })
+    );
+    container.registerDecorator(
+        ListReviewsUseCase.createDecorator({ decorator: CountingListReviews, dependencies: [] })
+    );
+    container.registerDecorator(
+        ListReviewAssignmentsUseCase.createDecorator({
+            decorator: CountingListReviewAssignments,
+            dependencies: []
+        })
     );
 };

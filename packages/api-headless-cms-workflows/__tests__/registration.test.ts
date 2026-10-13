@@ -14,6 +14,8 @@ import { ListCmsEntryWorkflowsUseCase } from "~/features/wrappers/ListCmsEntryWo
 import { GetCmsEntryWorkflowUseCase } from "~/features/wrappers/GetCmsEntryWorkflow/index.js";
 import { RequestCmsEntryReviewUseCase } from "~/features/wrappers/RequestCmsEntryReview/index.js";
 import { GetCmsEntryReviewUseCase } from "~/features/wrappers/GetCmsEntryReview/index.js";
+import { GetCmsEntryTargetReviewUseCase } from "~/features/wrappers/GetCmsEntryTargetReview/index.js";
+import { ListCmsEntryReviewsUseCase } from "~/features/wrappers/ListCmsEntryReviews/index.js";
 import { StartCmsEntryReviewStepUseCase } from "~/features/wrappers/StartCmsEntryReviewStep/index.js";
 import { TakeOverCmsEntryReviewStepUseCase } from "~/features/wrappers/TakeOverCmsEntryReviewStep/index.js";
 import { ApproveCmsEntryReviewStepUseCase } from "~/features/wrappers/ApproveCmsEntryReviewStep/index.js";
@@ -29,6 +31,8 @@ const WRAPPERS: Abstraction<unknown>[] = [
     GetCmsEntryWorkflowUseCase,
     RequestCmsEntryReviewUseCase,
     GetCmsEntryReviewUseCase,
+    GetCmsEntryTargetReviewUseCase,
+    ListCmsEntryReviewsUseCase,
     StartCmsEntryReviewStepUseCase,
     TakeOverCmsEntryReviewStepUseCase,
     ApproveCmsEntryReviewStepUseCase,

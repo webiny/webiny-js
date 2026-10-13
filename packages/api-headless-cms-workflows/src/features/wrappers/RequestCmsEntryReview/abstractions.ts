@@ -15,6 +15,11 @@ export interface RequestCmsEntryReviewInput {
     model: string;
     targetId: string;
     targetRevisionId: string;
+    /**
+     * The review title (D135); trimmed and at least 5 characters, checked by the engine (R89).
+     * Missing or empty: the entry's title.
+     */
+    title?: string | null;
     /** Reviewer picks per step (D22); malformed picks are rejected by the engine (R61). */
     picks?: ReviewPick[];
 }

@@ -6,6 +6,8 @@ import { ListCmsEntryWorkflowsFeature } from "./ListCmsEntryWorkflows/feature.js
 import { GetCmsEntryWorkflowFeature } from "./GetCmsEntryWorkflow/feature.js";
 import { RequestCmsEntryReviewFeature } from "./RequestCmsEntryReview/feature.js";
 import { GetCmsEntryReviewFeature } from "./GetCmsEntryReview/feature.js";
+import { GetCmsEntryTargetReviewFeature } from "./GetCmsEntryTargetReview/feature.js";
+import { ListCmsEntryReviewsFeature } from "./ListCmsEntryReviews/feature.js";
 import { StartCmsEntryReviewStepFeature } from "./StartCmsEntryReviewStep/feature.js";
 import { TakeOverCmsEntryReviewStepFeature } from "./TakeOverCmsEntryReviewStep/feature.js";
 import { ApproveCmsEntryReviewStepFeature } from "./ApproveCmsEntryReviewStep/feature.js";
@@ -31,6 +33,8 @@ export const CmsWrappersFeature = createFeature({
         // Reviews
         RequestCmsEntryReviewFeature.register(container);
         GetCmsEntryReviewFeature.register(container);
+        GetCmsEntryTargetReviewFeature.register(container);
+        ListCmsEntryReviewsFeature.register(container);
         StartCmsEntryReviewStepFeature.register(container);
         TakeOverCmsEntryReviewStepFeature.register(container);
         ApproveCmsEntryReviewStepFeature.register(container);
