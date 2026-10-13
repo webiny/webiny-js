@@ -10,7 +10,7 @@ const SOURCE_REF = "${{ needs.resolveSource.outputs.source-ref }}";
 const BASE_BRANCH = "${{ needs.resolveSource.outputs.base-branch }}";
 
 export const v6_fullRelease = createWorkflow({
-    name: `📦 v6 Full Release`,
+    name: `📦 v6 Release`,
     on: {
         workflow_dispatch: {
             // Version only. What a release branches off is not a free choice - it follows from
