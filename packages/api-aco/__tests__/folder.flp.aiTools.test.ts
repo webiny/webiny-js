@@ -9,7 +9,7 @@ import {
     FOLDER_CREATED_WEBSOCKET_ACTION,
     FOLDER_DELETED_WEBSOCKET_ACTION,
     FOLDER_UPDATED_WEBSOCKET_ACTION
-} from "~/features/ai/NotifyFolderChange/index.js";
+} from "~/features/folder/NotifyFolderChange/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 
 interface AccessResult {

@@ -5,7 +5,7 @@ import {
 import { CREATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
 import { type ICreateFlpTaskInput } from "~/types.js";
 import { CreateFlpUseCase } from "~/features/flp/CreateFlp/index.js";
-import { NotifyFolderChangeUseCase } from "~/features/ai/NotifyFolderChange/index.js";
+import { NotifyFolderChangeUseCase } from "~/features/folder/NotifyFolderChange/index.js";
 
 class CreateFlpTaskHandlerImpl implements TaskHandler.Interface<ICreateFlpTaskInput> {
     constructor(

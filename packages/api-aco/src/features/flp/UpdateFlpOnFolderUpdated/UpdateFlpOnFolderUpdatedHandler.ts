@@ -5,7 +5,7 @@ import type { FolderAfterUpdateEvent } from "~/features/folder/UpdateFolder/even
 import type { IUpdateFlpTaskInput } from "~/types.js";
 import { UPDATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
 import { FolderAfterUpdateEventHandler } from "~/features/folder/UpdateFolder/index.js";
-import { NotifyFolderChangeUseCase } from "~/features/ai/NotifyFolderChange/index.js";
+import { NotifyFolderChangeUseCase } from "~/features/folder/NotifyFolderChange/index.js";
 
 /*
  * Folder reads report permissions from the FLP records, and a change rewrites the folder's record

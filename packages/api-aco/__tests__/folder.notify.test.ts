@@ -3,10 +3,12 @@ import type { Container } from "@webiny/di";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { useHandler } from "~tests/utils/useHandler";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
+import { DeleteFolderUseCase } from "~/features/folder/DeleteFolder/index.js";
 import {
     FOLDER_CREATED_WEBSOCKET_ACTION,
+    FOLDER_DELETED_WEBSOCKET_ACTION,
     FOLDER_UPDATED_WEBSOCKET_ACTION
-} from "~/features/ai/NotifyFolderChange/index.js";
+} from "~/features/folder/NotifyFolderChange/index.js";
 import { CREATE_FLP_TASK_ID, UPDATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
 
 const type = "type";
@@ -129,5 +131,35 @@ describe("FLP tasks tell the admin when they finish", () => {
         } as never);
 
         expect(websocketMessages).toEqual([]);
+    });
+});
+
+/*
+ * A deleted folder is only dropped from the admin's cache, so the message goes out with the delete,
+ * whatever made it: the GraphQL API, an AI tool or a direct use case call.
+ */
+describe("Deleting a folder tells the admin", () => {
+    const { handler, websocketMessages } = useHandler();
+
+    it("should tell the user's tabs which folder was deleted", async () => {
+        const context = await handler();
+        const created = await context.container.resolve(CreateFolderUseCase).execute({
+            type,
+            title: "notify-delete",
+            slug: "notify-delete",
+            parentId: null
+        });
+        const folder = created.value;
+        websocketMessages.length = 0;
+
+        const deleted = await context.container.resolve(DeleteFolderUseCase).execute(folder.id);
+
+        expect(deleted.isOk()).toBe(true);
+        expect(websocketMessages).toEqual([
+            expect.objectContaining({
+                action: FOLDER_DELETED_WEBSOCKET_ACTION,
+                data: { id: folder.id }
+            })
+        ]);
     });
 });

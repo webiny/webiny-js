@@ -6,7 +6,7 @@ import { createAbstraction } from "@webiny/feature/api";
  * state until a reload. Each carries the folder id only; the admin reads the folder back.
  *
  * `created` and `updated` go out when the FLP tasks finish, since folder reads report permissions
- * from the FLP records. `deleted` goes out from the delete itself: nothing is read back.
+ * from the FLP records. `deleted` goes out right after the delete: nothing is read back.
  */
 export const FOLDER_CREATED_WEBSOCKET_ACTION = "aco.folder.created";
 export const FOLDER_UPDATED_WEBSOCKET_ACTION = "aco.folder.updated";

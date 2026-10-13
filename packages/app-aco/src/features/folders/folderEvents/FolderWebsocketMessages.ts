@@ -4,7 +4,7 @@ import { FolderCreatedEvent } from "./FolderCreatedEvent.js";
 import { FolderUpdatedEvent } from "./FolderUpdatedEvent.js";
 import { FolderDeletedEvent } from "./FolderDeletedEvent.js";
 
-// Sent by the api when an AI tool changes a folder; see `NotifyFolderChangeUseCase` in @webiny/api-aco.
+// Sent by the api when a folder changes; see `NotifyFolderChangeUseCase` in @webiny/api-aco.
 const FOLDER_CREATED_ACTION = "aco.folder.created";
 const FOLDER_UPDATED_ACTION = "aco.folder.updated";
 const FOLDER_DELETED_ACTION = "aco.folder.deleted";

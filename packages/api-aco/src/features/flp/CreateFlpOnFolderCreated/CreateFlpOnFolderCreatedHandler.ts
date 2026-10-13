@@ -5,7 +5,7 @@ import type { ICreateFlpTaskInput } from "~/types.js";
 import { CREATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
-import { NotifyFolderChangeUseCase } from "~/features/ai/NotifyFolderChange/index.js";
+import { NotifyFolderChangeUseCase } from "~/features/folder/NotifyFolderChange/index.js";
 
 /*
  * Folder reads report permissions from the FLP record, so the admin is told about a new folder only
