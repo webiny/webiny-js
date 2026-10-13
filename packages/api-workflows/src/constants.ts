@@ -13,3 +13,7 @@ export const MAX_REVIEW_LIST_LIMIT = 100;
 export const MAX_REVIEW_LIST_SCAN = 200;
 /** Repository page size of the review lists; constant, so a list cursor's `skip` stays valid. */
 export const REVIEW_LIST_PAGE_SIZE = 50;
+
+/** The shared user list (R123): rows per call by default and at most. */
+export const DEFAULT_USER_LIST_LIMIT = 50;
+export const MAX_USER_LIST_LIMIT = 200;

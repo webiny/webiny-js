@@ -4,6 +4,8 @@ import { PROJECT_PACKAGE_FEATURE_NAME } from "@webiny/wcp/types.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { createContextHandler } from "~tests/__helpers/handler.js";
+import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
+import { FakeListUsers, type FakeUser } from "~tests/__helpers/FakeListUsers.js";
 
 const EDITOR: SecurityPermission[] = [{ name: "workflows", editor: true }];
 /** Has a workflows permission, but not `editor`. */
@@ -11,6 +13,12 @@ const REASSIGNER: SecurityPermission[] = [{ name: "workflows", reassign: true }]
 
 const FUTURE = "2999-01-01T00:00:00.000Z";
 const PAST = "2000-01-01T00:00:00.000Z";
+
+/** The fake gives every user the email `<id>@webiny.test`. */
+const API_USERS: FakeUser[] = [
+    { id: "user-cara", displayName: "Cara Clark", teams: [] },
+    { id: "user-anna", displayName: "Anna Adams", teams: [] }
+];
 
 const ERROR_FIELDS = /* GraphQL */ `
     error {
@@ -68,6 +76,23 @@ const LIST_STEP_TYPES = /* GraphQL */ `
     }
 `;
 
+const LIST_USERS = /* GraphQL */ `
+    query ListUsers($search: String, $ids: [String!], $limit: Int) {
+        workflows {
+            listUsers(search: $search, ids: $ids, limit: $limit) {
+                data {
+                    users {
+                        id
+                        displayName
+                    }
+                    missingIds
+                }
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
 interface ErrorRow {
     code: string;
     message: string;
@@ -107,6 +132,21 @@ interface StepTypesEnvelope {
     error: ErrorRow | null;
 }
 
+interface UserRow {
+    id: string;
+    displayName: string;
+}
+
+interface UserListRow {
+    users: UserRow[];
+    missingIds: string[];
+}
+
+interface UserListEnvelope {
+    data: UserListRow | null;
+    error: ErrorRow | null;
+}
+
 interface GetSettingsResult {
     getSettings: SettingsEnvelope;
 }
@@ -117,6 +157,10 @@ interface UpdateSettingsResult {
 
 interface ListStepTypesResult {
     listStepTypes: StepTypesEnvelope;
+}
+
+interface ListUsersResult {
+    listUsers: UserListEnvelope;
 }
 
 interface WorkflowsRoot<TResult> {
@@ -147,12 +191,23 @@ interface IntrospectionData {
 }
 
 const createApi = async (params: CmsTestHandlerParams) => {
-    const { createQuery, createMutation } = await createContextHandler(params);
+    const users = new FakeListUsers(API_USERS);
+    // The use case test pins the `withoutAuthorization` wrap; here only the calls are counted.
+    const { createQuery, createMutation } = await createContextHandler({
+        ...params,
+        setup: async container => {
+            container.registerInstance(ListUsersUseCase, users);
+            await params.setup?.(container);
+        }
+    });
     return {
+        users,
         getSettings: createQuery<GraphQLBody<WorkflowsRoot<GetSettingsResult>>>(GET_SETTINGS),
         updateSettings:
             createMutation<GraphQLBody<WorkflowsRoot<UpdateSettingsResult>>>(UPDATE_SETTINGS),
-        listStepTypes: createQuery<GraphQLBody<WorkflowsRoot<ListStepTypesResult>>>(LIST_STEP_TYPES)
+        listStepTypes:
+            createQuery<GraphQLBody<WorkflowsRoot<ListStepTypesResult>>>(LIST_STEP_TYPES),
+        listUsers: createQuery<GraphQLBody<WorkflowsRoot<ListUsersResult>>>(LIST_USERS)
     };
 };
 
@@ -320,6 +375,42 @@ describe("workflows GraphQL root", () => {
         });
     });
 
+    it("lists users for an editor, by search and by ids (D48, D117)", async () => {
+        const api = await createApi({ permissions: EDITOR });
+
+        const [searched] = await api.listUsers({ search: "ANNA" });
+        const [byIds] = await api.listUsers({ ids: ["user-cara", "user-gone"] });
+
+        expect(searched.data.workflows.listUsers).toEqual({
+            data: { users: [{ id: "user-anna", displayName: "Anna Adams" }], missingIds: [] },
+            error: null
+        });
+        expect(byIds.data.workflows.listUsers).toEqual({
+            data: {
+                users: [{ id: "user-cara", displayName: "Cara Clark" }],
+                missingIds: ["user-gone"]
+            },
+            error: null
+        });
+        expect(api.users.calls).toHaveLength(2);
+    });
+
+    it("refuses the user list to a user without editor", async () => {
+        const api = await createApi({ permissions: REASSIGNER });
+
+        const [response] = await api.listUsers({ limit: 10 });
+
+        expect(response.data.workflows.listUsers).toEqual({
+            data: null,
+            error: {
+                code: "Workflows/NotAuthorized",
+                message: "You are not allowed to list users.",
+                data: { action: "list users" }
+            }
+        });
+        expect(api.users.calls).toEqual([]);
+    });
+
     it("exposes the shared types the app schemas reuse (R100)", async () => {
         const { introspect } = await createContextHandler({ permissions: EDITOR });
 
@@ -329,7 +420,43 @@ describe("workflows GraphQL root", () => {
 
         expect(memberNames(types, "Query")).toContain("workflows");
         expect(memberNames(types, "Mutation")).toContain("workflows");
-        expect(memberNames(types, "WorkflowsQuery")).toEqual(["getSettings", "listStepTypes"]);
+        expect(memberNames(types, "WorkflowsQuery")).toEqual([
+            "getSettings",
+            "listStepTypes",
+            "listUsers"
+        ]);
+        expect(memberNames(types, "WorkflowsUser")).toEqual(["id", "displayName"]);
+        expect(memberNames(types, "WorkflowsUserListResult")).toEqual(["users", "missingIds"]);
+        expect(memberNames(types, "WorkflowsUserListResponse")).toEqual(["data", "error"]);
+        expect(memberNames(types, "WorkflowsStepCandidate")).toEqual([
+            "id",
+            "displayName",
+            "excluded",
+            "excludedReason"
+        ]);
+        expect(memberNames(types, "WorkflowsRoutingTraceOutcome")).toEqual([
+            "matched",
+            "notMatched",
+            "skipped"
+        ]);
+        expect(memberNames(types, "WorkflowsRoutingTraceEntry")).toEqual([
+            "ruleId",
+            "outcome",
+            "reason"
+        ]);
+        expect(memberNames(types, "WorkflowsRoutingSkip")).toEqual([
+            "userId",
+            "displayName",
+            "reason"
+        ]);
+        expect(memberNames(types, "WorkflowsRoutingInspection")).toEqual([
+            "owner",
+            "source",
+            "ruleId",
+            "strategy",
+            "trace",
+            "skipped"
+        ]);
         expect(memberNames(types, "WorkflowsMutation")).toEqual(["updateSettings"]);
         expect(memberNames(types, "WorkflowsError")).toEqual(["code", "message", "data", "stack"]);
         expect(memberNames(types, "WorkflowsListMeta")).toEqual(["cursor", "hasMoreItems"]);

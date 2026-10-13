@@ -3,6 +3,7 @@ import { ErrorResponse, Response } from "@webiny/api-graphql";
 import { GetWorkflowSettingsForEditorUseCase } from "~/features/config/GetWorkflowSettingsForEditor/index.js";
 import { SaveWorkflowSettingsForEditorUseCase } from "~/features/config/SaveWorkflowSettingsForEditor/index.js";
 import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStepTypes/index.js";
+import { ListWorkflowUsersUseCase } from "~/features/config/ListWorkflowUsers/index.js";
 import type { WorkflowExclusion, WorkflowSettings } from "~/domain/settings/types.js";
 
 interface GetSettingsArgs {
@@ -21,6 +22,12 @@ interface SettingsInputArgs {
 
 interface UpdateSettingsArgs {
     data: SettingsInputArgs;
+}
+
+interface ListUsersArgs {
+    search?: string | null;
+    ids?: string[] | null;
+    limit?: number | null;
 }
 
 /** GraphQL sends `null` for omitted optional input fields; the engine types use absent keys. */
@@ -64,6 +71,50 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         id: ID!
         displayName: String!
         identityType: String
+    }
+
+    "A user as the workflows screens see one (D104): no email, roles or teams."
+    type WorkflowsUser {
+        id: ID!
+        displayName: String!
+    }
+
+    "A member of a step's teams (R120). excludedReason is null unless the viewer has editor or reassign (D97)."
+    type WorkflowsStepCandidate {
+        id: ID!
+        displayName: String!
+        excluded: Boolean!
+        excludedReason: String
+    }
+
+    enum WorkflowsRoutingTraceOutcome {
+        matched
+        notMatched
+        skipped
+    }
+
+    type WorkflowsRoutingTraceEntry {
+        ruleId: String!
+        outcome: WorkflowsRoutingTraceOutcome!
+        reason: String
+    }
+
+    "A person routing skipped (R129, D118). displayName is null for a user outside the step's teams."
+    type WorkflowsRoutingSkip {
+        userId: ID!
+        displayName: String
+        reason: String!
+    }
+
+    "What routing would do with an unsaved step config (R121, D45, D118). No load numbers (D104)."
+    type WorkflowsRoutingInspection {
+        owner: WorkflowsUser
+        source: String!
+        ruleId: String
+        "The step's configured strategy."
+        strategy: String!
+        trace: [WorkflowsRoutingTraceEntry!]!
+        skipped: [WorkflowsRoutingSkip!]!
     }
 
     type WorkflowsStepNotification {
@@ -310,9 +361,22 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
         error: WorkflowsError
     }
 
+    type WorkflowsUserListResult {
+        users: [WorkflowsUser!]!
+        "Requested ids with no user (D117); empty for a search."
+        missingIds: [String!]!
+    }
+
+    type WorkflowsUserListResponse {
+        data: WorkflowsUserListResult
+        error: WorkflowsError
+    }
+
     type WorkflowsQuery {
         getSettings(includeExpired: Boolean): WorkflowsSettingsResponse!
         listStepTypes: WorkflowsStepTypeListResponse!
+        "Search by display name or email (limit 50 by default, at most 200), or look up ids (D117)."
+        listUsers(search: String, ids: [String!], limit: Int): WorkflowsUserListResponse!
     }
 
     type WorkflowsMutation {
@@ -373,6 +437,24 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             resolver: (listStepTypes: ListWorkflowStepTypesUseCase.Interface) => {
                 return async () => {
                     const result = await listStepTypes.execute();
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<ListUsersArgs>({
+            path: "WorkflowsQuery.listUsers",
+            dependencies: [ListWorkflowUsersUseCase],
+            resolver: (listUsers: ListWorkflowUsersUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await listUsers.execute({
+                        search: args.search,
+                        ids: args.ids,
+                        limit: args.limit
+                    });
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }

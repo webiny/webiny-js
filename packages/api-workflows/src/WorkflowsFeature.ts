@@ -40,6 +40,7 @@ import { SaveWorkflowSettingsFeature } from "~/features/settings/SaveWorkflowSet
 import { GetWorkflowSettingsForEditorFeature } from "~/features/config/GetWorkflowSettingsForEditor/feature.js";
 import { SaveWorkflowSettingsForEditorFeature } from "~/features/config/SaveWorkflowSettingsForEditor/feature.js";
 import { ListWorkflowStepTypesFeature } from "~/features/config/ListWorkflowStepTypes/feature.js";
+import { ListWorkflowUsersFeature } from "~/features/config/ListWorkflowUsers/feature.js";
 import { CurrentUserTeamsFeature } from "~/features/identity/CurrentUserTeams/feature.js";
 import { CurrentReviewViewerFeature } from "~/features/identity/CurrentReviewViewer/feature.js";
 import { CandidateReadAccessFeature } from "~/features/identity/CandidateReadAccess/feature.js";
@@ -115,6 +116,7 @@ export const WorkflowsFeature = createFeature({
         GetWorkflowSettingsForEditorFeature.register(container);
         SaveWorkflowSettingsForEditorFeature.register(container);
         ListWorkflowStepTypesFeature.register(container);
+        ListWorkflowUsersFeature.register(container);
 
         // Building blocks for the app wrappers (D132)
         WorkflowsPermissionsFeature.register(container);
