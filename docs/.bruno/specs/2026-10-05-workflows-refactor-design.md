@@ -1,6 +1,6 @@
 # Workflows refactor: design
 
-Status: draft, 2026-10-05, updated 2026-10-12 (D132: api-workflows is an internal engine, apps own checks and GraphQL; D133: no cross-app reviews, shared configuration operations, engine identity touch points; D134: trash and delete refused while a review is in progress, create as published allowed, bound-model guards). Consolidates decisions D1-D134 in `docs/.bruno/workflows/decisions.md`; where decisions refine or supersede each other, this document states the final result. Decision ids are given in brackets for traceability. Discovery background lives in `docs/.bruno/workflows/` (`README.md`, `api.md`, `app.md`, `integrations.md`, `infrastructure.md`); the product brief for routing is `docs/.bruno/workflows/routing.md`; the UI design brief is `docs/.bruno/specs/2026-10-06-workflows-ui-design-brief.md` (UI decisions D88-D131).
+Status: draft, 2026-10-05, updated 2026-10-13 (D135: the review title comes from the content and may be changed on request; D136: every workflows GraphQL operation is on the main `/graphql` endpoint; D132: api-workflows is an internal engine, apps own checks and GraphQL; D133: no cross-app reviews, shared configuration operations, engine identity touch points; D134: trash and delete refused while a review is in progress, create as published allowed, bound-model guards). Consolidates decisions D1-D136 in `docs/.bruno/workflows/decisions.md`; where decisions refine or supersede each other, this document states the final result. Decision ids are given in brackets for traceability. Discovery background lives in `docs/.bruno/workflows/` (`README.md`, `api.md`, `app.md`, `integrations.md`, `infrastructure.md`); the product brief for routing is `docs/.bruno/workflows/routing.md`; the UI design brief is `docs/.bruno/specs/2026-10-06-workflows-ui-design-brief.md` (UI decisions D88-D131).
 
 ## 1. Goals
 
@@ -387,7 +387,12 @@ Two kinds of operations [D132, D133]:
 - **Per app** (CMS, Website Builder), e.g. `storeWebsiteBuilderPageWorkflow`, each backed by an app wrapper use case that reads the identity, builds the actor, checks permissions and target access, and calls the internal api-workflows use case. Nothing merges CMS and WB reviews.
 - **Shared configuration operations** in api-workflows, guarded only by `editor`: settings, `listUsers`, step types, notification transports, automation definitions, AI tools. These are the only api-workflows operations exposed outside the backend.
 
-The lists below name capabilities, not final operations; each per-app capability exists once per app. Final names are settled in the plan.
+The lists below name capabilities; each per-app capability exists once per app. Placement and final names [D136]: everything is on the main `/graphql` endpoint, nothing on `/cms/*`.
+
+- Root `workflows` (`WorkflowsQuery` / `WorkflowsMutation`): the shared configuration operations (`getSettings`, `updateSettings`, `listStepTypes`; later users, transports, automation definitions, AI tools).
+- Root `cms` (the existing `CmsQuery` / `CmsMutation`): `listCmsEntryWorkflows`, `getCmsEntryWorkflow(id)`, `getCmsEntryReview(id)`, `getCmsEntryTargetReview(modelId, revisionId)`, `listCmsEntryReviews(list, where, sort, limit, after)`, `listCmsEntryWorkflowModels(search, limit, after)`; `storeCmsEntryWorkflow(data, savedOn)`, `deleteCmsEntryWorkflow(id)`, `requestCmsEntryReview(modelId, revisionId, title, picks)`, `startCmsEntryReviewStep`, `takeOverCmsEntryReviewStep`, `approveCmsEntryReviewStep`, `rejectCmsEntryReviewStep` (each `reviewId, stepId`, approve and reject also `comment`), `cancelCmsEntryReview(reviewId)`, `cancelCmsEntryReviewsForDelete(modelId, entryId, revisionId, action)`.
+- Root `websiteBuilder` (the existing `WbQuery` / `WbMutation`): the same set with `WebsiteBuilderPage` in place of `CmsEntry` and no `modelId` (`getWebsiteBuilderPageTargetReview(revisionId)`, `requestWebsiteBuilderPageReview(revisionId, title, picks)`, `cancelWebsiteBuilderPageReviewsForDelete(pageId, action)`); there is no WB model list.
+- Operations that take a review id take no model; a request takes the revision id and the server derives the content id from it. Every operation returns `{ data, error }` (lists `{ data, meta: { cursor, hasMoreItems }, error }`).
 
 Per-app queries:
 
@@ -402,7 +407,7 @@ Per-app queries:
 Per-app mutations (base use case in brackets):
 
 - store workflow (`StoreWorkflow`, with the loaded `savedOn`, optimistic check, D131), delete workflow (`DeleteWorkflow`)
-- request review (`RequestReview`: model, target revision id, title, picks `[{ stepId, userId }]`)
+- request review (`RequestReview`: model, target revision id, optional title (the content's title when missing, fixed afterwards) [D135], picks `[{ stepId, userId }]`)
 - start (`StartReviewStep`), take over (`TakeOverReviewStep`, `notifyPreviousOwner = true`) [D111], reassign (`reviewId`, `userId`), approve (`comment?`), reject (`comment`), restart, cancel review
 - Validation: review title at least 5 characters; reject comment at least 10 characters [D100].
 

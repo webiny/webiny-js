@@ -1,5 +1,5 @@
 /**
- * A step type the workflow editor can offer (D130). Static in phase 3; phase 5 builds the list
+ * A step type the workflow editor can offer (D130). Static list; phase 5 builds it
  * from the `StepType` registry.
  */
 export interface WorkflowStepTypeInfo {

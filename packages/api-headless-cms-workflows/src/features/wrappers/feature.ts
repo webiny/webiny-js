@@ -18,7 +18,8 @@ import { CancelCmsEntryReviewsForDeleteFeature } from "./CancelCmsEntryReviewsFo
 
 /**
  * The Headless CMS wrapper use cases (D132, D133, R45): identity, `workflows` permission and target
- * access, then the internal api-workflows use case. Phase 3 puts GraphQL on top of them.
+ * access, then the internal api-workflows use case. `CmsWorkflowsSchemaFactory` puts them on the
+ * `cms` root of `/graphql` (D136, R88).
  */
 export const CmsWrappersFeature = createFeature({
     name: "CmsWorkflows/Wrappers",

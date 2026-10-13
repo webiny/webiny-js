@@ -3,7 +3,8 @@ import { REVIEW_MODEL_ID } from "~/constants.js";
 
 /**
  * Private model for reviews (spec 4.2). Current-step fields are top-level so lists and least-loaded
- * can query them (D19); `targetContext` is an object so lists can filter by folder (phase 3).
+ * can query them (D19); `targetContext` is an object field so it stays filterable (the lists
+ * hide unreadable targets with the app's read predicate, R94).
  * The requester is stored as `requester` because `createdBy` is a reserved CMS field id.
  */
 class ReviewModelImpl implements ModelFactory.Interface {

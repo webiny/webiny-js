@@ -20,8 +20,9 @@ export interface IGetTargetReviewUseCase {
 
 /**
  * The active review of a target revision, or `null` (D23). Internal (D132): used by the app
- * adapters' save block and publish rule (R53, R54); phase 3's `getTargetReview` wrappers add the
- * read check.
+ * adapters' save block and publish rule (R53, R54) and by the per-app target review wrappers,
+ * which check read access to the target first (`GetCmsEntryTargetReviewUseCase`,
+ * `GetWebsiteBuilderPageTargetReviewUseCase`).
  */
 export const GetTargetReviewUseCase =
     createAbstraction<IGetTargetReviewUseCase>("GetTargetReviewUseCase");

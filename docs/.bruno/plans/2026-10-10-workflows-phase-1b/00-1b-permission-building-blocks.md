@@ -71,7 +71,7 @@ Flag in review if wrong.
 - A15. A caller with only `{ name: "workflows", editor: true }` reaches the CMS before-save handler through `StoreWorkflowUseCase` (the workflow model is private and skips model authorization). Confirmed in Task 5: the handler runs and the model lookup then reports not found for a code-defined model (amended 2026-10-11, R38).
 - A19. The CMS `ModelsFetcher.fetchAll` caches the merged model list under a tenant-only key while the plugin part is filtered by the first caller's access. That pre-existing CMS issue is out of scope for phase 1b.
 - A16. `ListUserTeamsUseCase` answers only for admin users; other identities (API keys) get `UserNotFound`, so `CurrentUserTeams` returns `[]` for them. Under D133 they still act as `user` actors: they cannot start or take over pool steps (no team), but can request, cancel their own review and act where `reassign` suffices.
-- A17. Phase 3 decides how D89 (assignment reasons only for `editor` or `reassign`) reads the permission set; 1b only provides `getPermissionSet()`. Per D133 the engine returns full data and the wrapper redacts.
+- A17. Phase 3 decides how D89 (assignment reasons only for `editor` or `reassign`) reads the permission set; 1b only provides `getPermissionSet()`. Per D133 the engine returns full data and the wrapper redacts. Settled in phase 3: the get-review wrappers pass `viewer.permissions` to the pure `redactAssignmentRecords` (R96).
 - A18. An API key identity has `type: "api-key"` (`packages/api-core/src/features/security/apiKeys/ApiKeyAuthenticator.ts`), so `identity.type` is the `identityType` D133 asks for; no mapping is needed.
 
 ## Task order

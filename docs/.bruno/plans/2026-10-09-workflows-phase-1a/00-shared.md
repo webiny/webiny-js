@@ -80,7 +80,7 @@ Binding for this plan. Where they refine the spec, the ruling wins for phase 1a.
 
 - A1. Settings read: `GetWorkflowSettingsUseCase` filters expired exclusions by default and takes `{ includeExpired: true }` for the settings page, which must show expired entries so they can be edited (D105). Both rulings hold this way.
 - A2. `issues`, `taskId` and `runs` on review steps are not modelled in 1a; phases 5 and 6 add the fields (adding fields to a private model needs no migration, D1).
-- A3. `targetContext` is stored as an object field (not JSON) so phase 3 can filter by folder.
+- A3. `targetContext` is stored as an object field (not JSON) so phase 3 can filter by folder. Phase 3 hides unreadable targets with the app's read predicate instead (D76, R94); the field stays filterable.
 - A4. The domain keeps the spec's `createdBy: Actor` (the requester). The model field is named `requester`, because `createdBy` is a reserved CMS field id; the mapper translates. CMS meta `createdOn`/`savedOn` map to the review's `createdOn`/`savedOn`.
 - A5. Ids: workflow ids come from the caller (as today); review ids are generated in `RequestReviewUseCase` with `mdbid()`; the aggregate receives the id and `now` so it stays deterministic.
 - A6. A before-save handler rejects a save by throwing `WorkflowValidationError`; `StoreWorkflowUseCase` turns that into `Result.fail`. Other thrown errors propagate.

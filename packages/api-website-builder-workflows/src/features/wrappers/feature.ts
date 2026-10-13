@@ -17,7 +17,8 @@ import { CancelWebsiteBuilderPageReviewsForDeleteFeature } from "./CancelWebsite
 
 /**
  * The Website Builder wrapper use cases (D132, D133, R45): identity, `workflows` permission and page
- * access, then the internal api-workflows use case. Phase 3 puts GraphQL on top of them.
+ * access, then the internal api-workflows use case. `WebsiteBuilderWorkflowsSchemaFactory` puts
+ * them on the `websiteBuilder` root of `/graphql` (D136, R88).
  */
 export const WbWrappersFeature = createFeature({
     name: "WebsiteBuilderWorkflows/Wrappers",
