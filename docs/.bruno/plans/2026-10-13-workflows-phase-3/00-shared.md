@@ -119,7 +119,7 @@ Every task leaves all changed packages building and green.
 
 `packages/api-website-builder-workflows/src`:
 - `features/wrappers/ListWebsiteBuilderPageReviews/`, `features/wrappers/GetWebsiteBuilderPageTargetReview/`; changed `RequestWebsiteBuilderPageReview` (title), `GetWebsiteBuilderPageReview` (assignments).
-- `graphql/WebsiteBuilderWorkflowsSchemaFactory.ts` (extends `WbQuery` / `WbMutation`), `graphql/types.ts`, `graphql/isValidRevisionId.ts` (pure, R107), `WebsiteBuilderPageSchemaFactory.ts` (`WbPage.system.workflow`).
+- `graphql/WebsiteBuilderWorkflowsSchemaFactory.ts` (extends `WbQuery` / `WbMutation`), `graphql/isValidRevisionId.ts` (pure, R107), `WebsiteBuilderPageSchemaFactory.ts` (`WbPage.system.workflow`).
 
 `packages/api-website-builder/src/graphql/pages/pages.gql.ts`, `packages/api-website-builder/src/graphql/pages/pages.typeDefs.ts` (Task 11), `packages/api-website-builder-scheduler/src/features/PublishActionHandler/PublishPageActionHandler.ts` and `packages/api-website-builder-scheduler/src/features/UnpublishActionHandler/UnpublishPageActionHandler.ts` (R103).
 

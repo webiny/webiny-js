@@ -387,7 +387,7 @@ Two kinds of operations [D132, D133]:
 - **Per app** (CMS, Website Builder), e.g. `storeWebsiteBuilderPageWorkflow`, each backed by an app wrapper use case that reads the identity, builds the actor, checks permissions and target access, and calls the internal api-workflows use case. Nothing merges CMS and WB reviews.
 - **Shared configuration operations** in api-workflows, guarded only by `editor`: settings, `listUsers`, step types, notification transports, automation definitions, AI tools. These are the only api-workflows operations exposed outside the backend.
 
-The lists below name capabilities; each per-app capability exists once per app. Placement and final names [D136]: everything is on the main `/graphql` endpoint, nothing on `/cms/*`.
+The lists below name capabilities; each per-app capability exists once per app. Placement and final names [D136]: everything is on the main `/graphql` endpoint; there is no workflows operation on `/cms/*`, and the entry's `system.workflow` field stays there (R102).
 
 - Root `workflows` (`WorkflowsQuery` / `WorkflowsMutation`): the shared configuration operations (`getSettings`, `updateSettings`, `listStepTypes`; later users, transports, automation definitions, AI tools).
 - Root `cms` (the existing `CmsQuery` / `CmsMutation`): `listCmsEntryWorkflows`, `getCmsEntryWorkflow(id)`, `getCmsEntryReview(id)`, `getCmsEntryTargetReview(modelId, revisionId)`, `listCmsEntryReviews(list, where, sort, limit, after)`, `listCmsEntryWorkflowModels(search, limit, after)`; `storeCmsEntryWorkflow(data, savedOn)`, `deleteCmsEntryWorkflow(id)`, `requestCmsEntryReview(modelId, revisionId, title, picks)`, `startCmsEntryReviewStep`, `takeOverCmsEntryReviewStep`, `approveCmsEntryReviewStep`, `rejectCmsEntryReviewStep` (each `reviewId, stepId`, approve and reject also `comment`), `cancelCmsEntryReview(reviewId)`, `cancelCmsEntryReviewsForDelete(modelId, entryId, revisionId, action)`.
@@ -398,7 +398,7 @@ Per-app queries:
 
 - list and get workflows (the app's namespaces only)
 - `getReview(id)`, `getTargetReview(model, targetRevisionId)`; each step returns its assignment-log entries; the wrapper strips per-user skip entries for viewers without `editor` / `reassign` [D89, D127]
-- `listReviews(list: assignedToMe | pool | teamInReview | myRequests | failedSteps, where, sort: lastChangedOn_ASC | lastChangedOn_DESC, limit, after)` with `where: { model?, titleContains?, reviewState?, stepState? }` (review and step state only for `myRequests`; `model` only where the app has several models, i.e. CMS) [D47, D94, D112, D119, D133]
+- `listReviews(list: assignedToMe | pool | teamInReview | myRequests | failedSteps, where, sort: lastChangedOn_ASC | lastChangedOn_DESC, limit, after)` with `where: { modelId?, titleContains?, reviewState?, stepState? }` (review and step state only for `myRequests`; `modelId` only for CMS, without the `cms.` prefix) [D47, D94, D112, D119, D133]
 - `listStepCandidates(workflowId, stepId)` for Request review, `listStepCandidates(reviewId, stepId)` for Reassign (from the review snapshot) → `{ id, displayName, excluded, excludedReason }`; `excludedReason` only for `editor` / `reassign`; no workload counts [D48, D97, D104, D128]
 - `inspectRouting(stepConfig, model, requesterId, folderId)` → resulting owner, per-rule trace (including skipped rules and why), strategy choice; evaluates unsaved config; returns no per-person load numbers [D45, D95, D104, D118]
 - `folderExists(id, type)` → boolean [D69, D133]
