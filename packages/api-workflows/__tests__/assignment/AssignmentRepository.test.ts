@@ -56,6 +56,16 @@ const createLog = async () => {
 };
 
 describe("AssignmentRepository", () => {
+    it("reads a record stored without a reason back as null", async () => {
+        const repository = await createRepository();
+        const created = expectOk(await repository.create(record({})));
+        expect(created.reason).toBeNull();
+
+        const listed = expectOk(await repository.list({ where: { reviewId: "review-1" } }));
+        expect(listed.items).toHaveLength(1);
+        expect(listed.items[0].reason).toBeNull();
+    });
+
     it("records assignment decisions and lists a review's records newest first", async () => {
         const { repository, pool } = await createLog();
 

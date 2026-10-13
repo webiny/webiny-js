@@ -167,7 +167,7 @@ export class ReviewEntryMapper {
                 ? {
                       source: step.assignment.source,
                       ruleId: step.assignment.ruleId ?? null,
-                      reason: step.assignment.reason ?? null,
+                      reason: step.assignment.reason || null,
                       by: step.assignment.by ? ActorEntryMapper.toEntry(step.assignment.by) : null
                   }
                 : null,
@@ -190,7 +190,7 @@ export class ReviewEntryMapper {
             config: step.config ?? null,
             state: step.state as StepState,
             owner: ActorEntryMapper.fromEntry(step.owner),
-            comment: step.comment ?? null,
+            comment: step.comment || null,
             pickedUserId: step.pickedUserId ?? null,
             candidateTeamIds: step.candidateTeamIds ?? [],
             assignmentSource: step.assignmentSource ?? null,

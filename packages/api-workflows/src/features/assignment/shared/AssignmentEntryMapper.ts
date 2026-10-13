@@ -42,7 +42,7 @@ export class AssignmentEntryMapper {
             assignedOn: toIsoString(entry.values.assignedOn) ?? entry.createdOn,
             source: entry.values.source,
             by: ActorEntryMapper.fromEntry(entry.values.by),
-            reason: entry.values.reason ?? null,
+            reason: entry.values.reason || null,
             // Records stored before the field existed are outcomes (R96).
             kind: entry.values.kind === "skip" ? "skip" : "outcome"
         };
