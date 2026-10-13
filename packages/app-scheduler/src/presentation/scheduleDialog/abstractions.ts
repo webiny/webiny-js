@@ -32,7 +32,9 @@ export interface IScheduleDialogPresenterCancelParams {
 export interface IScheduleDialogPresenter {
     get vm(): IScheduleDialogPresenterViewModel;
     load(params: IScheduleDialogPresenterLoadParams): Promise<void>;
+    /** Rejects when scheduling fails, so the caller can show the error. */
     schedule(params: IScheduleDialogPresenterScheduleParams): Promise<void>;
+    /** Rejects when cancelling fails, so the caller can show the error. */
     cancel(params: IScheduleDialogPresenterCancelParams): Promise<void>;
     reset(): void;
 }
