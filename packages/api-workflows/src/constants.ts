@@ -5,3 +5,11 @@ export const WORKFLOW_SETTINGS_MODEL_ID = "wbyWorkflowSettings";
 /** The one settings entry of a tenant (CMS entries are tenant-scoped). */
 export const WORKFLOW_SETTINGS_ENTRY_ID = "settings";
 export const WORKFLOWS_PERMISSION = "workflows";
+
+/** Review lists (R92): rows per call by default and at most. */
+export const DEFAULT_REVIEW_LIST_LIMIT = 20;
+export const MAX_REVIEW_LIST_LIMIT = 100;
+/** Rows a list call examines at most; a call may return a short page with more to come (D76, A41). */
+export const MAX_REVIEW_LIST_SCAN = 200;
+/** Repository page size of the review lists; constant, so a list cursor's `skip` stays valid. */
+export const REVIEW_LIST_PAGE_SIZE = 50;

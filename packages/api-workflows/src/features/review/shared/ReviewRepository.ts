@@ -199,6 +199,75 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
         return Result.ok(reviews);
     }
 
+    async list(
+        params: Abstraction.ListParams
+    ): Promise<Result<Abstraction.ListResult, ReviewPersistenceError>> {
+        const { where } = params;
+        // An empty `In` list throws on OpenSearch (DDB returns nothing): answer without querying.
+        const emptyIn =
+            where.model_in.length === 0 ||
+            where.currentCandidateTeamIds_in?.length === 0 ||
+            where.currentStepType_in?.length === 0;
+        if (emptyIn) {
+            return Result.ok({
+                items: [],
+                meta: { cursor: null, hasMoreItems: false, totalCount: 0 }
+            });
+        }
+
+        const model = await this.modelProvider.get();
+        const values: CmsEntryListWhereValues = { model_in: [...where.model_in] };
+        if (where.isActive !== undefined) {
+            values.isActive = where.isActive;
+        }
+        if (where.state !== undefined) {
+            values.state = where.state;
+        }
+        if (where.currentStepState !== undefined) {
+            values.currentStepState = where.currentStepState;
+        }
+        if (where.currentOwnerId !== undefined) {
+            values.currentOwnerId = where.currentOwnerId;
+        }
+        if (where.currentOwnerId_not !== undefined) {
+            values.currentOwnerId_not = where.currentOwnerId_not;
+        }
+        if (where.currentCandidateTeamIds_in !== undefined) {
+            values.currentCandidateTeamIds_in = [...where.currentCandidateTeamIds_in];
+        }
+        if (where.currentStepType_in !== undefined) {
+            values.currentStepType_in = [...where.currentStepType_in];
+        }
+        if (where.title_contains !== undefined) {
+            values.title_contains = where.title_contains;
+        }
+        const requester: CmsEntryListWhereValues = {};
+        if (where.requesterId !== undefined) {
+            requester.id = where.requesterId;
+        }
+        if (where.requesterId_not !== undefined) {
+            requester.id_not = where.requesterId_not;
+        }
+        if (Object.keys(requester).length > 0) {
+            values.requester = requester;
+        }
+
+        const result = await this.listLatestEntries.execute<ReviewEntryValues>(model, {
+            where: { values },
+            // Values fields sort with the `values_` prefix (CMS sort mapper).
+            sort: [`values_${params.sort}`],
+            limit: params.limit,
+            after: params.after ?? null
+        });
+        if (result.isFail()) {
+            return Result.fail(new ReviewPersistenceError(result.error));
+        }
+        return Result.ok({
+            items: result.value.entries.map(entry => ReviewEntryMapper.fromEntry(entry)),
+            meta: result.value.meta
+        });
+    }
+
     async save(review: ReviewData): Promise<Result<ReviewData, ReviewPersistenceError>> {
         const model = await this.modelProvider.get();
         const id = createIdentifier({ id: review.id, version: 1 });

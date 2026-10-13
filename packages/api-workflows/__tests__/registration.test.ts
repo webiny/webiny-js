@@ -15,6 +15,8 @@ import { RejectReviewStepUseCase } from "~/features/review/RejectReviewStep/inde
 import { CancelReviewUseCase } from "~/features/review/CancelReview/index.js";
 import { GetTargetReviewUseCase } from "~/features/review/GetTargetReview/index.js";
 import { ListTargetReviewsUseCase } from "~/features/review/ListTargetReviews/index.js";
+import { ListReviewsUseCase } from "~/features/review/ListReviews/index.js";
+import { ReviewListLimits } from "~/features/review/ListReviews/ReviewListLimits.js";
 import { CancelTargetReviewsUseCase } from "~/features/review/CancelTargetReviews/index.js";
 import { DeleteTargetReviewsUseCase } from "~/features/review/DeleteTargetReviews/index.js";
 import { GetBoundWorkflowUseCase } from "~/features/workflow/GetBoundWorkflow/index.js";
@@ -67,6 +69,8 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(CancelReviewUseCase)).toHaveLength(1);
         expect(container.resolveAll(GetTargetReviewUseCase)).toHaveLength(1);
         expect(container.resolveAll(ListTargetReviewsUseCase)).toHaveLength(1);
+        expect(container.resolveAll(ListReviewsUseCase)).toHaveLength(1);
+        expect(container.resolveAll(ReviewListLimits)).toHaveLength(1);
         expect(container.resolveAll(DeleteTargetReviewsUseCase)).toHaveLength(1);
         expect(container.resolveAll(CancelTargetReviewsUseCase)).toHaveLength(1);
         expect(container.resolveAll(GetBoundWorkflowUseCase)).toHaveLength(1);

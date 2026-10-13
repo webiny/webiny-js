@@ -156,3 +156,30 @@ export interface ReviewWithViewerFlags {
     review: ReviewData;
     flags: ReviewViewerFlags;
 }
+
+/** The review lists of every app (spec 11, D47, D94, D112). */
+export type ReviewListKind =
+    | "assignedToMe"
+    | "pool"
+    | "teamInReview"
+    | "myRequests"
+    | "failedSteps";
+
+/** Lists sort by the last review event (D119). */
+export type ReviewListSort = "lastChangedOn_ASC" | "lastChangedOn_DESC";
+
+/** List filters. The namespace filter is the app wrapper's `models` input (R91, R94). */
+export interface ReviewListWhere {
+    /** A part of the title, case-insensitive; every list. */
+    titleContains?: string | null;
+    /** Only `myRequests` (D94); other lists fail with `ReviewValidationError`. */
+    reviewState?: ReviewState | null;
+    /** Only `myRequests` (D94); other lists fail with `ReviewValidationError`. */
+    stepState?: StepState | null;
+}
+
+/** No `totalCount`: rows the viewer cannot read are skipped, so no exact count exists (D76). */
+export interface ReviewListMeta {
+    cursor: string | null;
+    hasMoreItems: boolean;
+}
