@@ -260,7 +260,7 @@ const createJestTestsJob = (storage: string | null) => {
 
 export const v5_Push = createWorkflow({
     name: `(v5) Push`,
-    on: { push: { branches: ["v5-next", "v5-dev"] } },
+    on: { push: { branches: ["v5"] } },
     jobs: {
         constants: createJob({
             name: "Create constants",

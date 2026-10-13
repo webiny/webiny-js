@@ -6,8 +6,7 @@ name: (v5) Push
 'on':
   push:
     branches:
-      - v5-next
-      - v5-dev
+      - v5
 jobs:
   constants:
     name: Create constants
