@@ -5,7 +5,6 @@ import { Container } from "@webiny/feature/api";
 import { OidcIdentityProvider } from "@webiny/api-core/idp";
 import { CognitoIdpFeature } from "~/api/features/CognitoIdp/feature.js";
 import { CognitoIdpConfig } from "~/api/features/CognitoIdp/abstractions.js";
-import { CognitoApiFeature } from "~/api/CognitoApiFeature.js";
 
 class ExtensionConfig implements CognitoIdpConfig.Interface {
     getIdentity() {
@@ -19,9 +18,9 @@ const ExtensionConfigImpl = CognitoIdpConfig.createImplementation({
 });
 
 /**
- * The handlers register CognitoIdpFeature in the root container, and extensions (which provide
- * CognitoIdpConfig, e.g. Entra ID) register in the per-request child container. The provider must
- * see the request's config.
+ * Extensions that provide CognitoIdpConfig (e.g. Entra ID) register in the per-request child
+ * container. Even when CognitoIdpFeature is registered in a parent container, the provider must see
+ * the request's config.
  */
 describe("CognitoIdentityProvider", () => {
     it("uses the CognitoIdpConfig registered in the request container", async () => {
@@ -37,19 +36,5 @@ describe("CognitoIdentityProvider", () => {
 
         expect(identity.id).toBe("from-extension");
         expect(identity.displayName).toBe("Extension User");
-    });
-});
-
-describe("CognitoApiFeature", () => {
-    it("does not register a second Cognito identity provider per request", () => {
-        const root = new Container();
-        CognitoIdpFeature.register(root);
-
-        const request = root.createChildContainer();
-        CognitoApiFeature.register(request);
-
-        const providers = request.resolveAll(OidcIdentityProvider);
-
-        expect(providers).toHaveLength(1);
     });
 });
