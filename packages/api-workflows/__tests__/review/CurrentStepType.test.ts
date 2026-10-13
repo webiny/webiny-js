@@ -99,6 +99,83 @@ describe("Review currentStepType (D112, R93)", () => {
         });
     });
 
+    it("keeps the last step's type when approving it", () => {
+        const review = createStartedReview({ workflow: createMixedWorkflow() });
+        expectOk(
+            review.approve({
+                stepId: "legal",
+                actor: reviewer,
+                actorTeamIds: [REVIEW_TEAM_ID],
+                comment: null,
+                now: LATER
+            })
+        );
+        expectOk(review.reach({ resolution: poolResolution(), actor: reviewer, now: LATER }));
+        expectOk(
+            review.start({
+                stepId: "editorial",
+                actor: reviewer,
+                actorTeamIds: [REVIEW_TEAM_ID],
+                now: LATER
+            })
+        );
+        expectOk(
+            review.approve({
+                stepId: "editorial",
+                actor: reviewer,
+                actorTeamIds: [REVIEW_TEAM_ID],
+                comment: null,
+                now: LATER
+            })
+        );
+
+        review.prepareForSave();
+
+        const data = review.toData();
+        expect(data.state).toBe("approved");
+        expect(data.currentStepId).toBe("editorial");
+        expect(data.currentStepType).toBe("ai");
+    });
+
+    it("keeps the type when an AI step is rejected", () => {
+        const review = createStartedReview({ workflow: createMixedWorkflow() });
+        expectOk(
+            review.approve({
+                stepId: "legal",
+                actor: reviewer,
+                actorTeamIds: [REVIEW_TEAM_ID],
+                comment: null,
+                now: LATER
+            })
+        );
+        expectOk(review.reach({ resolution: poolResolution(), actor: reviewer, now: LATER }));
+        expectOk(
+            review.start({
+                stepId: "editorial",
+                actor: reviewer,
+                actorTeamIds: [REVIEW_TEAM_ID],
+                now: LATER
+            })
+        );
+        expectOk(
+            review.reject({
+                stepId: "editorial",
+                actor: reviewer,
+                actorTeamIds: [REVIEW_TEAM_ID],
+                comment: "Needs another pass.",
+                now: LATER
+            })
+        );
+
+        review.prepareForSave();
+
+        expect(review.toData()).toMatchObject({
+            state: "rejected",
+            currentStepId: "editorial",
+            currentStepType: "ai"
+        });
+    });
+
     it("is stored and read back by the use cases", async () => {
         const { context } = await createReviewContext();
 

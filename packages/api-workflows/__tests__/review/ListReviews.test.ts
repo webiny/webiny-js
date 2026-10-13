@@ -383,6 +383,16 @@ describe("ListReviewsUseCase input rules (R91, R92)", () => {
         expect(zero.items).toHaveLength(1);
     });
 
+    it("guards an infinite limit as the default and a negative limit as 1", async () => {
+        const { listReviews } = await createMemoryContext(poolRows(150));
+
+        const infinite = expectOk(await listReviews.execute(createListInput({ limit: Infinity })));
+        const negative = expectOk(await listReviews.execute(createListInput({ limit: -5 })));
+
+        expect(infinite.items).toHaveLength(20);
+        expect(negative.items).toHaveLength(1);
+    });
+
     it("stops at a repository page boundary with { after: next, skip: 0 } and resumes at the next row", async () => {
         // Default page size 50: 100 rows end exactly on the second page.
         const { listReviews } = await createMemoryContext(poolRows(150));

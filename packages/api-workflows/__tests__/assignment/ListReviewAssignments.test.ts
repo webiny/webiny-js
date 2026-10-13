@@ -90,4 +90,29 @@ describe("ListReviewAssignmentsUseCase (R96)", () => {
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Assignment/Persistence");
     });
+
+    it("ends after two calls when the repository repeats a cursor", async () => {
+        const { context } = await createContextHandler();
+        let calls = 0;
+        context.container.registerInstance(AssignmentRepository, {
+            create: async () => Result.fail(new AssignmentPersistenceError(new Error("Unused."))),
+            list: async () => {
+                calls++;
+                return Result.ok({
+                    items: [],
+                    meta: { cursor: "same", hasMoreItems: true, totalCount: 0 }
+                });
+            },
+            delete: async () => Result.fail(new AssignmentPersistenceError(new Error("Unused.")))
+        });
+
+        const records = expectOk(
+            await context.container
+                .resolve(ListReviewAssignmentsUseCase)
+                .execute({ reviewId: "review-1" })
+        );
+
+        expect(records).toEqual([]);
+        expect(calls).toBe(2);
+    });
 });

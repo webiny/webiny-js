@@ -109,6 +109,24 @@ describe("RejectReviewStepUseCase comment (D100, R90)", () => {
         expect(workflowEventTypes()).toEqual([]);
     });
 
+    it("checks the step state before the comment", async () => {
+        const { context } = await createReviewContext();
+        const requested = expectOk(
+            await context.container.resolve(RequestReviewUseCase).execute(createRequestInput())
+        );
+
+        const result = await context.container.resolve(RejectReviewStepUseCase).execute({
+            reviewId: requested.id,
+            stepId: "legal",
+            actor: reviewer,
+            actorTeamIds: [REVIEW_TEAM_ID],
+            comment: "No."
+        });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/InvalidState");
+    });
+
     it("rejects with a comment of at least 10 characters", async () => {
         const { actorInput, reject } = await setup();
 

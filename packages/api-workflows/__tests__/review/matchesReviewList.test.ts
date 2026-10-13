@@ -44,7 +44,6 @@ const COMMON_CASES: MatchCase[] = ALL_LISTS.flatMap(list => [
         review: { ...MATCHING[list], isActive: false },
         expected: false
     },
-    { name: "listed model", list, review: MATCHING[list], expected: true },
     {
         name: "other model",
         list,

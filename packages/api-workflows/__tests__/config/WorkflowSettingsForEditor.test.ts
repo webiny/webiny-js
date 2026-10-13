@@ -25,31 +25,31 @@ interface EngineCalls {
     save: number;
 }
 
-const engineCalls: EngineCalls = { get: 0, save: 0 };
-
-class CountingGetSettings implements GetWorkflowSettingsUseCase.Interface {
-    constructor(private decoratee: GetWorkflowSettingsUseCase.Interface) {}
-
-    execute(input?: GetWorkflowSettingsUseCase.Input): GetWorkflowSettingsUseCase.Return {
-        engineCalls.get++;
-        return this.decoratee.execute(input);
-    }
-}
-
-class CountingSaveSettings implements SaveWorkflowSettingsUseCase.Interface {
-    constructor(private decoratee: SaveWorkflowSettingsUseCase.Interface) {}
-
-    execute(input: SaveWorkflowSettingsUseCase.Input): SaveWorkflowSettingsUseCase.Return {
-        engineCalls.save++;
-        return this.decoratee.execute(input);
-    }
-}
-
 const throwing = async (): Promise<never> => {
     throw new Error("Permissions are down.");
 };
 
 const createSettingsContext = async (params: CmsTestHandlerParams = {}) => {
+    const engineCalls: EngineCalls = { get: 0, save: 0 };
+
+    class CountingGetSettings implements GetWorkflowSettingsUseCase.Interface {
+        constructor(private decoratee: GetWorkflowSettingsUseCase.Interface) {}
+
+        execute(input?: GetWorkflowSettingsUseCase.Input): GetWorkflowSettingsUseCase.Return {
+            engineCalls.get++;
+            return this.decoratee.execute(input);
+        }
+    }
+
+    class CountingSaveSettings implements SaveWorkflowSettingsUseCase.Interface {
+        constructor(private decoratee: SaveWorkflowSettingsUseCase.Interface) {}
+
+        execute(input: SaveWorkflowSettingsUseCase.Input): SaveWorkflowSettingsUseCase.Return {
+            engineCalls.save++;
+            return this.decoratee.execute(input);
+        }
+    }
+
     const { context } = await createContextHandler({
         ...params,
         setup: async container => {
@@ -81,6 +81,7 @@ const createSettingsContext = async (params: CmsTestHandlerParams = {}) => {
     engineCalls.save = 0;
     return {
         container,
+        engineCalls,
         getForEditor: container.resolve(GetWorkflowSettingsForEditorUseCase),
         saveForEditor: container.resolve(SaveWorkflowSettingsForEditorUseCase)
     };
@@ -88,7 +89,7 @@ const createSettingsContext = async (params: CmsTestHandlerParams = {}) => {
 
 describe("Workflow settings for editors (D133, R97)", () => {
     it("reads the settings for an editor, with expired exclusions only when asked", async () => {
-        const { getForEditor } = await createSettingsContext({ permissions: EDITOR });
+        const { getForEditor, engineCalls } = await createSettingsContext({ permissions: EDITOR });
 
         const active = expectOk(await getForEditor.execute());
         const all = expectOk(await getForEditor.execute({ includeExpired: true }));
@@ -96,6 +97,18 @@ describe("Workflow settings for editors (D133, R97)", () => {
         expect(active.exclusions.map(item => item.userId)).toEqual(["user-a"]);
         expect(all.exclusions.map(item => item.userId)).toEqual(["user-a", "user-b"]);
         expect(engineCalls.get).toBe(2);
+    });
+
+    it("allows a full-access permission set", async () => {
+        const { getForEditor, saveForEditor } = await createSettingsContext({
+            permissions: [{ name: "workflows.*" }, { name: "cms.*" }]
+        });
+
+        const read = await getForEditor.execute();
+        const saved = await saveForEditor.execute({ exclusions: [] });
+
+        expect(read.isOk()).toBe(true);
+        expect(saved.isOk()).toBe(true);
     });
 
     it("saves the settings for an editor", async () => {
@@ -125,7 +138,7 @@ describe("Workflow settings for editors (D133, R97)", () => {
     });
 
     it("refuses a user without editor and does not call the engine", async () => {
-        const { getForEditor, saveForEditor } = await createSettingsContext({
+        const { getForEditor, saveForEditor, engineCalls } = await createSettingsContext({
             permissions: REASSIGNER
         });
 
@@ -140,7 +153,8 @@ describe("Workflow settings for editors (D133, R97)", () => {
     });
 
     it("refuses an anonymous identity and does not call the engine", async () => {
-        const { container, getForEditor, saveForEditor } = await createSettingsContext();
+        const { container, getForEditor, saveForEditor, engineCalls } =
+            await createSettingsContext();
         const identityContext = container.resolve(IdentityContext);
 
         const read = await identityContext.withIdentity(new AnonymousIdentity(), () =>
@@ -156,7 +170,7 @@ describe("Workflow settings for editors (D133, R97)", () => {
     });
 
     it("returns the settings persistence error when the permission check throws (R87)", async () => {
-        const { getForEditor, saveForEditor } = await createSettingsContext({
+        const { getForEditor, saveForEditor, engineCalls } = await createSettingsContext({
             setup: container => {
                 container.registerInstance(WorkflowsPermissions, {
                     isFullAccess: throwing,

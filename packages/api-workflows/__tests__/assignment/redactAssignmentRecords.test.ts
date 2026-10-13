@@ -42,8 +42,11 @@ describe("redactAssignmentRecords (D89, D127, R96)", () => {
     it("does not change the input", () => {
         const input = [...RECORDS];
 
-        redactAssignmentRecords(input, NONE);
+        const output = redactAssignmentRecords(input, NONE);
 
-        expect(input).toEqual(RECORDS);
+        expect(output).toHaveLength(2);
+        expect(output).not.toBe(input);
+        expect(input).toHaveLength(RECORDS.length);
+        input.forEach((item, index) => expect(item).toBe(RECORDS[index]));
     });
 });
