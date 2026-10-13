@@ -116,6 +116,32 @@ describe("RoutingStrategyService: round robin (R115)", () => {
         expect(await order("roundRobin")).toEqual([CARA.id, ANNA.id, BOB.id]);
     });
 
+    it("finds the latest assignee behind more than a page of pool outcomes", async () => {
+        const { order, assignments } = await createStrategyContext();
+        expectOk(
+            await assignments.create(
+                assignmentRecord({
+                    userId: ANNA.id,
+                    source: "roundRobin",
+                    assignedOn: "2026-10-09T09:00:00.000Z"
+                })
+            )
+        );
+        for (let index = 0; index < 101; index++) {
+            const second = String(index % 60).padStart(2, "0");
+            const minute = String(Math.floor(index / 60)).padStart(2, "0");
+            expectOk(
+                await assignments.create(
+                    assignmentRecord({ assignedOn: `2026-10-09T10:${minute}:${second}.000Z` })
+                )
+            );
+        }
+        assignmentListCalls.length = 0;
+
+        expect(await order("roundRobin")).toEqual([BOB.id, CARA.id, ANNA.id]);
+        expect(assignmentListCalls.length).toBeGreaterThan(1);
+    });
+
     it("counts take over outcomes and keeps the position of a former candidate", async () => {
         const { order, assignments } = await createStrategyContext();
         expectOk(

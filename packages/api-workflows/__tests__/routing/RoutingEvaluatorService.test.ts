@@ -695,6 +695,63 @@ describe("RoutingEvaluatorService.evaluate: rules", () => {
         });
     });
 
+    it("continues from an invalid pick to a matching rule or the strategy", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        readableUsers.add(ANNA.id);
+        readableUsers.add(CARA.id);
+
+        const toRule = await evaluator.evaluate(
+            evaluateParams({
+                pickedUserId: "user-dan",
+                config: stepConfig({ rules: [userRule("rule-cara", CARA.id)] })
+            })
+        );
+        const toStrategy = await evaluator.evaluate(
+            evaluateParams({
+                pickedUserId: "user-dan",
+                config: stepConfig({ strategy: "roundRobin" })
+            })
+        );
+
+        expect(toRule.value).toMatchObject({
+            owner: CARA,
+            source: "rule",
+            records: [
+                skip("user-dan", "picked", ROUTING_SKIP_REASONS.notMember),
+                outcome(CARA.id, "rule", "rule-cara")
+            ]
+        });
+        expect(toStrategy.value).toMatchObject({
+            owner: ANNA,
+            source: "roundRobin",
+            records: [
+                skip("user-dan", "picked", ROUTING_SKIP_REASONS.notMember),
+                outcome(ANNA.id, "roundRobin")
+            ]
+        });
+    });
+
+    it("checks rule targets and strategy candidates as the request identity (SEC-66)", async () => {
+        const { evaluator, users } = await createEvaluatorContext();
+        readableUsers.add(BOB.id);
+
+        const ruled = await evaluator.evaluate(
+            evaluateParams({ config: stepConfig({ rules: [userRule("rule-bob", BOB.id)] }) })
+        );
+        const ruleChecks = readChecks.map(call => call.authorizationEnabled);
+        readChecks.length = 0;
+        const ordered = await evaluator.evaluate(
+            evaluateParams({ config: stepConfig({ strategy: "roundRobin" }) })
+        );
+
+        expect(ruled.value).toMatchObject({ owner: BOB, source: "rule" });
+        expect(ordered.value).toMatchObject({ owner: BOB, source: "roundRobin" });
+        expect(ruleChecks).toEqual([true]);
+        // Anna is asked first and refused, then Bob.
+        expect(readChecks.map(call => call.authorizationEnabled)).toEqual([true, true]);
+        expect(users.calls.map(call => call.authorizationEnabled)).toEqual([false, false]);
+    });
+
     it("treats a failed requester team lookup as no teams", async () => {
         const { evaluator, teams } = await createEvaluatorContext();
         teams.failuresLeft = 1;

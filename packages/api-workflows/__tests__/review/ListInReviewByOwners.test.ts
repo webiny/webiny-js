@@ -42,4 +42,20 @@ describe("ReviewRepository.listInReviewByOwners (R115)", () => {
 
         expect(expectOk(await reviews.listInReviewByOwners([]))).toEqual([]);
     });
+
+    it("reads every page past 100 rows", async () => {
+        const { context } = await createContextHandler();
+        const reviews = context.container.resolve(ReviewRepository);
+        for (let index = 0; index < 101; index++) {
+            expectOk(
+                await reviews.save(inReviewData(`review-${index}`, "user-anna", "cms.article"))
+            );
+        }
+        expectOk(await reviews.save(inReviewData("review-bob", "user-bob", "cms.article")));
+
+        const listed = expectOk(await reviews.listInReviewByOwners(["user-anna", "user-bob"]));
+
+        expect(listed).toHaveLength(102);
+        expect(new Set(listed.map(review => review.id)).size).toBe(102);
+    });
 });

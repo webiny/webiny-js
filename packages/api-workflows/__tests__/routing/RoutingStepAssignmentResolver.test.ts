@@ -24,7 +24,7 @@ import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLog
 import { FakeReviewTargetLoader } from "~tests/__helpers/FakeReviewTargetLoader.js";
 import { createRequestInput } from "~tests/__helpers/reviewContext.js";
 import { Review } from "~/domain/review/Review.js";
-import type { ReviewData, ReviewPick } from "~/domain/review/types.js";
+import type { Actor, ReviewData, ReviewPick } from "~/domain/review/types.js";
 import type {
     ReviewStepAssignmentConfig,
     Workflow,
@@ -37,11 +37,19 @@ import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
 import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
-import type { FakeListUsers } from "~tests/__helpers/FakeListUsers.js";
 import { ROUTING_FAILED_REASON } from "~/domain/routing/reasons.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/index.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
 import { RequestReviewUseCase } from "~/features/review/RequestReview/index.js";
+import { ApproveReviewStepUseCase } from "~/features/review/ApproveReviewStep/index.js";
+import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
+import { FakeListUsers } from "~tests/__helpers/FakeListUsers.js";
+import {
+    RecordingEventPublisher,
+    recordedEvents,
+    workflowEventTypes
+} from "~tests/__helpers/RecordingEventPublisher.js";
+import { ROUTING_NO_CANDIDATE_REASON } from "~/domain/routing/reasons.js";
 
 interface ReadFaults {
     assignmentList: boolean;
@@ -161,7 +169,7 @@ class FaultyWorkflowReadsImpl implements WorkflowRepository.Interface {
 const BOB = { id: "user-bob", displayName: "Bob" };
 const CARA = { id: "user-cara", displayName: "Cara" };
 
-const adminActor = (user: typeof BOB) => {
+const adminActor = (user: typeof BOB): Actor => {
     return { type: "user", id: user.id, displayName: user.displayName, identityType: "admin" };
 };
 
@@ -203,6 +211,7 @@ const createResolverContext = async () => {
         setup: container => {
             captureLoggedErrors(container);
             container.register(FakeReviewTargetLoader);
+            container.registerDecorator(RecordingEventPublisher);
             container.registerDecorator(
                 AssignmentRepository.createDecorator({
                     decorator: FaultyAssignmentReadsImpl,
@@ -357,6 +366,101 @@ describe("RoutingStepAssignmentResolver", () => {
                 reason: "Cannot read this content."
             }
         ]);
+    });
+
+    it("routes the next step when the owner approves (ApproveReviewStep)", async () => {
+        const { context } = await createResolverContext();
+        readableUsers.add(BOB.id);
+        readableUsers.add(CARA.id);
+        const editorialStep: WorkflowStep = {
+            ...createReviewStep({ id: "editorial", title: "Editorial review" }),
+            config: {
+                teams: [REVIEW_TEAM_ID],
+                assignment: {
+                    strategy: "roundRobin",
+                    allowManualPick: false,
+                    rules: [
+                        { id: "rule-cara", conditions: {}, target: { type: "user", id: CARA.id } }
+                    ]
+                }
+            }
+        };
+        expectOk(
+            await context.container.resolve(StoreWorkflowUseCase).execute({
+                workflow: createWorkflowValues({
+                    steps: [legalStep({ strategy: "roundRobin" }), editorialStep]
+                }),
+                actor: editor
+            })
+        );
+        const requested = expectOk(
+            await context.container.resolve(RequestReviewUseCase).execute(createRequestInput())
+        );
+        expect(requested.steps[0].owner).toEqual(adminActor(BOB));
+        recordedEvents.length = 0;
+
+        const approved = expectOk(
+            await context.container.resolve(ApproveReviewStepUseCase).execute({
+                reviewId: requested.id,
+                stepId: "legal",
+                actor: adminActor(BOB),
+                actorTeamIds: [REVIEW_TEAM_ID]
+            })
+        );
+
+        expect(approved).toMatchObject({
+            currentStepId: "editorial",
+            currentStepState: "inReview",
+            currentOwnerId: CARA.id
+        });
+        expect(approved.steps[1]).toMatchObject({
+            owner: adminActor(CARA),
+            assignment: { source: "rule", ruleId: "rule-cara" }
+        });
+        const records = expectOk(
+            await context.container
+                .resolve(AssignmentRepository)
+                .list({ where: { reviewId: requested.id, stepId: "editorial" } })
+        ).items;
+        expect(records).toMatchObject([
+            { kind: "outcome", stepId: "editorial", userId: CARA.id, source: "rule" }
+        ]);
+        expect(workflowEventTypes()).toEqual([
+            "Workflows/Review/StepApproved",
+            "Workflows/Review/StepReached"
+        ]);
+    });
+
+    it("leaves the step awaiting in the pool when the requester is the only member (spec 6)", async () => {
+        const { context } = await createResolverContext();
+        context.container.registerInstance(
+            ListUsersUseCase,
+            new FakeListUsers([
+                { id: requester.id, displayName: requester.displayName, teams: [REVIEW_TEAM_ID] }
+            ])
+        );
+        // Everyone can read: only the membership leaves nobody but the requester.
+        readableUsers.add(requester.id);
+        readableUsers.add("user-anna");
+        readableUsers.add(BOB.id);
+        readableUsers.add(CARA.id);
+        expectOk(
+            await context.container.resolve(StoreWorkflowUseCase).execute({
+                workflow: createWorkflowValues({ steps: [legalStep({ strategy: "roundRobin" })] }),
+                actor: editor
+            })
+        );
+
+        const review = expectOk(
+            await context.container.resolve(RequestReviewUseCase).execute(createRequestInput())
+        );
+
+        expect(review.steps[0]).toMatchObject({
+            state: "awaiting",
+            owner: null,
+            assignment: { source: "pool", reason: ROUTING_NO_CANDIDATE_REASON }
+        });
+        expect(review.currentCandidateTeamIds).toEqual([REVIEW_TEAM_ID]);
     });
 
     const breakUsers = (users: FakeListUsers): void => {
