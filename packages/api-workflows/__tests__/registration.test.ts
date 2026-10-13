@@ -32,6 +32,8 @@ import { RoutingStrategyService } from "~/features/routing/RoutingStrategyServic
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/index.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ListReviewAssignmentsUseCase } from "~/features/assignment/ListReviewAssignments/index.js";
+import { InspectRoutingUseCase } from "~/features/routing/InspectRouting/index.js";
+import { ListStepCandidatesUseCase } from "~/features/routing/ListStepCandidates/index.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import { GetWorkflowSettingsUseCase } from "~/features/settings/GetWorkflowSettings/index.js";
 import { SaveWorkflowSettingsUseCase } from "~/features/settings/SaveWorkflowSettings/index.js";
@@ -97,6 +99,8 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(ReviewRepository)).toHaveLength(1);
         expect(container.resolveAll(AssignmentRepository)).toHaveLength(1);
         expect(container.resolveAll(ListReviewAssignmentsUseCase)).toHaveLength(1);
+        expect(container.resolveAll(InspectRoutingUseCase)).toHaveLength(1);
+        expect(container.resolveAll(ListStepCandidatesUseCase)).toHaveLength(1);
         expect(container.resolveAll(GetWorkflowSettingsUseCase)).toHaveLength(1);
         expect(container.resolveAll(SaveWorkflowSettingsUseCase)).toHaveLength(1);
         expect(container.resolveAll(GetWorkflowSettingsForEditorUseCase)).toHaveLength(1);

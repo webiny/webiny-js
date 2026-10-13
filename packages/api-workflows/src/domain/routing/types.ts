@@ -153,3 +153,28 @@ export interface RoutingUserCheck {
     user: RoutingUser | null;
     skipReason: RoutingSkipReason | null;
 }
+
+/** What the rule inspector shows for an unsaved step config (R121): no records, no load numbers (D104). */
+export interface RoutingInspection {
+    owner: RoutingUser | null;
+    source: RoutingSource;
+    ruleId: string | null;
+    /** The step's configured strategy. */
+    strategy: RoutingStrategy;
+    /** Excluded rule targets show the exclusion's own reason; editor only (R129, D118). */
+    trace: RoutingTraceEntry[];
+    /** The skipped people with the trace's reasons (R129, D118). */
+    skipped: RoutingSkippedUser[];
+}
+
+/**
+ * A row of the request dialog's picker or the reassign dialog (R120, D128). `excludedReason`: the
+ * exclusion's own reason, a fixed reason, or `null`; the wrappers null it for viewers without
+ * `editor` / `reassign` (D97). No workload counts (D104).
+ */
+export interface StepCandidate {
+    id: string;
+    displayName: string;
+    excluded: boolean;
+    excludedReason: string | null;
+}

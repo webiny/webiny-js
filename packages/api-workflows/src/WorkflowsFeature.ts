@@ -32,6 +32,8 @@ import { ListReviewAssignmentsFeature } from "~/features/assignment/ListReviewAs
 import { AssignmentSharedFeature } from "~/features/assignment/shared/feature.js";
 import { RoutingEvaluatorFeature } from "~/features/routing/RoutingEvaluatorService/feature.js";
 import { RoutingStrategyFeature } from "~/features/routing/RoutingStrategyService/feature.js";
+import { InspectRoutingFeature } from "~/features/routing/InspectRouting/feature.js";
+import { ListStepCandidatesFeature } from "~/features/routing/ListStepCandidates/feature.js";
 import { WorkflowSettingsSharedFeature } from "~/features/settings/shared/feature.js";
 import { GetWorkflowSettingsFeature } from "~/features/settings/GetWorkflowSettings/feature.js";
 import { SaveWorkflowSettingsFeature } from "~/features/settings/SaveWorkflowSettings/feature.js";
@@ -96,6 +98,9 @@ export const WorkflowsFeature = createFeature({
         // Routing (spec 6): who gets a step when it is reached
         RoutingEvaluatorFeature.register(container);
         RoutingStrategyFeature.register(container);
+        // Routing reads for the editor's inspector and the request and reassign dialogs (R120, R121)
+        InspectRoutingFeature.register(container);
+        ListStepCandidatesFeature.register(container);
 
         // Assignment log (written from phase 4, read by the get-review wrappers)
         AssignmentSharedFeature.register(container);
