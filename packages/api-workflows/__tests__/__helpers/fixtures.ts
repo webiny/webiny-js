@@ -8,6 +8,7 @@ import type {
     TargetContext
 } from "~/domain/review/types.js";
 import type { Workflow, WorkflowStep, WorkflowValues } from "~/domain/workflow/types.js";
+import type { AssignmentDecision } from "~/domain/assignment/types.js";
 
 export const NOW = "2026-10-09T10:00:00.000Z";
 export const REVIEW_TEAM_ID = "team-reviewers";
@@ -112,11 +113,17 @@ export const targetContext: TargetContext = {
     author: { id: "user-requester", displayName: "Rita Requester" }
 };
 
+/** The outcome record of a step that went to the pool without a reason. */
+export const poolOutcomeRecord = (): AssignmentDecision => {
+    return { kind: "outcome", userId: null, source: "pool", ruleId: null, by: null, reason: null };
+};
+
 export const poolResolution = (): StepAssignmentResolution => {
     return {
         owner: null,
         candidateTeamIds: [REVIEW_TEAM_ID],
-        assignment: { source: "pool" }
+        assignment: { source: "pool" },
+        records: [poolOutcomeRecord()]
     };
 };
 

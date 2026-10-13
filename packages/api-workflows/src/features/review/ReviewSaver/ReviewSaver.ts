@@ -1,5 +1,8 @@
 import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
+import { toAssignmentRecordValues } from "~/domain/assignment/toAssignmentRecordValues.js";
 import { Review } from "~/domain/review/Review.js";
 import type { ReviewFact } from "~/domain/review/facts.js";
 import type { ReviewData } from "~/domain/review/types.js";
@@ -23,7 +26,9 @@ class ReviewSaverImpl implements Abstraction.Interface {
     constructor(
         private repository: ReviewRepository.Interface,
         private targetSyncs: ReviewTargetSync.Interface[],
-        private eventPublisher: EventPublisher.Interface
+        private eventPublisher: EventPublisher.Interface,
+        private assignments: AssignmentRepository.Interface,
+        private logger: Logger.Interface
     ) {}
 
     async save(review: Review): Abstraction.Return {
@@ -38,6 +43,38 @@ class ReviewSaverImpl implements Abstraction.Interface {
             return Result.fail(result.error);
         }
         const saved = result.value;
+
+        // The review is saved, so its assignment decisions happened: write them to the log
+        // (R117). Writing after the save leaves no orphaned records when the save fails; a failed
+        // write is logged and never fails the request.
+        for (const fact of facts) {
+            for (const values of toAssignmentRecordValues(saved, fact)) {
+                try {
+                    const created = await this.assignments.create(values);
+                    if (created.isFail()) {
+                        this.logger.error(
+                            {
+                                error: created.error,
+                                reviewId: saved.id,
+                                stepId: values.stepId,
+                                source: values.source
+                            },
+                            "Could not write an assignment record; the review was saved without it."
+                        );
+                    }
+                } catch (error) {
+                    this.logger.error(
+                        {
+                            error,
+                            reviewId: saved.id,
+                            stepId: values.stepId,
+                            source: values.source
+                        },
+                        "Could not write an assignment record; the review was saved without it."
+                    );
+                }
+            }
+        }
 
         // One sync per namespace; the last registered match wins. No match: nothing to sync.
         let synced: Result<void, Error> = Result.ok();
@@ -89,5 +126,11 @@ class ReviewSaverImpl implements Abstraction.Interface {
 
 export const ReviewSaver = Abstraction.createImplementation({
     implementation: ReviewSaverImpl,
-    dependencies: [ReviewRepository, [ReviewTargetSync, { multiple: true }], EventPublisher]
+    dependencies: [
+        ReviewRepository,
+        [ReviewTargetSync, { multiple: true }],
+        EventPublisher,
+        AssignmentRepository,
+        Logger
+    ]
 });

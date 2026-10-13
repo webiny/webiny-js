@@ -409,6 +409,7 @@ describe("workflows GraphQL root", () => {
             "userId",
             "assignedOn",
             "source",
+            "ruleId",
             "by",
             "reason"
         ]);

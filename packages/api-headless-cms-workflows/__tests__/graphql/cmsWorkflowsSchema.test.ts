@@ -418,7 +418,7 @@ describe("CMS workflows GraphQL", () => {
         expect(byRevision.getCmsEntryTargetReview.data.review.steps[0].assignments).toEqual([
             {
                 kind: "skip",
-                source: "strategy",
+                source: "roundRobin",
                 userId: REQUESTER.id,
                 reason: SKIP_RECORD_REASON
             },

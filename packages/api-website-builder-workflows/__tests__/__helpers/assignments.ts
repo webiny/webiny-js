@@ -14,14 +14,18 @@ export interface SeededAssignments {
 }
 
 /**
- * Two assignment-log records of the review's only step, written straight to the repository:
- * nothing writes the log before phase 4 (A44).
+ * Replaces the log of the review's only step with two known records, written straight to the
+ * repository. The record the request wrote when the step was reached (R117) is removed first.
  */
 export const seedAssignments = async (
     context: CmsContext,
     review: ReviewData
 ): Promise<SeededAssignments> => {
     const repository = context.container.resolve(AssignmentRepository);
+    const written = expectOk(await repository.list({ where: { reviewId: review.id } }));
+    for (const record of written.items) {
+        expectOk(await repository.delete(record.id));
+    }
     const outcome = expectOk(
         await repository.create({
             reviewId: review.id,
@@ -30,6 +34,7 @@ export const seedAssignments = async (
             userId: null,
             assignedOn: "2026-10-13T10:00:00.000Z",
             source: "pool",
+            ruleId: null,
             by: null,
             reason: null,
             kind: "outcome"
@@ -43,6 +48,7 @@ export const seedAssignments = async (
             userId: REVIEWER.id,
             assignedOn: "2026-10-13T09:00:00.000Z",
             source: "picked",
+            ruleId: null,
             by: null,
             reason: "pick excluded",
             kind: "skip"

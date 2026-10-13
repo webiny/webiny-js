@@ -1,6 +1,10 @@
 import { parseIdentifier } from "@webiny/utils";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
-import type { AssignmentRecord, AssignmentRecordValues } from "~/domain/assignment/types.js";
+import type {
+    AssignmentRecord,
+    AssignmentRecordValues,
+    AssignmentSource
+} from "~/domain/assignment/types.js";
 import { toIsoString } from "~/features/shared/toIsoString.js";
 import { ActorEntryMapper, type ActorEntryValues } from "~/features/shared/ActorEntryMapper.js";
 
@@ -11,6 +15,7 @@ export interface AssignmentEntryValues {
     userId: string | null;
     assignedOn: string | Date | null;
     source: string;
+    ruleId: string | null;
     by: ActorEntryValues | null;
     reason: string | null;
     kind: string | null;
@@ -25,6 +30,7 @@ export class AssignmentEntryMapper {
             userId: values.userId,
             assignedOn: values.assignedOn,
             source: values.source,
+            ruleId: values.ruleId,
             by: values.by ? ActorEntryMapper.toEntry(values.by) : null,
             reason: values.reason,
             kind: values.kind
@@ -40,7 +46,9 @@ export class AssignmentEntryMapper {
             stepId: entry.values.stepId,
             userId: entry.values.userId ?? null,
             assignedOn: toIsoString(entry.values.assignedOn) ?? entry.createdOn,
-            source: entry.values.source,
+            // Only the engine writes this model, always with an `AssignmentSource` (R109).
+            source: entry.values.source as AssignmentSource,
+            ruleId: entry.values.ruleId || null,
             by: ActorEntryMapper.fromEntry(entry.values.by),
             reason: entry.values.reason || null,
             // Records stored before the field existed are outcomes (R96).

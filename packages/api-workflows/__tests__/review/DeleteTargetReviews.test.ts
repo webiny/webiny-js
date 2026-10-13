@@ -23,6 +23,7 @@ const record = (reviewId: string, assignedOn: string): AssignmentRecordValues =>
         userId: reviewer.id,
         assignedOn,
         source: "picked",
+        ruleId: null,
         by: null,
         reason: null,
         kind: "outcome"

@@ -93,8 +93,17 @@ describe("CMS target review wrapper and assignment entries", () => {
 
         expect(result?.review.id).toBe(review.id);
         expect(result?.flags).toMatchObject({ canStart: true, canCancel: false });
-        expect(result?.review.steps.map(step => [step.id, step.assignments])).toEqual([
-            [STEP_ID, []]
+        // The request wrote the pool outcome when the step was reached (R117).
+        expect(result?.review.steps.map(step => step.id)).toEqual([STEP_ID]);
+        expect(result?.review.steps[0].assignments).toMatchObject([
+            {
+                kind: "outcome",
+                source: "pool",
+                userId: null,
+                ruleId: null,
+                reason: null,
+                reviewId: review.id
+            }
         ]);
     });
 

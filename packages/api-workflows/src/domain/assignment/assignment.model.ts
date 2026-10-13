@@ -20,6 +20,7 @@ class AssignmentModelImpl implements ModelFactory.Interface {
                     userId: fields.text().label("User ID"),
                     assignedOn: fields.datetime().label("Assigned on").withoutTimezone(),
                     source: fields.text().label("Source"),
+                    ruleId: fields.text().label("Rule ID"),
                     by: fields
                         .object()
                         .label("By")

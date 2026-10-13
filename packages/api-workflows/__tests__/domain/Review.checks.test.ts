@@ -54,7 +54,8 @@ const createAiOwnedReview = (): Review => {
             resolution: {
                 owner: aiActor,
                 candidateTeamIds: [REVIEW_TEAM_ID],
-                assignment: { source: "strategy" }
+                assignment: { source: "roundRobin" },
+                records: []
             },
             actor: requester,
             now: NOW

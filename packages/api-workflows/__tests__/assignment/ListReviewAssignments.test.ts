@@ -14,7 +14,8 @@ const record = (reviewId: string, hour: string): AssignmentRecordValues => {
         stepId: "legal",
         userId: reviewer.id,
         assignedOn: `2026-10-09T${hour}:00:00.000Z`,
-        source: "strategy",
+        source: "roundRobin",
+        ruleId: null,
         by: null,
         reason: null,
         kind: "outcome"

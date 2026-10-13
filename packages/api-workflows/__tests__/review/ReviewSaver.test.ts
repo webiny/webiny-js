@@ -6,6 +6,7 @@ import {
     createWorkflow,
     expectOk,
     NOW,
+    poolOutcomeRecord,
     requester,
     REVIEW_TEAM_ID,
     targetContext
@@ -94,7 +95,8 @@ describe("ReviewSaver", () => {
             actor: requester,
             owner: null,
             change: { stepId: "legal", fromState: "pending", toState: "awaiting" },
-            assignment: { source: "pool" }
+            assignment: { source: "pool" },
+            records: [poolOutcomeRecord()]
         });
     });
 
@@ -246,12 +248,13 @@ describe("Review lifecycle defaults", () => {
 
         const resolution = await context.container
             .resolve(StepAssignmentResolver)
-            .resolve({ review, step: review.steps[0] });
+            .resolve({ review, step: review.steps[0], now: new Date(NOW) });
 
         expect(resolution).toEqual({
             owner: null,
             candidateTeamIds: [REVIEW_TEAM_ID],
-            assignment: { source: "pool" }
+            assignment: { source: "pool" },
+            records: [poolOutcomeRecord()]
         });
     });
 

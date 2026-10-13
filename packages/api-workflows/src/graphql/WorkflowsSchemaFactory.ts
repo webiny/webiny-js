@@ -146,6 +146,8 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         userId: String
         assignedOn: DateTime!
         source: String!
+        "The rule that decided or was skipped (R109)."
+        ruleId: String
         by: WorkflowsActor
         reason: String
     }

@@ -10,6 +10,11 @@ export interface StepAssignmentResolverParams {
     review: ReviewData;
     /** The review step being reached; carries `pickedUserId` and the step config. */
     step: ReviewStep;
+    /**
+     * The reach time (R118): exclusion expiry and the records' `assignedOn` use it. Routing never
+     * calls `new Date()`.
+     */
+    now: Date;
 }
 
 export interface IStepAssignmentResolver {

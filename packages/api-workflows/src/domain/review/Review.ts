@@ -299,7 +299,8 @@ export class Review {
             actor: { ...params.actor },
             owner: step.owner ? { ...step.owner } : null,
             change: { stepId: step.id, fromState: "pending", toState: step.state },
-            assignment: structuredClone(resolution.assignment)
+            assignment: structuredClone(resolution.assignment),
+            records: structuredClone(resolution.records)
         });
         return Result.ok();
     }
@@ -325,7 +326,17 @@ export class Review {
             type: "stepStarted",
             occurredOn: params.now,
             actor: { ...params.actor },
-            change: { stepId: step.id, fromState: "awaiting", toState: "inReview" }
+            change: { stepId: step.id, fromState: "awaiting", toState: "inReview" },
+            records: [
+                {
+                    kind: "outcome",
+                    userId: params.actor.id,
+                    source: "poolStart",
+                    ruleId: null,
+                    by: null,
+                    reason: null
+                }
+            ]
         });
         return Result.ok();
     }
@@ -350,7 +361,17 @@ export class Review {
             occurredOn: params.now,
             actor: { ...params.actor },
             change: { stepId: step.id, fromState: "inReview", toState: "inReview" },
-            previousOwner: { ...previousOwner }
+            previousOwner: { ...previousOwner },
+            records: [
+                {
+                    kind: "outcome",
+                    userId: params.actor.id,
+                    source: "takeOver",
+                    ruleId: null,
+                    by: { ...params.actor },
+                    reason: null
+                }
+            ]
         });
         return Result.ok();
     }
@@ -665,7 +686,19 @@ export class Review {
         return {
             owner: null,
             candidateTeamIds: [...resolution.candidateTeamIds],
-            assignment: { source: "pool", reason: REQUESTER_OWNER_REASON }
+            assignment: { source: "pool", reason: REQUESTER_OWNER_REASON },
+            // The resolver's skips stay; its outcome is replaced by the pool (R117).
+            records: [
+                ...resolution.records.filter(record => record.kind === "skip"),
+                {
+                    kind: "outcome",
+                    userId: null,
+                    source: "pool",
+                    ruleId: null,
+                    by: null,
+                    reason: REQUESTER_OWNER_REASON
+                }
+            ]
         };
     }
 

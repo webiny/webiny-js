@@ -11,12 +11,14 @@ import {
     NOW,
     OTHER_TEAM_ID,
     otherReviewer,
+    poolOutcomeRecord,
     poolResolution,
     requester,
     REVIEW_TEAM_ID,
     reviewer,
     targetContext
 } from "~tests/__helpers/fixtures.js";
+import type { AssignmentDecision } from "~/domain/assignment/types.js";
 
 const LATER = "2026-10-09T11:00:00.000Z";
 
@@ -49,6 +51,19 @@ const requestReview = (overrides: Partial<ReviewRequestParams> = {}): Review => 
 
 const onLegal = (actor: Actor, actorTeamIds: string[] = [REVIEW_TEAM_ID]) => {
     return { stepId: "legal", actor, actorTeamIds, now: LATER };
+};
+
+const pickedOutcome = (userId: string): AssignmentDecision => {
+    return { kind: "outcome", userId, source: "picked", ruleId: null, by: null, reason: null };
+};
+
+const EXCLUDED_SKIP: AssignmentDecision = {
+    kind: "skip",
+    userId: otherReviewer.id,
+    source: "rule",
+    ruleId: "rule-legal",
+    by: null,
+    reason: "Excluded from reviews."
 };
 
 describe("Review.request", () => {
@@ -168,7 +183,8 @@ describe("Review.reach", () => {
                 actor: requester,
                 owner: null,
                 change: { stepId: "legal", fromState: "pending", toState: "awaiting" },
-                assignment: { source: "pool" }
+                assignment: { source: "pool" },
+                records: [poolOutcomeRecord()]
             }
         ]);
     });
@@ -181,7 +197,8 @@ describe("Review.reach", () => {
                 resolution: {
                     owner: reviewer,
                     candidateTeamIds: [REVIEW_TEAM_ID],
-                    assignment: { source: "picked" }
+                    assignment: { source: "picked" },
+                    records: [EXCLUDED_SKIP, pickedOutcome(reviewer.id)]
                 },
                 actor: requester,
                 now: NOW
@@ -201,7 +218,8 @@ describe("Review.reach", () => {
             actor: requester,
             owner: reviewer,
             change: { stepId: "legal", fromState: "pending", toState: "inReview" },
-            assignment: { source: "picked" }
+            assignment: { source: "picked" },
+            records: [EXCLUDED_SKIP, pickedOutcome(reviewer.id)]
         });
     });
 
@@ -214,7 +232,8 @@ describe("Review.reach", () => {
                 resolution: {
                     owner: requester,
                     candidateTeamIds: [REVIEW_TEAM_ID],
-                    assignment: { source: "picked" }
+                    assignment: { source: "picked" },
+                    records: [EXCLUDED_SKIP, pickedOutcome(requester.id)]
                 },
                 actor: requester,
                 now: NOW
@@ -240,7 +259,19 @@ describe("Review.reach", () => {
                 actor: requester,
                 owner: null,
                 change: { stepId: "legal", fromState: "pending", toState: "awaiting" },
-                assignment: expectedAssignment
+                assignment: expectedAssignment,
+                // The resolver's skips stay; its outcome becomes the pool (R117).
+                records: [
+                    EXCLUDED_SKIP,
+                    {
+                        kind: "outcome",
+                        userId: null,
+                        source: "pool",
+                        ruleId: null,
+                        by: null,
+                        reason: expectedAssignment.reason
+                    }
+                ]
             }
         ]);
     });
@@ -282,7 +313,17 @@ describe("Review.start", () => {
                 type: "stepStarted",
                 occurredOn: LATER,
                 actor: reviewer,
-                change: { stepId: "legal", fromState: "awaiting", toState: "inReview" }
+                change: { stepId: "legal", fromState: "awaiting", toState: "inReview" },
+                records: [
+                    {
+                        kind: "outcome",
+                        userId: reviewer.id,
+                        source: "poolStart",
+                        ruleId: null,
+                        by: null,
+                        reason: null
+                    }
+                ]
             }
         ]);
     });
@@ -369,7 +410,17 @@ describe("Review.takeOver", () => {
                 occurredOn: LATER,
                 actor: otherReviewer,
                 change: { stepId: "legal", fromState: "inReview", toState: "inReview" },
-                previousOwner: reviewer
+                previousOwner: reviewer,
+                records: [
+                    {
+                        kind: "outcome",
+                        userId: otherReviewer.id,
+                        source: "takeOver",
+                        ruleId: null,
+                        by: otherReviewer,
+                        reason: null
+                    }
+                ]
             }
         ]);
     });
@@ -428,7 +479,8 @@ describe("Review.takeOver", () => {
                 resolution: {
                     owner: aiActor,
                     candidateTeamIds: [REVIEW_TEAM_ID],
-                    assignment: { source: "strategy" }
+                    assignment: { source: "roundRobin" },
+                    records: []
                 },
                 actor: requester,
                 now: NOW

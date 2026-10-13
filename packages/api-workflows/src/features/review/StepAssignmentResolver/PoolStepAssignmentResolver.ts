@@ -1,7 +1,7 @@
 import { parseReviewStepConfig } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { StepAssignmentResolver } from "./abstractions.js";
 
-/** Every review step goes to its teams' pool; picks are stored but ignored until phase 4 (R3). */
+/** Every review step goes to its teams' pool. Replaced by the routing resolver (phase 4). */
 class PoolStepAssignmentResolverImpl implements StepAssignmentResolver.Interface {
     async resolve(
         params: StepAssignmentResolver.Params
@@ -12,7 +12,17 @@ class PoolStepAssignmentResolverImpl implements StepAssignmentResolver.Interface
         return {
             owner: null,
             candidateTeamIds: config ? [...config.teams] : [],
-            assignment: { source: "pool" }
+            assignment: { source: "pool" },
+            records: [
+                {
+                    kind: "outcome",
+                    userId: null,
+                    source: "pool",
+                    ruleId: null,
+                    by: null,
+                    reason: null
+                }
+            ]
         };
     }
 }

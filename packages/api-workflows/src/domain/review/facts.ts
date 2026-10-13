@@ -1,3 +1,4 @@
+import type { AssignmentDecision } from "~/domain/assignment/types.js";
 import type { Actor, ReviewStepAssignment, StepState } from "./types.js";
 
 /**
@@ -25,6 +26,8 @@ export interface ReviewStepReachedFact {
     owner: Actor | null;
     change: ReviewStepChange;
     assignment: ReviewStepAssignment;
+    /** The resolver's skips and outcome; `ReviewSaver` writes them after the save (R117). */
+    records: AssignmentDecision[];
 }
 
 export interface ReviewStepStartedFact {
@@ -32,6 +35,8 @@ export interface ReviewStepStartedFact {
     occurredOn: string;
     actor: Actor;
     change: ReviewStepChange;
+    /** One `poolStart` outcome (R117, A49). */
+    records: AssignmentDecision[];
 }
 
 export interface ReviewStepTakenOverFact {
@@ -40,6 +45,8 @@ export interface ReviewStepTakenOverFact {
     actor: Actor;
     change: ReviewStepChange;
     previousOwner: Actor;
+    /** One `takeOver` outcome with `by` (R117, A49). */
+    records: AssignmentDecision[];
 }
 
 export interface ReviewStepApprovedFact {

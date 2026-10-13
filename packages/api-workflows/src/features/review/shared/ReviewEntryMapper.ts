@@ -1,6 +1,7 @@
 import { parseIdentifier } from "@webiny/utils";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import type { WorkflowStepNotification } from "~/domain/workflow/types.js";
+import type { AssignmentSource } from "~/domain/assignment/types.js";
 import type {
     ReviewData,
     ReviewState,
@@ -193,7 +194,8 @@ export class ReviewEntryMapper {
             comment: step.comment || null,
             pickedUserId: step.pickedUserId ?? null,
             candidateTeamIds: step.candidateTeamIds ?? [],
-            assignmentSource: step.assignmentSource ?? null,
+            // Only the engine writes this model, always with an `AssignmentSource` (R109).
+            assignmentSource: (step.assignmentSource as AssignmentSource | null) ?? null,
             assignment: ReviewEntryMapper.assignmentFromEntry(step.assignment),
             reachedOn: toIsoString(step.reachedOn),
             startedOn: toIsoString(step.startedOn),
@@ -209,7 +211,7 @@ export class ReviewEntryMapper {
         }
         const by = ActorEntryMapper.fromEntry(value.by);
         return {
-            source: value.source,
+            source: value.source as AssignmentSource,
             ...(value.ruleId ? { ruleId: value.ruleId } : {}),
             ...(value.reason ? { reason: value.reason } : {}),
             ...(by ? { by } : {})

@@ -11,7 +11,11 @@ class ReviewStepReacherImpl implements Abstraction.Interface {
         if (!step) {
             return Result.ok();
         }
-        const resolution = await this.resolver.resolve({ review: params.review.toData(), step });
+        const resolution = await this.resolver.resolve({
+            review: params.review.toData(),
+            step,
+            now: new Date(params.now)
+        });
         return params.review.reach({ resolution, actor: params.actor, now: params.now });
     }
 }

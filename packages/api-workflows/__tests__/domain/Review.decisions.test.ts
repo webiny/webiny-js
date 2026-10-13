@@ -59,7 +59,8 @@ const requestWithOwner = (owner: Actor): Review => {
             resolution: {
                 owner,
                 candidateTeamIds: [REVIEW_TEAM_ID],
-                assignment: { source: "strategy" }
+                assignment: { source: "roundRobin" },
+                records: []
             },
             actor: requester,
             now: NOW

@@ -95,9 +95,9 @@ describe("ReviewRepository", () => {
                           owner: aiOwner,
                           comment: "Looks fine",
                           pickedUserId: "user-picked",
-                          assignmentSource: "rule",
+                          assignmentSource: "rule" as const,
                           assignment: {
-                              source: "rule",
+                              source: "rule" as const,
                               ruleId: "rule-1",
                               reason: "Matched",
                               by: reviewer

@@ -20,6 +20,7 @@ const record = (overrides: Partial<AssignmentRecordValues>): AssignmentRecordVal
         userId: null,
         assignedOn: "2026-10-09T10:00:00.000Z",
         source: "pool",
+        ruleId: null,
         by: null,
         reason: null,
         kind: "outcome",
@@ -77,6 +78,7 @@ describe("AssignmentRepository", () => {
             userId: null,
             assignedOn: "2026-10-09T10:00:00.000Z",
             source: "pool",
+            ruleId: null,
             by: null,
             reason: "No eligible candidates.",
             kind: "outcome"
@@ -207,7 +209,7 @@ describe("AssignmentRepository", () => {
         expect(listed.items).toEqual([]);
     });
 
-    it("stores the kind and reads a record stored without it as an outcome (R96)", async () => {
+    it("stores the kind and the rule id and reads a record stored without them as an outcome without a rule (R96, R109)", async () => {
         const { context } = await createContextHandler();
         const repository = context.container.resolve(AssignmentRepository);
         expectOk(
@@ -215,8 +217,9 @@ describe("AssignmentRepository", () => {
                 record({
                     reviewId: "review-kind",
                     userId: reviewer.id,
-                    source: "rule-1",
-                    reason: "Excluded: on leave.",
+                    source: "rule",
+                    ruleId: "rule-1",
+                    reason: "Excluded from reviews.",
                     kind: "skip"
                 })
             )
@@ -231,7 +234,7 @@ describe("AssignmentRepository", () => {
                     stepId: "legal",
                     userId: otherReviewer.id,
                     assignedOn: "2026-10-09T09:00:00.000Z",
-                    source: "strategy",
+                    source: "roundRobin",
                     by: null,
                     reason: null
                 }
@@ -240,9 +243,9 @@ describe("AssignmentRepository", () => {
 
         const listed = expectOk(await repository.list({ where: { reviewId: "review-kind" } }));
 
-        expect(listed.items.map(item => [item.userId, item.kind])).toEqual([
-            [reviewer.id, "skip"],
-            [otherReviewer.id, "outcome"]
+        expect(listed.items.map(item => [item.userId, item.kind, item.ruleId])).toEqual([
+            [reviewer.id, "skip", "rule-1"],
+            [otherReviewer.id, "outcome", null]
         ]);
     });
 });

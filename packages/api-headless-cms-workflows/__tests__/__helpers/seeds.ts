@@ -31,14 +31,19 @@ export const seedFailedStep = async (
 };
 
 /**
- * Two assignment records of the only step (A44): an outcome (the pool) and, a minute later, a
- * skip of the requester. Newest first, the skip comes first.
+ * Replaces the log of the only step with two known records: an outcome (the pool) and, a minute
+ * later, a skip of the requester. Newest first, the skip comes first. The record the request
+ * wrote when the step was reached (R117) is removed first.
  */
 export const seedAssignmentRecords = async (
     context: CmsContext,
     review: ReviewData
 ): Promise<void> => {
     const repository = context.container.resolve(AssignmentRepository);
+    const written = expectOk(await repository.list({ where: { reviewId: review.id } }));
+    for (const record of written.items) {
+        expectOk(await repository.delete(record.id));
+    }
     expectOk(
         await repository.create({
             reviewId: review.id,
@@ -47,6 +52,7 @@ export const seedAssignmentRecords = async (
             userId: null,
             assignedOn: "2026-10-13T10:00:00.000Z",
             source: "pool",
+            ruleId: null,
             by: null,
             reason: null,
             kind: "outcome"
@@ -59,7 +65,8 @@ export const seedAssignmentRecords = async (
             stepId: STEP_ID,
             userId: REQUESTER.id,
             assignedOn: "2026-10-13T10:01:00.000Z",
-            source: "strategy",
+            source: "roundRobin",
+            ruleId: null,
             by: null,
             reason: SKIP_RECORD_REASON,
             kind: "skip"

@@ -1,5 +1,6 @@
 import type { WorkflowsPermissionSet } from "~/domain/permissions/types.js";
 import type { WorkflowStep } from "~/domain/workflow/types.js";
+import type { AssignmentDecision, AssignmentSource } from "~/domain/assignment/types.js";
 
 export type ReviewState = "inProgress" | "approved" | "rejected" | "cancelled";
 
@@ -15,9 +16,9 @@ export interface Actor {
     identityType?: string;
 }
 
-/** "Why this owner" (D127). Sources: rule id, "strategy", "picked", "pool", "poolStart", "takeOver", "reassign". */
+/** "Why this owner" (D127, R109). `ruleId`: the rule that decided, also for a team target. */
 export interface ReviewStepAssignment {
-    source: string;
+    source: AssignmentSource;
     ruleId?: string;
     reason?: string;
     by?: Actor;
@@ -29,7 +30,7 @@ export interface ReviewStep extends WorkflowStep {
     comment: string | null;
     pickedUserId: string | null;
     candidateTeamIds: string[];
-    assignmentSource: string | null;
+    assignmentSource: AssignmentSource | null;
     assignment: ReviewStepAssignment | null;
     reachedOn: string | null;
     startedOn: string | null;
@@ -101,6 +102,11 @@ export interface StepAssignmentResolution {
     owner: Actor | null;
     candidateTeamIds: string[];
     assignment: ReviewStepAssignment;
+    /**
+     * The assignment-log records of this decision, in order: skips first, then one outcome
+     * (R117). Written by `ReviewSaver` after the review is saved.
+     */
+    records: AssignmentDecision[];
 }
 
 /** The value of `system.workflow` on the target revision (spec 4.5). */

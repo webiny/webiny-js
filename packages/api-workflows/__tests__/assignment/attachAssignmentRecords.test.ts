@@ -11,7 +11,8 @@ const record = (id: string, reviewId: string, stepId: string, hour: string): Ass
         stepId,
         userId: "user-owner",
         assignedOn: `2026-10-09T${hour}:00:00.000Z`,
-        source: "strategy",
+        source: "roundRobin",
+        ruleId: null,
         by: null,
         reason: null,
         kind: "outcome"

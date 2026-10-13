@@ -11,7 +11,8 @@ const record = (id: string, kind: AssignmentRecord["kind"]): AssignmentRecord =>
         stepId: "legal",
         userId: kind === "skip" ? "user-skipped" : "user-owner",
         assignedOn: "2026-10-09T10:00:00.000Z",
-        source: kind === "skip" ? "rule-1" : "strategy",
+        source: kind === "skip" ? "rule" : "roundRobin",
+        ruleId: kind === "skip" ? "rule-1" : null,
         by: null,
         reason: kind === "skip" ? "Excluded: on leave." : null,
         kind
