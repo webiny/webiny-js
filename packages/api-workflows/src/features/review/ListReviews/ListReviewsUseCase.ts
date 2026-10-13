@@ -44,10 +44,12 @@ class ListReviewsUseCaseImpl implements UseCase.Interface {
             return Result.ok({ items: [], meta: { cursor: null, hasMoreItems: false } });
         }
 
-        const limit = Math.min(
-            Math.max(input.limit ?? DEFAULT_REVIEW_LIST_LIMIT, 1),
-            MAX_REVIEW_LIST_LIMIT
-        );
+        // A missing or non-finite limit takes the default; others round down into 1..100 (R92).
+        const requestedLimit =
+            typeof input.limit === "number" && Number.isFinite(input.limit)
+                ? Math.floor(input.limit)
+                : DEFAULT_REVIEW_LIST_LIMIT;
+        const limit = Math.min(Math.max(requestedLimit, 1), MAX_REVIEW_LIST_LIMIT);
         const sort =
             input.sort ??
             (input.list === "myRequests" ? "lastChangedOn_DESC" : "lastChangedOn_ASC");

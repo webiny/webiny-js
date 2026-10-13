@@ -19,6 +19,8 @@ import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.
 import { ReviewNotFoundError, ReviewPersistenceError } from "~/domain/review/errors.js";
 import type { ReviewData, ReviewListKind } from "~/domain/review/types.js";
 import { ListReviewsUseCase } from "~/features/review/ListReviews/index.js";
+import { ReviewListLimits } from "~/features/review/ListReviews/ReviewListLimits.js";
+import { decodeReviewListCursor } from "~/features/review/ListReviews/reviewListCursor.js";
 
 const createStorageContext = async (reviews: ListedReviewParams[]) => {
     const { context } = await createContextHandler();
@@ -31,6 +33,11 @@ interface MemoryRepositoryOptions {
     missingIds?: string[];
     failList?: boolean;
     failGetId?: string;
+    /** What primary storage holds now for these ids, instead of the listed row (R18). */
+    primaryRows?: ReviewData[];
+    /** Every page after the first answers with the cursor it was asked with. */
+    repeatCursor?: boolean;
+    limits?: ReviewListLimits.Interface;
 }
 
 interface MemoryCalls {
@@ -50,7 +57,9 @@ const createMemoryContext = async (
             if (id === options.failGetId) {
                 return Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
             }
-            const review = reviews.find(item => item.id === id);
+            const review =
+                options.primaryRows?.find(item => item.id === id) ??
+                reviews.find(item => item.id === id);
             if (!review || options.missingIds?.includes(id)) {
                 return Result.fail(new ReviewNotFoundError({ id }));
             }
@@ -73,7 +82,11 @@ const createMemoryContext = async (
             return Result.ok({
                 items: reviews.slice(start, end),
                 meta: {
-                    cursor: hasMoreItems ? String(end) : null,
+                    cursor: hasMoreItems
+                        ? options.repeatCursor && params.after
+                            ? params.after
+                            : String(end)
+                        : null,
                     hasMoreItems,
                     totalCount: reviews.length
                 }
@@ -83,6 +96,9 @@ const createMemoryContext = async (
     const { context } = await createContextHandler({
         setup: container => {
             container.registerInstance(ReviewRepository, repository);
+            if (options.limits) {
+                container.registerInstance(ReviewListLimits, options.limits);
+            }
         }
     });
     return {
@@ -353,6 +369,92 @@ describe("ListReviewsUseCase input rules (R91, R92)", () => {
         expect(byDefault.meta.hasMoreItems).toBe(true);
         expect(clamped.items).toHaveLength(100);
         expect(clamped.meta.hasMoreItems).toBe(true);
+    });
+
+    it("guards a non-integer limit: NaN takes the default, 2.5 rounds down", async () => {
+        const { listReviews } = await createMemoryContext(poolRows(150));
+
+        const notANumber = expectOk(await listReviews.execute(createListInput({ limit: NaN })));
+        const fraction = expectOk(await listReviews.execute(createListInput({ limit: 2.5 })));
+        const zero = expectOk(await listReviews.execute(createListInput({ limit: 0 })));
+
+        expect(notANumber.items).toHaveLength(20);
+        expect(listedIds(fraction)).toEqual(["pool-1", "pool-2"]);
+        expect(zero.items).toHaveLength(1);
+    });
+
+    it("stops at a repository page boundary with { after: next, skip: 0 } and resumes at the next row", async () => {
+        // Default page size 50: 100 rows end exactly on the second page.
+        const { listReviews } = await createMemoryContext(poolRows(150));
+
+        const first = expectOk(await listReviews.execute(createListInput({ limit: 100 })));
+        const second = expectOk(
+            await listReviews.execute(createListInput({ limit: 100, after: first.meta.cursor }))
+        );
+
+        expect(listedIds(first).at(-1)).toBe("pool-100");
+        expect(decodeReviewListCursor(first.meta.cursor ?? "")).toEqual({ after: "100", skip: 0 });
+        expect(listedIds(second)[0]).toBe("pool-101");
+        expect(second.items).toHaveLength(50);
+        expect(second.meta).toEqual({ cursor: null, hasMoreItems: false });
+    });
+
+    it("ends the list when the repository repeats its cursor", async () => {
+        const { listReviews, calls } = await createMemoryContext(poolRows(9), {
+            repeatCursor: true,
+            limits: { pageSize: 3, maxScan: 200 }
+        });
+
+        const result = expectOk(await listReviews.execute(createListInput()));
+
+        // Page 1 answers cursor "3"; page 2, asked with "3", answers "3" again.
+        expect(listedIds(result)).toEqual([
+            "pool-1",
+            "pool-2",
+            "pool-3",
+            "pool-4",
+            "pool-5",
+            "pool-6"
+        ]);
+        expect(result.meta).toEqual({ cursor: null, hasMoreItems: false });
+        expect(calls.list).toBe(2);
+    });
+
+    it("skips a listed row whose primary row no longer matches, counts it and never asks canRead (R18)", async () => {
+        const rows = poolRows(6);
+        const { listReviews, calls } = await createMemoryContext(rows, {
+            primaryRows: [
+                // Taken since it was listed: no longer awaiting.
+                createListedReview({
+                    id: "pool-2",
+                    minute: 1,
+                    stepState: "inReview",
+                    ownerId: otherReviewer.id
+                }),
+                // Now the viewer's own request: the pool leaves it out.
+                createListedReview({ id: "pool-3", minute: 2, requester: reviewer })
+            ],
+            limits: { pageSize: 3, maxScan: 3 }
+        });
+        const asked: string[] = [];
+
+        const result = expectOk(
+            await listReviews.execute(
+                createListInput({
+                    canRead: async review => {
+                        asked.push(review.id);
+                        return true;
+                    }
+                })
+            )
+        );
+
+        expect(listedIds(result)).toEqual(["pool-1"]);
+        expect(asked).toEqual(["pool-1"]);
+        // Three rows examined hit the cap: pool-4 is left for the next call.
+        expect(calls.get).toBe(3);
+        expect(result.meta.hasMoreItems).toBe(true);
+        expect(decodeReviewListCursor(result.meta.cursor ?? "")).toEqual({ after: "3", skip: 0 });
     });
 
     it("skips a listed review that is gone from primary storage (R18)", async () => {
