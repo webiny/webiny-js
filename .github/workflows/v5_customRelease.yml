@@ -1,6 +1,6 @@
 name: 📦 v5 Custom Release
 
-# v5 only gets patches, released from v5-dev. Everything else follows from the version:
+# v5 only gets patches, released from the v5 branch. Everything else follows from the version:
 #   5.44.4        -> "v5" dist-tag, GitHub release (not marked latest, that's v6)
 #   5.44.4-beta.0 -> "v5-beta" dist-tag, no GitHub release, so "@v5" keeps pointing at a stable version
 on:
@@ -46,7 +46,7 @@ jobs:
 
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: v5-dev
+          ref: v5
           fetch-depth: 0
 
       - name: Install dependencies
