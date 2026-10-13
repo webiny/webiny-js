@@ -741,3 +741,13 @@ Confirmed 2026-10-12: the bound-workflow lookup fails closed (a failed workflow 
 The review title defaults to the content's title (entry or page title, as today). The requester may change it when requesting the review: the request wrappers take an optional `title`; when given it must have at least 5 characters after trimming (D100), otherwise the content's title is used. The title is fixed once the review exists.
 
 Refines D100 and spec 10 (request review input). Decided 2026-10-13.
+
+## D136. Where the GraphQL operations live
+
+- `/graphql`, root `workflows`: the shared configuration operations only (settings, step types; later users, transports, automation definitions, AI tools).
+- `/graphql`, root `websiteBuilder` (the existing `WbQuery` / `WbMutation`): every Website Builder pages workflow and review operation.
+- `/cms/manage`: every Headless CMS workflow and review operation, built like the existing CMS manage operations.
+  - Per model (generated for each model the way `getArticle` / `publishArticle` are): request review, get review (by review id and by revision), cancel-for-delete. The model comes from the operation, never from an argument.
+  - Not per model: workflow store, delete, list and get; the review list across all CMS models (optional model filter) for Content Reviews; the review actions that take a review id (start, take over, approve, reject, cancel); the editor's model list.
+
+Settles spec 10 "final names" placement. Decided 2026-10-13.
