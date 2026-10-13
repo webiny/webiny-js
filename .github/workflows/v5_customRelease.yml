@@ -1,6 +1,43 @@
-name: v5 Custom Release
+name: 📦 v5 Custom Release
 
+# Started either from the Actions tab (workflow_dispatch) or with `yarn trigger-release`
+# (a `release` repository_dispatch event). Each value comes from whichever of the two is set.
 on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to release from
+        required: true
+        default: v5-dev
+        type: string
+      type:
+        description: Release type
+        required: true
+        default: release
+        type: choice
+        options:
+          - release
+          - beta
+          - latest
+          - unstable
+      tag:
+        description: NPM dist-tag
+        required: true
+        default: v5
+        type: string
+      version:
+        description: Exact version (e.g. 5.44.4-beta.0), required for the "release" type
+        required: false
+        type: string
+      createGithubRelease:
+        description: Create a GitHub release
+        required: true
+        default: "no"
+        type: choice
+        options:
+          - "no"
+          - "true"
+          - latest
   repository_dispatch:
     types: [release]
 
@@ -9,10 +46,16 @@ env:
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  # Passed through env (not interpolated into `run`) so input values can't inject shell code.
+  RELEASE_BRANCH: ${{ github.event.client_payload.branch || inputs.branch }}
+  RELEASE_TYPE: ${{ github.event.client_payload.type || inputs.type }}
+  RELEASE_TAG: ${{ github.event.client_payload.tag || inputs.tag }}
+  RELEASE_VERSION: ${{ github.event.client_payload.version || inputs.version }}
+  RELEASE_CREATE_GITHUB_RELEASE: ${{ github.event.client_payload.createGithubRelease || inputs.createGithubRelease }}
 
 jobs:
   npm-release:
-    name: NPM release ("${{ github.event.client_payload.tag }}" tag)
+    name: NPM release ("${{ github.event.client_payload.tag || inputs.tag }}" tag)
     runs-on: webiny-build-packages
     environment: release
     steps:
@@ -22,7 +65,7 @@ jobs:
 
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ github.event.client_payload.branch }}
+          ref: ${{ env.RELEASE_BRANCH }}
           fetch-depth: 0
 
       - name: Install dependencies
@@ -41,9 +84,13 @@ jobs:
         run: git config --global user.name "webiny-bot"
 
       - name: Version and Publish
-        run: >
-          yarn release 
-          --type=${{ github.event.client_payload.type }} 
-          --tag=${{ github.event.client_payload.tag }} 
-          --version=${{ github.event.client_payload.version }} 
-          --createGithubRelease=${{ github.event.client_payload.createGithubRelease }}
+        run: |
+          # "no" is the form's way of saying "don't create one"; the script treats an empty value the same.
+          if [ "$RELEASE_CREATE_GITHUB_RELEASE" = "no" ]; then
+            RELEASE_CREATE_GITHUB_RELEASE=""
+          fi
+          yarn release \
+            --type="$RELEASE_TYPE" \
+            --tag="$RELEASE_TAG" \
+            --version="$RELEASE_VERSION" \
+            --createGithubRelease="$RELEASE_CREATE_GITHUB_RELEASE"

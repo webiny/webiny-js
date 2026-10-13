@@ -16,8 +16,8 @@ const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: BRANCH_NAME });
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: BRANCH_NAME });
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: BRANCH_NAME });
 
-export const unstableRelease = createWorkflow({
-    name: `📦 Unstable Release`,
+export const v6_unstableRelease = createWorkflow({
+    name: `📦 v6 Unstable Release`,
     on: {
         workflow_dispatch: {
             inputs: {
