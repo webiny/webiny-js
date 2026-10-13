@@ -8,7 +8,11 @@ const QUERIES = [
     "getWebsiteBuilderPageWorkflow",
     "getWebsiteBuilderPageReview",
     "getWebsiteBuilderPageTargetReview",
-    "listWebsiteBuilderPageReviews"
+    "listWebsiteBuilderPageReviews",
+    "listWebsiteBuilderPageStepCandidates",
+    "listWebsiteBuilderPageReviewStepCandidates",
+    "inspectWebsiteBuilderPageRouting",
+    "websiteBuilderPageFolderExists"
 ];
 
 const MUTATIONS = [
@@ -17,6 +21,7 @@ const MUTATIONS = [
     "requestWebsiteBuilderPageReview",
     "startWebsiteBuilderPageReviewStep",
     "takeOverWebsiteBuilderPageReviewStep",
+    "reassignWebsiteBuilderPageReviewStep",
     "approveWebsiteBuilderPageReviewStep",
     "rejectWebsiteBuilderPageReviewStep",
     "cancelWebsiteBuilderPageReview",

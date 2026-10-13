@@ -22,6 +22,11 @@ import { ApproveWebsiteBuilderPageReviewStepUseCase } from "~/features/wrappers/
 import { RejectWebsiteBuilderPageReviewStepUseCase } from "~/features/wrappers/RejectWebsiteBuilderPageReviewStep/index.js";
 import { CancelWebsiteBuilderPageReviewUseCase } from "~/features/wrappers/CancelWebsiteBuilderPageReview/index.js";
 import { CancelWebsiteBuilderPageReviewsForDeleteUseCase } from "~/features/wrappers/CancelWebsiteBuilderPageReviewsForDelete/index.js";
+import { ReassignWebsiteBuilderPageReviewStepUseCase } from "~/features/wrappers/ReassignWebsiteBuilderPageReviewStep/index.js";
+import { ListWebsiteBuilderPageStepCandidatesUseCase } from "~/features/wrappers/ListWebsiteBuilderPageStepCandidates/index.js";
+import { ListWebsiteBuilderPageReviewStepCandidatesUseCase } from "~/features/wrappers/ListWebsiteBuilderPageReviewStepCandidates/index.js";
+import { InspectWebsiteBuilderPageRoutingUseCase } from "~/features/wrappers/InspectWebsiteBuilderPageRouting/index.js";
+import { WebsiteBuilderPageFolderExistsUseCase } from "~/features/wrappers/WebsiteBuilderPageFolderExists/index.js";
 
 interface StoreWebsiteBuilderPageWorkflowArgs {
     data: WorkflowValues;
@@ -43,6 +48,13 @@ interface RequestWebsiteBuilderPageReviewArgs {
 interface CancelWebsiteBuilderPageReviewsForDeleteArgs {
     pageId: string;
     action: ReviewActiveOnTrashAction;
+}
+
+interface ListWebsiteBuilderPageStepCandidatesArgs {
+    workflowId: string;
+    stepId: string;
+    /** `<pageId>#<version>`; the page id is parsed from it (R88). */
+    revisionId: string;
 }
 
 /**
@@ -83,6 +95,16 @@ const WB_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         error: WorkflowsError
     }
 
+    type WbPageStepCandidateListResponse {
+        data: [WorkflowsStepCandidate!]
+        error: WorkflowsError
+    }
+
+    type WbPageRoutingInspectionResponse {
+        data: WorkflowsRoutingInspection
+        error: WorkflowsError
+    }
+
     input WbPageReviewListWhere {
         titleContains: String
         "My requests only (R91)."
@@ -104,6 +126,25 @@ const WB_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
             limit: Int
             after: String
         ): WbPageReviewListResponse!
+        "Who could take a step of a review of this page revision (request dialog, R120)."
+        listWebsiteBuilderPageStepCandidates(
+            workflowId: ID!
+            stepId: ID!
+            revisionId: ID!
+        ): WbPageStepCandidateListResponse!
+        "Who a review step can be reassigned to (R120)."
+        listWebsiteBuilderPageReviewStepCandidates(
+            reviewId: ID!
+            stepId: ID!
+        ): WbPageStepCandidateListResponse!
+        "folderId: a page folder; omitted or null is the root (R121)."
+        inspectWebsiteBuilderPageRouting(
+            stepConfig: JSON!
+            requesterId: ID!
+            folderId: ID
+        ): WbPageRoutingInspectionResponse!
+        "Whether a page folder still exists; the answer only (D69)."
+        websiteBuilderPageFolderExists(id: ID!): WorkflowsBooleanResponse!
     }
 
     extend type WbMutation {
@@ -120,6 +161,11 @@ const WB_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         ): WbPageReviewResponse!
         startWebsiteBuilderPageReviewStep(reviewId: ID!, stepId: ID!): WbPageReviewResponse!
         takeOverWebsiteBuilderPageReviewStep(reviewId: ID!, stepId: ID!): WbPageReviewResponse!
+        reassignWebsiteBuilderPageReviewStep(
+            reviewId: ID!
+            stepId: ID!
+            userId: ID!
+        ): WbPageReviewResponse!
         approveWebsiteBuilderPageReviewStep(
             reviewId: ID!
             stepId: ID!
@@ -328,6 +374,24 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
             }
         });
 
+        builder.addResolver<ReassignWebsiteBuilderPageReviewStepUseCase.Input>({
+            path: "WbMutation.reassignWebsiteBuilderPageReviewStep",
+            dependencies: [ReassignWebsiteBuilderPageReviewStepUseCase],
+            resolver: (reassignStep: ReassignWebsiteBuilderPageReviewStepUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await reassignStep.execute({
+                        reviewId: args.reviewId,
+                        stepId: args.stepId,
+                        userId: args.userId
+                    });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
         builder.addResolver<ApproveWebsiteBuilderPageReviewStepUseCase.Input>({
             path: "WbMutation.approveWebsiteBuilderPageReviewStep",
             dependencies: [ApproveWebsiteBuilderPageReviewStepUseCase],
@@ -390,6 +454,83 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         targetId: args.pageId,
                         action: args.action
                     });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        // Routing (R120, R121, R124, R125)
+        builder.addResolver<ListWebsiteBuilderPageStepCandidatesArgs>({
+            path: "WbQuery.listWebsiteBuilderPageStepCandidates",
+            dependencies: [ListWebsiteBuilderPageStepCandidatesUseCase],
+            resolver: (listCandidates: ListWebsiteBuilderPageStepCandidatesUseCase.Interface) => {
+                return async ({ args }) => {
+                    // A malformed revision id is a validation error, never a throw (R107).
+                    if (!isValidRevisionId(args.revisionId)) {
+                        return new ErrorResponse(
+                            new ReviewValidationError("The revision id is not valid.")
+                        );
+                    }
+                    const result = await listCandidates.execute({
+                        workflowId: args.workflowId,
+                        stepId: args.stepId,
+                        targetId: parseIdentifier(args.revisionId).id,
+                        targetRevisionId: args.revisionId
+                    });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<ListWebsiteBuilderPageReviewStepCandidatesUseCase.Input>({
+            path: "WbQuery.listWebsiteBuilderPageReviewStepCandidates",
+            dependencies: [ListWebsiteBuilderPageReviewStepCandidatesUseCase],
+            resolver: (
+                listCandidates: ListWebsiteBuilderPageReviewStepCandidatesUseCase.Interface
+            ) => {
+                return async ({ args }) => {
+                    const result = await listCandidates.execute({
+                        reviewId: args.reviewId,
+                        stepId: args.stepId
+                    });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<InspectWebsiteBuilderPageRoutingUseCase.Input>({
+            path: "WbQuery.inspectWebsiteBuilderPageRouting",
+            dependencies: [InspectWebsiteBuilderPageRoutingUseCase],
+            resolver: (inspectRouting: InspectWebsiteBuilderPageRoutingUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await inspectRouting.execute({
+                        stepConfig: args.stepConfig,
+                        requesterId: args.requesterId,
+                        folderId: args.folderId
+                    });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<WebsiteBuilderPageFolderExistsUseCase.Input>({
+            path: "WbQuery.websiteBuilderPageFolderExists",
+            dependencies: [WebsiteBuilderPageFolderExistsUseCase],
+            resolver: (folderExists: WebsiteBuilderPageFolderExistsUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await folderExists.execute({ id: args.id });
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }

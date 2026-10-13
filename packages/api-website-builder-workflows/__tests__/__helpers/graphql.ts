@@ -308,3 +308,97 @@ export const TYPE_FIELDS = /* GraphQL */ `
         }
     }
 `;
+
+const CANDIDATE_FIELDS = /* GraphQL */ `
+    id
+    displayName
+    excluded
+    excludedReason
+`;
+
+const INSPECTION_FIELDS = /* GraphQL */ `
+    owner {
+        id
+        displayName
+    }
+    source
+    ruleId
+    strategy
+    trace {
+        ruleId
+        outcome
+        reason
+    }
+    skipped {
+        userId
+        displayName
+        reason
+    }
+`;
+
+export const LIST_STEP_CANDIDATES = /* GraphQL */ `
+    query ListStepCandidates($workflowId: ID!, $stepId: ID!, $revisionId: ID!) {
+        websiteBuilder {
+            listWebsiteBuilderPageStepCandidates(
+                workflowId: $workflowId
+                stepId: $stepId
+                revisionId: $revisionId
+            ) {
+                data { ${CANDIDATE_FIELDS} }
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+export const LIST_REVIEW_STEP_CANDIDATES = /* GraphQL */ `
+    query ListReviewStepCandidates($reviewId: ID!, $stepId: ID!) {
+        websiteBuilder {
+            listWebsiteBuilderPageReviewStepCandidates(reviewId: $reviewId, stepId: $stepId) {
+                data { ${CANDIDATE_FIELDS} }
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+export const INSPECT_ROUTING = /* GraphQL */ `
+    query InspectRouting($stepConfig: JSON!, $requesterId: ID!, $folderId: ID) {
+        websiteBuilder {
+            inspectWebsiteBuilderPageRouting(
+                stepConfig: $stepConfig
+                requesterId: $requesterId
+                folderId: $folderId
+            ) {
+                data { ${INSPECTION_FIELDS} }
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+export const FOLDER_EXISTS = /* GraphQL */ `
+    query FolderExists($id: ID!) {
+        websiteBuilder {
+            websiteBuilderPageFolderExists(id: $id) {
+                data
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+export const REASSIGN_STEP = /* GraphQL */ `
+    mutation ReassignStep($reviewId: ID!, $stepId: ID!, $userId: ID!) {
+        websiteBuilder {
+            reassignWebsiteBuilderPageReviewStep(
+                reviewId: $reviewId
+                stepId: $stepId
+                userId: $userId
+            ) {
+                data { ${REVIEW_FIELDS} }
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
