@@ -14,6 +14,11 @@ import { ApproveWebsiteBuilderPageReviewStepFeature } from "./ApproveWebsiteBuil
 import { RejectWebsiteBuilderPageReviewStepFeature } from "./RejectWebsiteBuilderPageReviewStep/feature.js";
 import { CancelWebsiteBuilderPageReviewFeature } from "./CancelWebsiteBuilderPageReview/feature.js";
 import { CancelWebsiteBuilderPageReviewsForDeleteFeature } from "./CancelWebsiteBuilderPageReviewsForDelete/feature.js";
+import { ReassignWebsiteBuilderPageReviewStepFeature } from "./ReassignWebsiteBuilderPageReviewStep/feature.js";
+import { ListWebsiteBuilderPageStepCandidatesFeature } from "./ListWebsiteBuilderPageStepCandidates/feature.js";
+import { ListWebsiteBuilderPageReviewStepCandidatesFeature } from "./ListWebsiteBuilderPageReviewStepCandidates/feature.js";
+import { InspectWebsiteBuilderPageRoutingFeature } from "./InspectWebsiteBuilderPageRouting/feature.js";
+import { WebsiteBuilderPageFolderExistsFeature } from "./WebsiteBuilderPageFolderExists/feature.js";
 
 /**
  * The Website Builder wrapper use cases (D132, D133, R45): identity, `workflows` permission and page
@@ -41,8 +46,15 @@ export const WbWrappersFeature = createFeature({
         ApproveWebsiteBuilderPageReviewStepFeature.register(container);
         RejectWebsiteBuilderPageReviewStepFeature.register(container);
         CancelWebsiteBuilderPageReviewFeature.register(container);
+        ReassignWebsiteBuilderPageReviewStepFeature.register(container);
 
         // Confirm path for trash and delete with a review in progress (D134)
         CancelWebsiteBuilderPageReviewsForDeleteFeature.register(container);
+
+        // Routing: reviewer pickers and the workflow editor (R120, R121, R125)
+        ListWebsiteBuilderPageStepCandidatesFeature.register(container);
+        ListWebsiteBuilderPageReviewStepCandidatesFeature.register(container);
+        InspectWebsiteBuilderPageRoutingFeature.register(container);
+        WebsiteBuilderPageFolderExistsFeature.register(container);
     }
 });

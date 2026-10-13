@@ -32,6 +32,11 @@ import { CancelWebsiteBuilderPageReviewUseCase } from "~/features/wrappers/Cance
 import { CancelWebsiteBuilderPageReviewsForDeleteUseCase } from "~/features/wrappers/CancelWebsiteBuilderPageReviewsForDelete/index.js";
 import { ListWebsiteBuilderPageReviewsUseCase } from "~/features/wrappers/ListWebsiteBuilderPageReviews/index.js";
 import { GetWebsiteBuilderPageTargetReviewUseCase } from "~/features/wrappers/GetWebsiteBuilderPageTargetReview/index.js";
+import { ReassignWebsiteBuilderPageReviewStepUseCase } from "~/features/wrappers/ReassignWebsiteBuilderPageReviewStep/index.js";
+import { ListWebsiteBuilderPageStepCandidatesUseCase } from "~/features/wrappers/ListWebsiteBuilderPageStepCandidates/index.js";
+import { ListWebsiteBuilderPageReviewStepCandidatesUseCase } from "~/features/wrappers/ListWebsiteBuilderPageReviewStepCandidates/index.js";
+import { InspectWebsiteBuilderPageRoutingUseCase } from "~/features/wrappers/InspectWebsiteBuilderPageRouting/index.js";
+import { WebsiteBuilderPageFolderExistsUseCase } from "~/features/wrappers/WebsiteBuilderPageFolderExists/index.js";
 import { WbPageReviewGuardService } from "~/features/wrappers/WbPageReviewGuardService/index.js";
 
 const WRAPPERS: Abstraction<unknown>[] = [
@@ -49,6 +54,11 @@ const WRAPPERS: Abstraction<unknown>[] = [
     CancelWebsiteBuilderPageReviewsForDeleteUseCase,
     ListWebsiteBuilderPageReviewsUseCase,
     GetWebsiteBuilderPageTargetReviewUseCase,
+    ReassignWebsiteBuilderPageReviewStepUseCase,
+    ListWebsiteBuilderPageStepCandidatesUseCase,
+    ListWebsiteBuilderPageReviewStepCandidatesUseCase,
+    InspectWebsiteBuilderPageRoutingUseCase,
+    WebsiteBuilderPageFolderExistsUseCase,
     WbPageReviewGuardService,
     WbPageFolderExistsService
 ];
