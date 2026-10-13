@@ -24,10 +24,14 @@ class NotifyFolderChangeUseCaseImpl implements UseCaseAbstraction.Interface {
         private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
     ) {}
 
-    async execute({ id, change }: UseCaseAbstraction.Params): Promise<void> {
-        const identity = this.identityContext.getIdentity();
+    async execute({ id, change, identityId }: UseCaseAbstraction.Params): Promise<void> {
+        const recipient = identityId ?? this.identityContext.getIdentity()?.id;
+        if (!recipient) {
+            return;
+        }
+
         await this.sendToIdentity.execute(
-            { id: identity.id },
+            { id: recipient },
             { action: ACTIONS[change], data: { id } }
         );
     }

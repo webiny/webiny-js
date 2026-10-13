@@ -54,6 +54,7 @@ import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folder/List
 import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
 import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpty/feature.js";
 import { AcoAiToolsFeature } from "~/features/ai/index.js";
+import { NotifyFolderChangeFeature } from "~/features/folder/NotifyFolderChange/index.js";
 
 class AcoSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     public getSchemaKey = staticSchemaKey("api-aco/AcoSchemaFactoryImpl");
@@ -107,6 +108,7 @@ export const AcoFeature = createFeature({
         CreateFlpOnFolderCreatedFeature.register(container);
         UpdateFlpOnFolderUpdatedFeature.register(container);
         DeleteFlpOnFolderDeletedFeature.register(container);
+        NotifyFolderChangeFeature.register(container);
         EnsureFolderIsEmptyOnDeleteFeature.register(container);
         EnsureHcmsFolderIsEmptyOnDeleteFeature.register(container);
 

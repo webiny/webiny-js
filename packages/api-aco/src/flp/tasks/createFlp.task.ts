@@ -5,9 +5,13 @@ import {
 import { CREATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
 import { type ICreateFlpTaskInput } from "~/types.js";
 import { CreateFlpUseCase } from "~/features/flp/CreateFlp/index.js";
+import { NotifyFolderChangeUseCase } from "~/features/folder/NotifyFolderChange/index.js";
 
 class CreateFlpTaskHandlerImpl implements TaskHandler.Interface<ICreateFlpTaskInput> {
-    constructor(private createFlp: CreateFlpUseCase.Interface) {}
+    constructor(
+        private createFlp: CreateFlpUseCase.Interface,
+        private notifyFolderChange: NotifyFolderChangeUseCase.Interface
+    ) {}
 
     async run({ input, controller }: TaskHandler.RunParams<ICreateFlpTaskInput>) {
         try {
@@ -21,6 +25,15 @@ class CreateFlpTaskHandlerImpl implements TaskHandler.Interface<ICreateFlpTaskIn
 
             await this.createFlp.execute(input.folder);
 
+            // Only now can the admin read the folder back with its permissions.
+            if (input.notifyIdentityId) {
+                await this.notifyFolderChange.execute({
+                    id: input.folder.id,
+                    change: "created",
+                    identityId: input.notifyIdentityId
+                });
+            }
+
             return controller.response.done("Task done: FLP record created.");
         } catch (error) {
             return controller.response.error(error);
@@ -30,7 +43,7 @@ class CreateFlpTaskHandlerImpl implements TaskHandler.Interface<ICreateFlpTaskIn
 
 const CreateFlpTaskHandler = TaskHandler.createImplementation({
     implementation: CreateFlpTaskHandlerImpl,
-    dependencies: [CreateFlpUseCase]
+    dependencies: [CreateFlpUseCase, NotifyFolderChangeUseCase]
 });
 
 class CreateFlpTaskImpl implements TaskDefinition.Interface {

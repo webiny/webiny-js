@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { Container } from "@webiny/di";
 import { AcoFeature } from "@webiny/api-aco";
+import { Result } from "@webiny/feature/api";
+import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import {
     CreateFolderUseCase,
@@ -20,10 +23,18 @@ describe("Deleting Website Builder folders", () => {
     let container: Container;
 
     beforeEach(async () => {
-        // The test handler doesn't load ACO, which owns folders, so this test adds it.
+        // The test handler doesn't load ACO, which owns folders, so this test adds it, along with
+        // the task service and websocket sender that ACO's folder handlers need.
         const acoStorage = getStorageOps("aco");
+        const registerAco = (c: Container) => {
+            AcoFeature.register(c);
+            c.registerInstance(WebsocketsSendToIdentityUseCase, {
+                execute: async () => Result.ok()
+            });
+            InlineTaskServiceFeature.register(c);
+        };
         const handler = useHandler({
-            legacyPlugins: [...acoStorage.plugins, (c: Container) => AcoFeature.register(c)]
+            legacyPlugins: [...acoStorage.plugins, registerAco]
         });
         ({ container } = await handler.handler());
     });
