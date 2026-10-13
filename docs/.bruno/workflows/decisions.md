@@ -735,3 +735,9 @@ Decided 2026-10-12 (phase 2 plan review).
 Refines D62, D79, D80 and D84 (spec 4.5, 5.1, 9.2, 9.3).
 
 Confirmed 2026-10-12: the bound-workflow lookup fails closed (a failed workflow list refuses updates, moves, trash and delete on bound-or-unknown models); move, trash and delete are refused when any revision of the entry has an in-progress review; the move, trash and delete rules check the workflow binding first, like the save block.
+
+## D135. Review title from the content, editable on request
+
+The review title defaults to the content's title (entry or page title, as today). The requester may change it when requesting the review: the request wrappers take an optional `title`; when given it must have at least 5 characters after trimming (D100), otherwise the content's title is used. The title is fixed once the review exists.
+
+Refines D100 and spec 10 (request review input). Decided 2026-10-13.
