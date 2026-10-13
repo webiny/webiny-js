@@ -14,6 +14,9 @@ import type { IListAuditLogsParams } from "~/types";
 import type { IAuditLog } from "~/storage/types";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
+import { Result } from "@webiny/feature/api";
+import { registerInlineTaskService } from "@webiny/api-core-testing";
 
 export interface AuditLogsTestContext {
     container: Container;
@@ -51,6 +54,12 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             processLegacyPlugins(container, auditLogsStorage.plugins);
             container.register(FileModel);
             AcoFeature.register(container);
+            // No socket server in tests; messages to open admin tabs go nowhere.
+            container.registerInstance(WebsocketsSendToIdentityUseCase, {
+                execute: async () => Result.ok()
+            });
+            // Tasks run inside trigger(), so a test sees their effects when the call returns.
+            registerInlineTaskService(container);
             AuditLogsFeature.register(container);
         }
     };

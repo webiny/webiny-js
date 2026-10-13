@@ -29,6 +29,9 @@ import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
+import { Result } from "@webiny/feature/api";
+import { registerInlineTaskService } from "@webiny/api-core-testing";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -92,6 +95,12 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 extraPlugins: extraCmsPlugins
             });
             AcoFeature.register(container);
+            // No socket server in tests; messages to open admin tabs go nowhere.
+            container.registerInstance(WebsocketsSendToIdentityUseCase, {
+                execute: async () => Result.ok()
+            });
+            // Tasks run inside trigger(), so a test sees their effects when the call returns.
+            registerInlineTaskService(container);
             AcoHcmsFeature.register(container);
             // DI-native function plugins run after the package's features so they can override
             // defaults (last-wins), mirroring the legacy ContextPlugin timing.

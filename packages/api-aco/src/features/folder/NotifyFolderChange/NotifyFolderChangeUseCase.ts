@@ -17,20 +17,14 @@ const ACTIONS: Record<UseCaseAbstraction.Params["change"], string> = {
 /*
  * The change is already saved whether or not the message goes out, so the send's result is not the
  * caller's result. When it fails, the admin shows the change after its next reload, as it did before.
- * The same goes for an app without websockets: every folder write runs through here, so it must work
- * there too.
  */
 class NotifyFolderChangeUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private sendToIdentity?: WebsocketsSendToIdentityUseCase.Interface
+        private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
     ) {}
 
     async execute({ id, change, identityId }: UseCaseAbstraction.Params): Promise<void> {
-        if (!this.sendToIdentity) {
-            return;
-        }
-
         const recipient = identityId ?? this.identityContext.getIdentity()?.id;
         if (!recipient) {
             return;
@@ -46,5 +40,5 @@ class NotifyFolderChangeUseCaseImpl implements UseCaseAbstraction.Interface {
 export const NotifyFolderChangeUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: NotifyFolderChangeUseCaseImpl,
-    dependencies: [IdentityContext, [WebsocketsSendToIdentityUseCase, { optional: true }]]
+    dependencies: [IdentityContext, WebsocketsSendToIdentityUseCase]
 });
