@@ -132,8 +132,8 @@ export class WorkflowValidator {
             );
         }
 
-        // Spec 6: team targets must be among the step's teams. User targets need team lookups
-        // and are validated in phase 4 (A7).
+        // Spec 6: team targets must be among the step's teams. User targets need a user lookup,
+        // so `StoreWorkflowUseCase` checks them after this validation (R122).
         for (const rule of parsed.data.assignment.rules) {
             if (rule.target.type === "team" && !parsed.data.teams.includes(rule.target.id)) {
                 return fail(
