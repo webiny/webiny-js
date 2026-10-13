@@ -1,4 +1,4 @@
-import { defineExtension, zodSrcPath } from "~/extensions/index.js";
+import { defineExtension, zodSrcPath } from "~/defineExtension/index.js";
 import { ExtensionSrcResolver } from "~/index.js";
 import { z } from "zod";
 import path from "path";
