@@ -5,6 +5,10 @@ import { Container } from "@webiny/feature/api";
 import { OpenSearchQueryBuilderOperatorFeature } from "~/features/OpenSearchQueryBuilderOperator/feature.js";
 import { OpenSearchQueryBuilderOperator } from "~/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperator.js";
 import { OpenSearchQueryBuilderOperatorRegistry } from "~/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperatorRegistry.js";
+import { OpenSearchIndexFeature } from "~/features/OpenSearchIndex/feature.js";
+import { OpenSearchIndex } from "~/features/OpenSearchIndex/abstractions/OpenSearchIndex.js";
+import { OpenSearchIndexRegistry } from "~/features/OpenSearchIndex/abstractions/OpenSearchIndexRegistry.js";
+import type { OpenSearchIndexRequestBody } from "~/types.js";
 
 class CustomOperator implements OpenSearchQueryBuilderOperator.Interface {
     public getOperator(): string {
@@ -18,6 +22,19 @@ class CustomOperator implements OpenSearchQueryBuilderOperator.Interface {
 
 const CustomOperatorImpl = OpenSearchQueryBuilderOperator.createImplementation({
     implementation: CustomOperator,
+    dependencies: []
+});
+
+class CustomIndex implements OpenSearchIndex.Interface {
+    public readonly body: OpenSearchIndexRequestBody = {};
+
+    public canUse(): boolean {
+        return true;
+    }
+}
+
+const CustomIndexImpl = OpenSearchIndex.createImplementation({
+    implementation: CustomIndex,
     dependencies: []
 });
 
@@ -43,5 +60,23 @@ describe("OpenSearch query builder operator registry", () => {
         expect(extensionRegistry.get("eq")).toBeDefined();
         expect(otherRegistry.get("custom")).toBeUndefined();
         expect(rootRegistry.get("custom")).toBeUndefined();
+    });
+
+    it("includes indexes registered in the request container", () => {
+        const root = new Container();
+        OpenSearchIndexFeature.register(root);
+
+        const withExtension = root.createChildContainer();
+        withExtension.register(CustomIndexImpl);
+        const without = root.createChildContainer();
+
+        const extensionIndexes = withExtension.resolve(OpenSearchIndexRegistry).getAll();
+        const otherIndexes = without.resolve(OpenSearchIndexRegistry).getAll();
+        const rootIndexes = root.resolve(OpenSearchIndexRegistry).getAll();
+
+        expect(extensionIndexes).toHaveLength(1);
+        expect(extensionIndexes[0]).toBeInstanceOf(CustomIndex);
+        expect(otherIndexes).toHaveLength(0);
+        expect(rootIndexes).toHaveLength(0);
     });
 });
