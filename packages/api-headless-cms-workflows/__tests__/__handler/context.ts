@@ -18,7 +18,7 @@ export const createContextHandler = (
 ) => {
     const testLicence = createTestWcpLicense();
 
-    const { getContext } = createCmsTestHandler({
+    const handler = createCmsTestHandler({
         ...params,
         legacyPlugins: [
             ...createModelsPlugins(params),
@@ -38,7 +38,15 @@ export const createContextHandler = (
         identity: { id: "id-12345678", type: "admin", displayName: "John Doe" },
         tenant: { id: "root" },
         opensearch: createTestOpenSearchClient(),
+        handler,
         /** `getContext()` is `Record<string, any>` unless typed; the tests read the CMS context. */
-        context: () => getContext<CmsContext>()
+        context: () => handler.getContext<CmsContext>(),
+        /** The main `/graphql` endpoint (the `cms` root lives there). */
+        invoke: handler.invoke,
+        /** The CMS endpoints (`/cms/manage` by default). */
+        invokeCms: handler.invokeCms,
+        createQuery: handler.createQuery,
+        createMutation: handler.createMutation,
+        introspect: handler.introspect
     };
 };

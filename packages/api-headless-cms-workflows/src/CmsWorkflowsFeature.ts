@@ -6,6 +6,7 @@ import { CmsTargetFeature } from "./features/target/feature.js";
 import { CmsHooksFeature } from "./features/hooks/feature.js";
 import { CmsWrappersFeature } from "./features/wrappers/feature.js";
 import { createEntrySystemSchemaExtension } from "./graphql/entrySystemSchema.js";
+import { CmsWorkflowsSchemaFactory } from "./graphql/CmsWorkflowsSchemaFactory.js";
 
 export const CmsWorkflowsFeature = createFeature({
     name: "CmsWorkflows",
@@ -27,6 +28,9 @@ export const CmsWorkflowsFeature = createFeature({
 
         // Wrapper use cases (identity, permission and target checks around the engine).
         CmsWrappersFeature.register(container);
+
+        // Every CMS workflow and review operation on the `cms` root of `/graphql` (R88).
+        container.register(CmsWorkflowsSchemaFactory);
 
         // Add the `workflow` field to CmsEntrySystem on the CMS endpoint, which is served from the
         // separate CMS schema and needs its own CmsGraphQLSchemaFactory entry.

@@ -11,7 +11,7 @@ import { FakeListUserTeams } from "./FakeListUserTeams.js";
 import { OTHER_REVIEWER, REVIEW_TEAM, REVIEWER } from "./identities.js";
 
 /** Both reviewers are in the test step's team; nobody else is in any team. */
-const TEAMS: Record<string, string[]> = {
+export const TEST_TEAMS: Record<string, string[]> = {
     [REVIEWER.id]: [REVIEW_TEAM],
     [OTHER_REVIEWER.id]: [REVIEW_TEAM]
 };
@@ -39,7 +39,10 @@ export const createTestContext = async (params: TestContextParams = {}): Promise
         legacyPlugins: [
             (container: Container) => {
                 if (params.fakeTeams) {
-                    container.registerInstance(ListUserTeamsUseCase, new FakeListUserTeams(TEAMS));
+                    container.registerInstance(
+                        ListUserTeamsUseCase,
+                        new FakeListUserTeams(TEST_TEAMS)
+                    );
                 }
                 if (params.fakeFolderLevelPermissions) {
                     container.register(FakeFolderLevelPermissions);

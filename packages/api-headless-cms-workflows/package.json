@@ -19,10 +19,12 @@
   "dependencies": {
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-core": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-tasks": "0.0.0",
     "@webiny/api-workflows": "0.0.0",
-    "@webiny/feature": "0.0.0"
+    "@webiny/feature": "0.0.0",
+    "@webiny/utils": "0.0.0"
   },
   "devDependencies": {
     "@webiny/api-core-testing": "0.0.0",
