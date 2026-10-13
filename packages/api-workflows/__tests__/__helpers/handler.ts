@@ -10,7 +10,8 @@ export interface WorkflowsTestContext {
 
 /**
  * Request context with `WorkflowsFeature` registered. `params.setup` runs after it, so tests can
- * register fakes and decorators on top of the workflows abstractions.
+ * register fakes and decorators on top of the workflows abstractions. The same handler also serves
+ * GraphQL on `/graphql`: `invoke`, `createQuery`, `createMutation` and `introspect`.
  */
 export const createContextHandler = async (params: CmsTestHandlerParams = {}) => {
     const handler = createCmsTestHandler({
@@ -25,6 +26,10 @@ export const createContextHandler = async (params: CmsTestHandlerParams = {}) =>
 
     return {
         handler,
-        context
+        context,
+        invoke: handler.invoke,
+        createQuery: handler.createQuery,
+        createMutation: handler.createMutation,
+        introspect: handler.introspect
     };
 };

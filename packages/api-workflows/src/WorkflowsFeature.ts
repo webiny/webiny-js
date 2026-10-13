@@ -39,6 +39,7 @@ import { CurrentUserTeamsFeature } from "~/features/identity/CurrentUserTeams/fe
 import { CurrentReviewViewerFeature } from "~/features/identity/CurrentReviewViewer/feature.js";
 import { CandidateReadAccessFeature } from "~/features/identity/CandidateReadAccess/feature.js";
 import { WorkflowsPermissionsFeature } from "~/features/permissions/WorkflowsPermissions/feature.js";
+import { WorkflowsSchemaFactory } from "~/graphql/WorkflowsSchemaFactory.js";
 
 export const WorkflowsFeature = createFeature({
     name: "Workflows",
@@ -107,5 +108,8 @@ export const WorkflowsFeature = createFeature({
         CurrentUserTeamsFeature.register(container);
         CurrentReviewViewerFeature.register(container);
         CandidateReadAccessFeature.register(container);
+
+        // GraphQL on /graphql: the `workflows` root and the shared types (R88, R100)
+        container.register(WorkflowsSchemaFactory);
     }
 });
