@@ -9,7 +9,7 @@ import { WB_PAGE_NAMESPACE } from "~/constants.js";
  * revision is published only with its active review approved. Lookup failures block. The CMS
  * adapter's publish rule skips pages (private model, R52). Creating a page revision as published is
  * not a publish and is not blocked (D134 point 2). The throw rejects `PublishPageUseCase` (A26);
- * phase 3 maps it in the WB resolvers and the scheduler.
+ * WB's page resolvers and the scheduler's publish action keep its code and data (R103).
  */
 class RequireApprovedReviewOnPagePublishImpl implements PageBeforePublishEventHandler.Interface {
     public constructor(

@@ -95,7 +95,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await getPageRevisions.execute(args.entryId);
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     const revisions = result.value;
@@ -213,7 +215,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await createPage.execute(args.data);
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -231,7 +235,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await updatePage.execute(args.id, args.data);
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -252,7 +258,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     );
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -270,7 +278,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await duplicatePage.execute({ id: args.id });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -292,7 +302,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -310,7 +322,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await publishPage.execute({ id: args.id });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -328,7 +342,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await unpublishPage.execute({ id: args.id });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -346,7 +362,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await movePage.execute({ id: args.id, folderId: args.folderId });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return true;
@@ -364,7 +382,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await createRevision.execute({ id: args.id });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -388,7 +408,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return true;
@@ -408,7 +430,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
