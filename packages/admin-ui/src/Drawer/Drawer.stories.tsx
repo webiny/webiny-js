@@ -1,10 +1,11 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Drawer } from "./Drawer.js";
-import { Button } from "~/Button/index.js";
+import { Button, IconButton } from "~/Button/index.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";
 import { Tabs } from "~/Tabs/index.js";
 import { ReactComponent as DoorbellIcon } from "@webiny/icons/ring_volume.svg";
+import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 
 const meta: Meta<typeof Drawer> = {
     title: "Components/Drawer",
@@ -245,6 +246,23 @@ export const WithIcon: Story = {
     }
 };
 
+export const WithHeaderActions: Story = {
+    args: {
+        ...Default.args,
+        headerActions: (
+            <IconButton
+                variant={"ghost"}
+                size={"md"}
+                iconSize={"lg"}
+                title={"Refresh"}
+                aria-label={"Refresh"}
+                icon={<RefreshIcon />}
+            />
+        ),
+        children: <>Header actions sit next to the close button.</>
+    }
+};
+
 export const AsModal: Story = {
     args: {
         ...Default.args,
@@ -344,6 +362,10 @@ export const Documentation: Story = {
             description: "Show separator below the header",
             control: "boolean",
             defaultValue: true
+        },
+        headerActions: {
+            description:
+                "Controls rendered in the header, next to the close button, e.g. icon buttons."
         },
         footerSeparator: {
             description: "Show separator above the footer",
