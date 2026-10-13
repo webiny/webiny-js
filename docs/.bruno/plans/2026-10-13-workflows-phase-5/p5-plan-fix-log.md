@@ -100,3 +100,8 @@ Tasks 7-15 checked against current code (`BackgroundTasksGraphQLSchema` resolver
 
 1. Stuck detection, missing task (Task 14, R152): `GetTaskUseCase` answers `null` on any read failure, so a null task now gets the same `STEP_RUN_STUCK_GRACE_MS` (300000), measured from the step's `startedOn` (fallback `reachedOn`, then the review's `lastChangedOn`); stuck only once older than the grace. Task 14 prose and code updated, the "task record is gone" test seeds a step older than the grace, new test for a recent step with a null task that stays untouched. Task 9's constant unchanged. Files: 00-shared.md, task-14-stuck-detection.md.
 2. Sub-phase overviews: "Rulings R131-R158" changed to "Rulings R131-R163" in all five 00-5.*.md files.
+
+## Review-fix round 3
+
+1. Stuck detection tests (Task 14): "task record is gone" and "recent step with null task" mutated `seed.steps[0]` on a `Review` instance (no public `steps`, TS error and runtime TypeError); both now seed plain data with `toSaveData(createRunningAutomationReview("task-1"))`, mutate `startedOn` on it and pass `setup({ seed })`. Files: task-14-stuck-detection.md.
+2. "Gone" test keeps the explicit old `startedOn` override, with a comment that it pins the step older than `STEP_RUN_STUCK_GRACE_MS` regardless of the fixture's reach time. Files: task-14-stuck-detection.md.

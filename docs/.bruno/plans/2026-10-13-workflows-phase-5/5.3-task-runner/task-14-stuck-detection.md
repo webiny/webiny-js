@@ -291,9 +291,10 @@ describe("Stuck detection on single reads (D28, R152)", () => {
     });
 
     it("fails the step when the task record is gone and the step is older than the grace", async () => {
-        const seed = createRunningAutomationReview("task-1");
+        const seed = toSaveData(createRunningAutomationReview("task-1"));
+        // pins the step older than STEP_RUN_STUCK_GRACE_MS regardless of the fixture's reach time
         seed.steps[0].startedOn = new Date(Date.now() - STEP_RUN_STUCK_GRACE_MS - 1000).toISOString();
-        const { getReview } = await setup({ seed: toSaveData(seed) });
+        const { getReview } = await setup({ seed });
 
         const review = expectOk(await getReview.execute({ id: "review-1" }));
 
@@ -301,9 +302,9 @@ describe("Stuck detection on single reads (D28, R152)", () => {
     });
 
     it("leaves a recent step alone when its task record is missing, the read may have failed (R152)", async () => {
-        const seed = createRunningAutomationReview("task-1");
+        const seed = toSaveData(createRunningAutomationReview("task-1"));
         seed.steps[0].startedOn = new Date(Date.now() - 1000).toISOString();
-        const { getReview, reviews } = await setup({ seed: toSaveData(seed) });
+        const { getReview, reviews } = await setup({ seed });
 
         const review = expectOk(await getReview.execute({ id: "review-1" }));
 
