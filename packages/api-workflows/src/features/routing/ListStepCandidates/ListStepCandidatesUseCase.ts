@@ -1,4 +1,5 @@
 import { Result } from "@webiny/feature/api";
+import { Review } from "~/domain/review/Review.js";
 import { ReviewValidationError } from "~/domain/review/errors.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
@@ -54,18 +55,13 @@ class ListStepCandidatesUseCaseImpl implements UseCase.Interface {
                     )
                 );
             }
-            const config =
-                step.type === REVIEW_STEP_TYPE ? parseReviewStepConfig(step.config) : null;
-            if (!config) {
-                return Result.fail(
-                    new ReviewValidationError(`Step "${step.title}" is not a review step.`)
-                );
+            // The reassign transition's own rules: no candidates for a step it would refuse.
+            const allowed = Review.fromData(review).checkReassign({ stepId: input.stepId });
+            if (allowed.isFail()) {
+                return Result.fail(allowed.error);
             }
             params = {
-                teamIds:
-                    step.candidateTeamIds.length > 0
-                        ? [...step.candidateTeamIds]
-                        : [...config.teams],
+                teamIds: [...step.candidateTeamIds],
                 requesterId: review.createdBy.id,
                 model: review.model,
                 read: {

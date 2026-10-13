@@ -2,8 +2,11 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { StepCandidate } from "~/domain/routing/types.js";
 import type { RoutingDependencyError } from "~/domain/routing/errors.js";
 import type {
+    ReviewInvalidStateError,
     ReviewNotFoundError,
     ReviewPersistenceError,
+    ReviewStepNotCurrentError,
+    ReviewStepNotReassignableError,
     ReviewValidationError
 } from "~/domain/review/errors.js";
 import type { WorkflowNotFoundError, WorkflowPersistenceError } from "~/domain/workflow/errors.js";
@@ -35,6 +38,9 @@ export interface IListStepCandidatesUseCaseErrors {
     reviewNotFound: ReviewNotFoundError;
     reviewPersistence: ReviewPersistenceError;
     validation: ReviewValidationError;
+    invalidState: ReviewInvalidStateError;
+    stepNotCurrent: ReviewStepNotCurrentError;
+    stepNotReassignable: ReviewStepNotReassignableError;
     routing: RoutingDependencyError;
 }
 

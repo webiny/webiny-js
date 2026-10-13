@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
-import { createRoutingContext, resetRoutingFakes } from "~tests/__helpers/routingContext.js";
+import {
+    createRoutingContext,
+    LEGAL_TEAM_ID,
+    resetRoutingFakes
+} from "~tests/__helpers/routingContext.js";
 import { FakeListUsers } from "~tests/__helpers/FakeListUsers.js";
 import { FakeReviewTargetLoader } from "~tests/__helpers/FakeReviewTargetLoader.js";
 import {
@@ -11,13 +15,17 @@ import {
 import { createRequestInput } from "~tests/__helpers/reviewContext.js";
 import {
     ARTICLE_MODEL,
+    createReviewStep,
     createWorkflowValues,
     editor,
     expectOk,
     requester,
     REVIEW_TEAM_ID
 } from "~tests/__helpers/fixtures.js";
+import type { WorkflowStep } from "~/domain/workflow/types.js";
+import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
+import { CancelReviewUseCase } from "~/features/review/CancelReview/index.js";
 import { RequestReviewUseCase } from "~/features/review/RequestReview/index.js";
 import { ListStepCandidatesUseCase } from "~/features/routing/ListStepCandidates/index.js";
 
@@ -172,6 +180,104 @@ describe("ListStepCandidatesUseCase (D97, D128, R120)", () => {
         );
         expect(noReview.error.code).toBe("Workflows/Review/NotFound");
         expect(readChecks).toEqual([]);
+    });
+
+    it("refuses a non-review step for a request", async () => {
+        const routing = await createRoutingContext();
+        const { container } = routing.context;
+        expectOk(
+            await container.resolve(WorkflowRepository).create(
+                createWorkflowValues({
+                    steps: [
+                        {
+                            ...createReviewStep({ id: "legal", title: "Legal review" }),
+                            type: "approval"
+                        }
+                    ]
+                })
+            )
+        );
+
+        const result = await container.resolve(ListStepCandidatesUseCase).execute(REQUEST_INPUT);
+
+        expect(result.error.code).toBe("Workflows/Review/Validation");
+        expect(result.error.message).toBe('Step "Legal review" is not a review step.');
+        expect(readChecks).toEqual([]);
+    });
+
+    it("refuses reassign candidates for an unknown step, another step and a finished review", async () => {
+        const { context, listCandidates, users } = await setup();
+        const review = expectOk(
+            await context.container.resolve(RequestReviewUseCase).execute(createRequestInput())
+        );
+        readChecks.length = 0;
+        users.calls.length = 0;
+
+        const noStep = await listCandidates.execute({ reviewId: review.id, stepId: "nope" });
+        const otherStep = await listCandidates.execute({
+            reviewId: review.id,
+            stepId: "editorial"
+        });
+        expectOk(
+            await context.container
+                .resolve(CancelReviewUseCase)
+                .execute({ reviewId: review.id, actor: requester })
+        );
+        const cancelled = await listCandidates.execute({ reviewId: review.id, stepId: "legal" });
+
+        expect(noStep.error.code).toBe("Workflows/Review/Validation");
+        expect(noStep.error.message).toBe('Step "nope" does not exist in this review.');
+        expect(otherStep.error.code).toBe("Workflows/Review/StepNotCurrent");
+        expect(cancelled.error.code).toBe("Workflows/Review/InvalidState");
+        expect(users.calls).toEqual([]);
+        expect(readChecks).toEqual([]);
+    });
+
+    it("lists for reassign only the members of the teams the step was reached with", async () => {
+        const routing = await createRoutingContext({
+            setup: container => {
+                container.register(FakeReviewTargetLoader);
+            }
+        });
+        const { container } = routing.context;
+        const legalStep: WorkflowStep = {
+            ...createReviewStep({ id: "legal", title: "Legal review" }),
+            config: {
+                teams: [REVIEW_TEAM_ID, LEGAL_TEAM_ID],
+                assignment: {
+                    strategy: "none",
+                    allowManualPick: false,
+                    rules: [
+                        {
+                            id: "rule-legal",
+                            conditions: {},
+                            target: { type: "team", id: LEGAL_TEAM_ID }
+                        }
+                    ]
+                }
+            }
+        };
+        expectOk(
+            await container
+                .resolve(StoreWorkflowUseCase)
+                .execute({ workflow: createWorkflowValues({ steps: [legalStep] }), actor: editor })
+        );
+        const review = expectOk(
+            await container.resolve(RequestReviewUseCase).execute(createRequestInput())
+        );
+        readableUsers.add("user-cara");
+        routing.users.calls.length = 0;
+
+        const rows = expectOk(
+            await container
+                .resolve(ListStepCandidatesUseCase)
+                .execute({ reviewId: review.id, stepId: "legal" })
+        );
+
+        expect(rows.map(row => row.id)).toEqual(["user-cara"]);
+        expect(routing.users.calls).toEqual([
+            { input: { where: { teams_in: [LEGAL_TEAM_ID] } }, authorizationEnabled: false }
+        ]);
     });
 
     it("returns the routing dependency error when a lookup fails or a read check throws", async () => {
