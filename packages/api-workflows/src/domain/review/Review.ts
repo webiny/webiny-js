@@ -88,6 +88,11 @@ export interface ReviewCancelParams {
     reason?: string | null;
 }
 
+export interface ReviewReassignToCheckParams extends ReviewStepParams {
+    /** The chosen user; the current owner is refused (R126). */
+    userId: string;
+}
+
 export interface ReviewReassignParams extends ReviewStepParams {
     /** Who reassigns; recorded as `by` (D127). */
     actor: Actor;
@@ -127,8 +132,13 @@ export type ReviewReassignError =
     | ReviewStepNotCurrentError
     | ReviewStepNotReassignableError;
 
-/** Reassign adds the same-owner rule to the reassign guard. */
-export type ReviewReassignTransitionError = ReviewReassignError | ReviewAlreadyOwnerError;
+/** With a chosen user, the reassign check adds the same-owner rule (R126). */
+export type ReviewReassignCheckError = ReviewReassignError | ReviewAlreadyOwnerError;
+
+/** The transition adds the requester rule to the check (spec 5.1). */
+export type ReviewReassignTransitionError =
+    | ReviewReassignCheckError
+    | ReviewRequesterCannotReviewError;
 
 /**
  * One run of a workflow on one target revision (spec 3, 4.2, 5.1). Transitions take an explicit
@@ -495,26 +505,33 @@ export class Review {
     }
 
     /**
+     * `checkReassign` plus the same-owner rule for the chosen user (R126), so a reassign to the
+     * current owner is refused before the caller validates the user.
+     */
+    public checkReassignTo(
+        params: ReviewReassignToCheckParams
+    ): Result<void, ReviewReassignCheckError> {
+        return Review.toCheck(this.guardReassignTo(params));
+    }
+
+    /**
      * Gives the step to the chosen user (spec 5.1, R119), through the same guard as
-     * `checkReassign`. The caller has validated the user like a pick (R112). An `awaiting` step
-     * starts now; an `inReview` step keeps its `startedOn`.
+     * `checkReassignTo`, with the new owner as the chosen user. The caller has validated the user
+     * like a pick (R112); the requester is refused here too, as on start and take over. An
+     * `awaiting` step starts now; an `inReview` step keeps its `startedOn`.
      */
     public reassign(params: ReviewReassignParams): Result<void, ReviewReassignTransitionError> {
-        const guard = this.guardReassign(params);
+        const guard = this.guardReassignTo({ stepId: params.stepId, userId: params.owner.id });
         if (guard.isFail()) {
             return Result.fail(guard.error);
         }
         const step = guard.value;
-        const previousOwner = step.owner;
-        if (
-            previousOwner &&
-            previousOwner.type === params.owner.type &&
-            previousOwner.id === params.owner.id
-        ) {
+        if (this.isRequestedBy(params.owner)) {
             return Result.fail(
-                new ReviewAlreadyOwnerError({ reviewId: this.data.id, stepId: step.id })
+                new ReviewRequesterCannotReviewError({ reviewId: this.data.id, stepId: step.id })
             );
         }
+        const previousOwner = step.owner;
         const fromState = step.state;
 
         step.owner = { ...params.owner };
@@ -680,6 +697,23 @@ export class Review {
                     stepId: step.id,
                     ownerType: step.owner?.type ?? null
                 })
+            );
+        }
+        return Result.ok(step);
+    }
+
+    /** The reassign guard, then the same-owner rule for the chosen user (R126). */
+    private guardReassignTo(
+        params: ReviewReassignToCheckParams
+    ): Result<ReviewStep, ReviewReassignCheckError> {
+        const guard = this.guardReassign(params);
+        if (guard.isFail()) {
+            return Result.fail(guard.error);
+        }
+        const step = guard.value;
+        if (step.owner?.type === "user" && step.owner.id === params.userId) {
+            return Result.fail(
+                new ReviewAlreadyOwnerError({ reviewId: this.data.id, stepId: step.id })
             );
         }
         return Result.ok(step);

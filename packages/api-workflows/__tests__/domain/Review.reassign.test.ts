@@ -115,6 +115,35 @@ describe("Review.reassign (spec 5.1, D33, R119)", () => {
         expect(review.toData().steps[0].owner).toEqual(reviewer);
     });
 
+    it("refuses the requester as the new owner and records nothing", () => {
+        const review = createStartedReview();
+        review.pullFacts();
+
+        const result = review.reassign({
+            stepId: "legal",
+            actor: manager,
+            owner: requester,
+            now: LATER
+        });
+
+        expect(result.error.code).toBe("Workflows/Review/RequesterCannotReview");
+        expect(result.error.data).toEqual({ reviewId: "review-1", stepId: "legal" });
+        expect(review.pullFacts()).toEqual([]);
+        expect(review.toData().steps[0].owner).toEqual(reviewer);
+    });
+
+    it("checks the chosen user against the current owner without a transition", () => {
+        const review = createStartedReview();
+
+        const sameOwner = review.checkReassignTo({ stepId: "legal", userId: reviewer.id });
+        const otherUser = review.checkReassignTo({ stepId: "legal", userId: newOwner.id });
+        const noUser = review.checkReassign({ stepId: "legal" });
+
+        expect(sameOwner.error.code).toBe("Workflows/Review/AlreadyOwner");
+        expect(otherUser.isOk()).toBe(true);
+        expect(noUser.isOk()).toBe(true);
+    });
+
     it("uses the reassign guard: AI step, other step, finished review", () => {
         const aiData = toSaveData(createStartedReview());
         aiData.steps[0].owner = { ...aiActor };

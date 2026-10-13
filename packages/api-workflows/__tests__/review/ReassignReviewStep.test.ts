@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { createRoutingContext, resetRoutingFakes } from "~tests/__helpers/routingContext.js";
+import {
+    createRoutingContext,
+    LEGAL_TEAM_ID,
+    resetRoutingFakes
+} from "~tests/__helpers/routingContext.js";
 import { FakeReviewTargetLoader } from "~tests/__helpers/FakeReviewTargetLoader.js";
 import {
     RecordingEventPublisher,
@@ -13,6 +17,7 @@ import {
 } from "~tests/__helpers/FakeReviewTargetReadAccess.js";
 import { createRequestInput } from "~tests/__helpers/reviewContext.js";
 import {
+    createReviewStep,
     createWorkflowValues,
     editor,
     expectOk,
@@ -21,6 +26,7 @@ import {
     reviewer
 } from "~tests/__helpers/fixtures.js";
 import type { Actor } from "~/domain/review/types.js";
+import type { WorkflowStep } from "~/domain/workflow/types.js";
 import type { ReviewStepReassignedEvent } from "~/features/review/events.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
@@ -142,8 +148,8 @@ describe("ReassignReviewStepUseCase (spec 5.1, R112, R119)", () => {
     });
 
     it("reassigns a step in review away from its owner", async () => {
-        const { context, reassign, review } = await setup();
-        expectOk(
+        const { context, reassign, review, listRecords } = await setup();
+        const started = expectOk(
             await context.container.resolve(StartReviewStepUseCase).execute({
                 reviewId: review.id,
                 stepId: "legal",
@@ -173,6 +179,14 @@ describe("ReassignReviewStepUseCase (spec 5.1, R112, R119)", () => {
             item => item.eventType === "Workflows/Review/StepReassigned"
         ) as ReviewStepReassignedEvent;
         expect(event.payload.fact.previousOwner).toEqual(reviewer);
+        expect(reassigned.steps[0].startedOn).toBe(started.steps[0].startedOn);
+        const record = (await listRecords()).find(item => item.source === "reassign");
+        expect(record).toMatchObject({
+            kind: "outcome",
+            stepId: "legal",
+            userId: "user-bob",
+            by: manager
+        });
     });
 
     it("refuses an invalid user with the fixed reason and saves nothing (R112)", async () => {
@@ -227,6 +241,64 @@ describe("ReassignReviewStepUseCase (spec 5.1, R112, R119)", () => {
         const again = await reassign.execute(input);
 
         expect(again.error.code).toBe("Workflows/Review/AlreadyOwner");
+    });
+
+    it("refuses the current owner before any lookup, even when they can no longer review (R126)", async () => {
+        const { reassign, review, settings, users } = await setup();
+        readableUsers.add("user-anna");
+        const input = { reviewId: review.id, stepId: "legal", userId: "user-anna", actor: manager };
+        expectOk(await reassign.execute(input));
+        settings.exclusions = [{ userId: "user-anna", reason: "On leave" }];
+        readableUsers.delete("user-anna");
+        users.calls.length = 0;
+        readChecks.length = 0;
+
+        const again = await reassign.execute(input);
+
+        expect(again.error.code).toBe("Workflows/Review/AlreadyOwner");
+        expect(users.calls).toEqual([]);
+        expect(readChecks).toEqual([]);
+    });
+
+    it("validates the user against the teams the step was reached with, not all its teams", async () => {
+        const routing = await createRoutingContext({
+            setup: container => {
+                container.register(FakeReviewTargetLoader);
+            }
+        });
+        const { container } = routing.context;
+        const toLegal = {
+            id: "rule-legal",
+            conditions: {},
+            target: { type: "team" as const, id: LEGAL_TEAM_ID }
+        };
+        const legalStep: WorkflowStep = {
+            ...createReviewStep({ id: "legal", title: "Legal review" }),
+            config: {
+                teams: [REVIEW_TEAM_ID, LEGAL_TEAM_ID],
+                assignment: { strategy: "none", allowManualPick: false, rules: [toLegal] }
+            }
+        };
+        expectOk(
+            await container
+                .resolve(StoreWorkflowUseCase)
+                .execute({ workflow: createWorkflowValues({ steps: [legalStep] }), actor: editor })
+        );
+        const review = expectOk(
+            await container.resolve(RequestReviewUseCase).execute(createRequestInput())
+        );
+        expect(review.steps[0].candidateTeamIds).toEqual([LEGAL_TEAM_ID]);
+        readableUsers.add("user-anna");
+
+        const result = await container.resolve(ReassignReviewStepUseCase).execute({
+            reviewId: review.id,
+            stepId: "legal",
+            userId: "user-anna",
+            actor: manager
+        });
+
+        expect(result.error.code).toBe("Workflows/Review/ReassignTargetInvalid");
+        expect(result.error.data).toMatchObject({ reason: "Not a member of the step's teams." });
     });
 
     it("checks the review state before any lookup", async () => {

@@ -24,12 +24,14 @@ class ReassignReviewStepUseCaseImpl implements UseCase.Interface {
         const data = loaded.value;
         const review = Review.fromData(data);
 
-        // The state rules first: a refused reassign costs no user lookup or read check.
-        const allowed = review.checkReassign({ stepId: input.stepId });
+        // The state and same-owner rules first (R126): a refused reassign costs no user lookup,
+        // settings read or read check.
+        const allowed = review.checkReassignTo({ stepId: input.stepId, userId: input.userId });
         if (allowed.isFail()) {
             return Result.fail(allowed.error);
         }
-        const step = data.steps.find(item => item.id === input.stepId);
+        // The guard found the step: it is the review's current step.
+        const step = data.steps.find(item => item.id === input.stepId)!;
         const now = new Date();
 
         // The chosen user is validated like a pick (R112); the read check runs as the request
@@ -38,7 +40,7 @@ class ReassignReviewStepUseCaseImpl implements UseCase.Interface {
         try {
             checked = await this.routing.checkUser({
                 userId: input.userId,
-                teamIds: [...(step?.candidateTeamIds ?? [])],
+                teamIds: [...step.candidateTeamIds],
                 requesterId: data.createdBy.id,
                 model: data.model,
                 read: {

@@ -6,6 +6,7 @@ import type {
     ReviewNotFoundError,
     ReviewPersistenceError,
     ReviewReassignTargetInvalidError,
+    ReviewRequesterCannotReviewError,
     ReviewStepNotCurrentError,
     ReviewStepNotReassignableError,
     ReviewTargetSyncError
@@ -30,6 +31,7 @@ export interface IReassignReviewStepUseCaseErrors {
     stepNotReassignable: ReviewStepNotReassignableError;
     alreadyOwner: ReviewAlreadyOwnerError;
     targetInvalid: ReviewReassignTargetInvalidError;
+    requesterCannotReview: ReviewRequesterCannotReviewError;
     routing: RoutingDependencyError;
     targetSync: ReviewTargetSyncError;
 }
