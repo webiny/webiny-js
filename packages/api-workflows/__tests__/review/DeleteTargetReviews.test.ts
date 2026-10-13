@@ -24,7 +24,8 @@ const record = (reviewId: string, assignedOn: string): AssignmentRecordValues =>
         assignedOn,
         source: "picked",
         by: null,
-        reason: null
+        reason: null,
+        kind: "outcome"
     };
 };
 

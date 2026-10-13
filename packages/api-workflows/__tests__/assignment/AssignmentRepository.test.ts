@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { expectOk, otherReviewer, reviewer } from "~tests/__helpers/fixtures.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
+import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
+import { AssignmentModelProvider } from "~/domain/assignment/abstractions/AssignmentModelProvider.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import type { AssignmentRecordValues } from "~/domain/assignment/types.js";
 
@@ -20,6 +22,7 @@ const record = (overrides: Partial<AssignmentRecordValues>): AssignmentRecordVal
         source: "pool",
         by: null,
         reason: null,
+        kind: "outcome",
         ...overrides
     };
 };
@@ -65,7 +68,8 @@ describe("AssignmentRepository", () => {
             assignedOn: "2026-10-09T10:00:00.000Z",
             source: "pool",
             by: null,
-            reason: "No eligible candidates."
+            reason: "No eligible candidates.",
+            kind: "outcome"
         });
 
         const byReview = expectOk(await repository.list({ where: { reviewId: "review-1" } }));
@@ -191,5 +195,44 @@ describe("AssignmentRepository", () => {
         const listed = expectOk(await repository.list({ where: { reviewId: "" } }));
 
         expect(listed.items).toEqual([]);
+    });
+
+    it("stores the kind and reads a record stored without it as an outcome (R96)", async () => {
+        const { context } = await createContextHandler();
+        const repository = context.container.resolve(AssignmentRepository);
+        expectOk(
+            await repository.create(
+                record({
+                    reviewId: "review-kind",
+                    userId: reviewer.id,
+                    source: "rule-1",
+                    reason: "Excluded: on leave.",
+                    kind: "skip"
+                })
+            )
+        );
+        const model = await context.container.resolve(AssignmentModelProvider).get();
+        expectOk(
+            await context.container.resolve(CreateEntryUseCase).execute(model, {
+                createdOn: "2026-10-09T09:00:00.000Z",
+                values: {
+                    reviewId: "review-kind",
+                    workflowId: "workflow-1",
+                    stepId: "legal",
+                    userId: otherReviewer.id,
+                    assignedOn: "2026-10-09T09:00:00.000Z",
+                    source: "strategy",
+                    by: null,
+                    reason: null
+                }
+            })
+        );
+
+        const listed = expectOk(await repository.list({ where: { reviewId: "review-kind" } }));
+
+        expect(listed.items.map(item => [item.userId, item.kind])).toEqual([
+            [reviewer.id, "skip"],
+            [otherReviewer.id, "outcome"]
+        ]);
     });
 });

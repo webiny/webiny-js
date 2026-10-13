@@ -13,6 +13,7 @@ export interface AssignmentEntryValues {
     source: string;
     by: ActorEntryValues | null;
     reason: string | null;
+    kind: string | null;
 }
 
 export class AssignmentEntryMapper {
@@ -25,7 +26,8 @@ export class AssignmentEntryMapper {
             assignedOn: values.assignedOn,
             source: values.source,
             by: values.by ? ActorEntryMapper.toEntry(values.by) : null,
-            reason: values.reason
+            reason: values.reason,
+            kind: values.kind
         };
     }
 
@@ -40,7 +42,9 @@ export class AssignmentEntryMapper {
             assignedOn: toIsoString(entry.values.assignedOn) ?? entry.createdOn,
             source: entry.values.source,
             by: ActorEntryMapper.fromEntry(entry.values.by),
-            reason: entry.values.reason ?? null
+            reason: entry.values.reason ?? null,
+            // Records stored before the field existed are outcomes (R96).
+            kind: entry.values.kind === "skip" ? "skip" : "outcome"
         };
     }
 }

@@ -29,7 +29,8 @@ class AssignmentModelImpl implements ModelFactory.Interface {
                             displayName: byFields.text().label("Display name"),
                             identityType: byFields.text().label("Identity type")
                         })),
-                    reason: fields.longText().label("Reason")
+                    reason: fields.longText().label("Reason"),
+                    kind: fields.text().label("Kind")
                 }))
         ];
     }

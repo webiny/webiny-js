@@ -27,6 +27,7 @@ import { ReviewTargetSync } from "~/features/review/ReviewTargetSync/index.js";
 import { ReviewTargetReadAccess } from "~/features/review/ReviewTargetReadAccess/index.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/index.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
+import { ListReviewAssignmentsUseCase } from "~/features/assignment/ListReviewAssignments/index.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import { GetWorkflowSettingsUseCase } from "~/features/settings/GetWorkflowSettings/index.js";
 import { SaveWorkflowSettingsUseCase } from "~/features/settings/SaveWorkflowSettings/index.js";
@@ -84,6 +85,7 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(StepAssignmentResolver)).toHaveLength(1);
         expect(container.resolveAll(ReviewRepository)).toHaveLength(1);
         expect(container.resolveAll(AssignmentRepository)).toHaveLength(1);
+        expect(container.resolveAll(ListReviewAssignmentsUseCase)).toHaveLength(1);
         expect(container.resolveAll(GetWorkflowSettingsUseCase)).toHaveLength(1);
         expect(container.resolveAll(SaveWorkflowSettingsUseCase)).toHaveLength(1);
         expect(container.resolveAll(WorkflowRepository)).toHaveLength(1);
