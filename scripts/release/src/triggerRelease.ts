@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 import { Octokit } from "@octokit/rest";
-import { ConsoleLogger } from "../../ConsoleLogger";
-import { checkReleaseType } from "./releaseTypes";
+import { ConsoleLogger } from "./ConsoleLogger.js";
+import { checkReleaseType } from "./releaseTypes.js";
 
-yargs.version(false);
+const cli = yargs(hideBin(process.argv));
+
+// Disable default handling of `--version` parameter.
+cli.version(false);
 
 interface ReleaseArgs {
     branch?: string;
@@ -20,7 +24,8 @@ interface ReleaseArgs {
  */
 
 (async () => {
-    const { branch, type, token, tag, version, createGithubRelease } = yargs.argv as ReleaseArgs;
+    const { branch, type, token, tag, version, createGithubRelease } =
+        (await cli.argv) as ReleaseArgs;
     const logger = new ConsoleLogger();
 
     try {
@@ -74,5 +79,6 @@ interface ReleaseArgs {
         logger.info("See action details: %s", "https://github.com/webiny/webiny-js/actions");
     } catch (e) {
         logger.error(e.message);
+        process.exit(1);
     }
 })();
