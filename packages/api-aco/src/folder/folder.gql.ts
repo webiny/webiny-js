@@ -3,6 +3,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSche
 
 import { createFolderTypeDefs, CreateFolderTypeDefsParams } from "./createFolderTypeDefs";
 import { ensureAuthentication } from "~/utils/ensureAuthentication";
+import { ensureIdentity } from "~/utils/ensureIdentity";
 import { resolve } from "~/utils/resolve";
 import { compress } from "~/utils/compress";
 
@@ -33,19 +34,19 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
             AcoQuery: {
                 getFolderModel(_, __, context) {
                     return resolve(() => {
-                        ensureAuthentication(context);
+                        ensureIdentity(context);
                         return context.cms.getModel(FOLDER_MODEL_ID);
                     });
                 },
                 getFolder: async (_, { id }, context) => {
                     return resolve(() => {
-                        ensureAuthentication(context);
+                        ensureIdentity(context);
                         return context.aco.folder.get(id);
                     });
                 },
                 listFolders: async (_, args: any, context) => {
                     try {
-                        ensureAuthentication(context);
+                        ensureIdentity(context);
                         const [entries, meta] = await context.aco.folder.list(args);
                         return new ListResponse(entries, meta);
                     } catch (e) {
@@ -54,7 +55,7 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                 },
                 listFoldersCompressed: async (_, args: any, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        ensureIdentity(context);
 
                         const [entries] = await context.aco.folder.list(args);
                         const foldersPromises = entries.map(folder => {
@@ -101,7 +102,7 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                 getFolderHierarchy: async (_, args: any, context) => {
                     try {
                         return resolve(() => {
-                            ensureAuthentication(context);
+                            ensureIdentity(context);
                             return context.aco.folder.getFolderHierarchy(args);
                         });
                     } catch (e) {
