@@ -1,7 +1,5 @@
 name: 📦 v5 Custom Release
 
-# Started either from the Actions tab (workflow_dispatch) or with `yarn trigger-release`
-# (a `release` repository_dispatch event). Each value comes from whichever of the two is set.
 on:
   workflow_dispatch:
     inputs:
@@ -38,8 +36,6 @@ on:
           - "no"
           - "true"
           - latest
-  repository_dispatch:
-    types: [release]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
@@ -47,15 +43,15 @@ env:
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   YARN_ENABLE_IMMUTABLE_INSTALLS: false
   # Passed through env (not interpolated into `run`) so input values can't inject shell code.
-  RELEASE_BRANCH: ${{ github.event.client_payload.branch || inputs.branch }}
-  RELEASE_TYPE: ${{ github.event.client_payload.type || inputs.type }}
-  RELEASE_TAG: ${{ github.event.client_payload.tag || inputs.tag }}
-  RELEASE_VERSION: ${{ github.event.client_payload.version || inputs.version }}
-  RELEASE_CREATE_GITHUB_RELEASE: ${{ github.event.client_payload.createGithubRelease || inputs.createGithubRelease }}
+  RELEASE_BRANCH: ${{ inputs.branch }}
+  RELEASE_TYPE: ${{ inputs.type }}
+  RELEASE_TAG: ${{ inputs.tag }}
+  RELEASE_VERSION: ${{ inputs.version }}
+  RELEASE_CREATE_GITHUB_RELEASE: ${{ inputs.createGithubRelease }}
 
 jobs:
   npm-release:
-    name: NPM release ("${{ github.event.client_payload.tag || inputs.tag }}" tag)
+    name: NPM release ("${{ inputs.tag }}" tag)
     runs-on: webiny-build-packages
     environment: release
     steps:
