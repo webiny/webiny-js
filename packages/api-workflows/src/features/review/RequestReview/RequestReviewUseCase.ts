@@ -91,6 +91,7 @@ class RequestReviewUseCaseImpl implements UseCase.Interface {
             targetId: input.targetId,
             targetRevisionId: input.targetRevisionId,
             title: target.title,
+            requestedTitle: input.title,
             targetContext: target.context,
             picks: input.picks ?? [],
             requester: input.actor,

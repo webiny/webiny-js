@@ -238,7 +238,13 @@ describe("Review checks", () => {
         );
 
         const rejected = createStartedReview();
-        expectOk(rejected.reject({ ...checkParams(reviewer), comment: null, now: LATER }));
+        expectOk(
+            rejected.reject({
+                ...checkParams(reviewer),
+                comment: "Needs another pass.",
+                now: LATER
+            })
+        );
         const finished = rejected.checkReassign({ stepId: "legal" });
         expect(finished.error.code).toBe("Workflows/Review/InvalidState");
         expect(finished.error.data).toMatchObject({ transition: "reassign" });

@@ -222,7 +222,7 @@ describe("Review.reject", () => {
     it("lets only the owner reject", () => {
         const review = createStartedReview();
 
-        const result = review.reject(decision(otherReviewer, "No."));
+        const result = review.reject(decision(otherReviewer, "Not ready to publish."));
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Review/NotOwner");
@@ -232,7 +232,7 @@ describe("Review.reject", () => {
     it("cannot reject an awaiting step", () => {
         const review = createRequestedReview();
 
-        const result = review.reject(decision(reviewer, "No."));
+        const result = review.reject(decision(reviewer, "Not ready to publish."));
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Review/InvalidState");
@@ -418,7 +418,7 @@ describe("Review.getSystemWorkflow", () => {
         });
 
         const started = createStartedReview();
-        expectOk(started.reject(decision(reviewer, "No.")));
+        expectOk(started.reject(decision(reviewer, "Not ready to publish.")));
 
         expect(started.getSystemWorkflow()).toEqual({
             workflowId: "workflow-1",

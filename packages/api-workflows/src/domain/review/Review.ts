@@ -31,13 +31,22 @@ import {
 const REQUESTER_OWNER_REASON =
     "The resolved owner is the requester, who cannot review their own content.";
 
+/** A requested title, trimmed, has at least this many characters (D100, D135). */
+export const REVIEW_TITLE_MIN_LENGTH = 5;
+
+/** A rejection comment, trimmed, has at least this many characters (D100). */
+export const REJECT_COMMENT_MIN_LENGTH = 10;
+
 export interface ReviewRequestParams {
     id: string;
     workflow: Workflow;
     model: string;
     targetId: string;
     targetRevisionId: string;
+    /** The target's title; the review title when `requestedTitle` is missing or blank. */
     title: string;
+    /** The title the requester typed (D135); trimmed, at least 5 characters when given. */
+    requestedTitle?: string | null;
     targetContext: TargetContext;
     picks: ReviewPick[];
     requester: Actor;
@@ -102,6 +111,9 @@ export type ReviewDecisionError =
     | ReviewStepNotCurrentError
     | ReviewNotOwnerError;
 
+/** Reject adds the comment rule (D100) to the decision rules. */
+export type ReviewRejectError = ReviewDecisionError | ReviewValidationError;
+
 export type ReviewReassignError =
     | ReviewInvalidStateError
     | ReviewStepNotCurrentError
@@ -139,6 +151,14 @@ export class Review {
         if (params.workflow.steps.length === 0) {
             return Result.fail(
                 new ReviewValidationError(`The workflow "${params.workflow.name}" has no steps.`)
+            );
+        }
+        const requestedTitle = params.requestedTitle?.trim() ?? "";
+        if (requestedTitle && requestedTitle.length < REVIEW_TITLE_MIN_LENGTH) {
+            return Result.fail(
+                new ReviewValidationError(
+                    `The review title must have at least ${REVIEW_TITLE_MIN_LENGTH} characters.`
+                )
             );
         }
 
@@ -187,7 +207,8 @@ export class Review {
             model: params.model,
             targetId: params.targetId,
             targetRevisionId: params.targetRevisionId,
-            title: params.title,
+            // Fixed from here on: no operation changes the title (D135).
+            title: requestedTitle || params.title,
             isActive: true,
             state: "inProgress",
             currentStepId: null,
@@ -372,16 +393,28 @@ export class Review {
         return Review.toCheck(this.getOwnedStep("reject", params));
     }
 
-    /** Owner rejects; reject is final for the revision (D10). */
-    public reject(params: ReviewDecisionParams): Result<void, ReviewDecisionError> {
+    /**
+     * Owner rejects; reject is final for the revision (D10). Needs a comment of at least 10
+     * characters after trimming (D100), checked after the state and owner rules. `checkReject`
+     * (the viewer flag) does not take a comment, so it leaves this rule out.
+     */
+    public reject(params: ReviewDecisionParams): Result<void, ReviewRejectError> {
         const current = this.getOwnedStep("reject", params);
         if (current.isFail()) {
             return Result.fail(current.error);
         }
+        const comment = params.comment?.trim() ?? "";
+        if (comment.length < REJECT_COMMENT_MIN_LENGTH) {
+            return Result.fail(
+                new ReviewValidationError(
+                    `A rejection needs a comment of at least ${REJECT_COMMENT_MIN_LENGTH} characters.`
+                )
+            );
+        }
         const step = current.value;
 
         step.state = "rejected";
-        step.comment = params.comment;
+        step.comment = comment;
         step.finishedOn = params.now;
         this.data.state = "rejected";
         this.facts.push({
@@ -389,7 +422,7 @@ export class Review {
             occurredOn: params.now,
             actor: { ...params.actor },
             change: { stepId: step.id, fromState: "inReview", toState: "rejected" },
-            comment: params.comment
+            comment
         });
         return Result.ok();
     }

@@ -6,7 +6,8 @@ import type {
     ReviewNotOwnerError,
     ReviewPersistenceError,
     ReviewStepNotCurrentError,
-    ReviewTargetSyncError
+    ReviewTargetSyncError,
+    ReviewValidationError
 } from "~/domain/review/errors.js";
 import type { ReviewDecisionInput } from "../shared/types.js";
 
@@ -15,6 +16,8 @@ export interface IRejectReviewStepUseCaseErrors {
     invalidState: ReviewInvalidStateError;
     stepNotCurrent: ReviewStepNotCurrentError;
     notOwner: ReviewNotOwnerError;
+    /** The comment is shorter than 10 characters after trimming (D100). */
+    validation: ReviewValidationError;
     persistence: ReviewPersistenceError;
     targetSync: ReviewTargetSyncError;
 }

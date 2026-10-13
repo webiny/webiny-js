@@ -148,7 +148,7 @@ const transitionResults = (data: ReviewData, viewer: ReviewViewer) => {
             .approve({ ...params, comment: null })
             .isOk(),
         canReject: Review.fromData(data)
-            .reject({ ...params, comment: null })
+            .reject({ ...params, comment: "Needs another pass." })
             .isOk()
     };
 };

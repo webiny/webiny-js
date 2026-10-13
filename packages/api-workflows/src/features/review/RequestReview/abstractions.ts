@@ -15,6 +15,11 @@ export interface RequestReviewInput {
     model: string;
     targetId: string;
     targetRevisionId: string;
+    /**
+     * The review title (D135). Trimmed; at least 5 characters when given (D100). Missing or
+     * blank: the target's title.
+     */
+    title?: string | null;
     /** Reviewer picks per step (D22). Only malformed picks are rejected here (spec 6). */
     picks?: ReviewPick[];
     /** The requester, built by the app wrapper, which also checks write access (D77, D132). */
