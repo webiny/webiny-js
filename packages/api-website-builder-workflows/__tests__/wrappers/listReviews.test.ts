@@ -29,6 +29,7 @@ import {
     throwingAccessChecks,
     throwOnAccessChecks
 } from "~tests/__helpers/ThrowingWbPageAccess.js";
+import { throwOnWorkflowsPermissions } from "~tests/__helpers/ThrowingWorkflowsPermissions.js";
 import { ListWebsiteBuilderPageReviewsUseCase } from "~/features/wrappers/ListWebsiteBuilderPageReviews/index.js";
 import type { ListWebsiteBuilderPageReviewsInput } from "~/features/wrappers/ListWebsiteBuilderPageReviews/index.js";
 
@@ -50,11 +51,15 @@ const createScenario = async () => {
 };
 
 /** A context as the identity that counts the engine's calls; setup contexts do not. */
-const asUser = (identity: IdentityData | null, permissions: SecurityPermission[]) => {
+const asUser = (
+    identity: IdentityData | null,
+    permissions: SecurityPermission[],
+    legacyPlugins: unknown[] = []
+) => {
     return createUserContext({
         identity,
         permissions,
-        legacyPlugins: [countEngineCalls, scriptTargetReads, throwOnAccessChecks]
+        legacyPlugins: [countEngineCalls, scriptTargetReads, throwOnAccessChecks, ...legacyPlugins]
     });
 };
 
@@ -243,6 +248,16 @@ describe("WB review list wrapper", () => {
         expect(reviewIds(result.items)).toEqual([review.id]);
         expect(result.items[0].review.currentStepType).toBe("ai");
         expect(engineCalls).toEqual(["ListReviews"]);
+    });
+
+    it("fails with a persistence error when the viewer's permissions fail to load (R87)", async () => {
+        await createScenario();
+        const reviewer = await asUser(REVIEWER, WB_READER, [throwOnWorkflowsPermissions]);
+
+        const result = await list(reviewer, { list: "pool" });
+
+        expect(result.error.code).toBe("Workflows/Review/Persistence");
+        expect(engineCalls).toEqual([]);
     });
 
     it("refuses an anonymous identity, before the engine", async () => {

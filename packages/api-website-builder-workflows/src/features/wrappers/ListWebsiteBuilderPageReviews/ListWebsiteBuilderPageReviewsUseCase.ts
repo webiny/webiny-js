@@ -3,6 +3,7 @@ import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import { getReviewViewerFlags } from "@webiny/api-workflows/domain/review/getReviewViewerFlags.js";
 import { canReassignByPermission } from "@webiny/api-workflows/domain/review/canReassignByPermission.js";
 import { WorkflowsNotAuthorizedError } from "@webiny/api-workflows/domain/permissions/errors.js";
+import { ReviewPersistenceError } from "@webiny/api-workflows/domain/review/errors.js";
 import { CurrentReviewViewer } from "@webiny/api-workflows/features/identity/CurrentReviewViewer/index.js";
 import { ListReviewsUseCase } from "@webiny/api-workflows/features/review/ListReviews/index.js";
 import { WbPageTargetReader } from "~/features/target/WbPageTargetReader/index.js";
@@ -19,7 +20,17 @@ class ListWebsiteBuilderPageReviewsUseCaseImpl implements UseCase.Interface {
     ) {}
 
     public async execute(input: UseCase.Input): UseCase.Return {
-        const viewer = await this.viewer.get();
+        // A failed team or permission load is a persistence error, never a rejection (R87).
+        let viewer: Awaited<CurrentReviewViewer.Return>;
+        try {
+            viewer = await this.viewer.get();
+        } catch (error) {
+            return Result.fail(
+                new ReviewPersistenceError(
+                    error instanceof Error ? error : new Error(String(error))
+                )
+            );
+        }
         if (viewer.isFail()) {
             return Result.fail(viewer.error);
         }

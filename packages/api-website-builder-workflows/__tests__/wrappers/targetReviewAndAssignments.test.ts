@@ -19,6 +19,7 @@ import {
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import { failListReviewAssignments } from "~tests/__helpers/FailingListReviewAssignments.js";
+import { throwOnWorkflowsPermissions } from "~tests/__helpers/ThrowingWorkflowsPermissions.js";
 import { failGetTargetReview } from "~tests/__helpers/FailingGetTargetReview.js";
 import {
     scriptTargetReads,
@@ -172,6 +173,18 @@ describe("WB target review and assignment entries", () => {
             expect(result.error.code).toBe("Workflows/NotAuthorized");
             expect(result.error.data).toEqual({ action: "view this review" });
         }
+        expect(engineCalls).toEqual([]);
+    });
+
+    it("fails with a persistence error when the viewer's permissions fail to load (R87)", async () => {
+        const { page, review } = await createScenario();
+        const reviewer = await asUser(REVIEWER, WB_READER, [throwOnWorkflowsPermissions]);
+
+        const byTarget = await getTargetReview(reviewer, page.id);
+        const byReview = await getReview(reviewer, review.id);
+
+        expect(byTarget.error.code).toBe("Workflows/Review/Persistence");
+        expect(byReview.error.code).toBe("Workflows/Review/Persistence");
         expect(engineCalls).toEqual([]);
     });
 
