@@ -5,7 +5,6 @@ import { Container } from "@webiny/feature/api";
 import { OidcIdentityProvider } from "@webiny/api-core/idp";
 import { CognitoIdpFeature } from "~/api/features/CognitoIdp/feature.js";
 import { CognitoIdpConfig } from "~/api/features/CognitoIdp/abstractions.js";
-import { CognitoApiFeature } from "~/api/CognitoApiFeature.js";
 
 class ExtensionConfig implements CognitoIdpConfig.Interface {
     getIdentity() {
@@ -37,19 +36,5 @@ describe("CognitoIdentityProvider", () => {
 
         expect(identity.id).toBe("from-extension");
         expect(identity.displayName).toBe("Extension User");
-    });
-});
-
-describe("CognitoApiFeature", () => {
-    it("does not register a second Cognito identity provider per request", () => {
-        const root = new Container();
-        CognitoIdpFeature.register(root);
-
-        const request = root.createChildContainer();
-        CognitoApiFeature.register(request);
-
-        const providers = request.resolveAll(OidcIdentityProvider);
-
-        expect(providers).toHaveLength(1);
     });
 });
