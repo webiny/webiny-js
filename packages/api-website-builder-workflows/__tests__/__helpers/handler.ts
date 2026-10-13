@@ -20,7 +20,7 @@ import { createArticleModelPlugins } from "./cmsModel.js";
  * model ("article") exists for cross-app tests.
  */
 export const createContextHandler = (params: CmsTestHandlerParams = {}) => {
-    const { getContext } = createCmsTestHandler({
+    const { getContext, invoke } = createCmsTestHandler({
         ...params,
         legacyPlugins: [
             ...createArticleModelPlugins(),
@@ -42,6 +42,8 @@ export const createContextHandler = (params: CmsTestHandlerParams = {}) => {
     });
 
     return {
-        context: () => getContext()
+        context: () => getContext(),
+        /** POST to `/graphql` as the handler's identity. */
+        invoke
     };
 };

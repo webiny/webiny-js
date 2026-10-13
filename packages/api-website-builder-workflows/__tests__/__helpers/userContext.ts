@@ -2,6 +2,7 @@ import type { Container } from "@webiny/di";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
+import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
 import { ListUserTeamsUseCase } from "@webiny/api-core/features/users/ListUserTeams/index.js";
 import { createContextHandler } from "./handler.js";
 import { FakeFolderLevelPermissions } from "./FakeFolderLevelPermissions.js";
@@ -21,14 +22,17 @@ export interface UserContextParams {
     permissions?: SecurityPermission[];
     permissionsByIdentity?: Record<string, SecurityPermission[]>;
     legacyPlugins?: unknown[];
+    /** Defaults to the test license (every feature on). */
+    testProjectLicense?: DecryptedWcpProjectLicense;
 }
 
-/** A request context as the given identity, with fixed teams and the fake FLP (A28, A32). */
-export const createUserContext = async (params: UserContextParams = {}): Promise<CmsContext> => {
-    const { context } = createContextHandler({
+/** A handler as the given identity, with fixed teams and the fake FLP (A28, A32). */
+export const createUserHandler = (params: UserContextParams = {}) => {
+    return createContextHandler({
         identity: params.identity,
         permissions: params.permissions,
         permissionsByIdentity: params.permissionsByIdentity,
+        testProjectLicense: params.testProjectLicense,
         legacyPlugins: [
             (container: Container) => {
                 container.registerInstance(ListUserTeamsUseCase, new FakeListUserTeams(TEAMS));
@@ -37,5 +41,9 @@ export const createUserContext = async (params: UserContextParams = {}): Promise
             ...(params.legacyPlugins ?? [])
         ]
     });
-    return (await context()) as CmsContext;
+};
+
+/** A request context as the given identity, with fixed teams and the fake FLP (A28, A32). */
+export const createUserContext = async (params: UserContextParams = {}): Promise<CmsContext> => {
+    return (await createUserHandler(params).context()) as CmsContext;
 };

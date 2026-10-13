@@ -4,6 +4,7 @@ import { WbHooksFeature } from "./features/hooks/feature.js";
 import { WbWrappersFeature } from "./features/wrappers/feature.js";
 import { WbTargetFeature } from "./features/target/feature.js";
 import { WebsiteBuilderPageSchemaFactory } from "./WebsiteBuilderPageSchemaFactory.js";
+import { WebsiteBuilderWorkflowsSchemaFactory } from "./graphql/WebsiteBuilderWorkflowsSchemaFactory.js";
 
 export const WebsiteBuilderWorkflowsFeature = createFeature({
     name: "WebsiteBuilderWorkflows",
@@ -18,6 +19,8 @@ export const WebsiteBuilderWorkflowsFeature = createFeature({
         // `wb.page` target adapter and hooks, next to the Website Builder wrapper use cases that
         // read the identity and check permissions (D132, D133).
         container.register(WebsiteBuilderPageSchemaFactory);
+        // Every pages workflow and review operation on the `websiteBuilder` root (D136, R88).
+        container.register(WebsiteBuilderWorkflowsSchemaFactory);
 
         // The `wb.page` target adapter (spec 9.3).
         WbTargetFeature.register(container);

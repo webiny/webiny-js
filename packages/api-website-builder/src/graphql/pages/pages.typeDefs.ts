@@ -1,4 +1,9 @@
 export const pagesTypeDefs = /* GraphQL */ `
+    # Extended by api-website-builder-workflows with the stored system.workflow.
+    type WbPageSystem {
+        _empty: String
+    }
+
     type WbPage {
         id: ID!
         entryId: String!
@@ -20,7 +25,7 @@ export const pagesTypeDefs = /* GraphQL */ `
         restoredBy: WbIdentity
         firstPublishedBy: WbIdentity
         lastPublishedBy: WbIdentity
-        system: CmsEntrySystem
+        system: WbPageSystem
         live: CmsEntryLive
         revisionDescription: String
         properties: JSON
