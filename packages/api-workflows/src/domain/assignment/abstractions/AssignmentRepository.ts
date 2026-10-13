@@ -15,7 +15,7 @@ export interface AssignmentRepositoryListWhere {
     workflowId_in?: string[];
     stepId?: string;
     userId?: string;
-    /** Records of any of these users (phase 4: latest record per candidate, D20). */
+    /** Records of any of these users (least-loaded tie-break: latest record per candidate, D20). */
     userId_in?: string[];
     /**
      * Only outcomes (who got a step) or only skips (R115). Matches the stored `kind`: records

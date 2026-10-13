@@ -103,7 +103,7 @@ export const WorkflowsFeature = createFeature({
         InspectRoutingFeature.register(container);
         ListStepCandidatesFeature.register(container);
 
-        // Assignment log (written from phase 4, read by the get-review wrappers)
+        // Assignment log (written after each review save, R117; read by the get-review wrappers)
         AssignmentSharedFeature.register(container);
         ListReviewAssignmentsFeature.register(container);
 

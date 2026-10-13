@@ -37,8 +37,10 @@ export interface IReviewTargetReadAccess {
 /**
  * The engine's question to a target adapter about another user (spec 6, 9.3; D133 point 4a). One
  * implementation per namespace, registered by the app adapters; the last registered match wins and
- * no match means no access (R50). Phase 4 asks it for candidates and reassign; the engine never
- * asks it about the caller, whose checks are the app wrappers'. Not to be confused with the 1b
+ * no match means no access (R50). Routing asks it for picks, rule targets and strategy candidates,
+ * reassign for the chosen user, the step-candidate list for every member and the inspector for
+ * folder-level access (R111, R112, R120, R121); the engine never asks it about the caller, whose
+ * checks are the app wrappers'. Not to be confused with the 1b
  * `ReviewTargetAccess` flags type (`domain/review/types.ts`, R71).
  */
 export const ReviewTargetReadAccess =

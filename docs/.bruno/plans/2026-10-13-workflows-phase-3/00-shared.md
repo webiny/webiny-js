@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **Status note (after phase 4):** routing, the assignment-log writes, reassign, `listUsers`, `inspectRouting`, `listStepCandidates`, `folderExists` and the save-time check of rule user targets landed in phase 4 (`docs/.bruno/plans/2026-10-13-workflows-phase-4/`, R109-R130); the "Not in this phase" items marked (4) are done there.
+
 **Goal:** Put the phase 2 wrappers behind GraphQL on the main `/graphql` endpoint and add the review lists. Each app gets its review lists (Assigned to me, Pool, Team in review, My requests, Failed steps) with filters, row viewer flags, a target-read predicate and the rewritten pagination (D47, D76, D94, D112, D119, D133), `getTargetReview`, the request title (D135), the assignment-log entries per step with redaction (D89, D127), and the CMS editor model list (D116). The shared configuration operations (settings, step types) land in api-workflows behind `editor` (D133). Website Builder's own page resolvers keep the workflows error codes (A26).
 
 **Architecture:** Four sub-phases, built bottom up.
@@ -92,7 +94,7 @@ Binding for this plan. Where they refine the spec, the ruling wins for phase 3.
 - A42. Lists read the review's own fields; each kept row costs one target read for the predicate. With `limit` 20 and the cap 200, a call costs at most 200 primary reads of reviews (R18) plus 200 target reads. Accepted for v1.
 - A43. `getReviewViewerFlags` with `canRestart` always false until phase 5 and `canReassign` from the 1b predicate are what rows carry; no target access is folded into the row flags beyond the predicate (a listed row is readable by construction).
 - A45. Correcting `system.workflow` (R102) breaks the old admin's entry and page field selections that still select `state` (`app-headless-cms-workflows`, `app-website-builder-workflows`). Accepted: the old admin is already broken against the new API since phase 1a (roadmap Cutover); phase 8a rewrites it. No admin package is changed in phase 3.
-- A44. The assignment log is empty until phase 4; the redaction is tested with records written through `AssignmentRepository.create` in tests.
+- A44. The assignment log is empty until phase 4; the redaction is tested with records written through `AssignmentRepository.create` in tests. Phase 4 writes them after each save (R117); tests that need exact records still seed them.
 
 ## Task order
 
@@ -139,4 +141,4 @@ Each sub-phase has its own overview (`00-3.N-<slug>.md`, the SDD plan file), its
 ## Not in this phase
 
 - `listUsers`, `inspectRouting`, `listStepCandidates`, `folderExists`, reassign, exclusion-rule validation beyond the existing validator (4); restart, the `StepType` registry, automation definitions (5); AI tools (6); transports and notifications (7); admin (8a-9c).
-- Writing assignment records (4). Phase 3 only reads and redacts them.
+- Writing assignment records (4). Phase 3 only reads and redacts them. Done in phase 4 (R117).

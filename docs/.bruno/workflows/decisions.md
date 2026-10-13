@@ -264,6 +264,7 @@ Workflows exposes its own user queries; both run `withoutAuthorization` internal
 Team member lookup needs a `teams_in` filter on users storage in api-core, or in-memory filtering. To check: whether users storage can filter on teams.
 
 _Refined by D133: `listUsers` is a shared configuration operation in api-workflows (`editor`); `listStepCandidates` is per app. The `workflows.*` names above are capability names, not final operations._
+_Built in phase 4 (R123): `workflows.listUsers(search, ids, limit)` returns `{ id, displayName }` only (D104), ids up to 200 with `missingIds` (D117)._
 
 ## D49. Terminology
 
@@ -393,6 +394,7 @@ Refines D46: folder condition is `folder?: { id, type, includeDescendants }`; `t
 Resolves A8.
 
 _Refined by D133: `folderExists` is per app and takes the folder `type`._
+_Built in phase 4: `cmsEntryFolderExists(id, type)` and `websiteBuilderPageFolderExists(id)` (the type is always `wb:page`), `editor` only._
 
 ## D70. Content lists: rename only
 
@@ -628,6 +630,7 @@ When the editor loads a workflow, saved user and folder references (rule targets
 ## D118. Rules targeting an excluded person are skipped
 
 Extends D46. When a routing rule matches but its target person is currently excluded (D16), the rule is skipped and evaluation continues with the next rule, then the strategy. The routing trace (and Test routing) marks the rule "Skipped" with the exclusion reason and lists the person among skipped people. The rule card in the editor warns "{name} is unavailable (excluded until …). The rule is skipped while the exclusion lasts." From design answer QBZ-41.
+_Built in phase 4 (R129): the inspector's trace and its skipped-people list show the exclusion's own reason ("Excluded from reviews." when it has none); assignment-log records keep the fixed text (D89, D97)._
 
 ## D119. Review "last change" and list sorting
 
@@ -674,6 +677,7 @@ _Refined by D133: the engine returns every entry; the app wrapper redacts per-us
 `listStepCandidates` has two forms: `(workflowId, stepId)` for Request review (write access to the model, live workflow) and `(reviewId, stepId)` for Reassign (`reassign` permission, resolved from the review's snapshot and the step's `candidateTeamIds`). Both return name, `excluded` and, for `editor` / `reassign`, `excludedReason`; no workload counts [D97, D104]. Resolves spec review finding 3.
 
 _Refined by D133: `listStepCandidates` is per app; the wrapper checks write access or `reassign` and redacts `excludedReason`._
+_Built in phase 4: `listCmsEntryStepCandidates` / `listWebsiteBuilderPageStepCandidates` (request; they also take the target revision, so read access is checked per candidate; the workflow must belong to the app, another app's workflow is not found, R128) and `listCmsEntryReviewStepCandidates` / `listWebsiteBuilderPageReviewStepCandidates` (reassign)._
 
 ## D129. Transport list for "Notify via"
 

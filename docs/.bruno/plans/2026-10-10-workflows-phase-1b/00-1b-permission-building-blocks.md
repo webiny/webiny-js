@@ -177,7 +177,7 @@ All six tasks reviewed clean, a final review of the phase clean, `yarn test pack
 - `actor` on the workflow use case input and events (2, R39).
 - Target read and write access checks: start, take over, approve, reject, cancel, restart need read access; request needs write access (D77); candidates must read the target (D61) (2 wrappers and adapters, 4 routing).
 - GraphQL for every operation: per-app operations with viewer flags on review reads and list rows, and the shared configuration operations (settings, `listUsers`, step types, notification transports, automation definitions, AI tools) with their `editor` check (D133); query permissions (D78) and which assignment reasons a viewer sees, redacted by the wrapper (D89) (3; transports also 7).
-- Routing, candidates (read access through the app's target adapter, D61, D133), reassign transition (using `guardReassign`), pick validation against candidates and exclusions (D33, D61), per-app `listStepCandidates` (D128) (4).
+- Routing, candidates (read access through the app's target adapter, D61, D133), reassign transition (using `guardReassign`), pick validation against candidates and exclusions (D33, D61), per-app `listStepCandidates` (D128) (4). Done in phase 4 (R111, R112, R119, R120).
 - Failed steps, restart (with its permission-only predicate, R41) and a real `canRestart`; `withIdentity(requester)` around task triggers (D87, D133) (5).
 - Security admin UI for the "custom" workflows access level with `editor` and `reassign` checkboxes, matching R29's permission shape (9c).
 

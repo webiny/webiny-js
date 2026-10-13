@@ -45,7 +45,7 @@ export interface AssignmentDecision {
     reason: string | null;
 }
 
-/** One assignment-log record (spec 4.3, D20, D45, D127). Written from phase 4. */
+/** One assignment-log record (spec 4.3, D20, D45, D127), written after the review save (R117). */
 export interface AssignmentRecordValues extends AssignmentDecision {
     reviewId: string;
     workflowId: string;

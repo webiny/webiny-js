@@ -84,12 +84,12 @@ Binding for this plan. Where they refine the spec, the ruling wins for phase 1a.
 - A4. The domain keeps the spec's `createdBy: Actor` (the requester). The model field is named `requester`, because `createdBy` is a reserved CMS field id; the mapper translates. CMS meta `createdOn`/`savedOn` map to the review's `createdOn`/`savedOn`.
 - A5. Ids: workflow ids come from the caller (as today); review ids are generated in `RequestReviewUseCase` with `mdbid()`; the aggregate receives the id and `now` so it stays deterministic.
 - A6. A before-save handler rejects a save by throwing `WorkflowValidationError`; `StoreWorkflowUseCase` turns that into `Result.fail`. Other thrown errors propagate.
-- A7. Save-time validation of user rule targets against team membership (spec 6, last paragraph) needs team lookups and lands in phase 4. Team targets are checked in 1a (R21).
+- A7. Save-time validation of user rule targets against team membership (spec 6, last paragraph) needs team lookups and lands in phase 4. Team targets are checked in 1a (R21). Done in phase 4 (R122).
 - A8. The assignment repository stores `createdOn = assignedOn` and sorts `createdOn_DESC` in storage, so pages are newest `assignedOn` first. Writers (phase 4) must pass the decision time as `assignedOn`.
 - A9. OpenSearch is not available locally. Every task still lists `yarn test:os`; if it cannot run, say so in the task report and leave it to CI.
 - A10. When several `ReviewTargetLoader`s match a model, the last registered wins (the same rule as resolving a single registration).
 - A11. `ReviewTargetSync.sync` fails with a plain `Error` (`Result<void, Error>`); phase 2 adapters may return any `BaseError`.
-- A12. Carried to later phases: phase 3 input validation should require full ISO datetimes with offset or `Z` for `endsOn`, because a date-only value parses to start of day UTC, not the end of the picked day (D110). Phase 4 may widen the assignment `userId` filter to `string | null`, and round-robin must skip pool records (`userId: null`).
+- A12. Carried to later phases: phase 3 input validation should require full ISO datetimes with offset or `Z` for `endsOn`, because a date-only value parses to start of day UTC, not the end of the picked day (D110). Phase 4 may widen the assignment `userId` filter to `string | null`, and round-robin must skip pool records (`userId: null`). Phase 4: round-robin takes the latest `outcome` record with a user (R115).
 
 ## Sub-phases
 
@@ -190,7 +190,7 @@ Test helpers (`__tests__/__helpers/`): `handler.ts`, `fixtures.ts` (incl. `expec
 - Target adapters: `ReviewTargetLoader` and `ReviewTargetSync` implementations, `system.workflow` writes through `UpdateEntrySystemUseCase`, publish rule (D79, D121), move rule (D84), review and assignment-log delete on target delete, `EntryRevisionBeforeCreate` null, save block (D62, D80), model delete decorator (D64) (2).
 - Rebuilt CMS and Website Builder workflow handlers deleted in Task 1 (2).
 - GraphQL schema (per app, plus the shared configuration operations, D133), including `CmsEntrySystemWorkflow` on the base schema and the CMS endpoint type update to `reviewState`/`stepState`; review lists, folder filter, `lastChangedOn` sort, pagination (D47, D76, D94, D112, D119); error shape; title and comment length validation (D100) (3).
-- Routing: pick validation on step reached, rules, strategies, exclusions in candidate resolution, assignment-log writes, reassign, save-time validation of user rule targets against team membership, `listUsers`, `listStepCandidates`, `inspectRouting` (4).
+- Routing: pick validation on step reached, rules, strategies, exclusions in candidate resolution, assignment-log writes, reassign, save-time validation of user rule targets against team membership, `listUsers`, `listStepCandidates`, `inspectRouting` (4). Done in phase 4.
 - `actor` on workflow events (2, R26; landed, phase 2 R58).
 - Step types beyond "review", `StepType` extension point, automation, fail and restart, `taskId`, `runs`, secret config encryption (5).
 - AI steps and `issues` (6).
