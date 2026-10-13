@@ -237,12 +237,12 @@ describe("CMS reassign wrapper", () => {
         await cancelEntryReview(admin, lockedReview);
         const reassigner = await asUser(REASSIGNER, REASSIGNER_PERMISSIONS);
 
-        const notCurrent = await reassigner.container
+        const missingStep = await reassigner.container
             .resolve(ReassignCmsEntryReviewStepUseCase)
             .execute({ reviewId: review.id, stepId: "step-missing", userId: REVIEWER.id });
         const cancelled = await reassign(reassigner, lockedReview.id, REVIEWER.id);
 
-        expect(notCurrent.error.code).toBe("Workflows/Review/StepNotCurrent");
+        expect(missingStep.error.code).toBe("Workflows/Review/StepNotCurrent");
         expect(cancelled.error.code).toBe("Workflows/Review/InvalidState");
         expect(engineCalls.filter(call => call === "ReassignReviewStep")).toHaveLength(2);
     });
@@ -363,6 +363,32 @@ describe("CMS step candidate wrappers", () => {
                 excludedReason: "Cannot read this content."
             }
         ]);
+    });
+
+    it("shows the reasons to a requester with reassign but not editor", async () => {
+        const { lockedEntry } = await createScenario();
+        lockFolderForReviewer();
+        const reassigner = await asUser(REASSIGNER, [WORKFLOWS_REASSIGN, ...CMS_WRITER]);
+
+        const candidates = expectOk(await listRequestCandidates(reassigner, lockedEntry));
+
+        expect(candidates.find(item => item.id === REVIEWER.id)).toMatchObject({
+            excluded: true,
+            excludedReason: "Cannot read this content."
+        });
+    });
+
+    it("reports a target whose entry differs from the target id as not found", async () => {
+        const { entry } = await createScenario();
+        const requester = await asUser(REQUESTER, CMS_WRITER);
+
+        const result = await listRequestCandidates(requester, {
+            entryId: "entry-other",
+            id: entry.id
+        });
+
+        expect(result.error.code).toBe("Workflows/Review/TargetNotFound");
+        expect(engineCalls).not.toContain("ListStepCandidates");
     });
 
     it("refuses a viewer without write access to the target, before the engine (R125)", async () => {
@@ -607,6 +633,26 @@ describe("CMS inspector and folder existence wrappers", () => {
             trace: [{ ruleId: "rule-1", outcome: "notMatched", reason: null }],
             skipped: []
         });
+    });
+
+    it("treats the root folder id and an explicit null as no folder", async () => {
+        await createScenario();
+        const editor = await asUser(EDITOR, EDITOR_PERMISSIONS);
+        const input = {
+            stepConfig: FOLDER_RULE_CONFIG,
+            model: AUTHOR_NAMESPACE,
+            requesterId: REQUESTER.id
+        };
+
+        const inRootId = expectOk(await inspect(editor, { ...input, folderId: "root" }));
+        const inNull = expectOk(await inspect(editor, { ...input, folderId: null }));
+
+        for (const inspection of [inRootId, inNull]) {
+            expect(inspection).toMatchObject({ owner: null, source: "pool", ruleId: null });
+            expect(inspection.trace).toEqual([
+                { ruleId: "rule-1", outcome: "notMatched", reason: null }
+            ]);
+        }
     });
 
     it("skips a rule user who cannot read the folder (R121, A47)", async () => {
