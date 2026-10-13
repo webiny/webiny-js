@@ -36,6 +36,7 @@ import {
     mismatchedTargetRevisions,
     nullTargetRevisions,
     scriptTargetReads,
+    targetReads,
     throwingTargetRevisions
 } from "~tests/__helpers/ScriptedWbPageTargetReads.js";
 import {
@@ -324,6 +325,7 @@ describe("WB reassign wrapper", () => {
 describe("WB step candidate wrappers", () => {
     beforeEach(() => {
         engineCalls.length = 0;
+        targetReads.length = 0;
     });
 
     afterEach(() => {
@@ -380,15 +382,31 @@ describe("WB step candidate wrappers", () => {
         ]);
     });
 
+    it("shows the reasons to a requester with reassign but not editor", async () => {
+        const { lockedPage } = await createScenario();
+        lockFolderForReviewer();
+        const reassigner = await asUser(REASSIGNER, [WORKFLOWS_REASSIGN, ...WB_WRITER]);
+
+        const candidates = expectOk(await listRequestCandidates(reassigner, lockedPage));
+
+        expect(candidates.find(item => item.id === REVIEWER.id)).toMatchObject({
+            excluded: true,
+            excludedReason: "Cannot read this content."
+        });
+    });
+
     it("refuses a viewer without page write permission before reading the page (R75, R125)", async () => {
         const { page } = await createScenario();
         const reader = await asUser(READER, WB_READER);
+
+        targetReads.length = 0;
 
         const result = await listRequestCandidates(reader, page);
 
         expect(result.error.code).toBe("Workflows/NotAuthorized");
         expect(result.error.data).toEqual({ action: "list the step's candidates" });
         expect(engineCalls).not.toContain("ListStepCandidates");
+        expect(targetReads).toEqual([]);
     });
 
     it("refuses a writer without write access to the page's folder, before the engine", async () => {
