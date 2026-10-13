@@ -30,6 +30,6 @@ describe("WbPage.system.workflow on /graphql (R102)", () => {
 
         const body = await asGraphQLUser().run(GET_PAGE_SYSTEM, { id: page.id });
 
-        expect(body.data.websiteBuilder.getPageById.data.system?.workflow ?? null).toBeNull();
+        expect(body.data.websiteBuilder.getPageById.data.system).toBeNull();
     });
 });

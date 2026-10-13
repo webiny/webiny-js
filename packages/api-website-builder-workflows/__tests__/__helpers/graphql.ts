@@ -70,10 +70,7 @@ const FLAGS_FIELDS = /* GraphQL */ `
     }
 `;
 
-/**
- * A review read: steps carry their assignment-log entries (R96). `reason` is not selected: the
- * OpenSearch storage returns a stored `null` reason as `""` (the CMS GraphQL tests skip it too).
- */
+/** A review read: steps carry their assignment-log entries (R96). */
 const REVIEW_DETAIL_FIELDS = /* GraphQL */ `
     review {
         ${REVIEW_FIELDS}
@@ -85,6 +82,7 @@ const REVIEW_DETAIL_FIELDS = /* GraphQL */ `
                 kind
                 source
                 userId
+                reason
             }
         }
     }

@@ -3,6 +3,7 @@ import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createWbWorkflowValues, storeWbWorkflow } from "~tests/__helpers/engine.js";
 import { createCmsReview } from "~tests/__helpers/cmsReview.js";
 import { REVIEWER, WB_READER } from "~tests/__helpers/identities.js";
+import { failListWorkflows } from "~tests/__helpers/FailingListWorkflows.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import {
     asGraphQLUser,
@@ -123,5 +124,17 @@ describe("WB workflow operations through GraphQL", () => {
                 (workflow: { id: string }) => workflow.id
             )
         ).toEqual(["wb-workflow"]);
+    });
+
+    it("returns a list error response with null meta when listing the workflows fails", async () => {
+        await storeWbWorkflow(await createUserContext());
+        const admin = asGraphQLUser({ legacyPlugins: [failListWorkflows] });
+
+        const body = await admin.run(LIST_WORKFLOWS);
+        const result = body.data.websiteBuilder.listWebsiteBuilderPageWorkflows;
+
+        expect(result.data).toBeNull();
+        expect(result.meta).toBeNull();
+        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
     });
 });

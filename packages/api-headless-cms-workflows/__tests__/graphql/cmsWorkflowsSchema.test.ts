@@ -4,7 +4,7 @@ import { createAuthorEntry, createModelEntry, expectOk } from "~tests/__helpers/
 import { requestEntryReview, STEP_ID } from "~tests/__helpers/engine.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createWbReview } from "~tests/__helpers/wbReview.js";
-import { seedAssignmentRecords } from "~tests/__helpers/seeds.js";
+import { SKIP_RECORD_REASON, seedAssignmentRecords } from "~tests/__helpers/seeds.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import {
     EDITOR,
@@ -75,7 +75,7 @@ const GET_REVIEW = /* GraphQL */ `
                 data {
                     review {
                         ${REVIEW}
-                        steps { id description assignments { kind source userId } }
+                        steps { id description assignments { kind source userId reason } }
                     }
                     flags { canStart canCancel }
                 }
@@ -92,7 +92,7 @@ const GET_TARGET_REVIEW = /* GraphQL */ `
                 data {
                     review {
                         ${REVIEW}
-                        steps { id description assignments { kind source userId } }
+                        steps { id description assignments { kind source userId reason } }
                     }
                     flags { canStart canCancel }
                 }
@@ -416,8 +416,13 @@ describe("CMS workflows GraphQL", () => {
 
         expect(byRevision.getCmsEntryTargetReview.error).toBeNull();
         expect(byRevision.getCmsEntryTargetReview.data.review.steps[0].assignments).toEqual([
-            { kind: "skip", source: "strategy", userId: REQUESTER.id },
-            { kind: "outcome", source: "pool", userId: null }
+            {
+                kind: "skip",
+                source: "strategy",
+                userId: REQUESTER.id,
+                reason: SKIP_RECORD_REASON
+            },
+            { kind: "outcome", source: "pool", userId: null, reason: null }
         ]);
         expect(byRevision.getCmsEntryTargetReview.data).toEqual(byId.getCmsEntryReview.data);
     });
@@ -572,7 +577,7 @@ describe("CMS workflows GraphQL", () => {
             {
                 id: STEP_ID,
                 description: "This is step 1",
-                assignments: [{ kind: "outcome", source: "pool", userId: null }]
+                assignments: [{ kind: "outcome", source: "pool", userId: null, reason: null }]
             }
         ]);
     });

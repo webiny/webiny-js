@@ -152,8 +152,14 @@ describe("WB review operations through GraphQL", () => {
         const byRevisionResult = byRevision.data.websiteBuilder.getWebsiteBuilderPageTargetReview;
         expect(byRevisionResult.error).toBeNull();
         expect(byRevisionResult.data.review.steps[0].assignments).toEqual([
-            { id: outcome.id, kind: "outcome", source: "pool", userId: null },
-            { id: skip.id, kind: "skip", source: "picked", userId: REVIEWER.id }
+            { id: outcome.id, kind: "outcome", source: "pool", userId: null, reason: null },
+            {
+                id: skip.id,
+                kind: "skip",
+                source: "picked",
+                userId: REVIEWER.id,
+                reason: "pick excluded"
+            }
         ]);
         expect(byRevisionResult.data).toEqual(byIdResult.data);
     });
@@ -201,7 +207,7 @@ describe("WB review operations through GraphQL", () => {
         });
         expect(readResult.data.review.steps[0].description).toBe("This is step 1");
         expect(readResult.data.review.steps[0].assignments).toEqual([
-            { id: outcome.id, kind: "outcome", source: "pool", userId: null }
+            { id: outcome.id, kind: "outcome", source: "pool", userId: null, reason: null }
         ]);
         const cmsResult = cms.data.websiteBuilder.getWebsiteBuilderPageReview;
         expect(cmsResult.data).toBeNull();

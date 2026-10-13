@@ -121,7 +121,7 @@ describe("WB review list wrapper", () => {
     });
 
     it("skips rows whose page is missing, another page's or unreadable because a read throws", async () => {
-        const { page, lockedPage } = await createScenario();
+        const { page, lockedPage, lockedReview } = await createScenario();
         mismatchedTargetRevisions.add(page.id);
         throwingTargetRevisions.add(lockedPage.id);
         const reviewer = await asUser(REVIEWER, WB_READER);
@@ -130,11 +130,14 @@ describe("WB review list wrapper", () => {
         mismatchedTargetRevisions.clear();
         throwingTargetRevisions.clear();
         nullTargetRevisions.add(page.id);
+        const missing = expectOk(await list(reviewer, { list: "pool" }));
+        nullTargetRevisions.clear();
         throwingAccessChecks.add("canRead");
-        const missingAndCheckThrowing = expectOk(await list(reviewer, { list: "pool" }));
+        const checkThrowing = expectOk(await list(reviewer, { list: "pool" }));
 
         expect(mismatchedAndThrowing.items).toEqual([]);
-        expect(missingAndCheckThrowing.items).toEqual([]);
+        expect(reviewIds(missing.items)).toEqual([lockedReview.id]);
+        expect(checkThrowing.items).toEqual([]);
     });
 
     it("lists my requests newest first (D119)", async () => {
