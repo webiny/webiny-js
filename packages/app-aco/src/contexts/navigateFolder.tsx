@@ -69,14 +69,10 @@ export const NavigateFolderProvider = ({
 
     const navigateToFolder = useCallback(
         (folderId?: string) => {
-            const targetFolderId = folderId || ROOT_FOLDER;
-            if (targetFolderId === currentFolderId) {
-                return;
-            }
             setFolderToStorage(folderId);
-            props.navigateToFolder(targetFolderId);
+            props.navigateToFolder(folderId || ROOT_FOLDER);
         },
-        [currentFolderId]
+        [props.navigateToFolder]
     );
 
     const navigateToListHome = () => {
