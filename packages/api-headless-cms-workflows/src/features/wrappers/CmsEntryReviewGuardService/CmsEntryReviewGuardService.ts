@@ -20,7 +20,17 @@ class CmsEntryReviewGuardServiceImpl implements Abstraction.Interface {
     ) {}
 
     public async authorize(params: Abstraction.Params): Abstraction.Return {
-        const viewer = await this.viewer.get();
+        // A failed team or permission load is a persistence error, never a rejection (R87).
+        let viewer: Awaited<CurrentReviewViewer.Return>;
+        try {
+            viewer = await this.viewer.get();
+        } catch (error) {
+            return Result.fail(
+                new ReviewPersistenceError(
+                    error instanceof Error ? error : new Error(String(error))
+                )
+            );
+        }
         if (viewer.isFail()) {
             return Result.fail(viewer.error);
         }

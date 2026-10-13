@@ -270,6 +270,18 @@ describe("CMS reassign wrapper", () => {
         expect(engineCalls).not.toContain("ReassignReviewStep");
     });
 
+    it("fails with a persistence error when the viewer's permissions fail to load (R87)", async () => {
+        const { review } = await createScenario();
+        const reassigner = await asUser(REASSIGNER, REASSIGNER_PERMISSIONS, [
+            throwOnWorkflowsPermissions
+        ]);
+
+        const result = await reassign(reassigner, review.id, REVIEWER.id);
+
+        expect(result.error.code).toBe("Workflows/Review/Persistence");
+        expect(engineCalls).not.toContain("ReassignReviewStep");
+    });
+
     it("reports a Website Builder review as not found (R46)", async () => {
         const wbReview = await createWbReview();
         const reassigner = await asUser(REASSIGNER, REASSIGNER_PERMISSIONS);
@@ -406,6 +418,16 @@ describe("CMS step candidate wrappers", () => {
         expect(engineCalls).not.toContain("ListStepCandidates");
     });
 
+    it("fails with a persistence error when the viewer's permissions fail to load (R87)", async () => {
+        const { entry } = await createScenario();
+        const requester = await asUser(REQUESTER, CMS_WRITER, [throwOnWorkflowsPermissions]);
+
+        const result = await listRequestCandidates(requester, entry);
+
+        expect(result.error.code).toBe("Workflows/Review/Persistence");
+        expect(engineCalls).not.toContain("ListStepCandidates");
+    });
+
     it("refuses an anonymous identity before the engine (R87)", async () => {
         const { entry } = await createScenario();
         const anonymous = await asUser(null, []);
@@ -510,6 +532,18 @@ describe("CMS step candidate wrappers", () => {
         });
         expect(cancelled.error.code).toBe("Workflows/Review/InvalidState");
         expect(engineCalls.filter(call => call === "ListStepCandidates")).toHaveLength(2);
+    });
+
+    it("fails with a persistence error for a review step's candidates when the viewer's permissions fail to load (R87)", async () => {
+        const { review } = await createScenario();
+        const reassigner = await asUser(REASSIGNER, REASSIGNER_PERMISSIONS, [
+            throwOnWorkflowsPermissions
+        ]);
+
+        const result = await listReviewCandidates(reassigner, review.id);
+
+        expect(result.error.code).toBe("Workflows/Review/Persistence");
+        expect(engineCalls).not.toContain("ListStepCandidates");
     });
 
     it("reports a Website Builder review as not found for its candidates (R46)", async () => {
