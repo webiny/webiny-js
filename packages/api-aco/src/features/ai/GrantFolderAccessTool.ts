@@ -6,7 +6,6 @@ import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
 import type { FolderPermission } from "~/types.js";
 import { loadFolderPermissions } from "./loadFolderPermissions.js";
 import { assertTargetIsUsable } from "./assertTargetIsUsable.js";
-import { NotifyFolderChangeUseCase } from "./NotifyFolderChange/index.js";
 
 const ACCESS_LEVELS = ["owner", "editor", "viewer", "public", "no-access"] as const;
 
@@ -47,8 +46,7 @@ class GrantFolderAccessToolHandlerImpl implements AiSdkToolHandler.Interface<Inp
     constructor(
         private getFolder: GetFolderUseCase.Interface,
         private updateFolder: UpdateFolderUseCase.Interface,
-        private listTeams: ListTeamsUseCase.Interface,
-        private notifyFolderChange: NotifyFolderChangeUseCase.Interface
+        private listTeams: ListTeamsUseCase.Interface
     ) {}
 
     async execute(input: Input): Promise<GrantResult> {
@@ -72,8 +70,6 @@ class GrantFolderAccessToolHandlerImpl implements AiSdkToolHandler.Interface<Inp
 
         const folder = result.value;
 
-        await this.notifyFolderChange.execute({ id: folder.id, change: "updated" });
-
         const granted: GrantResult = {
             folderId: folder.id,
             title: folder.title,
@@ -93,12 +89,7 @@ class GrantFolderAccessToolHandlerImpl implements AiSdkToolHandler.Interface<Inp
 
 const GrantFolderAccessToolHandler = AiSdkToolHandler.createImplementation({
     implementation: GrantFolderAccessToolHandlerImpl,
-    dependencies: [
-        GetFolderUseCase,
-        UpdateFolderUseCase,
-        ListTeamsUseCase,
-        NotifyFolderChangeUseCase
-    ]
+    dependencies: [GetFolderUseCase, UpdateFolderUseCase, ListTeamsUseCase]
 });
 
 /**
