@@ -43,14 +43,13 @@ const INSTALL = /* GraphQL */ `
  */
 describe("api-event-handler-aws-ddb — system installation", () => {
     it("installs the system on a fresh database", async () => {
-        const handler = createAwsDdbApiHandler({
-            extensions: () => [],
-            documentClient: getDocumentClient()
-        });
+        const documentClient = getDocumentClient();
+        const handler = createAwsDdbApiHandler({ extensions: () => [], documentClient });
 
         let requestId = 0;
         const graphql = async (query: string, variables: Record<string, unknown> = {}) => {
             requestId++;
+            const body = JSON.stringify({ query, variables });
             const result = await handler({
                 httpMethod: "POST",
                 path: "/graphql",
@@ -59,11 +58,12 @@ describe("api-event-handler-aws-ddb — system installation", () => {
                     "x-tenant": "root"
                 },
                 requestContext: { requestId: `test-req-install-${requestId}` },
-                body: JSON.stringify({ query, variables }),
+                body,
                 isBase64Encoded: false
             });
             expect(result.statusCode).toBe(200);
-            return JSON.parse(String(result.body));
+            const responseBody = String(result.body);
+            return JSON.parse(responseBody);
         };
 
         const before = await graphql(IS_INSTALLED);

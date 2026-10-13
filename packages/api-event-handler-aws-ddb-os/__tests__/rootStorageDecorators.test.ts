@@ -18,22 +18,21 @@ import { createHandler } from "./createHandler.js";
 const PROBED = Symbol("probed");
 
 class StorageProbe {
-    public constructor(decoratee: object) {
-        return new Proxy(decoratee, {
+    public constructor(decoratee: unknown) {
+        const storage = decoratee as object;
+        return new Proxy(storage, {
             get: (target, key) => (key === PROBED ? true : Reflect.get(target, key))
         });
     }
 }
 
 const createProbe = (abstraction: Abstraction<unknown>) => {
-    // The probe wraps any storage, so it can't be typed against one specific interface.
-    const decorator = StorageProbe as never;
-    return createDecorator({ abstraction, decorator, dependencies: [] });
+    return createDecorator({ abstraction, decorator: StorageProbe, dependencies: [] });
 };
 
 const isProbed = (value: unknown): boolean => {
-    const probed = (value as Record<symbol, unknown>)[PROBED];
-    return probed === true;
+    const record = value as Record<symbol, unknown>;
+    return record[PROBED] === true;
 };
 
 describe("api-event-handler-aws-ddb-os — root storage decorators", () => {
