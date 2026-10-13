@@ -70,7 +70,7 @@ describe("RequestReviewUseCase", () => {
         expect(read.value).toEqual(review);
     });
 
-    it("stores picks on the review steps; the default resolver leaves the step in the pool", async () => {
+    it("stores picks on the review steps; a pick outside the step's teams leaves the step in the pool", async () => {
         const { context } = await createReviewContext();
 
         const result = await context.container

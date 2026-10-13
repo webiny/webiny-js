@@ -146,6 +146,54 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
         return Result.ok(reviews);
     }
 
+    async listInReviewByOwners(
+        ownerIds: string[]
+    ): Promise<Result<ReviewData[], ReviewPersistenceError>> {
+        // An empty `In` list throws on OpenSearch (DDB returns nothing): answer without querying.
+        if (ownerIds.length === 0) {
+            return Result.ok([]);
+        }
+        const model = await this.modelProvider.get();
+        const reviews: ReviewData[] = [];
+        let after: string | null = null;
+        do {
+            const result: Awaited<ListLatestEntriesUseCase.Return<ReviewEntryValues>> =
+                await this.listLatestEntries.execute<ReviewEntryValues>(model, {
+                    where: {
+                        values: {
+                            currentOwnerId_in: [...ownerIds],
+                            currentStepState: "inReview",
+                            isActive: true
+                        }
+                    },
+                    sort: ["createdOn_ASC"],
+                    limit: COUNT_PAGE_SIZE,
+                    after
+                });
+            if (result.isFail()) {
+                return Result.fail(new ReviewPersistenceError(result.error));
+            }
+
+            for (const entry of result.value.entries) {
+                // Index rows, not confirmed (A46); the filter is checked again on the row.
+                const review = ReviewEntryMapper.fromEntry(entry);
+                if (
+                    review.isActive &&
+                    review.currentStepState === "inReview" &&
+                    review.currentOwnerId !== null &&
+                    ownerIds.includes(review.currentOwnerId)
+                ) {
+                    reviews.push(review);
+                }
+            }
+
+            const { meta } = result.value;
+            after = meta.hasMoreItems ? meta.cursor : null;
+        } while (after);
+
+        return Result.ok(reviews);
+    }
+
     async listByTarget(
         params: Abstraction.ByTargetParams
     ): Promise<Result<ReviewData[], ReviewPersistenceError>> {

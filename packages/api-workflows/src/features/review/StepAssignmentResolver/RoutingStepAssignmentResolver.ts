@@ -1,0 +1,87 @@
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { parseReviewStepConfig } from "~/domain/workflow/reviewStepConfigSchema.js";
+import { createRoutingFailedResolution } from "~/domain/routing/createRoutingFailedResolution.js";
+import { toStepAssignmentResolution } from "~/domain/routing/toStepAssignmentResolution.js";
+import { ROUTING_FAILED_REASON } from "~/domain/routing/reasons.js";
+import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/abstractions.js";
+import { StepAssignmentResolver } from "./abstractions.js";
+
+/**
+ * Step reach routing (spec 6, R110): pick, rules, strategy, pool, through
+ * `RoutingEvaluatorService`. Never blocks the review (R116): a failed or throwing lookup gives
+ * the pool of the step's teams with a fixed reason, and the error is logged.
+ */
+class RoutingStepAssignmentResolverImpl implements StepAssignmentResolver.Interface {
+    public constructor(
+        private evaluator: RoutingEvaluatorService.Interface,
+        private logger: Logger.Interface
+    ) {}
+
+    public async resolve(
+        params: StepAssignmentResolver.Params
+    ): Promise<StepAssignmentResolver.Resolution> {
+        // Save-time validation guarantees a parsable config. An unparsable one (edited storage)
+        // leaves an empty pool; phase 5 fails such steps ("fail on invalid settings").
+        const config = parseReviewStepConfig(params.step.config);
+        if (!config) {
+            return {
+                owner: null,
+                candidateTeamIds: [],
+                assignment: { source: "pool" },
+                records: [
+                    {
+                        kind: "outcome",
+                        userId: null,
+                        source: "pool",
+                        ruleId: null,
+                        by: null,
+                        reason: null
+                    }
+                ]
+            };
+        }
+
+        try {
+            const evaluated = await this.evaluator.evaluate({
+                config,
+                model: params.review.model,
+                workflowId: params.review.workflowId,
+                stepId: params.step.id,
+                requesterId: params.review.createdBy.id,
+                pickedUserId: params.step.pickedUserId,
+                // The target's current folder: moves are refused while a review is in progress
+                // (D84, R55). Its ancestors are read now, through the folder port (R130).
+                folder: params.review.targetContext.folder,
+                read: {
+                    type: "target",
+                    targetId: params.review.targetId,
+                    targetRevisionId: params.review.targetRevisionId
+                },
+                now: params.now
+            });
+            if (evaluated.isFail()) {
+                this.logger.error(
+                    {
+                        error: evaluated.error,
+                        reviewId: params.review.id,
+                        stepId: params.step.id
+                    },
+                    ROUTING_FAILED_REASON
+                );
+                return createRoutingFailedResolution(config.teams);
+            }
+            return toStepAssignmentResolution(evaluated.value);
+        } catch (error) {
+            this.logger.error(
+                { error, reviewId: params.review.id, stepId: params.step.id },
+                ROUTING_FAILED_REASON
+            );
+            return createRoutingFailedResolution(config.teams);
+        }
+    }
+}
+
+export const RoutingStepAssignmentResolver = StepAssignmentResolver.createImplementation({
+    implementation: RoutingStepAssignmentResolverImpl,
+    dependencies: [RoutingEvaluatorService, Logger]
+});

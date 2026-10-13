@@ -60,6 +60,12 @@ export interface IReviewRepository {
     listInProgressByWorkflow(
         workflowId: string
     ): Promise<Result<ReviewData[], ReviewPersistenceError>>;
+    /**
+     * Active reviews whose current step is in review, owned by any of these users, in every
+     * namespace (least-loaded load, R115). Index rows, not confirmed from primary storage: a
+     * stale row only shifts a load count (A46). An empty list returns no reviews.
+     */
+    listInReviewByOwners(ownerIds: string[]): Promise<Result<ReviewData[], ReviewPersistenceError>>;
     /** Every review of a target (active or not), confirmed from primary storage (R18). */
     listByTarget(
         params: ReviewRepositoryByTargetParams

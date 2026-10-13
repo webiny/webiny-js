@@ -42,7 +42,10 @@ class AssignmentRepositoryImpl implements Abstraction.Interface {
     ): Promise<Result<Abstraction.ListResult, AssignmentPersistenceError>> {
         const { where } = params;
         // An empty `In` list throws on OpenSearch (DDB returns nothing): answer without querying.
-        if (where.userId_in && where.userId_in.length === 0) {
+        if (
+            (where.userId_in && where.userId_in.length === 0) ||
+            (where.workflowId_in && where.workflowId_in.length === 0)
+        ) {
             return Result.ok({
                 items: [],
                 meta: { cursor: null, hasMoreItems: false, totalCount: 0 }
@@ -64,6 +67,12 @@ class AssignmentRepositoryImpl implements Abstraction.Interface {
         }
         if (where.userId_in !== undefined) {
             values.userId_in = [...where.userId_in];
+        }
+        if (where.workflowId_in !== undefined) {
+            values.workflowId_in = [...where.workflowId_in];
+        }
+        if (where.kind !== undefined) {
+            values.kind = where.kind;
         }
 
         const result = await this.listLatestEntries.execute<AssignmentEntryValues>(model, {

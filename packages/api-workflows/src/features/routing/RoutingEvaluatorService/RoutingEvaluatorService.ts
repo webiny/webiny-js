@@ -26,6 +26,7 @@ import { toRoutingEvaluation } from "~/domain/routing/toRoutingEvaluation.js";
 import { GetWorkflowSettingsUseCase } from "~/features/settings/GetWorkflowSettings/abstractions.js";
 import { ReviewTargetReadAccess } from "~/features/review/ReviewTargetReadAccess/abstractions.js";
 import { ReviewTargetFolderChain } from "~/features/review/ReviewTargetFolderChain/abstractions.js";
+import { RoutingStrategyService } from "~/features/routing/RoutingStrategyService/abstractions.js";
 import { RoutingEvaluatorService as Abstraction } from "./abstractions.js";
 
 class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
@@ -35,7 +36,8 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
         private listUserTeams: ListUserTeamsUseCase.Interface,
         private getSettings: GetWorkflowSettingsUseCase.Interface,
         private readAccesses: ReviewTargetReadAccess.Interface[],
-        private folderChains: ReviewTargetFolderChain.Interface[]
+        private folderChains: ReviewTargetFolderChain.Interface[],
+        private strategies: RoutingStrategyService.Interface
     ) {}
 
     public async evaluate(params: Abstraction.EvaluateParams): Abstraction.EvaluateReturn {
@@ -279,9 +281,20 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
             requesterId: params.requesterId,
             exclusions
         });
+        // The strategy decides who is asked first (R115).
+        const ordered = await this.strategies.order({
+            strategy,
+            candidates,
+            model: params.model,
+            workflowId: params.workflowId,
+            stepId: params.stepId
+        });
+        if (ordered.isFail()) {
+            return Result.fail(ordered.error);
+        }
         // Read access is checked lazily in strategy order, stopping at the first readable
         // candidate (R111, A47).
-        for (const candidate of candidates) {
+        for (const candidate of ordered.value) {
             const canRead = !readAccess
                 ? false
                 : params.read.type === "target"
@@ -463,6 +476,7 @@ export const RoutingEvaluatorService = Abstraction.createImplementation({
         ListUserTeamsUseCase,
         GetWorkflowSettingsUseCase,
         [ReviewTargetReadAccess, { multiple: true }],
-        [ReviewTargetFolderChain, { multiple: true }]
+        [ReviewTargetFolderChain, { multiple: true }],
+        RoutingStrategyService
     ]
 });

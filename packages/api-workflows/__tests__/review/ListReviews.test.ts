@@ -69,6 +69,7 @@ const createMemoryContext = async (
         countInProgressByWorkflow: async () => Result.ok(0),
         listInProgressByWorkflow: async () => Result.ok([]),
         listByTarget: async () => Result.ok([]),
+        listInReviewByOwners: async () => Result.ok([]),
         save: async review => Result.ok(review),
         delete: async () => Result.ok(),
         list: async params => {

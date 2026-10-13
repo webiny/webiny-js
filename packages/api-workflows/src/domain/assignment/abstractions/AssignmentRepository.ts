@@ -1,20 +1,28 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { CmsEntryMeta } from "@webiny/api-headless-cms/types/index.js";
-import type { AssignmentRecord, AssignmentRecordValues } from "../types.js";
+import type { AssignmentRecord, AssignmentRecordKind, AssignmentRecordValues } from "../types.js";
 import type { AssignmentPersistenceError } from "../errors.js";
 
 /**
  * Filters combine with AND; omitted (`undefined`) filters do not restrict, an empty string is a
- * real filter value. An empty `userId_in` matches nothing. Pool records (`userId` null) are
- * reachable only via the `reviewId`, `workflowId` and `stepId` filters.
+ * real filter value. An empty `userId_in` or `workflowId_in` matches nothing. Pool records
+ * (`userId` null) are reachable only via the `reviewId`, `workflowId` and `stepId` filters.
  */
 export interface AssignmentRepositoryListWhere {
     reviewId?: string;
     workflowId?: string;
+    /** Records of any of these workflows (least-loaded tie-break per app, D137). */
+    workflowId_in?: string[];
     stepId?: string;
     userId?: string;
     /** Records of any of these users (phase 4: latest record per candidate, D20). */
     userId_in?: string[];
+    /**
+     * Only outcomes (who got a step) or only skips (R115). Matches the stored `kind`: records
+     * stored without one (read as outcomes, R96) are not matched. The model is unreleased, so
+     * such records do not exist outside old test data.
+     */
+    kind?: AssignmentRecordKind;
 }
 
 export interface AssignmentRepositoryListParams {

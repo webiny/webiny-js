@@ -237,7 +237,7 @@ describe("ReviewSaver", () => {
 });
 
 describe("Review lifecycle defaults", () => {
-    it("ships no target sync, no target loaders and a pool-only resolver", async () => {
+    it("ships no target sync, no target loaders and the routing resolver", async () => {
         const { context } = await createContextHandler();
         const review = createRequestedReview({
             picks: [{ stepId: "legal", userId: "user-picked" }]
@@ -250,11 +250,22 @@ describe("Review lifecycle defaults", () => {
             .resolve(StepAssignmentResolver)
             .resolve({ review, step: review.steps[0], now: new Date(NOW) });
 
+        // No admin user is stored: the pick is not a member, the step goes to the pool (spec 6).
         expect(resolution).toEqual({
             owner: null,
             candidateTeamIds: [REVIEW_TEAM_ID],
             assignment: { source: "pool" },
-            records: [poolOutcomeRecord()]
+            records: [
+                {
+                    kind: "skip",
+                    userId: "user-picked",
+                    source: "picked",
+                    ruleId: null,
+                    by: null,
+                    reason: "Not a member of the step's teams."
+                },
+                poolOutcomeRecord()
+            ]
         });
     });
 

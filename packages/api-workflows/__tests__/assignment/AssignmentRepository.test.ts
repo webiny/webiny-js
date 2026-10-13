@@ -248,4 +248,53 @@ describe("AssignmentRepository", () => {
             [otherReviewer.id, "outcome", null]
         ]);
     });
+
+    it("filters by kind and by a set of workflows (R115)", async () => {
+        const repository = await createRepository();
+        expectOk(
+            await repository.create(
+                record({ reviewId: "review-k", userId: reviewer.id, source: "roundRobin" })
+            )
+        );
+        expectOk(
+            await repository.create(
+                record({
+                    reviewId: "review-k",
+                    userId: otherReviewer.id,
+                    source: "roundRobin",
+                    kind: "skip",
+                    reason: "Cannot read this content.",
+                    assignedOn: "2026-10-09T11:00:00.000Z"
+                })
+            )
+        );
+        expectOk(
+            await repository.create(
+                record({
+                    reviewId: "review-k",
+                    workflowId: "workflow-2",
+                    userId: reviewer.id,
+                    source: "picked",
+                    assignedOn: "2026-10-09T12:00:00.000Z"
+                })
+            )
+        );
+
+        const outcomes = expectOk(
+            await repository.list({ where: { reviewId: "review-k", kind: "outcome" } })
+        );
+        const inWorkflows = expectOk(
+            await repository.list({
+                where: { reviewId: "review-k", workflowId_in: ["workflow-2", "workflow-3"] }
+            })
+        );
+        const noWorkflows = expectOk(
+            await repository.list({ where: { reviewId: "review-k", workflowId_in: [] } })
+        );
+
+        expect(outcomes.items.map(item => item.source)).toEqual(["picked", "roundRobin"]);
+        expect(inWorkflows.items.map(item => item.workflowId)).toEqual(["workflow-2"]);
+        expect(noWorkflows.items).toEqual([]);
+        expect(noWorkflows.meta).toEqual({ cursor: null, hasMoreItems: false, totalCount: 0 });
+    });
 });

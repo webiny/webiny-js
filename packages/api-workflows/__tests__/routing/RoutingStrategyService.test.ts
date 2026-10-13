@@ -1,0 +1,185 @@
+import { describe, expect, it } from "vitest";
+import { createContextHandler } from "~tests/__helpers/handler.js";
+import { ARTICLE_MODEL, createWorkflowValues, expectOk } from "~tests/__helpers/fixtures.js";
+import { assignmentRecord, inReviewData } from "~tests/__helpers/routingSeeds.js";
+import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
+import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
+import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
+import type { RoutingStrategyName, RoutingUser } from "~/domain/routing/types.js";
+import { RoutingStrategyService } from "~/features/routing/RoutingStrategyService/index.js";
+
+const ANNA = { id: "user-anna", displayName: "Anna" };
+const BOB = { id: "user-bob", displayName: "Bob" };
+const CARA = { id: "user-cara", displayName: "Cara" };
+const CANDIDATES: RoutingUser[] = [ANNA, BOB, CARA];
+
+const createStrategyContext = async () => {
+    const { context } = await createContextHandler();
+    const strategies = context.container.resolve(RoutingStrategyService);
+    const order = async (
+        strategy: RoutingStrategyName,
+        model = ARTICLE_MODEL,
+        workflowId: string | null = "workflow-1"
+    ): Promise<string[]> => {
+        const ordered = await strategies.order({
+            strategy,
+            candidates: CANDIDATES,
+            model,
+            workflowId,
+            stepId: "legal"
+        });
+        return expectOk(ordered).map(user => user.id);
+    };
+    return {
+        order,
+        assignments: context.container.resolve(AssignmentRepository),
+        reviews: context.container.resolve(ReviewRepository),
+        workflows: context.container.resolve(WorkflowRepository)
+    };
+};
+
+describe("RoutingStrategyService: round robin (R115)", () => {
+    it("starts with the first candidate without history or without a stored workflow", async () => {
+        const { order } = await createStrategyContext();
+
+        expect(await order("roundRobin")).toEqual([ANNA.id, BOB.id, CARA.id]);
+        expect(await order("roundRobin", ARTICLE_MODEL, null)).toEqual([ANNA.id, BOB.id, CARA.id]);
+    });
+
+    it("asks the candidate after the latest assignee of the workflow step first", async () => {
+        const { order, assignments } = await createStrategyContext();
+        const seeds = [
+            assignmentRecord({ userId: BOB.id, source: "roundRobin" }),
+            // Newer, but not an assignee: a skip and a pool outcome.
+            assignmentRecord({
+                userId: CARA.id,
+                source: "roundRobin",
+                kind: "skip",
+                reason: "Cannot read this content.",
+                assignedOn: "2026-10-09T11:00:00.000Z"
+            }),
+            assignmentRecord({ assignedOn: "2026-10-09T12:00:00.000Z" }),
+            // Newer, but another step and another workflow.
+            assignmentRecord({
+                userId: ANNA.id,
+                stepId: "editorial",
+                source: "roundRobin",
+                assignedOn: "2026-10-09T13:00:00.000Z"
+            }),
+            assignmentRecord({
+                userId: CARA.id,
+                workflowId: "workflow-2",
+                source: "roundRobin",
+                assignedOn: "2026-10-09T14:00:00.000Z"
+            })
+        ];
+        for (const seed of seeds) {
+            expectOk(await assignments.create(seed));
+        }
+
+        expect(await order("roundRobin")).toEqual([CARA.id, ANNA.id, BOB.id]);
+    });
+
+    it("counts take over outcomes and keeps the position of a former candidate", async () => {
+        const { order, assignments } = await createStrategyContext();
+        expectOk(
+            await assignments.create(assignmentRecord({ userId: CARA.id, source: "poolStart" }))
+        );
+        expectOk(
+            await assignments.create(
+                assignmentRecord({
+                    userId: "user-bea",
+                    source: "takeOver",
+                    by: { type: "user", id: "user-bea", displayName: "Bea" },
+                    assignedOn: "2026-10-09T11:00:00.000Z"
+                })
+            )
+        );
+
+        expect(await order("roundRobin")).toEqual([BOB.id, CARA.id, ANNA.id]);
+    });
+
+    it("wraps around after the last candidate", async () => {
+        const { order, assignments } = await createStrategyContext();
+        expectOk(
+            await assignments.create(assignmentRecord({ userId: CARA.id, source: "reassign" }))
+        );
+
+        expect(await order("roundRobin")).toEqual([ANNA.id, BOB.id, CARA.id]);
+    });
+});
+
+describe("RoutingStrategyService: least loaded (R115, D137)", () => {
+    it("orders by in-review load counted per app", async () => {
+        const { order, reviews } = await createStrategyContext();
+        const seeds = [
+            inReviewData("review-a1", ANNA.id, "cms.article"),
+            inReviewData("review-a2", ANNA.id, "cms.blog"),
+            inReviewData("review-b1", BOB.id, "cms.article"),
+            inReviewData("review-b2", BOB.id, "wb.page"),
+            inReviewData("review-b3", BOB.id, "wb.page"),
+            inReviewData("review-b4", BOB.id, "wb.page"),
+            // Not load: an inactive review.
+            { ...inReviewData("review-c1", CARA.id, "cms.article"), isActive: false }
+        ];
+        for (const seed of seeds) {
+            expectOk(await reviews.save(seed));
+        }
+
+        expect(await order("leastLoaded", "cms.article")).toEqual([CARA.id, BOB.id, ANNA.id]);
+        // Website Builder: Anna and Cara have none and were never assigned, so id order.
+        expect(await order("leastLoaded", "wb.page")).toEqual([ANNA.id, CARA.id, BOB.id]);
+    });
+
+    it("breaks ties by the least recent assignment in the same app's workflows", async () => {
+        const { order, assignments, workflows } = await createStrategyContext();
+        expectOk(await workflows.create(createWorkflowValues({ id: "workflow-1" })));
+        expectOk(
+            await workflows.create(
+                createWorkflowValues({ id: "workflow-blog", name: "Blog", models: ["cms.blog"] })
+            )
+        );
+        expectOk(
+            await workflows.create(
+                createWorkflowValues({ id: "workflow-wb", name: "Pages", models: ["wb.page"] })
+            )
+        );
+        const seeds = [
+            assignmentRecord({
+                userId: ANNA.id,
+                source: "leastLoaded",
+                assignedOn: "2026-10-09T08:00:00.000Z"
+            }),
+            assignmentRecord({
+                userId: ANNA.id,
+                source: "leastLoaded",
+                assignedOn: "2026-10-09T11:00:00.000Z"
+            }),
+            assignmentRecord({
+                userId: BOB.id,
+                workflowId: "workflow-blog",
+                source: "picked",
+                assignedOn: "2026-10-09T10:00:00.000Z"
+            }),
+            // Ignored: another app's workflow, and a skip.
+            assignmentRecord({
+                userId: CARA.id,
+                workflowId: "workflow-wb",
+                source: "picked",
+                assignedOn: "2026-10-09T12:00:00.000Z"
+            }),
+            assignmentRecord({
+                userId: CARA.id,
+                source: "leastLoaded",
+                kind: "skip",
+                reason: "Cannot read this content.",
+                assignedOn: "2026-10-09T13:00:00.000Z"
+            })
+        ];
+        for (const seed of seeds) {
+            expectOk(await assignments.create(seed));
+        }
+
+        expect(await order("leastLoaded", "cms.article")).toEqual([CARA.id, BOB.id, ANNA.id]);
+    });
+});
