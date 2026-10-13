@@ -4,8 +4,8 @@ Spec 7.4; D7, D27, D57; R142, R144, R145, R146, R148, R156, R157, R159; A53; Rev
 
 - **Definition** (`features/stepRun/WorkflowStepRunTask/WorkflowStepRunTaskDefinition.ts`, R142): id `STEP_RUN_TASK_DEFINITION_ID` (`workflowsStepRun`), title `Workflow step run`, `isPrivate = true`, `selfCleanup = "never"`, `maxIterations = STEP_RUN_MAX_ITERATIONS` (10000), a description, and `handler` pointing at the handler implementation, exactly like `DeleteModelTask` (the definition has no dependencies; the runner builds the handler on demand with `resolveImplementation`). Registered by `WorkflowsFeature`. The handler validates its input with `createInputValidation` to exactly `StepRunTaskInput { reviewId: string; stepId: string }`.
 - **Stale guard** (`domain/review/getStaleStepRunReason.ts`, R144): pure `getStaleStepRunReason(review: ReviewData, stepId: string, task: StepRunTaskIdentity): string | null` with `StepRunTaskIdentity { id: string; createdById: string }`. It returns a reason, checked in this order, unless: the review `isActive`; `state === "inProgress"`; `currentStepId === stepId`; that step is `inReview`; its `taskId === task.id`; and `task.createdById === review.createdBy.id` (the task was triggered as the requester, R148, so a forged or foreign task never matches). Reasons: `The review is not active.`, `The review is not in progress.`, `The step is not the current step.`, `The step is not in review.`, `The step does not belong to this task.`, `The task was not created by the requester.`.
-- **Failure hooks** (R144, R146): `onError`, `onMaxIterations` and `onAbort` on the handler class. Each reads nothing from the task but its id, creator and input, loads the review by `input.reviewId` (an input that is not two strings, a review that is not found or a failed read is stale: nothing written), applies the guard with the task's own id and `createdBy.id`, and on a stale result logs at info and returns without writing. On a current task it calls `review.fail({ stepId, reason, now })` and saves through `ReviewSaver`. A review that is not found is stale (info); any other failed read, a failed or throwing `fail` or save is logged with `Logger.error` and never rethrown (a hook must not break the runner, and no error is swallowed silently, R159). Reasons, with `<message>` cut to 500 characters:
-  - `onError`: `The automation failed: <message>.` where the message is the task output's `error.message`, or `The task ended with an error` when it has none;
+- **Failure hooks** (R144, R146): `onError`, `onMaxIterations` and `onAbort` on the handler class. Each reads nothing from the task but its id, creator and input, loads the review by `input.reviewId` (an input that is not two strings, a review that is not found or a failed read is stale: nothing written), applies the guard with the task's own id and `createdBy.id`, and on a stale result logs at info and returns without writing. On a current task it calls `review.fail({ stepId, reason, now })` and saves through `ReviewSaver`. A review that is not found is stale (info); any other failed read, a failed or throwing `fail` or save is logged with `Logger.error` and never rethrown (a hook must not break the runner, and no error is swallowed silently, R159). Reasons (fixed texts only, R146):
+  - `onError`: `The automation failed.` (the task output's `error`, which can carry internals, is logged with `Logger.error` once the guard passed and never stored);
   - `onMaxIterations` (the 10000 ceiling): `The automation did not finish in <n> iterations.` with `n` = the automation definition's own `maxIterations` (default `DEFAULT_AUTOMATION_MAX_ITERATIONS`, 50), looked up from the review snapshot (step config -> `AutomationDefinitionRegistryService`; a config that does not parse or a missing definition gives the default), never `STEP_RUN_MAX_ITERATIONS` (R145, P4);
   - `onAbort`: `The automation was aborted.`
   Cancel and delete deactivate the review before the abort hook runs (Task 13), so their own abort writes nothing; a restarted step's old task has another `taskId`, so a late hook of it writes nothing; a step failed by the first hook is no longer `inReview`, so a second hook for the same task (the runner calls `onError` after `onMaxIterations`) writes nothing.
@@ -358,13 +358,14 @@ const createContext = async (overrides: Parameters<typeof registerTestAutomation
     };
 };
 
-const HOOKS: { hook: HookName; reason: string; errorMessage?: string }[] = [
-    { hook: "onError", reason: "The automation failed: Boom.", errorMessage: "Boom" },
+const HOOKS: { hook: HookName; reason: string; errorMessage?: string; logged: number }[] = [
+    { hook: "onError", reason: "The automation failed.", errorMessage: "Boom", logged: 1 },
     {
         hook: "onMaxIterations",
-        reason: "The automation did not finish in 50 iterations."
+        reason: "The automation did not finish in 50 iterations.",
+        logged: 0
     },
-    { hook: "onAbort", reason: "The automation was aborted." }
+    { hook: "onAbort", reason: "The automation was aborted.", logged: 0 }
 ];
 
 describe("workflowsStepRun task definition (R142)", () => {
@@ -405,7 +406,7 @@ describe("workflowsStepRun task definition (R142)", () => {
     });
 });
 
-describe.each(HOOKS)("workflowsStepRun $hook (R144, R146, R148)", ({ hook, reason, errorMessage }) => {
+describe.each(HOOKS)("workflowsStepRun $hook (R144, R146, R148)", ({ hook, reason, errorMessage, logged }) => {
     beforeEach(() => {
         resetFakeTasks();
         loggedErrors.length = 0;
@@ -426,7 +427,8 @@ describe.each(HOOKS)("workflowsStepRun $hook (R144, R146, R148)", ({ hook, reaso
             owner: automationActor,
             taskId: "task-1"
         });
-        expect(loggedErrors).toEqual([]);
+        // Only `onError` logs: the task's own error is logged, never stored (R146).
+        expect(loggedErrors).toHaveLength(logged);
     });
 
     it("writes nothing for the task id of an earlier attempt (restarted step)", async () => {
@@ -522,7 +524,8 @@ describe.each(HOOKS)("workflowsStepRun $hook (R144, R146, R148)", ({ hook, reaso
 
         await expect(call(hook, createTask({ errorMessage }))).resolves.toBeUndefined();
 
-        expect(loggedErrors).toHaveLength(1);
+        // The failed save, plus the task error that `onError` logs first.
+        expect(loggedErrors).toHaveLength(logged + 1);
         expect((await read()).steps[0].state).toBe("inReview");
     });
 });
@@ -566,29 +569,43 @@ describe("workflowsStepRun onMaxIterations reason uses the automation's own limi
     });
 });
 
-describe("workflowsStepRun onError message (R146)", () => {
+describe("workflowsStepRun onError never stores the task's error message (R146)", () => {
     beforeEach(() => {
         resetFakeTasks();
+        loggedErrors.length = 0;
     });
 
-    it("cuts the message to 500 characters", async () => {
+    it("stores the fixed reason and logs the task error", async () => {
         const { call, read, seed } = await createContext();
         await seed(createRunningAutomationReview("task-1"));
 
         await call("onError", createTask({ errorMessage: "x".repeat(900) }));
 
-        expect((await read()).steps[0].comment).toBe(`The automation failed: ${"x".repeat(500)}.`);
+        const stored = await read();
+        expect(stored.steps[0].comment).toBe("The automation failed.");
+        expect(JSON.stringify(stored)).not.toContain("xxxxx");
+        expect(loggedErrors.map(logged => logged.message)).toEqual([
+            "The step run task ended with an error."
+        ]);
+        expect(loggedErrors[0].fields.error).toEqual({ message: "x".repeat(900) });
     });
 
-    it("names an error without a message", async () => {
+    it("stores the same fixed reason for an error without a message", async () => {
         const { call, read, seed } = await createContext();
         await seed(createRunningAutomationReview("task-1"));
 
         await call("onError", createTask());
 
-        expect((await read()).steps[0].comment).toBe(
-            "The automation failed: The task ended with an error."
-        );
+        expect((await read()).steps[0].comment).toBe("The automation failed.");
+    });
+
+    it("logs nothing when the task is stale", async () => {
+        const { call, seed } = await createContext();
+        await seed(createRunningAutomationReview("task-1"));
+
+        await call("onError", createTask({ id: "task-other", errorMessage: "Boom" }));
+
+        expect(loggedErrors).toEqual([]);
     });
 });
 
@@ -741,11 +758,8 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
     }
 
     public async onError({ task }: HookParams): Promise<void> {
-        const message = (task.output?.error?.message ?? "The task ended with an error").slice(
-            0,
-            500
-        );
-        const reason = `The automation failed: ${message}.`;
+        // Fixed text only: the task's own error can carry internals (R146).
+        const reason = "The automation failed.";
 
         const { reviewId, stepId } = task.input;
         if (typeof reviewId !== "string" || typeof stepId !== "string") {
@@ -779,6 +793,12 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                 );
                 return;
             }
+            // The guard passed, so this task is the step's current task: log its error here (never
+            // stored in the step).
+            this.logger.error(
+                { error: task.output?.error, taskId: task.id, reviewId, stepId },
+                "The step run task ended with an error."
+            );
             const review = Review.fromData(loaded.value);
             const failed = review.fail({ stepId, reason, now: new Date().toISOString() });
             if (failed.isFail()) {

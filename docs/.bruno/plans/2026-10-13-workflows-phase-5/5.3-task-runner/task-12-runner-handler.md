@@ -5,11 +5,11 @@ Spec 5.1, 7.4, 9.2; D7, D27, D36, D57, D87, D100; R135, R142, R143, R144, R145, 
 1. **Read and guard (R144, R148).** It reads nothing from the input but `reviewId` and `stepId`. It loads the review and applies the stale guard with the task's own id and `createdBy.id` (`controller.state.getTask()`). A forged task (SEC-68: another creator, another task id) or a review that is cancelled, finished or moved on never matches.
 2. **Wait for the task id (R143, R163, Review Focus 2).** The trigger runs before the review is saved, so the first iteration can start before the review exists (a new review is created by the one save) or before the step carries this task's id (a later step reached by approve, or a restarted step, is saved after the trigger). Only those two cases wait: the review is not found, or the review is active and in progress and the step exists but its `taskId` is not this task's id yet (`null`, or another id). While `task.iterations <= STEP_RUN_TASKID_WAIT_TRIES` (3, so at most three waits) the handler returns `controller.response.continue(input, { seconds: STEP_RUN_TASKID_WAIT_SECONDS })` (2); past that it treats the run as stale: log at info, write nothing, `done`. Any other guard result (review inactive or not in progress, step not current or not in review, task created by someone else while the step carries its id) does not wait: the task ends at once (stale, nothing written, `done`). A failed read that is not "not found" is a task error (`controller.response.error`, the `onError` hook then guards and writes nothing if the review is unreadable).
 3. **Look up and validate (R145, R146, R148, R163).** The step config (`automationStepConfigSchema`) names the automation; a config that no longer parses fails the step with `The automation step configuration is not valid.` (P3); the definition comes from `AutomationDefinitionRegistryService` (a missing one fails the step). The run count is `iteration = task.iterations - idWaits`, where `idWaits` is read from the task output (`controller.state.getOutput()?.idWaits`) and, on the first guarded run (nothing stored yet), is `task.iterations - 1` (every earlier iteration was a wait). The automation's own limit is `definition.maxIterations ?? DEFAULT_AUTOMATION_MAX_ITERATIONS` (50), compared with `iteration` (runs, never waits): `iteration > limit` fails the step with `The automation did not finish in <limit> iterations.`. The stored settings are parsed with the definition's schema before every `run` (`parseAutomationSettings`, invalid settings fail the step) and `run` receives the parsed value and `iteration` (1 on its first run).
-4. **Run as the requester, inside the bypass (R150, R161, Review Focus 3).** Everything from here on, including the failure path, runs inside `IdentityContext.withIdentity(requesterIdentity, ...)` where `requesterIdentity` is built from `review.createdBy` exactly as in R149 (`new AuthenticatedIdentity({ id, displayName, type: identityType ?? "admin", context: { canAccessTenant: true } })`); the handler never calls `withoutAuthorization`. `WorkflowBypassService.run(() => definition.run({ settings, review, step, iteration, state }))`: the flag exists only around that call and is restored in `finally`; the approve and reject below run outside it (but inside the requester identity). `state` is `controller.state.getOutput()?.state ?? null`: what the previous iteration returned. A throwing `run` fails the step.
-5. **Apply the outcome (R135, R141, R162).** `approved` calls `ApproveReviewStepUseCase.execute({ reviewId, stepId, actor: getAutomationActor(review.createdBy), actorTeamIds: [], comment })`; `rejected` needs a comment of `REJECT_COMMENT_MIN_LENGTH` (10) characters after trimming (else the step fails with `The automation rejected without a comment.`) and calls `RejectReviewStepUseCase` the same way; `continue` writes the whole output with one `controller.state.updateOutput({ idWaits, state })` (`state` = the outcome's `state` when given, else the previous one, so the write is correct whether the store merges or replaces) and returns `controller.response.continue(input, { seconds: wait })` (input unchanged; a missing or zero `wait` means no delay; the platform ignores waits below one second). Only the handler writes the task output. Any other outcome type fails the step. When the use case fails the step fails with `The automation failed: <message>.`; if the use case actually saved before failing (target sync) the step is no longer in review and the fail write below is discarded by the guard (the original reason is logged).
-6. **One failure path (R146, R159).** Every failure above throws `StepRunFailure(reason)` (a new internal error class), caught once at the end of `run`: the review is read again, the guard is applied again (so a review that was cancelled meanwhile is not touched; the discarded reason is logged at info), `review.fail({ stepId, reason, now })` and `ReviewSaver.save`, then `done`. The reason is one of the fixed R146 texts, `<message>` cut to 500 characters. An error that is not a `StepRunFailure` is returned as `controller.response.error(error)`: the `onError` hook (Task 11) fails the step through the same guard. A failed read, `fail` or save in this path is logged with `Logger.error` and returned as a task error, never ignored; a save that failed only in the target sync (R16) is logged too and still counts as written. The failure write is repeated inline here, as in the three hooks (the no-wrapper rule: dependency calls stay in the owning class).
+4. **Run as the requester, inside the bypass (R150, R161, Review Focus 3).** Everything from here on, including the failure path, runs inside `IdentityContext.withIdentity(requesterIdentity, ...)` where `requesterIdentity` is built from `review.createdBy` exactly as in R149 (`new AuthenticatedIdentity({ id, displayName, type: identityType ?? "admin", context: { canAccessTenant: true } })`); the handler adds no authorization switch: the task runner already runs `definition.run` under `withoutAuthorization` (D36, D26), so the run is attributed to the requester but not limited by their permissions. `WorkflowBypassService.run(() => definition.run({ settings, review, step, iteration, state }))`: the flag exists only around that call and is restored in `finally`; the approve and reject below run outside it (but inside the requester identity). `state` is `controller.state.getOutput()?.state ?? null`: what the previous iteration returned. A throwing `run` fails the step with the fixed `The automation failed.` and the error is logged.
+5. **Apply the outcome (R135, R141, R162).** `approved` calls `ApproveReviewStepUseCase.execute({ reviewId, stepId, actor: getAutomationActor(review.createdBy), actorTeamIds: [], comment })`; `rejected` needs a comment of `REJECT_COMMENT_MIN_LENGTH` (10) characters after trimming (else the step fails with `The automation rejected without a comment.`) and calls `RejectReviewStepUseCase` the same way; `continue` writes the whole output with one `controller.state.updateOutput({ idWaits, state })` (`state` = the outcome's `state` when given, else the previous one, so the write is correct whether the store merges or replaces) and returns `controller.response.continue(input, { seconds: wait })` (input unchanged; a missing or zero `wait` means no delay; the platform ignores waits below one second). Only the handler writes the task output. Any other outcome type fails the step. When the use case fails the step fails with the fixed `The automation failed.` (its message is logged with `Logger.error`, never stored, R146); if the use case actually saved before failing (target sync) the step is no longer in review and the fail write below is discarded by the guard (the original reason is logged).
+6. **One failure path (R146, R159).** Every failure above throws `StepRunFailure(reason)` (a new internal error class), caught once at the end of `run`: the review is read again, the guard is applied again (so a review that was cancelled meanwhile is not touched; the discarded reason is logged at info), `review.fail({ stepId, reason, now })` and `ReviewSaver.save`, then `done`. The reason is one of the fixed R146 texts; raw thrown messages (a throwing `run`, a failed use case) never reach the step: the handler logs the full error with `Logger.error` and throws `StepRunFailure("The automation failed.")`. An error that is not a `StepRunFailure` is returned as `controller.response.error(error)`: the `onError` hook (Task 11) fails the step through the same guard. A failed read, `fail` or save in this path is logged with `Logger.error` and returned as a task error, never ignored; a save that failed only in the target sync (R16) is logged too and still counts as written. The failure write is repeated inline here, as in the three hooks (the no-wrapper rule: dependency calls stay in the owning class).
 
-**Runner identity (verified with CodeGraph, R161).** `TaskControl.run` loads the task and calls `IdentityContext.setIdentity(AuthenticatedIdentity from task.createdBy)` before anything else, so a running task already carries the requester (the trigger ran under `withIdentity(requester)`, R149). `TaskManager.run` then runs `definition.run` inside `withoutAuthorization` (D26: all task work runs without authorization, attributed to that identity), and the runner calls `onError` after the run, outside it; `onAbort` runs in whichever request aborts the task. The handler's own `withIdentity(requester)` is therefore explicit and idempotent in production (the stale guard already requires `task.createdBy.id === review.createdBy.id`), and it is what the test pins (the default test identity differs from the requester). It adds no authorization switch of its own.
+**Runner identity (verified with CodeGraph, R161).** `TaskControl.run` loads the task and calls `IdentityContext.setIdentity(AuthenticatedIdentity from task.createdBy)` before anything else, so a running task already carries the requester (the trigger ran under `withIdentity(requester)`, R149). `TaskManager.run` then runs `definition.run` inside `withoutAuthorization` (D26: all task work runs without authorization, attributed to that identity), and the runner calls `onError` after the run, outside it; `onAbort` runs in whichever request aborts the task. The handler's own `withIdentity(requester)` is therefore explicit and idempotent in production (the stale guard already requires `task.createdBy.id === review.createdBy.id`), and it is what the test pins (the default test identity differs from the requester). It adds no authorization switch of its own, and `withIdentity` does not re-enable authorization: the automation and the engine calls it makes run with authorization OFF, attributed to the requester (D36, "an automation may change anything"). The requester's permissions are not applied; the test asserts only which identity is visible.
 
 Contract notes: `controller.response.continue(data, { seconds })` is the platform's signature (R162, not `{ input, wait }`); the `AutomationOutcome` field stays `wait` and maps to `{ seconds: wait }`. The task output carries `{ idWaits, state }`, both written only by this handler.
 
@@ -538,8 +538,11 @@ describe("workflowsStepRun run handler (R142-R146, R148, R161-R163)", () => {
             const { result } = run();
 
             await expect(result).resolves.toMatchObject({ status: "done" });
-            await expectFailed(read, "The automation failed: The test automation threw.");
+            await expectFailed(read, "The automation failed.");
             expect(bypass.isActive()).toBe(false);
+            // The raw message is logged, never stored (R146).
+            expect(loggedErrors.map(logged => logged.message)).toEqual(["The automation threw."]);
+            expect((loggedErrors[0].fields.error as Error).message).toBe("The test automation threw.");
         });
 
         it("when the automation returns an unknown outcome", async () => {
@@ -560,10 +563,13 @@ describe("workflowsStepRun run handler (R142-R146, R148, R161-R163)", () => {
             const { result } = run();
 
             await expect(result).resolves.toMatchObject({ status: "done" });
-            await expectFailed(read, "The automation failed: Storage is down.");
+            await expectFailed(read, "The automation failed.");
+            expect(loggedErrors.map(logged => logged.message)).toContain(
+                "Applying the automation outcome failed."
+            );
         });
 
-        it("cuts a long error message to 500 characters", async () => {
+        it("never puts a raw error message into the step, however long", async () => {
             const { run, seed, read } = await setup({
                 custom: () => {
                     const definition = new TestAutomationDefinition();
@@ -579,7 +585,9 @@ describe("workflowsStepRun run handler (R142-R146, R148, R161-R163)", () => {
 
             await expect(result).resolves.toMatchObject({ status: "done" });
             const stored = await read();
-            expect(stored.steps[0].comment).toBe(`The automation failed: ${"x".repeat(500)}.`);
+            expect(stored.steps[0].comment).toBe("The automation failed.");
+            expect(JSON.stringify(stored)).not.toContain("xxxxx");
+            expect((loggedErrors[0].fields.error as Error).message).toBe("x".repeat(600));
         });
 
         it("writes nothing when the review was cancelled while the automation ran", async () => {
@@ -797,8 +805,9 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
 
         // Everything from here on acts as the requester (D58, D87, R161). The runner already
         // restored `task.createdBy` (the requester, checked by the guard) and runs the handler
-        // under `withoutAuthorization`; this makes the identity explicit and never switches
-        // authorization itself.
+        // under `withoutAuthorization` (D36: an automation may change anything); this makes the
+        // identity explicit (attribution only) and does not switch authorization back on, so the
+        // requester's permissions are not applied.
         const requester = data.createdBy;
         const identity = new AuthenticatedIdentity({
             id: requester.id,
@@ -850,11 +859,12 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                         })
                     );
                 } catch (error) {
-                    const message = (error instanceof Error ? error.message : String(error)).slice(
-                        0,
-                        500
+                    // The raw message can carry internals: logged, never stored (R146).
+                    this.logger.error(
+                        { error, taskId: task.id, reviewId, stepId },
+                        "The automation threw."
                     );
-                    throw new StepRunFailure(`The automation failed: ${message}.`);
+                    throw new StepRunFailure("The automation failed.");
                 }
 
                 // 5. Apply the outcome as the automation actor (R135, R141).
@@ -868,9 +878,11 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                             comment: outcome.comment
                         });
                         if (approved.isFail()) {
-                            throw new StepRunFailure(
-                                `The automation failed: ${approved.error.message.slice(0, 500)}.`
+                            this.logger.error(
+                                { error: approved.error, taskId: task.id, reviewId, stepId },
+                                "Applying the automation outcome failed."
                             );
+                            throw new StepRunFailure("The automation failed.");
                         }
                         return controller.response.done();
                     }
@@ -887,9 +899,11 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                             comment
                         });
                         if (rejected.isFail()) {
-                            throw new StepRunFailure(
-                                `The automation failed: ${rejected.error.message.slice(0, 500)}.`
+                            this.logger.error(
+                                { error: rejected.error, taskId: task.id, reviewId, stepId },
+                                "Applying the automation outcome failed."
                             );
+                            throw new StepRunFailure("The automation failed.");
                         }
                         return controller.response.done();
                     }

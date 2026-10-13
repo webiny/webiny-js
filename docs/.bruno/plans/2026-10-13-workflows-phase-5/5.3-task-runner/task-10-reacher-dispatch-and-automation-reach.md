@@ -3,12 +3,12 @@
 Spec 5.2, 7.4; D6, D7, D35, D37, D57, D87, D133 point 4b; R131, R143, R146, R149, R159; A52, A53; Review Focus 3, 4, 5. Step-reached stops being review-only:
 
 - `ReviewStepReacher` keeps its abstraction and its no-op rule (a current step that is not `pending` is left alone). Its implementation now resolves `StepTypeRegistryService.get(step.type)` and calls `stepType.reach({ review, step, actor, now })` (Task 1: the `review` type runs the existing resolver path unchanged). A step whose type is not registered (a workflow saved before its type was removed, A53) is failed with `review.fail` and the reason `The step type "<type>" is not available.`; the reacher returns ok and records no `stepReached` fact. The reacher no longer depends on `StepAssignmentResolver` (the review step type does). No error is swallowed (R159, P2): the reacher's error union is `ReviewInvalidStateError | ReviewStepNotCurrentError` (the same union `StepType.reach` returns), whatever `review.fail` or `review.reachRun` returns is returned, and `RequestReviewUseCase`, the one caller whose error union lacked `ReviewStepNotCurrentError`, gains it (`ApproveReviewStepUseCase` and the restart use case already have it).
-- `AutomationStepType.reach` (Task 2 left a placeholder) injects `AutomationDefinitionRegistryService`, `TaskService`, `IdentityContext` and `ReviewTaskAbortService`. It checks, in order, and stops at the first problem with the R146 reason:
+- `AutomationStepType.reach` (Task 2 left a placeholder) injects `AutomationDefinitionRegistryService`, `TaskService`, `IdentityContext`, `ReviewTaskAbortService` and `Logger`. It checks, in order, and stops at the first problem with the R146 reason:
   1. config parse (`automationStepConfigSchema.safeParse(step.config)`): a config that no longer parses fails with its own fixed reason `The automation step configuration is not valid.` (R146, P3), never the missing-definition text;
   2. definition lookup: `The automation "<automationId>" is not available.`;
   3. `matchesAutomationScope(definition.models, review.workflow.models)`: `The automation "<automationId>" is not available for this workflow's models.`;
   4. `parseAutomationSettings(definition, config.settings)`: `The automation settings are not valid: <path>: <message>.`;
-  5. the trigger (R149): `new AuthenticatedIdentity({ id, displayName, type: identityType ?? "admin", context: { canAccessTenant: true } })` from `review.createdBy` (the requester, never the actor who caused the reach: an approver of the previous step, a restarter, or the task itself), and `TaskService.trigger({ definition: STEP_RUN_TASK_DEFINITION_ID, name: "Workflow step: <step title>", input: { reviewId, stepId } })` inside `IdentityContext.withIdentity` only, so the task's `createdBy` is the requester (R148) and the identity is restored afterwards. The Result pattern and a `try`/`catch` are inline here, the only trigger call site, so there is no wrapper service. A failed or thrown trigger gives `The automation could not be started: <message>.`; the message is cut to 500 characters.
+  5. the trigger (R149): `new AuthenticatedIdentity({ id, displayName, type: identityType ?? "admin", context: { canAccessTenant: true } })` from `review.createdBy` (the requester, never the actor who caused the reach: an approver of the previous step, a restarter, or the task itself), and `TaskService.trigger({ definition: STEP_RUN_TASK_DEFINITION_ID, name: "Workflow step: <step title>", input: { reviewId, stepId } })` inside `IdentityContext.withIdentity` only, so the task's `createdBy` is the requester (R148) and the identity is restored afterwards. The Result pattern and a `try`/`catch` are inline here, the only trigger call site, so there is no wrapper service. A failed or thrown trigger gives the fixed reason `The automation could not be started.` (R146): the raw error message never reaches the step; the full error is logged with `Logger.error` (injected as a fifth dependency).
 - On success `review.reachRun({ actor, owner: getAutomationActor(review.createdBy), taskId, now })` stores the task id on the step in the one save. If `reachRun` itself fails after a successful trigger, the task is aborted through `ReviewTaskAbortService` (message `The review could not be saved.`) and the error is returned.
 - On any failure before a task exists, `reachRun` with `taskId: null` records the reach, then `review.fail({ stepId, reason, now })` fails the step with the reason. The reach returns ok: a failed step is a normal state of a review, restartable later (D8). The use cases then save the review as usual. No task is started and nothing is aborted.
 - The reach is the same code on request, on a later step reached by approve, inside a task and on restart (Task 15): always as the requester (A52, R149).
@@ -34,7 +34,7 @@ Spec 5.2, 7.4; D6, D7, D35, D37, D57, D87, D133 point 4b; R131, R143, R146, R149
 - Produces (matches the contract):
   - `ReviewStepReacher`: abstraction unchanged except the error union, now `ReviewStepReacherError = ReviewInvalidStateError | ReviewStepNotCurrentError` (exported type and `ReviewStepReacher.Error`); implementation dispatches through `StepTypeRegistryService` and fails an unregistered type's step with `The step type "<type>" is not available.`. Dependencies `[StepTypeRegistryService]`.
   - `IRequestReviewUseCaseErrors` gains `stepNotCurrent: ReviewStepNotCurrentError` (so `RequestReviewUseCase.Error` and the app wrappers that reuse it carry the reacher's whole union).
-  - `AutomationStepType.reach`: an automation step reaches `inReview` with a `taskId`, or `failed` with an R146 reason (Tasks 12, 15). Dependencies `[AutomationDefinitionRegistryService, TaskService, IdentityContext, ReviewTaskAbortService]`.
+  - `AutomationStepType.reach`: an automation step reaches `inReview` with a `taskId`, or `failed` with an R146 reason (Tasks 12, 15). Dependencies `[AutomationDefinitionRegistryService, TaskService, IdentityContext, ReviewTaskAbortService, Logger]`.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -44,6 +44,7 @@ Create `packages/api-workflows/__tests__/stepTypes/AutomationReach.test.ts`:
 import { beforeEach, describe, expect, it } from "vitest";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
+import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { registerTestAutomation } from "~tests/__helpers/TestAutomationDefinition.js";
 import {
     abortedTasks,
@@ -104,6 +105,7 @@ const createReview = (options: CreateReviewOptions = {}): Review => {
 const createContext = async (overrides: Parameters<typeof registerTestAutomation>[1] = {}) => {
     const { context } = await createContextHandler({
         setup: container => {
+            captureLoggedErrors(container);
             registerTestAutomation(container, overrides);
         }
     });
@@ -115,6 +117,7 @@ const AUTOMATION_ACTOR = getAutomationActor(requester);
 describe("AutomationStepType.reach (R146, R149)", () => {
     beforeEach(() => {
         resetFakeTasks();
+        loggedErrors.length = 0;
     });
 
     it("triggers as the requester, not as the actor who caused the reach", async () => {
@@ -258,7 +261,7 @@ describe("AutomationStepType.reach (R146, R149)", () => {
         expect(step.taskId).toBeNull();
     });
 
-    it("fails the step with the message of a failed trigger", async () => {
+    it("fails the step with a fixed reason when the trigger fails, and logs the error", async () => {
         const context = await createContext();
         fakeTaskFaults.trigger = "fail";
         fakeTaskFaults.triggerMessage = "The queue is full";
@@ -271,13 +274,17 @@ describe("AutomationStepType.reach (R146, R149)", () => {
         expect(result.isOk()).toBe(true);
         expect(review.toData().steps[0]).toMatchObject({
             state: "failed",
-            comment: "The automation could not be started: The queue is full.",
+            comment: "The automation could not be started.",
             taskId: null
         });
         expect(abortedTasks).toEqual([]);
+        expect(loggedErrors.map(logged => logged.message)).toEqual([
+            "Could not start the automation task."
+        ]);
+        expect((loggedErrors[0].fields.error as Error).message).toBe("The queue is full");
     });
 
-    it("fails the step with the message of a throwing trigger", async () => {
+    it("fails the step with the same fixed reason when the trigger throws, and logs the error", async () => {
         const context = await createContext();
         fakeTaskFaults.trigger = "throw";
         const review = createReview();
@@ -289,11 +296,15 @@ describe("AutomationStepType.reach (R146, R149)", () => {
         expect(result.isOk()).toBe(true);
         expect(review.toData().steps[0]).toMatchObject({
             state: "failed",
-            comment: "The automation could not be started: The task service is down."
+            comment: "The automation could not be started."
         });
+        expect(loggedErrors.map(logged => logged.message)).toEqual([
+            "Could not start the automation task."
+        ]);
+        expect((loggedErrors[0].fields.error as Error).message).toBe("The task service is down");
     });
 
-    it("cuts a long trigger message to 500 characters", async () => {
+    it("never puts a raw trigger message into the step, however long", async () => {
         const context = await createContext();
         fakeTaskFaults.trigger = "fail";
         fakeTaskFaults.triggerMessage = "x".repeat(900);
@@ -303,9 +314,9 @@ describe("AutomationStepType.reach (R146, R149)", () => {
             .resolve(ReviewStepReacher)
             .reach({ review, actor: requester, now: NOW });
 
-        expect(review.toData().steps[0].comment).toBe(
-            `The automation could not be started: ${"x".repeat(500)}.`
-        );
+        const [step] = review.toData().steps;
+        expect(step.comment).toBe("The automation could not be started.");
+        expect(JSON.stringify(step)).not.toContain("xxxxx");
     });
 
     it("aborts the triggered task when the step cannot be reached after it", async () => {
@@ -627,6 +638,7 @@ import {
     AuthenticatedIdentity,
     IdentityContext
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { automationStepConfigSchema } from "~/domain/automation/automationStepConfigSchema.js";
 import { getAutomationActor } from "~/domain/automation/getAutomationActor.js";
@@ -645,7 +657,8 @@ import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortServic
         private definitions: AutomationDefinitionRegistryService.Interface,
         private taskService: TaskService.Interface,
         private identityContext: IdentityContext.Interface,
-        private taskAbort: ReviewTaskAbortService.Interface
+        private taskAbort: ReviewTaskAbortService.Interface,
+        private logger: Logger.Interface
     ) {}
 ```
 
@@ -701,13 +714,21 @@ Replace the placeholder `reach` with:
                     });
                 });
                 if (triggered.isFail()) {
-                    reason = `The automation could not be started: ${triggered.error.message.slice(0, 500)}.`;
+                    // The raw message can carry internals: logged, never stored (R146).
+                    this.logger.error(
+                        { error: triggered.error, reviewId: data.id, stepId: step.id },
+                        "Could not start the automation task."
+                    );
+                    reason = "The automation could not be started.";
                 } else {
                     taskId = triggered.value.id;
                 }
             } catch (error) {
-                const message = error instanceof Error ? error.message : String(error);
-                reason = `The automation could not be started: ${message.slice(0, 500)}.`;
+                this.logger.error(
+                    { error, reviewId: data.id, stepId: step.id },
+                    "Could not start the automation task."
+                );
+                reason = "The automation could not be started.";
             }
         }
 
@@ -747,7 +768,8 @@ export const AutomationStepType = StepType.createImplementation({
         AutomationDefinitionRegistryService,
         TaskService,
         IdentityContext,
-        ReviewTaskAbortService
+        ReviewTaskAbortService,
+        Logger
     ]
 });
 ```

@@ -2,7 +2,7 @@
 
 Spec 5.1, 7.4; D25, D57; R142, R143, R144, R151; A51; Review Focus 2. The automation reach triggers its background task before the review is saved (Task 10), so a failed save would leave a task running for a review that does not have it. This task adds the abort half and the constants and test seams the later tasks need:
 
-- `features/stepRun/constants.ts`: `STEP_RUN_TASK_DEFINITION_ID = "workflowsStepRun"`, `STEP_RUN_MAX_ITERATIONS = 10000`, `STEP_RUN_TASKID_WAIT_TRIES = 3`, `STEP_RUN_TASKID_WAIT_SECONDS = 2`, `DEFAULT_AUTOMATION_MAX_ITERATIONS = 50`. `features/stepRun/types.ts`: `StepRunTaskInput { reviewId: string; stepId: string }`.
+- `features/stepRun/constants.ts`: `STEP_RUN_TASK_DEFINITION_ID = "workflowsStepRun"`, `STEP_RUN_MAX_ITERATIONS = 10000`, `STEP_RUN_TASKID_WAIT_TRIES = 3`, `STEP_RUN_TASKID_WAIT_SECONDS = 2`, `DEFAULT_AUTOMATION_MAX_ITERATIONS = 50`, `STEP_RUN_STUCK_GRACE_MS = 300000` (consumed by Task 14, R152). `features/stepRun/types.ts`: `StepRunTaskInput { reviewId: string; stepId: string }`.
 - `ReviewTaskAbortService` (`features/stepRun/ReviewTaskAbortService/`): `abort({ taskIds, message }): Promise<void>`. For each id it calls `TaskService.abort({ id, message })` inline with the Result pattern and a `try`/`catch`; a failed Result or a throw is logged with `Logger.error` (fields `error`, `taskId`) and never propagates. An empty `taskIds` makes no call. It is a DI service because three callers share it (saver, Task 10, Task 13), and it wraps one dependency (`TaskService`) with real logic (loop, per-id isolation, logging), not a pass-through.
 - `ReviewSaver.save`: when persisting fails, it collects the `taskId` of every recorded `stepReached` fact (non-null only) and calls `ReviewTaskAbortService.abort({ taskIds, message: "The review could not be saved." })`, then returns the unchanged persistence error. A save that succeeded and then failed in the target sync does not abort (the review is saved and carries the task id). A save that fails after the task finished is covered by the stale guard (R143, Task 11).
 - Test seams (R157, P1: the one helper set, these names everywhere): `__tests__/__helpers/FakeTaskService` (records `trigger` and `abort` calls and the identity in force at trigger time, returns `task-1`, `task-2`, ..., can be told to fail or throw) and the reusable `FailingReviewSave` decorator (Tasks 11-15 reuse both; none defines its own variant). `FakeTaskService` is registered by default in the api-workflows `createContextHandler`, because `ReviewSaver` now depends on `TaskService` (through `ReviewTaskAbortService`) and the test containers have no background-tasks feature. The CMS test package cannot import across packages, so it gets a package-local copy named `FakeTaskService` (same name and exports) registered in its test context for the same reason (R157). The WB test context already registers `BackgroundTasksFeature`, so it has a real `TaskService` and needs none. Production always registers `TaskService` through `BackgroundTasksFeature` (before `WorkflowsFeature` in `registerApiRequestStack.ts`).
@@ -279,6 +279,7 @@ import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortServic
 import {
     DEFAULT_AUTOMATION_MAX_ITERATIONS,
     STEP_RUN_MAX_ITERATIONS,
+    STEP_RUN_STUCK_GRACE_MS,
     STEP_RUN_TASK_DEFINITION_ID,
     STEP_RUN_TASKID_WAIT_SECONDS,
     STEP_RUN_TASKID_WAIT_TRIES
@@ -349,6 +350,7 @@ describe("step run constants (R142, R143, R145)", () => {
         expect(STEP_RUN_TASKID_WAIT_TRIES).toBe(3);
         expect(STEP_RUN_TASKID_WAIT_SECONDS).toBe(2);
         expect(DEFAULT_AUTOMATION_MAX_ITERATIONS).toBe(50);
+        expect(STEP_RUN_STUCK_GRACE_MS).toBe(300000);
     });
 });
 ```
@@ -530,6 +532,13 @@ export const STEP_RUN_TASKID_WAIT_SECONDS = 2;
 
 /** Used when the automation definition has no `maxIterations` (R145). */
 export const DEFAULT_AUTOMATION_MAX_ITERATIONS = 50;
+
+/**
+ * How long, in milliseconds, a `failed` or `aborted` task may be finished before stuck detection
+ * treats the step as stuck (R152): until then the runner's `onError` / `onAbort` hooks may still
+ * fail the step with the proper reason.
+ */
+export const STEP_RUN_STUCK_GRACE_MS = 300000;
 ```
 
 Create `packages/api-workflows/src/features/stepRun/types.ts`:

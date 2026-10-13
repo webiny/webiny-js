@@ -1,11 +1,11 @@
 ### Task 14: Stuck detection on single-review reads
 
-Spec 5.1, 7.4; D28, D57; R144, R146, R152, R157, R159; A51; Review Focus 1. A task can end without writing the outcome to its review: the platform marks it `success`, `failed` or `aborted` (or its record is gone) while the step is still `inReview`, for example the runner was killed after the handler's save failed, or the task was aborted from the tasks UI. The `onError`, `onMaxIterations` and `onAbort` hooks (Task 11) cover the cases where the runner still calls them; stuck detection covers the rest, lazily, when somebody looks at the review:
+Spec 5.1, 7.4; D28, D57, D132; R144, R146, R152, R157, R159; A51; Review Focus 1. A task can end without writing the outcome to its review: the platform marks it `success`, `failed` or `aborted` (or its record is gone) while the step is still `inReview`, for example the runner was killed after the handler's save failed, or the task was aborted from the tasks UI. The `onError`, `onMaxIterations` and `onAbort` hooks (Task 11) cover the cases where the runner still calls them; stuck detection covers the rest, lazily, when somebody looks at the review:
 
-- New DI service `StuckStepService` (`features/stepRun/StuckStepService/`), `check(review: ReviewData): Promise<ReviewData>`. It returns the review unchanged unless its current step is an `automation` step that is `inReview` and carries a `taskId`. It then reads the task through `GetTaskUseCase` (`@webiny/background-tasks/api/features/GetTask/index.js`, `execute(id)` returns the task or `null`). The step is stuck when the task is `null` or its `taskStatus` is `success`, `failed` or `aborted` (a `pending` or `running` task is alive). A stuck step must also pass the stale guard (R144): `getStaleStepRunReason(review, step.id, { id: taskId, createdById })` returns `null`; `createdById` is the task's creator, or the requester's id when the task does not exist (there is nobody to compare). A task started by somebody else (a forged one) therefore never fails a review.
+- New DI service `StuckStepService` (`features/stepRun/StuckStepService/`), `check(review: ReviewData): Promise<ReviewData>`. It returns the review unchanged unless its current step is an `automation` step that is `inReview` and carries a `taskId`. It then reads the task through `GetTaskUseCase` (`@webiny/background-tasks/api/features/GetTask/index.js`, `execute(id)` returns the task or `null`). The step is stuck when the task is `null` (no grace), or its `taskStatus` is `success`, or `failed` / `aborted` AND `finishedOn` (falling back to `savedOn`) is more than `STEP_RUN_STUCK_GRACE_MS` (300000, 5 minutes, Task 9 constants) ago: the runner may still call `onError` / `onAbort` right after the platform marks a task `failed` / `aborted`, and those hooks fail the step with the proper reason, so stuck detection must not race them. A `pending` or `running` task is alive and never stuck. A stuck step must also pass the stale guard (R144): `getStaleStepRunReason(review, step.id, { id: taskId, createdById })` returns `null`; `createdById` is the task's creator, or the requester's id when the task does not exist (there is nobody to compare). A task started by somebody else (a forged one) therefore never fails a review.
 - A stuck step is failed with the fixed reason `The automation task ended without a result.` (R146): `Review.fromData`, `review.fail({ stepId, reason, now })`, `ReviewSaver.save` (so the `StepFailed` event, the target sync and the version bump are the normal ones). The failed review is returned.
 - The service never throws and never fails a read: a throwing task lookup, a refused `fail` (the step is not failed twice, R140), a failed or throwing save all leave the review as read and log with `Logger.error`. A save that persisted but failed in the target sync (`ReviewTargetSyncError`) counts as written: the review it carries is returned, and the sync failure is logged with `Logger.error` too (R159, nothing is swallowed silently).
-- Only single reads call it: `GetReviewUseCase.execute` and `GetTargetReviewUseCase.execute` (the latter only when an active review exists). Lists (`ListReviews`, `ListTargetReviews`, ...) never look at tasks (R152): a list over many reviews must not make one task read per row.
+- Only single reads call it: `GetReviewUseCase.execute` and `GetTargetReviewUseCase.execute` (the latter only when an active review exists). RULING (R152): the read-triggered write happens in the engine before the app wrapper's authorization check; it is accepted because it only moves a truly stuck step to `failed` (a correct, idempotent state change), returns no extra data to the caller and runs in the engine, which checks no permissions (D132). Lists (`ListReviews`, `ListTargetReviews`, ...) never look at tasks (R152): a list over many reviews must not make one task read per row.
 - `StuckStepService` is registered by its own feature in `WorkflowsFeature`. It resolves `GetTaskUseCase`, which production gets from `BackgroundTasksFeature`; the test containers have none, so the api-workflows `createContextHandler` registers the new `FakeGetTask` (a map of task id to status) by default, and the CMS test context gets a package-local `NoopGetTask` by default (R157; Task 9 did the same for `TaskService`; the WB test context already registers `BackgroundTasksFeature`). Task 16 builds an in-review automation step in the CMS tests and registers a package-local `FakeGetTask` (same name and API as the one created here) over the no-op where it needs task statuses. No existing test reads an `inReview` automation step through a single read, so no existing expectation changes.
 
 **Files:**
@@ -27,13 +27,13 @@ Spec 5.1, 7.4; D28, D57; R144, R146, R152, R157, R159; A51; Review Focus 1. A ta
 **Interfaces:**
 - Consumes:
   - `GetTaskUseCase` (`@webiny/background-tasks/api/features/GetTask/index.js`): `execute<I, O>(id: string): Promise<TaskService.Task<I, O> | null>`. `TaskService.Task` (`@webiny/api-core/features/task/TaskService/index.js`): `id`, `taskStatus: TaskDataStatus`, `createdBy: { id; displayName; type }`, `iterations`, `input`, `output`, ...; `TaskDataStatus` (`PENDING`, `RUNNING`, `FAILED`, `SUCCESS`, `ABORTED`).
-  - Task 11: `getStaleStepRunReason(review: ReviewData, stepId: string, task: StepRunTaskIdentity): string | null` (`~/domain/review/getStaleStepRunReason.js`), `StepRunTaskIdentity { id: string; createdById: string }`; `@webiny/background-tasks` is already a dependency of `api-workflows`.
+  - Task 11: `getStaleStepRunReason(review: ReviewData, stepId: string, task: StepRunTaskIdentity): string | null` (`~/domain/review/getStaleStepRunReason.js`), `StepRunTaskIdentity { id: string; createdById: string }`; Task 9: `STEP_RUN_STUCK_GRACE_MS` (`~/features/stepRun/constants.js`); `@webiny/background-tasks` is already a dependency of `api-workflows`.
   - Task 5: `Review.fail({ stepId, reason, now })` (`Result<void, ReviewFailError>`, an already failed step is a no-op ok), `ReviewStepFailedEvent`; test helpers `createRunningAutomationReview(taskId)`, `createFailedAutomationReview()`, `AUTOMATION_STEP_ID` (`~tests/__helpers/stepRunReviews.js`).
   - Task 9: `ReviewSaver` (`save(review: Review): Promise<Result<ReviewData, ReviewPersistenceError | ReviewTargetSyncError>>`), `FailingReviewSave` and `reviewSaveFaults` (`~tests/__helpers/FailingReviewSave.js`), the CMS package-local `FakeTaskService` (registered in the CMS context).
   - Existing: `ReviewTargetSyncError` (`~/domain/review/errors.js`, `data.review` is the saved review), `Logger` (`@webiny/api-core/features/logger/index.js`), `AUTOMATION_STEP_TYPE` (`~/domain/workflow/stepTypes.js`, Task 1), `GetReviewUseCase`, `GetTargetReviewUseCase`, `ListTargetReviewsUseCase`, `ReviewRepository`, `captureLoggedErrors` / `loggedErrors`, `FailingReviewTargetSync`, `RecordingEventPublisher` / `recordedEvents` / `workflowEventTypes`, `createRequestedReview`, `toSaveData`, `expectOk`, `ARTICLE_MODEL`, `requester`.
 - Produces:
   - `StuckStepService` (`~/features/stepRun/StuckStepService/index.js`): `check(review: ReviewData): Promise<ReviewData>`, namespace types `StuckStepService.Interface`; feature `StuckStepFeature`. Consumed by `GetReviewUseCase` and `GetTargetReviewUseCase`.
-  - Test seam `FakeGetTask` (`~tests/__helpers/FakeGetTask.js`): class `FakeGetTask` with `set(id, status, createdById?)`, `reset()`, `calls: string[]`, `failure: Error | null`, and the shared instance `fakeGetTask`, registered by default in `createContextHandler`. Consumed by the Task 16 and 17 tests only through the package-local copies those tasks write (same names, R157).
+  - Test seam `FakeGetTask` (`~tests/__helpers/FakeGetTask.js`): class `FakeGetTask` with `set(id, status, createdById?, finishedOn?)`, `reset()`, `calls: string[]`, `failure: Error | null`, and the shared instance `fakeGetTask`, registered by default in `createContextHandler`. Consumed by the Task 16 and 17 tests only through the package-local copies those tasks write (same names, R157).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -58,8 +58,17 @@ export class FakeGetTask implements GetTaskUseCase.Interface {
     public failure: Error | null = null;
     private readonly tasks = new Map<string, TaskService.Task>();
 
-    /** `createdById` defaults to the requester: the trigger runs as the requester (R149). */
-    public set(id: string, status: TaskDataStatus, createdById: string = requester.id): void {
+    /**
+     * `createdById` defaults to the requester: the trigger runs as the requester (R149).
+     * `finishedOn` defaults to a time long past the stuck grace (R152); pass a recent one to test
+     * the grace.
+     */
+    public set(
+        id: string,
+        status: TaskDataStatus,
+        createdById: string = requester.id,
+        finishedOn: string = NOW
+    ): void {
         this.tasks.set(id, {
             id,
             name: "Workflow step: Check links",
@@ -69,6 +78,7 @@ export class FakeGetTask implements GetTaskUseCase.Interface {
             iterations: 1,
             taskStatus: status,
             eventResponse: undefined,
+            finishedOn,
             createdOn: NOW,
             savedOn: NOW,
             createdBy: { id: createdById, displayName: "Rita Requester", type: "admin" }
@@ -139,8 +149,10 @@ import {
     ARTICLE_MODEL,
     createRequestedReview,
     expectOk,
+    requester,
     toSaveData
 } from "~tests/__helpers/fixtures.js";
+import { STEP_RUN_STUCK_GRACE_MS } from "~/features/stepRun/constants.js";
 import type { Review } from "~/domain/review/Review.js";
 import type { ReviewData } from "~/domain/review/types.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
@@ -216,7 +228,7 @@ describe("Stuck detection on single reads (D28, R152)", () => {
     });
 
     it.each([TaskDataStatus.SUCCESS, TaskDataStatus.FAILED, TaskDataStatus.ABORTED])(
-        "fails an in-review automation step whose task is %s and returns the failed review",
+        "fails an in-review automation step whose task is %s (finished long ago) and returns the failed review",
         async status => {
             fakeGetTask.set("task-1", status);
             const { getReview, reviews } = await setup();
@@ -239,6 +251,44 @@ describe("Stuck detection on single reads (D28, R152)", () => {
             expect(workflowEventTypes()).toEqual(["Workflows/Review/StepFailed"]);
         }
     );
+
+    it.each([TaskDataStatus.FAILED, TaskDataStatus.ABORTED])(
+        "leaves the step alone while a %s task finished inside the grace, its hooks may still run (R152)",
+        async status => {
+            const justNow = new Date(Date.now() - 1000).toISOString();
+            fakeGetTask.set("task-1", status, requester.id, justNow);
+            const { getReview, reviews } = await setup();
+
+            const review = expectOk(await getReview.execute({ id: "review-1" }));
+
+            expect(review.steps[0]).toMatchObject({ state: "inReview", comment: null });
+            expect(expectOk(await reviews.get("review-1")).steps[0].state).toBe("inReview");
+            expect(workflowEventTypes()).toEqual([]);
+        }
+    );
+
+    it.each([TaskDataStatus.FAILED, TaskDataStatus.ABORTED])(
+        "fails the step once a %s task finished longer ago than the grace (R152)",
+        async status => {
+            const pastGrace = new Date(Date.now() - STEP_RUN_STUCK_GRACE_MS - 1000).toISOString();
+            fakeGetTask.set("task-1", status, requester.id, pastGrace);
+            const { getReview } = await setup();
+
+            const review = expectOk(await getReview.execute({ id: "review-1" }));
+
+            expect(review.steps[0]).toMatchObject({ state: "failed", comment: STUCK_REASON });
+        }
+    );
+
+    it("fails the step at once when the task succeeded without writing a result, no grace", async () => {
+        const justNow = new Date(Date.now() - 1000).toISOString();
+        fakeGetTask.set("task-1", TaskDataStatus.SUCCESS, requester.id, justNow);
+        const { getReview } = await setup();
+
+        const review = expectOk(await getReview.execute({ id: "review-1" }));
+
+        expect(review.steps[0]).toMatchObject({ state: "failed", comment: STUCK_REASON });
+    });
 
     it("fails the step when the task record is gone", async () => {
         const { getReview } = await setup();
@@ -430,7 +480,7 @@ export interface IStuckStepService {
 
 /**
  * Stuck detection for single reads (D28, D57, R152): an `inReview` automation step whose task is
- * `success`, `failed`, `aborted` or gone, and that passes the stale guard (R144), is failed with
+ * `success`, `failed` / `aborted` for longer than the grace, or gone, and that passes the stale guard (R144), is failed with
  * `The automation task ended without a result.`. Called by `GetReviewUseCase` and
  * `GetTargetReviewUseCase` only, never by lists. Internal (D132): no permission checks.
  */
@@ -452,15 +502,9 @@ import { ReviewTargetSyncError } from "~/domain/review/errors.js";
 import { getStaleStepRunReason } from "~/domain/review/getStaleStepRunReason.js";
 import type { ReviewData } from "~/domain/review/types.js";
 import { AUTOMATION_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
+import { STEP_RUN_STUCK_GRACE_MS } from "~/features/stepRun/constants.js";
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
 import { StuckStepService as Abstraction } from "./abstractions.js";
-
-/** Statuses of a task that is over: nothing will write the step's outcome any more. */
-const FINISHED_TASK_STATUSES: TaskDataStatus[] = [
-    TaskDataStatus.SUCCESS,
-    TaskDataStatus.FAILED,
-    TaskDataStatus.ABORTED
-];
 
 class StuckStepServiceImpl implements Abstraction.Interface {
     constructor(
@@ -489,8 +533,24 @@ class StuckStepServiceImpl implements Abstraction.Interface {
             );
             return review;
         }
-        if (task && !FINISHED_TASK_STATUSES.includes(task.taskStatus)) {
-            return review;
+        if (task) {
+            // A pending or running task is alive.
+            if (
+                task.taskStatus === TaskDataStatus.PENDING ||
+                task.taskStatus === TaskDataStatus.RUNNING
+            ) {
+                return review;
+            }
+            // A failed or aborted task may still be followed by the runner's `onError` /
+            // `onAbort` hook, which fails the step with the proper reason: wait out the grace
+            // before treating the step as stuck (R152). A `success` task writes nothing more.
+            if (task.taskStatus !== TaskDataStatus.SUCCESS) {
+                const finishedAt = Date.parse(task.finishedOn ?? task.savedOn);
+                // `!(a > b)` also keeps an unparseable time inside the grace.
+                if (!(Date.now() - finishedAt > STEP_RUN_STUCK_GRACE_MS)) {
+                    return review;
+                }
+            }
         }
 
         // A task that is gone has no creator to compare, so the requester stands in for it.

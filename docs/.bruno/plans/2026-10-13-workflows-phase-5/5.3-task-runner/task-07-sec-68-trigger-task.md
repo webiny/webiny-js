@@ -3,8 +3,9 @@
 Spec 7.4; D7, D27, D57; R142, R147, R148; Review Focus 1. SEC-68 is a platform bug, fixed in `packages/background-tasks` and nowhere else (user answer Q4):
 
 - The GraphQL mutation `WebinyBackgroundTaskMutation.triggerTask` runs any registered definition by id, including private ones (`isPrivate: true`), for any caller holding the `task.entry` write permission. Phase 5 registers a private definition (`workflowsStepRun`, Task 11) whose input is a review id and step id, so the mutation would let a caller start a step run for any review. The fix is in the resolver, which is the only place that is a trust boundary.
-- The resolver depends on `GetRunnableTaskDefinitionUseCase` (`execute(id)` is synchronous and returns a `Result`). Inside the existing `resolve(async () => ...)` block, before `TriggerTaskUseCase`, a failed lookup or a definition with `isPrivate === true` throws `new TaskDefinitionNotFoundError(args.definition)` (`~/api/domain/errors.js`): code `BackgroundTasks/TaskDefinition/NotFoundError`, message `Task definition not found.`, data `{ id }`. A private definition and an unknown one therefore produce the identical error, so a caller cannot tell them apart. The throw sits inside `resolve` so it becomes the usual `error` payload (`ErrorResponse`), not a GraphQL transport error.
+- The resolver depends on `GetRunnableTaskDefinitionUseCase` (`execute(id)` is synchronous and returns a `Result`). Inside the existing `resolve(async () => ...)` block, before `TriggerTaskUseCase`, a failed lookup or a definition with `isPrivate === true` throws `new TaskDefinitionNotFoundError(args.definition)` (`~/api/domain/errors.js`): code `BackgroundTasks/TaskDefinition/NotFoundError`, message `Task definition not found.`, data `{ id }`. A private definition and an unknown one therefore produce the identical error, so a caller cannot tell them apart. (Before the fix `TaskService.trigger` threw a `WebinyError` with code `TASK_DEFINITION_ERROR` and message `Task definition was not found!` for an unknown id; the resolver now checks unknown and private ids itself, so both return `TaskDefinitionNotFoundError`.) The throw sits inside `resolve` so it becomes the usual `error` payload (`ErrorResponse`), not a GraphQL transport error.
 - `TriggerTaskUseCase` and `TaskService.trigger` are unchanged: internal triggers of private definitions keep working (the workflows engine triggers `workflowsStepRun` through `TaskService.trigger`, R149). The permission check order is unchanged (`checkPermissions` first).
+- Out of scope: `abortTask`, `deleteTask`, `getTask` and `listTasks` stay open for private tasks to holders of `task.entry`; the `workflowsStepRun` stale guard (R144) makes abort and delete safe. Not changed here.
 - The runner defences (stale guard, `createdBy` equals the requester, input never trusted) stay regardless (R144, R148); this task is the platform half.
 - This task is its own commit with the `fix(background-tasks):` prefix. It touches no workflows package.
 
@@ -238,6 +239,10 @@ Run the Global Constraints chain (build `@webiny/background-tasks` with `--no-ca
 
 ```
 fix(background-tasks): refuse private task definitions in the graphql triggerTask mutation
+
+The mutation now answers a private definition exactly like an unknown one
+(TaskDefinitionNotFoundError). The SDK's triggerTask goes through this mutation, so it
+now refuses private ids too. abortTask, deleteTask, getTask and listTasks are unchanged.
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn

@@ -4,13 +4,13 @@ Spec 7.1, 7.2, 10; D122, D129, D130, D133 point 2; R87, R98, R132, R138. `ListWo
 
 Row rules for `listStepTypes` (R132, R138):
 
-- One row per registered step type: `type`, `title`, `available` and `unavailableReason` from `describeAvailability()`, `configSchema` = `zod.toJSONSchema(stepType.configSchema)` or `null` when the type has none.
+- One row per registered step type: `type`, `title`, `available` and `unavailableReason` from `describeAvailability()`, `configSchema` = `zod.toJSONSchema(stepType.configSchema, { io: "input", unrepresentable: "any" })` (the form the author fills in: a field with `.default()` is not required; a schema that cannot be converted is a `WorkflowPersistenceError`, R87, R138) or `null` when the type has none.
 - While no `ai` type is registered, an `ai` placeholder row exactly as today: `available` is the `aiPowerups` feature flag (read through `FeatureFlags`; a throwing read is a `WorkflowPersistenceError`), `unavailableReason` is `"AI powerups are not enabled."` when off and `null` when on, `configSchema: null`. A registered `ai` type replaces it and the flag is not read.
 - Display order: `review`, `ai`, `automation`, then every other registered type in registration order. Missing ones are skipped.
 - A throwing `describeAvailability` is a `WorkflowPersistenceError` (R87).
 - Behaviour change: the `automation` row's `configSchema` is now the JSON schema of `automationStepConfigSchema` (it was `null`). Its `available` / `unavailableReason` follow the definition registry (`"No automation is defined."` while it is empty, available once a definition is registered).
 
-`listAutomationDefinitions` (R138): needs `workflows.editor`, refusal action `"list automations"`; rows `{ id, name, models, settingsSchema }` sorted by `name`; `settingsSchema` = `zod.toJSONSchema(definition.settingsSchema, { unrepresentable: "any" })` so one unrepresentable schema (a `z.date()`) never makes the list throw.
+`listAutomationDefinitions` (R138): needs `workflows.editor`, refusal action `"list automations"`; rows `{ id, name, models, settingsSchema }` sorted by `name`; `settingsSchema` = `zod.toJSONSchema(definition.settingsSchema, { io: "input", unrepresentable: "any" })` (input side: a field with `.default()` is not required) so one unrepresentable schema (a `z.date()`) never makes the list throw; any remaining conversion error is caught and returned as a `WorkflowPersistenceError` (R87, R138).
 
 **Files:**
 - Modify: `packages/api-workflows/src/features/config/ListWorkflowStepTypes/ListWorkflowStepTypesUseCase.ts`
@@ -125,7 +125,10 @@ describe("ListAutomationDefinitionsUseCase (R138)", () => {
                 id: TEST_AUTOMATION_ID,
                 name: "Test automation",
                 models: ["cms.*"],
-                settingsSchema: zod.toJSONSchema(testAutomationSettingsSchema)
+                settingsSchema: zod.toJSONSchema(testAutomationSettingsSchema, {
+                    io: "input",
+                    unrepresentable: "any"
+                })
             }
         ]);
         expect(rows[0].settingsSchema).toMatchObject({ type: "object" });
@@ -133,6 +136,29 @@ describe("ListAutomationDefinitionsUseCase (R138)", () => {
             "mode",
             "comment"
         ]);
+    });
+
+    it("does not require a field that has a default (input side of the schema)", async () => {
+        const { listAutomations } = await createListContext({
+            setup: container => {
+                registerTestAutomation(container);
+            }
+        });
+
+        const rows = expectOk(await listAutomations.execute());
+
+        // `mode` has `.default("approve")`: the author may leave it out.
+        expect(rows[0].settingsSchema.required ?? []).not.toContain("mode");
+    });
+
+    it("returns the workflow persistence error when a schema cannot be converted (R87, R138)", async () => {
+        const { listAutomations } = await createListContext({
+            setup: registerDefinition("broken", "Broken", {} as never)
+        });
+
+        const result = await listAutomations.execute();
+
+        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
     });
 
     it("sorts the rows by name", async () => {
@@ -230,7 +256,7 @@ In the first test ("lists review, AI and automation for an editor; AI is off wit
                 title: "Automation",
                 available: false,
                 unavailableReason: "No automation is defined.",
-                configSchema: zod.toJSONSchema(automationStepConfigSchema)
+                configSchema: zod.toJSONSchema(automationStepConfigSchema, { io: "input", unrepresentable: "any" })
             }
 ```
 
@@ -291,7 +317,7 @@ Add these tests inside the `describe` (before "allows a full-access permission s
             title: "Zeta",
             available: false,
             unavailableReason: "Zeta is off.",
-            configSchema: zod.toJSONSchema(zod.object({ level: zod.number() }))
+            configSchema: zod.toJSONSchema(zod.object({ level: zod.number() }), { io: "input", unrepresentable: "any" })
         });
         expect(stepTypes[4]).toEqual({
             type: "alpha",
@@ -330,8 +356,39 @@ Add these tests inside the `describe` (before "allows a full-access permission s
             title: "AI step",
             available: true,
             unavailableReason: null,
-            configSchema: zod.toJSONSchema(zod.object({ prompt: zod.string() }))
+            configSchema: zod.toJSONSchema(zod.object({ prompt: zod.string() }), { io: "input", unrepresentable: "any" })
         });
+    });
+
+    it("lists a field with a default as not required (input side of the schema)", async () => {
+        const defaulted = createTestStepType({
+            type: "defaulted",
+            title: "Defaulted",
+            configSchema: zod.object({ level: zod.number().default(1) })
+        });
+        const { listStepTypes } = await createStepTypesContext({
+            setup: container => {
+                container.register(defaulted.implementation);
+            }
+        });
+
+        const stepTypes = expectOk(await listStepTypes.execute());
+
+        const row = stepTypes.find(item => item.type === "defaulted");
+        expect((row?.configSchema?.required ?? []) as string[]).not.toContain("level");
+    });
+
+    it("returns the workflow persistence error when a type's schema cannot be converted (R87, R138)", async () => {
+        const broken = createTestStepType({ type: "broken-schema", configSchema: {} as never });
+        const { listStepTypes } = await createStepTypesContext({
+            setup: container => {
+                container.register(broken.implementation);
+            }
+        });
+
+        const result = await listStepTypes.execute();
+
+        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
     });
 
     it("returns the workflow persistence error when a type's availability throws (R87)", async () => {
@@ -424,7 +481,7 @@ In "lists the step types with AI unavailable without AI powerups (D130)", the `a
             title: "Automation",
             available: false,
             unavailableReason: "No automation is defined.",
-            configSchema: zod.toJSONSchema(automationStepConfigSchema)
+            configSchema: zod.toJSONSchema(automationStepConfigSchema, { io: "input", unrepresentable: "any" })
         });
 ```
 
@@ -573,8 +630,13 @@ import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistrySe
                     title: stepType.title,
                     available: availability.available,
                     unavailableReason: availability.unavailableReason,
+                    // Input side (what the author fills in); the surrounding try/catch turns a
+                    // schema that cannot be converted into a persistence error (R87, R138).
                     configSchema: stepType.configSchema
-                        ? zod.toJSONSchema(stepType.configSchema)
+                        ? zod.toJSONSchema(stepType.configSchema, {
+                              io: "input",
+                              unrepresentable: "any"
+                          })
                         : null
                 });
             }
@@ -710,6 +772,7 @@ import { Result } from "@webiny/feature/api";
 import zod from "zod";
 import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
+import type { AutomationDefinitionInfo } from "~/domain/config/types.js";
 import { AutomationDefinitionRegistryService } from "~/features/automation/AutomationDefinitionRegistryService/index.js";
 import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
@@ -741,18 +804,29 @@ class ListAutomationDefinitionsUseCaseImpl implements UseCase.Interface {
             return Result.fail(new WorkflowsNotAuthorizedError({ action: "list automations" }));
         }
 
-        const rows = this.definitions.list().map(definition => {
-            return {
-                id: definition.id,
-                name: definition.name,
-                models: [...definition.models],
-                // `unrepresentable: "any"`: one schema JSON schema cannot express (a date) must
-                // not make the whole list throw.
-                settingsSchema: zod.toJSONSchema(definition.settingsSchema, {
-                    unrepresentable: "any"
-                })
-            };
-        });
+        let rows: AutomationDefinitionInfo[];
+        try {
+            rows = this.definitions.list().map(definition => {
+                return {
+                    id: definition.id,
+                    name: definition.name,
+                    models: [...definition.models],
+                    // Input side (what the author fills in; a field with `.default()` is not
+                    // required). `unrepresentable: "any"`: one schema JSON schema cannot express
+                    // (a date) must not make the whole list throw (R138).
+                    settingsSchema: zod.toJSONSchema(definition.settingsSchema, {
+                        io: "input",
+                        unrepresentable: "any"
+                    })
+                };
+            });
+        } catch (error) {
+            return Result.fail(
+                new WorkflowPersistenceError(
+                    error instanceof Error ? error : new Error(String(error))
+                )
+            );
+        }
         rows.sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id));
         return Result.ok(rows);
     }

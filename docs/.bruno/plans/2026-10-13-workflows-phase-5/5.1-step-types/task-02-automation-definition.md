@@ -35,7 +35,7 @@ Until Task 10, an `automation` step can be saved but `ReviewStepReacher` does no
   - `parseAutomationSettings(definition: AutomationDefinition.Interface, settings: unknown): Result<unknown, string>`: ok = the zod-parsed value (defaults applied); fail = `"<path>: <message>"` of the first issue (`<path>` dot-joined, `"<path>: "` omitted when empty). Reused by Tasks 10 and 15 for the reach-time reason.
   - `AutomationStepType` (`features/stepTypes/AutomationStepType/AutomationStepType.ts`, impl class `AutomationStepTypeImpl`, exported `AutomationStepType = StepType.createImplementation(...)`): `type: "automation"`, `title: "Automation"`, `configSchema: automationStepConfigSchema`; registered by `StepTypesFeature` (the engine now registers two step types).
   - Test helper `~tests/__helpers/TestAutomationDefinition.js` (R157): `TEST_AUTOMATION_ID = "test-automation"`, `testAutomationSettingsSchema`, `class TestAutomationDefinition` (id `test-automation`, name `Test automation`, models `["*"]`, settings `z.object({ mode: z.enum(["approve", "reject", "wait", "throw"]).default("approve"), comment: z.string().optional() })`; its `run` records the call in `runCalls` and answers by `mode`: `approve` / `reject` the outcome with the comment, `wait` a `continue` with `wait: 1` and `state: { iterations: iteration }`, `throw` throws `Error("The test automation threw.")`), `TestAutomationOverrides`, `registerTestAutomation(container: Container, overrides?: TestAutomationOverrides): TestAutomationDefinition` (R157, P1: the ONE signature every task uses; it registers one definition instance with `container.registerInstance(AutomationDefinition, definition)` and returns it so the test can read `runCalls`; use it inside a `setup: container => { registerTestAutomation(container, ...) }` callback), and `createAutomationStep(params: AutomationStepFixtureParams)` (a workflow `automation` step, a workflow fixture other tasks use).
-- Messages (R136, R137, `WorkflowValidationError`): malformed shell `Step "<title>" needs an automation.`; unknown definition `Step "<title>" uses the automation "<automationId>", which is not defined.`; uncovered models `Automation "<automationId>" is not available for this workflow's models.`; settings `Step "<title>" settings are not valid: <first issue path>: <message>.` (path omitted when empty). Check order: shell, definition, models, settings. The stored `settings` are the zod-parsed value.
+- Messages (R136, R137, `WorkflowValidationError`): malformed shell `Step "<title>" needs an automation.`; unknown definition `Step "<title>" uses the automation "<automationId>", which is not defined.`; uncovered models `Automation "<automationId>" is not available for this workflow's models.`; settings `Step "<title>" settings are not valid: <first issue path>: <message>.` (path omitted when empty). Check order: shell, definition, models, settings. The stored `settings` are the original value the author submitted (not zod's parsed output; a transform schema must save and re-parse): the save check only validates, and every later use parses them again (R137).
 
 - [ ] **Step 1: Write the test helper and the failing tests**
 
@@ -348,16 +348,17 @@ describe("AutomationStepType (R133, R137, R138)", () => {
     });
 
     describe("validate", () => {
-        it("returns the step with the zod-parsed settings (defaults applied)", async () => {
+        it("returns the step with the settings as the author entered them, after checking they parse", async () => {
             const stepType = await setup(container => registerTestAutomation(container));
             const step = createAutomationStep({ id: "notify", title: "Notify", settings: {} });
 
             const result = stepType.validate({ step, workflow: workflowWith(step) });
 
             expect(result.isOk()).toBe(true);
+            // Stored as entered (R137): the defaults are applied again on every use.
             expect(result.value?.config).toEqual({
                 automationId: TEST_AUTOMATION_ID,
-                settings: { mode: "approve" }
+                settings: {}
             });
             expect(result.value?.id).toBe("notify");
         });
@@ -445,11 +446,14 @@ Create `packages/api-workflows/__tests__/workflow/StoreWorkflowAutomationSteps.t
 
 ```ts
 import { describe, expect, it } from "vitest";
+import zod from "zod";
 import type { Container } from "@webiny/feature/api";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
 import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
 import type { WorkflowStep } from "~/domain/workflow/types.js";
+import { AutomationDefinition } from "~/features/automation/AutomationDefinition/index.js";
+import { parseAutomationSettings } from "~/domain/automation/parseAutomationSettings.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { FakeListUsers } from "~tests/__helpers/FakeListUsers.js";
 import {
@@ -458,6 +462,18 @@ import {
     TEST_AUTOMATION_ID
 } from "~tests/__helpers/TestAutomationDefinition.js";
 import { createReviewStep, createWorkflowValues, editor } from "~tests/__helpers/fixtures.js";
+
+/** Settings are `{ count: "5" }` as entered; the schema turns the string into a number. */
+class TransformAutomation implements AutomationDefinition.Interface {
+    public readonly id = "transform-automation";
+    public readonly name = "Transform automation";
+    public readonly models = ["*"];
+    public readonly settingsSchema = zod.object({ count: zod.string().transform(Number) });
+
+    public async run(): Promise<AutomationDefinition.Outcome> {
+        return { type: "approved" };
+    }
+}
 
 const setup = async (register: (container: Container) => void = () => {}) => {
     const { context } = await createContextHandler({
@@ -477,7 +493,7 @@ const setup = async (register: (container: Container) => void = () => {}) => {
 };
 
 describe("StoreWorkflowUseCase: automation steps (D35, D37, R137)", () => {
-    it("stores a workflow with an automation step and keeps the parsed settings", async () => {
+    it("stores a workflow with an automation step and keeps the settings as entered", async () => {
         const { store, getWorkflow } = await setup(container => registerTestAutomation(container));
 
         const stored = await store([
@@ -490,8 +506,46 @@ describe("StoreWorkflowUseCase: automation steps (D35, D37, R137)", () => {
         expect(read.value?.steps[1].type).toBe("automation");
         expect(read.value?.steps[1].config).toEqual({
             automationId: TEST_AUTOMATION_ID,
-            settings: { mode: "approve" }
+            settings: {}
         });
+    });
+
+    it("stores the submitted settings, not the parsed output, so a transform schema saves and re-parses", async () => {
+        const { store, getWorkflow } = await setup(container => {
+            container.registerInstance(
+                AutomationDefinition,
+                new TransformAutomation() as AutomationDefinition.Interface
+            );
+        });
+
+        const stored = await store([
+            createAutomationStep({
+                id: "notify",
+                title: "Notify",
+                automationId: "transform-automation",
+                settings: { count: "5" }
+            })
+        ]);
+
+        expect(stored.isOk()).toBe(true);
+        const read = await getWorkflow.execute({ id: "workflow-1" });
+        const config = read.value?.steps[0].config as { settings: Record<string, unknown> };
+        // The string the author submitted, not the number the transform produces (R137).
+        expect(config.settings).toEqual({ count: "5" });
+        // A second save of the stored workflow validates the same value again, and every use
+        // (reach, run) parses it again.
+        const definition = new TransformAutomation();
+        const parsed = parseAutomationSettings(definition, config.settings);
+        expect(parsed.value).toEqual({ count: 5 });
+        const again = await store([
+            createAutomationStep({
+                id: "notify",
+                title: "Notify",
+                automationId: "transform-automation",
+                settings: config.settings
+            })
+        ]);
+        expect(again.isOk()).toBe(true);
     });
 
     it("refuses an automation step when no automation is defined and stores nothing", async () => {
@@ -586,7 +640,7 @@ export type AutomationOutcome =
     | { type: "continue"; wait?: number; state?: Record<string, unknown> };
 
 export interface AutomationRunParams<TSettings = unknown> {
-    /** The step's settings, parsed with `settingsSchema` (defaults applied). */
+    /** The step's stored settings, parsed with `settingsSchema` on this run (defaults applied). */
     settings: TSettings;
     /** The review as stored; read-only for the automation. */
     review: ReviewData;
@@ -610,7 +664,7 @@ export interface IAutomationDefinition<TSettings = unknown> {
     readonly models: string[];
     /**
      * What the workflow author fills in when adding the automation as a step. Use an object schema:
-     * the editor renders its JSON schema as a form, and the stored settings are the parsed value.
+     * the editor renders its JSON schema as a form, and the stored settings are what the author entered, parsed again on every use.
      * Credentials do not belong here: keep them in the definition's own code or configuration, so
      * workflow authors never set or see them (R154).
      */
@@ -763,7 +817,7 @@ import zod from "zod";
 /** The stored config of an "automation" step (R133). */
 export interface AutomationStepConfig {
     automationId: string;
-    /** Validated against the definition's `settingsSchema`; stored as the parsed value. */
+    /** Validated against the definition's `settingsSchema`; stored as the author entered them and parsed again on every use. */
     settings: Record<string, unknown>;
 }
 
@@ -866,7 +920,9 @@ class AutomationStepTypeImpl implements StepType.Interface {
             return fail(`Step "${step.title}" settings are not valid: ${parsed.error}.`);
         }
 
-        return Result.ok({ ...step, config: { automationId, settings: parsed.value } });
+        // Stored as the author entered them (R137): the parse above only validates. Every use
+        // (reach, run) parses the stored settings again, so a transform schema keeps working.
+        return Result.ok({ ...step, config: { automationId, settings } });
     }
 
     public async reach() {
