@@ -7,7 +7,6 @@ import { CreateFolderTool } from "./CreateFolderTool.js";
 import { DeleteFolderTool } from "./DeleteFolderTool.js";
 import { CreateTeamTool } from "./CreateTeamTool.js";
 import { ListRolesTool } from "./ListRolesTool.js";
-import { NotifyFolderChangeUseCase } from "./NotifyFolderChange/NotifyFolderChangeUseCase.js";
 
 /**
  * Folder and team tools for AI callers.
@@ -20,8 +19,6 @@ import { NotifyFolderChangeUseCase } from "./NotifyFolderChange/NotifyFolderChan
 export const AcoAiToolsFeature = createFeature({
     name: "Aco/AiTools",
     register(container) {
-        container.register(NotifyFolderChangeUseCase);
-
         container.register(ListTeamsTool);
         container.register(ListFoldersTool);
         container.register(GrantFolderAccessTool);

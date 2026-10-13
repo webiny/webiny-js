@@ -1,3 +1,4 @@
+export { NotifyFolderChangeFeature } from "./feature.js";
 export {
     NotifyFolderChangeUseCase,
     FOLDER_CREATED_WEBSOCKET_ACTION,

@@ -17,8 +17,7 @@ describe("api-event-handler-aws-ddb — full handler boot (fresh install)", () =
     it("builds the GraphQL schema on a fresh DB without a DI wiring failure", async () => {
         const handler = createAwsDdbApiHandler({
             extensions: () => [],
-            documentClient: getDocumentClient(),
-            dbTable: process.env.DB_TABLE
+            documentClient: getDocumentClient()
         });
 
         const result = await handler({

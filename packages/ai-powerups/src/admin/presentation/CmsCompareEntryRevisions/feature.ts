@@ -5,7 +5,10 @@ import { CmsCompareEntryRevisionsPresenterImplementation } from "./CmsCompareEnt
 export const CmsCompareEntryRevisionsPresentationFeature = createFeature({
     name: "AiPowerUps/CmsCompareEntryRevisionsPresenter",
     register(container) {
-        container.register(CmsCompareEntryRevisionsPresenterImplementation).inSingletonScope();
+        // One per container, not a singleton. The presenter reads the revisions list, which only the
+        // content entries view's child container registers. A container-scoped instance is built from
+        // that child, and the header menu item and the overlays still share it.
+        container.register(CmsCompareEntryRevisionsPresenterImplementation).inContainerScope();
     },
     resolve(container) {
         return {

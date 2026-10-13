@@ -72,6 +72,41 @@ describe("RefMultiAutocompletePresenter", () => {
         ]);
         expect(presenter.vm.values).toEqual(["first", "second"]);
     });
+
+    it("ignores a search response that arrives after a newer one", async () => {
+        const boulder = createEntry("boulder", "Boulder");
+        const baker = createEntry("baker", "Baker");
+        // The "B" request is slower than the "Boulder" one, and its first page does not hold Boulder.
+        let resolveSlow: () => void = () => {};
+        const slow = new Promise<void>(resolve => {
+            resolveSlow = resolve;
+        });
+
+        const container = new Container();
+        container.registerInstance(SearchContentEntriesUseCase, {
+            execute: async ({ query }) => {
+                if (query === "B") {
+                    await slow;
+                    return { data: [baker] };
+                }
+                return { data: query ? [boulder] : [defaultEntry] };
+            }
+        });
+        container.registerInstance(GetContentEntriesUseCase, {
+            execute: async () => ({ latest: [], published: [] })
+        });
+        container.register(RefMultiAutocompletePresenter);
+        const presenter = container.resolve(MultiAbstraction);
+
+        await presenter.init({ modelIds: ["location"] });
+        const first = presenter.search("B");
+        await presenter.search("Boulder");
+        resolveSlow();
+        await first;
+
+        expect(presenter.vm.options).toEqual([{ label: "Boulder", value: "boulder" }]);
+        expect(presenter.vm.loading).toBe(false);
+    });
 });
 
 describe("RefSingleAutocompletePresenter", () => {
