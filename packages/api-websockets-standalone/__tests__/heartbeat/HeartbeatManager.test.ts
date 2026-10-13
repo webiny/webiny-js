@@ -10,7 +10,8 @@ const createManager = (
     sockets: Record<string, unknown>,
     cleanup: WebsocketsConnectionManager.Interface<unknown>["cleanup"]
 ): WebsocketsConnectionManager.Interface<unknown> => {
-    const live = new Map(Object.entries(sockets));
+    const entries = Object.entries(sockets);
+    const live = new Map(entries);
     return {
         add: vi.fn(),
         remove: vi.fn(),
@@ -24,7 +25,10 @@ const createManager = (
             }
             return evicted;
         },
-        getActiveConnectionIds: () => Array.from(live.keys())
+        getActiveConnectionIds: () => {
+            const ids = live.keys();
+            return Array.from(ids);
+        }
     };
 };
 

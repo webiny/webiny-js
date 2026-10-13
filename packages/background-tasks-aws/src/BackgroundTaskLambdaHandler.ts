@@ -34,9 +34,9 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Inte
 
         // Background tasks have no HTTP request establisher. This is the bg-task EXTRACT step: put the
         // tenant id from the task event into RawTenantId, then run the shared LOAD step
-        // (RequestTenantLoader) — same tenant-establishment path as every other transport. The
-        // CRUD (TasksCrud) and downstream use cases resolve the current tenant, so it must be set
-        // before the task runs.
+        // (RequestTenantLoader) — same tenant-establishment path as every other transport. The task
+        // use cases and repositories resolve the current tenant, so it must be set before the task
+        // runs.
         if (taskEvent?.tenant) {
             this.container.resolve(RawTenantId).set(taskEvent.tenant);
             await this.container.resolve(RequestTenantLoader).establish();

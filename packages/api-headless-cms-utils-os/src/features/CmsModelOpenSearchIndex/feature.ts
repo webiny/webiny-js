@@ -6,6 +6,6 @@ export const CmsModelOpenSearchIndexFeature = createFeature({
     name: "Cms/Model/OpenSearch/IndexFeature",
     register: container => {
         container.register(DefaultCmsModelOpenSearchIndex);
-        container.register(DefaultCmsModelOpenSearchIndexProvider).inSingletonScope();
+        container.register(DefaultCmsModelOpenSearchIndexProvider).inContainerScope();
     }
 });

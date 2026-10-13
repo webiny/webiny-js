@@ -22,6 +22,10 @@ describe(
                 params: { name: unique(tenantName) }
             });
 
+            // Saving a new entry leaves the form open, and the Install action lives on the list.
+            // Go back in-app: the open form keeps a beforeunload prompt, so a page load from it is
+            // aborted.
+            await screen.getByRole("button", "Back").tap();
             const row = screen.getByRole("row").filter({ hasText: tenantName });
             await row.getByRole("button", "Install").tap();
 
@@ -30,8 +34,11 @@ describe(
             await expect(manage).toBeVisible({ timeout: 120_000 });
             await manage.tap();
 
-            // The header's tenant selector shows the current tenant's name.
-            await expect(screen.getByText(tenantName).first()).toBeVisible({ timeout: 30_000 });
+            // The header's tenant selector shows the current tenant's name, with a "Root tenant"
+            // subtitle nested in the same element, so the match can't be exact.
+            await expect(screen.getByText(tenantName, { exact: false }).first()).toBeVisible({
+                timeout: 30_000
+            });
         });
 
         test("the uploaded image downloads byte for byte", async ({
@@ -45,7 +52,7 @@ describe(
 
             await app.open("/file-manager");
             // Still in the tenant: the switch is kept in localStorage.
-            await expect(screen.getByText(tenantName).first()).toBeVisible();
+            await expect(screen.getByText(tenantName, { exact: false }).first()).toBeVisible();
 
             await browser
                 .locator('input[type="file"]')
