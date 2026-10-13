@@ -8,20 +8,23 @@ import { REQUESTER } from "./identities.js";
 
 export const SKIP_RECORD_REASON = "The requester cannot review their own content.";
 
+export type FailedStepType = "ai" | "automation";
+
 /**
- * Stores the review with its only step failed as an AI step, straight through the repository
- * (nothing produces `failed` before phase 5, R93).
+ * Stores the review with its only step failed as an AI (default) or automation step, straight
+ * through the repository (nothing produces `failed` before phase 5, R93).
  */
 export const seedFailedStep = async (
     context: CmsContext,
-    review: ReviewData
+    review: ReviewData,
+    type: FailedStepType = "ai"
 ): Promise<ReviewData> => {
     const failed: ReviewData = {
         ...review,
         currentStepState: "failed",
-        currentStepType: "ai",
+        currentStepType: type,
         steps: review.steps.map((step): ReviewStep => {
-            return { ...step, type: "ai", state: "failed" };
+            return { ...step, type, state: "failed" };
         })
     };
     return expectOk(await context.container.resolve(ReviewRepository).save(failed));
@@ -61,5 +64,27 @@ export const seedAssignmentRecords = async (
             reason: SKIP_RECORD_REASON,
             kind: "skip"
         })
+    );
+};
+
+export interface SeededReviewTarget {
+    id: string;
+    model: string;
+    targetId: string;
+    targetRevisionId: string;
+}
+
+/**
+ * Stores a copy of the review under another id, namespace and target, straight through the
+ * repository. Reaches a state the engine refuses to create: a review on a model a workflow
+ * cannot be bound to.
+ */
+export const seedReviewOnTarget = async (
+    context: CmsContext,
+    review: ReviewData,
+    target: SeededReviewTarget
+): Promise<ReviewData> => {
+    return expectOk(
+        await context.container.resolve(ReviewRepository).save({ ...review, ...target })
     );
 };

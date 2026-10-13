@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { storeWorkflow } from "~tests/__workflows/workflow.js";
-import { createAuthorEntry, expectOk } from "~tests/__helpers/entries.js";
+import { createAuthorEntry, createModelEntry, expectOk } from "~tests/__helpers/entries.js";
 import { requestEntryReview, startEntryReview } from "~tests/__helpers/engine.js";
 import { createUserContext, type UserContextParams } from "~tests/__helpers/userContext.js";
 import {
@@ -16,6 +16,7 @@ import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { createWbReview } from "~tests/__helpers/wbReview.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import {
+    mismatchedTargetRevisions,
     scriptTargetReads,
     throwingTargetRevisions
 } from "~tests/__helpers/ScriptedTargetReads.js";
@@ -24,7 +25,9 @@ import {
     throwOnAccessChecks
 } from "~tests/__helpers/ThrowingCmsEntryAccess.js";
 import { throwOnListModels } from "~tests/__helpers/ThrowingListModels.js";
-import { seedFailedStep } from "~tests/__helpers/seeds.js";
+import { failListModels } from "~tests/__helpers/FailingListModels.js";
+import { createExtraModelPlugins } from "~tests/__cms/extraModels.js";
+import { seedFailedStep, seedReviewOnTarget } from "~tests/__helpers/seeds.js";
 import { ListCmsEntryReviewsUseCase } from "~/features/wrappers/ListCmsEntryReviews/index.js";
 
 /**
@@ -72,6 +75,7 @@ describe("CMS review list wrapper", () => {
     afterEach(() => {
         folderLevels.clear();
         throwingTargetRevisions.clear();
+        mismatchedTargetRevisions.clear();
         throwingAccessChecks.clear();
     });
 
@@ -287,6 +291,91 @@ describe("CMS review list wrapper", () => {
             identity: REVIEWER,
             permissions: CMS_READER,
             legacyPlugins: [throwOnListModels]
+        });
+
+        const result = await list(reviewer, { list: "pool" });
+
+        expect(result.error.code).toBe("Workflows/Review/Persistence");
+        expect(engineCalls).not.toContain("ListReviews");
+    });
+
+    it("treats an empty model id as a model that matches nothing, before the engine", async () => {
+        await createScenario();
+        const requester = await createCountingContext({
+            identity: REQUESTER,
+            permissions: CMS_WRITER
+        });
+        engineCalls.length = 0;
+
+        const page = expectOk(
+            await list(requester, { list: "myRequests", where: { modelId: "" } })
+        );
+
+        expect(page).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
+        expect(engineCalls).not.toContain("ListReviews");
+    });
+
+    it("does not list a review of a model that cannot be bound, even when asked for it", async () => {
+        const { review, lockedReview } = await createScenario();
+        const admin = await createUserContext({ legacyPlugins: createExtraModelPlugins() });
+        const unpublishable = await createModelEntry(admin, "siteSetting", { name: "Footer" });
+        await seedReviewOnTarget(admin, review, {
+            id: "review-site-setting",
+            model: "cms.siteSetting",
+            targetId: unpublishable.entryId,
+            targetRevisionId: unpublishable.id
+        });
+        const requester = await createCountingContext({
+            identity: REQUESTER,
+            permissions: CMS_WRITER,
+            legacyPlugins: createExtraModelPlugins()
+        });
+        engineCalls.length = 0;
+
+        const all = expectOk(await list(requester, { list: "myRequests" }));
+        const asked = expectOk(
+            await list(requester, { list: "myRequests", where: { modelId: "siteSetting" } })
+        );
+
+        expect(all.items.map(item => item.review.id).sort()).toEqual(
+            [review.id, lockedReview.id].sort()
+        );
+        expect(asked).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
+    });
+
+    it("does not list a review whose target is another entry's revision", async () => {
+        const { review, lockedEntry } = await createScenario();
+        const reviewer = await createCountingContext({
+            identity: REVIEWER,
+            permissions: CMS_READER
+        });
+        mismatchedTargetRevisions.add(lockedEntry.id);
+
+        const page = expectOk(await list(reviewer, { list: "pool" }));
+
+        expect(page.items.map(item => item.review.id)).toEqual([review.id]);
+    });
+
+    it("lists a failed automation step for a viewer with reassign (D112)", async () => {
+        const { admin, review } = await createScenario();
+        await seedFailedStep(admin, review, "automation");
+        const reassigner = await createUserContext({
+            identity: REASSIGNER,
+            permissions: [...CMS_READER, WORKFLOWS_REASSIGN]
+        });
+
+        const page = expectOk(await list(reassigner, { list: "failedSteps" }));
+
+        expect(page.items.map(item => item.review.id)).toEqual([review.id]);
+        expect(page.items[0].review.currentStepType).toBe("automation");
+    });
+
+    it("fails with a persistence error when the model list fails (R87)", async () => {
+        await createScenario();
+        const reviewer = await createCountingContext({
+            identity: REVIEWER,
+            permissions: CMS_READER,
+            legacyPlugins: [failListModels]
         });
 
         const result = await list(reviewer, { list: "pool" });

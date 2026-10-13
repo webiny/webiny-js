@@ -38,3 +38,18 @@ export const createAuthorEntry = async (
         })
     );
 };
+
+/** Creates an entry of any code model that has the "author" fields, as the context's identity. */
+export const createModelEntry = async (
+    context: CmsContext,
+    modelId: string,
+    params: AuthorEntryParams
+): Promise<CmsEntry> => {
+    const targetModel = expectOk(await context.container.resolve(GetModelUseCase).execute(modelId));
+    return expectOk(
+        await context.container.resolve(CreateEntryUseCase).execute(targetModel, {
+            values: { name: params.name },
+            location: { folderId: params.folderId ?? "root" }
+        })
+    );
+};

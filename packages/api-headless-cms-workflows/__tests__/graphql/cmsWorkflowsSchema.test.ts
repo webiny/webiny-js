@@ -1,6 +1,6 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow.js";
-import { createAuthorEntry, expectOk } from "~tests/__helpers/entries.js";
+import { createAuthorEntry, createModelEntry, expectOk } from "~tests/__helpers/entries.js";
 import { requestEntryReview, STEP_ID } from "~tests/__helpers/engine.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createWbReview } from "~tests/__helpers/wbReview.js";
@@ -15,6 +15,8 @@ import {
 } from "~tests/__helpers/identities.js";
 import { CMS_READER, CMS_WRITER, WORKFLOWS_EDITOR } from "~tests/__helpers/permissions.js";
 import { createGraphQLClient, type GraphQLClient } from "~tests/__helpers/graphql.js";
+import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
+import { createExtraModelPlugins } from "~tests/__cms/extraModels.js";
 
 const ERROR = "error { code message data }";
 const META = "meta { cursor hasMoreItems }";
@@ -88,7 +90,10 @@ const GET_TARGET_REVIEW = /* GraphQL */ `
         cms {
             getCmsEntryTargetReview(modelId: $modelId, revisionId: $revisionId) {
                 data {
-                    review { ${REVIEW} }
+                    review {
+                        ${REVIEW}
+                        steps { id description assignments { kind source userId } }
+                    }
                     flags { canStart canCancel }
                 }
                 ${ERROR}
@@ -261,6 +266,10 @@ const createScenario = async () => {
 };
 
 describe("CMS workflows GraphQL", () => {
+    beforeEach(() => {
+        engineCalls.length = 0;
+    });
+
     afterEach(() => {
         folderLevels.clear();
     });
@@ -394,6 +403,25 @@ describe("CMS workflows GraphQL", () => {
         expect(none.getCmsEntryTargetReview).toEqual({ data: null, error: null });
     });
 
+    it("reads the same review by id and by revision, assignments included", async () => {
+        const { admin, entry, review } = await createScenario();
+        await seedAssignmentRecords(admin, review);
+        const editor = createGraphQLClient({ identity: EDITOR, permissions: EDITOR_PERMISSIONS });
+
+        const byId = await run(editor, GET_REVIEW, { id: review.id });
+        const byRevision = await run(editor, GET_TARGET_REVIEW, {
+            modelId: "author",
+            revisionId: entry.id
+        });
+
+        expect(byRevision.getCmsEntryTargetReview.error).toBeNull();
+        expect(byRevision.getCmsEntryTargetReview.data.review.steps[0].assignments).toEqual([
+            { kind: "skip", source: "strategy", userId: REQUESTER.id },
+            { kind: "outcome", source: "pool", userId: null }
+        ]);
+        expect(byRevision.getCmsEntryTargetReview.data).toEqual(byId.getCmsEntryReview.data);
+    });
+
     it("returns the target review refusal with code and data", async () => {
         const { lockedEntry } = await createScenario();
         folderLevels.set("folder-locked", new Map([[REVIEWER.id, "no-access"]]));
@@ -451,6 +479,32 @@ describe("CMS workflows GraphQL", () => {
         }
     });
 
+    it("returns the revision id validation error from the target review read and the cancel for delete (R107)", async () => {
+        const { entry } = await createScenario();
+        const admin = createGraphQLClient();
+        const validation = {
+            code: "Workflows/Review/Validation",
+            message: "The revision id is not valid.",
+            data: null
+        };
+
+        for (const revisionId of ["#0001", "abc", "abc#x"]) {
+            const read = await run(admin, GET_TARGET_REVIEW, { modelId: "author", revisionId });
+            const cancel = await run(admin, CANCEL_REVIEWS_FOR_DELETE, {
+                modelId: "author",
+                entryId: entry.entryId,
+                revisionId,
+                action: "trash"
+            });
+
+            expect(read.getCmsEntryTargetReview).toEqual({ data: null, error: validation });
+            expect(cancel.cancelCmsEntryReviewsForDelete).toEqual({
+                data: null,
+                error: validation
+            });
+        }
+    });
+
     it("reports a review of another app as not found (R46)", async () => {
         await createScenario();
         const wbReview = await createWbReview();
@@ -463,6 +517,48 @@ describe("CMS workflows GraphQL", () => {
             code: "Workflows/Review/NotFound",
             data: { id: wbReview.id }
         });
+    });
+
+    it("reports a workflow of another app as not found through get and delete (R46)", async () => {
+        await createWbReview();
+        const editor = createGraphQLClient({ identity: EDITOR, permissions: EDITOR_PERMISSIONS });
+
+        const read = await run(editor, GET_WORKFLOW, { id: "wb-workflow" });
+        const deleted = await run(editor, DELETE_WORKFLOW, { id: "wb-workflow" });
+        const stillThere = await run(
+            createGraphQLClient({ identity: EDITOR, permissions: EDITOR_PERMISSIONS }),
+            LIST_WORKFLOWS
+        );
+
+        for (const response of [read.getCmsEntryWorkflow, deleted.deleteCmsEntryWorkflow]) {
+            expect(response.data).toBeNull();
+            expect(response.error).toMatchObject({
+                code: "Workflows/Workflow/NotFound",
+                data: { id: "wb-workflow" }
+            });
+        }
+        expect(stillThere.listCmsEntryWorkflows.data).toEqual([]);
+    });
+
+    it("reports a review of another app as not found for a step action, without changing it (R46)", async () => {
+        const wbReview = await createWbReview();
+        const reviewer = createGraphQLClient({
+            identity: REVIEWER,
+            permissions: CMS_READER,
+            legacyPlugins: [countEngineCalls]
+        });
+
+        const result = await run(reviewer, START_STEP, {
+            reviewId: wbReview.id,
+            stepId: STEP_ID
+        });
+
+        expect(result.startCmsEntryReviewStep.data).toBeNull();
+        expect(result.startCmsEntryReviewStep.error).toMatchObject({
+            code: "Workflows/Review/NotFound",
+            data: { id: wbReview.id }
+        });
+        expect(engineCalls).not.toContain("StartReviewStep");
     });
 
     it("drops skip entries from the review read for a plain reviewer through GraphQL (R96)", async () => {
@@ -498,6 +594,47 @@ describe("CMS workflows GraphQL", () => {
         );
         expect(result.listCmsEntryReviews.meta).toEqual({ cursor: null, hasMoreItems: false });
         expect(result.listCmsEntryReviews.error).toBeNull();
+    });
+
+    it("filters the review list by a second model", async () => {
+        const { review } = await createScenario();
+        const admin = await createUserContext({ legacyPlugins: createExtraModelPlugins() });
+        expectOk(
+            await storeWorkflow(admin, {
+                ...createWorkflowValues(["cms.book"]),
+                id: "workflow-book",
+                name: "Books review"
+            })
+        );
+        const book = await createModelEntry(admin, "book", { name: "Dune" });
+        const bookReview = await requestEntryReview(admin, book, REQUESTER, "cms.book");
+        const requester = createGraphQLClient({
+            identity: REQUESTER,
+            permissions: CMS_WRITER,
+            legacyPlugins: createExtraModelPlugins()
+        });
+
+        const books = await run(requester, LIST_REVIEWS, {
+            list: "myRequests",
+            where: { modelId: "book" }
+        });
+        const authors = await run(requester, LIST_REVIEWS, {
+            list: "myRequests",
+            where: { modelId: "author" }
+        });
+
+        expect(
+            books.listCmsEntryReviews.data.map((row: { review: { id: string } }) => row.review.id)
+        ).toEqual([bookReview.id]);
+        expect(
+            authors.listCmsEntryReviews.data.map(
+                (row: { review: { model: string } }) => row.review.model
+            )
+        ).toEqual(["cms.author", "cms.author"]);
+        expect(authors.listCmsEntryReviews.data).not.toContainEqual(
+            expect.objectContaining({ review: expect.objectContaining({ id: bookReview.id }) })
+        );
+        expect(review.model).toBe("cms.author");
     });
 
     it("filters and pages the review list", async () => {

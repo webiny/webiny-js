@@ -7,6 +7,7 @@ import { EDITOR, READER } from "~tests/__helpers/identities.js";
 import { CMS_READER, WORKFLOWS_EDITOR } from "~tests/__helpers/permissions.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import { throwOnListModels } from "~tests/__helpers/ThrowingListModels.js";
+import { failListModels } from "~tests/__helpers/FailingListModels.js";
 import { failListWorkflows } from "~tests/__helpers/FailingListWorkflows.js";
 import { throwOnWorkflowsPermissions } from "~tests/__helpers/ThrowingWorkflowsPermissions.js";
 import { createExtraModelPlugins } from "~tests/__cms/extraModels.js";
@@ -140,7 +141,11 @@ describe("CMS editor model list wrapper", () => {
 
     it("refuses a user without editor, before the engine", async () => {
         await createScenario();
-        const reader = await createModelsContext({ identity: READER, permissions: CMS_READER });
+        const reader = await createModelsContext({
+            identity: READER,
+            permissions: CMS_READER,
+            legacyPlugins: [throwOnListModels]
+        });
         engineCalls.length = 0;
 
         const result = await listModels(reader);
@@ -152,7 +157,11 @@ describe("CMS editor model list wrapper", () => {
 
     it("refuses an anonymous identity, before the engine", async () => {
         await createScenario();
-        const anonymous = await createModelsContext({ identity: null, permissions: [] });
+        const anonymous = await createModelsContext({
+            identity: null,
+            permissions: [],
+            legacyPlugins: [throwOnListModels]
+        });
         engineCalls.length = 0;
 
         const result = await listModels(anonymous);
@@ -161,7 +170,7 @@ describe("CMS editor model list wrapper", () => {
         expect(engineCalls).toEqual([]);
     });
 
-    it("fails with a persistence error when a dependency throws or fails (R87)", async () => {
+    it("fails with a persistence error when the permission check, the model list or the workflow list fails (R87)", async () => {
         await createScenario();
         const permissionsThrow = await createModelsContext({
             identity: EDITOR,
@@ -173,6 +182,11 @@ describe("CMS editor model list wrapper", () => {
             permissions: EDITOR_PERMISSIONS,
             legacyPlugins: [throwOnListModels]
         });
+        const modelsFail = await createModelsContext({
+            identity: EDITOR,
+            permissions: EDITOR_PERMISSIONS,
+            legacyPlugins: [failListModels]
+        });
         const workflowsFail = await createModelsContext({
             identity: EDITOR,
             permissions: EDITOR_PERMISSIONS,
@@ -181,10 +195,49 @@ describe("CMS editor model list wrapper", () => {
 
         const permissionsResult = await listModels(permissionsThrow);
         const modelsResult = await listModels(modelsThrow);
+        const modelsFailResult = await listModels(modelsFail);
         const workflowsResult = await listModels(workflowsFail);
 
         expect(permissionsResult.error.code).toBe("Workflows/Workflow/Persistence");
         expect(modelsResult.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(modelsFailResult.error.code).toBe("Workflows/Workflow/Persistence");
         expect(workflowsResult.error.code).toBe("Workflows/Workflow/Persistence");
+    });
+
+    it("does not list the workflows for an empty page", async () => {
+        await createScenario();
+        const editor = await createModelsContext({
+            identity: EDITOR,
+            permissions: EDITOR_PERMISSIONS,
+            legacyPlugins: [failListWorkflows]
+        });
+
+        const noMatch = expectOk(await listModels(editor, { search: "nothing-matches" }));
+        const withMatch = await listModels(editor, { search: "author" });
+
+        expect(noMatch).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
+        // The failing workflow list is reached only by a page with rows.
+        expect(withMatch.error.code).toBe("Workflows/Workflow/Persistence");
+    });
+
+    it("guards the limit: not finite is 20, fractions floor, the range is 1 to 100", async () => {
+        await createScenario();
+        const editor = await createModelsContext({
+            identity: EDITOR,
+            permissions: EDITOR_PERMISSIONS
+        });
+
+        const nan = expectOk(await listModels(editor, { limit: Number.NaN }));
+        const infinite = expectOk(await listModels(editor, { limit: Number.POSITIVE_INFINITY }));
+        const fraction = expectOk(await listModels(editor, { limit: 2.9 }));
+        const zero = expectOk(await listModels(editor, { limit: 0 }));
+        const huge = expectOk(await listModels(editor, { limit: 1000 }));
+
+        expect(nan.items).toHaveLength(4);
+        expect(nan.meta.hasMoreItems).toBe(false);
+        expect(infinite.items).toHaveLength(4);
+        expect(fraction.items).toHaveLength(2);
+        expect(zero.items).toHaveLength(1);
+        expect(huge.items).toHaveLength(4);
     });
 });

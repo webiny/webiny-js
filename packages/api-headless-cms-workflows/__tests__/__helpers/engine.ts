@@ -17,11 +17,12 @@ export const STEP_ID = "step-1";
 export const requestEntryReview = async (
     context: CmsContext,
     entry: CmsEntry,
-    requester: IdentityData = REQUESTER
+    requester: IdentityData = REQUESTER,
+    model: string = AUTHOR_NAMESPACE
 ): Promise<ReviewData> => {
     return expectOk(
         await context.container.resolve(RequestReviewUseCase).execute({
-            model: AUTHOR_NAMESPACE,
+            model,
             targetId: entry.entryId,
             targetRevisionId: entry.id,
             actor: toActor(requester)
