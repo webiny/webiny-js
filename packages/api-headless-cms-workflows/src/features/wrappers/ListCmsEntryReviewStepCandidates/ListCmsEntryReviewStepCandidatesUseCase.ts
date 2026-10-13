@@ -35,7 +35,8 @@ class ListCmsEntryReviewStepCandidatesUseCaseImpl implements UseCase.Interface {
         if (candidates.isFail()) {
             return Result.fail(candidates.error);
         }
-        // `reassign` always sees the reasons; redacted the same way as the request list (R120).
+        // This path requires `reassign`, so the call never clears a reason; kept so both candidate
+        // lists share one redaction rule (R120).
         return Result.ok(redactStepCandidates(candidates.value, viewer.permissions));
     }
 }

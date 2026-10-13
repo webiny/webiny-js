@@ -22,6 +22,7 @@ import {
     throwingAccessChecks,
     throwOnAccessChecks
 } from "~tests/__helpers/ThrowingCmsEntryAccess.js";
+import { throwOnWorkflowsPermissions } from "~tests/__helpers/ThrowingWorkflowsPermissions.js";
 import { failListReviewAssignments } from "~tests/__helpers/FailingListReviewAssignments.js";
 import { SKIP_RECORD_REASON, seedAssignmentRecords } from "~tests/__helpers/seeds.js";
 import { GetCmsEntryTargetReviewUseCase } from "~/features/wrappers/GetCmsEntryTargetReview/index.js";
@@ -175,6 +176,20 @@ describe("CMS target review wrapper and assignment entries", () => {
         const result = await getTargetReview(anonymous, entry);
 
         expect(result.error.code).toBe("Workflows/NotAuthenticated");
+        expect(engineCalls).toEqual([]);
+    });
+
+    it("fails with a persistence error when the viewer's permissions fail to load (R87)", async () => {
+        const { entry } = await createScenario();
+        const reviewer = await createCountingContext({
+            identity: REVIEWER,
+            permissions: CMS_READER,
+            legacyPlugins: [throwOnWorkflowsPermissions]
+        });
+
+        const result = await getTargetReview(reviewer, entry);
+
+        expect(result.error.code).toBe("Workflows/Review/Persistence");
         expect(engineCalls).toEqual([]);
     });
 

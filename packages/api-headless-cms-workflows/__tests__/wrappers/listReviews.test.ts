@@ -24,6 +24,7 @@ import {
     throwingAccessChecks,
     throwOnAccessChecks
 } from "~tests/__helpers/ThrowingCmsEntryAccess.js";
+import { throwOnWorkflowsPermissions } from "~tests/__helpers/ThrowingWorkflowsPermissions.js";
 import { throwOnListModels } from "~tests/__helpers/ThrowingListModels.js";
 import { failListModels } from "~tests/__helpers/FailingListModels.js";
 import { createExtraModelPlugins } from "~tests/__cms/extraModels.js";
@@ -256,6 +257,20 @@ describe("CMS review list wrapper", () => {
         const page = expectOk(await list(nobody, { list: "pool" }));
 
         expect(page).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
+        expect(engineCalls).not.toContain("ListReviews");
+    });
+
+    it("fails with a persistence error when the viewer's permissions fail to load (R87)", async () => {
+        await createScenario();
+        const reviewer = await createCountingContext({
+            identity: REVIEWER,
+            permissions: CMS_READER,
+            legacyPlugins: [throwOnWorkflowsPermissions]
+        });
+
+        const result = await list(reviewer, { list: "pool" });
+
+        expect(result.error.code).toBe("Workflows/Review/Persistence");
         expect(engineCalls).not.toContain("ListReviews");
     });
 

@@ -28,6 +28,10 @@ class CmsEntryReviewTargetFolderChainImpl implements ReviewTargetFolderChain.Int
             throw new Error(`"${params.model}" is not a CMS namespace.`);
         }
 
+        if (!params.folderId || params.folderId.includes("#")) {
+            throw new Error(`"${params.folderId}" is not a valid folder id.`);
+        }
+
         const folder = await this.getFolder.execute(params.folderId);
         if (folder.isFail()) {
             throw folder.error;

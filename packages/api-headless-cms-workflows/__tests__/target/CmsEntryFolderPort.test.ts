@@ -10,7 +10,11 @@ import { AUTHOR_NAMESPACE, createAuthorEntry, expectOk } from "~tests/__helpers/
 import { requestEntryReview } from "~tests/__helpers/engine.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { NOBODY, READER, REVIEW_TEAM, REVIEWER, WRITER } from "~tests/__helpers/identities.js";
-import { CMS_ENTRY_READER_WITHOUT_MODEL, CMS_READER } from "~tests/__helpers/permissions.js";
+import {
+    CMS_ENTRY_READER_WITHOUT_MODEL,
+    CMS_READER,
+    CMS_READER_WITHOUT_GROUP_READ
+} from "~tests/__helpers/permissions.js";
 import {
     FakeFolderLevelPermissions,
     folderLevels
@@ -31,9 +35,20 @@ const registerFakes = (container: Container) => {
     container.register(FakeFolderLevelPermissions);
     container.registerInstance(
         GetUserUseCase,
-        new FakeAdminUsers([READER.id, NOBODY.id, WRITER.id])
+        new FakeAdminUsers([READER.id, NOBODY.id, WRITER.id, NO_GROUP_READER_ID])
     );
 };
+
+/** The same admin users, but folder-level permissions stay off (the real one is not in use). */
+const registerWithoutFlp = (container: Container) => {
+    container.registerInstance(
+        GetUserUseCase,
+        new FakeAdminUsers([READER.id, NOBODY.id, WRITER.id, NO_GROUP_READER_ID])
+    );
+};
+
+/** Has model and entry read, but the group permission lacks read. */
+const NO_GROUP_READER_ID = "user-no-group-read";
 
 /** The default admin (`*`) with the extra code models, the fake FLP and throwing access checks. */
 const createAdminContext = async (): Promise<CmsContext> => {
@@ -42,7 +57,8 @@ const createAdminContext = async (): Promise<CmsContext> => {
         permissionsByIdentity: {
             [READER.id]: CMS_READER,
             [WRITER.id]: CMS_ENTRY_READER_WITHOUT_MODEL,
-            "user-elsewhere": CMS_READER
+            "user-elsewhere": CMS_READER,
+            [NO_GROUP_READER_ID]: CMS_READER_WITHOUT_GROUP_READ
         }
     });
     return context();
@@ -124,6 +140,18 @@ describe("CMS folder port", () => {
         ).rejects.toThrow("Storage is down.");
     });
 
+    it("throws for an empty folder id or one containing #", async () => {
+        const context = await createAdminContext();
+        addAuthorFolders();
+        const chain = getFolderChain(context);
+
+        for (const folderId of ["", "folder-child#0001"]) {
+            await expect(
+                chain.listFolderChainIds({ model: AUTHOR_NAMESPACE, folderId })
+            ).rejects.toThrow(`"${folderId}" is not a valid folder id.`);
+        }
+    });
+
     it("answers folder read access with the user's permissions (R121)", async () => {
         const context = await createAdminContext();
         folderLevels.set("folder-locked", new Map([[READER.id, "no-access"]]));
@@ -168,6 +196,36 @@ describe("CMS folder port", () => {
             });
             expect(canRead).toBe(false);
         }
+    });
+
+    it("denies a user with model read but without group read", async () => {
+        const context = await createAdminContext();
+        const access = getReadAccess(context);
+
+        const canRead = await access.canUserReadInFolder({
+            userId: NO_GROUP_READER_ID,
+            model: AUTHOR_NAMESPACE,
+            folderId: null
+        });
+
+        expect(canRead).toBe(false);
+    });
+
+    it("skips the folder check when folder-level permissions are not in use", async () => {
+        const { context } = createContextHandler({
+            legacyPlugins: [...createExtraModelPlugins(), registerWithoutFlp],
+            permissionsByIdentity: { [READER.id]: CMS_READER }
+        });
+        const access = getReadAccess(await context());
+        folderLevels.set("folder-locked", new Map([[READER.id, "no-access"]]));
+
+        const canRead = await access.canUserReadInFolder({
+            userId: READER.id,
+            model: AUTHOR_NAMESPACE,
+            folderId: "folder-locked"
+        });
+
+        expect(canRead).toBe(true);
     });
 
     it("denies another app's namespace, a missing or private model and a throwing check (R50)", async () => {
