@@ -131,7 +131,7 @@
     "test:es": "WEBINY_STORAGE=ddb-es,ddb vitest --config testing/vitest.config.ts --run",
     "test:os": "WEBINY_STORAGE=ddb-os,ddb vitest --config testing/vitest.config.ts --run",
     "test:sql": "WEBINY_STORAGE=sql,ddb vitest --config testing/vitest.config.ts --run",
-    "trigger-release": "node ./scripts/release/triggerRelease.js",
+    "trigger-release": "tsx ./scripts/release/src/triggerRelease.ts",
     "tsc": "tsc",
     "update-packages": "tsx ./scripts/updatePackages.ts",
     "validate-packages": "node scripts/validatePackages.js",
