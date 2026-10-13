@@ -34,6 +34,8 @@ export const OpenSearchQueryBuilderOperatorFeature = createFeature({
         container.register(NotIn).inSingletonScope();
         container.register(StartsWith).inSingletonScope();
         container.register(NotStartsWith).inSingletonScope();
-        container.register(OpenSearchQueryBuilderOperatorRegistry).inSingletonScope();
+        // Container scoped: each request builds the registry from its own container, so operators that
+        // extensions register per request are included. A singleton is built from the root only.
+        container.register(OpenSearchQueryBuilderOperatorRegistry).inContainerScope();
     }
 });
