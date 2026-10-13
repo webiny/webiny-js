@@ -14,6 +14,13 @@ export interface IWbPageAccess {
     canDeleteAnyPage(): Promise<boolean>;
     /** Read access of the current identity (review actions, get review). */
     canRead(target: WbPageTarget): Promise<boolean>;
+
+    /**
+     * Read access of the current identity to pages in a folder, without a page (the routing
+     * inspector, R121): `wb.page` read plus folder content read. Root (`null` or `"root"`) or FLP
+     * not in use: the page read only. No own-only check without a page (A47).
+     */
+    canReadInFolder(folderId: string | null): Promise<boolean>;
     /** Write access of the current identity (request a review, D77); includes read (R82). */
     canWrite(target: WbPageTarget): Promise<boolean>;
     /** Delete access of the current identity (trash, delete, cancel-for-delete, D134). */

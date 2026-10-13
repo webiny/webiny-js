@@ -6,7 +6,8 @@ import { WbPageAccess } from "./WbPageAccess/index.js";
 
 /**
  * `canUserRead` for pages (D61, D133, R48): the page is read as the current identity, only the WB
- * access check runs as the other user, through `CandidateReadAccess` (R67).
+ * access check runs as the other user, through `CandidateReadAccess` (R67). `canUserReadInFolder`
+ * (R121) has no page: only the folder-level check runs as the other user.
  *
  * Contract (SEC-66): reach this only as the request identity, never from inside
  * `withoutAuthorization`. The page model is read through `PageModelProvider`, which uses the CMS
@@ -42,12 +43,15 @@ class WbPageReviewTargetReadAccessImpl implements ReviewTargetReadAccess.Interfa
         return this.candidates.canUserRead(params.userId, () => this.access.canRead(target));
     }
 
-    /**
-     * Fail closed until 4.4 Task 11 adds the page model read and folder content check (R121):
-     * nobody passes the inspector's folder-level check yet.
-     */
-    public async canUserReadInFolder(): Promise<boolean> {
-        return false;
+    public async canUserReadInFolder(
+        params: ReviewTargetReadAccess.FolderReadParams
+    ): Promise<boolean> {
+        if (params.model !== WB_PAGE_NAMESPACE) {
+            return false;
+        }
+        return this.candidates.canUserRead(params.userId, () => {
+            return this.access.canReadInFolder(params.folderId);
+        });
     }
 }
 

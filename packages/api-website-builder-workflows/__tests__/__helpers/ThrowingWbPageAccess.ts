@@ -7,7 +7,8 @@ export type WbPageAccessCheck =
     | "canWrite"
     | "canDelete"
     | "canWriteAnyPage"
-    | "canDeleteAnyPage";
+    | "canDeleteAnyPage"
+    | "canReadInFolder";
 
 /** Access checks that throw, as an FLP lookup or a model read can. Clear it in `afterEach`. */
 export const throwingAccessChecks = new Set<WbPageAccessCheck>();
@@ -52,6 +53,13 @@ class ThrowingWbPageAccessImpl implements WbPageAccess.Interface {
             return fail("canDelete");
         }
         return this.decoratee.canDelete(target);
+    }
+
+    public async canReadInFolder(folderId: string | null): Promise<boolean> {
+        if (throwingAccessChecks.has("canReadInFolder")) {
+            return fail("canReadInFolder");
+        }
+        return this.decoratee.canReadInFolder(folderId);
     }
 }
 

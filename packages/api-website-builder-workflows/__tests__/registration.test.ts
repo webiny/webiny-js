@@ -5,6 +5,8 @@ import { PROJECT_PACKAGE_FEATURE_NAME } from "@webiny/wcp/types.js";
 import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
 import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTargetSync/index.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
+import { ReviewTargetFolderChain } from "@webiny/api-workflows/features/review/ReviewTargetFolderChain/index.js";
+import { WbPageFolderExistsService } from "~/features/target/WbPageFolderExistsService/index.js";
 import { CmsEntryReviewNamespace } from "@webiny/api-headless-cms-workflows/features/target/CmsEntryReviewNamespace/index.js";
 import { PageBeforePublishEventHandler } from "@webiny/api-website-builder/features/pages/PublishPage/index.js";
 import { PageBeforeMoveEventHandler } from "@webiny/api-website-builder/features/pages/MovePage/index.js";
@@ -47,7 +49,8 @@ const WRAPPERS: Abstraction<unknown>[] = [
     CancelWebsiteBuilderPageReviewsForDeleteUseCase,
     ListWebsiteBuilderPageReviewsUseCase,
     GetWebsiteBuilderPageTargetReviewUseCase,
-    WbPageReviewGuardService
+    WbPageReviewGuardService,
+    WbPageFolderExistsService
 ];
 
 describe("WebsiteBuilderWorkflowsFeature registration", () => {
@@ -58,6 +61,12 @@ describe("WebsiteBuilderWorkflowsFeature registration", () => {
         expect(container.resolveAll(ReviewTargetLoader)).toHaveLength(2);
         expect(container.resolveAll(ReviewTargetSync)).toHaveLength(2);
         expect(container.resolveAll(ReviewTargetReadAccess)).toHaveLength(2);
+        expect(container.resolveAll(ReviewTargetFolderChain)).toHaveLength(2);
+        expect(
+            container
+                .resolveAll(ReviewTargetFolderChain)
+                .filter((item: ReviewTargetFolderChain.Interface) => item.canHandle("wb.page"))
+        ).toHaveLength(1);
         expect(container.resolveAll(CmsEntryReviewNamespace)).toHaveLength(2);
         expect(
             container
@@ -82,6 +91,7 @@ describe("WebsiteBuilderWorkflowsFeature registration", () => {
         expect(container.resolveAll(ReviewTargetLoader)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetSync)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetReadAccess)).toHaveLength(0);
+        expect(container.resolveAll(ReviewTargetFolderChain)).toHaveLength(0);
         expect(container.resolveAll(CmsEntryReviewNamespace)).toHaveLength(0);
         const pageModel = { modelId: PAGE_MODEL_ID } as CmsModel;
         expect(

@@ -2,7 +2,11 @@ import type { CmsContext, CmsEntry } from "@webiny/api-headless-cms/types/index.
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { WbPage } from "@webiny/api-website-builder/domain/page/abstractions.js";
 import type { Actor, ReviewData } from "@webiny/api-workflows/domain/review/types.js";
-import type { Workflow, WorkflowValues } from "@webiny/api-workflows/domain/workflow/types.js";
+import type {
+    ReviewStepAssignmentConfig,
+    Workflow,
+    WorkflowValues
+} from "@webiny/api-workflows/domain/workflow/types.js";
 import { GetRevisionByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionById/index.js";
 import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import { RequestReviewUseCase } from "@webiny/api-workflows/features/review/RequestReview/index.js";
@@ -46,6 +50,32 @@ export const storeWbWorkflow = async (context: CmsContext): Promise<Workflow> =>
         await context.container
             .resolve(StoreWorkflowUseCase)
             .execute({ workflow: createWbWorkflowValues(), actor: WB_ADMIN_ACTOR })
+    );
+};
+
+/** The pages workflow with the given routing on its only step (team "team-1"). */
+export const createWbWorkflowValuesWithAssignment = (
+    assignment: ReviewStepAssignmentConfig
+): WorkflowValues => {
+    const values = createWbWorkflowValues();
+    return {
+        ...values,
+        steps: values.steps.map(step => {
+            return { ...step, config: { teams: [REVIEW_TEAM], assignment } };
+        })
+    };
+};
+
+/** Stores the pages workflow with the given routing through the engine (no wrapper). */
+export const storeWbWorkflowWithAssignment = async (
+    context: CmsContext,
+    assignment: ReviewStepAssignmentConfig
+): Promise<Workflow> => {
+    return expectOk(
+        await context.container.resolve(StoreWorkflowUseCase).execute({
+            workflow: createWbWorkflowValuesWithAssignment(assignment),
+            actor: WB_ADMIN_ACTOR
+        })
     );
 };
 

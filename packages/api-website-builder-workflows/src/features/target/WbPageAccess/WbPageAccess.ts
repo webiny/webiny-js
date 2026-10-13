@@ -48,6 +48,22 @@ class WbPageAccessImpl implements Abstraction.Interface {
         return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "r" });
     }
 
+    public async canReadInFolder(folderId: string | null): Promise<boolean> {
+        if (!(await this.permissions.canRead("page"))) {
+            return false;
+        }
+        // Folder-level permissions are skipped when FLP is not in use for the identity (e.g. API
+        // keys) or for the root folder, as the ACO CMS decorators do.
+        if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
+            return true;
+        }
+        if (!folderId || folderId === ROOT_FOLDER) {
+            return true;
+        }
+        const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
+        return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "r" });
+    }
+
     public async canWrite(target: WbPageTarget): Promise<boolean> {
         if (!(await this.permissions.canRead("page"))) {
             return false;
