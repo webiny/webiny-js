@@ -744,10 +744,10 @@ Refines D100 and spec 10 (request review input). Decided 2026-10-13.
 
 ## D136. Where the GraphQL operations live
 
-- `/graphql`, root `workflows`: the shared configuration operations only (settings, step types; later users, transports, automation definitions, AI tools).
-- `/graphql`, root `websiteBuilder` (the existing `WbQuery` / `WbMutation`): every Website Builder pages workflow and review operation.
-- `/cms/manage`: every Headless CMS workflow and review operation, built like the existing CMS manage operations.
-  - Per model (generated for each model the way `getArticle` / `publishArticle` are): request review, get review (by review id and by revision), cancel-for-delete. The model comes from the operation, never from an argument.
-  - Not per model: workflow store, delete, list and get; the review list across all CMS models (optional model filter) for Content Reviews; the review actions that take a review id (start, take over, approve, reject, cancel); the editor's model list.
+Everything is on the main `/graphql` endpoint, so the shared review UI talks to one endpoint. Nothing goes on the `/cms/*` endpoints.
 
-Settles spec 10 "final names" placement. Decided 2026-10-13.
+- Root `workflows`: the shared configuration operations only (settings, step types; later users, transports, automation definitions, AI tools).
+- Root `websiteBuilder` (the existing `WbQuery` / `WbMutation`): every Website Builder pages workflow and review operation.
+- Root `cms` (the existing `CmsQuery` / `CmsMutation`, which `getEntry(modelId, ...)` and ai-powerups' `compareEntryRevisions` already use): every Headless CMS workflow and review operation. Operations that address one model take `modelId` as an argument, like the existing `CmsQuery` operations; operations that take a review id (get review, start, take over, approve, reject, cancel) take no model.
+
+Settles spec 10 "final names" placement. Decided 2026-10-13 (first recorded with CMS operations on `/cms/manage`; changed the same day).
