@@ -15,6 +15,11 @@ export interface RequestWebsiteBuilderPageReviewInput {
     targetId: string;
     /** The page revision id. */
     targetRevisionId: string;
+    /**
+     * The review title (D135). Trimmed by the engine; at least 5 characters when given (D100,
+     * R89); missing or empty means the page title.
+     */
+    title?: string | null;
     /** Reviewer picks per step (D22); malformed picks are rejected by the engine (R61). */
     picks?: ReviewPick[];
 }

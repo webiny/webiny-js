@@ -28,6 +28,8 @@ import { ApproveWebsiteBuilderPageReviewStepUseCase } from "~/features/wrappers/
 import { RejectWebsiteBuilderPageReviewStepUseCase } from "~/features/wrappers/RejectWebsiteBuilderPageReviewStep/index.js";
 import { CancelWebsiteBuilderPageReviewUseCase } from "~/features/wrappers/CancelWebsiteBuilderPageReview/index.js";
 import { CancelWebsiteBuilderPageReviewsForDeleteUseCase } from "~/features/wrappers/CancelWebsiteBuilderPageReviewsForDelete/index.js";
+import { ListWebsiteBuilderPageReviewsUseCase } from "~/features/wrappers/ListWebsiteBuilderPageReviews/index.js";
+import { GetWebsiteBuilderPageTargetReviewUseCase } from "~/features/wrappers/GetWebsiteBuilderPageTargetReview/index.js";
 import { WbPageReviewGuardService } from "~/features/wrappers/WbPageReviewGuardService/index.js";
 
 const WRAPPERS: Abstraction<unknown>[] = [
@@ -43,6 +45,8 @@ const WRAPPERS: Abstraction<unknown>[] = [
     RejectWebsiteBuilderPageReviewStepUseCase,
     CancelWebsiteBuilderPageReviewUseCase,
     CancelWebsiteBuilderPageReviewsForDeleteUseCase,
+    ListWebsiteBuilderPageReviewsUseCase,
+    GetWebsiteBuilderPageTargetReviewUseCase,
     WbPageReviewGuardService
 ];
 

@@ -6,6 +6,8 @@ import { ListWebsiteBuilderPageWorkflowsFeature } from "./ListWebsiteBuilderPage
 import { GetWebsiteBuilderPageWorkflowFeature } from "./GetWebsiteBuilderPageWorkflow/feature.js";
 import { RequestWebsiteBuilderPageReviewFeature } from "./RequestWebsiteBuilderPageReview/feature.js";
 import { GetWebsiteBuilderPageReviewFeature } from "./GetWebsiteBuilderPageReview/feature.js";
+import { GetWebsiteBuilderPageTargetReviewFeature } from "./GetWebsiteBuilderPageTargetReview/feature.js";
+import { ListWebsiteBuilderPageReviewsFeature } from "./ListWebsiteBuilderPageReviews/feature.js";
 import { StartWebsiteBuilderPageReviewStepFeature } from "./StartWebsiteBuilderPageReviewStep/feature.js";
 import { TakeOverWebsiteBuilderPageReviewStepFeature } from "./TakeOverWebsiteBuilderPageReviewStep/feature.js";
 import { ApproveWebsiteBuilderPageReviewStepFeature } from "./ApproveWebsiteBuilderPageReviewStep/feature.js";
@@ -31,6 +33,8 @@ export const WbWrappersFeature = createFeature({
         // Reviews
         RequestWebsiteBuilderPageReviewFeature.register(container);
         GetWebsiteBuilderPageReviewFeature.register(container);
+        GetWebsiteBuilderPageTargetReviewFeature.register(container);
+        ListWebsiteBuilderPageReviewsFeature.register(container);
         StartWebsiteBuilderPageReviewStepFeature.register(container);
         TakeOverWebsiteBuilderPageReviewStepFeature.register(container);
         ApproveWebsiteBuilderPageReviewStepFeature.register(container);

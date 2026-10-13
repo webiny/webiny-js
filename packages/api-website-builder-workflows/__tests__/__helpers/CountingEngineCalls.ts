@@ -13,6 +13,9 @@ import { ApproveReviewStepUseCase } from "@webiny/api-workflows/features/review/
 import { RejectReviewStepUseCase } from "@webiny/api-workflows/features/review/RejectReviewStep/index.js";
 import { CancelReviewUseCase } from "@webiny/api-workflows/features/review/CancelReview/index.js";
 import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
+import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
+import { ListReviewsUseCase } from "@webiny/api-workflows/features/review/ListReviews/index.js";
+import { ListReviewAssignmentsUseCase } from "@webiny/api-workflows/features/assignment/ListReviewAssignments/index.js";
 
 /** Engine calls the handlers made, by use case name. Clear it in `beforeEach`. */
 export const engineCalls: string[] = [];
@@ -147,6 +150,35 @@ class CountingCancelReview implements CancelReviewUseCase.Interface {
     }
 }
 
+class CountingGetTargetReview implements GetTargetReviewUseCase.Interface {
+    public constructor(private decoratee: GetTargetReviewUseCase.Interface) {}
+
+    public async execute(input: GetTargetReviewUseCase.Input): GetTargetReviewUseCase.Return {
+        engineCalls.push("GetTargetReview");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingListReviews implements ListReviewsUseCase.Interface {
+    public constructor(private decoratee: ListReviewsUseCase.Interface) {}
+
+    public async execute(input: ListReviewsUseCase.Input): ListReviewsUseCase.Return {
+        engineCalls.push("ListReviews");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingListReviewAssignments implements ListReviewAssignmentsUseCase.Interface {
+    public constructor(private decoratee: ListReviewAssignmentsUseCase.Interface) {}
+
+    public async execute(
+        input: ListReviewAssignmentsUseCase.Input
+    ): ListReviewAssignmentsUseCase.Return {
+        engineCalls.push("ListReviewAssignments");
+        return this.decoratee.execute(input);
+    }
+}
+
 /** Records every workflow and review lookup the handlers make in `engineCalls` (`legacyPlugins`). */
 export const countEngineCalls = (container: Container) => {
     container.registerDecorator(
@@ -214,5 +246,20 @@ export const countEngineCalls = (container: Container) => {
     );
     container.registerDecorator(
         CancelReviewUseCase.createDecorator({ decorator: CountingCancelReview, dependencies: [] })
+    );
+    container.registerDecorator(
+        GetTargetReviewUseCase.createDecorator({
+            decorator: CountingGetTargetReview,
+            dependencies: []
+        })
+    );
+    container.registerDecorator(
+        ListReviewsUseCase.createDecorator({ decorator: CountingListReviews, dependencies: [] })
+    );
+    container.registerDecorator(
+        ListReviewAssignmentsUseCase.createDecorator({
+            decorator: CountingListReviewAssignments,
+            dependencies: []
+        })
     );
 };
