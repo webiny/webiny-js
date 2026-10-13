@@ -4,6 +4,7 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 import { useHandler } from "~tests/utils/useHandler";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
 import { DeleteFolderUseCase } from "~/features/folder/DeleteFolder/index.js";
+import { DeleteFlpUseCase } from "~/features/flp/DeleteFlp/index.js";
 import {
     FOLDER_CREATED_WEBSOCKET_ACTION,
     FOLDER_DELETED_WEBSOCKET_ACTION,
@@ -30,6 +31,23 @@ const taskHandler = (container: Container, id: string) => {
     return { definition, handler };
 };
 
+/*
+ * Creating a folder already runs the create task (inline, in tests) and writes the FLP record. The
+ * tests that run the task themselves remove that record first, so the task writes it again rather
+ * than failing on a duplicate, as SQL storage does.
+ */
+const createFolderWithoutFlp = async (container: Container, slug: string) => {
+    const created = await container.resolve(CreateFolderUseCase).execute({
+        type,
+        title: slug,
+        slug,
+        parentId: null
+    });
+    const folder = created.value;
+    await container.resolve(DeleteFlpUseCase).execute(folder);
+    return folder;
+};
+
 /** Says it is out of time from the `after`-th check onwards, like a task nearing its limit. */
 const timeoutAfter = (after: number) => {
     let checks = 0;
@@ -46,13 +64,7 @@ describe("FLP tasks tell the admin when they finish", () => {
 
     it("should tell the identity that created the folder once its FLP record exists", async () => {
         const context = await handler();
-        const created = await context.container.resolve(CreateFolderUseCase).execute({
-            type,
-            title: "notify-task-create",
-            slug: "notify-task-create",
-            parentId: null
-        });
-        const folder = created.value;
+        const folder = await createFolderWithoutFlp(context.container, "notify-task-create");
         websocketMessages.length = 0;
 
         const { definition, handler: run } = taskHandler(context.container, CREATE_FLP_TASK_ID);
@@ -115,21 +127,17 @@ describe("FLP tasks tell the admin when they finish", () => {
 
     it("should tell nobody when the task was started without an identity", async () => {
         const context = await handler();
-        const created = await context.container.resolve(CreateFolderUseCase).execute({
-            type,
-            title: "notify-task-none",
-            slug: "notify-task-none",
-            parentId: null
-        });
+        const folder = await createFolderWithoutFlp(context.container, "notify-task-none");
         websocketMessages.length = 0;
 
         const { definition, handler: run } = taskHandler(context.container, CREATE_FLP_TASK_ID);
-        await run.run({
-            input: { folder: created.value },
+        const result = await run.run({
+            input: { folder },
             definition,
             controller: fakeController(() => false)
         } as never);
 
+        expect(result).toMatchObject({ status: "done" });
         expect(websocketMessages).toEqual([]);
     });
 });
