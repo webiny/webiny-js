@@ -32,6 +32,9 @@ import { AssignmentSharedFeature } from "~/features/assignment/shared/feature.js
 import { WorkflowSettingsSharedFeature } from "~/features/settings/shared/feature.js";
 import { GetWorkflowSettingsFeature } from "~/features/settings/GetWorkflowSettings/feature.js";
 import { SaveWorkflowSettingsFeature } from "~/features/settings/SaveWorkflowSettings/feature.js";
+import { GetWorkflowSettingsForEditorFeature } from "~/features/config/GetWorkflowSettingsForEditor/feature.js";
+import { SaveWorkflowSettingsForEditorFeature } from "~/features/config/SaveWorkflowSettingsForEditor/feature.js";
+import { ListWorkflowStepTypesFeature } from "~/features/config/ListWorkflowStepTypes/feature.js";
 import { CurrentUserTeamsFeature } from "~/features/identity/CurrentUserTeams/feature.js";
 import { CurrentReviewViewerFeature } from "~/features/identity/CurrentReviewViewer/feature.js";
 import { CandidateReadAccessFeature } from "~/features/identity/CandidateReadAccess/feature.js";
@@ -93,6 +96,11 @@ export const WorkflowsFeature = createFeature({
         WorkflowSettingsSharedFeature.register(container);
         GetWorkflowSettingsFeature.register(container);
         SaveWorkflowSettingsFeature.register(container);
+
+        // Shared configuration operations behind `editor` (D133 point 2, R97)
+        GetWorkflowSettingsForEditorFeature.register(container);
+        SaveWorkflowSettingsForEditorFeature.register(container);
+        ListWorkflowStepTypesFeature.register(container);
 
         // Building blocks for the app wrappers (D132)
         WorkflowsPermissionsFeature.register(container);

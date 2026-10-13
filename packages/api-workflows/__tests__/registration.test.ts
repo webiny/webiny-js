@@ -31,6 +31,9 @@ import { ListReviewAssignmentsUseCase } from "~/features/assignment/ListReviewAs
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import { GetWorkflowSettingsUseCase } from "~/features/settings/GetWorkflowSettings/index.js";
 import { SaveWorkflowSettingsUseCase } from "~/features/settings/SaveWorkflowSettings/index.js";
+import { GetWorkflowSettingsForEditorUseCase } from "~/features/config/GetWorkflowSettingsForEditor/index.js";
+import { SaveWorkflowSettingsForEditorUseCase } from "~/features/config/SaveWorkflowSettingsForEditor/index.js";
+import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStepTypes/index.js";
 import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
 import { WorkflowModelProvider } from "~/domain/workflow/abstractions/WorkflowModelProvider.js";
 import { ReviewModelProvider } from "~/domain/review/abstractions/ReviewModelProvider.js";
@@ -88,6 +91,9 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(ListReviewAssignmentsUseCase)).toHaveLength(1);
         expect(container.resolveAll(GetWorkflowSettingsUseCase)).toHaveLength(1);
         expect(container.resolveAll(SaveWorkflowSettingsUseCase)).toHaveLength(1);
+        expect(container.resolveAll(GetWorkflowSettingsForEditorUseCase)).toHaveLength(1);
+        expect(container.resolveAll(SaveWorkflowSettingsForEditorUseCase)).toHaveLength(1);
+        expect(container.resolveAll(ListWorkflowStepTypesUseCase)).toHaveLength(1);
         expect(container.resolveAll(WorkflowRepository)).toHaveLength(1);
         expect(container.resolveAll(WorkflowModelProvider)).toHaveLength(1);
         expect(container.resolveAll(ReviewModelProvider)).toHaveLength(1);

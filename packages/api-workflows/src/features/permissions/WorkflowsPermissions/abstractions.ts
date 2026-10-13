@@ -14,7 +14,8 @@ export interface IWorkflowsPermissions {
 
 /**
  * The one shared checker of the `workflows` permission (spec 8, D54). A building block for the
- * app wrappers (D132): the api-workflows use cases never call it, they are an internal engine.
+ * app wrappers (D132). The api-workflows engine use cases never call it; only the app wrappers
+ * and the shared configuration use cases (R97) do.
  */
 export const WorkflowsPermissions =
     createAbstraction<IWorkflowsPermissions>("WorkflowsPermissions");
