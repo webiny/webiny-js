@@ -10689,13 +10689,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-event-handler-aws-ddb@workspace:packages/api-event-handler-aws-ddb"
   dependencies:
+    "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-aco-ddb": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
     "@webiny/api-audit-logs-ddb": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-event-handler-aws": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-ddb": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-websockets-aws": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
