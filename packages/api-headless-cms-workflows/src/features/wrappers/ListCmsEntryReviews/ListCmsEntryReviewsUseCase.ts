@@ -52,7 +52,7 @@ class ListCmsEntryReviewsUseCaseImpl implements UseCase.Interface {
         const { modelId, ...listWhere } = where;
         const namespaces = (models.isOk() ? models.value : [])
             .filter(model => isBindableModel(model))
-            .filter(model => !modelId || model.modelId === modelId)
+            .filter(model => modelId === null || modelId === undefined || model.modelId === modelId)
             .map(model => toCmsNamespace(model.modelId));
         if (namespaces.length === 0) {
             return Result.ok({ items: [], meta: { cursor: null, hasMoreItems: false } });

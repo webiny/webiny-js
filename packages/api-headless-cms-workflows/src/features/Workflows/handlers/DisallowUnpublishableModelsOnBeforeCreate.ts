@@ -2,6 +2,7 @@ import { WorkflowBeforeCreateEventHandler } from "@webiny/api-workflows/features
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { WorkflowValidationError } from "@webiny/api-workflows/domain/workflow/errors.js";
 import { getModelIdFromAppName } from "~/utils/appName.js";
+import { UNPUBLISHABLE_MODEL_TAG } from "~/utils/isBindableModel.js";
 
 const MODEL_NOT_FOUND = "Cms/Model/NotFound";
 const MODEL_NOT_AUTHORIZED = "Cms/Model/NotAuthorized";
@@ -47,7 +48,7 @@ class DisallowUnpublishableModelsOnBeforeCreateImpl
                 );
             }
             const tags = model.value.tags || [];
-            if (!tags.includes("$publishing:false")) {
+            if (!tags.includes(UNPUBLISHABLE_MODEL_TAG)) {
                 continue;
             }
             throw new WorkflowValidationError(

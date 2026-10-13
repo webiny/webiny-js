@@ -95,7 +95,7 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
     type CmsEntryWorkflowModel {
         "Namespace id, cms.<modelId>, as a workflow's models hold it."
         model: String!
-        modelId: ID!
+        modelId: String!
         name: String!
         workflow: CmsEntryWorkflowModelWorkflow
     }
@@ -267,6 +267,12 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             dependencies: [GetCmsEntryTargetReviewUseCase],
             resolver: (getTargetReview: GetCmsEntryTargetReviewUseCase.Interface) => {
                 return async ({ args }) => {
+                    // A malformed revision id is a validation error, never a throw (R107).
+                    if (!isValidRevisionId(args.revisionId)) {
+                        return new ErrorResponse(
+                            new ReviewValidationError("The revision id is not valid.")
+                        );
+                    }
                     const result = await getTargetReview.execute({
                         model: toCmsNamespace(args.modelId),
                         targetRevisionId: args.revisionId
@@ -416,6 +422,16 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             dependencies: [CancelCmsEntryReviewsForDeleteUseCase],
             resolver: (cancelForDelete: CancelCmsEntryReviewsForDeleteUseCase.Interface) => {
                 return async ({ args }) => {
+                    // A given revision id must be well formed (R107).
+                    if (
+                        args.revisionId !== null &&
+                        args.revisionId !== undefined &&
+                        !isValidRevisionId(args.revisionId)
+                    ) {
+                        return new ErrorResponse(
+                            new ReviewValidationError("The revision id is not valid.")
+                        );
+                    }
                     const result = await cancelForDelete.execute({
                         model: toCmsNamespace(args.modelId),
                         targetId: args.entryId,
