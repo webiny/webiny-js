@@ -15,6 +15,11 @@ import { ApproveCmsEntryReviewStepFeature } from "./ApproveCmsEntryReviewStep/fe
 import { RejectCmsEntryReviewStepFeature } from "./RejectCmsEntryReviewStep/feature.js";
 import { CancelCmsEntryReviewFeature } from "./CancelCmsEntryReview/feature.js";
 import { CancelCmsEntryReviewsForDeleteFeature } from "./CancelCmsEntryReviewsForDelete/feature.js";
+import { ReassignCmsEntryReviewStepFeature } from "./ReassignCmsEntryReviewStep/feature.js";
+import { ListCmsEntryStepCandidatesFeature } from "./ListCmsEntryStepCandidates/feature.js";
+import { ListCmsEntryReviewStepCandidatesFeature } from "./ListCmsEntryReviewStepCandidates/feature.js";
+import { InspectCmsEntryRoutingFeature } from "./InspectCmsEntryRouting/feature.js";
+import { CmsEntryFolderExistsFeature } from "./CmsEntryFolderExists/feature.js";
 
 /**
  * The Headless CMS wrapper use cases (D132, D133, R45): identity, `workflows` permission and target
@@ -43,6 +48,14 @@ export const CmsWrappersFeature = createFeature({
         ApproveCmsEntryReviewStepFeature.register(container);
         RejectCmsEntryReviewStepFeature.register(container);
         CancelCmsEntryReviewFeature.register(container);
+        ReassignCmsEntryReviewStepFeature.register(container);
+
+        // Routing: candidates for the request and reassign dialogs, the editor's
+        // inspector and folder existence (R120, R121, R125)
+        ListCmsEntryStepCandidatesFeature.register(container);
+        ListCmsEntryReviewStepCandidatesFeature.register(container);
+        InspectCmsEntryRoutingFeature.register(container);
+        CmsEntryFolderExistsFeature.register(container);
 
         // Confirm path for trash and delete with a review in progress (D134)
         CancelCmsEntryReviewsForDeleteFeature.register(container);
