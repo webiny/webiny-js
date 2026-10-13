@@ -16,6 +16,7 @@
     { "path": "../api-core" },
     { "path": "../api-headless-cms" },
     { "path": "../api-websockets" },
+    { "path": "../cognito" },
     { "path": "../db-dynamodb" },
     { "path": "../handler" }
   ],
@@ -54,6 +55,8 @@
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
       "@webiny/api-websockets": ["../api-websockets/src"],
+      "@webiny/cognito/*": ["../cognito/src/*"],
+      "@webiny/cognito": ["../cognito/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler/*": ["../handler/src/*"],
