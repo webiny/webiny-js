@@ -41,6 +41,14 @@ class WbPageReviewTargetReadAccessImpl implements ReviewTargetReadAccess.Interfa
         }
         return this.candidates.canUserRead(params.userId, () => this.access.canRead(target));
     }
+
+    /**
+     * Fail closed until 4.4 Task 11 adds the page model read and folder content check (R121):
+     * nobody passes the inspector's folder-level check yet.
+     */
+    public async canUserReadInFolder(): Promise<boolean> {
+        return false;
+    }
 }
 
 export const WbPageReviewTargetReadAccess = ReviewTargetReadAccess.createImplementation({

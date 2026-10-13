@@ -25,6 +25,8 @@ import { ReviewStepReacher } from "~/features/review/ReviewStepReacher/abstracti
 import { ReviewTargetLoader } from "~/features/review/ReviewTargetLoader/index.js";
 import { ReviewTargetSync } from "~/features/review/ReviewTargetSync/index.js";
 import { ReviewTargetReadAccess } from "~/features/review/ReviewTargetReadAccess/index.js";
+import { ReviewTargetFolderChain } from "~/features/review/ReviewTargetFolderChain/index.js";
+import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/index.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ListReviewAssignmentsUseCase } from "~/features/assignment/ListReviewAssignments/index.js";
@@ -84,6 +86,8 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(ReviewTargetLoader)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetSync)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetReadAccess)).toHaveLength(0);
+        expect(container.resolveAll(ReviewTargetFolderChain)).toHaveLength(0);
+        expect(container.resolveAll(RoutingEvaluatorService)).toHaveLength(1);
         expect(container.resolveAll(CandidateReadAccess)).toHaveLength(1);
         expect(container.resolveAll(StepAssignmentResolver)).toHaveLength(1);
         expect(container.resolveAll(ReviewRepository)).toHaveLength(1);

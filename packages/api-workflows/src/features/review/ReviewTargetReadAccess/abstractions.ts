@@ -8,6 +8,14 @@ export interface ReviewTargetUserReadParams {
     targetRevisionId: string;
 }
 
+export interface ReviewTargetFolderReadParams {
+    userId: string;
+    /** Namespace id, e.g. "cms.article" or "wb.page". */
+    model: string;
+    /** `null`: the root folder. */
+    folderId: string | null;
+}
+
 export interface IReviewTargetReadAccess {
     /** Whether this adapter answers for the namespace. */
     canHandle(model: string): boolean;
@@ -18,6 +26,12 @@ export interface IReviewTargetReadAccess {
      * `CandidateReadAccess` (R48, R67).
      */
     canUserRead(params: ReviewTargetUserReadParams): Promise<boolean>;
+    /**
+     * Whether the user could read content of the model in the folder, without a revision (R121):
+     * model read and folder content read as that user; for the root folder, model read only. Same
+     * identity contract as `canUserRead` (SEC-66). Fail closed.
+     */
+    canUserReadInFolder(params: ReviewTargetFolderReadParams): Promise<boolean>;
 }
 
 /**
@@ -33,4 +47,5 @@ export const ReviewTargetReadAccess =
 export namespace ReviewTargetReadAccess {
     export type Interface = IReviewTargetReadAccess;
     export type UserReadParams = ReviewTargetUserReadParams;
+    export type FolderReadParams = ReviewTargetFolderReadParams;
 }

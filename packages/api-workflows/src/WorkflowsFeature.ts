@@ -29,6 +29,7 @@ import { GetBoundWorkflowFeature } from "~/features/workflow/GetBoundWorkflow/fe
 import { ReadableBlockingReviewsFeature } from "~/features/workflow/ReadableBlockingReviews/feature.js";
 import { ListReviewAssignmentsFeature } from "~/features/assignment/ListReviewAssignments/feature.js";
 import { AssignmentSharedFeature } from "~/features/assignment/shared/feature.js";
+import { RoutingEvaluatorFeature } from "~/features/routing/RoutingEvaluatorService/feature.js";
 import { WorkflowSettingsSharedFeature } from "~/features/settings/shared/feature.js";
 import { GetWorkflowSettingsFeature } from "~/features/settings/GetWorkflowSettings/feature.js";
 import { SaveWorkflowSettingsFeature } from "~/features/settings/SaveWorkflowSettings/feature.js";
@@ -88,6 +89,9 @@ export const WorkflowsFeature = createFeature({
         CancelTargetReviewsFeature.register(container);
         GetBoundWorkflowFeature.register(container);
         ReadableBlockingReviewsFeature.register(container);
+
+        // Routing (spec 6): who gets a step when it is reached
+        RoutingEvaluatorFeature.register(container);
 
         // Assignment log (written from phase 4, read by the get-review wrappers)
         AssignmentSharedFeature.register(container);

@@ -1,0 +1,714 @@
+import { beforeEach, describe, expect, it } from "vitest";
+import {
+    ARTICLE_MODEL,
+    NOW,
+    requester,
+    REVIEW_TEAM_ID,
+    targetContext
+} from "~tests/__helpers/fixtures.js";
+import {
+    createRoutingContext,
+    LEGAL_TEAM_ID,
+    resetRoutingFakes
+} from "~tests/__helpers/routingContext.js";
+import {
+    readableUsers,
+    readChecks,
+    throwingReadChecks
+} from "~tests/__helpers/FakeReviewTargetReadAccess.js";
+import { folderChainCalls, folderChains } from "~tests/__helpers/FakeReviewTargetFolderChain.js";
+import type { AssignmentDecision } from "~/domain/assignment/types.js";
+import type {
+    ReviewStepAssignmentConfig,
+    ReviewStepConfig,
+    RoutingRule
+} from "~/domain/workflow/types.js";
+import type { RoutingEvaluateParams } from "~/domain/routing/types.js";
+import { ROUTING_NO_CANDIDATE_REASON, ROUTING_SKIP_REASONS } from "~/domain/routing/reasons.js";
+import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
+
+const ANNA = { id: "user-anna", displayName: "Anna" };
+const BOB = { id: "user-bob", displayName: "Bob" };
+const CARA = { id: "user-cara", displayName: "Cara" };
+const TARGET_READ = {
+    type: "target" as const,
+    targetId: "article-1",
+    targetRevisionId: "article-1#0001"
+};
+
+const stepConfig = (assignment: Partial<ReviewStepAssignmentConfig> = {}): ReviewStepConfig => {
+    return {
+        teams: [REVIEW_TEAM_ID],
+        assignment: { strategy: "none", allowManualPick: true, rules: [], ...assignment }
+    };
+};
+
+const evaluateParams = (overrides: Partial<RoutingEvaluateParams> = {}): RoutingEvaluateParams => {
+    return {
+        config: stepConfig(),
+        model: ARTICLE_MODEL,
+        workflowId: "workflow-1",
+        stepId: "legal",
+        requesterId: requester.id,
+        pickedUserId: null,
+        folder: targetContext.folder,
+        read: TARGET_READ,
+        now: new Date(NOW),
+        ...overrides
+    };
+};
+
+const userRule = (id: string, userId: string, conditions: RoutingRule["conditions"] = {}) => {
+    return { id, conditions, target: { type: "user" as const, id: userId } };
+};
+
+const teamRule = (id: string, teamId: string, conditions: RoutingRule["conditions"] = {}) => {
+    return { id, conditions, target: { type: "team" as const, id: teamId } };
+};
+
+const skip = (
+    userId: string,
+    source: AssignmentDecision["source"],
+    reason: string,
+    ruleId: string | null = null
+): AssignmentDecision => {
+    return { kind: "skip", userId, source, ruleId, by: null, reason };
+};
+
+const outcome = (
+    userId: string | null,
+    source: AssignmentDecision["source"],
+    ruleId: string | null = null,
+    reason: string | null = null
+): AssignmentDecision => {
+    return { kind: "outcome", userId, source, ruleId, by: null, reason };
+};
+
+const createEvaluatorContext = async () => {
+    const routing = await createRoutingContext();
+    return {
+        ...routing,
+        evaluator: routing.context.container.resolve(RoutingEvaluatorService)
+    };
+};
+
+describe("RoutingEvaluatorService.evaluate: pick", () => {
+    beforeEach(() => {
+        resetRoutingFakes();
+    });
+
+    it("gives the step to a valid pick", async () => {
+        const { evaluator, users } = await createEvaluatorContext();
+        readableUsers.add(BOB.id);
+
+        const result = await evaluator.evaluate(evaluateParams({ pickedUserId: BOB.id }));
+
+        expect(result.value).toEqual({
+            owner: BOB,
+            source: "picked",
+            ruleId: null,
+            strategy: "none",
+            candidateTeamIds: [REVIEW_TEAM_ID],
+            reason: null,
+            records: [outcome(BOB.id, "picked")],
+            trace: [],
+            skipped: []
+        });
+        expect(users.calls.map(call => call.input)).toEqual([
+            { where: { teams_in: [REVIEW_TEAM_ID] } }
+        ]);
+        expect(readChecks).toMatchObject([
+            { userId: BOB.id, scope: "target", targetRevisionId: "article-1#0001" }
+        ]);
+    });
+
+    it("ignores the pick when the step does not allow picks, without reading users", async () => {
+        const { evaluator, users, settings } = await createEvaluatorContext();
+        readableUsers.add(BOB.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                config: stepConfig({ allowManualPick: false }),
+                pickedUserId: BOB.id
+            })
+        );
+
+        expect(result.value).toMatchObject({
+            owner: null,
+            source: "pool",
+            records: [outcome(null, "pool")]
+        });
+        expect(users.calls).toEqual([]);
+        expect(settings.inputs).toEqual([]);
+        expect(readChecks).toEqual([]);
+    });
+
+    it.each([
+        ["the requester", requester.id, ROUTING_SKIP_REASONS.requester],
+        ["a user outside the step's teams", "user-dan", ROUTING_SKIP_REASONS.notMember],
+        ["an excluded user", ANNA.id, ROUTING_SKIP_REASONS.excluded],
+        ["a user who cannot read the content", BOB.id, ROUTING_SKIP_REASONS.cannotRead]
+    ])("skips a pick of %s with a fixed reason and goes on", async (_label, userId, reason) => {
+        const { evaluator, settings } = await createEvaluatorContext();
+        settings.exclusions = [{ userId: ANNA.id, reason: "On leave until May" }];
+        readableUsers.add(ANNA.id);
+        readableUsers.add(requester.id);
+        readableUsers.add("user-dan");
+
+        const result = await evaluator.evaluate(evaluateParams({ pickedUserId: userId }));
+
+        expect(result.value).toMatchObject({
+            owner: null,
+            source: "pool",
+            records: [skip(userId, "picked", reason), outcome(null, "pool")]
+        });
+        // An exclusion's own reason never reaches a record (D89, D97); only the inspector's
+        // `skipped` list shows it (R129).
+        expect(JSON.stringify(result.value?.records)).not.toContain("On leave");
+        expect(result.value?.skipped).toMatchObject([
+            { userId, reason: userId === ANNA.id ? "On leave until May" : reason }
+        ]);
+    });
+
+    it("reads exclusions with the expired ones and treats an expired one as no exclusion", async () => {
+        const { evaluator, settings } = await createEvaluatorContext();
+        settings.exclusions = [{ userId: ANNA.id, endsOn: "2026-10-01T00:00:00.000Z" }];
+        readableUsers.add(ANNA.id);
+
+        const result = await evaluator.evaluate(evaluateParams({ pickedUserId: ANNA.id }));
+
+        expect(result.value?.owner).toEqual(ANNA);
+        expect(settings.inputs).toEqual([{ includeExpired: true }]);
+    });
+
+    it("answers no access when no read check matches the namespace", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        readableUsers.add(BOB.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({ model: "cms.other", pickedUserId: BOB.id })
+        );
+
+        expect(result.value?.records).toEqual([
+            skip(BOB.id, "picked", ROUTING_SKIP_REASONS.cannotRead),
+            outcome(null, "pool")
+        ]);
+        expect(readChecks).toEqual([]);
+    });
+
+    it("asks the folder-level read check when there is no target revision", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        readableUsers.add(BOB.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                pickedUserId: BOB.id,
+                read: { type: "folder", folderId: "folder-1" }
+            })
+        );
+
+        expect(result.value?.owner).toEqual(BOB);
+        expect(readChecks).toMatchObject([
+            { userId: BOB.id, scope: "folder", folderId: "folder-1" }
+        ]);
+    });
+
+    it("reads users as the system and checks read access as the request identity (SEC-66)", async () => {
+        const { evaluator, users } = await createEvaluatorContext();
+        readableUsers.add(BOB.id);
+
+        await evaluator.evaluate(evaluateParams({ pickedUserId: BOB.id }));
+
+        expect(users.calls.map(call => call.authorizationEnabled)).toEqual([false]);
+        expect(readChecks.map(call => call.authorizationEnabled)).toEqual([true]);
+    });
+});
+
+describe("RoutingEvaluatorService.evaluate: rules", () => {
+    beforeEach(() => {
+        resetRoutingFakes();
+    });
+
+    it("takes the first rule whose conditions match and whose target is valid", async () => {
+        const { evaluator, teams } = await createEvaluatorContext();
+        readableUsers.add(CARA.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                config: stepConfig({
+                    rules: [
+                        userRule("rule-1", BOB.id, { requesterUserId: "user-someone" }),
+                        userRule("rule-2", "user-dan", { modelId: "article" }),
+                        userRule("rule-3", CARA.id, { requesterTeamId: "team-other" })
+                    ]
+                })
+            })
+        );
+
+        expect(result.value).toEqual({
+            owner: CARA,
+            source: "rule",
+            ruleId: "rule-3",
+            strategy: "none",
+            candidateTeamIds: [REVIEW_TEAM_ID],
+            reason: null,
+            records: [
+                skip("user-dan", "rule", ROUTING_SKIP_REASONS.notMember, "rule-2"),
+                outcome(CARA.id, "rule", "rule-3")
+            ],
+            trace: [
+                { ruleId: "rule-1", outcome: "notMatched", reason: null },
+                {
+                    ruleId: "rule-2",
+                    outcome: "skipped",
+                    reason: ROUTING_SKIP_REASONS.notMember
+                },
+                { ruleId: "rule-3", outcome: "matched", reason: null }
+            ],
+            skipped: [
+                { userId: "user-dan", displayName: null, reason: ROUTING_SKIP_REASONS.notMember }
+            ]
+        });
+        // Read lazily: the team lookup runs when rule 3 is reached, once.
+        expect(teams.calls).toEqual([requester.id]);
+    });
+
+    it("shows an excluded rule target's own reason in the trace, never in the record (R129)", async () => {
+        const { evaluator, settings } = await createEvaluatorContext();
+        settings.exclusions = [
+            { userId: ANNA.id, reason: "On leave until May" },
+            { userId: BOB.id }
+        ];
+        readableUsers.add(ANNA.id);
+        readableUsers.add(BOB.id);
+        readableUsers.add(CARA.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                config: stepConfig({
+                    rules: [
+                        userRule("rule-anna", ANNA.id),
+                        userRule("rule-bob", BOB.id),
+                        userRule("rule-cara", CARA.id)
+                    ]
+                })
+            })
+        );
+
+        expect(result.value).toMatchObject({
+            owner: CARA,
+            ruleId: "rule-cara",
+            records: [
+                skip(ANNA.id, "rule", ROUTING_SKIP_REASONS.excluded, "rule-anna"),
+                skip(BOB.id, "rule", ROUTING_SKIP_REASONS.excluded, "rule-bob"),
+                outcome(CARA.id, "rule", "rule-cara")
+            ],
+            trace: [
+                { ruleId: "rule-anna", outcome: "skipped", reason: "On leave until May" },
+                { ruleId: "rule-bob", outcome: "skipped", reason: ROUTING_SKIP_REASONS.excluded },
+                { ruleId: "rule-cara", outcome: "matched", reason: null }
+            ],
+            skipped: [
+                { userId: ANNA.id, displayName: "Anna", reason: "On leave until May" },
+                { userId: BOB.id, displayName: "Bob", reason: ROUTING_SKIP_REASONS.excluded }
+            ]
+        });
+        expect(JSON.stringify(result.value?.records)).not.toContain("On leave");
+    });
+
+    it("matches no requester team rule for a requester without teams, such as an API key (R113)", async () => {
+        const { evaluator, teams } = await createEvaluatorContext();
+        readableUsers.add(BOB.id);
+        readableUsers.add(CARA.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                requesterId: "api-key-1",
+                config: stepConfig({
+                    rules: [
+                        userRule("rule-team", BOB.id, { requesterTeamId: "team-other" }),
+                        userRule("rule-any", CARA.id)
+                    ]
+                })
+            })
+        );
+
+        expect(result.value).toMatchObject({
+            owner: CARA,
+            ruleId: "rule-any",
+            trace: [
+                { ruleId: "rule-team", outcome: "notMatched", reason: null },
+                { ruleId: "rule-any", outcome: "matched", reason: null }
+            ]
+        });
+        expect(teams.calls).toEqual(["api-key-1"]);
+    });
+
+    it("prefers a valid pick over the rules", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        readableUsers.add(BOB.id);
+        readableUsers.add(CARA.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                pickedUserId: BOB.id,
+                config: stepConfig({ rules: [userRule("rule-1", CARA.id)] })
+            })
+        );
+
+        expect(result.value).toMatchObject({ owner: BOB, source: "picked", trace: [] });
+    });
+
+    it("skips a rule user target who cannot read and takes the next rule", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        readableUsers.add(CARA.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                config: stepConfig({
+                    rules: [userRule("rule-1", BOB.id), userRule("rule-2", CARA.id)]
+                })
+            })
+        );
+
+        expect(result.value).toMatchObject({
+            owner: CARA,
+            ruleId: "rule-2",
+            records: [
+                skip(BOB.id, "rule", ROUTING_SKIP_REASONS.cannotRead, "rule-1"),
+                outcome(CARA.id, "rule", "rule-2")
+            ],
+            trace: [
+                { ruleId: "rule-1", outcome: "skipped", reason: ROUTING_SKIP_REASONS.cannotRead },
+                { ruleId: "rule-2", outcome: "matched", reason: null }
+            ]
+        });
+    });
+
+    it("narrows the pool to a team target when the step has no strategy", async () => {
+        const { evaluator, users } = await createEvaluatorContext();
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                config: stepConfig({ rules: [teamRule("rule-legal", LEGAL_TEAM_ID)] })
+            })
+        );
+
+        expect(result.value).toEqual({
+            owner: null,
+            source: "pool",
+            ruleId: "rule-legal",
+            strategy: "none",
+            candidateTeamIds: [LEGAL_TEAM_ID],
+            reason: null,
+            records: [outcome(null, "pool", "rule-legal")],
+            trace: [{ ruleId: "rule-legal", outcome: "matched", reason: null }],
+            skipped: []
+        });
+        expect(users.calls).toEqual([]);
+    });
+
+    it("matches folder rules on the target folder and its ancestors from the folder port", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        folderChains.set("folder-1", ["folder-1", "folder-parent"]);
+        readableUsers.add(BOB.id);
+        readableUsers.add(CARA.id);
+        const parent = { id: "folder-parent", type: "cms:article" };
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                config: stepConfig({
+                    rules: [
+                        userRule("rule-exact", CARA.id, {
+                            folder: { ...parent, includeDescendants: false }
+                        }),
+                        userRule("rule-tree", BOB.id, {
+                            folder: { ...parent, includeDescendants: true }
+                        })
+                    ]
+                })
+            })
+        );
+
+        expect(result.value).toMatchObject({ owner: BOB, ruleId: "rule-tree" });
+        expect(folderChainCalls).toEqual([{ model: ARTICLE_MODEL, folderId: "folder-1" }]);
+    });
+
+    it("never matches a folder rule for a target in the root and does not ask the folder port", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        readableUsers.add(BOB.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                folder: null,
+                config: stepConfig({
+                    rules: [
+                        userRule("rule-tree", BOB.id, {
+                            folder: {
+                                id: "folder-1",
+                                type: "cms:article",
+                                includeDescendants: true
+                            }
+                        })
+                    ]
+                })
+            })
+        );
+
+        expect(result.value).toMatchObject({
+            owner: null,
+            source: "pool",
+            trace: [{ ruleId: "rule-tree", outcome: "notMatched", reason: null }]
+        });
+        expect(folderChainCalls).toEqual([]);
+    });
+
+    it("fails when a folder rule needs a folder chain and no port handles the namespace", async () => {
+        const { evaluator } = await createEvaluatorContext();
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                model: "wb.page",
+                folder: { id: "folder-1", type: "wb:page" },
+                config: stepConfig({
+                    rules: [
+                        userRule("rule-tree", BOB.id, {
+                            folder: { id: "folder-1", type: "wb:page", includeDescendants: true }
+                        })
+                    ]
+                })
+            })
+        );
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Routing/Dependency");
+    });
+
+    it("treats a failed requester team lookup as no teams", async () => {
+        const { evaluator, teams } = await createEvaluatorContext();
+        teams.failuresLeft = 1;
+        readableUsers.add(BOB.id);
+        readableUsers.add(CARA.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                config: stepConfig({
+                    rules: [
+                        userRule("rule-team", BOB.id, { requesterTeamId: "team-other" }),
+                        userRule("rule-any", CARA.id)
+                    ]
+                })
+            })
+        );
+
+        expect(result.value).toMatchObject({ owner: CARA, ruleId: "rule-any" });
+    });
+});
+
+describe("RoutingEvaluatorService.evaluate: strategy candidates", () => {
+    beforeEach(() => {
+        resetRoutingFakes();
+    });
+
+    it("never selects the requester, an excluded user or a user without read access", async () => {
+        const { evaluator, settings } = await createEvaluatorContext();
+        settings.exclusions = [{ userId: ANNA.id, reason: "On leave" }];
+        readableUsers.add(ANNA.id);
+        readableUsers.add(requester.id);
+        readableUsers.add(CARA.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                pickedUserId: null,
+                config: stepConfig({ strategy: "roundRobin" })
+            })
+        );
+
+        expect(result.value).toEqual({
+            owner: CARA,
+            source: "roundRobin",
+            ruleId: null,
+            strategy: "roundRobin",
+            candidateTeamIds: [REVIEW_TEAM_ID],
+            reason: null,
+            records: [
+                skip(BOB.id, "roundRobin", ROUTING_SKIP_REASONS.cannotRead),
+                outcome(CARA.id, "roundRobin")
+            ],
+            trace: [],
+            // Excluded candidates and the requester are dropped without a skip (A50).
+            skipped: [
+                {
+                    userId: BOB.id,
+                    displayName: BOB.displayName,
+                    reason: ROUTING_SKIP_REASONS.cannotRead
+                }
+            ]
+        });
+        // Lazy: excluded users and the requester are never asked; asking stops at Cara.
+        expect(readChecks.map(call => call.userId)).toEqual([BOB.id, CARA.id]);
+    });
+
+    it("goes to the pool with a reason when no candidate can read", async () => {
+        const { evaluator } = await createEvaluatorContext();
+
+        const result = await evaluator.evaluate(
+            evaluateParams({ config: stepConfig({ strategy: "leastLoaded" }) })
+        );
+
+        expect(result.value).toMatchObject({
+            owner: null,
+            source: "pool",
+            strategy: "leastLoaded",
+            reason: ROUTING_NO_CANDIDATE_REASON,
+            records: [
+                skip(ANNA.id, "leastLoaded", ROUTING_SKIP_REASONS.cannotRead),
+                skip(BOB.id, "leastLoaded", ROUTING_SKIP_REASONS.cannotRead),
+                skip(CARA.id, "leastLoaded", ROUTING_SKIP_REASONS.cannotRead),
+                outcome(null, "pool", null, ROUTING_NO_CANDIDATE_REASON)
+            ]
+        });
+    });
+
+    it("runs the strategy over a team target's members only", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        readableUsers.add(ANNA.id);
+        readableUsers.add(CARA.id);
+
+        // Save-time validation needs a team target among the step's teams.
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                config: {
+                    ...stepConfig({
+                        strategy: "roundRobin",
+                        rules: [teamRule("rule-legal", LEGAL_TEAM_ID)]
+                    }),
+                    teams: [REVIEW_TEAM_ID, LEGAL_TEAM_ID]
+                }
+            })
+        );
+
+        expect(result.value).toMatchObject({
+            owner: CARA,
+            source: "roundRobin",
+            ruleId: "rule-legal",
+            candidateTeamIds: [LEGAL_TEAM_ID],
+            records: [outcome(CARA.id, "roundRobin", "rule-legal")]
+        });
+    });
+
+    it("fails when users or settings cannot be read", async () => {
+        const { evaluator, users, settings } = await createEvaluatorContext();
+        const params = evaluateParams({ config: stepConfig({ strategy: "roundRobin" }) });
+
+        users.failuresLeft = 1;
+        const usersFailed = await evaluator.evaluate(params);
+        settings.failuresLeft = 1;
+        const settingsFailed = await evaluator.evaluate(params);
+
+        expect(usersFailed.error.code).toBe("Workflows/Routing/Dependency");
+        expect(settingsFailed.error.code).toBe("Workflows/Routing/Dependency");
+    });
+
+    it("lets a throwing read check propagate to the caller", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        throwingReadChecks.add(ANNA.id);
+
+        await expect(
+            evaluator.evaluate(evaluateParams({ config: stepConfig({ strategy: "roundRobin" }) }))
+        ).rejects.toThrow("The read check crashed.");
+    });
+});
+
+describe("RoutingEvaluatorService.listMembers and checkUser", () => {
+    beforeEach(() => {
+        resetRoutingFakes();
+    });
+
+    it("lists every member of the teams but the requester, by id, with exclusion and read access", async () => {
+        const { evaluator, settings } = await createEvaluatorContext();
+        settings.exclusions = [{ userId: ANNA.id, reason: "On leave" }];
+        readableUsers.add(BOB.id);
+
+        const result = await evaluator.listMembers({
+            teamIds: [REVIEW_TEAM_ID],
+            requesterId: requester.id,
+            model: ARTICLE_MODEL,
+            read: TARGET_READ,
+            now: new Date(NOW)
+        });
+
+        expect(result.value).toEqual([
+            {
+                ...ANNA,
+                teamIds: [REVIEW_TEAM_ID],
+                exclusion: { userId: ANNA.id, reason: "On leave" },
+                canRead: false
+            },
+            { ...BOB, teamIds: [REVIEW_TEAM_ID], exclusion: null, canRead: true },
+            {
+                ...CARA,
+                teamIds: [REVIEW_TEAM_ID, LEGAL_TEAM_ID],
+                exclusion: null,
+                canRead: false
+            }
+        ]);
+        expect(readChecks.map(call => call.userId)).toEqual([ANNA.id, BOB.id, CARA.id]);
+    });
+
+    it("fails listing members when users cannot be read", async () => {
+        const { evaluator, users } = await createEvaluatorContext();
+        users.failuresLeft = 1;
+
+        const result = await evaluator.listMembers({
+            teamIds: [REVIEW_TEAM_ID],
+            requesterId: requester.id,
+            model: ARTICLE_MODEL,
+            read: TARGET_READ,
+            now: new Date(NOW)
+        });
+
+        expect(result.error.code).toBe("Workflows/Routing/Dependency");
+    });
+
+    it("checks one user like a pick (R112)", async () => {
+        const { evaluator, users, settings } = await createEvaluatorContext();
+        settings.exclusions = [{ userId: ANNA.id }];
+        readableUsers.add(ANNA.id);
+        readableUsers.add(CARA.id);
+        const check = (userId: string) => {
+            return evaluator.checkUser({
+                userId,
+                teamIds: [REVIEW_TEAM_ID],
+                requesterId: requester.id,
+                model: ARTICLE_MODEL,
+                read: TARGET_READ,
+                now: new Date(NOW)
+            });
+        };
+
+        expect((await check(CARA.id)).value).toEqual({ user: CARA, skipReason: null });
+        expect((await check(requester.id)).value).toEqual({
+            user: null,
+            skipReason: ROUTING_SKIP_REASONS.requester
+        });
+        expect((await check("user-dan")).value).toEqual({
+            user: null,
+            skipReason: ROUTING_SKIP_REASONS.notMember
+        });
+        expect((await check(ANNA.id)).value).toEqual({
+            user: ANNA,
+            skipReason: ROUTING_SKIP_REASONS.excluded
+        });
+        expect((await check(BOB.id)).value).toEqual({
+            user: BOB,
+            skipReason: ROUTING_SKIP_REASONS.cannotRead
+        });
+        expect(users.calls[0]).toEqual({
+            input: { where: { id_in: [CARA.id], teams_in: [REVIEW_TEAM_ID] } },
+            authorizationEnabled: false
+        });
+        // The requester is refused without a lookup.
+        expect(users.calls).toHaveLength(4);
+    });
+});
