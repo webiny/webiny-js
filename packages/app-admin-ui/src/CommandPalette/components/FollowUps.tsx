@@ -23,7 +23,7 @@ export const FollowUps = ({
                     type="button"
                     disabled={disabled}
                     onClick={() => onAsk(question)}
-                    className="cursor-pointer rounded-full border border-neutral-muted px-sm-extra px-sm py-xxs text-left transition-colors duration-150 hover:border-neutral-strong hover:bg-neutral-subtle focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed active:translate-y-px disabled:cursor-default disabled:opacity-60"
+                    className="cursor-pointer rounded-md border border-neutral-muted px-sm py-xxs text-left transition-colors duration-150 hover:border-neutral-strong hover:bg-neutral-subtle focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed active:translate-y-px disabled:cursor-default disabled:opacity-60"
                 >
                     <Text size="sm" className="text-neutral-strong">
                         {question}

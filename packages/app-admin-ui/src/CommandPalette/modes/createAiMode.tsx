@@ -5,7 +5,7 @@ import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg"
 import { ReactComponent as BackspaceIcon } from "@webiny/icons/backspace.svg";
 import { AiModeBadge } from "../components/index.js";
 import { AiSuggestions } from "../components/index.js";
-import { AiConversation } from "../components/index.js";
+import { AiTurn } from "../components/index.js";
 import { HintIcon } from "../components/index.js";
 import type { Hint } from "../components/index.js";
 import type { PaletteMode, PaletteModeKeyContext } from "./PaletteMode.js";
@@ -38,90 +38,73 @@ const modelLabel = (model: string | undefined): string => {
  * reactive component's render tracks the presenter's observables and re-renders on a new turn, with
  * no dependency arrays to keep honest.
  */
-export const createAiMode = (
-    presenter: AdminAssistantPresenter.Interface,
-    /** The signed-in user's initials, shown against each question. */
-    initials: string
-): PaletteMode => {
-    // How many turns the panel showed last time, so a new question is told apart from a re-render.
-    let shownTurns = 0;
+export const createAiMode = (presenter: AdminAssistantPresenter.Interface): PaletteMode => ({
+    get appearance() {
+        const started = presenter.vm.turns.length > 0;
 
-    return {
-        get appearance() {
-            const started = presenter.vm.turns.length > 0;
+        return {
+            icon: <AiIcon />,
+            iconColor: "accent" as const,
+            iconLabel: "Ask AI",
+            badge: <AiModeBadge />,
+            placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
+            footerLabel: modelLabel(presenter.vm.model),
+            hints: HINTS,
+            tall: true
+        };
+    },
 
-            return {
-                icon: <AiIcon />,
-                iconColor: "accent" as const,
-                iconLabel: "Ask AI",
-                badge: <AiModeBadge />,
-                placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
-                footerLabel: modelLabel(presenter.vm.model),
-                hints: HINTS,
-                tall: true
-            };
-        },
+    get body() {
+        const { turns, busy } = presenter.vm;
 
-        get body() {
-            const { turns, busy } = presenter.vm;
-
-            if (turns.length === 0) {
-                return <AiSuggestions onAsk={question => presenter.ask(question)} />;
-            }
-
-            return (
-                <AiConversation
-                    turns={turns}
-                    initials={initials}
-                    busy={busy}
-                    onApprove={index => presenter.decide(index, true)}
-                    onReject={index => presenter.decide(index, false)}
-                    onAsk={question => presenter.ask(question)}
-                />
-            );
-        },
-
-        // A seed only arrives from the no-results "Ask AI" button; see `PaletteMode.enter`.
-        enter(seed?: string) {
-            if (seed?.trim()) {
-                presenter.ask(seed);
-            }
-        },
-
-        reset() {
-            presenter.reset();
-            shownTurns = 0;
-        },
-
-        handleKey(event: React.KeyboardEvent, context: PaletteModeKeyContext) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                presenter.ask(context.query);
-                context.setQuery("");
-                return true;
-            }
-
-            // Backspace on an empty input leaves the mode, mirroring how space entered it.
-            if (event.key === "Backspace" && context.query === "") {
-                event.preventDefault();
-                context.exit();
-                return true;
-            }
-
-            return false;
-        },
-
-        /*
-         * The newest turn is at the top, so a new question scrolls there. Only a new question: an answer
-         * re-renders the panel with every token, and scrolling on each one would pull a reader back up
-         * from an earlier turn they opened.
-         */
-        afterRender(container: HTMLElement) {
-            const count = presenter.vm.turns.length;
-            if (count > shownTurns) {
-                container.scrollTo({ top: 0 });
-            }
-            shownTurns = count;
+        if (turns.length === 0) {
+            return <AiSuggestions onAsk={question => presenter.ask(question)} />;
         }
-    };
-};
+
+        return turns.map((turn, index) => (
+            <AiTurn
+                key={index}
+                turn={turn}
+                latest={index === turns.length - 1}
+                busy={busy}
+                onApprove={() => presenter.decide(index, true)}
+                onReject={() => presenter.decide(index, false)}
+                onAsk={question => presenter.ask(question)}
+            />
+        ));
+    },
+
+    // A seed only arrives from the no-results "Ask AI" button; see `PaletteMode.enter`.
+    enter(seed?: string) {
+        if (seed?.trim()) {
+            presenter.ask(seed);
+        }
+    },
+
+    reset() {
+        presenter.reset();
+    },
+
+    handleKey(event: React.KeyboardEvent, context: PaletteModeKeyContext) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            presenter.ask(context.query);
+            context.setQuery("");
+            return true;
+        }
+
+        // Backspace on an empty input leaves the mode, mirroring how space entered it.
+        if (event.key === "Backspace" && context.query === "") {
+            event.preventDefault();
+            context.exit();
+            return true;
+        }
+
+        return false;
+    },
+
+    // Answers are long enough to push earlier turns off-screen, so keep the newest one visible.
+    afterRender(container: HTMLElement) {
+        container.scrollTo({ top: container.scrollHeight });
+    }
+});

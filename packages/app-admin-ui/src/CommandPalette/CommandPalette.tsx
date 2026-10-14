@@ -5,8 +5,7 @@ import {
     CommandPaletteFeature,
     createReactiveComponent,
     useAdminConfig,
-    useFeatureFlags,
-    useIdentity
+    useFeatureFlags
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
@@ -45,20 +44,6 @@ const COMMAND_HINTS: Hint[] = [
     { keys: "space", label: "Ask AI" }
 ];
 
-/** "Sven Al Hamad" is "SA". Falls back to the display name, then to nothing. */
-const toInitials = (identity: ReturnType<typeof useIdentity>["identity"]): string => {
-    const { firstName = "", lastName = "" } = identity?.profile ?? {};
-    const name = `${firstName} ${lastName}`.trim() || identity?.displayName || "";
-
-    return name
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map(part => part[0])
-        .join("")
-        .toUpperCase();
-};
-
 const CommandPaletteBase = () => {
     const { presenter } = useFeature(CommandPaletteFeature);
     const { menus } = useAdminConfig();
@@ -73,9 +58,7 @@ const CommandPaletteBase = () => {
      * registry; nothing above this line has to change for that.
      */
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
-    const { identity } = useIdentity();
-    const initials = toInitials(identity);
-    const aiMode = useMemo(() => createAiMode(assistant, initials), [assistant, initials]);
+    const aiMode = useMemo(() => createAiMode(assistant), [assistant]);
 
     /*
      * The assistant is licensed separately, and the api registers no route without it. Checked here
