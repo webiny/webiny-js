@@ -91,6 +91,26 @@ describe("SchedulerService", () => {
         await service.update(input);
     });
 
+    it("creates the schedule when updating one that doesn't exist", async () => {
+        const client = mockClient(SchedulerClient);
+        client
+            .on(GetScheduleCommand)
+            .rejects(Object.assign(new Error("Not found."), { name: "ResourceNotFoundException" }));
+        client.on(CreateScheduleCommand).resolves({ $metadata: { httpStatusCode: 200 } });
+
+        const service = new EventBridgeSchedulerService(() => client, config);
+
+        await service.update({
+            id: "schedule-1",
+            tenant,
+            namespace,
+            scheduleFor: new Date(Date.now() + 1000000)
+        });
+
+        expect(client.commandCalls(CreateScheduleCommand)).toHaveLength(1);
+        expect(client.commandCalls(UpdateScheduleCommand)).toHaveLength(0);
+    });
+
     it("throws if updating a schedule in the past", async () => {
         const client = mockClient(SchedulerClient);
         const service = new EventBridgeSchedulerService(() => client, config);
