@@ -7,6 +7,7 @@ import type {
     ReviewState,
     ReviewStep,
     ReviewStepAssignment,
+    StepRunOutcome,
     StepState,
     TargetContextAuthor,
     TargetContextFolder
@@ -19,6 +20,14 @@ export interface ReviewEntryStepAssignment {
     ruleId: string | null;
     reason: string | null;
     by: ActorEntryValues | null;
+}
+
+export interface ReviewEntryStepRun {
+    taskId: string | null;
+    startedOn: string | Date | null;
+    finishedOn: string | Date | null;
+    outcome: string | null;
+    reason: string | null;
 }
 
 export interface ReviewEntryStep {
@@ -39,6 +48,8 @@ export interface ReviewEntryStep {
     reachedOn: string | Date | null;
     startedOn: string | Date | null;
     finishedOn: string | Date | null;
+    taskId: string | null;
+    runs: ReviewEntryStepRun[] | null;
 }
 
 export interface ReviewEntryTargetContext {
@@ -174,7 +185,15 @@ export class ReviewEntryMapper {
                 : null,
             reachedOn: step.reachedOn,
             startedOn: step.startedOn,
-            finishedOn: step.finishedOn
+            finishedOn: step.finishedOn,
+            taskId: step.taskId,
+            runs: step.runs.map(run => ({
+                taskId: run.taskId,
+                startedOn: run.startedOn,
+                finishedOn: run.finishedOn,
+                outcome: run.outcome,
+                reason: run.reason
+            }))
         };
     }
 
@@ -199,7 +218,17 @@ export class ReviewEntryMapper {
             assignment: ReviewEntryMapper.assignmentFromEntry(step.assignment),
             reachedOn: toIsoString(step.reachedOn),
             startedOn: toIsoString(step.startedOn),
-            finishedOn: toIsoString(step.finishedOn)
+            finishedOn: toIsoString(step.finishedOn),
+            // Reviews stored before the fields existed read as no task and no runs (R139).
+            taskId: step.taskId || null,
+            runs: (step.runs ?? []).map(run => ({
+                taskId: run.taskId || null,
+                startedOn: toIsoString(run.startedOn) ?? "",
+                finishedOn: toIsoString(run.finishedOn),
+                // Only the engine writes this model, always with a `StepRunOutcome`.
+                outcome: (run.outcome as StepRunOutcome | null) || null,
+                reason: run.reason || null
+            }))
         };
     }
 

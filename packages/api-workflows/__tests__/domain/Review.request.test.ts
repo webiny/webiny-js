@@ -105,6 +105,15 @@ describe("Review.request", () => {
         ]);
     });
 
+    it("creates every step without a task id and without earlier runs", () => {
+        const review = requestReview();
+
+        const steps = review.toData().steps;
+
+        expect(steps.map(step => step.taskId)).toEqual([null, null]);
+        expect(steps.map(step => step.runs)).toEqual([[], []]);
+    });
+
     it("rejects picks for unknown steps or steps without manual picks", () => {
         const unknownStep = Review.request(
             requestParams({ picks: [{ stepId: "missing", userId: reviewer.id }] })

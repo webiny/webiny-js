@@ -110,7 +110,28 @@ class ReviewModelImpl implements ModelFactory.Interface {
                                 })),
                             reachedOn: stepFields.datetime().label("Reached on").withoutTimezone(),
                             startedOn: stepFields.datetime().label("Started on").withoutTimezone(),
-                            finishedOn: stepFields.datetime().label("Finished on").withoutTimezone()
+                            finishedOn: stepFields
+                                .datetime()
+                                .label("Finished on")
+                                .withoutTimezone(),
+                            taskId: stepFields.text().label("Task ID"),
+                            runs: stepFields
+                                .object()
+                                .label("Runs")
+                                .list()
+                                .fields(runFields => ({
+                                    taskId: runFields.text().label("Task ID"),
+                                    startedOn: runFields
+                                        .datetime()
+                                        .label("Started on")
+                                        .withoutTimezone(),
+                                    finishedOn: runFields
+                                        .datetime()
+                                        .label("Finished on")
+                                        .withoutTimezone(),
+                                    outcome: runFields.text().label("Outcome"),
+                                    reason: runFields.longText().label("Reason")
+                                }))
                         })),
                     requester: fields
                         .object()

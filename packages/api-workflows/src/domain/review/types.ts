@@ -24,6 +24,21 @@ export interface ReviewStepAssignment {
     by?: Actor;
 }
 
+/** How an earlier attempt of a step ended (D82). */
+export type StepRunOutcome = "approved" | "rejected" | "failed";
+
+/**
+ * One earlier attempt of a step (D82, R139): the history `Review.restart` appends the failed
+ * attempt to. `taskId` is `null` when the reach failed before a task started.
+ */
+export interface ReviewStepRun {
+    taskId: string | null;
+    startedOn: string;
+    finishedOn: string | null;
+    outcome: StepRunOutcome | null;
+    reason: string | null;
+}
+
 export interface ReviewStep extends WorkflowStep {
     state: StepState;
     owner: Actor | null;
@@ -35,6 +50,10 @@ export interface ReviewStep extends WorkflowStep {
     reachedOn: string | null;
     startedOn: string | null;
     finishedOn: string | null;
+    /** The current attempt's background task id, also the run id (D57, R139). */
+    taskId: string | null;
+    /** Earlier attempts, oldest first (D82, R139). */
+    runs: ReviewStepRun[];
 }
 
 export interface ReviewWorkflowSnapshot {

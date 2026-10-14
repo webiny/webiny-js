@@ -219,7 +219,9 @@ export class Review {
             assignment: null,
             reachedOn: null,
             startedOn: null,
-            finishedOn: null
+            finishedOn: null,
+            taskId: null,
+            runs: []
         }));
 
         const review = new Review({

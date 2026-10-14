@@ -118,6 +118,50 @@ describe("ReviewRepository", () => {
         expect(read.value.steps[1]).toEqual(data.steps[1]);
     });
 
+    it("round-trips the task id and the earlier runs of a step", async () => {
+        const repository = await createRepository();
+        const base = toSaveData(createRequestedReview());
+        const runs = [
+            {
+                taskId: "task-1",
+                startedOn: NOW,
+                finishedOn: LATER,
+                outcome: "failed" as const,
+                reason: "The automation failed: boom."
+            },
+            {
+                taskId: null,
+                startedOn: LATER,
+                finishedOn: LATER,
+                outcome: "failed" as const,
+                reason: 'The automation "test-automation" is not available.'
+            },
+            {
+                taskId: "task-2",
+                startedOn: LATER,
+                finishedOn: null,
+                outcome: null,
+                reason: null
+            }
+        ];
+        const data = {
+            ...base,
+            steps: base.steps.map((step, index) =>
+                index === 0 ? { ...step, taskId: "task-3", runs } : step
+            )
+        };
+
+        const saved = await repository.save(data);
+        const read = await repository.get(data.id);
+
+        expect(saved.value.steps[0].taskId).toBe("task-3");
+        expect(saved.value.steps[0].runs).toEqual(runs);
+        expect(read.value.steps[0].taskId).toBe("task-3");
+        expect(read.value.steps[0].runs).toEqual(runs);
+        // The untouched second step keeps no task and no runs.
+        expect(read.value.steps[1]).toMatchObject({ taskId: null, runs: [] });
+    });
+
     it("updates an existing review in place", async () => {
         const repository = await createRepository();
         const saved = await repository.save(toSaveData(createRequestedReview()));

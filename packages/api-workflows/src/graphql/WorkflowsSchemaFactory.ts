@@ -204,6 +204,16 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         reason: String
     }
 
+    type WorkflowsStepRun {
+        "The earlier attempt's background task id; null when its reach failed before a task started."
+        taskId: String
+        startedOn: DateTime!
+        finishedOn: DateTime
+        "approved, rejected or failed."
+        outcome: String
+        reason: String
+    }
+
     type WorkflowsReviewStep {
         id: ID!
         title: String!
@@ -222,6 +232,10 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         reachedOn: DateTime
         startedOn: DateTime
         finishedOn: DateTime
+        "The current attempt's background task id (D57); null on a review step and before an automation starts."
+        taskId: String
+        "Earlier attempts of the step, oldest first (D82)."
+        runs: [WorkflowsStepRun!]!
         "Assignment-log entries of this step, newest first (D127). Only on a single review read; skip entries need editor or reassign (D89)."
         assignments: [WorkflowsAssignmentEntry!]
     }

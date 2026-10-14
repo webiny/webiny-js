@@ -650,7 +650,16 @@ describe("workflows GraphQL root", () => {
             "reachedOn",
             "startedOn",
             "finishedOn",
+            "taskId",
+            "runs",
             "assignments"
+        ]);
+        expect(memberNames(types, "WorkflowsStepRun")).toEqual([
+            "taskId",
+            "startedOn",
+            "finishedOn",
+            "outcome",
+            "reason"
         ]);
         expect(memberNames(types, "WorkflowsAssignmentEntry")).toEqual([
             "id",
