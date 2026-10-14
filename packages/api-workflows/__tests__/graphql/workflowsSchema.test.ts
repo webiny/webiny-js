@@ -1,4 +1,10 @@
 import { describe, expect, it } from "vitest";
+import zod from "zod";
+import { automationStepConfigSchema } from "~/domain/automation/automationStepConfigSchema.js";
+import {
+    registerTestAutomation,
+    TEST_AUTOMATION_ID
+} from "~tests/__helpers/TestAutomationDefinition.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { PROJECT_PACKAGE_FEATURE_NAME } from "@webiny/wcp/types.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -76,6 +82,22 @@ const LIST_STEP_TYPES = /* GraphQL */ `
     }
 `;
 
+const LIST_AUTOMATION_DEFINITIONS = /* GraphQL */ `
+    query ListAutomationDefinitions {
+        workflows {
+            listAutomationDefinitions {
+                data {
+                    id
+                    name
+                    models
+                    settingsSchema
+                }
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
 const LIST_USERS = /* GraphQL */ `
     query ListUsers($search: String, $ids: [String!], $limit: Int) {
         workflows {
@@ -130,6 +152,22 @@ interface StepTypeRow {
 interface StepTypesEnvelope {
     data: StepTypeRow[] | null;
     error: ErrorRow | null;
+}
+
+interface AutomationDefinitionRow {
+    id: string;
+    name: string;
+    models: string[];
+    settingsSchema: JsonSchemaRow | null;
+}
+
+interface AutomationDefinitionsEnvelope {
+    data: AutomationDefinitionRow[] | null;
+    error: ErrorRow | null;
+}
+
+interface ListAutomationDefinitionsResult {
+    listAutomationDefinitions: AutomationDefinitionsEnvelope;
 }
 
 interface UserRow {
@@ -207,6 +245,9 @@ const createApi = async (params: CmsTestHandlerParams) => {
             createMutation<GraphQLBody<WorkflowsRoot<UpdateSettingsResult>>>(UPDATE_SETTINGS),
         listStepTypes:
             createQuery<GraphQLBody<WorkflowsRoot<ListStepTypesResult>>>(LIST_STEP_TYPES),
+        listAutomationDefinitions: createQuery<
+            GraphQLBody<WorkflowsRoot<ListAutomationDefinitionsResult>>
+        >(LIST_AUTOMATION_DEFINITIONS),
         listUsers: createQuery<GraphQLBody<WorkflowsRoot<ListUsersResult>>>(LIST_USERS)
     };
 };
@@ -336,7 +377,10 @@ describe("workflows GraphQL root", () => {
             title: "Automation",
             available: false,
             unavailableReason: "No automation is defined.",
-            configSchema: null
+            configSchema: zod.toJSONSchema(automationStepConfigSchema, {
+                io: "input",
+                unrepresentable: "any"
+            })
         });
     });
 
@@ -371,6 +415,73 @@ describe("workflows GraphQL root", () => {
                 code: "Workflows/NotAuthorized",
                 message: "You are not allowed to list the step types.",
                 data: { action: "list the step types" }
+            }
+        });
+    });
+
+    it("lists the step types with automation available once a definition is registered", async () => {
+        const api = await createApi({
+            permissions: EDITOR,
+            setup: container => {
+                registerTestAutomation(container);
+            }
+        });
+
+        const [response] = await api.listStepTypes();
+        const automation = response.data.workflows.listStepTypes.data?.find(
+            row => row.type === "automation"
+        );
+
+        expect(automation).toMatchObject({ available: true, unavailableReason: null });
+    });
+
+    it("lists the automation definitions with their settings schema (R138)", async () => {
+        const api = await createApi({
+            permissions: EDITOR,
+            setup: container => {
+                registerTestAutomation(container, { models: ["cms.*"] });
+            }
+        });
+
+        const [response] = await api.listAutomationDefinitions();
+        const { data, error } = response.data.workflows.listAutomationDefinitions;
+
+        expect(error).toBeNull();
+        expect(data).toHaveLength(1);
+        expect(data?.[0]).toMatchObject({
+            id: TEST_AUTOMATION_ID,
+            name: "Test automation",
+            models: ["cms.*"]
+        });
+        expect(data?.[0].settingsSchema).toMatchObject({ type: "object" });
+        expect(Object.keys(data?.[0].settingsSchema?.properties ?? {})).toEqual([
+            "mode",
+            "comment"
+        ]);
+    });
+
+    it("lists no automation definitions when none is registered", async () => {
+        const api = await createApi({ permissions: EDITOR });
+
+        const [response] = await api.listAutomationDefinitions();
+
+        expect(response.data.workflows.listAutomationDefinitions).toEqual({
+            data: [],
+            error: null
+        });
+    });
+
+    it("refuses the automation definitions to a user without editor", async () => {
+        const api = await createApi({ permissions: REASSIGNER });
+
+        const [response] = await api.listAutomationDefinitions();
+
+        expect(response.data.workflows.listAutomationDefinitions).toEqual({
+            data: null,
+            error: {
+                code: "Workflows/NotAuthorized",
+                message: "You are not allowed to list automations.",
+                data: { action: "list automations" }
             }
         });
     });
@@ -423,7 +534,18 @@ describe("workflows GraphQL root", () => {
         expect(memberNames(types, "WorkflowsQuery")).toEqual([
             "getSettings",
             "listStepTypes",
+            "listAutomationDefinitions",
             "listUsers"
+        ]);
+        expect(memberNames(types, "WorkflowsAutomationDefinition")).toEqual([
+            "id",
+            "name",
+            "models",
+            "settingsSchema"
+        ]);
+        expect(memberNames(types, "WorkflowsAutomationDefinitionListResponse")).toEqual([
+            "data",
+            "error"
         ]);
         expect(memberNames(types, "WorkflowsUser")).toEqual(["id", "displayName"]);
         expect(memberNames(types, "WorkflowsUserListResult")).toEqual(["users", "missingIds"]);

@@ -1,6 +1,6 @@
 /**
- * A step type the workflow editor can offer (D130). Static list; phase 5 builds it
- * from the `StepType` registry.
+ * A step type the workflow editor can offer (D130): a row of `listStepTypes`, built from the
+ * `StepType` registry (R138).
  */
 export interface WorkflowStepTypeInfo {
     /** Stored on `WorkflowStep.type`, e.g. "review". */
@@ -12,6 +12,17 @@ export interface WorkflowStepTypeInfo {
     unavailableReason: string | null;
     /** JSON schema of the step's `config`; `null` when the type has no editable config yet. */
     configSchema: Record<string, unknown> | null;
+}
+
+/**
+ * An automation a workflow author can add as a step (R138): a row of `listAutomationDefinitions`.
+ * `models` is the scope (D35); `settingsSchema` is the JSON schema of what the author fills in.
+ */
+export interface AutomationDefinitionInfo {
+    id: string;
+    name: string;
+    models: string[];
+    settingsSchema: Record<string, unknown>;
 }
 
 /** A user as the workflows configuration screens see one (D48, D104): no email, roles or teams. */

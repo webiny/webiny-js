@@ -8,6 +8,9 @@ import {
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { expectOk } from "~tests/__helpers/fixtures.js";
+import { createTestStepType } from "~tests/__helpers/TestStepType.js";
+import { registerTestAutomation } from "~tests/__helpers/TestAutomationDefinition.js";
+import { automationStepConfigSchema } from "~/domain/automation/automationStepConfigSchema.js";
 import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStepTypes/index.js";
@@ -59,7 +62,10 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
                 title: "Review",
                 available: true,
                 unavailableReason: null,
-                configSchema: zod.toJSONSchema(reviewStepConfigSchema)
+                configSchema: zod.toJSONSchema(reviewStepConfigSchema, {
+                    io: "input",
+                    unrepresentable: "any"
+                })
             },
             {
                 type: "ai",
@@ -73,12 +79,19 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
                 title: "Automation",
                 available: false,
                 unavailableReason: "No automation is defined.",
-                configSchema: null
+                configSchema: zod.toJSONSchema(automationStepConfigSchema, {
+                    io: "input",
+                    unrepresentable: "any"
+                })
             }
         ]);
         expect(stepTypes[0].configSchema).toMatchObject({
             type: "object",
             required: ["teams", "assignment"]
+        });
+        expect(stepTypes[2].configSchema).toMatchObject({
+            type: "object",
+            required: ["automationId", "settings"]
         });
     });
 
@@ -103,6 +116,150 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
             unavailableReason: null,
             configSchema: null
         });
+    });
+
+    it("marks automation available once a definition is registered", async () => {
+        const { listStepTypes } = await createStepTypesContext({
+            setup: container => {
+                registerTestAutomation(container);
+            }
+        });
+
+        const stepTypes = expectOk(await listStepTypes.execute());
+
+        expect(stepTypes[2]).toMatchObject({
+            type: "automation",
+            available: true,
+            unavailableReason: null
+        });
+    });
+
+    it("lists other registered types after the built-in order, in registration order", async () => {
+        const zeta = createTestStepType({
+            type: "zeta",
+            title: "Zeta",
+            availability: { available: false, unavailableReason: "Zeta is off." },
+            configSchema: zod.object({ level: zod.number() })
+        });
+        const alpha = createTestStepType({ type: "alpha", title: "Alpha" });
+        const { listStepTypes } = await createStepTypesContext({
+            setup: container => {
+                container.register(zeta.implementation);
+                container.register(alpha.implementation);
+            }
+        });
+
+        const stepTypes = expectOk(await listStepTypes.execute());
+
+        expect(stepTypes.map(row => row.type)).toEqual([
+            "review",
+            "ai",
+            "automation",
+            "zeta",
+            "alpha"
+        ]);
+        expect(stepTypes[3]).toEqual({
+            type: "zeta",
+            title: "Zeta",
+            available: false,
+            unavailableReason: "Zeta is off.",
+            configSchema: zod.toJSONSchema(zod.object({ level: zod.number() }), {
+                io: "input",
+                unrepresentable: "any"
+            })
+        });
+        expect(stepTypes[4]).toEqual({
+            type: "alpha",
+            title: "Alpha",
+            available: true,
+            unavailableReason: null,
+            configSchema: null
+        });
+    });
+
+    it("lets a registered ai type replace the placeholder row without reading the flag", async () => {
+        const ai = createTestStepType({
+            type: "ai",
+            title: "AI step",
+            availability: { available: true, unavailableReason: null },
+            configSchema: zod.object({ prompt: zod.string() })
+        });
+        const { listStepTypes } = await createStepTypesContext({
+            setup: container => {
+                container.register(ai.implementation);
+                // The flag is not read when an `ai` type is registered.
+                container.registerDecorator(
+                    FeatureFlags.createDecorator({
+                        decorator: ThrowingFeatureFlags,
+                        dependencies: []
+                    })
+                );
+            }
+        });
+
+        const stepTypes = expectOk(await listStepTypes.execute());
+
+        expect(stepTypes.map(row => row.type)).toEqual(["review", "ai", "automation"]);
+        expect(stepTypes[1]).toEqual({
+            type: "ai",
+            title: "AI step",
+            available: true,
+            unavailableReason: null,
+            configSchema: zod.toJSONSchema(zod.object({ prompt: zod.string() }), {
+                io: "input",
+                unrepresentable: "any"
+            })
+        });
+    });
+
+    it("lists a field with a default as not required (input side of the schema)", async () => {
+        const defaulted = createTestStepType({
+            type: "defaulted",
+            title: "Defaulted",
+            configSchema: zod.object({ level: zod.number().default(1) })
+        });
+        const { listStepTypes } = await createStepTypesContext({
+            setup: container => {
+                container.register(defaulted.implementation);
+            }
+        });
+
+        const stepTypes = expectOk(await listStepTypes.execute());
+
+        const row = stepTypes.find(item => item.type === "defaulted");
+        expect((row?.configSchema?.required ?? []) as string[]).not.toContain("level");
+    });
+
+    it("returns the workflow persistence error when a type's schema cannot be converted (R87, R138)", async () => {
+        const broken = createTestStepType({ type: "broken-schema", configSchema: {} as never });
+        const { listStepTypes } = await createStepTypesContext({
+            setup: container => {
+                container.register(broken.implementation);
+            }
+        });
+
+        const result = await listStepTypes.execute();
+
+        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+    });
+
+    it("returns the workflow persistence error when a type's availability throws (R87)", async () => {
+        const broken = createTestStepType({
+            type: "broken",
+            describeAvailability: async () => {
+                throw new Error("Availability is down.");
+            }
+        });
+        const { listStepTypes } = await createStepTypesContext({
+            setup: container => {
+                container.register(broken.implementation);
+            }
+        });
+
+        const result = await listStepTypes.execute();
+
+        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(result.error.message).toBe("Availability is down.");
     });
 
     it("allows a full-access permission set", async () => {

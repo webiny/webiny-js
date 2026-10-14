@@ -19,9 +19,9 @@ export interface IListWorkflowStepTypesUseCase {
 }
 
 /**
- * The step types the workflow editor offers, with availability (D130, D133 point 2, R98): needs
- * `workflows.editor`. A static list until phase 5 adds the `StepType` registry; the workflow
- * validator still accepts only "review".
+ * The step types the workflow editor offers, with availability (D130, D133 point 2, R98, R138):
+ * needs `workflows.editor`. Built from the step type registry; while no `ai` type is registered
+ * the `ai` row stays, available with the `aiPowerups` flag (R132).
  */
 export const ListWorkflowStepTypesUseCase = createAbstraction<IListWorkflowStepTypesUseCase>(
     "ListWorkflowStepTypesUseCase"

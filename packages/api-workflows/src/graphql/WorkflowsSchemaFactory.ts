@@ -2,6 +2,7 @@ import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.j
 import { ErrorResponse, Response } from "@webiny/api-graphql";
 import { GetWorkflowSettingsForEditorUseCase } from "~/features/config/GetWorkflowSettingsForEditor/index.js";
 import { SaveWorkflowSettingsForEditorUseCase } from "~/features/config/SaveWorkflowSettingsForEditor/index.js";
+import { ListAutomationDefinitionsUseCase } from "~/features/config/ListAutomationDefinitions/index.js";
 import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStepTypes/index.js";
 import { ListWorkflowUsersUseCase } from "~/features/config/ListWorkflowUsers/index.js";
 import type { WorkflowExclusion, WorkflowSettings } from "~/domain/settings/types.js";
@@ -361,6 +362,20 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
         error: WorkflowsError
     }
 
+    type WorkflowsAutomationDefinition {
+        id: String!
+        name: String!
+        "Where it may be used: '*', '<app>.*' or exact namespace ids (D35)."
+        models: [String!]!
+        "JSON schema of the settings the workflow author fills in when adding the step."
+        settingsSchema: JSON
+    }
+
+    type WorkflowsAutomationDefinitionListResponse {
+        data: [WorkflowsAutomationDefinition!]
+        error: WorkflowsError
+    }
+
     type WorkflowsUserListResult {
         users: [WorkflowsUser!]!
         "Requested ids with no user (D117); empty for a search."
@@ -375,6 +390,7 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
     type WorkflowsQuery {
         getSettings(includeExpired: Boolean): WorkflowsSettingsResponse!
         listStepTypes: WorkflowsStepTypeListResponse!
+        listAutomationDefinitions: WorkflowsAutomationDefinitionListResponse!
         "Search by display name or email (limit 50 by default, at most 200), or look up ids (D117)."
         listUsers(search: String, ids: [String!], limit: Int): WorkflowsUserListResponse!
     }
@@ -437,6 +453,20 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             resolver: (listStepTypes: ListWorkflowStepTypesUseCase.Interface) => {
                 return async () => {
                     const result = await listStepTypes.execute();
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver({
+            path: "WorkflowsQuery.listAutomationDefinitions",
+            dependencies: [ListAutomationDefinitionsUseCase],
+            resolver: (listAutomations: ListAutomationDefinitionsUseCase.Interface) => {
+                return async () => {
+                    const result = await listAutomations.execute();
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }
