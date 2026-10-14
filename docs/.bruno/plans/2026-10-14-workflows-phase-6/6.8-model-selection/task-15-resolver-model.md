@@ -2,10 +2,10 @@
 
 Spec 7.3; D56, D101; R165, R169, R170, R177, R178; A60; Review Focus 6 (one model source, the gate holds). The workflow author chooses the model on the step (user answer Q2), and "models with a configured connection" must have exactly one source, used by the resolver, `listAiModels` (Task 16) and `AiStepType.checkConfig` (Task 17):
 
-- New DI service `ConfiguredAiModelsService` (`packages/ai-powerups/src/api/features/ConfiguredAiModels/`, dependencies `Ai` and `GetSettingsUseCase`):
-  - `list(): Promise<Result<ConfiguredAiModel[], Error>>`: `Ai.listModels()` filtered to the models whose `providerId` equals the `sdkName` of a settings connection preset (`settings.connections.presets`) with a truthy `apiKeyEncrypted` (the resolver's own source of a usable connection). Rows `{ id, name, providerId, providerName }` with `id = "<providerId>/<modelId>"` (the full id `Ai` expects) and `name = modelName`, deduplicated by `id` (first wins), in `Ai.listModels()` order. `Ai.listModelsByConnections()` is NOT used: it reads `AiConnectionFactory` registrations that nothing registers (R169). A key that no longer works is not detected (A60). Failed settings read, throwing settings read or throwing `Ai.listModels()` is a failed Result carrying an `Error` (never a rejected promise); no raw message is made user-facing here, callers map it to their own fixed text.
-  - `findConnection(model: string): Promise<Result<AiConnectionPreset | null, Error>>`: the first settings connection preset with a truthy `apiKeyEncrypted` whose `sdkName` equals the provider half of `model` (`sdkNameFromModel`); `null` when none, or when `model` is not of the form `<provider>/<id>` (both halves non-empty). It does not look at `Ai.listModels()`: a model the provider list does not know is still resolved through its provider's connection, exactly as the capability overrides are.
-- `ResolveAiCapabilityUseCase.execute(capabilityId, model?)` gains the optional `model`. Without it nothing changes (the existing tests pass unchanged apart from one registration line, see Step 5). With it, after the unknown-capability check and the **enabled gate** (`AiCapabilityDisabledError`, so the licence and enabled gate hold with and without `model`):
+- New DI service `ConfiguredAiModelsService` (`packages/ai-powerups/src/api/features/ConfiguredAiModels/`, dependencies `Ai`, `GetSettingsUseCase` and `Logger`):
+  - `list(): Promise<Result<ConfiguredAiModel[], Error>>`: `Ai.listModels()` filtered to the models whose `providerId` equals the `sdkName` of a settings connection preset (`settings.connections.presets`) with a truthy `apiKeyEncrypted` (the resolver's own source of a usable connection). Rows `{ id, name, providerId, providerName }` with `id = "<providerId>/<modelId>"` (the full id `Ai` expects) and `name = modelName`, deduplicated by `id` (first wins), in `Ai.listModels()` order. `Ai.listModelsByConnections()` is NOT used: it reads `AiConnectionFactory` registrations that nothing registers (R169). A key that no longer works is not detected (A60). Failed settings read, throwing settings read or throwing `Ai.listModels()` is a failed Result carrying a fixed-text `Error` (never a rejected promise): `Failed to load AI Power-Ups settings.` for a settings failure, `Failed to list the configured AI models.` for a throwing `Ai.listModels()`. The service logs the raw failure once (`Logger.error` with the raw error); callers (Tasks 16, 17, 19) show their own fixed text and do NOT log it again (the same split as `StepRunStaleCheckService`). The raw error never reaches a step reason or the model. `findConnection` does the same for a failed or throwing settings read.
+  - `findConnection(model: string): Promise<Result<AiConnectionPreset | null, Error>>`: the first settings connection preset with a truthy `apiKeyEncrypted` whose `sdkName` equals the provider half of `model` (`sdkNameFromModel`); `null` when none, or when `model` is not of the form `<provider>/<id>`: a non-empty provider before the first `/` and a non-empty id after it. The id may itself contain `/` (a gateway model such as `openrouter/meta/llama`: `sdkNameFromModel` only reads the part before the first `/`), but no empty segment (`"a//"`, `"a/b//c"`, a trailing `/`). It does not look at `Ai.listModels()`: a model the provider list does not know is still resolved through its provider's connection, exactly as the capability overrides are.
+- `ResolveAiCapabilityUseCase.execute(capabilityId, model?)` gains the optional `model`. Without it nothing changes (the existing tests pass unchanged apart from one `ConfiguredAiModelsService` stub (import, class, registration) in each of two files, see Step 3). With it, after the unknown-capability check and the **enabled gate** (`AiCapabilityDisabledError`, so the licence and enabled gate hold with and without `model`):
   - the model is used as given: no role, no override `connectionId`/`model`, no standard fallback;
   - the connection comes from `ConfiguredAiModelsService.findConnection(model)`; `null` (no connection with a key for the provider, or an unparsable model) fails with `AiModelNotAvailableError` (`Capabilities/AiModelNotAvailableError.ts`, `code = "AI_MODEL_NOT_AVAILABLE"`, field `model`, message `The model "<model>" is not available. Add a connection for its provider under Settings → AI Power-Ups.`, the fixed text, no settings content); a failed `findConnection` is returned as is;
   - the result: `{ capabilityId, model, connection: { sdkName: <preset sdkName>, apiKey: <decrypted> }, roleId: null, fellBackToStandard: false, guidance: <the capability's>, additionalInstructions: <the capability's override, trimmed, or ""> }`.
@@ -27,15 +27,16 @@ Spec 7.3; D56, D101; R165, R169, R170, R177, R178; A60; Review Focus 6 (one mode
 - Create: `packages/ai-powerups/__tests__/features/ConfiguredAiModels/ConfiguredAiModelsService.test.ts`
 - Create: `packages/ai-powerups/__tests__/features/ConfiguredAiModels/ConfiguredAiModelsRegistration.test.ts`
 - Create: `packages/ai-powerups/__tests__/features/Capabilities/ResolveAiCapabilityModel.test.ts`
-- Modify (one registration line in its `resolver` helper, no assertion changes): `packages/ai-powerups/__tests__/features/Capabilities/ResolveAiCapabilityUseCase.test.ts`
+- Modify (one `ConfiguredAiModelsService` stub: import, class, registration in its `resolver` helper, no assertion changes): `packages/ai-powerups/__tests__/features/Capabilities/ResolveAiCapabilityUseCase.test.ts`
+- Modify (the same stub: import, class, registration in its `resolver` helper, no assertion changes): `packages/ai-powerups/__tests__/features/upgradeFromLegacyProviders.test.ts`
 
 **Interfaces:**
 - Consumes:
-  - Existing: `Ai` (`@webiny/api-core/features/ai/index.js`; `Ai.Interface.listModels(): Promise<AiModel[]>`, `AiModel { providerId; providerName; modelId; modelName }`, `listModelsByConnections()`), `GetSettingsUseCase` (`~/api/features/GetSettings/index.js`; `execute(): Promise<Result<IAiPowerUpsSettings>>`), `AiConnectionPreset` (`~/api/features/Connections/index.js`, the real type: `{ id; name; sdkName; apiKey?; apiKeyMasked; apiKeyEncrypted }`), `sdkNameFromModel(model)` (`~/api/features/shared/modelId.js`), `Encryption` (`@webiny/api-core/features/encryption/index.js`), `AiCapability`, `AiCapabilityDisabledError`, `isCapabilityEnabled`.
+  - Existing: `Ai` (`@webiny/api-core/features/ai/index.js`; `Ai.Interface.listModels(): Promise<AiModel[]>`, `AiModel { providerId; providerName; modelId; modelName }`, `listModelsByConnections()`), `GetSettingsUseCase` (`~/api/features/GetSettings/index.js`; `execute(): Promise<Result<IAiPowerUpsSettings>>`), `AiConnectionPreset` (`~/api/features/Connections/index.js`, the real type: `{ id; name; sdkName; apiKey?; apiKeyMasked; apiKeyEncrypted }`), `sdkNameFromModel(model)` (`~/api/features/shared/modelId.js`), `Encryption` (`@webiny/api-core/features/encryption/index.js`; the resolver needs it, not `Extension.register`), `Logger` (`@webiny/api-core/features/logger/index.js`; `error(objOrMsg, ...args)`), `AiCapability`, `AiCapabilityDisabledError`, `isCapabilityEnabled`.
 - Produces (matches the contract):
-  - `ConfiguredAiModelsService` with `interface ConfiguredAiModel { id: string; name: string; providerId: string; providerName: string }`, `list()`, `findConnection(model)` (`~/api/features/ConfiguredAiModels/index.js`; consumed by Tasks 16, 17, 19), `ConfiguredAiModelsFeature`.
+  - `ConfiguredAiModelsService` (dependencies `Ai`, `GetSettingsUseCase`, `Logger`; logs a failed read once, callers do not log it again) with `interface ConfiguredAiModel { id: string; name: string; providerId: string; providerName: string }`, `list()`, `findConnection(model)` (`~/api/features/ConfiguredAiModels/index.js`; consumed by Tasks 16, 17, 19), `ConfiguredAiModelsFeature`.
   - `IResolveAiCapabilityUseCase.execute(capabilityId: string, model?: string): Promise<Result<IResolvedAiCapability, Error>>`; `AiModelNotAvailableError` (exported from the `Capabilities` barrel; Tasks 17 and 19 map it to `The model "<model>" is not available.`, R170).
-  - Test helpers `registerFakeAiPowerUpsSettings`, `createConnectionPreset`, `createAiPowerUpsSettings` (`__tests__/__helpers/FakeAiPowerUpsSettings.ts`) and `registerFakeAi`, `createAiModel` (`__tests__/__helpers/FakeAi.ts`), reused by Tasks 16, 17 and 19.
+  - Test helpers `registerFakeAiPowerUpsSettings`, `createConnectionPreset`, `createAiPowerUpsSettings` (`__tests__/__helpers/FakeAiPowerUpsSettings.ts`) and `registerFakeAi`, `createAiModel`, `registerFakeLogger` (`__tests__/__helpers/FakeAi.ts`), reused by Tasks 16, 17 and 19.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -117,8 +118,10 @@ Create `packages/ai-powerups/__tests__/__helpers/FakeAi.ts`:
 
 ```ts
 import type { Container } from "@webiny/di";
+import { vi } from "vitest";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import type { AiModel } from "@webiny/api-core/features/ai/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 export const createAiModel = (providerId: string, modelId: string): AiModel => {
     return {
@@ -162,6 +165,21 @@ export const registerFakeAi = (container: Container, models: AiModel[] | Error):
     }
     container.register(Ai.createImplementation({ implementation: FakeAi, dependencies: [] }));
 };
+
+/** Registers a `Logger` whose `error` is a spy, so a test can count and read what was logged. */
+export const registerFakeLogger = (container: Container) => {
+    const error = vi.fn();
+    container.registerInstance(Logger, {
+        trace: vi.fn(),
+        debug: vi.fn(),
+        info: vi.fn(),
+        warn: vi.fn(),
+        error,
+        fatal: vi.fn(),
+        log: vi.fn()
+    } as unknown as Logger.Interface);
+    return { error };
+};
 ```
 
 Create `packages/ai-powerups/__tests__/features/ConfiguredAiModels/ConfiguredAiModelsService.test.ts`:
@@ -173,7 +191,7 @@ import { ConfiguredAiModelsFeature } from "~/api/features/ConfiguredAiModels/fea
 import { ConfiguredAiModelsService } from "~/api/features/ConfiguredAiModels/index.js";
 import type { AiModel } from "@webiny/api-core/features/ai/index.js";
 import type { AiConnectionPreset } from "~/api/features/Connections/index.js";
-import { createAiModel, registerFakeAi } from "~tests/__helpers/FakeAi.js";
+import { createAiModel, registerFakeAi, registerFakeLogger } from "~tests/__helpers/FakeAi.js";
 import {
     createAiPowerUpsSettings,
     createConnectionPreset,
@@ -192,7 +210,7 @@ interface ServiceParams {
     settings?: Error;
 }
 
-const createService = (params: ServiceParams) => {
+const setupService = (params: ServiceParams) => {
     const container = new Container();
     ConfiguredAiModelsFeature.register(container);
     registerFakeAi(container, params.models ?? [...ANTHROPIC_MODELS, ...OPENAI_MODELS]);
@@ -200,11 +218,17 @@ const createService = (params: ServiceParams) => {
         container,
         params.settings ?? createAiPowerUpsSettings({ connections: params.connections })
     );
-    return container.resolve(ConfiguredAiModelsService);
+    const logger = registerFakeLogger(container);
+    return { service: container.resolve(ConfiguredAiModelsService), logger };
+};
+
+const createService = (params: ServiceParams) => {
+    return setupService(params).service;
 };
 
 describe("ConfiguredAiModelsService.list (R169)", () => {
-    it("lists the models of the providers that have a connection with a key", async () => {
+    it("lists the models of the providers that have a connection with a key, without the connection factories", async () => {
+        // `listModelsByConnections` throws in the fake (R169), so an Ok result proves it is not read.
         const service = createService({
             connections: [createConnectionPreset({ id: "conn-1", sdkName: "anthropic" })]
         });
@@ -311,18 +335,8 @@ describe("ConfiguredAiModelsService.list (R169)", () => {
         expect(result.value).toEqual([]);
     });
 
-    it("never reads the connection factories (listModelsByConnections throws in the fake)", async () => {
-        const service = createService({
-            connections: [createConnectionPreset({ id: "conn-1", sdkName: "anthropic" })]
-        });
-
-        const result = await service.list();
-
-        expect(result.isOk()).toBe(true);
-    });
-
-    it("fails when the settings cannot be read", async () => {
-        const service = createService({
+    it("fails, logs once and does not leak the message when the settings cannot be read", async () => {
+        const { service, logger } = setupService({
             connections: [],
             settings: new Error("settings are gone")
         });
@@ -330,18 +344,33 @@ describe("ConfiguredAiModelsService.list (R169)", () => {
         const result = await service.list();
 
         expect(result.isFail()).toBe(true);
+        expect(result.error.message).toBe("Failed to load AI Power-Ups settings.");
+        expect(logger.error).toHaveBeenCalledTimes(1);
     });
 
-    it("fails, and does not reject, when listing the provider models throws", async () => {
-        const service = createService({
+    it("fails, logs the raw error once and does not reject when listing the provider models throws", async () => {
+        const raw = new Error("provider list exploded");
+        const { service, logger } = setupService({
             connections: [createConnectionPreset({ id: "conn-1", sdkName: "anthropic" })],
-            models: new Error("provider list exploded")
+            models: raw
         });
 
         const result = await service.list();
 
         expect(result.isFail()).toBe(true);
-        expect(result.error.message).toBe("provider list exploded");
+        expect(result.error.message).toBe("Failed to list the configured AI models.");
+        expect(logger.error).toHaveBeenCalledTimes(1);
+        expect(logger.error.mock.calls[0][0]).toEqual({ error: raw });
+    });
+
+    it("does not log a successful list", async () => {
+        const { service, logger } = setupService({
+            connections: [createConnectionPreset({ id: "conn-1", sdkName: "anthropic" })]
+        });
+
+        await service.list();
+
+        expect(logger.error).not.toHaveBeenCalled();
     });
 });
 
@@ -420,12 +449,40 @@ describe("ConfiguredAiModelsService.findConnection (R169)", () => {
         }
     );
 
-    it("fails when the settings cannot be read", async () => {
-        const service = createService({ connections: [], settings: new Error("settings are gone") });
+    it("answers a model id that itself contains a slash on its provider's connection", async () => {
+        const gateway = createConnectionPreset({ id: "conn-1", sdkName: "openrouter" });
+        const service = createService({ connections: [gateway] });
+
+        const result = await service.findConnection("openrouter/meta/llama-3");
+
+        expect(result.value).toEqual(gateway);
+    });
+
+    it.each(["a//", "a//b", "a/b//c", "a/b/"])(
+        "answers null for the model %j with an empty segment, although provider a has a connection",
+        async model => {
+            const service = createService({
+                connections: [createConnectionPreset({ id: "conn-1", sdkName: "a" })]
+            });
+
+            const result = await service.findConnection(model);
+
+            expect(result.isOk()).toBe(true);
+            expect(result.value).toBeNull();
+        }
+    );
+
+    it("fails, logs once and does not leak the message when the settings cannot be read", async () => {
+        const { service, logger } = setupService({
+            connections: [],
+            settings: new Error("settings are gone")
+        });
 
         const result = await service.findConnection("anthropic/claude-sonnet-4-5");
 
         expect(result.isFail()).toBe(true);
+        expect(result.error.message).toBe("Failed to load AI Power-Ups settings.");
+        expect(logger.error).toHaveBeenCalledTimes(1);
     });
 });
 ```
@@ -435,11 +492,12 @@ Create `packages/ai-powerups/__tests__/features/ConfiguredAiModels/ConfiguredAiM
 ```ts
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
+import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { Extension } from "~/api/Extension.js";
 import { ConfiguredAiModelsService } from "~/api/features/ConfiguredAiModels/index.js";
 import { ResolveAiCapabilityUseCase } from "~/api/features/Capabilities/index.js";
-import { registerFakeAi } from "~tests/__helpers/FakeAi.js";
+import { registerFakeAi, registerFakeLogger } from "~tests/__helpers/FakeAi.js";
 import {
     createAiPowerUpsSettings,
     createConnectionPreset,
@@ -452,6 +510,13 @@ const createContainer = (enabledFlags: string[]): Container => {
         get: () => ({ isEnabled: (name: string) => enabledFlags.includes(name) })
     } as unknown as FeatureFlags.Interface);
     Extension.register(container);
+    // `Extension.register` needs only `FeatureFlags`. The resolver needs `Encryption` and the
+    // service needs `Logger`, `Ai` and the settings, so the bare container supplies them.
+    container.registerInstance(Encryption, {
+        encrypt: async (plain: string) => plain,
+        decrypt: async (encrypted: string) => encrypted
+    } as unknown as Encryption.Interface);
+    registerFakeLogger(container);
     registerFakeAi(container, []);
     registerFakeAiPowerUpsSettings(
         container,
@@ -500,7 +565,7 @@ import { AiCapabilityDisabledError } from "~/api/features/Capabilities/AiCapabil
 import { AiModelNotAvailableError } from "~/api/features/Capabilities/AiModelNotAvailableError.js";
 import { ConfiguredAiModelsFeature } from "~/api/features/ConfiguredAiModels/feature.js";
 import type { AiConnectionPreset } from "~/api/features/Connections/index.js";
-import { registerFakeAi } from "~tests/__helpers/FakeAi.js";
+import { registerFakeAi, registerFakeLogger } from "~tests/__helpers/FakeAi.js";
 import {
     createAiPowerUpsSettings,
     createConnectionPreset,
@@ -550,6 +615,7 @@ const createResolver = (params: ResolverParams) => {
     ConfiguredAiModelsFeature.register(container);
     container.register(ResolveAiCapabilityUseCaseImplementation);
     registerFakeAi(container, []);
+    registerFakeLogger(container);
     registerFakeAiPowerUpsSettings(container, params.settings ?? createAiPowerUpsSettings(params));
     return container.resolve(ResolveAiCapabilityUseCase);
 };
@@ -662,10 +728,12 @@ describe("ResolveAiCapabilityUseCase with a model (R169)", () => {
         expect(result.error).toBeInstanceOf(AiModelNotAvailableError);
     });
 
-    it.each(["", "gpt-5", "openai/"])(
+    it.each(["", "gpt-5", "openai/", "a//", "openai//gpt-5"])(
         "fails with the model-not-available error for the unparsable model %j",
         async model => {
-            const resolver = createResolver({ connections: [OPENAI] });
+            const resolver = createResolver({
+                connections: [OPENAI, createConnectionPreset({ id: "conn-9", sdkName: "a" })]
+            });
 
             const result = await resolver.execute(CAPABILITY_ID, model);
 
@@ -807,6 +875,7 @@ Create `packages/ai-powerups/src/api/features/ConfiguredAiModels/ConfiguredAiMod
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import type { AiModel } from "@webiny/api-core/features/ai/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { sdkNameFromModel } from "~/api/features/shared/modelId.js";
 import type { AiConnectionPreset } from "~/api/features/Connections/index.js";
@@ -816,21 +885,38 @@ import { ConfiguredAiModelsService as Abstraction } from "./abstractions.js";
 class ConfiguredAiModelsServiceImpl implements Abstraction.Interface {
     public constructor(
         private ai: Ai.Interface,
-        private getSettings: GetSettingsUseCase.Interface
+        private getSettings: GetSettingsUseCase.Interface,
+        private logger: Logger.Interface
     ) {}
 
     public async list(): Promise<Result<Abstraction.Model[], Error>> {
+        // Failures are logged here, once, with the raw error; the callers show their own fixed
+        // text and do not log again. The returned Error carries a fixed message only.
         let settings: IAiPowerUpsSettings;
-        let models: AiModel[];
         try {
             const settingsResult = await this.getSettings.execute();
             if (settingsResult.isFail()) {
+                this.logger.error(
+                    { error: settingsResult.error },
+                    "Could not read the AI Power-Ups settings to list the configured models."
+                );
                 return Result.fail(new Error("Failed to load AI Power-Ups settings."));
             }
             settings = settingsResult.value;
+        } catch (error) {
+            this.logger.error(
+                { error },
+                "Could not read the AI Power-Ups settings to list the configured models."
+            );
+            return Result.fail(new Error("Failed to load AI Power-Ups settings."));
+        }
+
+        let models: AiModel[];
+        try {
             models = await this.ai.listModels();
         } catch (error) {
-            return Result.fail(error instanceof Error ? error : new Error(String(error)));
+            this.logger.error({ error }, "Could not list the AI provider models.");
+            return Result.fail(new Error("Failed to list the configured AI models."));
         }
 
         const presets = settings.connections?.presets ?? [];
@@ -858,8 +944,11 @@ class ConfiguredAiModelsServiceImpl implements Abstraction.Interface {
     }
 
     public async findConnection(model: string): Promise<Result<AiConnectionPreset | null, Error>> {
+        // `<provider>/<id>`: a non-empty provider before the first "/" and a non-empty id after it.
+        // The id may contain further "/" (a gateway model), but no empty segment ("a//", "a/b/").
         const separator = model.indexOf("/");
-        if (separator < 1 || separator === model.length - 1) {
+        const idSegments = model.slice(separator + 1).split("/");
+        if (separator < 1 || idSegments.some(segment => segment === "")) {
             return Result.ok(null);
         }
 
@@ -867,11 +956,19 @@ class ConfiguredAiModelsServiceImpl implements Abstraction.Interface {
         try {
             const settingsResult = await this.getSettings.execute();
             if (settingsResult.isFail()) {
+                this.logger.error(
+                    { error: settingsResult.error },
+                    "Could not read the AI Power-Ups settings to find a model connection."
+                );
                 return Result.fail(new Error("Failed to load AI Power-Ups settings."));
             }
             settings = settingsResult.value;
         } catch (error) {
-            return Result.fail(error instanceof Error ? error : new Error(String(error)));
+            this.logger.error(
+                { error },
+                "Could not read the AI Power-Ups settings to find a model connection."
+            );
+            return Result.fail(new Error("Failed to load AI Power-Ups settings."));
         }
 
         const sdkName = sdkNameFromModel(model);
@@ -885,7 +982,7 @@ class ConfiguredAiModelsServiceImpl implements Abstraction.Interface {
 
 export const ConfiguredAiModelsService = Abstraction.createImplementation({
     implementation: ConfiguredAiModelsServiceImpl,
-    dependencies: [Ai, GetSettingsUseCase]
+    dependencies: [Ai, GetSettingsUseCase, Logger]
 });
 ```
 
@@ -965,14 +1062,42 @@ the constructor gains the fourth dependency:
     }
 ```
 
-`execute` gets the argument, and the new branch goes right after `const override: AiCapabilityOverride = entry?.overrides ?? {};` and before `const selection = this.selectModel(...)` (everything else in `execute` and `selectModel` stays exactly as it is):
+`execute` becomes this (the whole method; the new `model` branch sits after the `override` line, the rest is the current body):
 
 ```ts
     async execute(
         capabilityId: string,
         model?: string
     ): Promise<Result<IResolvedAiCapability, Error>> {
-        // ... capability lookup, settings read and the isCapabilityEnabled gate, unchanged ...
+        const capability = this.capabilityLookup.get(capabilityId);
+
+        if (!capability) {
+            // Nothing a project can do about this one: the caller passed an unregistered id.
+            return Result.fail(
+                new Error(
+                    `Unknown AI capability "${capabilityId}". Register it with the AiCapability abstraction.`
+                )
+            );
+        }
+
+        const settingsResult = await this.getSettings.execute();
+        if (settingsResult.isFail()) {
+            return Result.fail(new Error("Failed to load AI Power-Ups settings."));
+        }
+
+        const settings = settingsResult.value;
+        const entry = settings.capabilities?.items?.[capabilityId];
+
+        /*
+         * Checked here rather than at every call site, so a capability switched off in settings is
+         * off for the GraphQL mutation as much as for the button that usually triggers it. The
+         * admin hides the affordance too, but that is a courtesy and this is the actual gate.
+         */
+        if (!isCapabilityEnabled(entry)) {
+            return Result.fail(
+                new AiCapabilityDisabledError(capabilityId, capability.label, SETTINGS_PATH)
+            );
+        }
 
         const override: AiCapabilityOverride = entry?.overrides ?? {};
 
@@ -1004,10 +1129,62 @@ the constructor gains the fourth dependency:
         }
 
         const selection = this.selectModel(settings, capability.defaultRole, override);
-        // ... unchanged from here ...
+        if (selection.isFail()) {
+            return Result.fail(selection.error);
+        }
+
+        const { connectionId, model: selectedModel, roleId, fellBackToStandard } = selection.value;
+
+        const connection = settings.connections?.presets?.find(c => c.id === connectionId);
+
+        if (!connection) {
+            return Result.fail(
+                new Error(
+                    `"${capability.label}" points at a connection that no longer exists. Pick one under ${SETTINGS_PATH} → Model roles.`
+                )
+            );
+        }
+
+        if (!connection.apiKeyEncrypted) {
+            return Result.fail(
+                new Error(
+                    `The connection "${connection.name}" has no API key. Add one under ${SETTINGS_PATH} → Connections.`
+                )
+            );
+        }
+
+        /*
+         * A model is stored fully qualified ("anthropic/claude-sonnet-4-5") and a connection stores
+         * its vendor separately, so the two can disagree if a connection is re-pointed at another
+         * vendor after a role was filled. Catching it here beats a provider-side auth error.
+         */
+        const modelSdkName = sdkNameFromModel(selectedModel);
+        if (modelSdkName && connection.sdkName && modelSdkName !== connection.sdkName) {
+            return Result.fail(
+                new Error(
+                    `The model "${selectedModel}" cannot run on the "${connection.name}" connection, which is a ${connection.sdkName} credential. Fix the pairing under ${SETTINGS_PATH} → Model roles.`
+                )
+            );
+        }
+
+        return Result.ok({
+            capabilityId,
+            model: selectedModel,
+            connection: {
+                sdkName: modelSdkName || connection.sdkName,
+                apiKey: await this.encryption.decrypt(connection.apiKeyEncrypted)
+            },
+            roleId,
+            fellBackToStandard,
+            // Always the capability's own. Projects adjust prompts by appending, never by
+            // replacing, because for most capabilities the prompt is the output contract.
+            guidance: capability.guidance ?? "",
+            additionalInstructions: override.additionalInstructions?.trim() ?? ""
+        });
+    }
 ```
 
-and the registration at the bottom of the file:
+(The destructured `model` of the role path is renamed `selectedModel` because the parameter is now called `model`; `selectModel` is unchanged.) and the registration at the bottom of the file:
 
 ```ts
 export const ResolveAiCapabilityUseCaseImplementation =
@@ -1044,7 +1221,7 @@ and register it right after `CapabilitiesFeature.register(container);` (under th
         ReaderPersonasFeature.register(container);
 ```
 
-In `packages/ai-powerups/__tests__/features/Capabilities/ResolveAiCapabilityUseCase.test.ts` (the existing resolver tests resolve the use case from their own container, which now also needs the service), add the two imports
+In `packages/ai-powerups/__tests__/features/Capabilities/ResolveAiCapabilityUseCase.test.ts` (the existing resolver tests resolve the use case from their own container, which now also needs the service), add the import
 
 ```ts
 import { ConfiguredAiModelsService } from "~/api/features/ConfiguredAiModels/index.js";
@@ -1077,17 +1254,19 @@ and this registration in `resolver(...)`, right before `container.register(Resol
 
 No assertion in that file changes.
 
+`packages/ai-powerups/__tests__/features/upgradeFromLegacyProviders.test.ts` registers `ResolveAiCapabilityUseCaseImplementation` in its own `resolver(...)` helper too, so it gets the same change: the same `ConfiguredAiModelsService` import, the same `StubConfiguredAiModels` class (it needs `Result`, which that file already imports from `@webiny/feature/api`) next to its `StubEncryption`, and the same registration right before `container.register(ResolveAiCapabilityUseCaseImplementation);` in `resolver(...)`. No assertion there changes either.
+
 - [ ] **Step 4: Run the tests to verify they pass**
 
 Run: `yarn test packages/ai-powerups/__tests__/features/ConfiguredAiModels/ConfiguredAiModelsService.test.ts packages/ai-powerups/__tests__/features/ConfiguredAiModels/ConfiguredAiModelsRegistration.test.ts packages/ai-powerups/__tests__/features/Capabilities/ResolveAiCapabilityModel.test.ts 2>&1 | tail -50`
-Expected: PASS. If `ConfiguredAiModelsRegistration.test.ts` fails because `Extension.register` needs a registration the bare container lacks (it only resolves `FeatureFlags`, which the test provides), register that abstraction in `createContainer`; the three assertions stay.
+Expected: PASS.
 
 - [ ] **Step 5: Run the existing tests covering the changed code**
 
 The resolver, the barrel and `Extension.ts` changed (additively); the other tests resolve the resolver or register the extension:
 
 Run: `yarn test packages/ai-powerups/__tests__/features/Capabilities/ResolveAiCapabilityUseCase.test.ts packages/ai-powerups/__tests__/features/Capabilities/ListAiCapabilitiesUseCase.test.ts packages/ai-powerups/__tests__/features/Capabilities/CapabilitiesHandler.test.ts packages/ai-powerups/__tests__/features/Connections/ConnectionsHandler.test.ts packages/ai-powerups/__tests__/features/upgradeFromLegacyProviders.test.ts packages/ai-powerups/__tests__/features/AdminAssistant/AdminAssistantUseCase.test.ts packages/ai-powerups/__tests__/features/AiImageEnrichment/PrepareImageEnrichmentUseCase.test.ts packages/ai-powerups/__tests__/features/WbTranslatePage/WbTranslatePageDecorator.test.ts 2>&1 | tail -50`
-Expected: PASS. `ResolveAiCapabilityUseCase.test.ts` passes with only the one registration added; if another test builds its own container with `ResolveAiCapabilityUseCaseImplementation` and fails to resolve it, add the same `StubConfiguredAiModels` registration there and say so in the commit body.
+Expected: PASS. `ResolveAiCapabilityUseCase.test.ts` and `upgradeFromLegacyProviders.test.ts` pass with only the stub (import, class, registration) added to each (they are the only tests that register `ResolveAiCapabilityUseCaseImplementation`).
 
 Run: `yarn check:test:types -p ai-powerups --report cli 2>&1 | tail -40`
 Expected: no errors. (If `Promise<never>` on the fake `generateText` or `streamText` is not accepted, return the rejected promise through a cast `as unknown as ReturnType<typeof generateText>`.)

@@ -3,19 +3,19 @@
 Spec 9.3; D36, D55, D62; R87, R150, R172, R173; SEC-66; Review Focus 3. The `wb.page` adapter of the `ReviewTargetEditor` port (Task 9) in `packages/api-website-builder-workflows`. Mirrors Tasks 11 and 12 (same port, same failure handling), adapted to pages. Behaviour:
 
 - `features/target/WbPageReviewTargetEditor.ts` (flat file in `features/target/`, like `WbPageReviewTargetLoader.ts`; no barrel). `canEdit(model)` is `model === WB_PAGE_NAMESPACE`. Registered in `target/feature.ts` next to the other page ports, so it sits under the same licence gate (`WbTargetFeature`; the editor adds no flag of its own, the AI step type is what is gated, R177).
-- **Reading (whole page).** `read({ model, targetId, targetRevisionId })` loads the page through `WbPageTargetReader` (the page model is private and read as the current identity, the revision without entry checks) and then asks `WbPageAccess.canRead(target)` as the request identity (SEC-66; in production the AI run is attributed to the requester with authorization off, R161, so the check passes there, and the target id comes from the stored review snapshot, never from the model). It returns `Result.ok({ title, fields })`. `title` is `page.properties.title`. `fields` is `toWbPageEditorFields(page)` (pure), in this order:
+- **Reading (the whole page except the element tree, summarized).** `read({ model, targetId, targetRevisionId })` loads the page through `WbPageTargetReader` (the page model is private and read as the current identity, the revision without entry checks) and then asks `WbPageAccess.canRead(target)` as the request identity (SEC-66; in production the AI run is attributed to the requester with authorization off, R161, so the check passes there, and the target id comes from the stored review snapshot, never from the model). It returns `Result.ok({ title, fields })`. `title` is `page.properties.title`. `fields` is `toWbPageEditorFields(page)` (pure), in this order:
   - `properties.title` (`text`, writable).
   - Every other key of `properties` except `seo` as one read-only row `properties.<key>` with the whole value (`path`, `language`, `snippet`, `tags`, `image`, `social`, `sourcePage` and anything custom). `properties.path` and `properties.language` are always read-only. A key that contains a dot is skipped (it could shadow an allowlisted path).
   - The five SEO scalars, writable, in this order: `properties.seo.title` (`text`), `properties.seo.description` (`long-text`), `properties.seo.canonicalUrl` (`text`), `properties.seo.noIndex` (`boolean`), `properties.seo.noFollow` (`boolean`); a missing value reads as `null`.
   - Every other key of `properties.seo` (`metaTags`, `structuredSchema`) as a read-only row `properties.seo.<key>`.
-  - Read-only rows `location`, `status`, `metadata`, `bindings`, `extensions` (whole value, `null` when missing) and `elements`, whose value is a summary `{ count, components }` (`components` maps a component name to how many elements use it), not the element tree (R172, so a large page does not hit the input cap just because of its tree).
+  - Read-only rows `location`, `status`, `metadata`, `bindings`, `extensions` (whole value, `null` when missing) and `elements`, whose value is a summary `{ count, components }` (`components` maps a component name to how many elements use it), not the element tree (R172, so a large page does not hit the input cap just because of its tree). In short: the whole page except the element tree (summary). Everything else stays in full, `bindings` included: an oversized page fails through Task 10's fixed over-cap path (`AI_STEP_CONTENT_TOO_LARGE_MESSAGE`), with no truncation.
   - Every row carries `path`, `label`, `type` (the SEO and title rows use the field type above; a read-only row uses `text`, `number`, `boolean`, `list`, `object` or `null` from the JavaScript value), `value` (`null` when missing) and `writable`.
 - **Writing (explicit allowlist, R172).** Only `properties.title` and `properties.seo.{title,description,canonicalUrl,noIndex,noFollow}` are writable (the General and SEO groups of the page editor; `properties.seo.metaTags`, `properties.social`, `properties.image`, `properties.tags`, `properties.path`, `properties.language` and everything else are read-only). `update({ model, targetId, targetRevisionId, values })`, in this order:
   1. **Input.** No keys: `ReviewTargetEditorError("No fields were given.")`, nothing read or written. The applied list is `Object.keys(values)` in input order.
   2. **Target.** The page is read again (reader plus `canRead`, as the request identity): a missing revision, one of another page, or one the identity cannot read fails with `The target was not found.`; a throwing reader or access check, or a malformed page (`toWbPageEditorFields` or the title read throwing), is logged (`Could not read the target for the AI editor.`) and fails with `The target could not be read.` (R87).
-  3. **Path rules.** Every key is looked up in a `Map` built from `toWbPageEditorFields(page)` (never by indexing `values`, so `__proto__` is a plain unknown key). Not a row: `Unknown field "<path>". Use the paths returned by readTarget.` (this includes `properties.seo`, `properties.social.title` and `properties.nope`); a read-only row: `The field "<path>" is read-only.`; a value of the wrong type: `The field "<path>" expects <description>.` (`isWbPageEditorValue`: `properties.title` a non-empty string, `null` not accepted; `properties.seo.title`, `.description` and `.canonicalUrl` a string or `null`, and `null` removes the key; `noIndex` and `noFollow` a boolean). All problems are collected and returned in one error (joined with a space). Nothing is written when there is any problem (atomic).
+  3. **Path rules.** Every key is looked up in a `Map` built from `toWbPageEditorFields(page)` (never by indexing `values`, so `__proto__` is a plain unknown key). Not a row: `Unknown field "<path>". Use the paths returned by readTarget.` (this includes `properties.seo`, `properties.social.title` and `properties.nope`); a read-only row: `The field "<path>" is read-only.`; a value of the wrong type: `The field "<path>" expects <description>.` (`isWbPageEditorValue`: `properties.title` a non-empty string, `null` not accepted; `properties.seo.title` and `.description` a string or `null`; `properties.seo.canonicalUrl` a pathname such as `/path` (the admin SEO group's rule, plus `//host` rejected on top; an external URL and `javascript:` fail the leading `/`) or `null`; `null` removes the key; `noIndex` and `noFollow` a boolean). All problems are collected and returned in one error (joined with a space). Nothing is written when there is any problem (atomic).
   4. **Merge.** `toWbPageProperties(page.properties, values)` returns the FULL merged `properties` object: a copy of the current `properties` with the written keys set, and a copy of `seo` (a missing or non-object `seo` is created) when any SEO key is written. The page update replaces `properties` as a whole (the CMS update merges top-level keys only), so a partial blob would wipe `path`, `language`, `social`, `seo.metaTags` and every other key. The current values are never mutated.
-  5. **Write.** One `UpdatePageUseCase.execute(targetRevisionId, { properties: merged })` call: `properties` only, so `elements`, `bindings`, `metadata`, `extensions` and `location` are not in the update. The bypass is already active around this call (R173, `updateTargetFields` wraps `update` in `WorkflowBypassService.run`); this class neither reads nor sets it and adds no authorization switch: the write runs with the identity and authorization state of the task (requester, authorization off, R161). Success returns `{ applied }`. The page is read and written in two calls (a read-modify-write window like the tool re-guard, A59); a user edit in that window is lost only for `properties`, and a revision under review is save-blocked for users anyway.
+  5. **Write.** One `UpdatePageUseCase.execute(targetRevisionId, { properties: merged })` call: `properties` only, so `elements`, `bindings`, `metadata`, `extensions` and `location` are not in the update. The bypass is already active around this call (R173, `updateTargetFields` wraps `update` in `WorkflowBypassService.run`); this class neither reads nor sets it and adds no authorization switch: the write runs with the identity and authorization state of the task (requester, authorization off, R161). Success returns `{ applied }`. The page is read and written in two calls (a read-modify-write window like the tool re-guard, A59); a concurrent edit to ANY `properties` key in that window (`path`, `social`, and so on, not only the written keys) is lost, because the whole merged `properties` is written back; this is acceptable under the save block (A59), since a revision under review is save-blocked for users anyway.
   6. **Failures (R87).** The page model has no validators on `properties` (a JSON field), and the page use case wraps CMS messages (`PageValidationError`, `PagePersistenceError` keep the raw text), so no use case message is ever forwarded to the model: every failed Result (not authorized, not found, locked or blocked revision, validation, persistence, `TargetLocked` from the save block outside the bypass) is logged with `Logger.error({ error, model, targetId }, "Could not update the target from the AI editor.")` and returns `ReviewTargetEditorError("The target could not be updated.")`. A throwing use case is handled the same way. The method never rejects (the reads, the patch building and the write each run inside a `try`).
 
 **Files:**
@@ -37,9 +37,9 @@ Spec 9.3; D36, D55, D62; R87, R150, R172, R173; SEC-66; Review Focus 3. The `wb.
 **Interfaces:**
 - Consumes:
   - Task 9 (`@webiny/api-workflows`): `ReviewTargetEditor` (`features/review/ReviewTargetEditor/index.js`; `createImplementation`, `Interface`), the interfaces `ReviewTargetEditorField`, `ReviewTargetContent`, `ReviewTargetEditorReadParams`, `ReviewTargetEditorUpdateParams`, `ReviewTargetEditorUpdateResult` (`features/review/ReviewTargetEditor/abstractions.js`, named exactly as in the contract) and `ReviewTargetEditorError` (`domain/review/errors.js`, `new ReviewTargetEditorError(message: string)`, code `Workflows/ReviewTarget/EditorError`).
-  - Task 11 (`@webiny/api-headless-cms-workflows`): `CmsEntryReviewTargetEditor`, registered by `CmsTargetFeature`; the test handler registers both packages, so `resolveAll(ReviewTargetEditor)` has two entries (`cms.*`, `wb.page`) and the licence-off one has none.
+  - Task 11 (`@webiny/api-headless-cms-workflows`): `CmsEntryReviewTargetEditor`, registered by `CmsTargetFeature`; the test handler may register both packages, but this task's tests assert only the WB editor (6.7 stays independent of 6.6): they filter `resolveAll(ReviewTargetEditor)` by `canEdit("wb.page")` and expect one, and the licence-off container has none.
   - Existing: `WbPageTargetReader` (`~/features/target/WbPageTargetReader/index.js`; `read({ model, targetRevisionId }): Promise<{ model, page } | null>`, returns `null` for another namespace or a missing revision, throws on unexpected failures), `WbPageAccess` (`~/features/target/WbPageAccess/index.js`; `canRead(target): Promise<boolean>`), `WB_PAGE_NAMESPACE` (`~/constants.js`), `UpdatePageUseCase` (`@webiny/api-website-builder/features/pages/UpdatePage/index.js`; `execute(id, { properties?, ... }): Promise<Result<WbPage, PageNotAuthorizedError | PageValidationError | PageNotFoundError | PagePersistenceError>>`; checks `WbPermissions.canEdit("page")`, and the repository writes `values: data`, so the CMS update replaces `properties` as a whole), `WbPage` (`@webiny/api-website-builder/domain/page/abstractions.js`), `WorkflowBypassService` (`@webiny/api-workflows/features/bypass/WorkflowBypassService/index.js`; `run<T>(callback)`, `isActive()`), `Logger` (`@webiny/api-core/features/logger/index.js`), `Result` (`@webiny/feature/api`), `ReviewTargetLockedError` (`@webiny/api-workflows/domain/review/errors.js`).
-  - Test helpers: `createUserContext` (`~tests/__helpers/userContext.js`), `captureLoggedErrors`, `loggedErrors` (`~tests/__helpers/CapturingLogger.js`), `scriptTargetReads`, `throwingTargetRevisions`, `nullTargetRevisions`, `mismatchedTargetRevisions` (`~tests/__helpers/ScriptedWbPageTargetReads.js`), `createPage`, `expectOk` (`~tests/__helpers/pages.js`), `storeWbWorkflow`, `requestPageReview`, `readPage` (`~tests/__helpers/engine.js`), `NOBODY`, `READER`, `WB_READER`, `WB_WRITER` (`~tests/__helpers/identities.js`).
+  - Test helpers: `createUserContext` (`~tests/__helpers/userContext.js`), `captureLoggedErrors`, `loggedErrors` (`~tests/__helpers/CapturingLogger.js`), `scriptTargetReads`, `throwingTargetRevisions`, `nullTargetRevisions`, `mismatchedTargetRevisions`, `targetReads` (`~tests/__helpers/ScriptedWbPageTargetReads.js`), `throwingAccessChecks`, `throwOnAccessChecks` (`~tests/__helpers/ThrowingWbPageAccess.js`), `createPage`, `expectOk` (`~tests/__helpers/pages.js`), `storeWbWorkflow`, `requestPageReview`, `readPage` (`~tests/__helpers/engine.js`), `NOBODY`, `READER`, `WB_READER`, `WB_WRITER` (`~tests/__helpers/identities.js`).
 - Produces (matches the contract):
   - `WbPageReviewTargetEditor` (`~/features/target/WbPageReviewTargetEditor.js`): `ReviewTargetEditor` implementation, `canEdit(model)`, `read(params)`, `update(params)`, bounded and atomic as above. Consumed by Task 19 (indirectly, through the tools).
   - `toWbPageEditorFields(page: WbPageEditorSource): ReviewTargetEditorField[]`, `WB_PAGE_TITLE_FIELD`, `WB_PAGE_SEO_FIELDS`, `WbPageEditorSource`, `WbPageWritableField`, `WbElementsSummary` (`~/features/target/toWbPageEditorFields.js`), pure.
@@ -379,7 +379,7 @@ describe("toWbPageEditorFields", () => {
             path: "elements",
             label: "elements",
             type: "object",
-            value: { count: 4, components: { "Webiny/Box": 1, "Webiny/Text": 2, unknown: 1 } },
+            value: { count: 4, components: { "Webiny/Box": 1, "Webiny/Text": 2, "(none)": 1 } },
             writable: false
         });
     });
@@ -422,6 +422,12 @@ describe("isWbPageEditorValue", () => {
         ["properties.seo.canonicalUrl", "/home", true],
         ["properties.seo.canonicalUrl", null, true],
         ["properties.seo.canonicalUrl", false, false],
+        ["properties.seo.canonicalUrl", "/ok", true],
+        ["properties.seo.canonicalUrl", "https://example.com/home", false],
+        ["properties.seo.canonicalUrl", "javascript:alert(1)", false],
+        ["properties.seo.canonicalUrl", "//evil.example.com", false],
+        ["properties.seo.canonicalUrl", "home", false],
+        ["properties.seo.canonicalUrl", "", false],
         ["properties.seo.noIndex", true, true],
         ["properties.seo.noIndex", false, true],
         ["properties.seo.noIndex", null, false],
@@ -444,7 +450,9 @@ describe("isWbPageEditorValue", () => {
         expect(describeWbPageEditorValue("properties.title")).toBe("a non-empty string");
         expect(describeWbPageEditorValue("properties.seo.title")).toBe("a string or null");
         expect(describeWbPageEditorValue("properties.seo.description")).toBe("a string or null");
-        expect(describeWbPageEditorValue("properties.seo.canonicalUrl")).toBe("a string or null");
+        expect(describeWbPageEditorValue("properties.seo.canonicalUrl")).toBe(
+            "a pathname such as /path, or null"
+        );
         expect(describeWbPageEditorValue("properties.seo.noIndex")).toBe("true or false");
         expect(describeWbPageEditorValue("properties.seo.noFollow")).toBe("true or false");
     });
@@ -571,6 +579,10 @@ import {
     scriptTargetReads,
     throwingTargetRevisions
 } from "~tests/__helpers/ScriptedWbPageTargetReads.js";
+import {
+    throwingAccessChecks,
+    throwOnAccessChecks
+} from "~tests/__helpers/ThrowingWbPageAccess.js";
 import { malformedWbPageTargetReader } from "~tests/__helpers/MalformedWbPageTargetReader.js";
 import { createRichPage, RICH_PROPERTIES } from "~tests/__helpers/richPages.js";
 import { createPage } from "~tests/__helpers/pages.js";
@@ -591,24 +603,23 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+    throwingAccessChecks.clear();
     throwingTargetRevisions.clear();
     nullTargetRevisions.clear();
     mismatchedTargetRevisions.clear();
 });
 
 describe("WbPageReviewTargetEditor.read", () => {
-    it("claims the wb.page namespace only, next to the CMS editor", async () => {
+    it("claims the wb.page namespace only", async () => {
         const context = await createEditorContext();
         const editors = context.container.resolveAll(ReviewTargetEditor);
 
-        expect(editors).toHaveLength(2);
         expect(editors.filter(item => item.canEdit("wb.page"))).toHaveLength(1);
-        expect(editors.filter(item => item.canEdit("cms.article"))).toHaveLength(1);
         expect(editors.some(item => item.canEdit("wb.pages"))).toBe(false);
         expect(editors.some(item => item.canEdit("page"))).toBe(false);
     });
 
-    it("reads the title and the whole page, with writability (R172)", async () => {
+    it("reads the title and the page except the element tree, with writability (R172)", async () => {
         const context = await createEditorContext();
         const page = await createRichPage(context);
 
@@ -772,6 +783,25 @@ describe("WbPageReviewTargetEditor.read", () => {
         expect(loggedErrors[0].fields).toMatchObject({ model: "wb.page", targetId: page.entryId });
     });
 
+    it("logs a throwing read access check and fails with a generic text instead of rejecting (R87)", async () => {
+        const context = await createEditorContext([throwOnAccessChecks]);
+        const page = await createRichPage(context);
+        throwingAccessChecks.add("canRead");
+
+        const result = await getEditor(context).read({
+            model: "wb.page",
+            targetId: page.entryId,
+            targetRevisionId: page.id
+        });
+        throwingAccessChecks.clear();
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.message).toBe("The target could not be read.");
+        expect(loggedErrors).toHaveLength(1);
+        expect(loggedErrors[0].message).toBe("Could not read the target for the AI editor.");
+        expect(loggedErrors[0].fields).toMatchObject({ model: "wb.page", targetId: page.entryId });
+    });
+
     it("fails with a generic text and one log for a malformed page instead of rejecting (R87)", async () => {
         const context = await createEditorContext([malformedWbPageTargetReader]);
         const page = await createRichPage(context);
@@ -805,8 +835,13 @@ import {
     mismatchedTargetRevisions,
     nullTargetRevisions,
     scriptTargetReads,
+    targetReads,
     throwingTargetRevisions
 } from "~tests/__helpers/ScriptedWbPageTargetReads.js";
+import {
+    throwingAccessChecks,
+    throwOnAccessChecks
+} from "~tests/__helpers/ThrowingWbPageAccess.js";
 import { malformedWbPageTargetReader } from "~tests/__helpers/MalformedWbPageTargetReader.js";
 import { failUpdatePage, updatePageFaults } from "~tests/__helpers/FailingUpdatePage.js";
 import { createRichPage, RICH_PROPERTIES } from "~tests/__helpers/richPages.js";
@@ -850,6 +885,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+    throwingAccessChecks.clear();
     throwingTargetRevisions.clear();
     nullTargetRevisions.clear();
     mismatchedTargetRevisions.clear();
@@ -1084,6 +1120,7 @@ describe("WbPageReviewTargetEditor.update", () => {
             update(context, page, { "properties.seo.title": 5 }),
             update(context, page, { "properties.seo.description": ["x"] }),
             update(context, page, { "properties.seo.canonicalUrl": false }),
+            update(context, page, { "properties.seo.canonicalUrl": "https://example.com/x" }),
             update(context, page, { "properties.seo.noIndex": "true" }),
             update(context, page, { "properties.seo.noFollow": null })
         ]);
@@ -1094,23 +1131,24 @@ describe("WbPageReviewTargetEditor.update", () => {
             'The field "properties.title" expects a non-empty string.',
             'The field "properties.seo.title" expects a string or null.',
             'The field "properties.seo.description" expects a string or null.',
-            'The field "properties.seo.canonicalUrl" expects a string or null.',
+            'The field "properties.seo.canonicalUrl" expects a pathname such as /path, or null.',
+            'The field "properties.seo.canonicalUrl" expects a pathname such as /path, or null.',
             'The field "properties.seo.noIndex" expects true or false.',
             'The field "properties.seo.noFollow" expects true or false.'
         ]);
         expect(await readProperties(context, page)).toEqual(before);
     });
 
-    it("fails for no fields without touching the target", async () => {
+    it("fails for no fields without reading or writing the target", async () => {
         const context = await createEditorContext([scriptTargetReads]);
         const page = await createRichPage(context);
-        const before = await readProperties(context, page);
+        targetReads.length = 0;
 
         const result = await update(context, page, {});
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toBe("No fields were given.");
-        expect(await readProperties(context, page)).toEqual(before);
+        expect(targetReads).toEqual([]);
     });
 
     it("fails for a missing revision and for a revision of another page", async () => {
@@ -1142,6 +1180,22 @@ describe("WbPageReviewTargetEditor.update", () => {
         expect(loggedErrors).toHaveLength(1);
         expect(loggedErrors[0].message).toBe("Could not read the target for the AI editor.");
         expect((await readProperties(context, page)).title).toBe("Home");
+    });
+
+    it("logs a throwing read access check and fails with a generic text, writing nothing (R87)", async () => {
+        const context = await createEditorContext([throwOnAccessChecks]);
+        const page = await createRichPage(context);
+        const before = await readProperties(context, page);
+        throwingAccessChecks.add("canRead");
+
+        const result = await update(context, page, { "properties.title": "Changed" });
+        throwingAccessChecks.clear();
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.message).toBe("The target could not be read.");
+        expect(loggedErrors).toHaveLength(1);
+        expect(loggedErrors[0].message).toBe("Could not read the target for the AI editor.");
+        expect(await readProperties(context, page)).toEqual(before);
     });
 
     it("fails with a generic text and one log for a malformed page instead of rejecting (R87)", async () => {
@@ -1280,8 +1334,7 @@ describe("WbPageReviewTargetEditor.update", () => {
 Modify `packages/api-website-builder-workflows/__tests__/registration.test.ts`: import `ReviewTargetEditor` (`@webiny/api-workflows/features/review/ReviewTargetEditor/index.js`) after the `ReviewTargetFolderChain` import and, in the first test, after the `ReviewTargetFolderChain` per-namespace `expect(...).toHaveLength(1);` block (the one ending `.filter(... item.canHandle("wb.page"))).toHaveLength(1);`) add:
 
 ```ts
-        // `cms.*` from the CMS package, `wb.page` from this one (R172).
-        expect(container.resolveAll(ReviewTargetEditor)).toHaveLength(2);
+        // Only the WB editor is asserted here (R172); this sub-phase does not depend on 6.6.
         expect(
             container
                 .resolveAll(ReviewTargetEditor)
@@ -1298,7 +1351,7 @@ and in the licence-off test add one line after `expect(container.resolveAll(Revi
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `yarn test packages/api-website-builder-workflows/__tests__/target/toWbPageEditorFields.test.ts packages/api-website-builder-workflows/__tests__/target/isWbPageEditorValue.test.ts packages/api-website-builder-workflows/__tests__/target/toWbPageProperties.test.ts packages/api-website-builder-workflows/__tests__/target/WbPageReviewTargetEditorRead.test.ts packages/api-website-builder-workflows/__tests__/target/WbPageReviewTargetEditorUpdate.test.ts packages/api-website-builder-workflows/__tests__/registration.test.ts 2>&1 | tail -50`
-Expected: FAIL. The three helper modules do not exist (import errors); the read and update tests find no `wb.page` editor (`getEditor` returns `undefined`, and `resolveAll(ReviewTargetEditor)` has one entry, the CMS one); the registration test sees one `ReviewTargetEditor` where it expects two.
+Expected: FAIL. The three helper modules do not exist (import errors); the read and update tests find no `wb.page` editor (`getEditor` returns `undefined`, and `resolveAll(ReviewTargetEditor)` has no `wb.page` entry); the registration test finds no `wb.page` `ReviewTargetEditor` where it expects one.
 
 Run the same with `yarn test:os` (one run at a time):
 `yarn test:os packages/api-website-builder-workflows/__tests__/target/toWbPageEditorFields.test.ts packages/api-website-builder-workflows/__tests__/target/isWbPageEditorValue.test.ts packages/api-website-builder-workflows/__tests__/target/toWbPageProperties.test.ts packages/api-website-builder-workflows/__tests__/target/WbPageReviewTargetEditorRead.test.ts packages/api-website-builder-workflows/__tests__/target/WbPageReviewTargetEditorUpdate.test.ts packages/api-website-builder-workflows/__tests__/registration.test.ts 2>&1 | tail -50`
@@ -1414,7 +1467,7 @@ const summarizeElements = (elements: unknown): WbElementsSummary => {
             const name =
                 isRecord(component) && typeof component.name === "string"
                     ? component.name
-                    : "unknown";
+                    : "(none)";
             components.set(name, (components.get(name) ?? 0) + 1);
         }
     }
@@ -1473,10 +1526,28 @@ Create `packages/api-website-builder-workflows/src/features/target/isWbPageEdito
 
 ```ts
 /**
+ * The pathname rule of the admin SEO group (`PATHNAME_REGEX` in
+ * `packages/app-website-builder/src/presentation/pages/PageEditor/PageSettings/groups/SeoSettingsGroup.ts`),
+ * copied here, not imported (the API must not depend on admin code). An empty string passes the
+ * admin form (it is optional) but is rejected here: the model must send `null` to clear the key.
+ */
+const PATHNAME_REGEX = new RegExp(
+    `^\\/(?:[a-zA-Z0-9._~:@!$&'()*+,;=%/-])*(?:\\?[a-zA-Z0-9._~:@!$&'()*+,;=?/%#[\\]-]*)?(?:#[a-zA-Z0-9._~:@!$&'()*+,;=?/%#[\\]-]*)?$`
+);
+
+/**
+ * The admin rule lets `//host` through (its path class includes `/`), and a protocol-relative URL
+ * is an external URL, so it is rejected on top of the copied rule.
+ */
+const isPathname = (value: unknown): boolean => {
+    return typeof value === "string" && !value.startsWith("//") && PATHNAME_REGEX.test(value);
+};
+
+/**
  * Whether `value` is acceptable for the writable page path (R172). The page model stores
  * `properties` as JSON and nothing type-checks it, so the editor does before writing. The title is
- * required and never cleared; the SEO text fields accept `null` (the key is removed); the SEO
- * flags are booleans. Any other path is not writable. Pure.
+ * required and never cleared; the SEO text fields accept `null` (the key is removed); the canonical
+ * URL must also be a pathname (`/path`, the admin rule); the SEO flags are booleans. Any other path is not writable. Pure.
  */
 export const isWbPageEditorValue = (path: string, value: unknown): boolean => {
     switch (path) {
@@ -1484,8 +1555,9 @@ export const isWbPageEditorValue = (path: string, value: unknown): boolean => {
             return typeof value === "string" && value.trim() !== "";
         case "properties.seo.title":
         case "properties.seo.description":
-        case "properties.seo.canonicalUrl":
             return value === null || typeof value === "string";
+        case "properties.seo.canonicalUrl":
+            return value === null || isPathname(value);
         case "properties.seo.noIndex":
         case "properties.seo.noFollow":
             return typeof value === "boolean";
@@ -1499,6 +1571,8 @@ export const describeWbPageEditorValue = (path: string): string => {
     switch (path) {
         case "properties.title":
             return "a non-empty string";
+        case "properties.seo.canonicalUrl":
+            return "a pathname such as /path, or null";
         case "properties.seo.noIndex":
         case "properties.seo.noFollow":
             return "true or false";

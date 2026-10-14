@@ -3,7 +3,7 @@
 Spec 7.3; D101, D109; R131, R165, R169; Review Focus 6 (the hook Task 17 uses for the model check). `StepType.validate` stays pure and synchronous (R131). The I/O check (a model has a configured connection, R165) is a second, optional, async hook, so a type that needs it does not turn `validate` into I/O:
 
 - `IStepType` gains an optional `checkConfig?(params: StepTypeValidateParams): Promise<Result<void, WorkflowValidationError>>` (type `StepType.CheckConfig`). The `review` and `automation` types do not define it and are untouched.
-- `StoreWorkflowUseCase` runs it **after** the pure `validate` of every step (and the user-target membership check), **after** its `existing` read and **after** the `savedOn` conflict and not-found checks, so a `WorkflowConflictError` or `WorkflowNotFoundError` is returned even when a `checkConfig` would fail, and no I/O check runs for a save that is refused anyway.
+- `StoreWorkflowUseCase` runs it **after** the pure `validate` of every step (and the user-target membership check), **after** its `existing` read and **after** the `savedOn` conflict, not-found and same-model uniqueness checks (the `sameModel` list), so a `WorkflowConflictError`, `WorkflowNotFoundError` or the `The model "<model>" already has a workflow` refusal is returned even when a `checkConfig` would fail, and no I/O check runs for a save that is refused anyway. It runs right before the `Before*` events.
 - It runs only for a step whose type defines `checkConfig` and that is **new or changed** versus the stored workflow: the step is matched by `id` in `existing.steps`; it counts as changed when no stored step has that `id`, when the stored step has another `type`, or when the normalised new `config` (the config `validate` returned, which is what is stored) is not deeply equal to the stored `config` (`isDeepStrictEqual` from `node:util`: key order is irrelevant, array order is not). On create (`existing` is `null`) every step counts as new. A stored workflow whose model or connection was removed later can therefore still be saved (renamed, another step edited) without touching that step; the reach and run keep failing with the model-not-available reason (R169).
 - The first failing `checkConfig` (steps in workflow order) is returned as is (a `WorkflowValidationError`); nothing is stored. A throw is a `WorkflowPersistenceError` carrying the cause (R87), the same wrapping as the user lookup above it.
 - The step and workflow passed are the normalised ones (`values`), the same shapes `validate` receives.
@@ -36,6 +36,7 @@ import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js
 import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { createTestStepType } from "~tests/__helpers/TestStepType.js";
+import type { TestStepTypeOptions } from "~tests/__helpers/TestStepType.js";
 import { FakeListUsers } from "~tests/__helpers/FakeListUsers.js";
 import { createReviewStep, createWorkflowValues, editor } from "~tests/__helpers/fixtures.js";
 
@@ -50,10 +51,18 @@ interface CheckState {
     throws: boolean;
 }
 
-const setup = async () => {
+interface SetupOptions {
+    /** The `validate` of the "custom" type; defaults to accepting the step as it is. */
+    validate?: TestStepTypeOptions["validate"];
+    /** More step types to register next to "custom", e.g. one whose own `validate` fails. */
+    extraTypes?: ReturnType<typeof createTestStepType>[];
+}
+
+const setup = async (options: SetupOptions = {}) => {
     const state: CheckState = { fail: false, throws: false };
     const custom = createTestStepType({
         type: "custom",
+        validate: options.validate,
         checkConfig: async ({ step }) => {
             if (state.throws) {
                 throw new Error("connection lookup exploded");
@@ -68,6 +77,9 @@ const setup = async () => {
         setup: container => {
             container.registerInstance(ListUsersUseCase, new FakeListUsers([]));
             container.register(custom.implementation);
+            for (const extra of options.extraTypes ?? []) {
+                container.register(extra.implementation);
+            }
         }
     });
     return {
@@ -159,6 +171,22 @@ describe("StoreWorkflowUseCase: checkConfig for new or changed steps (R165)", ()
         expect(calls).toHaveLength(0);
     });
 
+    it("treats a config whose array order changed as changed", async () => {
+        const { store, calls } = await setup();
+        const created = await store(
+            createWorkflowValues({ steps: [customStep("one", { tools: ["x", "y"] })] })
+        );
+        calls.length = 0;
+
+        const updated = await store(
+            createWorkflowValues({ steps: [customStep("one", { tools: ["y", "x"] })] }),
+            created.value?.savedOn
+        );
+
+        expect(updated.isOk()).toBe(true);
+        expect(checkedStepIds(calls)).toEqual(["one"]);
+    });
+
     it("refuses a step whose config changed and keeps the stored workflow", async () => {
         const { store, state, getWorkflow } = await setup();
         const created = await store(
@@ -238,18 +266,64 @@ describe("StoreWorkflowUseCase: checkConfig for new or changed steps (R165)", ()
     });
 
     it("runs the pure validation of every step before any check", async () => {
-        const { store, calls } = await setup();
+        const strict = createTestStepType({
+            type: "strict",
+            validate: ({ step }) => {
+                return Result.fail(new WorkflowValidationError(`Step "${step.title}" is invalid.`));
+            }
+        });
+        const { store, calls } = await setup({ extraTypes: [strict] });
 
         const result = await store(
             createWorkflowValues({
                 steps: [
                     customStep("one", { model: "a" }),
-                    { ...customStep("bad", {}), title: "   " }
+                    { ...customStep("two", {}, "Strict"), type: "strict" }
                 ]
             })
         );
 
         expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe('Step "Strict" is invalid.');
+        expect(calls).toHaveLength(0);
+    });
+
+    it("hands the check the step as its own validate normalised it", async () => {
+        const { store, calls } = await setup({
+            validate: ({ step }) => {
+                const config = step.config as { model: string };
+                return Result.ok({ ...step, config: { model: config.model.trim() } });
+            }
+        });
+
+        const created = await store(
+            createWorkflowValues({ steps: [customStep("one", { model: "  a  " })] })
+        );
+
+        expect(created.isOk()).toBe(true);
+        expect(calls).toHaveLength(1);
+        expect(calls[0].step.config).toEqual({ model: "a" });
+    });
+
+    it("counts a re-save of the normalised config as unchanged", async () => {
+        const { store, state, calls } = await setup({
+            validate: ({ step }) => {
+                const config = step.config as { model: string };
+                return Result.ok({ ...step, config: { model: config.model.trim() } });
+            }
+        });
+        const created = await store(
+            createWorkflowValues({ steps: [customStep("one", { model: "  a  " })] })
+        );
+        calls.length = 0;
+        state.fail = true;
+
+        const updated = await store(
+            createWorkflowValues({ steps: [customStep("one", { model: "a " })] }),
+            created.value?.savedOn
+        );
+
+        expect(updated.isOk()).toBe(true);
         expect(calls).toHaveLength(0);
     });
 
@@ -281,6 +355,31 @@ describe("StoreWorkflowUseCase: checkConfig for new or changed steps (R165)", ()
         );
 
         expect(result.error.code).toBe("Workflows/Workflow/NotFound");
+        expect(calls).toHaveLength(0);
+    });
+
+    it("returns the same-model refusal even when the check would fail", async () => {
+        const { store, state, calls } = await setup();
+        const first = await store(
+            createWorkflowValues({
+                id: "workflow-1",
+                name: "First",
+                steps: [customStep("one", { model: "a" })]
+            })
+        );
+        calls.length = 0;
+        state.fail = true;
+
+        const result = await store(
+            createWorkflowValues({
+                id: "workflow-2",
+                name: "Second",
+                steps: [customStep("one", { model: "b" })]
+            })
+        );
+
+        expect(first.isOk()).toBe(true);
+        expect(result.error.message).toBe('The model "cms.article" already has a workflow: "First".');
         expect(calls).toHaveLength(0);
     });
 
@@ -351,8 +450,8 @@ In `packages/api-workflows/src/features/stepTypes/StepType/abstractions.ts`, ext
     validate(params: StepTypeValidateParams): Result<WorkflowStep, WorkflowValidationError>;
     /**
      * Optional save-time check that needs I/O (R165), e.g. "the chosen model has a configured
-     * connection". Runs after `validate` of every step and after the save's conflict and
-     * not-found checks, and only for a step that is new or whose normalised `config` differs from
+     * connection". Runs after `validate` of every step and after the save's conflict,
+     * not-found and same-model checks, and only for a step that is new or whose normalised `config` differs from
      * the stored workflow's, so a workflow whose external resource was removed later can still be
      * saved without touching that step. `params.step` is the step `validate` returned. A throw
      * is a `WorkflowPersistenceError`.
@@ -378,13 +477,13 @@ In `packages/api-workflows/src/features/workflow/StoreWorkflow/StoreWorkflowUseC
 import { isDeepStrictEqual } from "node:util";
 ```
 
-and insert this block right after the `if (!existing && input.savedOn) { ... }` block (the not-found refusal) and before the `// v1: one workflow per model` comment; nothing else in the file changes:
+and insert this block right after the `if (other) { ... }` block (the same-model uniqueness refusal, after the `sameModel` list) and before `const actor = input.actor;` (so before every `Before*` event); nothing else in the file changes:
 
 ```ts
         // R165: the I/O check of a step type runs only for a step that is new or changed versus
         // the stored workflow, so a workflow whose model or connection was removed later can still
-        // be saved without touching that step. It runs after the conflict and not-found checks
-        // above, so those win over a check failure. A stored config that went through storage
+        // be saved without touching that step. It runs after the conflict, not-found and
+        // same-model checks above, so those win over a check failure. A stored config that went through storage
         // with an `undefined` key dropped compares as changed, which only means one more check.
         const storedSteps = new Map((existing?.steps ?? []).map(step => [step.id, step]));
         for (const step of values.steps) {
@@ -427,15 +526,16 @@ In the doc comment add: `checkConfigCalls` records every `checkConfig` call, in 
 
 ```ts
     const checkConfigCalls: StepType.ValidateParams[] = [];
+    const check = options.checkConfig;
 ```
 
 in the class, after `validate`:
 
 ```ts
-        public readonly checkConfig: StepType.CheckConfig | undefined = options.checkConfig
+        public readonly checkConfig: StepType.CheckConfig | undefined = check
             ? async (params: StepType.ValidateParams) => {
                   checkConfigCalls.push(params);
-                  return options.checkConfig!(params);
+                  return check(params);
               }
             : undefined;
 ```
@@ -453,7 +553,7 @@ and return it:
     };
 ```
 
-(The class field initialiser runs when the container builds the implementation, after `options` is in scope; `options.checkConfig!` is safe because the arrow only exists when the option is set.)
+(`check` is captured as a `const` outside the class, so the arrow needs no non-null assertion; the field is `undefined` unless the option is set.)
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
