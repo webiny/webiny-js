@@ -113,7 +113,7 @@ export const AiTurn = ({ turn, latest, busy, onApprove, onReject, onAsk }: AiTur
                 <Text
                     as="div"
                     size="md"
-                    className="max-w-[80%] rounded-xl rounded-br-xs bg-primary-subtle px-sm-extra py-xs-plus font-semibold text-pretty text-neutral-primary"
+                    className="max-w-[80%] rounded-xl bg-primary-subtle px-sm-extra py-xs-plus font-semibold text-pretty text-neutral-primary"
                 >
                     {turn.question}
                 </Text>
