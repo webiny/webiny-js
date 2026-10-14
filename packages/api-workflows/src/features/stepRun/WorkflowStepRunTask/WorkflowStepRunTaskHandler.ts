@@ -165,6 +165,28 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                     throw new StepRunFailure("The automation failed.");
                 }
 
+                // The automation may have run for a while: the review can have been cancelled, or
+                // the step aborted and restarted under another task. A stale task writes nothing.
+                const after = await this.repository.get(reviewId);
+                if (after.isFail()) {
+                    this.logger.error(
+                        { error: after.error, taskId: task.id, reviewId, stepId },
+                        "Could not read the review to apply the automation outcome."
+                    );
+                    return controller.response.error(after.error);
+                }
+                const staleAfter = getStaleStepRunReason(after.value, stepId, {
+                    id: task.id,
+                    createdById: task.createdBy.id
+                });
+                if (staleAfter) {
+                    this.logger.info(
+                        { taskId: task.id, reviewId, stepId, stale: staleAfter },
+                        "Ignored a stale step run outcome."
+                    );
+                    return controller.response.done();
+                }
+
                 // 5. Apply the outcome as the automation actor (R135, R141).
                 switch (outcome.type) {
                     case "approved": {

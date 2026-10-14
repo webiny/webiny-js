@@ -4,7 +4,11 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { resetFakeTasks } from "~tests/__helpers/FakeTaskService.js";
 import { FailingReviewSave, reviewSaveFaults } from "~tests/__helpers/FailingReviewSave.js";
-import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import {
+    captureLoggedErrors,
+    loggedErrors,
+    loggedInfos
+} from "~tests/__helpers/CapturingLogger.js";
 import {
     createFakeTaskController,
     type FakeTaskControllerParams
@@ -221,6 +225,7 @@ describe("workflowsStepRun run handler (R142-R146, R148, R161-R163)", () => {
     beforeEach(() => {
         resetFakeTasks();
         loggedErrors.length = 0;
+        loggedInfos.length = 0;
         recordedEvents.length = 0;
         approveIdentities.length = 0;
         reviewSaveFaults.failNext = false;
@@ -587,6 +592,60 @@ describe("workflowsStepRun run handler (R142-R146, R148, R161-R163)", () => {
             // Only the automation's own error is logged; the discarded failure write is info.
             expect(loggedErrors.map(logged => logged.message)).toEqual(["The automation threw."]);
         });
+    });
+
+    describe("a stale task writes nothing after the automation ran (R144)", () => {
+        const changes = [
+            {
+                name: "the review was cancelled during the run",
+                change: async (ctx: Awaited<ReturnType<typeof setup>>) => ctx.cancel(),
+                state: "cancelled"
+            },
+            {
+                name: "the step was restarted under a new task during the run",
+                change: async (ctx: Awaited<ReturnType<typeof setup>>) => {
+                    const data = toSaveData(Review.fromData(await ctx.read()));
+                    data.steps[0].taskId = "task-new";
+                    await ctx.seedData(data);
+                },
+                state: "inProgress"
+            }
+        ];
+        const outcomes = [
+            { type: "approved", mode: "approve" },
+            { type: "rejected", mode: "reject" },
+            { type: "continue", mode: "wait" }
+        ];
+
+        for (const outcome of outcomes) {
+            for (const { name, change, state } of changes) {
+                it(`ignores a late ${outcome.type} outcome when ${name}`, async () => {
+                    const ctx = await setup();
+                    await ctx.seed(
+                        createReview({ mode: outcome.mode, comment: "Links are fine." })
+                    );
+                    const original = ctx.definition.run.bind(ctx.definition);
+                    ctx.definition.run = async params => {
+                        const result = await original(params);
+                        await change(ctx);
+                        return result;
+                    };
+                    const events = workflowEventTypes().length;
+                    const { result, outputUpdates } = ctx.run();
+                    await expect(result).resolves.toMatchObject({ status: "done" });
+                    const before = await ctx.read();
+                    expect(before.state).toBe(state);
+                    expect(before.steps[0].state).toBe("inReview");
+                    expect(before.steps[0].comment).toBeNull();
+                    expect(outputUpdates).toEqual([]);
+                    expect(workflowEventTypes().length).toBe(
+                        name.startsWith("the review") ? 1 : events
+                    );
+                    expect(loggedInfos).toContain("Ignored a stale step run outcome.");
+                    expect(loggedErrors).toEqual([]);
+                });
+            }
+        }
     });
 
     describe("runs as the requester (R161, D58, D87)", () => {

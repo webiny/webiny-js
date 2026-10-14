@@ -9,6 +9,9 @@ export interface LoggedError {
 /** Errors logged through `Logger` while `captureLoggedErrors` is registered. Clear it per test. */
 export const loggedErrors: LoggedError[] = [];
 
+/** Info messages logged while `captureLoggedErrors` is registered. Clear it per test. */
+export const loggedInfos: string[] = [];
+
 class CapturingLogger implements Logger.Interface {
     public constructor(private decoratee: Logger.Interface) {}
 
@@ -19,6 +22,7 @@ class CapturingLogger implements Logger.Interface {
         this.decoratee.debug(objOrMsg, ...args);
     }
     public info(objOrMsg: object | string, ...args: any[]): void {
+        loggedInfos.push(typeof objOrMsg === "string" ? objOrMsg : String(args[0]));
         this.decoratee.info(objOrMsg, ...args);
     }
     public warn(objOrMsg: object | string, ...args: any[]): void {
