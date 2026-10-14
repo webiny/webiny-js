@@ -45,6 +45,7 @@ import { CurrentUserTeamsFeature } from "~/features/identity/CurrentUserTeams/fe
 import { CurrentReviewViewerFeature } from "~/features/identity/CurrentReviewViewer/feature.js";
 import { CandidateReadAccessFeature } from "~/features/identity/CandidateReadAccess/feature.js";
 import { WorkflowsPermissionsFeature } from "~/features/permissions/WorkflowsPermissions/feature.js";
+import { AutomationDefinitionRegistryFeature } from "~/features/automation/AutomationDefinitionRegistryService/feature.js";
 import { StepTypesFeature } from "~/features/stepTypes/feature.js";
 import { WorkflowsSchemaFactory } from "~/graphql/WorkflowsSchemaFactory.js";
 
@@ -68,8 +69,10 @@ export const WorkflowsFeature = createFeature({
         ListNotificationTypesFeature.register(container);
         NotificationTransportFeature.register(container);
 
-        // Step types (R131): the registry and the built-in review type
+        // Step types (R131): the registry and the built-in review and automation types
         StepTypesFeature.register(container);
+        // Automation definitions written by developers (R133); none ships (R155)
+        AutomationDefinitionRegistryFeature.register(container);
 
         // Workflows
         WorkflowSharedFeature.register(container);

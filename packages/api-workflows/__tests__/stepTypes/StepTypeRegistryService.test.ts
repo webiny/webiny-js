@@ -4,11 +4,11 @@ import { createTestStepType } from "~tests/__helpers/TestStepType.js";
 import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
 
 describe("StepTypeRegistryService (R131)", () => {
-    it("has the review built-in and nothing else registered by the engine yet", async () => {
+    it("has the review and automation built-ins and nothing else registered by the engine yet", async () => {
         const { context } = await createContextHandler();
         const registry = context.container.resolve(StepTypeRegistryService);
 
-        expect(registry.list().map(stepType => stepType.type)).toEqual(["review"]);
+        expect(registry.list().map(stepType => stepType.type)).toEqual(["review", "automation"]);
         expect(registry.get("review")?.title).toBe("Review");
         expect(registry.get("ai")).toBeNull();
         expect(registry.get("unknown")).toBeNull();
@@ -23,7 +23,11 @@ describe("StepTypeRegistryService (R131)", () => {
         });
         const registry = context.container.resolve(StepTypeRegistryService);
 
-        expect(registry.list().map(stepType => stepType.type)).toEqual(["review", "custom"]);
+        expect(registry.list().map(stepType => stepType.type)).toEqual([
+            "review",
+            "automation",
+            "custom"
+        ]);
         expect(registry.get("custom")?.title).toBe("Custom");
     });
 
@@ -39,7 +43,11 @@ describe("StepTypeRegistryService (R131)", () => {
         const registry = context.container.resolve(StepTypeRegistryService);
 
         expect(registry.get("review")?.title).toBe("Custom review");
-        expect(registry.list().map(stepType => stepType.type)).toEqual(["review", "custom"]);
+        expect(registry.list().map(stepType => stepType.type)).toEqual([
+            "review",
+            "automation",
+            "custom"
+        ]);
         expect(registry.list()[0].title).toBe("Custom review");
     });
 });
