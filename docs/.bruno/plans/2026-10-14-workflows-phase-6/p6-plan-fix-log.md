@@ -51,3 +51,14 @@ Files: `00-shared.md` (S), `6.2-step-runner/task-03-*.md`, `task-04-*.md`, `6.2-
 3. Service tests -> `StepRunStaleCheckService.test.ts` (fresh false; cancelled true; restarted under a new task true and false for the new task; foreign creator true; not found true without a log; failed read false plus log; throwing read false plus log; no throttle, no state) with a new `FailingReviewGet` helper (a `ReviewRepository` decorator with `mode` and a read counter, mirror of `FailingReviewSave`). Touched: Task 4.
 4. Task 3 wording -> the accepted Review Focus 5 difference also means one fewer repository read for a short reject comment or unknown outcome (the post-run re-read no longer happens). Touched: Task 3 intro.
 5. Registration -> `registration.test.ts` gains `StepRunnerRegistryService` (and `StepRunner`) assertions in Task 3 and a `StepRunStaleCheckService` assertion in Task 4; both are in the red and green runs. Touched: Tasks 3, 4.
+
+## Chunk 2 task review (Tasks 5-8)
+
+Files: `00-shared.md` (R167 and Interfaces by task), `6.3-issues/task-06-approve-reject-issues.md`, `6.4-tool-registry/task-07-workflow-ai-tool-registry.md`, `task-08-list-ai-tools.md`. Verified against code: `CapturingLogger.ts`, `CountingEngineCalls.ts` (records call names only), CMS and WB `reviewTransitions.test.ts`, and the four CMS/WB approve and reject wrappers.
+
+1. Task 7 registry -> no constructor throw (contradicted R87): dependencies `[[WorkflowAiTool, { multiple: true }], Logger]`; an invalid-named tool is dropped, logged once with `Logger.error({ toolName, reason }, "The AI tool was dropped.")`, the others stay. Tests rewritten with `captureLoggedErrors` (bad tool absent from `list`/`get`, one log, valid tools work; 64 accepted, 65 dropped and logged). "Constructor throw" / "surface on first use" wording removed. Touched: Task 7 text, code, tests, Consumes; `00-shared.md` R167 and Interfaces by task.
+2. Task 8 -> new test: `listAiTools` skips an invalid-named tool without error; text notes the registry already dropped it.
+3. Task 6 wrappers -> corrected the false "wrappers do not expose issues" premise (they call the engine from explicit fields; GraphQL has no `issues` arg). Added a CMS and a WB `reviewTransitions.test.ts` describe with a recording decorator on the engine approve and reject (the `CountingEngineCalls` helper records names only), asserting the forwarded input has no `issues` key even when the caller's input carries one; Files, Step 2 note and Step 5 runs updated.
+4. Task 6 `decision` helper -> inline object type extracted to `DecisionExtra`.
+5. Task 6 weak step-id test -> replaced by one asserting `runner.runCalls[0].step.id` and the stored step id.
+6. Task 7 type-only tests -> noted they run only under `check:test:types`; the schema-strip test is stated to show the test tool only and not pin Review Focus 2 (Task 19 pins the allowlist).
