@@ -9,6 +9,7 @@ export {
     FormModelFactory,
     RuleEvaluator,
     FieldType,
+    FieldValueFormatter,
     FieldBuilderRegistry
 } from "./abstractions.js";
 export type {
@@ -46,6 +47,7 @@ export type {
     ITypedField,
     IFieldConfig,
     IFieldVM,
+    IFieldValueFormatter,
     IFieldValidation,
     IFormVM,
     IFormError,
