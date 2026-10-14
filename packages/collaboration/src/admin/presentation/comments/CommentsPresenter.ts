@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction, toJS } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import { CommentsPresenter as PresenterAbstraction } from "./abstractions.js";
 import type { ICreateThreadParams } from "./abstractions.js";
 import { CollaborationApi } from "~/admin/features/api/abstractions.js";
@@ -134,9 +134,7 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
         if (!this.composerBody.trim() || this.composerSubmitting) {
             return;
         }
-        runInAction(() => {
-            this.composerSubmitting = true;
-        });
+        this.setComposerSubmitting(true);
         try {
             // Empty locator => entry-level (unanchored) comment.
             await this.createThread({
@@ -146,9 +144,7 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
             });
             this.resetComposer();
         } finally {
-            runInAction(() => {
-                this.composerSubmitting = false;
-            });
+            this.setComposerSubmitting(false);
         }
     }
 
@@ -156,10 +152,7 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
         if (this.loadedContentId === contentId) {
             return;
         }
-        runInAction(() => {
-            this.contentId = contentId;
-            this.loadedContentId = contentId;
-        });
+        this.setContentId(contentId);
         void this.loadUsers();
         await this.reload();
     }
@@ -170,9 +163,7 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
         }
         try {
             const users = await this.api.listMentionableUsers();
-            runInAction(() => {
-                this.users = users;
-            });
+            this.setUsers(users);
         } catch {
             // Best-effort — mentions simply won't autocomplete.
         }
@@ -182,25 +173,16 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
         if (!this.contentId) {
             return;
         }
-        runInAction(() => {
-            this.loading = true;
-            this.error = null;
-        });
+        this.startLoading();
         try {
             const result = await this.api.listThreads({
                 contentType: CONTENT_TYPE_CMS_ENTRY,
                 contentId: this.contentId
             });
-            runInAction(() => {
-                this.threads = result.items;
-                this.loading = false;
-            });
+            this.finishLoading(result.items);
         } catch (err) {
             console.error("[collaboration] failed to load comment threads", err);
-            runInAction(() => {
-                this.error = readableError(err);
-                this.loading = false;
-            });
+            this.failLoading(readableError(err));
         }
     }
 
@@ -216,9 +198,7 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
             body: params.body,
             mentions: params.mentions
         });
-        runInAction(() => {
-            this.threads = [thread, ...this.threads];
-        });
+        this.prependThread(thread);
     }
 
     async reply(threadId: string, body: string, mentions?: string[]) {
@@ -249,9 +229,7 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
 
     async remove(threadId: string) {
         await this.api.deleteThread(threadId);
-        runInAction(() => {
-            this.threads = this.threads.filter(thread => thread.id !== threadId);
-        });
+        this.removeThread(threadId);
     }
 
     async editMessage(threadId: string, messageId: string, body: string) {
@@ -275,12 +253,49 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
         await this.reload();
     }
 
+    /*
+     * State changes that happen after an `await` go through these methods. makeAutoObservable makes
+     * each of them an action, so the change runs inside one even though the caller has already
+     * left its own action.
+     */
+    private setComposerSubmitting(submitting: boolean) {
+        this.composerSubmitting = submitting;
+    }
+
+    private setContentId(contentId: string) {
+        this.contentId = contentId;
+        this.loadedContentId = contentId;
+    }
+
+    private setUsers(users: CollabUser[]) {
+        this.users = users;
+    }
+
+    private startLoading() {
+        this.loading = true;
+        this.error = null;
+    }
+
+    private finishLoading(threads: CollabThread[]) {
+        this.threads = threads;
+        this.loading = false;
+    }
+
+    private failLoading(error: string) {
+        this.error = error;
+        this.loading = false;
+    }
+
+    private prependThread(thread: CollabThread) {
+        this.threads = [thread, ...this.threads];
+    }
+
+    private removeThread(threadId: string) {
+        this.threads = this.threads.filter(thread => thread.id !== threadId);
+    }
+
     private replaceThread(updated: CollabThread) {
-        runInAction(() => {
-            this.threads = this.threads.map(thread =>
-                thread.id === updated.id ? updated : thread
-            );
-        });
+        this.threads = this.threads.map(thread => (thread.id === updated.id ? updated : thread));
     }
 }
 
