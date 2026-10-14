@@ -45,12 +45,13 @@ class DdbEsListEntriesImpl implements ListEntriesStorageOperation.Interface {
 
         const limit = createLimit(params.limit, 50);
         const configurations = createConfigurations(this.indexProvider);
-        const { index } = await configurations.es({
+        const { index, shared } = await configurations.es({
             model
         });
 
         const body = this.bodyBuilder.build({
             model,
+            shared,
             params: {
                 ...params,
                 limit,

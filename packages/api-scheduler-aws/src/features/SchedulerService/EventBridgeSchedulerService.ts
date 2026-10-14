@@ -40,32 +40,16 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
             );
         }
 
-        const client = this.getClient();
-
         const exists = await this.exists({
             id,
             tenant,
             namespace
         });
         if (exists) {
-            return this.update(params);
+            return this.sendUpdate(params);
         }
 
-        await client.send(
-            new CreateScheduleCommand({
-                Name: this.createScheduleName(params),
-                ScheduleExpression: this.createScheduleExpression(scheduleFor),
-                FlexibleTimeWindow: {
-                    Mode: "OFF"
-                },
-                Target: {
-                    Arn: this.config.lambdaArn,
-                    RoleArn: this.config.roleArn,
-                    Input: this.createScheduledActionEventInput(params)
-                },
-                ActionAfterCompletion: "DELETE"
-            })
-        );
+        return this.sendCreate(params);
     }
 
     public async update(params: SchedulerService.UpdateParams): Promise<void> {
@@ -82,12 +66,45 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
             );
         }
 
+        /*
+         * The schedule can be gone while the scheduled action still exists, for example after a
+         * failed or manual cleanup. UpdateScheduleCommand would then fail, so create it instead.
+         */
+        const exists = await this.exists(params);
+        if (!exists) {
+            return this.sendCreate(params);
+        }
+
+        return this.sendUpdate(params);
+    }
+
+    private async sendCreate(params: SchedulerService.CreateParams): Promise<void> {
+        const client = this.getClient();
+
+        await client.send(
+            new CreateScheduleCommand({
+                Name: this.createScheduleName(params),
+                ScheduleExpression: this.createScheduleExpression(params.scheduleFor),
+                FlexibleTimeWindow: {
+                    Mode: "OFF"
+                },
+                Target: {
+                    Arn: this.config.lambdaArn,
+                    RoleArn: this.config.roleArn,
+                    Input: this.createScheduledActionEventInput(params)
+                },
+                ActionAfterCompletion: "DELETE"
+            })
+        );
+    }
+
+    private async sendUpdate(params: SchedulerService.UpdateParams): Promise<void> {
         const client = this.getClient();
 
         await client.send(
             new UpdateScheduleCommand({
                 Name: this.createScheduleName(params),
-                ScheduleExpression: this.createScheduleExpression(scheduleFor),
+                ScheduleExpression: this.createScheduleExpression(params.scheduleFor),
                 FlexibleTimeWindow: {
                     Mode: "OFF"
                 },

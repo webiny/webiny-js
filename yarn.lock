@@ -11306,6 +11306,7 @@ __metadata:
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.11"
   languageName: unknown
   linkType: soft
 
