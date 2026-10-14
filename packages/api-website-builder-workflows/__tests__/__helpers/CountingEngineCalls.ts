@@ -17,6 +17,7 @@ import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/Ge
 import { ListReviewsUseCase } from "@webiny/api-workflows/features/review/ListReviews/index.js";
 import { ListReviewAssignmentsUseCase } from "@webiny/api-workflows/features/assignment/ListReviewAssignments/index.js";
 import { ReassignReviewStepUseCase } from "@webiny/api-workflows/features/review/ReassignReviewStep/index.js";
+import { RestartReviewStepUseCase } from "@webiny/api-workflows/features/review/RestartReviewStep/index.js";
 import { ListStepCandidatesUseCase } from "@webiny/api-workflows/features/routing/ListStepCandidates/index.js";
 import { InspectRoutingUseCase } from "@webiny/api-workflows/features/routing/InspectRouting/index.js";
 
@@ -191,6 +192,15 @@ class CountingReassignReviewStep implements ReassignReviewStepUseCase.Interface 
     }
 }
 
+class CountingRestartReviewStep implements RestartReviewStepUseCase.Interface {
+    public constructor(private decoratee: RestartReviewStepUseCase.Interface) {}
+
+    public async execute(input: RestartReviewStepUseCase.Input): RestartReviewStepUseCase.Return {
+        engineCalls.push("RestartReviewStep");
+        return this.decoratee.execute(input);
+    }
+}
+
 class CountingListStepCandidates implements ListStepCandidatesUseCase.Interface {
     public constructor(private decoratee: ListStepCandidatesUseCase.Interface) {}
 
@@ -295,6 +305,12 @@ export const countEngineCalls = (container: Container) => {
     container.registerDecorator(
         ReassignReviewStepUseCase.createDecorator({
             decorator: CountingReassignReviewStep,
+            dependencies: []
+        })
+    );
+    container.registerDecorator(
+        RestartReviewStepUseCase.createDecorator({
+            decorator: CountingRestartReviewStep,
             dependencies: []
         })
     );

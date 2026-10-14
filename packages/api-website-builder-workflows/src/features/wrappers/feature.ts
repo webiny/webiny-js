@@ -15,6 +15,7 @@ import { RejectWebsiteBuilderPageReviewStepFeature } from "./RejectWebsiteBuilde
 import { CancelWebsiteBuilderPageReviewFeature } from "./CancelWebsiteBuilderPageReview/feature.js";
 import { CancelWebsiteBuilderPageReviewsForDeleteFeature } from "./CancelWebsiteBuilderPageReviewsForDelete/feature.js";
 import { ReassignWebsiteBuilderPageReviewStepFeature } from "./ReassignWebsiteBuilderPageReviewStep/feature.js";
+import { RestartWebsiteBuilderPageReviewStepFeature } from "./RestartWebsiteBuilderPageReviewStep/feature.js";
 import { ListWebsiteBuilderPageStepCandidatesFeature } from "./ListWebsiteBuilderPageStepCandidates/feature.js";
 import { ListWebsiteBuilderPageReviewStepCandidatesFeature } from "./ListWebsiteBuilderPageReviewStepCandidates/feature.js";
 import { InspectWebsiteBuilderPageRoutingFeature } from "./InspectWebsiteBuilderPageRouting/feature.js";
@@ -47,6 +48,7 @@ export const WbWrappersFeature = createFeature({
         RejectWebsiteBuilderPageReviewStepFeature.register(container);
         CancelWebsiteBuilderPageReviewFeature.register(container);
         ReassignWebsiteBuilderPageReviewStepFeature.register(container);
+        RestartWebsiteBuilderPageReviewStepFeature.register(container);
 
         // Confirm path for trash and delete with a review in progress (D134)
         CancelWebsiteBuilderPageReviewsForDeleteFeature.register(container);

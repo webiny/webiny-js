@@ -402,3 +402,18 @@ export const REASSIGN_STEP = /* GraphQL */ `
         }
     }
 `;
+
+export const RESTART_STEP = /* GraphQL */ `
+    mutation RestartStep($reviewId: ID!, $stepId: ID!) {
+        websiteBuilder {
+            restartWebsiteBuilderPageReviewStep(reviewId: $reviewId, stepId: $stepId) {
+                data {
+                    id
+                    currentStepState
+                    steps { id state comment taskId runs { taskId outcome reason } }
+                }
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;

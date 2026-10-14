@@ -22,6 +22,7 @@ const MUTATIONS = [
     "startWebsiteBuilderPageReviewStep",
     "takeOverWebsiteBuilderPageReviewStep",
     "reassignWebsiteBuilderPageReviewStep",
+    "restartWebsiteBuilderPageReviewStep",
     "approveWebsiteBuilderPageReviewStep",
     "rejectWebsiteBuilderPageReviewStep",
     "cancelWebsiteBuilderPageReview",

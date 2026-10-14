@@ -23,6 +23,7 @@ import { RejectWebsiteBuilderPageReviewStepUseCase } from "~/features/wrappers/R
 import { CancelWebsiteBuilderPageReviewUseCase } from "~/features/wrappers/CancelWebsiteBuilderPageReview/index.js";
 import { CancelWebsiteBuilderPageReviewsForDeleteUseCase } from "~/features/wrappers/CancelWebsiteBuilderPageReviewsForDelete/index.js";
 import { ReassignWebsiteBuilderPageReviewStepUseCase } from "~/features/wrappers/ReassignWebsiteBuilderPageReviewStep/index.js";
+import { RestartWebsiteBuilderPageReviewStepUseCase } from "~/features/wrappers/RestartWebsiteBuilderPageReviewStep/index.js";
 import { ListWebsiteBuilderPageStepCandidatesUseCase } from "~/features/wrappers/ListWebsiteBuilderPageStepCandidates/index.js";
 import { ListWebsiteBuilderPageReviewStepCandidatesUseCase } from "~/features/wrappers/ListWebsiteBuilderPageReviewStepCandidates/index.js";
 import { InspectWebsiteBuilderPageRoutingUseCase } from "~/features/wrappers/InspectWebsiteBuilderPageRouting/index.js";
@@ -166,6 +167,7 @@ const WB_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
             stepId: ID!
             userId: ID!
         ): WbPageReviewResponse!
+        restartWebsiteBuilderPageReviewStep(reviewId: ID!, stepId: ID!): WbPageReviewResponse!
         approveWebsiteBuilderPageReviewStep(
             reviewId: ID!
             stepId: ID!
@@ -383,6 +385,23 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         reviewId: args.reviewId,
                         stepId: args.stepId,
                         userId: args.userId
+                    });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<RestartWebsiteBuilderPageReviewStepUseCase.Input>({
+            path: "WbMutation.restartWebsiteBuilderPageReviewStep",
+            dependencies: [RestartWebsiteBuilderPageReviewStepUseCase],
+            resolver: (restartStep: RestartWebsiteBuilderPageReviewStepUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await restartStep.execute({
+                        reviewId: args.reviewId,
+                        stepId: args.stepId
                     });
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
