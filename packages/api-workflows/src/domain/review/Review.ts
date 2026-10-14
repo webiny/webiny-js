@@ -101,6 +101,28 @@ export interface ReviewReassignParams extends ReviewStepParams {
     now: string;
 }
 
+export interface ReviewReachRunParams {
+    /** Who caused the step to be reached: the requester or the approver of the previous step. */
+    actor: Actor;
+    /** The automation actor (R141); `getAutomationActor(requester)`. */
+    owner: Actor;
+    /** The background task started for this attempt; `null` when none was started. */
+    taskId: string | null;
+    now: string;
+}
+
+export interface ReviewFailParams extends ReviewStepParams {
+    /** A fixed reason text (R146); stored in the step's `comment` and on its `runs` entry. */
+    reason: string;
+    now: string;
+}
+
+export interface ReviewRestartParams extends ReviewStepParams {
+    /** Who restarts; recorded on the fact (the wrapper checked it, D132). */
+    actor: Actor;
+    now: string;
+}
+
 /** A human-held `inReview` step and its owner, as the take-over guard found them. */
 interface ReviewHeldStep {
     step: ReviewStep;
@@ -133,6 +155,12 @@ export type ReviewReassignError =
     | ReviewStepNotReassignableError;
 
 /** With a chosen user, the reassign check adds the same-owner rule (R126). */
+/** Fail needs the current step; the check for a finished review is `InvalidState` (R140). */
+export type ReviewFailError = ReviewInvalidStateError | ReviewStepNotCurrentError;
+
+/** Restart needs a failed current step (R140, R153). */
+export type ReviewRestartError = ReviewInvalidStateError | ReviewStepNotCurrentError;
+
 export type ReviewReassignCheckError = ReviewReassignError | ReviewAlreadyOwnerError;
 
 /** The transition adds the requester rule to the check (spec 5.1). */
@@ -323,7 +351,42 @@ export class Review {
             owner: step.owner ? { ...step.owner } : null,
             change: { stepId: step.id, fromState: "pending", toState: step.state },
             assignment: structuredClone(resolution.assignment),
+            taskId: null,
             records: structuredClone(resolution.records)
+        });
+        return Result.ok();
+    }
+
+    /**
+     * Reaches the `pending` current step of an automation (spec 5.2, R140): the automation actor
+     * owns it at once, there is no pool and no assignment, and the id of the task started for it
+     * is stored. The caller triggered the task as the requester (R149) before saving.
+     */
+    public reachRun(params: ReviewReachRunParams): Result<void, ReviewInvalidStateError> {
+        const current = this.getCurrentStepIn("reach", "pending");
+        if (current.isFail()) {
+            return Result.fail(current.error);
+        }
+        const step = current.value;
+
+        step.candidateTeamIds = [];
+        step.assignment = null;
+        step.assignmentSource = null;
+        step.owner = { ...params.owner };
+        step.state = "inReview";
+        step.reachedOn = params.now;
+        step.startedOn = params.now;
+        step.taskId = params.taskId;
+
+        this.facts.push({
+            type: "stepReached",
+            occurredOn: params.now,
+            actor: { ...params.actor },
+            owner: { ...params.owner },
+            change: { stepId: step.id, fromState: "pending", toState: "inReview" },
+            assignment: null,
+            taskId: params.taskId,
+            records: []
         });
         return Result.ok();
     }
@@ -572,6 +635,83 @@ export class Review {
      * moves it too: D119 does not list cancel, but a cancelled review leaves every list
      * (`isActive: false`), so this is harmless and keeps the field monotonic.
      */
+    /**
+     * Fails the current step with a reason (spec 5.1, D8, R140): a `pending` or `inReview` step,
+     * the owner kept, `comment` = the reason. The review stays in progress; the step can be
+     * restarted. An already failed step is a no-op without a fact, so a late hook, stuck
+     * detection or a second failure path cannot fail it twice or overwrite its reason.
+     */
+    public fail(params: ReviewFailParams): Result<void, ReviewFailError> {
+        const guard = this.guardFail(params.stepId);
+        if (guard.isFail()) {
+            return Result.fail(guard.error);
+        }
+        const step = guard.value;
+        if (step.state === "failed") {
+            return Result.ok();
+        }
+        const fromState = step.state;
+
+        step.state = "failed";
+        step.comment = params.reason;
+        step.finishedOn = params.now;
+
+        this.facts.push({
+            type: "stepFailed",
+            occurredOn: params.now,
+            actor: { ...(step.owner ?? this.data.createdBy) },
+            change: { stepId: step.id, fromState, toState: "failed" },
+            reason: params.reason
+        });
+        return Result.ok();
+    }
+
+    /**
+     * Restart is possible on a failed current step only (spec 5.1, D8, R153); a rejected step is
+     * final (D10). Who may restart (requester or `reassign`) is checked by the app wrapper with
+     * `canRestartByPermission` (D132, R41).
+     */
+    public checkRestart(params: ReviewStepParams): Result<void, ReviewRestartError> {
+        return Review.toCheck(this.guardRestart(params));
+    }
+
+    /**
+     * Moves the failed attempt into `runs` and makes the step `pending` again (R140, D82). The
+     * owner stays; the times of the attempt are cleared because a `pending` step has none. The
+     * caller re-reaches the step afterwards (`reachRun`).
+     */
+    public restart(params: ReviewRestartParams): Result<void, ReviewRestartError> {
+        const guard = this.guardRestart(params);
+        if (guard.isFail()) {
+            return Result.fail(guard.error);
+        }
+        const step = guard.value;
+        const previousTaskId = step.taskId;
+
+        step.runs.push({
+            taskId: step.taskId,
+            startedOn: step.startedOn ?? step.reachedOn ?? step.finishedOn ?? params.now,
+            finishedOn: step.finishedOn,
+            outcome: "failed",
+            reason: step.comment
+        });
+        step.state = "pending";
+        step.comment = null;
+        step.taskId = null;
+        step.reachedOn = null;
+        step.startedOn = null;
+        step.finishedOn = null;
+
+        this.facts.push({
+            type: "stepRestarted",
+            occurredOn: params.now,
+            actor: { ...params.actor },
+            change: { stepId: step.id, fromState: "failed", toState: "pending" },
+            previousTaskId
+        });
+        return Result.ok();
+    }
+
     public prepareForSave(): void {
         const lastFact = this.facts[this.facts.length - 1];
         if (lastFact && Date.parse(lastFact.occurredOn) > Date.parse(this.data.lastChangedOn)) {
@@ -719,6 +859,39 @@ export class Review {
             );
         }
         return Result.ok(step);
+    }
+
+    /** The current step when it can fail: `pending`, `inReview`, or already `failed` (R140). */
+    private guardFail(stepId: string): Result<ReviewStep, ReviewFailError> {
+        const step = this.findCurrentStep();
+        if (this.data.state === "inProgress" && step && step.id !== stepId) {
+            return Result.fail(
+                new ReviewStepNotCurrentError({
+                    reviewId: this.data.id,
+                    stepId,
+                    currentStepId: step.id
+                })
+            );
+        }
+        const failable =
+            step?.state === "pending" || step?.state === "inReview" || step?.state === "failed";
+        if (this.data.state !== "inProgress" || !step || !failable) {
+            return Result.fail(
+                new ReviewInvalidStateError({
+                    reviewId: this.data.id,
+                    transition: "fail",
+                    reviewState: this.data.state,
+                    stepId: step?.id ?? null,
+                    stepState: step?.state ?? null
+                })
+            );
+        }
+        return Result.ok(step);
+    }
+
+    /** The current step when it is failed (R140): rejected, in review and the rest are refused. */
+    private guardRestart(params: ReviewStepParams): Result<ReviewStep, ReviewRestartError> {
+        return this.getRequestedStepIn("restart", "failed", params.stepId);
     }
 
     /** Turns a guard's result into a check's result: same error, no step. */

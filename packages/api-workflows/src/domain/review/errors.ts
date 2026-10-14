@@ -10,7 +10,9 @@ export type ReviewTransitionName =
     | "approve"
     | "reject"
     | "cancel"
-    | "reassign";
+    | "reassign"
+    | "fail"
+    | "restart";
 
 export interface ReviewNotFoundErrorData {
     id: string;

@@ -41,6 +41,7 @@ describe("toAssignmentRecordValues (R117)", () => {
             owner: reviewer,
             change: { stepId: "editorial", fromState: "pending", toState: "inReview" },
             assignment: { source: "roundRobin" },
+            taskId: null,
             records: [SKIP, OUTCOME]
         };
 
@@ -104,6 +105,20 @@ describe("toAssignmentRecordValues (R117)", () => {
                 comment: null
             },
             {
+                type: "stepFailed",
+                occurredOn: NOW,
+                actor: requester,
+                change: { stepId: "legal", fromState: "inReview", toState: "failed" },
+                reason: "The automation failed: boom."
+            },
+            {
+                type: "stepRestarted",
+                occurredOn: NOW,
+                actor: requester,
+                change: { stepId: "legal", fromState: "failed", toState: "pending" },
+                previousTaskId: "task-1"
+            },
+            {
                 type: "cancelled",
                 occurredOn: NOW,
                 actor: requester,
@@ -115,5 +130,21 @@ describe("toAssignmentRecordValues (R117)", () => {
         ];
 
         expect(facts.flatMap(fact => toAssignmentRecordValues(review, fact))).toEqual([]);
+    });
+
+    it("writes no record for an automation reach: it has no assignment decision", () => {
+        const review = toSaveData(createRequestedReview());
+        const fact: ReviewFact = {
+            type: "stepReached",
+            occurredOn: LATER,
+            actor: requester,
+            owner: { type: "automation", id: requester.id, displayName: requester.displayName },
+            change: { stepId: "legal", fromState: "pending", toState: "inReview" },
+            assignment: null,
+            taskId: "task-1",
+            records: []
+        };
+
+        expect(toAssignmentRecordValues(review, fact)).toEqual([]);
     });
 });

@@ -15,9 +15,11 @@ import {
     type ReviewEvent,
     ReviewRequestedEvent,
     ReviewStepApprovedEvent,
+    ReviewStepFailedEvent,
     ReviewStepReachedEvent,
     ReviewStepReassignedEvent,
     ReviewStepRejectedEvent,
+    ReviewStepRestartedEvent,
     ReviewStepStartedEvent,
     ReviewStepTakenOverEvent
 } from "../events.js";
@@ -119,6 +121,10 @@ class ReviewSaverImpl implements Abstraction.Interface {
                 return new ReviewStepApprovedEvent({ review, fact });
             case "stepRejected":
                 return new ReviewStepRejectedEvent({ review, fact });
+            case "stepFailed":
+                return new ReviewStepFailedEvent({ review, fact });
+            case "stepRestarted":
+                return new ReviewStepRestartedEvent({ review, fact });
             case "cancelled":
                 return new ReviewCancelledEvent({ review, fact });
             case "approved":

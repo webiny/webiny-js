@@ -193,6 +193,7 @@ describe("Review.reach", () => {
                 owner: null,
                 change: { stepId: "legal", fromState: "pending", toState: "awaiting" },
                 assignment: { source: "pool" },
+                taskId: null,
                 records: [poolOutcomeRecord()]
             }
         ]);
@@ -228,6 +229,7 @@ describe("Review.reach", () => {
             owner: reviewer,
             change: { stepId: "legal", fromState: "pending", toState: "inReview" },
             assignment: { source: "picked" },
+            taskId: null,
             records: [EXCLUDED_SKIP, pickedOutcome(reviewer.id)]
         });
     });
@@ -269,6 +271,7 @@ describe("Review.reach", () => {
                 owner: null,
                 change: { stepId: "legal", fromState: "pending", toState: "awaiting" },
                 assignment: expectedAssignment,
+                taskId: null,
                 // The resolver's skips stay; its outcome becomes the pool (R117).
                 records: [
                     EXCLUDED_SKIP,

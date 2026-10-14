@@ -30,6 +30,8 @@ export const toAssignmentRecordValues = (
         case "requested":
         case "stepApproved":
         case "stepRejected":
+        case "stepFailed":
+        case "stepRestarted":
         case "cancelled":
         case "approved":
             return [];

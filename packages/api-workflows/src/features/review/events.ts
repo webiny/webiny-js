@@ -8,9 +8,11 @@ import type {
     ReviewFact,
     ReviewRequestedFact,
     ReviewStepApprovedFact,
+    ReviewStepFailedFact,
     ReviewStepReachedFact,
     ReviewStepReassignedFact,
     ReviewStepRejectedFact,
+    ReviewStepRestartedFact,
     ReviewStepStartedFact,
     ReviewStepTakenOverFact
 } from "~/domain/review/facts.js";
@@ -180,6 +182,50 @@ export namespace ReviewStepRejectedEventHandler {
 }
 
 // ============================================================================
+// StepFailed (the review stays in progress; the step can be restarted, D8)
+// ============================================================================
+
+export class ReviewStepFailedEvent extends DomainEvent<ReviewEventPayload<ReviewStepFailedFact>> {
+    eventType = "Workflows/Review/StepFailed" as const;
+
+    getHandlerAbstraction() {
+        return ReviewStepFailedEventHandler;
+    }
+}
+
+export const ReviewStepFailedEventHandler = createAbstraction<IEventHandler<ReviewStepFailedEvent>>(
+    "ReviewStepFailedEventHandler"
+);
+
+export namespace ReviewStepFailedEventHandler {
+    export type Interface = IEventHandler<ReviewStepFailedEvent>;
+    export type Event = ReviewStepFailedEvent;
+}
+
+// ============================================================================
+// StepRestarted (the failed step is pending again; the caller re-reaches it)
+// ============================================================================
+
+export class ReviewStepRestartedEvent extends DomainEvent<
+    ReviewEventPayload<ReviewStepRestartedFact>
+> {
+    eventType = "Workflows/Review/StepRestarted" as const;
+
+    getHandlerAbstraction() {
+        return ReviewStepRestartedEventHandler;
+    }
+}
+
+export const ReviewStepRestartedEventHandler = createAbstraction<
+    IEventHandler<ReviewStepRestartedEvent>
+>("ReviewStepRestartedEventHandler");
+
+export namespace ReviewStepRestartedEventHandler {
+    export type Interface = IEventHandler<ReviewStepRestartedEvent>;
+    export type Event = ReviewStepRestartedEvent;
+}
+
+// ============================================================================
 // Cancelled
 // ============================================================================
 
@@ -229,5 +275,7 @@ export type ReviewEvent =
     | ReviewStepReassignedEvent
     | ReviewStepApprovedEvent
     | ReviewStepRejectedEvent
+    | ReviewStepFailedEvent
+    | ReviewStepRestartedEvent
     | ReviewCancelledEvent
     | ReviewApprovedEvent;

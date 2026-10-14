@@ -25,7 +25,10 @@ export interface ReviewStepReachedFact {
     /** Who got the step; `null` when it went to the pool. */
     owner: Actor | null;
     change: ReviewStepChange;
-    assignment: ReviewStepAssignment;
+    /** `null` when an automation step was reached: nothing assigns it (R140). */
+    assignment: ReviewStepAssignment | null;
+    /** The background task of an automation step (D57, R140); `null` for a review step. */
+    taskId: string | null;
     /** The resolver's skips and outcome; `ReviewSaver` writes them after the save (R117). */
     records: AssignmentDecision[];
 }
@@ -79,6 +82,26 @@ export interface ReviewStepRejectedFact {
     comment: string | null;
 }
 
+export interface ReviewStepFailedFact {
+    type: "stepFailed";
+    occurredOn: string;
+    /** The step's owner (the automation actor), else the requester (R140). */
+    actor: Actor;
+    change: ReviewStepChange;
+    /** The fixed reason text stored in the step's `comment` (R146). */
+    reason: string;
+}
+
+export interface ReviewStepRestartedFact {
+    type: "stepRestarted";
+    occurredOn: string;
+    /** Who restarted: the requester or a user with `reassign` (the wrapper checked it, D132). */
+    actor: Actor;
+    change: ReviewStepChange;
+    /** The failed attempt's task, now the last entry of `runs`. */
+    previousTaskId: string | null;
+}
+
 export interface ReviewCancelledFact {
     type: "cancelled";
     occurredOn: string;
@@ -104,5 +127,7 @@ export type ReviewFact =
     | ReviewStepReassignedFact
     | ReviewStepApprovedFact
     | ReviewStepRejectedFact
+    | ReviewStepFailedFact
+    | ReviewStepRestartedFact
     | ReviewCancelledFact
     | ReviewApprovedFact;

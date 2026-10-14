@@ -96,6 +96,7 @@ describe("ReviewSaver", () => {
             owner: null,
             change: { stepId: "legal", fromState: "pending", toState: "awaiting" },
             assignment: { source: "pool" },
+            taskId: null,
             records: [poolOutcomeRecord()]
         });
     });
