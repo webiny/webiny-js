@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { DiContainerProvider, useContainer, useFeature, useRoute } from "@webiny/app";
 import { createReactiveComponent, useRouter } from "@webiny/app-admin";
+import { useWebsockets, type IncomingGenericData } from "@webiny/app-websockets";
 import {
     Button,
     Checkbox,
@@ -29,7 +30,13 @@ import { JobAssignmentFeature } from "~/presentation/JobAssignment/feature.js";
 import { jobOwner, ownerOf } from "~/presentation/ExtractionList/jobBoard.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
 import { currentStage, stageEntry } from "~/shared/ledger.js";
-import { STAGES, STAGE_LABELS, type Stage } from "~/constants.js";
+import {
+    STAGES,
+    STAGE_DONE_ACTION,
+    STAGE_FAILED_ACTION,
+    STAGE_LABELS,
+    type Stage
+} from "~/constants.js";
 import {
     Breadcrumb,
     MigrationTrail,
@@ -442,6 +449,34 @@ const JobDetailContent = createReactiveComponent(function JobDetailContent() {
             presenter.init(jobId);
         }
     }, [presenter, jobId]);
+
+    // Keep up with a run in flight: its stages, progress and the next stage it starts on its own.
+    const pollInterval = presenter.pollInterval;
+    useEffect(() => {
+        if (!pollInterval) {
+            return;
+        }
+        const interval = setInterval(() => void presenter.refresh(), pollInterval);
+        return () => clearInterval(interval);
+    }, [presenter, pollInterval]);
+
+    // A stage finishing or failing shows at once rather than at the next poll. The push reaches
+    // whoever started the stage; for everyone else the poll above is the source.
+    const websockets = useWebsockets();
+    useEffect(() => {
+        const onEvent = (event: IncomingGenericData & { data?: { jobId?: string } }) => {
+            if (event.data?.jobId === jobId) {
+                void presenter.refresh();
+            }
+        };
+        const subs = [STAGE_DONE_ACTION, STAGE_FAILED_ACTION].map(action =>
+            websockets.onMessage<IncomingGenericData & { data?: { jobId?: string } }>(
+                action,
+                onEvent
+            )
+        );
+        return () => subs.forEach(sub => sub.off());
+    }, [presenter, jobId, websockets]);
 
     const run = presenter.currentRun;
     const goList = () => goToRoute(Routes.List);

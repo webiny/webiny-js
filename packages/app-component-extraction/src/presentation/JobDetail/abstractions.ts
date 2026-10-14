@@ -27,6 +27,10 @@ export interface IJobDetailPresenter {
     /** The newest run (the "current run"), or null if the job has never run. */
     readonly currentRun: RunDto | null;
     init(jobId: string): Promise<void>;
+    /** Reads the job and its runs again without a loading state; for keeping up with a live run. */
+    refresh(): Promise<void>;
+    /** How often to refresh while the newest run is in flight, in ms; null when it is not. */
+    readonly pollInterval: number | null;
     /** Shows a job the server returned after a change to it, such as an assignment. */
     setJob(job: JobDto): void;
     selectStage(stage: Stage): void;

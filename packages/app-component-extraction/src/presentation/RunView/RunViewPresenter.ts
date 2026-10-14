@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { RunViewPresenter as PresenterAbstraction } from "./abstractions.js";
 import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
 import { themeSnapshot } from "./themeSnapshot.js";
+import { stageToFollow } from "./followStage.js";
 import { stageEntry } from "~/shared/ledger.js";
 import { normalizeUrl } from "~/shared/url.js";
 import { STAGES } from "~/constants.js";
@@ -294,9 +295,18 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
         try {
             const run = await this.gateway.getRun(runId);
+            const before = this.vm.run;
             runInAction(() => {
                 this.vm.run = run;
             });
+            // A run that hands itself on to the next stage takes the view with it, so its progress
+            // shows without a click. Not while the Site view is open: that is somewhere else entirely.
+            const follow = this.vm.showSite
+                ? null
+                : stageToFollow(this.vm.selectedStage, before, run);
+            if (follow) {
+                this.selectStage(follow);
+            }
             // While the job's theme is being extracted, follow it: the card shows its step, and Cluster
             // opens the moment it is pinned.
             const extraction = this.vm.job?.themeExtraction;

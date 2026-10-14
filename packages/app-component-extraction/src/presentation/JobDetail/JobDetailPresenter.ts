@@ -31,6 +31,38 @@ class JobDetailPresenterImpl implements PresenterAbstraction.Interface {
             this.vm.loading = true;
             this.vm.error = null;
         });
+        await this.load(jobId, true);
+    }
+
+    /**
+     * Reads the job and its runs again while a run is in flight, so the page keeps up without a reload.
+     * Quiet: no loading state, and the stage picked in the rail stays picked.
+     */
+    async refresh() {
+        const jobId = this.vm.job?.id;
+        if (!jobId || this.vm.loading) {
+            return;
+        }
+        await this.load(jobId, false);
+    }
+
+    /**
+     * How often to read the run again, or null to stop. Often while a stage runs; slower while the run
+     * is in flight with nothing running, which is both a run paused at a gate and the seconds between
+     * one stage finishing and the next one it started marking itself running.
+     */
+    get pollInterval(): number | null {
+        const run = this.currentRun;
+        if (!run) {
+            return null;
+        }
+        if (run.stages.some(entry => entry.status === "running")) {
+            return 3000;
+        }
+        return run.status === "running" ? 10000 : null;
+    }
+
+    private async load(jobId: string, first: boolean) {
         try {
             const [job, runs, overrides] = await Promise.all([
                 this.gateway.getJob(jobId),
@@ -57,14 +89,21 @@ class JobDetailPresenterImpl implements PresenterAbstraction.Interface {
                 this.vm.runs = runs;
                 this.vm.overrides = overrides;
                 this.vm.promoted = promoted;
-                this.vm.selectedStage = current ? (currentStage(current) ?? STAGES[0]) : STAGES[0];
+                if (first) {
+                    this.vm.selectedStage = current
+                        ? (currentStage(current) ?? STAGES[0])
+                        : STAGES[0];
+                }
                 this.vm.loading = false;
             });
         } catch (error) {
-            runInAction(() => {
-                this.vm.error = (error as Error).message;
-                this.vm.loading = false;
-            });
+            // A refresh that fails leaves the page as it was; the next one tries again.
+            if (first) {
+                runInAction(() => {
+                    this.vm.error = (error as Error).message;
+                    this.vm.loading = false;
+                });
+            }
         }
     }
 
