@@ -3,12 +3,10 @@ import { Icon, Markdown, Text } from "@webiny/admin-ui";
 import { ReactComponent as ErrorIcon } from "@webiny/icons/error.svg";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import type { AiTurnViewModel } from "@webiny/app-admin";
-import { ToolChip } from "./ToolChip.js";
 import { ToolTrace } from "./ToolTrace.js";
 import { FollowUps } from "./FollowUps.js";
 import { AnswerSkeleton } from "./AnswerSkeleton.js";
 import { ApprovalPlan } from "./ApprovalPlan.js";
-import { toolState } from "./toolState.js";
 
 /**
  * Its own block rather than red text, so a failure reads as the outcome of the turn and not as part
@@ -101,11 +99,10 @@ export interface AiTurnProps {
  * sparkle instead of a bubble of its own: it can hold a table or the approval card, and a box around
  * those would be a card inside a card.
  *
- * Tools show in two places, never both. While the turn runs, chips above the answer show the work in
- * progress. Once it settles, they fold into one "Ran" line under it.
+ * The tools it called show as one line under the answer, which stays in place while the turn runs
+ * and after it settles. See `ToolTrace`.
  */
 export const AiTurn = ({ turn, latest, busy, onApprove, onReject, onAsk }: AiTurnProps) => {
-    const showLiveTools = !turn.settled && turn.tools.length > 0;
     const showFollowUps =
         latest && turn.settled && !turn.error && turn.pendingApprovals.length === 0;
 
@@ -130,18 +127,6 @@ export const AiTurn = ({ turn, latest, busy, onApprove, onReject, onAsk }: AiTur
                     className="mt-xs shrink-0"
                 />
                 <div className="min-w-0 flex-1">
-                    {showLiveTools ? (
-                        <div className="mb-sm flex flex-wrap items-center gap-xs">
-                            {turn.tools.map((name, index) => (
-                                <ToolChip
-                                    key={`${name}-${index}`}
-                                    name={name}
-                                    state={toolState(turn, index)}
-                                />
-                            ))}
-                        </div>
-                    ) : null}
-
                     {renderAnswer(turn)}
 
                     {turn.pendingApprovals.length > 0 ? (
@@ -153,7 +138,7 @@ export const AiTurn = ({ turn, latest, busy, onApprove, onReject, onAsk }: AiTur
                         />
                     ) : null}
 
-                    {turn.settled ? <ToolTrace turn={turn} /> : null}
+                    <ToolTrace turn={turn} />
 
                     {showFollowUps ? (
                         <FollowUps questions={turn.followUps} disabled={busy} onAsk={onAsk} />

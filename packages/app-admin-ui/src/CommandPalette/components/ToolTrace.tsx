@@ -1,34 +1,39 @@
 import React from "react";
 import { cn } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
+import { ReactComponent as SpinnerIcon } from "@webiny/icons/autorenew.svg";
 import type { AiTurnViewModel } from "@webiny/app-admin";
 import { toolState } from "./toolState.js";
 
 /**
- * The tools a finished turn ran, as one quiet line under the answer.
+ * The tools a turn used, as one quiet line under the answer, from the first call to the end.
  *
- * While the turn runs, `ToolChip`s above the answer show progress. Once the answer is in, the work
- * matters less than the result, so it shrinks to this. A failed call stays visible here, since it
- * can explain an answer that looks incomplete.
+ * One line in one place, on purpose. Progress used to show as chips above the answer that were
+ * swapped for this line once the turn settled, so the same tools vanished from one spot and came
+ * back in another, in another style. Now the line stays put: it reads "Running" while the turn
+ * works, with a spinner on the call in flight, and "Ran" once it is done.
  *
- * A call that never returned is left out: that is a change proposed for approval, or one the user
- * rejected, and listing it under "Ran" would say it happened.
+ * A failed call stays visible, since it can explain an answer that looks incomplete.
+ *
+ * Once the turn settles, a call that never returned is left out: that is a change proposed for
+ * approval, or one the user rejected, and listing it under "Ran" would say it happened.
  */
 export const ToolTrace = ({ turn }: { turn: AiTurnViewModel }) => {
-    const ran = turn.tools
+    const calls = turn.tools
         .map((name, index) => ({ name, index, state: toolState(turn, index) }))
-        .filter(call => call.state !== "running");
+        .filter(call => !turn.settled || call.state !== "running");
 
-    if (ran.length === 0) {
+    if (calls.length === 0) {
         return null;
     }
 
     return (
         <div className="mt-sm flex flex-wrap items-center gap-xs">
             <Text size="sm" className="text-neutral-muted">
-                Ran
+                {turn.settled ? "Ran" : "Running"}
             </Text>
-            {ran.map(({ name, index, state }) => {
+            {calls.map(({ name, index, state }) => {
                 const failed = state === "failed";
 
                 return (
@@ -36,12 +41,21 @@ export const ToolTrace = ({ turn }: { turn: AiTurnViewModel }) => {
                         key={`${name}-${index}`}
                         size="sm"
                         className={cn(
-                            "rounded-sm border px-xs font-mono",
+                            "inline-flex items-center gap-xxs rounded-sm border px-xs font-mono",
                             failed
                                 ? "border-destructive-subtle text-destructive-primary"
                                 : "border-neutral-dimmed text-neutral-muted"
                         )}
                     >
+                        {state === "running" ? (
+                            <Icon
+                                icon={<SpinnerIcon />}
+                                size="xs"
+                                label=""
+                                color="inherit"
+                                className="animate-spin"
+                            />
+                        ) : null}
                         {name}
                     </Text>
                 );

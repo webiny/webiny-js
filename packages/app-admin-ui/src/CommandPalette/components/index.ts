@@ -10,4 +10,3 @@ export { ApprovalPlan } from "./ApprovalPlan.js";
 export { AnswerSkeleton } from "./AnswerSkeleton.js";
 export { NoResults } from "./NoResults.js";
 export { PaletteFooter, type Hint } from "./PaletteFooter.js";
-export { ToolChip } from "./ToolChip.js";
