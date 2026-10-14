@@ -65,12 +65,20 @@ export class ThemeSdk {
         this.requestInit = config.requestInit;
     }
 
-    /** The route path for an artifact — the stable active-version path, or a specific draft for preview. */
+    /**
+     * The route path for an artifact — the stable active-version path, or a specific draft for preview.
+     *
+     * A configured tenant goes in the stable path's query string as well as the `x-tenant` header. A
+     * browser's `<link>` sends no headers, so without it a tenant's site would load root's theme; and
+     * the URL keeps each tenant's stylesheet apart in any cache keyed on it. Preview is left alone:
+     * it needs the API key, so it is only ever fetched with headers.
+     */
     private path(artifact: ThemeArtifactName, preview?: ThemePreview): string {
         if (preview) {
             return `${THEME_ROUTE_PREFIX}/preview/${preview.themeId}/${preview.version}/${ARTIFACT_FILE[artifact]}`;
         }
-        return THEME_ARTIFACT_PATHS[artifact];
+        const path = THEME_ARTIFACT_PATHS[artifact];
+        return this.apiTenant ? `${path}?tenant=${encodeURIComponent(this.apiTenant)}` : path;
     }
 
     /**

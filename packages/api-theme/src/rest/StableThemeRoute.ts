@@ -14,6 +14,9 @@ import {
 import { ActiveThemeStore } from "~/features/ActiveThemeStore/index.js";
 import { GetThemeByIdRepository } from "~/features/GetThemeById/index.js";
 import { ThemeArtifactService, isArtifactFile } from "~/features/ThemeArtifacts/index.js";
+import type { ArtifactFile } from "~/features/ThemeArtifacts/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
 
 const json = (statusCode: number, body: unknown): IHttpResponse => ({
     statusCode,
@@ -30,6 +33,12 @@ const json = (statusCode: number, body: unknown): IHttpResponse => ({
  *
  * "No active theme" is a 204, not a 404 — it is the normal state for a project that has not opted in,
  * and it is cached at the same short TTL so activating the first theme reaches the site on its own.
+ *
+ * The tenant comes from the `x-tenant` header like every other request, or from a `tenant` query
+ * parameter, which wins. The parameter exists for the browser: a `<link rel="stylesheet">` cannot
+ * send a header, so without it every tenant's site would load root's theme. The URL is also the CDN's
+ * cache key, so each tenant's stylesheet is cached on its own. Reading another tenant's theme this
+ * way reveals nothing the header did not: the route is public either way.
  */
 class StableThemeRouteImpl implements HttpRouteHandler.Interface {
     constructor(private container: Container) {}
@@ -41,6 +50,20 @@ class StableThemeRouteImpl implements HttpRouteHandler.Interface {
             return json(404, { message: `Unknown theme artifact "${file}".` });
         }
 
+        const tenantId = request.query?.tenant;
+        const tenantContext = this.container.resolve(TenantContext);
+        if (!tenantId || tenantId === tenantContext.getTenant().id) {
+            return this.serve(file);
+        }
+
+        const tenant = await this.container.resolve(GetTenantByIdUseCase).execute(tenantId);
+        if (tenant.isFail()) {
+            return json(404, { message: `Unknown tenant "${tenantId}".` });
+        }
+        return tenantContext.withTenant(tenant.value, () => this.serve(file));
+    }
+
+    private async serve(file: ArtifactFile): Promise<IHttpResponse> {
         const store = this.container.resolve(ActiveThemeStore);
         const pointer = await store.get();
 

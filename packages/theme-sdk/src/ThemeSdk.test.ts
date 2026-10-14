@@ -155,6 +155,47 @@ describe("ThemeSdk.getTheme", () => {
     });
 });
 
+describe("ThemeSdk tenant in the URL", () => {
+    const tenantSdk = (config: Partial<ConstructorParameters<typeof ThemeSdk>[0]> = {}) =>
+        new ThemeSdk({ apiHost: API, apiTenant: "acme", ...config });
+
+    it("names the tenant in the stylesheet link, which cannot send an x-tenant header", () => {
+        expect(tenantSdk().getHeadTags()[1].href).toBe(
+            `${API}${THEME_ARTIFACT_PATHS.css}?tenant=acme`
+        );
+        expect(tenantSdk({ sameOrigin: true }).artifactUrl("css")).toBe(
+            `${THEME_ARTIFACT_PATHS.css}?tenant=acme`
+        );
+    });
+
+    it("names it in the server fetch too, alongside the header", async () => {
+        let url: string | undefined;
+        await tenantSdk({
+            fetch: u => {
+                url = String(u);
+                return Promise.resolve(jsonResponse({}));
+            }
+        }).getTheme();
+
+        expect(url).toBe(`${API}${THEME_ARTIFACT_PATHS.json}?tenant=acme`);
+    });
+
+    it("encodes the tenant id", () => {
+        expect(tenantSdk({ apiTenant: "a&b" }).artifactUrl("css")).toBe(
+            `${API}${THEME_ARTIFACT_PATHS.css}?tenant=a%26b`
+        );
+    });
+
+    it("leaves the URL bare without a tenant, and preview URLs alone", () => {
+        expect(new ThemeSdk({ apiHost: API }).artifactUrl("css")).toBe(
+            `${API}${THEME_ARTIFACT_PATHS.css}`
+        );
+        expect(tenantSdk().artifactUrl("css", { themeId: "t", version: 2 })).not.toContain(
+            "tenant"
+        );
+    });
+});
+
 describe("createThemeRewrite", () => {
     it("builds a same-origin proxy rule covering every theme route under one prefix", () => {
         expect(createThemeRewrite(API)).toEqual({
