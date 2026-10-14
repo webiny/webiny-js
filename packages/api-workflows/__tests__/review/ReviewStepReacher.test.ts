@@ -14,7 +14,6 @@ import {
 import { Result } from "@webiny/feature/api";
 import { Review } from "~/domain/review/Review.js";
 import { ReviewStepNotCurrentError } from "~/domain/review/errors.js";
-import { getAutomationActor } from "~/domain/automation/getAutomationActor.js";
 import { ReviewStepReacher } from "~/features/review/ReviewStepReacher/abstractions.js";
 import { StepType } from "~/features/stepTypes/StepType/index.js";
 import { createTestStepType } from "~tests/__helpers/TestStepType.js";
@@ -136,7 +135,7 @@ describe("ReviewStepReacher dispatches by step type (R131)", () => {
         expect(triggeredTasks).toEqual([]);
     });
 
-    it("fails the step as the requester when it has no owner", async () => {
+    it("fails a step of an unknown type, the fact carrying the requester as actor", async () => {
         const { context } = await createContextHandler();
         const review = createReview("mystery");
 
@@ -146,7 +145,6 @@ describe("ReviewStepReacher dispatches by step type (R131)", () => {
 
         const failed = review.pullFacts().find(fact => fact.type === "stepFailed");
         expect(failed).toMatchObject({ actor: requester });
-        expect(getAutomationActor(requester).type).toBe("automation");
     });
 
     it("returns the error of a step type's reach instead of swallowing it (R159)", async () => {

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TaskDataStatus } from "@webiny/api-core/features/task/TaskService/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
@@ -96,6 +96,10 @@ describe("Stuck detection on single reads (D28, R152)", () => {
         recordedEvents.length = 0;
         reviewSaveFaults.failNext = false;
         saverFaults.throwNext = false;
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
     });
 
     it.each([TaskDataStatus.SUCCESS, TaskDataStatus.FAILED, TaskDataStatus.ABORTED])(
@@ -329,5 +333,99 @@ describe("Stuck detection on single reads (D28, R152)", () => {
         const checked = await stuckSteps.check(data);
 
         expect(checked.steps[0]).toMatchObject({ state: "failed", comment: STUCK_REASON });
+    });
+});
+
+describe("Stuck detection grace boundaries (R152)", () => {
+    // Only `Date` is faked, after the setup, so the async stores keep their real timers.
+    const NOW = new Date("2026-10-14T12:00:00.000Z");
+    const ago = (ms: number): string => new Date(NOW.getTime() - ms).toISOString();
+
+    beforeEach(() => {
+        fakeGetTask.reset();
+        loggedErrors.length = 0;
+        recordedEvents.length = 0;
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
+    const freezeTime = () => {
+        vi.useFakeTimers({ toFake: ["Date"] });
+        vi.setSystemTime(NOW);
+    };
+
+    it.each([TaskDataStatus.FAILED, TaskDataStatus.ABORTED])(
+        "is not stuck when a %s task finished exactly the grace ago, strictly older is required",
+        async status => {
+            fakeGetTask.set("task-1", status, requester.id, ago(STEP_RUN_STUCK_GRACE_MS));
+            const { getReview } = await setup();
+            freezeTime();
+
+            const review = expectOk(await getReview.execute({ id: "review-1" }));
+
+            expect(review.steps[0]).toMatchObject({ state: "inReview", comment: null });
+        }
+    );
+
+    it.each([TaskDataStatus.FAILED, TaskDataStatus.ABORTED])(
+        "is stuck when a %s task finished one millisecond past the grace",
+        async status => {
+            fakeGetTask.set("task-1", status, requester.id, ago(STEP_RUN_STUCK_GRACE_MS + 1));
+            const { getReview } = await setup();
+            freezeTime();
+
+            const review = expectOk(await getReview.execute({ id: "review-1" }));
+
+            expect(review.steps[0]).toMatchObject({ state: "failed", comment: STUCK_REASON });
+        }
+    );
+
+    it("is not stuck when the task is missing and the step started exactly the grace ago", async () => {
+        const seed = toSaveData(createRunningAutomationReview("task-1"));
+        seed.steps[0].startedOn = ago(STEP_RUN_STUCK_GRACE_MS);
+        const { getReview } = await setup({ seed });
+        freezeTime();
+
+        const review = expectOk(await getReview.execute({ id: "review-1" }));
+
+        expect(review.steps[0]).toMatchObject({ state: "inReview", comment: null });
+    });
+
+    it("is stuck when the task is missing and the step started one millisecond past the grace", async () => {
+        const seed = toSaveData(createRunningAutomationReview("task-1"));
+        seed.steps[0].startedOn = ago(STEP_RUN_STUCK_GRACE_MS + 1);
+        const { getReview } = await setup({ seed });
+        freezeTime();
+
+        const review = expectOk(await getReview.execute({ id: "review-1" }));
+
+        expect(review.steps[0]).toMatchObject({ state: "failed", comment: STUCK_REASON });
+    });
+
+    it("measures a missing task from reachedOn when the step has no startedOn", async () => {
+        const seed = toSaveData(createRunningAutomationReview("task-1"));
+        seed.steps[0].startedOn = null;
+        seed.steps[0].reachedOn = ago(STEP_RUN_STUCK_GRACE_MS + 1000);
+        const { getReview } = await setup({ seed });
+        freezeTime();
+
+        const review = expectOk(await getReview.execute({ id: "review-1" }));
+
+        expect(review.steps[0]).toMatchObject({ state: "failed", comment: STUCK_REASON });
+    });
+
+    it("measures a missing task from the review's lastChangedOn when the step has no times", async () => {
+        const seed = toSaveData(createRunningAutomationReview("task-1"));
+        seed.steps[0].startedOn = null;
+        seed.steps[0].reachedOn = null;
+        seed.lastChangedOn = ago(STEP_RUN_STUCK_GRACE_MS + 1000);
+        const { getReview } = await setup({ seed });
+        freezeTime();
+
+        const review = expectOk(await getReview.execute({ id: "review-1" }));
+
+        expect(review.steps[0]).toMatchObject({ state: "failed", comment: STUCK_REASON });
     });
 });

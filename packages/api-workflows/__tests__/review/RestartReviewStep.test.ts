@@ -8,6 +8,7 @@ import {
     triggeredTasks
 } from "~tests/__helpers/FakeTaskService.js";
 import { FailingReviewSave, reviewSaveFaults } from "~tests/__helpers/FailingReviewSave.js";
+import { FailingReviewTargetSync } from "~tests/__helpers/FailingReviewTargetSync.js";
 import {
     RecordingEventPublisher,
     recordedEvents,
@@ -45,6 +46,8 @@ interface SetupParams {
     seed?: ReviewData;
     /** Register the test automation; without it the definition is missing. */
     defined?: boolean;
+    /** The review is saved but the target sync fails (R16). */
+    failSync?: boolean;
 }
 
 const setup = async (params: SetupParams = {}) => {
@@ -54,6 +57,9 @@ const setup = async (params: SetupParams = {}) => {
             container.registerDecorator(RecordingEventPublisher);
             if (params.defined !== false) {
                 registerTestAutomation(container);
+            }
+            if (params.failSync) {
+                container.register(FailingReviewTargetSync);
             }
         }
     });
@@ -337,5 +343,26 @@ describe("RestartReviewStepUseCase (D8, D34, D82, R153)", () => {
         const stored = expectOk(await reviews.get("review-1"));
         expect(stored.steps[0]).toMatchObject({ state: "failed", comment: FAILURE });
         expect(stored.steps[0].runs).toEqual([]);
+    });
+
+    it("keeps the new task and the restarted review when only the target sync fails (R16)", async () => {
+        const { restart, reviews } = await setup({ failSync: true });
+
+        const result = await restart.execute({
+            reviewId: "review-1",
+            stepId: AUTOMATION_STEP_ID,
+            actor: editor
+        });
+
+        expect(result.error?.code).toBe("Workflows/Review/TargetSync");
+        expect(triggeredTasks.map(task => task.id)).toEqual(["task-1"]);
+        expect(abortedTasks).toEqual([]);
+        const stored = expectOk(await reviews.get("review-1"));
+        expect(stored.steps[0]).toMatchObject({
+            state: "inReview",
+            taskId: "task-1",
+            comment: null
+        });
+        expect(stored.steps[0].runs).toHaveLength(1);
     });
 });

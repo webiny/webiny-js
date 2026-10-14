@@ -19,8 +19,7 @@ import {
 } from "~tests/__helpers/fixtures.js";
 import type { ReviewData } from "~/domain/review/types.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
-import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
-import { AssignmentPersistenceError } from "~/domain/assignment/errors.js";
+import { ReviewPersistenceError } from "~/domain/review/errors.js";
 import { CancelReviewUseCase } from "~/features/review/CancelReview/index.js";
 import { CancelTargetReviewsUseCase } from "~/features/review/CancelTargetReviews/index.js";
 import { DeleteTargetReviewsUseCase } from "~/features/review/DeleteTargetReviews/index.js";
@@ -222,15 +221,22 @@ describe("DeleteTargetReviewsUseCase aborts the steps' tasks (R151)", () => {
 
     it("aborts nothing for a review whose delete failed", async () => {
         const { context } = await setup();
-        const assignments = context.container.resolve(AssignmentRepository);
         const reviews = context.container.resolve(ReviewRepository);
         expectOk(await reviews.save(runningReview("review-1", "task-1", "article-1#0001")));
-        context.container.registerInstance(AssignmentRepository, {
-            create: values => assignments.create(values),
-            list: async () =>
-                Result.fail(new AssignmentPersistenceError(new Error("Storage is down."))),
-            delete: id => assignments.delete(id)
-        });
+        // Every read and write is the real repository's; only the delete fails.
+        context.container.registerInstance(
+            ReviewRepository,
+            new Proxy(reviews, {
+                get: (target, property) => {
+                    if (property === "delete") {
+                        return async () =>
+                            Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
+                    }
+                    const value = Reflect.get(target, property);
+                    return typeof value === "function" ? value.bind(target) : value;
+                }
+            })
+        );
 
         const failed = await context.container
             .resolve(DeleteTargetReviewsUseCase)
