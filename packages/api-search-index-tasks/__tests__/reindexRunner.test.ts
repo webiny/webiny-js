@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
+import { Result } from "@webiny/feature/api";
 import { TaskResultStatus } from "@webiny/api-core/features/task/TaskDefinition/abstractions.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -37,7 +38,7 @@ const createMockTenantContext = (): TenantContext.Interface =>
 
 const createMockListTenants = (): ListTenantsUseCase.Interface =>
     ({
-        execute: async () => ({ value: [{ id: "root" }] })
+        execute: async () => Result.ok([{ id: "root" }])
     }) as any;
 
 const buildRunner = (params: {

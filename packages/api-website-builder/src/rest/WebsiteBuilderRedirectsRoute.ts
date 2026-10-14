@@ -24,6 +24,9 @@ class WebsiteBuilderRedirectsRouteImpl implements HttpRouteHandler.Interface {
         }
 
         const result = await getActiveRedirects.execute();
+        if (result.isFail()) {
+            return response.status(500).json({ message: result.error.message });
+        }
         const redirectsDto = result.value.map(entry => ActiveRedirectRestMapper.toDto(entry));
 
         return response.header("cache-control", "public, max-age=31536000").json(redirectsDto);
