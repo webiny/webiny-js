@@ -2,6 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
+import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortService/index.js";
 import { AssignmentPageSize } from "./AssignmentPageSize.js";
 import { DeleteTargetReviewsUseCase as UseCase } from "./abstractions.js";
 
@@ -9,7 +10,8 @@ class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
     constructor(
         private reviewRepository: ReviewRepository.Interface,
         private assignmentRepository: AssignmentRepository.Interface,
-        private assignmentPageSize: AssignmentPageSize.Interface
+        private assignmentPageSize: AssignmentPageSize.Interface,
+        private taskAbort: ReviewTaskAbortService.Interface
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
@@ -53,6 +55,14 @@ class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
                 return Result.fail(deleted.error);
             }
             deletedReviewIds.push(review.id);
+
+            // The review is gone, so the task of its in-review step must stop (R151). Only an
+            // in-review step has one running. An abort failure is logged by the service and never
+            // fails the delete.
+            const current = review.steps.find(step => step.id === review.currentStepId);
+            const taskIds =
+                current && current.state === "inReview" && current.taskId ? [current.taskId] : [];
+            await this.taskAbort.abort({ taskIds, message: "The review was deleted." });
         }
 
         return Result.ok({ deletedReviewIds });
@@ -61,5 +71,10 @@ class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
 
 export const DeleteTargetReviewsUseCase = UseCase.createImplementation({
     implementation: DeleteTargetReviewsUseCaseImpl,
-    dependencies: [ReviewRepository, AssignmentRepository, AssignmentPageSize]
+    dependencies: [
+        ReviewRepository,
+        AssignmentRepository,
+        AssignmentPageSize,
+        ReviewTaskAbortService
+    ]
 });
