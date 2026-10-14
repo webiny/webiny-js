@@ -49,7 +49,7 @@ jobs:
         with:
           issue-number: ${{ github.event.issue.number }}
           body: >-
-            Cypress E2E tests have been initiated (for more information, click
+            E2E tests have been initiated (for more information, click
             [here](https://github.com/webiny/webiny-js/actions/runs/${{
             github.run_id }})). :sparkles:
 
@@ -198,7 +198,6 @@ jobs:
       - build
     name: Constants - DDB
     outputs:
-      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -214,12 +213,6 @@ jobs:
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: List Cypress tests folders
-        id: list-cypress-folders
-        run: >-
-          echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
-          $GITHUB_OUTPUT
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Get Pulumi backend URL
         id: get-pulumi-backend-url
         run: >-
@@ -239,13 +232,10 @@ jobs:
       - e2e-wby-cms-ddb-constants
       - checkComment
     name: E2E (DDB) - Project setup
-    outputs:
-      cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-constants.outputs.pulumi-backend-url }}
@@ -399,25 +389,31 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
-      - name: Create Cypress config
-        run: >-
-          yarn setup-cypress --projectFolder ${{ github.workspace
-          }}/new-webiny-project
+      - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Save Cypress config
-        id: save-cypress-config
-        run: >-
-          echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
-          '\t\n\r')" >> $GITHUB_OUTPUT
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install Cypress binary
-        run: cd cypress-tests && yarn cypress install
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Cypress - run installation wizard test
-        run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          if [ ! -f e2e/tests/installation.e2e.ts ]; then
+            echo "::notice::This branch has no e2e installation test. Running the Cypress one."
+            yarn setup-cypress --projectFolder ${{ github.workspace }}/new-webiny-project
+            (cd cypress-tests && yarn cypress install)
+            yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
+            exit $?
+          fi
+          yarn workspace e2e-tests playwright install --with-deps chromium
+          yarn e2e --tag installation
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-ddb
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: Update PR comment - DDB passed
         if: success()
         env:
@@ -460,7 +456,6 @@ jobs:
       - build
     name: Constants - DDB-OS
     outputs:
-      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -476,12 +471,6 @@ jobs:
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: List Cypress tests folders
-        id: list-cypress-folders
-        run: >-
-          echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
-          $GITHUB_OUTPUT
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Get Pulumi backend URL
         id: get-pulumi-backend-url
         run: >-
@@ -501,13 +490,10 @@ jobs:
       - e2e-wby-cms-ddb-os-constants
       - checkComment
     name: E2E (DDB-OS) - Project setup
-    outputs:
-      cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.pulumi-backend-url }}
@@ -682,25 +668,31 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
-      - name: Create Cypress config
-        run: >-
-          yarn setup-cypress --projectFolder ${{ github.workspace
-          }}/new-webiny-project
+      - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Save Cypress config
-        id: save-cypress-config
-        run: >-
-          echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
-          '\t\n\r')" >> $GITHUB_OUTPUT
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install Cypress binary
-        run: cd cypress-tests && yarn cypress install
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Cypress - run installation wizard test
-        run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          if [ ! -f e2e/tests/installation.e2e.ts ]; then
+            echo "::notice::This branch has no e2e installation test. Running the Cypress one."
+            yarn setup-cypress --projectFolder ${{ github.workspace }}/new-webiny-project
+            (cd cypress-tests && yarn cypress install)
+            yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
+            exit $?
+          fi
+          yarn workspace e2e-tests playwright install --with-deps chromium
+          yarn e2e --tag installation
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-ddb-os
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: Update PR comment - DDB+OS passed
         if: success()
         env:
@@ -889,19 +881,31 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
-      - name: Create Cypress config
+      - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn setup-cypress:standalone --apiUrl http://localhost:3002
-          --adminUrl http://localhost:3001
-      - name: Install Cypress binary
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: cd cypress-tests && yarn cypress install
-      - name: Cypress - run installation wizard test
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          if [ ! -f e2e/tests/installation.e2e.ts ]; then
+            echo "::notice::This branch has no e2e installation test. Running the Cypress one."
+            yarn setup-cypress:standalone --apiUrl http://localhost:3002 --adminUrl http://localhost:3001
+            (cd cypress-tests && yarn cypress install)
+            yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
+            exit $?
+          fi
+          yarn workspace e2e-tests playwright install --with-deps chromium
+          yarn e2e --tag installation
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-standalone-sqlite
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: Update PR comment - Standalone (SQLite) passed
         if: success()
         env:
@@ -938,16 +942,6 @@ jobs:
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
-      - name: Upload Cypress screenshots
-        if: failure()
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
-        with:
-          name: cypress-screenshots-standalone-sqlite
-          retention-days: 1
-          if-no-files-found: ignore
-          path: >-
-            ${{ needs.baseBranch.outputs.base-branch
-            }}/cypress-tests/cypress/screenshots
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -1122,19 +1116,31 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
-      - name: Create Cypress config
+      - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn setup-cypress:standalone --apiUrl http://localhost:3002
-          --adminUrl http://localhost:3001
-      - name: Install Cypress binary
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: cd cypress-tests && yarn cypress install
-      - name: Cypress - run installation wizard test
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          if [ ! -f e2e/tests/installation.e2e.ts ]; then
+            echo "::notice::This branch has no e2e installation test. Running the Cypress one."
+            yarn setup-cypress:standalone --apiUrl http://localhost:3002 --adminUrl http://localhost:3001
+            (cd cypress-tests && yarn cypress install)
+            yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
+            exit $?
+          fi
+          yarn workspace e2e-tests playwright install --with-deps chromium
+          yarn e2e --tag installation
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-standalone-postgres
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: Update PR comment - Standalone (Postgres) passed
         if: success()
         env:
@@ -1171,16 +1177,6 @@ jobs:
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
-      - name: Upload Cypress screenshots
-        if: failure()
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
-        with:
-          name: cypress-screenshots-standalone-postgres
-          retention-days: 1
-          if-no-files-found: ignore
-          path: >-
-            ${{ needs.baseBranch.outputs.base-branch
-            }}/cypress-tests/cypress/screenshots
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -1345,19 +1341,31 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
-      - name: Create Cypress config
+      - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn setup-cypress:standalone --apiUrl http://localhost:3002
-          --adminUrl http://localhost:3001
-      - name: Install Cypress binary
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: cd cypress-tests && yarn cypress install
-      - name: Cypress - run installation wizard test
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          if [ ! -f e2e/tests/installation.e2e.ts ]; then
+            echo "::notice::This branch has no e2e installation test. Running the Cypress one."
+            yarn setup-cypress:standalone --apiUrl http://localhost:3002 --adminUrl http://localhost:3001
+            (cd cypress-tests && yarn cypress install)
+            yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
+            exit $?
+          fi
+          yarn workspace e2e-tests playwright install --with-deps chromium
+          yarn e2e --tag installation
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-standalone-sqlite-wcp
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: AI E2E - run tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
@@ -1370,7 +1378,7 @@ jobs:
             exit 0
           fi
           yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e
+          yarn e2e --exclude-tag installation
       - name: AI E2E - upload results
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -1416,16 +1424,6 @@ jobs:
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
-      - name: Upload Cypress screenshots
-        if: failure()
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
-        with:
-          name: cypress-screenshots-standalone-sqlite-wcp
-          retention-days: 1
-          if-no-files-found: ignore
-          path: >-
-            ${{ needs.baseBranch.outputs.base-branch
-            }}/cypress-tests/cypress/screenshots
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -1607,19 +1605,31 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
-      - name: Create Cypress config
+      - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn setup-cypress:standalone --apiUrl http://localhost:3002
-          --adminUrl http://localhost:3001
-      - name: Install Cypress binary
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: cd cypress-tests && yarn cypress install
-      - name: Cypress - run installation wizard test
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          if [ ! -f e2e/tests/installation.e2e.ts ]; then
+            echo "::notice::This branch has no e2e installation test. Running the Cypress one."
+            yarn setup-cypress:standalone --apiUrl http://localhost:3002 --adminUrl http://localhost:3001
+            (cd cypress-tests && yarn cypress install)
+            yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
+            exit $?
+          fi
+          yarn workspace e2e-tests playwright install --with-deps chromium
+          yarn e2e --tag installation
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-standalone-postgres-wcp
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: AI E2E - run tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
@@ -1632,7 +1642,7 @@ jobs:
             exit 0
           fi
           yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e
+          yarn e2e --exclude-tag installation
       - name: AI E2E - upload results
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -1678,16 +1688,6 @@ jobs:
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
-      - name: Upload Cypress screenshots
-        if: failure()
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
-        with:
-          name: cypress-screenshots-standalone-postgres-wcp
-          retention-days: 1
-          if-no-files-found: ignore
-          path: >-
-            ${{ needs.baseBranch.outputs.base-branch
-            }}/cypress-tests/cypress/screenshots
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'

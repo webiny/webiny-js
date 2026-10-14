@@ -3,7 +3,6 @@ import { createCheckoutPrSteps } from "../steps/index.js";
 import { createConfigureBugReporterSteps } from "../steps/index.js";
 import { createSetupVerdaccioSteps } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
-import { ACTION } from "../utils/index.js";
 import { createJob } from "../jobs/index.js";
 import {
     DIR_STANDALONE_PROJECT,
@@ -18,6 +17,7 @@ import {
 import { installBuildSteps, runBuildCacheDownloadSteps, yarnCacheSteps } from "./sharedSteps.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
 import { AI_E2E_JOB_IF, AI_E2E_LICENSE_ENV, aiE2eCommentRow, createAiE2eSteps } from "./aiE2e.js";
+import { createInstallationTestSteps } from "./installationTest.js";
 
 // The storage backends the standalone hosting type supports. Mirrors `StorageOps` in
 // create-webiny-project's standalone project setup.
@@ -61,7 +61,7 @@ const PG = {
 // Structurally different from the AWS jobs in one way that matters: a standalone project is not
 // deployed anywhere, it runs ON THE RUNNER. The API process and the Admin static server only exist
 // for the lifetime of the job that starts them, so scaffold / build / start / test all have to live
-// in a SINGLE job - there is no deployed URL to hand to a separate Cypress job.
+// in a SINGLE job - there is no deployed URL to hand to a separate test job.
 //
 // Consequences: no `awsAuth`, no Pulumi backend, no `environment: next` secrets, and it runs on a
 // GitHub-hosted runner. That makes it far cheaper than the DDB / DDB+OS jobs.
@@ -75,18 +75,21 @@ interface StandaloneProjectPartsParams {
     // Build with a WCP license and also run the experimental AI tests in `e2e/` (see aiE2e.ts).
     // Only the dedicated AI job sets this; the regular variants stay unlicensed.
     aiE2e?: boolean;
+    // Fall back to the Cypress installation test on branches that predate the e2e one. Only for
+    // `/e2e`, which runs this workflow from the default branch against any PR.
+    cypressFallback?: boolean;
 }
 
 /**
  * The standalone project lifecycle, shared by the `/e2e` and `push` workflows: publish to
- * Verdaccio, scaffold, build, start, wait for readiness, run Cypress, dump logs on failure.
+ * Verdaccio, scaffold, build, start, wait for readiness, run the tests, dump logs on failure.
  *
  * The wrapping job supplies what differs between the two - how the repository is checked out, and
  * how the build output arrives (an artifact on `issue_comment`, the run cache on `push`).
  */
 export const createStandaloneProjectParts = (
     storageOps: StandaloneStorageOps,
-    { workingDirectory, statusLabel, aiE2e }: StandaloneProjectPartsParams
+    { workingDirectory, statusLabel, aiE2e, cypressFallback }: StandaloneProjectPartsParams
 ) => {
     const isPostgres = storageOps === "postgres";
     const licenseEnv = aiE2e ? AI_E2E_LICENSE_ENV : {};
@@ -250,24 +253,17 @@ export const createStandaloneProjectParts = (
                     'echo "GraphQL API responded."'
                 ].join("\n")
             },
-            {
-                name: "Create Cypress config",
-                "working-directory": workingDirectory,
-                run: `yarn setup-cypress:standalone --apiUrl ${STANDALONE_API_URL} --adminUrl ${STANDALONE_ADMIN_URL}`
-            },
-            {
-                name: "Install Cypress binary",
-                "working-directory": workingDirectory,
-                run: "cd cypress-tests && yarn cypress install"
-            },
-            {
-                // The same single spec the AWS variants run. /e2e is a smoke test - a freshly
-                // created project installs and the user lands in the dashboard - so every
-                // variant runs exactly this, and none tests more than its counterparts.
-                name: "Cypress - run installation wizard test",
-                "working-directory": workingDirectory,
-                run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
-            },
+            // The same single test the AWS variants run. /e2e is a smoke test - a freshly created
+            // project installs and the user lands in the dashboard - so every variant runs exactly
+            // this, and none tests more than its counterparts.
+            ...createInstallationTestSteps({
+                workingDirectory,
+                adminUrl: STANDALONE_ADMIN_URL,
+                artifactName: `e2e-results-standalone-${artifactSuffix}`,
+                cypressSetup: cypressFallback
+                    ? `yarn setup-cypress:standalone --apiUrl ${STANDALONE_API_URL} --adminUrl ${STANDALONE_ADMIN_URL}`
+                    : undefined
+            }),
             ...(aiE2e
                 ? createAiE2eSteps({
                       workingDirectory,
@@ -283,17 +279,6 @@ export const createStandaloneProjectParts = (
                     'echo "::group::API log"; cat /tmp/webiny-api.log || true; echo "::endgroup::"',
                     'echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo "::endgroup::"'
                 ].join("\n")
-            },
-            {
-                name: "Upload Cypress screenshots",
-                if: "failure()",
-                uses: ACTION.uploadArtifactV6,
-                with: {
-                    name: `cypress-screenshots-standalone-${artifactSuffix}`,
-                    "retention-days": 1,
-                    "if-no-files-found": "ignore",
-                    path: `${workingDirectory}/cypress-tests/cypress/screenshots`
-                }
             }
         ]
     };
@@ -307,7 +292,8 @@ export const createStandaloneJobs = (storageOps: StandaloneStorageOps) => {
     const label = standaloneVariantLabel(storageOps);
     const parts = createStandaloneProjectParts(storageOps, {
         workingDirectory: DIR_WEBINY_JS,
-        statusLabel: label
+        statusLabel: label,
+        cypressFallback: true
     });
 
     return {
@@ -316,7 +302,7 @@ export const createStandaloneJobs = (storageOps: StandaloneStorageOps) => {
 };
 
 /**
- * A licensed project running the Cypress smoke test plus the AI tests in `e2e/`. A job of its own
+ * A licensed project running the installation smoke test plus the AI tests in `e2e/`. A job of its own
  * rather than a license on the regular job, so `/e2e` still covers an unlicensed project for
  * everyone, the AI users included. Its status comment row (wcpVariantCommentRow) only appears on
  * the runs it takes part in.
@@ -326,7 +312,8 @@ export const createWcpStandaloneJobs = (storageOps: StandaloneStorageOps) => {
     const parts = createStandaloneProjectParts(storageOps, {
         workingDirectory: DIR_WEBINY_JS,
         statusLabel: label,
-        aiE2e: true
+        aiE2e: true,
+        cypressFallback: true
     });
 
     return {

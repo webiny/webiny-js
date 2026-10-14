@@ -39,7 +39,7 @@ interface CreateAiE2eStepsParams {
 }
 
 /**
- * Runs after Cypress, whose installation wizard creates the admin user the tests sign in with
+ * Runs after the installation test, which creates the admin user the tests sign in with
  * (`admin@webiny.com`, the e2e config's default).
  */
 export const createAiE2eSteps = ({
@@ -61,8 +61,10 @@ export const createAiE2eSteps = ({
             '  echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."',
             "  exit 0",
             "fi",
+            // Already installed by the installation test, unless the branch predates it and ran
+            // the Cypress one instead.
             "yarn workspace e2e-tests playwright install --with-deps chromium",
-            "yarn e2e"
+            "yarn e2e --exclude-tag installation"
         ].join("\n")
     },
     {
