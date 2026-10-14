@@ -35,6 +35,7 @@ describe("contains filter - objects", () => {
         ["array of objects - nested array value", [object], "handmade"],
         ["array of objects - second item", [{ pattern: "Checkered" }, object], "striped"],
         ["nested array of objects", [[object]], "portugal"],
+        ["deeply nested array of objects", [[[object]]], "portugal"],
         ["array of strings", ["cotton", "handmade"], "made"]
     ];
     test.each(containsList)("value should contain - %s", (_, value, compareValue) => {
