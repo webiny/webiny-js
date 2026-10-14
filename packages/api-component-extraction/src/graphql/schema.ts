@@ -2,6 +2,7 @@ import type { GenerationEffort } from "@webiny/remote-components/api/features/ge
 import { ErrorResponse, Response } from "@webiny/api-graphql";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { resolveStopAfter } from "~/domain/gateConfig.js";
 import {
     needsThemeExtraction,
     THEME_READING_STAGES,
@@ -793,10 +794,7 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         Math.max(1, data.pageCap ?? DEFAULT_PAGE_CAP),
                         MAX_PAGE_CAP
                     );
-                    const stopAfter =
-                        data.stopAfter && data.stopAfter.length
-                            ? data.stopAfter.filter(isStage)
-                            : [...STAGES];
+                    const stopAfter = resolveStopAfter(data.stopAfter);
 
                     const created = await jobRepository.create({
                         name: data.name,
