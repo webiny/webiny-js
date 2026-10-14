@@ -24,6 +24,7 @@ import {
     type ExtractionMetadata
 } from "~/model/applyAssignment.js";
 import { withTimeout } from "@webiny/site-capture";
+import { decideColorScheme } from "~/model/colorScheme.js";
 
 /**
  * Phase two: judgement — see the design brief, section 10.5.
@@ -162,15 +163,12 @@ class AnalyseCrawlUseCaseImpl implements UseCaseAbstraction.Interface {
         // that reference them load and render the site's typography rather than the Webiny defaults.
         const themeSettings = applyDerivedFonts(createDefaultSettings(), applied.fonts);
 
-        // Ship a dark palette only when the site actually has one. Otherwise the theme is a single
-        // (light-only) scheme — the alternative was leaving every dark slot at the seeded default,
-        // which reads as a random dark theme unrelated to the site.
-        const hasDarkVariant =
-            crawl.payload.darkMode.probed && crawl.payload.darkMode.hasDarkVariant;
+        // Ship a dark palette only when the site has one AND we kept dark values for it. Otherwise the
+        // theme is a single (light-only) scheme — the alternative was leaving every dark slot at the
+        // seeded default, which reads as a random dark theme unrelated to the site.
         const policy: ThemePolicy = {
             ...createDefaultPolicy(),
-            colorScheme: hasDarkVariant ? "light-dark" : "single",
-            defaultMode: hasDarkVariant ? "system" : "light"
+            ...decideColorScheme(crawl.payload.darkMode, validated.darkAccepted.length)
         };
 
         const created = await this.createTheme.execute({
