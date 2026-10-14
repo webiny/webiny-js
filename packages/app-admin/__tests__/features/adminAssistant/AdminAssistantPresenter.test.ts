@@ -109,4 +109,24 @@ describe("AdminAssistantPresenter", () => {
 
         expect(presenter.vm.turns[0].text).toBe("I'll add a new folder:\n\nNo folder was created.");
     });
+
+    /*
+     * A collapsed turn summarises its answer in a line. The text before the last tool call is the
+     * model saying what it will look up, so the summary has to start after it.
+     */
+    it("marks where the answer starts, after the last tool call", async () => {
+        const presenter = setup([
+            { type: "text", text: "I'll check the models." },
+            { type: "tool-call", name: "listContentModels" },
+            { type: "tool-result", name: "listContentModels" },
+            { type: "text", text: "\n\n6 content models." },
+            DONE
+        ]);
+
+        presenter.ask("What content models does this project have?");
+        await settle(presenter);
+
+        const [turn] = presenter.vm.turns;
+        expect(turn.text.slice(turn.answerStart).trim()).toBe("6 content models.");
+    });
 });

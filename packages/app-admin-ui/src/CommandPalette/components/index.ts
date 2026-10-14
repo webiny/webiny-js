@@ -6,6 +6,7 @@ export { Kbd } from "./Kbd.js";
 export { AiModeBadge } from "./AiModeBadge.js";
 export { AiSuggestions, AI_SUGGESTIONS } from "./AiSuggestions.js";
 export { AiTurn } from "./AiTurn.js";
+export { AiConversation } from "./AiConversation.js";
 export { ApprovalPlan } from "./ApprovalPlan.js";
 export { AnswerSkeleton } from "./AnswerSkeleton.js";
 export { NoResults } from "./NoResults.js";
