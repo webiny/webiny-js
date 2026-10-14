@@ -56,11 +56,20 @@ import { NotificationTransport } from "~/features/notifications/NotificationTran
 import { CurrentUserTeams } from "~/features/identity/CurrentUserTeams/index.js";
 import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
 import { CandidateReadAccess } from "~/features/identity/CandidateReadAccess/index.js";
-import { AutomationDefinition } from "~/features/automation/AutomationDefinition/index.js";
+import {
+    AutomationDefinition,
+    type AutomationOutcome,
+    type AutomationRunParams,
+    type IAutomationDefinition
+} from "~/features/automation/AutomationDefinition/index.js";
 import { AutomationDefinitionRegistryService } from "~/features/automation/AutomationDefinitionRegistryService/index.js";
 import { StepType } from "~/features/stepTypes/StepType/index.js";
 import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
+
+// Type-level pin of the public automation exports (R134), checked by `check:test:types`.
+type AutomationExports = [AutomationOutcome, AutomationRunParams, IAutomationDefinition];
+export type { AutomationExports };
 
 describe("WorkflowsFeature registration", () => {
     it("registers every workflows abstraction once (D18)", async () => {
