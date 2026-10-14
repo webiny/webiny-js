@@ -28,6 +28,20 @@ const AnswerError = ({ message }: { message: string }) => (
     </div>
 );
 
+/*
+ * Body text, not help text. The shared `Markdown` defaults suit a sentence of field help, and an
+ * answer read at that size and colour looked like a footnote. Size, colour and spacing match the AI
+ * chat sidebar. Tables get rules and padding, since a list of models or entries often comes back as
+ * one, and the compiler emits bare cells.
+ */
+const ANSWER_CLASSES = [
+    "leading-[24px] text-neutral-primary",
+    "[&_p]:mb-sm [&_ul]:mb-sm [&_ol]:mb-sm [&_li]:mt-xs",
+    "[&_table]:mb-sm [&_table]:border-collapse",
+    "[&_th]:border-b [&_th]:border-neutral-dimmed [&_th]:py-xs [&_th]:pr-md [&_th]:text-left [&_th]:font-semibold",
+    "[&_td]:border-b [&_td]:border-neutral-subtle [&_td]:py-xs [&_td]:pr-md"
+].join(" ");
+
 /**
  * One of four things fills the answer slot, in priority order: the failure, the skeleton, the answer,
  * or a note that nothing came back.
@@ -49,7 +63,7 @@ const renderAnswer = (turn: AiTurnViewModel) => {
 
     if (turn.text) {
         return (
-            <Markdown size="sm" className="text-neutral-strong">
+            <Markdown size="md" className={ANSWER_CLASSES}>
                 {turn.text}
             </Markdown>
         );
