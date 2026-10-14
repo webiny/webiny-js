@@ -1,5 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { DocumentNode } from "graphql";
+import type { IEventHandler } from "~/features/eventPublisher/index.js";
+import type { GraphQLExtensionsEvent } from "./GraphQLExtensionsEvent.js";
 
 type IHeaders = Record<string, string | number | undefined>;
 
@@ -19,4 +21,13 @@ export namespace GraphQLClient {
     export type Headers = IHeaders;
     export type Interface = IGraphQLClient;
     export type Request<TVariables = any> = GraphQLRequest<TVariables>;
+}
+
+export const GraphQLExtensionsEventHandler = createAbstraction<
+    IEventHandler<GraphQLExtensionsEvent>
+>("GraphQLExtensionsEventHandler");
+
+export namespace GraphQLExtensionsEventHandler {
+    export type Interface = IEventHandler<GraphQLExtensionsEvent>;
+    export type Event = GraphQLExtensionsEvent;
 }

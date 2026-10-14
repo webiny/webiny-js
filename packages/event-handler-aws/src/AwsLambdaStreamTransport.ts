@@ -1,5 +1,6 @@
 import type { Container } from "@webiny/di";
 import type { Transport } from "@webiny/event-handler-core";
+import { RequestId } from "@webiny/event-handler-core";
 import type { Context } from "@webiny/aws-sdk/types/index.js";
 import { AwsLambdaEvent } from "./abstractions/AwsLambdaEvent.js";
 import { AwsLambdaContext, AwsLambdaContextValue } from "./abstractions/AwsLambdaContext.js";
@@ -29,5 +30,8 @@ export const awsLambdaStreamTransport: Transport = {
             AwsLambdaContext,
             context ? new AwsLambdaContextValue(context) : new NullAwsLambdaContext()
         );
+        if (context?.awsRequestId) {
+            container.registerInstance(RequestId, { value: context.awsRequestId });
+        }
     }
 };
