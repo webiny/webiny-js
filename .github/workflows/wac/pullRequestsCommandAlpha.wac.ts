@@ -91,7 +91,6 @@ export const pullRequestsCommandAlpha = createSlashCommandWorkflow({
             needs: ["prBranch", "build"],
             name: "NPM release (alpha)",
             env: {
-                GH_TOKEN: "${{ secrets.GH_TOKEN }}",
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
                 SLACK_RELEASE_CHANNEL_WEBHOOK: "${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}"
             },
