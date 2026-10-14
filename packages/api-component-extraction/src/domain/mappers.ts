@@ -38,7 +38,9 @@ export class EntryToJobMapper {
             gateConfig,
             pinned: entry.values.pinned ?? false,
             note: entry.values.note ?? "",
-            siteTenantFromStart: entry.values.siteTenantFromStart === true
+            siteTenantFromStart: entry.values.siteTenantFromStart === true,
+            assignment: entry.values.assignment ?? null,
+            owner: entry.values.assignment?.owner ?? entry.createdBy
         };
     }
 }

@@ -4,6 +4,7 @@ import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
 import { themeSnapshot } from "./themeSnapshot.js";
 import { stageEntry } from "~/shared/ledger.js";
 import { normalizeUrl } from "~/shared/url.js";
+import { STAGES } from "~/constants.js";
 import type {
     PageMapDto,
     ComponentPromptDto,
@@ -96,6 +97,7 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         sitePageMapLoading: false,
         siteLivePageByPath: {},
         siteAssembledCount: null,
+        siteSourceScreenshots: {},
         siteBuiltFrom: null,
         siteInventory: null,
         siteResult: null,
@@ -137,7 +139,7 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         makeAutoObservable(this);
     }
 
-    async init(runId: string) {
+    async init(runId: string, stage?: string | null) {
         runInAction(() => {
             this.vm.loading = true;
             this.vm.error = null;
@@ -152,7 +154,9 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             // has no logs and looks like the trail was lost).
             const running = run.stages.find(entry => entry.status === "running");
             const lastRun = [...run.stages].reverse().find(entry => entry.taskId);
-            const selected = running?.stage ?? lastRun?.stage ?? run.stages[0]?.stage ?? null;
+            const asked = stage && (STAGES as readonly string[]).includes(stage) ? stage : null;
+            const selected =
+                asked ?? running?.stage ?? lastRun?.stage ?? run.stages[0]?.stage ?? null;
             const themeFit = await this.loadThemeFit(run);
             runInAction(() => {
                 this.vm.run = run;
@@ -164,8 +168,12 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 this.openStage(selected);
             });
             void this.loadThemeSnapshot();
-            // The rail's Site entry shows the site's state from the start, not only once opened.
-            void this.loadSite(run);
+            if (stage === "site") {
+                this.openSite();
+            } else {
+                // The rail's Site entry shows the site's state from the start, not only once opened.
+                void this.loadSite(run);
+            }
             if (selected) {
                 await this.loadLogs(run, selected);
                 await this.loadArtifact(run, selected);
@@ -1131,6 +1139,11 @@ export class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 this.vm.siteInventory = inventory;
                 this.vm.siteResult = result;
                 this.vm.siteAssembledCount = assemble ? assemble.pages.length : null;
+                this.vm.siteSourceScreenshots = Object.fromEntries(
+                    (assemble?.pages ?? [])
+                        .filter(page => page.screenshotRef)
+                        .map(page => [page.url, page.screenshotRef!])
+                );
                 this.vm.siteBuiltFrom = builtFrom
                     ? { runId: builtFrom, runNumber: builtFromNumber }
                     : null;

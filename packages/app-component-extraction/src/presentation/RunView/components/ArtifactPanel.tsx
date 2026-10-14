@@ -113,8 +113,11 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
     const showView = VIEW_STAGES.has(stage) && (hasOutput || (stage === "promote" && generateDone));
 
     const failed = entry?.status === "failed";
+    // Not at Generate: its Needs attention tab carries the same count, and each card says what failed.
     const degraded =
-        hasOutput && vm.artifactStage === stage ? degradedSummary(stage, vm.artifact) : null;
+        hasOutput && vm.artifactStage === stage && stage !== "generate"
+            ? degradedSummary(stage, vm.artifact)
+            : null;
     // The step between stages: this stage is done, the next has not run, and nothing is running.
     const next = STAGES[STAGES.indexOf(stage) + 1] as Stage | undefined;
     const nextEntry = next ? stageEntry(run, next) : undefined;
@@ -139,19 +142,19 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
     return (
         <div className="flex flex-col h-full min-h-0">
             {entry?.error ? (
-                <div className="px-md py-sm border-b border-destructive-dimmed bg-destructive-subtle">
+                <div className="px-lg py-sm border-b border-destructive-dimmed bg-destructive-subtle">
                     <Text size="sm" className="text-destructive-default">
                         {entry.error}
                     </Text>
                 </div>
             ) : null}
             {showNext && next ? (
-                <div className="px-md pt-sm">
+                <div className="px-lg pt-sm">
                     <NextStep stage={stage} next={next} counts={run.counts} />
                 </div>
             ) : null}
             {vm.stalledStage?.stage === stage ? (
-                <div className="px-md pt-sm">
+                <div className="px-lg pt-sm">
                     <Alert type="danger">
                         <div className="flex flex-wrap items-center justify-between gap-sm">
                             <span>
@@ -171,7 +174,7 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
                 </div>
             ) : null}
             {degraded ? (
-                <div className="px-md pt-sm">
+                <div className="px-lg pt-sm">
                     <Alert type="warning">{degraded}</Alert>
                 </div>
             ) : null}
@@ -180,13 +183,13 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
                     <div className="relative min-h-0 flex-1 overflow-hidden">
                         <StageView stage={stage} presenter={presenter} />
                     </div>
-                    <div className="max-h-[40%] overflow-y-auto border-t border-neutral-dimmed px-md py-xs">
+                    <div className="max-h-[40%] overflow-y-auto border-t border-neutral-dimmed px-lg py-xs">
                         {log}
                     </div>
                 </>
             ) : (
                 <Scrollbar>
-                    <div className="flex flex-col gap-sm px-md py-sm">
+                    <div className="flex flex-col gap-sm px-lg py-sm">
                         {/* Starting counts as running: between the click and the task picking the
                             stage up, the header already says Running, and "hasn't run yet" here
                             contradicted it. */}

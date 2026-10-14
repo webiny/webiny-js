@@ -1,6 +1,7 @@
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import { ComponentExtractionGateway, type StageTriggerResult } from "./abstractions.js";
 import type {
+    AdminUserOptionDto,
     SiteInventoryDto,
     SiteResultDto,
     CreateJobData,
@@ -38,6 +39,8 @@ import {
     GET_JOB,
     GET_THEME_FIT,
     RETRY_JOB_THEME,
+    ASSIGN_JOB,
+    LIST_ADMIN_USERS,
     USE_EXISTING_THEME,
     GET_PAGE_MAP,
     GET_SITE,
@@ -107,6 +110,22 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: GET_JOB, variables: { jobId } });
 
         return unwrap(response.componentExtractionGetJob);
+    }
+
+    async assignJob(jobId: string, userId: string): Promise<JobDto> {
+        const response = await this.client.execute<{
+            componentExtractionAssignJob: GqlEnvelope<JobDto>;
+        }>({ query: ASSIGN_JOB, variables: { jobId, userId } });
+
+        return unwrap(response.componentExtractionAssignJob);
+    }
+
+    async listAdminUsers(): Promise<AdminUserOptionDto[]> {
+        const response = await this.client.execute<{
+            adminUsers: { listUsers: GqlEnvelope<AdminUserOptionDto[]> };
+        }>({ query: LIST_ADMIN_USERS });
+
+        return unwrap(response.adminUsers.listUsers) ?? [];
     }
 
     async retryJobTheme(jobId: string): Promise<JobDto> {

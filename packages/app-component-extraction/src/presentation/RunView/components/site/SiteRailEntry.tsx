@@ -7,6 +7,8 @@ import type { RunViewPresenter } from "../../abstractions.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
+    /** Opens the site; the run page also puts it in the URL. */
+    onOpen: () => void;
 }
 
 /**
@@ -15,7 +17,10 @@ interface Props {
  * Not a stage. The site belongs to the job and has no ledger entry, so its state comes from the site
  * record: not built, building, built, or a build that failed.
  */
-export const SiteRailEntry = createReactiveComponent(function SiteRailEntry({ presenter }: Props) {
+export const SiteRailEntry = createReactiveComponent(function SiteRailEntry({
+    presenter,
+    onOpen
+}: Props) {
     const { vm } = presenter;
     const build = vm.site?.lastBuild;
     const status: DisplayStatus =
@@ -30,7 +35,7 @@ export const SiteRailEntry = createReactiveComponent(function SiteRailEntry({ pr
     return (
         <button
             type="button"
-            onClick={() => presenter.openSite()}
+            onClick={onOpen}
             className={cn(
                 "mt-xxs flex items-center gap-sm rounded-sm border-l-2 border-t border-transparent border-t-neutral-dimmed py-xs pl-xs pr-sm pt-sm text-left transition-colors",
                 "cursor-pointer hover:bg-neutral-light",

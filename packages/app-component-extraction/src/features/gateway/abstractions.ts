@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type {
+    AdminUserOptionDto,
     SiteInventoryDto,
     SiteResultDto,
     CreateJobData,
@@ -38,6 +39,10 @@ export interface IComponentExtractionGateway {
     createRun(jobId: string, note?: string): Promise<RunDto>;
     runStage(runId: string, stage: string): Promise<StageTriggerResult>;
     listThemes(): Promise<ThemeOptionDto[]>;
+    /** Assign the job to an admin user. */
+    assignJob(jobId: string, userId: string): Promise<JobDto>;
+    /** The admin users a job can be assigned to. */
+    listAdminUsers(): Promise<AdminUserOptionDto[]>;
     /** Extract the job's theme again: after a failure, or to replace a theme it has (re-pins). */
     retryJobTheme(jobId: string): Promise<JobDto>;
     /** Pin an existing published theme on the job instead of extracting one. */

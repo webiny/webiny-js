@@ -28,6 +28,7 @@ import { ReactComponent as PlayIcon } from "@webiny/icons/play_arrow.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as DuplicateIcon } from "@webiny/icons/content_copy.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
+import { ReactComponent as AssignIcon } from "@webiny/icons/assignment_ind.svg";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as BoardIcon } from "@webiny/icons/view_kanban.svg";
 import { ReactComponent as TableIcon } from "@webiny/icons/table_rows.svg";
@@ -36,6 +37,7 @@ import { ExtractionListFeature } from "../feature.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
 import { currentStage } from "~/shared/ledger.js";
 import {
+    MigrationTrail,
     StagePips,
     StageStatus,
     StageKindChip,
@@ -46,10 +48,12 @@ import {
 import { Routes } from "~/routes.js";
 import type { JobListItemDto } from "~/shared/types.js";
 import type { ListSort, ListView, OwnerFilter, StatusFilter } from "../abstractions.js";
-import { boardColumn, isMine, matchesSearch } from "../jobBoard.js";
+import { boardColumn, isMine, jobOwner, matchesSearch } from "../jobBoard.js";
 import { JobBoard, OwnerBadge } from "./JobBoard.js";
 import { JobDeletionFeature } from "~/presentation/JobDeletion/feature.js";
 import { DeleteJobDialog } from "~/presentation/JobDeletion/DeleteJobDialog.js";
+import { AssignJobDialog } from "~/presentation/JobAssignment/AssignJobDialog.js";
+import { JobAssignmentFeature } from "~/presentation/JobAssignment/feature.js";
 
 type JobRow = JobListItemDto & { id: string; name: string; siteUrl: string };
 
@@ -157,6 +161,7 @@ const CurrentStageCell = ({ item }: { item: JobRow }) => {
 const ExtractionListContent = createReactiveComponent(function ExtractionListContent() {
     const { presenter } = useFeature(ExtractionListFeature);
     const { presenter: deletion } = useFeature(JobDeletionFeature);
+    const { presenter: assignment } = useFeature(JobAssignmentFeature);
     const { goToRoute } = useRouter();
     const toast = useToast();
 
@@ -303,6 +308,17 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
                             disabled={vm.startingJobId === item.job.id}
                             text="Start new run"
                         />
+                        <DropdownMenu.Item
+                            icon={<AssignIcon />}
+                            text="Assign"
+                            onClick={() =>
+                                void assignment.open({
+                                    id: item.job.id,
+                                    name: item.job.name,
+                                    ownerId: jobOwner(item.job)?.id ?? null
+                                })
+                            }
+                        />
                         {/* Duplicate needs a backend mutation (not built — noted for W10). */}
                         <DropdownMenu.Item icon={<DuplicateIcon />} text="Duplicate" disabled />
                         <DropdownMenu.Item
@@ -318,11 +334,12 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
                 enableResizing: false
             }
         }),
-        [presenter, deletion, vm.startingJobId]
+        [presenter, deletion, assignment, vm.startingJobId]
     );
 
     return (
         <>
+            <MigrationTrail />
             <div className="flex items-end justify-between px-md pt-md">
                 <div className="flex flex-col gap-xxs">
                     <Heading level={3}>Components</Heading>
@@ -476,6 +493,7 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
                 </div>
             )}
             <DeleteJobDialog presenter={deletion} onDeleted={() => void presenter.init()} />
+            <AssignJobDialog presenter={assignment} onAssigned={() => void presenter.init()} />
         </>
     );
 });
@@ -488,6 +506,7 @@ export const ExtractionListPage = () => {
         ComponentExtractionGatewayFeature.register(child);
         ExtractionListFeature.register(child);
         JobDeletionFeature.register(child);
+        JobAssignmentFeature.register(child);
         return child;
     }, []);
 

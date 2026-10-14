@@ -27,6 +27,8 @@ export interface IJobDetailPresenter {
     /** The newest run (the "current run"), or null if the job has never run. */
     readonly currentRun: RunDto | null;
     init(jobId: string): Promise<void>;
+    /** Shows a job the server returned after a change to it, such as an assignment. */
+    setJob(job: JobDto): void;
     selectStage(stage: Stage): void;
     toggleRunSelection(runId: string): void;
     /** Starts a new run and returns its id. Throws on failure. */

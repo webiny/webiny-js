@@ -186,6 +186,11 @@ export interface IRunViewVm {
     /** How many pages this run assembled, which is what a build publishes; null until known. */
     siteAssembledCount: number | null;
     /**
+     * Each assembled page's full-page capture screenshot, by its source URL. Its height is the source
+     * page's height at the capture width, which is what the page comparison sizes its frames by.
+     */
+    siteSourceScreenshots: Record<string, string>;
+    /**
      * The run the site was last built from, by its number. The site's pages are that run's, which need
      * not be the run on screen: opened on run 5, a site built from run 3 lists run 3's pages, and reads
      * as broken unless the view says so.
@@ -216,7 +221,11 @@ export interface IRunViewVm {
 
 export interface IRunViewPresenter {
     vm: IRunViewVm;
-    init(runId: string): Promise<void>;
+    /**
+     * Load the run and open a step: `stage` when it names one of the run's stages or "site" (the URL's,
+     * so a reload stays where it was), otherwise the most recently active stage.
+     */
+    init(runId: string, stage?: string | null): Promise<void>;
     refresh(): Promise<void>;
     /** Extract the job's theme again: after a failure, or (confirmed) to replace a theme it has. */
     retryTheme(): Promise<void>;

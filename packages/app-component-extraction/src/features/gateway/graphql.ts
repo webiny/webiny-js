@@ -16,6 +16,24 @@ const JOB_FIELDS = /* GraphQL */ `
         displayName
         type
     }
+    owner {
+        id
+        displayName
+        type
+    }
+    assignment {
+        owner {
+            id
+            displayName
+            type
+        }
+        assignedBy {
+            id
+            displayName
+            type
+        }
+        assignedOn
+    }
 `;
 
 const RUN_FIELDS = /* GraphQL */ `
@@ -634,6 +652,35 @@ export const RETRY_JOB_THEME = /* GraphQL */ `
         componentExtractionRetryJobTheme(jobId: $jobId) {
             data { ${JOB_FIELDS} }
             error { message code data }
+        }
+    }
+`;
+
+export const ASSIGN_JOB = /* GraphQL */ `
+    mutation AssignJob($jobId: ID!, $userId: ID!) {
+        componentExtractionAssignJob(jobId: $jobId, userId: $userId) {
+            data { ${JOB_FIELDS} }
+            error { message code data }
+        }
+    }
+`;
+
+/** The instance's admin users, to assign a job to. Needs permission to read users. */
+export const LIST_ADMIN_USERS = /* GraphQL */ `
+    query ListAdminUsers {
+        adminUsers {
+            listUsers {
+                data {
+                    id
+                    displayName
+                    email
+                }
+                error {
+                    message
+                    code
+                    data
+                }
+            }
         }
     }
 `;

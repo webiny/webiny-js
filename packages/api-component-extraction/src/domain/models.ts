@@ -35,7 +35,9 @@ class JobModelFactory implements ModelFactory.Interface {
             pinned: fields.boolean().label("Pinned"),
             note: fields.longText().label("Note"),
             // Approve into and compose in the site tenant (set at creation; absent on older jobs).
-            siteTenantFromStart: fields.boolean().label("Site tenant from the start")
+            siteTenantFromStart: fields.boolean().label("Site tenant from the start"),
+            // The owner when someone assigned one, with who assigned it and when.
+            assignment: fields.json().label("Assignment")
         }));
 
         return [model];

@@ -1,0 +1,244 @@
+{
+  "_source": "componentExtractionGetStageArtifact(runId: 6ac618d899bb470002e8f5c9#0001, stage: generate), FreehillStreetLofts Fixes Check 3, read 2026-10-13",
+  "components": [
+    {
+      "signature": "23b8364598c4ed70ea11ca1afe2cb1dc5592c69d5bf55d5f471069ad94890d63",
+      "name": "Contact Info",
+      "type": "footer",
+      "attempts": 1,
+      "memberCount": 2,
+      "pageCount": 2,
+      "propCount": 2,
+      "validation": {
+        "tokenBinding": {
+          "passed": true,
+          "failures": []
+        },
+        "textPreservation": {
+          "passed": true,
+          "failures": []
+        },
+        "contractConformance": {
+          "failures": [],
+          "passed": true
+        },
+        "bundling": {
+          "failures": [],
+          "passed": true
+        }
+      },
+      "revision": 1,
+      "contentSha256": "d3ce520d9670c3993b6d9adc49f45ae05a906a288d1578fcd57d88ebfda03da5"
+    },
+    {
+      "signature": "c45f33d6ab9cbb20fd32376ca2261e100a6f7f0536eefa5d9713d1a28947689f",
+      "name": "Site Header",
+      "type": "header",
+      "attempts": 2,
+      "memberCount": 2,
+      "pageCount": 2,
+      "propCount": 2,
+      "validation": {
+        "textPreservation": {
+          "failures": [],
+          "passed": true
+        },
+        "tokenBinding": {
+          "failures": [],
+          "passed": true
+        },
+        "bundling": {
+          "failures": [],
+          "passed": true
+        },
+        "contractConformance": {
+          "failures": [],
+          "passed": true
+        }
+      },
+      "revision": 1,
+      "contentSha256": "c7df23bc6ab40f6dab657a2e11c3bbb48711affa40a37528d649d9a3e988ec0c"
+    },
+    {
+      "signature": "614b7761c8a17145d30a7d2f19535b26666218d613c448773560d2e5e986a7fc",
+      "name": "Hero Banner",
+      "type": "hero",
+      "attempts": 2,
+      "memberCount": 1,
+      "pageCount": 1,
+      "propCount": 3,
+      "validation": {
+        "textPreservation": {
+          "passed": true,
+          "failures": []
+        },
+        "bundling": {
+          "passed": true,
+          "failures": []
+        },
+        "tokenBinding": {
+          "passed": true,
+          "failures": []
+        },
+        "contractConformance": {
+          "passed": true,
+          "failures": []
+        }
+      },
+      "revision": 1,
+      "contentSha256": "4ea3a7a6cf247a7c9a39840f9626aeb7bb453c977ad75a3201312086f768c9fc"
+    },
+    {
+      "signature": "e1a5e5abf3cc0f2d278209f053abd826b14af6884e8fb42f4c4c1e2cd4d16f84",
+      "name": "Contact Form",
+      "type": "form",
+      "attempts": 3,
+      "memberCount": 1,
+      "pageCount": 1,
+      "propCount": 12,
+      "validation": {
+        "bundling": {
+          "passed": true,
+          "failures": []
+        },
+        "textPreservation": {
+          "failures": [
+            "missing text: \"Phone Number\""
+          ],
+          "passed": false
+        },
+        "tokenBinding": {
+          "failures": [],
+          "passed": true
+        },
+        "contractConformance": {
+          "passed": true,
+          "failures": []
+        }
+      },
+      "revision": 1,
+      "contentSha256": "545c0296cf09febeb14cff5d4c1030e4ff27e03815f0dc74c55f727ab941d65d"
+    },
+    {
+      "signature": "c9a29452611984a9f60cb1517ae0ce94ce108353ee500fe6d757075bafc40809",
+      "name": "Amenities List",
+      "type": "features",
+      "attempts": 3,
+      "memberCount": 1,
+      "pageCount": 1,
+      "propCount": 4,
+      "validation": {
+        "bundling": {
+          "failures": [],
+          "passed": true
+        },
+        "tokenBinding": {
+          "passed": true,
+          "failures": []
+        },
+        "textPreservation": {
+          "passed": false,
+          "failures": [
+            "missing text: \"Dive In\""
+          ]
+        },
+        "contractConformance": {
+          "failures": [],
+          "passed": true
+        }
+      },
+      "revision": 1,
+      "contentSha256": "aa7669bc8650a31f99492956bea5c73cce4672631f99656acdea0eabddc44d79"
+    },
+    {
+      "signature": "6ae06e7d954c760cb3922fe0f7f8f27eb347db4bbb0951da912a78454160b736",
+      "name": "Footer with address and office hours",
+      "type": "footer",
+      "attempts": 2,
+      "memberCount": 2,
+      "pageCount": 2,
+      "propCount": 8,
+      "validation": {
+        "contractConformance": {
+          "failures": [],
+          "passed": true
+        },
+        "textPreservation": {
+          "passed": true,
+          "failures": []
+        },
+        "bundling": {
+          "passed": true,
+          "failures": []
+        },
+        "tokenBinding": {
+          "failures": [],
+          "passed": true
+        }
+      },
+      "revision": 1,
+      "contentSha256": "b3cfe6fd230ad7a492496528a3a46360adc1689ad37e98f2b24097b634aad9d4"
+    },
+    {
+      "signature": "93fbca7f150c8e89dda54a8d1caaff82f4d7ff8cd5c9bb4aa85df2762aad5a4f",
+      "name": "Image with text block",
+      "type": "content",
+      "attempts": 2,
+      "memberCount": 1,
+      "pageCount": 1,
+      "propCount": 3,
+      "validation": {
+        "textPreservation": {
+          "failures": [],
+          "passed": true
+        },
+        "tokenBinding": {
+          "passed": true,
+          "failures": []
+        },
+        "contractConformance": {
+          "passed": true,
+          "failures": []
+        },
+        "bundling": {
+          "passed": true,
+          "failures": []
+        }
+      },
+      "revision": 1,
+      "contentSha256": "fd6d31fe0bc6931af43bb00ba148586a77588b57ebbe28a64fca4811f851ede4"
+    },
+    {
+      "signature": "b98c126c59f6f9aa44d6bc31d208d42261c4a08e1b64010750a3ffd90eda2ef0",
+      "name": "Privacy Policy",
+      "type": "content",
+      "attempts": 3,
+      "memberCount": 1,
+      "pageCount": 1,
+      "propCount": 3,
+      "validation": {
+        "tokenBinding": {
+          "passed": true,
+          "failures": []
+        },
+        "textPreservation": {
+          "failures": [
+            "missing text: \"Users may learn more about Google Analyt\"",
+            "missing text: \"The Site may provide links to other Web \""
+          ],
+          "passed": false
+        },
+        "contractConformance": {
+          "failures": [],
+          "passed": true
+        },
+        "bundling": {
+          "failures": [],
+          "passed": true
+        }
+      },
+      "revision": 1,
+      "contentSha256": "287a4c07a86216d84b32c32967c29471c370a0b670e69bf627554591cd78a73b"
+    }
+  ]
+}

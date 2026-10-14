@@ -6,7 +6,7 @@ import { RunInspectorFeature } from "../feature.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
 import { stageEntry } from "~/shared/ledger.js";
 import { STAGES, STAGE_LABELS, type Stage } from "~/constants.js";
-import { Breadcrumb, stageMeta } from "~/presentation/shared/index.js";
+import { Breadcrumb, MigrationTrail, stageMeta } from "~/presentation/shared/index.js";
 import { Routes } from "~/routes.js";
 import type { RunInspectorPresenter } from "../abstractions.js";
 import type { ModelCallDto, OverrideDto, ReattachmentDto, RunDto } from "~/shared/types.js";
@@ -351,6 +351,13 @@ const RunInspectorInner = createReactiveComponent(function RunInspectorInner() {
 
     return (
         <div className="flex h-main-content flex-col">
+            {vm.job && run ? (
+                <MigrationTrail
+                    job={vm.job}
+                    run={{ id: run.id, label: runLabel(run) }}
+                    current="Run inspector"
+                />
+            ) : null}
             <div className="flex items-center justify-between gap-sm px-md py-sm">
                 <Breadcrumb
                     items={[

@@ -12,6 +12,7 @@ import { StatusDot } from "~/presentation/shared/StatusIndicator.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import { caveatReasons, composedStatus, STATUS_TAG } from "../composed/pageStatus.js";
 import { siteUrl } from "./siteUrl.js";
+import { ComparePageView } from "./ComparePageView.js";
 import {
     type Cell,
     formats,
@@ -408,6 +409,8 @@ export const SitePagesTable = createReactiveComponent(function SitePagesTable({
     const merged = result ? siteWideNotYet(result) : null;
     const [open, setOpen] = useState<Record<string, boolean>>({});
     const [caveatOpen, setCaveatOpen] = useState(false);
+    const [compared, setCompared] = useState<ComposedPageDto | null>(null);
+    const comparedUrl = compared ? siteUrl(vm.websiteDomain, compared.path, tenantId) : null;
 
     const statuses = map.pages.map(page => composedStatus(page));
     const allCaveat = statuses.length > 0 && statuses.every(status => status === "caveat");
@@ -490,7 +493,7 @@ export const SitePagesTable = createReactiveComponent(function SitePagesTable({
                                 </span>
                             </Table.Head>
                         ))}
-                        <Table.Head className="w-[112px] whitespace-normal align-bottom leading-tight">
+                        <Table.Head className="w-[136px] whitespace-normal align-bottom leading-tight">
                             {""}
                         </Table.Head>
                     </Table.Row>
@@ -665,25 +668,49 @@ export const SitePagesTable = createReactiveComponent(function SitePagesTable({
                                     truncate={false}
                                     className="align-top whitespace-normal leading-normal text-right"
                                 >
-                                    <Button
-                                        variant="tertiary"
-                                        size="sm"
-                                        text="View page"
-                                        disabled={!url}
-                                        title={
-                                            url ??
-                                            "Website Builder has no preview domain set, so there is no address to open this page at."
-                                        }
-                                        onClick={() =>
-                                            url && window.open(url, "_blank", "noopener")
-                                        }
-                                    />
+                                    <div className="flex flex-col items-end gap-xs">
+                                        <Button
+                                            variant="tertiary"
+                                            size="sm"
+                                            text="View page"
+                                            disabled={!url}
+                                            title={
+                                                url ??
+                                                "Website Builder has no preview domain set, so there is no address to open this page at."
+                                            }
+                                            onClick={() =>
+                                                url && window.open(url, "_blank", "noopener")
+                                            }
+                                        />
+                                        <Button
+                                            variant="tertiary"
+                                            size="sm"
+                                            text="Compare page"
+                                            disabled={!url}
+                                            title={
+                                                url
+                                                    ? "The original page and the generated page side by side"
+                                                    : "Website Builder has no preview domain set, so there is no address to open this page at."
+                                            }
+                                            onClick={() => setCompared(page)}
+                                        />
+                                    </div>
                                 </Table.Cell>
                             </Table.Row>
                         );
                     })}
                 </Table.Body>
             </Table>
+            {compared && comparedUrl ? (
+                <ComparePageView
+                    runId={vm.run?.id ?? ""}
+                    title={compared.title || compared.path}
+                    sourceUrl={compared.sourceUrl}
+                    generatedUrl={comparedUrl}
+                    screenshotRef={vm.siteSourceScreenshots[compared.sourceUrl]}
+                    onClose={() => setCompared(null)}
+                />
+            ) : null}
         </Panel>
     );
 });

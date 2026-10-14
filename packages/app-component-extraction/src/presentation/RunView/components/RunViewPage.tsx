@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DiContainerProvider, useContainer, useFeature, useRoute } from "@webiny/app";
 import { createReactiveComponent, useRouter } from "@webiny/app-admin";
 import {
@@ -14,6 +14,7 @@ import {
 } from "@webiny/admin-ui";
 import { useWebsockets, type IncomingGenericData } from "@webiny/app-websockets";
 import { ReactComponent as ChevronIcon } from "@webiny/icons/keyboard_arrow_down.svg";
+import { ReactComponent as ArrowForwardIcon } from "@webiny/icons/arrow_forward.svg";
 import { RunViewFeature } from "../feature.js";
 import { ArtifactPanel } from "./ArtifactPanel.js";
 import { ComposedPagesPanel } from "./composed/ComposedPagesPanel.js";
@@ -39,8 +40,9 @@ import {
     StatusDot,
     StatusTag,
     StageKindChip,
-    StageKindSentence,
     stageMeta,
+    stageKindSentence,
+    MigrationTrail,
     runStageStatuses,
     toDisplayStatus,
     pausedGateStage
@@ -136,15 +138,20 @@ const ParametersCard = ({
 const RunViewInner = createReactiveComponent(function RunViewInner() {
     const { presenter } = useFeature(RunViewFeature);
     const { goToRoute } = useRouter();
-    const { route, setRouteParams } = useRoute(Routes.Run);
+    const { route, setRouteParams, replaceRouteParams } = useRoute(Routes.Run);
     const websockets = useWebsockets();
     const toast = useToast();
 
     const runId = route ? route.params.runId : undefined;
+    const routeStage = route?.params.stage;
+
+    // The URL's step, for the run's first view; after that the effect below keeps the two in step.
+    const initialStage = useRef(routeStage);
+    initialStage.current = routeStage;
 
     useEffect(() => {
         if (runId) {
-            presenter.init(runId);
+            presenter.init(runId, initialStage.current);
         }
     }, [presenter, runId]);
 
@@ -195,6 +202,61 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
      * the URL while a different panel is on screen would make the link lie about what it opens.
      */
     const closeComposedRoute = () => openComposedRoute(false, null);
+
+    /*
+     * The open step and `?stage=` kept in step, so a reload, a link or the back button lands on the
+     * step that was open.
+     *
+     * Two directions, told apart by which side changed since the last pass. Both effects would
+     * otherwise run on the same render after a back-button press, with the URL already on the earlier
+     * step and the view still on the later one, and the view's side would write the later step back
+     * over the navigation. The URL wins when it moved: a link, a reload, back or forward. The view wins
+     * when it moved on its own (a stage started from the header opens that stage), and is written
+     * with a replace, so the back button doesn't walk through steps nobody chose.
+     */
+    const viewStage = presenter.vm.showSite ? "site" : presenter.vm.selectedStage;
+    const lastSynced = useRef<{ route?: string; view?: string | null }>({});
+    useEffect(() => {
+        if (!loadedRunId) {
+            return;
+        }
+        const routeMoved = routeStage !== lastSynced.current.route;
+        const viewMoved = viewStage !== lastSynced.current.view;
+        lastSynced.current = { route: routeStage, view: viewStage };
+        if (routeMoved && routeStage && routeStage !== viewStage) {
+            if (routeStage === "site") {
+                presenter.openSite();
+            } else if ((STAGES as readonly string[]).includes(routeStage)) {
+                presenter.selectStage(routeStage);
+            }
+            return;
+        }
+        if (viewMoved && viewStage && viewStage !== routeStage) {
+            replaceRouteParams((params: Record<string, unknown>) => ({
+                ...params,
+                stage: viewStage
+            }));
+        }
+    }, [presenter, routeStage, viewStage, loadedRunId, replaceRouteParams]);
+
+    // A step chosen in the rail is a navigation: it goes into history, and closes the composed panel.
+    const goToStep = (stage: string) => {
+        if (stage === "site") {
+            presenter.openSite();
+        } else {
+            presenter.selectStage(stage);
+        }
+        // A write that changes nothing would still add a step the back button has to walk through.
+        if (stage === routeStage && !composedOpen) {
+            return;
+        }
+        setRouteParams((params: Record<string, unknown>) => ({
+            ...params,
+            stage,
+            composed: undefined,
+            page: undefined
+        }));
+    };
 
     useEffect(() => {
         const onEvent = (event: StageEvent) => {
@@ -304,8 +366,26 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
               }
             : null;
 
+    // Where in the run: a side panel when one is open, otherwise the step.
+    const trailCurrent = vm.showComposed
+        ? "Composed pages"
+        : vm.showTokens
+          ? "Token usage"
+          : vm.showOverrides
+            ? "Overrides"
+            : vm.showSite
+              ? "Site"
+              : `${meta.number} · ${meta.label}`;
+
     return (
         <div className="flex h-main-content flex-col">
+            {vm.job ? (
+                <MigrationTrail
+                    job={vm.job}
+                    run={{ id: run.id, label: runLabel(run) }}
+                    current={trailCurrent}
+                />
+            ) : null}
             <div className="flex items-center justify-between gap-sm px-md py-sm">
                 <Breadcrumb
                     items={[
@@ -368,14 +448,10 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                         className="flex-shrink-0 shadow-sm"
                         rows={railRows}
                         selected={vm.showSite ? null : selected}
-                        onSelect={stage => {
-                            // The composed panel is route-owned; leaving it goes through the route.
-                            if (vm.showComposed) {
-                                openComposedRoute(false, null);
-                            }
-                            presenter.selectStage(stage);
-                        }}
-                        after={<SiteRailEntry presenter={presenter} />}
+                        onSelect={stage => goToStep(stage)}
+                        after={
+                            <SiteRailEntry presenter={presenter} onOpen={() => goToStep("site")} />
+                        }
                         footer={
                             vm.job ? (
                                 <Button
@@ -402,64 +478,69 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                         <ComposedPagesPanel presenter={presenter} onCompare={openComposedRoute} />
                     ) : (
                         <div className="flex min-h-0 flex-1 flex-col">
-                            <div className="flex flex-col gap-sm border-b border-neutral-dimmed px-md py-sm">
-                                <div className="flex flex-wrap items-center justify-between gap-sm">
-                                    <div className="flex items-center gap-sm">
-                                        <StatusDot status={status} stageNumber={meta.number} />
-                                        <Text className="font-medium">
+                            <div className="flex flex-wrap items-start justify-between gap-x-md-plus gap-y-sm-extra px-lg pt-[18px]">
+                                <div className="min-w-[min(100%,320px)] flex-[1_1_320px]">
+                                    <div className="flex items-center gap-sm-plus whitespace-nowrap">
+                                        <StatusDot
+                                            status={status}
+                                            stageNumber={meta.number}
+                                            className="size-6"
+                                        />
+                                        <span className="text-[18px] font-semibold leading-6 text-neutral-primary">
                                             {meta.number} · {meta.label}
-                                        </Text>
+                                        </span>
                                         <StatusTag status={status} />
                                         <StageKindChip kind={meta.kind} />
                                     </div>
-                                    <div className="flex items-center gap-sm">
-                                        {earlier.length > 0 ? (
-                                            <DropdownMenu
-                                                trigger={
-                                                    <Button
-                                                        variant="tertiary"
-                                                        size="sm"
-                                                        text="Jump back to…"
-                                                        disabled={busy}
-                                                    />
-                                                }
-                                            >
-                                                {earlier.map(stage => (
-                                                    <DropdownMenu.Item
-                                                        key={stage}
-                                                        text={`${stageMeta(stage).number} · ${STAGE_LABELS[stage]}`}
-                                                        onClick={() => void runStage(stage)}
-                                                    />
-                                                ))}
-                                            </DropdownMenu>
-                                        ) : null}
-                                        {hasRun ? (
-                                            <Button
-                                                variant="secondary"
-                                                size="sm"
-                                                text="Re-run this stage"
-                                                disabled={busy}
-                                                onClick={() => void runStage(selected)}
-                                            />
-                                        ) : null}
-                                        {primaryAction ? (
-                                            <Button
-                                                variant="primary"
-                                                size="sm"
-                                                text={primaryAction.text}
-                                                disabled={busy}
-                                                onClick={() => void runStage(primaryAction.target)}
-                                            />
-                                        ) : null}
+                                    <div className="mt-xs-plus text-[13px] leading-5 text-neutral-strong">
+                                        {meta.description} {stageKindSentence(meta.kind)}
                                     </div>
                                 </div>
-                                <Text size="sm" className="text-neutral-strong">
-                                    {meta.description}
-                                </Text>
-                                <StageKindSentence kind={meta.kind} />
+                                <div className="flex flex-none items-center gap-sm">
+                                    {earlier.length > 0 ? (
+                                        <DropdownMenu
+                                            trigger={
+                                                <Button
+                                                    variant="tertiary"
+                                                    size="sm"
+                                                    text="Jump back to…"
+                                                    disabled={busy}
+                                                />
+                                            }
+                                        >
+                                            {earlier.map(stage => (
+                                                <DropdownMenu.Item
+                                                    key={stage}
+                                                    text={`${stageMeta(stage).number} · ${STAGE_LABELS[stage]}`}
+                                                    onClick={() => void runStage(stage)}
+                                                />
+                                            ))}
+                                        </DropdownMenu>
+                                    ) : null}
+                                    {hasRun ? (
+                                        <Button
+                                            variant="tertiary"
+                                            size="sm"
+                                            text="Re-run this stage"
+                                            disabled={busy}
+                                            onClick={() => void runStage(selected)}
+                                        />
+                                    ) : null}
+                                    {primaryAction ? (
+                                        <Button
+                                            variant="primary"
+                                            size="sm"
+                                            text={primaryAction.text}
+                                            icon={<ArrowForwardIcon />}
+                                            iconPosition="end"
+                                            disabled={busy}
+                                            onClick={() => void runStage(primaryAction.target)}
+                                        />
+                                    ) : null}
+                                </div>
                             </div>
 
-                            <div className="flex flex-col gap-sm px-md pt-sm">
+                            <div className="flex flex-col gap-sm px-lg pt-[14px] empty:hidden">
                                 {status === "stale" ? (
                                     <Alert type="warning">
                                         An upstream stage re-ran, so this artifact is stale. Re-run

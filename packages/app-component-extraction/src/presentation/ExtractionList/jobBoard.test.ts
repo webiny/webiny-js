@@ -7,6 +7,7 @@ import {
     boardColumn,
     failureOf,
     isMine,
+    jobOwner,
     matchesSearch,
     ownerOf,
     SHARED_LOGIN_IDS,
@@ -113,6 +114,34 @@ describe("ownership", () => {
         expect(isMine(job(SHARED), "ana-1")).toBe(false);
         expect(isMine(job(null), "ana-1")).toBe(false);
         expect(isMine(job(ANA), null)).toBe(false);
+    });
+
+    it("follows the assigned owner, not the creator, once a job is assigned", () => {
+        // A job the shared login created, assigned to Ana: hers, and no longer the shared login's.
+        const assigned: JobListItemDto = {
+            ...items[0]!,
+            job: {
+                ...items[0]!.job,
+                createdBy: SHARED,
+                owner: ANA,
+                assignment: {
+                    owner: ANA,
+                    assignedBy: SHARED,
+                    assignedOn: "2026-10-13T08:00:00.000Z"
+                }
+            }
+        };
+        expect(isMine(assigned, "ana-1")).toBe(true);
+        expect(isMine(assigned, SHARED.id)).toBe(false);
+        expect(matchesSearch(assigned, "kovač")).toBe(true);
+        expect(ownerOf(jobOwner(assigned.job)).label).toBe("Ana Kovač");
+    });
+
+    it("reads the creator as the owner on an API without the owner field", () => {
+        const older: JobListItemDto = { ...items[0]!, job: { ...items[0]!.job, createdBy: ANA } };
+        delete older.job.owner;
+        expect(isMine(older, "ana-1")).toBe(true);
+        expect(jobOwner(older.job)).toEqual(ANA);
     });
 
     it("searches the job name, its site URL and its owner", () => {

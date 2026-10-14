@@ -35,7 +35,7 @@ export const Extension = () => {
                     <Route
                         route={Routes.List}
                         element={
-                            <AdminLayout title="Component Extraction">
+                            <AdminLayout title="Website Migration">
                                 <ExtractionListPage />
                             </AdminLayout>
                         }
@@ -77,11 +77,11 @@ export const Extension = () => {
                         parent="dev-tools"
                         element={
                             <Menu.Link
-                                text="Component Extraction"
+                                text="Website Migration"
                                 to={getLink(Routes.List)}
                                 icon={
                                     <Menu.Link.Icon
-                                        label="Component Extraction"
+                                        label="Website Migration"
                                         element={<ExtractionIcon />}
                                     />
                                 }

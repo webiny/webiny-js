@@ -3,7 +3,7 @@ import { JobDetailPresenter as PresenterAbstraction } from "./abstractions.js";
 import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
 import { currentStage } from "~/shared/ledger.js";
 import { STAGES, type Stage } from "~/constants.js";
-import type { OverrideDto, PromoteArtifactDto, RunDto } from "~/shared/types.js";
+import type { JobDto, OverrideDto, PromoteArtifactDto, RunDto } from "~/shared/types.js";
 
 class JobDetailPresenterImpl implements PresenterAbstraction.Interface {
     vm: PresenterAbstraction.ViewModel = {
@@ -66,6 +66,12 @@ class JobDetailPresenterImpl implements PresenterAbstraction.Interface {
                 this.vm.loading = false;
             });
         }
+    }
+
+    setJob(job: JobDto) {
+        runInAction(() => {
+            this.vm.job = job;
+        });
     }
 
     selectStage(stage: Stage) {

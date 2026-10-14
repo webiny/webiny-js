@@ -78,11 +78,18 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         "Approves into and composes in its site tenant. False for jobs created before that existed."
         siteTenantFromStart: Boolean
         createdOn: String!
-        """
-        Who created the job: the identity the CMS stamped on its entry at creation. Not editable; this
-        is ownership, not assignment.
-        """
+        "Who created the job: the identity the CMS stamped on its entry at creation."
         createdBy: ComponentExtractionIdentity
+        "The admin user the job is assigned to, or who created it when nobody has assigned it."
+        owner: ComponentExtractionIdentity
+        "Who assigned the owner and when; empty when nobody has."
+        assignment: ComponentExtractionJobAssignment
+    }
+
+    type ComponentExtractionJobAssignment {
+        owner: ComponentExtractionIdentity!
+        assignedBy: ComponentExtractionIdentity!
+        assignedOn: String!
     }
 
     "An identity as the CMS records it: an admin user, or an API key."
@@ -228,6 +235,9 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionCancelRun(runId: ID!): ComponentExtractionRunResponse!
         "Extract the job's theme again from its site: after a failure, or to replace a theme it already has (re-pins it and marks Cluster onward of the latest run stale)."
         componentExtractionRetryJobTheme(jobId: ID!): ComponentExtractionJobResponse!
+
+        "Assigns the job to an admin user. Their account is read, so the owner is a real user."
+        componentExtractionAssignJob(jobId: ID!, userId: ID!): ComponentExtractionJobResponse!
         "Pin an existing published theme on the job instead of extracting one (marks Cluster onward of the latest run stale when it replaces a theme)."
         componentExtractionUseExistingTheme(
             jobId: ID!

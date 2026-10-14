@@ -17,6 +17,7 @@ import {
     boardColumn,
     cardStage,
     failureOf,
+    jobOwner,
     ownerOf,
     sortColumn,
     timingOf,
@@ -37,7 +38,7 @@ const ACCENT: Record<BoardColumn, string> = {
 
 /** The owner, as an avatar with initials and a name; the account as recorded on hover. */
 export const OwnerBadge = ({ item }: { item: JobListItemDto }) => {
-    const owner = ownerOf(item.job.createdBy);
+    const owner = ownerOf(jobOwner(item.job));
     return (
         <Tooltip
             content={owner.account}

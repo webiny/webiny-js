@@ -20,14 +20,19 @@ import { ReactComponent as PinIcon } from "@webiny/icons/push_pin.svg";
 import { ReactComponent as NoteIcon } from "@webiny/icons/sticky_note_2.svg";
 import { ReactComponent as ArrowIcon } from "@webiny/icons/arrow_forward.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
+import { ReactComponent as AssignIcon } from "@webiny/icons/assignment_ind.svg";
 import { JobDetailFeature } from "../feature.js";
 import { JobDeletionFeature } from "~/presentation/JobDeletion/feature.js";
 import { DeleteJobDialog } from "~/presentation/JobDeletion/DeleteJobDialog.js";
+import { AssignJobDialog } from "~/presentation/JobAssignment/AssignJobDialog.js";
+import { JobAssignmentFeature } from "~/presentation/JobAssignment/feature.js";
+import { jobOwner, ownerOf } from "~/presentation/ExtractionList/jobBoard.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
 import { currentStage, stageEntry } from "~/shared/ledger.js";
 import { STAGES, STAGE_LABELS, type Stage } from "~/constants.js";
 import {
     Breadcrumb,
+    MigrationTrail,
     StageRail,
     StageStatus,
     StatusTag,
@@ -425,6 +430,7 @@ const PromotedGrid = ({ promoted }: { promoted: { componentId: string; name: str
 const JobDetailContent = createReactiveComponent(function JobDetailContent() {
     const { presenter } = useFeature(JobDetailFeature);
     const { presenter: deletion } = useFeature(JobDeletionFeature);
+    const { presenter: assignment } = useFeature(JobAssignmentFeature);
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.Job);
     const toast = useToast();
@@ -491,6 +497,7 @@ const JobDetailContent = createReactiveComponent(function JobDetailContent() {
 
     return (
         <div className="flex flex-col gap-lg p-md">
+            <MigrationTrail job={job} />
             <Breadcrumb items={[{ label: "Extractions", onClick: goList }, { label: job.name }]} />
 
             <div className="flex flex-col gap-sm">
@@ -528,6 +535,19 @@ const JobDetailContent = createReactiveComponent(function JobDetailContent() {
                         <Button
                             variant="tertiary"
                             size="sm"
+                            icon={<AssignIcon />}
+                            text="Assign"
+                            onClick={() =>
+                                void assignment.open({
+                                    id: job.id,
+                                    name: job.name,
+                                    ownerId: jobOwner(job)?.id ?? null
+                                })
+                            }
+                        />
+                        <Button
+                            variant="tertiary"
+                            size="sm"
                             icon={<DeleteIcon />}
                             text="Delete"
                             onClick={() => void deletion.open(job.id, job.name)}
@@ -535,7 +555,8 @@ const JobDetailContent = createReactiveComponent(function JobDetailContent() {
                     </div>
                 </div>
                 <Text size="sm" className="text-neutral-strong">
-                    {job.siteUrl} · Theme v{job.themeVersion}
+                    {job.siteUrl} · Theme v{job.themeVersion} · Owner:{" "}
+                    {ownerOf(jobOwner(job)).label}
                 </Text>
                 <div className="flex items-start gap-sm rounded-sm border border-dashed border-neutral-muted p-sm">
                     <Icon
@@ -585,6 +606,10 @@ const JobDetailContent = createReactiveComponent(function JobDetailContent() {
                 </div>
             </div>
             <DeleteJobDialog presenter={deletion} onDeleted={goList} />
+            <AssignJobDialog
+                presenter={assignment}
+                onAssigned={updated => presenter.setJob(updated)}
+            />
         </div>
     );
 });
@@ -597,6 +622,7 @@ export const JobDetailPage = () => {
         ComponentExtractionGatewayFeature.register(child);
         JobDetailFeature.register(child);
         JobDeletionFeature.register(child);
+        JobAssignmentFeature.register(child);
         return child;
     }, []);
 

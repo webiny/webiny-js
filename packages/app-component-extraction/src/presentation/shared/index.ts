@@ -5,3 +5,4 @@ export * from "./StatusIndicator.js";
 export * from "./StagePips.js";
 export * from "./StageRail.js";
 export * from "./Breadcrumb.js";
+export * from "./MigrationTrail.js";

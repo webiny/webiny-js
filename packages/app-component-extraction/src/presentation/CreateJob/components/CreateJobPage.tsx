@@ -15,7 +15,12 @@ import {
 } from "@webiny/admin-ui";
 import { CreateJobFeature } from "../feature.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
-import { Breadcrumb, StageKindChip, STAGE_META } from "~/presentation/shared/index.js";
+import {
+    Breadcrumb,
+    MigrationTrail,
+    StageKindChip,
+    STAGE_META
+} from "~/presentation/shared/index.js";
 import { Routes } from "~/routes.js";
 import { EXTRACT_THEME, type GatePreset } from "../abstractions.js";
 
@@ -126,6 +131,7 @@ const CreateJobContent = createReactiveComponent(function CreateJobContent() {
 
     return (
         <div className="mx-auto flex w-full max-w-[760px] flex-col gap-lg px-md py-lg">
+            <MigrationTrail current="New extraction" />
             <Breadcrumb
                 items={[{ label: "Extractions", onClick: goList }, { label: "New extraction" }]}
             />

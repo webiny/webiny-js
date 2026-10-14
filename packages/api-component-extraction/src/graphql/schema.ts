@@ -21,6 +21,8 @@ import {
     SiteTenant
 } from "~/domain/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import { GetUserUseCase } from "@webiny/api-core/exports/api/security/user.js";
 import { BlobStore, StageArtifactStore } from "~/domain/stage.js";
 import {
     readGenerationLog,
@@ -315,6 +317,58 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         Boolean(job.themeEntryId)
                     );
                     const updated = await jobRepository.get(job.id);
+                    if (updated.isFail()) {
+                        throw updated.error;
+                    }
+                    return updated.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionAssignJob",
+        dependencies: [
+            ComponentExtractionPermissions,
+            JobRepository,
+            GetUserUseCase,
+            IdentityContext
+        ],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            jobRepository: JobRepository.Interface,
+            getUser: GetUserUseCase.Interface,
+            identityContext: IdentityContext.Interface
+        ) {
+            return ({ args }: { args: { jobId: string; userId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to assign extraction jobs.");
+                    }
+                    const jobResult = await jobRepository.get(args.jobId);
+                    if (jobResult.isFail()) {
+                        throw jobResult.error;
+                    }
+                    // Read the account, so the owner is a user that exists, named as it is now.
+                    const user = await getUser.execute({ id: args.userId });
+                    if (user.isFail()) {
+                        throw user.error;
+                    }
+                    const identity = identityContext.getIdentity();
+                    const updated = await jobRepository.update(jobResult.value.id, {
+                        assignment: {
+                            owner: {
+                                id: user.value.id,
+                                displayName: user.value.displayName,
+                                type: "admin"
+                            },
+                            assignedBy: {
+                                id: identity.id,
+                                displayName: identity.displayName ?? null,
+                                type: identity.type
+                            },
+                            assignedOn: new Date().toISOString()
+                        }
+                    });
                     if (updated.isFail()) {
                         throw updated.error;
                     }

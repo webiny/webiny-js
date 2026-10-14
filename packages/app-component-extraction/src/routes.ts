@@ -37,6 +37,8 @@ export const Routes = {
         path: "/component-extraction/runs/:runId",
         params: zod => ({
             runId: zod.string(),
+            /** The open step: a stage name, or "site". Kept so a reload stays where it was. */
+            stage: zod.string().optional(),
             composed: zod.boolean().optional(),
             /** The Website Builder path of the page whose comparison is open. */
             page: zod.string().optional()

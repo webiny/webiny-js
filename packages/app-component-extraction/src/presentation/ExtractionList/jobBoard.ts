@@ -66,7 +66,7 @@ const initialsOf = (name: string): string =>
         .join("") || "?";
 
 /**
- * The owner: who created the job, as the CMS stamped it. The shared login and API keys are accounts,
+ * The owner as a label: whoever the job is assigned to, else who created it, as the CMS stamped it. The shared login and API keys are accounts,
  * not people, so their jobs say so; a job with no record says that instead of guessing.
  */
 export const ownerOf = (
@@ -89,8 +89,12 @@ export const ownerOf = (
     return { label: name, account: name, shared: false, initials: initialsOf(name) };
 };
 
+/** The job's owner: whoever it is assigned to, or who created it when nobody has assigned it. */
+export const jobOwner = (job: JobListItemDto["job"]): IdentityDto | null =>
+    job.owner ?? job.createdBy ?? null;
+
 export const isMine = (item: JobListItemDto, identityId: string | null): boolean =>
-    Boolean(identityId) && item.job.createdBy?.id === identityId;
+    Boolean(identityId) && jobOwner(item.job)?.id === identityId;
 
 const latest = (values: Array<string | null | undefined>): string | null =>
     values
@@ -188,7 +192,7 @@ export const matchesSearch = (item: JobListItemDto, query: string): boolean => {
     if (!needle) {
         return true;
     }
-    const owner = ownerOf(item.job.createdBy);
+    const owner = ownerOf(jobOwner(item.job));
     return `${item.job.name} ${item.job.siteUrl} ${owner.label} ${owner.account}`
         .toLowerCase()
         .includes(needle);

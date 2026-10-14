@@ -171,6 +171,18 @@ export interface JobValues {
      * (`scripts/baseline/reports/2026-10-12/site-tenant-revert-procedure.md`).
      */
     siteTenantFromStart?: boolean;
+    /**
+     * Who the job is assigned to, when someone assigned it. Absent on a job nobody has assigned: its
+     * owner is then who created it.
+     */
+    assignment?: JobAssignment | null;
+}
+
+/** An owner set by hand: the admin user it is assigned to, and who assigned it when. */
+export interface JobAssignment {
+    owner: Identity;
+    assignedBy: Identity;
+    assignedOn: string;
 }
 
 export interface Job extends JobValues {
@@ -178,6 +190,8 @@ export interface Job extends JobValues {
     entryId: string;
     createdOn: string;
     createdBy: Identity;
+    /** The assigned owner, or who created the job when nobody has assigned it. */
+    owner: Identity;
     savedOn: string;
     tenant: string;
 }

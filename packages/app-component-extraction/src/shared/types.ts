@@ -139,6 +139,17 @@ export interface JobDto {
     createdOn: string;
     /** Who created the job, as the CMS stamped it. Absent from an API without the field. */
     createdBy?: IdentityDto | null;
+    /** The assigned owner, or the creator when nobody has assigned one. Absent from an older API. */
+    owner?: IdentityDto | null;
+    /** Who assigned the owner and when; null when nobody has. */
+    assignment?: { owner: IdentityDto; assignedBy: IdentityDto; assignedOn: string } | null;
+}
+
+/** An admin user a job can be assigned to. */
+export interface AdminUserOptionDto {
+    id: string;
+    displayName: string;
+    email: string;
 }
 
 /** An identity as the CMS records it: an admin user (`type` "admin") or an API key. */
