@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction, toJS } from "mobx";
+import { makeAutoObservable, toJS } from "mobx";
 import { NotificationsPresenter as PresenterAbstraction } from "./abstractions.js";
 import type { NotificationsTab } from "./abstractions.js";
 import { NotificationsApi } from "~/admin/features/api/abstractions.js";
@@ -124,33 +124,19 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
         // Switching tabs or filters quickly can leave an older request still in flight; it may
         // fill its own view's cache, but only the latest request writes the visible list.
         const requestId = ++this.latestRequestId;
-        runInAction(() => {
-            // Set either way: an older request that showed the loading state won't clear it,
-            // because it's no longer the latest.
-            this.loading = showLoading;
-            this.error = null;
-        });
+        this.startLoading(showLoading);
         try {
             const result = await this.api.list({
                 archived,
                 read: unreadOnly ? false : undefined,
                 limit: 50
             });
-            runInAction(() => {
-                this.cache.set(key, result.items);
-                if (requestId === this.latestRequestId) {
-                    this.items = result.items;
-                    this.loading = false;
-                }
-            });
+            this.storeItems(key, result.items, requestId);
         } catch (err) {
             if (requestId !== this.latestRequestId) {
                 return;
             }
-            runInAction(() => {
-                this.error = (err as Error).message;
-                this.loading = false;
-            });
+            this.failLoading((err as Error).message);
         }
     }
 
@@ -184,12 +170,39 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
     private async refreshCounts() {
         try {
             const counts = await this.api.counts();
-            runInAction(() => {
-                this.counts = counts;
-            });
+            this.setCounts(counts);
         } catch {
             // best-effort
         }
+    }
+
+    /*
+     * State changes that happen after an `await` go through these methods. makeAutoObservable makes
+     * each of them an action, so the change runs inside one even though the caller has already
+     * left its own action.
+     */
+    private startLoading(showLoading: boolean) {
+        // Set either way: an older request that showed the loading state won't clear it, because
+        // it's no longer the latest.
+        this.loading = showLoading;
+        this.error = null;
+    }
+
+    private storeItems(key: string, items: Notification[], requestId: number) {
+        this.cache.set(key, items);
+        if (requestId === this.latestRequestId) {
+            this.items = items;
+            this.loading = false;
+        }
+    }
+
+    private failLoading(error: string) {
+        this.error = error;
+        this.loading = false;
+    }
+
+    private setCounts(counts: NotificationCounts) {
+        this.counts = counts;
     }
 }
 
