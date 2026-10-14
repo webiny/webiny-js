@@ -69,4 +69,71 @@ describe("WorkflowBypassService (D36, D62, R150)", () => {
         expect(seen).toEqual([true]);
         expect(second.isActive()).toBe(false);
     });
+
+    it("is not active for a sibling started alongside a run", async () => {
+        const service = await createService();
+        const seen: boolean[] = [];
+        let release: () => void = () => undefined;
+        const gate = new Promise<void>(resolve => {
+            release = resolve;
+        });
+
+        await Promise.all([
+            service.run(async () => {
+                await gate;
+                seen.push(service.isActive());
+            }),
+            (async () => {
+                await Promise.resolve();
+                seen.push(service.isActive());
+                release();
+            })()
+        ]);
+
+        expect(seen).toEqual([false, true]);
+        expect(service.isActive()).toBe(false);
+    });
+
+    it("keeps two overlapping runs active for their whole duration, whichever ends first", async () => {
+        const service = await createService();
+        const seen: boolean[] = [];
+        let releaseFirst: () => void = () => undefined;
+        let releaseSecond: () => void = () => undefined;
+        const firstGate = new Promise<void>(resolve => {
+            releaseFirst = resolve;
+        });
+        const secondGate = new Promise<void>(resolve => {
+            releaseSecond = resolve;
+        });
+
+        const first = service.run(async () => {
+            await firstGate;
+            seen.push(service.isActive());
+        });
+        const second = service.run(async () => {
+            await secondGate;
+            seen.push(service.isActive());
+        });
+        releaseFirst();
+        await first;
+        seen.push(service.isActive());
+        releaseSecond();
+        await second;
+
+        expect(seen).toEqual([true, false, true]);
+        expect(service.isActive()).toBe(false);
+    });
+
+    it("does not leak into another request container", async () => {
+        const first = await createService();
+        const second = await createService();
+        const seen: boolean[] = [];
+
+        await first.run(async () => {
+            await Promise.resolve();
+            seen.push(second.isActive());
+        });
+
+        expect(seen).toEqual([false]);
+    });
 });
