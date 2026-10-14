@@ -65,10 +65,11 @@ class ScheduleDialogPresenterImpl implements IScheduleDialogPresenter {
                 this.entry = entry;
                 this.loading = false;
             });
-        } catch {
+        } catch (error) {
             runInAction(() => {
                 this.loading = false;
             });
+            throw error;
         }
     }
 
