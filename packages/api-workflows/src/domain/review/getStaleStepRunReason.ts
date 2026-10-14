@@ -37,6 +37,9 @@ export const getStaleStepRunReason = (
     if (step.taskId !== task.id) {
         return "The step does not belong to this task.";
     }
+    // Contract: a task's `createdBy` is the identity active when it was triggered.
+    // `AutomationStepType.reach` triggers inside `withIdentity(requester)`, so for a genuine step
+    // run task it is the review's requester. Pinned by background-tasks `crud/trigger.test.ts`.
     if (task.createdById !== review.createdBy.id) {
         return "The task was not created by the requester.";
     }
