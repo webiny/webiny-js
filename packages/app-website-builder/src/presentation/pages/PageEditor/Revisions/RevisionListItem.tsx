@@ -71,13 +71,15 @@ const getIcon = (revision: PageRevision) => {
 
 interface RevisionListItemProps {
     item: RevisionListPresenter.ItemViewModel;
+    onDeleted?: (revision: PageRevision) => void;
 }
 
-const RevisionListItem = ({ item }: RevisionListItemProps) => {
+const RevisionListItem = ({ item, onDeleted }: RevisionListItemProps) => {
     const { revision } = item;
     const { createRevision, editRevision, deleteRevision, unpublishRevision, publishRevision } =
         useRevision({
-            revision
+            revision,
+            onDeleted
         });
 
     const { icon, text: tooltipText } = getIcon(revision);
