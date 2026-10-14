@@ -171,7 +171,7 @@ The contract each task produces for later tasks. Paths are under `packages/api-w
 - `domain/automation/parseAutomationStepConfig.ts`: none; reach safe-parses with `automationStepConfigSchema.safeParse` inline (pure, no dependency) and uses the R146 reason `The automation step configuration is not valid.` on failure (P3).
 - `domain/automation/parseAutomationSettings.ts`: `parseAutomationSettings(definition: AutomationDefinition.Interface, settings: unknown): Result<unknown, string>` - ok = parsed settings; fail = the message `"<path>: <message>"` (path omitted when empty). Reused by Tasks 10 and 15 for the reach-time failure reason.
 - `features/stepTypes/AutomationStepType/AutomationStepType.ts` (class `AutomationStepType`): `type: "automation"`, `configSchema: automationStepConfigSchema`, `validate` per R136/R137, `describeAvailability` per R138, `reach` is a placeholder returning `Result.ok()` until Task 10 (the reacher does not dispatch by type yet, so an automation step is reached like a review step in the interim, R160).
-- `__tests__/__helpers/TestAutomationDefinition.ts` (`TestAutomationDefinition` with `runCalls`, `registerTestAutomation(container, overrides?)`), `createAutomationStep.ts` (R157; `createTestStepType` is Task 1's `TestStepType.ts`). Consumed by Tasks 3, 10, 11, 16, 17 (helpers: only these names).
+- `__tests__/__helpers/TestAutomationDefinition.ts` (`TestAutomationDefinition` with `runCalls`, `registerTestAutomation(container, overrides?)`, `createAutomationStep(params)`) (R157; `createTestStepType` is Task 1's `TestStepType.ts`). Consumed by Tasks 3, 10, 11, 16, 17 (helpers: only these names).
 
 ### Task 3: listStepTypes and listAutomationDefinitions
 
