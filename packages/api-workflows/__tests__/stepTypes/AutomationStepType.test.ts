@@ -143,12 +143,4 @@ describe("AutomationStepType (R133, R137, R138)", () => {
             );
         });
     });
-
-    it("reach is a placeholder that succeeds without changing the review (Task 10 fills it)", async () => {
-        const stepType = await setup(container => registerTestAutomation(container));
-
-        const result = await stepType.reach({} as never);
-
-        expect(result.isOk()).toBe(true);
-    });
 });

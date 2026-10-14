@@ -4,6 +4,7 @@ import type {
     ReviewAlreadyActiveError,
     ReviewInvalidStateError,
     ReviewPersistenceError,
+    ReviewStepNotCurrentError,
     ReviewTargetNotFoundError,
     ReviewTargetSyncError,
     ReviewValidationError,
@@ -32,6 +33,7 @@ export interface IRequestReviewUseCaseErrors {
     targetNotFound: ReviewTargetNotFoundError;
     validation: ReviewValidationError;
     invalidState: ReviewInvalidStateError;
+    stepNotCurrent: ReviewStepNotCurrentError;
     persistence: ReviewPersistenceError;
     targetSync: ReviewTargetSyncError;
 }

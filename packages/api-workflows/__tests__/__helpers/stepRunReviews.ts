@@ -1,5 +1,6 @@
 import { Review } from "~/domain/review/Review.js";
 import { getAutomationActor } from "~/domain/automation/getAutomationActor.js";
+import { createAutomationStep } from "./TestAutomationDefinition.js";
 import type { Workflow } from "~/domain/workflow/types.js";
 import {
     ARTICLE_MODEL,
@@ -20,11 +21,7 @@ export const automationActor = getAutomationActor(requester);
 export const createAutomationWorkflow = (): Workflow => {
     return createWorkflow({
         steps: [
-            {
-                ...createReviewStep({ id: AUTOMATION_STEP_ID, title: "Check links" }),
-                type: "automation",
-                config: { automationId: "test-automation", settings: {} }
-            },
+            createAutomationStep({ id: AUTOMATION_STEP_ID, title: "Check links" }),
             createReviewStep({ id: "editorial", title: "Editorial review" })
         ]
     });
