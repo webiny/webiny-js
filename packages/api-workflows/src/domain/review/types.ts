@@ -167,7 +167,7 @@ export interface ReviewViewerFlags {
     canReject: boolean;
     canCancel: boolean;
     canReassign: boolean;
-    /** Always `false` until phase 5 adds failed steps (D34). */
+    /** The current step failed, and the viewer is the requester or holds `reassign` (D34, R153). */
     canRestart: boolean;
 }
 

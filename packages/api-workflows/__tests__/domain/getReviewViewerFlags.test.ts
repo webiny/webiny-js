@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Review } from "~/domain/review/Review.js";
 import { getReviewViewerFlags } from "~/domain/review/getReviewViewerFlags.js";
+import { canRestartByPermission } from "~/domain/review/canRestartByPermission.js";
 import type { Actor, ReviewData, ReviewViewer, ReviewViewerFlags } from "~/domain/review/types.js";
 import type { WorkflowsPermissionSet } from "~/domain/permissions/types.js";
 import {
@@ -20,6 +21,12 @@ import {
     targetContext,
     toSaveData
 } from "~tests/__helpers/fixtures.js";
+import {
+    AUTOMATION_STEP_ID,
+    createFailedAutomationReview,
+    createPendingAutomationReview,
+    createRunningAutomationReview
+} from "~tests/__helpers/stepRunReviews.js";
 
 const LATER = "2026-10-09T11:00:00.000Z";
 
@@ -131,6 +138,40 @@ const rejectedReview = (): ReviewData => {
 const cancelledReview = (): ReviewData => {
     const review = createStartedReview();
     expectOk(review.cancel({ actor: requester, now: LATER }));
+    return toSaveData(review);
+};
+
+/** The automation step failed; the review is still in progress (D8). */
+const failedReview = (): ReviewData => toSaveData(createFailedAutomationReview());
+
+/** The automation step is `inReview`, owned by the automation actor. */
+const runningAutomationReview = (): ReviewData => toSaveData(createRunningAutomationReview());
+
+/** The automation step failed while still `pending`: it never started a task. */
+const failedBeforeStartReview = (): ReviewData => {
+    const review = createPendingAutomationReview();
+    expectOk(
+        review.fail({
+            stepId: AUTOMATION_STEP_ID,
+            reason: 'The automation "test-automation" is not available.',
+            now: LATER
+        })
+    );
+    return toSaveData(review);
+};
+
+/** The automation rejected its step: the review is rejected and final (D10). */
+const rejectedAutomationReview = (): ReviewData => {
+    const review = createRunningAutomationReview();
+    expectOk(
+        review.reject({
+            stepId: AUTOMATION_STEP_ID,
+            actor: automationActor,
+            actorTeamIds: [],
+            comment: "Does not meet the policy.",
+            now: LATER
+        })
+    );
     return toSaveData(review);
 };
 
@@ -247,6 +288,106 @@ describe("getReviewViewerFlags", () => {
         });
     });
 
+    it("lets the requester restart a failed step, and cancel the review (D34)", () => {
+        expect(getReviewViewerFlags(failedReview(), viewerOf(requester))).toEqual({
+            ...NO_FLAGS,
+            canCancel: true,
+            canRestart: true
+        });
+    });
+
+    it("lets reassign holders and full access restart a failed step (D34, D54)", () => {
+        const expected = { ...NO_FLAGS, canCancel: true, canRestart: true };
+
+        expect(getReviewViewerFlags(failedReview(), outsiderOf(REASSIGN))).toEqual(expected);
+        expect(getReviewViewerFlags(failedReview(), outsiderOf(FULL_ACCESS))).toEqual(expected);
+    });
+
+    it("offers a failed step to nobody else, whatever their teams", () => {
+        const data = failedReview();
+
+        expect(getReviewViewerFlags(data, viewerOf(reviewer))).toEqual(NO_FLAGS);
+        expect(getReviewViewerFlags(data, viewerOf(otherReviewer))).toEqual(NO_FLAGS);
+        expect(getReviewViewerFlags(data, outsiderOf())).toEqual(NO_FLAGS);
+        // The automation actor carries the requester's id (D58) but is not the requester.
+        expect(getReviewViewerFlags(data, viewerOf(automationActor))).toEqual(NO_FLAGS);
+        expect(getReviewViewerFlags(data, viewerOf(aiActor))).toEqual(NO_FLAGS);
+    });
+
+    it("offers no start, take over, approve, reject or reassign on a failed step", () => {
+        expect(
+            getReviewViewerFlags(failedReview(), viewerOf(requester, { permissions: FULL_ACCESS }))
+        ).toEqual({ ...NO_FLAGS, canCancel: true, canRestart: true });
+    });
+
+    it("lets the requester restart a step that failed before it started", () => {
+        expect(getReviewViewerFlags(failedBeforeStartReview(), viewerOf(requester))).toEqual({
+            ...NO_FLAGS,
+            canCancel: true,
+            canRestart: true
+        });
+    });
+
+    it("offers no restart while the automation step is still running", () => {
+        const data = runningAutomationReview();
+
+        expect(getReviewViewerFlags(data, viewerOf(requester))).toEqual({
+            ...NO_FLAGS,
+            canCancel: true
+        });
+        expect(getReviewViewerFlags(data, outsiderOf(FULL_ACCESS)).canRestart).toBe(false);
+    });
+
+    it("never offers restart on a rejected step: reject is final (D10)", () => {
+        const data = rejectedAutomationReview();
+
+        expect(
+            getReviewViewerFlags(data, viewerOf(requester, { permissions: FULL_ACCESS }))
+        ).toEqual(NO_FLAGS);
+    });
+
+    it("offers no restart on a cancelled review with a failed step", () => {
+        const review = createFailedAutomationReview();
+        expectOk(review.cancel({ actor: requester, now: LATER }));
+        const data = toSaveData(review);
+
+        expect(
+            getReviewViewerFlags(data, viewerOf(requester, { permissions: FULL_ACCESS }))
+        ).toEqual(NO_FLAGS);
+    });
+
+    it("agrees with the restart check and the permission predicate for every viewer", () => {
+        const reviews = [
+            failedReview(),
+            failedBeforeStartReview(),
+            runningAutomationReview(),
+            rejectedAutomationReview(),
+            awaitingReview(),
+            approvedReview(),
+            cancelledReview()
+        ];
+        const viewers = [
+            viewerOf(requester),
+            viewerOf(reviewer),
+            viewerOf(aiActor),
+            viewerOf(automationActor),
+            outsiderOf(REASSIGN),
+            outsiderOf(FULL_ACCESS)
+        ];
+
+        for (const data of reviews) {
+            const review = Review.fromData(data);
+            for (const viewer of viewers) {
+                const stepId = review.actionableStepId;
+                const expected =
+                    stepId !== null &&
+                    review.checkRestart({ stepId }).isOk() &&
+                    canRestartByPermission(data, viewer);
+                expect(getReviewViewerFlags(data, viewer).canRestart).toBe(expected);
+            }
+        }
+    });
+
     it.each([
         ["approved", approvedReview],
         ["rejected", rejectedReview],
@@ -268,7 +409,9 @@ describe("getReviewViewerFlags", () => {
             pendingNextStepReview(),
             approvedReview(),
             rejectedReview(),
-            cancelledReview()
+            cancelledReview(),
+            failedReview(),
+            runningAutomationReview()
         ];
         const viewers = [
             viewerOf(requester),
