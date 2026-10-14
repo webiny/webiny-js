@@ -58,6 +58,8 @@ import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/ind
 import { CandidateReadAccess } from "~/features/identity/CandidateReadAccess/index.js";
 import { WorkflowBypassService } from "~/features/bypass/WorkflowBypassService/index.js";
 import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortService/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { STEP_RUN_TASK_DEFINITION_ID } from "~/features/stepRun/constants.js";
 import {
     AutomationDefinition,
     type AutomationOutcome,
@@ -145,6 +147,11 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(CurrentReviewViewer)).toHaveLength(1);
         expect(container.resolveAll(WorkflowBypassService)).toHaveLength(1);
         expect(container.resolveAll(ReviewTaskAbortService)).toHaveLength(1);
+        expect(
+            container
+                .resolveAll(TaskDefinition)
+                .filter(item => item.id === STEP_RUN_TASK_DEFINITION_ID)
+        ).toHaveLength(1);
     });
 
     it.each(["wbyWorkflow", "wbyWorkflowReview", "wbyWorkflowAssignment", "wbyWorkflowSettings"])(
