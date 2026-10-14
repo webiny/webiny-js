@@ -19,6 +19,7 @@ import { GetReviewFeature } from "~/features/review/GetReview/feature.js";
 import { StartReviewStepFeature } from "~/features/review/StartReviewStep/feature.js";
 import { TakeOverReviewStepFeature } from "~/features/review/TakeOverReviewStep/feature.js";
 import { ReassignReviewStepFeature } from "~/features/review/ReassignReviewStep/feature.js";
+import { RestartReviewStepFeature } from "~/features/review/RestartReviewStep/feature.js";
 import { ApproveReviewStepFeature } from "~/features/review/ApproveReviewStep/feature.js";
 import { RejectReviewStepFeature } from "~/features/review/RejectReviewStep/feature.js";
 import { CancelReviewFeature } from "~/features/review/CancelReview/feature.js";
@@ -94,6 +95,7 @@ export const WorkflowsFeature = createFeature({
         StartReviewStepFeature.register(container);
         TakeOverReviewStepFeature.register(container);
         ReassignReviewStepFeature.register(container);
+        RestartReviewStepFeature.register(container);
         ApproveReviewStepFeature.register(container);
         RejectReviewStepFeature.register(container);
         CancelReviewFeature.register(container);
