@@ -10,7 +10,6 @@ import {
 } from "@webiny/api-core/features/task/TaskService/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { resetFakeTasks } from "~tests/__helpers/FakeTaskService.js";
-import { createFakeTaskController } from "~tests/__helpers/FakeTaskController.js";
 import { registerTestAutomation } from "~tests/__helpers/TestAutomationDefinition.js";
 import { FailingReviewSave, reviewSaveFaults } from "~tests/__helpers/FailingReviewSave.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
@@ -359,20 +358,5 @@ describe("workflowsStepRun onError never stores the task's error message (R146)"
         await call("onError", createTask({ id: "task-other", errorMessage: "Boom" }));
 
         expect(loggedErrors).toEqual([]);
-    });
-});
-
-describe("workflowsStepRun run (placeholder until Task 12)", () => {
-    it("returns done", async () => {
-        const { handler } = await createContext();
-        const { controller } = createFakeTaskController();
-
-        const result = await handler.run({
-            input: { reviewId: "review-1", stepId: AUTOMATION_STEP_ID },
-            definition: DEFINITION,
-            controller
-        });
-
-        expect(result).toMatchObject({ status: "done" });
     });
 });
