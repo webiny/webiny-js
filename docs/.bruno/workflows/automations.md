@@ -77,6 +77,7 @@ Every failure writes a fixed reason on the step (`failed`, R146); nothing is lef
 | `The automation settings are not valid: <path>: <message>.` | The settings no longer parse with the schema. |
 | `The automation could not be started.` | The task could not be triggered. |
 | `The automation failed.` | `run` threw, applying the outcome failed, or the task errored. The raw message is logged, never shown. |
+| `The automation failed: It returned an unknown outcome.` | `run` returned an outcome type other than `approved`, `rejected` or `continue`. |
 | `The automation rejected without a comment.` | A `rejected` outcome with a comment shorter than 10 characters. |
 | `The automation did not finish in <n> iterations.` | The run count passed the definition's `maxIterations`. |
 | `The automation was aborted.` | The task was aborted. |

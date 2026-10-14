@@ -164,7 +164,7 @@ All six tasks reviewed clean, a final review of the phase clean, `yarn test pack
 | 5.3, D25, D54: `canCancel` (requester or `reassign`, not on approved/rejected/cancelled) | Task 2 `checkCancel`, `isRequestedBy`; Task 3 (`canCancelByPermission`, R41) |
 | 5.3, D33: `canReassign` (`reassign`, step `awaiting` or human `inReview`) | Task 2 `checkReassign`, `ReviewStepNotReassignableError`; Task 3 (`canReassignByPermission`, R41) |
 | 5.1, D132: wrappers authorize cancel and reassign by permission and leave state errors to the engine | Task 3 (permission-only predicates, R41) |
-| 5.3, D34: `canRestart` | Task 3 (always `false` until phase 5, R34) | Done in phase 5 (R131-R158).
+| 5.3, D34: `canRestart` | Task 3 (always `false` until phase 5, R34) Done in phase 5 (R131-R158). |
 | 5.3, D22: `canPick` per step at submit | Task 3 (`canPickReviewer`, shared with `Review.request`, R35) |
 | D58: AI and automation actors carry the requester's id but are not the requester | Task 2 (`isRequestedBy`), Task 3 |
 | 1a review carry-over: `assertModelsBindable` throws `ModelNotAuthorized` for an editor without model read access | Task 5 (R38, amended: mapped to a validation error) |

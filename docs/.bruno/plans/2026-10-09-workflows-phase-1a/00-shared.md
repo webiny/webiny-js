@@ -165,7 +165,7 @@ Test helpers (`__tests__/__helpers/`): `handler.ts`, `fixtures.ts` (incl. `expec
 | 4.1 validation: exactly one model in a valid namespace, at least one step (D108), one workflow per model (D15, D41) | Task 2 (`WorkflowValidator`), Task 3 (`ensureModelIsFree`) |
 | 4.1 model exists and is publishable | Task 3 (CMS `assertModelsBindable` on BeforeCreate/BeforeUpdate) |
 | 4.1 every rule has a target; review config teams; 6: team targets among the step's teams | Task 2 |
-| 4.1 only review step type until phase 5 (R7) | Task 2 | Done in phase 5 (R131-R158).
+| 4.1 only review step type until phase 5 (R7) | Task 2 Done in phase 5 (R131-R158). |
 | 4.1 optimistic save (D131), NotFound without tombstone (D123) | Task 3 |
 | 4.1 delete blocked while in progress with exact count (D81) | Task 6 |
 | 4.2 review model, full workflow snapshot (D81), current-step fields (D19), `lastChangedOn` (D119), `model` replaces `app` (D41) | Task 4 (aggregate), Task 6 (model, repository) |
@@ -192,7 +192,7 @@ Test helpers (`__tests__/__helpers/`): `handler.ts`, `fixtures.ts` (incl. `expec
 - GraphQL schema (per app, plus the shared configuration operations, D133), including `CmsEntrySystemWorkflow` on the base schema and the CMS endpoint type update to `reviewState`/`stepState`; review lists, folder filter, `lastChangedOn` sort, pagination (D47, D76, D94, D112, D119); error shape; title and comment length validation (D100) (3).
 - Routing: pick validation on step reached, rules, strategies, exclusions in candidate resolution, assignment-log writes, reassign, save-time validation of user rule targets against team membership, `listUsers`, `listStepCandidates`, `inspectRouting` (4). Done in phase 4.
 - `actor` on workflow events (2, R26; landed, phase 2 R58).
-- Step types beyond "review", `StepType` extension point, automation, fail and restart, `taskId`, `runs`, secret config encryption (5).
+- Step types beyond "review", `StepType` extension point, automation, fail and restart, `taskId`, `runs`, secret config encryption (5). Done in phase 5 (R131-R158), except secret config encryption, which was dropped (R154).
 - AI steps and `issues` (6).
 - Notifications on review events (7); existing notifications features are untouched (1b R40 removes the `editor` check from `ListNotificationTypesUseCase`).
 - Admin UI (8a-9c); the old admin is expected to break against this API.

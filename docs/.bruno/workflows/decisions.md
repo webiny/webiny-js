@@ -67,6 +67,8 @@ An AI step acts exactly like a human reviewer: approve or reject, with a comment
 
 Automated steps are code definitions, not UI-built. Webiny ships built-ins (e.g. send a webhook, pull an image from an external URL, create records). Users register their own via code.
 
+_Superseded in phase 5 (user answers, R155): no automation ships with Webiny. Developers write every automation in code; a webhook automation is only an example of one._
+
 - Each definition implements only its logic and returns the step outcome. The background task wrapping is framework-owned and invisible to the implementer.
 - A definition declares its scope: global, per app, or (CMS) per model or set of models.
 - A definition declares a config schema (zod) for per-step settings (e.g. webhook URL). The API exposes it to the admin (e.g. as JSON schema), and the step editor renders a form from it. The admin picks the automation from a list filtered by app or model scope. No schema, no form.
