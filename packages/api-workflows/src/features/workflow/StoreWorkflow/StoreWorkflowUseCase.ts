@@ -4,7 +4,9 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
-import { REVIEW_STEP_TYPE, WorkflowValidator } from "~/domain/workflow/WorkflowValidator.js";
+import { WorkflowValidator } from "~/domain/workflow/WorkflowValidator.js";
+import { REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
+import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
 import { parseReviewStepConfig } from "~/domain/workflow/reviewStepConfigSchema.js";
 import {
     isWorkflowValidationError,
@@ -28,11 +30,26 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
         private repository: WorkflowRepository.Interface,
         private eventPublisher: EventPublisher.Interface,
         private identityContext: IdentityContext.Interface,
-        private listUsers: ListUsersUseCase.Interface
+        private listUsers: ListUsersUseCase.Interface,
+        private stepTypes: StepTypeRegistryService.Interface
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
-        const validation = WorkflowValidator.validate(input.workflow);
+        // Each step is validated by its registered step type (R131). While no `ai` type is
+        // registered (phase 6 registers it) an `ai` step gets its own message (R132).
+        const validation = WorkflowValidator.validate(input.workflow, step => {
+            const stepType = this.stepTypes.get(step.type);
+            if (!stepType) {
+                return Result.fail(
+                    new WorkflowValidationError(
+                        step.type === "ai"
+                            ? `Step "${step.title}" uses the step type "ai", which is not available.`
+                            : `Step "${step.title}" uses an unknown step type "${step.type}".`
+                    )
+                );
+            }
+            return stepType.validate({ step, workflow: input.workflow });
+        });
         if (validation.isFail()) {
             return Result.fail(validation.error);
         }
@@ -173,5 +190,11 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
 
 export const StoreWorkflowUseCase = UseCase.createImplementation({
     implementation: StoreWorkflowUseCaseImpl,
-    dependencies: [WorkflowRepository, EventPublisher, IdentityContext, ListUsersUseCase]
+    dependencies: [
+        WorkflowRepository,
+        EventPublisher,
+        IdentityContext,
+        ListUsersUseCase,
+        StepTypeRegistryService
+    ]
 });

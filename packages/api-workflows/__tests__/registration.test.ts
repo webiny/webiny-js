@@ -55,6 +55,8 @@ import { NotificationTransport } from "~/features/notifications/NotificationTran
 import { CurrentUserTeams } from "~/features/identity/CurrentUserTeams/index.js";
 import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
 import { CandidateReadAccess } from "~/features/identity/CandidateReadAccess/index.js";
+import { StepType } from "~/features/stepTypes/StepType/index.js";
+import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 
 describe("WorkflowsFeature registration", () => {
@@ -88,6 +90,9 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(GetBoundWorkflowUseCase)).toHaveLength(1);
         expect(container.resolveAll(ReviewSaver)).toHaveLength(1);
         expect(container.resolveAll(ReviewStepReacher)).toHaveLength(1);
+        expect(container.resolveAll(StepTypeRegistryService)).toHaveLength(1);
+        // `review` (the `automation` type is added in Task 2, the `ai` type by phase 6).
+        expect(container.resolveAll(StepType)).toHaveLength(1);
         // No default loader, sync or target read access: the app adapters register one per namespace.
         expect(container.resolveAll(ReviewTargetLoader)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetSync)).toHaveLength(0);

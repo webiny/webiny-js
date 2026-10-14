@@ -1,11 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { WorkflowValidationError } from "./errors.js";
-import { reviewStepConfigSchema } from "./reviewStepConfigSchema.js";
-import { findReviewStepConfigProblem } from "./findReviewStepConfigProblem.js";
-import type { ReviewStepConfig, WorkflowStep, WorkflowValues } from "./types.js";
-
-/** The only step type phase 1a accepts; phase 5 replaces this check with the `StepType` registry. */
-export const REVIEW_STEP_TYPE = "review";
+import type { WorkflowStep, WorkflowValues } from "./types.js";
 
 /**
  * Valid namespace ids in v1: `cms.<modelId>` and `wb.page` (spec 3). Whether a `cms.*` model exists
@@ -13,25 +8,30 @@ export const REVIEW_STEP_TYPE = "review";
  */
 export const MODEL_NAMESPACE_PATTERN = /^(cms\.[A-Za-z0-9_-]+|wb\.page)$/;
 
-type UnknownRecord = Record<string, unknown>;
-
-const isRecord = (value: unknown): value is UnknownRecord => {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
-};
+/**
+ * Validates one step's type and config: the step type registry's `validate` (R131). Returns the
+ * step with its normalised `config`.
+ */
+export type WorkflowStepValidator = (
+    step: WorkflowStep
+) => Result<WorkflowStep, WorkflowValidationError>;
 
 const fail = (message: string) => {
     return Result.fail(new WorkflowValidationError(message));
 };
 
 /**
- * Validates a workflow on create and update (one path, spec 4.1, D41, D108). Checks that need
- * storage (model already bound to another workflow) live in `StoreWorkflowUseCase`; the "model is
- * publishable" check is a `WorkflowBeforeCreate` / `WorkflowBeforeUpdate` handler in the CMS
- * workflows package.
+ * Validates a workflow on create and update (one path, spec 4.1, D41, D108). It checks the
+ * structure (id, name, one model, steps, step ids and titles) and normalises each step; the step
+ * type and its config are checked by `validateStep`, which `StoreWorkflowUseCase` builds from the
+ * step type registry. Checks that need storage (model already bound to another workflow) live in
+ * `StoreWorkflowUseCase`; the "model is publishable" check is a `WorkflowBeforeCreate` /
+ * `WorkflowBeforeUpdate` handler in the CMS workflows package.
  */
 export class WorkflowValidator {
     public static validate(
-        values: WorkflowValues
+        values: WorkflowValues,
+        validateStep: WorkflowStepValidator
     ): Result<WorkflowValues, WorkflowValidationError> {
         if (!values.id) {
             return fail("Workflow ID is required.");
@@ -55,7 +55,7 @@ export class WorkflowValidator {
         const stepIds = new Set<string>();
         const steps: WorkflowStep[] = [];
         for (const step of values.steps) {
-            const result = WorkflowValidator.validateStep(step, stepIds);
+            const result = WorkflowValidator.validateStep(step, stepIds, validateStep);
             if (result.isFail()) {
                 return Result.fail(result.error);
             }
@@ -72,7 +72,8 @@ export class WorkflowValidator {
 
     private static validateStep(
         step: WorkflowStep,
-        stepIds: Set<string>
+        stepIds: Set<string>,
+        validateStep: WorkflowStepValidator
     ): Result<WorkflowStep, WorkflowValidationError> {
         if (!step.id) {
             return fail("Every step needs an ID.");
@@ -85,61 +86,20 @@ export class WorkflowValidator {
         if (!step.title || !step.title.trim()) {
             return fail(`Step "${step.id}" needs a title.`);
         }
-        if (step.type !== REVIEW_STEP_TYPE) {
-            return fail(
-                `Step "${step.title}" uses the step type "${step.type}", which is not supported yet. Only "review" steps can be saved.`
-            );
-        }
 
-        const config = WorkflowValidator.validateReviewConfig(step);
-        if (config.isFail()) {
-            return Result.fail(config.error);
+        const validated = validateStep(step);
+        if (validated.isFail()) {
+            return Result.fail(validated.error);
         }
 
         // Normalise to what the mapper returns on read, so stored values equal returned values.
-        const { description, ...rest } = step;
+        const { description, ...rest } = validated.value;
         const trimmedDescription = description?.trim();
         return Result.ok({
             ...rest,
-            color: step.color ?? "",
+            color: validated.value.color ?? "",
             ...(trimmedDescription ? { description: trimmedDescription } : {}),
-            notifications: step.notifications ?? [],
-            config: config.value
+            notifications: validated.value.notifications ?? []
         });
-    }
-
-    private static validateReviewConfig(
-        step: WorkflowStep
-    ): Result<ReviewStepConfig, WorkflowValidationError> {
-        const config: UnknownRecord = isRecord(step.config) ? step.config : {};
-        const assignment: UnknownRecord = isRecord(config.assignment) ? config.assignment : {};
-        const rules = Array.isArray(assignment.rules) ? assignment.rules : [];
-        for (const rule of rules) {
-            if (!isRecord(rule) || !isRecord(rule.target)) {
-                return fail(`Every routing rule in step "${step.title}" needs a target.`);
-            }
-        }
-
-        const parsed = reviewStepConfigSchema.safeParse(step.config);
-        if (!parsed.success) {
-            const [issue] = parsed.error.issues;
-            return fail(
-                `Step "${step.title}" has an invalid configuration: ${issue?.message ?? "unknown error"}`
-            );
-        }
-
-        // At least one team, and team targets among the step's teams (spec 4.1, 6). User targets
-        // need a user lookup, so `StoreWorkflowUseCase` checks them after this validation (R122).
-        const problem = findReviewStepConfigProblem(parsed.data);
-        if (problem?.type === "noTeams") {
-            return fail(`Step "${step.title}" needs at least one team.`);
-        }
-        if (problem?.type === "teamTargetOutsideTeams") {
-            return fail(
-                `Routing rule "${problem.ruleId}" in step "${step.title}" targets a team that is not one of the step's teams.`
-            );
-        }
-
-        return Result.ok(parsed.data);
     }
 }

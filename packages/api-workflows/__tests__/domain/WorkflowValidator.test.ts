@@ -1,15 +1,23 @@
 import { describe, expect, it } from "vitest";
-import { WorkflowValidator } from "~/domain/workflow/WorkflowValidator.js";
-import type { WorkflowValues } from "~/domain/workflow/types.js";
+import { Result } from "@webiny/feature/api";
+import { WorkflowValidationError } from "~/domain/workflow/errors.js";
 import {
-    createReviewStep,
-    createWorkflowValues,
-    OTHER_TEAM_ID,
-    REVIEW_TEAM_ID
-} from "~tests/__helpers/fixtures.js";
+    WorkflowValidator,
+    type WorkflowStepValidator
+} from "~/domain/workflow/WorkflowValidator.js";
+import type { WorkflowStep, WorkflowValues } from "~/domain/workflow/types.js";
+import { createReviewStep, createWorkflowValues } from "~tests/__helpers/fixtures.js";
 
-const validationMessage = (values: WorkflowValues): string => {
-    const result = WorkflowValidator.validate(values);
+/** Accepts every step as it is; the step type checks are tested with the step types. */
+const acceptStep: WorkflowStepValidator = step => {
+    return Result.ok(step);
+};
+
+const validationMessage = (
+    values: WorkflowValues,
+    validateStep: WorkflowStepValidator = acceptStep
+): string => {
+    const result = WorkflowValidator.validate(values, validateStep);
     if (result.isOk()) {
         throw new Error("Expected the workflow to be invalid.");
     }
@@ -18,10 +26,10 @@ const validationMessage = (values: WorkflowValues): string => {
 };
 
 describe("WorkflowValidator", () => {
-    it("accepts a workflow with review steps", () => {
+    it("accepts a workflow whose steps the step validator accepts", () => {
         const values = createWorkflowValues();
 
-        const result = WorkflowValidator.validate(values);
+        const result = WorkflowValidator.validate(values, acceptStep);
 
         expect(result.isOk()).toBe(true);
         expect(result.value).toEqual(values);
@@ -52,13 +60,28 @@ describe("WorkflowValidator", () => {
             'Model "wb.block" is not a valid model ID. Use "cms.<modelId>" or "wb.page".'
         );
         expect(
-            WorkflowValidator.validate(createWorkflowValues({ models: ["wb.page"] })).isOk()
+            WorkflowValidator.validate(
+                createWorkflowValues({ models: ["wb.page"] }),
+                acceptStep
+            ).isOk()
         ).toBe(true);
     });
 
     it("requires at least one step", () => {
         expect(validationMessage(createWorkflowValues({ steps: [] }))).toBe(
             "Add at least one step."
+        );
+    });
+
+    it("requires a step id and a title", () => {
+        const withoutId = [{ ...createReviewStep({ id: "legal", title: "Legal" }), id: "" }];
+        const withoutTitle = [createReviewStep({ id: "legal", title: " " })];
+
+        expect(validationMessage(createWorkflowValues({ steps: withoutId }))).toBe(
+            "Every step needs an ID."
+        );
+        expect(validationMessage(createWorkflowValues({ steps: withoutTitle }))).toBe(
+            'Step "legal" needs a title.'
         );
     });
 
@@ -73,87 +96,62 @@ describe("WorkflowValidator", () => {
         );
     });
 
-    it("accepts only review steps until step types are pluggable", () => {
-        const steps = [{ ...createReviewStep({ id: "ai", title: "AI check" }), type: "ai" }];
-
-        expect(validationMessage(createWorkflowValues({ steps }))).toBe(
-            'Step "AI check" uses the step type "ai", which is not supported yet. Only "review" steps can be saved.'
-        );
-    });
-
-    it("requires at least one team on a review step", () => {
-        const steps = [createReviewStep({ id: "legal", title: "Legal review", teams: [] })];
-
-        expect(validationMessage(createWorkflowValues({ steps }))).toBe(
-            'Step "Legal review" needs at least one team.'
-        );
-    });
-
-    it("requires a target on every routing rule", () => {
+    it("calls the step validator once per step, in order, after the structural checks", () => {
+        const seen: string[] = [];
+        const validateStep: WorkflowStepValidator = step => {
+            seen.push(step.id);
+            return Result.ok(step);
+        };
         const steps = [
-            createReviewStep({
-                id: "legal",
-                title: "Legal review",
-                rules: [{ id: "rule-1", conditions: {} }]
-            })
+            createReviewStep({ id: "legal", title: "Legal review" }),
+            createReviewStep({ id: "editorial", title: "Editorial review" })
         ];
 
-        expect(validationMessage(createWorkflowValues({ steps }))).toBe(
-            'Every routing rule in step "Legal review" needs a target.'
+        WorkflowValidator.validate(createWorkflowValues({ steps }), validateStep);
+        expect(seen).toEqual(["legal", "editorial"]);
+
+        seen.length = 0;
+        const duplicate = [steps[0], { ...steps[1], id: "legal" }];
+        validationMessage(createWorkflowValues({ steps: duplicate }), validateStep);
+        expect(seen).toEqual(["legal"]);
+    });
+
+    it("returns the step validator's error", () => {
+        const validateStep: WorkflowStepValidator = step => {
+            return Result.fail(new WorkflowValidationError(`Step "${step.title}" is not valid.`));
+        };
+
+        expect(validationMessage(createWorkflowValues(), validateStep)).toBe(
+            'Step "Legal review" is not valid.'
         );
     });
 
-    it("requires a team target to be one of the step's teams", () => {
-        const steps = [
-            createReviewStep({
-                id: "legal",
-                title: "Legal review",
-                teams: [REVIEW_TEAM_ID],
-                rules: [
-                    {
-                        id: "rule-1",
-                        conditions: {},
-                        target: { type: "team", id: OTHER_TEAM_ID }
-                    }
-                ]
-            })
-        ];
-
-        expect(validationMessage(createWorkflowValues({ steps }))).toBe(
-            'Routing rule "rule-1" in step "Legal review" targets a team that is not one of the step\'s teams.'
-        );
-    });
-
-    it("accepts a team target that is one of the step's teams and any user target", () => {
-        const steps = [
-            createReviewStep({
-                id: "legal",
-                title: "Legal review",
-                teams: [REVIEW_TEAM_ID],
-                rules: [
-                    { id: "rule-1", conditions: {}, target: { type: "team", id: REVIEW_TEAM_ID } },
-                    { id: "rule-2", conditions: {}, target: { type: "user", id: "user-anyone" } }
-                ]
-            })
-        ];
-
-        expect(WorkflowValidator.validate(createWorkflowValues({ steps })).isOk()).toBe(true);
-    });
-
-    it("rejects an invalid review config", () => {
-        const step = createReviewStep({ id: "legal", title: "Legal review" });
-        const steps = [
+    it("normalises the returned step: color, trimmed description, notifications, config", () => {
+        const validateStep: WorkflowStepValidator = step => {
+            return Result.ok({ ...step, config: { normalised: true } });
+        };
+        const [first, second] = [
             {
-                ...step,
-                config: {
-                    teams: ["team-a"],
-                    assignment: { strategy: "random", allowManualPick: false, rules: [] }
-                }
+                ...createReviewStep({ id: "legal", title: "Legal review" }),
+                description: "  Check the legal side  ",
+                notifications: undefined as unknown as WorkflowStep["notifications"]
+            },
+            {
+                ...createReviewStep({ id: "editorial", title: "Editorial review" }),
+                description: "   ",
+                color: undefined as unknown as string
             }
         ];
 
-        expect(validationMessage(createWorkflowValues({ steps }))).toMatch(
-            /^Step "Legal review" has an invalid configuration: /
+        const result = WorkflowValidator.validate(
+            createWorkflowValues({ steps: [first, second] }),
+            validateStep
         );
+
+        expect(result.value?.steps[0].description).toBe("Check the legal side");
+        expect(result.value?.steps[0].notifications).toEqual([]);
+        expect(result.value?.steps[0].config).toEqual({ normalised: true });
+        expect(result.value?.steps[1]).not.toHaveProperty("description");
+        expect(result.value?.steps[1].color).toBe("");
     });
 });

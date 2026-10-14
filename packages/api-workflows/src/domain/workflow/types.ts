@@ -8,7 +8,7 @@ export interface WorkflowStep {
     title: string;
     color: string;
     description?: string;
-    /** Step type id. Phase 1a accepts only "review" (R7). */
+    /** Step type id; a registered `StepType` (R131), e.g. "review" or "automation". */
     type: string;
     notifications: WorkflowStepNotification[];
     /** Validated by the step type's schema; for "review" see `ReviewStepConfig`. */

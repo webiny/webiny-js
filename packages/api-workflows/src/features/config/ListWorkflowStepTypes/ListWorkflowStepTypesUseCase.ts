@@ -3,7 +3,7 @@ import zod from "zod";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
-import { REVIEW_STEP_TYPE } from "~/domain/workflow/WorkflowValidator.js";
+import { REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
 import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";

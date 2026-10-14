@@ -1,6 +1,6 @@
 import type { WorkflowStep } from "./types.js";
 import { parseReviewStepConfig } from "./reviewStepConfigSchema.js";
-import { REVIEW_STEP_TYPE } from "./WorkflowValidator.js";
+import { REVIEW_STEP_TYPE } from "./stepTypes.js";
 
 /**
  * `canPick` for one step at submit (spec 5.3, D22): a review step whose config allows a manual

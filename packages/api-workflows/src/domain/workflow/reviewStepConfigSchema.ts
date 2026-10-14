@@ -22,8 +22,8 @@ const routingRuleSchema = zod.object({
 });
 
 /**
- * Config of a "review" step (spec 4.1). Validated in code until phase 5 adds the `StepType`
- * extension point; stored as JSON on the workflow and review models.
+ * Config of a "review" step (spec 4.1): the `configSchema` of the built-in `ReviewStepType`
+ * (R131). Stored as JSON on the workflow and review models.
  */
 export const reviewStepConfigSchema = zod.object({
     teams: zod.array(zod.string().min(1, "Team ID is required.")),

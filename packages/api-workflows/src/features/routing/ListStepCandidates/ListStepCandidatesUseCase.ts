@@ -3,7 +3,7 @@ import { Review } from "~/domain/review/Review.js";
 import { ReviewValidationError } from "~/domain/review/errors.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
-import { REVIEW_STEP_TYPE } from "~/domain/workflow/WorkflowValidator.js";
+import { REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
 import { parseReviewStepConfig } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { RoutingDependencyError } from "~/domain/routing/errors.js";
 import { ROUTING_SKIP_REASONS } from "~/domain/routing/reasons.js";
