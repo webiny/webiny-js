@@ -8,6 +8,7 @@ import { PageBeforePublishEvent, PageAfterPublishEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
+import { PageToEntryValuesMapper } from "~/domain/page/PageToEntryValuesMapper.js";
 
 class PublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -44,8 +45,11 @@ class PublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
 
         await this.eventPublisher.publish(beforeEvent);
 
-        // Execute the publish operation
-        const result = await this.repository.execute(params);
+        // Publish the page as the handlers left it.
+        const result = await this.repository.execute({
+            id: params.id,
+            values: PageToEntryValuesMapper.toValues(beforeEvent.payload.page)
+        });
 
         if (result.isFail()) {
             return result;

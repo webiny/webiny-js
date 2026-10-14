@@ -11,6 +11,7 @@ import { PageBeforeCreateRevisionFromEvent, PageAfterCreateRevisionFromEvent } f
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
+import { PageToEntryValuesMapper } from "~/domain/page/PageToEntryValuesMapper.js";
 
 class CreatePageRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -34,13 +35,17 @@ class CreatePageRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface 
 
         // Publish before event
         const beforeEvent = new PageBeforeCreateRevisionFromEvent({
-            params
+            params,
+            page: getResult.value
         });
 
         await this.eventPublisher.publish(beforeEvent);
 
-        // Execute the create revision operation
-        const result = await this.repository.execute(params);
+        // Create the revision with the values the handlers left on the page.
+        const result = await this.repository.execute({
+            id: params.id,
+            values: PageToEntryValuesMapper.toValues(beforeEvent.payload.page)
+        });
 
         if (result.isFail()) {
             return result;

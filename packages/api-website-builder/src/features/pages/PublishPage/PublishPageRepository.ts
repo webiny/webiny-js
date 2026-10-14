@@ -25,7 +25,9 @@ class PublishPageRepositoryImpl implements RepositoryAbstraction.Interface {
         }
 
         // Publish the entry
-        const result = await this.publishEntry.execute(this.pageModel, params.id);
+        const result = await this.publishEntry.execute(this.pageModel, params.id, {
+            values: params.values
+        });
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/NotFound") {
