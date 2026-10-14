@@ -49,7 +49,7 @@ jobs:
         with:
           issue-number: ${{ github.event.issue.number }}
           body: >-
-            Cypress E2E tests have been initiated (for more information, click
+            E2E tests have been initiated (for more information, click
             [here](https://github.com/webiny/webiny-js/actions/runs/${{
             github.run_id }})). :sparkles:
 
