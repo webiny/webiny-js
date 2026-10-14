@@ -42,17 +42,19 @@ class RecoverScheduledActionsHandlerImpl implements ScheduledActionRecoverEventH
          * Nobody is signed in at boot. Listing without authorization is what the run side does too
          * (ExecuteScheduledActionUseCase); otherwise the anonymous identity fails the permission check.
          */
-        const pending = await this.identityContext.withoutAuthorization(() => {
-            return this.listAllPending(tenant);
+        const recovered = await this.identityContext.withoutAuthorization(() => {
+            return this.recoverAllPending(tenant);
         });
 
-        await this.scheduler.recover(pending);
-
-        return { recovered: pending.length };
+        return { recovered };
     }
 
-    private async listAllPending(tenant: string): Promise<IPendingAction[]> {
-        const pending: IPendingAction[] = [];
+    /*
+     * Re-arms page by page, so a lookup that fails on a later page still leaves the earlier pages
+     * armed. The failure is rethrown and logged by the boot step.
+     */
+    private async recoverAllPending(tenant: string): Promise<number> {
+        let recovered = 0;
         let after: string | undefined;
 
         do {
@@ -65,8 +67,9 @@ class RecoverScheduledActionsHandlerImpl implements ScheduledActionRecoverEventH
                 throw listResult.error;
             }
 
+            const page: IPendingAction[] = [];
             for (const action of listResult.value.items) {
-                pending.push({
+                page.push({
                     id: action.id,
                     namespace: action.namespace,
                     tenant,
@@ -74,11 +77,14 @@ class RecoverScheduledActionsHandlerImpl implements ScheduledActionRecoverEventH
                 });
             }
 
+            await this.scheduler.recover(page);
+            recovered += page.length;
+
             const { meta } = listResult.value;
             after = meta.hasMoreItems && meta.cursor ? meta.cursor : undefined;
         } while (after);
 
-        return pending;
+        return recovered;
     }
 }
 

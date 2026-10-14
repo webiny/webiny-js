@@ -11044,6 +11044,8 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.11"
+  peerDependencies:
+    "@webiny/di": ^2.0.0
   languageName: unknown
   linkType: soft
 
