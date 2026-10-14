@@ -156,7 +156,6 @@ interface Actor {
 
 - A review carries a full snapshot of its workflow. Editing a workflow never changes running reviews; no steps are inserted into a running review [D81].
 - At most one active review per target revision. Rejected, approved and failed reviews stay active; only cancel deactivates [D23].
-- Secret config fields are kept encrypted in the snapshot and stripped from read responses [D67].
 - Current-step fields after a finished review: on approve and reject they keep the last or rejecting step and its owner; only cancel clears them [D75, D119].
 - `lastChangedOn` changes on request, step reached, start, take over, reassign, approve, reject, fail, restart and content updated by a step; edits outside the review do not touch it [D119].
 
@@ -279,15 +278,17 @@ Rule targets are also validated when the workflow is saved: user targets must be
 
 ### 7.2 Automation steps [D14, D35, D36, D37, D38]
 
-- Defined in code. v1 ships one built-in, "Send webhook" (POST to a URL with a secret signing key, reads back `{ approved, comment }`); more built-ins (pull image, create records) come later. Developers register their own [D86].
-- The automation definition abstraction, outcome types and the step-type extension point are public exports of api-workflows (editor-side counterparts from app-workflows) [D86].
-- A definition declares: id, name, scope `models` (`["*"]`, `["cms.*"]`, or specific namespace ids), a zod settings schema, and a handler that returns an outcome (`approved` / `rejected` with comment). It may set `maxIterations` and wait times [D57].
+- Defined in code by developers; no automation ships with Webiny, and a "call a webhook" automation, a "create records" automation and so on are examples developers write themselves [D86].
+- The automation definition abstraction (`AutomationDefinition`), its outcome types and the step-type extension point are public exports of api-workflows (editor-side counterparts from app-workflows) [D86].
+- A definition declares: `id`, `name`, scope `models` (`["*"]`, `["cms.*"]`, or specific namespace ids), a zod `settingsSchema` for the information the workflow author passes in (for a webhook automation: the URL), optional `maxIterations` (default 50), and a handler `run` that returns an outcome: `approved` or `rejected` with a comment, or `continue` with an optional wait in seconds and state for the next iteration [D57].
+- The step's config is `{ automationId, settings }`. The workflow author adds the automation as a step and fills `settings`; the editor renders the form from the schema, which `listAutomationDefinitions` exposes as JSON schema. Settings are validated against the definition's zod schema when the workflow is saved, when the step is reached and restarted, and before every run [D14, D37].
 - The background task wrapping is framework-owned; implementers write only logic.
-- The step editor offers a definition only if its scope covers every model in the workflow.
-- An automation may create, update or delete anything, including the target revision. It runs in a workflow bypass context, so the save block does not apply, and the review stays valid.
-- External systems are polled across task iterations; no inbound callback route in v1.
-- On step reached the definition is looked up and the stored settings are re-validated; missing definition or invalid settings fail the step with the reason. The editor flags the same.
-- Secret settings (`.meta({ secret: true })`) are encrypted at rest, write-only in the API (the editor shows "set" / "replace"), decrypted only inside the task [D67].
+- The step editor offers a definition only if its scope covers every model in the workflow; save refuses one that does not [D35].
+- An automation may create, update or delete anything, including the target revision. It runs in a workflow bypass context that lifts the save block (`BlockUpdateWhileInReview`) only, so the review stays valid; moving the target, deleting it and trashing it stay blocked while the review is in progress [D36, D62, D84, D134].
+- External systems are polled across task iterations (`continue`); no inbound callback route in v1.
+- On step reached the definition is looked up and the stored settings (kept as entered) are parsed again; a missing definition, a scope that no longer covers the models or invalid settings fail the step with a fixed reason. The editor flags the same.
+- Step config holds no secrets. Credentials an automation needs (keys, tokens, signing secrets) belong to whoever writes the definition, in their own code or configuration, and are never set or seen by workflow editors [D67 superseded].
+- The run is attributed to the requester but with authorization off (D36): the automation can read and write anything, so the developer scopes their own code. Delivery is at-least-once, so automations should be idempotent. Developer guide: `docs/.bruno/workflows/automations.md`.
 
 ### 7.3 AI steps [D13, D39, D40, D55]
 
@@ -306,6 +307,8 @@ Rule targets are also validated when the workflow is saved: user targets must be
 - `onError` and `onMaxIterations` set the step `failed` with the reason; the write is idempotent.
 - Stuck detection on read: only on single-review reads (`getReview`, `getTargetReview`), not in lists. If the task is done, failed or aborted while the step is still `inReview`, the step is set `failed` ("task ended without result").
 - Cancel aborts the running task where possible (`TaskService.abort`); the guard discards late results. Step implementations handle cancellation of their own work [D25].
+- One private background task definition, `workflowsStepRun`, serves every automation step: input is only `{ reviewId, stepId }`, everything else comes from the review snapshot. The engine triggers the task before the review is saved and stores its id on the step in the same save; the handler waits briefly (up to three short waits) for the id to appear, and a failed save aborts the task. GraphQL `triggerTask` refuses private definitions like unknown ones (SEC-68), and the handler never trusts its input.
+- The handler enforces the automation definition's own `maxIterations` from the task's iteration count (waits for the task id are not counted); the task definition has one high ceiling. Fixed failure reasons cover a missing definition, invalid settings, a scope mismatch, a failed trigger, a thrown error, too many iterations, a task that ended without a result and an abort. Stuck detection gives a failed or aborted task a five-minute grace before it fails the step.
 - No step max duration and no watchdog.
 
 ## 8. Permissions [D54]
@@ -389,9 +392,9 @@ Two kinds of operations [D132, D133]:
 
 The lists below name capabilities; each per-app capability exists once per app. Placement and final names [D136]: everything is on the main `/graphql` endpoint; there is no workflows operation on `/cms/*`, and the entry's `system.workflow` field stays there (R102).
 
-- Root `workflows` (`WorkflowsQuery` / `WorkflowsMutation`): the shared configuration operations (`getSettings`, `updateSettings`, `listStepTypes`, `listUsers(search, ids, limit)` → `{ users: { id, displayName }[], missingIds }`; later transports, automation definitions, AI tools).
-- Root `cms` (the existing `CmsQuery` / `CmsMutation`): `listCmsEntryWorkflows`, `getCmsEntryWorkflow(id)`, `getCmsEntryReview(id)`, `getCmsEntryTargetReview(modelId, revisionId)`, `listCmsEntryReviews(list, where, sort, limit, after)`, `listCmsEntryWorkflowModels(search, limit, after)`, `listCmsEntryStepCandidates(workflowId, stepId, modelId, revisionId)`, `listCmsEntryReviewStepCandidates(reviewId, stepId)`, `inspectCmsEntryRouting(stepConfig, modelId, requesterId, folderId)`, `cmsEntryFolderExists(id, type)`; `storeCmsEntryWorkflow(data, savedOn)`, `deleteCmsEntryWorkflow(id)`, `requestCmsEntryReview(modelId, revisionId, title, picks)`, `startCmsEntryReviewStep`, `takeOverCmsEntryReviewStep`, `approveCmsEntryReviewStep`, `rejectCmsEntryReviewStep` (each `reviewId, stepId`, approve and reject also `comment`), `reassignCmsEntryReviewStep(reviewId, stepId, userId)`, `cancelCmsEntryReview(reviewId)`, `cancelCmsEntryReviewsForDelete(modelId, entryId, revisionId, action)`.
-- Root `websiteBuilder` (the existing `WbQuery` / `WbMutation`): the same set with `WebsiteBuilderPage` in place of `CmsEntry` and no `modelId` (`getWebsiteBuilderPageTargetReview(revisionId)`, `requestWebsiteBuilderPageReview(revisionId, title, picks)`, `cancelWebsiteBuilderPageReviewsForDelete(pageId, action)`, `listWebsiteBuilderPageStepCandidates(workflowId, stepId, revisionId)`, `listWebsiteBuilderPageReviewStepCandidates(reviewId, stepId)`, `inspectWebsiteBuilderPageRouting(stepConfig, requesterId, folderId)`, `websiteBuilderPageFolderExists(id)` (the type is always `wb:page`), `reassignWebsiteBuilderPageReviewStep(reviewId, stepId, userId)`); there is no WB model list.
+- Root `workflows` (`WorkflowsQuery` / `WorkflowsMutation`): the shared configuration operations (`getSettings`, `updateSettings`, `listStepTypes`, `listUsers(search, ids, limit)` → `{ users: { id, displayName }[], missingIds }`, `listAutomationDefinitions` → `{ id, name, models, settingsSchema }[]` (the settings schema as JSON schema); later transports, AI tools). The review step exposes `taskId` and `runs` (the shared `WorkflowsStepRun { taskId, startedOn, finishedOn, outcome, reason }`, earlier attempts only).
+- Root `cms` (the existing `CmsQuery` / `CmsMutation`): `listCmsEntryWorkflows`, `getCmsEntryWorkflow(id)`, `getCmsEntryReview(id)`, `getCmsEntryTargetReview(modelId, revisionId)`, `listCmsEntryReviews(list, where, sort, limit, after)`, `listCmsEntryWorkflowModels(search, limit, after)`, `listCmsEntryStepCandidates(workflowId, stepId, modelId, revisionId)`, `listCmsEntryReviewStepCandidates(reviewId, stepId)`, `inspectCmsEntryRouting(stepConfig, modelId, requesterId, folderId)`, `cmsEntryFolderExists(id, type)`; `storeCmsEntryWorkflow(data, savedOn)`, `deleteCmsEntryWorkflow(id)`, `requestCmsEntryReview(modelId, revisionId, title, picks)`, `startCmsEntryReviewStep`, `takeOverCmsEntryReviewStep`, `approveCmsEntryReviewStep`, `rejectCmsEntryReviewStep` (each `reviewId, stepId`, approve and reject also `comment`), `reassignCmsEntryReviewStep(reviewId, stepId, userId)`, `restartCmsEntryReviewStep(reviewId, stepId)`, `cancelCmsEntryReview(reviewId)`, `cancelCmsEntryReviewsForDelete(modelId, entryId, revisionId, action)`.
+- Root `websiteBuilder` (the existing `WbQuery` / `WbMutation`): the same set with `WebsiteBuilderPage` in place of `CmsEntry` and no `modelId` (`getWebsiteBuilderPageTargetReview(revisionId)`, `requestWebsiteBuilderPageReview(revisionId, title, picks)`, `cancelWebsiteBuilderPageReviewsForDelete(pageId, action)`, `listWebsiteBuilderPageStepCandidates(workflowId, stepId, revisionId)`, `listWebsiteBuilderPageReviewStepCandidates(reviewId, stepId)`, `inspectWebsiteBuilderPageRouting(stepConfig, requesterId, folderId)`, `websiteBuilderPageFolderExists(id)` (the type is always `wb:page`), `reassignWebsiteBuilderPageReviewStep(reviewId, stepId, userId)`, `restartWebsiteBuilderPageReviewStep(reviewId, stepId)`); there is no WB model list.
 - Operations that take a review id take no model; a request takes the revision id and the server derives the content id from it. Every operation returns `{ data, error }` (lists `{ data, meta: { cursor, hasMoreItems }, error }`).
 
 Per-app queries:
@@ -408,14 +411,14 @@ Per-app mutations (base use case in brackets):
 
 - store workflow (`StoreWorkflow`, with the loaded `savedOn`, optimistic check, D131), delete workflow (`DeleteWorkflow`)
 - request review (`RequestReview`: model, target revision id, optional title (the content's title when missing, fixed afterwards) [D135], picks `[{ stepId, userId }]`)
-- start (`StartReviewStep`), take over (`TakeOverReviewStep`, `notifyPreviousOwner = true`) [D111], reassign (`ReassignReviewStep`: `reviewId`, `stepId`, `userId`; the chosen user is validated like a pick, the current owner is refused), approve (`comment?`), reject (`comment`), restart, cancel review
+- start (`StartReviewStep`), take over (`TakeOverReviewStep`, `notifyPreviousOwner = true`) [D111], reassign (`ReassignReviewStep`: `reviewId`, `stepId`, `userId`; the chosen user is validated like a pick, the current owner is refused), approve (`comment?`), reject (`comment`), restart (`RestartReviewStep`: `reviewId`, `stepId`; only a failed step; re-reaches it as the requester; returns the updated review, and `canRestart` is read through the review get operations, R158), cancel review
 - Validation: review title at least 5 characters; reject comment at least 10 characters [D100].
 
 Shared configuration operations (api-workflows, `editor`):
 
 - settings: get, update
 - `listUsers(search, ids, limit)` → `{ users: { id, displayName }[], missingIds }` [D48, D104]; also accepts a list of ids (up to 200) and reports which do not exist, so the editor can show saved targets as "Deleted user" [D117]
-- step types (with config JSON schemas, `available` and `unavailableReason` per type [D130]), notification transports (`id`, `title`, `description`) [D129], automation definitions (with scope and settings JSON schemas), AI tools
+- step types (with config JSON schemas, `available` and `unavailableReason` per type [D130]), notification transports (`id`, `title`, `description`) [D129], automation definitions (with scope and the settings schema as JSON schema, `listAutomationDefinitions`), AI tools
 
 Errors return `code`, `message` and `data`; the admin must keep them (today gateways drop them).
 
@@ -478,7 +481,7 @@ Screens, states and copy are specified in the UI design brief (`docs/.bruno/spec
 
 - Bound to models (`models`), one model per workflow in v1.
 - Step editor rebuilt on FormModel: a dynamic zone per step type; each step type contributes its editor fields [D56, D66].
-- Automation settings forms are generated from JSON schema through a new JSON-schema → FormModel adapter, with UI hints in zod `.meta()` (user, team, secret, textarea). The client rebuilds validators with `z.fromJSONSchema` to flag invalid stored settings [D66].
+- Automation settings forms are generated from JSON schema through a new JSON-schema → FormModel adapter, with UI hints in zod `.meta()` (user, team, textarea). The client rebuilds validators with `z.fromJSONSchema` to flag invalid stored settings [D66].
 - Review step assignment section: strategy selector, `allowManualPick` toggle, reorderable rule list (`ObjectAccordionMultipleRenderer`), rule inspector.
 - Rule fields: `WorkflowUserPicker` over `listUsers` (shared configuration operation); `WorkflowTeamPicker` limited to the step's teams; standard `FolderPicker` filtered by folder permissions. A folder the editor cannot see shows as "restricted folder" and is preserved. The editor flags invalid targets, missing folders (the app's `folderExists`), and targets without read access [D69, D72, D61].
 - The assignment section is shown only for review steps.

@@ -8,6 +8,7 @@ Starting point for refactoring Advanced Publishing Workflows (API + admin UI), i
 - `api.md`: `api-workflows` domain, lifecycle, persistence, GraphQL, permissions, tests, smells.
 - `app.md`: `app-workflows` architecture, editor, review flows, GraphQL usage, bugs, smells.
 - `integrations.md`: CMS and Website Builder packages (API + admin), how content binds to a workflow, publish blocking, available metadata.
+- `automations.md`: developer guide for writing an automation (definition, zod settings schema, outcomes, credentials, failure and restart, registration).
 - `infrastructure.md`: AI providers, ai-powerups capabilities, background tasks, ACO folders, teams/users, mailer, tenant settings, webhooks.
 
 ## Packages

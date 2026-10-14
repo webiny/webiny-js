@@ -230,7 +230,8 @@ describe("WB review list wrapper", () => {
 
     it("lists a failed AI step for a viewer with reassign (D112)", async () => {
         const { admin, review } = await createScenario();
-        // Nothing produces a failed step before phase 5 (R93): seed it in storage.
+        // Seeded straight through the repository so the test controls the failed step exactly (the
+        // runner produces them for real, R146).
         expectOk(
             await admin.container.resolve(ReviewRepository).save({
                 ...review,

@@ -52,7 +52,7 @@ Binding for this plan. Where they refine the spec, the ruling wins for phase 1a.
 
 **Controller rulings**
 
-- R7. Step types: only `"review"` is accepted on save; any other type fails validation with "Step "{title}" uses the step type "{type}", which is not supported yet. Only "review" steps can be saved." until phase 5 adds the `StepType` extension point. The review config is validated in code with a zod schema in the domain. The models keep `config` as a JSON field, so phase 5 needs no model change.
+- R7. Step types: only `"review"` is accepted on save; any other type fails validation with "Step "{title}" uses the step type "{type}", which is not supported yet. Only "review" steps can be saved." until phase 5 adds the `StepType` extension point. The review config is validated in code with a zod schema in the domain. The models keep `config` as a JSON field, so phase 5 needs no model change. Done in phase 5 (R131-R158).
 - R8. Transitions in scope: request, reach (internal, via the resolver), start, take over, approve, reject, cancel. Out of scope: reassign, fail, restart (phases 4/5), viewer flags (1b), routing (4), notifications (7), audit logs (later). Events carry the saved review snapshot plus the fact: actor, review id, workflow id (both in the snapshot), step id, from/to state, comment.
 - R9. Events: `Workflows/Workflow/BeforeCreate|AfterCreate|BeforeUpdate|AfterUpdate|BeforeDelete|AfterDelete`, `Workflows/Review/Requested|StepReached|StepStarted|StepTakenOver|StepApproved|StepRejected|Cancelled|Approved`. One event per domain fact: a rejected step ends the review (D10), so `StepRejected` is the review-rejected fact; approving the last step publishes `StepApproved` then `Approved`.
 - R10. Single save path: `ReviewSaver.save(review)` is used by every transition. It calls `Review.prepareForSave()` (refreshes `currentStepId`, `currentStepState`, `currentOwnerId` (only for `user` owners, D74), `currentCandidateTeamIds`, `state`, `isActive`, and `lastChangedOn` from the newest fact), persists through `ReviewRepository.save(data)` (create or update), calls `ReviewTargetSync`, then publishes the events. No optimistic locking on reviews (D27).
@@ -165,7 +165,7 @@ Test helpers (`__tests__/__helpers/`): `handler.ts`, `fixtures.ts` (incl. `expec
 | 4.1 validation: exactly one model in a valid namespace, at least one step (D108), one workflow per model (D15, D41) | Task 2 (`WorkflowValidator`), Task 3 (`ensureModelIsFree`) |
 | 4.1 model exists and is publishable | Task 3 (CMS `assertModelsBindable` on BeforeCreate/BeforeUpdate) |
 | 4.1 every rule has a target; review config teams; 6: team targets among the step's teams | Task 2 |
-| 4.1 only review step type until phase 5 (R7) | Task 2 |
+| 4.1 only review step type until phase 5 (R7) | Task 2 | Done in phase 5 (R131-R158).
 | 4.1 optimistic save (D131), NotFound without tombstone (D123) | Task 3 |
 | 4.1 delete blocked while in progress with exact count (D81) | Task 6 |
 | 4.2 review model, full workflow snapshot (D81), current-step fields (D19), `lastChangedOn` (D119), `model` replaces `app` (D41) | Task 4 (aggregate), Task 6 (model, repository) |

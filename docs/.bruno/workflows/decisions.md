@@ -369,7 +369,7 @@ Design for audit logs now, implement later. Planned: a "Workflows" app in `commo
 
 ## D66. Step editor on FormModel, JSON-schema adapter
 
-- New JSON-schema → FormModel adapter (`app-admin/src/features/formModel`); UI hints (user, team, secret, textarea) carried in zod `.meta()`.
+- New JSON-schema → FormModel adapter (`app-admin/src/features/formModel`); UI hints (user, team, textarea) carried in zod `.meta()`.
 - Step editor rebuilt on FormModel: dynamic zone per step type, `ObjectAccordionMultipleRenderer` for the reorderable rule list.
 - Client rebuilds the validator with `z.fromJSONSchema` (zod 4) to flag invalid stored config (D37).
 
@@ -378,6 +378,8 @@ Resolves A3.
 ## D67. Secret config fields
 
 Config fields marked `.meta({ secret: true })` are stored encrypted (`Encryption` service, as ai-powerups `apiKeyEncrypted`) and are write-only in the API: never returned, the editor shows "set" / "replace". The review snapshot keeps the encrypted value; review read responses strip secret fields. The task decrypts at run time only. Resolves A4.
+
+_Superseded in phase 5 (user answer, R154): there are no secret settings. Step config has no secret fields, no encryption, no write-only marker, no stripping. Credentials belong to whoever writes the automation definition, in their own code or configuration, never in workflow step config. Resolved A4 stands as history only._
 
 ## D68. Collaboration integration deferred
 
@@ -485,13 +487,17 @@ Publishing does not change `system.workflow`; the published revision keeps `revi
 
 ## D86. v1 built-in automation; public abstractions
 
-v1 ships one built-in automation: "Send webhook" (POST to a URL with a secret signing key, read back `{ approved, comment }`). Other built-ins (pull image, create records) come later. The automation definition abstraction, its outcome types and the step-type extension point are exported publicly from api-workflows (and the editor-side counterparts from app-workflows) so developers and later built-ins can register multiple automations.
+The automation definition abstraction, its outcome types and the step-type extension point are exported publicly from api-workflows (and the editor-side counterparts from app-workflows) so developers can register any number of automations. Each definition declares a zod settings schema for what the workflow author fills in (D14, D66).
+
+_Superseded in phase 5 (user answers, R155): v1 ships no built-in automation. "Send webhook" (POST to a URL with a secret signing key, read back `{ approved, comment }`) was only an example of what a developer can write; no webhook step ships, nothing signs requests, and the webhook response contract is dropped. Other examples (pull image, create records) are likewise written by developers when needed._
 
 ## D87. Run tasks as the requester via withIdentity
 
 Supersedes D58's mechanism (the `TaskService.trigger` `identity` parameter). Workflows triggers AI and automation tasks inside `IdentityContext.withIdentity(requesterIdentity, () => taskService.trigger(...))`, so the task's `createdBy` (and the identity restored at run time) is the requester. `TaskService.trigger` keeps its current interface; api-core does not change. The interface shape is not changed just to pass a different identity.
 
 _Refined by D133: one of the engine's two identity touch points; the engine wraps the trigger itself, including for steps reached inside a task._
+
+_Built in phase 5 (R149): the inline trigger in the automation reach, also on restart (always the requester)._
 
 ## D88. UI: review details view
 

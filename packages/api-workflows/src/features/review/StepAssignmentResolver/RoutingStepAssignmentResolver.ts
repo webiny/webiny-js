@@ -23,7 +23,7 @@ class RoutingStepAssignmentResolverImpl implements StepAssignmentResolver.Interf
         params: StepAssignmentResolver.Params
     ): Promise<StepAssignmentResolver.Resolution> {
         // Save-time validation guarantees a parsable config. An unparsable one (edited storage)
-        // leaves an empty pool; phase 5 fails such steps ("fail on invalid settings").
+        // leaves an empty pool; the review step type does not fail such a step (R116).
         const config = parseReviewStepConfig(params.step.config);
         if (!config) {
             return {
