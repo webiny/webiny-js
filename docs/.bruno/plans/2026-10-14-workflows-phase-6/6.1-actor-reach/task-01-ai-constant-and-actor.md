@@ -2,7 +2,7 @@
 
 Spec 5.2; D58, D107; R141 (mirror), R164. Two small, pure additions to `packages/api-workflows`; no behaviour changes yet, nothing consumes them until Tasks 3, 17 and 19:
 
-- `domain/workflow/stepTypes.ts` gains `export const AI_STEP_TYPE = "ai"` next to `REVIEW_STEP_TYPE` and `AUTOMATION_STEP_TYPE`. The file comment "`ai` is registered by phase 6 and has no constant here" is replaced by a comment that says `ai` is the type phase 6 registers (R164). The `"ai"` string literals elsewhere (`ListWorkflowStepTypesUseCase` placeholder row, `StoreWorkflowUseCase` unavailable-type message, `FAILED_STEP_LIST_TYPES`) are left alone: they are phase 5 code whose tests stay unchanged, and Task 17 and 19 switch to the constant where they touch those files.
+- `domain/workflow/stepTypes.ts` gains `export const AI_STEP_TYPE = "ai"` next to `REVIEW_STEP_TYPE` and `AUTOMATION_STEP_TYPE`. The file comment "`ai` is registered by phase 6 and has no constant here" is replaced by the final comment `/** The step type ids (R131, R164). review and automation are registered by the engine; ai is registered by ai-powerups (R177). */` (no "phase 6"). The `"ai"` string literals elsewhere (`ListWorkflowStepTypesUseCase` placeholder row, `StoreWorkflowUseCase` unavailable-type message, `FAILED_STEP_LIST_TYPES`) are left alone: they are phase 5 code whose tests stay unchanged, and Task 17 and 19 switch to the constant where they touch those files.
 - `domain/ai/getAiActor.ts` (new folder `domain/ai/`): pure `getAiActor(requester: Actor): Actor` returning `{ type: "ai", id: requester.id, displayName: requester.displayName }`. It is the mirror of `domain/automation/getAutomationActor.ts` (spec 5.2, D58, D107, R141): the AI step's owner, its approve and reject facts and its `fail` facts say who the AI acts for; `identityType` is omitted because an AI step is not an identity. `ActorType` already contains `"ai"` (`domain/review/types.ts`), so no type change is needed.
 
 **Files:**
@@ -86,8 +86,8 @@ Replace the content of `packages/api-workflows/src/domain/workflow/stepTypes.ts`
 
 ```ts
 /**
- * The step type ids (R131, R164). `review` and `automation` are registered by the engine; `ai` is
- * the type phase 6 registers from `@webiny/ai-powerups`, so the engine alone never has it.
+ * The step type ids (R131, R164). review and automation are registered by the engine;
+ * ai is registered by ai-powerups (R177).
  */
 export const REVIEW_STEP_TYPE = "review";
 export const AUTOMATION_STEP_TYPE = "automation";
