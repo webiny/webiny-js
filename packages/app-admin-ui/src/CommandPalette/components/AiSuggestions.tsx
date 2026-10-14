@@ -39,7 +39,7 @@ export const AiSuggestions = ({ onAsk }: { onAsk: (question: string) => void }) 
                 key={suggestion.question}
                 type="button"
                 onClick={() => onAsk(suggestion.question)}
-                className="flex w-full cursor-pointer items-center gap-sm rounded-md px-sm py-xs text-left hover:bg-neutral-dimmed"
+                className="flex w-full cursor-pointer items-center gap-sm rounded-md px-sm py-xs text-left transition-colors duration-150 hover:bg-neutral-dimmed focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed active:translate-y-px"
             >
                 <span className="grid size-lg shrink-0 place-items-center rounded-md border border-neutral-dimmed bg-neutral-subtle">
                     <Icon icon={suggestion.icon} size="sm" label="" color="neutral-strong" />

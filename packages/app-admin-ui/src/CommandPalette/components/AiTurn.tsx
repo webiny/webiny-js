@@ -1,6 +1,7 @@
 import React from "react";
 import { Icon, Markdown, Text } from "@webiny/admin-ui";
 import { ReactComponent as ErrorIcon } from "@webiny/icons/error.svg";
+import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import type { AiTurnViewModel } from "@webiny/app-admin";
 import { ToolChip } from "./ToolChip.js";
 import { ToolTrace } from "./ToolTrace.js";
@@ -36,10 +37,14 @@ const AnswerError = ({ message }: { message: string }) => (
  */
 const ANSWER_CLASSES = [
     "leading-[24px] text-neutral-primary",
-    "[&_p]:mb-sm [&_ul]:mb-sm [&_ol]:mb-sm [&_li]:mt-xs",
-    "[&_table]:mb-sm [&_table]:border-collapse",
+    // About 70 characters a line. Tables and code are left full width.
+    "[&_p]:mb-sm [&_p]:max-w-[70ch] [&_p]:text-pretty",
+    "[&_ul]:mb-sm [&_ol]:mb-sm [&_li]:mt-xs [&_li]:max-w-[70ch]",
+    "[&_table]:mb-sm [&_table]:border-collapse [&_table]:tabular-nums",
     "[&_th]:border-b [&_th]:border-neutral-dimmed [&_th]:py-xs [&_th]:pr-md [&_th]:text-left [&_th]:font-semibold",
-    "[&_td]:border-b [&_td]:border-neutral-subtle [&_td]:py-xs [&_td]:pr-md"
+    "[&_td]:border-b [&_td]:border-neutral-subtle [&_td]:py-xs [&_td]:pr-md",
+    // In a table every row has an id; chip backgrounds on each one turn the column into noise.
+    "[&_td_code]:bg-transparent [&_td_code]:px-0"
 ].join(" ");
 
 /**
@@ -82,6 +87,8 @@ const renderAnswer = (turn: AiTurnViewModel) => {
 
 export interface AiTurnProps {
     turn: AiTurnViewModel;
+    /** Follow-ups only make sense as the next thing to ask, so older turns drop theirs. */
+    latest: boolean;
     busy: boolean;
     onApprove: () => void;
     onReject: () => void;
@@ -90,57 +97,68 @@ export interface AiTurnProps {
 
 /*
  * The question is a bubble on the right and the answer is plain text on the left, the same split as
- * the AI chat sidebar, so the two read as one product. A bubble also tells the user's words from the
- * assistant's at a glance, which an avatar beside a left-aligned question did not.
+ * the AI chat sidebar, so the two read as one product. The answer is marked by the assistant's
+ * sparkle instead of a bubble of its own: it can hold a table or the approval card, and a box around
+ * those would be a card inside a card.
  *
  * Tools show in two places, never both. While the turn runs, chips above the answer show the work in
  * progress. Once it settles, they fold into one "Ran" line under it.
  */
-export const AiTurn = ({ turn, busy, onApprove, onReject, onAsk }: AiTurnProps) => {
+export const AiTurn = ({ turn, latest, busy, onApprove, onReject, onAsk }: AiTurnProps) => {
     const showLiveTools = !turn.settled && turn.tools.length > 0;
-    const showFollowUps = turn.settled && !turn.error && turn.pendingApprovals.length === 0;
+    const showFollowUps =
+        latest && turn.settled && !turn.error && turn.pendingApprovals.length === 0;
 
     return (
-        <div className="mb-md">
+        <div className="border-t border-neutral-subtle pt-md pb-md first:border-t-0 first:pt-xs">
             <div className="flex justify-end px-sm pb-sm">
                 <Text
                     as="div"
                     size="md"
-                    className="max-w-[80%] rounded-lg bg-primary-subtle px-sm-extra py-xs-plus font-semibold text-neutral-primary"
+                    className="max-w-[80%] rounded-lg rounded-br-xs bg-primary-subtle px-sm-extra py-xs-plus font-semibold text-pretty text-neutral-primary"
                 >
                     {turn.question}
                 </Text>
             </div>
 
-            <div className="px-sm">
-                {showLiveTools ? (
-                    <div className="mb-sm flex flex-wrap items-center gap-xs">
-                        {turn.tools.map((name, index) => (
-                            <ToolChip
-                                key={`${name}-${index}`}
-                                name={name}
-                                state={toolState(turn, index)}
-                            />
-                        ))}
-                    </div>
-                ) : null}
+            <div className="flex items-start gap-sm px-sm">
+                <Icon
+                    icon={<AiIcon />}
+                    size="sm"
+                    label="Assistant"
+                    color="accent"
+                    className="mt-xs shrink-0"
+                />
+                <div className="min-w-0 flex-1">
+                    {showLiveTools ? (
+                        <div className="mb-sm flex flex-wrap items-center gap-xs">
+                            {turn.tools.map((name, index) => (
+                                <ToolChip
+                                    key={`${name}-${index}`}
+                                    name={name}
+                                    state={toolState(turn, index)}
+                                />
+                            ))}
+                        </div>
+                    ) : null}
 
-                {renderAnswer(turn)}
+                    {renderAnswer(turn)}
 
-                {turn.pendingApprovals.length > 0 ? (
-                    <ApprovalPlan
-                        approvals={turn.pendingApprovals}
-                        busy={busy}
-                        onApprove={onApprove}
-                        onReject={onReject}
-                    />
-                ) : null}
+                    {turn.pendingApprovals.length > 0 ? (
+                        <ApprovalPlan
+                            approvals={turn.pendingApprovals}
+                            busy={busy}
+                            onApprove={onApprove}
+                            onReject={onReject}
+                        />
+                    ) : null}
 
-                {turn.settled ? <ToolTrace turn={turn} /> : null}
+                    {turn.settled ? <ToolTrace turn={turn} /> : null}
 
-                {showFollowUps ? (
-                    <FollowUps questions={turn.followUps} disabled={busy} onAsk={onAsk} />
-                ) : null}
+                    {showFollowUps ? (
+                        <FollowUps questions={turn.followUps} disabled={busy} onAsk={onAsk} />
+                    ) : null}
+                </div>
             </div>
         </div>
     );

@@ -61,6 +61,7 @@ export const createAiMode = (presenter: AdminAssistantPresenter.Interface): Pale
             <AiTurn
                 key={index}
                 turn={turn}
+                latest={index === turns.length - 1}
                 busy={busy}
                 onApprove={() => presenter.decide(index, true)}
                 onReject={() => presenter.decide(index, false)}
