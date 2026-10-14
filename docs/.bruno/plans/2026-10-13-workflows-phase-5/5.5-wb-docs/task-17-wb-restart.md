@@ -9,6 +9,8 @@ Spec 5.1, 10; D8, D34, D82, D132, D133; R33, R46, R87, R107 (does not apply), R1
 
 Every refusal before the engine is pinned with `engineCalls` (`CountingEngineCalls` gains `RestartReviewStep`). The WB package gets its own copies of Task 16's test seams and a new `seeds.ts`; the failed step is written straight through the `ReviewRepository`.
 
+**`ReviewTargetSyncError` (final review of 5.3).** The engine restart returns `ReviewTargetSyncError` (`Workflows/Review/TargetSync`) when the review was saved (restarted, new `taskId`, new task kept running) but writing the target failed (R16). Handle it exactly as the existing wrappers do: no special case. `ReassignWebsiteBuilderPageReviewStepUseCase` and `CancelWebsiteBuilderPageReviewUseCase` (`packages/api-website-builder-workflows/src/features/wrappers/`) return the engine's failed `Result` unchanged, and the resolvers in `packages/api-website-builder-workflows/src/graphql/WebsiteBuilderWorkflowsSchemaFactory.ts` map any failed result with `new ErrorResponse(result.error)`. Do not catch it, convert it, abort the task or add a retry; the new restart wrapper and resolver follow the same shape, and the wrapper test only needs to show the error passes through unchanged (engine-side behaviour is pinned in api-workflows `RestartReviewStep.test.ts`).
+
 **Files:**
 - Create: `packages/api-website-builder-workflows/src/features/wrappers/RestartWebsiteBuilderPageReviewStep/abstractions.ts`
 - Create: `packages/api-website-builder-workflows/src/features/wrappers/RestartWebsiteBuilderPageReviewStep/RestartWebsiteBuilderPageReviewStepUseCase.ts`
