@@ -344,6 +344,8 @@ const createPrStandaloneJob = (
     createJob({
         needs: ["baseBranch", "constants", "build", "checkComment"],
         name,
+        // Writes the result into the status comment.
+        permissions: { "pull-requests": "write" },
         checkout: { path: DIR_WEBINY_JS },
         ...(parts.services ? { services: parts.services } : {}),
         steps: [
