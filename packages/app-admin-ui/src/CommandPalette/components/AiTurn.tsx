@@ -32,22 +32,26 @@ const AnswerError = ({ message }: { message: string }) => (
  * answer read at that size and colour looked like a footnote. Size, colour and spacing match the AI
  * chat sidebar. Tables get rules and padding, since a list of models or entries often comes back as
  * one, and the compiler emits bare cells.
+ *
+ * The answer box is `neutral-subtle`, the same shade the shared defaults use for inline code and for
+ * light rules, so both step one shade darker here to stay visible on it.
  */
 const ANSWER_CLASSES = [
     "leading-[24px] text-neutral-primary",
     // About 70 characters a line. Tables and code are left full width.
-    "[&_p]:mb-sm [&_p]:max-w-[70ch] [&_p]:text-pretty",
+    "[&_p]:mb-sm [&_p]:max-w-[70ch] [&_p]:text-pretty [&>*:last-child]:mb-0",
     "[&_ul]:mb-sm [&_ol]:mb-sm [&_li]:mt-xs [&_li]:max-w-[70ch]",
     "[&_table]:mb-sm [&_table]:border-collapse [&_table]:tabular-nums",
-    "[&_th]:border-b [&_th]:border-neutral-dimmed [&_th]:py-xs [&_th]:pr-md [&_th]:text-left [&_th]:font-semibold",
-    "[&_td]:border-b [&_td]:border-neutral-subtle [&_td]:py-xs [&_td]:pr-md",
+    "[&_th]:border-b [&_th]:border-neutral-muted [&_th]:py-xs [&_th]:pr-md [&_th]:text-left [&_th]:font-semibold",
+    "[&_td]:border-b [&_td]:border-neutral-dimmed [&_td]:py-xs [&_td]:pr-md",
+    "[&_code]:bg-neutral-dimmed",
     // In a table every row has an id; chip backgrounds on each one turn the column into noise.
     "[&_td_code]:bg-transparent [&_td_code]:px-0"
 ].join(" ");
 
 /**
- * One of four things fills the answer slot, in priority order: the failure, the skeleton, the answer,
- * or a note that nothing came back.
+ * One of three things fills the answer box: the skeleton, the answer, or a note that nothing came
+ * back. A failure replaces the box altogether; see `AiTurn`.
  *
  * The skeleton shows only until the first token lands. Once text is arriving, the text itself is the
  * progress indicator, and swapping a skeleton in and out under it would flicker.
@@ -56,10 +60,6 @@ const ANSWER_CLASSES = [
  * returning nothing, so it gets neither the note nor the skeleton.
  */
 const renderAnswer = (turn: AiTurnViewModel) => {
-    if (turn.error) {
-        return <AnswerError message={turn.error} />;
-    }
-
     if (!turn.text && !turn.settled) {
         return <AnswerSkeleton />;
     }
@@ -94,10 +94,10 @@ export interface AiTurnProps {
 }
 
 /*
- * The question is a bubble on the right and the answer is plain text on the left, the same split as
- * the AI chat sidebar, so the two read as one product. The answer is marked by the assistant's
- * sparkle instead of a bubble of its own: it can hold a table or the approval card, and a box around
- * those would be a card inside a card.
+ * The question is a bubble on the right. The answer sits in a light box on the left beside the
+ * assistant's mark, holding only the text and the tools it ran. The approval card and the follow-ups
+ * go under the box, not in it: the approval card is a box of its own, and nesting it would be a card
+ * inside a card. A failed turn shows the error block in place of the box, for the same reason.
  *
  * The tools it called show as one line under the answer, which stays in place while the turn runs
  * and after it settles. See `ToolTrace`.
@@ -105,6 +105,7 @@ export interface AiTurnProps {
 export const AiTurn = ({ turn, latest, busy, onApprove, onReject, onAsk }: AiTurnProps) => {
     const showFollowUps =
         latest && turn.settled && !turn.error && turn.pendingApprovals.length === 0;
+    const answer = renderAnswer(turn);
 
     return (
         <div className="border-t border-neutral-subtle pt-md pb-md first:border-t-0 first:pt-xs">
@@ -119,15 +120,25 @@ export const AiTurn = ({ turn, latest, busy, onApprove, onReject, onAsk }: AiTur
             </div>
 
             <div className="flex items-start gap-sm px-sm">
-                <Icon
-                    icon={<AiIcon />}
-                    size="sm"
-                    label="Assistant"
-                    color="accent"
-                    className="mt-xs shrink-0"
-                />
+                <span className="grid size-xl shrink-0 place-items-center rounded-full border border-neutral-dimmed bg-neutral-base">
+                    <Icon icon={<AiIcon />} size="sm" label="Assistant" color="accent" />
+                </span>
                 <div className="min-w-0 flex-1">
-                    {renderAnswer(turn)}
+                    {turn.error ? (
+                        <>
+                            <AnswerError message={turn.error} />
+                            <ToolTrace turn={turn} />
+                        </>
+                    ) : answer ? (
+                        <div className="rounded-lg border border-neutral-dimmed bg-neutral-subtle px-md py-sm-extra">
+                            {answer}
+                            <ToolTrace turn={turn} />
+                        </div>
+                    ) : (
+                        // No text, e.g. a run that only proposed a change. A box around the trace
+                        // alone looks empty.
+                        <ToolTrace turn={turn} />
+                    )}
 
                     {turn.pendingApprovals.length > 0 ? (
                         <ApprovalPlan
@@ -137,8 +148,6 @@ export const AiTurn = ({ turn, latest, busy, onApprove, onReject, onAsk }: AiTur
                             onReject={onReject}
                         />
                     ) : null}
-
-                    <ToolTrace turn={turn} />
 
                     {showFollowUps ? (
                         <FollowUps questions={turn.followUps} disabled={busy} onAsk={onAsk} />

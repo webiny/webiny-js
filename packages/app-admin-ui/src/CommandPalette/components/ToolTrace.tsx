@@ -19,17 +19,20 @@ import { toolState } from "./toolState.js";
  * Once the turn settles, a call that never returned is left out: that is a change proposed for
  * approval, or one the user rejected, and listing it under "Ran" would say it happened.
  */
-export const ToolTrace = ({ turn }: { turn: AiTurnViewModel }) => {
-    const calls = turn.tools
+const traceCalls = (turn: AiTurnViewModel) =>
+    turn.tools
         .map((name, index) => ({ name, index, state: toolState(turn, index) }))
         .filter(call => !turn.settled || call.state !== "running");
+
+export const ToolTrace = ({ turn }: { turn: AiTurnViewModel }) => {
+    const calls = traceCalls(turn);
 
     if (calls.length === 0) {
         return null;
     }
 
     return (
-        <div className="mt-sm flex flex-wrap items-center gap-xs">
+        <div className="mt-sm flex flex-wrap items-center gap-xs first:mt-0">
             <Text size="sm" className="text-neutral-muted">
                 {turn.settled ? "Ran" : "Running"}
             </Text>

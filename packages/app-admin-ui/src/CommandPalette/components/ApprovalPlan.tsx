@@ -55,7 +55,7 @@ export const ApprovalPlan = ({ approvals, busy, onApprove, onReject }: ApprovalP
     return (
         <div
             className={cn(
-                "mt-sm overflow-hidden rounded-md border",
+                "mt-sm overflow-hidden rounded-md border first:mt-0",
                 destructive ? "border-destructive-subtle" : "border-warning-muted"
             )}
         >
