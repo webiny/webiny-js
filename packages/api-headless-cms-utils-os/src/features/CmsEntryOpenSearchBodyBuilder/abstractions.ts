@@ -8,6 +8,10 @@ import type { PrimitiveValue, SearchBody } from "@webiny/api-opensearch/types.js
 
 export interface ICmsEntryOpenSearchBodyBuilderParams {
     model: CmsModel;
+    /**
+     * Whether the model's index is shared between tenants, from CmsModelOpenSearchIndexProvider.
+     */
+    shared: boolean;
     params: Omit<CmsEntryListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
         after?: PrimitiveValue[];
