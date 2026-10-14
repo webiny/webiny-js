@@ -79,6 +79,34 @@ describe("ReferenceTitles", () => {
         expect(gateway).toHaveBeenCalledTimes(1);
     });
 
+    it("settles a reference to a deleted entry as an empty title", async () => {
+        const { titles, gateway } = createContainer();
+
+        titles.getTitle({ modelId: "location", id: "gone#0001" });
+        await tick();
+        await tick();
+
+        expect(titles.getTitle({ modelId: "location", id: "gone#0001" })).toBe("");
+        expect(gateway).toHaveBeenCalledTimes(1);
+    });
+
+    it("asks again after a failed request", async () => {
+        const { titles, gateway } = createContainer();
+        gateway.mockRejectedValueOnce(new Error("Network error"));
+        const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+        titles.getTitle({ modelId: "location", id: "baker#0001" });
+        await tick();
+        await tick();
+        expect(titles.getTitle({ modelId: "location", id: "baker#0001" })).toBeUndefined();
+        await tick();
+        await tick();
+
+        expect(gateway).toHaveBeenCalledTimes(2);
+        expect(titles.getTitle({ modelId: "location", id: "baker#0001" })).toBe("Baker");
+        consoleError.mockRestore();
+    });
+
     it("keeps titles of entries the reference inputs load, without a request of its own", async () => {
         const { container, titles, gateway } = createContainer();
 

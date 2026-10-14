@@ -45,11 +45,24 @@ class ReferenceTitlesImpl implements Abstraction.Interface {
     private async flush(): Promise<void> {
         const entries = this.queue;
         this.queue = [];
+        const keys = entries.map(ref => toKey(ref.modelId, ref.id));
         try {
             const result = await this.gateway.execute({ entries });
             this.remember(result.latest);
+            // A deleted entry has no title. Settle it as empty, so a title made of several
+            // references doesn't wait on it forever.
+            runInAction(() => {
+                for (const key of keys) {
+                    if (!this.titles.has(key)) {
+                        this.titles.set(key, "");
+                    }
+                }
+            });
         } catch (e) {
-            // The title falls back to the item's default label; the reference input reports the error.
+            // The title falls back to the item's default label until the next render asks again.
+            for (const key of keys) {
+                this.requested.delete(key);
+            }
             console.error(e);
         }
     }
