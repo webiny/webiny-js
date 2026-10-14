@@ -20,8 +20,17 @@ class TenantContextImpl implements Abstraction.Interface {
         this.currentTenant = tenant;
     }
 
+    /*
+     * Puts back the tenant that was current before a `with*` call. That can be none at all: work
+     * outside an HTTP request (a background task, a scheduled action) starts without a tenant.
+     * Restoring is not switching, so it skips the checks `setTenant` makes.
+     */
+    private restoreTenant(tenant: Tenant | null): void {
+        this.currentTenant = tenant;
+    }
+
     async withRootTenant<T>(cb: () => T): Promise<T> {
-        const initialTenant = this.getTenant();
+        const initialTenant = this.currentTenant;
         const rootTenant = await this.getRootTenant.execute();
         if (!rootTenant.isOk()) {
             return rootTenant.error as T;
@@ -34,7 +43,7 @@ class TenantContextImpl implements Abstraction.Interface {
             return await cb();
         } finally {
             // Make sure that, whatever happens in the callback, the tenant is set back to the initial one.
-            this.setTenant(initialTenant);
+            this.restoreTenant(initialTenant);
         }
     }
 
@@ -42,14 +51,14 @@ class TenantContextImpl implements Abstraction.Interface {
         tenants: Tenant[],
         cb: (tenant: Tenant) => Promise<TReturn>
     ): Promise<TReturn[]> {
-        const initialTenant = this.getTenant();
+        const initialTenant = this.currentTenant;
         const results = [];
         for (const tenant of tenants) {
             this.setTenant(tenant);
             try {
                 results.push(await cb(tenant));
             } finally {
-                this.setTenant(initialTenant);
+                this.restoreTenant(initialTenant);
             }
         }
         return results;
@@ -59,13 +68,13 @@ class TenantContextImpl implements Abstraction.Interface {
         tenant: Tenant,
         cb: (tenant: Tenant) => Promise<TReturn>
     ): Promise<TReturn> {
-        const initialTenant = this.getTenant();
+        const initialTenant = this.currentTenant;
         this.setTenant(tenant);
         try {
             return await cb(tenant);
         } finally {
             // Make sure that, whatever happens in the callback, the tenant is set back to the initial one.
-            this.setTenant(initialTenant);
+            this.restoreTenant(initialTenant);
         }
     }
 }

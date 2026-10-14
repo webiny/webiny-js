@@ -6,7 +6,6 @@
     { "path": "../api-core" },
     { "path": "../api-graphql" },
     { "path": "../api-headless-cms" },
-    { "path": "../event-handler-aws" },
     { "path": "../event-handler-core" },
     { "path": "../feature" },
     { "path": "../utils" }
@@ -26,8 +25,6 @@
       "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/event-handler-aws/*": ["../event-handler-aws/src/*"],
-      "@webiny/event-handler-aws": ["../event-handler-aws/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],

@@ -17,12 +17,14 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@webiny/api-core": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
-    "@webiny/feature": "0.0.0",
-    "@webiny/stdlib": "^0.0.21"
+    "@webiny/feature": "0.0.0"
+  },
+  "peerDependencies": {
+    "@webiny/di": "^2.0.0"
   },
   "devDependencies": {
-    "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^2.0.0",
     "typescript": "^7.0.2",
