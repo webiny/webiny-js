@@ -1,3 +1,4 @@
+import { TaskAbortError } from "@webiny/background-tasks/api/domain/errors.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { ReviewTaskAbortService as Abstraction } from "./abstractions.js";
@@ -15,7 +16,10 @@ class ReviewTaskAbortServiceImpl implements Abstraction.Interface {
                     id: taskId,
                     message: params.message
                 });
-                if (result.isFail()) {
+                if (result.isFail() && result.error instanceof TaskAbortError) {
+                    // The task is no longer pending or running: nothing left to abort.
+                    this.logger.info({ taskId }, "The step run task had already ended.");
+                } else if (result.isFail()) {
                     this.logger.error(
                         { error: result.error, taskId },
                         "Could not abort a workflow step run task."
