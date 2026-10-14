@@ -58,6 +58,7 @@ const RefInputInner = observer(({ field }: InnerFieldProps) => {
             value={vm.value}
             options={vm.options}
             validation={field.validation}
+            shouldFilter={false}
             onValueSearch={query => presenter.search(query)}
             onValueChange={selectedEntryId => {
                 if (!selectedEntryId) {

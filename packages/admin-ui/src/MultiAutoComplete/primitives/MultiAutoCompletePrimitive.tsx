@@ -94,6 +94,12 @@ interface MultiAutoCompletePrimitiveProps {
      */
     selectedOptionRenderer?: (item: any, index: number) => React.ReactNode;
     /**
+     * Filter the options by the typed text on the client. Defaults to `true`.
+     * Set to `false` when `onValueSearch` already returns the matching options,
+     * so options matched on data other than their label are not dropped.
+     */
+    shouldFilter?: boolean;
+    /**
      * Icon to be displayed at the start of the input field.
      */
     startIcon?: React.ReactElement<typeof Icon> | React.ReactElement;
@@ -158,7 +164,11 @@ const DecoratableMultiAutoCompletePrimitive = (props: MultiAutoCompletePrimitive
 
     return (
         <PopoverPrimitive open={vm.optionsListVm.open} onOpenChange={() => setListOpenState(true)}>
-            <Command label={String(props.label)} onKeyDown={handleKeyDown}>
+            <Command
+                label={String(props.label)}
+                shouldFilter={props.shouldFilter}
+                onKeyDown={handleKeyDown}
+            >
                 <PopoverPrimitive.Trigger asChild>
                     <span>
                         <MultiAutoCompleteInput
