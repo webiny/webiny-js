@@ -36,6 +36,26 @@ const createDate = (date: string | null): Date | null => {
     }
 };
 
+/**
+ * Lower rank comes first: an exact title match, then a title starting with the query,
+ * then a title containing it, then entries that matched on some other field.
+ */
+const getSearchRank = (title: string, query?: string): number => {
+    const normalizedQuery = query?.trim().toLowerCase();
+    if (!normalizedQuery) {
+        return 0;
+    }
+    const normalizedTitle = (title || "").trim().toLowerCase();
+    if (normalizedTitle === normalizedQuery) {
+        return 0;
+    } else if (normalizedTitle.startsWith(normalizedQuery)) {
+        return 1;
+    } else if (normalizedTitle.includes(normalizedQuery)) {
+        return 2;
+    }
+    return 3;
+};
+
 interface CmsEntryRecord {
     id: string;
     entryId: string;
@@ -438,27 +458,51 @@ export const createContentEntriesSchema = ({
                     const { modelIds, fields, query, limit = 10 } = args;
                     const models = await context.cms.listModels();
 
+                    const listLatest = context.container.resolve(ListLatestEntriesUseCase);
+
+                    const listRecords = async (
+                        model: CmsModel,
+                        where: CmsEntryListWhere,
+                        search?: string
+                    ) => {
+                        const result = await listLatest.execute(model, {
+                            limit,
+                            where,
+                            search,
+                            fields: fields || []
+                        });
+                        // TODO figure a better way to handle errors in parallel execution
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value.entries.map((entry: CmsEntry) => {
+                            return createCmsEntryRecord(model, entry);
+                        });
+                    };
+
                     const getters = models
                         .filter(model => modelIds.includes(model.modelId))
                         .map(async model => {
-                            const listLatest =
-                                await context.container.resolve(ListLatestEntriesUseCase);
-                            const where: CmsEntryListWhere = {};
-
-                            const result = await listLatest.execute(model, {
-                                limit,
-                                where,
-                                search: !!query ? query : undefined,
-                                fields: fields || []
-                            });
-                            // TODO figure a better way to handle errors in parallel execution
-                            if (result.isFail()) {
-                                throw result.error;
-                            }
-                            const { entries } = result.value;
-                            return entries.map((entry: CmsEntry) => {
-                                return createCmsEntryRecord(model, entry);
-                            });
+                            /**
+                             * Full-text search matches the query against every searchable field, and the
+                             * storage cuts the result to `limit` entries before we get to rank them. When more
+                             * entries mention the query somewhere in their content, an entry whose title is
+                             * the query can be left out. A second search on the title field alone brings it back.
+                             */
+                            const titleField = model.fields.find(
+                                field => field.fieldId === model.titleFieldId
+                            );
+                            const [titleRecords, records] = await Promise.all([
+                                query && titleField?.type === "text"
+                                    ? listRecords(model, {
+                                          values: {
+                                              [`${titleField.fieldId}_contains`]: query
+                                          }
+                                      })
+                                    : [],
+                                listRecords(model, {}, query || undefined)
+                            ]);
+                            return [...titleRecords, ...records];
                         });
 
                     try {
@@ -466,9 +510,21 @@ export const createContentEntriesSchema = ({
                             results.reduce((result, item) => result.concat(item), [])
                         );
 
+                        const uniqueEntries = Array.from(
+                            new Map(entries.map(entry => [entry.id, entry])).values()
+                        );
+
                         return new Response(
-                            entries
-                                .sort((a, b) => b.savedOn.getTime() - a.savedOn.getTime())
+                            uniqueEntries
+                                .sort((a, b) => {
+                                    const rank =
+                                        getSearchRank(a.title, query) -
+                                        getSearchRank(b.title, query);
+                                    if (rank !== 0) {
+                                        return rank;
+                                    }
+                                    return b.savedOn.getTime() - a.savedOn.getTime();
+                                })
                                 .slice(0, limit)
                         );
                     } catch (ex) {

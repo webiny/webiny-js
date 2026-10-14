@@ -672,6 +672,36 @@ describe("Content entries", () => {
         });
     });
 
+    it("should list entries with a matching title before entries matching on other fields", async () => {
+        await setupGroupAndModels({
+            manager: mainManager,
+            models: ["fruit"]
+        });
+
+        // Created first, so the newest-first full-text results leave it out once the limit is reached.
+        const peach = await createAndPublishFruit({
+            values: { ...appleData.values, name: "Peach", description: "fruit named peach" }
+        });
+        for (const name of ["Apricot", "Nectarine", "Plum"]) {
+            await createAndPublishFruit({
+                values: { ...appleData.values, name, description: `${name} tastes like peach` }
+            });
+        }
+
+        const [response] = await searchContentEntries({
+            modelsIds: ["fruit"],
+            query: "peach",
+            limit: 2
+        });
+
+        expect(response.data.entries.error).toBeNull();
+        expect(response.data.entries.data).toHaveLength(2);
+        expect(response.data.entries.data[0]).toMatchObject({
+            id: peach.id,
+            title: "Peach"
+        });
+    });
+
     it("should process the delete of non existing entry", async () => {
         const { greenApple } = await setupFruits();
         /**
