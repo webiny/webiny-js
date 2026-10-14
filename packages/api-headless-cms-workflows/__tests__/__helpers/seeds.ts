@@ -13,8 +13,8 @@ export const SKIP_RECORD_REASON = "The requester cannot review their own content
 export type FailedStepType = "ai" | "automation";
 
 /**
- * Stores the review with its only step failed as an AI (default) or automation step, straight
- * through the repository (the tests seed `failed` straight through the repository).
+ * Seeds a failed AI (default) or automation step directly in storage, for tests that need a
+ * review already in `failed`, such as the restart tests.
  */
 export const seedFailedStep = async (
     context: CmsContext,

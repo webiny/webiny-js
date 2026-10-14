@@ -132,6 +132,7 @@ class FakeTaskServiceImpl implements TaskService.Interface {
     }
 }
 
+/** Unused: kept for parity with the api-workflows and CMS copies; registration goes through the decorator. */
 export const FakeTaskService = TaskService.createImplementation({
     implementation: FakeTaskServiceImpl,
     dependencies: [IdentityContext]

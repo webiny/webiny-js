@@ -22,8 +22,9 @@ import {
     throwOnAccessChecks
 } from "~tests/__helpers/ThrowingCmsEntryAccess.js";
 import { throwOnWorkflowsPermissions } from "~tests/__helpers/ThrowingWorkflowsPermissions.js";
+import { failTargetSync } from "~tests/__helpers/FailingReviewTargetSync.js";
 import { registerTestAutomation } from "~tests/__helpers/TestAutomationDefinition.js";
-import { resetFakeTasks, triggeredTasks } from "~tests/__helpers/FakeTaskService.js";
+import { abortedTasks, resetFakeTasks, triggeredTasks } from "~tests/__helpers/FakeTaskService.js";
 import { registerFakeGetTask } from "~tests/__helpers/FakeGetTask.js";
 import { ReviewRepository } from "@webiny/api-workflows/domain/review/abstractions/ReviewRepository.js";
 import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
@@ -177,6 +178,20 @@ describe("CMS restart wrapper", () => {
         expect(wrongState.error.data).toMatchObject({ transition: "restart" });
         expect(engineCalls.filter(call => call === "RestartReviewStep")).toHaveLength(2);
         expect(triggeredTasks).toEqual([]);
+    });
+
+    it("passes a target sync error through unchanged, keeping the restarted review and the new task (R16)", async () => {
+        const { review } = await createScenario();
+        const requester = await asUser(REQUESTER, REQUESTER_PERMISSIONS, [failTargetSync]);
+
+        const result = await restart(requester, review.id);
+
+        expect(result.error.code).toBe("Workflows/Review/TargetSync");
+        expect(triggeredTasks.map(task => task.id)).toEqual(["task-1"]);
+        expect(abortedTasks).toEqual([]);
+        const stored = expectOk(await requester.container.resolve(ReviewRepository).get(review.id));
+        expect(stored.currentStepState).toBe("inReview");
+        expect(stored.steps[0].taskId).toBe("task-1");
     });
 
     it("fails with a persistence error when the viewer's permissions fail to load (R87)", async () => {

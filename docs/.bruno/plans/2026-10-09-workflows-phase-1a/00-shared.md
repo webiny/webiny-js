@@ -165,7 +165,7 @@ Test helpers (`__tests__/__helpers/`): `handler.ts`, `fixtures.ts` (incl. `expec
 | 4.1 validation: exactly one model in a valid namespace, at least one step (D108), one workflow per model (D15, D41) | Task 2 (`WorkflowValidator`), Task 3 (`ensureModelIsFree`) |
 | 4.1 model exists and is publishable | Task 3 (CMS `assertModelsBindable` on BeforeCreate/BeforeUpdate) |
 | 4.1 every rule has a target; review config teams; 6: team targets among the step's teams | Task 2 |
-| 4.1 only review step type until phase 5 (R7) | Task 2 Done in phase 5 (R131-R158). |
+| 4.1 only review step type until phase 5 (R7) | Task 2; done in phase 5 (R131-R158). |
 | 4.1 optimistic save (D131), NotFound without tombstone (D123) | Task 3 |
 | 4.1 delete blocked while in progress with exact count (D81) | Task 6 |
 | 4.2 review model, full workflow snapshot (D81), current-step fields (D19), `lastChangedOn` (D119), `model` replaces `app` (D41) | Task 4 (aggregate), Task 6 (model, repository) |
