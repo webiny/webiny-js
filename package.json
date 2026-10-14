@@ -44,7 +44,7 @@
     "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
     "@vitest/coverage-v8": "^4.1.11",
-    "@webiny/stdlib": "^0.0.17",
+    "@webiny/stdlib": "^0.0.21",
     "adio": "^3.0.1",
     "chalk": "^6.0.0",
     "cross-env": "^10.1.0",
@@ -120,7 +120,7 @@
     "lint:fix": "oxlint --fix",
     "mdx-from-folder": "tsx scripts/mdxFromFolder",
     "open": "yarn webiny open",
-    "postinstall": "yarn node ./scripts/linkWorkspaces.js",
+    "postinstall": "yarn node ./scripts/linkWorkspaces.js && (git config core.hooksPath .githooks || true)",
     "prepublishOnly": "tsx scripts/prepublishOnly/src/index.ts",
     "release": "tsx ./scripts/release/src/index.ts",
     "setup-cypress": "tsx scripts/setupCypress/setupCypressAws.js",
@@ -138,7 +138,6 @@
     "test:pg": "WEBINY_STORAGE=sql WEBINY_SQL_CLIENT=pg vitest --config testing/vitest.config.ts --run",
     "test:pglite": "WEBINY_STORAGE=sql WEBINY_SQL_CLIENT=pglite vitest --config testing/vitest.config.ts --run",
     "test:pg:os": "WEBINY_STORAGE=pg-os vitest --config testing/vitest.config.ts --run",
-    "trigger-release": "tsx ./scripts/release/src/triggerRelease.ts",
     "tsc": "tsc",
     "update-packages": "tsx ./scripts/updatePackages.ts",
     "validate-packages": "node scripts/validatePackages.js",
@@ -197,7 +196,7 @@
   "packageManager": "yarn@4.18.0",
   "dependencies": {
     "@types/hoist-non-react-statics": "^3.3.7",
-    "@webiny/di": "^1.1.0",
+    "@webiny/di": "^2.0.0",
     "jwt-decode": "^4.0.0"
   },
   "dependenciesMeta": {

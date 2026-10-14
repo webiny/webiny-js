@@ -385,6 +385,33 @@ const [value, setValue] = useState("password");
 export default WithControlledValueExample;
 ` } } />
 
+### With Actions
+
+Use `actions` to put controls at the end of the tab row, such as a filter checkbox or a button. They render outside the tab list, so arrow keys still move only between tabs.
+
+<Canvas of={Tabs.WithActions} source={ { code: `
+import React, { useState } from "react";
+import { Checkbox, Tabs } from "@webiny/admin-ui";
+
+const WithActionsExample = () => {
+const [unreadOnly, setUnreadOnly] = useState(false);
+
+    return (
+        <Tabs
+            separator={true}
+            actions={<Checkbox label="Unread only" checked={unreadOnly} onChange={setUnreadOnly} />}
+            tabs={[
+                <Tabs.Tab key="inbox" value="inbox" trigger="Inbox" content="Inbox content" />,
+                <Tabs.Tab key="archive" value="archive" trigger="Archive" content="Archive content" />
+            ]}
+        />
+    );
+
+};
+
+export default WithActionsExample;
+` } } />
+
 ### With Icons
 
 <Canvas of={Tabs.WithIcons} source={ { code: `

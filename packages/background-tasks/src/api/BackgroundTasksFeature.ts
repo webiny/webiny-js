@@ -5,7 +5,6 @@ import { TaskController } from "./features/TaskController/index.js";
 import { TaskPrivateModel } from "./crud/TaskPrivateModel.js";
 import { TaskLogPrivateModel } from "./crud/TaskLogPrivateModel.js";
 import { BackgroundTaskSettingsModel } from "./models/BackgroundTaskSettingsModel.js";
-import { TasksCrudAdapter } from "./crud/TasksCrudAdapter.js";
 import { TaskModelProvider } from "./domain/task/TaskModelProvider.js";
 import { TaskLogModelProvider } from "./domain/task/TaskLogModelProvider.js";
 import { TasksRepository } from "./domain/task/TasksRepository.js";
@@ -19,6 +18,11 @@ import { CreateTaskFeature } from "./features/CreateTask/index.js";
 import { UpdateTaskFeature } from "./features/UpdateTask/index.js";
 import { DeleteTaskFeature } from "./features/DeleteTask/index.js";
 import { BackgroundTaskServiceFeature } from "./features/TaskService/index.js";
+import { CreateTaskLogFeature } from "./features/CreateTaskLog/index.js";
+import { UpdateTaskLogFeature } from "./features/UpdateTaskLog/index.js";
+import { DeleteTaskLogFeature } from "./features/DeleteTaskLog/index.js";
+import { GetLatestTaskLogFeature } from "./features/GetLatestTaskLog/index.js";
+import { ListTaskLogsFeature } from "./features/ListTaskLogs/index.js";
 import { TriggerTaskFeature } from "./features/TriggerTask/feature.js";
 import { AbortTaskFeature } from "./features/AbortTask/feature.js";
 import { GetTaskFeature } from "./features/GetTask/feature.js";
@@ -63,12 +67,14 @@ export const BackgroundTasksFeature = createFeature({
         UpdateTaskFeature.register(container);
         DeleteTaskFeature.register(container);
         CleanupTaskSubtreeFeature.register(container);
+        CreateTaskLogFeature.register(container);
+        UpdateTaskLogFeature.register(container);
+        DeleteTaskLogFeature.register(container);
+        GetLatestTaskLogFeature.register(container);
+        ListTaskLogsFeature.register(container);
         BackgroundTaskServiceFeature.register(container);
         TriggerTaskFeature.register(container);
         AbortTaskFeature.register(container);
-
-        // The old all-in-one TasksCrud API, for the callers that still use it.
-        container.register(TasksCrudAdapter);
 
         // Execution context (singleton), controller, and the built-in test task.
         TaskExecutionContextFeature.register(container);

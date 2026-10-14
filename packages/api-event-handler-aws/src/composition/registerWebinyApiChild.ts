@@ -18,7 +18,6 @@ export async function registerWebinyApiChild(
 ): Promise<void> {
     await registerApiRequestStack(container, {
         extensions: config.extensions,
-        registerRequestStorage: config.registerRequestStorage,
         transports: {
             // Real AWS WebSocket transport (API Gateway Management API), registered right after
             // WebsocketsFeature so it overrides the NullWebsocketsTransport.

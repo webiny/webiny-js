@@ -9,6 +9,7 @@ import { usePreviewDomain } from "@webiny/frontend-settings/exports/admin.js";
 import { ContentEntryFormContent } from "~/presentation/contentEntries/views/layout/ContentEntryFormContent.js";
 import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { PreviewPane } from "./PreviewPane.js";
+import { PreviewDomainStatus } from "./PreviewDomainStatus.js";
 import { useLivePreviewPresenter } from "./useLivePreviewPresenter.js";
 import { getPatternRefFieldIds, getRefValues, withRefValues } from "./resolvePreviewUrl.js";
 
@@ -19,7 +20,7 @@ export const PreviewDecorator = ContentEntryFormContent.createDecorator(Original
             const livePreview = useLivePreviewPresenter();
             const model = presenter.vm.model;
             const previewPath = model?.settings?.previewPath as string | undefined;
-            const { previewDomain } = usePreviewDomain();
+            const domain = usePreviewDomain();
 
             const form = presenter.vm.form;
             const entry = presenter.vm.entry;
@@ -50,7 +51,11 @@ export const PreviewDecorator = ContentEntryFormContent.createDecorator(Original
 
             return (
                 <SplitView namespace={"cms-live-preview"} className="h-full">
-                    <LeftPanel span={5} minSize={20} className="bg-white overflow-y-auto">
+                    {/*
+                     * The form keeps at least 420px, so when the comments panel opens beside the
+                     * split, the preview gives up its width first.
+                     */}
+                    <LeftPanel span={5} minSize={420} className="bg-white overflow-y-auto">
                         <Original
                             {...props}
                             width={"100%"}
@@ -59,17 +64,23 @@ export const PreviewDecorator = ContentEntryFormContent.createDecorator(Original
                     </LeftPanel>
                     <RightPanel
                         span={7}
-                        minSize={20}
+                        minSize={"20%"}
                         className="overflow-hidden p-md"
                         style={{ overflowY: "hidden" }}
                     >
-                        <PreviewPane
-                            domain={previewDomain}
-                            previewPath={previewPath}
-                            entryId={entryId}
-                            entryData={entryData}
-                            urlEntryData={urlEntryData}
-                        />
+                        {domain.previewDomain ? (
+                            <PreviewPane
+                                domain={domain.previewDomain}
+                                settingsDomain={domain.isOverridden ? domain.settingsDomain : null}
+                                onResetDomain={domain.unsetPreviewDomain}
+                                previewPath={previewPath}
+                                entryId={entryId}
+                                entryData={entryData}
+                                urlEntryData={urlEntryData}
+                            />
+                        ) : (
+                            <PreviewDomainStatus error={domain.error} onRetry={domain.retry} />
+                        )}
                     </RightPanel>
                 </SplitView>
             );

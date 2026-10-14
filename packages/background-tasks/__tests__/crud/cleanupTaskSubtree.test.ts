@@ -61,7 +61,15 @@ const makeContext = (fx: Fixture) => {
     const deletedTasks: string[] = [];
     const deletedLogs: string[] = [];
     const deleteTaskThrows = new Set<string>();
-    const meta = (count: number) => ({ totalCount: count, hasMoreItems: false, cursor: null });
+    // Pages like the CMS list: `limit` items from the position the `after` cursor points to.
+    const page = <T>(all: T[], params: any) => {
+        const start = params?.after ? Number(params.after) : 0;
+        const limit = params?.limit ?? 50;
+        const items = all.slice(start, start + limit);
+        const hasMoreItems = start + limit < all.length;
+        const cursor = hasMoreItems ? String(start + limit) : null;
+        return { items, meta: { totalCount: all.length, hasMoreItems, cursor } };
+    };
 
     const tasksRepository = {
         get: async (id: string) => {
@@ -73,15 +81,15 @@ const makeContext = (fx: Fixture) => {
                 return Result.fail(BackgroundTaskPersistenceError.from(new Error("db down")));
             }
             const parentId = params?.where?.parentId;
-            const items = [...tasks.values()].filter(t => (t as any).parentId === parentId);
-            return Result.ok({ items, meta: meta(items.length) });
+            const children = [...tasks.values()].filter(t => (t as any).parentId === parentId);
+            return Result.ok(page(children, params));
         }
     } as unknown as TasksRepository.Interface;
 
     const logsRepository = {
         list: async (params: any) => {
-            const items = logsByTask.get(params?.where?.task) ?? [];
-            return Result.ok({ items, meta: meta(items.length) });
+            const logs = logsByTask.get(params?.where?.task) ?? [];
+            return Result.ok(page(logs, params));
         },
         delete: async (id: string) => {
             deletedLogs.push(id);
@@ -230,5 +238,28 @@ describe("cleanupTaskSubtree", () => {
         await expect(fx.cleanup("root")).resolves.toBeUndefined();
         expect(fx.deletedTasks).toEqual([]);
         expect(fx.logger.warn).toHaveBeenCalled();
+    });
+
+    it("deletes children beyond the first page", async () => {
+        const children = Array.from({ length: 250 }, (_, i) => mkTask(`c${i}`, "defA", "root"));
+        const fx = makeContext({
+            tasks: [mkTask("root", "defA"), ...children],
+            logs: [],
+            definitions: { defA: { databaseLogs: false } }
+        });
+        await fx.cleanup("root");
+        expect(fx.deletedTasks).toHaveLength(251);
+        expect(fx.deletedTasks[fx.deletedTasks.length - 1]).toBe("root");
+    });
+
+    it("deletes logs beyond the first page", async () => {
+        const logs = Array.from({ length: 250 }, (_, i) => mkLog(`log${i}`, "t1"));
+        const fx = makeContext({
+            tasks: [mkTask("t1", "defA")],
+            logs,
+            definitions: { defA: { databaseLogs: true } }
+        });
+        await fx.cleanup("t1");
+        expect(fx.deletedLogs).toHaveLength(250);
     });
 });

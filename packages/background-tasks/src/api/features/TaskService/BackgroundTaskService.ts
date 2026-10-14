@@ -10,7 +10,10 @@ import type {
 import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { NotFoundError } from "@webiny/api-graphql";
 import { TaskService as TaskTransport } from "~/api/domain/TaskService.js";
-import { TaskLogsRepository, TasksRepository } from "~/api/domain/task/abstractions.js";
+import { GetTaskUseCase } from "~/api/features/GetTask/index.js";
+import { CreateTaskLogUseCase } from "~/api/features/CreateTaskLog/index.js";
+import { GetLatestTaskLogUseCase } from "~/api/features/GetLatestTaskLog/index.js";
+import { UpdateTaskLogUseCase } from "~/api/features/UpdateTaskLog/index.js";
 import { CreateTaskUseCase } from "~/api/features/CreateTask/index.js";
 import { UpdateTaskUseCase } from "~/api/features/UpdateTask/index.js";
 import { DeleteTaskUseCase } from "~/api/features/DeleteTask/index.js";
@@ -53,8 +56,10 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
         private readonly createTask: CreateTaskUseCase.Interface,
         private readonly updateTask: UpdateTaskUseCase.Interface,
         private readonly deleteTask: DeleteTaskUseCase.Interface,
-        private readonly tasks: TasksRepository.Interface,
-        private readonly logs: TaskLogsRepository.Interface,
+        private readonly getTask: GetTaskUseCase.Interface,
+        private readonly getLatestTaskLog: GetLatestTaskLogUseCase.Interface,
+        private readonly createTaskLog: CreateTaskLogUseCase.Interface,
+        private readonly updateTaskLog: UpdateTaskLogUseCase.Interface,
         private readonly transports: TaskTransport.Interface[],
         private readonly logger: Logger.Interface
     ) {}
@@ -143,9 +148,9 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
     async abort<I extends TaskInput = TaskInput, O extends TaskOutput = TaskOutput>(
         params: ITaskAbortParams
     ): Promise<Result<TaskService.Task<I, O>, BaseError<any>>> {
-        const taskResult = await this.tasks.get<I, O>(params.id);
+        const taskResult = await this.getTask.execute<I, O>(params.id);
         if (taskResult.isFail()) {
-            return Result.fail(new TaskNotFoundError());
+            return Result.fail(taskResult.error);
         }
         const task = taskResult.value;
 
@@ -168,7 +173,7 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
             if (updated.isFail()) {
                 throw updated.error;
             }
-            const logUpdate = await this.logs.update(taskLog.id, {
+            const logUpdate = await this.updateTaskLog.execute(taskLog.id, {
                 items: taskLog.items.concat([
                     {
                         message: params.message || "Task aborted.",
@@ -194,6 +199,17 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
         }
     }
 
+    // A missing task is null; any other failure is thrown, so it isn't mistaken for a missing one.
+    private async findTask(id: string): Promise<TaskService.Task | null> {
+        const result = await this.getTask.execute(id);
+        if (result.isOk()) {
+            return result.value;
+        } else if (result.error instanceof TaskNotFoundError) {
+            return null;
+        }
+        throw result.error;
+    }
+
     private getTransport(): TaskTransport.Interface {
         // The last registration wins, so a test or a deployment can swap the transport.
         const transport = this.transports[this.transports.length - 1];
@@ -203,22 +219,12 @@ class BackgroundTaskServiceImpl implements TaskService.Interface {
         return transport;
     }
 
-    private async findTask(id: string): Promise<TaskService.Task | null> {
-        const result = await this.tasks.get(id);
-        if (result.isOk()) {
-            return result.value;
-        } else if (result.error instanceof TaskNotFoundError) {
-            return null;
-        }
-        throw result.error;
-    }
-
     private async getOrCreateLog(task: TaskService.Task<any, any>): Promise<ITaskLog> {
-        const latest = await this.logs.getLatest(task.id);
+        const latest = await this.getLatestTaskLog.execute(task.id);
         if (latest.isOk()) {
             return latest.value;
         }
-        const created = await this.logs.create(task, {
+        const created = await this.createTaskLog.execute(task, {
             iteration: 1,
             executionName: task.executionName
         });
@@ -236,8 +242,10 @@ export const BackgroundTaskService = TaskService.createImplementation({
         CreateTaskUseCase,
         UpdateTaskUseCase,
         DeleteTaskUseCase,
-        TasksRepository,
-        TaskLogsRepository,
+        GetTaskUseCase,
+        GetLatestTaskLogUseCase,
+        CreateTaskLogUseCase,
+        UpdateTaskLogUseCase,
         [TaskTransport, { multiple: true }],
         Logger
     ]

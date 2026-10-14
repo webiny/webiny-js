@@ -34,12 +34,6 @@ export interface RegisterApiRequestStackConfig {
      */
     extensions: () => Parameters<typeof registerExtensions>[1];
     /**
-     * Register request-phase storage features that must run BEFORE `HeadlessCmsFeature` builds its
-     * storage — e.g. `DbRegistryFeature` for the DDB+ES variant. Per-request storage state
-     * (the CMS storage operations) goes here too. Optional.
-     */
-    registerRequestStorage?: (container: Container) => void | Promise<void>;
-    /**
      * Hosting-specific transport adapters, each installed at its exact interleave point in the stack.
      * Every entry follows the same shape: it runs immediately AFTER the transport-agnostic domain
      * Feature has registered its NULL default, and overrides that default (nearest-container-last-wins)
@@ -102,9 +96,6 @@ export async function registerApiRequestStack(
     // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind to the
     // request child container so per-request event handlers are resolvable) ─────────
     ApiCoreFeature.register(container, { wcpLicense: undefined });
-
-    // ── Request-phase storage (variant-specific; must precede HeadlessCmsFeature) ──
-    await config.registerRequestStorage?.(container);
 
     // ── CMS ────────────────────────────────────────────────────
     HeadlessCmsFeature.register(container, { type: "manage" });

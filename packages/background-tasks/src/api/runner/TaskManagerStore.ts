@@ -10,7 +10,10 @@ import type {
     ITaskManagerStoreUpdateTaskOptions,
     TaskDataStatus
 } from "~/api/types.js";
-import { TasksCrud } from "~/api/TasksCrud.js";
+import type { ListTasksUseCase } from "~/api/features/ListTasks/index.js";
+import type { UpdateTaskUseCase } from "~/api/features/UpdateTask/index.js";
+import type { UpdateTaskLogUseCase } from "~/api/features/UpdateTaskLog/index.js";
+import type { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { Container } from "@webiny/feature/api";
 import { TaskLogItemType } from "~/api/types.js";
 import type {
@@ -50,10 +53,13 @@ export interface ITaskManagerStoreParams {
     log: ITaskLog;
     databaseLogs: boolean;
     /**
-     * Supplied by the caller rather than pulled from `context.container`, so the store's one real
-     * collaborator is visible in its signature and a test can substitute it.
+     * Supplied by the caller rather than pulled from `context.container`, so the store's
+     * collaborators are visible in its signature and a test can substitute them.
      */
-    tasksCrud: TasksCrud.Interface;
+    listTasks: ListTasksUseCase.Interface;
+    updateTask: UpdateTaskUseCase.Interface;
+    updateTaskLog: UpdateTaskLogUseCase.Interface;
+    logger: Logger.Interface;
 }
 
 export class TaskManagerStore<
@@ -61,7 +67,10 @@ export class TaskManagerStore<
     O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > implements ITaskManagerStorePrivate<T, O> {
     private readonly context: TaskManagerStoreContext;
-    private readonly tasksCrud: TasksCrud.Interface;
+    private readonly listTasksUseCase: ListTasksUseCase.Interface;
+    private readonly updateTaskUseCase: UpdateTaskUseCase.Interface;
+    private readonly updateTaskLogUseCase: UpdateTaskLogUseCase.Interface;
+    private readonly logger: Logger.Interface;
     private task: ITask<T, O>;
     private taskLog: ITaskLog;
     private readonly databaseLogs: boolean;
@@ -71,7 +80,10 @@ export class TaskManagerStore<
 
     public constructor(params: ITaskManagerStoreParams) {
         this.context = params.context;
-        this.tasksCrud = params.tasksCrud;
+        this.listTasksUseCase = params.listTasks;
+        this.updateTaskUseCase = params.updateTask;
+        this.updateTaskLogUseCase = params.updateTaskLog;
+        this.logger = params.logger;
         this.task = params.task as ITask<T, O>;
         this.taskLog = params.log;
         this.databaseLogs = params.databaseLogs === true;
@@ -95,12 +107,15 @@ export class TaskManagerStore<
         if (definitionId) {
             where.definitionId = definitionId;
         }
-        const result = await this.tasksCrud.listTasks<I, O>({
+        const result = await this.listTasksUseCase.execute<I, O>({
             where,
             sort: ["createdOn_ASC"],
             limit: 1000000
         });
-        return result.items;
+        if (result.isFail()) {
+            throw result.error;
+        }
+        return result.value.items;
     }
 
     public async updateTask(
@@ -203,10 +218,8 @@ export class TaskManagerStore<
         if (!this.databaseLogs) {
             return;
         }
-        /**
-         * Let's log the error to the console as well.
-         */
-        console.error(log.error);
+        // Log the error as well, not only into the task log.
+        this.logger.error({ error: log.error, taskId: this.task.id }, "Task reported an error.");
         /**
          * Then update the log object.
          */
@@ -230,15 +243,24 @@ export class TaskManagerStore<
         /**
          * Update both task and the log, if anything to update.
          */
-        const tasksCrud = this.tasksCrud;
         if (this.taskUpdater.isDirty()) {
-            this.task = await tasksCrud.updateTask<T, O>(this.task.id, this.taskUpdater.fetch());
+            const changes = this.taskUpdater.fetch();
+            const result = await this.updateTaskUseCase.execute<T, O>(this.task.id, changes);
+            if (result.isFail()) {
+                throw result.error;
+            }
+            this.task = result.value;
         }
         if (!this.databaseLogs) {
             return;
         }
         if (this.taskLogUpdater.isDirty()) {
-            this.taskLog = await tasksCrud.updateLog(this.taskLog.id, this.taskLogUpdater.fetch());
+            const changes = this.taskLogUpdater.fetch();
+            const result = await this.updateTaskLogUseCase.execute(this.taskLog.id, changes);
+            if (result.isFail()) {
+                throw result.error;
+            }
+            this.taskLog = result.value;
         }
     }
 }
