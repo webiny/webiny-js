@@ -114,7 +114,20 @@ export const useScheduleDialog = (
             title: `Schedule "${target.title}"`,
             content: <FormComponent presenter={presenter} />,
             formData: async () => {
-                await presenter.load({ namespace, id: target.id });
+                try {
+                    await presenter.load({ namespace, id: target.id });
+                } catch (error) {
+                    /*
+                     * Without the current schedule the dialog can't tell a new action from a
+                     * duplicate, so show the error and close it instead of offering the form.
+                     */
+                    toast.showWarningToast({ title: error.message });
+                    if (dialogClose.current) {
+                        dialogClose.current();
+                        dialogClose.current = null;
+                    }
+                    return {};
+                }
 
                 const entry = presenter.vm.entry;
                 const scheduleOn = entry?.publishOn || entry?.unpublishOn;

@@ -15,7 +15,7 @@ import { ScheduleDialogPresenter } from "./ScheduleDialogPresenter.js";
  * `cancel()` resolves, and shows the error when they reject. So a failed action must reject,
  * and the dialog must not be left loading.
  */
-const setup = (params: { fail: boolean }) => {
+const setup = (params: { fail: boolean; getExecute?: () => Promise<unknown> }) => {
     const execute = vi.fn(async () => {
         if (params.fail) {
             throw new Error("Could not schedule the action.");
@@ -24,7 +24,9 @@ const setup = (params: { fail: boolean }) => {
     });
 
     const container = new Container();
-    container.registerInstance(GetScheduledActionGateway, { execute: vi.fn() } as any);
+    container.registerInstance(GetScheduledActionGateway, {
+        execute: params.getExecute ?? vi.fn()
+    } as any);
     container.registerInstance(CancelScheduledActionGateway, { execute } as any);
     container.registerInstance(SchedulePublishActionGateway, { execute } as any);
     container.registerInstance(ScheduleUnpublishActionGateway, { execute } as any);
@@ -73,5 +75,34 @@ describe("ScheduleDialogPresenter", () => {
             presenter.cancel({ id: "action-1", namespace: "cms/article" })
         ).resolves.toBeUndefined();
         expect(presenter.vm.loading).toBe(false);
+    });
+
+    /*
+     * The dialog loads the existing schedule before it opens. A failed load used to leave the
+     * entry empty, which reads as "nothing scheduled" and invites scheduling a duplicate.
+     */
+    it("rejects when loading the scheduled action fails", async () => {
+        const presenter = setup({
+            fail: false,
+            getExecute: async () => {
+                throw new Error("Could not fetch scheduled action.");
+            }
+        });
+
+        await expect(presenter.load({ namespace: "cms/article", id: "entry-1" })).rejects.toThrow(
+            "Could not fetch scheduled action."
+        );
+        expect(presenter.vm.loading).toBe(false);
+        expect(presenter.vm.entry).toBeNull();
+    });
+
+    it("resolves with no entry when nothing is scheduled", async () => {
+        const presenter = setup({ fail: false, getExecute: async () => null });
+
+        await expect(
+            presenter.load({ namespace: "cms/article", id: "entry-1" })
+        ).resolves.toBeUndefined();
+        expect(presenter.vm.loading).toBe(false);
+        expect(presenter.vm.entry).toBeNull();
     });
 });
