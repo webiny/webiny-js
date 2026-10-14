@@ -7,6 +7,7 @@ import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEnt
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
 import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
+import { WorkflowBypassService } from "@webiny/api-workflows/features/bypass/WorkflowBypassService/index.js";
 import { createAuthorEntry, expectOk, getAuthorModel } from "~tests/__helpers/entries.js";
 import { createTestContext } from "~tests/__helpers/testContext.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
@@ -86,6 +87,21 @@ describe("CMS trash with a review in progress (D134)", () => {
             ]
         });
         expect((await readEntry(context, entry.id)).id).toBe(entry.id);
+    });
+
+    it("does not exempt trash or permanent delete from the bypass (D134, R150)", async () => {
+        const context = await createTestContext();
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+        await requestEntryReview(context, entry);
+        const bypass = context.container.resolve(WorkflowBypassService);
+
+        const trashed = await bypass.run(() => trash(context, entry));
+        const deleted = await bypass.run(() => deletePermanently(context, entry));
+
+        expect(trashed.isFail()).toBe(true);
+        expect(trashed.error.code).toBe("Workflows/Review/ActiveReviewOnTrash");
+        expect(deleted.isFail()).toBe(true);
+        expect(deleted.error.code).toBe("Workflows/Review/ActiveReviewOnTrash");
     });
 
     it("trashes the entry once the review is cancelled, and keeps the cancelled review", async () => {

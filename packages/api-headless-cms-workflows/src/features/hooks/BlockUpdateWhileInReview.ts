@@ -1,6 +1,7 @@
 import { EntryBeforeUpdateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
 import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
+import { WorkflowBypassService } from "@webiny/api-workflows/features/bypass/WorkflowBypassService/index.js";
 import { ReviewTargetLockedError } from "@webiny/api-workflows/domain/review/errors.js";
 import { CmsEntryReviewNamespace } from "~/features/target/CmsEntryReviewNamespace/index.js";
 
@@ -12,17 +13,24 @@ import { CmsEntryReviewNamespace } from "~/features/target/CmsEntryReviewNamespa
  * models never look up reviews. Failed lookups block the update. Exempt, because they publish
  * other events: the `system.workflow` sync (`UpdateEntrySystemUseCase` publishes
  * `EntryBeforeUpdateSystem`) and revision-description changes (`UpdateRevisionDescriptionUseCase`
- * publishes `EntryBeforeUpdateRevisionDescription`; metadata only, not content). Phase 5 adds the
- * automation and AI bypass context here (D36, D62), as a check before the binding lookup.
+ * publishes `EntryBeforeUpdateRevisionDescription`; metadata only, not content). The automation
+ * run is exempt too (D36, D62, R150): while `WorkflowBypassService.isActive()` the handler returns
+ * before the binding lookup. Only this save block honours the bypass; the move rule (D84) and the
+ * delete and trash blocks (D134) do not.
  */
 class BlockUpdateWhileInReviewImpl implements EntryBeforeUpdateEventHandler.Interface {
     public constructor(
+        private bypass: WorkflowBypassService.Interface,
         private namespaces: CmsEntryReviewNamespace.Interface[],
         private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
         private getTargetReview: GetTargetReviewUseCase.Interface
     ) {}
 
     public async handle(event: EntryBeforeUpdateEventHandler.Event): Promise<void> {
+        if (this.bypass.isActive()) {
+            return;
+        }
+
         const { model, original } = event.payload;
         // The last registered non-null namespace for the model wins (R51).
         let namespace: string | null = null;
@@ -69,6 +77,7 @@ class BlockUpdateWhileInReviewImpl implements EntryBeforeUpdateEventHandler.Inte
 export const BlockUpdateWhileInReview = EntryBeforeUpdateEventHandler.createImplementation({
     implementation: BlockUpdateWhileInReviewImpl,
     dependencies: [
+        WorkflowBypassService,
         [CmsEntryReviewNamespace, { multiple: true }],
         GetBoundWorkflowUseCase,
         GetTargetReviewUseCase

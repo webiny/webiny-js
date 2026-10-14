@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
 import { DeleteWorkflowUseCase } from "@webiny/api-workflows/features/workflow/DeleteWorkflow/index.js";
+import { WorkflowBypassService } from "@webiny/api-workflows/features/bypass/WorkflowBypassService/index.js";
 import { ADMIN_ACTOR, createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow.js";
 import { createAuthorEntry, expectOk, getAuthorModel } from "~tests/__helpers/entries.js";
 import { createTestContext } from "~tests/__helpers/testContext.js";
@@ -77,6 +78,51 @@ describe("Revision create and save block", () => {
             action: "update"
         });
         expect(allowed.isOk()).toBe(true);
+    });
+
+    it("lets the save through while the bypass is active, and only then (D36, D62, R150)", async () => {
+        const { context } = await createWorkflowContext();
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+        const review = await requestEntryReview(context, entry);
+        const bypass = context.container.resolve(WorkflowBypassService);
+
+        const bypassed = await bypass.run(() => updateName(context, entry.id, "By automation"));
+        const blockedAfter = await updateName(context, entry.id, "By someone else");
+
+        expect(bypassed.isOk()).toBe(true);
+        expect((await readEntry(context, entry.id)).values.name).toBe("By automation");
+        expect(blockedAfter.isFail()).toBe(true);
+        expect(blockedAfter.error.code).toBe("Workflows/Review/TargetLocked");
+        expect(blockedAfter.error.data).toMatchObject({ reviewId: review.id, action: "update" });
+    });
+
+    it("blocks the save again after a bypassed callback throws (finally)", async () => {
+        const { context } = await createWorkflowContext();
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+        await requestEntryReview(context, entry);
+        const bypass = context.container.resolve(WorkflowBypassService);
+
+        await expect(
+            bypass.run(async () => {
+                throw new Error("automation failed");
+            })
+        ).rejects.toThrow("automation failed");
+        const blocked = await updateName(context, entry.id, "Changed");
+
+        expect(blocked.isFail()).toBe(true);
+        expect(blocked.error.code).toBe("Workflows/Review/TargetLocked");
+    });
+
+    it("does not look up the binding or the review while the bypass is active", async () => {
+        const { context } = await createWorkflowContext([countEngineCalls]);
+        const entry = await createAuthorEntry(context, { name: "Ann" });
+        await requestEntryReview(context, entry);
+        engineCalls.length = 0;
+        const bypass = context.container.resolve(WorkflowBypassService);
+
+        await bypass.run(() => updateName(context, entry.id, "By automation"));
+
+        expect(engineCalls).toEqual([]);
     });
 
     it("keeps approved and rejected revisions locked (D80, D23)", async () => {

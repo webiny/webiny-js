@@ -45,6 +45,7 @@ import { ListWorkflowUsersFeature } from "~/features/config/ListWorkflowUsers/fe
 import { CurrentUserTeamsFeature } from "~/features/identity/CurrentUserTeams/feature.js";
 import { CurrentReviewViewerFeature } from "~/features/identity/CurrentReviewViewer/feature.js";
 import { CandidateReadAccessFeature } from "~/features/identity/CandidateReadAccess/feature.js";
+import { WorkflowBypassServiceFeature } from "~/features/bypass/WorkflowBypassService/feature.js";
 import { WorkflowsPermissionsFeature } from "~/features/permissions/WorkflowsPermissions/feature.js";
 import { AutomationDefinitionRegistryFeature } from "~/features/automation/AutomationDefinitionRegistryService/feature.js";
 import { StepTypesFeature } from "~/features/stepTypes/feature.js";
@@ -132,6 +133,9 @@ export const WorkflowsFeature = createFeature({
         CurrentUserTeamsFeature.register(container);
         CurrentReviewViewerFeature.register(container);
         CandidateReadAccessFeature.register(container);
+
+        // Bypass context for the automation run (D36, D62, R150); only the save block reads it
+        WorkflowBypassServiceFeature.register(container);
 
         // GraphQL on /graphql: the `workflows` root and the shared types (R88, R100)
         container.register(WorkflowsSchemaFactory);

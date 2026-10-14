@@ -3,6 +3,7 @@ import type { CmsContext, CmsEntry } from "@webiny/api-headless-cms/types/index.
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
 import { UnpublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/index.js";
 import { RepublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/RepublishEntry/index.js";
+import { WorkflowBypassService } from "@webiny/api-workflows/features/bypass/WorkflowBypassService/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { MoveEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/MoveEntry/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
@@ -259,6 +260,19 @@ describe("CMS move rule (D84)", () => {
         expect(blocked.error.code).toBe("Workflows/Review/TargetLocked");
         expect(blocked.error.data).toMatchObject({ action: "move", reviewState: "inProgress" });
         expect(moved.isOk()).toBe(true);
+    });
+
+    it("does not exempt the move rule from the bypass (D84, R150)", async () => {
+        const context = await createTestContext();
+        const entry = await createAuthorEntry(context, { name: "Ann", folderId: "folder-1" });
+        await requestEntryReview(context, entry);
+        const bypass = context.container.resolve(WorkflowBypassService);
+
+        const blocked = await bypass.run(() => move(context, entry, "folder-2"));
+
+        expect(blocked.isFail()).toBe(true);
+        expect(blocked.error.code).toBe("Workflows/Review/TargetLocked");
+        expect(blocked.error.data).toMatchObject({ action: "move", reviewState: "inProgress" });
     });
 
     it("moves an entry of an unbound model without looking up reviews", async () => {
