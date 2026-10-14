@@ -155,18 +155,18 @@ export type ReviewReassignError =
     | ReviewStepNotReassignableError;
 
 /** With a chosen user, the reassign check adds the same-owner rule (R126). */
-/** Fail needs the current step; the check for a finished review is `InvalidState` (R140). */
-export type ReviewFailError = ReviewInvalidStateError | ReviewStepNotCurrentError;
-
-/** Restart needs a failed current step (R140, R153). */
-export type ReviewRestartError = ReviewInvalidStateError | ReviewStepNotCurrentError;
-
 export type ReviewReassignCheckError = ReviewReassignError | ReviewAlreadyOwnerError;
 
 /** The transition adds the requester rule to the check (spec 5.1). */
 export type ReviewReassignTransitionError =
     | ReviewReassignCheckError
     | ReviewRequesterCannotReviewError;
+
+/** Fail needs the current step; the check for a finished review is `InvalidState` (R140). */
+export type ReviewFailError = ReviewInvalidStateError | ReviewStepNotCurrentError;
+
+/** Restart needs a failed current step (R140, R153). */
+export type ReviewRestartError = ReviewInvalidStateError | ReviewStepNotCurrentError;
 
 /**
  * One run of a workflow on one target revision (spec 3, 4.2, 5.1). Transitions take an explicit
@@ -629,13 +629,6 @@ export class Review {
     }
 
     /**
-     * Called by the single save path before persisting (D19). Derives the review-level fields from
-     * the steps; `lastChangedOn` moves only when a review event happened (D119), and never
-     * backwards: it becomes the later of the stored value and the newest unpulled fact. Cancel
-     * moves it too: D119 does not list cancel, but a cancelled review leaves every list
-     * (`isActive: false`), so this is harmless and keeps the field monotonic.
-     */
-    /**
      * Fails the current step with a reason (spec 5.1, D8, R140): a `pending` or `inReview` step,
      * the owner kept, `comment` = the reason. The review stays in progress; the step can be
      * restarted. An already failed step is a no-op without a fact, so a late hook, stuck
@@ -712,6 +705,13 @@ export class Review {
         return Result.ok();
     }
 
+    /**
+     * Called by the single save path before persisting (D19). Derives the review-level fields from
+     * the steps; `lastChangedOn` moves only when a review event happened (D119), and never
+     * backwards: it becomes the later of the stored value and the newest unpulled fact. Cancel
+     * moves it too: D119 does not list cancel, but a cancelled review leaves every list
+     * (`isActive: false`), so this is harmless and keeps the field monotonic.
+     */
     public prepareForSave(): void {
         const lastFact = this.facts[this.facts.length - 1];
         if (lastFact && Date.parse(lastFact.occurredOn) > Date.parse(this.data.lastChangedOn)) {

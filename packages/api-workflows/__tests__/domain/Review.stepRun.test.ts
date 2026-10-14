@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Review } from "~/domain/review/Review.js";
+import type { ReviewInvalidStateErrorData } from "~/domain/review/errors.js";
 import {
     createRequestedReview,
     expectOk,
@@ -483,11 +484,9 @@ describe("Review.restart (R140, R153, D82)", () => {
             "Workflows/Review/InvalidState",
             "Workflows/Review/InvalidState"
         ]);
-        expect(results.map(result => result.error.data.stepState)).toEqual([
-            "inReview",
-            "awaiting",
-            "pending"
-        ]);
+        expect(
+            results.map(result => (result.error.data as ReviewInvalidStateErrorData).stepState)
+        ).toEqual(["inReview", "awaiting", "pending"]);
         expect(inReview.toData().steps[0].runs).toEqual([]);
         expect(inReview.pullFacts()).toEqual([]);
     });
