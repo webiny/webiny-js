@@ -1,6 +1,6 @@
-### Task 4: Neutral hooks, actor, stuck detection, timeout signal, stale check service
+### Task 4: Neutral hooks, actor, stuck detection, timeout signal, stale check service, self-cleanup
 
-Spec 5.1, 7.4; D7, D27, D28, D57, D87; R144, R146, R148, R152, R159, R161, R163, R168, R170, R175; A53, A56; Review Focus 1 (the stale stop needs a real stored-review check, and the neutral handler keeps the guard) and 5 (no automation behaviour changes); D132. Task 3 made the handler dispatch by step type with a placeholder signal. This task finishes the neutral handler and adds the shared stale check:
+Spec 5.1, 7.4; D7, D27, D28, D57, D87; R144, R146, R148, R152, R159, R161, R163, R168, R170, R175, R179; A53, A56; Review Focus 1 (the stale stop needs a real stored-review check, and the neutral handler keeps the guard) and 5 (no automation behaviour changes); D132. Task 3 made the handler dispatch by step type with a placeholder signal. This task finishes the neutral handler and adds the shared stale check:
 
 - **Neutral hooks (R168).** `onError`, `onAbort` and `onMaxIterations` read the step from the review snapshot after the stale guard passes, pick `runner = runners.get(step.type)` and store `runner.failureReasons.error`, `runner.failureReasons.aborted` and `runner.maxIterationsReason(step)`. A step whose type has no runner (the `ai` type turned off by a flag or licence) gets the neutral fixed texts `The step failed.` (`onError`, `onMaxIterations`) and `The step was aborted.` (`onAbort`), so no hook ever throws. Automation keeps its texts because its runner exists (`The automation failed.`, `The automation was aborted.`, `The automation did not finish in <n> iterations.`): the phase 5 hook tests, built with the automation runner registered, run unchanged. The handler drops its `AutomationDefinitionRegistryService` dependency and the `automationStepConfigSchema` / `DEFAULT_AUTOMATION_MAX_ITERATIONS` imports (they live in `AutomationStepRunner` since Task 3).
 - **Stuck detection per runner (R168, R152).** `StuckStepService.check` handles every `inReview` current step that carries a task id, whatever its type (no longer only `AUTOMATION_STEP_TYPE`). The reason is `runner.failureReasons.stuck`; a step with no runner is still checked and, when stuck, fails with `The step failed.`. Grace, task statuses, the stale guard and every log are unchanged. A `review` step carries no task id, so it is still never looked up.
@@ -10,13 +10,18 @@ Spec 5.1, 7.4; D7, D27, D28, D57, D87; R144, R146, R148, R152, R159, R161, R163,
 - **Actor.** The approve and reject `actor` is `runner.getActor(requester)` (Task 3, pinned there with a fake runner whose actor is the step owner); `actorTeamIds: []`.
 - Two additions to `features/stepRun/constants.ts` beyond the contract's `STEP_RUN_TIMEOUT_MARGIN_MS` and `STEP_RUN_STALE_CHECK_INTERVAL_MS`: `STEP_RUN_MIN_TIMEOUT_MS = 1000` (the signal floor, R175) and the two neutral texts `STEP_RUN_NEUTRAL_FAILED_REASON` / `STEP_RUN_NEUTRAL_ABORTED_REASON`, shared by the hooks and stuck detection.
 
-Pinned by tests: the neutral and per-runner hook texts, stuck detection per runner and for a no-runner step, the signal (timer value, cleared, floor, already-aborted fails through the one failure path, id waits unaffected), `StepRunStaleCheckService` (false while current, true after a cancel, after a restart under another task and when not found, a failed Result and one log for a failed and for a throwing read, no throttle and no state; the throttle and sticky tests are Task 19's), its registration, and the `singleRun` re-entry (the handler run twice on one task). Phase 5 handler, hook and stuck tests run unchanged.
+- **Self-cleanup (R179).** `WorkflowStepRunTaskDefinition.selfCleanup` changes from `"never"` to `"always"` (`WorkflowStepRunTaskDefinition.ts:17`; the doc comment says why). Every outcome is already on the step (success through the runner, failure and abort through the fixed-text hooks; raw errors live in the logs), so the finished task has nothing left to keep. The platform turns the task's database logs off for a self-cleaning definition (`TaskDefinitionDefaultsDecorator.databaseLogs`), but an abort still writes one log row: `TaskService.abort` creates a log (`TasksCrud.createLog`) when the task has none, whatever `databaseLogs` says. So this task also changes `deleteTaskLogs` in `packages/background-tasks/src/api/crud/cleanupTaskSubtree.ts`: it always lists the task's logs by task id (`listLogs({ where: { task: task.id } })`) and deletes them, with no `definition.databaseLogs` check and no definition lookup (the cleanup removes whatever exists; the abort semantics are unchanged). A cleaned-up step run task therefore leaves no log rows, the abort log included. **When the platform deletes the task, verified in `packages/background-tasks`:** `SelfCleaningTaskHandlerDecorator` wraps every handler; its `onDone`, `onError` and `onAbort` first `await` the definition's own hook (a throwing hook is swallowed and logged, so the task is still cleaned) and only then call `CleanupTaskSubtreeUseCase`. The hooks are called after the run's final status was saved (`TaskControl.runEvents` for done and error; `TaskService.abort` after it set `aborted`). A task that reaches `maxIterations` runs `onMaxIterations` (which writes the step) and returns an error result, whose `onError` then triggers the cleanup. So cleanup always runs AFTER the hook wrote the step. Pinned by existing background-tasks tests for `onDone` (`SelfCleaningTaskHandlerDecorator.test.ts` "invokes the handler's onDone before cleanup", `selfCleanup.integration.test.ts` "user's onDone runs before cleanup fires") and by two new unit tests and three new integration tests here (`onError` and `onAbort` ordering, and the abort log of an `"always"` task being removed), and by the `cleanupTaskSubtree` unit tests (logs are swept whatever `databaseLogs` or the definition says, across pages). A throw from `definition.run` (the handler) is caught by `TaskManager` and becomes an error result, so `onError` fires and the cleanup runs; a hook that throws is swallowed and the task is still cleaned. The catch-without-events path (no hook, no cleanup) is reached only when `manager.run`, `databaseResponse.from` or `runEvents` itself throws (existing behaviour, unchanged): then the task stays and `StuckStepService` handles it. **Accepted decision:** if the step-writing hook itself fails, the cleanup still runs; the step stays `inReview` with no task and `StuckStepService` fails it once the grace measured from the step start has passed (a long step is failed at the next read). Cost: in that double failure the step carries the stuck reason instead of the hook's reason. **Accepted trace (cancel while the run continues):** `ReviewTaskAbortService` aborts the task, `onAbort` runs and the cleanup deletes it while the handler may still be running; the cancelled in-flight step then ends and the platform logs one "Task returned an error result" line per cancelled in-flight step. This is accepted: it is better than `selfCleanup` `"never"`, where that late result overwrote the `aborted` status. Nothing in phase 6 reads a finished `workflowsStepRun` task: `StuckStepService` (`GetTaskUseCase`) already gives a missing task the grace measured from the step start and fails the step as stuck afterwards (pinned by the phase 5 stuck tests for a null task and by Task 4's stuck tests); Task 20 stubs `GetTaskUseCase` to answer `null`. **Cancel after cleanup:** `ReviewTaskAbortService` treats a `TaskNotFoundError` from the abort like the existing `TaskAbortError` (an info log `The step run task had already ended.`, not an error log), because a task that finished and was cleaned up is gone; a failed abort for any other reason still logs the error. `TaskService.abort` reads the task with `getTask`, which answers `null` on any read failure, so a storage error during an abort is logged as the info "already ended" rather than an error (accepted).
+
+Pinned by tests: the neutral and per-runner hook texts, stuck detection per runner and for a no-runner step, the signal (timer value, cleared, floor, already-aborted fails through the one failure path, id waits unaffected), `StepRunStaleCheckService` (false while current, true after a cancel, after a restart under another task and when not found, a failed Result and one log for a failed and for a throwing read, no throttle and no state; the throttle and sticky tests are Task 19's), its registration, and the `singleRun` re-entry (the handler run twice on one task); the definition's `selfCleanup` `"always"`, cleanup after the `onError` and `onAbort` hooks (background-tasks unit and integration tests), an abort of an already deleted task logging info only, and the cleanup deleting the abort log of an `"always"` task (`cleanupTaskSubtree` and `selfCleanup.integration.test.ts`). Phase 5 handler, hook and stuck tests run unchanged; the one phase 5 expectation that changes is `selfCleanup` in `WorkflowStepRunTask.test.ts` (and its test title).
 
 **Files:**
 - Modify: `packages/api-workflows/src/features/stepRun/constants.ts`
 - Modify: `packages/api-workflows/src/features/stepRun/WorkflowStepRunTask/WorkflowStepRunTaskHandler.ts`
 - Modify: `packages/api-workflows/src/features/stepRun/StuckStepService/StuckStepService.ts`
 - Modify: `packages/api-workflows/src/features/stepRun/StuckStepService/abstractions.ts` (doc comment only)
+- Modify: `packages/api-workflows/src/features/stepRun/WorkflowStepRunTask/WorkflowStepRunTaskDefinition.ts` (R179: `selfCleanup`, doc comment)
+- Modify: `packages/api-workflows/src/features/stepRun/ReviewTaskAbortService/ReviewTaskAbortService.ts` (`TaskNotFoundError` logs info)
+- Modify: `packages/background-tasks/src/api/crud/cleanupTaskSubtree.ts` (`deleteTaskLogs` sweeps logs whatever `databaseLogs` says)
 - Create: `packages/api-workflows/src/features/stepRun/StepRunStaleCheckService/abstractions.ts`
 - Create: `packages/api-workflows/src/features/stepRun/StepRunStaleCheckService/StepRunStaleCheckService.ts`
 - Create: `packages/api-workflows/src/features/stepRun/StepRunStaleCheckService/feature.ts`
@@ -29,6 +34,12 @@ Pinned by tests: the neutral and per-runner hook texts, stuck detection per runn
 - Create: `packages/api-workflows/__tests__/__helpers/FailingReviewGet.ts`
 - Create: `packages/api-workflows/__tests__/stepRun/StepRunStaleCheckService.test.ts`
 - Modify: `packages/api-workflows/__tests__/registration.test.ts` (one assertion)
+- Modify: `packages/api-workflows/__tests__/stepRun/WorkflowStepRunTask.test.ts` (one expectation and the test title, R179)
+- Modify: `packages/api-workflows/__tests__/stepRun/ReviewTaskAbortService.test.ts` (one test)
+- Modify: `packages/api-workflows/__tests__/__helpers/FakeTaskService.ts` (`FakeAbortFault` gains `"gone"`)
+- Modify: `packages/background-tasks/__tests__/decorators/SelfCleaningTaskHandlerDecorator.test.ts` (two ordering tests)
+- Modify: `packages/background-tasks/__tests__/runner/selfCleanup.integration.test.ts` (two ordering tests, one abort-log test)
+- Modify: `packages/background-tasks/__tests__/crud/cleanupTaskSubtree.test.ts` (the fake `listLogs` pages; two tests change: logs are swept without `databaseLogs` and without a definition; one added: a task whose logs span pages)
 
 **Interfaces:**
 - Consumes:
@@ -38,6 +49,7 @@ Pinned by tests: the neutral and per-runner hook texts, stuck detection per runn
   - `features/stepRun/constants.ts`: `STEP_RUN_TIMEOUT_MARGIN_MS = 30000`, `STEP_RUN_STALE_CHECK_INTERVAL_MS = 5000` (contract), plus `STEP_RUN_MIN_TIMEOUT_MS = 1000`, `STEP_RUN_NEUTRAL_FAILED_REASON = "The step failed."`, `STEP_RUN_NEUTRAL_ABORTED_REASON = "The step was aborted."`.
   - The handler passes `signal` (`StepRunner.Params`) and, for `singleRun`, persists `{ idWaits, state }` first; hooks and stuck detection as above. Consumed by Tasks 17 (stuck for `ai`) and 19 (`AiStepRunner` reads `signal`, relies on the pre-run write and injects `StepRunStaleCheckService`).
   - `features/stepRun/StepRunStaleCheckService` (`~/features/stepRun/StepRunStaleCheckService/index.js`): `StepRunStaleCheckService` with `isStale(params: { reviewId: string; stepId: string; task: StepRunTaskIdentity }): Promise<Result<boolean, ReviewPersistenceError>>` (namespace `Interface`, `Params`); registered by `WorkflowsFeature` (`StepRunStaleCheckFeature`). Consumed by Task 19.
+  - `WorkflowStepRunTaskDefinition.selfCleanup === "always"` (R179), and the platform guarantee that a cleaned-up task's logs (the abort log included) are deleted whatever `definition.databaseLogs` says (`cleanupTaskSubtree`). No new export; nothing in later tasks reads a finished step run task.
   - Test helper `FailingReviewGet` (`~tests/__helpers/FailingReviewGet.js`): a `ReviewRepository` decorator whose `get` fails or throws on demand and counts reads (`reviewGetFaults`).
   - `createFakeTaskController` gains the optional `remainingMilliseconds` (default 900000, so every existing test is unchanged).
 
@@ -1051,6 +1063,280 @@ and the assertion right after `expect(container.resolveAll(StuckStepService)).to
         expect(container.resolveAll(StepRunStaleCheckService)).toHaveLength(1);
 ```
 
+**R179: self-cleanup.** In `packages/api-workflows/__tests__/stepRun/WorkflowStepRunTask.test.ts`, change the first test's title and its `selfCleanup` expectation:
+
+```ts
+    it("is one private definition with a high iteration ceiling that cleans itself up", async () => {
+        const { context } = await createContextHandler();
+
+        const definitions = context.container
+            .resolveAll(TaskDefinition)
+            .filter(item => item.id === STEP_RUN_TASK_DEFINITION_ID);
+
+        expect(definitions).toHaveLength(1);
+        expect(definitions[0]).toMatchObject({
+            id: "workflowsStepRun",
+            title: "Workflow step run",
+            isPrivate: true,
+            selfCleanup: "always",
+            maxIterations: 10000
+        });
+        expect(definitions[0].description).toEqual(expect.any(String));
+        expect(definitions[0].handler).toBe(WorkflowStepRunTaskHandler);
+    });
+```
+
+In `packages/api-workflows/__tests__/__helpers/FakeTaskService.ts`, add the `"gone"` fault (a task that was cleaned up). Add `TaskNotFoundError` to the errors import:
+
+```ts
+import { TaskAbortError, TaskNotFoundError } from "@webiny/background-tasks/api/domain/errors.js";
+```
+
+change the type
+
+```ts
+export type FakeAbortFault = FakeTaskFault | "ended" | "gone";
+```
+
+its doc line in `FakeTaskFaults`
+
+```ts
+    /**
+     * `"ended"` fails like the real service does for a task that is no longer pending or running;
+     * `"gone"` fails like it does for a task that no longer exists (it cleaned itself up, R179).
+     */
+    abort: FakeAbortFault;
+```
+
+and in `abort`, right after the `"ended"` branch:
+
+```ts
+        if (fakeTaskFaults.abort === "gone") {
+            return Result.fail(new TaskNotFoundError());
+        }
+```
+
+In `packages/api-workflows/__tests__/stepRun/ReviewTaskAbortService.test.ts`, add this test after "logs info, not an error, when the task had already ended":
+
+```ts
+    it("logs info, not an error, when the task is gone because it cleaned itself up (R179)", async () => {
+        const service = await createService();
+        fakeTaskFaults.abort = "gone";
+
+        await expect(
+            service.abort({ taskIds: ["task-1"], message: "The review was cancelled." })
+        ).resolves.toBeUndefined();
+
+        expect(loggedErrors).toEqual([]);
+        expect(loggedInfos).toEqual(["The step run task had already ended."]);
+    });
+```
+
+**R179: cleanup runs after the hook (background-tasks).** In `packages/background-tasks/__tests__/decorators/SelfCleaningTaskHandlerDecorator.test.ts`, inside `describe("hook wrapping")`, right after "invokes the handler's onDone before cleanup":
+
+```ts
+        it("invokes the handler's onError before cleanup", async () => {
+            const calls: string[] = [];
+            const cleanupTaskSubtree: CleanupTaskSubtreeUseCase.Interface = {
+                execute: async () => {
+                    calls.push("cleanup");
+                }
+            };
+            const handler = makeHandler({
+                onError: async () => {
+                    calls.push("userHook");
+                }
+            });
+
+            const dec = decorate(handler, cleanupTaskSubtree);
+            await dec.onError(hookParams("always"));
+
+            expect(calls).toEqual(["userHook", "cleanup"]);
+        });
+
+        it("invokes the handler's onAbort before cleanup", async () => {
+            const calls: string[] = [];
+            const cleanupTaskSubtree: CleanupTaskSubtreeUseCase.Interface = {
+                execute: async () => {
+                    calls.push("cleanup");
+                }
+            };
+            const handler = makeHandler({
+                onAbort: async () => {
+                    calls.push("userHook");
+                }
+            });
+
+            const dec = decorate(handler, cleanupTaskSubtree);
+            await dec.onAbort(hookParams("always"));
+
+            expect(calls).toEqual(["userHook", "cleanup"]);
+        });
+```
+
+In `packages/background-tasks/__tests__/runner/selfCleanup.integration.test.ts`, right after "user's onDone runs before cleanup fires":
+
+```ts
+    it("user's onError runs before cleanup fires", async () => {
+        const order: string[] = [];
+        const contextRef: {
+            current?: Awaited<ReturnType<ReturnType<typeof createLiveContextFactory>>>;
+        } = {};
+
+        const plugin = createTaskDefinition({
+            id: "cleanupErrorOrderTask",
+            title: "cleanupErrorOrderTask",
+            selfCleanup: "always",
+            run: async ({ controller }) =>
+                controller.response.error({ message: "boom", code: "TEST_ERR" }),
+            onError: async ({ task }) => {
+                // Task must still exist while the user's hook runs.
+                const live = await contextRef.current!.tasks.getTask(task.id);
+                order.push(live ? "user-saw-task" : "user-task-gone");
+            }
+        });
+        const contextFactory = createLiveContextFactory({ plugins: [plugin] });
+        const context = await contextFactory();
+        contextRef.current = context;
+
+        const task = await runTask(context, "cleanupErrorOrderTask");
+
+        expect(order).toEqual(["user-saw-task"]);
+        expect(await context.tasks.getTask(task.id)).toBeNull();
+    });
+
+    it("user's onAbort runs before cleanup fires", async () => {
+        const order: string[] = [];
+        const contextRef: {
+            current?: Awaited<ReturnType<ReturnType<typeof createLiveContextFactory>>>;
+        } = {};
+
+        const plugin = createTaskDefinition({
+            id: "cleanupAbortOrderTask",
+            title: "cleanupAbortOrderTask",
+            selfCleanup: "always",
+            run: async ({ controller }) => controller.response.done("ok"),
+            onAbort: async ({ task }) => {
+                // Task must still exist while the user's hook runs.
+                const live = await contextRef.current!.tasks.getTask(task.id);
+                order.push(live ? "user-saw-task" : "user-task-gone");
+            }
+        });
+        const contextFactory = createLiveContextFactory({ plugins: [plugin] });
+        const context = await contextFactory();
+        contextRef.current = context;
+
+        const task = await context.tasks.createTask({
+            definitionId: "cleanupAbortOrderTask",
+            input: {},
+            name: "to-abort"
+        });
+        await context.tasks.abort({ id: task.id, message: "testing hook order on abort" });
+
+        expect(order).toEqual(["user-saw-task"]);
+        expect(await context.tasks.getTask(task.id)).toBeNull();
+    });
+
+    it("selfCleanup='always' removes the log row an abort writes", async () => {
+        // `databaseLogs` is forced to false by the decorator, but `TaskService.abort` still
+        // creates one log row (the task has none); the cleanup must delete it with the task.
+        const plugin = createTaskDefinition({
+            id: "cleanupAbortLogTask",
+            title: "cleanupAbortLogTask",
+            selfCleanup: "always",
+            run: async ({ controller }) => controller.response.done("ok")
+        });
+        const contextFactory = createLiveContextFactory({ plugins: [plugin] });
+        const context = await contextFactory();
+
+        const task = await context.tasks.createTask({
+            definitionId: "cleanupAbortLogTask",
+            input: {},
+            name: "to-abort"
+        });
+        await context.tasks.abort({ id: task.id, message: "testing the abort log cleanup" });
+
+        expect(await context.tasks.getTask(task.id)).toBeNull();
+        const { items } = await context.tasks.listLogs({ where: { task: task.id } });
+        expect(items).toHaveLength(0);
+    });
+```
+
+In `packages/background-tasks/__tests__/crud/cleanupTaskSubtree.test.ts`, make three changes. First, `interface Fixture` gains `logPageSize?: number;`. Second, in `makeContext` replace the `listLogs` and `deleteLog` fakes so they page and shrink as rows are deleted (a real storage does the same):
+
+```ts
+        listLogs: (async (params: any) => {
+            const all = logsByTask.get(params?.where?.task) ?? [];
+            const size = fx.logPageSize ?? all.length;
+            const items = all.slice(0, size);
+            return {
+                items,
+                meta: {
+                    totalCount: all.length,
+                    hasMoreItems: all.length > size,
+                    cursor: null
+                }
+            };
+        }) as any,
+```
+
+```ts
+        deleteLog: (async (id: string) => {
+            deletedLogs.push(id);
+            for (const [taskId, logs] of logsByTask) {
+                logsByTask.set(
+                    taskId,
+                    logs.filter(log => log.id !== id)
+                );
+            }
+            return true;
+        }) as any,
+```
+
+Third, replace the two tests that pinned the old gate ("skips log sweep when databaseLogs=false" and "skips log sweep when definition is missing") with:
+
+```ts
+    it("deletes a task's logs even when databaseLogs=false", async () => {
+        const { container, deletedTasks, deletedLogs } = makeContext({
+            tasks: [mkTask("t1", "defA")],
+            logs: [mkLog("abortLog", "t1")],
+            definitions: { defA: { databaseLogs: false } }
+        });
+        await createCleanupTaskSubtree(container)("t1");
+        expect(deletedTasks).toEqual(["t1"]);
+        expect(deletedLogs).toEqual(["abortLog"]);
+    });
+
+    it("deletes every log of a task whose logs span several pages", async () => {
+        const { container, deletedTasks, deletedLogs } = makeContext({
+            tasks: [mkTask("t1", "defA")],
+            logs: [
+                mkLog("log1", "t1"),
+                mkLog("log2", "t1"),
+                mkLog("log3", "t1"),
+                mkLog("log4", "t1"),
+                mkLog("log5", "t1")
+            ],
+            definitions: { defA: { databaseLogs: false } },
+            logPageSize: 2
+        });
+        await createCleanupTaskSubtree(container)("t1");
+        expect(deletedTasks).toEqual(["t1"]);
+        expect([...deletedLogs].sort()).toEqual(["log1", "log2", "log3", "log4", "log5"]);
+    });
+
+    it("deletes a task's logs even when its definition is missing", async () => {
+        const { container, deletedTasks, deletedLogs } = makeContext({
+            tasks: [mkTask("t1", "defMissing")],
+            logs: [mkLog("log1", "t1")],
+            definitions: {}
+        });
+        await createCleanupTaskSubtree(container)("t1");
+        expect(deletedTasks).toEqual(["t1"]);
+        expect(deletedLogs).toEqual(["log1"]);
+    });
+```
+
 - [ ] **Step 2: Run them to verify they fail**
 
 Run: `yarn test packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskSignals.test.ts packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskRunnerHooks.test.ts packages/api-workflows/__tests__/stepRun/StuckStepServiceRunners.test.ts packages/api-workflows/__tests__/stepRun/StepRunStaleCheckService.test.ts packages/api-workflows/__tests__/registration.test.ts 2>&1 | tail -50`
@@ -1059,6 +1345,16 @@ Expected: FAIL. `StepRunStaleCheckService.test.ts` does not load (`Cannot find m
 Run the same with `yarn test:os` (one run at a time):
 `yarn test:os packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskSignals.test.ts packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskRunnerHooks.test.ts packages/api-workflows/__tests__/stepRun/StuckStepServiceRunners.test.ts packages/api-workflows/__tests__/stepRun/StepRunStaleCheckService.test.ts packages/api-workflows/__tests__/registration.test.ts 2>&1 | tail -50`
 Expected: FAIL, same reasons.
+
+R179 and the abort of a cleaned-up task:
+`yarn test packages/api-workflows/__tests__/stepRun/WorkflowStepRunTask.test.ts packages/api-workflows/__tests__/stepRun/ReviewTaskAbortService.test.ts 2>&1 | tail -50`
+Expected: FAIL. "is one private definition..." expects `selfCleanup: "always"` and receives `"never"`; "logs info, not an error, when the task is gone..." finds one error log per id instead of an info log.
+Run the same two files with `yarn test:os` (one run at a time): `yarn test:os packages/api-workflows/__tests__/stepRun/WorkflowStepRunTask.test.ts packages/api-workflows/__tests__/stepRun/ReviewTaskAbortService.test.ts 2>&1 | tail -50`
+Expected: FAIL, same reasons.
+
+The background-tasks ordering tests pin existing platform behaviour, the log cleanup is new:
+`yarn test packages/background-tasks/__tests__/decorators/SelfCleaningTaskHandlerDecorator.test.ts packages/background-tasks/__tests__/runner/selfCleanup.integration.test.ts packages/background-tasks/__tests__/crud/cleanupTaskSubtree.test.ts 2>&1 | tail -50`
+Expected: FAIL in exactly four tests: "selfCleanup='always' removes the log row an abort writes" (one log row is left), and the three `cleanupTaskSubtree` tests "deletes a task's logs even when databaseLogs=false" / "...even when its definition is missing" / "deletes every log of a task whose logs span several pages" (no log is deleted). The four ordering tests (`onError`, `onAbort`, unit and integration) PASS already (`@webiny/background-tasks` is not an `-es` / `-os` package: `yarn test` by path only, no `test:os` run). If an ordering test fails, stop: the cleanup would delete the task before the step run hook wrote the step, and the definition must not become `"always"` until that is fixed in the decorator.
 
 - [ ] **Step 3: Constants, handler, stuck detection**
 
@@ -1622,6 +1918,141 @@ export interface IStuckStepService {
  */
 ```
 
+Modify `packages/background-tasks/src/api/crud/cleanupTaskSubtree.ts` (R179): `deleteTaskLogs` no longer looks the definition up or checks `databaseLogs`; it lists and deletes the task's logs by task id. Replace the doc comment of `createCleanupTaskSubtree` and the whole `deleteTaskLogs`:
+
+```ts
+/**
+ * Recursively deletes the task identified by `rootId`, all its descendants, and
+ * their logs. The logs are listed by task id whatever the owning definition says
+ * (`databaseLogs`, or no registered definition): a self-cleaning task writes none
+ * of its own, but an abort still writes one log row, and cleanup removes whatever
+ * exists. Bottom-up, best-effort: per-record errors are logged and swallowed, the
+ * function never throws.
+ */
+```
+
+```ts
+    const deleteTaskLogs = async (task: ITask): Promise<void> => {
+        try {
+            // Page through every log: list the first page (no cursor), delete its rows, and list
+            // again while the listed page was non-empty and more remain (deleted rows shift the
+            // pages, so the cursor is never used). An empty page ends the loop; so does a page
+            // in which no delete succeeded (it would come back unchanged and spin forever).
+            let hasMore = true;
+            while (hasMore) {
+                const { items, meta } = await container.resolve(TasksCrud).listLogs({
+                    where: { task: task.id }
+                });
+                let deleted = 0;
+                for (const log of items) {
+                    try {
+                        await container.resolve(TasksCrud).deleteLog(log.id);
+                        deleted++;
+                    } catch (ex: any) {
+                        console.warn(
+                            `cleanupTaskSubtree: failed to delete log "${log.id}" for task "${task.id}": ${ex.message}`
+                        );
+                    }
+                }
+                hasMore = items.length > 0 && deleted > 0 && meta.hasMoreItems;
+            }
+        } catch (ex: any) {
+            console.warn(
+                `cleanupTaskSubtree: failed to list logs for task "${task.id}": ${ex.message}`
+            );
+        }
+    };
+```
+
+The rest of the file (`listChildren`, `collectSubtree`, the returned function) is unchanged. The existing integration test "cascade sweeps child logs when the child definition has databaseLogs=true" and the "selfCleanup='always' deletes the task and writes no logs" test stay green unchanged.
+
+Modify `packages/api-workflows/src/features/stepRun/WorkflowStepRunTask/WorkflowStepRunTaskDefinition.ts` (R179): replace the doc comment and the `selfCleanup` member. Full new file:
+
+```ts
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { STEP_RUN_MAX_ITERATIONS, STEP_RUN_TASK_DEFINITION_ID } from "../constants.js";
+import { WorkflowStepRunTaskHandler } from "./WorkflowStepRunTaskHandler.js";
+
+/**
+ * The one private task that runs a workflow step (R142). Private, so the task list never shows
+ * it and the GraphQL `triggerTask` refuses it as unknown (SEC-68, Task 7); only the engine
+ * triggers it, through `TaskService.trigger` in the step run reach. The ceiling is high on
+ * purpose: the handler enforces the automation definition's own `maxIterations` (R145).
+ *
+ * The task cleans itself up (R179). Every outcome is already on the step: success through the
+ * runner, failure and abort through the fixed-text `onError` / `onAbort` hooks (raw errors live
+ * only in the logs). Background tasks run the definition's own hook first and delete the task
+ * after it, so the step is written before the task is gone, and turn the task's database logs
+ * off (an abort still writes one log row, which the cleanup now deletes). A step whose task is gone is handled by `StuckStepService` (grace from the step start).
+ */
+class WorkflowStepRunTaskDefinitionImpl implements TaskDefinition.Interface {
+    public readonly id = STEP_RUN_TASK_DEFINITION_ID;
+    public readonly title = "Workflow step run";
+    public readonly description = "Runs an automation step of a workflow review.";
+    public readonly isPrivate = true;
+    public readonly maxIterations = STEP_RUN_MAX_ITERATIONS;
+    public readonly selfCleanup = "always" as const;
+
+    public readonly handler: TaskDefinition.Interface["handler"] = WorkflowStepRunTaskHandler;
+}
+
+export const WorkflowStepRunTaskDefinition = TaskDefinition.createImplementation({
+    implementation: WorkflowStepRunTaskDefinitionImpl,
+    dependencies: []
+});
+```
+
+Modify `packages/api-workflows/src/features/stepRun/ReviewTaskAbortService/ReviewTaskAbortService.ts`: import `TaskNotFoundError` next to `TaskAbortError` and treat both as "nothing left to abort". Full new file:
+
+```ts
+import {
+    TaskAbortError,
+    TaskNotFoundError
+} from "@webiny/background-tasks/api/domain/errors.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { ReviewTaskAbortService as Abstraction } from "./abstractions.js";
+
+class ReviewTaskAbortServiceImpl implements Abstraction.Interface {
+    public constructor(
+        private taskService: TaskService.Interface,
+        private logger: Logger.Interface
+    ) {}
+
+    public async abort(params: Abstraction.Params): Promise<void> {
+        for (const taskId of params.taskIds) {
+            try {
+                const result = await this.taskService.abort({
+                    id: taskId,
+                    message: params.message
+                });
+                if (
+                    result.isFail() &&
+                    (result.error instanceof TaskAbortError ||
+                        result.error instanceof TaskNotFoundError)
+                ) {
+                    // The task is no longer pending or running, or it already cleaned itself up
+                    // (R179): nothing left to abort.
+                    this.logger.info({ taskId }, "The step run task had already ended.");
+                } else if (result.isFail()) {
+                    this.logger.error(
+                        { error: result.error, taskId },
+                        "Could not abort a workflow step run task."
+                    );
+                }
+            } catch (error) {
+                this.logger.error({ error, taskId }, "Could not abort a workflow step run task.");
+            }
+        }
+    }
+}
+
+export const ReviewTaskAbortService = Abstraction.createImplementation({
+    implementation: ReviewTaskAbortServiceImpl,
+    dependencies: [TaskService, Logger]
+});
+```
+
 - [ ] **Step 4: Run the tests**
 
 Run: `yarn test packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskSignals.test.ts packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskRunnerHooks.test.ts packages/api-workflows/__tests__/stepRun/StuckStepServiceRunners.test.ts packages/api-workflows/__tests__/stepRun/StepRunStaleCheckService.test.ts packages/api-workflows/__tests__/registration.test.ts 2>&1 | tail -50`
@@ -1631,15 +2062,25 @@ Run the same with `yarn test:os` (one run at a time):
 `yarn test:os packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskSignals.test.ts packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskRunnerHooks.test.ts packages/api-workflows/__tests__/stepRun/StuckStepServiceRunners.test.ts packages/api-workflows/__tests__/stepRun/StepRunStaleCheckService.test.ts packages/api-workflows/__tests__/registration.test.ts 2>&1 | tail -50`
 Expected: PASS.
 
+Run: `yarn test packages/api-workflows/__tests__/stepRun/WorkflowStepRunTask.test.ts packages/api-workflows/__tests__/stepRun/ReviewTaskAbortService.test.ts 2>&1 | tail -50`
+Expected: PASS. Run the same two files with `yarn test:os` (one run at a time): `yarn test:os packages/api-workflows/__tests__/stepRun/WorkflowStepRunTask.test.ts packages/api-workflows/__tests__/stepRun/ReviewTaskAbortService.test.ts 2>&1 | tail -50`
+Expected: PASS.
+
+Run: `yarn test packages/background-tasks/__tests__/decorators/SelfCleaningTaskHandlerDecorator.test.ts packages/background-tasks/__tests__/runner/selfCleanup.integration.test.ts packages/background-tasks/__tests__/crud/cleanupTaskSubtree.test.ts 2>&1 | tail -50`
+Expected: PASS.
+
 Run: `yarn check:test:types -p api-workflows --report cli 2>&1 | tail -40`
 Expected: no errors.
 
+Run: `yarn check:test:types 2>&1 | grep -iE "background-tasks" | head`
+Expected: no output.
+
 - [ ] **Step 5: Run the existing tests covering the changed code (unchanged, no expectation may change)**
 
-Every phase 5 handler, hook, stuck and reach test, plus the Task 3 files, stays green without an edit:
+Every phase 5 handler, hook, stuck and reach test, plus the Task 3 files, stays green; the background-tasks suites that touch cleanup (`packages/background-tasks/__tests__/decorators/TaskDefinitionDefaultsDecorator.test.ts`, `packages/background-tasks/__tests__/crud/trigger.test.ts`) stay green unchanged. Only two phase 5 test files changed in this task, each by the R179 edit above (`WorkflowStepRunTask.test.ts`: the `selfCleanup` expectation; `ReviewTaskAbortService.test.ts`: one added test, no expectation changed):
 
 Run: `yarn test packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskRun.test.ts packages/api-workflows/__tests__/stepRun/WorkflowStepRunTask.test.ts packages/api-workflows/__tests__/stepRun/StuckStepService.test.ts packages/api-workflows/__tests__/stepRun/ReviewTaskAbortService.test.ts packages/api-workflows/__tests__/stepRun/StepRunnerRegistryService.test.ts packages/api-workflows/__tests__/stepRun/AutomationStepRunner.test.ts packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskDispatch.test.ts packages/api-workflows/__tests__/stepTypes/AutomationReach.test.ts packages/api-workflows/__tests__/registration.test.ts 2>&1 | tail -50`
-Expected: PASS, with `git diff --stat -- packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskRun.test.ts packages/api-workflows/__tests__/stepRun/WorkflowStepRunTask.test.ts packages/api-workflows/__tests__/stepRun/StuckStepService.test.ts` printing nothing.
+Expected: PASS, with `git diff --stat -- packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskRun.test.ts packages/api-workflows/__tests__/stepRun/StuckStepService.test.ts` printing nothing, and `git diff -- packages/api-workflows/__tests__/stepRun/WorkflowStepRunTask.test.ts` showing only the test title and `selfCleanup: "always"`.
 
 Run the same files with `yarn test:os` (one run at a time):
 `yarn test:os packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskRun.test.ts packages/api-workflows/__tests__/stepRun/WorkflowStepRunTask.test.ts packages/api-workflows/__tests__/stepRun/StuckStepService.test.ts packages/api-workflows/__tests__/stepRun/ReviewTaskAbortService.test.ts packages/api-workflows/__tests__/stepRun/StepRunnerRegistryService.test.ts packages/api-workflows/__tests__/stepRun/AutomationStepRunner.test.ts packages/api-workflows/__tests__/stepRun/WorkflowStepRunTaskDispatch.test.ts packages/api-workflows/__tests__/stepTypes/AutomationReach.test.ts packages/api-workflows/__tests__/registration.test.ts 2>&1 | tail -50`
@@ -1647,9 +2088,9 @@ Expected: PASS.
 
 - [ ] **Step 6: Commit**
 
-Run the Global Constraints chain (build `@webiny/api-workflows` with `--no-cache`, restore `.gitleaks.toml`), then commit:
+Run the Global Constraints chain (build `@webiny/background-tasks` and `@webiny/api-workflows` with `--no-cache`, restore `.gitleaks.toml`), then commit:
 
 ```
-git commit -m "feat(api-workflows): neutral step run hooks, stuck detection per runner, timeout signal and a stale check service" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+git commit -m "feat(api-workflows): neutral step run hooks, stuck detection per runner, timeout signal, a stale check service and self-cleaning step run tasks" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01U31bVptN4E9cWVxet6Tjxn"
 ```
