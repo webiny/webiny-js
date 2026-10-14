@@ -11,7 +11,8 @@ export interface IStuckStepService {
 
 /**
  * Stuck detection for single reads (D28, D57, R152): an `inReview` automation step whose task is
- * `success`, `failed` / `aborted` for longer than the grace, or gone (null task) for longer than the grace, and that passes the stale guard (R144), is failed with
+ * `success`, `failed` / `aborted` for longer than the grace, or gone (null task) for longer than
+ * the grace, and that passes the stale guard (R144), is failed with
  * `The automation task ended without a result.`. Called by `GetReviewUseCase` and
  * `GetTargetReviewUseCase` only, never by lists. Internal (D132): no permission checks.
  */
