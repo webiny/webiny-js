@@ -29,6 +29,12 @@ export const previousStage = (stage: Stage): Stage | null => {
     return index > 0 ? STAGES[index - 1] : null;
 };
 
+/** The stage immediately after the given one, or null for the last stage. */
+export const nextStage = (stage: Stage): Stage | null => {
+    const index = stageIndex(stage);
+    return index >= 0 && index < STAGES.length - 1 ? STAGES[index + 1] : null;
+};
+
 // Private CMS model ids. Private means invisible to the CMS GraphQL endpoint and UI; this feature's
 // own schema is the only way in — the same mechanism the Theme app uses for `wbyTheme`.
 export const JOB_MODEL_ID = "wbyExtractionJob";

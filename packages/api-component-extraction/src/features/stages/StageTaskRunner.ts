@@ -8,6 +8,7 @@ import {
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import {
     JobRepository,
     ModelCallRepository,
@@ -31,10 +32,12 @@ import {
     markStageRunning,
     stageEntry,
     withoutStageClaim,
+    withStageClaim,
     withStageModelUsage,
     withStageTaskId
 } from "~/domain/ledger.js";
-import { previousStage, stageArtifactKey, type Stage } from "~/constants.js";
+import { previousStage, stageArtifactKey, stageTaskId, type Stage } from "~/constants.js";
+import { decideAutoAdvance } from "./autoAdvance.js";
 import type { Run, StageModelUsage } from "~/domain/types.js";
 import { OverrideApplicator } from "~/features/shared/OverrideApplicator.js";
 
@@ -119,7 +122,8 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface,
         private modelCallScope: ModelCallScope.Interface,
         private modelCalls: ModelCallRepository.Interface,
-        private overrideApplicator: OverrideApplicator.Interface
+        private overrideApplicator: OverrideApplicator.Interface,
+        private taskService: TaskService.Interface
     ) {}
 
     /** Sum a model-backed stage's recorded calls into its per-stage aggregate (retries/failures included). */
@@ -448,9 +452,82 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
             status: "done",
             degraded: outcome.value.degraded
         });
+
+        if (stage !== "promote") {
+            await this.advance(run, stage, appendActivity);
+        }
+
         // Hand the accumulated output (with the activity trail) to `done` so the framework's completion
         // write re-persists it rather than blanking the output.
         return controller.response.done(controller.state.getOutput());
+    }
+
+    /**
+     * Starts the next stage unless the job pauses after this one.
+     *
+     * The job is read again rather than taken from the start of the stage: a long stage can outlast
+     * the job's theme extraction, and the pinned theme is what lets a theme-reading stage start.
+     * Nothing here fails the stage that just finished. It is done whatever happens next, and the
+     * next stage can always be started by hand, which is what the activity line then says.
+     */
+    private async advance(
+        run: Run,
+        finished: Stage,
+        appendActivity: (message: string) => Promise<void>
+    ): Promise<void> {
+        const job = await this.jobRepository.get(run.jobId);
+        if (job.isFail()) {
+            await appendActivity(
+                `Could not read the job to decide what runs next (${job.error.message}). Start the next stage by hand.`
+            );
+            return;
+        }
+
+        const decision = decideAutoAdvance(job.value, finished);
+        if (decision.kind === "end") {
+            return;
+        }
+        if (decision.kind === "gate") {
+            await appendActivity(`Paused after "${finished}", as set for this job.`);
+            return;
+        }
+        if (decision.kind === "waiting") {
+            await appendActivity(`"${decision.next}" waits for the theme: ${decision.reason}`);
+            return;
+        }
+
+        const latest = await this.runRepository.get(run.id);
+        if (latest.isFail()) {
+            await appendActivity(
+                `Could not start "${decision.next}" (${latest.error.message}). Start it by hand.`
+            );
+            return;
+        }
+        // A cancelled run takes no more stages, as when one is started by hand.
+        if (latest.value.status === "cancelled") {
+            return;
+        }
+
+        const triggered = await this.taskService.trigger<StageTaskInput>({
+            definition: stageTaskId(decision.next),
+            name: `Component extraction — ${decision.next} (run ${latest.value.runNumber})`,
+            input: { runId: run.id }
+        });
+        if (triggered.isFail()) {
+            await appendActivity(
+                `Could not start "${decision.next}" (${triggered.error.message}). Start it by hand.`
+            );
+            return;
+        }
+
+        // The same claim a manual start records, so a stage started a moment later sees this one is
+        // in flight rather than reading its previous run as done.
+        await this.runRepository.update(run.id, {
+            stages: withStageClaim(latest.value.stages, decision.next, triggered.value.id)
+        });
+        await appendActivity(
+            `Started "${decision.next}": this job does not pause after "${finished}".`
+        );
     }
 
     private async fail(
@@ -522,6 +599,7 @@ export const StageTaskRunnerService = createImplementation({
         WebsocketsSendToIdentityUseCase,
         ModelCallScope,
         ModelCallRepository,
-        OverrideApplicator
+        OverrideApplicator,
+        TaskService
     ]
 });
