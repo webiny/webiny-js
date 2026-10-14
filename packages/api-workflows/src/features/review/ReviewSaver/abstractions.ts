@@ -13,7 +13,8 @@ export interface IReviewSaver {
  * The single save path for reviews (R10, D19, D52): prepare the review-level fields, persist
  * (create or update), write the facts' assignment records (R117; a failed write is only logged),
  * sync `system.workflow`, then publish one event per recorded fact. A failed sync keeps the save
- * and the events and returns `ReviewTargetSyncError` (R16).
+ * and the events and returns `ReviewTargetSyncError` (R16). A failed persist aborts the step run tasks started by
+ * the recorded reaches (R143) before returning the persistence error.
  */
 export const ReviewSaver = createAbstraction<IReviewSaver>("ReviewSaver");
 

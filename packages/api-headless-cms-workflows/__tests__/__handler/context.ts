@@ -9,6 +9,7 @@ import { createModelsPlugins, type ICreateModelsPluginsParams } from "../__cms/m
 import { WorkflowsFeature } from "@webiny/api-workflows";
 import { CmsWorkflowsFeature } from "~/index.js";
 import { registerFakeFolders } from "../__helpers/FakeFolders.js";
+import { FakeTaskService } from "../__helpers/FakeTaskService.js";
 
 const registerNoopFlp = createRegisterExtensionPlugin(context => {
     context.container.register(NoopFolderLevelPermissions);
@@ -31,6 +32,8 @@ export const createContextHandler = (
         setup: container => {
             WorkflowsFeature.register(container);
             CmsWorkflowsFeature.register(container);
+            // The saver aborts tasks through `TaskService`; this context has no background tasks.
+            container.register(FakeTaskService);
             // ACO is not registered; the CMS folder port reads these stand-ins.
             registerFakeFolders(container);
         },

@@ -9,6 +9,7 @@ import type { ReviewData } from "~/domain/review/types.js";
 import { ReviewTargetSyncError } from "~/domain/review/errors.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewTargetSync } from "../ReviewTargetSync/abstractions.js";
+import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortService/index.js";
 import {
     ReviewApprovedEvent,
     ReviewCancelledEvent,
@@ -31,7 +32,8 @@ class ReviewSaverImpl implements Abstraction.Interface {
         private targetSyncs: ReviewTargetSync.Interface[],
         private eventPublisher: EventPublisher.Interface,
         private assignments: AssignmentRepository.Interface,
-        private logger: Logger.Interface
+        private logger: Logger.Interface,
+        private taskAbort: ReviewTaskAbortService.Interface
     ) {}
 
     async save(review: Review): Abstraction.Return {
@@ -43,6 +45,19 @@ class ReviewSaverImpl implements Abstraction.Interface {
         // No optimistic locking on reviews (D27).
         const result = await this.repository.save(review.toData());
         if (result.isFail()) {
+            // The automation reach triggers its task before this save (R143). The review will not
+            // carry the task id, so abort the tasks the recorded reaches started. Best effort: the
+            // abort never throws and never changes the error returned here.
+            const taskIds: string[] = [];
+            for (const fact of facts) {
+                if (fact.type === "stepReached" && fact.taskId) {
+                    taskIds.push(fact.taskId);
+                }
+            }
+            await this.taskAbort.abort({
+                taskIds,
+                message: "The review could not be saved."
+            });
             return Result.fail(result.error);
         }
         const saved = result.value;
@@ -140,6 +155,7 @@ export const ReviewSaver = Abstraction.createImplementation({
         [ReviewTargetSync, { multiple: true }],
         EventPublisher,
         AssignmentRepository,
-        Logger
+        Logger,
+        ReviewTaskAbortService
     ]
 });

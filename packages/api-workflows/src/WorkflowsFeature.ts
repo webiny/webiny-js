@@ -46,6 +46,7 @@ import { CurrentUserTeamsFeature } from "~/features/identity/CurrentUserTeams/fe
 import { CurrentReviewViewerFeature } from "~/features/identity/CurrentReviewViewer/feature.js";
 import { CandidateReadAccessFeature } from "~/features/identity/CandidateReadAccess/feature.js";
 import { WorkflowBypassServiceFeature } from "~/features/bypass/WorkflowBypassService/feature.js";
+import { ReviewTaskAbortServiceFeature } from "~/features/stepRun/ReviewTaskAbortService/feature.js";
 import { WorkflowsPermissionsFeature } from "~/features/permissions/WorkflowsPermissions/feature.js";
 import { AutomationDefinitionRegistryFeature } from "~/features/automation/AutomationDefinitionRegistryService/feature.js";
 import { StepTypesFeature } from "~/features/stepTypes/feature.js";
@@ -136,6 +137,9 @@ export const WorkflowsFeature = createFeature({
 
         // Bypass context for the automation run (D36, D62, R150); only the save block reads it
         WorkflowBypassServiceFeature.register(container);
+
+        // Step run tasks (R142-R145): the abort service shared by the saver, the reach and cancel
+        ReviewTaskAbortServiceFeature.register(container);
 
         // GraphQL on /graphql: the `workflows` root and the shared types (R88, R100)
         container.register(WorkflowsSchemaFactory);
