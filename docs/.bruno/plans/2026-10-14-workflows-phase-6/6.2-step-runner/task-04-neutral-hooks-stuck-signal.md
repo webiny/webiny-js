@@ -5,12 +5,12 @@ Spec 5.1, 7.4; D7, D27, D28, D57, D87; R144, R146, R148, R152, R159, R161, R163,
 - **Neutral hooks (R168).** `onError`, `onAbort` and `onMaxIterations` read the step from the review snapshot after the stale guard passes, pick `runner = runners.get(step.type)` and store `runner.failureReasons.error`, `runner.failureReasons.aborted` and `runner.maxIterationsReason(step)`. A step whose type has no runner (the `ai` type turned off by a flag or licence) gets the neutral fixed texts `The step failed.` (`onError`, `onMaxIterations`) and `The step was aborted.` (`onAbort`), so no hook ever throws. Automation keeps its texts because its runner exists (`The automation failed.`, `The automation was aborted.`, `The automation did not finish in <n> iterations.`): the phase 5 hook tests, built with the automation runner registered, run unchanged. The handler drops its `AutomationDefinitionRegistryService` dependency and the `automationStepConfigSchema` / `DEFAULT_AUTOMATION_MAX_ITERATIONS` imports (they live in `AutomationStepRunner` since Task 3).
 - **Stuck detection per runner (R168, R152).** `StuckStepService.check` handles every `inReview` current step that carries a task id, whatever its type (no longer only `AUTOMATION_STEP_TYPE`). The reason is `runner.failureReasons.stuck`; a step with no runner is still checked and, when stuck, fails with `The step failed.`. Grace, task statuses, the stale guard and every log are unchanged. A `review` step carries no task id, so it is still never looked up.
 - **The timeout signal (R175, user answer Q4).** After the id wait is over and before the runner is called, the handler builds an `AbortController` from the task's remaining runtime: `budget = controller.runtime.getRemainingMilliseconds() - STEP_RUN_TIMEOUT_MARGIN_MS` (30000). When `budget < STEP_RUN_MIN_TIMEOUT_MS` (1000) the signal is aborted at once; otherwise a `setTimeout(budget)` aborts it, and the timer is cleared in a `finally` after the runner returns or throws (a plain `setTimeout`, so tests can observe it and fake timers can drive it; `AbortSignal.timeout` could not be). The id-wait iterations return before this code, so they are unaffected. The runner decides what an aborted signal means (the AI runner fails with `The AI review timed out.`, Task 19); the handler only passes it. The automation runner ignores it.
-- **`StepRunStaleCheckService` (R175, Review Focus 1).** A new DI service (`features/stepRun/StepRunStaleCheckService/{abstractions,StepRunStaleCheckService,feature,index}.ts`, dependencies `ReviewRepository` and `Logger`), registered by `WorkflowsFeature`. `isStale({ reviewId, stepId, task: { id, createdById } }): Promise<boolean>` re-reads the review through `ReviewRepository` and applies `getStaleStepRunReason` with the task identity (the same guard as the post-run re-guard), because `controller.runtime.isAborted()` only sees the task loaded at run start and stays false when another request cancels. A review that is no longer found is stale (`true`). A failed or throwing read is logged (`"Could not read the review to check the step is current."`, context `{ error, taskId, reviewId, stepId }`) and answered `false` (a read failure is not a cancel; the post-run guard still protects every write). The service does one read per call: it does not throttle and keeps no state. **Throttling and stickiness belong to the caller**, `AiStepRunner` (Task 19, R175): it calls the service at most once per `STEP_RUN_STALE_CHECK_INTERVAL_MS` (5000, constant added here) with its own local state and, once it has seen `true`, keeps answering `true`; the throttle and sticky tests live in Task 19, not here. The handler does not call the service and `StepRunnerRunParams` has no `isStale` (Task 3); the automation runner never uses it, so an automation run makes exactly the repository reads it made in phase 5.
+- **`StepRunStaleCheckService` (R175, Review Focus 1).** A new DI service (`features/stepRun/StepRunStaleCheckService/{abstractions,StepRunStaleCheckService,feature,index}.ts`, dependencies `ReviewRepository` and `Logger`), registered by `WorkflowsFeature`. `isStale({ reviewId, stepId, task: { id, createdById } }): Promise<Result<boolean, ReviewPersistenceError>>` re-reads the review through `ReviewRepository` and applies `getStaleStepRunReason` with the task identity (the same guard as the post-run re-guard), because `controller.runtime.isAborted()` only sees the task loaded at run start and stays false when another request cancels. A review that is no longer found is stale (`ok(true)`). A failed or throwing read is logged (`"Could not read the review to check the step is current."`, context `{ error, taskId, reviewId, stepId }`) and answered with a failed Result (`fail(error)` when the read failed with a `ReviewPersistenceError`, otherwise `fail(new ReviewPersistenceError(error))`; a throwing read becomes `fail(new ReviewPersistenceError(error))`): the answer is fail-closed (a failed read is NOT "not stale"), so a caller that is about to write refuses on a failed Result, while a caller that only decides whether to keep going (the AI runner's stop check, Task 19) treats a failed Result as not stale and keeps going because the post-run guard still protects its own write. The service logs every failure, so callers do not log it again. The method never rejects. The service does one read per call: it does not throttle and keeps no state. **Throttling and stickiness belong to the caller**, `AiStepRunner` (Task 19, R175): it calls the service at most once per `STEP_RUN_STALE_CHECK_INTERVAL_MS` (5000, constant added here) with its own local state and, once it has seen `true`, keeps answering `true`; the throttle and sticky tests live in Task 19, not here. The handler does not call the service and `StepRunnerRunParams` has no `isStale` (Task 3); the automation runner never uses it, so an automation run makes exactly the repository reads it made in phase 5.
 - **The `singleRun` pre-run write and re-entry (R170, R175).** For a runner with `singleRun` true only, once the id wait is over and BEFORE the runner is called, the handler refuses a re-entered task whose `iteration` is greater than 1 through the one failure path with `runner.failureReasons.error` (the runner is not called, nothing is written to the output), and otherwise persists `controller.state.updateOutput({ idWaits, state })` (the existing output shape, `state` as read or `null`). A re-entered task (the platform re-invoked it after the process died mid-call) then reads the fixed `idWaits` and gets a real `iteration` of 2. Without that write the output is only written on `continue`, `idWaits` would fall back to `iterations - 1` and `iteration` would be 1 again. A runner with `singleRun` false (automation) gets no pre-run write, so every phase 5 `outputUpdates` expectation stays unchanged. A failing output write is the task error, like the `continue` write (the runner is not called).
 - **Actor.** The approve and reject `actor` is `runner.getActor(requester)` (Task 3, pinned there with a fake runner whose actor is the step owner); `actorTeamIds: []`.
 - Two additions to `features/stepRun/constants.ts` beyond the contract's `STEP_RUN_TIMEOUT_MARGIN_MS` and `STEP_RUN_STALE_CHECK_INTERVAL_MS`: `STEP_RUN_MIN_TIMEOUT_MS = 1000` (the signal floor, R175) and the two neutral texts `STEP_RUN_NEUTRAL_FAILED_REASON` / `STEP_RUN_NEUTRAL_ABORTED_REASON`, shared by the hooks and stuck detection.
 
-Pinned by tests: the neutral and per-runner hook texts, stuck detection per runner and for a no-runner step, the signal (timer value, cleared, floor, already-aborted fails through the one failure path, id waits unaffected), `StepRunStaleCheckService` (false while current, true after a cancel, after a restart under another task and when not found, false and logged for a failed and for a throwing read, no throttle and no state; the throttle and sticky tests are Task 19's), its registration, and the `singleRun` re-entry (the handler run twice on one task). Phase 5 handler, hook and stuck tests run unchanged.
+Pinned by tests: the neutral and per-runner hook texts, stuck detection per runner and for a no-runner step, the signal (timer value, cleared, floor, already-aborted fails through the one failure path, id waits unaffected), `StepRunStaleCheckService` (false while current, true after a cancel, after a restart under another task and when not found, a failed Result and one log for a failed and for a throwing read, no throttle and no state; the throttle and sticky tests are Task 19's), its registration, and the `singleRun` re-entry (the handler run twice on one task). Phase 5 handler, hook and stuck tests run unchanged.
 
 **Files:**
 - Modify: `packages/api-workflows/src/features/stepRun/constants.ts`
@@ -37,7 +37,7 @@ Pinned by tests: the neutral and per-runner hook texts, stuck detection per runn
 - Produces (matches the contract):
   - `features/stepRun/constants.ts`: `STEP_RUN_TIMEOUT_MARGIN_MS = 30000`, `STEP_RUN_STALE_CHECK_INTERVAL_MS = 5000` (contract), plus `STEP_RUN_MIN_TIMEOUT_MS = 1000`, `STEP_RUN_NEUTRAL_FAILED_REASON = "The step failed."`, `STEP_RUN_NEUTRAL_ABORTED_REASON = "The step was aborted."`.
   - The handler passes `signal` (`StepRunner.Params`) and, for `singleRun`, persists `{ idWaits, state }` first; hooks and stuck detection as above. Consumed by Tasks 17 (stuck for `ai`) and 19 (`AiStepRunner` reads `signal`, relies on the pre-run write and injects `StepRunStaleCheckService`).
-  - `features/stepRun/StepRunStaleCheckService` (`~/features/stepRun/StepRunStaleCheckService/index.js`): `StepRunStaleCheckService` with `isStale(params: { reviewId: string; stepId: string; task: StepRunTaskIdentity }): Promise<boolean>` (namespace `Interface`, `Params`); registered by `WorkflowsFeature` (`StepRunStaleCheckFeature`). Consumed by Task 19.
+  - `features/stepRun/StepRunStaleCheckService` (`~/features/stepRun/StepRunStaleCheckService/index.js`): `StepRunStaleCheckService` with `isStale(params: { reviewId: string; stepId: string; task: StepRunTaskIdentity }): Promise<Result<boolean, ReviewPersistenceError>>` (namespace `Interface`, `Params`); registered by `WorkflowsFeature` (`StepRunStaleCheckFeature`). Consumed by Task 19.
   - Test helper `FailingReviewGet` (`~tests/__helpers/FailingReviewGet.js`): a `ReviewRepository` decorator whose `get` fails or throws on demand and counts reads (`reviewGetFaults`).
   - `createFakeTaskController` gains the optional `remainingMilliseconds` (default 900000, so every existing test is unchanged).
 
@@ -847,6 +847,7 @@ import { AUTOMATION_STEP_ID } from "~tests/__helpers/stepRunReviews.js";
 import { createFakeStepReview } from "~tests/__helpers/TestStepRunner.js";
 import { expectOk, requester } from "~tests/__helpers/fixtures.js";
 import { Review } from "~/domain/review/Review.js";
+import { ReviewPersistenceError } from "~/domain/review/errors.js";
 import type { ReviewData } from "~/domain/review/types.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
@@ -897,81 +898,96 @@ describe("StepRunStaleCheckService (R175, Review Focus 1)", () => {
         loggedErrors.length = 0;
     });
 
-    it("is false for a review whose step is this task's", async () => {
+    it("is ok(false) for a review whose step is this task's", async () => {
         const { service, seed } = await setup();
         await seed(createFakeStepReview());
 
-        await expect(
-            service.isStale({ reviewId: "review-1", stepId: AUTOMATION_STEP_ID, task: CURRENT_TASK })
-        ).resolves.toBe(false);
+        const result = await service.isStale({
+            reviewId: "review-1",
+            stepId: AUTOMATION_STEP_ID,
+            task: CURRENT_TASK
+        });
 
+        expect(expectOk(result)).toBe(false);
         expect(reviewGetFaults.reads).toBe(1);
         expect(loggedErrors).toEqual([]);
     });
 
-    it("is true once the review is cancelled", async () => {
+    it("is ok(true) once the review is cancelled", async () => {
         const { service, seed, cancel } = await setup();
         await seed(createFakeStepReview());
         await cancel();
 
-        await expect(
-            service.isStale({ reviewId: "review-1", stepId: AUTOMATION_STEP_ID, task: CURRENT_TASK })
-        ).resolves.toBe(true);
+        const result = await service.isStale({
+            reviewId: "review-1",
+            stepId: AUTOMATION_STEP_ID,
+            task: CURRENT_TASK
+        });
+
+        expect(expectOk(result)).toBe(true);
         expect(loggedErrors).toEqual([]);
     });
 
-    it("is true once the step is restarted under a new task, and false for the new task", async () => {
+    it("is ok(true) once the step is restarted under a new task, and ok(false) for the new task", async () => {
         const { service, seed, moveToAnotherTask } = await setup();
         await seed(createFakeStepReview());
         await moveToAnotherTask();
 
-        await expect(
-            service.isStale({ reviewId: "review-1", stepId: AUTOMATION_STEP_ID, task: CURRENT_TASK })
-        ).resolves.toBe(true);
-        await expect(
-            service.isStale({
-                reviewId: "review-1",
-                stepId: AUTOMATION_STEP_ID,
-                task: { id: "task-new", createdById: requester.id }
-            })
-        ).resolves.toBe(false);
+        const oldTask = await service.isStale({
+            reviewId: "review-1",
+            stepId: AUTOMATION_STEP_ID,
+            task: CURRENT_TASK
+        });
+        const newTask = await service.isStale({
+            reviewId: "review-1",
+            stepId: AUTOMATION_STEP_ID,
+            task: { id: "task-new", createdById: requester.id }
+        });
+
+        expect(expectOk(oldTask)).toBe(true);
+        expect(expectOk(newTask)).toBe(false);
     });
 
-    it("is true for a task somebody else created", async () => {
+    it("is ok(true) for a task somebody else created", async () => {
         const { service, seed } = await setup();
         await seed(createFakeStepReview());
 
-        await expect(
-            service.isStale({
-                reviewId: "review-1",
-                stepId: AUTOMATION_STEP_ID,
-                task: { id: "task-1", createdById: "user-intruder" }
-            })
-        ).resolves.toBe(true);
+        const result = await service.isStale({
+            reviewId: "review-1",
+            stepId: AUTOMATION_STEP_ID,
+            task: { id: "task-1", createdById: "user-intruder" }
+        });
+
+        expect(expectOk(result)).toBe(true);
     });
 
-    it("is true when the review is not found, without logging an error", async () => {
+    it("is ok(true) when the review is not found, without logging an error", async () => {
         const { service } = await setup();
 
-        await expect(
-            service.isStale({
-                reviewId: "review-missing",
-                stepId: AUTOMATION_STEP_ID,
-                task: CURRENT_TASK
-            })
-        ).resolves.toBe(true);
+        const result = await service.isStale({
+            reviewId: "review-missing",
+            stepId: AUTOMATION_STEP_ID,
+            task: CURRENT_TASK
+        });
+
+        expect(expectOk(result)).toBe(true);
         expect(loggedErrors).toEqual([]);
     });
 
-    it("is false and logs when the read fails (a read failure is not a cancel)", async () => {
+    it("fails closed and logs once when the read fails (a failed read is not a \"not stale\" answer)", async () => {
         const { service, seed } = await setup();
         await seed(createFakeStepReview());
         reviewGetFaults.mode = "fail";
 
-        await expect(
-            service.isStale({ reviewId: "review-1", stepId: AUTOMATION_STEP_ID, task: CURRENT_TASK })
-        ).resolves.toBe(false);
+        const result = await service.isStale({
+            reviewId: "review-1",
+            stepId: AUTOMATION_STEP_ID,
+            task: CURRENT_TASK
+        });
 
+        expect(result.isFail()).toBe(true);
+        expect(result.error).toBeInstanceOf(ReviewPersistenceError);
+        expect(result.error.message).toBe("Storage is down.");
         expect(loggedErrors).toHaveLength(1);
         expect(loggedErrors[0].message).toBe("Could not read the review to check the step is current.");
         expect(loggedErrors[0].fields).toEqual({
@@ -982,15 +998,20 @@ describe("StepRunStaleCheckService (R175, Review Focus 1)", () => {
         });
     });
 
-    it("is false and logs when the read throws, and never rejects", async () => {
+    it("fails closed and logs once when the read throws, and never rejects", async () => {
         const { service, seed } = await setup();
         await seed(createFakeStepReview());
         reviewGetFaults.mode = "throw";
 
-        await expect(
-            service.isStale({ reviewId: "review-1", stepId: AUTOMATION_STEP_ID, task: CURRENT_TASK })
-        ).resolves.toBe(false);
+        const result = await service.isStale({
+            reviewId: "review-1",
+            stepId: AUTOMATION_STEP_ID,
+            task: CURRENT_TASK
+        });
 
+        expect(result.isFail()).toBe(true);
+        expect(result.error).toBeInstanceOf(ReviewPersistenceError);
+        expect(result.error.message).toBe("Storage threw.");
         expect(loggedErrors).toHaveLength(1);
         expect(loggedErrors[0].message).toBe("Could not read the review to check the step is current.");
         expect(loggedErrors[0].fields).toEqual({
@@ -1006,11 +1027,11 @@ describe("StepRunStaleCheckService (R175, Review Focus 1)", () => {
         await seed(createFakeStepReview());
         const params = { reviewId: "review-1", stepId: AUTOMATION_STEP_ID, task: CURRENT_TASK };
 
-        const before = await service.isStale(params);
+        const before = expectOk(await service.isStale(params));
         expect(reviewGetFaults.reads).toBe(1);
         await cancel(); // resets the read counter
-        const after = await service.isStale(params);
-        const again = await service.isStale(params);
+        const after = expectOk(await service.isStale(params));
+        const again = expectOk(await service.isStale(params));
 
         expect([before, after, again]).toEqual([false, true, true]);
         expect(reviewGetFaults.reads).toBe(2);
@@ -1393,6 +1414,8 @@ Create `packages/api-workflows/src/features/stepRun/StepRunStaleCheckService/abs
 
 ```ts
 import { createAbstraction } from "@webiny/feature/api";
+import type { Result } from "@webiny/feature/api";
+import type { ReviewPersistenceError } from "~/domain/review/errors.js";
 import type { StepRunTaskIdentity } from "~/domain/review/getStaleStepRunReason.js";
 
 export interface StepRunStaleCheckParams {
@@ -1404,12 +1427,13 @@ export interface StepRunStaleCheckParams {
 
 export interface IStepRunStaleCheckService {
     /**
-     * True when this task must no longer write to the review (R144, R175): the review is gone,
-     * cancelled or finished, or the step was restarted under another task. One repository read
-     * per call; no throttle and no state, the caller owns both. A failed or throwing read is
-     * logged and answered false. Never throws.
+     * `ok(true)` when this task must no longer write to the review (R144, R175): the review is
+     * gone, cancelled or finished, or the step was restarted under another task. One repository
+     * read per call; no throttle and no state, the caller owns both. Fail-closed: a failed or
+     * throwing read is logged here (callers do not log it again) and answered with a failed
+     * Result, never with `ok(false)`, so a caller about to write can refuse. Never throws.
      */
-    isStale(params: StepRunStaleCheckParams): Promise<boolean>;
+    isStale(params: StepRunStaleCheckParams): Promise<Result<boolean, ReviewPersistenceError>>;
 }
 
 /**
@@ -1429,9 +1453,10 @@ export namespace StepRunStaleCheckService {
 Create `packages/api-workflows/src/features/stepRun/StepRunStaleCheckService/StepRunStaleCheckService.ts`:
 
 ```ts
+import { Result } from "@webiny/feature/api";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
-import { ReviewNotFoundError } from "~/domain/review/errors.js";
+import { ReviewNotFoundError, ReviewPersistenceError } from "~/domain/review/errors.js";
 import { getStaleStepRunReason } from "~/domain/review/getStaleStepRunReason.js";
 import { StepRunStaleCheckService as Abstraction } from "./abstractions.js";
 
@@ -1441,27 +1466,35 @@ class StepRunStaleCheckServiceImpl implements Abstraction.Interface {
         private logger: Logger.Interface
     ) {}
 
-    public async isStale({ reviewId, stepId, task }: Abstraction.Params): Promise<boolean> {
+    public async isStale({
+        reviewId,
+        stepId,
+        task
+    }: Abstraction.Params): Promise<Result<boolean, ReviewPersistenceError>> {
         try {
             const current = await this.repository.get(reviewId);
             if (current.isFail()) {
                 if (current.error instanceof ReviewNotFoundError) {
-                    return true;
+                    return Result.ok(true);
                 }
-                // A read failure is not a cancel; the post-run guard still protects every write.
+                // Fail-closed: a failed read must not read as "not stale" for a caller that writes.
                 this.logger.error(
                     { error: current.error, taskId: task.id, reviewId, stepId },
                     "Could not read the review to check the step is current."
                 );
-                return false;
+                return Result.fail(
+                    current.error instanceof ReviewPersistenceError
+                        ? current.error
+                        : new ReviewPersistenceError(current.error)
+                );
             }
-            return getStaleStepRunReason(current.value, stepId, task) !== null;
+            return Result.ok(getStaleStepRunReason(current.value, stepId, task) !== null);
         } catch (error) {
             this.logger.error(
                 { error, taskId: task.id, reviewId, stepId },
                 "Could not read the review to check the step is current."
             );
-            return false;
+            return Result.fail(new ReviewPersistenceError(error as Error));
         }
     }
 }
