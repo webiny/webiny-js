@@ -10,6 +10,8 @@ import type { Context, IListTaskLogParams, IListTaskParams, ITask, ITaskLog } fr
 import { TasksCrud } from "~/api/TasksCrud.js";
 import { ListTaskDefinitionsUseCase } from "~/api/features/ListTaskDefinitions/abstractions.js";
 import { TriggerTaskUseCase } from "~/api/features/TriggerTask/abstractions.js";
+import { GetRunnableTaskDefinitionUseCase } from "~/api/features/GetRunnableTaskDefinition/abstractions.js";
+import { TaskDefinitionNotFoundError } from "~/api/domain/errors.js";
 import { AbortTaskUseCase } from "~/api/features/AbortTask/abstractions.js";
 import { GetBackgroundTaskSettingsRepository } from "~/api/features/GetBackgroundTaskSettings/abstractions.js";
 import { UpdateBackgroundTaskSettingsUseCase } from "~/api/features/UpdateBackgroundTaskSettings/abstractions.js";
@@ -152,11 +154,23 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
 
     builder.addResolver({
         path: "WebinyBackgroundTaskMutation.triggerTask",
-        dependencies: [TriggerTaskUseCase],
-        resolver: (triggerTask: TriggerTaskUseCase.Interface) => {
+        dependencies: [TriggerTaskUseCase, GetRunnableTaskDefinitionUseCase],
+        resolver: (
+            triggerTask: TriggerTaskUseCase.Interface,
+            getRunnableTaskDefinition: GetRunnableTaskDefinitionUseCase.Interface
+        ) => {
             return async ({ args, context }: IResolverParams<ITriggerTaskMutationParams>) => {
                 await checkPermissions(context, { rwd: "w" });
                 return resolve<ITask>(async () => {
+                    // SEC-68: a private definition is an internal contract between the code that
+                    // registers it and the code that triggers it through `TaskService.trigger`.
+                    // GraphQL refuses it exactly like an unknown definition, so a caller cannot
+                    // tell the two apart and cannot start it with input of their choice.
+                    const definition = getRunnableTaskDefinition.execute(args.definition);
+                    if (definition.isFail() || definition.value.isPrivate) {
+                        throw new TaskDefinitionNotFoundError(args.definition);
+                    }
+
                     const result = await triggerTask.execute(args);
                     if (result.isOk()) {
                         return result.value;

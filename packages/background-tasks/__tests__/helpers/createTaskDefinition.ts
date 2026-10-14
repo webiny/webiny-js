@@ -9,6 +9,7 @@ interface TaskParams<T> {
     id: string;
     title: string;
     description?: string;
+    isPrivate?: boolean;
     selfCleanup?: ISelfCleanup;
     databaseLogs?: boolean;
     run: (params: TaskHandler.RunParams) => T;
@@ -47,6 +48,7 @@ export function createTaskDefinition<T extends TaskDefinition.Result>(params: Ta
         id = params.id;
         title = params.title;
         description = params.description;
+        isPrivate = params.isPrivate;
         selfCleanup = params.selfCleanup;
         databaseLogs = params.databaseLogs;
         handler = TestTaskHandler;
