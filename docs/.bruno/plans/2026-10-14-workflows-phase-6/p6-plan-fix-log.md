@@ -29,3 +29,11 @@ Verified against code: `TaskController.ts` / `TaskManagerStore.ts` (isAborted re
 6. R170 -> `run` fails with `failureReasons.error` when `iteration` > 1; test in Task 19; 6.10 overview.
 7. Task 4 stuck -> every `inReview` step with a task id is checked; no-runner step fails with `The step failed.`; test (R168, Task 4, 6.2 overview).
 8. Cross-refs -> 6.8 overview cites Review Focus 6 only; item 5 dropped from 6.9 overview.
+
+## Review round 3
+
+Verified against code: `WorkflowStepRunTaskHandler.ts` (`controller.state.updateOutput({ idWaits, state })` is the existing output shape, written today only on `continue`; `idWaits` falls back to `task.iterations - 1`).
+
+1. R170 / Tasks 3-4 / Task 19 re-entry -> the handler persists `controller.state.updateOutput({ idWaits, state })` once the id wait is over and before any runner, for every step type, so a re-entered task sees fixed `idWaits` and `iteration` 2; Task 4 handler test runs the handler twice on one task (iterations 4 then 5) with an AI-like runner and asserts the second run fails with `failureReasons.error`; phase 5 tests stay green. Touched: S (R170, R175, Task 3, Task 4), 6.2 overview.
+2. R175 / Task 19 stale stop -> `stopWhen` and the pre-tool check only set a local `stale` flag; `onStepFinish` dropped (SDK swallows throws); `run` checks the flag right after `generateText` returns or throws, before reading output (`NoOutputGeneratedError`), and throws `StepRunFailure(failureReasons.aborted)`. Touched: S (R175, Review Focus 1, Task 19), 6.10 overview.
+3. Tasks 19 / 20 tests -> fake timers (or the Task 4 injectable clock) advanced by `STEP_RUN_STALE_CHECK_INTERVAL_MS` after flipping the review. Touched: S (Review Focus 1, Task 4, Task 19, Task 20), 6.2 and 6.10 overviews.
