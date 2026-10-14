@@ -1,4 +1,5 @@
-import { hasToolCall, stepCountIs } from "ai";
+import { hasToolCall } from "ai";
+import { stepCountIs } from "ai";
 import type { ModelMessage } from "ai";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
@@ -18,7 +19,9 @@ import { toPendingApproval } from "./approvals.js";
 import type { ApprovalDecision } from "./approvals.js";
 import type { PendingApproval } from "./approvals.js";
 import type { AdminAssistantEvent } from "./events.js";
-import { FOLLOW_UPS_TOOL, followUpsTool, readFollowUps } from "./followUps.js";
+import { FOLLOW_UPS_TOOL } from "./followUps.js";
+import { followUpsTool } from "./followUps.js";
+import { readFollowUps } from "./followUps.js";
 
 /** The subset of the AI SDK's stream parts this use case reacts to. */
 interface StreamPart {

@@ -3,7 +3,11 @@ import type { AdminAssistantPresenter } from "@webiny/app-admin";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
 import { ReactComponent as BackspaceIcon } from "@webiny/icons/backspace.svg";
-import { AiModeBadge, AiSuggestions, AiTurn, HintIcon, type Hint } from "../components/index.js";
+import { AiModeBadge } from "../components/index.js";
+import { AiSuggestions } from "../components/index.js";
+import { AiTurn } from "../components/index.js";
+import { HintIcon } from "../components/index.js";
+import type { Hint } from "../components/index.js";
 import type { PaletteMode, PaletteModeKeyContext } from "./PaletteMode.js";
 
 const HINTS: Hint[] = [

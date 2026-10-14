@@ -1,5 +1,7 @@
 import React from "react";
-import { Icon, Markdown, Text } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { Markdown } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 import { ReactComponent as ErrorIcon } from "@webiny/icons/error.svg";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import type { AiTurnViewModel } from "@webiny/app-admin";

@@ -1,9 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { Container } from "@webiny/di";
-import {
-    AdminAssistantGateway,
-    AdminAssistantPresenter as PresenterAbstraction
-} from "~/features/adminAssistant/abstractions";
+import { AdminAssistantGateway } from "~/features/adminAssistant/abstractions";
+import { AdminAssistantPresenter as PresenterAbstraction } from "~/features/adminAssistant/abstractions";
 import type { AdminAssistantStreamEvent } from "~/features/adminAssistant/abstractions";
 import { AdminAssistantPresenter } from "~/features/adminAssistant/AdminAssistantPresenter.js";
 
