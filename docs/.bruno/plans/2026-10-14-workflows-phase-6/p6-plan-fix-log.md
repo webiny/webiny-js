@@ -16,3 +16,16 @@ Files: `00-shared.md` (S) plus the overviews named per item. Verified against co
 10. Tool names -> R167 regex `^[A-Za-z][A-Za-z0-9_]{0,63}$`. Touched: S.
 11. E2E -> Task 20 lists the copied handler helper (`createContextHandler` equivalent) and adds `packages/ai-powerups/ci.config.json` (ddb, ddb-os,ddb). Touched: S, 6.10 overview.
 12. Task 11 -> `CmsEntryReviewTargetEditor.ts` and `toEditorFields.ts` flat in `features/target/`, no barrel; applied the same to Task 13's `WbPageReviewTargetEditor.ts` for consistency. Touched: S, 6.6 and 6.7 overviews.
+
+## Review round 2
+
+Verified against code: `TaskController.ts` / `TaskManagerStore.ts` (isAborted reads the task loaded at run start), `StuckStepService.ts` (currently limited to `AUTOMATION_STEP_TYPE`), `AiConnectionPreset` in `ai-powerups/src/api/features/Connections/{types,index}.ts`, `Extension.ts` (plain `aiPowerups` early return, `CapabilitiesFeature.register`).
+
+1. R175 cancel-during-call (red) -> `isAborted` replaced by async `isStale(): Promise<boolean>` built in the handler (re-reads the review, `getStaleStepRunReason`, throttled one read per `STEP_RUN_STALE_CHECK_INTERVAL_MS = 5000`, sticky); AiStepRunner checks it in `stopWhen`, `onStepFinish` and before each tool; Task 19 test flips the stored review. Touched: S (Review Focus 1, R175, A56, A59, Task 3 interface and placeholder, Task 4, Task 19, Task 20), 6.2 and 6.10 overviews.
+2. Task 14 placement -> after `existing` read and savedOn conflict check, compares normalised new config with `existing.steps[].config`; test conflict / not-found wins. Touched: S, 6.8 overview.
+3. Task 15 types -> `AiConnectionPreset`; `ConfiguredAiModelsFeature` registered under the plain `aiPowerups` gate in `Extension.ts` after `CapabilitiesFeature`. Touched: S, 6.8 overview.
+4. ai-powerups tests -> Global Constraints: `yarn test` and `yarn test:os` once `ci.config.json` exists; Task 20 runs e2e on both one at a time and the existing test files once under `test:os`. Touched: S, 6.10 overview (table, Done when).
+5. Task 19 inline -> tool set and stale check inline in `AiStepRunner.run`, no wrapper around `tool.execute` (R175, Task 19).
+6. R170 -> `run` fails with `failureReasons.error` when `iteration` > 1; test in Task 19; 6.10 overview.
+7. Task 4 stuck -> every `inReview` step with a task id is checked; no-runner step fails with `The step failed.`; test (R168, Task 4, 6.2 overview).
+8. Cross-refs -> 6.8 overview cites Review Focus 6 only; item 5 dropped from 6.9 overview.
