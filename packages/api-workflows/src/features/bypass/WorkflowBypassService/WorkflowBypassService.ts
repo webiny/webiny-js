@@ -5,7 +5,7 @@ class WorkflowBypassServiceImpl implements Abstraction.Interface {
     /** Scopes the flag to the callback's async call chain, so concurrent work never sees it. */
     private readonly storage = new AsyncLocalStorage<boolean>();
 
-    public run<T>(callback: () => Promise<T>): Promise<T> {
+    public async run<T>(callback: () => Promise<T>): Promise<T> {
         return this.storage.run(true, callback);
     }
 

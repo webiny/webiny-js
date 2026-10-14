@@ -41,6 +41,17 @@ describe("WorkflowBypassService (D36, D62, R150)", () => {
         expect(service.isActive()).toBe(false);
     });
 
+    it("rejects, never throws synchronously, when the callback throws before returning a promise", async () => {
+        const service = await createService();
+
+        const failing = service.run((() => {
+            throw new Error("automation threw synchronously");
+        }) as () => Promise<void>);
+
+        await expect(failing).rejects.toThrow("automation threw synchronously");
+        expect(service.isActive()).toBe(false);
+    });
+
     it("keeps the outer run active when a nested run ends", async () => {
         const service = await createService();
         const seen: boolean[] = [];
@@ -119,6 +130,36 @@ describe("WorkflowBypassService (D36, D62, R150)", () => {
         seen.push(service.isActive());
         releaseSecond();
         await second;
+
+        expect(seen).toEqual([true, false, true]);
+        expect(service.isActive()).toBe(false);
+    });
+
+    it("keeps two overlapping runs active whichever ends first, the second finishing first", async () => {
+        const service = await createService();
+        const seen: boolean[] = [];
+        let releaseFirst: () => void = () => undefined;
+        let releaseSecond: () => void = () => undefined;
+        const firstGate = new Promise<void>(resolve => {
+            releaseFirst = resolve;
+        });
+        const secondGate = new Promise<void>(resolve => {
+            releaseSecond = resolve;
+        });
+
+        const first = service.run(async () => {
+            await firstGate;
+            seen.push(service.isActive());
+        });
+        const second = service.run(async () => {
+            await secondGate;
+            seen.push(service.isActive());
+        });
+        releaseSecond();
+        await second;
+        seen.push(service.isActive());
+        releaseFirst();
+        await first;
 
         expect(seen).toEqual([true, false, true]);
         expect(service.isActive()).toBe(false);
