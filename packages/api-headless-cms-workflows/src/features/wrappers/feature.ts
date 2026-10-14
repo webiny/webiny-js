@@ -16,6 +16,7 @@ import { RejectCmsEntryReviewStepFeature } from "./RejectCmsEntryReviewStep/feat
 import { CancelCmsEntryReviewFeature } from "./CancelCmsEntryReview/feature.js";
 import { CancelCmsEntryReviewsForDeleteFeature } from "./CancelCmsEntryReviewsForDelete/feature.js";
 import { ReassignCmsEntryReviewStepFeature } from "./ReassignCmsEntryReviewStep/feature.js";
+import { RestartCmsEntryReviewStepFeature } from "./RestartCmsEntryReviewStep/feature.js";
 import { ListCmsEntryStepCandidatesFeature } from "./ListCmsEntryStepCandidates/feature.js";
 import { ListCmsEntryReviewStepCandidatesFeature } from "./ListCmsEntryReviewStepCandidates/feature.js";
 import { InspectCmsEntryRoutingFeature } from "./InspectCmsEntryRouting/feature.js";
@@ -49,6 +50,7 @@ export const CmsWrappersFeature = createFeature({
         RejectCmsEntryReviewStepFeature.register(container);
         CancelCmsEntryReviewFeature.register(container);
         ReassignCmsEntryReviewStepFeature.register(container);
+        RestartCmsEntryReviewStepFeature.register(container);
 
         // Routing: candidates for the request and reassign dialogs, the editor's
         // inspector and folder existence (R120, R121, R125)

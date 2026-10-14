@@ -25,6 +25,7 @@ import { RejectCmsEntryReviewStepUseCase } from "~/features/wrappers/RejectCmsEn
 import { CancelCmsEntryReviewUseCase } from "~/features/wrappers/CancelCmsEntryReview/index.js";
 import { CancelCmsEntryReviewsForDeleteUseCase } from "~/features/wrappers/CancelCmsEntryReviewsForDelete/index.js";
 import { ReassignCmsEntryReviewStepUseCase } from "~/features/wrappers/ReassignCmsEntryReviewStep/index.js";
+import { RestartCmsEntryReviewStepUseCase } from "~/features/wrappers/RestartCmsEntryReviewStep/index.js";
 import { ListCmsEntryStepCandidatesUseCase } from "~/features/wrappers/ListCmsEntryStepCandidates/index.js";
 import { ListCmsEntryReviewStepCandidatesUseCase } from "~/features/wrappers/ListCmsEntryReviewStepCandidates/index.js";
 import { InspectCmsEntryRoutingUseCase } from "~/features/wrappers/InspectCmsEntryRouting/index.js";
@@ -188,6 +189,7 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         startCmsEntryReviewStep(reviewId: ID!, stepId: ID!): CmsEntryReviewResponse!
         takeOverCmsEntryReviewStep(reviewId: ID!, stepId: ID!): CmsEntryReviewResponse!
         reassignCmsEntryReviewStep(reviewId: ID!, stepId: ID!, userId: ID!): CmsEntryReviewResponse!
+        restartCmsEntryReviewStep(reviewId: ID!, stepId: ID!): CmsEntryReviewResponse!
         approveCmsEntryReviewStep(
             reviewId: ID!
             stepId: ID!
@@ -425,6 +427,23 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         reviewId: args.reviewId,
                         stepId: args.stepId,
                         userId: args.userId
+                    });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<RestartCmsEntryReviewStepUseCase.Input>({
+            path: "CmsMutation.restartCmsEntryReviewStep",
+            dependencies: [RestartCmsEntryReviewStepUseCase],
+            resolver: (restartStep: RestartCmsEntryReviewStepUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await restartStep.execute({
+                        reviewId: args.reviewId,
+                        stepId: args.stepId
                     });
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);

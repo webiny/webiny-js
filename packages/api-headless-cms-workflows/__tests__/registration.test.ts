@@ -25,6 +25,7 @@ import { RejectCmsEntryReviewStepUseCase } from "~/features/wrappers/RejectCmsEn
 import { CancelCmsEntryReviewUseCase } from "~/features/wrappers/CancelCmsEntryReview/index.js";
 import { CancelCmsEntryReviewsForDeleteUseCase } from "~/features/wrappers/CancelCmsEntryReviewsForDelete/index.js";
 import { ReassignCmsEntryReviewStepUseCase } from "~/features/wrappers/ReassignCmsEntryReviewStep/index.js";
+import { RestartCmsEntryReviewStepUseCase } from "~/features/wrappers/RestartCmsEntryReviewStep/index.js";
 import { ListCmsEntryStepCandidatesUseCase } from "~/features/wrappers/ListCmsEntryStepCandidates/index.js";
 import { ListCmsEntryReviewStepCandidatesUseCase } from "~/features/wrappers/ListCmsEntryReviewStepCandidates/index.js";
 import { InspectCmsEntryRoutingUseCase } from "~/features/wrappers/InspectCmsEntryRouting/index.js";
@@ -49,6 +50,7 @@ const WRAPPERS: Abstraction<unknown>[] = [
     CancelCmsEntryReviewUseCase,
     CancelCmsEntryReviewsForDeleteUseCase,
     ReassignCmsEntryReviewStepUseCase,
+    RestartCmsEntryReviewStepUseCase,
     ListCmsEntryStepCandidatesUseCase,
     ListCmsEntryReviewStepCandidatesUseCase,
     InspectCmsEntryRoutingUseCase,

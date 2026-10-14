@@ -41,6 +41,7 @@ const CMS_MUTATION_FIELDS = [
     "startCmsEntryReviewStep",
     "takeOverCmsEntryReviewStep",
     "reassignCmsEntryReviewStep",
+    "restartCmsEntryReviewStep",
     "approveCmsEntryReviewStep",
     "rejectCmsEntryReviewStep",
     "cancelCmsEntryReview",
