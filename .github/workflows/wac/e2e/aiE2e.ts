@@ -61,9 +61,6 @@ export const createAiE2eSteps = ({
             '  echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."',
             "  exit 0",
             "fi",
-            // Already installed by the installation test, unless the branch predates it and ran
-            // the Cypress one instead.
-            "yarn workspace e2e-tests playwright install --with-deps chromium",
             "yarn e2e --exclude-tag installation"
         ].join("\n")
     },

@@ -396,13 +396,6 @@ jobs:
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
-          if [ ! -f e2e/tests/installation.e2e.ts ]; then
-            echo "::notice::This branch has no e2e installation test. Running the Cypress one."
-            yarn setup-cypress --projectFolder ${{ github.workspace }}/new-webiny-project
-            (cd cypress-tests && yarn cypress install)
-            yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
-            exit $?
-          fi
           yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation
       - name: E2E - upload installation test results
@@ -675,13 +668,6 @@ jobs:
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
-          if [ ! -f e2e/tests/installation.e2e.ts ]; then
-            echo "::notice::This branch has no e2e installation test. Running the Cypress one."
-            yarn setup-cypress --projectFolder ${{ github.workspace }}/new-webiny-project
-            (cd cypress-tests && yarn cypress install)
-            yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
-            exit $?
-          fi
           yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation
       - name: E2E - upload installation test results
@@ -888,13 +874,6 @@ jobs:
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
-          if [ ! -f e2e/tests/installation.e2e.ts ]; then
-            echo "::notice::This branch has no e2e installation test. Running the Cypress one."
-            yarn setup-cypress:standalone --apiUrl http://localhost:3002 --adminUrl http://localhost:3001
-            (cd cypress-tests && yarn cypress install)
-            yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
-            exit $?
-          fi
           yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation
       - name: E2E - upload installation test results
@@ -1123,13 +1102,6 @@ jobs:
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
-          if [ ! -f e2e/tests/installation.e2e.ts ]; then
-            echo "::notice::This branch has no e2e installation test. Running the Cypress one."
-            yarn setup-cypress:standalone --apiUrl http://localhost:3002 --adminUrl http://localhost:3001
-            (cd cypress-tests && yarn cypress install)
-            yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
-            exit $?
-          fi
           yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation
       - name: E2E - upload installation test results
@@ -1348,13 +1320,6 @@ jobs:
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
-          if [ ! -f e2e/tests/installation.e2e.ts ]; then
-            echo "::notice::This branch has no e2e installation test. Running the Cypress one."
-            yarn setup-cypress:standalone --apiUrl http://localhost:3002 --adminUrl http://localhost:3001
-            (cd cypress-tests && yarn cypress install)
-            yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
-            exit $?
-          fi
           yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation
       - name: E2E - upload installation test results
@@ -1377,7 +1342,6 @@ jobs:
             echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."
             exit 0
           fi
-          yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --exclude-tag installation
       - name: AI E2E - upload results
         if: always()
@@ -1612,13 +1576,6 @@ jobs:
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
-          if [ ! -f e2e/tests/installation.e2e.ts ]; then
-            echo "::notice::This branch has no e2e installation test. Running the Cypress one."
-            yarn setup-cypress:standalone --apiUrl http://localhost:3002 --adminUrl http://localhost:3001
-            (cd cypress-tests && yarn cypress install)
-            yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"
-            exit $?
-          fi
           yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation
       - name: E2E - upload installation test results
@@ -1641,7 +1598,6 @@ jobs:
             echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."
             exit 0
           fi
-          yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --exclude-tag installation
       - name: AI E2E - upload results
         if: always()

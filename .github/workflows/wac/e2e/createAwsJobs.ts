@@ -192,10 +192,7 @@ export const createAwsJobs = (dbSetup: string) => {
             ...createInstallationTestSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
-                artifactName: `e2e-results-${dbSetup}`,
-                // An absolute path: DIR_WEBINY_JS is the PR's base branch name, which is often more
-                // than one directory deep ("release/6.5.0"), so `../` would not reach the project.
-                cypressSetup: `yarn setup-cypress --projectFolder ${PATH_TEST_PROJECT}`
+                artifactName: `e2e-results-${dbSetup}`
             }),
             // The row is set to "✅ Ready" with the URL once the deploy succeeds, but that happens
             // BEFORE the test runs - so without these the comment claims the variant is fine even

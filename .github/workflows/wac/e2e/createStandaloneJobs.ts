@@ -75,9 +75,6 @@ interface StandaloneProjectPartsParams {
     // Build with a WCP license and also run the experimental AI tests in `e2e/` (see aiE2e.ts).
     // Only the dedicated AI job sets this; the regular variants stay unlicensed.
     aiE2e?: boolean;
-    // Fall back to the Cypress installation test on branches that predate the e2e one. Only for
-    // `/e2e`, which runs this workflow from the default branch against any PR.
-    cypressFallback?: boolean;
 }
 
 /**
@@ -89,7 +86,7 @@ interface StandaloneProjectPartsParams {
  */
 export const createStandaloneProjectParts = (
     storageOps: StandaloneStorageOps,
-    { workingDirectory, statusLabel, aiE2e, cypressFallback }: StandaloneProjectPartsParams
+    { workingDirectory, statusLabel, aiE2e }: StandaloneProjectPartsParams
 ) => {
     const isPostgres = storageOps === "postgres";
     const licenseEnv = aiE2e ? AI_E2E_LICENSE_ENV : {};
@@ -259,10 +256,7 @@ export const createStandaloneProjectParts = (
             ...createInstallationTestSteps({
                 workingDirectory,
                 adminUrl: STANDALONE_ADMIN_URL,
-                artifactName: `e2e-results-standalone-${artifactSuffix}`,
-                cypressSetup: cypressFallback
-                    ? `yarn setup-cypress:standalone --apiUrl ${STANDALONE_API_URL} --adminUrl ${STANDALONE_ADMIN_URL}`
-                    : undefined
+                artifactName: `e2e-results-standalone-${artifactSuffix}`
             }),
             ...(aiE2e
                 ? createAiE2eSteps({
@@ -292,8 +286,7 @@ export const createStandaloneJobs = (storageOps: StandaloneStorageOps) => {
     const label = standaloneVariantLabel(storageOps);
     const parts = createStandaloneProjectParts(storageOps, {
         workingDirectory: DIR_WEBINY_JS,
-        statusLabel: label,
-        cypressFallback: true
+        statusLabel: label
     });
 
     return {
@@ -312,8 +305,7 @@ export const createWcpStandaloneJobs = (storageOps: StandaloneStorageOps) => {
     const parts = createStandaloneProjectParts(storageOps, {
         workingDirectory: DIR_WEBINY_JS,
         statusLabel: label,
-        aiE2e: true,
-        cypressFallback: true
+        aiE2e: true
     });
 
     return {
