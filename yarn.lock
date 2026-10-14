@@ -11117,6 +11117,7 @@ __metadata:
     "@webiny/api-headless-cms-testing": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
+    "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.1.0"
     "@webiny/feature": "npm:0.0.0"

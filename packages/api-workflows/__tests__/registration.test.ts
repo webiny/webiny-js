@@ -8,6 +8,7 @@ import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js
 import { DeleteWorkflowUseCase } from "~/features/workflow/DeleteWorkflow/index.js";
 import { RequestReviewUseCase } from "~/features/review/RequestReview/index.js";
 import { GetReviewUseCase } from "~/features/review/GetReview/index.js";
+import { StuckStepService } from "~/features/stepRun/StuckStepService/index.js";
 import { StartReviewStepUseCase } from "~/features/review/StartReviewStep/index.js";
 import { TakeOverReviewStepUseCase } from "~/features/review/TakeOverReviewStep/index.js";
 import { ReassignReviewStepUseCase } from "~/features/review/ReassignReviewStep/index.js";
@@ -91,6 +92,7 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(DeleteWorkflowUseCase)).toHaveLength(1);
         expect(container.resolveAll(RequestReviewUseCase)).toHaveLength(1);
         expect(container.resolveAll(GetReviewUseCase)).toHaveLength(1);
+        expect(container.resolveAll(StuckStepService)).toHaveLength(1);
         expect(container.resolveAll(StartReviewStepUseCase)).toHaveLength(1);
         expect(container.resolveAll(TakeOverReviewStepUseCase)).toHaveLength(1);
         expect(container.resolveAll(ReassignReviewStepUseCase)).toHaveLength(1);

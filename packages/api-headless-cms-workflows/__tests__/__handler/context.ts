@@ -9,6 +9,8 @@ import { createModelsPlugins, type ICreateModelsPluginsParams } from "../__cms/m
 import { WorkflowsFeature } from "@webiny/api-workflows";
 import { CmsWorkflowsFeature } from "~/index.js";
 import { registerFakeFolders } from "../__helpers/FakeFolders.js";
+import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
+import { NoopGetTask } from "../__helpers/NoopGetTask.js";
 import { FakeTaskService } from "../__helpers/FakeTaskService.js";
 
 const registerNoopFlp = createRegisterExtensionPlugin(context => {
@@ -34,6 +36,8 @@ export const createContextHandler = (
             CmsWorkflowsFeature.register(container);
             // The saver aborts tasks through `TaskService`; this context has no background tasks.
             container.register(FakeTaskService);
+            // Single reads resolve the task read for stuck detection; no background tasks here.
+            container.registerInstance(GetTaskUseCase, NoopGetTask);
             // ACO is not registered; the CMS folder port reads these stand-ins.
             registerFakeFolders(container);
         },

@@ -13,6 +13,7 @@ import { StoreWorkflowFeature } from "~/features/workflow/StoreWorkflow/feature.
 import { DeleteWorkflowFeature } from "~/features/workflow/DeleteWorkflow/feature.js";
 import { ReviewSharedFeature } from "~/features/review/shared/feature.js";
 import { ReviewLifecycleFeature } from "~/features/review/ReviewLifecycleFeature.js";
+import { StuckStepFeature } from "~/features/stepRun/StuckStepService/feature.js";
 import { RequestReviewFeature } from "~/features/review/RequestReview/feature.js";
 import { GetReviewFeature } from "~/features/review/GetReview/feature.js";
 import { StartReviewStepFeature } from "~/features/review/StartReviewStep/feature.js";
@@ -96,6 +97,8 @@ export const WorkflowsFeature = createFeature({
         ApproveReviewStepFeature.register(container);
         RejectReviewStepFeature.register(container);
         CancelReviewFeature.register(container);
+        // Stuck detection on single reads (R152)
+        StuckStepFeature.register(container);
 
         // Target queries for the app target adapters and wrappers
         GetTargetReviewFeature.register(container);

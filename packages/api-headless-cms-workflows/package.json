@@ -30,6 +30,7 @@
     "@webiny/api-core-testing": "0.0.0",
     "@webiny/api-headless-cms-testing": "0.0.0",
     "@webiny/api-opensearch": "0.0.0",
+    "@webiny/background-tasks": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^1.1.0",
     "@webiny/handler": "0.0.0",
