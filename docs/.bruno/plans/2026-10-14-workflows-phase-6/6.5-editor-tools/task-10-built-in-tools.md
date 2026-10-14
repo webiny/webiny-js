@@ -1180,6 +1180,8 @@ Expected: PASS.
 Run: `yarn check:test:types -p api-workflows --report cli 2>&1 | tail -40`
 Expected: no errors.
 
+If `check:test:types` complains about `createImplementation` variance for the tool classes, use the same cast pattern as Task 7's `TestWorkflowAiTool` helper (`tool as WorkflowAiTool.Interface`, see `registerTestAiTool`).
+
 - [ ] **Step 5: Run the existing tests covering the changed code**
 
 Every `WorkflowsFeature` container now holds two tools, so the Task 7 and Task 8 files and the registration test (all modified above) and the files that read the registry must stay green:
