@@ -1,14 +1,19 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Container } from "@webiny/di";
-import { WbPageStatus } from "~/constants.js";
+import { WbPageStatus, type WbStatus } from "~/constants.js";
 import { Page, pageListCache, fullPageCache } from "~/domain/Page/index.js";
+import { PageRevision, pageRevisionsCacheFactory } from "~/domain/PageRevision/index.js";
 import {
     PublishPageUseCase as UseCaseAbstraction,
     PublishPageGateway as GatewayAbstraction
 } from "./abstractions.js";
 import { PublishPageUseCase } from "./PublishPageUseCase.js";
 import { PublishPageRepository } from "./PublishPageRepository.js";
-import { PageListCache, FullPageCache } from "~/features/pages/shared/abstractions.js";
+import {
+    PageListCache,
+    FullPageCache,
+    PageRevisionsCache
+} from "~/features/pages/shared/abstractions.js";
 
 describe("PublishPage", () => {
     const gateway = {
@@ -97,6 +102,7 @@ describe("PublishPage", () => {
         const container = new Container();
         container.registerInstance(PageListCache, pagesCache);
         container.registerInstance(FullPageCache, fullPageCache);
+        container.registerInstance(PageRevisionsCache, pageRevisionsCacheFactory.getCache());
         container.registerInstance(GatewayAbstraction, gateway);
         container.register(PublishPageRepository).inSingletonScope();
         container.register(PublishPageUseCase);
@@ -134,6 +140,7 @@ describe("PublishPage", () => {
         const container = new Container();
         container.registerInstance(PageListCache, pagesCache);
         container.registerInstance(FullPageCache, fullPageCache);
+        container.registerInstance(PageRevisionsCache, pageRevisionsCacheFactory.getCache());
         container.registerInstance(GatewayAbstraction, gateway);
         container.register(PublishPageRepository).inSingletonScope();
         container.register(PublishPageUseCase);
@@ -150,5 +157,48 @@ describe("PublishPage", () => {
 
         expect(publishedItem?.id).toEqual("page-1#0001");
         expect(publishedItem?.status).toEqual(WbPageStatus.Draft);
+    });
+
+    it("should publish the revision and unpublish the previously published one", async () => {
+        const revisionsCache = pageRevisionsCacheFactory.getCache();
+        revisionsCache.clear();
+
+        const makeRevision = (id: string, version: number, status: WbStatus) =>
+            PageRevision.create({
+                id,
+                entryId: "page-1",
+                version,
+                status,
+                savedOn: "2026-09-21T00:00:00.000Z",
+                title: "Page 1",
+                locked: false,
+                createdBy: { id: "admin", displayName: "Admin", type: "admin" },
+                createdOn: "2026-09-21T00:00:00.000Z",
+                revisionDescription: undefined
+            });
+
+        revisionsCache.addItems([
+            makeRevision("page-1#0001", 1, WbPageStatus.Draft),
+            makeRevision("page-1#0002", 2, WbPageStatus.Published)
+        ]);
+
+        const container = new Container();
+        container.registerInstance(PageListCache, pagesCache);
+        container.registerInstance(FullPageCache, fullPageCache);
+        container.registerInstance(PageRevisionsCache, revisionsCache);
+        container.registerInstance(GatewayAbstraction, gateway);
+        container.register(PublishPageRepository).inSingletonScope();
+        container.register(PublishPageUseCase);
+
+        const publishPage = container.resolve(UseCaseAbstraction);
+
+        await publishPage.execute({ id: "page-1#0001" });
+
+        expect(revisionsCache.getItem(r => r.id === "page-1#0001")?.status).toEqual(
+            WbPageStatus.Published
+        );
+        expect(revisionsCache.getItem(r => r.id === "page-1#0002")?.status).toEqual(
+            WbPageStatus.Unpublished
+        );
     });
 });

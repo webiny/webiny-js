@@ -1,43 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { observer } from "mobx-react-lite";
 import { List, OverlayLoader } from "@webiny/admin-ui";
 import RevisionListItem from "./RevisionListItem.js";
 import type { Page } from "~/domain/Page/index.js";
-import type { PageRevision } from "~/domain/PageRevision/index.js";
-import { useGetPageRevisions } from "~/presentation/pages/hooks/useGetPageRevisions.js";
-import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
+import { useRevisionList } from "./useRevisionList.js";
 
 interface IRevisionsListProps {
     page: Pick<Page, "id">;
 }
 
-export const RevisionsList = (props: IRevisionsListProps) => {
+export const RevisionsList = observer((props: IRevisionsListProps) => {
     const { page } = props;
-
-    const [revisions, setRevisions] = useState<PageRevision[]>([]);
-    const { loading, getPageRevisions } = useGetPageRevisions();
-
-    useEffect(() => {
-        const { id: entryId } = parseIdentifier(page.id);
-        getPageRevisions({
-            entryId
-        }).then(revisions => {
-            setRevisions(
-                revisions
-                    .sort((a, b) => {
-                        return new Date(a.savedOn).getTime() - new Date(b.savedOn).getTime();
-                    })
-                    .reverse()
-            );
-        });
-    }, [page.id]);
+    const { presenter } = useRevisionList(page.id);
+    const { vm } = presenter;
 
     return (
         <div className={"relative"}>
-            {loading && <OverlayLoader />}
-            {revisions?.length ? (
+            {(vm.isLoading || vm.isMutating) && <OverlayLoader />}
+            {vm.revisions.length ? (
                 <List data-testid={"cms.content-form.revisions"}>
-                    {revisions.map(revision => (
-                        <RevisionListItem revision={revision} key={revision.id} />
+                    {vm.revisions.map(item => (
+                        <RevisionListItem item={item} key={item.revision.id} />
                     ))}
                 </List>
             ) : (
@@ -45,4 +28,4 @@ export const RevisionsList = (props: IRevisionsListProps) => {
             )}
         </div>
     );
-};
+});

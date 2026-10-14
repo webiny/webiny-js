@@ -26,7 +26,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { useRevision } from "./useRevision.js";
 import type { PageRevision } from "~/domain/PageRevision/index.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { HasPermission } from "~/presentation/security/HasPermission.js";
+import type { RevisionListPresenter } from "~/presentation/pages/RevisionList/abstractions.js";
 
 const t = i18n.ns("app-website-builder/modules/Pages/PageEditor/Revisions");
 
@@ -70,10 +70,11 @@ const getIcon = (revision: PageRevision) => {
 };
 
 interface RevisionListItemProps {
-    revision: PageRevision;
+    item: RevisionListPresenter.ItemViewModel;
 }
 
-const RevisionListItem = ({ revision }: RevisionListItemProps) => {
+const RevisionListItem = ({ item }: RevisionListItemProps) => {
+    const { revision } = item;
     const { createRevision, editRevision, deleteRevision, unpublishRevision, publishRevision } =
         useRevision({
             revision
@@ -116,58 +117,54 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                     data-testid={"page.revisions.more-options"}
                 >
                     <>
-                        <HasPermission entity={"page"} action={"edit"}>
+                        {item.canCreateFrom ? (
                             <DropdownMenu.Item
                                 onClick={() => createRevision()}
                                 data-testid={"page.revisioncreate-revision"}
                                 icon={<AddIcon />}
                                 text={t`New revision from current`}
                             />
-                            {!revision.locked ? (
-                                <DropdownMenu.Item
-                                    onClick={() => {
-                                        editRevision();
-                                    }}
-                                    icon={<EditIcon />}
-                                    text={t`Edit revision`}
-                                />
-                            ) : null}
-                        </HasPermission>
+                        ) : null}
 
-                        <HasPermission entity={"page"} action={"publish"}>
-                            {revision.status !== "published" ? (
-                                <DropdownMenu.Item
-                                    onClick={() => publishRevision()}
-                                    icon={<PublishIcon />}
-                                    text={t`Publish revision`}
-                                />
-                            ) : null}
-                        </HasPermission>
+                        {item.canEdit ? (
+                            <DropdownMenu.Item
+                                onClick={() => {
+                                    editRevision();
+                                }}
+                                icon={<EditIcon />}
+                                text={t`Edit revision`}
+                            />
+                        ) : null}
 
-                        <HasPermission entity={"page"} action={"unpublish"}>
-                            {revision.status === "published" ? (
-                                <DropdownMenu.Item
-                                    onClick={() => unpublishRevision()}
-                                    data-testid={"page.revisionunpublish"}
-                                    icon={<UnpublishIcon />}
-                                    text={t`Unpublish revision`}
-                                />
-                            ) : null}
-                        </HasPermission>
+                        {item.canPublish ? (
+                            <DropdownMenu.Item
+                                onClick={() => publishRevision()}
+                                data-testid={"page.revisionpublish"}
+                                icon={<PublishIcon />}
+                                text={t`Publish revision`}
+                            />
+                        ) : null}
 
-                        <HasPermission entity={"page"} action={"delete"}>
-                            {!revision.locked ? (
-                                <>
-                                    <DropdownMenu.Separator />
-                                    <DropdownMenu.Item
-                                        onClick={() => deleteRevision()}
-                                        icon={<DeleteIcon />}
-                                        text={t`Delete revision`}
-                                        variant={"destructive"}
-                                    />
-                                </>
-                            ) : null}
-                        </HasPermission>
+                        {item.canUnpublish ? (
+                            <DropdownMenu.Item
+                                onClick={() => unpublishRevision()}
+                                data-testid={"page.revisionunpublish"}
+                                icon={<UnpublishIcon />}
+                                text={t`Unpublish revision`}
+                            />
+                        ) : null}
+
+                        {item.canDelete ? (
+                            <>
+                                <DropdownMenu.Separator />
+                                <DropdownMenu.Item
+                                    onClick={() => deleteRevision()}
+                                    icon={<DeleteIcon />}
+                                    text={t`Delete revision`}
+                                    variant={"destructive"}
+                                />
+                            </>
+                        ) : null}
                     </>
                 </DropdownMenu>
             }
