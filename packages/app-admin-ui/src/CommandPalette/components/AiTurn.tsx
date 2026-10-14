@@ -33,8 +33,8 @@ const AnswerError = ({ message }: { message: string }) => (
  * chat sidebar. Tables get rules and padding, since a list of models or entries often comes back as
  * one, and the compiler emits bare cells.
  *
- * The answer box is `neutral-subtle`, the same shade the shared defaults use for inline code and for
- * light rules, so both step one shade darker here to stay visible on it.
+ * The answer box is `neutral-light`, a shade darker than the shared defaults' inline code and light
+ * rules, so both step darker here to stay visible on it.
  */
 const ANSWER_CLASSES = [
     "leading-[24px] text-neutral-primary",
@@ -94,8 +94,8 @@ export interface AiTurnProps {
 }
 
 /*
- * The question is a bubble on the right. The answer sits in a light box on the left beside the
- * assistant's mark, holding only the text and the tools it ran. The approval card and the follow-ups
+ * The question is a bubble on the right. The answer sits in a filled box on the left, styled like
+ * the dashboard's `light` widget (fill and radius, no border), beside the assistant's mark, holding only the text and the tools it ran. The approval card and the follow-ups
  * go under the box, not in it: the approval card is a box of its own, and nesting it would be a card
  * inside a card. A failed turn shows the error block in place of the box, for the same reason.
  *
@@ -113,14 +113,14 @@ export const AiTurn = ({ turn, latest, busy, onApprove, onReject, onAsk }: AiTur
                 <Text
                     as="div"
                     size="md"
-                    className="max-w-[80%] rounded-lg rounded-br-xs bg-primary-subtle px-sm-extra py-xs-plus font-semibold text-pretty text-neutral-primary"
+                    className="max-w-[80%] rounded-xl rounded-br-xs bg-primary-subtle px-sm-extra py-xs-plus font-semibold text-pretty text-neutral-primary"
                 >
                     {turn.question}
                 </Text>
             </div>
 
             <div className="flex items-start gap-sm px-sm">
-                <span className="grid size-xl shrink-0 place-items-center rounded-full border border-neutral-dimmed bg-neutral-base">
+                <span className="grid size-xl shrink-0 place-items-center rounded-full bg-neutral-light">
                     <Icon icon={<AiIcon />} size="sm" label="Assistant" color="accent" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -130,7 +130,7 @@ export const AiTurn = ({ turn, latest, busy, onApprove, onReject, onAsk }: AiTur
                             <ToolTrace turn={turn} />
                         </>
                     ) : answer ? (
-                        <div className="rounded-lg border border-neutral-dimmed bg-neutral-subtle px-md py-sm-extra">
+                        <div className="rounded-xl bg-neutral-light px-md py-sm-extra">
                             {answer}
                             <ToolTrace turn={turn} />
                         </div>
