@@ -18,9 +18,9 @@ const ExtensionConfigImpl = CognitoIdpConfig.createImplementation({
 });
 
 /**
- * The handlers register CognitoIdpFeature in the root container, and extensions (which provide
- * CognitoIdpConfig, e.g. Entra ID) register in the per-request child container. The provider must
- * see the request's config.
+ * Extensions that provide CognitoIdpConfig (e.g. Entra ID) register in the per-request child
+ * container. Even when CognitoIdpFeature is registered in a parent container, the provider must see
+ * the request's config.
  */
 describe("CognitoIdentityProvider", () => {
     it("uses the CognitoIdpConfig registered in the request container", async () => {

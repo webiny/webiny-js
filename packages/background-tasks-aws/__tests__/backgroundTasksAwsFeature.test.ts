@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { BackgroundTasksAwsFeature } from "~/BackgroundTasksAwsFeature.js";
-import { BackgroundTaskEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/BackgroundTaskEventHandler.js";
+import { BackgroundTaskEventHandler } from "@webiny/event-handler-core";
 import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { AwsLambdaContext } from "@webiny/event-handler-aws/abstractions/AwsLambdaContext.js";

@@ -89,7 +89,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       UNSTABLE_VERSION: ${{ vars.UNSTABLE_VERSION }}
     steps:

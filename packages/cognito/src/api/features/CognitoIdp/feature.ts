@@ -4,9 +4,9 @@ import { CognitoIdentityProvider } from "./CognitoIdentityProvider.js";
 export const CognitoIdpFeature = createFeature({
     name: "CognitoIdp",
     register(container) {
-        // Registered in the root container, but its optional CognitoIdpConfig comes from extensions,
-        // which register per request. A container-scoped instance is built from the request
-        // container, so it sees that config; a singleton is built from the root and would not.
+        // Registered per request by CognitoApiFeature (the `<Cognito/>` extension). Container scoped:
+        // one provider per request, built from the request container, so it sees the optional
+        // CognitoIdpConfig that other extensions (e.g. Entra ID) register there.
         container.register(CognitoIdentityProvider).inContainerScope();
     }
 });

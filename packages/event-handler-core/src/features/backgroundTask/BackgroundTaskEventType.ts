@@ -1,6 +1,6 @@
-import { EventType } from "@webiny/event-handler-core";
-import type { IEventType } from "@webiny/event-handler-core";
-import { BackgroundTaskEventHandler } from "~/abstractions/handlers/BackgroundTaskEventHandler.js";
+import { EventType } from "~/features/events/EventType.js";
+import type { IEventType } from "~/features/events/EventType.js";
+import { BackgroundTaskEventHandler } from "./BackgroundTaskEventHandler.js";
 
 export interface IBackgroundTaskEvent {
     webinyTaskId: string;

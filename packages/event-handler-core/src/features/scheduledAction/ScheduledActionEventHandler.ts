@@ -1,6 +1,6 @@
 import { Abstraction } from "@webiny/di";
-import type { IEventHandler } from "@webiny/event-handler-core";
-import type { IScheduledActionEvent } from "~/eventTypes/ScheduledActionEventType.js";
+import type { IEventHandler } from "~/features/events/EventHandler.js";
+import type { IScheduledActionEvent } from "./ScheduledActionEventType.js";
 
 export interface IScheduledActionResult {
     success: boolean;

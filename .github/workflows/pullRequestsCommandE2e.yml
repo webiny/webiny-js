@@ -49,7 +49,7 @@ jobs:
         with:
           issue-number: ${{ github.event.issue.number }}
           body: >-
-            Cypress E2E tests have been initiated (for more information, click
+            E2E tests have been initiated (for more information, click
             [here](https://github.com/webiny/webiny-js/actions/runs/${{
             github.run_id }})). :sparkles:
 
@@ -80,6 +80,10 @@ jobs:
   baseBranch:
     needs: checkComment
     name: Get base branch
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: read
     outputs:
       base-branch: ${{ steps.base-branch.outputs.base-branch }}
       pr-sha: ${{ steps.pr-sha.outputs.pr-sha }}
@@ -91,14 +95,14 @@ jobs:
       - name: Get base branch
         id: base-branch
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json
           baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT
       - name: Get PR head SHA
         id: pr-sha
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json
           headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT
@@ -106,9 +110,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   constants:
     needs: baseBranch
     name: Create constants
@@ -146,11 +147,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -209,11 +210,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: List Cypress tests folders
         id: list-cypress-folders
         run: >-
@@ -239,6 +240,11 @@ jobs:
       - e2e-wby-cms-ddb-constants
       - checkComment
     name: E2E (DDB) - Project setup
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+      pull-requests: write
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
@@ -267,11 +273,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -387,7 +393,7 @@ jobs:
           2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
       - name: Update PR comment with admin URL
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
@@ -421,7 +427,7 @@ jobs:
       - name: Update PR comment - DDB passed
         if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
         run: >-
@@ -436,7 +442,7 @@ jobs:
       - name: Update PR comment - DDB failed
         if: failure()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
         run: >-
@@ -449,10 +455,6 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: write
-      id-token: write
   e2e-wby-cms-ddb-os-constants:
     needs:
       - baseBranch
@@ -471,11 +473,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: List Cypress tests folders
         id: list-cypress-folders
         run: >-
@@ -501,6 +503,11 @@ jobs:
       - e2e-wby-cms-ddb-os-constants
       - checkComment
     name: E2E (DDB-OS) - Project setup
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+      pull-requests: write
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
@@ -534,11 +541,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -670,7 +677,7 @@ jobs:
           2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
       - name: Update PR comment with admin URL
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
@@ -704,7 +711,7 @@ jobs:
       - name: Update PR comment - DDB+OS passed
         if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
         run: >-
@@ -719,7 +726,7 @@ jobs:
       - name: Update PR comment - DDB+OS failed
         if: failure()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
         run: >-
@@ -732,10 +739,6 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: write
-      id-token: write
   e2e-standalone-sqlite:
     needs:
       - baseBranch
@@ -743,6 +746,10 @@ jobs:
       - build
       - checkComment
     name: E2E - Standalone (SQLite)
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -752,11 +759,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -905,7 +912,7 @@ jobs:
       - name: Update PR comment - Standalone (SQLite) passed
         if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
@@ -919,7 +926,7 @@ jobs:
       - name: Update PR comment - Standalone (SQLite) failed
         if: failure()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
@@ -952,9 +959,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   e2e-standalone-postgres:
     needs:
       - baseBranch
@@ -962,6 +966,10 @@ jobs:
       - build
       - checkComment
     name: E2E - Standalone (Postgres)
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     services:
       postgres:
         image: postgres:17
@@ -983,11 +991,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1138,7 +1146,7 @@ jobs:
       - name: Update PR comment - Standalone (Postgres) passed
         if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
@@ -1152,7 +1160,7 @@ jobs:
       - name: Update PR comment - Standalone (Postgres) failed
         if: failure()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
@@ -1185,9 +1193,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   e2e-standalone-sqlite-wcp:
     needs:
       - baseBranch
@@ -1195,6 +1200,10 @@ jobs:
       - build
       - checkComment
     name: E2E - Standalone (SQLite, WCP)
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -1204,11 +1213,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1383,7 +1392,7 @@ jobs:
       - name: Update PR comment - Standalone (SQLite, WCP) passed
         if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
@@ -1397,7 +1406,7 @@ jobs:
       - name: Update PR comment - Standalone (SQLite, WCP) failed
         if: failure()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
@@ -1430,9 +1439,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
     if: >-
       ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
       }}
@@ -1443,6 +1449,10 @@ jobs:
       - build
       - checkComment
     name: E2E - Standalone (Postgres, WCP)
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     services:
       postgres:
         image: postgres:17
@@ -1464,11 +1474,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1645,7 +1655,7 @@ jobs:
       - name: Update PR comment - Standalone (Postgres, WCP) passed
         if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
@@ -1659,7 +1669,7 @@ jobs:
       - name: Update PR comment - Standalone (Postgres, WCP) failed
         if: failure()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
@@ -1692,9 +1702,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
     if: >-
       ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
       }}

@@ -27,7 +27,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     command: "e2e",
     name: "💬 PR Command - E2E",
     comment: [
-        "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
+        "E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
         "",
         "| Database | Status | Admin URL |",
         "| --- | --- | --- |",
@@ -48,6 +48,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         baseBranch: createJob({
             needs: "checkComment",
             name: "Get base branch",
+            permissions: { "pull-requests": "read" },
             outputs: {
                 "base-branch": "${{ steps.base-branch.outputs.base-branch }}",
                 "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}"
@@ -56,7 +57,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                 {
                     name: "Get base branch",
                     id: "base-branch",
-                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" },
                     run: 'echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT'
                 },
                 {
@@ -67,7 +68,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                     // the test jobs run against another.
                     name: "Get PR head SHA",
                     id: "pr-sha",
-                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" },
                     run: 'echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT'
                 }
             ]

@@ -78,6 +78,8 @@ export const createAwsJobs = (dbSetup: string) => {
     const projectSetupJob: NormalJob = createJob({
         needs: ["baseBranch", "constants", jobNames.constants, "checkComment"],
         name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
+        // Writes the admin URL and the result into the status comment.
+        permissions: { "pull-requests": "write" },
         outputs: {
             "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
         },
@@ -194,7 +196,7 @@ export const createAwsJobs = (dbSetup: string) => {
             {
                 name: "Update PR comment with admin URL",
                 env: {
-                    GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}",
+                    GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
                     ADMIN_URL: `\${{ steps.admin-url.outputs.admin-url }}`,
                     COMMENT_ID: `\${{ needs.checkComment.outputs.comment-id }}`
                 },

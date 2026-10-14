@@ -1,6 +1,6 @@
 import { Abstraction } from "@webiny/di";
-import type { IEventHandler } from "@webiny/event-handler-core";
-import type { IBackgroundTaskEvent } from "~/eventTypes/BackgroundTaskEventType.js";
+import type { IEventHandler } from "~/features/events/EventHandler.js";
+import type { IBackgroundTaskEvent } from "./BackgroundTaskEventType.js";
 
 // Result is the task response (status: continue/done/error) — the Step Functions state machine
 // reads `$.status` from the Lambda's return value to decide the next state, so the handler MUST

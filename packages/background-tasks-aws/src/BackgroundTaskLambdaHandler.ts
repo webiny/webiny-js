@@ -1,13 +1,13 @@
 import type { Container } from "@webiny/feature/api";
 import { AwsLambdaContext } from "@webiny/event-handler-aws/abstractions/AwsLambdaContext.js";
-import { BackgroundTaskEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/BackgroundTaskEventHandler.js";
+import { BackgroundTaskEventHandler } from "@webiny/event-handler-core";
 import { RequestContainer } from "@webiny/event-handler-core";
 import {
     RawTenantId,
     RequestTenantLoader
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
-import type { IBackgroundTaskEvent } from "@webiny/event-handler-aws/eventTypes/BackgroundTaskEventType.js";
+import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
 import { TaskRunner } from "@webiny/background-tasks/api/runner/index.js";
 import { TaskEventValidation } from "@webiny/background-tasks/api/runner/TaskEventValidation.js";
 import type { Context } from "@webiny/background-tasks/api/types.js";

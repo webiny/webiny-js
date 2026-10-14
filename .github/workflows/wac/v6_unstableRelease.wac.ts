@@ -66,7 +66,6 @@ export const v6_unstableRelease = createWorkflow({
             needs: ["constants", "build"],
             name: 'NPM release ("unstable" tag)',
             env: {
-                GH_TOKEN: "${{ secrets.GH_TOKEN }}",
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
                 UNSTABLE_VERSION: "${{ vars.UNSTABLE_VERSION }}"
             },
