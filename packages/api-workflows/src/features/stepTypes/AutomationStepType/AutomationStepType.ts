@@ -1,11 +1,9 @@
 import { Result } from "@webiny/feature/api";
-import {
-    AuthenticatedIdentity,
-    IdentityContext
-} from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { getAutomationActor } from "~/domain/automation/getAutomationActor.js";
+import { getRequesterIdentity } from "~/domain/automation/getRequesterIdentity.js";
 import { STEP_RUN_TASK_DEFINITION_ID } from "~/features/stepRun/constants.js";
 import type { StepRunTaskInput } from "~/features/stepRun/types.js";
 import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortService/index.js";
@@ -24,7 +22,8 @@ const fail = (message: string) => {
 /**
  * The built-in automation step (spec 7.2, R133): runs a developer-written `AutomationDefinition`
  * chosen by `config.automationId`. Save-time validation checks the definition exists, covers the
- * workflow's models and accepts the settings (D35, D37, R137). `reach` triggers the run task as the requester (R149).
+ * workflow's models and accepts the settings (D35, D37, R137). `reach` triggers the run task as
+ * the requester (R149).
  */
 class AutomationStepTypeImpl implements StepType.Interface {
     public readonly type = AUTOMATION_STEP_TYPE;
@@ -109,12 +108,7 @@ class AutomationStepTypeImpl implements StepType.Interface {
         let taskId: string | null = null;
         if (reason === null) {
             const input: StepRunTaskInput = { reviewId: data.id, stepId: step.id };
-            const identity = new AuthenticatedIdentity({
-                id: requester.id,
-                displayName: requester.displayName,
-                type: requester.identityType ?? "admin",
-                context: { canAccessTenant: true }
-            });
+            const identity = getRequesterIdentity(requester);
             try {
                 const triggered = await this.identityContext.withIdentity(identity, () => {
                     return this.taskService.trigger({

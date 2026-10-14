@@ -3,13 +3,11 @@ import {
     TaskHandler,
     type TaskDefinition
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import {
-    AuthenticatedIdentity,
-    IdentityContext
-} from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { automationStepConfigSchema } from "~/domain/automation/automationStepConfigSchema.js";
 import { getAutomationActor } from "~/domain/automation/getAutomationActor.js";
+import { getRequesterIdentity } from "~/domain/automation/getRequesterIdentity.js";
 import { parseAutomationSettings } from "~/domain/automation/parseAutomationSettings.js";
 import { Review, REJECT_COMMENT_MIN_LENGTH } from "~/domain/review/Review.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
@@ -106,12 +104,7 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
         // identity explicit (attribution only) and does not switch authorization back on, so the
         // requester's permissions are not applied.
         const requester = data.createdBy;
-        const identity = new AuthenticatedIdentity({
-            id: requester.id,
-            displayName: requester.displayName,
-            type: requester.identityType ?? "admin",
-            context: { canAccessTenant: true }
-        });
+        const identity = getRequesterIdentity(requester);
 
         return this.identityContext.withIdentity(identity, async () => {
             try {
