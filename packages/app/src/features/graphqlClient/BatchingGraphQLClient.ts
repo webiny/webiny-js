@@ -1,6 +1,8 @@
 import { createDecorator } from "@webiny/di";
 import { GraphQLClient } from "./abstractions.js";
 import { RequestValue } from "~/features/graphqlClient/RequestValue.js";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
+import { publishExtensions } from "./publishExtensions.js";
 
 interface BatchedRequest {
     request: RequestValue;
@@ -20,7 +22,10 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
     private readonly batchWindowMs: number;
     private readonly maxBatchSize: number;
 
-    constructor(private decoratee: GraphQLClient.Interface) {
+    constructor(
+        private eventPublisher: EventPublisher.Interface,
+        private decoratee: GraphQLClient.Interface
+    ) {
         // Default: 10ms window, max 10 operations per batch
         this.batchWindowMs = 10;
         this.maxBatchSize = 10;
@@ -165,6 +170,19 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
             throw new Error("Expected batch response to be an array");
         }
 
+        /*
+         * The batch went out in one request, so it bypassed the decoratee that would otherwise have
+         * announced each response's extensions. Announced before the error handling below, which
+         * can fail the whole batch: a failed operation is exactly the one whose debug data is wanted.
+         */
+        for (const [index, result] of json.entries()) {
+            await publishExtensions(this.eventPublisher, {
+                endpoint,
+                operationName: operations[index]?.operationName,
+                extensions: result?.extensions
+            });
+        }
+
         // Map each result, handling individual errors. As with the non-batched client, a result
         // may carry both `data` and `errors` (partial success); we only fail an operation when it
         // produced no data at all, otherwise the partial payload is handed back to its caller.
@@ -182,5 +200,5 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
 export const BatchingGraphQLClient = createDecorator({
     abstraction: GraphQLClient,
     decorator: BatchingGraphQLClientImpl,
-    dependencies: []
+    dependencies: [EventPublisher]
 });

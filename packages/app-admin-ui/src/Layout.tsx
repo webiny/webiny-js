@@ -3,6 +3,7 @@ import Helmet from "react-helmet";
 import type { LayoutProps } from "@webiny/app-admin";
 import { AssumedPermissionsSelector } from "@webiny/app-admin";
 import { BannerBar } from "@webiny/app-admin";
+import { DebuggerIndicator } from "@webiny/app-admin";
 import { LayoutRenderer } from "@webiny/app-admin";
 import { Navigation } from "@webiny/app-admin";
 import { TenantSelector } from "@webiny/app-admin";
@@ -82,6 +83,7 @@ const LayoutContent = ({
                     }
                     end={
                         <div className={"flex gap-x-sm items-center justify-end"}>
+                            <DebuggerIndicator />
                             <TenantSelector />
                             <AssumedPermissionsSelector />
                             <UserMenu />
