@@ -20,6 +20,9 @@ class SettingsFileUrlPrefixProviderImpl implements Abstraction.Interface {
 
     private async loadPrefix(): Promise<string> {
         const result = await this.getSettings.execute();
+        if (result.isFail()) {
+            throw result.error;
+        }
         return result.value?.srcPrefix ?? "";
     }
 }

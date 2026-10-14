@@ -50,6 +50,9 @@ class EmptyTrashBinTaskHandlerImpl implements TaskHandler.Interface<
 
         // Fetch all tenants, excluding those already processed.
         const tenantsResult = await this.listTenants.execute();
+        if (tenantsResult.isFail()) {
+            return controller.response.error(tenantsResult.error);
+        }
         const baseTenants = tenantsResult.value;
         const executedTenantIds = input.executedTenantIds || [];
         const tenants = baseTenants.filter(tenant => !executedTenantIds.includes(tenant.id));
@@ -70,6 +73,13 @@ class EmptyTrashBinTaskHandlerImpl implements TaskHandler.Interface<
 
             // List all non-private models.
             const modelsResult = await this.listModels.execute({ includePrivate: false });
+            if (modelsResult.isFail()) {
+                await controller.logger.error({
+                    message: `Failed to list models for tenant "${tenant.id}".`,
+                    error: modelsResult.error
+                });
+                return;
+            }
             const models = modelsResult.value;
 
             // Process each model to delete trashed entries.
@@ -88,6 +98,13 @@ class EmptyTrashBinTaskHandlerImpl implements TaskHandler.Interface<
                         model,
                         listEntriesParams
                     );
+                    if (listResult.isFail()) {
+                        await controller.logger.error({
+                            message: `Failed to list deleted entries of model "${model.modelId}".`,
+                            error: listResult.error
+                        });
+                        break;
+                    }
                     const { entries, meta } = listResult.value;
 
                     if (meta.totalCount === 0) {
