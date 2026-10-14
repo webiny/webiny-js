@@ -28,6 +28,7 @@ import { ListDeletedPagesFeature } from "./features/pages/ListDeletedPages/featu
 import { CreatePageFeature } from "./features/pages/CreatePage/feature.js";
 import { CreatePageRevisionFromFeature } from "./features/pages/CreatePageRevisionFrom/feature.js";
 import { DeletePageFeature } from "./features/pages/DeletePage/feature.js";
+import { DeletePageRevisionFeature } from "./features/pages/DeletePageRevision/feature.js";
 import { TrashPageFeature } from "./features/pages/TrashPage/feature.js";
 import { RestorePageFeature } from "./features/pages/RestorePage/feature.js";
 import { UpdatePageFeature } from "./features/pages/UpdatePage/feature.js";
@@ -104,6 +105,7 @@ export const WebsiteBuilderFeature = createFeature({
         CreatePageFeature.register(container);
         CreatePageRevisionFromFeature.register(container);
         DeletePageFeature.register(container);
+        DeletePageRevisionFeature.register(container);
         TrashPageFeature.register(container);
         RestorePageFeature.register(container);
         UpdatePageFeature.register(container);

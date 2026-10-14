@@ -13,6 +13,7 @@ import { ListPagesUseCase } from "~/features/pages/ListPages/index.js";
 import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
 import { UpdatePageUseCase } from "~/features/pages/UpdatePage/index.js";
 import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
+import { DeletePageRevisionUseCase } from "~/features/pages/DeletePageRevision/index.js";
 import { PublishPageUseCase } from "~/features/pages/PublishPage/index.js";
 import { UnpublishPageUseCase } from "~/features/pages/UnpublishPage/index.js";
 import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
@@ -377,6 +378,26 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     ensureAuthentication(context);
                     const deletePage = args.permanently ? deletePageUseCase : trashPageUseCase;
                     const result = await deletePage.execute({
+                        id: args.id
+                    });
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return true;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.deletePageRevision",
+        dependencies: [DeletePageRevisionUseCase],
+        resolver(deletePageRevision) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await deletePageRevision.execute({
                         id: args.id
                     });
 
