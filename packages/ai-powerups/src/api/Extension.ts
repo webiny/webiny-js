@@ -21,6 +21,7 @@ import { CmsResolveImageToolFeature } from "./features/CmsResolveImageTool/featu
 import { AdminAssistantFeature } from "./features/AdminAssistant/index.js";
 import { CmsCompareEntryRevisionsFeature } from "./features/CmsCompareEntryRevisions/feature.js";
 import { WbTranslatePageFeature } from "./features/WbTranslatePage/feature.js";
+import { SeedTenantSettingsFeature } from "./features/SeedTenantSettings/feature.js";
 import { CmsCompareEntryRevisionsSchema } from "./graphql/CmsCompareEntryRevisionsSchema.js";
 
 export const Extension = createFeature({
@@ -49,6 +50,7 @@ export const Extension = createFeature({
 
         GetSettingsFeature.register(container);
         UpdateSettingsFeature.register(container);
+        SeedTenantSettingsFeature.register(container);
         /*
          * `ProvidersFeature` is still registered so the legacy `providers` section keeps round-
          * tripping through storage. `Connections` and `ModelRoles` read it once to seed
