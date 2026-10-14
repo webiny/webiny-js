@@ -23,10 +23,6 @@ export const ObjectRenderer = createObjectFieldRenderer<"objectAccordionSingle">
     const settings = field.rendererSettings;
     const formatters = useFieldValueFormatters();
 
-    if (settings?.container === false) {
-        return <NestedLayout layout={field.layout} />;
-    }
-
     // Force the object accordion open when a focus request lands anywhere in
     // its subtree, so "jump to field" can cascade through collapsed levels.
     const focusInside = hasSubtreeFocusRequest(field.fields);
@@ -36,6 +32,10 @@ export const ObjectRenderer = createObjectFieldRenderer<"objectAccordionSingle">
             setOpen(true);
         }
     }, [focusInside]);
+
+    if (settings?.container === false) {
+        return <NestedLayout layout={field.layout} />;
+    }
 
     return (
         <Accordion background={"base"} variant={"container"}>
