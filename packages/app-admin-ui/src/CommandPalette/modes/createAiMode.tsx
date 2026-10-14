@@ -3,14 +3,7 @@ import type { AdminAssistantPresenter } from "@webiny/app-admin";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
 import { ReactComponent as BackspaceIcon } from "@webiny/icons/backspace.svg";
-import {
-    AiModeBadge,
-    AiSuggestions,
-    AiTurn,
-    HintIcon,
-    type AiTurnAsker,
-    type Hint
-} from "../components/index.js";
+import { AiModeBadge, AiSuggestions, AiTurn, HintIcon, type Hint } from "../components/index.js";
 import type { PaletteMode, PaletteModeKeyContext } from "./PaletteMode.js";
 
 const HINTS: Hint[] = [
@@ -41,10 +34,7 @@ const modelLabel = (model: string | undefined): string => {
  * reactive component's render tracks the presenter's observables and re-renders on a new turn, with
  * no dependency arrays to keep honest.
  */
-export const createAiMode = (
-    presenter: AdminAssistantPresenter.Interface,
-    asker: AiTurnAsker
-): PaletteMode => ({
+export const createAiMode = (presenter: AdminAssistantPresenter.Interface): PaletteMode => ({
     get appearance() {
         const started = presenter.vm.turns.length > 0;
 
@@ -71,7 +61,6 @@ export const createAiMode = (
             <AiTurn
                 key={index}
                 turn={turn}
-                asker={asker}
                 busy={busy}
                 onApprove={() => presenter.decide(index, true)}
                 onReject={() => presenter.decide(index, false)}

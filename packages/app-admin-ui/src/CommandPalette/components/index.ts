@@ -5,7 +5,7 @@ export { HintIcon } from "./HintIcon.js";
 export { Kbd } from "./Kbd.js";
 export { AiModeBadge } from "./AiModeBadge.js";
 export { AiSuggestions, AI_SUGGESTIONS } from "./AiSuggestions.js";
-export { AiTurn, type AiTurnAsker } from "./AiTurn.js";
+export { AiTurn } from "./AiTurn.js";
 export { ApprovalPlan } from "./ApprovalPlan.js";
 export { AnswerSkeleton } from "./AnswerSkeleton.js";
 export { NoResults } from "./NoResults.js";

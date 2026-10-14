@@ -1,5 +1,5 @@
 import React from "react";
-import { Avatar, Icon, Markdown, Text } from "@webiny/admin-ui";
+import { Icon, Markdown, Text } from "@webiny/admin-ui";
 import { ReactComponent as ErrorIcon } from "@webiny/icons/error.svg";
 import type { AiTurnViewModel } from "@webiny/app-admin";
 import { ToolChip } from "./ToolChip.js";
@@ -8,13 +8,6 @@ import { FollowUps } from "./FollowUps.js";
 import { AnswerSkeleton } from "./AnswerSkeleton.js";
 import { ApprovalPlan } from "./ApprovalPlan.js";
 import { toolState } from "./toolState.js";
-
-/** Who asked, for the avatar beside each question. */
-export interface AiTurnAsker {
-    /** First letter of the name, shown when there is no picture. */
-    initial: string;
-    avatarSrc?: string;
-}
 
 /**
  * Its own block rather than red text, so a failure reads as the outcome of the turn and not as part
@@ -75,7 +68,6 @@ const renderAnswer = (turn: AiTurnViewModel) => {
 
 export interface AiTurnProps {
     turn: AiTurnViewModel;
-    asker: AiTurnAsker;
     busy: boolean;
     onApprove: () => void;
     onReject: () => void;
@@ -83,28 +75,25 @@ export interface AiTurnProps {
 }
 
 /*
+ * The question is a bubble on the right and the answer is plain text on the left, the same split as
+ * the AI chat sidebar, so the two read as one product. A bubble also tells the user's words from the
+ * assistant's at a glance, which an avatar beside a left-aligned question did not.
+ *
  * Tools show in two places, never both. While the turn runs, chips above the answer show the work in
  * progress. Once it settles, they fold into one "Ran" line under it.
  */
-export const AiTurn = ({ turn, asker, busy, onApprove, onReject, onAsk }: AiTurnProps) => {
+export const AiTurn = ({ turn, busy, onApprove, onReject, onAsk }: AiTurnProps) => {
     const showLiveTools = !turn.settled && turn.tools.length > 0;
     const showFollowUps = turn.settled && !turn.error && turn.pendingApprovals.length === 0;
 
     return (
         <div className="mb-md">
-            <div className="flex items-start gap-sm px-sm pb-sm">
-                <Avatar
-                    size="sm"
-                    variant="light"
-                    className="shrink-0 rounded-full"
-                    image={<Avatar.Image src={asker.avatarSrc} />}
-                    fallback={
-                        <Avatar.Fallback className="text-xs uppercase" delayMs={0}>
-                            {asker.initial}
-                        </Avatar.Fallback>
-                    }
-                />
-                <Text as="div" size="md" className="pt-xxs font-semibold text-neutral-primary">
+            <div className="flex justify-end px-sm pb-sm">
+                <Text
+                    as="div"
+                    size="md"
+                    className="max-w-[80%] rounded-lg bg-primary-subtle px-sm-extra py-xs-plus font-semibold text-neutral-primary"
+                >
                     {turn.question}
                 </Text>
             </div>

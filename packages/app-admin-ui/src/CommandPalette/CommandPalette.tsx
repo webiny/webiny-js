@@ -5,8 +5,7 @@ import {
     CommandPaletteFeature,
     createReactiveComponent,
     useAdminConfig,
-    useFeatureFlags,
-    useIdentity
+    useFeatureFlags
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
@@ -59,13 +58,7 @@ const CommandPaletteBase = () => {
      * registry; nothing above this line has to change for that.
      */
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
-    const { identity } = useIdentity();
-    const askerName = identity?.profile?.firstName || identity?.displayName || "";
-    const askerAvatar = identity?.profile?.avatar?.src;
-    const aiMode = useMemo(
-        () => createAiMode(assistant, { initial: askerName[0] ?? "", avatarSrc: askerAvatar }),
-        [assistant, askerName, askerAvatar]
-    );
+    const aiMode = useMemo(() => createAiMode(assistant), [assistant]);
 
     /*
      * The assistant is licensed separately, and the api registers no route without it. Checked here
