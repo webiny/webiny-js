@@ -161,7 +161,11 @@ const WB_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
             picks: [WorkflowsReviewPickInput!]
         ): WbPageReviewResponse!
         startWebsiteBuilderPageReviewStep(reviewId: ID!, stepId: ID!): WbPageReviewResponse!
-        takeOverWebsiteBuilderPageReviewStep(reviewId: ID!, stepId: ID!): WbPageReviewResponse!
+        takeOverWebsiteBuilderPageReviewStep(
+            reviewId: ID!
+            stepId: ID!
+            notifyPreviousOwner: Boolean = true
+        ): WbPageReviewResponse!
         reassignWebsiteBuilderPageReviewStep(
             reviewId: ID!
             stepId: ID!
@@ -366,7 +370,8 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                 return async ({ args }) => {
                     const result = await takeOverStep.execute({
                         reviewId: args.reviewId,
-                        stepId: args.stepId
+                        stepId: args.stepId,
+                        notifyPreviousOwner: args.notifyPreviousOwner
                     });
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);

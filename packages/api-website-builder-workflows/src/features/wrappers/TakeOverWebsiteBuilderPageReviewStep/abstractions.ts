@@ -6,6 +6,8 @@ import type { WbPageReviewGuardService } from "../WbPageReviewGuardService/index
 export interface TakeOverWebsiteBuilderPageReviewStepInput {
     reviewId: string;
     stepId: string;
+    /** D111: whether the previous owner is told; omitted means true. */
+    notifyPreviousOwner?: boolean;
 }
 
 export interface ITakeOverWebsiteBuilderPageReviewStepUseCaseErrors {

@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import type { Container } from "@webiny/di";
 import { createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow.js";
 import { createAuthorEntry, createModelEntry, expectOk } from "~tests/__helpers/entries.js";
 import { requestEntryReview, STEP_ID } from "~tests/__helpers/engine.js";
@@ -16,6 +17,10 @@ import {
 import { CMS_READER, CMS_WRITER, WORKFLOWS_EDITOR } from "~tests/__helpers/permissions.js";
 import { createGraphQLClient, type GraphQLClient } from "~tests/__helpers/graphql.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
+import {
+    RecordingEventPublisher,
+    recordedEvents
+} from "~tests/__helpers/RecordingEventPublisher.js";
 import { createExtraModelPlugins } from "~tests/__cms/extraModels.js";
 
 const ERROR = "error { code message data }";
@@ -174,9 +179,13 @@ const START_STEP = /* GraphQL */ `
 `;
 
 const TAKE_OVER_STEP = /* GraphQL */ `
-    mutation TakeOverStep($reviewId: ID!, $stepId: ID!) {
+    mutation TakeOverStep($reviewId: ID!, $stepId: ID!, $notifyPreviousOwner: Boolean) {
         cms {
-            takeOverCmsEntryReviewStep(reviewId: $reviewId, stepId: $stepId) {
+            takeOverCmsEntryReviewStep(
+                reviewId: $reviewId
+                stepId: $stepId
+                notifyPreviousOwner: $notifyPreviousOwner
+            ) {
                 data { ${REVIEW} }
                 ${ERROR}
             }
@@ -711,6 +720,65 @@ describe("CMS workflows GraphQL", () => {
         });
         expect(takenOver.takeOverCmsEntryReviewStep.data.currentOwnerId).toBe(OTHER_REVIEWER.id);
         expect(approved.approveCmsEntryReviewStep.data.state).toBe("approved");
+    });
+
+    describe("take over notifyPreviousOwner (D111)", () => {
+        const recorder = (container: Container) => {
+            container.registerDecorator(RecordingEventPublisher);
+        };
+
+        /** The reviewer starts the step, then OTHER_REVIEWER takes it over with the given variables. */
+        const startThenTakeOver = async (variables: Record<string, unknown>) => {
+            const { review } = await createScenario();
+            const reviewer = createGraphQLClient({
+                identity: REVIEWER,
+                permissions: CMS_READER,
+                legacyPlugins: [recorder]
+            });
+            const otherReviewer = createGraphQLClient({
+                identity: OTHER_REVIEWER,
+                permissions: CMS_READER,
+                legacyPlugins: [recorder]
+            });
+            const step = { reviewId: review.id, stepId: STEP_ID };
+            await run(reviewer, START_STEP, step);
+            recordedEvents.length = 0;
+            return run(otherReviewer, TAKE_OVER_STEP, { ...step, ...variables });
+        };
+
+        const takenOverFlags = () => {
+            return recordedEvents
+                .filter(event => event.eventType === "Workflows/Review/StepTakenOver")
+                .map(event => event.payload.fact.notifyPreviousOwner);
+        };
+
+        it("is true when the argument is omitted", async () => {
+            const result = await startThenTakeOver({});
+
+            expect(result.takeOverCmsEntryReviewStep.error).toBeNull();
+            expect(takenOverFlags()).toEqual([true]);
+        });
+
+        it("is true when the argument is explicitly true", async () => {
+            const result = await startThenTakeOver({ notifyPreviousOwner: true });
+
+            expect(result.takeOverCmsEntryReviewStep.error).toBeNull();
+            expect(takenOverFlags()).toEqual([true]);
+        });
+
+        it("is false when the argument is false", async () => {
+            const result = await startThenTakeOver({ notifyPreviousOwner: false });
+
+            expect(result.takeOverCmsEntryReviewStep.error).toBeNull();
+            expect(takenOverFlags()).toEqual([false]);
+        });
+
+        it("is true when the argument is explicitly null", async () => {
+            const result = await startThenTakeOver({ notifyPreviousOwner: null });
+
+            expect(result.takeOverCmsEntryReviewStep.error).toBeNull();
+            expect(takenOverFlags()).toEqual([true]);
+        });
     });
 
     it("rejects a step only with a comment of at least 10 characters (R90)", async () => {

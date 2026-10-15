@@ -187,7 +187,11 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
             picks: [WorkflowsReviewPickInput!]
         ): CmsEntryReviewResponse!
         startCmsEntryReviewStep(reviewId: ID!, stepId: ID!): CmsEntryReviewResponse!
-        takeOverCmsEntryReviewStep(reviewId: ID!, stepId: ID!): CmsEntryReviewResponse!
+        takeOverCmsEntryReviewStep(
+            reviewId: ID!
+            stepId: ID!
+            notifyPreviousOwner: Boolean = true
+        ): CmsEntryReviewResponse!
         reassignCmsEntryReviewStep(reviewId: ID!, stepId: ID!, userId: ID!): CmsEntryReviewResponse!
         restartCmsEntryReviewStep(reviewId: ID!, stepId: ID!): CmsEntryReviewResponse!
         approveCmsEntryReviewStep(
@@ -408,7 +412,8 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                 return async ({ args }) => {
                     const result = await takeOverStep.execute({
                         reviewId: args.reviewId,
-                        stepId: args.stepId
+                        stepId: args.stepId,
+                        notifyPreviousOwner: args.notifyPreviousOwner
                     });
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);

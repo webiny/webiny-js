@@ -38,6 +38,10 @@ import {
     throwingTargetRevisions
 } from "~tests/__helpers/ScriptedTargetReads.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
+import {
+    RecordingEventPublisher,
+    recordedEvents
+} from "~tests/__helpers/RecordingEventPublisher.js";
 import { RequestCmsEntryReviewUseCase } from "~/features/wrappers/RequestCmsEntryReview/index.js";
 import { GetCmsEntryReviewUseCase } from "~/features/wrappers/GetCmsEntryReview/index.js";
 import { StartCmsEntryReviewStepUseCase } from "~/features/wrappers/StartCmsEntryReviewStep/index.js";
@@ -538,5 +542,70 @@ describe("API keys in CMS reviews (D133 point 5, R79)", () => {
         expect(result.error.data).toEqual({ action: "cancel a review requested by someone else" });
         const stored = expectOk(await view(admin, review.id));
         expect(stored.review.state).toBe("inProgress");
+    });
+});
+
+describe("CMS take over wrapper: notifyPreviousOwner (D111, R198)", () => {
+    /** One recording context as OTHER_REVIEWER, shared by the three cases below. */
+    const recorder = (container: Container) => {
+        container.registerDecorator(RecordingEventPublisher);
+    };
+
+    /** The reviewer starts the step, then OTHER_REVIEWER takes it over with the given flag (omitted when undefined). */
+    const startThenTakeOver = async (notifyPreviousOwner?: boolean) => {
+        const { review } = await createScenario();
+        const reviewer = await createUserContext({ identity: REVIEWER, permissions: CMS_READER });
+        expectOk(
+            await reviewer.container
+                .resolve(StartCmsEntryReviewStepUseCase)
+                .execute({ reviewId: review.id, stepId: STEP_ID })
+        );
+        recordedEvents.length = 0;
+        const taker = await createUserContext({
+            identity: OTHER_REVIEWER,
+            permissions: CMS_READER,
+            legacyPlugins: [scriptTargetReads, throwOnAccessChecks, recorder]
+        });
+        return taker.container.resolve(TakeOverCmsEntryReviewStepUseCase).execute({
+            reviewId: review.id,
+            stepId: STEP_ID,
+            ...(notifyPreviousOwner === undefined ? {} : { notifyPreviousOwner })
+        });
+    };
+
+    const takenOverFacts = () => {
+        return recordedEvents
+            .filter(event => event.eventType === "Workflows/Review/StepTakenOver")
+            .map(event => event.payload.fact);
+    };
+
+    afterEach(() => {
+        throwingAccessChecks.clear();
+        throwingTargetRevisions.clear();
+    });
+
+    it("notifies the previous owner when the argument is omitted", async () => {
+        const result = await startThenTakeOver();
+
+        expect(result.isOk()).toBe(true);
+        expect(takenOverFacts()).toMatchObject([
+            { previousOwner: toActor(REVIEWER), notifyPreviousOwner: true }
+        ]);
+    });
+
+    it("passes an explicit true to the fact", async () => {
+        const result = await startThenTakeOver(true);
+
+        expect(result.isOk()).toBe(true);
+        expect(takenOverFacts()).toMatchObject([{ notifyPreviousOwner: true }]);
+    });
+
+    it("passes false to the fact and still takes the step over", async () => {
+        const result = await startThenTakeOver(false);
+
+        expect(expectOk(result).steps[0].owner).toEqual(toActor(OTHER_REVIEWER));
+        expect(takenOverFacts()).toMatchObject([
+            { previousOwner: toActor(REVIEWER), notifyPreviousOwner: false }
+        ]);
     });
 });

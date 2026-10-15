@@ -23,7 +23,8 @@ class TakeOverWebsiteBuilderPageReviewStepUseCaseImpl implements UseCase.Interfa
             reviewId: input.reviewId,
             stepId: input.stepId,
             actor: viewer.actor,
-            actorTeamIds: viewer.teamIds
+            actorTeamIds: viewer.teamIds,
+            notifyPreviousOwner: input.notifyPreviousOwner ?? true
         });
     }
 }

@@ -23,7 +23,8 @@ class TakeOverCmsEntryReviewStepUseCaseImpl implements UseCase.Interface {
             reviewId: input.reviewId,
             stepId: input.stepId,
             actor: viewer.actor,
-            actorTeamIds: viewer.teamIds
+            actorTeamIds: viewer.teamIds,
+            notifyPreviousOwner: input.notifyPreviousOwner ?? true
         });
     }
 }

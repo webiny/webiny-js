@@ -6,6 +6,8 @@ import type { CmsEntryReviewGuardService } from "../CmsEntryReviewGuardService/i
 export interface TakeOverCmsEntryReviewStepInput {
     reviewId: string;
     stepId: string;
+    /** D111: whether the previous owner is told; omitted means true. */
+    notifyPreviousOwner?: boolean;
 }
 
 export interface ITakeOverCmsEntryReviewStepUseCaseErrors {

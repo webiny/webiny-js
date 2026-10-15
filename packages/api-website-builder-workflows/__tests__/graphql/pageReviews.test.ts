@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import type { Container } from "@webiny/di";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createPage } from "~tests/__helpers/pages.js";
 import {
@@ -21,6 +22,10 @@ import {
 } from "~tests/__helpers/identities.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
+import {
+    RecordingEventPublisher,
+    recordedEvents
+} from "~tests/__helpers/RecordingEventPublisher.js";
 import {
     APPROVE_STEP,
     asGraphQLUser,
@@ -266,6 +271,66 @@ describe("WB review operations through GraphQL", () => {
         expect(approveResult.error).toBeNull();
         expect(approveResult.data.state).toBe("approved");
         expect(approveResult.data.steps[0].comment).toBe("Looks good.");
+    });
+
+    describe("take over notifyPreviousOwner (D111)", () => {
+        const recorder = (container: Container) => {
+            container.registerDecorator(RecordingEventPublisher);
+        };
+
+        /** The reviewer starts the step, then OTHER_REVIEWER takes it over with the given variables. */
+        const startThenTakeOver = async (variables: Record<string, unknown>) => {
+            const { review } = await createScenario();
+            const reviewer = asGraphQLUser({
+                identity: REVIEWER,
+                permissions: WB_READER,
+                legacyPlugins: [recorder]
+            });
+            const otherReviewer = asGraphQLUser({
+                identity: OTHER_REVIEWER,
+                permissions: WB_READER,
+                legacyPlugins: [recorder]
+            });
+            const step = { reviewId: review.id, stepId: STEP_ID };
+            await reviewer.run(START_STEP, step);
+            recordedEvents.length = 0;
+            const body = await otherReviewer.run(TAKE_OVER_STEP, { ...step, ...variables });
+            return body.data.websiteBuilder.takeOverWebsiteBuilderPageReviewStep;
+        };
+
+        const takenOverFlags = () => {
+            return recordedEvents
+                .filter(event => event.eventType === "Workflows/Review/StepTakenOver")
+                .map(event => event.payload.fact.notifyPreviousOwner);
+        };
+
+        it("is true when the argument is omitted", async () => {
+            const result = await startThenTakeOver({});
+
+            expect(result.error).toBeNull();
+            expect(takenOverFlags()).toEqual([true]);
+        });
+
+        it("is true when the argument is explicitly true", async () => {
+            const result = await startThenTakeOver({ notifyPreviousOwner: true });
+
+            expect(result.error).toBeNull();
+            expect(takenOverFlags()).toEqual([true]);
+        });
+
+        it("is false when the argument is false", async () => {
+            const result = await startThenTakeOver({ notifyPreviousOwner: false });
+
+            expect(result.error).toBeNull();
+            expect(takenOverFlags()).toEqual([false]);
+        });
+
+        it("is true when the argument is explicitly null", async () => {
+            const result = await startThenTakeOver({ notifyPreviousOwner: null });
+
+            expect(result.error).toBeNull();
+            expect(takenOverFlags()).toEqual([true]);
+        });
     });
 
     it("returns Workflows/Review/NotCandidate with data to a reader outside the step's teams", async () => {

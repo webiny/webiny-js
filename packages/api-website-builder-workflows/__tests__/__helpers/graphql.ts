@@ -212,9 +212,13 @@ export const START_STEP = /* GraphQL */ `
 `;
 
 export const TAKE_OVER_STEP = /* GraphQL */ `
-    mutation TakeOverStep($reviewId: ID!, $stepId: ID!) {
+    mutation TakeOverStep($reviewId: ID!, $stepId: ID!, $notifyPreviousOwner: Boolean) {
         websiteBuilder {
-            takeOverWebsiteBuilderPageReviewStep(reviewId: $reviewId, stepId: $stepId) {
+            takeOverWebsiteBuilderPageReviewStep(
+                reviewId: $reviewId
+                stepId: $stepId
+                notifyPreviousOwner: $notifyPreviousOwner
+            ) {
                 data { ${REVIEW_FIELDS} }
                 ${ERROR_FIELDS}
             }
