@@ -8,6 +8,7 @@ import { CmsEntryReviewTargetSync } from "./CmsEntryReviewTargetSync.js";
 import { CmsEntryReviewTargetReadAccess } from "./CmsEntryReviewTargetReadAccess.js";
 import { CmsEntryReviewTargetFolderChain } from "./CmsEntryReviewTargetFolderChain.js";
 import { CmsEntryReviewTargetEditor } from "./CmsEntryReviewTargetEditor.js";
+import { CmsEntryReviewTargetLink } from "./CmsEntryReviewTargetLink.js";
 
 /** The `cms.*` target adapter (spec 9.3). */
 export const CmsTargetFeature = createFeature({
@@ -26,5 +27,8 @@ export const CmsTargetFeature = createFeature({
 
         // The AI step's editor port, one per namespace (R172).
         container.register(CmsEntryReviewTargetEditor);
+
+        // Where the notification e-mail links to the content, one per namespace (R195).
+        container.register(CmsEntryReviewTargetLink);
     }
 });

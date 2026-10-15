@@ -8,6 +8,7 @@ import { WbPageReviewTargetSync } from "./WbPageReviewTargetSync.js";
 import { WbPageReviewTargetReadAccess } from "./WbPageReviewTargetReadAccess.js";
 import { WbPageReviewTargetFolderChain } from "./WbPageReviewTargetFolderChain.js";
 import { WbPageReviewTargetEditor } from "./WbPageReviewTargetEditor.js";
+import { WbPageReviewTargetLink } from "./WbPageReviewTargetLink.js";
 
 /** The `wb.page` target adapter (spec 9.3). */
 export const WbTargetFeature = createFeature({
@@ -28,5 +29,8 @@ export const WbTargetFeature = createFeature({
 
         // The AI step's editor port for pages (R172).
         container.register(WbPageReviewTargetEditor);
+
+        // Where the notification e-mail links to the page (R195).
+        container.register(WbPageReviewTargetLink);
     }
 });

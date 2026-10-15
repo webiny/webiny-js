@@ -7,6 +7,7 @@ import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTa
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import { ReviewTargetFolderChain } from "@webiny/api-workflows/features/review/ReviewTargetFolderChain/index.js";
 import { ReviewTargetEditor } from "@webiny/api-workflows/features/review/ReviewTargetEditor/index.js";
+import { ReviewTargetLink } from "@webiny/api-workflows/features/notifications/ReviewTargetLink/index.js";
 import { WbPageFolderExistsService } from "~/features/target/WbPageFolderExistsService/index.js";
 import { CmsEntryReviewNamespace } from "@webiny/api-headless-cms-workflows/features/target/CmsEntryReviewNamespace/index.js";
 import { PageBeforePublishEventHandler } from "@webiny/api-website-builder/features/pages/PublishPage/index.js";
@@ -86,6 +87,13 @@ describe("WebsiteBuilderWorkflowsFeature registration", () => {
                 .resolveAll(ReviewTargetEditor)
                 .filter((item: ReviewTargetEditor.Interface) => item.canEdit("wb.page"))
         ).toHaveLength(1);
+        // One link adapter per namespace too: `cms.*` from the CMS package, `wb.page` from this one.
+        expect(container.resolveAll(ReviewTargetLink)).toHaveLength(2);
+        expect(
+            container
+                .resolveAll(ReviewTargetLink)
+                .filter((item: ReviewTargetLink.Interface) => item.canLink("wb.page"))
+        ).toHaveLength(1);
         expect(container.resolveAll(CmsEntryReviewNamespace)).toHaveLength(2);
         expect(
             container
@@ -112,6 +120,7 @@ describe("WebsiteBuilderWorkflowsFeature registration", () => {
         expect(container.resolveAll(ReviewTargetReadAccess)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetFolderChain)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetEditor)).toHaveLength(0);
+        expect(container.resolveAll(ReviewTargetLink)).toHaveLength(0);
         expect(container.resolveAll(CmsEntryReviewNamespace)).toHaveLength(0);
         const pageModel = { modelId: PAGE_MODEL_ID } as CmsModel;
         expect(

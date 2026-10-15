@@ -8,6 +8,7 @@ import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTa
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import { ReviewTargetFolderChain } from "@webiny/api-workflows/features/review/ReviewTargetFolderChain/index.js";
 import { ReviewTargetEditor } from "@webiny/api-workflows/features/review/ReviewTargetEditor/index.js";
+import { ReviewTargetLink } from "@webiny/api-workflows/features/notifications/ReviewTargetLink/index.js";
 import { createContextHandler } from "./__handler/context.js";
 import { CmsEntryReviewNamespace } from "~/features/target/CmsEntryReviewNamespace/index.js";
 import { StoreCmsEntryWorkflowUseCase } from "~/features/wrappers/StoreCmsEntryWorkflow/index.js";
@@ -77,6 +78,7 @@ describe("CmsWorkflowsFeature registration", () => {
         expect(container.resolveAll(ReviewTargetReadAccess)).toHaveLength(1);
         expect(container.resolveAll(ReviewTargetFolderChain)).toHaveLength(1);
         expect(container.resolveAll(ReviewTargetEditor)).toHaveLength(1);
+        expect(container.resolveAll(ReviewTargetLink)).toHaveLength(1);
         expect(container.resolveAll(CmsEntryReviewNamespace)).toHaveLength(1);
         for (const abstraction of WRAPPERS) {
             expect(container.resolveAll(abstraction)).toHaveLength(1);
@@ -94,5 +96,6 @@ describe("CmsWorkflowsFeature registration", () => {
         }
         expect(container.resolveAll(ReviewTargetFolderChain)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetEditor)).toHaveLength(0);
+        expect(container.resolveAll(ReviewTargetLink)).toHaveLength(0);
     });
 });
