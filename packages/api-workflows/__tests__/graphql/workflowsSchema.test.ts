@@ -12,6 +12,8 @@ import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.j
 import { PROJECT_PACKAGE_FEATURE_NAME } from "@webiny/wcp/types.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
+import { MailerService } from "@webiny/api-mailer";
+import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
 import { FakeListUsers, type FakeUser } from "~tests/__helpers/FakeListUsers.js";
@@ -91,6 +93,21 @@ const LIST_AI_TOOLS = /* GraphQL */ `
             listAiTools {
                 data {
                     name
+                    title
+                    description
+                }
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+const LIST_NOTIFICATION_TRANSPORTS = /* GraphQL */ `
+    query ListNotificationTransports {
+        workflows {
+            listNotificationTransports {
+                data {
+                    id
                     title
                     description
                 }
@@ -203,6 +220,21 @@ interface ListAiToolsResult {
     listAiTools: AiToolsEnvelope;
 }
 
+interface NotificationTransportRow {
+    id: string;
+    title: string;
+    description: string | null;
+}
+
+interface NotificationTransportsEnvelope {
+    data: NotificationTransportRow[] | null;
+    error: ErrorRow | null;
+}
+
+interface ListNotificationTransportsResult {
+    listNotificationTransports: NotificationTransportsEnvelope;
+}
+
 interface UserRow {
     id: string;
     displayName: string;
@@ -282,6 +314,9 @@ const createApi = async (params: CmsTestHandlerParams) => {
             GraphQLBody<WorkflowsRoot<ListAutomationDefinitionsResult>>
         >(LIST_AUTOMATION_DEFINITIONS),
         listAiTools: createQuery<GraphQLBody<WorkflowsRoot<ListAiToolsResult>>>(LIST_AI_TOOLS),
+        listNotificationTransports: createQuery<
+            GraphQLBody<WorkflowsRoot<ListNotificationTransportsResult>>
+        >(LIST_NOTIFICATION_TRANSPORTS),
         listUsers: createQuery<GraphQLBody<WorkflowsRoot<ListUsersResult>>>(LIST_USERS)
     };
 };
@@ -568,6 +603,51 @@ describe("workflows GraphQL root", () => {
         });
     });
 
+    it("lists the notification transports for an editor with an optional description", async () => {
+        const api = await createApi({
+            permissions: EDITOR,
+            setup: container => {
+                container.registerInstance(MailerService, {} as MailerService.Interface);
+                container.registerInstance(NotificationTransport, {
+                    id: "plain",
+                    title: "Plain",
+                    send: async () => {}
+                });
+            }
+        });
+
+        const [response] = await api.listNotificationTransports();
+
+        expect(response.data.workflows.listNotificationTransports).toEqual({
+            data: [
+                // Task 3 adds the description and updates this expectation.
+                { id: "e-mail", title: "E-Mail", description: null },
+                { id: "plain", title: "Plain", description: null }
+            ],
+            error: null
+        });
+    });
+
+    it("refuses the notification transports to a user without editor", async () => {
+        const api = await createApi({
+            permissions: REASSIGNER,
+            setup: container => {
+                container.registerInstance(MailerService, {} as MailerService.Interface);
+            }
+        });
+
+        const [response] = await api.listNotificationTransports();
+
+        expect(response.data.workflows.listNotificationTransports).toEqual({
+            data: null,
+            error: {
+                code: "Workflows/NotAuthorized",
+                message: "You are not allowed to list notification transports.",
+                data: { action: "list notification transports" }
+            }
+        });
+    });
+
     it("lists users for an editor, by search and by ids (D48, D117)", async () => {
         const api = await createApi({ permissions: EDITOR });
 
@@ -618,6 +698,7 @@ describe("workflows GraphQL root", () => {
             "listStepTypes",
             "listAutomationDefinitions",
             "listAiTools",
+            "listNotificationTransports",
             "listUsers"
         ]);
         expect(memberNames(types, "WorkflowsAutomationDefinition")).toEqual([
@@ -632,6 +713,15 @@ describe("workflows GraphQL root", () => {
         ]);
         expect(memberNames(types, "WorkflowsAiTool")).toEqual(["name", "title", "description"]);
         expect(memberNames(types, "WorkflowsAiToolListResponse")).toEqual(["data", "error"]);
+        expect(memberNames(types, "WorkflowsNotificationTransport")).toEqual([
+            "id",
+            "title",
+            "description"
+        ]);
+        expect(memberNames(types, "WorkflowsNotificationTransportListResponse")).toEqual([
+            "data",
+            "error"
+        ]);
         expect(memberNames(types, "WorkflowsUser")).toEqual(["id", "displayName"]);
         expect(memberNames(types, "WorkflowsUserListResult")).toEqual(["users", "missingIds"]);
         expect(memberNames(types, "WorkflowsUserListResponse")).toEqual(["data", "error"]);

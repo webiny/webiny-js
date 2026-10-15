@@ -47,6 +47,7 @@ import { SaveWorkflowSettingsUseCase } from "~/features/settings/SaveWorkflowSet
 import { GetWorkflowSettingsForEditorUseCase } from "~/features/config/GetWorkflowSettingsForEditor/index.js";
 import { SaveWorkflowSettingsForEditorUseCase } from "~/features/config/SaveWorkflowSettingsForEditor/index.js";
 import { ListAutomationDefinitionsUseCase } from "~/features/config/ListAutomationDefinitions/index.js";
+import { ListWorkflowNotificationTransportsUseCase } from "~/features/config/ListWorkflowNotificationTransports/index.js";
 import { ListWorkflowAiToolsUseCase } from "~/features/config/ListWorkflowAiTools/index.js";
 import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStepTypes/index.js";
 import { ListWorkflowUsersUseCase } from "~/features/config/ListWorkflowUsers/index.js";
@@ -156,6 +157,7 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(ListWorkflowStepTypesUseCase)).toHaveLength(1);
         expect(container.resolveAll(ListAutomationDefinitionsUseCase)).toHaveLength(1);
         expect(container.resolveAll(ListWorkflowAiToolsUseCase)).toHaveLength(1);
+        expect(container.resolveAll(ListWorkflowNotificationTransportsUseCase)).toHaveLength(1);
         expect(container.resolveAll(ListWorkflowUsersUseCase)).toHaveLength(1);
         expect(container.resolveAll(WorkflowRepository)).toHaveLength(1);
         expect(container.resolveAll(WorkflowModelProvider)).toHaveLength(1);

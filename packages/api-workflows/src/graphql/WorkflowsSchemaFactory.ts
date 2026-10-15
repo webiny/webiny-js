@@ -4,6 +4,7 @@ import { GetWorkflowSettingsForEditorUseCase } from "~/features/config/GetWorkfl
 import { SaveWorkflowSettingsForEditorUseCase } from "~/features/config/SaveWorkflowSettingsForEditor/index.js";
 import { ListAutomationDefinitionsUseCase } from "~/features/config/ListAutomationDefinitions/index.js";
 import { ListWorkflowAiToolsUseCase } from "~/features/config/ListWorkflowAiTools/index.js";
+import { ListWorkflowNotificationTransportsUseCase } from "~/features/config/ListWorkflowNotificationTransports/index.js";
 import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStepTypes/index.js";
 import { ListWorkflowUsersUseCase } from "~/features/config/ListWorkflowUsers/index.js";
 import type { WorkflowExclusion, WorkflowSettings } from "~/domain/settings/types.js";
@@ -415,6 +416,19 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
         error: WorkflowsError
     }
 
+    type WorkflowsNotificationTransport {
+        "The id a step stores in its notifications."
+        id: ID!
+        title: String!
+        "What the transport does; null when it has no description."
+        description: String
+    }
+
+    type WorkflowsNotificationTransportListResponse {
+        data: [WorkflowsNotificationTransport!]
+        error: WorkflowsError
+    }
+
     type WorkflowsUserListResult {
         users: [WorkflowsUser!]!
         "Requested ids with no user (D117); empty for a search."
@@ -431,6 +445,7 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
         listStepTypes: WorkflowsStepTypeListResponse!
         listAutomationDefinitions: WorkflowsAutomationDefinitionListResponse!
         listAiTools: WorkflowsAiToolListResponse!
+        listNotificationTransports: WorkflowsNotificationTransportListResponse!
         "Search by display name or email (limit 50 by default, at most 200), or look up ids (D117)."
         listUsers(search: String, ids: [String!], limit: Int): WorkflowsUserListResponse!
     }
@@ -521,6 +536,20 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             resolver: (listAiTools: ListWorkflowAiToolsUseCase.Interface) => {
                 return async () => {
                     const result = await listAiTools.execute();
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver({
+            path: "WorkflowsQuery.listNotificationTransports",
+            dependencies: [ListWorkflowNotificationTransportsUseCase],
+            resolver: (listTransports: ListWorkflowNotificationTransportsUseCase.Interface) => {
+                return async () => {
+                    const result = await listTransports.execute();
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }

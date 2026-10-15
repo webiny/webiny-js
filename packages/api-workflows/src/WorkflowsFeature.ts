@@ -43,6 +43,7 @@ import { GetWorkflowSettingsForEditorFeature } from "~/features/config/GetWorkfl
 import { SaveWorkflowSettingsForEditorFeature } from "~/features/config/SaveWorkflowSettingsForEditor/feature.js";
 import { ListAutomationDefinitionsFeature } from "~/features/config/ListAutomationDefinitions/feature.js";
 import { ListWorkflowAiToolsFeature } from "~/features/config/ListWorkflowAiTools/feature.js";
+import { ListWorkflowNotificationTransportsFeature } from "~/features/config/ListWorkflowNotificationTransports/feature.js";
 import { ListWorkflowStepTypesFeature } from "~/features/config/ListWorkflowStepTypes/feature.js";
 import { ListWorkflowUsersFeature } from "~/features/config/ListWorkflowUsers/feature.js";
 import { CurrentUserTeamsFeature } from "~/features/identity/CurrentUserTeams/feature.js";
@@ -145,6 +146,7 @@ export const WorkflowsFeature = createFeature({
         ListWorkflowStepTypesFeature.register(container);
         ListAutomationDefinitionsFeature.register(container);
         ListWorkflowAiToolsFeature.register(container);
+        ListWorkflowNotificationTransportsFeature.register(container);
         ListWorkflowUsersFeature.register(container);
 
         // Building blocks for the app wrappers (D132)
