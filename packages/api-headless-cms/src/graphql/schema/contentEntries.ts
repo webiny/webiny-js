@@ -37,9 +37,9 @@ const createDate = (date: string | null): Date | null => {
 };
 
 /**
- * How many title matches `searchContentEntries` reads before ranking them.
+ * How many matches per model `searchContentEntries` reads before ranking them by title.
  */
-const TITLE_SEARCH_LIMIT = 100;
+const SEARCH_CANDIDATES_LIMIT = 100;
 
 /**
  * Lower rank comes first: an exact title match, then a title starting with the query,
@@ -463,69 +463,35 @@ export const createContentEntriesSchema = ({
                     const { modelIds, fields, query, limit = 10 } = args;
                     const models = await context.cms.listModels();
 
-                    const listLatest = context.container.resolve(ListLatestEntriesUseCase);
-
-                    const listRecords = async (params: {
-                        model: CmsModel;
-                        where: CmsEntryListWhere;
-                        limit: number;
-                        search?: string;
-                    }) => {
-                        const { model, where, search } = params;
-                        const result = await listLatest.execute(model, {
-                            limit: params.limit,
-                            where,
-                            search,
-                            fields: fields || []
-                        });
-                        // TODO figure a better way to handle errors in parallel execution.
-                        if (result.isFail()) {
-                            throw result.error;
-                        }
-                        return result.value.entries.map((entry: CmsEntry) => {
-                            return createCmsEntryRecord(model, entry);
-                        });
-                    };
+                    /**
+                     * Full-text search matches the query against every searchable field, and the storage
+                     * returns the newest-created matches first. When many entries mention the query somewhere
+                     * in their content, an older entry whose title is the query falls outside the first `limit`.
+                     * So when searching, read more candidates than requested, rank them by title, then cut.
+                     */
+                    const storageLimit = query ? Math.max(limit, SEARCH_CANDIDATES_LIMIT) : limit;
 
                     const getters = models
                         .filter(model => modelIds.includes(model.modelId))
                         .map(async model => {
-                            /**
-                             * Full-text search matches the query against every searchable field, and the
-                             * storage cuts the result to `limit` entries before we get to rank them. When more
-                             * entries mention the query somewhere in their content, an entry whose title is
-                             * the query can be left out. A second search on the title field alone brings it back.
-                             * That search gets a larger limit of its own, so an exact title match is not cut in
-                             * favour of newer titles that only contain the query.
-                             */
-                            const titleField = model.fields.find(
-                                field => field.fieldId === model.titleFieldId
-                            );
-                            let titleRecordsPromise: Promise<CmsEntryRecord[]> = Promise.resolve(
-                                []
-                            );
-                            if (query && titleField?.type === "text") {
-                                titleRecordsPromise = listRecords({
-                                    model,
-                                    where: {
-                                        values: {
-                                            [`${titleField.fieldId}_contains`]: query
-                                        }
-                                    },
-                                    limit: Math.max(limit, TITLE_SEARCH_LIMIT)
-                                });
-                            }
-                            const recordsPromise = listRecords({
-                                model,
-                                where: {},
-                                limit,
-                                search: query || undefined
+                            const listLatest =
+                                await context.container.resolve(ListLatestEntriesUseCase);
+                            const where: CmsEntryListWhere = {};
+
+                            const result = await listLatest.execute(model, {
+                                limit: storageLimit,
+                                where,
+                                search: !!query ? query : undefined,
+                                fields: fields || []
                             });
-                            const [titleRecords, records] = await Promise.all([
-                                titleRecordsPromise,
-                                recordsPromise
-                            ]);
-                            return [...titleRecords, ...records];
+                            // TODO figure a better way to handle errors in parallel execution
+                            if (result.isFail()) {
+                                throw result.error;
+                            }
+                            const { entries } = result.value;
+                            return entries.map((entry: CmsEntry) => {
+                                return createCmsEntryRecord(model, entry);
+                            });
                         });
 
                     try {
@@ -533,11 +499,8 @@ export const createContentEntriesSchema = ({
                             results.reduce((result, item) => result.concat(item), [])
                         );
 
-                        const entriesById = new Map(entries.map(entry => [entry.id, entry]));
-                        const uniqueEntries = Array.from(entriesById.values());
-
                         return new Response(
-                            uniqueEntries
+                            entries
                                 .sort((a, b) => {
                                     const rank =
                                         getSearchRank(a.title, query) -
