@@ -11,6 +11,7 @@ import {
 } from "~tests/__helpers/stepRunReviews.js";
 import { requester, toSaveData } from "~tests/__helpers/fixtures.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { withoutBuiltInAiTools } from "~tests/__helpers/withoutBuiltInAiTools.js";
 import { WorkflowAiTool } from "~/features/aiTools/WorkflowAiTool/index.js";
 import { WorkflowAiToolRegistryService } from "~/features/aiTools/WorkflowAiToolRegistryService/index.js";
 import { AI_STEP_MAX_INPUT_CHARACTERS } from "~/features/aiTools/constants.js";
@@ -31,7 +32,7 @@ describe("WorkflowAiToolRegistryService (R167)", () => {
         const { context } = await createContextHandler();
         const registry = context.container.resolve(WorkflowAiToolRegistryService);
 
-        expect(registry.list()).toEqual([]);
+        expect(withoutBuiltInAiTools(registry.list())).toEqual([]);
         expect(registry.get(TEST_AI_TOOL_NAME)).toBeNull();
     });
 
@@ -44,7 +45,10 @@ describe("WorkflowAiToolRegistryService (R167)", () => {
         });
         const registry = context.container.resolve(WorkflowAiToolRegistryService);
 
-        expect(registry.list().map(tool => tool.name)).toEqual([TEST_AI_TOOL_NAME, "otherTool"]);
+        expect(withoutBuiltInAiTools(registry.list()).map(tool => tool.name)).toEqual([
+            TEST_AI_TOOL_NAME,
+            "otherTool"
+        ]);
         expect(registry.get("otherTool")?.title).toBe("Other");
         expect(registry.get("unknown")).toBeNull();
     });
@@ -60,7 +64,10 @@ describe("WorkflowAiToolRegistryService (R167)", () => {
         const registry = context.container.resolve(WorkflowAiToolRegistryService);
 
         expect(registry.get(TEST_AI_TOOL_NAME)?.title).toBe("Replacement");
-        expect(registry.list().map(tool => tool.name)).toEqual([TEST_AI_TOOL_NAME, "otherTool"]);
+        expect(withoutBuiltInAiTools(registry.list()).map(tool => tool.name)).toEqual([
+            TEST_AI_TOOL_NAME,
+            "otherTool"
+        ]);
     });
 
     it("finds a tool only by its exact name (a name outside the registry never yields a tool, Review Focus 2)", async () => {
@@ -94,7 +101,10 @@ describe("WorkflowAiToolRegistryService (R167)", () => {
         const registry = context.container.resolve(WorkflowAiToolRegistryService);
 
         expect(registry.get("my-tool")).toBeNull();
-        expect(registry.list().map(tool => tool.name)).toEqual([TEST_AI_TOOL_NAME, "otherTool"]);
+        expect(withoutBuiltInAiTools(registry.list()).map(tool => tool.name)).toEqual([
+            TEST_AI_TOOL_NAME,
+            "otherTool"
+        ]);
         expect(registry.get(TEST_AI_TOOL_NAME)?.title).toBe("Test tool");
         expect(loggedErrors).toEqual([
             {
@@ -131,9 +141,9 @@ describe("WorkflowAiToolRegistryService (R167)", () => {
                 registerTestAiTool(container, { name: `a${"b".repeat(63)}` });
             }
         });
-        const acceptedTools = accepted.context.container
-            .resolve(WorkflowAiToolRegistryService)
-            .list();
+        const acceptedTools = withoutBuiltInAiTools(
+            accepted.context.container.resolve(WorkflowAiToolRegistryService).list()
+        );
 
         expect(acceptedTools).toHaveLength(1);
         expect(loggedErrors).toEqual([]);
@@ -146,7 +156,7 @@ describe("WorkflowAiToolRegistryService (R167)", () => {
         });
         const refusedRegistry = refused.context.container.resolve(WorkflowAiToolRegistryService);
 
-        expect(refusedRegistry.list()).toEqual([]);
+        expect(withoutBuiltInAiTools(refusedRegistry.list())).toEqual([]);
         expect(refusedRegistry.get(`a${"b".repeat(64)}`)).toBeNull();
         expect(loggedErrors).toHaveLength(1);
         expect(loggedErrors[0].message).toBe("The AI tool was dropped.");

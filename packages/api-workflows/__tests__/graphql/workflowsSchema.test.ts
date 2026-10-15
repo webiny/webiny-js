@@ -6,6 +6,8 @@ import {
     TEST_AUTOMATION_ID
 } from "~tests/__helpers/TestAutomationDefinition.js";
 import { registerTestAiTool, TEST_AI_TOOL_NAME } from "~tests/__helpers/TestWorkflowAiTool.js";
+import { BUILT_IN_AI_TOOL_NAMES } from "~/features/aiTools/constants.js";
+import { withoutBuiltInAiTools } from "~tests/__helpers/withoutBuiltInAiTools.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { PROJECT_PACKAGE_FEATURE_NAME } from "@webiny/wcp/types.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -532,21 +534,23 @@ describe("workflows GraphQL root", () => {
 
         const [response] = await api.listAiTools();
 
-        expect(response.data.workflows.listAiTools).toEqual({
-            data: [
-                { name: TEST_AI_TOOL_NAME, title: "Alpha", description: "A tool for tests." },
-                { name: "zuluTool", title: "Zulu", description: "A tool for tests." }
-            ],
-            error: null
-        });
+        const envelope = response.data.workflows.listAiTools;
+
+        expect(envelope.error).toBeNull();
+        expect(withoutBuiltInAiTools(envelope.data ?? [])).toEqual([
+            { name: TEST_AI_TOOL_NAME, title: "Alpha", description: "A tool for tests." },
+            { name: "zuluTool", title: "Zulu", description: "A tool for tests." }
+        ]);
     });
 
-    it("lists no AI tools when none is registered", async () => {
+    it("lists only the built-in AI tools when no other is registered", async () => {
         const api = await createApi({ permissions: EDITOR });
 
         const [response] = await api.listAiTools();
 
-        expect(response.data.workflows.listAiTools).toEqual({ data: [], error: null });
+        const envelope = response.data.workflows.listAiTools;
+        expect(envelope.error).toBeNull();
+        expect((envelope.data ?? []).map(row => row.name)).toEqual(BUILT_IN_AI_TOOL_NAMES);
     });
 
     it("refuses the AI tools to a user without editor", async () => {

@@ -14,6 +14,8 @@ import {
     testAiToolInputSchema
 } from "~tests/__helpers/TestWorkflowAiTool.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
+import { BUILT_IN_AI_TOOL_NAMES } from "~/features/aiTools/constants.js";
+import { withoutBuiltInAiTools } from "~tests/__helpers/withoutBuiltInAiTools.js";
 import { WorkflowAiTool } from "~/features/aiTools/WorkflowAiTool/index.js";
 import { WorkflowAiToolRegistryService } from "~/features/aiTools/WorkflowAiToolRegistryService/index.js";
 import { ListWorkflowAiToolsUseCase } from "~/features/config/ListWorkflowAiTools/index.js";
@@ -47,12 +49,16 @@ const createListContext = async (params: CmsTestHandlerParams = {}) => {
 };
 
 describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
-    it("lists nothing when no tool is registered", async () => {
+    it("lists only the built-in tools when no other tool is registered (Task 10)", async () => {
         const { listAiTools } = await createListContext({
             permissions: [{ name: "workflows", editor: true }]
         });
 
-        expect(expectOk(await listAiTools.execute())).toEqual([]);
+        const rows = expectOk(await listAiTools.execute());
+
+        expect(rows.map(row => row.name)).toEqual(BUILT_IN_AI_TOOL_NAMES);
+        expect(rows.map(row => row.title)).toEqual(["Read target", "Update target fields"]);
+        expect(withoutBuiltInAiTools(rows)).toEqual([]);
     });
 
     it("lists name, title and description only, with no schema", async () => {
@@ -66,7 +72,7 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
             }
         });
 
-        const rows = expectOk(await listAiTools.execute());
+        const rows = withoutBuiltInAiTools(expectOk(await listAiTools.execute()));
 
         expect(rows).toEqual([
             { name: TEST_AI_TOOL_NAME, title: "Test tool", description: "A tool for tests." }
@@ -84,7 +90,7 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
             }
         });
 
-        const rows = expectOk(await listAiTools.execute());
+        const rows = withoutBuiltInAiTools(expectOk(await listAiTools.execute()));
 
         expect(rows.map(row => row.name)).toEqual(["alphaOne", "alphaTwo", "mike", "zulu"]);
     });
@@ -97,7 +103,7 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
             }
         });
 
-        const rows = expectOk(await listAiTools.execute());
+        const rows = withoutBuiltInAiTools(expectOk(await listAiTools.execute()));
 
         expect(rows).toHaveLength(1);
         expect(rows[0].title).toBe("Replacement");
@@ -112,7 +118,7 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
             }
         });
 
-        const rows = expectOk(await listAiTools.execute());
+        const rows = withoutBuiltInAiTools(expectOk(await listAiTools.execute()));
 
         expect(rows.map(row => row.name)).toEqual([TEST_AI_TOOL_NAME]);
     });

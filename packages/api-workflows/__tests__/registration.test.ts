@@ -129,9 +129,9 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(AutomationDefinitionRegistryService)).toHaveLength(1);
         // No built-in automation (R155): developers register definitions.
         expect(container.resolveAll(AutomationDefinition)).toHaveLength(0);
-        // The AI tool registry; no tool ships yet (Task 10 registers the built-ins).
+        // The AI tool registry and the two built-in tools (Task 10)
         expect(container.resolveAll(WorkflowAiToolRegistryService)).toHaveLength(1);
-        expect(container.resolveAll(WorkflowAiTool)).toHaveLength(0);
+        expect(container.resolveAll(WorkflowAiTool)).toHaveLength(2);
         // No default loader, sync or target read access: the app adapters register one per namespace.
         expect(container.resolveAll(ReviewTargetLoader)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetSync)).toHaveLength(0);
