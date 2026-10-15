@@ -67,31 +67,16 @@ const createStandaloneE2EJobs = (storageOps: StandaloneStorageOps) => {
     };
 };
 
+// Pulumi state stays in the project's local `.pulumi` folder and goes away with the runner. The
+// nightly `cleanup.yml` removes what was deployed with aws-nuke, so nothing needs the state later.
 const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
     const jobNames = {
-        constants: `e2eTests-${storageOps.shortId}-constants`,
         projectSetup: `e2eTests-${storageOps.shortId}-setup`
     };
-
-    const constantsJob: NormalJob = createJob({
-        name: `E2E (${storageOps.displayName}) - Constants`,
-        needs: ["build"],
-        outputs: {
-            "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
-        },
-        steps: [
-            {
-                name: "Get Pulumi backend URL",
-                id: "get-pulumi-backend-url",
-                run: `echo "pulumi-backend-url=\${{ secrets.WEBINY_PULUMI_BACKEND }}\${{ github.run_id }}_${storageOps.shortId}" >> $GITHUB_OUTPUT`
-            }
-        ]
-    });
 
     const env: Record<string, string> = {
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
         PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
-        WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
         YARN_ENABLE_IMMUTABLE_INSTALLS: "false",
         WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}",
         /*
@@ -110,7 +95,7 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
     }
 
     const projectSetupJob: NormalJob = createJob({
-        needs: ["constants", "build", jobNames.constants],
+        needs: ["constants", "build"],
         "runs-on": BUILD_PACKAGES_RUNNER,
         name: `E2E (${storageOps.displayName}) - Project setup`,
         environment: "next",
@@ -237,7 +222,6 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
     });
 
     return {
-        [jobNames.constants]: constantsJob,
         [jobNames.projectSetup]: projectSetupJob
     };
 };
