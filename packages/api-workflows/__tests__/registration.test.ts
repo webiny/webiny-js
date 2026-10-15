@@ -8,6 +8,8 @@ import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js
 import { DeleteWorkflowUseCase } from "~/features/workflow/DeleteWorkflow/index.js";
 import { RequestReviewUseCase } from "~/features/review/RequestReview/index.js";
 import { GetReviewUseCase } from "~/features/review/GetReview/index.js";
+import { StepRunner } from "~/features/stepRun/StepRunner/index.js";
+import { StepRunnerRegistryService } from "~/features/stepRun/StepRunnerRegistryService/index.js";
 import { StuckStepService } from "~/features/stepRun/StuckStepService/index.js";
 import { StartReviewStepUseCase } from "~/features/review/StartReviewStep/index.js";
 import { TakeOverReviewStepUseCase } from "~/features/review/TakeOverReviewStep/index.js";
@@ -95,6 +97,9 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(RequestReviewUseCase)).toHaveLength(1);
         expect(container.resolveAll(GetReviewUseCase)).toHaveLength(1);
         expect(container.resolveAll(StuckStepService)).toHaveLength(1);
+        expect(container.resolveAll(StepRunnerRegistryService)).toHaveLength(1);
+        // The built-in automation runner; later sub-phases register their own next to it (R168).
+        expect(container.resolveAll(StepRunner)).toHaveLength(1);
         expect(container.resolveAll(StartReviewStepUseCase)).toHaveLength(1);
         expect(container.resolveAll(TakeOverReviewStepUseCase)).toHaveLength(1);
         expect(container.resolveAll(ReassignReviewStepUseCase)).toHaveLength(1);

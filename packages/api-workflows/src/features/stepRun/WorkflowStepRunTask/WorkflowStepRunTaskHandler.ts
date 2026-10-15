@@ -6,17 +6,13 @@ import {
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { automationStepConfigSchema } from "~/domain/automation/automationStepConfigSchema.js";
-import { getAutomationActor } from "~/domain/automation/getAutomationActor.js";
 import { getRequesterIdentity } from "~/domain/automation/getRequesterIdentity.js";
-import { parseAutomationSettings } from "~/domain/automation/parseAutomationSettings.js";
 import { Review, REJECT_COMMENT_MIN_LENGTH } from "~/domain/review/Review.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewNotFoundError, ReviewTargetSyncError } from "~/domain/review/errors.js";
 import { getStaleStepRunReason } from "~/domain/review/getStaleStepRunReason.js";
 import type { ReviewStep } from "~/domain/review/types.js";
 import { AutomationDefinitionRegistryService } from "~/features/automation/AutomationDefinitionRegistryService/index.js";
-import type { AutomationDefinition } from "~/features/automation/AutomationDefinition/index.js";
-import { WorkflowBypassService } from "~/features/bypass/WorkflowBypassService/index.js";
 import { ApproveReviewStepUseCase } from "~/features/review/ApproveReviewStep/index.js";
 import { RejectReviewStepUseCase } from "~/features/review/RejectReviewStep/index.js";
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
@@ -26,19 +22,20 @@ import {
     STEP_RUN_TASKID_WAIT_TRIES
 } from "../constants.js";
 import { StepRunFailure } from "../StepRunFailure.js";
+import { StepRunnerRegistryService } from "../StepRunnerRegistryService/index.js";
 import type { StepRunTaskInput } from "../types.js";
 
 type RunParams = TaskHandler.RunParams<StepRunTaskInput>;
 type HookParams = TaskHandler.LifecycleHookParams<StepRunTaskInput>;
 
 /**
- * Runs one automation step (spec 7.4, R142). `run` reads the review, applies the stale guard (a
- * forged, foreign or restarted task writes nothing, R144, R148), waits a few iterations for its
- * task id to appear on the step (R143), runs the automation as the requester inside the bypass
- * (R150, R161) and applies its outcome through the base approve and reject use cases as the
- * automation actor (R141). Every failure fails the step once, with a fixed reason (R146). The
- * failure hooks fail the step when the runner reports an error, the iteration ceiling or an abort.
- * Every write is guarded; a hook never throws.
+ * Runs one step of any type (spec 7.4, R142, R168). `run` reads the review, applies the stale
+ * guard (a forged, foreign or restarted task writes nothing, R144, R148), waits a few iterations
+ * for its task id to appear on the step (R143), hands the step to the `StepRunner` registered for
+ * its type, which runs as the requester (R150, R161), and applies the runner's outcome through
+ * the base approve and reject use cases as the runner's actor (R141). Every failure fails the
+ * step once, with a fixed reason (R146). The failure hooks fail the step when the runner reports
+ * an error, the iteration ceiling or an abort. Every write is guarded; a hook never throws.
  */
 class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTaskInput> {
     public constructor(
@@ -46,9 +43,9 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
         private saver: ReviewSaver.Interface,
         private logger: Logger.Interface,
         private definitions: AutomationDefinitionRegistryService.Interface,
+        private runners: StepRunnerRegistryService.Interface,
         private approveStep: ApproveReviewStepUseCase.Interface,
         private rejectStep: RejectReviewStepUseCase.Interface,
-        private bypass: WorkflowBypassService.Interface,
         private identityContext: IdentityContext.Interface
     ) {}
 
@@ -108,57 +105,32 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
 
         return this.identityContext.withIdentity(identity, async () => {
             try {
-                // 3. Look up and validate everything from the review snapshot (A53, R148).
-                const config = automationStepConfigSchema.safeParse(step.config);
-                if (!config.success) {
-                    throw new StepRunFailure("The automation step configuration is not valid.");
+                // 3. Pick the runner from the review snapshot (A53, R148, R168).
+                const runner = this.runners.get(step.type);
+                if (!runner) {
+                    throw new StepRunFailure(`The step type "${step.type}" is not available.`);
                 }
-                const automationId = config.data.automationId;
-                const definition = this.definitions.get(automationId);
-                if (!definition) {
-                    throw new StepRunFailure(`The automation "${automationId}" is not available.`);
-                }
-                // `iteration` counts automation runs, never the waits for the task id (R163).
+                // `iteration` counts runs, never the waits for the task id (R163).
                 const output = controller.state.getOutput();
                 const idWaits =
                     typeof output?.idWaits === "number" ? output.idWaits : task.iterations - 1;
                 const iteration = task.iterations - idWaits;
-                const maxIterations = definition.maxIterations ?? DEFAULT_AUTOMATION_MAX_ITERATIONS;
-                if (iteration > maxIterations) {
-                    throw new StepRunFailure(
-                        `The automation did not finish in ${maxIterations} iterations.`
-                    );
-                }
-                const settings = parseAutomationSettings(definition, config.data.settings);
-                if (settings.isFail()) {
-                    throw new StepRunFailure(
-                        `The automation settings are not valid: ${settings.error}.`
-                    );
-                }
-
-                // 4. Run inside the bypass, and only there (D36, R150).
                 const state = (output?.state ?? null) as Record<string, unknown> | null;
-                let outcome: AutomationDefinition.Outcome;
-                try {
-                    outcome = await this.bypass.run(() =>
-                        definition.run({
-                            settings: settings.value,
-                            review: data,
-                            step,
-                            iteration,
-                            state
-                        })
-                    );
-                } catch (error) {
-                    // The raw message can carry internals: logged, never stored (R146).
-                    this.logger.error(
-                        { error, taskId: task.id, reviewId, stepId },
-                        "The automation threw."
-                    );
-                    throw new StepRunFailure("The automation failed.");
-                }
 
-                // The automation may have run for a while: the review can have been cancelled, or
+                // 4. Run the step. The runner validates its own config and owns its own
+                // dependencies and texts; a failure is a thrown `StepRunFailure` (R146).
+                // `signal` is a placeholder until Task 4 builds the real one.
+                const outcome = await runner.run({
+                    review: data,
+                    step,
+                    requester,
+                    task: { id: task.id, createdById: task.createdBy.id },
+                    iteration,
+                    state,
+                    signal: new AbortController().signal
+                });
+
+                // The runner may have run for a while: the review can have been cancelled, or
                 // the step aborted and restarted under another task. A stale task writes nothing.
                 const after = await this.repository.get(reviewId);
                 if (after.isFail()) {
@@ -180,13 +152,13 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                     return controller.response.done();
                 }
 
-                // 5. Apply the outcome as the automation actor (R135, R141).
+                // 5. Apply the outcome as the runner's actor (R135, R141, R168).
                 switch (outcome.type) {
                     case "approved": {
                         const approved = await this.approveStep.execute({
                             reviewId,
                             stepId,
-                            actor: getAutomationActor(requester),
+                            actor: runner.getActor(requester),
                             actorTeamIds: [],
                             comment: outcome.comment
                         });
@@ -195,19 +167,19 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                                 { error: approved.error, taskId: task.id, reviewId, stepId },
                                 "Applying the automation outcome failed."
                             );
-                            throw new StepRunFailure("The automation failed.");
+                            throw new StepRunFailure(runner.failureReasons.error);
                         }
                         return controller.response.done();
                     }
                     case "rejected": {
                         const comment = (outcome.comment ?? "").trim();
                         if (comment.length < REJECT_COMMENT_MIN_LENGTH) {
-                            throw new StepRunFailure("The automation rejected without a comment.");
+                            throw new StepRunFailure(runner.failureReasons.error);
                         }
                         const rejected = await this.rejectStep.execute({
                             reviewId,
                             stepId,
-                            actor: getAutomationActor(requester),
+                            actor: runner.getActor(requester),
                             actorTeamIds: [],
                             comment
                         });
@@ -216,13 +188,13 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                                 { error: rejected.error, taskId: task.id, reviewId, stepId },
                                 "Applying the automation outcome failed."
                             );
-                            throw new StepRunFailure("The automation failed.");
+                            throw new StepRunFailure(runner.failureReasons.error);
                         }
                         return controller.response.done();
                     }
                     case "continue": {
                         // One whole write of what this handler keeps in the task output (R135,
-                        // R163): the wait count and the automation's state.
+                        // R163): the wait count and the runner's state.
                         await controller.state.updateOutput({
                             idWaits,
                             state: outcome.state !== undefined ? outcome.state : state
@@ -233,9 +205,7 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                         );
                     }
                     default:
-                        throw new StepRunFailure(
-                            "The automation failed: It returned an unknown outcome."
-                        );
+                        throw new StepRunFailure(runner.failureReasons.error);
                 }
             } catch (error) {
                 if (!(error instanceof StepRunFailure)) {
@@ -505,9 +475,9 @@ export const WorkflowStepRunTaskHandler = TaskHandler.createImplementation({
         ReviewSaver,
         Logger,
         AutomationDefinitionRegistryService,
+        StepRunnerRegistryService,
         ApproveReviewStepUseCase,
         RejectReviewStepUseCase,
-        WorkflowBypassService,
         IdentityContext
     ]
 });
