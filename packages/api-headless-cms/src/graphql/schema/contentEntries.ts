@@ -37,6 +37,11 @@ const createDate = (date: string | null): Date | null => {
 };
 
 /**
+ * How many title matches `searchContentEntries` reads before ranking them.
+ */
+const TITLE_SEARCH_LIMIT = 100;
+
+/**
  * Lower rank comes first: an exact title match, then a title starting with the query,
  * then a title containing it, then entries that matched on some other field.
  */
@@ -460,18 +465,20 @@ export const createContentEntriesSchema = ({
 
                     const listLatest = context.container.resolve(ListLatestEntriesUseCase);
 
-                    const listRecords = async (
-                        model: CmsModel,
-                        where: CmsEntryListWhere,
-                        search?: string
-                    ) => {
+                    const listRecords = async (params: {
+                        model: CmsModel;
+                        where: CmsEntryListWhere;
+                        limit: number;
+                        search?: string;
+                    }) => {
+                        const { model, where, search } = params;
                         const result = await listLatest.execute(model, {
-                            limit,
+                            limit: params.limit,
                             where,
                             search,
                             fields: fields || []
                         });
-                        // TODO figure a better way to handle errors in parallel execution
+                        // TODO figure a better way to handle errors in parallel execution.
                         if (result.isFail()) {
                             throw result.error;
                         }
@@ -488,19 +495,35 @@ export const createContentEntriesSchema = ({
                              * storage cuts the result to `limit` entries before we get to rank them. When more
                              * entries mention the query somewhere in their content, an entry whose title is
                              * the query can be left out. A second search on the title field alone brings it back.
+                             * That search gets a larger limit of its own, so an exact title match is not cut in
+                             * favour of newer titles that only contain the query.
                              */
                             const titleField = model.fields.find(
                                 field => field.fieldId === model.titleFieldId
                             );
+                            let titleRecordsPromise: Promise<CmsEntryRecord[]> = Promise.resolve(
+                                []
+                            );
+                            if (query && titleField?.type === "text") {
+                                titleRecordsPromise = listRecords({
+                                    model,
+                                    where: {
+                                        values: {
+                                            [`${titleField.fieldId}_contains`]: query
+                                        }
+                                    },
+                                    limit: Math.max(limit, TITLE_SEARCH_LIMIT)
+                                });
+                            }
+                            const recordsPromise = listRecords({
+                                model,
+                                where: {},
+                                limit,
+                                search: query || undefined
+                            });
                             const [titleRecords, records] = await Promise.all([
-                                query && titleField?.type === "text"
-                                    ? listRecords(model, {
-                                          values: {
-                                              [`${titleField.fieldId}_contains`]: query
-                                          }
-                                      })
-                                    : [],
-                                listRecords(model, {}, query || undefined)
+                                titleRecordsPromise,
+                                recordsPromise
                             ]);
                             return [...titleRecords, ...records];
                         });
@@ -510,9 +533,8 @@ export const createContentEntriesSchema = ({
                             results.reduce((result, item) => result.concat(item), [])
                         );
 
-                        const uniqueEntries = Array.from(
-                            new Map(entries.map(entry => [entry.id, entry])).values()
-                        );
+                        const entriesById = new Map(entries.map(entry => [entry.id, entry]));
+                        const uniqueEntries = Array.from(entriesById.values());
 
                         return new Response(
                             uniqueEntries
