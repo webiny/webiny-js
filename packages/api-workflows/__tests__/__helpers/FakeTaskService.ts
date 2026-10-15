@@ -1,5 +1,5 @@
 import { BaseError, Result } from "@webiny/feature/api";
-import { TaskAbortError } from "@webiny/background-tasks/api/domain/errors.js";
+import { TaskAbortError, TaskNotFoundError } from "@webiny/background-tasks/api/domain/errors.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TaskDataStatus, TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 
@@ -19,11 +19,14 @@ export interface AbortedTask {
 }
 
 export type FakeTaskFault = "none" | "fail" | "throw";
-export type FakeAbortFault = FakeTaskFault | "ended";
+export type FakeAbortFault = FakeTaskFault | "ended" | "gone";
 
 export interface FakeTaskFaults {
     trigger: FakeTaskFault;
-    /** `"ended"` fails like the real service does for a task that is no longer pending or running. */
+    /**
+     * `"ended"` fails like the real service does for a task that is no longer pending or running;
+     * `"gone"` fails like it does for a task that no longer exists (it cleaned itself up, R179).
+     */
     abort: FakeAbortFault;
     /** The message of a failed or thrown `trigger`; the default when `null`. */
     triggerMessage: string | null;
@@ -115,6 +118,9 @@ class FakeTaskServiceImpl implements TaskService.Interface {
         }
         if (fakeTaskFaults.abort === "ended") {
             return Result.fail(new TaskAbortError({ id: params.id, status: "success" }) as never);
+        }
+        if (fakeTaskFaults.abort === "gone") {
+            return Result.fail(new TaskNotFoundError() as never);
         }
         if (fakeTaskFaults.abort === "fail") {
             return Result.fail(new FakeTaskError({ message: "The task could not be aborted" }));

@@ -5,23 +5,25 @@ import {
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { automationStepConfigSchema } from "~/domain/automation/automationStepConfigSchema.js";
 import { getRequesterIdentity } from "~/domain/automation/getRequesterIdentity.js";
 import { Review, REJECT_COMMENT_MIN_LENGTH } from "~/domain/review/Review.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewNotFoundError, ReviewTargetSyncError } from "~/domain/review/errors.js";
 import { getStaleStepRunReason } from "~/domain/review/getStaleStepRunReason.js";
 import type { ReviewStep } from "~/domain/review/types.js";
-import { AutomationDefinitionRegistryService } from "~/features/automation/AutomationDefinitionRegistryService/index.js";
 import { ApproveReviewStepUseCase } from "~/features/review/ApproveReviewStep/index.js";
 import { RejectReviewStepUseCase } from "~/features/review/RejectReviewStep/index.js";
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
 import {
-    DEFAULT_AUTOMATION_MAX_ITERATIONS,
+    STEP_RUN_MIN_TIMEOUT_MS,
+    STEP_RUN_NEUTRAL_ABORTED_REASON,
+    STEP_RUN_NEUTRAL_FAILED_REASON,
     STEP_RUN_TASKID_WAIT_SECONDS,
-    STEP_RUN_TASKID_WAIT_TRIES
+    STEP_RUN_TASKID_WAIT_TRIES,
+    STEP_RUN_TIMEOUT_MARGIN_MS
 } from "../constants.js";
 import { StepRunFailure } from "../StepRunFailure.js";
+import type { StepRunner } from "../StepRunner/index.js";
 import { StepRunnerRegistryService } from "../StepRunnerRegistryService/index.js";
 import type { StepRunTaskInput } from "../types.js";
 
@@ -42,7 +44,6 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
         private repository: ReviewRepository.Interface,
         private saver: ReviewSaver.Interface,
         private logger: Logger.Interface,
-        private definitions: AutomationDefinitionRegistryService.Interface,
         private runners: StepRunnerRegistryService.Interface,
         private approveStep: ApproveReviewStepUseCase.Interface,
         private rejectStep: RejectReviewStepUseCase.Interface,
@@ -117,18 +118,46 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                 const iteration = task.iterations - idWaits;
                 const state = (output?.state ?? null) as Record<string, unknown> | null;
 
-                // 4. Run the step. The runner validates its own config and owns its own
+                // 4. A single-run runner never continues, so the handler fixes the wait count
+                // before the model (or any one-shot work) runs: a task that is invoked again
+                // reads the stored `idWaits` and gets a real `iteration` of 2, which is refused
+                // without calling the runner (R170, R175). A runner that may continue (automation)
+                // gets no such write: its output is written only on `continue`.
+                if (runner.singleRun) {
+                    if (iteration > 1) {
+                        throw new StepRunFailure(runner.failureReasons.error);
+                    }
+                    await controller.state.updateOutput({ idWaits, state });
+                }
+
+                // The signal fires near the end of the task's remaining runtime; under the
+                // floor it fires at once. The id-wait iterations returned before this point (R175).
+                const timeout = new AbortController();
+                const budget =
+                    controller.runtime.getRemainingMilliseconds() - STEP_RUN_TIMEOUT_MARGIN_MS;
+                let timer: ReturnType<typeof setTimeout> | undefined;
+                if (budget < STEP_RUN_MIN_TIMEOUT_MS) {
+                    timeout.abort();
+                } else {
+                    timer = setTimeout(() => timeout.abort(), budget);
+                }
+
+                // 5. Run the step. The runner validates its own config and owns its own
                 // dependencies and texts; a failure is a thrown `StepRunFailure` (R146).
-                // `signal` is a placeholder until Task 4 builds the real one.
-                const outcome = await runner.run({
-                    review: data,
-                    step,
-                    requester,
-                    task: { id: task.id, createdById: task.createdBy.id },
-                    iteration,
-                    state,
-                    signal: new AbortController().signal
-                });
+                let outcome: StepRunner.Outcome;
+                try {
+                    outcome = await runner.run({
+                        review: data,
+                        step,
+                        requester,
+                        task: { id: task.id, createdById: task.createdBy.id },
+                        iteration,
+                        state,
+                        signal: timeout.signal
+                    });
+                } finally {
+                    clearTimeout(timer);
+                }
 
                 // The runner may have run for a while: the review can have been cancelled, or
                 // the step aborted and restarted under another task. A stale task writes nothing.
@@ -152,7 +181,7 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                     return controller.response.done();
                 }
 
-                // 5. Apply the outcome as the runner's actor (R135, R141, R168).
+                // 6. Apply the outcome as the runner's actor (R135, R141, R168).
                 switch (outcome.type) {
                     case "approved": {
                         const approved = await this.approveStep.execute({
@@ -214,7 +243,7 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                     );
                 }
 
-                // 6. The one failure path (R146, R159): read again, guard again (a review
+                // 7. The one failure path (R146, R159): read again, guard again (a review
                 // cancelled meanwhile, or whose outcome did get saved, is not touched), fail the
                 // step, save. Nothing is ignored silently: every skipped or failed write is logged.
                 const current = await this.repository.get(reviewId);
@@ -279,9 +308,6 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
     }
 
     public async onError({ task }: HookParams): Promise<void> {
-        // Fixed text only: the task's own error can carry internals (R146).
-        const reason = "The automation failed.";
-
         const { reviewId, stepId }: Partial<StepRunTaskInput> = task.input ?? {};
         if (typeof reviewId !== "string" || typeof stepId !== "string") {
             this.logger.info({ taskId: task.id }, "Ignored a step run hook with a bad input.");
@@ -320,6 +346,11 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                 { error: task.output?.error, taskId: task.id, reviewId, stepId },
                 "The step run task ended with an error."
             );
+            // Fixed text only: the task's own error can carry internals (R146). The runner of the
+            // step's type names it; a type with no runner gets the neutral text (R168).
+            const step = loaded.value.steps.find(item => item.id === stepId);
+            const runner = step ? this.runners.get(step.type) : null;
+            const reason = runner ? runner.failureReasons.error : STEP_RUN_NEUTRAL_FAILED_REASON;
             const review = Review.fromData(loaded.value);
             const failed = review.fail({ stepId, reason, now: new Date().toISOString() });
             if (failed.isFail()) {
@@ -377,13 +408,14 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                 );
                 return;
             }
-            // The reason names the automation's own limit from the review snapshot, never the
-            // 10000 ceiling of the task definition (R145, P4).
-            const step = loaded.value.steps.find(item => item.id === stepId);
-            const config = automationStepConfigSchema.safeParse(step?.config);
-            const own = config.success ? this.definitions.get(config.data.automationId) : null;
-            const maxIterations = own?.maxIterations ?? DEFAULT_AUTOMATION_MAX_ITERATIONS;
-            const reason = `The automation did not finish in ${maxIterations} iterations.`;
+            // The reason names the step type's own limit from the review snapshot, never the
+            // 10000 ceiling of the task definition (R145, P4); a type with no runner gets the
+            // neutral text (R168). The guard passed, so the step exists.
+            const step = loaded.value.steps.find(item => item.id === stepId) as ReviewStep;
+            const runner = this.runners.get(step.type);
+            const reason = runner
+                ? runner.maxIterationsReason(step)
+                : STEP_RUN_NEUTRAL_FAILED_REASON;
             const review = Review.fromData(loaded.value);
             const failed = review.fail({ stepId, reason, now: new Date().toISOString() });
             if (failed.isFail()) {
@@ -409,8 +441,6 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
     }
 
     public async onAbort({ task }: HookParams): Promise<void> {
-        const reason = "The automation was aborted.";
-
         const { reviewId, stepId }: Partial<StepRunTaskInput> = task.input ?? {};
         if (typeof reviewId !== "string" || typeof stepId !== "string") {
             this.logger.info({ taskId: task.id }, "Ignored a step run hook with a bad input.");
@@ -443,6 +473,11 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                 );
                 return;
             }
+            // The runner of the step's type names the reason; a type with no runner gets the
+            // neutral text (R168).
+            const step = loaded.value.steps.find(item => item.id === stepId);
+            const runner = step ? this.runners.get(step.type) : null;
+            const reason = runner ? runner.failureReasons.aborted : STEP_RUN_NEUTRAL_ABORTED_REASON;
             const review = Review.fromData(loaded.value);
             const failed = review.fail({ stepId, reason, now: new Date().toISOString() });
             if (failed.isFail()) {
@@ -474,7 +509,6 @@ export const WorkflowStepRunTaskHandler = TaskHandler.createImplementation({
         ReviewRepository,
         ReviewSaver,
         Logger,
-        AutomationDefinitionRegistryService,
         StepRunnerRegistryService,
         ApproveReviewStepUseCase,
         RejectReviewStepUseCase,

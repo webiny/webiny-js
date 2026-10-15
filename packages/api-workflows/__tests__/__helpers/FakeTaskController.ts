@@ -22,6 +22,8 @@ export interface FakeTaskControllerParams {
     output?: ITaskOutput;
     /** Makes `updateOutput` throw, as a storage failure would. */
     outputUpdateError?: Error;
+    /** What `controller.runtime.getRemainingMilliseconds()` answers; 900000 when omitted (R175). */
+    remainingMilliseconds?: number;
 }
 
 /**
@@ -95,8 +97,8 @@ export const createFakeTaskController = (params: FakeTaskControllerParams = {}) 
         runtime: {
             isCloseToTimeout: () => false,
             isAborted: () => false,
-            getRemainingSeconds: () => 900,
-            getRemainingMilliseconds: () => 900000
+            getRemainingSeconds: () => Math.floor((params.remainingMilliseconds ?? 900000) / 1000),
+            getRemainingMilliseconds: () => params.remainingMilliseconds ?? 900000
         }
     };
 

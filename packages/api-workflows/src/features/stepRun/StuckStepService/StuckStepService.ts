@@ -5,21 +5,25 @@ import { Review } from "~/domain/review/Review.js";
 import { ReviewTargetSyncError } from "~/domain/review/errors.js";
 import { getStaleStepRunReason } from "~/domain/review/getStaleStepRunReason.js";
 import type { ReviewData } from "~/domain/review/types.js";
-import { AUTOMATION_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
-import { STEP_RUN_STUCK_GRACE_MS } from "~/features/stepRun/constants.js";
+import {
+    STEP_RUN_NEUTRAL_FAILED_REASON,
+    STEP_RUN_STUCK_GRACE_MS
+} from "~/features/stepRun/constants.js";
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
+import { StepRunnerRegistryService } from "~/features/stepRun/StepRunnerRegistryService/index.js";
 import { StuckStepService as Abstraction } from "./abstractions.js";
 
 class StuckStepServiceImpl implements Abstraction.Interface {
     constructor(
         private getTask: GetTaskUseCase.Interface,
         private saver: ReviewSaver.Interface,
-        private logger: Logger.Interface
+        private logger: Logger.Interface,
+        private runners: StepRunnerRegistryService.Interface
     ) {}
 
     async check(review: ReviewData): Promise<ReviewData> {
         const step = review.steps.find(item => item.id === review.currentStepId);
-        if (!step || step.type !== AUTOMATION_STEP_TYPE || step.state !== "inReview") {
+        if (!step || step.state !== "inReview") {
             return review;
         }
         const taskId = step.taskId;
@@ -78,10 +82,13 @@ class StuckStepServiceImpl implements Abstraction.Interface {
             return review;
         }
 
+        // The runner of the step's type names the reason; a step whose type has no runner (the
+        // flag or licence was turned off) is still failed, with the neutral text (R168).
+        const runner = this.runners.get(step.type);
         const stuck = Review.fromData(review);
         const failed = stuck.fail({
             stepId: step.id,
-            reason: "The automation task ended without a result.",
+            reason: runner ? runner.failureReasons.stuck : STEP_RUN_NEUTRAL_FAILED_REASON,
             now: new Date().toISOString()
         });
         if (failed.isFail()) {
@@ -123,5 +130,5 @@ class StuckStepServiceImpl implements Abstraction.Interface {
 
 export const StuckStepService = Abstraction.createImplementation({
     implementation: StuckStepServiceImpl,
-    dependencies: [GetTaskUseCase, ReviewSaver, Logger]
+    dependencies: [GetTaskUseCase, ReviewSaver, Logger, StepRunnerRegistryService]
 });

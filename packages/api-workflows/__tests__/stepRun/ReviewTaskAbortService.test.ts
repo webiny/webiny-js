@@ -76,6 +76,18 @@ describe("ReviewTaskAbortService (D57, R143, R151)", () => {
         expect(loggedInfos).toEqual(["The step run task had already ended."]);
     });
 
+    it("logs info, not an error, when the task is gone because it cleaned itself up (R179)", async () => {
+        const service = await createService();
+        fakeTaskFaults.abort = "gone";
+
+        await expect(
+            service.abort({ taskIds: ["task-1"], message: "The review was cancelled." })
+        ).resolves.toBeUndefined();
+
+        expect(loggedErrors).toEqual([]);
+        expect(loggedInfos).toEqual(["The step run task had already ended."]);
+    });
+
     it("logs a throwing abort, never throws, and still aborts the other ids", async () => {
         const service = await createService();
         fakeTaskFaults.abort = "throw";

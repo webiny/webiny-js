@@ -34,6 +34,7 @@ interface Fixture {
     tasks: ITask[];
     logs: ITaskLog[];
     definitions: Record<string, { databaseLogs?: boolean } | undefined>;
+    logPageSize?: number;
 }
 
 const makeContext = (fx: Fixture) => {
@@ -59,8 +60,17 @@ const makeContext = (fx: Fixture) => {
             return { items, meta: { totalCount: items.length, hasMoreItems: false, cursor: null } };
         }) as any,
         listLogs: (async (params: any) => {
-            const items = logsByTask.get(params?.where?.task) ?? [];
-            return { items, meta: { totalCount: items.length, hasMoreItems: false, cursor: null } };
+            const all = logsByTask.get(params?.where?.task) ?? [];
+            const size = fx.logPageSize ?? all.length;
+            const items = all.slice(0, size);
+            return {
+                items,
+                meta: {
+                    totalCount: all.length,
+                    hasMoreItems: all.length > size,
+                    cursor: null
+                }
+            };
         }) as any,
         deleteTask: (async (id: string) => {
             if (deleteTaskThrows.has(id)) {
@@ -72,6 +82,12 @@ const makeContext = (fx: Fixture) => {
         }) as any,
         deleteLog: (async (id: string) => {
             deletedLogs.push(id);
+            for (const [taskId, logs] of logsByTask) {
+                logsByTask.set(
+                    taskId,
+                    logs.filter(log => log.id !== id)
+                );
+            }
             return true;
         }) as any,
         getDefinition: (id: string) => fx.definitions[id] ?? null
@@ -107,14 +123,15 @@ describe("cleanupTaskSubtree", () => {
         expect(deletedLogs.sort()).toEqual(["log1", "log2"]);
     });
 
-    it("skips log sweep when databaseLogs=false", async () => {
-        const { container, deletedLogs } = makeContext({
+    it("deletes a task's logs even when databaseLogs=false", async () => {
+        const { container, deletedTasks, deletedLogs } = makeContext({
             tasks: [mkTask("t1", "defA")],
-            logs: [mkLog("stray", "t1")],
+            logs: [mkLog("abortLog", "t1")],
             definitions: { defA: { databaseLogs: false } }
         });
         await createCleanupTaskSubtree(container)("t1");
-        expect(deletedLogs).toEqual([]);
+        expect(deletedTasks).toEqual(["t1"]);
+        expect(deletedLogs).toEqual(["abortLog"]);
     });
 
     it("deletes descendant tree bottom-up", async () => {
@@ -155,7 +172,25 @@ describe("cleanupTaskSubtree", () => {
         await expect(createCleanupTaskSubtree(container)("ghost")).resolves.toBeUndefined();
     });
 
-    it("skips log sweep when definition is missing", async () => {
+    it("deletes every log of a task whose logs span several pages", async () => {
+        const { container, deletedTasks, deletedLogs } = makeContext({
+            tasks: [mkTask("t1", "defA")],
+            logs: [
+                mkLog("log1", "t1"),
+                mkLog("log2", "t1"),
+                mkLog("log3", "t1"),
+                mkLog("log4", "t1"),
+                mkLog("log5", "t1")
+            ],
+            definitions: { defA: { databaseLogs: false } },
+            logPageSize: 2
+        });
+        await createCleanupTaskSubtree(container)("t1");
+        expect(deletedTasks).toEqual(["t1"]);
+        expect([...deletedLogs].sort()).toEqual(["log1", "log2", "log3", "log4", "log5"]);
+    });
+
+    it("deletes a task's logs even when its definition is missing", async () => {
         const { container, deletedTasks, deletedLogs } = makeContext({
             tasks: [mkTask("t1", "defMissing")],
             logs: [mkLog("log1", "t1")],
@@ -163,7 +198,7 @@ describe("cleanupTaskSubtree", () => {
         });
         await createCleanupTaskSubtree(container)("t1");
         expect(deletedTasks).toEqual(["t1"]);
-        expect(deletedLogs).toEqual([]);
+        expect(deletedLogs).toEqual(["log1"]);
     });
 
     it("does not infinite-loop when the subtree has a cycle", async () => {

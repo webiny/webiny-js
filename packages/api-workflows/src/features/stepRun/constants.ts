@@ -25,3 +25,27 @@ export const DEFAULT_AUTOMATION_MAX_ITERATIONS = 50;
  * fail the step with the proper reason.
  */
 export const STEP_RUN_STUCK_GRACE_MS = 300000;
+
+/**
+ * How much of the task's remaining runtime the handler keeps back, in milliseconds, when it
+ * builds the runner's abort signal (R175): the signal fires at `remaining - margin`.
+ */
+export const STEP_RUN_TIMEOUT_MARGIN_MS = 30000;
+
+/**
+ * Below this many milliseconds left after the margin, the signal is aborted at once instead of
+ * starting a timer (R175): the step fails as timed out, restartable.
+ */
+export const STEP_RUN_MIN_TIMEOUT_MS = 1000;
+
+/**
+ * The most often a caller re-reads the stored review through `StepRunStaleCheckService` during a
+ * run, in milliseconds (R175). The service itself does not throttle: `AiStepRunner` (Task 19) does.
+ */
+export const STEP_RUN_STALE_CHECK_INTERVAL_MS = 5000;
+
+/** Stored by a failure hook or stuck detection for a step type with no runner (R168). */
+export const STEP_RUN_NEUTRAL_FAILED_REASON = "The step failed.";
+
+/** Stored by `onAbort` for a step type with no runner (R168). */
+export const STEP_RUN_NEUTRAL_ABORTED_REASON = "The step was aborted.";

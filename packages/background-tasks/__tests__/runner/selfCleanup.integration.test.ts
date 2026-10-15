@@ -215,6 +215,90 @@ describe("selfCleanup integration", () => {
         expect(await context.tasks.getTask(task.id)).toBeNull();
     });
 
+    it("user's onError runs before cleanup fires", async () => {
+        const order: string[] = [];
+        const contextRef: {
+            current?: Awaited<ReturnType<ReturnType<typeof createLiveContextFactory>>>;
+        } = {};
+
+        const plugin = createTaskDefinition({
+            id: "cleanupErrorOrderTask",
+            title: "cleanupErrorOrderTask",
+            selfCleanup: "always",
+            run: async ({ controller }) =>
+                controller.response.error({ message: "boom", code: "TEST_ERR" }),
+            onError: async ({ task }) => {
+                // Task must still exist while the user's hook runs.
+                const live = await contextRef.current!.tasks.getTask(task.id);
+                order.push(live ? "user-saw-task" : "user-task-gone");
+            }
+        });
+        const contextFactory = createLiveContextFactory({ plugins: [plugin] });
+        const context = await contextFactory();
+        contextRef.current = context;
+
+        const task = await runTask(context, "cleanupErrorOrderTask");
+
+        expect(order).toEqual(["user-saw-task"]);
+        expect(await context.tasks.getTask(task.id)).toBeNull();
+    });
+
+    it("user's onAbort runs before cleanup fires", async () => {
+        const order: string[] = [];
+        const contextRef: {
+            current?: Awaited<ReturnType<ReturnType<typeof createLiveContextFactory>>>;
+        } = {};
+
+        const plugin = createTaskDefinition({
+            id: "cleanupAbortOrderTask",
+            title: "cleanupAbortOrderTask",
+            selfCleanup: "always",
+            run: async ({ controller }) => controller.response.done("ok"),
+            onAbort: async ({ task }) => {
+                // Task must still exist while the user's hook runs.
+                const live = await contextRef.current!.tasks.getTask(task.id);
+                order.push(live ? "user-saw-task" : "user-task-gone");
+            }
+        });
+        const contextFactory = createLiveContextFactory({ plugins: [plugin] });
+        const context = await contextFactory();
+        contextRef.current = context;
+
+        const task = await context.tasks.createTask({
+            definitionId: "cleanupAbortOrderTask",
+            input: {},
+            name: "to-abort"
+        });
+        await context.tasks.abort({ id: task.id, message: "testing hook order on abort" });
+
+        expect(order).toEqual(["user-saw-task"]);
+        expect(await context.tasks.getTask(task.id)).toBeNull();
+    });
+
+    it("selfCleanup='always' removes the log row an abort writes", async () => {
+        // `databaseLogs` is forced to false by the decorator, but `TaskService.abort` still
+        // creates one log row (the task has none); the cleanup must delete it with the task.
+        const plugin = createTaskDefinition({
+            id: "cleanupAbortLogTask",
+            title: "cleanupAbortLogTask",
+            selfCleanup: "always",
+            run: async ({ controller }) => controller.response.done("ok")
+        });
+        const contextFactory = createLiveContextFactory({ plugins: [plugin] });
+        const context = await contextFactory();
+
+        const task = await context.tasks.createTask({
+            definitionId: "cleanupAbortLogTask",
+            input: {},
+            name: "to-abort"
+        });
+        await context.tasks.abort({ id: task.id, message: "testing the abort log cleanup" });
+
+        expect(await context.tasks.getTask(task.id)).toBeNull();
+        const { items } = await context.tasks.listLogs({ where: { task: task.id } });
+        expect(items).toHaveLength(0);
+    });
+
     it("cascade deletes grandchildren (3 levels deep)", async () => {
         const parent = createTaskDefinition({
             id: "cleanupDeepParent",

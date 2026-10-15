@@ -51,6 +51,7 @@ import { WorkflowBypassServiceFeature } from "~/features/bypass/WorkflowBypassSe
 import { ReviewTaskAbortServiceFeature } from "~/features/stepRun/ReviewTaskAbortService/feature.js";
 import { StepRunReachServiceFeature } from "~/features/stepRun/StepRunReachService/feature.js";
 import { StepRunnerRegistryFeature } from "~/features/stepRun/StepRunnerRegistryService/feature.js";
+import { StepRunStaleCheckFeature } from "~/features/stepRun/StepRunStaleCheckService/feature.js";
 import { AutomationStepRunnerFeature } from "~/features/stepRun/AutomationStepRunner/feature.js";
 import { WorkflowStepRunTaskFeature } from "~/features/stepRun/WorkflowStepRunTask/feature.js";
 import { WorkflowsPermissionsFeature } from "~/features/permissions/WorkflowsPermissions/feature.js";
@@ -153,6 +154,8 @@ export const WorkflowsFeature = createFeature({
         // The step runners the task dispatches to, and the built-in automation runner (R168)
         StepRunnerRegistryFeature.register(container);
         AutomationStepRunnerFeature.register(container);
+        // The stored-review stale check for runners whose call outlives the run start (R175)
+        StepRunStaleCheckFeature.register(container);
         // The private task that runs a workflow step (R142)
         WorkflowStepRunTaskFeature.register(container);
 

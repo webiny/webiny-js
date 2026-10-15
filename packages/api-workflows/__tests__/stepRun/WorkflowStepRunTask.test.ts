@@ -118,7 +118,7 @@ const HOOKS: { hook: HookName; reason: string; errorMessage?: string; logged: nu
 ];
 
 describe("workflowsStepRun task definition (R142)", () => {
-    it("is one private definition with a high iteration ceiling and no self cleanup", async () => {
+    it("is one private definition with a high iteration ceiling that cleans itself up", async () => {
         const { context } = await createContextHandler();
 
         const definitions = context.container
@@ -130,7 +130,7 @@ describe("workflowsStepRun task definition (R142)", () => {
             id: "workflowsStepRun",
             title: "Workflow step run",
             isPrivate: true,
-            selfCleanup: "never",
+            selfCleanup: "always",
             maxIterations: 10000
         });
         expect(definitions[0].description).toEqual(expect.any(String));
