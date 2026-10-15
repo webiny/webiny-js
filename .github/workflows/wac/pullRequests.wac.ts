@@ -321,7 +321,7 @@ export const pullRequests = createWorkflow({
                 ...withCommonParams(
                     [
                         { name: "Install dependencies", run: "yarn --immutable" },
-                        { name: "Check types for Cypress tests", run: "yarn cy:ts" }
+                        { name: "Check types for E2E tests", run: "yarn e2e:ts" }
                     ],
                     { "working-directory": DIR_WEBINY_JS }
                 )
