@@ -83,10 +83,9 @@ describe("CmsEntryReviewTargetEditor.read", () => {
         });
         expect(byPath.age.value).toBe(30);
         expect(byPath.active.value).toBe(true);
-        // The revision as the CMS reads it, not the create response (a datetime reads as a Date).
-        expect(byPath.joinedOn.value).toEqual(
-            (await readProfile(context, entry.id)).values.joinedOn
-        );
+        // The CMS reads a datetime as a Date; the AI gets the ISO string.
+        const stored = (await readProfile(context, entry.id)).values.joinedOn as Date;
+        expect(byPath.joinedOn.value).toBe(stored.toISOString());
         expect(byPath["address.street"].value).toBe("Main Street");
         expect(byPath["address.location.label"].value).toBe("Home");
         expect(byPath["address.landlord"].value).toEqual({

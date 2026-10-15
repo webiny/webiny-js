@@ -18,6 +18,36 @@ const isRecord = (value: unknown): value is Record<string, unknown> => {
     return typeof value === "object" && value !== null && !Array.isArray(value);
 };
 
+/**
+ * A datetime value as the CMS write validator accepts it. The CMS reads a datetime as a `Date`; the
+ * AI gets a string: `YYYY-MM-DD` for `date`, an ISO string otherwise. Strings pass unchanged and an
+ * invalid `Date` is `null`.
+ */
+const toDatetimeString = (value: unknown, subtype: unknown): unknown => {
+    if (!(value instanceof Date)) {
+        return value;
+    }
+    if (Number.isNaN(value.getTime())) {
+        return null;
+    }
+    const iso = value.toISOString();
+    return subtype === "date" ? iso.slice(0, 10) : iso;
+};
+
+const normalizeValue = (field: CmsModelField, value: unknown): unknown => {
+    if (value === undefined) {
+        return null;
+    }
+    if (field.type !== "datetime") {
+        return value;
+    }
+    const subtype = field.settings?.type;
+    if (field.list && Array.isArray(value)) {
+        return value.map(item => toDatetimeString(item, subtype));
+    }
+    return toDatetimeString(value, subtype);
+};
+
 const flattenFields = (
     fields: CmsModelField[],
     values: Record<string, unknown>,
@@ -36,7 +66,7 @@ const flattenFields = (
             path: segments.join("."),
             label: field.label,
             type: field.type,
-            value: value === undefined ? null : value,
+            value: normalizeValue(field, value),
             writable: !field.list && WRITABLE_FIELD_TYPES.includes(field.type)
         });
     }

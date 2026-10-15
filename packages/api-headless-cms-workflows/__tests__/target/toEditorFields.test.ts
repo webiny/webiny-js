@@ -159,4 +159,49 @@ describe("toEditorFields", () => {
             { path: "blob", label: "BLOB", type: "object", value: { x: 1 }, writable: false }
         ]);
     });
+
+    describe("datetime values", () => {
+        const read = (
+            settings: Record<string, unknown> | undefined,
+            value: unknown,
+            list = false
+        ) => {
+            const model = createModel([field({ fieldId: "d", type: "datetime", settings, list })]);
+            return toEditorFields(model, { d: value as never })[0].value;
+        };
+        const date = new Date("2024-01-15T10:30:00.000Z");
+
+        it("gives a date as YYYY-MM-DD", () => {
+            expect(read({ type: "date" }, date)).toBe("2024-01-15");
+        });
+
+        it("gives dateTimeWithoutTimezone and an unset type as an ISO string", () => {
+            expect(read({ type: "dateTimeWithoutTimezone" }, date)).toBe(
+                "2024-01-15T10:30:00.000Z"
+            );
+            expect(read(undefined, date)).toBe("2024-01-15T10:30:00.000Z");
+        });
+
+        it("leaves time, dateTimeWithTimezone and strings unchanged", () => {
+            expect(read({ type: "time" }, "10:30:00")).toBe("10:30:00");
+            expect(read({ type: "dateTimeWithTimezone" }, "2024-01-15T10:30:00+02:00")).toBe(
+                "2024-01-15T10:30:00+02:00"
+            );
+            expect(read({ type: "date" }, "2024-01-15")).toBe("2024-01-15");
+        });
+
+        it("gives an invalid Date and a missing value as null", () => {
+            expect(read({ type: "date" }, new Date("nope"))).toBeNull();
+            expect(read({ type: "date" }, null)).toBeNull();
+            expect(read({ type: "date" }, undefined)).toBeNull();
+        });
+
+        it("normalises each item of a list", () => {
+            expect(read({ type: "date" }, [date, "2024-02-01", new Date("nope")], true)).toEqual([
+                "2024-01-15",
+                "2024-02-01",
+                null
+            ]);
+        });
+    });
 });
