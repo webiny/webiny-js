@@ -20,14 +20,14 @@
 
 ## Current state
 
-- Branch: bruno/refactor/workflows-flow, 331 commits ahead of origin/next, never pushed.
+- Branch: bruno/refactor/workflows-flow, 333 commits ahead of origin/next, never pushed.
 - Last code commit d66ecec123 passed the full pre-commit chain and targeted tests on both storages.
-- Uncommitted at pause: 00-answers.md Q5 line (committed with this handoff); the Task 3b writer (task-03b-mailer-default-from.md + R201 + 7.1 overview row) may have been interrupted — check.
+- Task 3b plan (api-mailer default `from`: SmtpMailTransportFactory passes settings.from; explicit from wins) committed as an UNREVIEWED draft (18f64c39cc) with R201 and the 7.1 overview row. Tree clean.
 - Resume map: .superpowers/sdd/p7-plan/notes.md ("PAUSE" section).
 
 ## What might come next
 
-- Finish/verify Task 3b plan (api-mailer default `from`), review, commit; implement it with SDD.
+- Review Task 3b plan (doubt: e2e via registerCodeSmtpSettings with explicit from untested; empty-string from already rejected by SendMailUseCase), fix, commit; implement it with SDD.
 - 7.2 (Tasks 4-5, take-over flag), 7.3 (Tasks 6-9), 7.4 (Tasks 10-13), 7.5 (Task 14), stopping per sub-phase.
 - Open user decisions: RUNNING-task reaping after a hard-killed Lambda; R180 detail in committed phase 6 plan files.
 - Pre-merge: commit trailers (0b0157fe9f, c9ec20e917 and older), useGraphQLHandler.ts ApiKey type error, R180 SEC id in docs/.reports/security.md, ListAutomationDefinitions/StepTypes raw-message leak fixed (7cdadc545d), earlier handoff items.
