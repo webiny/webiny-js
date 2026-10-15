@@ -21,6 +21,7 @@ class TakeOverReviewStepUseCaseImpl implements UseCase.Interface {
             stepId: input.stepId,
             actor: input.actor,
             actorTeamIds: input.actorTeamIds,
+            notifyPreviousOwner: input.notifyPreviousOwner ?? true,
             now: new Date().toISOString()
         });
         if (takenOver.isFail()) {

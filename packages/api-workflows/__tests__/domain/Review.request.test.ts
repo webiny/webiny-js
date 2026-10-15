@@ -423,6 +423,7 @@ describe("Review.takeOver", () => {
                 actor: otherReviewer,
                 change: { stepId: "legal", fromState: "inReview", toState: "inReview" },
                 previousOwner: reviewer,
+                notifyPreviousOwner: true,
                 records: [
                     {
                         kind: "outcome",
@@ -435,6 +436,44 @@ describe("Review.takeOver", () => {
                 ]
             }
         ]);
+    });
+
+    it("puts an explicit notifyPreviousOwner true and false on the fact (D111)", () => {
+        const notified = createStartedReview();
+        const silent = createStartedReview();
+
+        const notifiedResult = notified.takeOver({
+            ...onLegal(otherReviewer),
+            notifyPreviousOwner: true
+        });
+        const silentResult = silent.takeOver({
+            ...onLegal(otherReviewer),
+            notifyPreviousOwner: false
+        });
+
+        expect(notifiedResult.isOk()).toBe(true);
+        expect(silentResult.isOk()).toBe(true);
+        expect(notified.pullFacts()).toMatchObject([
+            { type: "stepTakenOver", notifyPreviousOwner: true }
+        ]);
+        expect(silent.pullFacts()).toMatchObject([
+            { type: "stepTakenOver", notifyPreviousOwner: false }
+        ]);
+    });
+
+    it("counts an undefined notifyPreviousOwner as true and never stores the flag (R185)", () => {
+        const review = createStartedReview();
+
+        const result = review.takeOver({
+            ...onLegal(otherReviewer),
+            notifyPreviousOwner: undefined
+        });
+
+        expect(result.isOk()).toBe(true);
+        expect(review.pullFacts()).toMatchObject([
+            { type: "stepTakenOver", notifyPreviousOwner: true }
+        ]);
+        expect(JSON.stringify(review.toData())).not.toContain("notifyPreviousOwner");
     });
 
     it("does not let the current owner take over", () => {

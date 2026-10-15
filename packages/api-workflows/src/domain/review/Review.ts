@@ -77,6 +77,11 @@ export interface ReviewActorParams extends ReviewActorCheckParams {
     now: string;
 }
 
+export interface ReviewTakeOverParams extends ReviewActorParams {
+    /** D111: whether the previous owner is told; omitted means true. Carried on the fact, never stored. */
+    notifyPreviousOwner?: boolean;
+}
+
 /** `actorTeamIds` is not read by approve or reject: only the owner decides (spec 5.1). */
 export interface ReviewDecisionParams extends ReviewActorParams {
     comment: string | null;
@@ -435,7 +440,7 @@ export class Review {
         return Review.toCheck(this.guardTakeOver(params));
     }
 
-    public takeOver(params: ReviewActorParams): Result<void, ReviewTakeOverError> {
+    public takeOver(params: ReviewTakeOverParams): Result<void, ReviewTakeOverError> {
         const guard = this.guardTakeOver(params);
         if (guard.isFail()) {
             return Result.fail(guard.error);
@@ -452,6 +457,7 @@ export class Review {
             actor: { ...params.actor },
             change: { stepId: step.id, fromState: "inReview", toState: "inReview" },
             previousOwner: { ...previousOwner },
+            notifyPreviousOwner: params.notifyPreviousOwner ?? true,
             records: [
                 {
                     kind: "outcome",

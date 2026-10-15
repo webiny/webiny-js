@@ -137,9 +137,62 @@ describe("Review transitions", () => {
             item => item.eventType === "Workflows/Review/StepTakenOver"
         ) as ReviewStepTakenOverEvent;
         expect(event.payload.fact.previousOwner).toEqual(reviewer);
+        expect(event.payload.fact.notifyPreviousOwner).toBe(true);
 
         const again = await takeOver.execute(actorInput(otherReviewer));
         expect(again.error.code).toBe("Workflows/Review/AlreadyOwner");
+    });
+
+    it("puts notifyPreviousOwner true on the published fact when the input omits it (D111)", async () => {
+        const { start, takeOver, actorInput } = await setup();
+        expectOk(await start.execute(actorInput()));
+        resetRecorders();
+
+        const result = await takeOver.execute(actorInput(otherReviewer));
+
+        expect(result.isOk()).toBe(true);
+        const event = recordedEvents.find(
+            item => item.eventType === "Workflows/Review/StepTakenOver"
+        ) as ReviewStepTakenOverEvent;
+        expect(event.payload.fact.notifyPreviousOwner).toBe(true);
+    });
+
+    it("puts an explicit notifyPreviousOwner true on the published fact (D111)", async () => {
+        const { start, takeOver, actorInput } = await setup();
+        expectOk(await start.execute(actorInput()));
+        resetRecorders();
+
+        const result = await takeOver.execute({
+            ...actorInput(otherReviewer),
+            notifyPreviousOwner: true
+        });
+
+        expect(result.isOk()).toBe(true);
+        const event = recordedEvents.find(
+            item => item.eventType === "Workflows/Review/StepTakenOver"
+        ) as ReviewStepTakenOverEvent;
+        expect(event.payload.fact.notifyPreviousOwner).toBe(true);
+    });
+
+    it("puts an explicit notifyPreviousOwner false on the published fact and still takes over (D111)", async () => {
+        const { start, takeOver, actorInput } = await setup();
+        expectOk(await start.execute(actorInput()));
+        resetRecorders();
+
+        const result = await takeOver.execute({
+            ...actorInput(otherReviewer),
+            notifyPreviousOwner: false
+        });
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.currentOwnerId).toBe(otherReviewer.id);
+        expect(workflowEventTypes()).toEqual(["Workflows/Review/StepTakenOver"]);
+        const event = recordedEvents.find(
+            item => item.eventType === "Workflows/Review/StepTakenOver"
+        ) as ReviewStepTakenOverEvent;
+        expect(event.payload.fact.notifyPreviousOwner).toBe(false);
+        expect(event.payload.fact.previousOwner).toEqual(reviewer);
+        expect(JSON.stringify(result.value)).not.toContain("notifyPreviousOwner");
     });
 
     it("does not let the requester or a non-member take over", async () => {

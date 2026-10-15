@@ -48,6 +48,8 @@ export interface ReviewStepTakenOverFact {
     actor: Actor;
     change: ReviewStepChange;
     previousOwner: Actor;
+    /** D111: whether the previous owner is told; the opt-out is this one fact, never stored. */
+    notifyPreviousOwner: boolean;
     /** One `takeOver` outcome with `by` (R117, A49). */
     records: AssignmentDecision[];
 }

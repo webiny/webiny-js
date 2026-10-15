@@ -80,6 +80,7 @@ describe("toAssignmentRecordValues (R117)", () => {
             actor: otherReviewer,
             change: { stepId: "legal", fromState: "inReview", toState: "inReview" },
             previousOwner: reviewer,
+            notifyPreviousOwner: true,
             records: [
                 { ...OUTCOME, userId: otherReviewer.id, source: "takeOver", by: otherReviewer }
             ]
