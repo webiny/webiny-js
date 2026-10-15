@@ -59,6 +59,7 @@ const RefInputsInner = observer(({ field }: InnerFieldProps) => {
             options={vm.options}
             uniqueValues
             validation={field.validation}
+            shouldFilter={false}
             onValueSearch={query => presenter.search(query)}
             onValuesChange={entryIds => {
                 const refs = presenter.select(entryIds);
