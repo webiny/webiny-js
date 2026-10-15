@@ -22,6 +22,7 @@ import { BUG_REPORTER_ENV } from "./steps/index.js";
 import {
     createInstallationTestSteps,
     createStandaloneProjectParts,
+    createUnlicensedE2eSteps,
     type StandaloneStorageOps
 } from "./e2e/index.js";
 import { AbstractStorageOps } from "./storageOps/AbstractStorageOps.js";
@@ -217,6 +218,11 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
                 workingDirectory: DIR_WEBINY_JS,
                 adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
                 artifactName: `e2e-results-${storageOps.shortId}`
+            }),
+            ...createUnlicensedE2eSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
+                artifactName: `e2e-test-results-${storageOps.shortId}`
             })
         ]
     });
