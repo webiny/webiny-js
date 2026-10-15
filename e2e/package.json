@@ -1,0 +1,19 @@
+{
+  "name": "e2e-tests",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "description": "End-to-end tests for Webiny, written with the e2e framework (https://e2e.tester.army).",
+  "author": "Webiny Ltd.",
+  "devDependencies": {
+    "@e2e-dev/web": "^0.11.1",
+    "e2e": "^0.15.1",
+    "playwright": "^1.63.0",
+    "typescript": "^7.0.2"
+  },
+  "scripts": {
+    "test": "e2e run",
+    "test:headed": "e2e run --headed",
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}

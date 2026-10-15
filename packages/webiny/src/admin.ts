@@ -30,3 +30,4 @@ export {
 } from "@webiny/app-admin/presentation/commandPalette/index.js";
 export { createFeature, createAbstraction, BaseError } from "@webiny/feature/admin/index.js";
 export { usePreviewDomain } from "@webiny/frontend-settings/admin/usePreviewDomain.js";
+export { PreviewDomainMenu } from "@webiny/frontend-settings/admin/presentation/PreviewDomainMenu.js";

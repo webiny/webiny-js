@@ -26,7 +26,7 @@ export const ModelEditorComponentDiscovery = ContentModelEditor.createDecorator(
 
         return (
             <>
-                {previewPath ? (
+                {previewPath && previewDomain ? (
                     <ComponentDiscoveryIframe domain={previewDomain} previewPath={previewPath} />
                 ) : null}
                 <Original />
