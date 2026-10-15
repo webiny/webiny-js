@@ -3,6 +3,11 @@ import { Container } from "@webiny/di";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { StepType } from "@webiny/api-workflows/features/stepTypes/StepType/index.js";
+import { StepRunner } from "@webiny/api-workflows/features/stepRun/StepRunner/index.js";
+import { StepRunReachService } from "@webiny/api-workflows/features/stepRun/StepRunReachService/index.js";
+import { StepRunStaleCheckService } from "@webiny/api-workflows/features/stepRun/StepRunStaleCheckService/index.js";
+import { WorkflowAiToolRegistryService } from "@webiny/api-workflows/features/aiTools/WorkflowAiToolRegistryService/index.js";
+import { ReviewTargetEditorService } from "@webiny/api-workflows/features/review/ReviewTargetEditorService/index.js";
 import { WorkflowsSchemaFactory } from "@webiny/api-workflows/graphql/WorkflowsSchemaFactory.js";
 import { Extension } from "~/api/Extension.js";
 import { AiCapability } from "~/api/features/Capabilities/index.js";
@@ -45,6 +50,20 @@ const createContainer = (enabledFlags: string[]): Container => {
         })
     );
     registerFakeWorkflowsAccess(container);
+    // The workflows services the ai step type and runner inject. Never called here.
+    container.registerInstance(StepRunReachService, {} as unknown as StepRunReachService.Interface);
+    container.registerInstance(
+        StepRunStaleCheckService,
+        {} as unknown as StepRunStaleCheckService.Interface
+    );
+    container.registerInstance(
+        WorkflowAiToolRegistryService,
+        {} as unknown as WorkflowAiToolRegistryService.Interface
+    );
+    container.registerInstance(
+        ReviewTargetEditorService,
+        {} as unknown as ReviewTargetEditorService.Interface
+    );
     return container;
 };
 
@@ -101,9 +120,23 @@ describe("workflow review registration: the combined gate (R177, D56, Review Foc
         expect(typeDefs).not.toContain("listAiModels");
     });
 
-    it("does not register the ai step type yet, with both flags on (R178; Task 19 registers it)", () => {
+    it("registers the ai step type and the ai runner together with both flags on (R178)", () => {
         const container = createContainer(["aiPowerups", "advancedPublishingWorkflow"]);
 
+        expect(container.resolveAll(StepType).map(stepType => stepType.type)).toEqual(["ai"]);
+        const runners = container.resolveAll(StepRunner);
+        expect(runners.map(runner => runner.type)).toEqual(["ai"]);
+        expect(runners[0].singleRun).toBe(true);
+    });
+
+    it.each([
+        { name: "aiPowerups on and workflows off", flags: ["aiPowerups"] },
+        { name: "workflows on and aiPowerups off", flags: ["advancedPublishingWorkflow"] },
+        { name: "both off", flags: [] as string[] }
+    ])("registers no ai step type and no ai runner with $name", ({ flags }) => {
+        const container = createContainer(flags);
+
         expect(container.resolveAll(StepType)).toHaveLength(0);
+        expect(container.resolveAll(StepRunner)).toHaveLength(0);
     });
 });

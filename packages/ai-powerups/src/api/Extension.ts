@@ -25,6 +25,8 @@ import { WbTranslatePageFeature } from "./features/WbTranslatePage/feature.js";
 import { CmsCompareEntryRevisionsSchema } from "./graphql/CmsCompareEntryRevisionsSchema.js";
 import { WorkflowsReviewCapability } from "./features/WorkflowReview/WorkflowsReviewCapability.js";
 import { ListWorkflowAiModelsFeature } from "./features/WorkflowReview/ListWorkflowAiModels/feature.js";
+import { AiStepType } from "./features/WorkflowReview/AiStepType/AiStepType.js";
+import { AiStepRunnerFeature } from "./features/WorkflowReview/AiStepRunner/feature.js";
 import { ListWorkflowAiModelsSchema } from "./graphql/ListWorkflowAiModelsSchema.js";
 
 export const Extension = createFeature({
@@ -102,5 +104,14 @@ export const Extension = createFeature({
         container.register(WorkflowsReviewCapability);
         ListWorkflowAiModelsFeature.register(container);
         container.register(ListWorkflowAiModelsSchema);
+
+        /*
+         * The `ai` step type and its runner register together, last (R178): nothing above can
+         * save an AI step that no runner can run. With the type registered `listStepTypes` reads
+         * the `ai` row from the registry (R166), and `Extension.register` has returned above
+         * unless both `aiPowerups` and `advancedPublishingWorkflow` are on (R177).
+         */
+        container.register(AiStepType);
+        AiStepRunnerFeature.register(container);
     }
 });
