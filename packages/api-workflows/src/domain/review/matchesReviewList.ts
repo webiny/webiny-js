@@ -1,7 +1,8 @@
+import { AI_STEP_TYPE, AUTOMATION_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
 import type { ReviewData, ReviewListKind, ReviewListWhere } from "./types.js";
 
 /** Current step types the failed steps list shows (D112). */
-export const FAILED_STEP_LIST_TYPES: readonly string[] = ["ai", "automation"];
+export const FAILED_STEP_LIST_TYPES: readonly string[] = [AI_STEP_TYPE, AUTOMATION_STEP_TYPE];
 
 export interface ReviewListMatchParams {
     list: ReviewListKind;

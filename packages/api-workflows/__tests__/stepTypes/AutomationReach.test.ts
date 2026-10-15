@@ -243,7 +243,7 @@ describe("AutomationStepType.reach (R146, R149)", () => {
         });
         expect(abortedTasks).toEqual([]);
         expect(loggedErrors.map(logged => logged.message)).toEqual([
-            "Could not start the automation task."
+            "Could not start the step run task."
         ]);
         expect((loggedErrors[0].fields.error as Error).message).toBe("The queue is full");
     });
@@ -263,7 +263,7 @@ describe("AutomationStepType.reach (R146, R149)", () => {
             comment: "The automation could not be started."
         });
         expect(loggedErrors.map(logged => logged.message)).toEqual([
-            "Could not start the automation task."
+            "Could not start the step run task."
         ]);
         expect((loggedErrors[0].fields.error as Error).message).toBe("The task service is down");
     });

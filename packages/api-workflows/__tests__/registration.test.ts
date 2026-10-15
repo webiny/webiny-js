@@ -124,7 +124,7 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(ReviewSaver)).toHaveLength(1);
         expect(container.resolveAll(ReviewStepReacher)).toHaveLength(1);
         expect(container.resolveAll(StepTypeRegistryService)).toHaveLength(1);
-        // `review` and `automation` (the `ai` type is registered by phase 6).
+        // `review` and `automation` (ai-powerups registers `ai`, R177).
         expect(container.resolveAll(StepType)).toHaveLength(2);
         expect(container.resolveAll(AutomationDefinitionRegistryService)).toHaveLength(1);
         // No built-in automation (R155): developers register definitions.

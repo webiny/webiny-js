@@ -6,7 +6,7 @@ import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/inde
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
 import { WorkflowValidator } from "~/domain/workflow/WorkflowValidator.js";
-import { REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
+import { AI_STEP_TYPE, REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
 import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
 import { parseReviewStepConfig } from "~/domain/workflow/reviewStepConfigSchema.js";
 import {
@@ -37,13 +37,13 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
 
     async execute(input: UseCase.Input): UseCase.Return {
         // Each step is validated by its registered step type (R131). While no `ai` type is
-        // registered (phase 6 registers it) an `ai` step gets its own message (R132).
+        // registered (ai-powerups registers it, R177) an `ai` step gets its own message (R132).
         const validation = WorkflowValidator.validate(input.workflow, step => {
             const stepType = this.stepTypes.get(step.type);
             if (!stepType) {
                 return Result.fail(
                     new WorkflowValidationError(
-                        step.type === "ai"
+                        step.type === AI_STEP_TYPE
                             ? `Step "${step.title}" uses the step type "ai", which is not available.`
                             : `Step "${step.title}" uses an unknown step type "${step.type}".`
                     )

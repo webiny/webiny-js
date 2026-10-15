@@ -34,7 +34,8 @@ const fail = (message: string) => {
  * changed step. `reach` mirrors the automation step: every reason that stops the step from running
  * is a fixed text (R170) and the shared `StepRunReachService` does the triggering.
  *
- * Not registered by `Extension.ts` until Task 19 registers the type and the runner together (R178).
+ * Registered by `Extension.ts` together with `AiStepRunner`, last, only when `aiPowerups` and
+ * `advancedPublishingWorkflow` are both on (R177, R178).
  */
 class AiStepTypeImpl implements StepType.Interface {
     public readonly type = AI_STEP_TYPE;

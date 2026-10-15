@@ -60,9 +60,9 @@ export interface IStepType {
 
 /**
  * A kind of workflow step (spec 4.1, 7.1, R131). Multi-registered: the engine registers `review`
- * and `automation`; phase 6 registers `ai`. `StepTypeRegistryService` returns the last
- * registration per `type`. The save-time validation, `listStepTypes` and (from Task 10) the step
- * reach go through it.
+ * and `automation`; ai-powerups registers `ai` (R177). `StepTypeRegistryService` returns the last
+ * registration per `type`. The save-time validation, `listStepTypes` and the step reach go
+ * through it.
  */
 export const StepType = createAbstraction<IStepType>("StepType");
 

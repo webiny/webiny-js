@@ -5,7 +5,11 @@ import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstraction
 import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
 import type { WorkflowStepTypeInfo } from "~/domain/config/types.js";
-import { AUTOMATION_STEP_TYPE, REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
+import {
+    AI_STEP_TYPE,
+    AUTOMATION_STEP_TYPE,
+    REVIEW_STEP_TYPE
+} from "~/domain/workflow/stepTypes.js";
 import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
 import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
@@ -64,9 +68,10 @@ class ListWorkflowStepTypesUseCaseImpl implements UseCase.Interface {
             return Result.fail(new WorkflowPersistenceError(new Error(FAILURE_MESSAGE)));
         }
 
-        // While no `ai` type is registered (phase 6 registers it), the row stays, as it was
-        // before the registry: AI steps need the AI powerups entitlement (D130, R132).
-        if (!rowsByType.has("ai")) {
+        // While no `ai` type is registered (ai-powerups registers it only when `aiPowerups` and
+        // `advancedPublishingWorkflow` are both on, R177), the row stays, as it was before the
+        // registry: AI steps need the AI powerups entitlement (D130, R132, R166).
+        if (!rowsByType.has(AI_STEP_TYPE)) {
             let aiAvailable: boolean;
             try {
                 aiAvailable = this.featureFlags.get().isEnabled("aiPowerups");
@@ -74,8 +79,8 @@ class ListWorkflowStepTypesUseCaseImpl implements UseCase.Interface {
                 this.logger.error({ error }, FAILURE_LOG);
                 return Result.fail(new WorkflowPersistenceError(new Error(FAILURE_MESSAGE)));
             }
-            rowsByType.set("ai", {
-                type: "ai",
+            rowsByType.set(AI_STEP_TYPE, {
+                type: AI_STEP_TYPE,
                 title: "AI",
                 available: aiAvailable,
                 unavailableReason: aiAvailable ? null : "AI powerups are not enabled.",
@@ -84,7 +89,7 @@ class ListWorkflowStepTypesUseCaseImpl implements UseCase.Interface {
         }
 
         // Fixed display order first, then the other types in registration order (R138).
-        const displayOrder = [REVIEW_STEP_TYPE, "ai", AUTOMATION_STEP_TYPE];
+        const displayOrder = [REVIEW_STEP_TYPE, AI_STEP_TYPE, AUTOMATION_STEP_TYPE];
         const rows = [
             ...displayOrder
                 .map(type => rowsByType.get(type))

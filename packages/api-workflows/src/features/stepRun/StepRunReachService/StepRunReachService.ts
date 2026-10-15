@@ -49,7 +49,7 @@ class StepRunReachServiceImpl implements Abstraction.Interface {
                     // The raw message can carry internals: logged, never stored (R146).
                     this.logger.error(
                         { error: triggered.error, reviewId: data.id, stepId: step.id },
-                        "Could not start the automation task."
+                        "Could not start the step run task."
                     );
                     reason = startFailure;
                 } else {
@@ -58,7 +58,7 @@ class StepRunReachServiceImpl implements Abstraction.Interface {
             } catch (error) {
                 this.logger.error(
                     { error, reviewId: data.id, stepId: step.id },
-                    "Could not start the automation task."
+                    "Could not start the step run task."
                 );
                 reason = startFailure;
             }

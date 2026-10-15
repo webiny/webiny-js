@@ -3,8 +3,9 @@ import { createAbstraction } from "@webiny/feature/api";
 export interface IWorkflowBypassService {
     /**
      * Runs the callback with the bypass flag set and restores the previous value in `finally`,
-     * also when the callback throws. Only the step run handler calls it, around the automation
-     * (R150). It does not touch the identity and does not widen permissions.
+     * also when the callback throws. Only the automation runner (around the automation, R150) and
+     * the built-in `updateTargetFields` AI tool (around its write only, R173) call it. It does
+     * not touch the identity and does not widen permissions.
      */
     run<T>(callback: () => Promise<T>): Promise<T>;
     /** Whether a `run` is in progress on this request container. */
