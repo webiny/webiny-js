@@ -63,7 +63,7 @@ The handler may start before the save lands, so it waits for the task id to appe
 
 A stale guard protects the review. The task's `createdBy` must be the requester and the step's `taskId` must be the task's id; both are checked before `run` and checked again after it, because a restarted step has a new task and the old task's late result must not be applied.
 
-GraphQL `triggerTask` refuses private task definitions like unknown ones (SEC-68), so `workflowsStepRun` cannot be started from outside the engine.
+GraphQL `triggerTask` refuses private task definitions like unknown ones (R147), so `workflowsStepRun` cannot be started from outside the engine.
 
 ## 8. Failure and restart
 

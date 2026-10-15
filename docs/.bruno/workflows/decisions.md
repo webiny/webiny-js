@@ -345,7 +345,7 @@ Refines D51. One handler on the CMS `EntryRevisionBeforeCreate` event (create-re
 
 No stored inbox; D47 lists serve that role. Workflows only sends websocket messages (`WebsocketsSendToIdentityUseCase`); the websockets layer decides delivery for live or non-live connections. On the client, every workflow websocket message also fires `WorkflowStateChangedEvent`, so the open bar, lists and editor refetch (editor reloads the entry if content changed). Resolves P9, A7.
 
-_Phase 7: delivery is tenant-scoped by the notifier; workflows lists the recipient's connections and sends to the current tenant's ones, and does not use `WebsocketsSendToIdentityUseCase` (D149)._
+_Phase 7: delivery is tenant-scoped by the notifier; workflows lists the recipient's connections and sends to the current tenant's ones, and does not use `WebsocketsSendToIdentityUseCase` (D149, R188)._
 
 ## D61. Candidates must be able to read the target
 
@@ -796,7 +796,7 @@ Covers R165. Refines D101, D109. Decided 2026-10-14 (phase 6 plan R165).
 
 `workflowsStepRun` stays the one private task; a multi-registered `StepRunner` (type, `singleRun`, fixed failure reasons, `getActor`, `maxIterationsReason`, `run`) holds what differs per type and the handler dispatches by step type. Automation behaviour is byte for byte unchanged; the AI runner is single-run (the handler persists the output before calling it and refuses a re-entered task). A step type with no runner fails with the "not available" reason and neutral texts; stuck detection covers every step type. One shared reach service starts the task for both types.
 
-The task cleans itself up when it finishes (`selfCleanup: "always"`), because every outcome is already on the step; a step whose task is gone is handled by stuck detection (grace from the step start) (R179). Private tasks: R180 (extends SEC-68).
+The task cleans itself up when it finishes (`selfCleanup: "always"`), because every outcome is already on the step; a step whose task is gone is handled by stuck detection (grace from the step start) (R179). Private tasks: R180.
 
 Covers R168, R179, R180 and user answer Q1. Refines D57, D87. Decided 2026-10-14 (phase 6 plan R168, R179, R180).
 
@@ -864,7 +864,7 @@ Covers R177, R178 and user answer Q5. Refines D56. Decided 2026-10-14 (phase 6 p
 
 ## D149. Websocket delivery is tenant-scoped by the notifier
 
-For each recipient the notifier lists the recipient's connections (`WebsocketsListConnectionsUseCase`, `where: { identityId }`), keeps the connections whose `tenant` is the current tenant (`TenantContext`, set in a request, an event handler and the background-task step run alike) and sends to them with `WebsocketsSendToConnectionsUseCase`, one send per recipient, ten recipients at a time. `WebsocketsSendToIdentityUseCase` is not used: it lists connections by identity id alone, so a user connected in another tenant would receive the message.
+For each recipient the notifier lists the recipient's connections (`WebsocketsListConnectionsUseCase`, `where: { identityId }`), keeps the connections whose `tenant` is the current tenant (`TenantContext`, set in a request, an event handler and the background-task step run alike) and sends to them with `WebsocketsSendToConnectionsUseCase`, one send per recipient, ten recipients at a time. `WebsocketsSendToIdentityUseCase` is not used; the notifier delivers only to the recipient's connections in the review's tenant (R188, A63).
 
 A recipient with an empty id is skipped without a list call (an empty `identityId` would list every connection). No current tenant: nothing is sent and it is logged once. A recipient connected only elsewhere gets nothing and that is not an error. Only connections younger than 3 hours are listed; no inbox, no retry (D60). The message carries no tenant data.
 
