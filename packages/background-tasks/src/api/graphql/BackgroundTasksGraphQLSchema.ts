@@ -145,7 +145,7 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
                     // R180 (extends SEC-68). A query for one task: when it is private, or the read
                     // answers null (missing, or the read failed: fail closed), answer what a missing
                     // task answers, an empty list, without querying the logs.
-                    const requestedTaskId = args.where?.task;
+                    const requestedTaskId = args?.where?.task;
                     if (requestedTaskId) {
                         const requestedTask = await tasksCrud.getTask(requestedTaskId);
                         if (!requestedTask || privateIds.includes(requestedTask.definitionId)) {

@@ -14,6 +14,10 @@ const MISSING_ID = "aTaskThatDoesNotExist";
 const PUBLIC_ID = "myCustomTaskNumber1";
 const OTHER_PUBLIC_ID = "myCustomTaskNumber2";
 
+interface INamedItem {
+    name: string;
+}
+
 const NOT_FOUND_CODE = "BackgroundTasks/Task/NotFoundError";
 
 // The model stamps `createdOn` with the current millisecond, so tasks created back to back can
@@ -137,7 +141,7 @@ describe("graphql - private tasks are invisible (R180, extends SEC-68)", () => {
             // The order is not asserted here (creation instants can tie): the set and the total are.
             expect(
                 result.data.backgroundTasks.listTasks.data
-                    .map((item: { name: string }) => {
+                    .map((item: INamedItem) => {
                         return item.name;
                     })
                     .sort()
@@ -172,7 +176,7 @@ describe("graphql - private tasks are invisible (R180, extends SEC-68)", () => {
             const first = await handler.listTasks({ sort: ["createdOn_ASC"], limit: 1 });
             const firstList = first.data.backgroundTasks.listTasks;
 
-            expect(firstList.data.map((item: { name: string }) => item.name)).toEqual(["Public 1"]);
+            expect(firstList.data.map((item: INamedItem) => item.name)).toEqual(["Public 1"]);
             expect(firstList.meta).toEqual({
                 cursor: expect.any(String),
                 hasMoreItems: true,
@@ -186,9 +190,7 @@ describe("graphql - private tasks are invisible (R180, extends SEC-68)", () => {
             });
             const secondList = second.data.backgroundTasks.listTasks;
 
-            expect(secondList.data.map((item: { name: string }) => item.name)).toEqual([
-                "Public 2"
-            ]);
+            expect(secondList.data.map((item: INamedItem) => item.name)).toEqual(["Public 2"]);
             expect(secondList.meta).toEqual({
                 cursor: null,
                 hasMoreItems: false,
@@ -219,7 +221,7 @@ describe("graphql - private tasks are invisible (R180, extends SEC-68)", () => {
             });
 
             expect(
-                result.data.backgroundTasks.listTasks.data.map((item: { name: string }) => {
+                result.data.backgroundTasks.listTasks.data.map((item: INamedItem) => {
                     return item.name;
                 })
             ).toEqual(["Public 2"]);
@@ -260,7 +262,7 @@ describe("graphql - private tasks are invisible (R180, extends SEC-68)", () => {
             const result = await handler.listTasks();
 
             expect(
-                result.data.backgroundTasks.listTasks.data.map((item: { name: string }) => {
+                result.data.backgroundTasks.listTasks.data.map((item: INamedItem) => {
                     return item.name;
                 })
             ).toEqual(["Retired run"]);
