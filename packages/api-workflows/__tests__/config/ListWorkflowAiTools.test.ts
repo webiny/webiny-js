@@ -7,7 +7,7 @@ import {
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { expectOk } from "~tests/__helpers/fixtures.js";
-import { captureLoggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import {
     registerTestAiTool,
     TEST_AI_TOOL_NAME,
@@ -18,11 +18,27 @@ import { WorkflowAiTool } from "~/features/aiTools/WorkflowAiTool/index.js";
 import { WorkflowAiToolRegistryService } from "~/features/aiTools/WorkflowAiToolRegistryService/index.js";
 import { ListWorkflowAiToolsUseCase } from "~/features/config/ListWorkflowAiTools/index.js";
 
+const FIXED_MESSAGE = "Could not list the AI tools.";
+
+const expectFixedFailure = (
+    result: Awaited<ReturnType<ListWorkflowAiToolsUseCase.Interface["execute"]>>,
+    rawText: string
+) => {
+    expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+    expect(result.error.message).toBe(FIXED_MESSAGE);
+    expect(
+        JSON.stringify({ message: result.error.message, data: result.error.data })
+    ).not.toContain(rawText);
+    expect(loggedErrors).toHaveLength(1);
+    expect((loggedErrors[0].fields.error as Error).message).toBe(rawText);
+};
+
 const throwing = async (): Promise<never> => {
     throw new Error("Permissions are down.");
 };
 
 const createListContext = async (params: CmsTestHandlerParams = {}) => {
+    loggedErrors.length = 0;
     const { context } = await createContextHandler(params);
     return {
         container: context.container,
@@ -134,6 +150,7 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
     it("returns the workflow persistence error when the permission check throws (R87)", async () => {
         const { listAiTools } = await createListContext({
             setup: container => {
+                captureLoggedErrors(container);
                 container.registerInstance(WorkflowsPermissions, {
                     isFullAccess: throwing,
                     canEdit: throwing,
@@ -145,13 +162,13 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
 
         const result = await listAiTools.execute();
 
-        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error.message).toBe("Permissions are down.");
+        expectFixedFailure(result, "Permissions are down.");
     });
 
     it("returns the workflow persistence error when the tool list throws (R87)", async () => {
         const { listAiTools } = await createListContext({
             setup: (container: Container) => {
+                captureLoggedErrors(container);
                 container.registerInstance(WorkflowAiToolRegistryService, {
                     get: () => null,
                     list: () => {
@@ -163,8 +180,7 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
 
         const result = await listAiTools.execute();
 
-        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error.message).toBe("The tool list is down.");
+        expectFixedFailure(result, "The tool list is down.");
     });
 
     it("returns the workflow persistence error when a tool getter throws (R87)", async () => {
@@ -183,13 +199,13 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
         }
         const { listAiTools } = await createListContext({
             setup: container => {
+                captureLoggedErrors(container);
                 container.registerInstance(WorkflowAiTool, new BrokenTool());
             }
         });
 
         const result = await listAiTools.execute();
 
-        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error.message).toBe("The title is down.");
+        expectFixedFailure(result, "The title is down.");
     });
 });

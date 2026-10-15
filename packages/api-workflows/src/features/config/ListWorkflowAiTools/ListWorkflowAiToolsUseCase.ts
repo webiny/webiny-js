@@ -1,4 +1,5 @@
 import { Result } from "@webiny/feature/api";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
 import type { WorkflowAiToolInfo } from "~/domain/config/types.js";
@@ -7,11 +8,15 @@ import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/ind
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 import { ListWorkflowAiToolsUseCase as UseCase } from "./abstractions.js";
 
+const FAILURE_MESSAGE = "Could not list the AI tools.";
+const FAILURE_LOG = "Could not list the workflow AI tools.";
+
 class ListWorkflowAiToolsUseCaseImpl implements UseCase.Interface {
     constructor(
         private viewer: CurrentReviewViewer.Interface,
         private permissions: WorkflowsPermissions.Interface,
-        private tools: WorkflowAiToolRegistryService.Interface
+        private tools: WorkflowAiToolRegistryService.Interface,
+        private logger: Logger.Interface
     ) {}
 
     async execute(): UseCase.Return {
@@ -23,11 +28,8 @@ class ListWorkflowAiToolsUseCaseImpl implements UseCase.Interface {
         try {
             canEdit = await this.permissions.canEdit();
         } catch (error) {
-            return Result.fail(
-                new WorkflowPersistenceError(
-                    error instanceof Error ? error : new Error(String(error))
-                )
-            );
+            this.logger.error({ error }, FAILURE_LOG);
+            return Result.fail(new WorkflowPersistenceError(new Error(FAILURE_MESSAGE)));
         }
         if (!canEdit) {
             return Result.fail(new WorkflowsNotAuthorizedError({ action: "list AI tools" }));
@@ -39,11 +41,8 @@ class ListWorkflowAiToolsUseCaseImpl implements UseCase.Interface {
                 return { name: tool.name, title: tool.title, description: tool.description };
             });
         } catch (error) {
-            return Result.fail(
-                new WorkflowPersistenceError(
-                    error instanceof Error ? error : new Error(String(error))
-                )
-            );
+            this.logger.error({ error }, FAILURE_LOG);
+            return Result.fail(new WorkflowPersistenceError(new Error(FAILURE_MESSAGE)));
         }
         rows.sort((a, b) => a.title.localeCompare(b.title) || a.name.localeCompare(b.name));
         return Result.ok(rows);
@@ -52,5 +51,5 @@ class ListWorkflowAiToolsUseCaseImpl implements UseCase.Interface {
 
 export const ListWorkflowAiToolsUseCase = UseCase.createImplementation({
     implementation: ListWorkflowAiToolsUseCaseImpl,
-    dependencies: [CurrentReviewViewer, WorkflowsPermissions, WorkflowAiToolRegistryService]
+    dependencies: [CurrentReviewViewer, WorkflowsPermissions, WorkflowAiToolRegistryService, Logger]
 });
