@@ -572,34 +572,10 @@ jobs:
       contents: read
       actions: write
       id-token: write
-  e2eTests-ddb-constants:
-    name: E2E (DDB) - Constants
-    needs:
-      - build
-    outputs:
-      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
-    steps:
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-      - name: Get Pulumi backend URL
-        id: get-pulumi-backend-url
-        run: >-
-          echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-          github.run_id }}_ddb" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   e2eTests-ddb-setup:
     needs:
       - constants
       - build
-      - e2eTests-ddb-constants
     runs-on: webiny-build-packages
     name: E2E (DDB) - Project setup
     environment: next
@@ -608,7 +584,6 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTests-ddb-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
       BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
       BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
@@ -748,34 +723,10 @@ jobs:
       contents: read
       actions: write
       id-token: write
-  e2eTests-ddb-os-constants:
-    name: E2E (DDB+OS) - Constants
-    needs:
-      - build
-    outputs:
-      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
-    steps:
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-      - name: Get Pulumi backend URL
-        id: get-pulumi-backend-url
-        run: >-
-          echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-          github.run_id }}_ddb-os" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   e2eTests-ddb-os-setup:
     needs:
       - constants
       - build
-      - e2eTests-ddb-os-constants
     runs-on: webiny-build-packages
     name: E2E (DDB+OS) - Project setup
     environment: next
@@ -784,7 +735,6 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTests-ddb-os-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
       BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
       BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}

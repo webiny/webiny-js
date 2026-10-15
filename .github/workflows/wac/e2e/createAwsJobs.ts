@@ -18,35 +18,20 @@ import {
 
 // AWS-deployed E2E: scaffold a project, deploy it with Pulumi, then run the installation test
 // against the deployed URLs. One variant per storage setup ("ddb", "ddb-os").
+//
+// Pulumi keeps its state in the project's local `.pulumi` folder, which goes away with the runner.
+// Nothing needs it afterwards: the nightly `cleanup.yml` removes the deployed resources with
+// aws-nuke rather than `webiny destroy`.
 export const createAwsJobs = (dbSetup: string) => {
     const jobNames = {
-        constants: `e2e-wby-cms-${dbSetup}-constants`,
         projectSetup: `e2e-wby-cms-${dbSetup}-project-setup`
     };
 
     const dbDisplayName = dbSetup === "ddb-os" ? "DDB+OS" : "DDB";
 
-    const constantsJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants", "build"],
-        name: `Constants - ${dbSetup.toUpperCase()}`,
-        outputs: {
-            "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
-        },
-        checkout: { path: DIR_WEBINY_JS },
-        steps: [
-            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
-            {
-                name: "Get Pulumi backend URL",
-                id: "get-pulumi-backend-url",
-                run: `echo "pulumi-backend-url=\${{ secrets.WEBINY_PULUMI_BACKEND }}\${{ github.run_id }}_${dbSetup}" >> $GITHUB_OUTPUT`
-            }
-        ]
-    });
-
     const env: Record<string, string> = {
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
         PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
-        WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
         WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}",
         /*
          * Read by `<Project.BugReporter>` while `webiny deploy api` builds, so it has to be on the
@@ -64,7 +49,7 @@ export const createAwsJobs = (dbSetup: string) => {
     }
 
     const projectSetupJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants", jobNames.constants, "checkComment"],
+        needs: ["baseBranch", "constants", "build", "checkComment"],
         name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
         // Writes the admin URL and the result into the status comment.
         permissions: { "pull-requests": "write" },
@@ -208,7 +193,6 @@ export const createAwsJobs = (dbSetup: string) => {
     });
 
     return {
-        [jobNames.constants]: constantsJob,
         [jobNames.projectSetup]: projectSetupJob
     };
 };

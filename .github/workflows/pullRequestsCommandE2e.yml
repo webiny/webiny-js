@@ -192,45 +192,11 @@ jobs:
     permissions:
       contents: read
       actions: write
-  e2e-wby-cms-ddb-constants:
-    needs:
-      - baseBranch
-      - constants
-      - build
-    name: Constants - DDB
-    outputs:
-      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
-    steps:
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Checkout Pull Request
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
-          }}/head
-
-          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-      - name: Get Pulumi backend URL
-        id: get-pulumi-backend-url
-        run: >-
-          echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-          github.run_id }}_ddb" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   e2e-wby-cms-ddb-project-setup:
     needs:
       - baseBranch
       - constants
-      - e2e-wby-cms-ddb-constants
+      - build
       - checkComment
     name: E2E (DDB) - Project setup
     permissions:
@@ -244,7 +210,6 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
       BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
       BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
@@ -444,45 +409,11 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
     runs-on: ubuntu-latest
-  e2e-wby-cms-ddb-os-constants:
-    needs:
-      - baseBranch
-      - constants
-      - build
-    name: Constants - DDB-OS
-    outputs:
-      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
-    steps:
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Checkout Pull Request
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
-          }}/head
-
-          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-      - name: Get Pulumi backend URL
-        id: get-pulumi-backend-url
-        run: >-
-          echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-          github.run_id }}_ddb-os" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   e2e-wby-cms-ddb-os-project-setup:
     needs:
       - baseBranch
       - constants
-      - e2e-wby-cms-ddb-os-constants
+      - build
       - checkComment
     name: E2E (DDB-OS) - Project setup
     permissions:
@@ -496,7 +427,6 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
       BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
       BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
