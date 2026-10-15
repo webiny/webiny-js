@@ -41,6 +41,15 @@ export interface IStepType {
      */
     validate(params: StepTypeValidateParams): Result<WorkflowStep, WorkflowValidationError>;
     /**
+     * Optional save-time check that needs I/O (R165), e.g. "the chosen model has a configured
+     * connection". Runs after `validate` of every step and after the save's conflict,
+     * not-found and same-model checks, and only for a step that is new or whose normalised
+     * `config` differs from the stored workflow's, so a workflow whose external resource was
+     * removed later can still be saved without touching that step. `params.step` is the step
+     * `validate` returned. A throw is a `WorkflowPersistenceError`.
+     */
+    checkConfig?(params: StepTypeValidateParams): Promise<Result<void, WorkflowValidationError>>;
+    /**
      * Puts the pending step of the review into its next state (spec 5.2). Returns the review's
      * transition errors as they are (R159); never swallows one.
      */
@@ -61,5 +70,6 @@ export namespace StepType {
     export type Interface = IStepType;
     export type Availability = StepTypeAvailability;
     export type ValidateParams = StepTypeValidateParams;
+    export type CheckConfig = NonNullable<IStepType["checkConfig"]>;
     export type ReachParams = StepTypeReachParams;
 }

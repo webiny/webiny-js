@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from "node:util";
 import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -136,6 +137,41 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
                     `The model "${model}" already has a workflow: "${other.name}".`
                 )
             );
+        }
+
+        // R165: the I/O check of a step type runs only for a step that is new or changed versus
+        // the stored workflow, so a workflow whose model or connection was removed later can still
+        // be saved without touching that step. It runs after the conflict, not-found and
+        // same-model checks above, so those win over a check failure. A stored config that went
+        // through storage with an `undefined` key dropped compares as changed, which only means
+        // one more check.
+        const storedSteps = new Map((existing?.steps ?? []).map(step => [step.id, step]));
+        for (const step of values.steps) {
+            const stepType = this.stepTypes.get(step.type);
+            if (!stepType?.checkConfig) {
+                continue;
+            }
+            const stored = storedSteps.get(step.id);
+            if (
+                stored &&
+                stored.type === step.type &&
+                isDeepStrictEqual(stored.config, step.config)
+            ) {
+                continue;
+            }
+            let checked: Result<void, WorkflowValidationError>;
+            try {
+                checked = await stepType.checkConfig({ step, workflow: values });
+            } catch (error) {
+                return Result.fail(
+                    new WorkflowPersistenceError(
+                        error instanceof Error ? error : new Error(String(error))
+                    )
+                );
+            }
+            if (checked.isFail()) {
+                return Result.fail(checked.error);
+            }
         }
 
         const actor = input.actor;
