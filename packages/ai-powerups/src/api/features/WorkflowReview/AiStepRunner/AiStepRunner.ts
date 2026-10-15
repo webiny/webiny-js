@@ -133,7 +133,7 @@ class AiStepRunnerImpl implements StepRunner.Interface {
             }
 
             // 4. The tool set is the allowlist and nothing else (D55, Review Focus 2).
-            // `Interface` defaults `TInput` to `unknown` (Task 7), which is what `execute` below passes.
+            // `Interface` defaults `TInput` to `unknown`, which is what `execute` below passes.
             const allowlisted: WorkflowAiTool.Interface[] = [];
             for (const name of config.data.tools) {
                 const registered = this.tools.get(name);
@@ -146,7 +146,7 @@ class AiStepRunnerImpl implements StepRunner.Interface {
             }
 
             // 5. The capability and the model the author picked (R169). The split of logs is
-            // Task 17's `reach`: a model that is not available is an expected typed state and a
+            // The step type's `reach`: a model that is not available is an expected typed state and a
             // disabled capability is a decision (D40), neither is logged; anything else is logged
             // once here with the raw error (`ConfiguredAiModelsService` may have logged its own
             // failed read too: the accepted double log, 2 error logs for a failed settings read).
@@ -170,7 +170,7 @@ class AiStepRunnerImpl implements StepRunner.Interface {
             }
             const capability = resolved.value;
 
-            // 6. The target, from the snapshot (adapters log their real errors, Task 9).
+            // 6. The target, from the snapshot (adapters log their real errors).
             const content = await this.editors.read({
                 model: review.model,
                 targetId: review.targetId,

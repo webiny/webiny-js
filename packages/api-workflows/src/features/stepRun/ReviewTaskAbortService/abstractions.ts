@@ -15,7 +15,7 @@ export interface IReviewTaskAbortService {
 
 /**
  * Shared by `ReviewSaver` (abort when the save fails, R143), the automation reach (abort when
- * `reachRun` fails after a trigger, Task 10) and cancel and delete (R151).
+ * `reachRun` fails after a trigger) and cancel and delete (R151).
  */
 export const ReviewTaskAbortService =
     createAbstraction<IReviewTaskAbortService>("ReviewTaskAbortService");

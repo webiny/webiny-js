@@ -162,7 +162,7 @@ class AiStepTypeImpl implements StepType.Interface {
 
         // The shared service triggers the task as the requester (or fails the step with `failure`
         // when it is set), stores the task id in the one save and aborts the task when that save
-        // cannot happen (Task 2). Whatever it returns is returned, never ignored (R159).
+        // cannot happen. Whatever it returns is returned, never ignored (R159).
         return this.reachService.reach({
             review,
             step,

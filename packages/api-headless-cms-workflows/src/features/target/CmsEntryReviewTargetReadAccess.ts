@@ -15,11 +15,10 @@ import { CmsEntryAccess } from "./CmsEntryAccess/index.js";
  * `withAuthorization`.
  *
  * Contract (SEC-66): this class does not widen access itself, and the CMS model cache is filled
- * per tenant after access filtering. An AI step run is the one place the model and group are
- * read inside `withoutAuthorization` (the editor, R161); the access checks here apply after the
- * cache and run as the candidate user through `CandidateReadAccess`, the only place that changes
- * identity for the check. Any failure,
- * including a throwing target or model read, answers `false` (fail closed, R50).
+ * per tenant after access filtering. A whole AI step run executes inside `withoutAuthorization`
+ * (R161), so the model and group reads of the AI editor happen there; the access checks here
+ * apply after the cache and run as the candidate user through `CandidateReadAccess`, the only
+ * place that changes identity for the check. Any failure, including a throwing target or model read, answers `false` (fail closed, R50).
  */
 class CmsEntryReviewTargetReadAccessImpl implements ReviewTargetReadAccess.Interface {
     public constructor(

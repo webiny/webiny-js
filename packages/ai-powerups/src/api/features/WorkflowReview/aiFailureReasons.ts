@@ -1,6 +1,6 @@
 /**
  * The fixed texts a step shows when it cannot run (R170). One source for the step type's reach
- * (Task 17) and the runner (Task 19): the raw provider, settings or decrypt error is never part
+ * and the runner: the raw provider, settings or decrypt error is never part
  * of any of them.
  */
 export const AI_STEP_INVALID_CONFIGURATION_REASON = "The AI step configuration is not valid.";

@@ -65,7 +65,7 @@ export const Extension = createFeature({
         ModelRolesFeature.register(container);
         CapabilitiesFeature.register(container);
         // The resolver's `model` argument reads it, so it lives under the plain `aiPowerups` gate
-        // (R177): the workflows-only pieces register in their own, second gate (Task 16).
+        // (R177): the workflows-only pieces register in their own, second gate.
         ConfiguredAiModelsFeature.register(container);
         ReaderPersonasFeature.register(container);
         WriterPersonasFeature.register(container);

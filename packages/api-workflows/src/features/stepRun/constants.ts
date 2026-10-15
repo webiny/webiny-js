@@ -40,7 +40,7 @@ export const STEP_RUN_MIN_TIMEOUT_MS = 1000;
 
 /**
  * The most often a caller re-reads the stored review through `StepRunStaleCheckService` during a
- * run, in milliseconds (R175). The service itself does not throttle: `AiStepRunner` (Task 19) does.
+ * run, in milliseconds (R175). The service itself does not throttle: `AiStepRunner` does.
  */
 export const STEP_RUN_STALE_CHECK_INTERVAL_MS = 5000;
 
