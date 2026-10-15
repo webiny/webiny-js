@@ -12,12 +12,13 @@ import { WorkflowStepRunTaskHandler } from "./WorkflowStepRunTaskHandler.js";
  * runner, failure and abort through the fixed-text `onError` / `onAbort` hooks (raw errors live
  * only in the logs). Background tasks run the definition's own hook first and delete the task
  * after it, so the step is written before the task is gone, and turn the task's database logs
- * off (an abort still writes one log row, which the cleanup now deletes). A step whose task is gone is handled by `StuckStepService` (grace from the step start).
+ * off (an abort still writes one log row, which the cleanup now deletes). A step whose task is
+ * gone is handled by `StuckStepService` (grace from the step start).
  */
 class WorkflowStepRunTaskDefinitionImpl implements TaskDefinition.Interface {
     public readonly id = STEP_RUN_TASK_DEFINITION_ID;
     public readonly title = "Workflow step run";
-    public readonly description = "Runs an automation step of a workflow review.";
+    public readonly description = "Runs a step of a workflow review.";
     public readonly isPrivate = true;
     public readonly maxIterations = STEP_RUN_MAX_ITERATIONS;
     public readonly selfCleanup = "always" as const;
