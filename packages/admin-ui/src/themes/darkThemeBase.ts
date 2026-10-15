@@ -1,0 +1,103 @@
+/**
+ * Shared semantic mapping for dark themes.
+ *
+ * Components consume *semantic* tokens (e.g. `bg-neutral-base`, `text-neutral-primary`,
+ * `border-neutral-dimmed`, `fill-neutral-strong`), which in light mode alias raw neutral
+ * shades. A dark theme re-points those semantic aliases to inverted positions on the raw
+ * ramp, so the whole admin chrome flips without touching component markup.
+ *
+ * This object is the dark "flip" and is theme-agnostic: a dark theme spreads it and then
+ * overrides only the raw `--color-*` palette (neutral ramp + accent). It is applied at
+ * runtime as inline custom properties on `<html>` (see `@webiny/app-admin` applyTheme), so
+ * the `var(--color-neutral-900)` references resolve against whatever raw palette the theme
+ * also sets (or the built-in light defaults, which gives "Webiny Dark").
+ *
+ * `--fill-neutral-base` and `--text-color-neutral-light` are intentionally NOT included —
+ * they color icons/text on accent surfaces and must stay light in any theme.
+ */
+export type ThemeVariables = Record<string, string>;
+
+export const darkThemeBase: ThemeVariables = {
+    // Surfaces / backgrounds.
+    "--color-neutral-base": "var(--color-neutral-900)",
+
+    // Inverted / emphasis surfaces: Tooltip and Popover "accent", Toast, Alert "info"
+    // strong, the neutral-dark Tag, OverlayHeader "strong", UploadProgress. In light this
+    // is near-black against a white page. In dark it has to LIFT off the page rather than
+    // stay dark: neutral-900 IS the page colour (so a tooltip vanished into whatever was
+    // behind it), and neutral-800 is already --color-neutral-elevated, which would make
+    // Tooltip's "accent" and "subtle" variants identical. 700 keeps page < elevated <
+    // inverted distinct, and --text-color-neutral-light (white, never remapped) stays
+    // readable on it.
+    "--color-neutral-dark": "var(--color-neutral-700)",
+    "--color-neutral-elevated": "var(--color-neutral-800)",
+    "--color-neutral-subtle": "var(--color-neutral-800)",
+    "--color-neutral-light": "var(--color-neutral-800)",
+    "--color-neutral-dimmed": "var(--color-neutral-700)",
+    "--color-neutral-disabled": "var(--color-neutral-700)",
+    "--color-neutral-muted": "var(--color-neutral-600)",
+    "--color-neutral-strong": "var(--color-neutral-500)",
+    "--color-neutral-xstrong": "var(--color-neutral-300)",
+
+    // Low-alpha interaction tints (hover/press) are painted with this colour. It must
+    // flip to white: a 5% *dark* tint on a dark surface is invisible, which is why
+    // `--color-neutral-dark` itself deliberately stays dark (it also backs scrims).
+    "--color-neutral-overlay": "var(--color-neutral-0)",
+
+    // Text.
+    "--text-color-neutral-primary": "var(--color-neutral-100)",
+    "--text-color-neutral-strong": "var(--color-neutral-300)",
+    "--text-color-neutral-muted": "var(--color-neutral-400)",
+    "--text-color-neutral-dimmed": "var(--color-neutral-500)",
+    "--text-color-neutral-disabled": "var(--color-neutral-600)",
+
+    // The Lexical editor's default typography (app-admin `typography.css`, the `.wa-*`
+    // classes registered by LexicalPreset) colours text with this project-level var, which
+    // the project template pins to #0a0a0a. Left alone it painted black text on a dark
+    // editor. Overriding it here reaches existing projects, since applyTheme sets inline
+    // properties on <html> that beat global.css's `:root`.
+    "--wa-theme-color-text-base": "var(--text-color-neutral-primary)",
+
+    // Status label text on a `*-subtle` chip: the chip background flips light->dark,
+    // so the text has to flip dark->light with it.
+    "--text-color-warning-strong": "var(--color-warning-300)",
+    "--text-color-success-strong": "var(--color-success-300)",
+    "--text-color-destructive-strong": "var(--color-destructive-300)",
+
+    // Borders.
+    "--border-color-neutral-base": "var(--color-neutral-900)",
+    "--border-color-neutral-black": "var(--color-neutral-0)",
+    "--border-color-neutral-subtle": "var(--color-neutral-800)",
+    "--border-color-neutral-dimmed": "var(--color-neutral-700)",
+    "--border-color-neutral-dimmed-darker": "var(--color-neutral-700)",
+    "--border-color-neutral-muted": "var(--color-neutral-600)",
+    "--border-color-neutral-strong": "var(--color-neutral-500)",
+    "--border-color-neutral-dark": "var(--color-neutral-400)",
+
+    // Fills (icons).
+    "--fill-neutral-dark": "var(--color-neutral-100)",
+    // Mirrors --text-color-neutral-primary so a tag/chip icon tracks its label.
+    "--fill-neutral-primary": "var(--color-neutral-100)",
+    "--fill-neutral-strong": "var(--color-neutral-400)",
+    "--fill-neutral-xstrong": "var(--color-neutral-300)",
+    "--fill-neutral-disabled": "var(--color-neutral-600)",
+
+    // Brand "subtle" tints are near-white in light mode and would glare on dark.
+    "--color-primary-subtle": "var(--color-primary-900)",
+    "--color-secondary-subtle": "var(--color-success-900)",
+    "--color-success-subtle": "var(--color-success-900)",
+    "--color-warning-subtle": "var(--color-warning-900)",
+    "--color-destructive-subtle": "var(--color-destructive-900)",
+
+    // Soft black shadows are invisible on a dark surface — raise their opacity.
+    "--shadow-sm": "0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px 0 rgba(0, 0, 0, 0.4)",
+    "--shadow-md": "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4)",
+    "--shadow-lg": "0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4)",
+    "--shadow-xl": "0 24px 24px rgba(0, 0, 0, 0.5)",
+    "--shadow-xxl": "0 48px 48px rgba(0, 0, 0, 0.5)",
+
+    // Switches browser-drawn UI to its dark palette: the native date/time picker indicators,
+    // scrollbars, `<select>` popups and autofill. Those are outside CSS's reach — no `fill`
+    // or `color` affects them — so this is the only way they follow the theme.
+    "--color-scheme": "dark"
+};
