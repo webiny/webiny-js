@@ -29,5 +29,4 @@
 
 - Review Task 3b plan (doubt: e2e via registerCodeSmtpSettings with explicit from untested; empty-string from already rejected by SendMailUseCase), fix, commit; implement it with SDD.
 - 7.2 (Tasks 4-5, take-over flag), 7.3 (Tasks 6-9), 7.4 (Tasks 10-13), 7.5 (Task 14), stopping per sub-phase.
-- Open user decisions: R180 detail in committed phase 6 plan files.
-- Pre-merge: commit trailers (0b0157fe9f, c9ec20e917 and older), useGraphQLHandler.ts ApiKey type error, R180 SEC id in docs/.reports/security.md, ListAutomationDefinitions/StepTypes raw-message leak fixed (7cdadc545d), earlier handoff items.
+- Pre-merge: commit trailers (0b0157fe9f, c9ec20e917 and older), useGraphQLHandler.ts ApiKey type error, ListAutomationDefinitions/StepTypes raw-message leak fixed (7cdadc545d), earlier handoff items.
