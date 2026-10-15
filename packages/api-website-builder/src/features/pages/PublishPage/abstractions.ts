@@ -86,8 +86,6 @@ export interface PageBeforePublishPayload {
         id: string;
         data: CmsEntryWbPage;
     };
-    /** @deprecated Use `original`. Changes to it are not published. */
-    page: WbPage;
 }
 
 export interface PageAfterPublishPayload {

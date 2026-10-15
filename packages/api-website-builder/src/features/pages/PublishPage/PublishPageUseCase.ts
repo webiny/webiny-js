@@ -41,8 +41,7 @@ class PublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
         // Publish before publish event
         const beforeEvent = new PageBeforePublishEvent({
             original: page,
-            input: { id: params.id, data: PageToEntryValuesMapper.toValues(page) },
-            page
+            input: { id: params.id, data: PageToEntryValuesMapper.toValues(page) }
         });
 
         await this.eventPublisher.publish(beforeEvent);
