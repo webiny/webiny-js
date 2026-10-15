@@ -6,6 +6,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
 import type { IObjectFieldItemVM, LayoutNodeVM } from "~/features/formModel/index.js";
+import { hasSubtreeFocusRequest } from "~/features/formModel/index.js";
 import { LayoutNodeRenderer } from "~/features/formModel/FormView.js";
 import { resolveItemTitle, resolveItemDescription } from "./resolveItemTitle.js";
 import type { ISortableItemProps } from "~/presentation/sortable/index.js";
@@ -43,7 +44,7 @@ export const ListItemRenderer = observer(
         sortable
     }: ListItemRendererProps) => {
         const [open, setOpen] = useState(false);
-        const hasFocusRequest = item.fields.some(f => f.focusRequested);
+        const hasFocusRequest = hasSubtreeFocusRequest(item.fields);
 
         useEffect(() => {
             if (hasFocusRequest) {

@@ -1,3 +1,4 @@
+import http from "node:http";
 import { describe, it, expect } from "vitest";
 import { HttpRouteDefinition, HttpRouteHandler, HttpStreamBody } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse, HttpStreamSource } from "@webiny/event-handler-core";
@@ -160,6 +161,49 @@ describe("Node HTTP server streaming", () => {
             expect(lines).toHaveLength(chunkCount);
             expect(lines[0]).toBe(`0:${chunk}`);
             expect(lines[chunkCount - 1]).toBe(`${chunkCount - 1}:${chunk}`);
+        } finally {
+            await server.close();
+        }
+    });
+
+    it("should release the producer when a stalled client disconnects", async () => {
+        const producerReleased = deferred();
+        const chunk = "x".repeat(64 * 1024);
+
+        const route = makeRoute(() =>
+            streamResponse({
+                async *[Symbol.asyncIterator]() {
+                    try {
+                        while (true) {
+                            yield chunk;
+                        }
+                    } finally {
+                        producerReleased.resolve();
+                    }
+                }
+            })
+        );
+
+        const server = await startServer(route);
+
+        try {
+            /*
+             * A client that never reads fills the socket buffer, so the server ends up waiting
+             * for `drain`. Disconnecting then emits `close`, which that wait must also notice.
+             */
+            const request = http.get(server.url, response => {
+                response.pause();
+                setTimeout(() => request.destroy(), 200);
+            });
+            request.on("error", () => {});
+
+            const timedOut = new Promise<string>(resolve => {
+                setTimeout(() => resolve("timed out"), 3_000);
+            });
+            const released = producerReleased.promise.then(() => "released");
+
+            const outcome = await Promise.race([released, timedOut]);
+            expect(outcome).toBe("released");
         } finally {
             await server.close();
         }

@@ -62,9 +62,9 @@ class RefSingleAutocompletePresenterImpl implements Abstraction.Interface {
     }
 
     select(entryId: string): CmsReferenceValue | null {
-        this.base.clearSearch();
-
+        // Look the entry up before clearing the search, or one picked from the search results is lost.
         const opt = this.findOption(entryId);
+        this.base.clearSearch();
         if (!opt) {
             return null;
         }

@@ -17,7 +17,6 @@ import {
 } from "@webiny/api-event-handler-standalone";
 import { ApiCoreSqlFeature, registerSQLCore } from "@webiny/api-core-sql";
 import { HeadlessCmsSqlFeature } from "@webiny/api-headless-cms-sql";
-import { HeadlessCmsSqlRequestFeature } from "@webiny/api-headless-cms-sql";
 import { registerAcoSqlStorageOperations } from "@webiny/api-aco-sql";
 import { registerAuditLogsSqlStorageOperations } from "@webiny/api-audit-logs-sql";
 import { WebsocketsSqlFeature } from "@webiny/api-websockets-sql";
@@ -60,10 +59,6 @@ export function createSqlApiHandler(config: CreateSqlApiHandlerConfig) {
                 registerAcoSqlStorageOperations({ knex, tableNamePrefix }),
                 registerAuditLogsSqlStorageOperations({ knex, tableNamePrefix })
             ]);
-        },
-        registerRequestStorage: container => {
-            // The CMS storage operations are per request, so extension decorators apply to them.
-            HeadlessCmsSqlRequestFeature.register(container);
         }
     });
 }

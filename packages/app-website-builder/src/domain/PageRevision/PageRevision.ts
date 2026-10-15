@@ -1,5 +1,6 @@
 import { type WbStatus } from "~/constants.js";
 import { toTitleCaseLabel } from "~/shared/toTitleCaseLabel.js";
+import type { Page } from "~/domain/Page/Page.js";
 import type { WbIdentity } from "~/types.js";
 
 export interface PageRevisionData {
@@ -44,7 +45,34 @@ export class PageRevision {
         return `v${this.version} (${toTitleCaseLabel(this.status)})`;
     }
 
+    /**
+     * Publishing a revision unpublishes the one that was published before it, so the list needs
+     * to reflect the new status without refetching.
+     */
+    withStatus(status: WbStatus) {
+        return new PageRevision({ ...this, status });
+    }
+
     static create(data: PageRevisionData) {
         return new PageRevision(data);
+    }
+
+    /**
+     * A page revision is a projection of a page, so mutations that return a `Page` (for example,
+     * creating a new revision) can be reflected in the revisions cache without an extra round trip.
+     */
+    static createFromPage(page: Page) {
+        return new PageRevision({
+            id: page.id,
+            entryId: page.entryId,
+            status: page.status,
+            version: page.version,
+            savedOn: page.savedOn,
+            title: page.properties.title,
+            locked: page.locked,
+            createdBy: page.createdBy,
+            createdOn: page.createdOn,
+            revisionDescription: page.revisionDescription
+        });
     }
 }

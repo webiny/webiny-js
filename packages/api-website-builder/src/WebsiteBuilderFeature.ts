@@ -28,6 +28,7 @@ import { ListDeletedPagesFeature } from "./features/pages/ListDeletedPages/featu
 import { CreatePageFeature } from "./features/pages/CreatePage/feature.js";
 import { CreatePageRevisionFromFeature } from "./features/pages/CreatePageRevisionFrom/feature.js";
 import { DeletePageFeature } from "./features/pages/DeletePage/feature.js";
+import { DeletePageRevisionFeature } from "./features/pages/DeletePageRevision/feature.js";
 import { TrashPageFeature } from "./features/pages/TrashPage/feature.js";
 import { RestorePageFeature } from "./features/pages/RestorePage/feature.js";
 import { UpdatePageFeature } from "./features/pages/UpdatePage/feature.js";
@@ -38,6 +39,8 @@ import { DuplicatePageFeature } from "./features/pages/DuplicatePage/feature.js"
 import { TranslatePageFeature } from "./features/pages/TranslatePage/feature.js";
 import { MovePageFeature } from "./features/pages/MovePage/feature.js";
 import { GetSettingsFeature } from "./features/pages/GetSettings/feature.js";
+import { EnsureWbPageFolderIsEmptyOnDeleteFeature } from "./features/folders/EnsureWbPageFolderIsEmptyOnDelete/feature.js";
+import { EnsureWbRedirectFolderIsEmptyOnDeleteFeature } from "./features/folders/EnsureWbRedirectFolderIsEmptyOnDelete/feature.js";
 // Misc
 import { WbPermissionsFeature } from "./features/permissions/feature.js";
 import { ApiKeyInstallerFeature } from "./features/installer/feature.js";
@@ -102,6 +105,7 @@ export const WebsiteBuilderFeature = createFeature({
         CreatePageFeature.register(container);
         CreatePageRevisionFromFeature.register(container);
         DeletePageFeature.register(container);
+        DeletePageRevisionFeature.register(container);
         TrashPageFeature.register(container);
         RestorePageFeature.register(container);
         UpdatePageFeature.register(container);
@@ -112,6 +116,10 @@ export const WebsiteBuilderFeature = createFeature({
         TranslatePageFeature.register(container);
         MovePageFeature.register(container);
         GetSettingsFeature.register(container);
+
+        // Folders: block deleting a folder that still has pages or redirects in it.
+        EnsureWbPageFolderIsEmptyOnDeleteFeature.register(container);
+        EnsureWbRedirectFolderIsEmptyOnDeleteFeature.register(container);
 
         // A/B testing — experiments and variants.
         ExperimentFeature.register(container);

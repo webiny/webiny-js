@@ -30,6 +30,9 @@ import {
     LIST_ENTRIES,
     UPDATE_ENTRY
 } from "~tests/graphql/cms";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
+import { Result } from "@webiny/feature/api";
+import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -71,6 +74,12 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
             container.register(FileModel);
             AcoFeature.register(container);
+            // No socket server in tests; messages to open admin tabs go nowhere.
+            container.registerInstance(WebsocketsSendToIdentityUseCase, {
+                execute: async () => Result.ok()
+            });
+            // Tasks run inside trigger(), so a test sees their effects when the call returns.
+            InlineTaskServiceFeature.register(container);
         }
     });
 

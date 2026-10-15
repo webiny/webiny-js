@@ -34,7 +34,6 @@ function setup() {
     container.registerInstance(S3EventHandler, {
         async execute() {
             innerCalled = true;
-            return "inner-ok";
         }
     });
     container.registerDecorator(S3TenantLoaderDecorator);
@@ -50,7 +49,7 @@ function setup() {
 describe("S3TenantLoaderDecorator", () => {
     it("extracts tenant from the bucket name into RawTenantId, runs the load, then the inner handler", async () => {
         const t = setup();
-        const result = await t.handler.execute(
+        await t.handler.execute(
             { event: s3Event("acme-uploads"), metadata: {} } as any,
             async () => undefined
         );
@@ -58,7 +57,6 @@ describe("S3TenantLoaderDecorator", () => {
         expect(t.rawTenantId()).toBe("acme");
         expect(t.establishCalled()).toBe(true);
         expect(t.innerCalled()).toBe(true);
-        expect(result).toBe("inner-ok");
     });
 
     it("takes only the first bucket-name segment", async () => {

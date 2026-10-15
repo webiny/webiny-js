@@ -18,11 +18,13 @@ export const createAdminPulumiApp = async () => {
             const [adminDomains] = projectConfig.extensionsByType(adminCustomDomainsExt);
 
             if (adminDomains) {
-                const { domains, sslMethod, certificateArn } = adminDomains.params;
+                const { domains, sslMethod, certificateArn, minimumProtocolVersion } =
+                    adminDomains.params;
                 return {
                     domains,
                     sslSupportMethod: sslMethod,
-                    acmCertificateArn: certificateArn
+                    acmCertificateArn: certificateArn,
+                    minimumProtocolVersion
                 };
             }
 

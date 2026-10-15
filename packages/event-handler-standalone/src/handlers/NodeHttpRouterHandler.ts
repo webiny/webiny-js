@@ -2,6 +2,7 @@ import { HttpRouter, RouteNotFoundError } from "@webiny/event-handler-core";
 import type { EventContext, IHttpResponse, NextFunction } from "@webiny/event-handler-core";
 import { NodeHttpEventHandler } from "~/abstractions/NodeHttpEventHandler.js";
 import { nodeHttpRequestFromIncomingMessage } from "~/translators/NodeHttpTranslator.js";
+import { RequestBodyTooLargeError } from "~/translators/RequestBodyTooLargeError.js";
 
 /**
  * Terminal handler for the Node HTTP server transport. Translates the raw `IncomingMessage` into an
@@ -13,10 +14,18 @@ class NodeHttpRouterHandlerImpl implements NodeHttpEventHandler.Interface {
     constructor(private router: HttpRouter.Interface) {}
 
     async execute(ctx: EventContext<any>, _next: NextFunction): Promise<IHttpResponse> {
-        const request = await nodeHttpRequestFromIncomingMessage(ctx.event);
         try {
+            const request = await nodeHttpRequestFromIncomingMessage(ctx.event);
             return await this.router.route(request);
         } catch (e) {
+            if (e instanceof RequestBodyTooLargeError) {
+                // Close the connection after answering, so Node doesn't read the rest of the body.
+                return {
+                    statusCode: 413,
+                    headers: { connection: "close" },
+                    body: { message: e.message }
+                };
+            }
             if (e instanceof RouteNotFoundError) {
                 return { statusCode: 404, body: { message: e.message } };
             }

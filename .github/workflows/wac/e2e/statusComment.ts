@@ -31,7 +31,7 @@ const updateStep = (
         name: `Update PR comment - ${params.label} ${outcome === "success" ? "passed" : "failed"}`,
         if: `${outcome}()`,
         env: {
-            GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}",
+            GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
             COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}",
             ...params.env
         },

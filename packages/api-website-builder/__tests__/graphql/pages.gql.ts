@@ -139,6 +139,17 @@ export const DELETE_PAGE = /* GraphQL */ `
     }
 `;
 
+export const DELETE_PAGE_REVISION = /* GraphQL */ `
+    mutation DeletePageRevision($id: ID!) {
+        websiteBuilder {
+            deletePageRevision(id: $id) {
+                data
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const RESTORE_PAGE = /* GraphQL */ `
     mutation RestorePage($id: ID!) {
         websiteBuilder {
@@ -198,9 +209,15 @@ export const GET_PAGE_REVISIONS = /* GraphQL */ `
 `;
 
 export const LIST_PAGES = /* GraphQL */ `
-    query ListPages($limit: Int, $after: String, $where: WbPagesListWhereInput) {
+    query ListPages(
+        $limit: Int
+        $after: String
+        $where: WbPagesListWhereInput
+        $sort: [WbPageListSorter]
+        $search: String
+    ) {
         websiteBuilder {
-            listPages(limit: $limit, after: $after, where: $where) {
+            listPages(limit: $limit, after: $after, where: $where, sort: $sort, search: $search) {
                 data ${PAGE_DATA_FIELD}
                 error ${ERROR_FIELD}
                 meta {

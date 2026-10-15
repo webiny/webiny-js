@@ -17,6 +17,8 @@ import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { AssumePermissionsFeature } from "~/features/assumePermissions/index.js";
 import { AssumePermissionsPresenterFeature } from "~/presentation/assumePermissions/feature.js";
 import { BannersPresenterFeature } from "~/presentation/banners/feature.js";
+import { DebuggerFeature } from "~/features/debugger/feature.js";
+import { DebuggerPresenterFeature } from "~/presentation/debugger/feature.js";
 import { FormModelFeature } from "~/features/formModel/feature.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import { AdminConfigPlugin, AdminConfigProvider } from "~/config/AdminConfig.js";
@@ -56,6 +58,13 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     AssumePermissionsPresenterFeature.register(container);
     // The Layout renders the banner bar, so its presenter has to exist before the Layout mounts.
     BannersPresenterFeature.register(container);
+    /*
+     * Here rather than in the config tree for two reasons: the response handler has to exist
+     * before the first GraphQL request, and the Layout renders the header indicator, so its
+     * presenter has to exist before the Layout mounts.
+     */
+    DebuggerFeature.register(container);
+    DebuggerPresenterFeature.register(container);
     DateFormatterFeature.register(container);
     StringFormatterFeature.register(container);
     FormModelFeature.register(container);

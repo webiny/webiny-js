@@ -33,6 +33,9 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
 
         // Get existing settings to merge with new data
         const existingResult = await this.getSettings.execute();
+        if (existingResult.isFail()) {
+            return Result.fail(existingResult.error);
+        }
         const existing = existingResult.value;
 
         // Prepare merged settings

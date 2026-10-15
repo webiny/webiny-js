@@ -1,6 +1,6 @@
-import { ScheduledActionEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/ScheduledActionEventHandler.js";
-import type { IScheduledActionEvent } from "@webiny/event-handler-aws/eventTypes/ScheduledActionEventType.js";
-import type { IScheduledActionResult } from "@webiny/event-handler-aws/abstractions/handlers/ScheduledActionEventHandler.js";
+import { ScheduledActionEventHandler } from "@webiny/event-handler-core";
+import type { IScheduledActionEvent } from "@webiny/event-handler-core";
+import type { IScheduledActionResult } from "@webiny/event-handler-core";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/index.js";
 import type { IExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/abstractions.js";

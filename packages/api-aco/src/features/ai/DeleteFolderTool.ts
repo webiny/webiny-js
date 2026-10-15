@@ -2,7 +2,6 @@ import { z } from "zod";
 import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { DeleteFolderUseCase } from "~/features/folder/DeleteFolder/index.js";
-import { NotifyFolderChangeUseCase } from "./NotifyFolderChange/index.js";
 
 const inputSchema = z.object({
     folderId: z.string().describe("Folder id as returned by listFolders."),
@@ -30,8 +29,7 @@ interface DeletedFolder {
 class DeleteFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(
         private getFolder: GetFolderUseCase.Interface,
-        private deleteFolder: DeleteFolderUseCase.Interface,
-        private notifyFolderChange: NotifyFolderChangeUseCase.Interface
+        private deleteFolder: DeleteFolderUseCase.Interface
     ) {}
 
     async execute(input: Input): Promise<DeletedFolder> {
@@ -57,15 +55,13 @@ class DeleteFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
             throw new Error(`Could not delete the folder: ${result.error.message}`);
         }
 
-        await this.notifyFolderChange.execute({ id: folder.id, change: "deleted" });
-
         return { id: folder.id, title: folder.title, path: folder.path, type: folder.type };
     }
 }
 
 const DeleteFolderToolHandler = AiSdkToolHandler.createImplementation({
     implementation: DeleteFolderToolHandlerImpl,
-    dependencies: [GetFolderUseCase, DeleteFolderUseCase, NotifyFolderChangeUseCase]
+    dependencies: [GetFolderUseCase, DeleteFolderUseCase]
 });
 
 /**

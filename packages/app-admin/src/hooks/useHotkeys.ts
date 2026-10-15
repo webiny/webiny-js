@@ -88,6 +88,13 @@ export function useHotkeys(props: HookProps) {
     const prevPropsRef = useRef<HookProps | undefined>();
     const firstRenderRef = useRef(true);
 
+    // The unmount cleanup below runs once, so it must not close over the props of the first
+    // render. Without this, a component unmounted while its shortcuts are registered (for
+    // example, an open drawer navigating away) would leak them into the shared registry, and
+    // the next component to register the same shortcut would throw.
+    const propsRef = useRef(props);
+    propsRef.current = props;
+
     useEffect(
         function () {
             if (firstRenderRef.current || prevPropsRef.current?.disabled !== disabled) {
@@ -109,8 +116,8 @@ export function useHotkeys(props: HookProps) {
 
     useEffect(function () {
         return function () {
-            if (!disabled) {
-                unregisterZIndex(props);
+            if (!propsRef.current.disabled) {
+                unregisterZIndex(propsRef.current);
             }
         };
     }, []);

@@ -26,6 +26,14 @@ export const RevisionListDrawer = (props: IRevisionListDrawerProps) => {
             title={"Entry revisions"}
             open={isRevisionListOpen}
             onOpenChange={open => openRevisionList(open)}
+            onInteractOutside={e => {
+                // Confirmation dialogs render above the drawer; clicking their overlay must not
+                // close the drawer underneath them.
+                const target = e.target as HTMLElement;
+                if (target.closest("[data-role='dialog']")) {
+                    e.preventDefault();
+                }
+            }}
             modal
             bodyPadding={false}
             headerSeparator={true}

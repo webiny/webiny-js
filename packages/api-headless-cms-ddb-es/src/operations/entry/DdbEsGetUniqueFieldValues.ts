@@ -32,12 +32,13 @@ class DdbEsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperat
         const { where, fieldId } = params;
 
         const configurations = createConfigurations(this.indexProvider);
-        const { index } = await configurations.es({
+        const { index, shared } = await configurations.es({
             model
         });
 
         const initialBody = this.bodyBuilder.build({
             model,
+            shared,
             params: {
                 limit: 1,
                 where

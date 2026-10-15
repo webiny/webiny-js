@@ -11,6 +11,7 @@ import { CmsSchedulerFeature } from "@webiny/api-headless-cms-scheduler";
 import { MailerFeature } from "@webiny/api-mailer";
 import { RecordLockingAppFeature } from "@webiny/api-record-locking";
 import { AuditLogsFeature } from "@webiny/api-audit-logs";
+import { DashboardAppFeature } from "@webiny/api-dashboard";
 import { WebhooksFeature } from "@webiny/webhooks/api";
 import { AcoFeature } from "@webiny/api-aco";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
@@ -32,12 +33,6 @@ export interface RegisterApiRequestStackConfig {
      * code-defined CMS models — are registered before anything lists/caches the model set).
      */
     extensions: () => Parameters<typeof registerExtensions>[1];
-    /**
-     * Register request-phase storage features that must run BEFORE `HeadlessCmsFeature` builds its
-     * storage — e.g. `DbRegistryFeature` for the DDB+ES variant. Per-request storage state
-     * (the CMS storage operations) goes here too. Optional.
-     */
-    registerRequestStorage?: (container: Container) => void | Promise<void>;
     /**
      * Hosting-specific transport adapters, each installed at its exact interleave point in the stack.
      * Every entry follows the same shape: it runs immediately AFTER the transport-agnostic domain
@@ -102,9 +97,6 @@ export async function registerApiRequestStack(
     // request child container so per-request event handlers are resolvable) ─────────
     ApiCoreFeature.register(container, { wcpLicense: undefined });
 
-    // ── Request-phase storage (variant-specific; must precede HeadlessCmsFeature) ──
-    await config.registerRequestStorage?.(container);
-
     // ── CMS ────────────────────────────────────────────────────
     HeadlessCmsFeature.register(container, { type: "manage" });
     AcoFeature.register(container);
@@ -129,6 +121,7 @@ export async function registerApiRequestStack(
     MailerFeature.register(container);
     RecordLockingAppFeature.register(container, {});
     AuditLogsFeature.register(container, {});
+    DashboardAppFeature.register(container);
     WebhooksFeature.register(container);
     BackgroundTasksFeature.register(container);
 

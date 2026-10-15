@@ -35,10 +35,13 @@ class ListWebhookDeliveriesRepositoryImpl implements RepositoryAbstraction.Inter
 
             const listResult =
                 await this.listEntriesRepository.execute<WebhookDeliveryCmsEntryValues>(model, {
-                    where: this.whereMapper.map({
-                        fields: model.fields,
-                        input: params.where
-                    }),
+                    where: {
+                        ...this.whereMapper.map({
+                            fields: model.fields,
+                            input: params.where
+                        }),
+                        latest: true
+                    },
                     sort: this.sortMapper.map({
                         fields: model.fields,
                         input: params.sort

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
+import { minimumProtocolVersions } from "~/pulumi/apps/customDomain.js";
 
 export const AdminCustomDomains = defineExtension({
     type: "Infra/Admin/CustomDomains",
@@ -13,6 +14,12 @@ export const AdminCustomDomains = defineExtension({
             .default("sni-only"),
         certificateArn: z
             .string()
-            .describe("The ARN of the SSL/TLS certificate to use for the custom domains.")
+            .describe("The ARN of the SSL/TLS certificate to use for the custom domains."),
+        minimumProtocolVersion: z
+            .enum(minimumProtocolVersions)
+            .describe(
+                "The minimum TLS version viewers must support. Left to CloudFront's own default when omitted."
+            )
+            .optional()
     })
 });

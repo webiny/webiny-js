@@ -4,6 +4,7 @@ import { WebsiteBuilderWorkflowsMenu } from "~/Routes/index.js";
 import { ListOpenInNewWindow, PageEditorConfig, PagesList } from "~/Components/index.js";
 import { PageListWorkflowsFeature } from "~/presentation/page/PageList/feature.js";
 import { PageGetWorkflowsFeature } from "~/presentation/page/PageGet/feature.js";
+import { RevisionListWorkflowsFeature } from "~/presentation/page/RevisionList/feature.js";
 
 export const WebsiteBuilderWorkflows = () => {
     const featureFlags = useFeatureFlags();
@@ -16,6 +17,7 @@ export const WebsiteBuilderWorkflows = () => {
         <>
             <RegisterFeature feature={PageListWorkflowsFeature} />
             <RegisterFeature feature={PageGetWorkflowsFeature} />
+            <RegisterFeature feature={RevisionListWorkflowsFeature} />
             <WebsiteBuilderWorkflowsMenu />
             <PageEditorConfig />
             <PagesList />

@@ -57,6 +57,10 @@ jobs:
   prBranch:
     needs: checkComment
     name: Get PR branch
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: read
     outputs:
       pr-branch: ${{ steps.pr-branch.outputs.pr-branch }}
       pr-sha: ${{ steps.pr-sha.outputs.pr-sha }}
@@ -68,7 +72,7 @@ jobs:
       - name: Get PR branch
         id: pr-branch
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           echo "pr-branch=$(gh pr view ${{ github.event.issue.number }} --repo
           ${{ github.repository }} --json headRefName -q .headRefName)" >>
@@ -76,7 +80,7 @@ jobs:
       - name: Get PR head SHA
         id: pr-sha
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --repo ${{
           github.repository }} --json headRefOid -q .headRefOid)" >>
@@ -96,9 +100,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   build:
     name: Build
     needs:
@@ -156,7 +157,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       SLACK_RELEASE_CHANNEL_WEBHOOK: ${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}
     steps:
