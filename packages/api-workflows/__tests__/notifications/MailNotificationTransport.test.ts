@@ -1,41 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MockInstance } from "vitest";
-import { BaseError, Result } from "@webiny/feature/api";
 import { MailerService } from "@webiny/api-mailer";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { RecordingMailer, type SentMail } from "~tests/__helpers/RecordingMailer.js";
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
 import { MAIL_BCC_CHUNK_SIZE } from "~/domain/notifications/constants.js";
-
-type SentMail = Parameters<MailerService.Interface["sendMail"]>[0];
-
-class SmtpFailure extends BaseError {
-    override readonly code = "Mailer/MailerService/TransportSendError" as const;
-
-    public constructor(message: string) {
-        super({ message });
-    }
-}
-
-/** Local fake: records every mail; `failOn` returns a failed Result, `throwOn` throws, by call index. */
-class FakeMailer implements MailerService.Interface {
-    public readonly sent: SentMail[] = [];
-    public failOn: number[] = [];
-    public throwOn: number[] = [];
-    public failureMessage = "SMTP refused.";
-
-    public async sendMail<T = any>(data: SentMail): MailerService.Return<T> {
-        const index = this.sent.length;
-        this.sent.push(data);
-        if (this.throwOn.includes(index)) {
-            throw Object.assign(new Error(this.failureMessage), { code: "ECONNRESET" });
-        }
-        if (this.failOn.includes(index)) {
-            return Result.fail(new SmtpFailure(this.failureMessage) as never);
-        }
-        return Result.ok({ result: null, error: null });
-    }
-}
 
 const createUsers = (count: number, from = 0): NotificationTransport.User[] => {
     return Array.from({ length: count }, (_, index) => {
@@ -55,7 +25,7 @@ const MESSAGE: NotificationTransport.Message = {
     linkLabel: "Open content"
 };
 
-const createTransport = async (mailer: FakeMailer) => {
+const createTransport = async (mailer: RecordingMailer) => {
     loggedErrors.length = 0;
     const { context } = await createContextHandler({
         setup: container => {
@@ -84,7 +54,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("keeps its id and title and states a description", async () => {
-        const transport = await createTransport(new FakeMailer());
+        const transport = await createTransport(new RecordingMailer());
 
         expect(transport.id).toBe("e-mail");
         expect(transport.title).toBe("E-Mail");
@@ -92,7 +62,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("escapes the html and leaves the text untouched", async () => {
-        const mailer = new FakeMailer();
+        const mailer = new RecordingMailer();
         const transport = await createTransport(mailer);
 
         await transport.send({
@@ -114,7 +84,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("collapses CR, LF and whitespace runs in the subject to single spaces", async () => {
-        const mailer = new FakeMailer();
+        const mailer = new RecordingMailer();
         const transport = await createTransport(mailer);
 
         await transport.send({
@@ -130,7 +100,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("adds the link to the html and the text when there is a url", async () => {
-        const mailer = new FakeMailer();
+        const mailer = new RecordingMailer();
         const transport = await createTransport(mailer);
         const url = "https://admin.test/cms/content-entries/article?id=a%231&tenantId=root";
 
@@ -147,7 +117,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("sends no link when the url is null", async () => {
-        const mailer = new FakeMailer();
+        const mailer = new RecordingMailer();
         const transport = await createTransport(mailer);
 
         await transport.send({ users: toRecipients(createUsers(1)), message: MESSAGE });
@@ -158,7 +128,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("uses bare addresses: a display name with quotes and a newline never reaches a header", async () => {
-        const mailer = new FakeMailer();
+        const mailer = new RecordingMailer();
         const transport = await createTransport(mailer);
 
         await transport.send({
@@ -182,7 +152,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("skips a user whose email is not a plain address", async () => {
-        const mailer = new FakeMailer();
+        const mailer = new RecordingMailer();
         const transport = await createTransport(mailer);
         const invalid = [
             "idp|1234",
@@ -213,7 +183,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("sends an address once when several users share it", async () => {
-        const mailer = new FakeMailer();
+        const mailer = new RecordingMailer();
         const transport = await createTransport(mailer);
 
         await transport.send({
@@ -229,7 +199,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("sends nothing when every email is skipped", async () => {
-        const mailer = new FakeMailer();
+        const mailer = new RecordingMailer();
         const transport = await createTransport(mailer);
 
         await transport.send({
@@ -242,7 +212,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("sends 120 recipients as 3 mails of 50, 50 and 20", async () => {
-        const mailer = new FakeMailer();
+        const mailer = new RecordingMailer();
         const transport = await createTransport(mailer);
 
         await transport.send({ users: toRecipients(createUsers(120)), message: MESSAGE });
@@ -260,7 +230,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("logs each failed chunk once and still sends the others", async () => {
-        const mailer = new FakeMailer();
+        const mailer = new RecordingMailer();
         mailer.failOn = [0, 2];
         const transport = await createTransport(mailer);
 
@@ -280,7 +250,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("logs a failed Result once, holding only the error code and name, never an address", async () => {
-        const mailer = new FakeMailer();
+        const mailer = new RecordingMailer();
         mailer.failOn = [0];
         mailer.failureMessage = "Mailbox anna@webiny.test rejected the message.";
         const transport = await createTransport(mailer);
@@ -301,7 +271,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("logs a throwing mailer once, never rethrows and never logs the error text", async () => {
-        const mailer = new FakeMailer();
+        const mailer = new RecordingMailer();
         mailer.throwOn = [0];
         mailer.failureMessage = "Connection to smtp for anna@webiny.test was reset.";
         const transport = await createTransport(mailer);
@@ -320,7 +290,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("logs a thrown value's code and name only when they are strings", async () => {
-        class ObjectCodeMailer extends FakeMailer {
+        class ObjectCodeMailer extends RecordingMailer {
             public override async sendMail<T = any>(data: SentMail): MailerService.Return<T> {
                 this.sent.push(data);
                 throw { code: { address: "anna@webiny.test" }, name: ["anna@webiny.test"] };
@@ -343,7 +313,7 @@ describe("MailNotificationTransport (R193)", () => {
     });
 
     it("does not use console.error", async () => {
-        const mailer = new FakeMailer();
+        const mailer = new RecordingMailer();
         mailer.failOn = [0];
         mailer.throwOn = [1];
         const transport = await createTransport(mailer);
