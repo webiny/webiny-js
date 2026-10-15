@@ -64,6 +64,9 @@ const TENANT_ID = "tenant-a";
 const ADMIN_URL = "https://admin.example.com";
 const TITLE = "Article article-1";
 const REJECT_COMMENT = "The links are broken.";
+const MAIL_FAILED = "Could not send a workflow notification e-mail.";
+const WEBSOCKET_FAILED = "Could not send a workflow websocket notification.";
+const SECRET = "SECRET-e2e-failure";
 
 const DEFINITION: TaskDefinition.Metadata = {
     id: STEP_RUN_TASK_DEFINITION_ID,
@@ -349,24 +352,102 @@ describe("review notifications inside the background-task step run (R188, R195, 
         }
     });
 
-    it("finishes the task and keeps the decision when the mailer and the websocket throw (R87, R196)", async () => {
-        const { inTenant, seed, run, read, connections, sends, mailer } = await setup();
-        connections.connect(requester.id, TENANT_ID, "conn-tenant-a");
-        mailer.throwOn = [0];
-        sends.mode = "throw";
+    interface StepRunFailureCase {
+        name: string;
+        arrange: (fakes: Awaited<ReturnType<typeof setup>>) => void;
+        frames: number;
+        mails: number;
+        logged: Array<{ message: string; count: number }>;
+    }
 
-        const { result, stored } = await inTenant(async () => {
-            await seed(
-                createNotifyingAutomationReview({ mode: "reject", comment: REJECT_COMMENT })
+    const STEP_RUN_FAILURE_CASES: StepRunFailureCase[] = [
+        {
+            name: "the mailer throws",
+            arrange: ({ mailer }) => {
+                mailer.throwOn = [0];
+                mailer.failureMessage = SECRET;
+            },
+            frames: 1,
+            mails: 1,
+            logged: [{ message: MAIL_FAILED, count: 1 }]
+        },
+        {
+            name: "the mailer returns a failed Result",
+            arrange: ({ mailer }) => {
+                mailer.failOn = [0];
+                mailer.failureMessage = SECRET;
+            },
+            frames: 1,
+            mails: 1,
+            logged: [{ message: MAIL_FAILED, count: 1 }]
+        },
+        {
+            name: "the websocket connection list throws",
+            arrange: ({ connections }) => {
+                connections.mode = "throw";
+                connections.failureMessage = SECRET;
+            },
+            frames: 0,
+            mails: 1,
+            logged: [{ message: WEBSOCKET_FAILED, count: 1 }]
+        },
+        {
+            name: "the websocket send fails",
+            arrange: ({ sends }) => {
+                sends.mode = "fail";
+                sends.failureMessage = SECRET;
+            },
+            frames: 1,
+            mails: 1,
+            logged: [{ message: WEBSOCKET_FAILED, count: 1 }]
+        },
+        {
+            name: "the mailer and the websocket send both throw",
+            arrange: ({ mailer, sends }) => {
+                mailer.throwOn = [0];
+                sends.mode = "throw";
+                mailer.failureMessage = SECRET;
+                sends.failureMessage = SECRET;
+            },
+            frames: 1,
+            mails: 1,
+            logged: [
+                { message: MAIL_FAILED, count: 1 },
+                { message: WEBSOCKET_FAILED, count: 1 }
+            ]
+        }
+    ];
+
+    it.each(STEP_RUN_FAILURE_CASES)(
+        "finishes the task and keeps the decision when $name (R87, R196)",
+        async testCase => {
+            const fakes = await setup();
+            const { inTenant, seed, run, read, connections, sends, mailer } = fakes;
+            connections.connect(requester.id, TENANT_ID, "conn-tenant-a");
+            testCase.arrange(fakes);
+
+            const { result, stored } = await inTenant(async () => {
+                await seed(
+                    createNotifyingAutomationReview({ mode: "reject", comment: REJECT_COMMENT })
+                );
+                const taskResult = await run();
+                return { result: taskResult, stored: await read() };
+            });
+
+            expect(result.status).toBe("done");
+            expect(stored.state).toBe("rejected");
+            expect(sends.sent).toHaveLength(testCase.frames);
+            expect(mailer.sent).toHaveLength(testCase.mails);
+            expect(loggedErrors).toHaveLength(
+                testCase.logged.reduce((total, entry) => total + entry.count, 0)
             );
-            const taskResult = await run();
-            return { result: taskResult, stored: await read() };
-        });
-
-        expect(result.status).toBe("done");
-        expect(stored.state).toBe("rejected");
-        expect(mailer.sent).toHaveLength(1);
-        expect(sends.sent).toHaveLength(1);
-        expect(loggedErrors.length).toBeGreaterThan(0);
-    });
+            for (const entry of testCase.logged) {
+                expect(
+                    loggedErrors.filter(logged => logged.message === entry.message)
+                ).toHaveLength(entry.count);
+            }
+            expect(JSON.stringify(sends.sent)).not.toContain(SECRET);
+            expect(JSON.stringify(mailer.sent)).not.toContain(SECRET);
+        }
+    );
 });

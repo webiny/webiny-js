@@ -78,6 +78,8 @@ const ADMIN_URL = "https://admin.example.com";
 const COMMENT = "The legal text is unclear.";
 const FAILURE_REASON = "The automation failed: boom.";
 const MAIL_FAILED = "Could not send a workflow notification e-mail.";
+const WEBSOCKET_FAILED = "Could not send a workflow websocket notification.";
+const SECRET = "SECRET-e2e-failure";
 
 const ANNA: Actor = { type: "user", id: "user-anna", displayName: "Anna", identityType: "admin" };
 const BOB: Actor = { type: "user", id: "user-bob", displayName: "Bob", identityType: "admin" };
@@ -220,6 +222,8 @@ interface FailureCase {
     /** `RecordingWebsocketsSend` records a failing or throwing send too; a failing list sends nothing. */
     frames: number;
     mails: number;
+    /** The fixed log texts the failure produces, each with the number of entries. */
+    logged: Array<{ message: string; count: number }>;
 }
 
 const FAILURE_CASES: FailureCase[] = [
@@ -227,49 +231,61 @@ const FAILURE_CASES: FailureCase[] = [
         name: "the mailer throws",
         arrange: ({ mailer }) => {
             mailer.throwOn = [0];
+            mailer.failureMessage = SECRET;
         },
         frames: 1,
-        mails: 1
+        mails: 1,
+        logged: [{ message: MAIL_FAILED, count: 1 }]
     },
     {
         name: "the mailer returns a failed Result",
         arrange: ({ mailer }) => {
             mailer.failOn = [0];
+            mailer.failureMessage = SECRET;
         },
         frames: 1,
-        mails: 1
+        mails: 1,
+        logged: [{ message: MAIL_FAILED, count: 1 }]
     },
     {
         name: "the websocket connection list fails",
         arrange: ({ connections }) => {
             connections.mode = "fail";
+            connections.failureMessage = SECRET;
         },
         frames: 0,
-        mails: 1
+        mails: 1,
+        logged: [{ message: WEBSOCKET_FAILED, count: 1 }]
     },
     {
         name: "the websocket connection list throws",
         arrange: ({ connections }) => {
             connections.mode = "throw";
+            connections.failureMessage = SECRET;
         },
         frames: 0,
-        mails: 1
+        mails: 1,
+        logged: [{ message: WEBSOCKET_FAILED, count: 1 }]
     },
     {
         name: "the websocket send fails",
         arrange: ({ sends }) => {
             sends.mode = "fail";
+            sends.failureMessage = SECRET;
         },
         frames: 1,
-        mails: 1
+        mails: 1,
+        logged: [{ message: WEBSOCKET_FAILED, count: 1 }]
     },
     {
         name: "the websocket send throws",
         arrange: ({ sends }) => {
             sends.mode = "throw";
+            sends.failureMessage = SECRET;
         },
         frames: 1,
-        mails: 1
+        mails: 1,
+        logged: [{ message: WEBSOCKET_FAILED, count: 1 }]
     },
     {
         name: "the mailer, the connection list and the send all throw",
@@ -277,9 +293,16 @@ const FAILURE_CASES: FailureCase[] = [
             mailer.throwOn = [0];
             connections.mode = "throw";
             sends.mode = "throw";
+            mailer.failureMessage = SECRET;
+            connections.failureMessage = SECRET;
+            sends.failureMessage = SECRET;
         },
         frames: 0,
-        mails: 1
+        mails: 1,
+        logged: [
+            { message: MAIL_FAILED, count: 1 },
+            { message: WEBSOCKET_FAILED, count: 1 }
+        ]
     }
 ];
 
@@ -833,7 +856,8 @@ describe("review notifications through the real saver (R181-R197)", () => {
             "returns the rejected review and still sends the other channel when $name",
             async testCase => {
                 const fakes = await setup();
-                const { request, start, reject, connectAll, clear, sends, mailer, read } = fakes;
+                const { request, start, reject, connectAll, clear, sends, mailer, chat, read } =
+                    fakes;
                 allowReaders();
                 connectAll();
                 const review = expectOk(await request.execute(createRequestInput()));
@@ -850,7 +874,19 @@ describe("review notifications through the real saver (R181-R197)", () => {
                 expect((await read(review.id)).state).toBe("rejected");
                 expect(sends.sent).toHaveLength(testCase.frames);
                 expect(mailer.sent).toHaveLength(testCase.mails);
-                expect(loggedErrors.length).toBeGreaterThan(0);
+                // The exact fixed texts, one entry per failing dependency, and nothing else.
+                expect(loggedErrors).toHaveLength(
+                    testCase.logged.reduce((total, entry) => total + entry.count, 0)
+                );
+                for (const entry of testCase.logged) {
+                    expect(
+                        loggedErrors.filter(logged => logged.message === entry.message)
+                    ).toHaveLength(entry.count);
+                }
+                // The raw error text is logged only; it never reaches a frame, a mail or a transport.
+                expect(JSON.stringify(sends.sent)).not.toContain(SECRET);
+                expect(JSON.stringify(mailer.sent)).not.toContain(SECRET);
+                expect(JSON.stringify(chat.sent)).not.toContain(SECRET);
             }
         );
     });
