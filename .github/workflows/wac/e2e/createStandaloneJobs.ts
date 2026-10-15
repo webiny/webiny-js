@@ -18,6 +18,7 @@ import { installBuildSteps, runBuildCacheDownloadSteps, yarnCacheSteps } from ".
 import { createStatusRowUpdateSteps } from "./statusComment.js";
 import { AI_E2E_JOB_IF, AI_E2E_LICENSE_ENV, aiE2eCommentRow, createAiE2eSteps } from "./aiE2e.js";
 import { createInstallationTestSteps } from "./installationTest.js";
+import { createUnlicensedE2eSteps } from "./unlicensedE2e.js";
 
 // The storage backends the standalone hosting type supports. Mirrors `StorageOps` in
 // create-webiny-project's standalone project setup.
@@ -250,9 +251,10 @@ export const createStandaloneProjectParts = (
                     'echo "GraphQL API responded."'
                 ].join("\n")
             },
-            // The same single test the AWS variants run. /e2e is a smoke test - a freshly created
-            // project installs and the user lands in the dashboard - so every variant runs exactly
-            // this, and none tests more than its counterparts.
+            // The same tests the AWS variants run. /e2e is a smoke test - a freshly created project
+            // installs and the admin can sign in - so every variant runs exactly these, and none
+            // tests more than its counterparts. The WCP job runs the unlicensed tests as part of
+            // its own, larger run.
             ...createInstallationTestSteps({
                 workingDirectory,
                 adminUrl: STANDALONE_ADMIN_URL,
@@ -263,7 +265,11 @@ export const createStandaloneProjectParts = (
                       workingDirectory,
                       artifactName: `ai-e2e-results-standalone-${artifactSuffix}`
                   })
-                : []),
+                : createUnlicensedE2eSteps({
+                      workingDirectory,
+                      adminUrl: STANDALONE_ADMIN_URL,
+                      artifactName: `e2e-test-results-standalone-${artifactSuffix}`
+                  })),
             // After the AI tests, so the AI job's row reports them too.
             ...(statusLabel ? createStatusRowUpdateSteps({ label: statusLabel }) : []),
             {

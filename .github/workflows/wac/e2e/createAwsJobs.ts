@@ -9,6 +9,7 @@ import { createJob } from "../jobs/index.js";
 import { DIR_TEST_PROJECT, DIR_WEBINY_JS, PATH_TEST_PROJECT } from "./constants.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
 import { createInstallationTestSteps } from "./installationTest.js";
+import { createUnlicensedE2eSteps } from "./unlicensedE2e.js";
 import {
     globalBuildCacheSteps,
     installBuildSteps,
@@ -181,8 +182,13 @@ export const createAwsJobs = (dbSetup: string) => {
                 adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
                 artifactName: `e2e-results-${dbSetup}`
             }),
+            ...createUnlicensedE2eSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
+                artifactName: `e2e-test-results-${dbSetup}`
+            }),
             // The row is set to "✅ Ready" with the URL once the deploy succeeds, but that happens
-            // BEFORE the test runs - so without these the comment claims the variant is fine even
+            // BEFORE the tests run - so without these the comment claims the variant is fine even
             // when its tests failed.
             ...createStatusRowUpdateSteps({
                 label: dbDisplayName,
