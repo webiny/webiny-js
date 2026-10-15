@@ -121,6 +121,37 @@ describe("ContentEntryFormPresenter.saveRevision", () => {
         expect(forms[0].setErrors).toHaveBeenCalledTimes(1);
     });
 
+    it("creates a new entry in the folder it was started in", async () => {
+        const { presenter, create, createExecute } = setup();
+        presenter.setFolderId("folder-1");
+        presenter.newEntry();
+
+        const saving = presenter.saveRevision();
+        create.resolve(createEntry("A"));
+
+        await expect(saving).resolves.toBe(true);
+        expect(createExecute).toHaveBeenCalledWith(
+            expect.objectContaining({
+                data: { values: { title: "Draft" }, wbyAco_location: { folderId: "folder-1" } }
+            })
+        );
+    });
+
+    it("does not carry the folder over to an entry started after a reset", async () => {
+        const { presenter, create, createExecute } = setup();
+        presenter.setFolderId("folder-1");
+        presenter.reset();
+        presenter.newEntry();
+
+        const saving = presenter.saveRevision();
+        create.resolve(createEntry("A"));
+
+        await expect(saving).resolves.toBe(true);
+        expect(createExecute).toHaveBeenCalledWith(
+            expect.objectContaining({ data: { values: { title: "Draft" } } })
+        );
+    });
+
     it("returns false instead of throwing when the form was reset mid-save", async () => {
         const { presenter, create, createExecute } = setup();
         presenter.newEntry();
