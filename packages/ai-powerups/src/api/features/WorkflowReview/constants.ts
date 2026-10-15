@@ -6,3 +6,6 @@ export const AI_STEP_MAX_TOOL_STEPS = 20;
 
 /** Most issues one AI decision keeps; extras are dropped and logged (R171). */
 export const AI_STEP_MAX_ISSUES = 50;
+
+/** Most characters one AI decision comment keeps; the rest is cut (R171). */
+export const AI_STEP_MAX_COMMENT_LENGTH = 5000;

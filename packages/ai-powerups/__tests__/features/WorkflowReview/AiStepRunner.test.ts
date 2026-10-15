@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { z } from "zod";
 import { Result } from "@webiny/feature/api";
+import type { WorkflowAiTool } from "@webiny/api-workflows/features/aiTools/WorkflowAiTool/index.js";
 import { StepRunFailure } from "@webiny/api-workflows/features/stepRun/StepRunFailure.js";
 import { ReviewTargetEditorError } from "@webiny/api-workflows/domain/review/errors.js";
 import { REJECT_COMMENT_MIN_LENGTH } from "@webiny/api-workflows/domain/review/Review.js";
@@ -13,6 +15,7 @@ import {
     AiModelNotAvailableError
 } from "~/api/features/Capabilities/index.js";
 import {
+    AI_STEP_MAX_COMMENT_LENGTH,
     AI_STEP_MAX_ISSUES,
     AI_STEP_MAX_TOOL_STEPS,
     WORKFLOWS_REVIEW_CAPABILITY_ID
@@ -51,6 +54,30 @@ const createGenerateError = (): NoObjectGeneratedError => {
         finishReason: "stop"
     });
 };
+
+/**
+ * A tool that records when each call starts and finishes into `events`, and holds every call for
+ * a macrotask so an overlap would show; the call with the input `fail` throws.
+ */
+class SlowRecordingAiTool implements WorkflowAiTool.Interface {
+    public readonly title = "slow";
+    public readonly description = "Slow.";
+    public readonly inputSchema = z.object({ value: z.string() });
+    public readonly events: string[] = [];
+
+    public constructor(public readonly name: string) {}
+
+    public async execute(input: unknown): Promise<WorkflowAiTool.Result> {
+        const value = (input as { value: string }).value;
+        this.events.push(`start ${value}`);
+        await new Promise(resolve => setTimeout(resolve, 20));
+        this.events.push(`finish ${value}`);
+        if (value === "fail") {
+            throw new Error("The first call failed.");
+        }
+        return { ok: true, data: { value } };
+    }
+}
 
 describe("AiStepRunner members (R168, R170)", () => {
     it("is the ai runner: single run, fixed reasons, the AI actor", () => {
@@ -190,7 +217,7 @@ describe("AiStepRunner failures before the call (R170, R175)", () => {
                     "Could not resolve the AI review capability."
                 );
                 expect(logger.errors[0].fields).toMatchObject({
-                    error,
+                    error: { name: error.name, message: error.message },
                     reviewId: AI_REVIEW_ID,
                     stepId: AI_STEP_ID,
                     taskId: AI_TASK.id
@@ -743,5 +770,117 @@ describe("AiStepRunner decision and call failures (R170, R175)", () => {
         expect(reason).toBe("The AI review failed.");
         expect(reason).not.toContain("hunter2");
         expect(logger.errors).toHaveLength(1);
+    });
+});
+
+describe("AiStepRunner serialises the tool calls of a run (I-3)", () => {
+    it("runs two parallel calls of one step one after the other", async () => {
+        const slow = new SlowRecordingAiTool("slow");
+        const { run, ai } = createAiStepRunnerHarness({
+            review: createRunningAiReview({ tools: ["slow"] }),
+            tools: [slow]
+        });
+        ai.response = {
+            steps: [
+                {
+                    toolCalls: [
+                        { name: "slow", input: { value: "a" } },
+                        { name: "slow", input: { value: "b" } }
+                    ]
+                }
+            ],
+            decision: APPROVE_DECISION
+        };
+
+        await run();
+
+        expect(slow.events).toEqual(["start a", "finish a", "start b", "finish b"]);
+        expect(ai.toolResults.map(item => item.result)).toEqual([
+            { ok: true, data: { value: "a" } },
+            { ok: true, data: { value: "b" } }
+        ]);
+    });
+
+    it("runs the second call after a first call that threw, with the fixed text for the first", async () => {
+        const slow = new SlowRecordingAiTool("slow");
+        const { run, ai, logger } = createAiStepRunnerHarness({
+            review: createRunningAiReview({ tools: ["slow"] }),
+            tools: [slow]
+        });
+        ai.response = {
+            steps: [
+                {
+                    toolCalls: [
+                        { name: "slow", input: { value: "fail" } },
+                        { name: "slow", input: { value: "b" } }
+                    ]
+                }
+            ],
+            decision: APPROVE_DECISION
+        };
+
+        const outcome = await run();
+
+        expect(slow.events).toEqual(["start fail", "finish fail", "start b", "finish b"]);
+        expect(ai.toolResults.map(item => item.result)).toEqual([
+            { ok: false, error: 'The tool "slow" failed.' },
+            { ok: true, data: { value: "b" } }
+        ]);
+        expect(logger.errors).toHaveLength(1);
+        expect(outcome.type).toBe("approved");
+    });
+});
+
+describe("AiStepRunner logs errors without the request (I-4)", () => {
+    it("logs name, message and status code of a provider error, not the request or the headers", async () => {
+        const { run, ai, logger } = createAiStepRunnerHarness();
+        const providerError = Object.assign(new Error("Unauthorized"), {
+            name: "AI_APICallError",
+            statusCode: 401,
+            requestBodyValues: { prompt: "the whole entry content" },
+            responseHeaders: { "x-request-id": "abc", authorization: "Bearer sk-secret-1" },
+            cause: new Error("socket")
+        });
+        ai.response = { steps: [], decision: APPROVE_DECISION, error: providerError };
+
+        await failureOf(run());
+
+        expect(logger.errors).toHaveLength(1);
+        expect(logger.errors[0].message).toBe("The AI review call failed.");
+        expect(logger.errors[0].fields.error).toEqual({
+            name: "AI_APICallError",
+            message: "Unauthorized",
+            statusCode: 401
+        });
+        expect(JSON.stringify(logger.errors[0].fields)).not.toContain("sk-secret-1");
+        expect(JSON.stringify(logger.errors[0].fields)).not.toContain("the whole entry content");
+    });
+});
+
+describe("AiStepRunner caps the decision comment (Minor 5)", () => {
+    it("stores a 6000 character comment as 5000 characters", async () => {
+        const { run, ai } = createAiStepRunnerHarness();
+        ai.response = {
+            steps: [],
+            decision: { approved: true, comment: "c".repeat(6000), issues: [] }
+        };
+
+        const outcome = await run();
+
+        expect(outcome).toMatchObject({ type: "approved" });
+        expect((outcome as { comment: string }).comment).toHaveLength(AI_STEP_MAX_COMMENT_LENGTH);
+        expect(AI_STEP_MAX_COMMENT_LENGTH).toBe(5000);
+    });
+
+    it("caps a reject comment too", async () => {
+        const { run, ai } = createAiStepRunnerHarness();
+        ai.response = {
+            steps: [],
+            decision: { approved: false, comment: "c".repeat(6000), issues: [] }
+        };
+
+        const outcome = await run();
+
+        expect((outcome as { comment: string }).comment).toHaveLength(AI_STEP_MAX_COMMENT_LENGTH);
     });
 });

@@ -23,6 +23,7 @@ import {
     ResolveAiCapabilityUseCase
 } from "~/api/features/Capabilities/index.js";
 import {
+    AI_STEP_MAX_COMMENT_LENGTH,
     AI_STEP_MAX_ISSUES,
     AI_STEP_MAX_TOOL_STEPS,
     WORKFLOWS_REVIEW_CAPABILITY_ID
@@ -44,6 +45,26 @@ import {
     AI_REVIEW_TIMED_OUT_REASON,
     getAiStepLimitReason
 } from "./aiRunFailureReasons.js";
+
+interface LoggedAiError {
+    name: string;
+    message: string;
+    statusCode?: number;
+}
+
+/**
+ * What is logged of an error: its name, message and status code. Provider errors carry the
+ * request body and the response headers, which hold the prompt and can hold secrets.
+ */
+const toLoggedError = (error: unknown): LoggedAiError => {
+    if (!(error instanceof Error)) {
+        return { name: "Error", message: String(error) };
+    }
+    const { statusCode } = error as Error & { statusCode?: unknown };
+    return typeof statusCode === "number"
+        ? { name: error.name, message: error.message, statusCode }
+        : { name: error.name, message: error.message };
+};
 
 /**
  * Runs one `ai` step (R170, R171, R175; spec 7.3): one `generateText` call with the structured
@@ -139,7 +160,7 @@ class AiStepRunnerImpl implements StepRunner.Interface {
                 }
                 if (!(resolved.error instanceof AiCapabilityDisabledError)) {
                     this.logger.error(
-                        { error: resolved.error, ...logFields },
+                        { error: toLoggedError(resolved.error), ...logFields },
                         "Could not resolve the AI review capability."
                     );
                 }
@@ -228,7 +249,7 @@ class AiStepRunnerImpl implements StepRunner.Interface {
                         // The service returns Results; a throw is unexpected. Not stale, logged
                         // once here, never handed to the AI SDK (R87).
                         this.logger.error(
-                            { error, ...logFields },
+                            { error: toLoggedError(error), ...logFields },
                             "Could not check whether the AI step is still running."
                         );
                     }
@@ -243,34 +264,50 @@ class AiStepRunnerImpl implements StepRunner.Interface {
 
             // The AI SDK tool set, one entry per allowlisted tool (the shape `AiSdkTools` builds).
             // The context comes from the run, never from the model's input (Review Focus 2).
+            let toolChain: Promise<void> = Promise.resolve();
             const toolSet: ToolSet = {};
             for (const workflowTool of allowlisted) {
                 toolSet[workflowTool.name] = {
                     description: workflowTool.description,
                     inputSchema: workflowTool.inputSchema,
-                    execute: async (input: unknown) => {
-                        if (await checkStale()) {
-                            return { ok: false, error: AI_TOOL_STEP_NOT_RUNNING_MESSAGE };
-                        }
-                        try {
-                            return await workflowTool.execute(input, {
-                                review,
-                                step,
-                                requester,
-                                task
-                            });
-                        } catch (error) {
-                            // A custom tool threw (R87): the SDK would show its raw message to
-                            // the model.
-                            this.logger.error(
-                                { error, ...logFields, tool: workflowTool.name },
-                                "An AI tool threw."
-                            );
-                            return {
-                                ok: false,
-                                error: `The tool "${workflowTool.name}" failed.`
-                            };
-                        }
+                    execute: (input: unknown) => {
+                        // The SDK runs the tool calls of one model step in parallel, and a write
+                        // tool reads the entry and writes a merged object: two at once lose one
+                        // write. Each call waits for the previous one of this run. The chain
+                        // never rejects, so one failing call cannot break it for the next.
+                        const turn = toolChain.then(async () => {
+                            if (await checkStale()) {
+                                return { ok: false, error: AI_TOOL_STEP_NOT_RUNNING_MESSAGE };
+                            }
+                            try {
+                                return await workflowTool.execute(input, {
+                                    review,
+                                    step,
+                                    requester,
+                                    task
+                                });
+                            } catch (error) {
+                                // A custom tool threw (R87): the SDK would show its raw message
+                                // to the model.
+                                this.logger.error(
+                                    {
+                                        error: toLoggedError(error),
+                                        ...logFields,
+                                        tool: workflowTool.name
+                                    },
+                                    "An AI tool threw."
+                                );
+                                return {
+                                    ok: false,
+                                    error: `The tool "${workflowTool.name}" failed.`
+                                };
+                            }
+                        });
+                        toolChain = turn.then(
+                            () => undefined,
+                            () => undefined
+                        );
+                        return turn;
                     }
                 };
             }
@@ -314,7 +351,10 @@ class AiStepRunnerImpl implements StepRunner.Interface {
                 ) {
                     throw new StepRunFailure(AI_REVIEW_NO_DECISION_REASON);
                 }
-                this.logger.error({ error: callError, ...logFields }, "The AI review call failed.");
+                this.logger.error(
+                    { error: toLoggedError(callError), ...logFields },
+                    "The AI review call failed."
+                );
                 throw new StepRunFailure(this.failureReasons.error);
             }
 
@@ -352,7 +392,10 @@ class AiStepRunnerImpl implements StepRunner.Interface {
                 );
             }
             const issues = normalizeAiIssues(decision.data.issues);
-            const comment = decision.data.comment.trim();
+            const comment = decision.data.comment
+                .trim()
+                .slice(0, AI_STEP_MAX_COMMENT_LENGTH)
+                .trim();
             if (decision.data.approved) {
                 return comment === ""
                     ? { type: "approved", issues }
@@ -367,7 +410,10 @@ class AiStepRunnerImpl implements StepRunner.Interface {
                 throw error;
             }
             // 14. Nothing but a `StepRunFailure` leaves this runner (R87).
-            this.logger.error({ error, ...logFields }, "The AI review threw.");
+            this.logger.error(
+                { error: toLoggedError(error), ...logFields },
+                "The AI review threw."
+            );
             throw new StepRunFailure(this.failureReasons.error);
         }
     }
