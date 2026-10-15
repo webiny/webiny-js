@@ -189,7 +189,7 @@ Register the editor under the same flag as the rest of the target adapter. Test 
 ## 8. Limits and what happens when content is too large
 
 - The serialised target plus the previous comments plus the step instructions may not exceed `AI_STEP_MAX_INPUT_CHARACTERS` (200000). Over the cap the step fails BEFORE any model call with `The content is too large for the AI review.`, and `readTarget` answers the same text as a tool error. Nothing is ever truncated: the AI must not approve content it never saw.
-- Content and comments are serialised with `<` escaped as `<` (6 characters), so markup-heavy content reaches the cap earlier than `readTarget`'s own check does. A Website Builder page keeps its bindings in full and summarises only the element tree, so a page with very large bindings fails the same way, and not even its title can be edited.
+- Content and comments are serialised with `<` escaped as `\u003c` (6 characters), so markup-heavy content reaches the cap earlier than `readTarget`'s own check does. A Website Builder page keeps its bindings in full and summarises only the element tree, so a page with very large bindings fails the same way, and not even its title can be edited.
 - The tool loop stops after `AI_STEP_MAX_TOOL_STEPS` (20) steps: `The AI review did not finish in 20 steps.`
 - The model call is aborted shortly before the task's remaining runtime ends (`The AI review timed out.`, margin `STEP_RUN_TIMEOUT_MARGIN_MS`, 30 seconds).
 - A cancel or restart seen during the call stops it between tool steps, at most `STEP_RUN_STALE_CHECK_INTERVAL_MS` (5 seconds) late, and nothing is written afterwards (A56, A59). A call whose result is discarded as stale is accepted.
@@ -213,6 +213,8 @@ The reach service logs a failed capability resolve once, except model-not-availa
 
 Runner-time reasons are in `packages/ai-powerups/src/api/features/WorkflowReview/AiStepRunner/aiRunFailureReasons.ts`, and the runner also uses the shared ones above where they apply: the timeout (`The AI review timed out.`), no valid decision (`The AI review returned no decision.`), a rejection without a comment (`The AI review rejected without a comment.`), the step cap (`The AI review did not finish in 20 steps.`), the over-the-cap text from section 8, an abort (`The AI review was aborted.`) and a task that ended without a result (`The AI review task ended without a result.`). The runner also logs a failed capability resolve once, except model-not-available and disabled.
 
+`ConfiguredAiModelsService` logs its own failures once. A failed settings read inside `findConnection` is logged twice, once by the service and once by the step check or the runner; this is accepted.
+
 `listAiModels` logs a throwing permission read or a throwing `list()` once and answers the fixed text `Could not list the AI models.`
 
 A failed AI step shows in the failed list (D112). The requester, or a viewer with `reassign`, restarts it through the phase 5 restart; each restart is a new task and a new model cost.
@@ -223,7 +225,7 @@ The AI task is one iteration: a re-entered task fails without a second model cal
 
 **Issues.** The decision carries `issues[]`, `{ fieldPath, severity, message, suggestion }`, stored on the step (`ReviewStep.issues`, default `[]`, reset by a restart). Showing them is the admin phases' work.
 
-**Private tasks.** The `workflowsStepRun` task is invisible to the background-tasks GraphQL (R180, extends SEC-68).
+**Private tasks.** R180 (extends SEC-68).
 
 ## 10. Related
 

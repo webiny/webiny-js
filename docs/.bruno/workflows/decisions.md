@@ -786,7 +786,7 @@ Covers R165. Refines D101, D109. Decided 2026-10-14 (phase 6 plan R165).
 
 `workflowsStepRun` stays the one private task; a multi-registered `StepRunner` (type, `singleRun`, fixed failure reasons, `getActor`, `maxIterationsReason`, `run`) holds what differs per type and the handler dispatches by step type. Automation behaviour is byte for byte unchanged; the AI runner is single-run (the handler persists the output before calling it and refuses a re-entered task). A step type with no runner fails with the "not available" reason and neutral texts; stuck detection covers every step type. One shared reach service starts the task for both types.
 
-The task cleans itself up when it finishes (`selfCleanup: "always"`), because every outcome is already on the step; a step whose task is gone is handled by stuck detection (grace from the step start) (R179). The background-tasks GraphQL treats a private task like one that does not exist (`getTask` not found, `listTasks` leaves it out, `listLogs` answers nothing, `abortTask` and `deleteTask` refuse it), which extends SEC-68 (R180).
+The task cleans itself up when it finishes (`selfCleanup: "always"`), because every outcome is already on the step; a step whose task is gone is handled by stuck detection (grace from the step start) (R179). Private tasks: R180 (extends SEC-68).
 
 Covers R168, R179, R180 and user answer Q1. Refines D57, D87. Decided 2026-10-14 (phase 6 plan R168, R179, R180).
 
