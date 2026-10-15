@@ -1,0 +1,40 @@
+// A fixture for the guard-4 self-test. Not compiled, not registered, deliberately not a .ts file
+// so nothing type-checks or imports it.
+//
+// It contains exactly three non-optional dependency tokens and one optional one. The last
+// dependency array is NON-EMPTY and is followed by a long stretch of code before the next `})`,
+// mirroring a GraphQL factory's `addResolver` — which is the shape that actually broke the guard.
+// An over-greedy match will run from that array into the trailing code and report the bait.
+
+export const OneRequired = SomeAbstraction.createImplementation({
+    implementation: Impl,
+    dependencies: [AlphaToken]
+});
+
+export const TwoRequiredAndOneOptional = Other.createImplementation({
+    implementation: Impl,
+    dependencies: [BetaToken, [GammaOptional, { optional: true }], DeltaToken]
+});
+
+export class SomeFactory {
+    public async execute(builder) {
+        builder.addResolver({
+            path: "Query.something",
+            dependencies: [AlphaToken],
+            resolver: (dep) => async ({ args }) => {
+                const outcome = await dep.execute({
+                    target: BaitTargetType,
+                    id: args.id
+                });
+
+                if (outcome.isFail()) {
+                    return new BaitErrorResponse(outcome.error);
+                }
+
+                return new BaitListResponse(outcome.value.map(BaitMapper), {
+                    cursor: null
+                });
+            }
+        });
+    }
+}

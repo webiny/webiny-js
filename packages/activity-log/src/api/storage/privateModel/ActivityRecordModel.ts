@@ -1,0 +1,90 @@
+import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+
+export const ACTIVITY_LOG_MODEL_ID = "wbyActivityLog";
+
+/**
+ * The activity record as a private CMS model.
+ *
+ * Field choices are driven entirely by what has to be filterable. `revision` and `actorId` are
+ * top-level text fields because the read API narrows on them; everything describing *what*
+ * changed lives in the `changeset` JSON blob, which nothing queries.
+ *
+ * `changeset` holds paths, hashes, labels and operations. It never holds a value, before or
+ * after, in any form.
+ */
+class ActivityRecordModelImpl implements ModelFactory.Interface {
+    public async execute(builder: ModelFactory.Builder) {
+        return [
+            builder
+                .private({
+                    modelId: ACTIVITY_LOG_MODEL_ID,
+                    name: "Activity Log"
+                })
+                .fields(fields => ({
+                    // Sort and pagination key. See ActivityRecordValues.sequence.
+                    sequence: fields.text().label("Sequence").required("Sequence is required."),
+                    targetType: fields
+                        .text()
+                        .label("Target Type")
+                        .required("Target type is required."),
+                    targetId: fields.text().label("Target ID").required("Target ID is required."),
+                    revision: fields.text().label("Revision").required("Revision is required."),
+                    // `datetime()` defaults to `"date"` — date only, time silently discarded —
+                    // so the variant has to be stated. `withTimezone()` keeps the offset that
+                    // `toISOString()` writes, which makes each record an unambiguous instant
+                    // rather than one that relies on a convention about which zone it meant.
+                    //
+                    // Records are always written as ISO-8601 UTC, so the `timestamp_DESC` sort
+                    // stays chronological: same-format UTC strings sort lexicographically. Mixed
+                    // offsets would break that, which is why the write side never emits one.
+                    timestamp: fields
+                        .datetime()
+                        .label("Timestamp")
+                        .required("Timestamp is required.")
+                        .withTimezone(),
+                    actorId: fields.text().label("Actor ID").required("Actor ID is required."),
+                    actorType: fields
+                        .text()
+                        .label("Actor Type")
+                        .required("Actor type is required."),
+                    actorDisplayName: fields.text().label("Actor Display Name"),
+                    action: fields.text().label("Action").required("Action is required."),
+                    source: fields.text().label("Source").required("Source is required."),
+                    correlationId: fields
+                        .text()
+                        .label("Correlation ID")
+                        .required("Correlation ID is required."),
+                    changeset: fields.json().label("Changeset"),
+                    // Which part of the target the action concerned, e.g. a workflow step.
+                    subjectId: fields.text().label("Subject ID"),
+                    subjectLabel: fields.text().label("Subject Label"),
+                    // Whether a note was attached. Never the note itself.
+                    hasNote: fields.boolean().label("Has Note"),
+                    truncated: fields.boolean().label("Changeset Truncated"),
+                    // The generated sentence. The only field on this model that may contain
+                    // content values, and the reason the feature's privacy posture is stated
+                    // narrowly rather than absolutely.
+                    summary: fields.longText().label("Summary"),
+                    summaryKind: fields.text().label("Summary Kind"),
+                    summaryRunId: fields.text().label("Summary Run ID"),
+                    // Job bookkeeping. `summaryValues` holds content values transiently, between
+                    // the save that produced them and the job that consumes them.
+                    summaryTaskId: fields.text().label("Summary Task ID"),
+                    summaryValues: fields.json().label("Summary Values"),
+                    // Indexed separately from `timestamp` because the sweeper ages against when the
+                    // values were written, which is not when the change happened for a debounced
+                    // run that extended an earlier record.
+                    summaryValuesWrittenOn: fields
+                        .datetime()
+                        .label("Summary Values Written On")
+                        .withTimezone(),
+                    summaryReason: fields.text().label("Summary Reason")
+                }))
+        ];
+    }
+}
+
+export const ActivityRecordModel = ModelFactory.createImplementation({
+    implementation: ActivityRecordModelImpl,
+    dependencies: []
+});
