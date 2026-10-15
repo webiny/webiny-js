@@ -20,13 +20,13 @@
 
 ## Current state
 
-- Branch: bruno/refactor/workflows-flow, 333 commits ahead of origin/next, never pushed.
-- Last code commit d66ecec123 passed the full pre-commit chain and targeted tests on both storages.
-- Task 3b plan (api-mailer default `from`: SmtpMailTransportFactory passes settings.from; explicit from wins) committed as an UNREVIEWED draft (18f64c39cc) with R201 and the 7.1 overview row. Tree clean.
-- Resume map: .superpowers/sdd/p7-plan/notes.md ("PAUSE" section).
+- Phase 7 (notifications) fully built and reviewed (2026-10-16): Task 3b (d5030a6e88, ecaa534f6f), 7.2 (7f75346d1d, c43bf8049f), 7.3 (85e8609d11, c5b0fd5b2e, a13db56e94, af9c5975ef), 7.4 (0f53e8976a, f1b81b6354, e8e2254bae, 867311bc5f, bde1ea2f4e), 7.5 docs (b52e5710bd, b96c2c13e3), barrel cleanup (c17e48f0ff). Every task, sub-phase and the whole phase reviewed clean.
+- Notification tests: 24 files green on ddb-os, CMS/WB link and registration tests green on both storages.
+- SEC register rebuilt in gitignored docs/.reports/security.md (SEC-69 = R180). SEC ids removed from guides, spec and decisions.
+- Branch bruno/refactor/workflows-flow, never pushed. Rulings and deferred minors: .superpowers/sdd/p7-plan/ (rulings-*.md, minors-7.3.md, notes.md).
 
 ## What might come next
 
-- Review Task 3b plan (doubt: e2e via registerCodeSmtpSettings with explicit from untested; empty-string from already rejected by SendMailUseCase), fix, commit; implement it with SDD.
-- 7.2 (Tasks 4-5, take-over flag), 7.3 (Tasks 6-9), 7.4 (Tasks 10-13), 7.5 (Task 14), stopping per sub-phase.
-- Pre-merge: commit trailers (0b0157fe9f, c9ec20e917 and older), useGraphQLHandler.ts ApiKey type error, ListAutomationDefinitions/StepTypes raw-message leak fixed (7cdadc545d), earlier handoff items.
+- Open user decision: the e-mail transport calls `MailerService` directly, not `SendMailUseCase` (skips mailer validation and the MailBeforeSend/AfterSend/SendError events). Keep and document in D153, or switch.
+- Phases 8a-9c (admin UI; stale client gateway `listWorkflowNotificationTypes` in app-workflows).
+- Pre-merge: commit trailers (b52e5710bd Sonnet trailer, 0b0157fe9f, c9ec20e917 and older), useGraphQLHandler.ts ApiKey type error, earlier handoff items. Optional: widen the 5ms hold in the notifier fan-out test if CI flakes.
