@@ -8,14 +8,13 @@ export const createDependencyTree = async (project: IProjectModel): Promise<IDep
     const projectRoot = project.paths.rootFolder;
     const basePath = projectRoot.toString();
     const packagesFolderPath = projectRoot.join("packages").toString();
-    const cypressFolderPath = projectRoot.join("cypress").toString();
     const packageJsonFilePath = projectRoot.join("package.json").toString();
 
     const listAllPackages = new ListAllPackages();
     const listAllPackageJsonFiles = new ListAllPackageJsonFiles();
     const buildDependencyTree = new BuildDependencyTree();
 
-    const allPackages = await listAllPackages.list([packagesFolderPath, cypressFolderPath]);
+    const allPackages = await listAllPackages.list([packagesFolderPath]);
 
     const allPackageJsonFiles = listAllPackageJsonFiles.list({
         targets: allPackages
