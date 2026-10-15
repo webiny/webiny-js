@@ -6,6 +6,7 @@ import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/Review
 import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTargetSync/index.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import { ReviewTargetFolderChain } from "@webiny/api-workflows/features/review/ReviewTargetFolderChain/index.js";
+import { ReviewTargetEditor } from "@webiny/api-workflows/features/review/ReviewTargetEditor/index.js";
 import { WbPageFolderExistsService } from "~/features/target/WbPageFolderExistsService/index.js";
 import { CmsEntryReviewNamespace } from "@webiny/api-headless-cms-workflows/features/target/CmsEntryReviewNamespace/index.js";
 import { PageBeforePublishEventHandler } from "@webiny/api-website-builder/features/pages/PublishPage/index.js";
@@ -79,6 +80,12 @@ describe("WebsiteBuilderWorkflowsFeature registration", () => {
                 .resolveAll(ReviewTargetFolderChain)
                 .filter((item: ReviewTargetFolderChain.Interface) => item.canHandle("wb.page"))
         ).toHaveLength(1);
+        // Only the WB editor is asserted here (R172); this sub-phase does not depend on 6.6.
+        expect(
+            container
+                .resolveAll(ReviewTargetEditor)
+                .filter((item: ReviewTargetEditor.Interface) => item.canEdit("wb.page"))
+        ).toHaveLength(1);
         expect(container.resolveAll(CmsEntryReviewNamespace)).toHaveLength(2);
         expect(
             container
@@ -104,6 +111,7 @@ describe("WebsiteBuilderWorkflowsFeature registration", () => {
         expect(container.resolveAll(ReviewTargetSync)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetReadAccess)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetFolderChain)).toHaveLength(0);
+        expect(container.resolveAll(ReviewTargetEditor)).toHaveLength(0);
         expect(container.resolveAll(CmsEntryReviewNamespace)).toHaveLength(0);
         const pageModel = { modelId: PAGE_MODEL_ID } as CmsModel;
         expect(
