@@ -57,9 +57,9 @@ import { AssignmentModelProvider } from "~/domain/assignment/abstractions/Assign
 import { WorkflowSettingsModelProvider } from "~/domain/settings/abstractions/WorkflowSettingsModelProvider.js";
 import { WorkflowSettingsRepository } from "~/domain/settings/abstractions/WorkflowSettingsRepository.js";
 import {
-    ListNotificationTypesRepository,
-    ListNotificationTypesUseCase
-} from "~/features/notifications/ListNotificationTypes/index.js";
+    ListNotificationTransportsRepository,
+    ListNotificationTransportsUseCase
+} from "~/features/notifications/ListNotificationTransports/index.js";
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
 import { CurrentUserTeams } from "~/features/identity/CurrentUserTeams/index.js";
 import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
@@ -163,8 +163,8 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(AssignmentModelProvider)).toHaveLength(1);
         expect(container.resolveAll(WorkflowSettingsModelProvider)).toHaveLength(1);
         expect(container.resolveAll(WorkflowSettingsRepository)).toHaveLength(1);
-        expect(container.resolveAll(ListNotificationTypesUseCase)).toHaveLength(1);
-        expect(container.resolveAll(ListNotificationTypesRepository)).toHaveLength(1);
+        expect(container.resolveAll(ListNotificationTransportsUseCase)).toHaveLength(1);
+        expect(container.resolveAll(ListNotificationTransportsRepository)).toHaveLength(1);
         expect(container.resolveAll(NotificationTransport)).toHaveLength(1);
         expect(container.resolveAll(WorkflowsPermissions)).toHaveLength(1);
         expect(container.resolveAll(CurrentUserTeams)).toHaveLength(1);
