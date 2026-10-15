@@ -10,6 +10,7 @@ import { ProvidersFeature } from "./features/Providers/feature.js";
 import { ConnectionsFeature } from "./features/Connections/feature.js";
 import { ModelRolesFeature } from "./features/ModelRoles/feature.js";
 import { CapabilitiesFeature } from "./features/Capabilities/feature.js";
+import { ConfiguredAiModelsFeature } from "./features/ConfiguredAiModels/feature.js";
 import { ReaderPersonasFeature } from "./features/ReaderPersonas/feature.js";
 import { WriterPersonasFeature } from "./features/WriterPersonas/feature.js";
 import { ProjectsFeature } from "./features/Projects/feature.js";
@@ -58,6 +59,9 @@ export const Extension = createFeature({
         ConnectionsFeature.register(container);
         ModelRolesFeature.register(container);
         CapabilitiesFeature.register(container);
+        // The resolver's `model` argument reads it, so it lives under the plain `aiPowerups` gate
+        // (R177): the workflows-only pieces register in their own, second gate (Task 16).
+        ConfiguredAiModelsFeature.register(container);
         ReaderPersonasFeature.register(container);
         WriterPersonasFeature.register(container);
         ProjectsFeature.register(container);
