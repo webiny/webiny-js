@@ -6,13 +6,7 @@ import type {
 import type { ReviewTargetEditorField } from "@webiny/api-workflows/features/review/ReviewTargetEditor/abstractions.js";
 
 /** The field types the AI may write (R172). Everything else is read-only. */
-export const WRITABLE_FIELD_TYPES: string[] = [
-    "text",
-    "long-text",
-    "number",
-    "boolean",
-    "datetime"
-];
+const WRITABLE_FIELD_TYPES: string[] = ["text", "long-text", "number", "boolean", "datetime"];
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
     return typeof value === "object" && value !== null && !Array.isArray(value);

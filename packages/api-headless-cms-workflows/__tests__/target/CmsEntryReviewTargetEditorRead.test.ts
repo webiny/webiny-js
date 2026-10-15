@@ -64,6 +64,7 @@ describe("CmsEntryReviewTargetEditor.read", () => {
             ["age", "number", true],
             ["active", "boolean", true],
             ["joinedOn", "datetime", true],
+            ["birthday", "datetime", true],
             ["address.street", "text", true],
             ["address.zip", "number", true],
             ["address.location.label", "text", true],
@@ -230,20 +231,5 @@ describe("CmsEntryReviewTargetEditor.read", () => {
         expect(result.error.message).toBe("The target could not be read.");
         expect(loggedErrors).toHaveLength(1);
         expect(loggedErrors[0].message).toBe("Could not read the target for the AI editor.");
-    });
-
-    it("refuses to update until Task 12", async () => {
-        const context = await createProfileContext();
-        const entry = await createProfileEntry(context);
-
-        const result = await getEditor(context).update({
-            model: PROFILE_NAMESPACE,
-            targetId: entry.entryId,
-            targetRevisionId: entry.id,
-            values: { name: "New" }
-        });
-
-        expect(result.isFail()).toBe(true);
-        expect(result.error.message).toBe("This target cannot be edited.");
     });
 });

@@ -25,6 +25,7 @@ export const profileModel = {
         ["age"],
         ["active"],
         ["joinedOn"],
+        ["birthday"],
         ["address"],
         ["tags"],
         ["contacts"],
@@ -76,6 +77,16 @@ export const profileModel = {
             type: "datetime",
             label: "Joined on",
             settings: { type: "dateTimeWithoutTimezone" },
+            validation: [],
+            listValidation: []
+        },
+        {
+            id: "birthday",
+            storageId: "datetime@birthday",
+            fieldId: "birthday",
+            type: "datetime",
+            label: "Birthday",
+            settings: { type: "date" },
             validation: [],
             listValidation: []
         },
