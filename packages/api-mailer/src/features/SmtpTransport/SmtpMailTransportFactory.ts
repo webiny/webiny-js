@@ -11,7 +11,7 @@ class SmtpMailTransportFactoryImpl implements MailTransportFactory.Interface {
     }
 
     async createTransport(settings: TransportSettings): MailTransportFactory.Return {
-        return new SmtpMailTransport(SmtpConfig.fromTransportSettings(settings));
+        return new SmtpMailTransport(SmtpConfig.fromTransportSettings(settings), settings.from);
     }
 }
 

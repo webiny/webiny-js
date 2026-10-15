@@ -7,7 +7,10 @@ export class SmtpMailTransport implements MailTransport.Interface {
     public readonly name = "Mailer/SmtpTransport";
     private readonly transporter: Transporter<SMTPTransport.SentMessageInfo>;
 
-    constructor(config: SMTPTransport.Options) {
+    constructor(
+        config: SMTPTransport.Options,
+        private readonly defaultFrom?: string
+    ) {
         this.transporter = nodemailer.createTransport(config);
     }
 
@@ -19,7 +22,9 @@ export class SmtpMailTransport implements MailTransport.Interface {
                 replyTo,
                 bcc,
                 cc,
-                from,
+                // An explicit sender wins; otherwise the configured settings sender (R201).
+                // An empty default counts as none, so a missing settings `from` changes nothing.
+                from: from || this.defaultFrom || undefined,
                 text,
                 html,
                 to,
