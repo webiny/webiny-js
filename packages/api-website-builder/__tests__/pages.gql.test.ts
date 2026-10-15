@@ -200,6 +200,44 @@ describe("Pages CRUD", () => {
         expect(revisions[0].data.websiteBuilder.getPageRevisions.data[1].version).toBe(2);
     });
 
+    it("should delete a page revision", async () => {
+        const [createResponse] = await handler.wb.createPage({
+            data: pageMocks.pageA
+        });
+        const page = createResponse.data.websiteBuilder.createPage.data;
+
+        await handler.wb.publishPage({ id: page.id });
+        const [revisionResponse] = await handler.wb.createPageRevisionFrom({ id: page.id });
+        const newRevision = revisionResponse.data.websiteBuilder.createPageRevisionFrom.data;
+
+        const [deleteResponse] = await handler.wb.deletePageRevision({ id: newRevision.id });
+
+        expect(deleteResponse.data.websiteBuilder.deletePageRevision.error).toBeNull();
+        expect(deleteResponse.data.websiteBuilder.deletePageRevision.data).toBe(true);
+
+        // Only the deleted revision is gone; the entry and its first revision are kept.
+        const revisions = await handler.until(
+            () => handler.wb.getPageRevisions({ entryId: page.entryId }),
+            ([response]) => response.data.websiteBuilder.getPageRevisions.data.length === 1
+        );
+
+        expect(revisions[0].data.websiteBuilder.getPageRevisions.data).toMatchObject([
+            { id: page.id, version: 1 }
+        ]);
+
+        const [getDeletedResponse] = await handler.wb.getPageById({ id: newRevision.id });
+        expect(getDeletedResponse.data.websiteBuilder.getPageById.data).toBeNull();
+    });
+
+    it("should not delete a page revision that does not exist", async () => {
+        const [deleteResponse] = await handler.wb.deletePageRevision({
+            id: "nonExistingPage#0001"
+        });
+
+        expect(deleteResponse.data.websiteBuilder.deletePageRevision.data).toBeNull();
+        expect(deleteResponse.data.websiteBuilder.deletePageRevision.error).not.toBeNull();
+    });
+
     it("should delete a page", async () => {
         const [createResponse] = await handler.wb.createPage({
             data: pageMocks.pageA

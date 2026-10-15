@@ -16,6 +16,9 @@ class RestoreEntriesBulkActionImpl implements EntriesBulkAction.Interface {
         params: EntriesBulkAction.LoadDataParams
     ): Promise<EntriesBulkAction.LoadDataResult> {
         const entriesResult = await this.listDeletedEntries.execute(model, params);
+        if (entriesResult.isFail()) {
+            throw entriesResult.error;
+        }
 
         return entriesResult.value;
     }

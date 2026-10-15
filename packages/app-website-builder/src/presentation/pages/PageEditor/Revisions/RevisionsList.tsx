@@ -1,43 +1,61 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback } from "react";
+import { observer } from "mobx-react-lite";
 import { List, OverlayLoader } from "@webiny/admin-ui";
+import { useRouter } from "@webiny/app";
 import RevisionListItem from "./RevisionListItem.js";
 import type { Page } from "~/domain/Page/index.js";
 import type { PageRevision } from "~/domain/PageRevision/index.js";
-import { useGetPageRevisions } from "~/presentation/pages/hooks/useGetPageRevisions.js";
-import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
+import { Routes } from "~/routes.js";
+import { useRevisionList } from "./useRevisionList.js";
+import { usePageEditorDrawer } from "./usePageEditorDrawer.js";
 
 interface IRevisionsListProps {
     page: Pick<Page, "id">;
 }
 
-export const RevisionsList = (props: IRevisionsListProps) => {
+export const RevisionsList = observer((props: IRevisionsListProps) => {
     const { page } = props;
+    const { presenter } = useRevisionList(page.id);
+    const { goToRoute } = useRouter();
+    const { openRevisionList } = usePageEditorDrawer();
+    const { vm } = presenter;
 
-    const [revisions, setRevisions] = useState<PageRevision[]>([]);
-    const { loading, getPageRevisions } = useGetPageRevisions();
+    /**
+     * Deleting the revision that is open in the editor would leave the editor on a revision that
+     * no longer exists, so we move to the newest remaining one, or back to the list if none is left.
+     */
+    const onDeleted = useCallback(
+        (revision: PageRevision) => {
+            if (revision.id !== page.id) {
+                return;
+            }
 
-    useEffect(() => {
-        const { id: entryId } = parseIdentifier(page.id);
-        getPageRevisions({
-            entryId
-        }).then(revisions => {
-            setRevisions(
-                revisions
-                    .sort((a, b) => {
-                        return new Date(a.savedOn).getTime() - new Date(b.savedOn).getTime();
-                    })
-                    .reverse()
-            );
-        });
-    }, [page.id]);
+            openRevisionList(false);
+
+            const [next] = presenter.vm.revisions;
+            if (!next) {
+                goToRoute(Routes.Pages.List);
+                return;
+            }
+
+            goToRoute(Routes.Pages.Editor, {
+                id: next.revision.id
+            });
+        },
+        [page.id, presenter, openRevisionList]
+    );
 
     return (
         <div className={"relative"}>
-            {loading && <OverlayLoader />}
-            {revisions?.length ? (
+            {(vm.isLoading || vm.isMutating) && <OverlayLoader />}
+            {vm.revisions.length ? (
                 <List data-testid={"cms.content-form.revisions"}>
-                    {revisions.map(revision => (
-                        <RevisionListItem revision={revision} key={revision.id} />
+                    {vm.revisions.map(item => (
+                        <RevisionListItem
+                            item={item}
+                            key={item.revision.id}
+                            onDeleted={onDeleted}
+                        />
                     ))}
                 </List>
             ) : (
@@ -45,4 +63,4 @@ export const RevisionsList = (props: IRevisionsListProps) => {
             )}
         </div>
     );
-};
+});

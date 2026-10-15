@@ -7,6 +7,7 @@ import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abs
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import { Page } from "~/domain/Page/Page.js";
+import { pageRevisionsCacheFactory } from "~/domain/PageRevision/index.js";
 import {
     ListPagesGateway,
     type IListPagesGatewayParams,
@@ -14,7 +15,11 @@ import {
 } from "~/features/pages/listPages/abstractions.js";
 import { ListPagesUseCase } from "~/features/pages/listPages/ListPagesUseCase.js";
 import { ListPagesRepository } from "~/features/pages/listPages/ListPagesRepository.js";
-import { FullPageCache, PageListCache } from "~/features/pages/shared/abstractions.js";
+import {
+    FullPageCache,
+    PageListCache,
+    PageRevisionsCache
+} from "~/features/pages/shared/abstractions.js";
 import { PublishPageGateway } from "~/features/pages/publishPage/abstractions.js";
 import { PublishPageUseCase as PublishPageUseCaseImpl } from "~/features/pages/publishPage/PublishPageUseCase.js";
 import { PublishPageRepository } from "~/features/pages/publishPage/PublishPageRepository.js";
@@ -181,6 +186,7 @@ describe("PageListPresenter", () => {
         container.registerInstance(GetDescendantFoldersUseCase, { execute: () => [] });
         container.registerInstance(DeletePageUseCase, noopUseCase as any);
         container.registerInstance(FullPageCache, new ListCache<Page>("id"));
+        container.registerInstance(PageRevisionsCache, pageRevisionsCacheFactory.getCache());
         container.registerInstance(PublishPageGateway, publishGateway);
         container.register(PublishPageRepository).inSingletonScope();
         container.register(PublishPageUseCaseImpl);

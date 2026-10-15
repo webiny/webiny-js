@@ -24,6 +24,10 @@ class PublishEntriesBulkActionImpl implements EntriesBulkAction.Interface {
             }
         });
 
+        if (entriesResult.isFail()) {
+            throw entriesResult.error;
+        }
+
         return entriesResult.value;
     }
 

@@ -21,6 +21,8 @@ import {
     CmsModelOpenSearchIndexProvider
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import type { CmsIndexEntry } from "@webiny/api-headless-cms-utils-os/types.js";
+import { Debugger } from "@webiny/api-core/features/debugger/index.js";
+import "~/debuggerNamespaces.js";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys.js";
 
 class DdbEsListEntriesImpl implements ListEntriesStorageOperation.Interface {
@@ -32,7 +34,8 @@ class DdbEsListEntriesImpl implements ListEntriesStorageOperation.Interface {
         private fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface,
         private fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
         openSearchClient: OpenSearchClient.Interface,
-        private indexProvider: CmsModelOpenSearchIndexProvider.Interface
+        private indexProvider: CmsModelOpenSearchIndexProvider.Interface,
+        private debuggerService: Debugger.Interface
     ) {
         this.elasticsearch = openSearchClient.use();
     }
@@ -45,12 +48,13 @@ class DdbEsListEntriesImpl implements ListEntriesStorageOperation.Interface {
 
         const limit = createLimit(params.limit, 50);
         const configurations = createConfigurations(this.indexProvider);
-        const { index } = await configurations.es({
+        const { index, shared } = await configurations.es({
             model
         });
 
         const body = this.bodyBuilder.build({
             model,
+            shared,
             params: {
                 ...params,
                 limit,
@@ -59,12 +63,36 @@ class DdbEsListEntriesImpl implements ListEntriesStorageOperation.Interface {
         });
 
         let response: OpenSearchSearchResponse;
+        const startedAt = Date.now();
         try {
             response = await this.elasticsearch.search({
                 index,
                 body
             });
+
+            this.debuggerService.log("cms.os.list", () => ({
+                index,
+                query: body,
+                /**
+                 * Only the response body and status. The full client response also carries
+                 * `meta.connection.url` (the cluster endpoint) plus request headers.
+                 */
+                body: response.body,
+                statusCode: response.statusCode,
+                tookMs: Date.now() - startedAt
+            }));
         } catch (error) {
+            /**
+             * Logged before the `index_not_found` check below, which swallows the error and returns
+             * an empty result. That silent exit is exactly what is hard to see from the outside.
+             */
+            this.debuggerService.log("cms.os.list", () => ({
+                index,
+                query: body,
+                error,
+                tookMs: Date.now() - startedAt
+            }));
+
             /**
              * We will silently ignore the `index_not_found_exception` error and return an empty result set.
              * This is because the index might not exist yet, and we don't want to throw an error.
@@ -136,6 +164,7 @@ export const DdbEsListEntries = ListEntriesStorageOperation.createImplementation
         CmsModelFieldToGraphQLRegistry,
         CmsEntryOpenSearchFieldIndexRegistry,
         OpenSearchClient,
-        CmsModelOpenSearchIndexProvider
+        CmsModelOpenSearchIndexProvider,
+        Debugger
     ]
 });

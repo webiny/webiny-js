@@ -70,7 +70,7 @@ const INITIAL_COMMENT_BODY = [
 
 // Env needed by any step that patches the status comment.
 const COMMENT_ENV = {
-    GH_TOKEN: "${{ secrets.GH_TOKEN }}",
+    GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
     COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}"
 };
 
@@ -151,6 +151,8 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         [jobNames.constants]: createJob({
             needs: ["baseBranch", "build", "checkComment"],
             name: `Vitest (${rowLabel}) - Constants`,
+            // Marks the group as running in the status comment.
+            permissions: { "pull-requests": "write" },
             checkout: { path: DIR_WEBINY_JS },
             outputs: {
                 "vitest-test-commands":
@@ -178,6 +180,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         [jobNames.result]: createJob({
             needs: [jobNames.tests, "checkComment"],
             name: `Vitest (${rowLabel}) - Report status`,
+            permissions: { "pull-requests": "write" },
             if: "always() && needs.checkComment.result == 'success'",
             checkout: false,
             steps: [createReportResultStep(rowLabel, jobNames.tests)]
@@ -231,6 +234,7 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
         baseBranch: createJob({
             needs: "checkComment",
             name: "Get base branch",
+            permissions: { "pull-requests": "read" },
             outputs: {
                 "base-branch": "${{ steps.base-branch.outputs.base-branch }}",
                 "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}"
@@ -239,7 +243,7 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                 {
                     name: "Get base branch",
                     id: "base-branch",
-                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" },
                     run: 'echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT'
                 },
                 {
@@ -250,7 +254,7 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                     // the test jobs run against another.
                     name: "Get PR head SHA",
                     id: "pr-sha",
-                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" },
                     run: 'echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT'
                 }
             ]
@@ -294,6 +298,8 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
         // mirrors the result into the PR description between markers.
         vitestStatusSummary: createJob({
             name: "Vitest status summary",
+            // Rewrites the status comment and the PR description.
+            permissions: { "pull-requests": "write" },
             needs: [
                 "checkComment",
                 "vitest-run",
@@ -305,7 +311,7 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
             if: "always() && needs.checkComment.result == 'success'",
             checkout: false,
             env: {
-                GH_TOKEN: "${{ secrets.GH_TOKEN }}",
+                GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
                 COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}",
                 COMMENT_INTRO,
                 PR_NUMBER: "${{ github.event.issue.number }}",

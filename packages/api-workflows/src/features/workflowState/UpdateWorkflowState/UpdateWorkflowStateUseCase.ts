@@ -53,6 +53,9 @@ class UpdateWorkflowStateUseCaseImpl implements UseCase.Interface {
 
         const identity = this.identityContext.getIdentity();
         const teamsResult = await this.getUserTeams.execute(identity.id);
+        if (teamsResult.isFail()) {
+            return Result.fail(teamsResult.error);
+        }
         const teams = teamsResult.value;
         const updatedState = new WorkflowState(updatedRecord, teams, identity);
 

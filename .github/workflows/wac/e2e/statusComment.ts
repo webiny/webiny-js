@@ -31,7 +31,7 @@ const updateStep = (
         name: `Update PR comment - ${params.label} ${outcome === "success" ? "passed" : "failed"}`,
         if: `${outcome}()`,
         env: {
-            GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}",
+            GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
             COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}",
             ...params.env
         },
@@ -48,7 +48,7 @@ const updateStep = (
  *
  * Every variant reports both outcomes. Previously only the AWS rows were updated, and only on the
  * way through - they flipped to "✅ Ready" once the deploy succeeded and then never changed again,
- * so a failed Cypress run left the comment claiming the variant was fine.
+ * so a failed test run left the comment claiming the variant was fine.
  */
 export const createStatusRowUpdateSteps = (
     params: CreateStatusRowUpdateStepsParams
