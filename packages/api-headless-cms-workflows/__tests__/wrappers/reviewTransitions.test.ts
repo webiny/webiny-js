@@ -6,6 +6,9 @@ import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { CreateApiKeyUseCase } from "@webiny/api-core/features/security/apiKeys/CreateApiKey/index.js";
+import type { Container } from "@webiny/di";
+import { ApproveReviewStepUseCase } from "@webiny/api-workflows/features/review/ApproveReviewStep/index.js";
+import { RejectReviewStepUseCase } from "@webiny/api-workflows/features/review/RejectReviewStep/index.js";
 import { storeWorkflow } from "~tests/__workflows/workflow.js";
 import { AUTHOR_NAMESPACE, createAuthorEntry, expectOk } from "~tests/__helpers/entries.js";
 import {
@@ -323,6 +326,122 @@ describe("CMS review transition wrappers", () => {
 
         expect(result.error.code).toBe("Workflows/Review/NotCandidate");
         expect(engineCalls).toContain("StartReviewStep");
+    });
+});
+
+type ForwardedDecision = ApproveReviewStepUseCase.Input | RejectReviewStepUseCase.Input;
+
+/** The inputs the wrappers forwarded to the engine's approve and reject. Cleared in `beforeEach`. */
+const forwardedDecisions: ForwardedDecision[] = [];
+
+class RecordingApproveReviewStep implements ApproveReviewStepUseCase.Interface {
+    public constructor(private decoratee: ApproveReviewStepUseCase.Interface) {}
+
+    public async execute(input: ApproveReviewStepUseCase.Input): ApproveReviewStepUseCase.Return {
+        forwardedDecisions.push(input);
+        return this.decoratee.execute(input);
+    }
+}
+
+class RecordingRejectReviewStep implements RejectReviewStepUseCase.Interface {
+    public constructor(private decoratee: RejectReviewStepUseCase.Interface) {}
+
+    public async execute(input: RejectReviewStepUseCase.Input): RejectReviewStepUseCase.Return {
+        forwardedDecisions.push(input);
+        return this.decoratee.execute(input);
+    }
+}
+
+const recordForwardedDecisions = (container: Container) => {
+    container.registerDecorator(
+        ApproveReviewStepUseCase.createDecorator({
+            decorator: RecordingApproveReviewStep,
+            dependencies: []
+        })
+    );
+    container.registerDecorator(
+        RejectReviewStepUseCase.createDecorator({
+            decorator: RecordingRejectReviewStep,
+            dependencies: []
+        })
+    );
+};
+
+/** What a hostile or careless caller could put on a decision input next to the allowed fields. */
+const SMUGGLED_ISSUES = [
+    {
+        fieldPath: "title",
+        severity: "error",
+        message: "Smuggled in by the caller.",
+        suggestion: null
+    }
+];
+
+describe("CMS review decision wrappers forward no issues (D132, R171)", () => {
+    beforeEach(() => {
+        forwardedDecisions.length = 0;
+    });
+
+    it("forwards an approve input without issues, even when the caller's input carries some", async () => {
+        const { review } = await createScenario();
+        const reviewer = await createUserContext({
+            identity: REVIEWER,
+            permissions: CMS_READER,
+            legacyPlugins: [recordForwardedDecisions]
+        });
+        expectOk(await start(reviewer, review.id));
+        const input = {
+            reviewId: review.id,
+            stepId: STEP_ID,
+            comment: "Looks good.",
+            issues: SMUGGLED_ISSUES
+        };
+
+        const approved = expectOk(
+            await reviewer.container.resolve(ApproveCmsEntryReviewStepUseCase).execute(input)
+        );
+
+        expect(forwardedDecisions).toHaveLength(1);
+        expect("issues" in forwardedDecisions[0]).toBe(false);
+        expect(Object.keys(forwardedDecisions[0]).sort()).toEqual([
+            "actor",
+            "actorTeamIds",
+            "comment",
+            "reviewId",
+            "stepId"
+        ]);
+        expect(approved.steps[0].issues ?? []).toEqual([]);
+    });
+
+    it("forwards a reject input without issues, even when the caller's input carries some", async () => {
+        const { review } = await createScenario();
+        const reviewer = await createUserContext({
+            identity: REVIEWER,
+            permissions: CMS_READER,
+            legacyPlugins: [recordForwardedDecisions]
+        });
+        expectOk(await start(reviewer, review.id));
+        const input = {
+            reviewId: review.id,
+            stepId: STEP_ID,
+            comment: "Needs another pass.",
+            issues: SMUGGLED_ISSUES
+        };
+
+        const rejected = expectOk(
+            await reviewer.container.resolve(RejectCmsEntryReviewStepUseCase).execute(input)
+        );
+
+        expect(forwardedDecisions).toHaveLength(1);
+        expect("issues" in forwardedDecisions[0]).toBe(false);
+        expect(Object.keys(forwardedDecisions[0]).sort()).toEqual([
+            "actor",
+            "actorTeamIds",
+            "comment",
+            "reviewId",
+            "stepId"
+        ]);
+        expect(rejected.steps[0].issues ?? []).toEqual([]);
     });
 });
 

@@ -25,6 +25,7 @@ class ApproveReviewStepUseCaseImpl implements UseCase.Interface {
             actor: input.actor,
             actorTeamIds: input.actorTeamIds,
             comment: input.comment ?? null,
+            issues: input.issues,
             now
         });
         if (approved.isFail()) {

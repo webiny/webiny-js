@@ -189,7 +189,8 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                             stepId,
                             actor: runner.getActor(requester),
                             actorTeamIds: [],
-                            comment: outcome.comment
+                            comment: outcome.comment,
+                            issues: outcome.issues
                         });
                         if (approved.isFail()) {
                             this.logger.error(
@@ -210,7 +211,8 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                             stepId,
                             actor: runner.getActor(requester),
                             actorTeamIds: [],
-                            comment
+                            comment,
+                            issues: outcome.issues
                         });
                         if (rejected.isFail()) {
                             this.logger.error(

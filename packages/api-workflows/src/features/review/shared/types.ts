@@ -1,4 +1,4 @@
-import type { Actor } from "~/domain/review/types.js";
+import type { Actor, AiIssue } from "~/domain/review/types.js";
 
 /**
  * Input of step transitions. Internal (D132): the app wrapper builds the actor and team ids
@@ -15,6 +15,12 @@ export interface ReviewActorInput {
 
 export interface ReviewDecisionInput extends ReviewActorInput {
     comment?: string | null;
+    /**
+     * The findings of an AI decision (D39, R171), stored on the step; omitted means none. Only
+     * the engine's own callers set it: the app wrappers build their input from explicit fields
+     * and do not expose it (D132).
+     */
+    issues?: AiIssue[];
 }
 
 /** Cancel is review-level: no `stepId` (R17). */

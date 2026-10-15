@@ -3,6 +3,7 @@ import type { Workflow } from "~/domain/workflow/types.js";
 import { canPickReviewer } from "~/domain/workflow/canPickReviewer.js";
 import type {
     Actor,
+    AiIssue,
     ReviewData,
     ReviewPick,
     ReviewState,
@@ -79,6 +80,8 @@ export interface ReviewActorParams extends ReviewActorCheckParams {
 /** `actorTeamIds` is not read by approve or reject: only the owner decides (spec 5.1). */
 export interface ReviewDecisionParams extends ReviewActorParams {
     comment: string | null;
+    /** The findings of an AI decision, stored on the step (R171); omitted means none. */
+    issues?: AiIssue[];
 }
 
 export interface ReviewCancelParams {
@@ -477,6 +480,7 @@ export class Review {
 
         step.state = "approved";
         step.comment = params.comment;
+        step.issues = (params.issues ?? []).map(issue => ({ ...issue }));
         step.finishedOn = params.now;
         this.facts.push({
             type: "stepApproved",
@@ -523,6 +527,7 @@ export class Review {
 
         step.state = "rejected";
         step.comment = comment;
+        step.issues = (params.issues ?? []).map(issue => ({ ...issue }));
         step.finishedOn = params.now;
         this.data.state = "rejected";
         this.facts.push({
