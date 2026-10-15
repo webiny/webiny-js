@@ -49,6 +49,7 @@ import { CurrentReviewViewerFeature } from "~/features/identity/CurrentReviewVie
 import { CandidateReadAccessFeature } from "~/features/identity/CandidateReadAccess/feature.js";
 import { WorkflowBypassServiceFeature } from "~/features/bypass/WorkflowBypassService/feature.js";
 import { ReviewTaskAbortServiceFeature } from "~/features/stepRun/ReviewTaskAbortService/feature.js";
+import { StepRunReachServiceFeature } from "~/features/stepRun/StepRunReachService/feature.js";
 import { WorkflowStepRunTaskFeature } from "~/features/stepRun/WorkflowStepRunTask/feature.js";
 import { WorkflowsPermissionsFeature } from "~/features/permissions/WorkflowsPermissions/feature.js";
 import { AutomationDefinitionRegistryFeature } from "~/features/automation/AutomationDefinitionRegistryService/feature.js";
@@ -146,6 +147,7 @@ export const WorkflowsFeature = createFeature({
 
         // Step run tasks (R142-R145): the abort service shared by the saver, the reach and cancel
         ReviewTaskAbortServiceFeature.register(container);
+        StepRunReachServiceFeature.register(container);
         // The private task that runs an automation step (R142)
         WorkflowStepRunTaskFeature.register(container);
 
