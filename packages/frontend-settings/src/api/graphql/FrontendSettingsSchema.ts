@@ -1,5 +1,6 @@
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse } from "@webiny/handler-graphql";
+import { Response } from "@webiny/handler-graphql";
 import { FrontendGetSettingsUseCase } from "~/api/features/getSettings/abstractions.js";
 import { FrontendUpdateSettingsUseCase } from "~/api/features/updateSettings/abstractions.js";
 import type { IFrontendSettings } from "~/shared/types.js";

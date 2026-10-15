@@ -1,9 +1,13 @@
-import { createAbstraction, type Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
+import type { Result } from "@webiny/feature/api";
 import type { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
+import type { InvalidFrontendDomainError } from "~/api/domain/errors.js";
 import type { IFrontendSettings } from "~/shared/types.js";
 
 export interface IFrontendUpdateSettingsUseCase {
-    execute(data: IFrontendSettings): Promise<Result<boolean, NotAuthorizedError>>;
+    execute(
+        data: IFrontendSettings
+    ): Promise<Result<boolean, NotAuthorizedError | InvalidFrontendDomainError>>;
 }
 
 export const FrontendUpdateSettingsUseCase = createAbstraction<IFrontendUpdateSettingsUseCase>(
@@ -12,7 +16,7 @@ export const FrontendUpdateSettingsUseCase = createAbstraction<IFrontendUpdateSe
 
 export namespace FrontendUpdateSettingsUseCase {
     export type Interface = IFrontendUpdateSettingsUseCase;
-    export type Return = Promise<Result<boolean, NotAuthorizedError>>;
+    export type Return = Promise<Result<boolean, NotAuthorizedError | InvalidFrontendDomainError>>;
 }
 
 export interface IFrontendUpdateSettingsRepository {
