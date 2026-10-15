@@ -620,8 +620,11 @@ describe("workflows GraphQL root", () => {
 
         expect(response.data.workflows.listNotificationTransports).toEqual({
             data: [
-                // Task 3 adds the description and updates this expectation.
-                { id: "e-mail", title: "E-Mail", description: null },
+                {
+                    id: "e-mail",
+                    title: "E-Mail",
+                    description: "Sends an e-mail to the people who need to act."
+                },
                 { id: "plain", title: "Plain", description: null }
             ],
             error: null

@@ -77,8 +77,7 @@ describe("ListWorkflowNotificationTransportsUseCase (R191, D133)", () => {
             {
                 id: "e-mail",
                 title: "E-Mail",
-                // Task 3 adds the description and updates this expectation.
-                description: null
+                description: "Sends an e-mail to the people who need to act."
             }
         ]);
     });

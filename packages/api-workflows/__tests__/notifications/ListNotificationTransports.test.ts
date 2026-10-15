@@ -49,7 +49,7 @@ describe("ListNotificationTransportsUseCase (internal, D133)", () => {
         expect(result.value).toContainEqual({
             id: "e-mail",
             title: expect.any(String),
-            description: null
+            description: "Sends an e-mail to the people who need to act."
         });
     });
 
