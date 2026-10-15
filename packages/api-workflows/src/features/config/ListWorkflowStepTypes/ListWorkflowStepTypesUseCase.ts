@@ -1,4 +1,5 @@
 import { Result } from "@webiny/feature/api";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import zod from "zod";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
@@ -10,12 +11,16 @@ import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/ind
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 import { ListWorkflowStepTypesUseCase as UseCase } from "./abstractions.js";
 
+const FAILURE_MESSAGE = "Could not list the step types.";
+const FAILURE_LOG = "Could not list the workflow step types.";
+
 class ListWorkflowStepTypesUseCaseImpl implements UseCase.Interface {
     constructor(
         private viewer: CurrentReviewViewer.Interface,
         private permissions: WorkflowsPermissions.Interface,
         private featureFlags: FeatureFlags.Interface,
-        private stepTypes: StepTypeRegistryService.Interface
+        private stepTypes: StepTypeRegistryService.Interface,
+        private logger: Logger.Interface
     ) {}
 
     async execute(): UseCase.Return {
@@ -27,11 +32,8 @@ class ListWorkflowStepTypesUseCaseImpl implements UseCase.Interface {
         try {
             canEdit = await this.permissions.canEdit();
         } catch (error) {
-            return Result.fail(
-                new WorkflowPersistenceError(
-                    error instanceof Error ? error : new Error(String(error))
-                )
-            );
+            this.logger.error({ error }, FAILURE_LOG);
+            return Result.fail(new WorkflowPersistenceError(new Error(FAILURE_MESSAGE)));
         }
         if (!canEdit) {
             return Result.fail(new WorkflowsNotAuthorizedError({ action: "list the step types" }));
@@ -58,11 +60,8 @@ class ListWorkflowStepTypesUseCaseImpl implements UseCase.Interface {
                 });
             }
         } catch (error) {
-            return Result.fail(
-                new WorkflowPersistenceError(
-                    error instanceof Error ? error : new Error(String(error))
-                )
-            );
+            this.logger.error({ error }, FAILURE_LOG);
+            return Result.fail(new WorkflowPersistenceError(new Error(FAILURE_MESSAGE)));
         }
 
         // While no `ai` type is registered (phase 6 registers it), the row stays, as it was
@@ -72,11 +71,8 @@ class ListWorkflowStepTypesUseCaseImpl implements UseCase.Interface {
             try {
                 aiAvailable = this.featureFlags.get().isEnabled("aiPowerups");
             } catch (error) {
-                return Result.fail(
-                    new WorkflowPersistenceError(
-                        error instanceof Error ? error : new Error(String(error))
-                    )
-                );
+                this.logger.error({ error }, FAILURE_LOG);
+                return Result.fail(new WorkflowPersistenceError(new Error(FAILURE_MESSAGE)));
             }
             rowsByType.set("ai", {
                 type: "ai",
@@ -101,5 +97,11 @@ class ListWorkflowStepTypesUseCaseImpl implements UseCase.Interface {
 
 export const ListWorkflowStepTypesUseCase = UseCase.createImplementation({
     implementation: ListWorkflowStepTypesUseCaseImpl,
-    dependencies: [CurrentReviewViewer, WorkflowsPermissions, FeatureFlags, StepTypeRegistryService]
+    dependencies: [
+        CurrentReviewViewer,
+        WorkflowsPermissions,
+        FeatureFlags,
+        StepTypeRegistryService,
+        Logger
+    ]
 });

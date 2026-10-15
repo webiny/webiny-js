@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import zod from "zod";
 import type { Container } from "@webiny/feature/api";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
@@ -8,6 +8,7 @@ import {
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { expectOk } from "~tests/__helpers/fixtures.js";
+import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import {
     registerTestAutomation,
     TEST_AUTOMATION_ID,
@@ -16,6 +17,25 @@ import {
 import { AutomationDefinition } from "~/features/automation/AutomationDefinition/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 import { ListAutomationDefinitionsUseCase } from "~/features/config/ListAutomationDefinitions/index.js";
+
+const FIXED_MESSAGE = "Could not list the automations.";
+
+const expectFixedFailure = (
+    result: Awaited<ReturnType<ListAutomationDefinitionsUseCase.Interface["execute"]>>,
+    rawText: string
+) => {
+    expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+    expect(result.error.message).toBe(FIXED_MESSAGE);
+    expect(
+        JSON.stringify({ message: result.error.message, data: result.error.data })
+    ).not.toContain(rawText);
+    expect(loggedErrors).toHaveLength(1);
+    expect((loggedErrors[0].fields.error as Error).message).toBe(rawText);
+};
+
+beforeEach(() => {
+    loggedErrors.length = 0;
+});
 
 const throwing = async (): Promise<never> => {
     throw new Error("Permissions are down.");
@@ -107,12 +127,17 @@ describe("ListAutomationDefinitionsUseCase (R138)", () => {
 
     it("returns the workflow persistence error when a schema cannot be converted (R87, R138)", async () => {
         const { listAutomations } = await createListContext({
-            setup: registerDefinition("broken", "Broken", {} as never)
+            setup: container => {
+                captureLoggedErrors(container);
+                registerDefinition("broken", "Broken", {} as never)(container);
+            }
         });
 
         const result = await listAutomations.execute();
 
         expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(result.error.message).toBe(FIXED_MESSAGE);
+        expect(loggedErrors).toHaveLength(1);
     });
 
     it("sorts the rows by name", async () => {
@@ -175,6 +200,7 @@ describe("ListAutomationDefinitionsUseCase (R138)", () => {
     it("returns the workflow persistence error when the permission check throws (R87)", async () => {
         const { listAutomations } = await createListContext({
             setup: container => {
+                captureLoggedErrors(container);
                 container.registerInstance(WorkflowsPermissions, {
                     isFullAccess: throwing,
                     canEdit: throwing,
@@ -186,7 +212,6 @@ describe("ListAutomationDefinitionsUseCase (R138)", () => {
 
         const result = await listAutomations.execute();
 
-        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error.message).toBe("Permissions are down.");
+        expectFixedFailure(result, "Permissions are down.");
     });
 });

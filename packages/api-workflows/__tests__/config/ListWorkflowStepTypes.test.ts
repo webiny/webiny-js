@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import zod from "zod";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
@@ -8,12 +8,32 @@ import {
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { expectOk } from "~tests/__helpers/fixtures.js";
+import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { createTestStepType } from "~tests/__helpers/TestStepType.js";
 import { registerTestAutomation } from "~tests/__helpers/TestAutomationDefinition.js";
 import { automationStepConfigSchema } from "~/domain/automation/automationStepConfigSchema.js";
 import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStepTypes/index.js";
+
+const FIXED_MESSAGE = "Could not list the step types.";
+
+const expectFixedFailure = (
+    result: Awaited<ReturnType<ListWorkflowStepTypesUseCase.Interface["execute"]>>,
+    rawText: string
+) => {
+    expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+    expect(result.error.message).toBe(FIXED_MESSAGE);
+    expect(
+        JSON.stringify({ message: result.error.message, data: result.error.data })
+    ).not.toContain(rawText);
+    expect(loggedErrors).toHaveLength(1);
+    expect((loggedErrors[0].fields.error as Error).message).toBe(rawText);
+};
+
+beforeEach(() => {
+    loggedErrors.length = 0;
+});
 
 /** Throws from the flag read. */
 class ThrowingFeatureFlags implements FeatureFlags.Interface {
@@ -234,6 +254,7 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
         const broken = createTestStepType({ type: "broken-schema", configSchema: {} as never });
         const { listStepTypes } = await createStepTypesContext({
             setup: container => {
+                captureLoggedErrors(container);
                 container.register(broken.implementation);
             }
         });
@@ -241,6 +262,8 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
         const result = await listStepTypes.execute();
 
         expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(result.error.message).toBe(FIXED_MESSAGE);
+        expect(loggedErrors).toHaveLength(1);
     });
 
     it("returns the workflow persistence error when a type's availability throws (R87)", async () => {
@@ -252,14 +275,14 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
         });
         const { listStepTypes } = await createStepTypesContext({
             setup: container => {
+                captureLoggedErrors(container);
                 container.register(broken.implementation);
             }
         });
 
         const result = await listStepTypes.execute();
 
-        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error.message).toBe("Availability is down.");
+        expectFixedFailure(result, "Availability is down.");
     });
 
     it("allows a full-access permission set", async () => {
@@ -275,6 +298,7 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
     it("returns the workflow persistence error when the flag read throws", async () => {
         const { listStepTypes } = await createStepTypesContext({
             setup: container => {
+                captureLoggedErrors(container);
                 container.registerDecorator(
                     FeatureFlags.createDecorator({
                         decorator: ThrowingFeatureFlags,
@@ -286,8 +310,7 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
 
         const result = await listStepTypes.execute();
 
-        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error.message).toBe("Flags are down.");
+        expectFixedFailure(result, "Flags are down.");
     });
 
     it("refuses a user without editor", async () => {
@@ -314,6 +337,7 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
     it("returns the workflow persistence error when the permission check throws (R87)", async () => {
         const { listStepTypes } = await createStepTypesContext({
             setup: container => {
+                captureLoggedErrors(container);
                 container.registerInstance(WorkflowsPermissions, {
                     isFullAccess: throwing,
                     canEdit: throwing,
@@ -325,7 +349,6 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
 
         const result = await listStepTypes.execute();
 
-        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error.message).toBe("Permissions are down.");
+        expectFixedFailure(result, "Permissions are down.");
     });
 });
