@@ -45,8 +45,8 @@ class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
 
         await this.eventPublisher.publish(beforeEvent);
 
-        // Execute the update operation
-        const result = await this.repository.execute(id, data);
+        // Update with the data as the handlers left it.
+        const result = await this.repository.execute(id, beforeEvent.payload.input.data);
 
         if (result.isFail()) {
             return result;
@@ -55,7 +55,7 @@ class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
         // Publish after update event
         const afterEvent = new PageAfterUpdateEvent({
             original,
-            input: { id, data },
+            input: beforeEvent.payload.input,
             page: result.value
         });
 

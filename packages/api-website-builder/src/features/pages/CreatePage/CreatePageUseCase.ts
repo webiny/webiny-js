@@ -26,8 +26,8 @@ class CreatePageUseCaseImpl implements UseCaseAbstraction.Interface {
 
         await this.eventPublisher.publish(beforeCreateEvent);
 
-        // Execute the create operation
-        const result = await this.repository.execute(data);
+        // Create the page as the handlers left it.
+        const result = await this.repository.execute(beforeCreateEvent.payload.input);
 
         if (result.isFail()) {
             return result;

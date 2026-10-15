@@ -2,7 +2,14 @@ import { describe, expect, it } from "vitest";
 import { createContextPlugin } from "@webiny/api";
 import { useHandler } from "./utils/useHandler.js";
 import { pageMocks } from "./mocks/page.mock.js";
-import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
+import {
+    CreatePageUseCase,
+    PageBeforeCreateEventHandler
+} from "~/features/pages/CreatePage/index.js";
+import {
+    PageBeforeUpdateEventHandler,
+    UpdatePageUseCase
+} from "~/features/pages/UpdatePage/index.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import {
     PageBeforePublishEventHandler,
@@ -14,10 +21,10 @@ import {
 } from "~/features/pages/CreatePageRevisionFrom/index.js";
 
 /*
- * "Before" event handlers run after authorization and before the write. Whatever they leave on
- * the page is what gets saved, and throwing stops the write. The handlers below replace
- * `properties` instead of editing it in place, because an in-place edit can reach the write
- * through a shared object even when the page itself is never passed on.
+ * "Before" event handlers run after authorization and before the write. Whatever they leave in
+ * `input` is what gets saved, and throwing stops the write. The handlers below replace the
+ * object instead of editing it in place, because an in-place edit can reach the write through a
+ * shared object even when the event's value is never passed on.
  */
 const setup = async (register: Parameters<typeof createContextPlugin>[0]) => {
     const handler = useHandler({ plugins: [createContextPlugin(register)] });
@@ -30,16 +37,70 @@ const setup = async (register: Parameters<typeof createContextPlugin>[0]) => {
         throw createResult.error;
     }
 
-    return { context, page: createResult.value };
+    const getStored = async (id: string) => {
+        const result = await context.container.resolve(GetPageByIdUseCase).execute(id);
+        if (result.isFail()) {
+            throw result.error;
+        }
+        return result.value;
+    };
+
+    return { context, page: createResult.value, getStored };
 };
 
 describe("Page before-event handlers", () => {
-    it("publishes the page as a page.beforePublish handler changed it", async () => {
-        const { context, page } = await setup(context => {
+    it("creates the page with the input a page.beforeCreate handler replaced", async () => {
+        const { page, getStored } = await setup(context => {
+            context.container.registerFactory(PageBeforeCreateEventHandler, () => ({
+                async handle(event) {
+                    const { input } = event.payload;
+                    event.payload.input = {
+                        ...input,
+                        properties: { ...input.properties, title: "Changed before create" }
+                    };
+                }
+            }));
+        });
+
+        expect(page.properties.title).toBe("Changed before create");
+        expect((await getStored(page.id)).properties.title).toBe("Changed before create");
+    });
+
+    it("updates the page with the data a page.beforeUpdate handler replaced", async () => {
+        const { context, page, getStored } = await setup(context => {
+            context.container.registerFactory(PageBeforeUpdateEventHandler, () => ({
+                async handle(event) {
+                    const { original, input } = event.payload;
+                    expect(original.properties.title).toBe("Page A");
+                    input.data = {
+                        ...input.data,
+                        properties: { ...input.data.properties, title: "Changed before update" }
+                    };
+                }
+            }));
+        });
+
+        const result = await context.container.resolve(UpdatePageUseCase).execute(page.id, {
+            properties: { ...page.properties, title: "Typed by the user" }
+        });
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        expect(result.value.properties.title).toBe("Changed before update");
+        expect((await getStored(page.id)).properties.title).toBe("Changed before update");
+    });
+
+    it("publishes the data a page.beforePublish handler replaced", async () => {
+        const { context, page, getStored } = await setup(context => {
             context.container.registerFactory(PageBeforePublishEventHandler, () => ({
                 async handle(event) {
-                    const { page } = event.payload;
-                    page.properties = { ...page.properties, title: "Changed before publish" };
+                    const { original, input } = event.payload;
+                    expect(original.id).toBe(input.id);
+                    input.data = {
+                        ...input.data,
+                        properties: { ...input.data.properties, title: "Changed before publish" }
+                    };
                 }
             }));
         });
@@ -52,16 +113,13 @@ describe("Page before-event handlers", () => {
         expect(result.value.status).toBe("published");
         expect(result.value.properties.title).toBe("Changed before publish");
 
-        const stored = await context.container.resolve(GetPageByIdUseCase).execute(page.id);
-        if (stored.isFail()) {
-            throw stored.error;
-        }
-        expect(stored.value.status).toBe("published");
-        expect(stored.value.properties.title).toBe("Changed before publish");
+        const stored = await getStored(page.id);
+        expect(stored.status).toBe("published");
+        expect(stored.properties.title).toBe("Changed before publish");
     });
 
     it("does not publish when a page.beforePublish handler throws", async () => {
-        const { context, page } = await setup(context => {
+        const { context, page, getStored } = await setup(context => {
             context.container.registerFactory(PageBeforePublishEventHandler, () => ({
                 async handle() {
                     throw new Error("Page is not ready to be published.");
@@ -73,20 +131,19 @@ describe("Page before-event handlers", () => {
             context.container.resolve(PublishPageUseCase).execute({ id: page.id })
         ).rejects.toThrow("Page is not ready to be published.");
 
-        const stored = await context.container.resolve(GetPageByIdUseCase).execute(page.id);
-        if (stored.isFail()) {
-            throw stored.error;
-        }
-        expect(stored.value.status).toBe("draft");
+        expect((await getStored(page.id)).status).toBe("draft");
     });
 
-    it("creates the revision as a page.beforeCreateRevisionFrom handler changed it", async () => {
-        const { context, page } = await setup(context => {
+    it("creates the revision with the data a page.beforeCreateRevisionFrom handler replaced", async () => {
+        const { context, page, getStored } = await setup(context => {
             context.container.registerFactory(PageBeforeCreateRevisionFromEventHandler, () => ({
                 async handle(event) {
-                    const { page, params } = event.payload;
-                    expect(page.id).toBe(params.id);
-                    page.properties = { ...page.properties, title: "Changed in new revision" };
+                    const { original, input, params } = event.payload;
+                    expect(original.id).toBe(params.id);
+                    input.data = {
+                        ...input.data,
+                        properties: { ...input.data.properties, title: "Changed in new revision" }
+                    };
                 }
             }));
         });
@@ -102,11 +159,7 @@ describe("Page before-event handlers", () => {
         expect(result.value.properties.title).toBe("Changed in new revision");
 
         // The source revision is left as it was.
-        const source = await context.container.resolve(GetPageByIdUseCase).execute(page.id);
-        if (source.isFail()) {
-            throw source.error;
-        }
-        expect(source.value.properties.title).toBe("Page A");
+        expect((await getStored(page.id)).properties.title).toBe("Page A");
     });
 
     it("does not create a revision when a page.beforeCreateRevisionFrom handler throws", async () => {

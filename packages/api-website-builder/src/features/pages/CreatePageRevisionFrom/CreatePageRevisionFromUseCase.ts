@@ -34,17 +34,19 @@ class CreatePageRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface 
         }
 
         // Publish before event
+        const original = getResult.value;
         const beforeEvent = new PageBeforeCreateRevisionFromEvent({
             params,
-            page: getResult.value
+            original,
+            input: { id: params.id, data: PageToEntryValuesMapper.toValues(original) }
         });
 
         await this.eventPublisher.publish(beforeEvent);
 
-        // Create the revision with the values the handlers left on the page.
+        // Create the revision with the data as the handlers left it.
         const result = await this.repository.execute({
             id: params.id,
-            values: PageToEntryValuesMapper.toValues(beforeEvent.payload.page)
+            values: beforeEvent.payload.input.data
         });
 
         if (result.isFail()) {

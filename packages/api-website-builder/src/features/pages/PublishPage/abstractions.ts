@@ -79,7 +79,14 @@ export namespace PublishPageUseCase {
 // ============================================================================
 
 export interface PageBeforePublishPayload {
-    /** The page about to be published. Changes made by handlers are what gets published. */
+    /** The stored revision being published. */
+    original: WbPage;
+    /** What gets published. Handlers can change or replace `data`. */
+    input: {
+        id: string;
+        data: CmsEntryWbPage;
+    };
+    /** @deprecated Use `original`. Changes to it are not published. */
     page: WbPage;
 }
 
