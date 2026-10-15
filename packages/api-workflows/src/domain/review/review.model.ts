@@ -131,6 +131,16 @@ class ReviewModelImpl implements ModelFactory.Interface {
                                         .withoutTimezone(),
                                     outcome: runFields.text().label("Outcome"),
                                     reason: runFields.longText().label("Reason")
+                                })),
+                            issues: stepFields
+                                .object()
+                                .label("Issues")
+                                .list()
+                                .fields(issueFields => ({
+                                    fieldPath: issueFields.text().label("Field path"),
+                                    severity: issueFields.text().label("Severity"),
+                                    message: issueFields.longText().label("Message"),
+                                    suggestion: issueFields.longText().label("Suggestion")
                                 }))
                         })),
                     requester: fields

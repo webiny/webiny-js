@@ -214,6 +214,15 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         reason: String
     }
 
+    type WorkflowsAiIssue {
+        "A dotted path into the target; null when the finding is about the whole target."
+        fieldPath: String
+        "error, warning or info."
+        severity: String!
+        message: String!
+        suggestion: String
+    }
+
     type WorkflowsReviewStep {
         id: ID!
         title: String!
@@ -236,6 +245,8 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         taskId: String
         "Earlier attempts of the step, oldest first (D82)."
         runs: [WorkflowsStepRun!]!
+        "The findings of an AI decision (R171); empty for every other step."
+        issues: [WorkflowsAiIssue!]!
         "Assignment-log entries of this step, newest first (D127). Only on a single review read; skip entries need editor or reassign (D89)."
         assignments: [WorkflowsAssignmentEntry!]
     }

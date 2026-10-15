@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import {
     ARTICLE_MODEL,
+    createAiIssue,
     createRequestedReview,
     createWorkflow,
     expectOk,
@@ -160,6 +161,32 @@ describe("ReviewRepository", () => {
         expect(read.value.steps[0].runs).toEqual(runs);
         // The untouched second step keeps no task and no runs.
         expect(read.value.steps[1]).toMatchObject({ taskId: null, runs: [] });
+    });
+
+    it("round-trips the issues of a step and reads other steps as no issues (R171)", async () => {
+        const repository = await createRepository();
+        const base = toSaveData(createRequestedReview());
+        const issues = [
+            createAiIssue(),
+            createAiIssue({
+                fieldPath: null,
+                severity: "error",
+                message: "The page has no content.",
+                suggestion: null
+            }),
+            createAiIssue({ fieldPath: "fields.body.0.text", severity: "info" })
+        ];
+        const data = {
+            ...base,
+            steps: base.steps.map((step, index) => (index === 0 ? { ...step, issues } : step))
+        };
+
+        const saved = await repository.save(data);
+        const read = await repository.get(data.id);
+
+        expect(saved.value.steps[0].issues).toEqual(issues);
+        expect(read.value.steps[0].issues).toEqual(issues);
+        expect(read.value.steps[1].issues).toEqual([]);
     });
 
     it("updates an existing review in place", async () => {

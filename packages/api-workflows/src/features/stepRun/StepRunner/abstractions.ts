@@ -1,16 +1,15 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { StepRunTaskIdentity } from "~/domain/review/getStaleStepRunReason.js";
-import type { Actor, ReviewData, ReviewStep } from "~/domain/review/types.js";
+import type { Actor, AiIssue, ReviewData, ReviewStep } from "~/domain/review/types.js";
 
 /**
  * `approved` and `rejected` end the step; a `rejected` outcome needs a comment of 10 or more
- * characters after trimming (D100). `issues` is typed `unknown[]` until the review step carries
- * `AiIssue` (Task 5 narrows it).
+ * characters after trimming (D100). `issues` are the AI findings stored on the step (R171).
  */
 export interface StepRunnerDecisionOutcome {
     type: "approved" | "rejected";
     comment?: string;
-    issues?: unknown[];
+    issues?: AiIssue[];
 }
 
 /** Run the step again: `wait` seconds later, with `state` handed back on the next call. */

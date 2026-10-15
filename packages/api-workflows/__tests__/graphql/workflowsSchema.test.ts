@@ -652,6 +652,7 @@ describe("workflows GraphQL root", () => {
             "finishedOn",
             "taskId",
             "runs",
+            "issues",
             "assignments"
         ]);
         expect(memberNames(types, "WorkflowsStepRun")).toEqual([
@@ -660,6 +661,12 @@ describe("workflows GraphQL root", () => {
             "finishedOn",
             "outcome",
             "reason"
+        ]);
+        expect(memberNames(types, "WorkflowsAiIssue")).toEqual([
+            "fieldPath",
+            "severity",
+            "message",
+            "suggestion"
         ]);
         expect(memberNames(types, "WorkflowsAssignmentEntry")).toEqual([
             "id",

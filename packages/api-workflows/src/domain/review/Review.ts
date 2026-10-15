@@ -249,7 +249,8 @@ export class Review {
             startedOn: null,
             finishedOn: null,
             taskId: null,
-            runs: []
+            runs: [],
+            issues: []
         }));
 
         const review = new Review({
@@ -691,6 +692,7 @@ export class Review {
         step.state = "pending";
         step.comment = null;
         step.taskId = null;
+        step.issues = [];
         step.reachedOn = null;
         step.startedOn = null;
         step.finishedOn = null;

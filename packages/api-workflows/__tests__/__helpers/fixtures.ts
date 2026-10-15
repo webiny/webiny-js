@@ -2,6 +2,7 @@ import type { Result } from "@webiny/feature/api";
 import { Review } from "~/domain/review/Review.js";
 import type {
     Actor,
+    AiIssue,
     ReviewData,
     ReviewPick,
     StepAssignmentResolution,
@@ -183,4 +184,15 @@ export const toSaveData = (review: Review): ReviewData => {
     review.prepareForSave();
     review.pullFacts();
     return review.toData();
+};
+
+/** One AI finding; override any field. */
+export const createAiIssue = (overrides: Partial<AiIssue> = {}): AiIssue => {
+    return {
+        fieldPath: "seo.title",
+        severity: "warning",
+        message: "The title is longer than 60 characters.",
+        suggestion: "Shorten the title to 60 characters.",
+        ...overrides
+    };
 };

@@ -3,6 +3,8 @@ import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import type { WorkflowStepNotification } from "~/domain/workflow/types.js";
 import type { AssignmentSource } from "~/domain/assignment/types.js";
 import type {
+    AiIssue,
+    AiIssueSeverity,
     ReviewData,
     ReviewState,
     ReviewStep,
@@ -30,6 +32,13 @@ export interface ReviewEntryStepRun {
     reason: string | null;
 }
 
+export interface ReviewEntryStepIssue {
+    fieldPath: string | null;
+    severity: string;
+    message: string;
+    suggestion: string | null;
+}
+
 export interface ReviewEntryStep {
     id: string;
     title: string;
@@ -50,6 +59,7 @@ export interface ReviewEntryStep {
     finishedOn: string | Date | null;
     taskId: string | null;
     runs: ReviewEntryStepRun[] | null;
+    issues: ReviewEntryStepIssue[] | null;
 }
 
 export interface ReviewEntryTargetContext {
@@ -193,6 +203,12 @@ export class ReviewEntryMapper {
                 finishedOn: run.finishedOn,
                 outcome: run.outcome,
                 reason: run.reason
+            })),
+            issues: step.issues.map((issue: AiIssue) => ({
+                fieldPath: issue.fieldPath,
+                severity: issue.severity,
+                message: issue.message,
+                suggestion: issue.suggestion
             }))
         };
     }
@@ -228,6 +244,14 @@ export class ReviewEntryMapper {
                 // Only the engine writes this model, always with a `StepRunOutcome`.
                 outcome: (run.outcome as StepRunOutcome | null) || null,
                 reason: run.reason || null
+            })),
+            // Reviews stored before the field existed read as no issues (R171, like R139).
+            issues: (step.issues ?? []).map((issue): AiIssue => ({
+                fieldPath: issue.fieldPath || null,
+                // Only the engine writes this model, always with an `AiIssueSeverity`.
+                severity: issue.severity as AiIssueSeverity,
+                message: issue.message ?? "",
+                suggestion: issue.suggestion || null
             }))
         };
     }

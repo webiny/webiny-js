@@ -39,6 +39,19 @@ export interface ReviewStepRun {
     reason: string | null;
 }
 
+export type AiIssueSeverity = "error" | "warning" | "info";
+
+/**
+ * One finding of an AI decision (D39, R171). `fieldPath` is a dotted path into the target
+ * (`null` when the finding is about the whole target); `suggestion` is an optional fix.
+ */
+export interface AiIssue {
+    fieldPath: string | null;
+    severity: AiIssueSeverity;
+    message: string;
+    suggestion: string | null;
+}
+
 export interface ReviewStep extends WorkflowStep {
     state: StepState;
     owner: Actor | null;
@@ -54,6 +67,8 @@ export interface ReviewStep extends WorkflowStep {
     taskId: string | null;
     /** Earlier attempts, oldest first (D82, R139). */
     runs: ReviewStepRun[];
+    /** The findings of an AI decision; empty for every other step and before a decision (R171). */
+    issues: AiIssue[];
 }
 
 export interface ReviewWorkflowSnapshot {

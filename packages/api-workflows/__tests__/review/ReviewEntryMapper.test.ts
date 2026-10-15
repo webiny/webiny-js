@@ -6,7 +6,12 @@ import {
     type ReviewEntryValues
 } from "~/features/review/shared/ReviewEntryMapper.js";
 import type { ReviewStepRun } from "~/domain/review/types.js";
-import { createRequestedReview, NOW, toSaveData } from "~tests/__helpers/fixtures.js";
+import {
+    createAiIssue,
+    createRequestedReview,
+    NOW,
+    toSaveData
+} from "~tests/__helpers/fixtures.js";
 
 const LATER = "2026-10-09T11:00:00.000Z";
 
@@ -90,6 +95,92 @@ describe("ReviewEntryMapper step run data (R139)", () => {
         expect(read.steps[0].taskId).toBeNull();
         expect(read.steps[0].runs).toEqual([
             { taskId: null, startedOn: NOW, finishedOn: LATER, outcome: null, reason: null }
+        ]);
+    });
+});
+
+describe("ReviewEntryMapper step issues (R171)", () => {
+    it("maps the issues both ways", () => {
+        const issues = [
+            createAiIssue(),
+            createAiIssue({
+                fieldPath: null,
+                severity: "error",
+                message: "The page is empty.",
+                suggestion: null
+            }),
+            createAiIssue({ severity: "info", suggestion: "Keep it." })
+        ];
+        const data = toSaveData(createRequestedReview());
+        data.steps[0].issues = issues;
+
+        const values = ReviewEntryMapper.toValues(data);
+        const read = ReviewEntryMapper.fromEntry(toEntry(values));
+
+        expect(values.steps?.[0].issues).toEqual(issues);
+        expect(read.steps[0].issues).toEqual(issues);
+        expect(read.steps[1].issues).toEqual([]);
+    });
+
+    it("does not share the issue objects with the review data", () => {
+        const data = toSaveData(createRequestedReview());
+        data.steps[0].issues = [createAiIssue()];
+
+        const values = ReviewEntryMapper.toValues(data);
+        data.steps[0].issues[0].message = "Changed after mapping.";
+
+        expect(values.steps?.[0].issues?.[0].message).toBe(
+            "The title is longer than 60 characters."
+        );
+    });
+
+    it("reads steps stored without the field, or with null, as no issues (no migration)", () => {
+        const values = ReviewEntryMapper.toValues(toSaveData(createRequestedReview()));
+        const absent = values.steps?.map(step => ({
+            ...step,
+            issues: undefined
+        })) as unknown as ReviewEntryStep[];
+        const nulled = values.steps?.map(step => ({
+            ...step,
+            issues: null
+        })) as unknown as ReviewEntryStep[];
+
+        const readAbsent = ReviewEntryMapper.fromEntry(toEntry({ ...values, steps: absent }));
+        const readNull = ReviewEntryMapper.fromEntry(toEntry({ ...values, steps: nulled }));
+
+        expect(readAbsent.steps.map(step => step.issues)).toEqual([[], []]);
+        expect(readNull.steps.map(step => step.issues)).toEqual([[], []]);
+    });
+
+    it("reads storage nulls and empty strings of the optional fields as null", () => {
+        const values = ReviewEntryMapper.toValues(toSaveData(createRequestedReview()));
+        const steps = values.steps?.map((step, index) =>
+            index === 0
+                ? {
+                      ...step,
+                      issues: [
+                          {
+                              fieldPath: "",
+                              severity: "error",
+                              message: "Broken.",
+                              suggestion: ""
+                          },
+                          {
+                              fieldPath: null,
+                              severity: "info",
+                              message: "Fine.",
+                              suggestion: null
+                          }
+                      ]
+                  }
+                : step
+        ) as ReviewEntryStep[];
+
+        const read = ReviewEntryMapper.fromEntry(toEntry({ ...values, steps }));
+
+        expect(read.steps[0].issues).toEqual([
+            { fieldPath: null, severity: "error", message: "Broken.", suggestion: null },
+            { fieldPath: null, severity: "info", message: "Fine.", suggestion: null }
         ]);
     });
 });
