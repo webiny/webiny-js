@@ -56,6 +56,7 @@ import { AutomationStepRunnerFeature } from "~/features/stepRun/AutomationStepRu
 import { WorkflowStepRunTaskFeature } from "~/features/stepRun/WorkflowStepRunTask/feature.js";
 import { WorkflowsPermissionsFeature } from "~/features/permissions/WorkflowsPermissions/feature.js";
 import { AutomationDefinitionRegistryFeature } from "~/features/automation/AutomationDefinitionRegistryService/feature.js";
+import { WorkflowAiToolRegistryFeature } from "~/features/aiTools/WorkflowAiToolRegistryService/feature.js";
 import { StepTypesFeature } from "~/features/stepTypes/feature.js";
 import { WorkflowsSchemaFactory } from "~/graphql/WorkflowsSchemaFactory.js";
 
@@ -83,6 +84,8 @@ export const WorkflowsFeature = createFeature({
         StepTypesFeature.register(container);
         // Automation definitions written by developers (R133); none ships (R155)
         AutomationDefinitionRegistryFeature.register(container);
+        // AI tools an AI step may allowlist (R167); the built-ins arrive with Task 10
+        WorkflowAiToolRegistryFeature.register(container);
 
         // Workflows
         WorkflowSharedFeature.register(container);

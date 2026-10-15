@@ -73,6 +73,8 @@ import {
     type IAutomationDefinition
 } from "~/features/automation/AutomationDefinition/index.js";
 import { AutomationDefinitionRegistryService } from "~/features/automation/AutomationDefinitionRegistryService/index.js";
+import { WorkflowAiTool } from "~/features/aiTools/WorkflowAiTool/index.js";
+import { WorkflowAiToolRegistryService } from "~/features/aiTools/WorkflowAiToolRegistryService/index.js";
 import { StepType } from "~/features/stepTypes/StepType/index.js";
 import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
@@ -124,6 +126,9 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(AutomationDefinitionRegistryService)).toHaveLength(1);
         // No built-in automation (R155): developers register definitions.
         expect(container.resolveAll(AutomationDefinition)).toHaveLength(0);
+        // The AI tool registry; no tool ships yet (Task 10 registers the built-ins).
+        expect(container.resolveAll(WorkflowAiToolRegistryService)).toHaveLength(1);
+        expect(container.resolveAll(WorkflowAiTool)).toHaveLength(0);
         // No default loader, sync or target read access: the app adapters register one per namespace.
         expect(container.resolveAll(ReviewTargetLoader)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetSync)).toHaveLength(0);
