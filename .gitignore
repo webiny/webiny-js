@@ -32,10 +32,6 @@ apps/**/build/
 .verdaccio
 .history
 *.tsbuildinfo
-cypress.json
-cypress.config.ts
-cypress/screenshots/*
-cypress-tests/cypress/screenshots/*
 .pulumi
 logs.txt
 Pulumi.*

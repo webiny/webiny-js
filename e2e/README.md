@@ -36,16 +36,19 @@ tests/
     aiImageEnrichment.e2e.ts    tags: wcp, ai, file-manager
   tenancy/
     tenantFileDelivery.e2e.ts   tags: wcp, tenancy, file-manager
+  installation.e2e.ts           tags: installation
 ```
 
-Two tags say what a test needs:
+Three tags say what a test needs:
 
 | Tag   | Meaning                                                                                                                                                                        |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `wcp` | Needs a project connected to WCP with the full license, for example AI Power-Ups, audit logs or teams. On an unlicensed project these features don't exist, so the test fails. |
 | `ai`  | Makes real model calls through Webiny. Costs money and needs `ANTHROPIC_API_KEY`.                                                                                              |
 
-They are separate because they vary separately. Teams needs a license and no model, and a future AI feature might ship without a license gate.
+| `installation` | Clicks through the installation wizard, so it needs a project that has never been installed. It is skipped unless `E2E_INSTALLATION=1` is set. |
+
+`wcp` and `ai` are separate because they vary separately. Teams needs a license and no model, and a future AI feature might ship without a license gate.
 
 Put the tags on the `describe`, so every test in it inherits them:
 
@@ -61,6 +64,8 @@ A WCP test that reaches an unlicensed project should fail, not skip. That means 
 
 ## In CI
 
-`/e2e` on a pull request runs this suite in the WCP jobs, "Standalone (SQLite, WCP)" and "Standalone (Postgres, WCP)". These jobs are experimental and only run for the people listed in `AI_E2E_USERS` (`.github/workflows/wac/e2e/aiE2e.ts`). They build a licensed project, run the Cypress smoke test and then `yarn e2e`, and upload `e2e/.e2e/` as an artifact.
+Every `/e2e` job (AWS and standalone) and the `push` E2E jobs start with the installation test, `E2E_INSTALLATION=1 yarn e2e --tag installation`, against the freshly built project. It creates the admin user the other tests sign in with. On failure the job uploads `e2e/.e2e/` as an artifact.
 
-The regular standalone jobs don't run this suite yet. When they do, they should run `yarn e2e --exclude-tag wcp`, which today is the login test. Keep `--pass-with-no-tests` in mind if a filter can ever leave nothing to run: without it the run fails with `NO_TESTS`.
+Then `/e2e` runs the rest of this suite in the WCP jobs, "Standalone (SQLite, WCP)" and "Standalone (Postgres, WCP)". These jobs are experimental and only run for the people listed in `AI_E2E_USERS` (`.github/workflows/wac/e2e/aiE2e.ts`). They build a licensed project, run the installation test and then `yarn e2e --exclude-tag installation`, and upload `e2e/.e2e/` as an artifact.
+
+The regular standalone jobs don't run this suite yet. When they do, they should run `yarn e2e --exclude-tag wcp,installation`, which today is the login test. Keep `--pass-with-no-tests` in mind if a filter can ever leave nothing to run: without it the run fails with `NO_TESTS`.
