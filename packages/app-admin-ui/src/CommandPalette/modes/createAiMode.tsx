@@ -5,7 +5,7 @@ import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg"
 import { ReactComponent as BackspaceIcon } from "@webiny/icons/backspace.svg";
 import { AiModeBadge } from "../components/index.js";
 import { AiSuggestions } from "../components/index.js";
-import { AiTurn } from "../components/index.js";
+import { AiConversation } from "../components/index.js";
 import { ContinueInChats } from "../components/index.js";
 import { CONTINUE_IN_CHATS_AFTER } from "../components/index.js";
 import { HintIcon } from "../components/index.js";
@@ -60,14 +60,13 @@ const modelLabel = (model: string | undefined): string => {
  * reactive component's render tracks the presenter's observables and re-renders on a new turn, with
  * no dependency arrays to keep honest.
  */
-/** How close to the bottom counts as reading the newest text, so the stream may follow it. */
-const FOLLOW_THRESHOLD = 100;
-
-export const createAiMode = (presenter: AdminAssistantPresenter.Interface): PaletteMode => {
+export const createAiMode = (
+    presenter: AdminAssistantPresenter.Interface,
+    /** The signed-in user's initials, shown against each question. */
+    initials: string
+): PaletteMode => {
     // How many turns the panel showed last time, so a new question is told apart from a re-render.
     let shownTurns = 0;
-    // Where the last automatic scroll left the panel. Above it means the reader scrolled up.
-    let autoScrollTop = 0;
 
     return {
         get appearance() {
@@ -97,17 +96,14 @@ export const createAiMode = (presenter: AdminAssistantPresenter.Interface): Pale
 
             return (
                 <>
-                    {turns.map((turn, index) => (
-                        <AiTurn
-                            key={index}
-                            turn={turn}
-                            latest={index === turns.length - 1}
-                            busy={busy}
-                            onApprove={() => presenter.decide(index, true)}
-                            onReject={() => presenter.decide(index, false)}
-                            onAsk={question => presenter.ask(question)}
-                        />
-                    ))}
+                    <AiConversation
+                        turns={turns}
+                        initials={initials}
+                        busy={busy}
+                        onApprove={index => presenter.decide(index, true)}
+                        onReject={index => presenter.decide(index, false)}
+                        onAsk={question => presenter.ask(question)}
+                    />
                     {turns.length >= CONTINUE_IN_CHATS_AFTER ? (
                         <ContinueInChats onContinue={continueInChats} />
                     ) : null}
@@ -125,7 +121,6 @@ export const createAiMode = (presenter: AdminAssistantPresenter.Interface): Pale
         reset() {
             presenter.reset();
             shownTurns = 0;
-            autoScrollTop = 0;
         },
 
         handleKey(event: React.KeyboardEvent, context: PaletteModeKeyContext) {
@@ -158,26 +153,14 @@ export const createAiMode = (presenter: AdminAssistantPresenter.Interface): Pale
         },
 
         /*
-         * New text arrives at the bottom. A new question always scrolls there. While an answer
-         * streams, the panel follows it only if the reader has not scrolled up: scrolling on every
-         * token pulled anyone reading an earlier turn back down, a line at a time.
-         *
-         * Decided here, from positions, not from scroll events. An event arrives a frame after the
-         * scroll, and a token can re-render in between, which would snap the reader back down.
-         * Streamed text only adds height, so a reader still sits at or below the last automatic
-         * position unless they moved up, or within reach of the bottom once they come back.
+         * The newest turn is at the top, so a new question scrolls there. Only a new question: an answer
+         * re-renders the panel with every token, and scrolling on each one would pull a reader back up
+         * from an earlier turn they opened.
          */
         afterRender(container: HTMLElement) {
             const count = presenter.vm.turns.length;
-            const fromBottom =
-                container.scrollHeight - container.scrollTop - container.clientHeight;
-            const following =
-                container.scrollTop >= autoScrollTop - 1 || fromBottom < FOLLOW_THRESHOLD;
-
-            if (count > shownTurns || following) {
-                // The target, not a read-back: a smooth scroll has not moved yet when this runs.
-                autoScrollTop = container.scrollHeight - container.clientHeight;
-                container.scrollTo({ top: autoScrollTop });
+            if (count > shownTurns) {
+                container.scrollTo({ top: 0 });
             }
             shownTurns = count;
         }

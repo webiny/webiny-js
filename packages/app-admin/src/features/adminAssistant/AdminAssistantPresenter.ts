@@ -16,6 +16,7 @@ interface Turn extends AiTurnViewModel {
 const emptyTurn = (question: string): Turn => ({
     question,
     text: "",
+    answerStart: 0,
     tools: [],
     completed: [],
     failed: [],
@@ -52,6 +53,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
                 const view: AiTurnViewModel = {
                     question: turn.question,
                     text: turn.text,
+                    answerStart: turn.answerStart,
                     tools: turn.tools,
                     completed: turn.completed,
                     failed: turn.failed,
@@ -190,7 +192,11 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
                 if (event.type === "tool-call") {
                     tools.push(event.name);
-                    this.patch(index, { tools: [...tools], running: true });
+                    this.patch(index, {
+                        tools: [...tools],
+                        running: true,
+                        answerStart: text.length
+                    });
                     continue;
                 }
 

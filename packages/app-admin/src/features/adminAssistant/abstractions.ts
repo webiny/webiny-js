@@ -87,6 +87,11 @@ export interface AiTurnViewModel {
     question: string;
     /** Answer text so far. Grows as the stream arrives. */
     text: string;
+    /**
+     * Where the answer proper starts in `text`: after the last tool call. Text before it is the
+     * model saying what it is about to look up, which is no summary of the answer.
+     */
+    answerStart: number;
     /** Tools called this turn, in call order. */
     tools: string[];
     /**

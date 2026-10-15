@@ -7,6 +7,7 @@ export { AiModeBadge } from "./AiModeBadge.js";
 export { AiSuggestions, AI_SUGGESTIONS } from "./AiSuggestions.js";
 export { AiTurn } from "./AiTurn.js";
 export { ContinueInChats, CONTINUE_IN_CHATS_AFTER } from "./ContinueInChats.js";
+export { AiConversation } from "./AiConversation.js";
 export { ApprovalPlan } from "./ApprovalPlan.js";
 export { AnswerSkeleton } from "./AnswerSkeleton.js";
 export { NoResults } from "./NoResults.js";
