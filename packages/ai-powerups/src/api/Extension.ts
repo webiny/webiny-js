@@ -23,6 +23,9 @@ import { AdminAssistantFeature } from "./features/AdminAssistant/index.js";
 import { CmsCompareEntryRevisionsFeature } from "./features/CmsCompareEntryRevisions/feature.js";
 import { WbTranslatePageFeature } from "./features/WbTranslatePage/feature.js";
 import { CmsCompareEntryRevisionsSchema } from "./graphql/CmsCompareEntryRevisionsSchema.js";
+import { WorkflowsReviewCapability } from "./features/WorkflowReview/WorkflowsReviewCapability.js";
+import { ListWorkflowAiModelsFeature } from "./features/WorkflowReview/ListWorkflowAiModels/feature.js";
+import { ListWorkflowAiModelsSchema } from "./graphql/ListWorkflowAiModelsSchema.js";
 
 export const Extension = createFeature({
     name: "AiPowerUps",
@@ -82,5 +85,22 @@ export const Extension = createFeature({
         container.register(AiPowerUpsSettingsGraphQLMapperImpl).inSingletonScope();
         container.register(BaseGraphQLSchema);
         container.register(CmsCompareEntryRevisionsSchema);
+
+        /*
+         * The AI step for workflows (R177, D56). Everything below extends or depends on the
+         * workflows engine (`WorkflowsQuery`, `CurrentReviewViewer`, the step type and runner
+         * abstractions), which exists only when `advancedPublishingWorkflow` is on, so it sits
+         * behind a second check. With `aiPowerups` on and workflows off nothing here is registered:
+         * the schema has no `listAiModels` field and no "Workflow review" capability is listed.
+         * `ConfiguredAiModelsFeature` is not in here: the capability resolver needs it with
+         * workflows off too, so it lives under the plain `aiPowerups` gate above.
+         */
+        if (!container.resolve(FeatureFlags).get().isEnabled("advancedPublishingWorkflow")) {
+            return;
+        }
+
+        container.register(WorkflowsReviewCapability);
+        ListWorkflowAiModelsFeature.register(container);
+        container.register(ListWorkflowAiModelsSchema);
     }
 });
