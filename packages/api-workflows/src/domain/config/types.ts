@@ -25,6 +25,16 @@ export interface AutomationDefinitionInfo {
     settingsSchema: Record<string, unknown>;
 }
 
+/**
+ * An AI tool a workflow author can allowlist on an AI step (R167): a row of `listAiTools`. No
+ * input schema: the editor shows what a tool is, the runner builds what the model sees.
+ */
+export interface WorkflowAiToolInfo {
+    name: string;
+    title: string;
+    description: string;
+}
+
 /** A user as the workflows configuration screens see one (D48, D104): no email, roles or teams. */
 export interface WorkflowUser {
     id: string;

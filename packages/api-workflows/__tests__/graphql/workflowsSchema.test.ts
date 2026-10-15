@@ -5,6 +5,7 @@ import {
     registerTestAutomation,
     TEST_AUTOMATION_ID
 } from "~tests/__helpers/TestAutomationDefinition.js";
+import { registerTestAiTool, TEST_AI_TOOL_NAME } from "~tests/__helpers/TestWorkflowAiTool.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { PROJECT_PACKAGE_FEATURE_NAME } from "@webiny/wcp/types.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -75,6 +76,21 @@ const LIST_STEP_TYPES = /* GraphQL */ `
                     available
                     unavailableReason
                     configSchema
+                }
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+const LIST_AI_TOOLS = /* GraphQL */ `
+    query ListAiTools {
+        workflows {
+            listAiTools {
+                data {
+                    name
+                    title
+                    description
                 }
                 ${ERROR_FIELDS}
             }
@@ -170,6 +186,21 @@ interface ListAutomationDefinitionsResult {
     listAutomationDefinitions: AutomationDefinitionsEnvelope;
 }
 
+interface AiToolRow {
+    name: string;
+    title: string;
+    description: string;
+}
+
+interface AiToolsEnvelope {
+    data: AiToolRow[] | null;
+    error: ErrorRow | null;
+}
+
+interface ListAiToolsResult {
+    listAiTools: AiToolsEnvelope;
+}
+
 interface UserRow {
     id: string;
     displayName: string;
@@ -248,6 +279,7 @@ const createApi = async (params: CmsTestHandlerParams) => {
         listAutomationDefinitions: createQuery<
             GraphQLBody<WorkflowsRoot<ListAutomationDefinitionsResult>>
         >(LIST_AUTOMATION_DEFINITIONS),
+        listAiTools: createQuery<GraphQLBody<WorkflowsRoot<ListAiToolsResult>>>(LIST_AI_TOOLS),
         listUsers: createQuery<GraphQLBody<WorkflowsRoot<ListUsersResult>>>(LIST_USERS)
     };
 };
@@ -486,6 +518,52 @@ describe("workflows GraphQL root", () => {
         });
     });
 
+    it("lists the AI tools by title, with no schema (R167, R176)", async () => {
+        const api = await createApi({
+            permissions: EDITOR,
+            setup: container => {
+                registerTestAiTool(container, { name: "zuluTool", title: "Zulu" });
+                registerTestAiTool(container, {
+                    title: "Alpha",
+                    description: "A tool for tests."
+                });
+            }
+        });
+
+        const [response] = await api.listAiTools();
+
+        expect(response.data.workflows.listAiTools).toEqual({
+            data: [
+                { name: TEST_AI_TOOL_NAME, title: "Alpha", description: "A tool for tests." },
+                { name: "zuluTool", title: "Zulu", description: "A tool for tests." }
+            ],
+            error: null
+        });
+    });
+
+    it("lists no AI tools when none is registered", async () => {
+        const api = await createApi({ permissions: EDITOR });
+
+        const [response] = await api.listAiTools();
+
+        expect(response.data.workflows.listAiTools).toEqual({ data: [], error: null });
+    });
+
+    it("refuses the AI tools to a user without editor", async () => {
+        const api = await createApi({ permissions: REASSIGNER });
+
+        const [response] = await api.listAiTools();
+
+        expect(response.data.workflows.listAiTools).toEqual({
+            data: null,
+            error: {
+                code: "Workflows/NotAuthorized",
+                message: "You are not allowed to list AI tools.",
+                data: { action: "list AI tools" }
+            }
+        });
+    });
+
     it("lists users for an editor, by search and by ids (D48, D117)", async () => {
         const api = await createApi({ permissions: EDITOR });
 
@@ -535,6 +613,7 @@ describe("workflows GraphQL root", () => {
             "getSettings",
             "listStepTypes",
             "listAutomationDefinitions",
+            "listAiTools",
             "listUsers"
         ]);
         expect(memberNames(types, "WorkflowsAutomationDefinition")).toEqual([
@@ -547,6 +626,8 @@ describe("workflows GraphQL root", () => {
             "data",
             "error"
         ]);
+        expect(memberNames(types, "WorkflowsAiTool")).toEqual(["name", "title", "description"]);
+        expect(memberNames(types, "WorkflowsAiToolListResponse")).toEqual(["data", "error"]);
         expect(memberNames(types, "WorkflowsUser")).toEqual(["id", "displayName"]);
         expect(memberNames(types, "WorkflowsUserListResult")).toEqual(["users", "missingIds"]);
         expect(memberNames(types, "WorkflowsUserListResponse")).toEqual(["data", "error"]);
