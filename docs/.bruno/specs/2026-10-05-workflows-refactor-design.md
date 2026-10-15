@@ -57,7 +57,7 @@ interface WorkflowStep {
 ```
 
 - v1 validation on create and update (same path): exactly one entry in `models`, the model is publishable, and no other workflow is bound to it. The uniqueness race is accepted [D15, D41]. "Publishable" is checked by the app package on the engine's workflow before-save events (the CMS workflows package for `cms.*`), so every caller of the base use case gets it.
-- At least one step ("Add at least one step.") [D108]. AI steps need non-empty `instructions` and a `model` [D101, D109]. Every rule needs a target; required automation settings must be present (the same checks run in the editor before Save).
+- At least one step ("Add at least one step.") [D108]. AI steps need non-empty `instructions` (no minimum length, no default prompt) and a `model` that has a configured connection; every `tools` entry must be a registered workflow AI tool; a step whose config no longer parses fails with `Step "<title>" has an invalid AI configuration.` and a model list that cannot be loaded fails with `Step "<title>" could not be checked: the configured AI models could not be loaded.`; the model is checked only for new or changed steps, so an unrelated edit of a workflow whose connection was removed still saves [D101, D109, D139]. Every rule needs a target; required automation settings must be present (the same checks run in the editor before Save).
 - Editing is always allowed. Deleting is blocked while any of the workflow's reviews is `inProgress`. The engine's error carries the exact count and the blocking reviews (content reference, title, step position and name); the app wrapper filters them to the ones the caller can read and keeps 5. The count stays exact. Finished reviews do not block it [D81, D115, D133].
 - No tombstone: a save that finds the workflow deleted only learns that it no longer exists [D123].
 - Saves are checked optimistically: the base `StoreWorkflow` use case takes the loaded `savedOn`, and each app's store mutation (e.g. `storeWebsiteBuilderPageWorkflow`) passes it through; a mismatch fails with `Workflows/Workflow/Conflict`, a missing workflow with `Workflows/Workflow/NotFound` [D131, D132].
@@ -96,8 +96,8 @@ interface AutomationStepConfig {
 // "ai" (registered by ai-powerups) [D56]
 interface AiStepConfig {
     instructions: string;      // the reviewer prompt
-    model: string;             // chosen AI model, required [D101]
-    tools: string[];           // allowlist from the workflow AI tool registry [D55]
+    model: string;             // chosen AI model "<providerId>/<modelId>", required, must have a configured connection [D101]
+    tools: string[];           // allowlist from the workflow AI tool registry, default [] [D55]
 }
 ```
 
@@ -134,7 +134,7 @@ interface ReviewStep extends WorkflowStep {
     state: StepState;
     owner: Actor | null;
     comment: string | null;              // decision or failure reason
-    issues?: AiIssue[];                  // AI steps [D39]
+    issues: AiIssue[];                   // AI steps' structured findings; [] for every other step; reset by restart [D39, D145]
     pickedUserId?: string | null;        // requester's pick at submit [D22]
     candidateTeamIds: string[];          // resolved on step reached [D21]
     assignmentSource?: string | null;    // rule id, "strategy", "picked", "pool", "poolStart", "takeOver", "reassign" [D45]
@@ -152,12 +152,20 @@ interface Actor {
     displayName: string;
     identityType?: string;                // identity kind of a user actor, e.g. "admin", "api-key" [D30, D133]
 }
+
+interface AiIssue {
+    fieldPath: string | null;            // clamped to 500 characters
+    severity: "error" | "warning" | "info";
+    message: string;                     // clamped to 2000 characters
+    suggestion: string | null;           // clamped to 2000 characters
+}
 ```
 
 - A review carries a full snapshot of its workflow. Editing a workflow never changes running reviews; no steps are inserted into a running review [D81].
 - At most one active review per target revision. Rejected, approved and failed reviews stay active; only cancel deactivates [D23].
 - Current-step fields after a finished review: on approve and reject they keep the last or rejecting step and its owner; only cancel clears them [D75, D119].
 - `lastChangedOn` changes on request, step reached, start, take over, reassign, approve, reject, fail, restart and content updated by a step; edits outside the review do not touch it [D119].
+- A step's `issues` hold what the AI reported with its decision (at most 50); steps written before they existed read as empty; facts and events carry no issues [D145].
 
 ### 4.3 Assignment log (`wbyWorkflowAssignment`) [D20, D45]
 
@@ -274,7 +282,7 @@ Rule targets are also validated when the workflow is saved: user targets must be
 
 ### 7.1 Extension point [D56]
 
-`StepType` abstraction in api-workflows and app-workflows: id, config schema, editor fields, and runner (what happens on step reached). Built in: `review`, `automation`. ai-powerups registers `ai`. Dependency direction is always plugin → workflows.
+`StepType` abstraction in api-workflows and app-workflows: id, config schema, editor fields, and runner (what happens on step reached). Built in: `review`, `automation`. ai-powerups registers `ai` (together with its `StepRunner`) only when both `aiPowerups` and `advancedPublishingWorkflow` are on; with only workflows on, `listStepTypes` keeps the disabled `ai` row [D122]. A step type may also define an async `checkConfig` for checks that need I/O (the AI step checks that its model has a configured connection); the save path runs it only for steps that are new or whose config changed [D139]. `StepRunner` is the matching extension point for the background task: one runner per step type, registered next to the type [D140]. Dependency direction is always plugin → workflows.
 
 ### 7.2 Automation steps [D14, D35, D36, D37, D38]
 
@@ -290,14 +298,18 @@ Rule targets are also validated when the workflow is saved: user targets must be
 - Step config holds no secrets. Credentials an automation needs (keys, tokens, signing secrets) belong to whoever writes the definition, in their own code or configuration, and are never set or seen by workflow editors [D67 superseded].
 - The run is attributed to the requester but with authorization off (D36): the automation can read and write anything, so the developer scopes their own code. Delivery is at-least-once, so automations should be idempotent. Developer guide: `docs/.bruno/workflows/automations.md`.
 
-### 7.3 AI steps [D13, D39, D40, D55]
+### 7.3 AI steps [D13, D39, D40, D55, D101, D109, D139-D148]
 
-- Acts like a human reviewer: approves or rejects with a comment. No human confirmation.
-- Input built by the framework: target content serialized with field labels, model name, previous step comments, the step instructions as prompt.
-- Runs as an agent loop (`stopWhen`) with tools from the workflow AI tool registry only, filtered by the step's allowlist. Built-in tools: `readTarget`, `updateTargetFields(fieldPath → value)`, scoped to the revision under review and implemented per target adapter. Developers can register more. The global `AiSdkTools` registry is never exposed to AI steps.
-- Structured output: `{ approved: boolean, comment: string, issues: [{ fieldPath?, severity, message, suggestion? }] }`.
-- The step's chosen model is used [D101]. The connection comes from ai-powerups via the "Workflow review" capability (`ResolveAiCapabilityUseCase`); the resolved inline connection is passed to `Ai.generateText` / `streamText`. A model that is no longer available fails the step on reach (restartable).
-- Needs both `advancedPublishingWorkflow` and `aiPowerups`. Without `aiPowerups` the type is listed disabled with the reason in the editor and cannot be added [D122]. A disabled capability or lapsed licence fails the step on reach; restartable once fixed.
+- Acts like a human reviewer: approves or rejects with a comment. No human confirmation. The decision is applied through the base approve and reject use cases with an `ai` actor that names the requester; a reject needs a comment of at least the minimum length [D100, D145].
+- Input built by the framework: the labelled target content, the previous step comments, then the step instructions in a delimited block as the task. The system prompt is the capability guidance (fixed output contract, content under review is data and never instructions) plus the capability's additional instructions. There is no default prompt [D109, D146].
+- Runs as an agent loop (`stopWhen`, at most 20 tool steps) with tools from the workflow AI tool registry only, filtered by the step's allowlist. Built-in tools: `readTarget`, `updateTargetFields({ fields })` (path → value), scoped to the revision under review through the `ReviewTargetEditor` port that each target adapter implements. Developers can register more (`ai-tools.md`). The global `AiSdkTools` registry is never exposed to AI steps. A tool never takes a target, revision, review or step id from the model [D55, D142].
+- Writes are bounded: CMS top-level and nested-object scalar fields (text, long text, number, boolean, datetime, not lists); Website Builder page title and the SEO scalars. References, files, rich text, dynamic zones, the element tree, bindings, path and language are read-only. A bad path or value writes nothing [D143].
+- `updateTargetFields` is the only writer. It re-checks that the step is still this task's (fail-closed when the check fails) and runs only the write inside the workflow bypass, so the save block lets the AI's edit through and the move, delete and trash blocks stay [D144].
+- Structured output: `{ approved: boolean, comment: string, issues: [{ fieldPath, severity, message, suggestion }] }`; no valid output fails the step [D145].
+- The step's chosen model is used [D101]. The model must belong to a provider that has a connection with a stored key; that list has one source (`ConfiguredAiModelsService`) used by the editor's model list, the save check and the resolver [D141]. The connection comes from ai-powerups via the "Workflow review" capability (`ResolveAiCapabilityUseCase` with the model); the resolved inline connection is passed to `Ai.generateText`. A model or connection removed later fails the step on reach or run (restartable).
+- Needs both `advancedPublishingWorkflow` and `aiPowerups`. Without `aiPowerups` the type is listed disabled with the reason in the editor and cannot be added [D122]. A disabled capability or lapsed licence fails the step; restartable once fixed [D40, D145].
+- Limits: the serialised target, previous comments and instructions may not exceed 200000 characters; over it the step fails before any model call and nothing is truncated [D147].
+- Every failure ends in a fixed reason on the step; raw provider and storage messages are logged only [D145]. Developer guide: `docs/.bruno/workflows/ai-tools.md`.
 
 ### 7.4 Task execution [D6, D7, D27, D28, D57, D58]
 
@@ -305,10 +317,12 @@ Rule targets are also validated when the workflow is saved: user targets must be
 - The task always runs as the requester, including restarts, so records it creates or changes are attributed to the requester. The engine's step-reached path triggers the task inside `IdentityContext.withIdentity(requester, ...)`, also when the step is reached inside another task or a base use case with no wrapper; `TaskService.trigger` is unchanged [D87]. This is the engine's only identity write; transitions still use the explicit actor (`ai` or `automation`) [D132, D133].
 - Stale-result guard: on finish the task reloads the review and applies its result only if the review is still active, the step is still current, and the step's task id matches. The same guard applies to failure writes (`onError`, `onMaxIterations`) and to stuck detection, so a late hook from an old task cannot fail a restarted step. The narrow write race is accepted.
 - `onError` and `onMaxIterations` set the step `failed` with the reason; the write is idempotent.
-- Stuck detection on read: only on single-review reads (`getReview`, `getTargetReview`), not in lists. If the task is done, failed or aborted while the step is still `inReview`, the step is set `failed` ("task ended without result").
+- Stuck detection on read: only on single-review reads (`getReview`, `getTargetReview`), not in lists. If the task is done, failed or aborted while the step is still `inReview`, the step is set `failed` ("task ended without result"). A task that is gone (the step run task cleans itself up, R179) or cannot be read counts as stuck after a five-minute grace from the step start. Known limitation, not decided yet: a task left running after its runtime was killed hard is not failed today.
 - Cancel aborts the running task where possible (`TaskService.abort`); the guard discards late results. Step implementations handle cancellation of their own work [D25].
-- One private background task definition, `workflowsStepRun`, serves every automation step: input is only `{ reviewId, stepId }`, everything else comes from the review snapshot. The engine triggers the task before the review is saved and stores its id on the step in the same save; the handler waits briefly (up to three short waits) for the id to appear, and a failed save aborts the task. GraphQL `triggerTask` refuses private definitions like unknown ones (SEC-68), and the handler never trusts its input.
-- The handler enforces the automation definition's own `maxIterations` from the task's iteration count (waits for the task id are not counted); the task definition has one high ceiling. Fixed failure reasons cover a missing definition, invalid settings, a scope mismatch, a failed trigger, a thrown error, an unknown outcome (`The automation failed: It returned an unknown outcome.`), a rejection without a comment, too many iterations, a task that ended without a result and an abort. Stuck detection gives a failed or aborted task a five-minute grace before it fails the step.
+- One private background task definition, `workflowsStepRun`, serves every automation and AI step: input is only `{ reviewId, stepId }`, everything else comes from the review snapshot. The engine triggers the task before the review is saved and stores its id on the step in the same save; the handler waits briefly (up to three short waits) for the id to appear, and a failed save aborts the task. GraphQL `triggerTask` refuses private definitions like unknown ones (SEC-68), and the handler never trusts its input. The handler dispatches by step type to a `StepRunner` (automation and AI each have one); a step whose type has no runner fails with `The step type "<type>" is not available.` and fixed neutral texts [D140]. The task cleans itself up when it finishes, because every outcome is already on the step [R179, D140]. The background-tasks GraphQL treats a private task like one that does not exist (extends SEC-68; R180).
+- The handler enforces the automation definition's own `maxIterations` from the task's iteration count (waits for the task id are not counted); the task definition has one high ceiling. Fixed failure reasons cover a missing definition, invalid settings, a scope mismatch, a failed trigger, a thrown error, an unknown outcome (`The automation failed: It returned an unknown outcome.`), a rejection without a comment, too many iterations, a task that ended without a result and an abort. Stuck detection gives a failed or aborted task a five-minute grace before it fails the step. The fixed reasons of an AI step are in `ai-tools.md` and decision D145.
+- The AI runner is single-run: the task is one iteration and never continues. Once the id waits are over the handler persists the output before calling the runner, and a re-entered task (iteration above 1) fails without a second model call [D140, D145].
+- The handler passes the runner an abort signal built from the task's remaining runtime minus a 30 second margin; a model call that outlives it fails the step with a timeout reason. A cancel or restart during the call is seen by a throttled re-read of the stored review (`StepRunStaleCheckService`, at most one read per 5 seconds, because the task's own abort flag does not see a cancel written by another request); the runner stops between tool steps and nothing is written afterwards. A call whose result is discarded as stale is accepted [D147, A56, A59].
 - No step max duration and no watchdog.
 
 ## 8. Permissions [D54]
@@ -370,7 +384,7 @@ One adapter per namespace, replacing the duplicated CMS/WB handler pairs: `cms.*
 - publish blocking (D79) and move blocking: moves are blocked only while the review is `inProgress` [D84]; both only on bound models;
 - trash and delete refusal while a review is in progress, and the app's cancel-for-delete wrapper as the confirm path [D134];
 - `system.workflow` sync via `UpdateEntrySystemUseCase`;
-- implement the AI tools `readTarget` / `updateTargetFields`;
+- implement the `ReviewTargetEditor` port behind the AI tools `readTarget` / `updateTargetFields`: read the content with a per-field `writable` verdict, and write only the bounded set, atomically (CMS: `cms.*`; WB: `wb.page`, registered under the same gate as the rest of the adapter) [D143];
 - delete the review (and its assignment records) when the target is permanently deleted; a failed cleanup is logged and the delete stands, leaving the review orphaned;
 - answer whether a user can read the target (`canUserRead(userId, target)`), used by the engine for candidates during routing and reassign [D61, D133]. The adapter reads the model (and, for CMS, its group) and the revision as the current identity, then runs its own read check (CMS: group read, model read, entry and folder access; WB: page read and folder access) as the candidate. The candidate must be an admin user of the current tenant (one lookup; no parent-tenant fallback); the check runs with authorization enforced even when the caller runs without authorization (background tasks), and any error answers "cannot read" (fail closed).
 
@@ -392,7 +406,7 @@ Two kinds of operations [D132, D133]:
 
 The lists below name capabilities; each per-app capability exists once per app. Placement and final names [D136]: everything is on the main `/graphql` endpoint; there is no workflows operation on `/cms/*`, and the entry's `system.workflow` field stays there (R102).
 
-- Root `workflows` (`WorkflowsQuery` / `WorkflowsMutation`): the shared configuration operations (`getSettings`, `updateSettings`, `listStepTypes`, `listUsers(search, ids, limit)` → `{ users: { id, displayName }[], missingIds }`, `listAutomationDefinitions` → `{ id, name, models, settingsSchema }[]` (the settings schema as JSON schema); later transports, AI tools). The review step exposes `taskId` and `runs` (the shared `WorkflowsStepRun { taskId, startedOn, finishedOn, outcome, reason }`, earlier attempts only).
+- Root `workflows` (`WorkflowsQuery` / `WorkflowsMutation`): the shared configuration operations (`getSettings`, `updateSettings`, `listStepTypes`, `listUsers(search, ids, limit)` → `{ users: { id, displayName }[], missingIds }`, `listAutomationDefinitions` → `{ id, name, models, settingsSchema }[]` (the settings schema as JSON schema); later transports; `listAiTools` → `{ name, title, description }[]` and `listAiModels` → `{ id, name, providerId, providerName }[]`, the latter registered by ai-powerups only when `aiPowerups` and `advancedPublishingWorkflow` are both on, so the field is absent otherwise). The review step exposes `taskId`, `runs` (the shared `WorkflowsStepRun { taskId, startedOn, finishedOn, outcome, reason }`, earlier attempts only) and `issues` (`WorkflowsAiIssue { fieldPath, severity, message, suggestion }`).
 - Root `cms` (the existing `CmsQuery` / `CmsMutation`): `listCmsEntryWorkflows`, `getCmsEntryWorkflow(id)`, `getCmsEntryReview(id)`, `getCmsEntryTargetReview(modelId, revisionId)`, `listCmsEntryReviews(list, where, sort, limit, after)`, `listCmsEntryWorkflowModels(search, limit, after)`, `listCmsEntryStepCandidates(workflowId, stepId, modelId, revisionId)`, `listCmsEntryReviewStepCandidates(reviewId, stepId)`, `inspectCmsEntryRouting(stepConfig, modelId, requesterId, folderId)`, `cmsEntryFolderExists(id, type)`; `storeCmsEntryWorkflow(data, savedOn)`, `deleteCmsEntryWorkflow(id)`, `requestCmsEntryReview(modelId, revisionId, title, picks)`, `startCmsEntryReviewStep`, `takeOverCmsEntryReviewStep`, `approveCmsEntryReviewStep`, `rejectCmsEntryReviewStep` (each `reviewId, stepId`, approve and reject also `comment`), `reassignCmsEntryReviewStep(reviewId, stepId, userId)`, `restartCmsEntryReviewStep(reviewId, stepId)`, `cancelCmsEntryReview(reviewId)`, `cancelCmsEntryReviewsForDelete(modelId, entryId, revisionId, action)`.
 - Root `websiteBuilder` (the existing `WbQuery` / `WbMutation`): the same set with `WebsiteBuilderPage` in place of `CmsEntry` and no `modelId` (`getWebsiteBuilderPageTargetReview(revisionId)`, `requestWebsiteBuilderPageReview(revisionId, title, picks)`, `cancelWebsiteBuilderPageReviewsForDelete(pageId, action)`, `listWebsiteBuilderPageStepCandidates(workflowId, stepId, revisionId)`, `listWebsiteBuilderPageReviewStepCandidates(reviewId, stepId)`, `inspectWebsiteBuilderPageRouting(stepConfig, requesterId, folderId)`, `websiteBuilderPageFolderExists(id)` (the type is always `wb:page`), `reassignWebsiteBuilderPageReviewStep(reviewId, stepId, userId)`, `restartWebsiteBuilderPageReviewStep(reviewId, stepId)`); there is no WB model list.
 - Operations that take a review id take no model; a request takes the revision id and the server derives the content id from it. Every operation returns `{ data, error }` (lists `{ data, meta: { cursor, hasMoreItems }, error }`).
@@ -418,7 +432,7 @@ Shared configuration operations (api-workflows, `editor`):
 
 - settings: get, update
 - `listUsers(search, ids, limit)` → `{ users: { id, displayName }[], missingIds }` [D48, D104]; also accepts a list of ids (up to 200) and reports which do not exist, so the editor can show saved targets as "Deleted user" [D117]
-- step types (with config JSON schemas, `available` and `unavailableReason` per type [D130]), notification transports (`id`, `title`, `description`) [D129], automation definitions (with scope and the settings schema as JSON schema, `listAutomationDefinitions`), AI tools
+- step types (with config JSON schemas, `available` and `unavailableReason` per type [D130]), notification transports (`id`, `title`, `description`) [D129], automation definitions (with scope and the settings schema as JSON schema, `listAutomationDefinitions`), AI tools (`listAiTools`) and AI models (`listAiModels`, only with `aiPowerups`)
 
 Errors return `code`, `message` and `data`; the admin must keep them (today gateways drop them).
 
@@ -435,6 +449,8 @@ Each app has its own lists over its own reviews (CMS: `cms.*`; Website Builder: 
 | Team in review | `currentStepState = inReview`, owner is not the viewer, `viewerTeamIds` intersect `currentCandidateTeamIds` |
 | My requests | `createdBy = viewerUserId` |
 | Failed steps (only with `reassign`) | `currentStepState = failed`, current step type AI or automation [D112] |
+
+An AI step that fails (fixed reason, `ai-tools.md`) appears in Failed steps like an automation step and is restarted the same way.
 
 The engine's list use case takes `viewerUserId` and `viewerTeamIds` explicitly; the app wrapper supplies them from the identity and offers Failed steps only with `reassign` [D132].
 

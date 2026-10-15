@@ -61,7 +61,7 @@ Routing conditions exclude locale for now. CMS entries have no locale, and WB `p
 
 ## D13. AI step capabilities
 
-An AI step acts exactly like a human reviewer: approve or reject, with a comment giving the reason. (Editing revised by D39: allowed only via step-allowed tools.) No human confirmation of its decision (rejection is final, D10). Step config: reviewer instructions (prompt) plus ai-powerups capability and model role.
+An AI step acts exactly like a human reviewer: approve or reject, with a comment giving the reason. (Editing revised by D39: allowed only via step-allowed tools.) No human confirmation of its decision (rejection is final, D10). Step config: reviewer instructions (prompt) plus ai-powerups capability and model role. Built in phase 6: D138-D148.
 
 ## D14. Automated steps are defined in code
 
@@ -191,11 +191,11 @@ Revises D13: the AI may change content, but only through tools allowed on the st
 
 - Input built by the framework: target content serialized with field labels (CMS entry values or WB page content), model name, previous step comments, and the step instructions as the prompt.
 - Runs as an agent loop over the `AiSdkTools` registry with `stopWhen`. Each step configures an allowlist of tools; edit tools are permitted.
-- Structured output: `{ approved: boolean, comment: string, issues: [{ fieldPath?, severity, message, suggestion? }] }`.
+- Structured output: `{ approved: boolean, comment: string, issues: [{ fieldPath?, severity, message, suggestion? }] }`. _The `AiSdkTools` registry was replaced by the workflow tool registry (D55, D142); phase 6 built the loop, bounded writes and issues (D143-D145)._
 
 ## D40. AI licensing and capability
 
-One shared ai-powerups capability, "Workflow review"; model role selectable per step. Without the `aiPowerups` licence the AI step type is hidden in the editor. If the capability is disabled or the licence lapses later, the step becomes `failed` with the reason when reached; restartable once fixed.
+One shared ai-powerups capability, "Workflow review"; model role selectable per step. Without the `aiPowerups` licence the AI step type is hidden in the editor. If the capability is disabled or the licence lapses later, the step becomes `failed` with the reason when reached; restartable once fixed. _The per-step model role was already replaced by D101; the capability "Workflow review" is built (D138)._
 
 ## D41. Model deletion and binding checks
 
@@ -561,7 +561,7 @@ Review title: at least 5 characters. Reject comment: at least 10 characters. Bot
 
 ## D101. AI step picks a model
 
-Supersedes the per-step model role in D40. When creating or editing an AI step, the admin chooses a specific model (required) from the list of available models (ai-powerups `listModels`, `packages/ai-powerups/src/admin/features/listModels/`). The step stores the chosen model. If the model is no longer available, the editor warns and the step fails when reached (restartable after a fix). The "Workflow review" capability still gates whether AI steps can run.
+Supersedes the per-step model role in D40. When creating or editing an AI step, the admin chooses a specific model (required) from the list of available models (ai-powerups `listModels`, `packages/ai-powerups/src/admin/features/listModels/`). The step stores the chosen model. If the model is no longer available, the editor warns and the step fails when reached (restartable after a fix). The "Workflow review" capability still gates whether AI steps can run. _Built in phase 6: the model must have a configured connection and is checked on save for new or changed steps (D139, D141)._
 
 ## D102. In-app notification is a toast
 
@@ -656,7 +656,7 @@ An approved revision that was published and later unpublished can be published a
 
 ## D122. Unavailable step types are shown disabled
 
-Revises D91: in Add step, every step type is listed. AI without the `aiPowerups` licence and Automation with no definition covering the workflow's model are shown disabled with the reason ("Requires AI Power-Ups", "No automations are available for this model" / "for pages"), and cannot be added. Resolves final-check item H2.
+Revises D91: in Add step, every step type is listed. AI without the `aiPowerups` licence and Automation with no definition covering the workflow's model are shown disabled with the reason ("Requires AI Power-Ups", "No automations are available for this model" / "for pages"), and cannot be added. Resolves final-check item H2. _Phase 6 registers the `ai` type when both `aiPowerups` and `advancedPublishingWorkflow` are on (D148); otherwise the disabled row stays._
 
 ## D123. Deleted-while-editing dialog without who and when
 
@@ -769,3 +769,85 @@ Settles spec 10 "final names" placement. Decided 2026-10-13 (first recorded with
 The `leastLoaded` strategy counts a candidate's load only within the review's app: in-review reviews they own whose namespace belongs to the same app (CMS: every `cms.*` namespace; Website Builder: `wb.page`). The tie-break ("least recently assigned") also looks only at the same app's assignments. Consistent with D133 (nothing crosses apps).
 
 Refines spec 6 (strategy) and D20, D63. Decided 2026-10-13.
+
+## D138. AI step shape: names, config, editor row
+
+`AI_STEP_TYPE = "ai"`. `AiStepConfig { instructions, model, tools }` (`tools` default `[]`, `model` is the full id `<providerId>/<modelId>`). Capability `workflows.review`, label "Workflow review", default role standard. The AI actor is `{ type: "ai", id: <requester id>, displayName: <requester displayName> }` (D58, D107). With the type registered the `listStepTypes` row comes from the registry (`available: true`, JSON schema config with a textarea hint on `instructions`); without it the disabled placeholder stays. The shared operations are `listAiTools` (api-workflows) and `listAiModels` (ai-powerups, only when both flags are on), `editor` only, rows without schemas.
+
+Covers R164, R166, R176. Refines D56, D122, D130. Decided 2026-10-14 (phase 6 plan R164, R166, R176).
+
+## D139. Save-time AI validation: pure rules, then the model check for changed steps only
+
+Exact texts: `Step "<title>" needs instructions.`, `Step "<title>" needs a model.`, `Step "<title>" uses the AI tool "<name>", which is not defined.`; duplicate tools are deduplicated. Check-time failures: `Step "<title>" has an invalid AI configuration.` (config no longer parses) and `Step "<title>" could not be checked: the configured AI models could not be loaded.` (the model list could not be read). The model check is a second, async hook on `StepType` (`checkConfig`): `Step "<title>" uses the model "<model>", which is not available.`; it runs after the pure validation of all steps and the conflict, not-found and same-model checks, and only for steps that are new or whose config changed, so a workflow whose connection was removed later can still be saved without touching that step. A throw is a persistence error.
+
+Covers R165. Refines D101, D109. Decided 2026-10-14 (phase 6 plan R165).
+
+## D140. One task runner for every step type
+
+`workflowsStepRun` stays the one private task; a multi-registered `StepRunner` (type, `singleRun`, fixed failure reasons, `getActor`, `maxIterationsReason`, `run`) holds what differs per type and the handler dispatches by step type. Automation behaviour is byte for byte unchanged; the AI runner is single-run (the handler persists the output before calling it and refuses a re-entered task). A step type with no runner fails with the "not available" reason and neutral texts; stuck detection covers every step type. One shared reach service starts the task for both types.
+
+The task cleans itself up when it finishes (`selfCleanup: "always"`), because every outcome is already on the step; a step whose task is gone is handled by stuck detection (grace from the step start) (R179). The background-tasks GraphQL treats a private task like one that does not exist (`getTask` not found, `listTasks` leaves it out, `listLogs` answers nothing, `abortTask` and `deleteTask` refuse it), which extends SEC-68 (R180).
+
+Covers R168, R179, R180 and user answer Q1. Refines D57, D87. Decided 2026-10-14 (phase 6 plan R168, R179, R180).
+
+## D141. One source for "models with a configured connection"
+
+`ConfiguredAiModelsService` lists the models of providers that have a connection preset with a stored key and finds the connection for a model; the editor's `listAiModels`, the save check and the capability resolver all use it, and `Ai.listModelsByConnections()` is not used. `ResolveAiCapabilityUseCase.execute(capabilityId, model?)` takes the step's model; the capability must still be enabled; an unavailable model fails with `The model "<model>" is not available. Add a connection for its provider under Settings → AI Power-Ups.` A listed model does not prove the key works (a bad key fails the run).
+
+Covers R169, A60 and user answer Q2. Refines D101, D56. Decided 2026-10-14 (phase 6 plan R169).
+
+## D142. Workflow AI tool registry
+
+A multi-registered `WorkflowAiTool` abstraction (name `^[A-Za-z][A-Za-z0-9_]{0,63}$`, title, description, zod input schema, `execute(input, context)` returning `{ ok, data?, error? }`); the context carries review, step, requester and task so a handler takes no id from the model; the last registration of a name wins; an invalid name is dropped and logged, never thrown; a step must allowlist a tool for the model to see it; turning tools into AI SDK tools is the runner's job (api-workflows has no AI dependency). The registry is a singleton per container, so a tool keeps no per-call state.
+
+Covers R167, A61. Refines D55. Decided 2026-10-14 (phase 6 plan R167, A61).
+
+## D143. AI writes are bounded and atomic
+
+The `ReviewTargetEditor` port reads in full with a `writable` verdict per field and writes a bounded set: CMS top-level and nested-object scalar fields (text, long text, number, boolean, datetime, not lists); Website Builder `properties.title` and the SEO scalars (title, description, canonical URL, noIndex, noFollow). Everything else is read-only (dynamic zones, references, files, rich text, element tree, bindings, metadata, path, language). One bad path or value writes nothing; failure texts are safe to show the model and real errors are logged.
+
+Covers R172 and user answer Q3. Refines D39. Decided 2026-10-14 (phase 6 plan R172).
+
+## D144. The AI writes only through tools, guarded, under the bypass
+
+The model call has no write access of its own. `updateTargetFields` re-reads the stored review and refuses when the step is no longer this task's, or when the check fails (fail-closed); only its write runs inside the workflow bypass, which lifts the save block only. The narrow race between the check and the write is accepted (A59); a custom tool's write path is its developer's responsibility (A61).
+
+Covers R173. Refines D36, D62. Decided 2026-10-14 (phase 6 plan R173).
+
+## D145. AI outcome, issues and fixed failure reasons
+
+The model answers `{ approved, comment, issues[] }`; approve keeps the comment (empty allowed), reject needs a trimmed comment of at least the minimum length (D100); the decision goes through the base use cases with the `ai` actor and `actorTeamIds: []`. `issues` (`fieldPath`, `severity`, `message`, `suggestion`; at most 50, long fields clamped) are stored on the review step, default `[]`, reset by restart; facts and events carry none. Every failure writes one of these fixed reasons, and raw provider, storage and thrown messages are only logged:
+
+- `The AI step configuration is not valid.`
+- `The AI tool "<name>" is not available.`
+- `The AI review capability is not available.`
+- `The model "<model>" is not available.`
+- `The content is too large for the AI review.`
+- `The AI review timed out.`
+- `The AI review failed.`
+- `The AI review returned no decision.`
+- `The AI review rejected without a comment.`
+- `The AI review did not finish in 20 steps.`
+- `The AI review was aborted.`
+- `The AI review task ended without a result.`
+- `The AI review could not be started.`
+
+Covers R170, R171. Refines D39, D100. Decided 2026-10-14 (phase 6 plan R170, R171).
+
+## D146. Prompt composition and injection
+
+System prompt: capability guidance plus additional instructions; user message: labelled content, previous comments, then the step instructions in a delimited block; the guidance states that content under review is data. The content and the comments are JSON with `<` escaped. No default prompt (D109). Prompt injection is mitigated by scope (tool context, allowlist, bounded writes, a reject needs a comment), not by detection (A58).
+
+Covers R174. Refines D39, D109. Decided 2026-10-14 (phase 6 plan R174, A58).
+
+## D147. Limits, timeout and cancel for AI runs
+
+Input cap 200000 characters, fails before any model call, no truncation ever; at most 20 tool steps; the call is aborted 30 seconds before the task's runtime ends; a cancel or restart is seen through a throttled (5 seconds) re-read of the stored review and stops the call between tool steps, because the task's own abort flag does not see another request's cancel; a stopped call is discarded and writes nothing; a failed check read does not stop the call.
+
+Covers R175, A56, A59 and user answer Q4. Refines D7, D27. Decided 2026-10-14 (phase 6 plan R175).
+
+## D148. Dependency direction and registration gate for AI
+
+`ai-powerups` depends on `api-workflows`, never the reverse; the `ai` step type, runner, capability and `listAiModels` are registered only when both `aiPowerups` and `advancedPublishingWorkflow` are on, and the step type and runner are registered last, together, so no workflow can save an AI step the runner cannot run. With only `aiPowerups` on the schema stays valid and has no `listAiModels` field.
+
+Covers R177, R178 and user answer Q5. Refines D56. Decided 2026-10-14 (phase 6 plan R177, R178). Developer guide: `docs/.bruno/workflows/ai-tools.md`.
