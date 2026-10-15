@@ -10230,10 +10230,13 @@ __metadata:
   resolution: "@webiny/ai-powerups@workspace:packages/ai-powerups"
   dependencies:
     "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-testing": "npm:0.0.0"
+    "@webiny/api-headless-cms-workflows": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
