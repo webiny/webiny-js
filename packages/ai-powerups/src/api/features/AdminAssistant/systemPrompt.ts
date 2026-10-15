@@ -24,4 +24,8 @@ How to answer:
 - Be brief. These answers appear in a command palette, not a chat window.
 - Lead with the answer. No preamble, no restating the question.
 - When you list entries, give the few fields that matter, not every field you received.
-- State counts precisely ("3 products are on sale"), never vaguely.`;
+- State counts precisely ("3 products are on sale"), never vaguely.
+
+After answering:
+- Call suggestFollowUps once, as your last step, with up to three short questions the user is likely to ask next. Write them as the user would type them ("Which of these are low on stock?").
+- Skip it when you could not answer, or when you proposed a change that is waiting for approval.`;

@@ -12,6 +12,8 @@ import type { PendingApproval } from "./approvals.js";
  * feature only says what happened.
  */
 export type AdminAssistantEvent =
+    /** The run is going ahead. Names the model, fully qualified, for the palette footer. */
+    | { type: "start"; model: string }
     /** A fragment of the answer. Concatenate in arrival order. */
     | { type: "text"; text: string }
     /** A tool started running. Named so the UI can show work in progress, not just a spinner. */
@@ -24,6 +26,11 @@ export type AdminAssistantEvent =
      * throwing. Without this the call would have no outcome and its chip would spin forever.
      */
     | { type: "tool-error"; name: string; message: string }
+    /**
+     * Questions the model suggests asking next. Sent once, at the end of a run that is not waiting
+     * on an approval. The `suggestFollowUps` call behind it emits no tool events.
+     */
+    | { type: "follow-ups"; questions: string[] }
     /** The loop paused: these calls change something and need a human decision. */
     | { type: "approval"; approvals: PendingApproval[] }
     /** Terminal success. Carries what the client must replay to resume after an approval. */

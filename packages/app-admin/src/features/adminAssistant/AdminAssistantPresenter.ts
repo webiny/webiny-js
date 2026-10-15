@@ -16,11 +16,13 @@ interface Turn extends AiTurnViewModel {
 const emptyTurn = (question: string): Turn => ({
     question,
     text: "",
+    answerStart: 0,
     tools: [],
     completed: [],
     failed: [],
     running: false,
     pendingApprovals: [],
+    followUps: [],
     messages: [],
     settled: false
 });
@@ -36,6 +38,7 @@ const emptyTurn = (question: string): Turn => ({
 class AdminAssistantPresenterImpl implements Abstraction.Interface {
     private turns: Turn[] = [];
     private busy = false;
+    private model: string | undefined = undefined;
     private controller: AbortController | null = null;
 
     constructor(private gateway: AdminAssistantGateway.Interface) {
@@ -44,20 +47,35 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     }
 
     get vm(): IAdminAssistantViewModel {
-        return {
+        const vm: IAdminAssistantViewModel = {
             busy: this.busy,
-            turns: this.turns.map(turn => ({
-                question: turn.question,
-                text: turn.text,
-                tools: turn.tools,
-                completed: turn.completed,
-                failed: turn.failed,
-                running: turn.running,
-                pendingApprovals: turn.pendingApprovals,
-                settled: turn.settled,
-                ...(turn.error === undefined ? {} : { error: turn.error })
-            }))
+            turns: this.turns.map(turn => {
+                const view: AiTurnViewModel = {
+                    question: turn.question,
+                    text: turn.text,
+                    answerStart: turn.answerStart,
+                    tools: turn.tools,
+                    completed: turn.completed,
+                    failed: turn.failed,
+                    running: turn.running,
+                    pendingApprovals: turn.pendingApprovals,
+                    followUps: turn.followUps,
+                    settled: turn.settled
+                };
+
+                if (turn.error !== undefined) {
+                    view.error = turn.error;
+                }
+
+                return view;
+            })
         };
+
+        if (this.model !== undefined) {
+            vm.model = this.model;
+        }
+
+        return vm;
     }
 
     ask(question: string): void {
@@ -98,7 +116,12 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         ];
 
         // Clear the block immediately so the plan cannot be submitted twice.
-        this.patch(turnIndex, { pendingApprovals: [], settled: false, running: true });
+        this.patch(turnIndex, {
+            pendingApprovals: [],
+            followUps: [],
+            settled: false,
+            running: true
+        });
 
         void this.run(turnIndex, { messages, approvals }, true);
     }
@@ -148,17 +171,32 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             const completed: string[] = existing ? [...existing.completed] : [];
             const failed: string[] = existing ? [...existing.failed] : [];
             const priorMessages: AdminAssistantMessage[] = existing ? [...existing.messages] : [];
+            /*
+             * A resumed run writes on after the text shown before the approval pause. Without a
+             * break, the two ran together ("...a new folder:Understood, no folder was created.").
+             */
+            let separateFromExisting = text.length > 0;
 
             for await (const event of this.gateway.stream(request, controller.signal)) {
+                if (event.type === "start") {
+                    this.setModel(event.model);
+                    continue;
+                }
+
                 if (event.type === "text") {
-                    text += event.text;
+                    text += separateFromExisting ? `\n\n${event.text}` : event.text;
+                    separateFromExisting = false;
                     this.patch(index, { text, running: false });
                     continue;
                 }
 
                 if (event.type === "tool-call") {
                     tools.push(event.name);
-                    this.patch(index, { tools: [...tools], running: true });
+                    this.patch(index, {
+                        tools: [...tools],
+                        running: true,
+                        answerStart: text.length
+                    });
                     continue;
                 }
 
@@ -171,6 +209,11 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
                 if (event.type === "tool-error") {
                     failed.push(event.name);
                     this.patch(index, { failed: [...failed] });
+                    continue;
+                }
+
+                if (event.type === "follow-ups") {
+                    this.patch(index, { followUps: event.questions });
                     continue;
                 }
 
@@ -222,6 +265,10 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
     private setBusy(busy: boolean): void {
         this.busy = busy;
+    }
+
+    private setModel(model: string): void {
+        this.model = model;
     }
 
     private clear(): void {
