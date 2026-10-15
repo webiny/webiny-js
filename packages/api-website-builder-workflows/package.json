@@ -29,6 +29,8 @@
   },
   "devDependencies": {
     "@webiny/api-headless-cms-testing": "0.0.0",
+    "@webiny/api-mailer": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^1.1.0",

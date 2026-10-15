@@ -6,6 +6,7 @@ import { AssignmentModel } from "~/domain/assignment/assignment.model.js";
 import { WorkflowSettingsModel } from "~/domain/settings/settings.model.js";
 import { ListNotificationTransportsFeature } from "~/features/notifications/ListNotificationTransports/index.js";
 import { NotificationTransportFeature } from "~/features/notifications/NotificationTransport/index.js";
+import { ReviewNotificationsFeature } from "~/features/notifications/feature.js";
 import { WorkflowSharedFeature } from "~/features/workflow/shared/feature.js";
 import { GetWorkflowFeature } from "~/features/workflow/GetWorkflow/feature.js";
 import { ListWorkflowsFeature } from "~/features/workflow/ListWorkflows/feature.js";
@@ -79,9 +80,11 @@ export const WorkflowsFeature = createFeature({
         container.register(AssignmentModel);
         container.register(WorkflowSettingsModel);
 
-        // Notifications (internal, no permission check, D133; recipient rules arrive in phase 7)
+        // Notifications (internal, no permission check, D133)
         ListNotificationTransportsFeature.register(container);
         NotificationTransportFeature.register(container);
+        // Who is told about review events, and how (R182, R199)
+        ReviewNotificationsFeature.register(container);
 
         // Step types (R131): the registry and the built-in review and automation types
         StepTypesFeature.register(container);

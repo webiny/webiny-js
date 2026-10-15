@@ -5,6 +5,14 @@ import { WorkflowsFeature } from "~/WorkflowsFeature.js";
 import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
 import { FakeTaskService } from "./FakeTaskService.js";
 import { fakeGetTask } from "./FakeGetTask.js";
+import { MailerService } from "@webiny/api-mailer";
+import {
+    WebsocketsListConnectionsUseCase,
+    WebsocketsSendToConnectionsUseCase
+} from "@webiny/api-websockets/exports/api.js";
+import { RecordingMailer } from "./RecordingMailer.js";
+import { FakeWebsocketConnections } from "./FakeWebsocketConnections.js";
+import { RecordingWebsocketsSend } from "./RecordingWebsocketsSend.js";
 
 /** The part of the request context the tests read. `getContext()` is otherwise `Record<string, any>`. */
 export interface WorkflowsTestContext {
@@ -26,6 +34,18 @@ export const createContextHandler = async (params: CmsTestHandlerParams = {}) =>
             container.register(FakeTaskService);
             // Single review reads look at the step's task (stuck detection, R152).
             container.registerInstance(GetTaskUseCase, fakeGetTask);
+            // The review notification handlers (R182) depend on the mailer and the websocket use
+            // cases, which the test context does not provide. Inert instances, so no test sends a
+            // mail or a frame; a test's own `registerInstance` in `params.setup` wins.
+            container.registerInstance(MailerService, new RecordingMailer());
+            container.registerInstance(
+                WebsocketsListConnectionsUseCase,
+                new FakeWebsocketConnections()
+            );
+            container.registerInstance(
+                WebsocketsSendToConnectionsUseCase,
+                new RecordingWebsocketsSend()
+            );
             await params.setup?.(container);
         },
         permissions: params.permissions ?? [{ name: "*" }]

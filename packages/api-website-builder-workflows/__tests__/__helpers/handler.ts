@@ -12,6 +12,14 @@ import { WebsiteBuilderWorkflowsFeature } from "~/index.js";
 import { NoopInvalidateAssetCacheTaskDefinition } from "./NoopInvalidateAssetCacheTask.js";
 import { registerNoAcoFolders } from "./NoAcoFolders.js";
 import { createArticleModelPlugins } from "./cmsModel.js";
+import { MailerService } from "@webiny/api-mailer";
+import {
+    WebsocketsListConnectionsUseCase,
+    WebsocketsSendToConnectionsUseCase
+} from "@webiny/api-websockets/exports/api.js";
+import { InertMailer } from "./InertMailer.js";
+import { InertWebsocketConnections } from "./InertWebsocketConnections.js";
+import { InertWebsocketsSend } from "./InertWebsocketsSend.js";
 
 /**
  * Website Builder as in `api-website-builder`'s `useHandler`, plus the workflows features in the
@@ -40,6 +48,17 @@ export const createContextHandler = (params: CmsTestHandlerParams = {}) => {
             container.registerInstance(TaskService, createMockTaskService());
             WorkflowsFeature.register(container);
             CmsWorkflowsFeature.register(container);
+            // The review notification handlers (api-workflows) need a mailer and the websocket use
+            // cases; this context has no request stack. Inert, so nothing is sent.
+            container.registerInstance(MailerService, new InertMailer());
+            container.registerInstance(
+                WebsocketsListConnectionsUseCase,
+                new InertWebsocketConnections()
+            );
+            container.registerInstance(
+                WebsocketsSendToConnectionsUseCase,
+                new InertWebsocketsSend()
+            );
         }
     });
 

@@ -12,6 +12,14 @@ import { registerFakeFolders } from "../__helpers/FakeFolders.js";
 import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
 import { NoopGetTask } from "../__helpers/NoopGetTask.js";
 import { FakeTaskService } from "../__helpers/FakeTaskService.js";
+import { MailerService } from "@webiny/api-mailer";
+import {
+    WebsocketsListConnectionsUseCase,
+    WebsocketsSendToConnectionsUseCase
+} from "@webiny/api-websockets/exports/api.js";
+import { InertMailer } from "../__helpers/InertMailer.js";
+import { InertWebsocketConnections } from "../__helpers/InertWebsocketConnections.js";
+import { InertWebsocketsSend } from "../__helpers/InertWebsocketsSend.js";
 
 const registerNoopFlp = createRegisterExtensionPlugin(context => {
     context.container.register(NoopFolderLevelPermissions);
@@ -34,6 +42,17 @@ export const createContextHandler = (
         setup: container => {
             WorkflowsFeature.register(container);
             CmsWorkflowsFeature.register(container);
+            // The review notification handlers (api-workflows) need a mailer and the websocket use
+            // cases; this context has no request stack. Inert, so nothing is sent.
+            container.registerInstance(MailerService, new InertMailer());
+            container.registerInstance(
+                WebsocketsListConnectionsUseCase,
+                new InertWebsocketConnections()
+            );
+            container.registerInstance(
+                WebsocketsSendToConnectionsUseCase,
+                new InertWebsocketsSend()
+            );
             // The saver aborts tasks through `TaskService`; this context has no background tasks.
             container.register(FakeTaskService);
             // Single reads resolve the task read for stuck detection; no background tasks here.
