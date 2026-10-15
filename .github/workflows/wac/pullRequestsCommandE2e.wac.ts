@@ -6,6 +6,7 @@ import {
     createInstallBuildSteps,
     createRunBuildCacheSteps,
     createSetupVerdaccioSteps,
+    createUnlicensedE2eSteps,
     createYarnCacheSteps
 } from "./steps/index.js";
 import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
@@ -30,37 +31,21 @@ const createCheckoutPrSteps = () =>
         }
     ] as NonNullable<NormalJob["steps"]>;
 
-// Scaffold a project, deploy it to AWS, then run the installation test against the deployed Admin
-// app. One variant per storage setup ("ddb", "ddb-os").
+// Scaffold a project, deploy it to AWS, then run the installation and login tests against the
+// deployed Admin app. One variant per storage setup ("ddb", "ddb-os").
+//
+// Pulumi state stays in the project's local `.pulumi` folder and goes away with the runner. The
+// nightly `cleanup.yml` removes what was deployed with aws-nuke, so nothing needs the state later.
 const createE2eJobs = (dbSetup: string) => {
     const jobNames = {
-        constants: `e2e-wby-cms-${dbSetup}-constants`,
         projectSetup: `e2e-wby-cms-${dbSetup}-project-setup`
     };
 
     const dbDisplayName = dbSetup === "ddb-os" ? "DDB+OS" : "DDB";
 
-    const constantsJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants", "build"],
-        name: `Constants - ${dbSetup.toUpperCase()}`,
-        outputs: {
-            "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
-        },
-        checkout: { path: DIR_WEBINY_JS },
-        steps: [
-            ...createCheckoutPrSteps(),
-            {
-                name: "Get Pulumi backend URL",
-                id: "get-pulumi-backend-url",
-                run: `echo "pulumi-backend-url=\${{ secrets.WEBINY_PULUMI_BACKEND }}\${{ github.run_id }}_${dbSetup}" >> $GITHUB_OUTPUT`
-            }
-        ]
-    });
-
     const env: Record<string, string> = {
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
         PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
-        WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
         WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}"
     };
 
@@ -73,7 +58,7 @@ const createE2eJobs = (dbSetup: string) => {
     }
 
     const projectSetupJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants", jobNames.constants, "checkComment"],
+        needs: ["baseBranch", "constants", "build", "checkComment"],
         name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
         environment: "next",
         env,
@@ -187,12 +172,16 @@ const createE2eJobs = (dbSetup: string) => {
                 workingDirectory: DIR_WEBINY_JS,
                 adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
                 artifactName: `e2e-results-${dbSetup}`
+            }),
+            ...createUnlicensedE2eSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
+                artifactName: `e2e-test-results-${dbSetup}`
             })
         ]
     });
 
     return {
-        [jobNames.constants]: constantsJob,
         [jobNames.projectSetup]: projectSetupJob
     };
 };

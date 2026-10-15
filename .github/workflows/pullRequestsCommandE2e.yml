@@ -141,40 +141,11 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  e2e-wby-cms-ddb-constants:
-    needs:
-      - baseBranch
-      - constants
-      - build
-    name: Constants - DDB
-    outputs:
-      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
-    steps:
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-      - uses: actions/checkout@v5
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Checkout Pull Request
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Get Pulumi backend URL
-        id: get-pulumi-backend-url
-        run: >-
-          echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-          github.run_id }}_ddb" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2e-wby-cms-ddb-project-setup:
     needs:
       - baseBranch
       - constants
-      - e2e-wby-cms-ddb-constants
+      - build
       - checkComment
     name: E2E (DDB) - Project setup
     environment: next
@@ -183,7 +154,6 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
     steps:
       - uses: actions/setup-node@v5
@@ -321,43 +291,29 @@ jobs:
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: E2E - run tests
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_TELEMETRY_DISABLED: '1'
+        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+      - name: E2E - upload test results
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: e2e-test-results-ddb
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-  e2e-wby-cms-ddb-os-constants:
-    needs:
-      - baseBranch
-      - constants
-      - build
-    name: Constants - DDB-OS
-    outputs:
-      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
-    steps:
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-      - uses: actions/checkout@v5
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Checkout Pull Request
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Get Pulumi backend URL
-        id: get-pulumi-backend-url
-        run: >-
-          echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-          github.run_id }}_ddb-os" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2e-wby-cms-ddb-os-project-setup:
     needs:
       - baseBranch
       - constants
-      - e2e-wby-cms-ddb-os-constants
+      - build
       - checkComment
     name: E2E (DDB-OS) - Project setup
     environment: next
@@ -366,7 +322,6 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
       AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.OPENSEARCH_DOMAIN_NAME }}
       OPENSEARCH_ENDPOINT: ${{ secrets.OPENSEARCH_ENDPOINT }}
@@ -521,6 +476,21 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: e2e-results-ddb-os
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: E2E - run tests
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_TELEMETRY_DISABLED: '1'
+        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+      - name: E2E - upload test results
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: e2e-test-results-ddb-os
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true

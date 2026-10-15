@@ -2,7 +2,7 @@
 
 End-to-end tests for Webiny, written with [TesterArmy's e2e framework](https://e2e.tester.army/docs). Tests drive a real browser against a running Admin app with plain locators (`screen`, `expect`).
 
-Today there is one test, `tests/installation.e2e.ts`. It clicks through the installation wizard on a freshly deployed project, then signs in and checks that the admin lands on the dashboard.
+There are two tests. `tests/installation.e2e.ts` clicks through the installation wizard on a freshly deployed project, then signs in and checks that the admin lands on the dashboard. `tests/login.e2e.ts` signs in as that admin on an installed project.
 
 ## Running
 
@@ -28,4 +28,4 @@ A run writes its report, screenshots and traces to `e2e/.e2e/`.
 
 ## In CI
 
-The `/e2e` pull request command and the `push` E2E jobs deploy a fresh project (DDB and DDB+OS), then run `E2E_INSTALLATION=1 yarn e2e --tag installation` against its Admin app URL. On failure the job uploads `e2e/.e2e/` as an artifact.
+The `/e2e` pull request command and the `push` E2E jobs deploy a fresh project (DDB and DDB+OS), then run `E2E_INSTALLATION=1 yarn e2e --tag installation` against its Admin app URL. That creates the admin user, and the job then runs `yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests`, which today is the login test. On failure either step uploads `e2e/.e2e/` as an artifact.
