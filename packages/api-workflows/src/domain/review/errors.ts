@@ -362,3 +362,17 @@ export class ReviewActiveOnTrashError extends BaseError<ReviewActiveOnTrashError
         });
     }
 }
+
+/**
+ * A target editor refused or could not do what the AI tool asked (R172): an unknown or read-only
+ * path, a value the target rejects, or no editor for the namespace. The message is shown to the
+ * model, so it holds only a validation text or a generic text, never a provider or storage error
+ * (the adapter logs that one, R87). Returned by `ReviewTargetEditor` and `ReviewTargetEditorService`.
+ */
+export class ReviewTargetEditorError extends BaseError {
+    override readonly code = "Workflows/ReviewTarget/EditorError" as const;
+
+    constructor(message: string) {
+        super({ message });
+    }
+}

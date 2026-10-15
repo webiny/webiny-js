@@ -32,6 +32,8 @@ import { ReviewTargetLoader } from "~/features/review/ReviewTargetLoader/index.j
 import { ReviewTargetSync } from "~/features/review/ReviewTargetSync/index.js";
 import { ReviewTargetReadAccess } from "~/features/review/ReviewTargetReadAccess/index.js";
 import { ReviewTargetFolderChain } from "~/features/review/ReviewTargetFolderChain/index.js";
+import { ReviewTargetEditor } from "~/features/review/ReviewTargetEditor/index.js";
+import { ReviewTargetEditorService } from "~/features/review/ReviewTargetEditorService/index.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
 import { RoutingStrategyService } from "~/features/routing/RoutingStrategyService/index.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/index.js";
@@ -135,6 +137,9 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(ReviewTargetSync)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetReadAccess)).toHaveLength(0);
         expect(container.resolveAll(ReviewTargetFolderChain)).toHaveLength(0);
+        // The editor service is registered; the adapters register the editors (Tasks 11-13).
+        expect(container.resolveAll(ReviewTargetEditorService)).toHaveLength(1);
+        expect(container.resolveAll(ReviewTargetEditor)).toHaveLength(0);
         expect(container.resolveAll(RoutingEvaluatorService)).toHaveLength(1);
         expect(container.resolveAll(RoutingStrategyService)).toHaveLength(1);
         expect(container.resolveAll(CandidateReadAccess)).toHaveLength(1);
