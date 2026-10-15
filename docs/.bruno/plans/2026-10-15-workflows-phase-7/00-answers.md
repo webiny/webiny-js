@@ -6,3 +6,4 @@
 - Q4 Websocket contract: one action with the event in `data` ({ event, reviewId, stepId, namespace, ... }), sent only to recipients.
 - Other research questions: controller takes the research recommendations unless noted (see notes.md).
 - Q3 detail: admin host comes from `ServiceDiscovery.load()` (`@webiny/api-core/features/serviceDiscovery/index.js`), `manifest.admin.cloudfront.domain` (precedent: packages/api-website-builder/src/features/nextjs/NextjsConfig.ts getDomains). No manifest or no admin entry → the e-mail goes without a link (never fails the notification).
+- Q5 Mail sender (2026-10-15): api-mailer defaults `from` to the configured mailer settings `from` when the caller passes none (SMTP transport or its factory). Fixes every caller; workflows' mail transport keeps sending without `from`.
