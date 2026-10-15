@@ -106,13 +106,15 @@ class FakeTaskServiceImpl implements TaskService.Interface {
         }) as never;
     }
 
-    public async abort(params: Parameters<TaskService.Interface["abort"]>[0]) {
+    public async abort(
+        params: Parameters<TaskService.Interface["abort"]>[0]
+    ): Promise<Result<never, BaseError>> {
         abortedTasks.push({ id: params.id, message: params.message });
         if (fakeTaskFaults.abort === "throw") {
             throw new Error("The task service is down");
         }
         if (fakeTaskFaults.abort === "ended") {
-            return Result.fail(new TaskAbortError({ id: params.id, status: "success" }));
+            return Result.fail(new TaskAbortError({ id: params.id, status: "success" }) as never);
         }
         if (fakeTaskFaults.abort === "fail") {
             return Result.fail(new FakeTaskError({ message: "The task could not be aborted" }));
