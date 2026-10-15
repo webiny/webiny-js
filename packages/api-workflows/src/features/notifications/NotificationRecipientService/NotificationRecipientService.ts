@@ -8,10 +8,7 @@ import type { RoutingMember, RoutingMembersParams } from "~/domain/routing/types
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
 import type { NotificationTransport } from "~/features/notifications/NotificationTransport/abstractions.js";
-import {
-    NotificationRecipientService as Abstraction,
-    type NotificationRecipient
-} from "./abstractions.js";
+import { NotificationRecipientService as Abstraction } from "./abstractions.js";
 
 class NotificationRecipientServiceImpl implements Abstraction.Interface {
     public constructor(
@@ -61,7 +58,7 @@ class NotificationRecipientServiceImpl implements Abstraction.Interface {
             return Result.fail(new WorkflowPersistenceError(listed.error));
         }
 
-        const pool: NotificationRecipient[] = [];
+        const pool: Abstraction.Recipient[] = [];
         for (const member of listed.value) {
             if (!member.exclusion && member.canRead) {
                 pool.push({ id: member.id, displayName: member.displayName });

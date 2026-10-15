@@ -27,8 +27,7 @@ import type { ReviewData } from "~/domain/review/types.js";
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
 import {
     NotificationRecipientService,
-    NotificationRecipientServiceFeature,
-    type NotificationRecipient
+    NotificationRecipientServiceFeature
 } from "~/features/notifications/NotificationRecipientService/index.js";
 import { WorkflowsAdminUrlService } from "~/features/notifications/WorkflowsAdminUrlService/index.js";
 import { ReviewTargetLink } from "~/features/notifications/ReviewTargetLink/index.js";
@@ -38,8 +37,7 @@ import {
 } from "~/features/notifications/ReviewTargetLinkService/index.js";
 import {
     ReviewNotifierService,
-    ReviewNotifierServiceFeature,
-    type ReviewNotifyParams
+    ReviewNotifierServiceFeature
 } from "~/features/notifications/ReviewNotifierService/index.js";
 
 const SECRET = "SECRET-TOKEN-4711";
@@ -49,8 +47,8 @@ const TRANSPORT_TEXT = "Could not send a workflow notification through a transpo
 const UNKNOWN_TRANSPORT_TEXT = "A step names a notification transport that is not registered.";
 const LINK_TEXT = "Could not build the workflow notification link.";
 
-const ANNA: NotificationRecipient = { id: "user-anna", displayName: "Anna" };
-const BOB: NotificationRecipient = { id: "user-bob", displayName: "Bob" };
+const ANNA: NotificationRecipientService.Recipient = { id: "user-anna", displayName: "Anna" };
+const BOB: NotificationRecipientService.Recipient = { id: "user-bob", displayName: "Bob" };
 
 const USERS: FakeUser[] = [
     { id: "user-anna", displayName: "Anna", teams: [] },
@@ -168,7 +166,7 @@ const setup = async (params: SetupParams = {}) => {
         link,
         users,
         tenantId,
-        notify: (overrides: Partial<ReviewNotifyParams> = {}): Promise<void> => {
+        notify: (overrides: Partial<ReviewNotifierService.Params> = {}): Promise<void> => {
             return notifier.notify({
                 review: createReview(),
                 stepId: "legal",
@@ -803,10 +801,13 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
     describe("fan-out (R197, A65, Review Focus 9)", () => {
         it("sends 25 frames with at most 10 connection lists and 10 sends in flight", async () => {
             const { notify, connections, sends, tenantId } = await setup();
-            const recipients: NotificationRecipient[] = Array.from({ length: 25 }, (_, index) => ({
-                id: `user-${index}`,
-                displayName: `User ${index}`
-            }));
+            const recipients: NotificationRecipientService.Recipient[] = Array.from(
+                { length: 25 },
+                (_, index) => ({
+                    id: `user-${index}`,
+                    displayName: `User ${index}`
+                })
+            );
             for (const recipient of recipients) {
                 connections.connect(recipient.id, tenantId, `conn-${recipient.id}`);
             }

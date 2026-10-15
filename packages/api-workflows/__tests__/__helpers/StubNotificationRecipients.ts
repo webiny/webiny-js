@@ -1,9 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
-import {
-    NotificationRecipientService,
-    type NotificationRecipient
-} from "~/features/notifications/NotificationRecipientService/index.js";
+import { NotificationRecipientService } from "~/features/notifications/NotificationRecipientService/index.js";
 
 /** The text a failing pool lookup carries; a handler must never log it (R196). */
 export const POOL_FAILURE_SECRET = "SECRET-POOL-4711";
@@ -14,7 +11,7 @@ export const POOL_FAILURE_SECRET = "SECRET-POOL-4711";
  * `container.registerInstance(NotificationRecipientService, stub)`.
  */
 export class StubNotificationRecipients implements NotificationRecipientService.Interface {
-    public pool: NotificationRecipient[] = [];
+    public pool: NotificationRecipientService.Recipient[] = [];
     public mode: "ok" | "fail" | "throw" = "ok";
     public readonly poolCalls: NotificationRecipientService.PoolParams[] = [];
 
