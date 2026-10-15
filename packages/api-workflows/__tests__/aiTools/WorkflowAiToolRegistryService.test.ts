@@ -107,6 +107,22 @@ describe("WorkflowAiToolRegistryService (R167)", () => {
         ]);
     });
 
+    it("logs a dropped tool once per container: the registry is a singleton", async () => {
+        loggedErrors.length = 0;
+        const { context } = await createContextHandler({
+            setup: container => {
+                captureLoggedErrors(container);
+                registerTestAiTool(container, { name: "my-tool" });
+            }
+        });
+
+        const first = context.container.resolve(WorkflowAiToolRegistryService);
+        const second = context.container.resolve(WorkflowAiToolRegistryService);
+
+        expect(second).toBe(first);
+        expect(loggedErrors).toHaveLength(1);
+    });
+
     it("accepts a 64 character name and drops a 65 character one", async () => {
         loggedErrors.length = 0;
         const accepted = await createContextHandler({

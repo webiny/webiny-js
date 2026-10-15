@@ -4,6 +4,6 @@ import { WorkflowAiToolRegistryService } from "./WorkflowAiToolRegistryService.j
 export const WorkflowAiToolRegistryFeature = createFeature({
     name: "Workflows/WorkflowAiToolRegistry",
     register(container) {
-        container.register(WorkflowAiToolRegistryService);
+        container.register(WorkflowAiToolRegistryService).inSingletonScope();
     }
 });
