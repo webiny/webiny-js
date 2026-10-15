@@ -223,6 +223,8 @@ Anyone who can request a review can read exclusions (user, reason, `endsOn`) thr
 
 An assignment never notifies the whole team. Channels: transports configured on the step (`notifications[]`, e.g. e-mail) plus an in-app websocket notification always.
 
+_Built in phase 7: D149-D156._
+
 ## D45. Explaining assignments
 
 - Pool fall-through also writes a `wbyWorkflowAssignment` record with `userId: null` and a reason (e.g. all candidates excluded, rule target invalid).
@@ -342,6 +344,8 @@ Refines D51. One handler on the CMS `EntryRevisionBeforeCreate` event (create-re
 ## D60. Websocket messages, no inbox
 
 No stored inbox; D47 lists serve that role. Workflows only sends websocket messages (`WebsocketsSendToIdentityUseCase`); the websockets layer decides delivery for live or non-live connections. On the client, every workflow websocket message also fires `WorkflowStateChangedEvent`, so the open bar, lists and editor refetch (editor reloads the entry if content changed). Resolves P9, A7.
+
+_Phase 7: delivery is tenant-scoped by the notifier; workflows lists the recipient's connections and sends to the current tenant's ones, and does not use `WebsocketsSendToIdentityUseCase` (D149)._
 
 ## D61. Candidates must be able to read the target
 
@@ -571,6 +575,8 @@ An in-app notification is shown as a toast through the existing admin `Notificat
 
 Every notification uses the "Notify via" channels of the step where its event happened: Review approved uses the last step (the one that approved), Review rejected the step that rejected, Review cancelled the step the review was on, A step failed the failed step. Step events (reached, started, reassigned) use their own step as before. No workflow-level channel setting. Resolves gap A2 from the design review.
 
+_Built in phase 7 (D151)._
+
 ## D104. No workload counts in reviewer pickers
 
 Reviewer pickers (Request review, Reassign, rule targets) show the person's name and, when it applies, "Unavailable" with the reason (D97). No per-person count of open reviews: it would need a count query per candidate on every picker open, which is expensive with many users, and it would expose colleagues' workload. Resolves gap A3 from the design review.
@@ -602,6 +608,8 @@ Extends D73. The timezone used when saving is the browser's (there is no profile
 ## D111. Take over can notify the previous owner
 
 The Take over dialog has a checkbox "Notify {name} that you took over", checked by default. When checked, the previous owner gets "{taker} took over {step} on {title}." in-app and through the step's channels (D103). The take-over action carries `notifyPreviousOwner` (default true). Reassignment keeps notifying both previous and new owner, with no opt-out. Resolves gap A10 from the design review.
+
+_Built in phase 7: the flag travels on the fact (D154)._
 
 ## D112. "Failed steps" tab for operators
 
@@ -692,6 +700,8 @@ _Built in phase 4: `listCmsEntryStepCandidates` / `listWebsiteBuilderPageStepCan
 `listNotificationTransports` returns the registered transports (`id`, `title`, optional `description`), permission `editor`. The editor shows them as the "Notify via" list, or "Only in-app notifications are available." when there are none [D96]. Resolves spec review finding 6.
 
 _Refined by D133: a shared configuration operation in api-workflows (`editor`)._
+
+_Built in phase 7: `listNotificationTransports` (D152)._
 
 ## D130. Editor model list and step type availability
 
@@ -851,3 +861,61 @@ Covers R175, A56, A59 and user answer Q4. Refines D7, D27. Decided 2026-10-14 (p
 `ai-powerups` depends on `api-workflows`, never the reverse; the `ai` step type, runner, capability and `listAiModels` are registered only when both `aiPowerups` and `advancedPublishingWorkflow` are on, and the step type and runner are registered last, together, so no workflow can save an AI step the runner cannot run. With only `aiPowerups` on the schema stays valid and has no `listAiModels` field.
 
 Covers R177, R178 and user answer Q5. Refines D56. Decided 2026-10-14 (phase 6 plan R177, R178). Developer guide: `docs/.bruno/workflows/ai-tools.md`.
+
+## D149. Websocket delivery is tenant-scoped by the notifier
+
+For each recipient the notifier lists the recipient's connections (`WebsocketsListConnectionsUseCase`, `where: { identityId }`), keeps the connections whose `tenant` is the current tenant (`TenantContext`, set in a request, an event handler and the background-task step run alike) and sends to them with `WebsocketsSendToConnectionsUseCase`, one send per recipient, ten recipients at a time. `WebsocketsSendToIdentityUseCase` is not used: it lists connections by identity id alone, so a user connected in another tenant would receive the message.
+
+A recipient with an empty id is skipped without a list call (an empty `identityId` would list every connection). No current tenant: nothing is sent and it is logged once. A recipient connected only elsewhere gets nothing and that is not an error. Only connections younger than 3 hours are listed; no inbox, no retry (D60). The message carries no tenant data.
+
+Covers R187, R188, R197, A63. Refines D60. Decided 2026-10-15 (phase 7 plan R187, R188, R197).
+
+## D150. Which events notify, to whom, and the self-skip rule
+
+Exactly the D44 rows plus the take-over notice: step reached (pool: the members of the step's candidate teams who may read the content and are not excluded, never the requester; owner: a user owner), reassign (new and old owner, two messages), take over (the previous owner, if a user and the taker did not opt out), approved, rejected and failed (the requester), cancelled (the owner of the step the review was on, if a user). Nothing for requested, an intermediate approve, a pool start or a restart. AI and automation owners are never notified as owners.
+
+A recipient equal to the actor is dropped only when the actor is a `user`: AI and automation actors carry the requester's id (D58), so the requester still hears about their own rejected or failed review; a failed step never drops anyone. One handler per event; handlers catch everything.
+
+Covers R181, R182, R183, R184, A64, A66, A67. Refines D44, D58. Decided 2026-10-15 (phase 7 plan R181-R184).
+
+## D151. Channels per step; unknown and duplicate transport ids
+
+Every message goes through the websocket and through every transport on the step named in the table of D103, in that step's order, deduplicated by id. Transport ids are not validated when a workflow is saved: a transport unregistered later must not block editing or notifying; an unknown id is skipped and logged once with `A step names a notification transport that is not registered.`
+
+Covers R186, R192. Refines D96, D103. Decided 2026-10-15 (phase 7 plan R186, R192).
+
+## D152. Transports operation and message shape
+
+`ListNotificationTypes*` became `ListNotificationTransports*`; the transport has an optional `description`; the leftover `NotificationType*` abstractions were deleted. The shared `listNotificationTransports` operation (`editor` only, no engine check, D133) returns `{ id, title, description }` sorted by title; the editor shows `Only in-app notifications are available.` when it is empty (client). The transport message is `{ title, body, url, linkLabel }` (subject, plain text, link or `null`, link text). The contract of `send` is stated on the abstraction: it never throws and never fails the notification.
+
+Covers R190, R191. Refines D129, D133. Decided 2026-10-15 (phase 7 plan R190, R191). Developer guide: `docs/.bruno/workflows/notifications.md`.
+
+## D153. E-mail transport as built
+
+HTML-escapes every interpolated value, converts newlines after escaping, sends the text as the plain body, appends the link to both parts when there is one, keeps one-line subjects (CR, LF and whitespace runs collapsed), sends to bare bcc addresses (no display names), keeps an address only if it has exactly one `@` with text on both sides and no whitespace, comma, semicolon or angle bracket, deduplicates addresses, sends one mail per 50 recipients and logs each failed chunk once with `errorCode`, `errorName` and the recipient ids (never an address, never the error message) under `Could not send a workflow notification e-mail.`; the next chunk still goes out.
+
+Recipients come from `NotificationRecipientService`, which looks users up inside `withoutAuthorization` around that one call and returns them as stored; address filtering lives in the mail transport only. The mail has no sender of its own: the mailer defaults `from` to its settings (R201).
+
+Covers R193, R194, R201. Refines D44. Decided 2026-10-15 (phase 7 plan R193, R194, R201).
+
+## D154. Take-over flag on the fact
+
+`notifyPreviousOwner` (default true; a missing value counts as true) goes from the CMS and Website Builder GraphQL mutations through the wrappers and the engine use case to `ReviewStepTakenOverFact`, always set. The event is the only carrier: nothing is stored, no per-user setting, no reuse of the exclusion settings (D105). Reassign has no flag.
+
+Covers R185, R198. Refines D111. Decided 2026-10-15 (phase 7 plan R185, R198).
+
+## D155. Messages and links: simplified copy
+
+Message texts follow the design copy, simplified where the data is not at hand (A62): no team name (the pool text says "the team pool"), no rule name in the assignment reason, no per-recipient greeting, no detail card in the e-mail, every link opens the content (also where the design says "review details"; a cancel caused by trashed or deleted content links to content that may be in the trash, accepted). A cancel has three texts: a normal cancel names the canceller, `content trashed` and `content deleted` say the content was moved to the trash or deleted; any other reason is never printed. AI and automation deciders are named by their step title, a blank person name reads `A user`, the rejection comment is clamped to 300 characters.
+
+A message contains only the content title, step titles, display names of people in the review, the clamped comment, the fixed failure reason and (websocket) ids and the namespace, (e-mail) the link; never field values, model names, team names or error text. The e-mail link is the admin host from service discovery (no manifest, no link), the path from the target's app through the `ReviewTargetLink` port (CMS content entry, Website Builder page editor, mirroring the admin routes) and the current tenant's id (the review's own tenant) as the `tenantId` query parameter; the websocket carries no URL.
+
+Covers R189, R195, R200, A62. Refines D44, D107, D126, D133. Decided 2026-10-15 (phase 7 plan R189, R195, R200).
+
+## D156. Failure handling and latency
+
+The notifier never throws and never returns a failure; every dependency call (websocket list and send, user lookup, member lookup, service discovery, each transport) sits in its own try/catch or Result check, is logged once with a fixed text and the error code and name only (never the error object, the message or an address; only a websocket error may add its message), and does not stop the rest. The logged fields come from the pure `getErrorLogFields` (code and name only when they are strings), shared by the notifier and the handlers. Every handler wraps its whole body in a try/catch and logs `A workflow notification handler failed.`; a step a handler cannot find is logged once with `Could not find the step for a workflow notification.`
+
+A mailer or websocket failure never fails a review action that is already saved. Handlers are awaited inside the request, so mail and websocket latency adds to the action; bounded concurrency and one mail per event keep it small, and bulk cancels notify serially. Delivery is at most once per published fact with no dedupe store and no retry; a process that dies after the save loses that notification. One accepted exception: concurrent stuck detection or a late task hook can publish `stepFailed` twice and notify the requester twice (A64).
+
+Covers R196, A64, A65. Refines D44. Decided 2026-10-15 (phase 7 plan R196, A64, A65).
