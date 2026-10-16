@@ -10,6 +10,10 @@ const at = (year: number, month: number, day: number, hour: number, minute: numb
 };
 
 describe("formatReviewTime (QBZ-54)", () => {
+    it("returns an empty string for an invalid date", () => {
+        expect(formatReviewTime("not a date", NOW)).toBe("");
+    });
+
     it("shows today as the time only", () => {
         expect(formatReviewTime(at(2026, 9, 16, 14, 20), NOW)).toBe("14:20");
     });

@@ -1,9 +1,6 @@
 import type { ReviewStep } from "~/review/domain/types.js";
 import { formatReviewTime } from "../actionDialog/formatReviewTime.js";
-
-const pad = (value: number): string => {
-    return String(value).padStart(2, "0");
-};
+import { formatTimeOfDay } from "../time/formatTimeOfDay.js";
 
 const isSameDay = (first: Date, second: Date): boolean => {
     return (
@@ -13,9 +10,10 @@ const isSameDay = (first: Date, second: Date): boolean => {
     );
 };
 
-/**
+/*
  * "Reached 6 Oct, 10:41 · started 11:05 · finished 11:20" (QBZ-54): the date once when start and
- * finish fall on the day of "reached". `null` for a step that was not reached. Pure.
+ * finish fall on the day of "reached". `null` for a step that was not reached or whose reached
+ * date is unparsable; an unparsable started or finished date is left out. Pure.
  */
 export const getStepTimes = (step: ReviewStep, now: Date): string | null => {
     if (step.reachedOn === null) {
@@ -23,7 +21,11 @@ export const getStepTimes = (step: ReviewStep, now: Date): string | null => {
     }
 
     const reached = new Date(step.reachedOn);
-    let text = `Reached ${formatReviewTime(step.reachedOn, now)}`;
+    const reachedText = formatReviewTime(step.reachedOn, now);
+    if (reachedText === "") {
+        return null;
+    }
+    let text = `Reached ${reachedText}`;
 
     const later: Array<[string, string | null]> = [
         ["started", step.startedOn],
@@ -35,12 +37,14 @@ export const getStepTimes = (step: ReviewStep, now: Date): string | null => {
         }
         const date = new Date(iso);
         if (isSameDay(date, reached)) {
-            const hours = pad(date.getHours());
-            const minutes = pad(date.getMinutes());
-            text += ` · ${label} ${hours}:${minutes}`;
+            const time = formatTimeOfDay(date);
+            text += ` · ${label} ${time}`;
             return;
         }
         const formatted = formatReviewTime(iso, now);
+        if (formatted === "") {
+            return;
+        }
         text += ` · ${label} ${formatted}`;
     });
 

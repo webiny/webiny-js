@@ -1,10 +1,8 @@
+import { startOfDay } from "../time/startOfDay.js";
+
 const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
-
-const startOfDay = (date: Date): number => {
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-};
 
 /**
  * "Just now", "12 min ago", "3 h ago", "Yesterday", "n days ago" (README 8). A date in the future
@@ -27,7 +25,9 @@ export const formatLastChange = (isoDate: string, now: Date): string => {
         return `${Math.floor(elapsed / HOUR)} h ago`;
     }
 
-    const days = Math.round((startOfDay(now) - startOfDay(changed)) / DAY);
+    const startOfNow = startOfDay(now);
+    const startOfChanged = startOfDay(changed);
+    const days = Math.round((startOfNow - startOfChanged) / DAY);
     if (days <= 1) {
         return "Yesterday";
     }

@@ -118,6 +118,19 @@ describe("getStepTimes (QBZ-54)", () => {
         expect(getStepTimes(step, NOW)).toBe("Reached 6 Oct, 10:41 · started 7 Oct, 09:00");
     });
 
+    it("is null when the reached date is invalid", () => {
+        expect(getStepTimes(createStep({ reachedOn: "not a date" }), NOW)).toBeNull();
+    });
+
+    it("leaves out a started or finished time that is invalid", () => {
+        const step = createStep({
+            reachedOn: at(6, 10, 41),
+            startedOn: "not a date",
+            finishedOn: at(6, 11, 20)
+        });
+        expect(getStepTimes(step, NOW)).toBe("Reached 6 Oct, 10:41 · finished 11:20");
+    });
+
     it("shows only 'reached' for a step that was not started", () => {
         expect(getStepTimes(createStep({ reachedOn: at(16, 14, 20) }), NOW)).toBe("Reached 14:20");
     });
