@@ -43,7 +43,7 @@
     "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
     "@vitest/coverage-v8": "^5.0.3",
-    "@webiny/stdlib": "^0.0.19",
+    "@webiny/stdlib": "0.0.20",
     "adio": "^3.0.1",
     "chalk": "^6.0.1",
     "cross-env": "^10.1.0",
