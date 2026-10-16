@@ -42,10 +42,6 @@ vi.mock("~/presentation/permissions/index.js", async importOriginal => {
     return { ...actual, SecurityPermissions: () => null };
 });
 
-vi.mock("~/presentation/ContentReviews.js", () => {
-    return { ContentReviews: () => null };
-});
-
 const mount = (flagOn: boolean): Container => {
     flags.isEnabled.mockImplementation((name: string) => {
         return flagOn && name === "advancedPublishingWorkflow";

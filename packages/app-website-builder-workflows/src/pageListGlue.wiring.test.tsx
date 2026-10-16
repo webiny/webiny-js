@@ -51,10 +51,6 @@ vi.mock("~/Components/ContentReviews/WbContentReviews.js", () => {
     return { WbContentReviews: () => null };
 });
 
-vi.mock("~/Components/OptionItem/index.js", () => {
-    return { ListOpenInNewWindow: () => null };
-});
-
 const createPage = (id: string, entryId: string): Page => {
     return Page.create({ id, entryId, status: WbPageStatus.Draft });
 };

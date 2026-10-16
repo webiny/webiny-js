@@ -2,7 +2,7 @@ import React from "react";
 import { RegisterFeature, useFeatureFlags } from "@webiny/app-admin";
 import { WbContentReviews } from "~/Components/ContentReviews/WbContentReviews.js";
 import { WebsiteBuilderWorkflowsMenu } from "~/Routes/index.js";
-import { ListOpenInNewWindow, PageEditorConfig, PagesList } from "~/Components/index.js";
+import { PageEditorConfig, PagesList } from "~/Components/index.js";
 import { PageListWorkflowsFeature } from "~/presentation/page/PageList/feature.js";
 import { PageGetWorkflowsFeature } from "~/presentation/page/PageGet/feature.js";
 import { WbPageReviewFeature } from "~/features/editorReview/feature.js";
@@ -29,7 +29,6 @@ export const WebsiteBuilderWorkflows = () => {
             <WebsiteBuilderWorkflowsMenu />
             <PageEditorConfig />
             <PagesList />
-            <ListOpenInNewWindow />
         </>
     );
 };

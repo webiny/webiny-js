@@ -10,7 +10,6 @@
     { "path": "../app-websockets/tsconfig.build.json" },
     { "path": "../app-workflows/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" },
     { "path": "../app-aco/tsconfig.build.json" },
     { "path": "../feature-flags/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" }
@@ -38,8 +37,6 @@
       "@webiny/app-workflows": ["../app-workflows/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/app-aco/*": ["../app-aco/src/*"],
       "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/feature-flags/*": ["../feature-flags/src/*"],

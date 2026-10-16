@@ -24,7 +24,6 @@ vi.mock("~/Routes/index.js", () => {
 
 vi.mock("~/Components/index.js", () => {
     return {
-        ListOpenInNewWindow: () => null,
         PageEditorConfig: () => null,
         PagesList: () => null
     };

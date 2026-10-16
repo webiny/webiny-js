@@ -8,7 +8,6 @@ import { CmsEntryReviewNewRevision } from "~/Components/ContentEntryForm/index.j
 import { CmsEntryReviewScheduleMenuItem } from "~/Components/ContentEntryForm/index.js";
 import { CmsContentReviews } from "~/Components/ContentReviews/CmsContentReviews.js";
 import { CmsContentReviewsSidebarItem } from "~/Components/ContentReviews/CmsContentReviewsSidebarItem.js";
-import { ListOpenInNewWindow } from "~/Components/OptionItem/OpenInNewWindow.js";
 import { CmsEntryReviewFeature } from "~/features/editorReview/feature.js";
 import { CmsReviewMoveEntryAction } from "~/Components/CmsEntriesList/CmsReviewMoveEntryAction.js";
 import { CmsWorkflowsFeature } from "~/presentation/feature.js";
@@ -34,7 +33,6 @@ export const CmsWorkflows = () => {
             <RegisterFeature feature={CmsWorkflowsEditorPresenterFeature} />
             <RegisterFeature feature={CmsEntryReviewFeature} />
             <RegisterFeature feature={CmsReviewTrashFeature} />
-            <ListOpenInNewWindow />
             <CmsContentReviews />
             <CmsContentReviewsSidebarItem />
             <CmsWorkflowsEditor />

@@ -14,11 +14,7 @@ import { ReviewListPresenterFeature } from "~/review/presentation/reviewList/fea
 import { ReviewWidgetPresenterFeature } from "~/review/presentation/reviewWidget/feature.js";
 import { ReassignDialogPresenterFeature } from "~/review/presentation/actionDialog/reassignFeature.js";
 import { ReviewServicesFeature } from "~/review/feature.js";
-import { WorkflowStatePresenterFeature } from "~/presentation/workflowState/feature.js";
-import { WorkflowStateListPresenterFeature } from "~/presentation/workflowStateList/feature.js";
-import { WorkflowStatesWidgetPresenterFeature } from "~/presentation/workflowStatesWidget/feature.js";
 import { WorkflowsEditorPresenterFeature } from "~/presentation/workflowsEditor/feature.js";
-import { ContentReviews } from "~/presentation/ContentReviews.js";
 
 export const WorkflowsAdminApp = () => {
     const featureFlags = useFeatureFlags();
@@ -32,9 +28,6 @@ export const WorkflowsAdminApp = () => {
             <RegisterFeature feature={WorkflowsPermissionsFeature} />
             <RegisterFeature feature={WorkflowsFeature} />
             <RegisterFeature feature={ReviewServicesFeature} />
-            <RegisterFeature feature={WorkflowStatePresenterFeature} />
-            <RegisterFeature feature={WorkflowStateListPresenterFeature} />
-            <RegisterFeature feature={WorkflowStatesWidgetPresenterFeature} />
             <RegisterFeature feature={WorkflowsEditorPresenterFeature} />
             <RegisterFeature feature={TargetReviewPresenterFeature} />
             <RegisterFeature feature={ReviewActionDialogPresenterFeature} />
@@ -47,7 +40,6 @@ export const WorkflowsAdminApp = () => {
             <RegisterFeature feature={ActiveReviewTrashFeature} />
             <ActiveReviewWarningConfig />
             <SecurityPermissions />
-            <ContentReviews />
         </>
     );
 };

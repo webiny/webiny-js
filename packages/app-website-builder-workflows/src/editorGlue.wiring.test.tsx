@@ -47,10 +47,6 @@ vi.mock("~/Components/ContentReviews/WbContentReviews.js", () => {
     return { WbContentReviews: () => null };
 });
 
-vi.mock("~/Components/OptionItem/index.js", () => {
-    return { ListOpenInNewWindow: () => null };
-});
-
 vi.mock("@webiny/app-website-builder/BaseEditor/config/Layout.js", async () => {
     const React = await import("react");
     const { makeDecoratable } = await import("@webiny/react-composition");

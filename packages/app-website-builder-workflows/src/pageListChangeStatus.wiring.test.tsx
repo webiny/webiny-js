@@ -62,10 +62,6 @@ vi.mock("~/Routes/index.js", () => {
     return { WebsiteBuilderWorkflowsMenu: () => null };
 });
 
-vi.mock("~/Components/OptionItem/index.js", () => {
-    return { ListOpenInNewWindow: () => null };
-});
-
 vi.mock("~/Components/ContentReviews/WbContentReviews.js", () => {
     return { WbContentReviews: () => null };
 });

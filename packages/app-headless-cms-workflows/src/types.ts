@@ -1,17 +1,5 @@
 import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
 import type { SystemWorkflowValue } from "@webiny/app-workflows/review/domain/types.js";
-import type { WorkflowStateValue } from "@webiny/app-workflows/types.js";
-
-export interface ICmsEntryWorkflowState {
-    workflowId: string;
-    stepId: string;
-    stepName: string;
-    state: WorkflowStateValue;
-}
-
-export interface ICmsEntrySystemWithWorkflow {
-    workflow?: ICmsEntryWorkflowState | null;
-}
 
 export interface ICmsEntrySystemWithReview {
     workflow?: SystemWorkflowValue | null;

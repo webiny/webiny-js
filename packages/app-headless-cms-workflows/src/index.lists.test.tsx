@@ -78,10 +78,6 @@ vi.mock("~/Components/ContentReviews/CmsContentReviewsSidebarItem.js", () => {
     return { CmsContentReviewsSidebarItem: () => null };
 });
 
-vi.mock("~/Components/OptionItem/OpenInNewWindow.js", () => {
-    return { ListOpenInNewWindow: () => null };
-});
-
 vi.mock("~/presentation/cmsWorkflowsEditor/feature.js", () => {
     return {
         CmsWorkflowsEditorPresenterFeature: {

@@ -50,10 +50,6 @@ vi.mock("~/Components/ContentReviews/CmsContentReviewsSidebarItem.js", () => {
     };
 });
 
-vi.mock("~/Components/OptionItem/OpenInNewWindow.js", () => {
-    return { ListOpenInNewWindow: () => null };
-});
-
 vi.mock("~/presentation/feature.js", () => {
     return {
         CmsWorkflowsFeature: { name: "Mock", register: () => undefined, resolve: () => undefined }

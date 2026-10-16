@@ -10,7 +10,6 @@
     { "path": "../app-websockets" },
     { "path": "../app-workflows" },
     { "path": "../feature" },
-    { "path": "../utils" },
     { "path": "../app-aco" },
     { "path": "../feature-flags" },
     { "path": "../react-composition" }
@@ -38,8 +37,6 @@
       "@webiny/app-workflows": ["../app-workflows/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/app-aco/*": ["../app-aco/src/*"],
       "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/feature-flags/*": ["../feature-flags/src/*"],
