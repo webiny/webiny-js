@@ -7,6 +7,7 @@ import { CmsFormModelBuilder } from "~/features/formModel/abstractions.js";
 import { CmsFormModelFeature } from "~/features/formModel/feature.js";
 import { DateTimeInputRenderer } from "~/presentation/fieldTypes/renderers/dateTime/DateTimeInputRenderer.js";
 import { DateTimeInputsRenderer } from "~/presentation/fieldTypes/renderers/dateTime/DateTimeInputsRenderer.js";
+import { BirthdayInputRenderer } from "~/presentation/fieldTypes/renderers/dateTime/BirthdayInputRenderer.js";
 import { TextInputRenderer } from "~/presentation/fieldTypes/renderers/text/TextInputRenderer.js";
 import { TextInputsRenderer } from "~/presentation/fieldTypes/renderers/text/TextInputsRenderer.js";
 
@@ -32,6 +33,7 @@ function createCmsForm(fields: any[]) {
     CmsFormModelFeature.register(container);
     container.register(DateTimeInputRenderer);
     container.register(DateTimeInputsRenderer);
+    container.register(BirthdayInputRenderer);
     container.register(TextInputRenderer);
     container.register(TextInputsRenderer);
 
@@ -92,6 +94,31 @@ describe("CmsFormModelBuilder renderer cardinality", () => {
         const item = (form.field("holidayHours") as any).items[0];
 
         expect(item.children.get("openTime").vm.renderer).toBe("dateTimeInput");
+    });
+});
+
+describe("CmsFormModelBuilder birthday picker", () => {
+    it("renders a date-only field with the birthday picker and keeps its value", () => {
+        const form = createCmsForm([
+            field("dob", "datetime", false, "birthday-input", {
+                settings: { type: "date" },
+                renderer: { name: "birthday-input", settings: { yearRange: [1900, 2026] } }
+            })
+        ]);
+        form.setData({ dob: "1990-02-09" });
+
+        const vm = form.field("dob").vm as any;
+        expect(vm.renderer).toBe("birthdayInput");
+        expect(vm.rendererSettings).toEqual({ type: "date", yearRange: [1900, 2026] });
+        expect(vm.value).toBe("1990-02-09");
+    });
+
+    it("falls back to the date/time input when the field is no longer date-only", () => {
+        const form = createCmsForm([
+            field("openTime", "datetime", false, "birthday-input", { settings: { type: "time" } })
+        ]);
+
+        expect(form.field("openTime").vm.renderer).toBe("dateTimeInput");
     });
 });
 

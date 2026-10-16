@@ -17,6 +17,7 @@ import { RadioButtonsRenderer } from "~/base/Base/FieldRenderers/RadioButtonsRen
 import { CheckboxesRenderer } from "~/base/Base/FieldRenderers/CheckboxesRenderer.js";
 import { DateTimeRenderer } from "~/base/Base/FieldRenderers/DateTimeRenderer.js";
 import { DateTimeInputsRenderer } from "~/base/Base/FieldRenderers/DateTimeInputsRenderer.js";
+import { BirthdayInputRenderer } from "~/base/Base/FieldRenderers/BirthdayInputRenderer.js";
 import { HiddenRenderer } from "~/base/Base/FieldRenderers/HiddenRenderer.js";
 import { KeyValueTagsRenderer } from "~/base/Base/FieldRenderers/ObjectRenderer/KeyValueTagsRenderer.js";
 import { FilePickerRenderer } from "~/base/Base/FieldRenderers/FilePickerRenderer.js";
@@ -99,6 +100,10 @@ export const DefaultFieldRenderers = () => {
                 <AdminConfig.Form.FieldRenderer
                     name={"dateTimeInputs"}
                     component={DateTimeInputsRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"birthdayInput"}
+                    component={BirthdayInputRenderer}
                 />
                 <AdminConfig.Form.FieldRenderer name={"hidden"} component={HiddenRenderer} />
                 <AdminConfig.Form.FieldRenderer

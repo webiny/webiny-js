@@ -84,19 +84,19 @@ fields.datetime();
 
 Default renderer: `dateTimeInput`. Pick a variant method to set the subtype:
 
-| Variant                                   | Value Format                   | Example                 |
-| ----------------------------------------- | ------------------------------ | ----------------------- |
-| `.dateOnly()`                             | `"2026-05-01"`                 | Birthdays, due dates    |
-| `.timeOnly()`                             | `"14:30:00"`                   | Opening hours           |
-| `.withTimezone()`                         | `"2026-05-01T14:30:00+02:00"`  | Events tied to a locale |
-| `.withoutTimezone()`                      | `"2026-05-01T14:30:00.000Z"`   | Timestamps, logs        |
-| `.monthOnly()`                            | `"2026-05"`                    | Billing cycles          |
-| `.weekOnly({ startsOn: 1 })`              | `"2026-W18"`                   | Sprint planning         |
-| `.yearOnly({ range: [2020, 2035] })`      | `2026` (number)                | Fiscal years            |
-| `.dateRange()`                            | `{ from: "...", to: "..." }`   | Vacation requests       |
-| `.multipleDates()`                        | `["2026-05-01", "2026-05-03"]` | Blackout dates          |
-| `.multipleMonths()`                       | `["2026-01", "2026-03"]`       | Seasonal availability   |
-| `.multipleYears({ range: [2020, 2035] })` | `[2024, 2025, 2026]`           | Multi-year budgets      |
+| Variant                                   | Value Format                   | Example                                                        |
+| ----------------------------------------- | ------------------------------ | -------------------------------------------------------------- |
+| `.dateOnly()`                             | `"2026-05-01"`                 | Holidays, due dates (birthdays: see the birthday picker below) |
+| `.timeOnly()`                             | `"14:30:00"`                   | Opening hours                                                  |
+| `.withTimezone()`                         | `"2026-05-01T14:30:00+02:00"`  | Events tied to a locale                                        |
+| `.withoutTimezone()`                      | `"2026-05-01T14:30:00.000Z"`   | Timestamps, logs                                               |
+| `.monthOnly()`                            | `"2026-05"`                    | Billing cycles                                                 |
+| `.weekOnly({ startsOn: 1 })`              | `"2026-W18"`                   | Sprint planning                                                |
+| `.yearOnly({ range: [2020, 2035] })`      | `2026` (number)                | Fiscal years                                                   |
+| `.dateRange()`                            | `{ from: "...", to: "..." }`   | Vacation requests                                              |
+| `.multipleDates()`                        | `["2026-05-01", "2026-05-03"]` | Blackout dates                                                 |
+| `.multipleMonths()`                       | `["2026-01", "2026-03"]`       | Seasonal availability                                          |
+| `.multipleYears({ range: [2020, 2035] })` | `[2024, 2025, 2026]`           | Multi-year budgets                                             |
 
 Additional chainable methods:
 
@@ -107,6 +107,19 @@ Additional chainable methods:
 ])
 .displayFormat("dd/MM/yyyy")  // date-fns format tokens
 .list()  // switches renderer to "dateTimeInputs"
+```
+
+For dates far in the past, like a date of birth, a date-only field can use the `birthdayInput`
+renderer, a step-by-step picker (day, then month, then year). It stores the same `"YYYY-MM-DD"`
+value as the calendar. Chain `.renderer()` after the subtype method, since subtype methods
+reset the renderer:
+
+```typescript
+fields.datetime().dateOnly().renderer("birthdayInput");
+fields
+  .datetime()
+  .dateOnly()
+  .renderer("birthdayInput", { yearRange: [1900, 2026] }); // years offered
 ```
 
 ### File
@@ -299,6 +312,7 @@ These are available on **all** field types:
 | `switch`                  | boolean                    | —                                                               | Toggle switch (default for boolean)                          |
 | `dateTimeInput`           | datetime                   | `{ type, displayFormat?, yearRange?, weekStartsOn?, presets? }` | Date/time picker (default for datetime)                      |
 | `dateTimeInputs`          | datetime (list)            | `{ type, displayFormat?, weekStartsOn?, addItemLabel? }`        | List of date/time pickers                                    |
+| `birthdayInput`           | datetime (date-only)       | `{ yearRange? }`                                                | Day → month → year picker, for dates of birth                |
 | `lexical`                 | lexical                    | —                                                               | Lexical rich text editor (default for lexical)               |
 | `filePicker`              | file                       | —                                                               | File picker with full metadata (default for file)            |
 | `fileUrlPicker`           | fileUrl                    | —                                                               | File picker returning URL only (default for fileUrl)         |

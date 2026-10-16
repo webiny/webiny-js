@@ -40,6 +40,11 @@ class DateTimeFieldBuilder extends DataFieldBuilder<"datetime"> implements IDate
     /**
      * Just a calendar date, no time, no timezone. Useful for things like birthdays, holidays, or due dates where the time of day doesn't matter.
      * Example: 2026-04-30
+     *
+     * @example
+     * fields.datetime().dateOnly()
+     * // day, then month, then year; single values only, not for `.list()`
+     * fields.datetime().dateOnly().renderer("birthdayInput", { yearRange: [1900, 2026] })
      */
     dateOnly(): this {
         return this.dateTimeType("date");
