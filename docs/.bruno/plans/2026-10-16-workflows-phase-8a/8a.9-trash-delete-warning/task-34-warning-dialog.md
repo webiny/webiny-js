@@ -20,7 +20,6 @@ R205, R212, D157, A71; Review Focus 8 (flag off registers nothing). The UI half 
 - Create: `packages/app-workflows/src/review/trash/components/ActiveReviewWarningDialog.test.tsx`
 - Create: `packages/app-workflows/src/review/trash/ActiveReviewTrashFeature.test.tsx`
 - Modify: `packages/app-workflows/src/app.tsx`
-- Modify: `packages/app-workflows/src/index.tsx` (barrel, append at the end)
 
 **Interfaces:**
 - Consumes:
@@ -32,7 +31,7 @@ R205, R212, D157, A71; Review Focus 8 (flag off registers nothing). The UI half 
   - `IActiveReviewWarningPresenter`, token `ActiveReviewWarningPresenter` (`Workflows/ActiveReviewWarningPresenter`, in `ActiveReviewWarningPresenter.ts`), implementation `ActiveReviewWarningPresenter` from `ActiveReviewWarningPresenterImpl.ts` (class `ActiveReviewWarningPresenterImpl`), transient.
   - `ActiveReviewTrashFeature` (`createFeature`, name `Workflows/ActiveReviewTrash`, `resolve` -> `{ presenter }`).
   - `ActiveReviewWarningDialog`, `ActiveReviewWarningConfig`.
-  - Barrel additions (end of `index.tsx`): `ActiveReviewTrashFeature`, `ActiveReviewWarningDialog`.
+  - No barrel additions (R-k): deep-path imports only.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -1107,13 +1106,6 @@ import { ActiveReviewWarningConfig } from "~/review/trash/components/ActiveRevie
 ```
 
 Both lines sit inside the existing flag gate (`if (!featureFlags.isEnabled("advancedPublishingWorkflow")) { return null; }` comes before the returned fragment), so with the flag off nothing is registered.
-
-Append to the end of `packages/app-workflows/src/index.tsx`:
-
-```ts
-export { ActiveReviewTrashFeature } from "./review/trash/feature.js";
-export { ActiveReviewWarningDialog } from "./review/trash/components/ActiveReviewWarningDialog.js";
-```
 
 - [ ] **Step 4: Run the new tests, expect pass**
 

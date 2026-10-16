@@ -35,7 +35,11 @@ Create `packages/app-workflows/src/app.cleanup.test.tsx`:
 import fs from "node:fs";
 import path from "node:path";
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
 import { WorkflowsAdminApp } from "~/app.js";
 
 const flags = vi.hoisted(() => {
@@ -196,7 +200,11 @@ Create `packages/app-headless-cms-workflows/src/index.cleanup.test.tsx`:
 import fs from "node:fs";
 import path from "node:path";
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
 import { CmsWorkflows } from "~/index.js";
 
 const flags = vi.hoisted(() => {
@@ -336,7 +344,11 @@ Create `packages/app-website-builder-workflows/src/index.cleanup.test.tsx` (same
 import fs from "node:fs";
 import path from "node:path";
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
 import { WebsiteBuilderWorkflows } from "~/index.js";
 
 const flags = vi.hoisted(() => {
@@ -492,7 +504,7 @@ A failure to import the module (`Cannot find module`, `no export named ... defin
 
 - [ ] **Step 3: Implementation**
 
-**3a. Record the importers before deleting (the safety net).** Run and keep the output; after the deletion Step 3e must show the same files fixed:
+**3a. Record the importers before deleting (the safety net).** Run and keep the output; after the deletion Step 3e (which runs after 3d) must show the same files fixed:
 
 ```
 grep -rlE "presentation/(workflowState|workflowStateList|workflowStatesWidget|shared)|domain/events|~/routes\.js|features/(approveStep|cancelWorkflowState|getTargetWorkflowState|listWorkflowStates|rejectStep|requestReview|startStep|takeOverStep)" packages/app-workflows/src --include='*.ts' --include='*.tsx' | sort
@@ -535,7 +547,8 @@ Expected, run after 3b: only the two files this step rewrites (`packages/app-wor
 Replace `packages/app-workflows/src/types.ts` with:
 
 ```ts
-import type { GenericRecord, NonEmptyArray } from "@webiny/app/types.js";
+import type { GenericRecord } from "@webiny/app/types.js";
+import type { NonEmptyArray } from "@webiny/app/types.js";
 import type { ReactElement } from "react";
 import { Identity } from "@webiny/app-admin/domain/Identity.js";
 
@@ -688,10 +701,13 @@ export { WorkflowStepModel } from "./WorkflowStepModel.js";
 -} from "./presentation/workflowStatesWidget/components/index.js";
 -
 -import { WorkflowStateListAppOverlay } from "./presentation/workflowStateList/components/Overlay/WorkflowStateListAppOverlay.js";
+ export { WorkflowsAdminApp } from "./app.js";
 -import { WorkflowStateBar } from "./presentation/workflowState/components/Bar/WorkflowStateBar.js";
 -import { WorkflowStateOverlay } from "./presentation/workflowState/components/Overlay/WorkflowStateOverlay.js";
 -import { WorkflowStateTooltip } from "./presentation/workflowState/components/Tooltip/WorkflowStateTooltip.js";
 ```
+
+(the `export { WorkflowsAdminApp } from "./app.js";` line sits between the overlay import and the `WorkflowStateBar` import in the real file and is kept, shown here as a context line so the hunk applies literally)
 
 ```diff
 -export { useWorkflowState } from "./presentation/workflowState/useWorkflowState.js";
@@ -757,15 +773,6 @@ Also in the same comment, the sentence "Example usage is in Workflow State Bar" 
 ```
 
 verify: `grep -n "WorkflowState\|Workflow State" packages/app-admin/src/components/DeveloperMode/DeveloperMode.tsx` prints nothing after the edit.
-
-**3e. Importer check after the deletion (the hard stop).** Re-run the two greps of 3a, with the test files of this task excluded, and the repository-wide check:
-
-```
-grep -rlE "presentation/(workflowState|workflowStateList|workflowStatesWidget|shared)|domain/events|~/routes\.js|features/(approveStep|cancelWorkflowState|getTargetWorkflowState|listWorkflowStates|rejectStep|requestReview|startStep|takeOverStep)|domain/(WorkflowStateModel|WorkflowStateStepModel)|presentation/ContentReviews\.js" packages/*/src --include='*.ts' --include='*.tsx' --exclude='*.cleanup.test.tsx' | sort
-grep -rnE "WorkflowState|workflowState|useWorkflowState|Components\.(ContentReview|Overlay|Widget|List)\b" packages/*/src --include='*.ts' --include='*.tsx' --exclude='*.cleanup.test.tsx' | grep -vE "WorkflowStateList\b" | sort
-```
-
-Expected: no output from either. Fix loop for every hit, one file at a time: (1) a hit in a kept file is an import or reference of a deleted module: remove the import and the code that used it if that code was old review UI (an earlier task should already have replaced it; if it is live code with no replacement, stop and report, do not restore the deleted file); (2) a hit in a test file is a stale mock or assertion of a deleted module: remove it as in the mocks list below; (3) re-run both greps until empty, then Step 4. The whole word `WorkflowStateList` (route constants of R206) is the only allowed match.
 
 **3d. The two app packages.**
 
@@ -836,6 +843,19 @@ vi.mock("~/presentation/ContentReviews.js", () => {
 
 Then `grep -rn "OptionItem\|presentation/ContentReviews\.js\|CmsEntriesWorkflowStateList\|PagesListContentReviews\|CmsEntryFormCreateNewRevisionButton" packages/app-workflows/src packages/app-headless-cms-workflows/src packages/app-website-builder-workflows/src` must print nothing (a stale mock of another deleted module, left by an earlier task, is removed the same way).
 
+**3e. Importer check after the deletion (the hard stop; runs after 3d, because 3d fixes the two app packages this check covers).** Re-run the greps of 3a with the patterns that name a package-local path (`~/routes\.js`, `domain/events`) scoped to `packages/app-workflows/src` (other packages have their own `routes.ts` and event folders), the deep imports of those two paths from every other package, and the repository-wide check, with the test files of this task excluded:
+
+```
+grep -rlE "presentation/(workflowState|workflowStateList|workflowStatesWidget|shared)|features/(approveStep|cancelWorkflowState|getTargetWorkflowState|listWorkflowStates|rejectStep|requestReview|startStep|takeOverStep)|domain/(WorkflowStateModel|WorkflowStateStepModel)|presentation/ContentReviews\.js" packages/*/src --include='*.ts' --include='*.tsx' --exclude='*.cleanup.test.tsx' | sort
+grep -rlE "domain/events|~/routes\.js" packages/app-workflows/src --include='*.ts' --include='*.tsx' --exclude='*.cleanup.test.tsx' | sort
+grep -rlE "@webiny/app-workflows/(domain/events|routes)" packages/*/src --include='*.ts' --include='*.tsx' --exclude='*.cleanup.test.tsx' | sort
+grep -rnE "WorkflowState|workflowState|useWorkflowState|Components\.(ContentReview|Overlay|Widget|List)\b" packages/*/src --include='*.ts' --include='*.tsx' --exclude='*.cleanup.test.tsx' | grep -vE "WorkflowStateList\b" | grep -v workflowStateTooltip | sort
+```
+
+(`workflowStateTooltip` is the old test id Task 20's negative assertions look for, so those assertions are the one allowed match besides `WorkflowStateList`.)
+
+Expected: no output from any of them. Fix loop for every hit, one file at a time: (1) a hit in a kept file is an import or reference of a deleted module: remove the import and the code that used it if that code was old review UI (an earlier task should already have replaced it; if it is live code with no replacement, stop and report, do not restore the deleted file); (2) a hit in a test file is a stale mock or assertion of a deleted module: remove it as in the mocks list above; (3) re-run all the greps until empty, then Step 4. The whole word `WorkflowStateList` (route constants of R206) is the only allowed match.
+
 - [ ] **Step 4: Run the tests and expect pass**
 
 ```
@@ -873,6 +893,8 @@ All green. If a build fails on a missing module, the message names a deleted pat
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
+Run the Global Constraints pre-commit chain from `../00-shared.md` in full (it stages everything with `git add .`) and restore `.gitleaks.toml` after format and after build:
+
 ```
 git add .
 yarn > /dev/null 2>&1
@@ -880,6 +902,7 @@ node scripts/generateTsConfigsInPackages.js
 yarn adio
 yarn check-ts-configs
 yarn format:fix > /dev/null 2>&1
+git checkout -- .gitleaks.toml
 yarn lint:fix
 yarn webiny sync-dependencies
 git diff -- 'packages/app-workflows/package.json' 'packages/app-headless-cms-workflows/package.json' 'packages/app-website-builder-workflows/package.json'
@@ -887,8 +910,8 @@ yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 yarn build -p @webiny/app-headless-cms-workflows --no-cache 2>&1 | tail -30
 yarn build -p @webiny/app-website-builder-workflows --no-cache 2>&1 | tail -30
 yarn build -p @webiny/app-serverless-cms --no-cache 2>&1 | tail -30
-git add .
 git checkout -- .gitleaks.toml
+git add .
 git commit -m "refactor(app-workflows): delete the old admin review UI" -m "Removes the old review presenters, dialogs, widgets, list, gateways, WorkflowState models and WorkflowStateChangedEvent from app-workflows, the old editor decorators, cache handler and mounting components from app-headless-cms-workflows and app-website-builder-workflows, and the global Workflows/ContentReviews route (R219). Kept for 9a and 9c: the workflow editor, notification types, permissions and the editor routes and views. Adds composition tests for the three gated roots." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
@@ -899,7 +922,7 @@ If any step of the chain fails and you fix something, rerun the whole chain from
 **Done-when check for this task (run after the commit, expected output in brackets):**
 
 ```
-grep -rnE "WorkflowState|workflowState|app-workflows/domain/events|Workflows/ContentReviews" packages/app-*/src packages/app/src --exclude='*.cleanup.test.tsx' | grep -vE "WorkflowStateList\b"   [no output]
+grep -rnE "WorkflowState|workflowState|app-workflows/domain/events|Workflows/ContentReviews" packages/app-*/src packages/app/src --exclude='*.cleanup.test.tsx' | grep -vE "WorkflowStateList\b" | grep -v workflowStateTooltip   [no output]
 yarn adio                                                                                                                          [passes]
 yarn check-ts-configs                                                                                                              [passes]
 ```
@@ -910,6 +933,6 @@ yarn check-ts-configs                                                           
 3. The overview's "Done when" grep (`WorkflowState` in `packages/app-*/src`) also matches the route constants `Routes.ContentEntries.ContentReviews` name string `"Cms/ContentEntries/WorkflowStateList"` and `Routes.Pages.WorkflowStateList`, which R206 keeps unchanged and Tasks 22, 29 and 30 use. The commands and tests above therefore allow `WorkflowStateList` as a whole word and nothing else; renaming the routes would be a separate ruling.
 4. The old `Components.Overlay`, `Components.Widget` and `Components.List` entries of the `@webiny/app-workflows` barrel are removed; their only consumers were the deleted old files of the two app packages (3a second grep proves it). If that grep shows another consumer, stop and report it.
 5. `Components.ContentReview.*`, `useWorkflowState`, `WorkflowStatePresenter` and `WorkflowStateValue` leave the public barrel; the three packages are not published outside this monorepo's unreleased rewrite, so no compatibility shim is added.
-6. The composition tests (`*.cleanup.test.tsx`) call the three roots as functions with `useFeatureFlags` mocked; they carry a small test-only element walker that is repeated in each package (test code, not production logic). The tests import the real roots (module imports only, nothing is rendered), so they need the DOM setup and svg alias of Tasks 14 and 20; verify: that `@webiny/app-admin`'s barrel loads under each package's jsdom `vitest.config.ts` (the flag on/off tests of Tasks 10-12 rely on the same, and Tasks 20-30 add `vi.mock` stubs for the shell-dependent components, which are only needed when a root is rendered), and the rendered component names `CmsWorkflowsEditor`, `WebsiteBuilderWorkflowsMenu`, `PageEditorConfig`.
+6. The composition tests (`*.cleanup.test.tsx`) call the three roots as functions with `useFeatureFlags` mocked; they carry a small test-only element walker that is repeated in each package (test code, not production logic). The tests import the real roots (module imports only, nothing is rendered), so they need the DOM setup and svg alias of Task 14 (`app-workflows`), Task 20 (`app-headless-cms-workflows`) and Task 22 (`app-website-builder-workflows`); verify: that `@webiny/app-admin`'s barrel loads under each package's jsdom `vitest.config.ts` (the flag on/off tests of Tasks 10-12 rely on the same, and Tasks 20-30 add `vi.mock` stubs for the shell-dependent components, which are only needed when a root is rendered), and the rendered component names `CmsWorkflowsEditor`, `WebsiteBuilderWorkflowsMenu`, `PageEditorConfig`.
 7. The hunks for `app.tsx` and `index.tsx` are written against the pre-8a text of those files; Tasks 10-34 add lines to both, so every hunk is a removal and line numbers will have drifted.
 8. Size: a deletion of about 190 files plus six small file rewrites; the one step with judgement is the 3a/3e importer check, which is why it is a hard stop rather than a fix-up.

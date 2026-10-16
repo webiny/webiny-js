@@ -33,7 +33,6 @@ There is no fallback copy: `ReviewToastParams` is a union typed per kind, so a s
 - Create: `packages/app-workflows/src/review/feature.ts`
 - Create tests: `packages/app-workflows/src/review/events/ReviewChangedEvent.test.ts`, `cache/ReviewCacheSyncHandler.test.ts`, `activity/ReviewActivity.test.ts`, `toasts/getReviewToastText.test.ts`, `toasts/ReviewToasts.test.ts`, `notifications/ReviewNotificationService.test.ts`, `feature.test.ts`; `packages/app-workflows/src/app.test.tsx`
 - Modify: `packages/app-workflows/src/app.tsx` (register `ReviewServicesFeature` inside the gate)
-- Modify: `packages/app-workflows/src/index.tsx` (barrel)
 - Modify: `packages/app-workflows/package.json` (devDependency `@testing-library/react`)
 
 **Interfaces:**
@@ -45,7 +44,7 @@ There is no fallback copy: `ReviewToastParams` is a union typed per kind, so a s
   - `ReviewToastKind`, `ReviewToastParams` (a union typed per kind, each member carrying `kind; stepTitle; personName; reviewsUrl`, `approved` also `nextStepTitle: string | null`), `IReviewToasts`, token `ReviewToasts` (`"Workflows/ReviewToasts"`), `getReviewToastText`.
   - `WorkflowsNotificationData`, `HandleReviewNotificationParams`, `IReviewNotificationService`, token `ReviewNotificationService` (`"Workflows/ReviewNotificationService"`).
   - `ReviewServicesFeature` (`resolve` -> `{ activity, toasts, notifications }`).
-  - Barrel adds (with Task 8's and Task 9's lines the union is the contract list): `ReviewServicesFeature`, `ReviewActivity`, `ReviewToasts`, `ReviewNotificationService`, `ReviewChangedEvent`, `ReviewChangedHandler`, `ReviewCacheSyncHandler`, and the types `ReviewActivitySignal`, `ReviewActivityListener`, `ReviewChangedPayload`, `ReviewToastKind`, `ReviewToastParams`, `WorkflowsNotificationData`, `HandleReviewNotificationParams`.
+  - No barrel adds (R-k): the app packages import these by deep path (`@webiny/app-workflows/review/...`).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -274,10 +273,9 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { ReviewActivity as ReviewActivityToken } from "./abstractions.js";
 import { ReviewActivity } from "./ReviewActivity.js";
-import type { IReviewActivity } from "./abstractions.js";
 
 describe("ReviewActivity", () => {
-    let activity: IReviewActivity;
+    let activity: ReviewActivityToken.Interface;
 
     beforeEach(() => {
         const container = new Container();
@@ -1479,36 +1477,6 @@ export const ReviewServicesFeature = createFeature({
 ```
 
 Both stay inside the existing `if (!featureFlags.isEnabled("advancedPublishingWorkflow")) { return null; }` gate, so without the flag nothing is registered.
-
-`packages/app-workflows/src/index.tsx`, add after the `ReviewUseCases` line (Task 9):
-
-```ts
-export { ReviewServicesFeature } from "./review/feature.js";
-export { ReviewActivity } from "./review/activity/abstractions.js";
-export type {
-    IReviewActivity,
-    ReviewActivityListener,
-    ReviewActivitySignal
-} from "./review/activity/abstractions.js";
-export { ReviewToasts } from "./review/toasts/abstractions.js";
-export type {
-    IReviewToasts,
-    ReviewToastKind,
-    ReviewToastParams
-} from "./review/toasts/abstractions.js";
-export { ReviewNotificationService } from "./review/notifications/abstractions.js";
-export type {
-    HandleReviewNotificationParams,
-    IReviewNotificationService,
-    WorkflowsNotificationData
-} from "./review/notifications/abstractions.js";
-export { ReviewChangedEvent } from "./review/events/ReviewChangedEvent.js";
-export { ReviewChangedHandler } from "./review/events/ReviewChangedHandler.js";
-export type { ReviewChangedPayload } from "./review/events/ReviewChangedEvent.js";
-export { ReviewCacheSyncHandler } from "./review/cache/ReviewCacheSyncHandler.js";
-```
-
-(The barrel exports the abstractions, never the `...Impl` registrations: apps and presenters resolve through the tokens or the feature, and the `*Impl` classes stay internal.)
 
 - [ ] **Step 4: Run the tests and expect pass**
 

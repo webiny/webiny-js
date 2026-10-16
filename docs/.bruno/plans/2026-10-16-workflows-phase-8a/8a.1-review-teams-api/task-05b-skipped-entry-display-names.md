@@ -36,11 +36,9 @@ import type { Container } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import type { GetUserInput } from "@webiny/api-core/features/users/shared/types.js";
-import {
-    NotAuthorizedError,
-    UserNotFoundError,
-    UserStorageError
-} from "@webiny/api-core/features/users/shared/errors.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/users/shared/errors.js";
+import { UserNotFoundError } from "@webiny/api-core/features/users/shared/errors.js";
+import { UserStorageError } from "@webiny/api-core/features/users/shared/errors.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 
 export const KNOWN_USER_ID = "user-maja";
@@ -120,24 +118,27 @@ export const registerFakeNamedUsers = (
 Create `packages/api-workflows/__tests__/review/ResolveReviewUserName.test.ts`:
 
 ```ts
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import { ResolveReviewUserNameUseCase } from "~/features/review/ResolveReviewUserName/index.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { captureLoggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { expectOk } from "~tests/__helpers/fixtures.js";
-import {
-    KNOWN_USER_ID,
-    KNOWN_USER_NAME,
-    OTHER_KNOWN_USER_ID,
-    OTHER_KNOWN_USER_NAME,
-    registerFakeNamedUsers,
-    userLookups,
-    type FakeNamedUsersMode
-} from "~tests/__helpers/FakeNamedUsers.js";
+import { KNOWN_USER_ID } from "~tests/__helpers/FakeNamedUsers.js";
+import { KNOWN_USER_NAME } from "~tests/__helpers/FakeNamedUsers.js";
+import { OTHER_KNOWN_USER_ID } from "~tests/__helpers/FakeNamedUsers.js";
+import { OTHER_KNOWN_USER_NAME } from "~tests/__helpers/FakeNamedUsers.js";
+import { registerFakeNamedUsers } from "~tests/__helpers/FakeNamedUsers.js";
+import { userLookups } from "~tests/__helpers/FakeNamedUsers.js";
+import type { FakeNamedUsersMode } from "~tests/__helpers/FakeNamedUsers.js";
 
 /** Has a workflows permission, but no users permission, as a reviewer has. */
 const REVIEWER_PERMISSIONS: SecurityPermission[] = [{ name: "workflows", reassign: true }];
@@ -240,20 +241,22 @@ describe("ResolveReviewUserNameUseCase (R251, A90)", () => {
 Create `packages/api-workflows/__tests__/graphql/workflowsAssignmentUserName.test.ts`. The shared `WorkflowsAssignmentEntry` is only reachable through the CMS and WB roots, which this package does not have, so, as in Task 1, the test registers a probe field on `WorkflowsQuery` that returns an entry with only the `userId` it was given; the real shared field resolver then runs on the real schema:
 
 ```ts
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { ResolveReviewUserNameUseCase } from "~/features/review/ResolveReviewUserName/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
-import {
-    KNOWN_USER_ID,
-    KNOWN_USER_NAME,
-    registerFakeNamedUsers,
-    userLookups,
-    type FakeNamedUsersMode
-} from "~tests/__helpers/FakeNamedUsers.js";
+import { captureLoggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { KNOWN_USER_ID } from "~tests/__helpers/FakeNamedUsers.js";
+import { KNOWN_USER_NAME } from "~tests/__helpers/FakeNamedUsers.js";
+import { registerFakeNamedUsers } from "~tests/__helpers/FakeNamedUsers.js";
+import { userLookups } from "~tests/__helpers/FakeNamedUsers.js";
+import type { FakeNamedUsersMode } from "~tests/__helpers/FakeNamedUsers.js";
 
 /** Has a workflows permission, but no users permission, as a reviewer has. */
 const REVIEWER: SecurityPermission[] = [{ name: "workflows", reassign: true }];
@@ -476,25 +479,32 @@ Update the two existing assertions. `packages/api-workflows/__tests__/graphql/wo
 Create the CMS end-to-end case, `packages/api-headless-cms-workflows/__tests__/graphql/cmsAssignmentUserName.test.ts`. It uses the existing skip scenario (`seedAssignmentRecords`: an `outcome` entry without user and a `skip` entry for `REQUESTER`), reads one review as an editor (editor or reassign see skip entries, D89) and replaces `GetUserUseCase` with a fake that knows `REQUESTER` by name:
 
 ```ts
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import type { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import type { GetUserInput } from "@webiny/api-core/features/users/shared/types.js";
-import {
-    UserNotFoundError,
-    UserStorageError
-} from "@webiny/api-core/features/users/shared/errors.js";
+import { UserNotFoundError } from "@webiny/api-core/features/users/shared/errors.js";
+import { UserStorageError } from "@webiny/api-core/features/users/shared/errors.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 import { storeWorkflow } from "~tests/__workflows/workflow.js";
-import { createAuthorEntry, expectOk } from "~tests/__helpers/entries.js";
-import { requestEntryReview, STEP_ID } from "~tests/__helpers/engine.js";
+import { createAuthorEntry } from "~tests/__helpers/entries.js";
+import { expectOk } from "~tests/__helpers/entries.js";
+import { requestEntryReview } from "~tests/__helpers/engine.js";
+import { STEP_ID } from "~tests/__helpers/engine.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createGraphQLClient } from "~tests/__helpers/graphql.js";
-import { EDITOR, REQUESTER } from "~tests/__helpers/identities.js";
-import { CMS_READER, WORKFLOWS_EDITOR } from "~tests/__helpers/permissions.js";
-import { SKIP_RECORD_REASON, seedAssignmentRecords } from "~tests/__helpers/seeds.js";
-import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { EDITOR } from "~tests/__helpers/identities.js";
+import { REQUESTER } from "~tests/__helpers/identities.js";
+import { CMS_READER } from "~tests/__helpers/permissions.js";
+import { WORKFLOWS_EDITOR } from "~tests/__helpers/permissions.js";
+import { SKIP_RECORD_REASON } from "~tests/__helpers/seeds.js";
+import { seedAssignmentRecords } from "~tests/__helpers/seeds.js";
+import { captureLoggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 
 /** Knows `REQUESTER` by name; every other id is "not found". Fails every lookup when `failing`. */
 class SkippedUsers implements GetUserUseCase.Interface {
@@ -641,7 +651,8 @@ Expected: FAIL. The unit test and the registration test cannot resolve `~/featur
 `packages/api-workflows/src/features/review/ResolveReviewUserName/abstractions.ts`:
 
 ```ts
-import { createAbstraction, type Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
+import type { Result } from "@webiny/feature/api";
 import type { ReviewPersistenceError } from "~/domain/review/errors.js";
 
 export interface ResolveReviewUserNameInput {

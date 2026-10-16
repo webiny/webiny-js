@@ -15,7 +15,7 @@ Spec 13.5; R202, R206, R211, R223, R224, R231; Decisions D133, D159; design READ
 - Create: `packages/app-workflows/src/review/mounting/components/{ReviewContentReviewsRoute,ReviewContentReviewsMenu,ReviewDashboardWidgets}.tsx`
 - Create (test support, a vitest fake in the testing folder because a co-located test cannot import from `__tests__/`, TS6059, R243): `packages/app-workflows/src/review/testing/adminConfigStub.tsx`
 - Create tests: `packages/app-workflows/src/review/mounting/AppReviewRowProvider.test.ts`, `packages/app-workflows/src/review/mounting/ReviewNotificationHandler.test.ts`, `packages/app-workflows/src/review/mounting/components/ReviewMountingComponents.test.tsx`
-- Modify: `packages/app-workflows/package.json` (dependency `@webiny/app-websockets`), `packages/app-workflows/src/index.tsx` (barrel)
+- Modify: `packages/app-workflows/package.json` (dependency `@webiny/app-websockets`)
 
 **Interfaces:**
 - Consumes: Task 25 (`IReviewRowProvider`, `IReviewRowBinding`, `ReviewListTab`, `parseReviewListTab`); Task 26 (`ReviewListView`, `IReviewContentTypeFilter`); Task 14 (the vitest config with the DOM setup and the svg alias that the icon import of the menu needs); Task 27 (`ReviewForMeWidget`, `ReviewMyRequestsWidget`); Task 10 (`ReviewNotificationService`, `WORKFLOWS_NOTIFICATION_ACTION`, `WorkflowsNotificationData`); Task 8 (`IReviewContentAdapter`, `IReviewUseCases`, `IReviewListUseCases`). Existing: `AdminConfig`, `AdminLayout`, `useRoute`, `useRouter` (`@webiny/app-admin`), `Route` (`@webiny/app/features/router/Route.js`), `WebsocketEventHandler` and `WebsocketEvent` (`@webiny/app-websockets/events/abstractions.js`, `.../events/WebsocketEvent.js`), `react-helmet`, `@webiny/icons/account_tree.svg`; the files these components replace: `packages/app-workflows/src/presentation/ContentReviews.tsx` and `.../workflowStateList/components/WorkflowsMenu.tsx`.
@@ -25,7 +25,7 @@ Spec 13.5; R202, R206, R211, R223, R224, R231; Decisions D133, D159; design READ
   - `ReviewContentReviewsRoute` props `{ route: Route<any>; useCases: IReviewListUseCases; rowProvider: IReviewRowProvider; namespaces: string[]; showContentType: boolean; contentTypeFilter: IReviewContentTypeFilter | null; breadcrumbName: string; ready?: boolean }` (`ready` is additive: `false` shows a loader instead of the list, so an app that still loads its namespaces does not start the list twice).
   - `ReviewContentReviewsMenu` props `{ name: string; route: Route<any>; parent?: string }` (the optional `parent` is additive: it nests the item under an app's menu group).
   - `ReviewDashboardWidgets` props `{ prefix: "cms" | "wb"; useCases: IReviewListUseCases; namespaces: string[]; rowProvider: IReviewRowProvider; viewAllRoute: Route<any>; ready?: boolean }` (`ready` additive: `false` registers no widget yet).
-  - Barrel additions (explicit list): `AppReviewRowProvider`, `ReviewNotificationHandler`, `ReviewContentReviewsRoute`, `ReviewContentReviewsMenu`, `ReviewDashboardWidgets`, `ReviewListView`, `ReviewForMeWidget`, `ReviewMyRequestsWidget`, `ReviewListPresenterFeature`, `ReviewWidgetPresenterFeature`, types `IReviewRowProvider`, `IReviewRowBinding`, `IReviewContentTypeFilter`, `ReviewListTab`. The app packages (Tasks 29 and 30) import these through deep paths, `@webiny/app-workflows/review/mounting/AppReviewRowProvider.js` and so on; the barrel entries are for completeness.
+  - No barrel additions (R-k): the app packages (Tasks 29 and 30) import these through deep paths, `@webiny/app-workflows/review/mounting/AppReviewRowProvider.js` and so on.
 
 verify before writing code (record each result in the commit body):
 - `useRoute` and `useRouter` are exported by `@webiny/app-admin` (`packages/app-admin/src/index.ts`), and `router.getLink(route, params)` accepts `{ tab }` for a route that declares a `tab` parameter (Tasks 29 and 30 add it).
@@ -860,27 +860,6 @@ export const ReviewDashboardWidgets = (props: ReviewDashboardWidgetsProps) => {
         </AdminConfig>
     );
 };
-```
-
-`packages/app-workflows/src/index.tsx`: append to the explicit export list (re-read the file as Tasks 8 to 27 left it and keep any entry already present):
-
-```ts
-export { AppReviewRowProvider } from "./review/mounting/AppReviewRowProvider.js";
-export { ReviewNotificationHandler } from "./review/mounting/ReviewNotificationHandler.js";
-export { ReviewContentReviewsRoute } from "./review/mounting/components/ReviewContentReviewsRoute.js";
-export { ReviewContentReviewsMenu } from "./review/mounting/components/ReviewContentReviewsMenu.js";
-export { ReviewDashboardWidgets } from "./review/mounting/components/ReviewDashboardWidgets.js";
-export { ReviewListView } from "./review/presentation/reviewList/components/ReviewListView.js";
-export { ReviewForMeWidget } from "./review/presentation/reviewWidget/components/ReviewForMeWidget.js";
-export { ReviewMyRequestsWidget } from "./review/presentation/reviewWidget/components/ReviewMyRequestsWidget.js";
-export { ReviewListPresenterFeature } from "./review/presentation/reviewList/feature.js";
-export { ReviewWidgetPresenterFeature } from "./review/presentation/reviewWidget/feature.js";
-export type {
-    IReviewRowBinding,
-    IReviewRowProvider,
-    ReviewListTab
-} from "./review/presentation/reviewList/abstractions.js";
-export type { IReviewContentTypeFilter } from "./review/presentation/reviewList/IReviewContentTypeFilter.js";
 ```
 
 - [ ] **Step 4: Run the new tests, expect pass**

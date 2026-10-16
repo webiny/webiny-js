@@ -11,7 +11,7 @@ Spec 13.1 and 13.4 (client core); R202 (shared core in `app-workflows`, app-owne
 - `allowManualPick` mirrors `packages/api-workflows/src/domain/workflow/canPickReviewer.ts`: true only for a step of type `review` whose `config.assignment.allowManualPick === true`.
 - `WorkflowsWorkflow.models` (the namespaces a workflow binds) maps to `ReviewWorkflow.namespaces`; `WorkflowsReview.model` maps to `Review.namespace`; `WorkflowsReview.workflow.name` maps to `Review.workflowName`.
 - The test fixtures live in `packages/app-workflows/src/review/testing/reviewFixtures.ts` (R243; pure builders, no vitest, mobx or `@webiny/di`; later `app-workflows` tasks import them as `~/review/testing/reviewFixtures.js`, other packages as `@webiny/app-workflows/review/testing/reviewFixtures.js`). They ship in `dist` on purpose: a co-located test importing from `__tests__/` fails the build with TS6059 (`rootDir: ./src`). `createReview(overrides)` builds a domain review with the defaults of R243 (one awaiting step "Editorial check" `step-1`, no teams, title "Spring campaign", requester "Maja Kos") and `createReviewWithFlags(review, flags)` is positional.
-- The barrel `packages/app-workflows/src/index.tsx` is an explicit export list. This task adds its own exports (Task 9 and Task 10 add theirs, the union is the barrel list named in Task 10).
+- The barrel `packages/app-workflows/src/index.tsx` is not touched by Tasks 8-10 (R-k): app packages import the review modules through deep paths, nothing imports the new names through `@webiny/app-workflows`.
 
 **Files:**
 - Create: `packages/app-workflows/vitest.config.ts`
@@ -22,7 +22,6 @@ Spec 13.1 and 13.4 (client core); R202 (shared core in `app-workflows`, app-owne
 - Create: `packages/app-workflows/src/review/content/IReviewContentAdapter.ts`, `packages/app-workflows/src/review/cache/IReviewCacheWriter.ts`
 - Create: `packages/app-workflows/src/review/testing/reviewFixtures.ts`
 - Create tests: `packages/app-workflows/src/review/domain/isReviewSelectable.test.ts`, `toSystemWorkflow.test.ts`, `toReviewListRow.test.ts`; `packages/app-workflows/src/review/gateway/mapReview.test.ts`, `mapReviewWithFlags.test.ts`, `mapWorkflow.test.ts`, `mapStepCandidate.test.ts`; `packages/app-workflows/__tests__/reviewFields.test.ts` (in `__tests__` on purpose, see Contract notes)
-- Modify: `packages/app-workflows/src/index.tsx` (barrel additions)
 
 **Interfaces:**
 - Consumes: Task 1 (`WorkflowsReviewStep.candidateTeams { id name }`, selected in `REVIEW_FIELDS`), Task 5b (`WorkflowsAssignmentEntry.userDisplayName`, selected in `REVIEW_ASSIGNMENT_FIELDS`, R251) and Task 5c (`WorkflowsReview.cancelledBy`, selected in `REVIEW_FIELDS`, R252); the fragments are text only, so this task does not need the API running. Existing, verified with codegraph: `packages/app-admin/vitest.config.ts` and `testing/createTestConfig.ts` (`createTestConfig`, `path`, `vitestConfig`), the server codes in `packages/api-workflows/src/domain/review/errors.ts`, `canPickReviewer.ts` (`REVIEW_STEP_TYPE = "review"` in `.../domain/workflow/stepTypes.ts`), `Review.getSystemWorkflow` (`.../domain/review/Review.ts`), the shared types in `packages/api-workflows/src/graphql/WorkflowsSchemaFactory.ts` (`WorkflowsReview`, `WorkflowsReviewStep`, `WorkflowsViewerFlags`, `WorkflowsWorkflow`, `WorkflowsStepCandidate`, `WorkflowsListMeta`, `WorkflowsError`).
@@ -2509,111 +2508,7 @@ export interface IReviewCacheWriter {
 }
 ```
 
-`packages/app-workflows/src/index.tsx`, add this block after the line `export { WorkflowsPermissionsFeature } from "./features/permissions/feature.js";` and before `export const Components = {` (Task 9 and Task 10 add their own lines below it):
-
-```ts
-export { ReviewState } from "./review/domain/ReviewState.js";
-export type { ReviewStateValue } from "./review/domain/ReviewState.js";
-export { StepState } from "./review/domain/StepState.js";
-export type { StepStateValue } from "./review/domain/StepState.js";
-export type { ReviewListKind } from "./review/domain/ReviewListKind.js";
-export type { ReviewListSort } from "./review/domain/ReviewListSort.js";
-export { ReviewErrorCode } from "./review/domain/ReviewErrorCode.js";
-export {
-    REVIEW_TITLE_MIN_LENGTH,
-    REJECT_COMMENT_MIN_LENGTH,
-    REVIEW_LIST_PAGE_SIZE,
-    REVIEW_WIDGET_PAGE_SIZE,
-    WORKFLOWS_NOTIFICATION_ACTION
-} from "./review/domain/constants.js";
-export type {
-    ActiveReviewOnTrashData,
-    BlockingReview,
-    Review,
-    ReviewActor,
-    ReviewActorType,
-    ReviewAiIssue,
-    ReviewAssignmentEntry,
-    ReviewCandidateTeam,
-    ReviewForDeleteAction,
-    ReviewListMeta,
-    ReviewListRow,
-    ReviewStep,
-    ReviewStepAssignment,
-    ReviewStepRun,
-    ReviewTarget,
-    ReviewTargetContext,
-    ReviewViewerFlags,
-    ReviewWithFlags,
-    ReviewWorkflow,
-    ReviewWorkflowStep,
-    StepCandidate,
-    SystemWorkflowValue
-} from "./review/domain/types.js";
-export { toReviewListRow } from "./review/domain/toReviewListRow.js";
-export { toSystemWorkflow } from "./review/domain/toSystemWorkflow.js";
-export { isReviewSelectable } from "./review/domain/isReviewSelectable.js";
-export type {
-    ReviewAiIssueDto,
-    ReviewActorDto,
-    ReviewAssignmentEntryDto,
-    ReviewDto,
-    ReviewEnvelope,
-    ReviewErrorDto,
-    ReviewListEnvelope,
-    ReviewStepDto,
-    ReviewWithFlagsDto,
-    StepCandidateDto,
-    ViewerFlagsDto,
-    WorkflowDto,
-    WorkflowStepDto
-} from "./review/gateway/dto.js";
-export {
-    REVIEW_ASSIGNMENT_FIELDS,
-    REVIEW_FIELDS,
-    REVIEW_SYSTEM_WORKFLOW_SELECTION,
-    REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS,
-    REVIEW_WITH_FLAGS_FIELDS
-} from "./review/gateway/reviewFields.js";
-export { mapReview } from "./review/gateway/mapReview.js";
-export { mapReviewWithFlags } from "./review/gateway/mapReviewWithFlags.js";
-export { mapWorkflow } from "./review/gateway/mapWorkflow.js";
-export { mapStepCandidate } from "./review/gateway/mapStepCandidate.js";
-export type {
-    ApproveReviewParams,
-    CancelForDeleteParams,
-    CancelReviewParams,
-    IReviewGateway,
-    ListReviewsParams,
-    ListReviewStepCandidatesParams,
-    ListStepCandidatesParams,
-    ReassignReviewParams,
-    RejectReviewParams,
-    RequestReviewParams,
-    RequestReviewPick,
-    ReviewListWhere,
-    ReviewStepRef,
-    TakeOverReviewParams
-} from "./review/gateway/IReviewGateway.js";
-export type { IReviewReadUseCases } from "./review/useCases/IReviewReadUseCases.js";
-export type { IReviewActionUseCases } from "./review/useCases/IReviewActionUseCases.js";
-export type {
-    IReviewListUseCases,
-    ReviewListPage
-} from "./review/useCases/IReviewListUseCases.js";
-export type { IReviewCancelForDeleteUseCases } from "./review/useCases/IReviewCancelForDeleteUseCases.js";
-export type { IReviewUseCases } from "./review/useCases/IReviewUseCases.js";
-export type {
-    IReviewContentAdapter,
-    ReviewContentRef
-} from "./review/content/IReviewContentAdapter.js";
-export type {
-    IReviewCacheWriter,
-    ReviewCacheRef
-} from "./review/cache/IReviewCacheWriter.js";
-```
-
-The old `features/graphqlFields.ts` is not exported from the barrel. The generic ``ERROR_FIELDS`, `WORKFLOW_FIELDS` and `STEP_CANDIDATE_FIELDS` stay internal to `app-workflows`: the app packages import `app-workflows` through deep paths (`@webiny/app-workflows/review/gateway/reviewFields.js`), so the barrel stays minimal.`
+This task does not touch the barrel `packages/app-workflows/src/index.tsx` (R-k: no export is added that nothing consumes). The old `features/graphqlFields.ts` stays as is, and the generic `ERROR_FIELDS`, `WORKFLOW_FIELDS` and `STEP_CANDIDATE_FIELDS` stay internal to `app-workflows`: the app packages import `app-workflows` through deep paths (`@webiny/app-workflows/review/gateway/reviewFields.js`).
 
 - [ ] **Step 4: Run the tests and expect pass**
 
@@ -2663,7 +2558,7 @@ If any step fails and you fix something, rerun the chain from the top. Never com
 **Contract notes**
 
 - `@webiny/di` (dependency) is added in Task 9, the first task whose test imports it (`yarn adio` flags a used but undeclared dependency); `@testing-library/react` (devDependency) is added in Task 10, where the first component test needs it. Neither is needed by Task 8.
-- Barrel: the contract says Task 8 modifies `index.tsx` with "additions named in Task 10". Each task here adds its own exports (Task 8 the domain, DTO, mapper, field, interface exports above; Task 9 `ReviewUseCases`; Task 10 the services), so every commit builds with an honest barrel; the union equals the Task 10 list. The generic `ERROR_FIELDS`, `WORKFLOW_FIELDS` and `STEP_CANDIDATE_FIELDS` are not on the barrel; the app packages import `app-workflows` through deep paths contract-wide, so the barrel carries only what is imported through it.
+- Barrel: the contract says Task 8 modifies `index.tsx` with "additions named in Task 10"; that is dropped (R-k): the app packages import `app-workflows` through deep paths contract-wide and nothing imports the new names through the bare barrel, so no task of 8a adds a barrel export (Task 37 only removes the old entries).
 - Added beyond the contract (names the contract does not give, all additive): `ReviewActorType`, `ReviewForDeleteAction`, `ReviewTargetFolder`, `ReviewTargetAuthor` (aliases for repeated unions and inline objects), the DTO helper interfaces (`ReviewActorDto`, `ReviewStepAssignmentDto`, `ReviewAssignmentEntryDto`, `ReviewStepRunDto`, `ReviewAiIssueDto`, `ReviewCandidateTeamDto`, `ReviewTargetContextDto`, `ReviewWorkflowRefDto`, `ViewerFlagsDto`, `WorkflowStepDto`), `REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS` (the single-read selection, so the two apps do not each compose the `steps` merge), `ReviewListMeta` (a domain type in `types.ts`, used by the DTO envelope and the list use case), `ReviewAssignmentEntry.assignedOn` (the shared type has it; the contract's list omits it), and the test helper module `src/review/testing/reviewFixtures.ts`.
 - Nullability: the contract writes `reachedOn; startedOn; finishedOn: string | null`; the shared schema has all three nullable (`reachedOn: DateTime`, `startedOn: DateTime`, `finishedOn: DateTime` without `!`), so all three are `string | null`.
 - `ReviewListKind` and `ReviewListSort` are plain string-union types (the contract lists only their values), `ReviewState` and `StepState` are const objects with a `...Value` type as the contract names.

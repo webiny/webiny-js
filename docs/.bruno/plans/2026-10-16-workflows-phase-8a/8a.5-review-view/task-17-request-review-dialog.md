@@ -673,7 +673,7 @@ Create `packages/app-workflows/src/review/presentation/requestReview/abstraction
 import { createAbstraction } from "@webiny/feature/admin";
 import type { ReviewTarget } from "~/review/domain/types.js";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
-import type { IReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
+import type { ReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
 
 export interface RequestReviewInitParams {
     useCases: IReviewUseCases;
@@ -721,7 +721,7 @@ export interface IRequestReviewPresenter {
     init(params: RequestReviewInitParams): Promise<void>;
     setTitle(title: string): void;
     setMode(stepId: string, mode: RequestReviewMode): void;
-    getPickerPresenter(stepId: string): IReviewerPickerPresenter | null;
+    getPickerPresenter(stepId: string): ReviewerPickerPresenter.Interface | null;
     retrySteps(): Promise<void>;
     submit(): Promise<void>;
     dismiss(): void;
@@ -1367,7 +1367,7 @@ Expected: PASS. If a radio lookup by name fails, query `screen.getByLabelText("C
 - [ ] **Step 5: Run the existing tests covering the changed code and type-check**
 
 ```bash
-yarn test packages/app-workflows/src/review 2>&1 | tail -30
+yarn test packages/app-workflows/src/review/presentation/requestReview/RequestReviewPresenter.test.ts packages/app-workflows/src/review/presentation/requestReview/components/RequestReviewDialog.test.tsx packages/app-workflows/src/app.test.tsx 2>&1 | tail -30
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 

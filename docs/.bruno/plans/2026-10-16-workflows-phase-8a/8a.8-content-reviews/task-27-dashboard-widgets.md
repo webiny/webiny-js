@@ -13,7 +13,7 @@ Spec 13.5; R206, R210, R212, R231, R234; Decisions D71, D133; design README 8 (h
 - Create: `packages/app-workflows/src/review/presentation/reviewWidget/components/{ReviewWidgetCard,ReviewForMeWidget,ReviewMyRequestsWidget}.tsx`
 - Create tests: `packages/app-workflows/src/review/presentation/reviewWidget/ReviewWidgetPresenter.test.ts`, `packages/app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgets.test.tsx`
 - Modify: `packages/app-workflows/src/app.test.tsx` (Task 10's composition test, extended by Task 13's "WorkflowsAdminApp review view" `describe`; one expectation per test added)
-- Modify: `packages/app-workflows/src/app.tsx` (register `ReviewWidgetPresenterFeature` inside the gate). The barrel `src/index.tsx` is edited once, in Task 28.
+- Modify: `packages/app-workflows/src/app.tsx` (register `ReviewWidgetPresenterFeature` inside the gate). The barrel `src/index.tsx` is not touched (R-k).
 
 **Interfaces:**
 - Consumes: Task 25 (`IReviewRowProvider`, `ReviewListTab` from `~/review/presentation/reviewList/abstractions.js`, `getReviewListEmpty`, `resolveRowBinding`, `formatLastChange`, `getListReviewStateLabel`, the builder `createReviewListItem` from `~/review/testing/createReviewListItem.js`); Task 13 (`getStepStateTag` `~/review/presentation/targetReview/getStepStateTag.js`, `TargetReviewTagVariant` `.../abstractions.js`, the fixture `createActor` `~/review/testing/createActor.js`); Task 14 (`renderWithAdminUi` `~/review/testing/renderWithAdminUi.js`, the vitest config with the DOM setup and svg alias); Task 15 (`renderWithContainer` `~/review/testing/renderWithContainer.js`); Task 10 (`ReviewActivity` token `~/review/activity/abstractions.js`, the implementation `~/review/activity/ReviewActivity.js`); Task 8 (`IReviewListUseCases`, `ReviewListPage`, `REVIEW_WIDGET_PAGE_SIZE`, `toReviewListRow`, `ReviewListRow`, `ReviewListSort`). Existing: `IdentityContext` (`@webiny/app-admin/features/security/IdentityContext/abstractions.js`), `createReactiveComponent` (`@webiny/app-admin`), `useFeature` (`@webiny/app`), admin-ui `Button`, `Link`, `SegmentedControl`, `Skeleton`, `Tag`, `Text`.
@@ -662,7 +662,6 @@ import { getStepStateTag } from "~/review/presentation/targetReview/getStepState
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { ReviewListPage } from "~/review/useCases/IReviewListUseCases.js";
 import { ReviewWidgetPresenter as Abstraction } from "./abstractions.js";
-import type { IReviewWidgetViewModel } from "./abstractions.js";
 import type { ReviewWidgetInitParams } from "./abstractions.js";
 import type { ReviewWidgetKind } from "./abstractions.js";
 import type { ReviewWidgetRowVm } from "./abstractions.js";
@@ -711,7 +710,7 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
         });
     }
 
-    get vm(): IReviewWidgetViewModel {
+    get vm(): Abstraction.ViewModel {
         const now = new Date();
         const rows = this._rows.map(row => this.toRowVm(row, now));
 
@@ -1215,7 +1214,7 @@ git commit -m "feat(app-workflows): add the review dashboard widgets" -m "Co-Aut
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
 
 **Contract notes:**
-- Additive: `ReviewWidgetRowVm.stateVariant`, `IReviewWidgetViewModel.hasTeams` (QBZ-73), `ReviewWidgetStatus`, and the shared `ReviewWidgetCard.tsx` behind the two named components (the contract names only the two). The presenter now depends on `IdentityContext` (`[ReviewActivity, IdentityContext]`). Both components pass the same four props.
+- Additive: `ReviewWidgetRowVm.stateVariant`, `ReviewWidgetPresenter.ViewModel.hasTeams` (QBZ-73), `ReviewWidgetStatus`, and the shared `ReviewWidgetCard.tsx` behind the two named components (the contract names only the two). The presenter now depends on `IdentityContext` (`[ReviewActivity, IdentityContext]`). Both components pass the same four props.
 - Contract deviations recorded: the design's step colour dot and the "(app)" suffix of the step line are dropped. `stepLine` is "{step} · {content type}": the row binding returns a content type label only, `ReviewListRow` has no step colour, and `app-workflows` knows no app name (R206). The CMS shows the model name, WB shows the step alone.
 - The state tag comes from Task 13's `getStepStateTag` (variant type `TargetReviewTagVariant`); a row without a current step state falls back to the review state label with a neutral tag.
 - The loading and error copy of the widgets ("Could not load reviews." with "Try again") is design frame 12; the loading state is a three-row skeleton (frame 10). A failed first load retries with the skeleton, a failed background refresh keeps the rows.

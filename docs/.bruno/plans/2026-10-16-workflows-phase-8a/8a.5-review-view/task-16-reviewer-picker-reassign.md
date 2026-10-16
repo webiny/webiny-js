@@ -478,6 +478,17 @@ describe("ReassignDialogPresenter", () => {
         expect(setup.presenter.vm.cancelLabel).toBe("Close");
     });
 
+    it("fails the load when the named step is not in the review (R244, no invented title)", async () => {
+        await setup.presenter.init({
+            ...setup.params(),
+            request: { kind: "reassign", reviewId: "review-1", stepId: "step-unknown" }
+        });
+
+        expect(setup.presenter.vm.status).toBe("failed");
+        expect(setup.useCases.listReviewStepCandidates).not.toHaveBeenCalled();
+        expect(setup.presenter.vm.cancelLabel).toBe("Close");
+    });
+
     it("keeps the dialog open while submitting", async () => {
         let release: () => void = () => undefined;
         setup.useCases.reassignStep.mockReturnValue(
@@ -990,7 +1001,7 @@ Create `packages/app-workflows/src/review/presentation/actionDialog/reassignAbst
 ```ts
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
-import type { IReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
+import type { ReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
 import type { ReviewActionConflictVm } from "./abstractions.js";
 import type { ReviewActionRequest } from "./ReviewActionRequest.js";
 
@@ -1021,7 +1032,7 @@ export interface IReassignDialogViewModel {
 export interface IReassignDialogPresenter {
     readonly vm: IReassignDialogViewModel;
     init(params: ReassignDialogInitParams): Promise<void>;
-    getPickerPresenter(): IReviewerPickerPresenter;
+    getPickerPresenter(): ReviewerPickerPresenter.Interface;
     submit(): Promise<void>;
     dismiss(): void;
     dispose(): void;
@@ -1137,8 +1148,12 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
                 return;
             }
             const step = loaded.review.steps.find(item => item.id === request.stepId);
+            if (!step) {
+                this.applyLoadFailure();
+                return;
+            }
             let currentOwnerId: string | null = null;
-            if (step && step.owner !== null && step.owner.type === "user") {
+            if (step.owner !== null && step.owner.type === "user") {
                 currentOwnerId = step.owner.id;
             }
 
@@ -1163,12 +1178,12 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
         const params = this.params;
         const loaded = this.review;
         const userId = this.picker.vm.value;
-        if (!params || !loaded || userId === null || !this.vm.canSubmit) {
+        const step = loaded && params ? loaded.review.steps.find(item => item.id === params.request.stepId) : undefined;
+        if (!params || !loaded || !step || userId === null || !this.vm.canSubmit) {
             return;
         }
 
         const { useCases, request } = params;
-        const step = loaded.review.steps.find(item => item.id === request.stepId);
         const candidate = this.picker.vm.options.find(option => option.value === userId);
         const newOwnerName = candidate ? candidate.label : "";
         const token = this.token;
@@ -1231,7 +1246,7 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
 
         this.toasts.show({
             kind: "reassigned",
-            stepTitle: step ? step.title : "",
+            stepTitle: step.title,
             personName: newOwnerName,
             reviewsUrl: params.reviewsUrl
         });
@@ -1535,7 +1550,7 @@ Expected: PASS. If the `ReviewerPicker` "offers the options" test cannot open th
 - [ ] **Step 5: Run the existing tests covering the changed code and type-check**
 
 ```bash
-yarn test packages/app-workflows/src/review 2>&1 | tail -30
+yarn test packages/app-workflows/src/review/presentation/reviewerPicker/ReviewerPickerPresenter.test.ts packages/app-workflows/src/review/presentation/reviewerPicker/components/ReviewerPicker.test.tsx packages/app-workflows/src/review/presentation/actionDialog/ReassignDialogPresenter.test.ts packages/app-workflows/src/review/presentation/actionDialog/components/ReassignDialog.test.tsx packages/app-workflows/src/app.test.tsx 2>&1 | tail -30
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 

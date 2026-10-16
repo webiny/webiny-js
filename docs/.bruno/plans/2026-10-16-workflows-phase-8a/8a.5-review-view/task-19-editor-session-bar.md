@@ -3,7 +3,7 @@
 R202, R211, R212, R213, R234, R-c, R-e, R-f, R-k, R-l; A76, A77; Review Focus 5, 17 (the shared editor session and bar). What both app editors mount. `EditorReviewSession` is the shared, **plain** class `{ presenter, useCases }` that holds one editor's `TargetReviewPresenter` together with that app's use cases; `EditorReviewBar` renders the shared bar and the details drawer for a session. Each app (Tasks 20 and 22) subclasses the session once in its own file and registers the subclass as a singleton under its own token; this task registers nothing, because the shared class carries no `createImplementation` call (controller rule: `createImplementation` stores the abstraction and dependencies on the class itself, so a shared class bound under two tokens would be mis-bound silently).
 
 - **`EditorReviewSession`** (`implements IEditorReviewSession`): constructor `(presenter: TargetReviewPresenter.Interface, useCases: IReviewUseCases)`, public readonly fields. It is a singleton in the apps (one editor is open at a time, the presenter's `dispose()` resets it, R212); the editor glue calls `session.presenter.init(...)` on mount and `dispose()` on unmount.
-- **App usage** (Tasks 20 and 22, for the record): `class CmsEntryReviewSessionImpl extends EditorReviewSession implements CmsEntryReview.Interface {}` then `export const CmsEntryReviewSession = CmsEntryReview.createImplementation({ implementation: CmsEntryReviewSessionImpl, dependencies: [TargetReviewPresenter, CmsReviewUseCases] })`, registered `.inSingletonScope()`.
+- **App usage** (Tasks 20 and 22, for the record): `class CmsEntryReviewSessionImpl extends EditorReviewSession implements Abstraction.Interface {}` then, in `CmsEntryReviewImpl.ts` (Task 20, R212; the token is imported `as Abstraction`), `export const CmsEntryReview = Abstraction.createImplementation({ implementation: CmsEntryReviewSessionImpl, dependencies: [TargetReviewPresenter, CmsReviewUseCases] })`, registered `.inSingletonScope()`.
 - **`EditorReviewBar`** props `{ session; reviewsRoute }` (R-f: the bar reads the target and the content title from the presenter's view model, so the glue passes nothing else). It builds `reviewsUrl = useRouter().getLink(reviewsRoute)` (A76, verified below), renders `ReviewBar` and, when the viewer opens it, `ReviewDetailsDrawer`; the component stores the **opened review id** (`useState<string | null>`, set from `vm.reviewId` when "Review details" is clicked, `null` closes), so the drawer keeps showing the review that was opened even if the bar's review changes underneath. An action taken in the drawer refreshes the bar (`onChanged` -> `session.presenter.refresh()`).
 - **A76 verified:** `useRouter().getLink(route)` returns `RouteUrl.fromPattern(route.path, params)`, a plain path string (`packages/app/src/features/router/RouterRepository.ts`), pinned by a test on `RouteUrl`.
 
@@ -16,7 +16,7 @@ R202, R211, R212, R213, R234, R-c, R-e, R-f, R-k, R-l; A76, A77; Review Focus 5,
 
 **Interfaces:**
 - Consumes: Task 13 (`TargetReviewPresenter` with `.Interface`, `TargetReviewPresenterFeature`), Task 14 (`ReviewBar`, `createFakePresenter`, `createViewModel`), Task 18 (`ReviewDetailsDrawer`, `ReviewDetailsPresenterFeature`), Task 15 (`ReviewActionDialogPresenterFeature`, `renderWithContainer`), Task 8 (`IReviewUseCases`, `createReview`/`createReviewWithFlags` from `~/review/testing/reviewFixtures.js`), Task 13's builders and `TARGET`. Existing (verified): `useRouter` and `Route` (`@webiny/app`; `Route` constructor `{ name, path }`), `RouteUrl.fromPattern` (`@webiny/app/features/router/RouteUrl.js`), `createAbstraction` (`@webiny/feature/admin`).
-- Produces: `IEditorReviewSession { readonly presenter: TargetReviewPresenter.Interface; readonly useCases: IReviewUseCases }` (`editor/abstractions.ts`; it has no token of its own, each app declares one); class `EditorReviewSession` (plain, no `createImplementation`); `EditorReviewBar` props `{ session: IEditorReviewSession; reviewsRoute: Route }`. Imported by deep path (`@webiny/app-workflows/review/editor/EditorReviewSession.js`, `.../components/EditorReviewBar.js`); consumed by Tasks 20 and 22.
+- Produces: `IEditorReviewSession { readonly presenter: TargetReviewPresenter.Interface; readonly useCases: IReviewUseCases }` (`editor/abstractions.ts`; it has no token of its own, each app declares one); class `EditorReviewSession` (plain, no `createImplementation`); `EditorReviewBar` props `{ session: IEditorReviewSession; reviewsRoute: Route<any> }`. Imported by deep path (`@webiny/app-workflows/review/editor/EditorReviewSession.js`, `.../components/EditorReviewBar.js`); consumed by Tasks 20 and 22.
 
 **Test runner note:** admin package, `yarn test <path>` only.
 
@@ -32,6 +32,7 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { createAbstraction } from "@webiny/feature/admin";
 import { EventPublisher } from "@webiny/app/features/eventPublisher/abstractions.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import { TargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
@@ -66,6 +67,9 @@ const createContainer = () => {
     const container = new Container();
     container.registerInstance(EventPublisher, { publish: vi.fn().mockResolvedValue(undefined) });
     container.registerInstance(ReviewActivity, { subscribe: vi.fn(), notify: vi.fn() });
+    container.registerInstance(IdentityContext, {
+        getIdentity: () => ({ teams: [] })
+    } as unknown as IdentityContext.Interface);
     TargetReviewPresenterFeature.register(container);
     container.register(CmsEntryReviewSession).inSingletonScope();
     container.register(WbPageReviewSession).inSingletonScope();
@@ -308,7 +312,7 @@ Create `packages/app-workflows/src/review/editor/abstractions.ts`:
 
 ```ts
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
-import type { ITargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
+import type { TargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
 
 /**
  * One open editor's review state: its presenter and its app's use cases. Each app declares its
@@ -316,7 +320,7 @@ import type { ITargetReviewPresenter } from "~/review/presentation/targetReview/
  * and binds a subclass of `EditorReviewSession` to it.
  */
 export interface IEditorReviewSession {
-    readonly presenter: ITargetReviewPresenter;
+    readonly presenter: TargetReviewPresenter.Interface;
     readonly useCases: IReviewUseCases;
 }
 ```
@@ -356,7 +360,7 @@ import type { IEditorReviewSession } from "../abstractions.js";
 
 export interface EditorReviewBarProps {
     session: IEditorReviewSession;
-    reviewsRoute: Route;
+    reviewsRoute: Route<any>;
 }
 
 /**
@@ -406,11 +410,11 @@ Expected: PASS. The `getLink` of a real `useRouter` needs the router feature reg
 - [ ] **Step 5: Run the existing tests covering the changed code and type-check**
 
 ```bash
-yarn test packages/app-workflows/src/review 2>&1 | tail -30
+yarn test packages/app-workflows/src/review/editor/EditorReviewSession.test.ts packages/app-workflows/src/review/editor/components/EditorReviewBar.test.tsx 2>&1 | tail -30
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 
-Expected: the whole review folder passes (Tasks 8-19), no TypeScript errors (R-e: `yarn build -p @webiny/app-workflows` is the type check). Sub-phase gate for 8a.5: run `yarn test packages/app-workflows/src/review` once more after the last commit and confirm the package builds.
+Expected: this task's test files pass, no TypeScript errors (R-e: `yarn build -p @webiny/app-workflows` is the type check). Sub-phase gate for 8a.5: confirm the package builds after the last commit (tests run by path, per task).
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -433,5 +437,5 @@ If any step changes a file, fix it and rerun the chain from `git add .`. Never c
 
 ## Contract notes
 
-- The app subclass files are named by the contract (R212, R237): CMS `CmsEntryReviewSessionImpl` in `CmsEntryReviewImpl.ts`, WB `WbPageReviewSessionImpl` (unexported) in `WbPageReviewSession.ts`; Tasks 20 and 22 write them.
+- The app subclass files are named by the contract (R212, R237): CMS `CmsEntryReviewSessionImpl` in `CmsEntryReviewImpl.ts`, WB `WbPageReviewSessionImpl` in `WbPageReviewSessionImpl.ts` (exported as `WbPageReview`); Tasks 20 and 22 write them.
 - Size: small (three source files, two test files).

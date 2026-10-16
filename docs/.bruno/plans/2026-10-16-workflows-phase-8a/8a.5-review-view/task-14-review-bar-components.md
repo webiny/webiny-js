@@ -983,7 +983,7 @@ Expected: PASS. If `Button` with `disabled` does not set `aria-disabled` in the 
 - [ ] **Step 5: Run the existing tests covering the changed code and type-check**
 
 ```bash
-yarn test packages/app-workflows/src/review 2>&1 | tail -30
+yarn test packages/app-workflows/src/review/presentation/targetReview/components/ReviewBar.test.tsx packages/app-workflows/src/review/presentation/targetReview/components/ReviewTooltip.test.tsx 2>&1 | tail -30
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 

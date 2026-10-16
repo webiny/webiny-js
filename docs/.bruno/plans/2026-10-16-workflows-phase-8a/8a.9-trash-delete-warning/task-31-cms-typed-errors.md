@@ -483,14 +483,12 @@ In each of the four gateways add one import and replace the one `throw`. Nothing
 ```ts
 // Before (top of the file):
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsErrorResponse } from "~/types.js";
-import type { CmsModel } from "~/types.js";
+import type { CmsErrorResponse, CmsModel } from "~/types.js";
 
 // After:
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsErrorResponse } from "~/types.js";
-import type { CmsModel } from "~/types.js";
+import type { CmsErrorResponse, CmsModel } from "~/types.js";
 ```
 
 ```ts
@@ -514,14 +512,12 @@ import type { CmsModel } from "~/types.js";
 ```ts
 // Before (top of the file):
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsErrorResponse } from "~/types.js";
-import type { CmsModel } from "~/types.js";
+import type { CmsErrorResponse, CmsModel } from "~/types.js";
 
 // After:
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsErrorResponse } from "~/types.js";
-import type { CmsModel } from "~/types.js";
+import type { CmsErrorResponse, CmsModel } from "~/types.js";
 ```
 
 ```ts
@@ -545,14 +541,12 @@ import type { CmsModel } from "~/types.js";
 ```ts
 // Before (top of the file):
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsErrorResponse } from "~/types.js";
-import type { CmsModel } from "~/types.js";
+import type { CmsErrorResponse, CmsModel } from "~/types.js";
 
 // After:
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsErrorResponse } from "~/types.js";
-import type { CmsModel } from "~/types.js";
+import type { CmsErrorResponse, CmsModel } from "~/types.js";
 ```
 
 ```ts
@@ -576,14 +570,12 @@ import type { CmsModel } from "~/types.js";
 ```ts
 // Before (top of the file):
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsErrorResponse } from "~/types.js";
-import type { CmsModel } from "~/types.js";
+import type { CmsErrorResponse, CmsModel } from "~/types.js";
 
 // After:
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
-import type { CmsErrorResponse } from "~/types.js";
-import type { CmsModel } from "~/types.js";
+import type { CmsErrorResponse, CmsModel } from "~/types.js";
 ```
 
 ```ts

@@ -1,11 +1,11 @@
 ### Task 36: WB trash and delete decorators (`app-website-builder-workflows`)
 
-R202, R204, R205, R228, R211, R235, R236, R249, D157, A82; Q27; Review Focus 8, 10, 17, 18, 19. The Website Builder half of the warning flow: three decorators that only forward to the shared `ActiveReviewGuard` (Task 33), a feature `WebsiteBuilderWorkflows` mounts inside the flag gate, and the small base fixes the A82 caller review found. Same shape as Task 35; the differences are the use-case results, the single-argument bulk form, the revision delete without a first dialog, and the trash bin.
+R202, R204, R205, R228, R211, R235, R236, R249, D157, A82; Q28; Review Focus 8, 10, 17, 18, 19. The Website Builder half of the warning flow: three decorators that only forward to the shared `ActiveReviewGuard` (Task 33), a feature `WebsiteBuilderWorkflows` mounts inside the flag gate, and the small base fixes the A82 caller review found. Same shape as Task 35; the differences are the use-case results, the single-argument bulk form, the revision delete without a first dialog, and the trash bin.
 
 - **`DeletePageUseCaseReviewDecorator`** (`DeletePageUseCase.createDecorator`, dependencies `[ActiveReviewGuard, WbReviewUseCases]`): `execute(params)` -> `guard.run({ action: () => decoratee.execute(params), useCases, revisionId: null })`. `params.id` is a revision id (the list passes the page's current revision), but the trash covers the whole page, so `revisionId` is `null` and the confirm cancels every revision's reviews (`cancelWebsiteBuilderPageReviewsForDelete(pageId, null, action)`, `targetId` comes from the refusal data, the page id).
 - **`DeletePageRevisionUseCaseReviewDecorator`**: `revisionId: params.id` (the revision id), so the confirm cancels only that revision's reviews (the optional `revisionId` of Task 5, the block of Task 4).
 - **`BulkDeletePresenterReviewDecorator`** (`BulkDeletePresenter.createDecorator`, token `"WB/BulkDeletePresenter"`, dependencies `[ActiveReviewGuard, WbReviewUseCases]`): WB's form is `execute(items: Page[])` with **one argument**: `guard.runBulk({ items, getTargetId: row => row.entryId, run: batch => decoratee.execute(batch), useCases })`; `isRetry` is ignored (every WB bulk delete is already per page); `vm` delegates. Nothing else (R228).
-- **First-pass count (Q27, R228).** After a warning and a confirmed retry the results dialog shows only the retried items (accepted, documented in Task 38). The summary toast that states how many pages the first pass moved is shown by the shared guard (Task 33 `runBulk`), so this decorator holds no count logic. Step 0 only confirms that the WB bulk flow has no count of its own (`BulkActionDelete.tsx` shows a static message, `DialogMessage.tsx` lists one row per item); the toast wording is Task 33's.
+- **First-pass count (Q28, R228).** After a warning and a confirmed retry the results dialog shows only the retried items (accepted, documented in Task 38). The first-pass count toast (Q28 copy) is shown by `ActiveReviewGuard.runBulk` (Task 33); the WB bulk decorator only forwards and holds no count logic. Step 0 only confirms that the WB bulk flow has no count of its own (`BulkActionDelete.tsx` shows a static message, `DialogMessage.tsx` lists one row per item); the toast wording is Task 33's.
 - **Feature** `WbReviewTrashFeature` (name `WebsiteBuilderWorkflows/Trash`) registers the three decorators; `WebsiteBuilderWorkflows` mounts it with `<RegisterFeature feature={WbReviewTrashFeature} />` inside the gate after the shared features (A77). Root decorators apply to the scoped child container `PagesList` builds (`collectDecorators`: parent first, so the workflows decorator sits inside the base `...WithLoading` decorators, which wrap it).
 - **Use-case results.** The base WB delete use cases return `Promise<void>`, so the guard's `false` (dismissed warning) cannot travel through the typed interface, and the base `DeletePageUseCaseWithLoading` and `DeletePageRevisionUseCaseWithLoading` drop the result (`await runCallBack(...)` returns nothing). The CMS use cases return `boolean`. Fix: both WB use-case abstractions become `execute(params): Promise<boolean>` (`false` = not carried out), the two implementations return `true`, the two loading decorators `return` the `runCallBack` result (`ILoadingRepository.runCallBack<T>(Promise<T>): Promise<T>` already preserves it).
 
@@ -16,14 +16,14 @@ R202, R204, R205, R228, R211, R235, R236, R249, D157, A82; Q27; Review Focus 8, 
 - `useDeletePageConfirmationDialog` (`.../PageList/hooks/useDeletePageConfirmationDialog.tsx`, used by the table row action `Table/Actions/Delete.tsx`): shows "{title} was moved to trash!" after `await deletePage(...)` without looking at the result, so a dismissed warning would announce a trash that did not happen. Fix: return without the snackbar when the result is `false`. It has no test today: a hook test with mocked `@webiny/app-admin` hooks is added (needs `@testing-library/react` as a devDependency of `app-website-builder`).
 - `useRevision.deleteRevision` (`.../PageEditor/Revisions/useRevision.tsx`): fires `deletePageRevision(...)` without awaiting or reading the result and has **no first confirmation dialog** (the revision list item calls it directly), so for a revision delete the warning is the only dialog; a dismissed warning resolves `false` and nothing happens, a refusal that is not the workflow one remains an unhandled rejection as today. Unchanged.
 - `BulkDeletePresenter.deleteItem` (`.../bulkActions/BulkDeletePresenter.ts`): reports `report.success` whatever the use case returned. In a bulk run the guard's collect mode records the refusal and resolves `false` (Task 33, R228, R211-safe: no rethrow), so `deleteItem` must report `false` as a failure: `if (deleted === false) report.error(...)`, no try/catch, so a thrown (non-workflow) error still rejects `execute` exactly as today.
-- Results-dialog timing, verified in `packages/app-website-builder/src/presentation/pages/PageList/components/BulkActions/BulkActionDelete.tsx`: `await bulkDelete.execute(selectedItems)`, then `deselectAll()`, then `showResultsDialog(...)`, so no failure summary shows before the warning. The bulk confirmation is a generic `showConfirmationDialog` dialog, so the warning (named) stacks over it. The retry's report replaces the first pass's (Q27, accepted); the first-pass count above is what keeps the first pass visible.
+- Results-dialog timing, verified in `packages/app-website-builder/src/presentation/pages/PageList/components/BulkActions/BulkActionDelete.tsx`: `await bulkDelete.execute(selectedItems)`, then `deselectAll()`, then `showResultsDialog(...)`, so no failure summary shows before the warning. The bulk confirmation is a generic `showConfirmationDialog` dialog, so the warning (named) stacks over it. The retry's report replaces the first pass's (accepted); the first-pass count above is what keeps the first pass visible.
 - A72 (WB, from Task 32): there is no WB background-task path; the bulk delete is per page, so the collect flow covers all of it.
 
 **Step 0: verify before Step 1.**
 - Confirm the trash-bin evidence: read `packages/api-website-builder-workflows/src/features/target/WbPageTargetReader/WbPageTargetReader.ts` (`GetRevisionByIdUseCase` with its NotDeleted decorator, so a trashed page reads as missing) and `git grep -n "BlockPageTrashWhileInReview\|BlockPageDeleteWhileInReview" packages/api-website-builder-workflows/src` (the trash and delete blocks). Record both in the commit body of the feat commit.
 - `git grep -n "useDeletePage\b\|\.deletePage(" packages/app-website-builder/src packages/app-website-builder-workflows/src` lists every caller of the use case; the expected callers are the two above plus `Delete.tsx` through the hook. Any other caller that ignores a `false` result is fixed in this task.
 
-- Q27: confirm that the WB bulk flow states no count after the first pass (read `BulkActionDelete.tsx` and `DialogMessage.tsx`), so the guard's toast of Task 33 is the only first-pass summary; no WB-local count is built.
+- Q28: confirm that the WB bulk flow states no count after the first pass (read `BulkActionDelete.tsx` and `DialogMessage.tsx`), so the guard's toast of Task 33 is the only first-pass summary; no WB-local count is built.
 
 **Files:**
 - Create: `packages/app-website-builder-workflows/src/features/trash/feature.ts`
@@ -54,14 +54,14 @@ R202, R204, R205, R228, R211, R235, R236, R249, D157, A82; Q27; Review Focus 8, 
   - Task 33: `ActiveReviewGuard` token (`@webiny/app-workflows/review/trash/ActiveReviewGuard.js`), implementations for the integration tests (`.../ActiveReviewGuard.js`, `.../ActiveReviewBlockCollector.js`). Task 34: `ActiveReviewTrashFeature`. Build `@webiny/app-workflows` before Step 1 (`yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30`).
   - Task 12: `WbReviewUseCases` (`~/features/gateway/WbReviewUseCases.js`, one token per file, `IReviewUseCases` including `cancelForDelete`), `WbReviewFeature` registered in `WebsiteBuilderWorkflows`.
   - Task 32: the typed error from the base WB gateways. Task 3 (`deletePageRevision`), Task 4 (the server block), Task 5 (`revisionId` on cancel-for-delete): the decorator is only live with them.
-  - Existing: `DeletePageUseCase` and `DeletePageParams` (`@webiny/app-website-builder/features/pages/deletePage/abstractions.js`), `DeletePageRevisionUseCase` and `DeletePageRevisionParams` (`.../deletePageRevision/abstractions.js`), `BulkDeletePresenter` (`@webiny/app-website-builder/presentation/pages/bulkActions/abstractions.js`; token `"WB/BulkDeletePresenter"`, `execute(items: Page[])`), `Page` (`@webiny/app-website-builder/domain/Page/Page.js`; `Page.create`, `entryId`), `WbPageLoadingRepository` (`~/features/pages/shared/abstractions.js`, `ILoadingRepository.runCallBack`), `loadingActions` (`~/constants.js`), `Confirmation`, `RegisterFeature`, `useFeatureFlags`, `createFeature`, `GraphQLOperationError`, `ReviewErrorCode`, `CancelForDeleteParams`, `Review` (as in Task 35).
+  - Existing: `DeletePageUseCase` and `DeletePageParams` (`@webiny/app-website-builder/features/pages/deletePage/abstractions.js`), `DeletePageRevisionUseCase` and `DeletePageRevisionParams` (`.../deletePageRevision/abstractions.js`), `BulkDeletePresenter` (`@webiny/app-website-builder/presentation/pages/bulkActions/abstractions.js`; token `"WB/BulkDeletePresenter"`, `execute(items: Page[])`), `Page` (`@webiny/app-website-builder/domain/Page/Page.js`; `Page.create`, `entryId`), `WbPageLoadingRepository` (`~/features/pages/shared/abstractions.js`, `ILoadingRepository.runCallBack`), `loadingActions` (`~/constants.js`), `Confirmation`, `Notifications` (`@webiny/app-admin/features/notifications/abstractions.js`, registered as a fake in the three real-guard tests because the guard depends on `[Confirmation, ActiveReviewBlockCollector, Notifications]`), `REVIEW_TOAST_POSITION` and `REVIEW_TOAST_DURATION` (`@webiny/app-workflows/review/toasts/constants.js`, Task 10), `RegisterFeature`, `useFeatureFlags`, `createFeature`, `GraphQLOperationError`, `ReviewErrorCode`, `CancelForDeleteParams`, `Review` (as in Task 35).
 - Produces (no later consumer):
   - `WbReviewTrashFeature`, `DeletePageUseCaseReviewDecorator`, `DeletePageRevisionUseCaseReviewDecorator`, `BulkDeletePresenterReviewDecorator`.
   - Base fixes: `IDeletePageUseCase` and `IDeletePageRevisionUseCase` `execute(...): Promise<boolean>`; the loading decorators propagate the result; `useDeletePageConfirmationDialog` honours `false`; `BulkDeletePresenter.deleteItem` reports failures.
 
 - [ ] **Step 1: Write the failing tests**
 
-Admin packages run `yarn test <path>` only (the storage legs are for the API packages of 8a.1). `packages/app-website-builder-workflows` has its vitest setup from Task 12 (jsdom); `packages/app-website-builder` runs vitest in jsdom already.
+Admin packages run `yarn test <path>` only (the storage legs are for the API packages of 8a.1). `packages/app-website-builder-workflows` has its vitest setup from Task 12 (jsdom) and the DOM setup and SVG alias from Task 22 (`feature.test.tsx` imports modules that load `@webiny/icons/*.svg`); `packages/app-website-builder` runs vitest in jsdom already.
 
 Create `packages/app-website-builder-workflows/src/features/trash/DeletePageUseCaseReviewDecorator.test.ts`:
 
@@ -73,6 +73,7 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { DeletePageUseCase } from "@webiny/app-website-builder/features/pages/deletePage/abstractions.js";
 import { ReviewErrorCode } from "@webiny/app-workflows/review/domain/ReviewErrorCode.js";
 import type { Review } from "@webiny/app-workflows/review/domain/types.js";
@@ -121,6 +122,11 @@ function setup(decision: "confirm" | "dismiss" = "confirm") {
 
     const container = new Container();
     container.registerInstance(Confirmation, { confirm } as unknown as Confirmation.Interface);
+    container.registerInstance(Notifications, {
+        notify: vi.fn(),
+        success: vi.fn(),
+        warning: vi.fn()
+    } as unknown as Notifications.Interface);
     container.register(ActiveReviewBlockCollector).inSingletonScope();
     container.register(ActiveReviewGuard).inSingletonScope();
     container.registerInstance(WbReviewUseCases, useCases as unknown as WbReviewUseCases.Interface);
@@ -221,6 +227,7 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { DeletePageRevisionUseCase } from "@webiny/app-website-builder/features/pages/deletePageRevision/abstractions.js";
 import { ReviewErrorCode } from "@webiny/app-workflows/review/domain/ReviewErrorCode.js";
 import type { Review } from "@webiny/app-workflows/review/domain/types.js";
@@ -269,6 +276,11 @@ function setup(decision: "confirm" | "dismiss" = "confirm") {
 
     const container = new Container();
     container.registerInstance(Confirmation, { confirm } as unknown as Confirmation.Interface);
+    container.registerInstance(Notifications, {
+        notify: vi.fn(),
+        success: vi.fn(),
+        warning: vi.fn()
+    } as unknown as Notifications.Interface);
     container.register(ActiveReviewBlockCollector).inSingletonScope();
     container.register(ActiveReviewGuard).inSingletonScope();
     container.registerInstance(WbReviewUseCases, useCases as unknown as WbReviewUseCases.Interface);
@@ -344,12 +356,15 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { Page } from "@webiny/app-website-builder/domain/Page/Page.js";
 import { DeletePageUseCase } from "@webiny/app-website-builder/features/pages/deletePage/abstractions.js";
 import { BulkDeletePresenter } from "@webiny/app-website-builder/presentation/pages/bulkActions/abstractions.js";
 import { ReviewErrorCode } from "@webiny/app-workflows/review/domain/ReviewErrorCode.js";
 import type { Review } from "@webiny/app-workflows/review/domain/types.js";
 import type { CancelForDeleteParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
+import { REVIEW_TOAST_DURATION } from "@webiny/app-workflows/review/toasts/constants.js";
+import { REVIEW_TOAST_POSITION } from "@webiny/app-workflows/review/toasts/constants.js";
 import { ActiveReviewGuard as GuardAbstraction } from "@webiny/app-workflows/review/trash/ActiveReviewGuard.js";
 import { ActiveReviewBlockCollector } from "@webiny/app-workflows/review/trash/ActiveReviewBlockCollectorImpl.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuardImpl.js";
@@ -489,6 +504,9 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-pa
 
         const container = new Container();
         container.registerInstance(Confirmation, { confirm } as unknown as Confirmation.Interface);
+        // The real guard reports the first-pass count through Notifications (Task 33).
+        const notifications = { notify: vi.fn(), success: vi.fn(), warning: vi.fn() };
+        container.registerInstance(Notifications, notifications as unknown as Notifications.Interface);
         container.register(ActiveReviewBlockCollector).inSingletonScope();
         container.register(ActiveReviewGuard).inSingletonScope();
         container.registerInstance(WbReviewUseCases, useCases as unknown as WbReviewUseCases.Interface);
@@ -519,6 +537,7 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-pa
             failed,
             decoratee,
             useCases,
+            notifications,
             presenter: container.resolve(BulkDeletePresenter)
         };
     }
@@ -526,10 +545,21 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-pa
     const items = [page("p1"), page("p2"), page("p3")];
 
     it("collects every refused page, warns once and retries only the blocked pages", async () => {
-        const { confirm, deleted, failed, decoratee, useCases, presenter } =
+        const { confirm, deleted, failed, decoratee, useCases, notifications, presenter } =
             setupIntegrated("confirm");
 
         await presenter.execute(items);
+
+        // First pass: p2 was done, p1 and p3 were refused (Q28, Task 33).
+        expect(notifications.warning).toHaveBeenCalledTimes(1);
+        expect(notifications.warning).toHaveBeenCalledWith(
+            expect.objectContaining({
+                title: "1 of 3 items done. 2 still need your confirmation.",
+                position: REVIEW_TOAST_POSITION,
+                duration: REVIEW_TOAST_DURATION,
+                dismissible: true
+            })
+        );
 
         expect(confirm).toHaveBeenCalledTimes(1);
         const dialogParams = confirm.mock.calls[0][1] as GuardAbstraction.DialogParams;
@@ -805,7 +835,7 @@ describe("DeletePageRevisionUseCaseWithLoading", () => {
 });
 ```
 
-Create `packages/app-website-builder/src/presentation/pages/PageList/hooks/useDeletePageConfirmationDialog.test.tsx`:
+Create `packages/app-website-builder/src/presentation/pages/PageList/hooks/useDeletePageConfirmationDialog.test.tsx` (all imports at the top; `vi.mock` and `vi.hoisted` are hoisted above them by vitest, so the mocks still apply to the hook import):
 
 ```tsx
 import { afterEach } from "vitest";
@@ -816,6 +846,7 @@ import { vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import { renderHook } from "@testing-library/react";
 import type { PageDto } from "~/domain/Page/index.js";
+import { useDeletePageConfirmationDialog } from "./useDeletePageConfirmationDialog.js";
 
 const mocks = vi.hoisted(() => ({
     deletePage: vi.fn(),
@@ -832,8 +863,6 @@ vi.mock("@webiny/app-admin", () => ({
     }),
     useSnackbar: () => ({ showSnackbar: mocks.showSnackbar })
 }));
-
-import { useDeletePageConfirmationDialog } from "./useDeletePageConfirmationDialog.js";
 
 const PAGE = { id: "page-1#0001", properties: { title: "Home page" } } as unknown as PageDto;
 
@@ -1328,5 +1357,5 @@ git commit -m "feat(app-website-builder-workflows): guard the page trash and del
 **Contract notes:**
 - The WB revision delete has no first confirmation dialog in the admin (`useRevision.deleteRevision`), so D157's "normal dialog first" order does not exist there and the warning is the only dialog. Not changed (out of scope); Task 38 records it.
 - The WB revision delete does not update the revision list cache after a successful delete (existing behaviour of `DeletePageRevisionRepository`); not touched.
-- For Task 38: a bulk retry's results dialog shows only the retried items (Q27, accepted); the first-pass summary toast is the shared guard's (Task 33).
+- For Task 38: a bulk retry's results dialog shows only the retried items (accepted); the first-pass count toast (Q28 copy) is shown by `ActiveReviewGuard.runBulk` (Task 33), the WB bulk decorator only forwards.
 - verify: `WbReviewUseCases` file and export (Task 12), the `WbReviewFeature` anchor line in `index.tsx`, and that `@webiny/app-website-builder` exposes the deep imports used here (`./*` export; the existing `app-website-builder-workflows` sources already import `@webiny/app-website-builder/presentation/...`).

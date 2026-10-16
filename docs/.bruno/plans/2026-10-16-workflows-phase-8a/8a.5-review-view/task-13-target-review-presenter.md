@@ -14,7 +14,7 @@ R202, R212, R216, R217, R225, R226 (as amended by R-h), R232, R234, R-a, R-c, R-
   - `getReviewMessage` (README 6 table; R225 loading and failure texts; the shared QBZ-59 no-access sentence `NO_ACCESS_MESSAGE` (R-i, `presentation/noAccessMessage.ts`, also used by Tasks 15 and 18); "Waiting in the {names} team pool", names being the viewer's own teams among the step's `candidateTeams` joined " and " (QBZ-25, R232, R247; `viewerTeamIds` is a parameter), else all the step's `candidateTeams` joined ", ", none resolved "Waiting in the team pool"; owner is the viewer = `flags.canApprove` ("You are reviewing this step"; the client never learns the viewer's id, approving is owner-only on the server); someone else "{Name} is reviewing"; AI and automation owners by the step title (R216, QBZ-79); approved and published "Approved and published", approved, not published and `isUnpublished` "Approved and unpublished. Publishing again needs no new review.", otherwise "Approved, ready to publish" (R226 as amended by R-h); rejected through `getRejectionText`; a `running` or `failed` step falls back to the generic "{Name} is reviewing" (R203)).
   - `getRejectionText` (R216: "Rejected at {step}: “{comment}”", the comment cut to 80 characters with "…"; no comment "Rejected at {step}.").
   - `getStepOwnerLabel` (user name, "A user" when blank; AI and automation: the step title; no owner on an awaiting step: "Team pool ({names})" or "Team pool"; a pending step "Not reached yet").
-  - `getReviewStateTag` ("Review: In progress | Approved | Rejected", QBZ-52), `getStepStateTag` (labels and variants of the six step states, used by the popover here and the drawer in Task 18; `failed` is `destructive` (red), `rejected` is `neutral-dark`, no other step state is red, R239, Q24).
+  - `getReviewStateTag` ("Review: In progress | Approved | Rejected", QBZ-52; Rejected is `neutral-dark`, only Failed is destructive, Q30), `getStepStateTag` (labels and variants of the six step states, used by the popover here and the drawer in Task 18; `failed` is `destructive` (red), `rejected` is `neutral-dark`, no other step state is red, R239, Q24).
   - `getReviewActions` (README 6 labels and icons, ordered ghost -> tertiary -> secondary -> primary, only what the server `flags` allow; "Request review" only without an active review and with `canRequest`, R217; no Restart, 8b), `getEditorRules` (R226, R240; switches on `status`, `reviewKind` and `isUnpublished`; an unpublished revision with no review may publish (Q19, `publishDisabledReason` null); a revision with no review: "Publishing needs an approved review. Request a review first.", a rejected one: "This revision was rejected. Create a new revision, then request a new review.", in review: "This revision is in review. Publishing is allowed once every step approves."), `getReviewKind`, `getReviewProgress`, `getDisplayStep` (the step the bar describes: the current step, else the rejecting step, else the last), `getTargetIdFromRevisionId`, `getTeamNames`.
 
 **Files:**
@@ -802,7 +802,7 @@ describe("tags", () => {
         });
         expect(getReviewStateTag(ReviewState.Rejected)).toEqual({
             label: "Review: Rejected",
-            variant: "destructive"
+            variant: "neutral-dark"
         });
     });
 
@@ -1893,7 +1893,7 @@ export const getReviewStateTag = (state: ReviewStateValue): TargetReviewTag | nu
         case ReviewState.Approved:
             return { label: "Review: Approved", variant: "success-light" };
         case ReviewState.Rejected:
-            return { label: "Review: Rejected", variant: "destructive" };
+            return { label: "Review: Rejected", variant: "neutral-dark" };
         default:
             return null;
     }
@@ -2817,11 +2817,11 @@ Expected: PASS in every file. If the presenter test reports `Cannot read propert
 - [ ] **Step 5: Run the existing tests covering the changed code and type-check**
 
 ```bash
-yarn test packages/app-workflows/src/review 2>&1 | tail -30
+yarn test packages/app-workflows/src/review/presentation/targetReview/getReviewMessage.test.ts packages/app-workflows/src/review/presentation/targetReview/getEditorRules.test.ts packages/app-workflows/src/review/presentation/targetReview/getReviewActions.test.ts packages/app-workflows/src/review/presentation/targetReview/stepLabels.test.ts packages/app-workflows/src/review/presentation/targetReview/buildTargetReviewViewModel.test.ts packages/app-workflows/src/review/presentation/targetReview/TargetReviewPresenter.test.ts packages/app-workflows/src/app.test.tsx 2>&1 | tail -30
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 
-Expected: the `review` folder holds the Task 8-10 tests and this task's; all pass (`yarn test <folder>` is allowed here because the folder holds only this sub-phase's tests; Steps 2 and 4 keep one file per command). The build prints no TypeScript errors. **Type check (R-e):** `yarn build -p @webiny/app-workflows` is the type check. `yarn check:test:types -p app-workflows` does not apply to this package (the script only finds packages with `__tests__/**.test.ts` files and reports only errors inside `__tests__/`; `app-workflows` tests are co-located under `src/`). `packages/app-workflows/tsconfig.build.json` includes `src`, so `yarn build` type-checks every co-located `*.test.ts(x)` and the fixtures with `rootDir: ./src`; that is why the fixtures live in `src/review/testing/` and not in `__tests__/` (an import from outside `rootDir` fails the build with TS6059). Build `@webiny/app` first (`yarn build -p @webiny/app --no-cache 2>&1 | tail -30`) when Task 6 has not been built yet, because the presenter imports `GraphQLOperationError`.
+Expected: this task's test files (by path) all pass. The build prints no TypeScript errors. **Type check (R-e):** `yarn build -p @webiny/app-workflows` is the type check. `yarn check:test:types` does not cover co-located tests (the script only finds packages with `__tests__/**.test.ts` files and reports only errors inside `__tests__/`; `app-workflows` tests are co-located under `src/`). `packages/app-workflows/tsconfig.build.json` includes `src`, so `yarn build` type-checks every co-located `*.test.ts(x)` and the fixtures with `rootDir: ./src`; that is why the fixtures live in `src/review/testing/` and not in `__tests__/` (an import from outside `rootDir` fails the build with TS6059). Build `@webiny/app` first (`yarn build -p @webiny/app --no-cache 2>&1 | tail -30`) when Task 6 has not been built yet, because the presenter imports `GraphQLOperationError`.
 
 - [ ] **Step 6: Pre-commit chain and commit**
 

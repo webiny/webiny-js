@@ -2002,7 +2002,7 @@ Expected: PASS. Component test notes to check on the first run: `screen.getByTex
 - [ ] **Step 5: Run the existing tests covering the changed code and type-check**
 
 ```bash
-yarn test packages/app-workflows/src/review 2>&1 | tail -30
+yarn test packages/app-workflows/src/review/presentation/actionDialog/formatReviewTime.test.ts packages/app-workflows/src/review/presentation/actionDialog/getConflictMessage.test.ts packages/app-workflows/src/review/presentation/actionDialog/ReviewActionDialogPresenter.test.ts packages/app-workflows/src/review/presentation/actionDialog/components/ReviewActionDialogs.test.tsx packages/app-workflows/src/app.test.tsx 2>&1 | tail -30
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 

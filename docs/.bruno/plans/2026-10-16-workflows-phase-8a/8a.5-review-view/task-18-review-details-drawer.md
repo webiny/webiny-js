@@ -1686,7 +1686,7 @@ Expected: PASS.
 - [ ] **Step 5: Run the existing tests covering the changed code and type-check**
 
 ```bash
-yarn test packages/app-workflows/src/review 2>&1 | tail -30
+yarn test packages/app-workflows/src/review/presentation/reviewDetails/buildReviewDetailsViewModel.test.ts packages/app-workflows/src/review/presentation/reviewDetails/ReviewDetailsPresenter.test.ts packages/app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.test.tsx packages/app-workflows/src/app.test.tsx 2>&1 | tail -30
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 

@@ -4,7 +4,7 @@ Spec 13.1, 13.4; R225 (no editing or publishing while the status is unknown), R2
 
 - **A73 decision (stated, with why):** a workflows-registered `Ui.TopBar.Action` named `buttonWorkflowPublish`, registered **outside** any `Ui.IsNotReadOnly`/`Ui.IsReadOnly` condition (inside the page editor secondary config, wrapped only in the base `HasPermission entity="page" action="publish"`), plus one decorator of `Ui.TopBar.Action` that hides the base `buttonPublish` unless the namespace has no workflow. The "cleaner switch" was looked for and does not exist: `Ui.TopBar.Action` takes `remove`, `before`, `after`, `name`, `element`, `group` only (`BaseEditor/config/Element.tsx`), and `Ui.IsNotReadOnly` has no override. `remove` on `buttonPublish` would also drop the base button for pages without a workflow and the base `HasPermission` wrapper, which would then have to be copied. A workflows action is also required for QBZ-1/QBZ-36: while the status loads or failed the canvas is read-only (R225), the base Publish is gone with it, yet the design wants a visible disabled Publish with a reason. The new button reuses the base `PublishButton` (publish dialog, revision description, publish call, redirect to the list) when publishing is allowed, so none of that logic is copied.
 - **Who shows what (`vm.status`, `vm.allowsPublishing`, page status):** `noWorkflow`: the base Publish only (the workflows action renders nothing; the base shows when the canvas is editable, as today). `loading`, `failed`, `none`, `active`: the base Publish is hidden by the decorator; the workflows action renders the base `PublishButton` when `vm.allowsPublishing`, else a disabled button with `vm.publishDisabledReason`. `vm.allowsPublishing` comes from the shared `getEditorRules({ status, reviewKind, isUnpublished })` (R226): true for an approved review and, **for an unpublished page with no review (Q19)**, because it was reviewed before it was published; Task 22's bar passes `isUnpublished` to the presenter. A `published` page shows no Publish from workflows (it is already published; the base one is not mounted for a read-only canvas either). An approved revision shows an enabled Publish whether the page is a draft (canvas read-only because of the review) or unpublished (approved, later unpublished keeps "Review: Approved" with Publish enabled), and an unpublished page with no review shows it enabled too. Publish for such a page that was published before the workflow was bound is refused by the server with `Workflows/Review/PublishBlocked` (A89); the admin error toast shows it, the client has no flag to know in advance.
-- **Disabled Publish (QBZ-36, R241):** `DisabledPublishButton` takes the presenter and renders an admin-ui `Button` with `aria-disabled="true"` (not the `disabled` attribute, so it stays focusable), no click handler and `type="button"`, wrapped in the shared `ReviewTooltip` (`{ presenter; children }`, Task 14), which supplies the reason tooltip on hover and focus and the always-present `aria-describedby` description. This task builds no tooltip or description of its own.
+- **Disabled Publish (QBZ-36, R241):** `DisabledPublishButton` takes the presenter and renders an admin-ui `Button` with `aria-disabled="true"` (not the `disabled` attribute, so it stays focusable), no click handler and `type="button"`, wrapped in the shared `ReviewTooltip` (`{ presenter; children }`, Task 14; `children` is a render function receiving the description id), which supplies the reason tooltip on hover and focus and the always-present `aria-describedby` description. This task builds no tooltip or description of its own.
 - **Autosave:** `PageEditorAutoSave` (`Ui.TopBar.Element.createDecorator`, name `autoSave`, replaced in place) renders the base autosave only while `vm.allowsEditing`, so autosave is off while a review exists and while the status is loading or failed (defence in depth: the base autosave also refuses while the canvas is read-only). Other elements pass through untouched.
 - **`PageEditorConfig`** (Task 22's rewrite, which already mounts `PageEditorTopBar`, `PageEditorLayout` and `PageNewRevisionDecorator`) now also mounts `PageEditorAutoSave`, `PageBasePublishDecorator` and, inside the base config, `PageReviewPublishAction`.
 
@@ -19,10 +19,10 @@ Spec 13.1, 13.4; R225 (no editing or publishing while the status is unknown), R2
 - Not touched here (deleted in Task 37): `PageFormWorkflowStatePublishButton.tsx`.
 
 **Interfaces:**
-- Consumes: Task 22 (`WbPageReviewFeature`, `PageEditorConfig`, `PageEditorLayout`, `pageEditorDocument.ts`, the test support `createFakeSession`, `createFakeVm`, `createPageEditor`, `WbEditorHarness`); Task 13 (`TargetReviewPresenter.ViewModel`: `allowsEditing`, `allowsPublishing`, `publishDisabledReason`, `status`; `getEditorRules`, which the Task 22 fixture builds on); existing Website Builder code, deep imports: `PublishButton` (`@webiny/app-website-builder/presentation/pages/PageEditor/TopBar/PublishButton.js`), `HasPermission` (`@webiny/app-website-builder/presentation/security/HasPermission.js`), `PageEditorConfig` with `Ui.TopBar.Action`, `Ui.TopBar.Element`, `Ui.IsNotReadOnly` (`.../presentation/pages/PageEditor/PageEditorConfig.js`), `useSelectFromDocument`, `WbPageStatus`; `Button` (`@webiny/admin-ui`, forwards `aria-*` through `...rest` after its own `aria-disabled={disabled}`), `ReviewTooltip` (`@webiny/app-workflows/review/presentation/targetReview/components/ReviewTooltip.js`, Task 14, props `{ presenter; children }`, R241); `@webiny/icons/publish.svg`.
+- Consumes: Task 22 (`WbPageReviewFeature`, `PageEditorConfig`, `PageEditorLayout`, `pageEditorDocument.ts`, the test support `createFakeSession`, `createFakeVm`, `createPageEditor`, `WbEditorHarness`); Task 13 (`TargetReviewPresenter.ViewModel`: `allowsEditing`, `allowsPublishing`, `publishDisabledReason`, `status`; `getEditorRules`, which the Task 22 fixture builds on); existing Website Builder code, deep imports: `PublishButton` (`@webiny/app-website-builder/presentation/pages/PageEditor/TopBar/PublishButton.js`), `HasPermission` (`@webiny/app-website-builder/presentation/security/HasPermission.js`), `PageEditorConfig` with `Ui.TopBar.Action`, `Ui.TopBar.Element`, `Ui.IsNotReadOnly` (`.../presentation/pages/PageEditor/PageEditorConfig.js`), `useSelectFromDocument`, `WbPageStatus`; `Button` (`@webiny/admin-ui`, forwards `aria-*` through `...rest` after its own `aria-disabled={disabled}`), `ReviewTooltip` (`@webiny/app-workflows/review/presentation/targetReview/components/ReviewTooltip.js`, Task 14, props `{ presenter; children }` where `children` is a render function `describedBy => ReactNode`, R241); `@webiny/icons/publish.svg`.
 - Produces: the `buttonWorkflowPublish` action, the `buttonPublish` decorator and the autosave gate; no export beyond the components.
 
-**Test runner note:** admin package: `yarn test <path>` only (no `test:os`). Rendered `.svg` imports are mocked (`@webiny/icons/publish.svg`), `PublishButton` and `HasPermission` are mocked (the real ones need the page features and the permission container, which these tests do not exercise), and every test calls `cleanup()` in `afterEach`. `ReviewTooltip` is mocked to a span that exposes the presenter's `publishDisabledReason` as `data-reason` and renders its children (its own behaviour is tested in Task 14), so these tests assert the button (focusable, `aria-disabled`, no submit) and the reason it is given.
+**Test runner note:** admin package: `yarn test <path>` only (no `test:os`). Rendered `.svg` imports are mocked (`@webiny/icons/publish.svg`), `PublishButton` and `HasPermission` are mocked (the real ones need the page features and the permission container, which these tests do not exercise), and every test calls `cleanup()` in `afterEach`. `ReviewTooltip` is mocked to a span that exposes the presenter's `publishDisabledReason` as `data-reason` and calls its render-function child with the id `tooltip-description` (its own behaviour is tested in Task 14), so these tests assert the button (focusable, `aria-disabled`, no submit) and the reason it is given.
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -52,14 +52,14 @@ vi.mock(
         const React = await import("react");
         interface StubProps {
             presenter: { vm: { publishDisabledReason: string | null } };
-            children: React.ReactNode;
+            children: (describedBy: string) => React.ReactNode;
         }
         const ReviewTooltip = (props: StubProps) => {
             const reason = props.presenter.vm.publishDisabledReason ?? "";
             return React.createElement(
                 "span",
                 { "data-testid": "review-tooltip", "data-reason": reason },
-                props.children
+                props.children("tooltip-description")
             );
         };
         return { ReviewTooltip };
@@ -79,6 +79,7 @@ describe("DisabledPublishButton", () => {
         const button = screen.getByRole("button", { name: "Publish" });
         expect(button.getAttribute("aria-disabled")).toBe("true");
         expect(button.hasAttribute("disabled")).toBe(false);
+        expect(button.getAttribute("aria-describedby")).toBe("tooltip-description");
     });
 
     it("is wrapped in the shared review tooltip of the same presenter", () => {
@@ -128,7 +129,7 @@ import { Container } from "@webiny/di";
 import { InternalPageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import type { WbStatus } from "@webiny/app-website-builder/constants.js";
-import { WbPageReview } from "~/features/editorReview/abstractions.js";
+import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";
@@ -158,14 +159,14 @@ vi.mock(
         const React = await import("react");
         interface StubProps {
             presenter: { vm: { publishDisabledReason: string | null } };
-            children: React.ReactNode;
+            children: (describedBy: string) => React.ReactNode;
         }
         const ReviewTooltip = (props: StubProps) => {
             const reason = props.presenter.vm.publishDisabledReason ?? "";
             return React.createElement(
                 "span",
                 { "data-testid": "review-tooltip", "data-reason": reason },
-                props.children
+                props.children("tooltip-description")
             );
         };
         return { ReviewTooltip };
@@ -352,7 +353,7 @@ import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { InternalPageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
-import { WbPageReview } from "~/features/editorReview/abstractions.js";
+import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";
@@ -518,14 +519,14 @@ vi.mock(
         const React = await import("react");
         interface StubProps {
             presenter: { vm: { publishDisabledReason: string | null } };
-            children: React.ReactNode;
+            children: (describedBy: string) => React.ReactNode;
         }
         const ReviewTooltip = (props: StubProps) => {
             const reason = props.presenter.vm.publishDisabledReason ?? "";
             return React.createElement(
                 "span",
                 { "data-testid": "review-tooltip", "data-reason": reason },
-                props.children
+                props.children("tooltip-description")
             );
         };
         return { ReviewTooltip };
@@ -649,13 +650,16 @@ export interface DisabledPublishButtonProps {
 export const DisabledPublishButton = ({ presenter }: DisabledPublishButtonProps) => {
     return (
         <ReviewTooltip presenter={presenter}>
-            <Button
-                type={"button"}
-                variant={"primary"}
-                text={"Publish"}
-                icon={<PublishIcon />}
-                aria-disabled={"true"}
-            />
+            {describedBy => (
+                <Button
+                    type={"button"}
+                    variant={"primary"}
+                    text={"Publish"}
+                    icon={<PublishIcon />}
+                    aria-disabled={"true"}
+                    aria-describedby={describedBy}
+                />
+            )}
         </ReviewTooltip>
     );
 };
@@ -875,7 +879,7 @@ Expected: all pass, no type errors. In `editorGlue.wiring.test.tsx` the root now
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
-Run `git status --short` first and stage only the files this task touches.
+Run the Global Constraints pre-commit chain from `../00-shared.md` in full (it stages everything with `git add .`; `.gitleaks.toml`, `docs/.reports` and `.superpowers` are never committed) and restore `.gitleaks.toml` after format and after build:
 
 ```bash
 git add .
@@ -884,11 +888,12 @@ node scripts/generateTsConfigsInPackages.js
 yarn adio
 yarn check-ts-configs
 yarn format:fix > /dev/null 2>&1
+git checkout -- .gitleaks.toml
 yarn lint:fix
 yarn webiny sync-dependencies
 yarn build -p @webiny/app-website-builder-workflows --no-cache 2>&1 | tail -30
-git add .
 git checkout -- .gitleaks.toml
+git add .
 ```
 
 If any step fails and you fix anything, rerun the chain from the start. Then:

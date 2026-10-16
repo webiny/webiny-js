@@ -35,3 +35,4 @@
 - Q27 Bulk retry results (user): accept that a bulk retry's results dialog shows only the retried items (documented in Task 38). Make sure a first-pass toast or summary states how many items were done; add one if the flow has none (R228, Tasks 35, 36, 38).
 - Q28 Bulk first-pass toast copy (user): approved as proposed, "{done} of {total} items done. {n} still need your confirmation." (Task 33).
 - Q29 Rejected colours (user): approved split. Tags use neutral-dark for Rejected and destructive for Failed; progress segments keep the design's red for rejected steps (design README 11).
+- Q30 Review-level Rejected tag (user): neutral-dark too, same as the step tag; only Failed is destructive (refines Q29; Task 13 getReviewStateTag).

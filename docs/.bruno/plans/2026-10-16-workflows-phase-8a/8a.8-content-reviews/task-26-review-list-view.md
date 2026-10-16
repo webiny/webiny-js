@@ -14,7 +14,7 @@ Spec 13.5; R206, R210, R212, R229, R234; Decisions D112, D113, D114, D119; desig
 - Create: `packages/app-workflows/src/review/presentation/reviewList/components/{ReviewListView,ReviewListTabs,ReviewListToolbar,ReviewListTable,ReviewListRowActions,ReviewListEmpty,ReviewListNotice,ReviewListDialogs}.tsx`
 - Create: `packages/app-workflows/src/review/presentation/reviewList/prefersReducedMotion.ts` (pure)
 - Create tests: `packages/app-workflows/src/review/presentation/reviewList/components/ReviewListView.test.tsx`, `packages/app-workflows/src/review/presentation/reviewList/components/ReviewListToolbar.test.tsx`
-- The barrel `src/index.tsx` is edited once, in Task 28. No vitest config, svg stub or render helper is added here: Task 14 owns them (`vitest.config.ts` with the DOM setup and the svg alias, `renderWithAdminUi`).
+- The barrel `src/index.tsx` is not touched (R-k). No vitest config, svg stub or render helper is added here: Task 14 owns them (`vitest.config.ts` with the DOM setup and the svg alias, `renderWithAdminUi`).
 
 **Interfaces:**
 - Consumes: Task 25 (`ReviewListPresenter`, `ReviewListPresenterFeature`, `IReviewRowProvider`, `ReviewListTab`, `ReviewListRowVm`, `REVIEW_LIST_TABS`, `parseReviewListTab`, the builder `createReviewListItem` from `~/review/testing/createReviewListItem.js`); Task 15 and 16 (`ReviewActionDialogs` from `~/review/presentation/actionDialog/components/ReviewActionDialogs.js`, `ReviewActionRequest` from `~/review/presentation/actionDialog/ReviewActionRequest.js`, the `reassign` kind); Task 18 (`ReviewDetailsDrawer` from `~/review/presentation/reviewDetails/components/ReviewDetailsDrawer.js`, **and its `ReviewDetailsPresenter` notifying `ReviewActivity` with `source: "own"` after an action taken in the drawer**, see Contract notes); Task 14 (`renderWithAdminUi` from `~/review/testing/renderWithAdminUi.js`, the vitest config with the DOM setup file and the svg alias); Task 8 (`IReviewListUseCases`, `ReviewState`, `StepState`, `REVIEW_LIST_PAGE_SIZE`); Task 10 (`ReviewActivity` token and the real implementation `~/review/activity/ReviewActivity.js`). Existing: `IdentityContext` (`@webiny/app-admin/features/security/IdentityContext/abstractions.js`), `createReactiveComponent` (`@webiny/app-admin`), `useFeature` (`@webiny/app`), `@webiny/admin-ui` `Alert`, `Button`, `DropdownMenu`, `EmptyState`, `Heading`, `Icon`, `IconButton`, `Input`, `Link`, `Select`, `Skeleton`, `Table`, `Tabs`, `Tag`, `Text`; `@webiny/icons/more_vert.svg`, `@webiny/icons/open_in_new.svg`.
@@ -63,6 +63,7 @@ import { ReviewListView } from "./ReviewListView.js";
 interface DialogStubProps {
     useCases: { name: string };
     request: { kind: string; reviewId: string; stepId: string | null } | null;
+    listRefreshed?: boolean;
     onDone(): void;
     onClose(): void;
 }
@@ -87,6 +88,7 @@ vi.mock("~/review/presentation/actionDialog/components/ReviewActionDialogs.js", 
                     "data-kind": props.request.kind,
                     "data-review": props.request.reviewId,
                     "data-step": props.request.stepId,
+                    "data-list-refreshed": String(props.listRefreshed === true),
                     "data-usecases": props.useCases.name
                 },
                 React.createElement("button", { onClick: props.onDone }, "stub done"),
@@ -294,6 +296,32 @@ describe("ReviewListView", () => {
 
         await waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
         expect(screen.queryByTestId("action-dialogs")).toBeNull();
+    });
+
+    it("opens the action dialog with listRefreshed so a Start conflict ends with 'The list has been refreshed.' (R220, R242, QBZ-31)", async () => {
+        renderView({
+            results: [
+                page([
+                    createReviewListItem({
+                        id: "r1",
+                        title: "Review one",
+                        stepId: "step-7",
+                        flags: { canStart: true }
+                    })
+                ]),
+                page([])
+            ]
+        });
+        await screen.findByText("Review one");
+
+        fireEvent.click(within(rowOf("Review one")).getByRole("button", { name: "Start" }));
+
+        // The stub stands in for `ReviewActionDialogs`; with `listRefreshed` true, Task 15's
+        // `getConflictMessage` ends the StepNotCurrent message with "The list has been refreshed."
+        // (pinned in Task 15's `getConflictMessage.test.ts`), so the prop is what this list owes.
+        const dialogs = await screen.findByTestId("action-dialogs");
+        expect(dialogs.getAttribute("data-kind")).toBe("start");
+        expect(dialogs.getAttribute("data-list-refreshed")).toBe("true");
     });
 
     it("opens the menu actions and Review details", async () => {
@@ -588,11 +616,10 @@ import { fireEvent } from "@testing-library/react";
 import { render } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { ReviewState } from "~/review/domain/ReviewState.js";
-import type { IReviewListViewModel } from "../abstractions.js";
 import type { ReviewListPresenter } from "../abstractions.js";
 import { ReviewListToolbar } from "./ReviewListToolbar.js";
 
-const createVm = (overrides: Partial<IReviewListViewModel> = {}): IReviewListViewModel => {
+const createVm = (overrides: Partial<ReviewListPresenter.ViewModel> = {}): ReviewListPresenter.ViewModel => {
     return {
         tab: "assignedToMe",
         rows: [],
@@ -613,7 +640,7 @@ const createVm = (overrides: Partial<IReviewListViewModel> = {}): IReviewListVie
     };
 };
 
-const createPresenter = (vm: IReviewListViewModel): ReviewListPresenter.Interface => {
+const createPresenter = (vm: ReviewListPresenter.ViewModel): ReviewListPresenter.Interface => {
     return {
         vm,
         init: vi.fn(),
@@ -1315,6 +1342,7 @@ export const ReviewListDialogs = createReactiveComponent((props: ReviewListDialo
             useCases={binding.useCases}
             request={request}
             reviewsUrl={null}
+            listRefreshed={true}
             onDone={() => presenter.actionDone()}
             onClose={() => presenter.closeDialog()}
         />

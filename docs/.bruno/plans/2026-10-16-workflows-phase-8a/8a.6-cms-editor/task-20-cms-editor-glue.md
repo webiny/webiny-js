@@ -32,7 +32,7 @@ Spec 13.1, 13.3; R202, R211, R212, R217, R225, R226; Review Focus 1, 3, 4, 5, 8,
 - Existing, must stay green unchanged: every other test file Task 11 added under `packages/app-headless-cms-workflows` (list with `git ls-files 'packages/app-headless-cms-workflows/**/*.test.ts*'`).
 
 **Interfaces:**
-- Consumes: Task 19 (`EditorReviewSession` `.../review/editor/EditorReviewSession.js`, `IEditorReviewSession` `.../review/editor/abstractions.js`, `EditorReviewBar` `.../review/editor/components/EditorReviewBar.js`), Task 14 (`ReviewTooltip` `.../review/presentation/targetReview/components/ReviewTooltip.js`, props `{ presenter, children }`; test helpers `createViewModel`, `createFakePresenter` in `.../review/testing/targetReviewFakes.js`), Task 13 (`TargetReviewPresenter`, `ITargetReviewPresenter`, `ITargetReviewViewModel`, `TargetReviewContext`, `TargetReviewInitParams` from `.../review/presentation/targetReview/abstractions.js`; `setContext`; the vitest fake `createFakeUseCases` and the type `FakeReviewUseCases` in `.../review/testing/fakeReviewUseCases.js`), Task 8 (`IReviewUseCases`), Task 11 (`CmsReviewUseCases` token `~/features/gateway/CmsReviewUseCases.js`, `CmsReviewFeature` `~/features/gateway/feature.js`, `resolve -> { useCases, contentAdapter }`; `vitest.config.ts`, devDependencies, `src/index.test.tsx`). Existing, verified in code for this plan: `ContentEntryFormPresenter` / `IContentEntryFormPresenter` / `IContentEntryFormViewModel` (`packages/app-headless-cms/src/presentation/contentEntries/form/abstractions.ts`; `canCreateNewRevision` is read by the base `CreateNewRevisionButton` alone), `useContentEntryFormPresenter`, `ContentEntryFormContent` and `ContentEntryForm` (`.../views/layout/index.ts`, both `makeDecoratable`), `InternalContentEntryEditorConfig`, `ContentEntryEditorConfig`, `ContentEntryEditorWithConfig`, `useContentEntryEditorConfig` (`packages/app-headless-cms/src/admin/config/contentEntries/editor/ContentEntryEditorConfig.tsx`), `Actions.ButtonAction` (with `useButtons()` giving `ButtonPrimary`/`ButtonSecondary` with `onAction`, spread `...other` onto the admin-ui `Button`) and `Actions.MenuItemAction`, `Buttons` and `OptionsMenuItem` (`@webiny/app-admin`), `IsModelPublishable`, `usePermission` (`packages/app-headless-cms/src/admin/hooks/usePermission.ts`), `RevisionsListFeature` (`createRevision(revisionId)`), `CMS_MODEL_SINGLETON_TAG`, `createAppName`, `Routes.ContentEntries.ContentReviews`, `AdminUiProvider` (`@webiny/admin-ui`), `FeatureFlagsService` (`@webiny/app-admin/features/featureFlags/abstractions.js`), `Container` (`@webiny/di`: instance registrations win over class registrations; decorators apply to both).
+- Consumes: Task 19 (`EditorReviewSession` `.../review/editor/EditorReviewSession.js`, `IEditorReviewSession` `.../review/editor/abstractions.js`, `EditorReviewBar` `.../review/editor/components/EditorReviewBar.js`), Task 14 (`ReviewTooltip` `.../review/presentation/targetReview/components/ReviewTooltip.js`, props `{ presenter, children }`; test helpers `createViewModel`, `createFakePresenter` in `.../review/testing/targetReviewFakes.js`), Task 13 (`TargetReviewPresenter`, `ITargetReviewPresenter`, `TargetReviewPresenter.ViewModel`, `TargetReviewContext`, `TargetReviewInitParams` from `.../review/presentation/targetReview/abstractions.js`; `setContext`; the vitest fake `createFakeUseCases` and the type `FakeReviewUseCases` in `.../review/testing/fakeReviewUseCases.js`), Task 8 (`IReviewUseCases`), Task 11 (`CmsReviewUseCases` token `~/features/gateway/CmsReviewUseCases.js`, `CmsReviewFeature` `~/features/gateway/feature.js`, `resolve -> { useCases, contentAdapter }`; `vitest.config.ts`, devDependencies, `src/index.test.tsx`). Existing, verified in code for this plan: `ContentEntryFormPresenter` / `ContentEntryFormPresenter.Interface` / `ContentEntryFormPresenter.ViewModel` (`packages/app-headless-cms/src/presentation/contentEntries/form/abstractions.ts`; `canCreateNewRevision` is read by the base `CreateNewRevisionButton` alone), `useContentEntryFormPresenter`, `ContentEntryFormContent` and `ContentEntryForm` (`.../views/layout/index.ts`, both `makeDecoratable`), `InternalContentEntryEditorConfig`, `ContentEntryEditorConfig`, `ContentEntryEditorWithConfig`, `useContentEntryEditorConfig` (`packages/app-headless-cms/src/admin/config/contentEntries/editor/ContentEntryEditorConfig.tsx`), `Actions.ButtonAction` (with `useButtons()` giving `ButtonPrimary`/`ButtonSecondary` with `onAction`, spread `...other` onto the admin-ui `Button`) and `Actions.MenuItemAction`, `Buttons` and `OptionsMenuItem` (`@webiny/app-admin`), `IsModelPublishable`, `usePermission` (`packages/app-headless-cms/src/admin/hooks/usePermission.ts`), `RevisionsListFeature` (`createRevision(revisionId)`), `CMS_MODEL_SINGLETON_TAG`, `createAppName`, `Routes.ContentEntries.ContentReviews`, `AdminUiProvider` (`@webiny/admin-ui`), `FeatureFlagsService` (`@webiny/app-admin/features/featureFlags/abstractions.js`), `Container` (`@webiny/di`: instance registrations win over class registrations; decorators apply to both).
 - Produces: `CmsEntryReview` (token), `CmsEntryReviewFeature` (`resolve -> { session }`), `useCmsEntryReview()`, `isReviewableModel(model)`, `getCmsEntryReviewContext`, `getCmsEntryReviewInitParams`, the decorators `CmsEntryFormPresenterReviewDecorator`, `CmsEntryReviewBar`, `CmsEntryReviewScheduleMenuItem`, `CmsEntryReviewFormLock`, the registrations `CmsEntryReviewNewRevision`, `CmsEntryReviewBlockedActions`, and the shared test support (`src/testing/`, reused by Task 21 and 35).
 
 - [ ] **Step 1: Write the failing tests**
@@ -126,7 +126,7 @@ export const NO_PUBLISHING_MODEL = {
 Create `packages/app-headless-cms-workflows/src/testing/reviewStates.ts` (the editor-rule fields of the view model per status; they mirror Task 13's `getEditorRules` exactly, R226 included, so a change there needs a change here):
 
 ```ts
-import type { ITargetReviewViewModel } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
+import type { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 
 export const CHECKING = "Checking review status…";
 export const FAILED_REASON = "The review status could not be loaded. Try again from the review bar.";
@@ -137,7 +137,7 @@ export const IN_REVIEW_REASON =
     "This revision is in review. Publishing is allowed once every step approves.";
 export const NO_MOVE = "Can’t move while this revision is in review.";
 
-type Rules = Partial<ITargetReviewViewModel>;
+type Rules = Partial<TargetReviewPresenter.ViewModel>;
 
 /** A model without a workflow: nothing is shown and nothing is gated. */
 export const NO_WORKFLOW: Rules = {
@@ -213,7 +213,7 @@ Create `packages/app-headless-cms-workflows/src/testing/createEntrySession.ts` (
 import { action } from "mobx";
 import { observable } from "mobx";
 import type { IEditorReviewSession } from "@webiny/app-workflows/review/editor/abstractions.js";
-import type { ITargetReviewViewModel } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
+import type { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
 import { createViewModel } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
 import type { FakeTargetReviewPresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
@@ -224,10 +224,10 @@ export interface EntrySession {
     session: IEditorReviewSession;
     presenter: FakeTargetReviewPresenter;
     useCases: FakeReviewUseCases;
-    setVm(overrides: Partial<ITargetReviewViewModel>): void;
+    setVm(overrides: Partial<TargetReviewPresenter.ViewModel>): void;
 }
 
-export function createEntrySession(initial: Partial<ITargetReviewViewModel> = {}): EntrySession {
+export function createEntrySession(initial: Partial<TargetReviewPresenter.ViewModel> = {}): EntrySession {
     const state = observable({ vm: createViewModel(initial) }, { vm: observable.ref });
     const base = createFakePresenter();
     const presenter: FakeTargetReviewPresenter = {
@@ -238,7 +238,7 @@ export function createEntrySession(initial: Partial<ITargetReviewViewModel> = {}
     };
     const useCases = createFakeUseCases();
     const session: IEditorReviewSession = { presenter, useCases };
-    const setVm = action((overrides: Partial<ITargetReviewViewModel>) => {
+    const setVm = action((overrides: Partial<TargetReviewPresenter.ViewModel>) => {
         state.vm = createViewModel(overrides);
     });
 
@@ -271,13 +271,13 @@ export function createEntry(overrides: Partial<CmsContentEntry["meta"]> = {}): C
 Create `packages/app-headless-cms-workflows/src/testing/createFormVm.ts`:
 
 ```ts
-import type { IContentEntryFormViewModel } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
+import type { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
 import { createEntry } from "./createEntry.js";
 import { MODEL } from "./models.js";
 
 export function createFormVm(
-    overrides: Partial<IContentEntryFormViewModel> = {}
-): IContentEntryFormViewModel {
+    overrides: Partial<ContentEntryFormPresenter.ViewModel> = {}
+): ContentEntryFormPresenter.ViewModel {
     return {
         loading: null,
         entry: createEntry(),
@@ -311,17 +311,14 @@ import { ModelContext } from "@webiny/app-headless-cms/admin/components/ModelPro
 import { ContentEntryEditorWithConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
 import { useContentEntryEditorConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
 import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
-import type { IContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
-import type { IContentEntryFormViewModel } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
 import { RevisionsListPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/revisionsList/abstractions.js";
-import type { IRevisionsListPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/revisionsList/abstractions.js";
-import type { ITargetReviewViewModel } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
+import type { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
 import { createEntrySession } from "./createEntrySession.js";
 import type { EntrySession } from "./createEntrySession.js";
 import { createFormVm } from "./createFormVm.js";
 
-function createFakeFormPresenter(vm: IContentEntryFormViewModel): IContentEntryFormPresenter {
+function createFakeFormPresenter(vm: ContentEntryFormPresenter.ViewModel): ContentEntryFormPresenter.Interface {
     return {
         vm,
         loadRevision: vi.fn(),
@@ -335,7 +332,7 @@ function createFakeFormPresenter(vm: IContentEntryFormViewModel): IContentEntryF
     };
 }
 
-function createFakeRevisionsPresenter(): IRevisionsListPresenter {
+function createFakeRevisionsPresenter(): RevisionsListPresenter.Interface {
     return {
         vm: { loading: false, revisions: [], visible: false },
         init: vi.fn(),
@@ -377,14 +374,14 @@ const ActionsProbe = () => {
 
 export interface RenderEditorTreeParams {
     children?: React.ReactNode;
-    formVm?: Partial<IContentEntryFormViewModel>;
-    reviewVm?: Partial<ITargetReviewViewModel>;
+    formVm?: Partial<ContentEntryFormPresenter.ViewModel>;
+    reviewVm?: Partial<TargetReviewPresenter.ViewModel>;
 }
 
 export interface RenderedEditorTree extends EntrySession {
     container: Container;
-    formPresenter: IContentEntryFormPresenter;
-    revisions: IRevisionsListPresenter;
+    formPresenter: ContentEntryFormPresenter.Interface;
+    revisions: RevisionsListPresenter.Interface;
 }
 
 export function renderEditorTree(params: RenderEditorTreeParams): RenderedEditorTree {
@@ -428,8 +425,6 @@ import { vi } from "vitest";
 import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
-import type { IContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
-import type { IContentEntryFormViewModel } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
 import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
 import { CmsEntryFormPresenterReviewDecorator } from "~/presentation/CmsEntryFormPresenterReviewDecorator.js";
 import type { EntrySession } from "~/testing/createEntrySession.js";
@@ -451,7 +446,7 @@ interface SaveRevisionOptions {
 }
 
 interface BaseState {
-    vm: IContentEntryFormViewModel;
+    vm: ContentEntryFormPresenter.ViewModel;
     loadRevision: Mock<(id: string) => Promise<void>>;
     saveRevision: Mock<(options?: SaveRevisionOptions) => Promise<boolean>>;
     publishRevision: Mock<() => Promise<boolean>>;
@@ -461,8 +456,8 @@ interface BaseState {
 
 let base: BaseState;
 
-class FakeBasePresenter implements IContentEntryFormPresenter {
-    get vm(): IContentEntryFormViewModel {
+class FakeBasePresenter implements ContentEntryFormPresenter.Interface {
+    get vm(): ContentEntryFormPresenter.ViewModel {
         return base.vm;
     }
 
@@ -501,13 +496,13 @@ const BasePresenter = ContentEntryFormPresenter.createImplementation({
 });
 
 let fake: EntrySession;
-let presenter: IContentEntryFormPresenter;
+let presenter: ContentEntryFormPresenter.Interface;
 
-function loadedVm(overrides: Partial<IContentEntryFormViewModel> = {}): IContentEntryFormViewModel {
+function loadedVm(overrides: Partial<ContentEntryFormPresenter.ViewModel> = {}): ContentEntryFormPresenter.ViewModel {
     return createFormVm({ entry: createEntry(), canSave: true, canPublish: true, ...overrides });
 }
 
-function createBase(vm: IContentEntryFormViewModel): BaseState {
+function createBase(vm: ContentEntryFormPresenter.ViewModel): BaseState {
     return {
         vm,
         loadRevision: vi.fn<(id: string) => Promise<void>>(),
@@ -518,7 +513,7 @@ function createBase(vm: IContentEntryFormViewModel): BaseState {
     };
 }
 
-function resolvePresenter(): IContentEntryFormPresenter {
+function resolvePresenter(): ContentEntryFormPresenter.Interface {
     fake = createEntrySession();
     const container = new Container();
     container.registerInstance(CmsEntryReview, fake.session);
@@ -899,7 +894,7 @@ import { LOADING } from "~/testing/reviewStates.js";
 import { NO_WORKFLOW } from "~/testing/reviewStates.js";
 
 interface FakeBarProps {
-    reviewsRoute: Route;
+    reviewsRoute: Route<any>;
 }
 
 vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", async () => {
@@ -1509,8 +1504,6 @@ import { ModelContext } from "@webiny/app-headless-cms/admin/components/ModelPro
 import { ContentEntryEditorWithConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
 import { useContentEntryEditorConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
 import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
-import type { IContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
-import type { IContentEntryFormViewModel } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
@@ -1557,8 +1550,8 @@ vi.mock("~/presentation/cmsWorkflowsEditor/feature.js", () => {
     };
 });
 
-class FakeBasePresenter implements IContentEntryFormPresenter {
-    get vm(): IContentEntryFormViewModel {
+class FakeBasePresenter implements ContentEntryFormPresenter.Interface {
+    get vm(): ContentEntryFormPresenter.ViewModel {
         return createFormVm({ entry: createEntry(), model: MODEL });
     }
 
@@ -1831,8 +1824,6 @@ export function getCmsEntryReviewInitParams(input: CmsEntryReviewInitInput): Tar
 import { computed } from "mobx";
 import { makeAutoObservable } from "mobx";
 import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
-import type { IContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
-import type { IContentEntryFormViewModel } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
 import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
 import { getCmsEntryReviewContext } from "~/presentation/getCmsEntryReviewContext.js";
 import { getCmsEntryReviewInitParams } from "~/presentation/getCmsEntryReviewInitParams.js";
@@ -1849,13 +1840,13 @@ interface SaveRevisionOptions {
     skipValidation?: boolean;
 }
 
-class CmsEntryFormPresenterWithReview implements IContentEntryFormPresenter {
+class CmsEntryFormPresenterWithReview implements ContentEntryFormPresenter.Interface {
     private phase: ReviewPhase = "idle";
     private revisionId: string | null = null;
 
     constructor(
         private readonly session: CmsEntryReview.Interface,
-        private readonly original: IContentEntryFormPresenter
+        private readonly original: ContentEntryFormPresenter.Interface
     ) {
         makeAutoObservable<CmsEntryFormPresenterWithReview, "session" | "original">(this, {
             session: false,
@@ -1864,7 +1855,7 @@ class CmsEntryFormPresenterWithReview implements IContentEntryFormPresenter {
         });
     }
 
-    get vm(): IContentEntryFormViewModel {
+    get vm(): ContentEntryFormPresenter.ViewModel {
         const base = this.original.vm;
 
         if (this.phase === "idle") {

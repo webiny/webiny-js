@@ -19,7 +19,7 @@ Spec 13.5; R206, R210, R212, R229, R234, A74; Decisions D112, D113, D119; design
 - Create (pure test builder, used by Tasks 25-28): `packages/app-workflows/src/review/testing/createReviewListItem.ts`
 - Create tests: `packages/app-workflows/src/review/presentation/reviewList/ReviewListPresenter.test.ts`, `packages/app-workflows/src/review/presentation/reviewList/reviewListPure.test.ts`
 - Modify: `packages/app-workflows/src/app.test.tsx` (Task 10's composition test, extended by Task 13's "WorkflowsAdminApp review view" `describe`; one expectation per test added)
-- Modify: `packages/app-workflows/src/app.tsx` (register `ReviewListPresenterFeature` inside the gate). The package barrel `src/index.tsx` is edited once, in Task 28 (its "Barrel adds" list names every export of Tasks 25-27), so this task leaves `index.tsx` alone.
+- Modify: `packages/app-workflows/src/app.tsx` (register `ReviewListPresenterFeature` inside the gate). The package barrel `src/index.tsx` is not touched (R-k).
 
 **Interfaces:**
 - Consumes (Task 8): `IReviewListUseCases`, `ReviewListPage` (`~/review/useCases/IReviewListUseCases.js`), `IReviewUseCases` (`~/review/useCases/IReviewUseCases.js`), `ReviewListRow`, `ReviewWithFlags`, `ReviewActor` (`~/review/domain/types.js`), `ReviewState`, `ReviewStateValue` (`~/review/domain/ReviewState.js`), `StepState`, `StepStateValue` (`~/review/domain/StepState.js`), `ReviewListSort` (`~/review/domain/ReviewListSort.js`), `REVIEW_LIST_PAGE_SIZE` (`~/review/domain/constants.js`), `toReviewListRow(item: ReviewWithFlags): ReviewListRow` (`~/review/domain/toReviewListRow.js`), `ListReviewsParams`, `ReviewListWhere` (`~/review/gateway/IReviewGateway.js`), `ReviewContentRef` (`~/review/content/IReviewContentAdapter.js`). Task 10: `ReviewActivity` token and its `Interface` (`~/review/activity/abstractions.js`), the real implementation `ReviewActivity` (`~/review/activity/ReviewActivity.js`, used by the tests). Task 13: `getReviewActions({ flags, stepId, canRequest })` (`~/review/presentation/targetReview/getReviewActions.js`), `getStepStateTag(state)` (`.../getStepStateTag.js`), `TargetReviewActionVm`, `TargetReviewTagVariant` (`.../abstractions.js`), the fixtures `createActor` (`~/review/testing/createActor.js`), `createStep` (`createStep.js`), `createFlags` (`createFlags.js`) and `createReview`, `createReviewWithFlags(review, flags)` (Task 8, `~/review/testing/reviewFixtures.js`). Task 15: `ReviewActionKind` (`~/review/presentation/actionDialog/ReviewActionKind.js`; includes `"reassign"` after Task 16). Existing: `IdentityContext` (`@webiny/app-admin/features/security/IdentityContext/abstractions.js`, `getIdentity().teams`).
@@ -28,7 +28,7 @@ Spec 13.5; R206, R210, R212, R229, R234, A74; Decisions D112, D113, D119; design
 verify before writing code (record each result in the commit body):
 - The Task 8 signature of `toReviewListRow` (above) and that `ReviewListSort` and `ReviewListKind` are string-literal unions.
 - The Task 10 token `ReviewActivity` (namespace `Interface`, listener `(signal: ReviewActivitySignal) => void`) and that `~/review/activity/ReviewActivity.js` exports the implementation as `ReviewActivity` (`createImplementation` result).
-- The Task 13 fixture signatures (`createReviewWithFlags(review, flags)`), `getReviewActions` order of kinds (cancel, reassign, reject, takeOver, start, approve) and that `getStepStateTag(state: StepStateValue)` returns `{ label, variant }`.
+- The Task 8 fixture signature `createReviewWithFlags(review, flags)` (owned by Task 8's `~/review/testing/reviewFixtures.js`, not Task 13), the Task 13 `getReviewActions` order of kinds (cancel, reassign, reject, takeOver, start, approve) and that `getStepStateTag(state: StepStateValue)` returns `{ label, variant }`.
 - `packages/app-workflows/vitest.config.ts` is Task 14's (jsdom, DOM setup file, svg alias) and `@webiny/di` is a devDependency of the package.
 
 - [ ] **Step 1: Write the failing tests**
@@ -1467,7 +1467,6 @@ import type { TargetReviewTagVariant } from "~/review/presentation/targetReview/
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { ReviewListPage } from "~/review/useCases/IReviewListUseCases.js";
 import { ReviewListPresenter as Abstraction } from "./abstractions.js";
-import type { IReviewListViewModel } from "./abstractions.js";
 import type { IReviewRowProvider } from "./abstractions.js";
 import type { ReviewListDialogVm } from "./abstractions.js";
 import type { ReviewListEmptyVm } from "./abstractions.js";
@@ -1551,7 +1550,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
 
     // The relative times are computed when the view model is read; they are as fresh as the last
     // state change (a refetch, a tab switch), which is enough for "12 min ago" granularity.
-    get vm(): IReviewListViewModel {
+    get vm(): Abstraction.ViewModel {
         const now = new Date();
         const rows = this._entries.map(entry => this.toRowVm(entry, now));
         const visibleCount = this._entries.filter(entry => !entry.leaving).length;
@@ -2200,6 +2199,6 @@ If a pre-commit step fails and you fix anything, rerun the chain from the start.
 - R210: signals that arrive during a refetch collapse into exactly one follow-up refetch (never a parallel request, at most two requests for any burst). The in-flight flag is a generation token: a reload, tab switch or dispose supersedes it without a stale `refreshing = false`.
 - The refetch window is `max(loaded rows, page size)` capped at the server maximum 100. A row that is missing from a window the server says has more behind it, and sorts after the last returned row, is kept (not faded); with equal timestamps the row is also kept. Beyond 100 loaded rows a row can therefore stay until the next Load more or Show; this is accepted.
 - Highlights (QBZ-86) last until the next merge, a tab or filter change, or Show; the design's "one row just updated, highlighted" has no timer here because the presenter never uses timers.
-- `useCases.listReviews` is called inline in ten methods (R248); only state helpers are shared, so a change to the fetch-and-apply shape is made in each.
+- `useCases.listReviews` is called inline in twelve methods (R248); only state helpers are shared, so a change to the fetch-and-apply shape is made in each.
 - The composition-root expectations go into Task 10's `src/app.test.tsx` (Task 13's container-style `describe`). The contract's Interfaces name a `wiring.test.tsx` for this; no 8a.3 or 8a.5 task creates it, so this task uses the file that exists. Transient scope is also asserted by `ReviewListPresenter.test.ts` ("keeps two presenters independent").
-- `src/index.tsx` is not edited here; Task 28 owns the barrel for Tasks 25-27.
+- `src/index.tsx` is not edited here (R-k: nothing imports these names through the bare barrel).

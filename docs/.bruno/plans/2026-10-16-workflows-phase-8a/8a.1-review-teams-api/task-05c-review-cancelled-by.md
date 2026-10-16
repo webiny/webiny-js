@@ -42,26 +42,24 @@ Expected: the precedent commit touches only `Review.ts`, `review.model.ts`, `typ
 Create `packages/api-workflows/__tests__/review/ReviewCancelledBy.test.ts`:
 
 ```ts
-import { describe, expect, it } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import {
-    ARTICLE_MODEL,
-    createRequestedReview,
-    createStartedReview,
-    expectOk,
-    otherReviewer,
-    REVIEW_TEAM_ID,
-    requester,
-    reviewer,
-    toSaveData
-} from "~tests/__helpers/fixtures.js";
+import { ARTICLE_MODEL } from "~tests/__helpers/fixtures.js";
+import { createRequestedReview } from "~tests/__helpers/fixtures.js";
+import { createStartedReview } from "~tests/__helpers/fixtures.js";
+import { expectOk } from "~tests/__helpers/fixtures.js";
+import { otherReviewer } from "~tests/__helpers/fixtures.js";
+import { REVIEW_TEAM_ID } from "~tests/__helpers/fixtures.js";
+import { requester } from "~tests/__helpers/fixtures.js";
+import { reviewer } from "~tests/__helpers/fixtures.js";
+import { toSaveData } from "~tests/__helpers/fixtures.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewModelProvider } from "~/domain/review/abstractions/ReviewModelProvider.js";
-import {
-    ReviewEntryMapper,
-    type ReviewEntryValues
-} from "~/features/review/shared/ReviewEntryMapper.js";
+import { ReviewEntryMapper } from "~/features/review/shared/ReviewEntryMapper.js";
+import type { ReviewEntryValues } from "~/features/review/shared/ReviewEntryMapper.js";
 import { GetReviewUseCase } from "~/features/review/GetReview/index.js";
 import { CancelReviewUseCase } from "~/features/review/CancelReview/index.js";
 import { CancelTargetReviewsUseCase } from "~/features/review/CancelTargetReviews/index.js";
@@ -244,14 +242,12 @@ describe("cancelledBy through the use cases and the storage (R252, A91)", () => 
 Modify `packages/api-workflows/__tests__/review/ReviewEntryMapper.test.ts`. The import:
 
 ```diff
- import {
-     createAiIssue,
-     createRequestedReview,
-     NOW,
-+    otherReviewer,
-+    requester,
-     toSaveData
- } from "~tests/__helpers/fixtures.js";
+ import { createAiIssue } from "~tests/__helpers/fixtures.js";
+ import { createRequestedReview } from "~tests/__helpers/fixtures.js";
+ import { NOW } from "~tests/__helpers/fixtures.js";
++import { otherReviewer } from "~tests/__helpers/fixtures.js";
++import { requester } from "~tests/__helpers/fixtures.js";
+ import { toSaveData } from "~tests/__helpers/fixtures.js";
 ```
 
 and a new `describe` appended at the end of the file:
@@ -333,18 +329,22 @@ Update the exact fields of `WorkflowsReview` in `packages/api-workflows/__tests_
 Create the CMS end-to-end test, `packages/api-headless-cms-workflows/__tests__/graphql/cmsReviewCancelledBy.test.ts`. It cancels as the requester, as a user with `reassign` and through the delete-time cancel, and reads the review back as someone else:
 
 ```ts
-import { describe, expect, it } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { storeWorkflow } from "~tests/__workflows/workflow.js";
-import { createAuthorEntry, expectOk } from "~tests/__helpers/entries.js";
+import { createAuthorEntry } from "~tests/__helpers/entries.js";
+import { expectOk } from "~tests/__helpers/entries.js";
 import { requestEntryReview } from "~tests/__helpers/engine.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createGraphQLClient } from "~tests/__helpers/graphql.js";
-import { ADMIN, REASSIGNER, REQUESTER, REVIEWER } from "~tests/__helpers/identities.js";
-import {
-    CMS_READER,
-    CMS_WRITER,
-    WORKFLOWS_REASSIGN
-} from "~tests/__helpers/permissions.js";
+import { ADMIN } from "~tests/__helpers/identities.js";
+import { REASSIGNER } from "~tests/__helpers/identities.js";
+import { REQUESTER } from "~tests/__helpers/identities.js";
+import { REVIEWER } from "~tests/__helpers/identities.js";
+import { CMS_READER } from "~tests/__helpers/permissions.js";
+import { CMS_WRITER } from "~tests/__helpers/permissions.js";
+import { WORKFLOWS_REASSIGN } from "~tests/__helpers/permissions.js";
 
 const ERROR = "error { code message data }";
 const REVIEW = "id state isActive cancelledBy { id displayName }";
@@ -477,19 +477,20 @@ describe("CMS review cancelledBy (R252, Q23)", () => {
 Create the WB end-to-end test, `packages/api-website-builder-workflows/__tests__/graphql/pageReviewCancelledBy.test.ts`:
 
 ```ts
-import { describe, expect, it } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createPage } from "~tests/__helpers/pages.js";
-import { requestPageReview, storeWbWorkflow } from "~tests/__helpers/engine.js";
-import {
-    ADMIN,
-    REASSIGNER,
-    REQUESTER,
-    REVIEWER,
-    WB_READER,
-    WB_WRITER,
-    WORKFLOWS_REASSIGN
-} from "~tests/__helpers/identities.js";
+import { requestPageReview } from "~tests/__helpers/engine.js";
+import { storeWbWorkflow } from "~tests/__helpers/engine.js";
+import { ADMIN } from "~tests/__helpers/identities.js";
+import { REASSIGNER } from "~tests/__helpers/identities.js";
+import { REQUESTER } from "~tests/__helpers/identities.js";
+import { REVIEWER } from "~tests/__helpers/identities.js";
+import { WB_READER } from "~tests/__helpers/identities.js";
+import { WB_WRITER } from "~tests/__helpers/identities.js";
+import { WORKFLOWS_REASSIGN } from "~tests/__helpers/identities.js";
 import { asGraphQLUser } from "~tests/__helpers/graphql.js";
 
 const ERROR = "error { code message data }";

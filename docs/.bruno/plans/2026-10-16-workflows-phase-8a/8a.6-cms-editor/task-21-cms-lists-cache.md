@@ -18,6 +18,7 @@ Spec 13.1, 13.3; R202, R211, R213, R226, R229 (rows only), Review Focus 1, 8, 16
 - Create: `packages/app-headless-cms-workflows/src/features/cache/CmsReviewCacheSyncHandlerImpl.ts`
 - Modify: `packages/app-headless-cms-workflows/src/features/feature.ts` (`CmsWorkflowsCacheFeature`, existing)
 - Modify: `packages/app-headless-cms-workflows/src/presentation/feature.ts` (`CmsWorkflowsFeature`, already changed by Task 20)
+- Modify: `packages/app-headless-cms-workflows/package.json` (add `"@webiny/app-aco": "0.0.0"` to `devDependencies`, alphabetical, before `@webiny/build-tools`; the Move and root tests `vi.mock("@webiny/app-aco", ...)` and no source file imports it; the repo convention is the exact version `"0.0.0"` as in `packages/app-headless-cms/package.json`)
 - Modify: `packages/app-headless-cms-workflows/src/types.ts` (typing of `meta.system.workflow`; the old types stay until Task 37)
 - Modify: `packages/app-headless-cms-workflows/src/index.tsx` (mounts the Move gate; the cache and presentation features are already registered by it)
 - Modify: `packages/app-headless-cms-workflows/src/index.test.tsx` (**Task 11's file**, edited only to add one `vi.mock` for the new component, which needs a composition provider that test does not mount)
@@ -30,6 +31,8 @@ Spec 13.1, 13.3; R202, R211, R213, R226, R229 (rows only), Review Focus 1, 8, 16
 - Produces: `CmsReviewListEntriesFieldSelection`, `CmsReviewGetEntryFieldSelection`, `CmsReviewTableRowMapperDecorator`, `CmsReviewMoveEntryAction`, `CmsReviewCacheWriter` (token `"Cms/Workflows/ReviewCacheWriter"` in `CmsReviewCacheWriter.ts`, implementation `CmsReviewCacheWriterImpl` exported as `CmsReviewCacheWriter` from `CmsReviewCacheWriterImpl.ts`), `CmsReviewCacheSyncHandler`, `ICmsEntrySystemWithReview`, `ICmsEntryMetaWithReview`. Task 37 deletes the old files and the old types they use.
 
 - [ ] **Step 1: Write the failing tests**
+
+First add `"@webiny/app-aco": "0.0.0"` to `devDependencies` of `packages/app-headless-cms-workflows/package.json` (the Move and root tests mock that package), then run `yarn > /dev/null 2>&1` so the workspace link resolves.
 
 Create `packages/app-headless-cms-workflows/src/presentation/CmsReviewFieldSelections.test.ts`:
 

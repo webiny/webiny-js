@@ -12,8 +12,8 @@ Spec 13.1, 13.4 (Website Builder editor); R202 (shared core, thin glue), R211 (g
 - **`PageEditorConfig`** (kept by name, rewritten, R219) mounts `PageEditorTopBar`, `PageEditorLayout` and `PageNewRevisionDecorator` (Task 23 adds the autosave and publish pieces and the base config). The old `PageFormWorkflowState.tsx`, `PageFormWorkflowStateTooltip.tsx`, `PageFormWorkflowStatePublishButton.tsx` and `ToggleEditorMode.tsx` stop being imported (deleted in Task 37). The autosave and publish pieces are Task 23's; until then the base autosave still refuses to save while the canvas is read-only (it checks the editor state itself) and the base Publish is hidden by `Ui.IsNotReadOnly` whenever the canvas is read-only.
 
 **Files:**
-- Create: `packages/app-website-builder-workflows/src/features/editorReview/abstractions.ts`
-- Create: `packages/app-website-builder-workflows/src/features/editorReview/WbPageReviewSession.ts`
+- Create: `packages/app-website-builder-workflows/src/features/editorReview/WbPageReview.ts`
+- Create: `packages/app-website-builder-workflows/src/features/editorReview/WbPageReviewSessionImpl.ts`
 - Create: `packages/app-website-builder-workflows/src/features/editorReview/feature.ts`
 - Create: `packages/app-website-builder-workflows/src/Components/PageEditor/pageEditorDocument.ts`
 - Create: `packages/app-website-builder-workflows/src/Components/PageEditor/getPageReadOnlyReason.ts`
@@ -23,13 +23,14 @@ Spec 13.1, 13.4 (Website Builder editor); R202 (shared core, thin glue), R211 (g
 - Rewrite: `packages/app-website-builder-workflows/src/Components/PageEditor/PageEditorTopBar.tsx`
 - Rewrite: `packages/app-website-builder-workflows/src/Components/PageEditor/PageEditorLayout.tsx`
 - Rewrite: `packages/app-website-builder-workflows/src/Components/PageEditor/PageEditorConfig.tsx`
-- Modify: `packages/app-website-builder-workflows/src/index.tsx`, `packages/app-website-builder-workflows/package.json`
+- Modify: `packages/app-website-builder-workflows/src/index.tsx`, `packages/app-website-builder-workflows/package.json`, `packages/app-website-builder-workflows/vitest.config.ts` (Task 12 created it without a DOM setup or SVG alias; this is the first WB task that renders real admin components, R222)
+- Create: `packages/app-website-builder-workflows/__tests__/setup/setupDom.ts`, `packages/app-website-builder-workflows/__tests__/setup/svgStub.tsx`
 - Create (test support, reused by Tasks 23 and 24; in `src/testing/` because co-located `src` tests import it and a `~tests/...` import from `src` fails the build with TS6059 (`rootDir: ./src`); imported as `~/testing/...`; no non-test source imports it): `packages/app-website-builder-workflows/src/testing/createFakeVm.ts`, `createFakeSession.ts`, `createPageEditor.ts`, `WbEditorHarness.tsx`
 - Create tests: `src/Components/PageEditor/getPageReadOnlyReason.test.ts`, `PageEditorLayout.test.tsx`, `PageEditorTopBar.test.tsx`, `pageReviewMatrix.test.tsx`, `PageNewRevisionDecorator.test.tsx`, `src/editorGlue.wiring.test.tsx` (all under `packages/app-website-builder-workflows/`)
 
 **Interfaces:**
 - Consumes (Tasks 8-19, paths per the contract, verify each when writing code): `IEditorReviewSession` (`packages/app-workflows/src/review/editor/abstractions.ts`), `EditorReviewSession` (`.../review/editor/EditorReviewSession.ts`), `EditorReviewBar` (`.../review/editor/components/EditorReviewBar.tsx`, props `{ session; reviewsRoute }`), `TargetReviewPresenter` (`.../review/presentation/targetReview/abstractions.ts`; the namespace types `TargetReviewPresenter.Interface` and `TargetReviewPresenter.ViewModel`, whose `status` and `reviewKind` (`"none" | "inProgress" | "approved" | "rejected"`, R240) the glue switches on), `getEditorRules` (`.../review/presentation/targetReview/getEditorRules.ts`, `getEditorRules({ status, reviewKind, isUnpublished })`, R226; the test fixture builds its view model from it), `createViewModel` (`.../review/testing/targetReviewFakes.ts`, Task 14, R243), `IReviewUseCases` (`.../review/useCases/IReviewUseCases.ts`); Task 12 `WbReviewUseCases` (`~/features/gateway/WbReviewUseCases.js`, one token per file), `WB_PAGE_APP` (`~/constants.js`, `"wb.page"`); existing `Routes.Pages.WorkflowStateList` (`~/routes.js`). Existing Website Builder code, deep imports (every admin package exports `"./*": "./*"`): `PageEditorConfig` (`@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js`, `Ui.TopBar.Layout`, `Ui.TopBar.Action`, `Ui.TopBar.Elements`, `Ui.Layout`), `useSelectFromDocument` and the `EditorDocument` type (`@webiny/app-website-builder/BaseEditor/hooks/useSelectFromDocument.js`), `useDocumentEditor` (`@webiny/app-website-builder/DocumentEditor/index.js`), `WbPageStatus` and `WbStatus` (`@webiny/app-website-builder/constants.js`), `createReactiveComponent` and `useFeature` (`@webiny/app-admin`, `@webiny/app`), `createFeature`, `createAbstraction` (`@webiny/feature/admin`).
-- Produces: `WbPageReview` and `WbPageReviewSession` (`~/features/editorReview/`), `WbPageReviewFeature` (`resolve` -> `{ session }`), `getPageReadOnlyReason(vm, pageStatus)`, `PageNewRevisionDecorator`, the rewritten `PageEditorTopBar`, `PageEditorLayout`, `PageEditorConfig` (Task 23 adds to `PageEditorConfig`; Task 30 reuses `Routes.Pages.WorkflowStateList`), and the test support files (Tasks 23 and 24).
+- Produces: the token `WbPageReview` (`~/features/editorReview/WbPageReview.ts`) and its implementation, exported under the same name from `WbPageReviewSessionImpl.ts`, `WbPageReviewFeature` (`resolve` -> `{ session }`), `getPageReadOnlyReason(vm, pageStatus)`, `PageNewRevisionDecorator`, the rewritten `PageEditorTopBar`, `PageEditorLayout`, `PageEditorConfig` (Task 23 adds to `PageEditorConfig`; Task 30 reuses `Routes.Pages.WorkflowStateList`), and the test support files (Tasks 23 and 24).
 
 **Test runner note:** `packages/app-website-builder-workflows` is an admin package, so tests run with `yarn test <path>` only; it is not an `-es`/`-os` package and has no storage-specific suite (`yarn test:os` does not apply). Task 12 added `vitest.config.ts` (jsdom) and the `vitest` and `@testing-library/react` devDependencies (verify both exist; if not, copy `packages/app-admin/vitest.config.ts` and add them as in Task 12). The vitest config registers no SVG transform and no global `afterEach`, so tests that render call `cleanup()` in `afterEach` and mock any `.svg` import they render. The classic JSX runtime is used, so every `.tsx` file imports `React`.
 
@@ -42,6 +43,63 @@ Add the devDependencies the tests and helpers use (`yarn adio` in Step 6 confirm
         "@webiny/react-composition": "0.0.0",
         "mobx": "^7.0.3",
 ```
+
+Replace `packages/app-website-builder-workflows/vitest.config.ts` (the file Task 12 created; the vitest config registers no SVG transform, so any module that imports `@webiny/icons/*.svg` fails to load, and jsdom has no `ResizeObserver`, which Radix tooltips need; the same change Task 14 made in `app-workflows` and Task 20 in `app-headless-cms-workflows`). Tasks 23, 24, 30, 36 and 37 rely on it:
+
+```ts
+import { createTestConfig } from "../../testing";
+
+export default async () => {
+    return createTestConfig({
+        path: import.meta.dirname,
+        presets: [{ setupFiles: [`${import.meta.dirname}/__tests__/setup/setupDom.ts`] }],
+        vitestConfig: {
+            environment: "jsdom",
+            fileParallelism: true,
+            alias: [
+                {
+                    find: /^@webiny\/icons\/.+\.svg$/,
+                    replacement: `${import.meta.dirname}/__tests__/setup/svgStub.tsx`
+                }
+            ]
+        }
+    });
+};
+```
+
+Create `packages/app-website-builder-workflows/__tests__/setup/setupDom.ts`:
+
+```ts
+import { afterEach } from "vitest";
+import { cleanup } from "@testing-library/react";
+
+class ResizeObserverStub {
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+}
+
+// jsdom has no ResizeObserver; Radix tooltips and popovers need one.
+globalThis.ResizeObserver = ResizeObserverStub as unknown as typeof ResizeObserver;
+
+afterEach(() => {
+    cleanup();
+});
+```
+
+Create `packages/app-website-builder-workflows/__tests__/setup/svgStub.tsx`:
+
+```tsx
+import React from "react";
+
+export const ReactComponent = (props: React.SVGProps<SVGSVGElement>) => {
+    return <svg data-testid="svg-icon" {...props} />;
+};
+
+export default "svg-stub";
+```
+
+The per-file `vi.mock("@webiny/icons/....svg", ...)` stubs in this and the following tasks stay valid (they replace the aliased module).
 
 Create `packages/app-website-builder-workflows/src/testing/createFakeVm.ts` (test support: it builds on Task 14's pure `createViewModel`, and the rules, reasons and `reviewKind` come from the real `getEditorRules` of Task 13, so a change to the rules changes these fixtures with no copy to keep in step; `isUnpublished` is the Q19 input):
 
@@ -103,7 +161,7 @@ import { vi } from "vitest";
 import type { Mock } from "vitest";
 import type { IReviewUseCases } from "@webiny/app-workflows/review/useCases/IReviewUseCases.js";
 import type { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
-import type { WbPageReview } from "~/features/editorReview/abstractions.js";
+import type { WbPageReview } from "~/features/editorReview/WbPageReview.js";
 import type { FakeReviewKind } from "./createFakeVm.js";
 import { createFakeVm } from "./createFakeVm.js";
 
@@ -331,7 +389,7 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import type { WbStatus } from "@webiny/app-website-builder/constants.js";
-import { WbPageReview } from "~/features/editorReview/abstractions.js";
+import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";
@@ -447,10 +505,11 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
+import type { Route } from "@webiny/app-admin";
 import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import { WbPageStatus } from "@webiny/app-website-builder/constants.js";
 import type { WbStatus } from "@webiny/app-website-builder/constants.js";
-import { WbPageReview } from "~/features/editorReview/abstractions.js";
+import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";
@@ -473,7 +532,7 @@ vi.mock("@webiny/app-website-builder/BaseEditor/config/TopBar/Layout.js", async 
 vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", async () => {
     const React = await import("react");
     interface StubProps {
-        reviewsRoute: { name: string };
+        reviewsRoute: Route<any>;
     }
     const EditorReviewBar = (props: StubProps) => {
         return React.createElement("div", {
@@ -651,7 +710,7 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import type { WbStatus } from "@webiny/app-website-builder/constants.js";
-import { WbPageReview } from "~/features/editorReview/abstractions.js";
+import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";
@@ -776,7 +835,7 @@ import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { InternalPageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
-import { WbPageReview } from "~/features/editorReview/abstractions.js";
+import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";
@@ -893,7 +952,7 @@ import { CmsEntryReviewFeature } from "@webiny/app-headless-cms-workflows/featur
 import { CmsReviewUseCases } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewUseCases.js";
 import { CmsReviewFeature } from "@webiny/app-headless-cms-workflows/features/gateway/feature.js";
 import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases.js";
-import { WbPageReview } from "~/features/editorReview/abstractions.js";
+import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";
@@ -1030,11 +1089,11 @@ yarn test packages/app-website-builder-workflows/src/Components/PageEditor/PageN
 yarn test packages/app-website-builder-workflows/src/editorGlue.wiring.test.tsx 2>&1 | tail -50
 ```
 
-Expected: every file FAILS to load: `Failed to resolve import "./getPageReadOnlyReason.js"` (first file), `Failed to resolve import "./PageNewRevisionDecorator.js"` (its test) and `Failed to resolve import "~/features/editorReview/abstractions.js"` (the others; `~/Components/PageEditor/pageEditorDocument.js` is missing for the test support too). Record this RED before writing any source. If a failure names a symbol of Tasks 8-19 instead (`EditorReviewBar`, `ReviewTooltip`, `TargetReviewPresenter`, `WbReviewUseCases`), that task is not merged on this branch: stop and report it.
+Expected: every file FAILS to load: `Failed to resolve import "./getPageReadOnlyReason.js"` (first file), `Failed to resolve import "./PageNewRevisionDecorator.js"` (its test) and `Failed to resolve import "~/features/editorReview/WbPageReview.js"` (the others; `~/Components/PageEditor/pageEditorDocument.js` is missing for the test support too). Record this RED before writing any source. If a failure names a symbol of Tasks 8-19 instead (`EditorReviewBar`, `ReviewTooltip`, `TargetReviewPresenter`, `WbReviewUseCases`), that task is not merged on this branch: stop and report it.
 
 - [ ] **Step 3: Implement**
 
-Create `packages/app-website-builder-workflows/src/features/editorReview/abstractions.ts`:
+Create `packages/app-website-builder-workflows/src/features/editorReview/WbPageReview.ts`:
 
 ```ts
 import { createAbstraction } from "@webiny/feature/admin";
@@ -1049,7 +1108,7 @@ export namespace WbPageReview {
 }
 ```
 
-Create `packages/app-website-builder-workflows/src/features/editorReview/WbPageReviewSession.ts`:
+Create `packages/app-website-builder-workflows/src/features/editorReview/WbPageReviewSessionImpl.ts` (named after its class; exported under the token name `WbPageReview`, as Task 12's `WbReviewUseCasesImpl.ts` and Task 21's `CmsReviewCacheWriterImpl.ts` do; there is no `abstractions.ts` in this folder):
 
 The shared `EditorReviewSession` is never passed to `createImplementation` (it would store this app's token on the shared class and collide with the CMS binding); the app subclasses it once, in its own file:
 
@@ -1057,11 +1116,11 @@ The shared `EditorReviewSession` is never passed to `createImplementation` (it w
 import { EditorReviewSession } from "@webiny/app-workflows/review/editor/EditorReviewSession.js";
 import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases.js";
-import { WbPageReview } from "./abstractions.js";
+import { WbPageReview as Abstraction } from "./WbPageReview.js";
 
-class WbPageReviewSessionImpl extends EditorReviewSession implements WbPageReview.Interface {}
+class WbPageReviewSessionImpl extends EditorReviewSession implements Abstraction.Interface {}
 
-export const WbPageReviewSession = WbPageReview.createImplementation({
+export const WbPageReview = Abstraction.createImplementation({
     implementation: WbPageReviewSessionImpl,
     dependencies: [TargetReviewPresenter, WbReviewUseCases]
 });
@@ -1071,17 +1130,17 @@ Create `packages/app-website-builder-workflows/src/features/editorReview/feature
 
 ```ts
 import { createFeature } from "@webiny/feature/admin";
-import { WbPageReview } from "./abstractions.js";
-import { WbPageReviewSession } from "./WbPageReviewSession.js";
+import { WbPageReview as Abstraction } from "./WbPageReview.js";
+import { WbPageReview } from "./WbPageReviewSessionImpl.js";
 
 export const WbPageReviewFeature = createFeature({
     name: "WebsiteBuilder/Workflows/PageReviewSession",
     register(container) {
-        container.register(WbPageReviewSession).inSingletonScope();
+        container.register(WbPageReview).inSingletonScope();
     },
     resolve(container) {
         return {
-            session: container.resolve(WbPageReview)
+            session: container.resolve(Abstraction)
         };
     }
 });
@@ -1409,14 +1468,13 @@ Expected: all PASS. If a mock fails to apply (the real top bar or layout renders
 
 - [ ] **Step 5: Run the existing tests covering the changed code, and type-check**
 
-```bash
-ls packages/app-website-builder-workflows/src/features/gateway/*.test.ts* 
-```
-
-Run each file the listing prints (Task 12's tests: gateway, content adapter, feature, A83), one command per file:
+Task 12's tests (gateway, content adapter, feature with the A83 coexistence case, and the root composition test), one command per file:
 
 ```bash
-yarn test packages/app-website-builder-workflows/src/features/gateway/<file> 2>&1 | tail -50
+yarn test packages/app-website-builder-workflows/src/features/gateway/WbReviewGatewayImpl.test.ts 2>&1 | tail -50
+yarn test packages/app-website-builder-workflows/src/features/gateway/WbReviewContentAdapterImpl.test.ts 2>&1 | tail -50
+yarn test packages/app-website-builder-workflows/src/features/gateway/feature.test.ts 2>&1 | tail -50
+yarn test packages/app-website-builder-workflows/src/index.test.tsx 2>&1 | tail -50
 ```
 
 Then the type check. `check:test:types` lists only packages that have a `__tests__/**/*.test.ts` file (this package has none), so the check of the co-located tests and the support files is the package build (R243):
@@ -1429,7 +1487,7 @@ Expected: the Task 12 tests still pass (they mount `WebsiteBuilderWorkflows`, wh
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
-Run `git status --short` first and stage only the files this task touches.
+Run the Global Constraints pre-commit chain from `../00-shared.md` in full (it stages everything with `git add .`; `.gitleaks.toml`, `docs/.reports` and `.superpowers` are never committed) and restore `.gitleaks.toml` after format and after build:
 
 ```bash
 git add .
@@ -1438,11 +1496,12 @@ node scripts/generateTsConfigsInPackages.js
 yarn adio
 yarn check-ts-configs
 yarn format:fix > /dev/null 2>&1
+git checkout -- .gitleaks.toml
 yarn lint:fix
 yarn webiny sync-dependencies
 yarn build -p @webiny/app-website-builder-workflows --no-cache 2>&1 | tail -30
-git add .
 git checkout -- .gitleaks.toml
+git add .
 ```
 
 If any step fails and you fix anything, rerun the chain from the start. Then:

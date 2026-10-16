@@ -6,17 +6,16 @@ Spec 13.1; R202 (one shared implementation, app-owned gateway and tokens), R204 
 - `getBoundWorkflow(namespace)` loads `listWorkflows` once per instance. The in-flight or finished load is kept as a `Promise`, so concurrent callers share one request. A rejection (transport error or error envelope) clears the stored promise (only if it is still the same promise), so the next call retries; a loaded list is kept, including a namespace that no workflow binds (`null`, A74). The workflow found is the mapped one whose `namespaces` contain the namespace.
 - Transport failures are not caught anywhere else: a rejected gateway promise passes through unchanged (same object).
 - `listReviews` returns `{ items, meta }` where `items` are `ReviewWithFlags` (not rows; rows are the list presenter's business, R234) and an absent `meta` becomes `{ cursor: null, hasMoreItems: false }`.
-- The class is exported plain (no `createImplementation`, no abstraction metadata); the barrel gets one line. (The use-case interface types were already exported by Task 8.)
+- The class is exported plain (no `createImplementation`, no abstraction metadata); the barrel is not touched (R-k, deep-path imports).
 
 **Files:**
 - Modify: `packages/app-workflows/package.json` (dependency `@webiny/di`)
 - Create: `packages/app-workflows/src/review/useCases/ReviewUseCases.ts`
 - Create: `packages/app-workflows/src/review/useCases/ReviewUseCases.test.ts`
-- Modify: `packages/app-workflows/src/index.tsx` (barrel)
 
 **Interfaces:**
 - Consumes: Task 8 (`IReviewGateway` and its parameter types, `IReviewUseCases`, `ReviewListPage`, `ReviewErrorDto`, the DTOs, `mapReview`, `mapReviewWithFlags`, `mapWorkflow`, `mapStepCandidate`, `ReviewWorkflow`, `StepCandidate`, `Review`, `ReviewWithFlags`, `ReviewTarget`, the DTO builders of `src/review/testing/reviewFixtures.ts`, imported `~/review/testing/reviewFixtures.js`); Task 6 (`GraphQLOperationError`, imported `@webiny/app/errors/index.js`; `yarn build -p @webiny/app --no-cache` first, as Task 6 requires for every task that imports it).
-- Produces: `class ReviewUseCases implements IReviewUseCases`, `constructor(gateway: IReviewGateway)`, exported plain, to be subclassed once per app (Tasks 11 and 12 register the subclasses); barrel line `export { ReviewUseCases } from "./review/useCases/ReviewUseCases.js"`.
+- Produces: `class ReviewUseCases implements IReviewUseCases`, `constructor(gateway: IReviewGateway)`, exported plain, to be subclassed once per app (Tasks 11 and 12 register the subclasses).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -890,12 +889,6 @@ export class ReviewUseCases implements IReviewUseCases {
 ```
 
 The `getTargetReview` throw site reads `envelope.error.code` and `.data` directly because the branch only runs when `error` is set; the other methods use the combined `error || !data` condition and null-coalesce, so the protocol-breach case (neither field set) throws with the fallback message and code `null`. `Array.prototype.map(mapReview)` passes the mapper directly: every mapper takes exactly one parameter, so the extra `index` and `array` arguments are ignored.
-
-In `packages/app-workflows/src/index.tsx`, add after the last line Task 8 added (`export type { IReviewCacheWriter, ReviewCacheRef } from "./review/cache/IReviewCacheWriter.js";`):
-
-```ts
-export { ReviewUseCases } from "./review/useCases/ReviewUseCases.js";
-```
 
 - [ ] **Step 4: Run the test and expect pass**
 

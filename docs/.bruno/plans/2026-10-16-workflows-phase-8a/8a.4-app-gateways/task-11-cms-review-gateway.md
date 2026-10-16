@@ -542,6 +542,9 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
+import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
+import { ModelsCache } from "@webiny/app-headless-cms/features/model/abstractions.js";
+import type { CmsModel } from "@webiny/app-headless-cms/types.js";
 import { CmsReviewContentAdapter } from "./CmsReviewContentAdapter.js";
 import { CmsReviewGateway } from "./CmsReviewGateway.js";
 import { CmsReviewUseCases } from "./CmsReviewUseCases.js";
@@ -556,6 +559,7 @@ describe("CmsReviewFeature", () => {
 
         container = new Container();
         container.registerInstance(MainGraphQLClient, client);
+        container.registerInstance(ModelsCache, new ListCache<CmsModel>("modelId"));
         CmsReviewFeature.register(container);
     });
 
@@ -1456,12 +1460,11 @@ class CmsReviewContentAdapterImpl implements AdapterAbstraction.Interface {
 
     getContentUrl(ref: ReviewContentRef): string {
         const modelId = parseAppName(ref.namespace);
-        const path = Routes.ContentEntries.List.path.replace(
-            ":modelId",
-            encodeURIComponent(modelId)
-        );
+        const encodedModelId = encodeURIComponent(modelId);
+        const encodedRevisionId = encodeURIComponent(ref.targetRevisionId);
+        const path = Routes.ContentEntries.List.path.replace(":modelId", encodedModelId);
 
-        return `${path}?id=${encodeURIComponent(ref.targetRevisionId)}`;
+        return `${path}?id=${encodedRevisionId}`;
     }
 
     getContentTypeLabel(contentTypeId: string): string | null {

@@ -10,9 +10,9 @@ Spec 13.5; R202, R206, R211, R223, R231; A77, A80; Decisions D113, D159; Review 
 
 **Files:**
 - Create: `packages/app-headless-cms-workflows/src/features/gateway/CmsReviewRowProvider.ts` (token), `.../features/gateway/CmsReviewRowProviderImpl.ts` (subclass and binding), `.../features/gateway/CmsReviewNotificationHandlerImpl.ts` (subclass and binding)
-- Create: `packages/app-headless-cms-workflows/src/presentation/contentReviews/{abstractions,toContentTypes,CmsContentReviewsPresenter,feature}.ts`
+- Create: `packages/app-headless-cms-workflows/src/presentation/contentReviews/{abstractions,toContentTypes,CmsContentReviewsPresenterImpl,feature}.ts`
 - Create: `packages/app-headless-cms-workflows/src/Components/ContentReviews/{CmsContentReviews,CmsContentReviewsSidebarItem}.tsx`
-- Create tests: `packages/app-headless-cms-workflows/src/features/gateway/contentReviewsBindings.test.ts`, `packages/app-headless-cms-workflows/src/presentation/contentReviews/CmsContentReviewsPresenter.test.ts`, `packages/app-headless-cms-workflows/src/Components/ContentReviews/CmsContentReviews.test.tsx`, `packages/app-headless-cms-workflows/src/Components/ContentReviews/CmsContentReviewsSidebarItem.test.tsx`
+- Create tests: `packages/app-headless-cms-workflows/src/features/gateway/contentReviewsBindings.test.ts`, `packages/app-headless-cms-workflows/src/presentation/contentReviews/CmsContentReviewsPresenterImpl.test.ts`, `packages/app-headless-cms-workflows/src/Components/ContentReviews/CmsContentReviews.test.tsx`, `packages/app-headless-cms-workflows/src/Components/ContentReviews/CmsContentReviewsSidebarItem.test.tsx`
 - Modify: `packages/app-headless-cms-workflows/src/features/gateway/feature.ts` (Task 11: register the two bindings, resolve `rowProvider`), `packages/app-headless-cms-workflows/src/routes.ts` (`tab` parameter), `packages/app-headless-cms-workflows/src/index.tsx` (mount the glue, drop the old footer menu), `packages/app-headless-cms-workflows/package.json` (dependency `@webiny/app-websockets`)
 - Modify (root composition tests, exact hunks in Step 1): `packages/app-headless-cms-workflows/src/index.test.tsx` (Task 11; the gated-root cases for this task are added here), `packages/app-headless-cms-workflows/src/index.editor.test.tsx` (Task 20) and `packages/app-headless-cms-workflows/src/index.lists.test.tsx` (Task 21), each only to stub the two new components.
 - The old `Components/CmsEntriesWorkflowStateList/` stops being mounted here and is deleted in Task 37. `vitest.config.ts`, the DOM setup file and the svg alias are Task 20's; this task adds none.
@@ -30,7 +30,7 @@ verify before writing code (record each result in the commit body):
 
 - [ ] **Step 1: Write the failing tests**
 
-`packages/app-headless-cms-workflows/src/presentation/contentReviews/CmsContentReviewsPresenter.test.ts`:
+`packages/app-headless-cms-workflows/src/presentation/contentReviews/CmsContentReviewsPresenterImpl.test.ts`:
 
 ```ts
 import { describe } from "vitest";
@@ -124,8 +124,9 @@ import { CmsReviewRowProvider } from "./CmsReviewRowProvider.js";
 
 const handle = vi.fn();
 
-// The leaf dependencies of Task 11's gateway and adapter (the fakes its feature test registers) and
-// the shared service the handler reports to.
+// The leaf dependencies of Task 11's gateway and adapter (the `MainGraphQLClient` and `ModelsCache`
+// registrations its feature test also makes; here `ModelsCache` is a stub because only the handler
+// is under test) and the shared service the handler reports to.
 const createContainer = (): Container => {
     const container = new Container();
     container.registerInstance(MainGraphQLClient, {
@@ -576,7 +577,7 @@ No other change in those two files: they mount the real `CmsWorkflows` root, whi
 - [ ] **Step 2: Run the tests, expect failure**
 
 ```bash
-yarn test packages/app-headless-cms-workflows/src/presentation/contentReviews/CmsContentReviewsPresenter.test.ts 2>&1 | tail -50
+yarn test packages/app-headless-cms-workflows/src/presentation/contentReviews/CmsContentReviewsPresenterImpl.test.ts 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/features/gateway/contentReviewsBindings.test.ts 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/Components/ContentReviews/CmsContentReviews.test.tsx 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/Components/ContentReviews/CmsContentReviewsSidebarItem.test.tsx 2>&1 | tail -50
@@ -756,7 +757,7 @@ export const toContentTypes = (models: ListedModel[]): ContentType[] => {
 };
 ```
 
-`packages/app-headless-cms-workflows/src/presentation/contentReviews/CmsContentReviewsPresenter.ts`:
+`packages/app-headless-cms-workflows/src/presentation/contentReviews/CmsContentReviewsPresenterImpl.ts`:
 
 ```ts
 import { makeAutoObservable } from "mobx";
@@ -766,7 +767,6 @@ import { createAppName } from "~/utils/appName.js";
 import { CmsContentReviewsPresenter as Abstraction } from "./abstractions.js";
 import type { CmsContentTypeOption } from "./abstractions.js";
 import type { ContentType } from "./abstractions.js";
-import type { ICmsContentReviewsViewModel } from "./abstractions.js";
 import type { ListedModel } from "./abstractions.js";
 import { toContentTypes } from "./toContentTypes.js";
 
@@ -784,7 +784,7 @@ class CmsContentReviewsPresenterImpl implements Abstraction.Interface {
         });
     }
 
-    get vm(): ICmsContentReviewsViewModel {
+    get vm(): Abstraction.ViewModel {
         const namespaces = this._contentTypes.map(contentType => {
             return createAppName(contentType);
         });
@@ -831,7 +831,7 @@ export const CmsContentReviewsPresenter = Abstraction.createImplementation({
 ```ts
 import { createFeature } from "@webiny/feature/admin";
 import { CmsContentReviewsPresenter as Abstraction } from "./abstractions.js";
-import { CmsContentReviewsPresenter } from "./CmsContentReviewsPresenter.js";
+import { CmsContentReviewsPresenter } from "./CmsContentReviewsPresenterImpl.js";
 
 export const CmsContentReviewsPresenterFeature = createFeature({
     name: "Cms/Workflows/ContentReviewsPresenter",
@@ -980,7 +980,7 @@ where the old footer menu element was mounted. Nothing else in the file changes.
 - [ ] **Step 4: Run the new tests, expect pass**
 
 ```bash
-yarn test packages/app-headless-cms-workflows/src/presentation/contentReviews/CmsContentReviewsPresenter.test.ts 2>&1 | tail -50
+yarn test packages/app-headless-cms-workflows/src/presentation/contentReviews/CmsContentReviewsPresenterImpl.test.ts 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/features/gateway/contentReviewsBindings.test.ts 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/Components/ContentReviews/CmsContentReviews.test.tsx 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/Components/ContentReviews/CmsContentReviewsSidebarItem.test.tsx 2>&1 | tail -50
