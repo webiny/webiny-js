@@ -18,9 +18,11 @@ vi.mock("~/Routes/index.js", () => {
 
 vi.mock("~/Components/ContentEntryForm/index.js", () => {
     return {
-        CmsEntryFormScheduleMenuItemAction: () => null,
-        CmsEntryFormTooltipButton: () => null,
-        ContentEntryFormWorkflow: () => null
+        CmsEntryReviewBar: () => null,
+        CmsEntryReviewBlockedActions: () => null,
+        CmsEntryReviewFormLock: () => null,
+        CmsEntryReviewNewRevision: () => null,
+        CmsEntryReviewScheduleMenuItem: () => null
     };
 });
 
@@ -30,10 +32,6 @@ vi.mock("~/Components/CmsEntriesWorkflowStateList/index.js", () => {
 
 vi.mock("~/Components/OptionItem/OpenInNewWindow.js", () => {
     return { ListOpenInNewWindow: () => null };
-});
-
-vi.mock("~/Components/ContentEntryForm/CmsEntryFormCreateNewRevisionButton.js", () => {
-    return { CmsEntryFormCreateNewRevisionButton: () => null };
 });
 
 vi.mock("~/presentation/feature.js", () => {

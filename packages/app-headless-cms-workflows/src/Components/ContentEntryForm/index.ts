@@ -1,4 +1,5 @@
-export { ContentEntryFormWorkflow } from "./ContentEntryFormWorkflow.js";
-export { CmsEntryFormTooltipButton } from "./CmsEntryFormTooltipButton.js";
-export { CmsEntryFormScheduleMenuItemAction } from "./CmsEntryFormScheduleMenuItemAction.js";
-export { CmsEntryFormCreateNewRevisionButton } from "./CmsEntryFormCreateNewRevisionButton.js";
+export { CmsEntryReviewBar } from "./CmsEntryReviewBar.js";
+export { CmsEntryReviewBlockedActions } from "./CmsEntryReviewBlockedActions.js";
+export { CmsEntryReviewFormLock } from "./CmsEntryReviewFormLock.js";
+export { CmsEntryReviewNewRevision } from "./CmsEntryReviewNewRevision.js";
+export { CmsEntryReviewScheduleMenuItem } from "./CmsEntryReviewScheduleMenuItem.js";

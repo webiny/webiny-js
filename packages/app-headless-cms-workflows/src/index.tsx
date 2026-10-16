@@ -1,14 +1,14 @@
 import React from "react";
 import { RegisterFeature, useFeatureFlags } from "@webiny/app-admin";
 import { CmsWorkflowsEditor } from "~/Routes/index.js";
-import {
-    CmsEntryFormScheduleMenuItemAction,
-    CmsEntryFormTooltipButton,
-    ContentEntryFormWorkflow
-} from "~/Components/ContentEntryForm/index.js";
+import { CmsEntryReviewBar } from "~/Components/ContentEntryForm/index.js";
+import { CmsEntryReviewBlockedActions } from "~/Components/ContentEntryForm/index.js";
+import { CmsEntryReviewFormLock } from "~/Components/ContentEntryForm/index.js";
+import { CmsEntryReviewNewRevision } from "~/Components/ContentEntryForm/index.js";
+import { CmsEntryReviewScheduleMenuItem } from "~/Components/ContentEntryForm/index.js";
 import { CmsEntriesWorkflowStateListFooterMenu } from "~/Components/CmsEntriesWorkflowStateList/index.js";
 import { ListOpenInNewWindow } from "~/Components/OptionItem/OpenInNewWindow.js";
-import { CmsEntryFormCreateNewRevisionButton } from "~/Components/ContentEntryForm/CmsEntryFormCreateNewRevisionButton.js";
+import { CmsEntryReviewFeature } from "~/features/editorReview/feature.js";
 import { CmsWorkflowsFeature } from "~/presentation/feature.js";
 import { CmsWorkflowsCacheFeature } from "~/features/feature.js";
 import { CmsWorkflowsEditorPresenterFeature } from "~/presentation/cmsWorkflowsEditor/feature.js";
@@ -27,13 +27,15 @@ export const CmsWorkflows = () => {
             <RegisterFeature feature={CmsWorkflowsFeature} />
             <RegisterFeature feature={CmsWorkflowsCacheFeature} />
             <RegisterFeature feature={CmsWorkflowsEditorPresenterFeature} />
+            <RegisterFeature feature={CmsEntryReviewFeature} />
             <ListOpenInNewWindow />
             <CmsEntriesWorkflowStateListFooterMenu />
             <CmsWorkflowsEditor />
-            <ContentEntryFormWorkflow />
-            <CmsEntryFormTooltipButton />
-            <CmsEntryFormScheduleMenuItemAction />
-            <CmsEntryFormCreateNewRevisionButton />
+            <CmsEntryReviewBar />
+            <CmsEntryReviewFormLock />
+            <CmsEntryReviewBlockedActions />
+            <CmsEntryReviewScheduleMenuItem />
+            <CmsEntryReviewNewRevision />
         </>
     );
 };

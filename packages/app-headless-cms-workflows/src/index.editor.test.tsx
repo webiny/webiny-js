@@ -1,0 +1,183 @@
+import React from "react";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
+import { render } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
+import { Container } from "@webiny/di";
+import { CompositionProvider } from "@webiny/react-composition";
+import { DiContainerProvider } from "@webiny/app/shared/di/DiContainerProvider.js";
+import { FeatureFlagsService } from "@webiny/app-admin/features/featureFlags/abstractions.js";
+import { FeatureFlags } from "@webiny/feature-flags";
+import { AdminUiProvider } from "@webiny/admin-ui";
+import { ModelContext } from "@webiny/app-headless-cms/admin/components/ModelProvider/index.js";
+import { ContentEntryEditorConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
+import { ContentEntryEditorWithConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
+import { useContentEntryEditorConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
+import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
+import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
+import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
+import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
+import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
+import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
+import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
+import { CmsWorkflows } from "./index.js";
+import { createEntry } from "~/testing/createEntry.js";
+import { createFormVm } from "~/testing/createFormVm.js";
+import { MODEL } from "~/testing/models.js";
+
+vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", async () => {
+    const React = await import("react");
+
+    return {
+        EditorReviewBar: () => React.createElement("div", { "data-testid": "editor-review-bar" })
+    };
+});
+
+/*
+ * The editor route, the Content Reviews footer menu, the "open in new window" option and the old
+ * editor presenter need routing and menu providers and are not what this test asserts (Task 11's
+ * composition test stubs the same modules).
+ */
+vi.mock("~/Routes/index.js", () => {
+    return { CmsWorkflowsEditor: () => null };
+});
+
+vi.mock("~/Components/CmsEntriesWorkflowStateList/index.js", () => {
+    return { CmsEntriesWorkflowStateListFooterMenu: () => null };
+});
+
+vi.mock("~/Components/OptionItem/OpenInNewWindow.js", () => {
+    return { ListOpenInNewWindow: () => null };
+});
+
+vi.mock("~/presentation/cmsWorkflowsEditor/feature.js", () => {
+    return {
+        CmsWorkflowsEditorPresenterFeature: {
+            name: "Mock",
+            register: () => undefined,
+            resolve: () => undefined
+        }
+    };
+});
+
+class FakeBasePresenter implements ContentEntryFormPresenter.Interface {
+    get vm(): ContentEntryFormPresenter.ViewModel {
+        return createFormVm({ entry: createEntry(), model: MODEL });
+    }
+
+    async loadRevision(): Promise<void> {}
+
+    async saveRevision(): Promise<boolean> {
+        return true;
+    }
+
+    async publishRevision(): Promise<boolean> {
+        return true;
+    }
+
+    async unpublishRevision(): Promise<boolean> {
+        return true;
+    }
+
+    async deleteEntry(): Promise<boolean> {
+        return true;
+    }
+
+    setFolderId(): void {}
+
+    newEntry(): void {}
+
+    reset(): void {}
+}
+
+const BasePresenter = ContentEntryFormPresenter.createImplementation({
+    implementation: FakeBasePresenter,
+    dependencies: []
+});
+
+const ActionsProbe = () => {
+    const { buttonActions, menuItemActions } = useContentEntryEditorConfig();
+    const names = [...buttonActions, ...menuItemActions].map(action => action.name);
+
+    return <div data-testid="action-names">{names.join(",")}</div>;
+};
+
+function mountRoot(isEnabled: boolean) {
+    const flagsService: FeatureFlagsService.Interface = {
+        getFlags: () => new FeatureFlags({ advancedPublishingWorkflow: isEnabled }),
+        isLoaded: () => true,
+        loadFlags: async () => undefined
+    };
+    const container = new Container();
+    const presenter = createFakePresenter();
+    container.registerInstance(FeatureFlagsService, flagsService);
+    container.registerInstance(TargetReviewPresenter, presenter);
+    container.registerInstance(CmsReviewUseCases, createFakeUseCases());
+    container.register(BasePresenter).inSingletonScope();
+
+    render(
+        <AdminUiProvider>
+            <CompositionProvider>
+                <DiContainerProvider container={container}>
+                    <ModelContext.Provider value={MODEL}>
+                        <CmsWorkflows />
+                        <ContentEntryEditorConfig>
+                            <ContentEntryEditorConfig.Width value={"1020px"} />
+                        </ContentEntryEditorConfig>
+                        <ContentEntryEditorWithConfig>
+                            <ActionsProbe />
+                            <ContentEntryFormContent>
+                                <div data-testid="original" />
+                            </ContentEntryFormContent>
+                        </ContentEntryEditorWithConfig>
+                    </ModelContext.Provider>
+                </DiContainerProvider>
+            </CompositionProvider>
+        </AdminUiProvider>
+    );
+
+    return { container, presenter };
+}
+
+describe("CmsWorkflows editor wiring", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it("registers the session, the bar, the actions and the presenter decorator with the flag on", async () => {
+        const { container, presenter } = mountRoot(true);
+
+        const session = container.resolve(CmsEntryReview);
+        expect(session.presenter).toBe(presenter);
+        expect(await screen.findAllByTestId("editor-review-bar")).toHaveLength(1);
+
+        const names = (await screen.findByTestId("action-names")).textContent ?? "";
+        expect(names).toContain("workflowBlockedActions");
+        expect(names).toContain("createNewRevision");
+        expect(names).not.toContain("workflowStateTooltip");
+
+        const form = container.resolve(ContentEntryFormPresenter);
+        await form.loadRevision("entry-1#0001");
+        expect(presenter.init).toHaveBeenCalledTimes(1);
+    });
+
+    it("registers nothing with the flag off", async () => {
+        const { container, presenter } = mountRoot(false);
+
+        expect(() => container.resolve(CmsEntryReview)).toThrow("No registration found");
+        expect(await screen.findByTestId("original")).toBeTruthy();
+        await waitFor(() => expect(screen.queryByTestId("editor-review-bar")).toBeNull());
+
+        const names = (await screen.findByTestId("action-names")).textContent ?? "";
+        expect(names).not.toContain("workflowBlockedActions");
+        expect(names).not.toContain("createNewRevision");
+
+        const form = container.resolve(ContentEntryFormPresenter);
+        await form.loadRevision("entry-1#0001");
+        expect(presenter.init).not.toHaveBeenCalled();
+    });
+});

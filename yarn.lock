@@ -11941,6 +11941,7 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     "@webiny/feature-flags": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    "@webiny/react-composition": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     mobx: "npm:^7.0.3"
     mobx-react-lite: "npm:^5.0.3"
