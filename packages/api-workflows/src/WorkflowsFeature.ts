@@ -27,6 +27,7 @@ import { CancelReviewFeature } from "~/features/review/CancelReview/feature.js";
 import { GetTargetReviewFeature } from "~/features/review/GetTargetReview/feature.js";
 import { ListTargetReviewsFeature } from "~/features/review/ListTargetReviews/feature.js";
 import { ListReviewCandidateTeamsFeature } from "~/features/review/ListReviewCandidateTeams/feature.js";
+import { ResolveReviewUserNameFeature } from "~/features/review/ResolveReviewUserName/feature.js";
 import { ListReviewsFeature } from "~/features/review/ListReviews/feature.js";
 import { CancelTargetReviewsFeature } from "~/features/review/CancelTargetReviews/feature.js";
 import { DeleteTargetReviewsFeature } from "~/features/review/DeleteTargetReviews/feature.js";
@@ -123,6 +124,8 @@ export const WorkflowsFeature = createFeature({
         ListTargetReviewsFeature.register(container);
         // Team names of a review step's candidate teams (R208)
         ListReviewCandidateTeamsFeature.register(container);
+        // Display names of the users skipped by assignment (R251)
+        ResolveReviewUserNameFeature.register(container);
         // Review lists for the app wrappers (spec 11)
         ListReviewsFeature.register(container);
         DeleteTargetReviewsFeature.register(container);

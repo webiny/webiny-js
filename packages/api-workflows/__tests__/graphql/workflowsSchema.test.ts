@@ -852,6 +852,7 @@ describe("workflows GraphQL root", () => {
             "id",
             "kind",
             "userId",
+            "userDisplayName",
             "assignedOn",
             "source",
             "ruleId",
