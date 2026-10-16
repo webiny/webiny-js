@@ -2,7 +2,7 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { IReviewCacheWriter } from "@webiny/app-workflows/review/cache/IReviewCacheWriter.js";
 
 export const WbReviewPageCacheWriter = createAbstraction<IReviewCacheWriter>(
-    "Wb/Workflows/ReviewCacheWriter"
+    "WebsiteBuilder/Workflows/ReviewCacheWriter"
 );
 
 export namespace WbReviewPageCacheWriter {
