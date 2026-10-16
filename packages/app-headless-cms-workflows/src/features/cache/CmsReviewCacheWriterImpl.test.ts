@@ -27,10 +27,11 @@ const WORKFLOW: SystemWorkflowValue = {
 
 function createEntry(
     entryId: string,
-    system: Record<string, unknown> | undefined
+    system: Record<string, unknown> | undefined,
+    version = 1
 ): CmsContentEntry {
     return {
-        id: `${entryId}#0001`,
+        id: `${entryId}#000${version}`,
         entryId,
         meta: { title: entryId, status: "draft", version: 1, locked: false, system }
     } as unknown as CmsContentEntry;
@@ -76,7 +77,7 @@ describe("CmsReviewCacheWriter", () => {
         const writer = container.resolve(Abstraction);
 
         writer.write(
-            { namespace: "cms.article", targetId: "entry-1", targetRevisionId: "entry-1#0003" },
+            { namespace: "cms.article", targetId: "entry-1", targetRevisionId: "entry-1#0001" },
             WORKFLOW
         );
 
@@ -109,6 +110,18 @@ describe("CmsReviewCacheWriter", () => {
         );
 
         expect(getSystem(readCache("article", "entry-1"))).toEqual({ workflow: null });
+    });
+
+    it("an older revision does not mark the latest row", () => {
+        seedCache("article", [createEntry("entry-1", undefined, 2)]);
+        const writer = container.resolve(Abstraction);
+
+        writer.write(
+            { namespace: "cms.article", targetId: "entry-1", targetRevisionId: "entry-1#0001" },
+            WORKFLOW
+        );
+
+        expect(getSystem(readCache("article", "entry-1"))).toBeUndefined();
     });
 
     it("does not touch the cache of another model", () => {

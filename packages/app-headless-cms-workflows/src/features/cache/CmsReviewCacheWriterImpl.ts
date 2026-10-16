@@ -1,4 +1,3 @@
-import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 import { ContentEntriesCacheProvider } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
 import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
 import type { ReviewCacheRef } from "@webiny/app-workflows/review/cache/IReviewCacheWriter.js";
@@ -17,11 +16,11 @@ class CmsReviewCacheWriterImpl implements Abstraction.Interface {
 
     write(ref: ReviewCacheRef, workflow: SystemWorkflowValue | null): void {
         const modelId = parseAppName(ref.namespace);
-        const { id: entryId } = parseIdentifier(ref.targetRevisionId);
         const cache = this.cacheProvider.get(modelId);
 
         cache.updateItems((entry: CmsContentEntry) => {
-            if (entry.entryId !== entryId) {
+            // Only the revision the review belongs to is updated, never a newer one.
+            if (entry.id !== ref.targetRevisionId) {
                 return entry;
             }
 
