@@ -5,6 +5,8 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
+import { observable } from "mobx";
+import { runInAction } from "mobx";
 import { Container } from "@webiny/di";
 import { Route } from "@webiny/app";
 import { RouteUrl } from "@webiny/app/features/router/RouteUrl.js";
@@ -116,6 +118,34 @@ describe("EditorReviewBar", () => {
 
         expect(await screen.findByText("Spring campaign review")).toBeTruthy();
         expect(useCases.getReview).toHaveBeenCalledWith("review-1");
+    });
+
+    it("keeps the drawer on the review it was opened for when the bar's review changes", async () => {
+        const { session, presenter, useCases } = createSession();
+        const vmBox = observable.box(presenter.vm, { deep: false });
+        Object.defineProperty(presenter, "vm", { get: () => vmBox.get() });
+        renderBar(session);
+        fireEvent.click(screen.getByText("Review details"));
+        await screen.findByText("Spring campaign review");
+
+        runInAction(() => vmBox.set(createViewModel({ reviewId: "review-2" })));
+
+        expect(await screen.findByText("Spring campaign review")).toBeTruthy();
+        expect(useCases.getReview).toHaveBeenCalledWith("review-1");
+        expect(useCases.getReview).not.toHaveBeenCalledWith("review-2");
+    });
+
+    it("refreshes the bar's presenter when an action inside the drawer changed the review", async () => {
+        const { session, presenter } = createSession();
+        renderBar(session);
+        fireEvent.click(screen.getByText("Review details"));
+        await screen.findByText("Spring campaign review");
+
+        fireEvent.click(await screen.findByText("Approve", { selector: "button *, button" }));
+        await screen.findByText("Approve “Legal sign-off”");
+        fireEvent.click(screen.getAllByText("Approve", { selector: "button *, button" }).pop()!);
+
+        await vi.waitFor(() => expect(presenter.refresh).toHaveBeenCalledTimes(1));
     });
 
     it("renders nothing for content without a workflow", () => {
