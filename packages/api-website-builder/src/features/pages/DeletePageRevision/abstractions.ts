@@ -12,7 +12,7 @@ import type { PageNotAuthorizedError } from "~/domain/page/errors.js";
 // ============================================================================
 
 export interface IDeleteWbPageRevisionParams {
-    /** The revision id, `<pageId>#<version>`. */
+    // The revision id, `<pageId>#<version>`.
     id: string;
 }
 
@@ -59,7 +59,7 @@ export interface IDeletePageRevisionUseCaseErrors {
 
 type UseCaseError = IDeletePageRevisionUseCaseErrors[keyof IDeletePageRevisionUseCaseErrors];
 
-/**
+/*
  * Delete one revision of a page. Deleting the latest revision makes the previous one the latest;
  * deleting the only revision deletes the page, and the page-delete events are published as well.
  */
@@ -90,7 +90,7 @@ export interface PageRevisionAfterDeletePayload {
 // Event Handler Abstractions
 // ============================================================================
 
-/** Hook into page lifecycle before a page revision is deleted. */
+// Hook into page lifecycle before a page revision is deleted.
 export const PageRevisionBeforeDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageRevisionBeforeDeletePayload>>
 >("Wb/PageRevisionBeforeDeleteEventHandler");
@@ -101,7 +101,7 @@ export namespace PageRevisionBeforeDeleteEventHandler {
     export type Page = WbPage;
 }
 
-/** Hook into page lifecycle after a page revision is deleted. */
+// Hook into page lifecycle after a page revision is deleted.
 export const PageRevisionAfterDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageRevisionAfterDeletePayload>>
 >("Wb/PageRevisionAfterDeleteEventHandler");
