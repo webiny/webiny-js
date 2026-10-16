@@ -18,9 +18,11 @@ import { ContentEntryEditorConfig } from "@webiny/app-headless-cms/admin/config/
 import { ContentEntryEditorWithConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
 import { useContentEntryEditorConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
 import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
+import { ContentEntryForm } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
+import { createViewModel } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
 import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
 import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
@@ -28,6 +30,7 @@ import { CmsWorkflows } from "./index.js";
 import { createEntry } from "~/testing/createEntry.js";
 import { createFormVm } from "~/testing/createFormVm.js";
 import { MODEL } from "~/testing/models.js";
+import { LOADING } from "~/testing/reviewStates.js";
 
 vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", async () => {
     const React = await import("react");
@@ -103,7 +106,17 @@ const ActionsProbe = () => {
     const { buttonActions, menuItemActions } = useContentEntryEditorConfig();
     const names = [...buttonActions, ...menuItemActions].map(action => action.name);
 
-    return <div data-testid="action-names">{names.join(",")}</div>;
+    // Only the schedule item is rendered, the other menu items need the router.
+    const scheduleActions = menuItemActions.filter(action => action.name === "schedule");
+
+    return (
+        <>
+            <div data-testid="action-names">{names.join(",")}</div>
+            {scheduleActions.map(action => (
+                <span key={action.name}>{action.element}</span>
+            ))}
+        </>
+    );
 };
 
 function mountRoot(isEnabled: boolean) {
@@ -113,7 +126,7 @@ function mountRoot(isEnabled: boolean) {
         loadFlags: async () => undefined
     };
     const container = new Container();
-    const presenter = createFakePresenter();
+    const presenter = createFakePresenter(createViewModel(LOADING));
     container.registerInstance(FeatureFlagsService, flagsService);
     container.registerInstance(TargetReviewPresenter, presenter);
     container.registerInstance(CmsReviewUseCases, createFakeUseCases());
@@ -127,9 +140,14 @@ function mountRoot(isEnabled: boolean) {
                         <CmsWorkflows />
                         <ContentEntryEditorConfig>
                             <ContentEntryEditorConfig.Width value={"1020px"} />
+                            <ContentEntryEditorConfig.Actions.MenuItemAction
+                                name={"schedule"}
+                                element={<span data-testid="schedule-item" />}
+                            />
                         </ContentEntryEditorConfig>
                         <ContentEntryEditorWithConfig>
                             <ActionsProbe />
+                            <ContentEntryForm />
                             <ContentEntryFormContent>
                                 <div data-testid="original" />
                             </ContentEntryFormContent>
@@ -160,6 +178,9 @@ describe("CmsWorkflows editor wiring", () => {
         expect(names).toContain("createNewRevision");
         expect(names).not.toContain("workflowStateTooltip");
 
+        await waitFor(() => expect(document.querySelector("fieldset[disabled]")).not.toBeNull());
+        await waitFor(() => expect(screen.queryByTestId("schedule-item")).toBeNull());
+
         const form = container.resolve(ContentEntryFormPresenter);
         await form.loadRevision("entry-1#0001");
         expect(presenter.init).toHaveBeenCalledTimes(1);
@@ -175,6 +196,9 @@ describe("CmsWorkflows editor wiring", () => {
         const names = (await screen.findByTestId("action-names")).textContent ?? "";
         expect(names).not.toContain("workflowBlockedActions");
         expect(names).not.toContain("createNewRevision");
+
+        expect(await screen.findByTestId("schedule-item")).toBeTruthy();
+        expect(document.querySelector("fieldset")).toBeNull();
 
         const form = container.resolve(ContentEntryFormPresenter);
         await form.loadRevision("entry-1#0001");

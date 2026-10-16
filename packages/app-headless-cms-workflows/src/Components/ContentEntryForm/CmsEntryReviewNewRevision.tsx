@@ -45,7 +45,7 @@ const CreateNewRevisionMenuItem = createReactiveComponent(() => {
         setRouteParams(params => {
             return { ...params, id: newEntry.id };
         });
-    }, [entry, revisionsPresenter]);
+    }, [entry, revisionsPresenter, toast, setRouteParams]);
 
     if (!entry || !canEdit(entry, "cms.contentEntry")) {
         return null;
