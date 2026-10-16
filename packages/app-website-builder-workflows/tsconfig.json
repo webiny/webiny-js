@@ -9,7 +9,8 @@
     { "path": "../app-workflows" },
     { "path": "../feature" },
     { "path": "../app-headless-cms-workflows" },
-    { "path": "../feature-flags" }
+    { "path": "../feature-flags" },
+    { "path": "../react-composition" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -33,7 +34,9 @@
       "@webiny/app-headless-cms-workflows/*": ["../app-headless-cms-workflows/src/*"],
       "@webiny/app-headless-cms-workflows": ["../app-headless-cms-workflows/src"],
       "@webiny/feature-flags/*": ["../feature-flags/src/*"],
-      "@webiny/feature-flags": ["../feature-flags/src"]
+      "@webiny/feature-flags": ["../feature-flags/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"]
     }
   }
 }

@@ -9,7 +9,8 @@
     { "path": "../app-workflows/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../app-headless-cms-workflows/tsconfig.build.json" },
-    { "path": "../feature-flags/tsconfig.build.json" }
+    { "path": "../feature-flags/tsconfig.build.json" },
+    { "path": "../react-composition/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -33,7 +34,9 @@
       "@webiny/app-headless-cms-workflows/*": ["../app-headless-cms-workflows/src/*"],
       "@webiny/app-headless-cms-workflows": ["../app-headless-cms-workflows/src"],
       "@webiny/feature-flags/*": ["../feature-flags/src/*"],
-      "@webiny/feature-flags": ["../feature-flags/src"]
+      "@webiny/feature-flags": ["../feature-flags/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"]
     }
   }
 }
