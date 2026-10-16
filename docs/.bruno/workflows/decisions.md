@@ -343,7 +343,7 @@ Refines D51. One handler on the CMS `EntryRevisionBeforeCreate` event (create-re
 
 ## D60. Websocket messages, no inbox
 
-No stored inbox; D47 lists serve that role. Workflows only sends websocket messages (`WebsocketsSendToIdentityUseCase`); the websockets layer decides delivery for live or non-live connections. On the client, every workflow websocket message also fires `WorkflowStateChangedEvent`, so the open bar, lists and editor refetch (editor reloads the entry if content changed). Resolves P9, A7.
+No stored inbox; D47 lists serve that role. Workflows only sends websocket messages (`WebsocketsSendToIdentityUseCase`); the websockets layer decides delivery for live or non-live connections. On the client, every workflow websocket message goes to the shared review notification service, which shows the toast and signals the review activity bus, so the visible lists and widgets of that app refetch once per signal (R210, R223); `ReviewChangedEvent` (R213) replaces `WorkflowStateChangedEvent` and keeps the content lists' `system.workflow` cache in sync. Refined in phase 8a. Resolves P9, A7.
 
 _Phase 7: delivery is tenant-scoped by the notifier; workflows lists the recipient's connections and sends to the current tenant's ones, and does not use `WebsocketsSendToIdentityUseCase` (D149, R188)._
 
@@ -754,7 +754,7 @@ Decided 2026-10-12 (phase 2 plan review).
 5. **The save block looks up reviews only on bound models.** It first checks whether the model is bound to a workflow; unbound models never look up reviews, so they stay editable when the review lookup fails, and after a workflow is deleted its leftover approved and rejected reviews no longer lock their revisions. Refines D62 and D80.
 6. **The api-core permission fix stays on the workflows branch.** The per-identity permission cache and the new `withAuthorization` land as clearly labelled commits at the start of phase 2.1, with the full api-core suite (DDB and SQL) and the neighbouring package suites run.
 
-Refines D62, D79, D80 and D84 (spec 4.5, 5.1, 9.2, 9.3).
+Refines D62, D79, D80 and D84 (spec 4.5, 5.1, 9.2, 9.3). The order of the warning and the normal dialog in points 1 and 3 is superseded by D157.
 
 Confirmed 2026-10-12: the bound-workflow lookup fails closed (a failed workflow list refuses updates, moves, trash and delete on bound-or-unknown models); move, trash and delete are refused when any revision of the entry has an in-progress review; the move, trash and delete rules check the workflow binding first, like the save block.
 
@@ -921,3 +921,31 @@ The notifier never throws and never returns a failure; every dependency call (we
 A mailer or websocket failure never fails a review action that is already saved. Handlers are awaited inside the request, so mail and websocket latency adds to the action; bounded concurrency and one mail per event keep it small, and bulk cancels notify serially. Delivery is at most once per published fact with no dedupe store and no retry; a process that dies after the save loses that notification. One accepted exception: concurrent stuck detection or a late task hook can publish `stepFailed` twice and notify the requester twice (A64).
 
 Covers R196, A64, A65. Refines D44. Decided 2026-10-15 (phase 7 plan R196, A64, A65).
+
+## D157. Trash and delete warning driven by the server refusal
+
+The normal trash or delete confirmation runs first. The server refuses with `Workflows/Review/ActiveReviewOnTrash` (D134); the admin then shows a warning that lists the blocking reviews as "{title} · Step {n} of {m} ({step name})" under the D134 text ("This content has a review in progress. Trashing it cancels the review.", "Deleting it cancels the review." for a delete). **Confirm** calls the app's cancel-for-delete wrapper (`CancelCmsEntryReviewsForDelete`, `CancelWebsiteBuilderPageReviewsForDelete`), once per distinct target and scoped to the revision when one revision is deleted, and then repeats the action once, with no second confirm. **Dismiss** changes nothing. Any other error is shown as before. The rule covers trash, single revision delete, permanent delete and bulk delete; for a bulk run the refusals of the whole run are collected, one warning lists every blocking review, and only the blocked items are retried. The one gap: a bulk action over "all selected" content runs as a background task, and refusals inside the task are not visible to the client, so that path has no pre-warning.
+
+Two documented exceptions to "normal dialog first": the Website Builder revision delete has no first confirmation dialog in the admin, so there the warning is the only dialog (the order does not apply); and the CMS bulk dialog is a generic dialog, so the named warning stacks over the busy bulk dialog. A bulk retry replaces the results report with the retried items only (accepted, Q27); the first pass shows one `Notifications.warning` toast "{done} of {total} items done. {n} still need your confirmation." (copy approved by the user, Q28). During a bulk run the per-item decorators record the refusal and report the item as not deleted instead of throwing. The phase also fixes a base CMS bug the flow exposed: `RevisionsListPresenter.deleteRevision` never deleted a revision because of an inverted confirm check, and several callers ignored a `false` result (bulk action, trash bin, form presenter); on the Website Builder side the page delete use cases now return a boolean and their callers treat `false` as "not done" (separate `fix` and `refactor` commits).
+
+The base gateways of both apps (CMS delete, delete revision, permanently delete, bulk action; WB delete page, delete page revision, trash bin delete, trash bin bulk action) throw one typed `GraphQLOperationError` that carries the error code and data, so the workflows packages decorate the use cases and react to the code; nothing else in those gateways changes.
+
+**Supersedes** the order in D134 points 1 and 3 ("the warning first, then the normal trash dialog"). The cancel-for-delete confirm path and the rule that anyone who may trash or delete the content may confirm stay as D134 says.
+
+Covers R204, R205, R228, R249. Decided 2026-10-16 (phase 8a plan, user answers Q3, Q4, Q20, Q25, Q27, Q28).
+
+## D158. Review steps carry `candidateTeams`
+
+A review step carries `candidateTeams: [{ id, name }]` next to `candidateTeamIds`, so the client can write "Waiting in the {Team} team pool" and "Team pool ({names})" (spec 13.4). It is resolved at read time in `api-workflows` from `candidateTeamIds` and never stored. Team lookup needs the `security.team` permission that a reviewer does not have, so exactly that lookup (and nothing else) runs without authorization and exposes only `id` and `name`; ids are de-duplicated, the order of `candidateTeamIds` is kept, an unknown team is omitted, and a failed lookup never fails the review read (the field resolves to the teams it could read). The shared `WorkflowsReviewStep` type carries it, so the CMS and Website Builder responses expose it without a wrapper change.
+
+**Revisits** the phase 7 assumption A62 ("no team names") for the client only: the phase 7 websocket and e-mail texts keep "the team pool"; team names there are a later follow-up.
+
+Covers R208, R232. Decided 2026-10-16 (phase 8a plan, user answer Q7).
+
+## D159. Shared admin core in `app-workflows`, app-owned documents and glue
+
+`app-workflows` holds everything that is app-neutral: the gateway interface, the one shared `ReviewUseCases` implementation (orchestration, mapping, error mapping, the workflow list cached per namespace), the DTOs, field fragments and mappers of the shared `Workflows*` types, the presenters, views, dialogs, reviewer picker, toasts, activity and notification handling, the cache-sync handler, the editor session, the trash and delete warning flow and the mounting components. It knows no app and has no namespace registry. Each app package (CMS, Website Builder) owns only: its GraphQL operation documents and the gateway that runs them, the registration that binds its gateway to the shared use cases under its own tokens (so both apps coexist in one admin container, each with its own cache), a content adapter (content URL and content type label), a cache writer, and thin glue at app-specific extension points (editor decorators, list field selection, route and widget mounting). No logic is duplicated across the two app packages; shared presenters depend on the use-case interfaces, never on a gateway. Content Reviews exists once per app and the shared list works on app-neutral rows through a row provider, so a later global view can combine several apps without changing it. A shared class is never bound with `createImplementation` (the binding is stored on the class, so a second app would overwrite the first); each app subclasses it once in its own `<App><Name>Impl.ts` and binds the subclass under its own token (R237). Test fixtures and fakes live in `review/testing/` of `app-workflows` (R243).
+
+**Supersedes** the pre-8a layout in which each app package carried copies of the review logic and one shared presenter singleton served every view. Spec 13.1 "gateways are per app" stays, now with shared use cases above them.
+
+Covers R202, R206, R211-R213, R223, R224, R237, R238, R243, R245. Decided 2026-10-16 (phase 8a plan, user answers Q1, Q5, Q10, Q11, Q13).

@@ -31,23 +31,23 @@ Discovery notes for `api-headless-cms-workflows`, `app-headless-cms-workflows`, 
 
 ### app-headless-cms-workflows
 
-- Entry: `src/index.tsx:16-37` exports `<CmsWorkflows/>`, mounted at `app-serverless-cms/src/Admin.tsx:57`. Same feature flag gate.
-- `CmsWorkflowsFeature` (`src/presentation/feature.ts:9-19`):
-  - Registers app-workflows `WorkflowsFeature` and `WorkflowStatePresenterFeature` again; `WorkflowsAdminApp` already registers both (`app-workflows/src/app.tsx:22-23`).
-  - `ContentEntryFormPresenter` decorator → `ContentEntryFormPresenterWorkflowDecorator`
-  - `TableRowMapper` decorator → `TableRowMapperWorkflowDecorator`
-  - `ListEntriesGraphQLFieldSelection`, `GetEntryGraphQLFieldSelection` implementations
-- `CmsWorkflowsCacheFeature` (`src/features/feature.ts`): `WorkflowStateChangedHandler` → `WorkflowStateCacheHandler`, patches `ContentEntriesCacheProvider`.
-- `CmsWorkflowsEditorPresenterFeature`: lists models as workflow "apps" (`src/presentation/cmsWorkflowsEditor/CmsWorkflowsEditorPresenter.ts:21-44`).
-- Components: `ListOpenInNewWindow`, `CmsEntriesWorkflowStateListFooterMenu`, `CmsWorkflowsEditor` (route `/cms/workflows`), `ContentEntryFormWorkflow`, `CmsEntryFormTooltipButton`, `CmsEntryFormScheduleMenuItemAction`, `CmsEntryFormCreateNewRevisionButton`.
+- Entry: `src/index.tsx` exports `<CmsWorkflows/>`, mounted after `WorkflowsAdminApp` (`app-serverless-cms/src/Admin.tsx`), same feature flag gate.
+- `CmsReviewFeature` (`src/features/gateway/feature.ts`): `CmsReviewGateway` (GraphQL documents over the `cms` root), `CmsReviewUseCases` (`CmsReviewUseCasesImpl`, a subclass of the shared `ReviewUseCases` bound to that gateway, singleton), `CmsReviewContentAdapter` (`cms.<modelId>` namespaces, entry URL, model label), `CmsReviewRowProvider` and the `CmsReviewNotificationHandler`.
+- Editor: `CmsEntryReview` (editor session, `CmsEntryReviewImpl`) and `CmsEntryFormPresenterReviewDecorator`; components `CmsEntryReviewBar` (decorates `ContentEntryFormContent`), `CmsEntryReviewFormLock` (decorates `ContentEntryForm`), `CmsEntryReviewBlockedActions` (the disabled Publish, wrapped in the shared `ReviewTooltip`; there is no standalone tooltip component), `CmsEntryReviewScheduleMenuItem` (decorates `MenuItemAction`), `CmsEntryReviewNewRevision`.
+- Lists and cache: `CmsReviewListEntriesFieldSelection`, `CmsReviewGetEntryFieldSelection`, `CmsReviewTableRowMapperDecorator`, `CmsReviewMoveEntryAction` (gates the list Move action while a review is in progress), `CmsReviewCacheSyncHandler` (a subclass of the shared handler) with `CmsReviewCacheWriter` (patches `ContentEntriesCacheProvider`, only the review's own revision).
+- Content Reviews: `CmsContentReviews` mounts the shared route `/cms/content-reviews`, menu `workflows.cms.contentReviews`, widgets `workflows.cms.review` and `workflows.cms.requested`; `CmsContentReviewsSidebarItem` adds the sidebar footer item; `CmsContentReviewsPresenter` (`CmsContentReviewsPresenterImpl.ts`) supplies the model namespaces and the content type filter.
+- Trash and delete: `features/trash` decorates `DeleteEntryUseCase`, `DeleteEntryRevisionUseCase`, `PermanentlyDeleteEntryUseCase` and the bulk delete presenter through the shared `ActiveReviewGuard` (D157).
+- Workflow editor (kept until 9a): `CmsWorkflowsEditorPresenterFeature` (lists models as workflow "apps"), `CmsWorkflowsEditor` (route `/cms/workflows`).
 
 ### app-website-builder-workflows
 
-- Entry: `src/index.tsx:8-25` exports `<WebsiteBuilderWorkflows/>` (`Admin.tsx:58`).
-- Features: `PageListWorkflowsFeature` (`ListPagesGraphQLFieldSelection` + `TableRowMapper` decorator), `PageGetWorkflowsFeature` (`GetPageGraphQLFieldSelection`).
-- Components: `WebsiteBuilderWorkflowsMenu` (route `/website-builder/workflows`), `PageEditorConfig`, `PagesList`, `ListOpenInNewWindow`.
-- Does not register `WorkflowsFeature` or `WorkflowStatePresenterFeature`; relies on `WorkflowsAdminApp` (or the CMS app).
-- No `WorkflowStateChangedHandler`, so the pages-list cache is not patched after a workflow action.
+- Entry: `src/index.tsx` exports `<WebsiteBuilderWorkflows/>` (`Admin.tsx`), same gate.
+- `WbReviewFeature` (`src/features/gateway/feature.ts`): `WbReviewGateway` (documents over the `websiteBuilder` root), `WbReviewUseCases`, `WbReviewContentAdapter` (`wb.page`, page editor URL), `WbReviewRowProvider`, the `WbReviewNotificationHandler`.
+- Editor: `WbPageReview` (editor session, `WbPageReviewSessionImpl`); `PageEditorTopBar` renders the bar for every page status, `PageEditorLayout` makes the editor read-only from the review state, `PageEditorAutoSave` stops autosave while a review exists, `PageReviewBar` and `PageReadOnlySync` (the read-only flag and its reason), `PageNewRevisionDecorator` (hides the base New Revision button while a review is in progress), and the publish pieces `PageReviewPublishButton` and `PageReviewPublishAction` (`buttonWorkflowPublish`, so an approved page can be published although the editor is read-only), `DisabledPublishButton` (the disabled Publish inside the shared `ReviewTooltip`) and `PageBasePublishDecorator` (hides the base `buttonPublish` when the namespace has a workflow); a rejected page offers the base "Create new revision".
+- Lists and cache: `WbReviewListPagesFieldSelection`, `WbReviewGetPageFieldSelection`, `WbReviewTableRowMapperDecorator`, `WbReviewCacheSyncHandler` with `WbReviewPageCacheWriter` (only the review's own revision); the change-status action follows `reviewState`.
+- Content Reviews: `WbContentReviews` mounts the shared route `/website-builder/pages/content-reviews`, menu `workflows.wb.contentReviews`, widgets `workflows.wb.review` and `workflows.wb.requested`, and the sidebar footer item.
+- Trash and delete: `features/trash` decorates `DeletePageUseCase`, `DeletePageRevisionUseCase` and the bulk delete presenter (D157; no WB trash-bin hook: a trashed page cannot have an active review); the server side is `deletePageRevision` plus the workflows block (spec 9.6).
+- Workflow editor (kept until 9a): `WebsiteBuilderWorkflowsMenu` (route `/website-builder/workflows`, one hard-coded "Pages" app).
 
 ## 2. How a workflow is bound to content
 
@@ -122,30 +122,17 @@ Discovery notes for `api-headless-cms-workflows`, `app-headless-cms-workflows`, 
 
 ## 5. UI integration points
 
-- Shared presenter `WorkflowStatePresenter` (`app-workflows/src/presentation/workflowState/abstractions.ts:68-86`), DI singleton, accessed through `useWorkflowState()`:
-
-  ```ts
-  init(app: string, targetRevisionId: string, title: string): Promise<void>; requestReview(): Promise<void>; ...
-  vm: { hasWorkflow; hasState; isApproved; isRejected; isPending; isInReview; canCancel; ... }
-  ```
-
-  `requestReview` calls `RequestReviewUseCase`, then publishes `WorkflowStateChangedEvent{app,targetRevisionId,state}` (`WorkflowStatePresenter.ts:196-229`). The "Request Review" button in `WorkflowStateBarRequestReview.tsx:20-23` opens the dialog (`presenter.showRequestReviewDialog`); the dialog calls `requestReview`. Rendered by `Components.ContentReview.WorkflowStateBar`.
-- CMS entry editor:
-  - `ContentEntryFormPresenterWorkflowDecorator.loadRevision` calls `workflowPresenter.init(\`cms.${modelId}\`, id, \`${model.name}: ${title}\`)` for any revision status (`:39-49`). Singletons skipped.
-  - `ContentEntryFormWorkflow` decorates `ContentEntryFormContent`, renders `WorkflowStateBar` and the "Any changes you do on the entry will not be stored!" alert (`ContentEntryFormWorkflow.tsx:14-44`).
-  - `CmsEntryFormTooltipButton` adds `workflowStateTooltip` before `save`.
-  - `CmsEntryFormCreateNewRevisionButton` adds a `createNewRevision` menu item.
-  - List sidebar footer gets "Content Reviews" via `WorkflowStateListAppOverlay app={cms.<modelId>}`.
-- WB page editor (`PageEditorConfig.tsx:9-24`):
-  - `PageEditorTopBar` calls `presenter.init(WB_PAGE_APP, page.id, \`Website Builder: ${title}\`)` only when `status === Draft`, disposes on unmount (`PageEditorTopBar.tsx:35-42`).
-  - `PageFormWorkflowState` renders the bar with the same alert.
-  - Tooltip action `buttonWorkflowStateTooltip` before `buttonPublish`.
-- Pages list: `Browser.Sidebar.Footer name="contentReviews"` with `WorkflowStateListAppOverlay app="wb.page"`.
+- The shared review presenters and views live in `app-workflows` (`review/`); the apps pass their own use cases in. `EditorReviewSession` and `EditorReviewBar` give each editor one presenter, one bar and the details drawer; `ReviewListView` and the widgets serve Content Reviews and the dashboard. See `app.md` sections 2 and 4.
+- CMS entry editor: `CmsEntryFormPresenterReviewDecorator.loadRevision` inits the session with `{ namespace: cms.<modelId>, targetRevisionId, targetTitle, canRequest, isPublished }` for any revision status and applies `allowsEditing` and `allowsPublishing` to `canSave` and `canPublish`. Singleton models are skipped as before.
+- WB page editor: `PageEditorTopBar` inits the session with `{ namespace: "wb.page", targetRevisionId: page.id, ... }` for every page status and disposes on unmount; `PageEditorLayout` is the one source of the read-only flag.
+- Pages and entries lists: the field selections add `system.workflow { workflowId reviewState stepId stepName stepState }` and the row mappers read it; the cache writers keep it current after actions and incoming notifications.
 - Workflow editors wrap `Components.Admin.WorkflowsEditor` with `apps`.
-  - CMS: one app per publishable non-singleton model. Menu entry guarded by `HasWorkflowsEditorPermission` and `canCreateContentModels` (`CmsWorkflowsEditorView.tsx:22-45`). Route guarded by `useCanUseWorkflows` + `SecureRoute permission="cms.contentModel"` (`Routes/CmsWorkflowsEditor.tsx:27-36`); view checks `canCreateContentModels` only (`:104`).
-  - WB: one hard-coded "Pages" app. Route uses `SecureRoute permission="wb.page"` (`Routes/WebsiteBuilderWorkflowsMenu.tsx:38`). No `HasWorkflowsEditorPermission` wrapper on the menu (`PageWorkflowsEditorView.tsx:16-27`).
+  - CMS: one app per publishable non-singleton model. Menu entry guarded by `HasWorkflowsEditorPermission` and `canCreateContentModels` (`CmsWorkflowsEditorView.tsx`). Route guarded by `useCanUseWorkflows` + `SecureRoute permission="cms.contentModel"` (`Routes/CmsWorkflowsEditor.tsx`); the view checks `canCreateContentModels` only.
+  - WB: one hard-coded "Pages" app. Route uses `SecureRoute permission="wb.page"` (`Routes/WebsiteBuilderWorkflowsMenu.tsx`). No `HasWorkflowsEditorPermission` wrapper on the menu (`PageWorkflowsEditorView.tsx`).
 
 ## 6. Duplication, inconsistencies, bugs
+
+Items below that name the old state bar, `WorkflowStateCacheHandler`, `ToggleEditorMode`, the old presenters or the unused content-review routes (the inline app-name copy in 4, 5, the admin bullet of 6, 8-11) describe admin code deleted in phase 8a (D159).
 
 ### Near-identical code
 

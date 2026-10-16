@@ -6,7 +6,7 @@ Starting point for refactoring Advanced Publishing Workflows (API + admin UI), i
 
 - `routing.md`: product brief for reviewer routing (input, not discovery).
 - `api.md`: `api-workflows` domain, lifecycle, persistence, GraphQL, permissions, tests, smells.
-- `app.md`: `app-workflows` architecture, editor, review flows, GraphQL usage, bugs, smells.
+- `app.md`: `app-workflows` as built in phase 8a (shared review core, per-app gateways and glue, review flows, GraphQL usage), the workflow editor notes and the open editor bugs.
 - `integrations.md`: CMS and Website Builder packages (API + admin), how content binds to a workflow, publish blocking, available metadata.
 - `automations.md`: developer guide for writing an automation (definition, zod settings schema, outcomes, credentials, failure and restart, registration).
 - `ai-tools.md`: developer guide for AI steps (registering a `WorkflowAiTool`, tool naming, the built-in `readTarget` and `updateTargetFields`, making a custom target editable with `ReviewTargetEditor`, who the tools run as, limits and failure reasons).
@@ -18,7 +18,7 @@ Starting point for refactoring Advanced Publishing Workflows (API + admin UI), i
 | Package | Role | Size |
 |---|---|---|
 | `api-workflows` | Core domain, use cases, GraphQL | 160 files, ~6.3k LOC src |
-| `app-workflows` | Core admin UI | 192 files, ~7.3k LOC, no tests |
+| `app-workflows` | Core admin UI: shared review core (phase 8a) and the workflow editor | review core tested, editor not |
 | `api-headless-cms-workflows` | CMS entry binding | 22 files |
 | `app-headless-cms-workflows` | CMS entry editor/list UI | 25 files |
 | `api-website-builder-workflows` | WB page binding | 16 files |
@@ -45,7 +45,7 @@ Correctness:
 3. `WorkflowsFeature` is registered twice in API and app. Verified effects: notification types listed twice, workflow models listed twice in `ModelsProvider`, SDL composed twice (merges without error) (`api.md` §1, `integrations.md` §6).
 4. List resolvers push system fields into `where.values`; filtering by `createdBy`/`savedBy`/dates throws `FIELD_ERROR`. Nested step/team filters are stripped by zod; `listRequested` matches any step's team, not the current step (`api.md` §5).
 5. State invariants leak: cancelled states can still be started/approved (no `isActive` check); completed states never deactivate; a failed active-state lookup lets a second state be created (`api.md` §3).
-6. Admin: gateways drop error `code`/`data`, so error bars and invalid-field display never work; singleton widget presenter shared between two dashboard widgets (results overwrite, dialogs open twice); approve success dialog names the next step; fire-and-forget editor saves (`app.md` §7).
+6. Admin editor code: gateways drop error `code`/`data`, `useCanUseWorkflows` is misused (always false), fire-and-forget editor saves (`app.md` §7). The review UI bugs of the first snapshot went with the old code in phase 8a.
 7. CMS and WB publish checks differ: WB crashes generically on lookup errors and does not clear `system.workflow` on done (`integrations.md` §6).
 
 Structure:

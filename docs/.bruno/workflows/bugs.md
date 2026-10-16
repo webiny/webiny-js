@@ -14,7 +14,7 @@ Bugs found during discovery that get fixed separately, before or alongside the r
 ## B2. WorkflowsFeature registered twice
 
 - API: `registerApiRequestStack.ts:127` and `CmsWorkflowsFeature.ts:20`. Effects: notification types listed twice, workflow models listed twice in `ModelsProvider`, SDL composed twice.
-- Admin: `WorkflowsAdminApp` and `app-headless-cms-workflows/src/presentation/feature.ts:12-13` both register `WorkflowsFeature` and `WorkflowStatePresenterFeature`.
+- Admin: resolved in phase 8a; `WorkflowsAdminApp` registers `WorkflowsFeature` once.
 - Fix first, per D18.
 
 ## B3. DDB listUsers ignores id_in

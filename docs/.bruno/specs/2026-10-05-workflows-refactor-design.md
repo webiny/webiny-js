@@ -1,6 +1,6 @@
 # Workflows refactor: design
 
-Status: draft, 2026-10-05, updated 2026-10-13 (D137: least loaded counts load per app; D135: the review title comes from the content and may be changed on request; D136: every workflows GraphQL operation is on the main `/graphql` endpoint; D132: api-workflows is an internal engine, apps own checks and GraphQL; D133: no cross-app reviews, shared configuration operations, engine identity touch points; D134: trash and delete refused while a review is in progress, create as published allowed, bound-model guards). Consolidates decisions D1-D137 in `docs/.bruno/workflows/decisions.md`; where decisions refine or supersede each other, this document states the final result. Decision ids are given in brackets for traceability. Discovery background lives in `docs/.bruno/workflows/` (`README.md`, `api.md`, `app.md`, `integrations.md`, `infrastructure.md`); the product brief for routing is `docs/.bruno/workflows/routing.md`; the UI design brief is `docs/.bruno/specs/2026-10-06-workflows-ui-design-brief.md` (UI decisions D88-D131).
+Status: draft, 2026-10-05, updated 2026-10-16 (phase 8a: D157 trash and delete warning driven by the server refusal; D158 review steps carry team names; D159 shared admin core in app-workflows), earlier updated 2026-10-13 (D137: least loaded counts load per app; D135: the review title comes from the content and may be changed on request; D136: every workflows GraphQL operation is on the main `/graphql` endpoint; D132: api-workflows is an internal engine, apps own checks and GraphQL; D133: no cross-app reviews, shared configuration operations, engine identity touch points; D134: trash and delete refused while a review is in progress, create as published allowed, bound-model guards). Consolidates decisions D1-D159 in `docs/.bruno/workflows/decisions.md`; where decisions refine or supersede each other, this document states the final result. Decision ids are given in brackets for traceability. Discovery background lives in `docs/.bruno/workflows/` (`README.md`, `api.md`, `app.md`, `integrations.md`, `infrastructure.md`); the product brief for routing is `docs/.bruno/workflows/routing.md`; the UI design brief is `docs/.bruno/specs/2026-10-06-workflows-ui-design-brief.md` (UI decisions D88-D131).
 
 ## 1. Goals
 
@@ -137,6 +137,7 @@ interface ReviewStep extends WorkflowStep {
     issues: AiIssue[];                   // AI steps' structured findings; [] for every other step; reset by restart [D39, D145]
     pickedUserId?: string | null;        // requester's pick at submit [D22]
     candidateTeamIds: string[];          // resolved on step reached [D21]
+    candidateTeams?: { id: string; name: string }[];   // read only: derived from candidateTeamIds when the review is read, never stored; unknown teams omitted [D158]
     assignmentSource?: string | null;    // rule id, "strategy", "picked", "pool", "poolStart", "takeOver", "reassign" [D45]
     assignment?: { source: string; ruleId?: string; reason?: string; by?: Actor };   // "why this owner" [D127]
     taskId?: string | null;              // AI/automation run id [D57]
@@ -232,7 +233,7 @@ Rules:
 - Exclusions govern new assignments only. Work already held by a user who becomes excluded stays with them (brief).
 - An approved revision that was published and later unpublished can be published again without a new review [D121].
 - When the last step is approved the review is `approved` and publish is allowed. On a workflow-bound model, publish requires an approved review on that revision, enforced in the API (not only the UI); a failed lookup blocks publish. Models without a workflow publish normally [D79]. The rule guards the publish action only: creating content as published (create, create-from, new revision with `status: "published"`) needs no review, for data transfer from other systems [D134].
-- Trashing or deleting content with a review in progress is refused on bound models: CMS trash, permanent delete, single revision delete (that revision's review) and `deleteMultiple`, and WB page trash and delete fail with `Workflows/Review/ActiveReviewOnTrash` (data: the action and each in-progress review's id, target, title and current step). The admin warns ("This content has a review in progress. Trashing it cancels the review."); on confirm it calls the app's cancel-for-delete wrapper (`CancelCmsEntryReviewsForDelete`, `CancelWebsiteBuilderPageReviewsForDelete`) and repeats the action. Anyone who may delete the content may confirm, without cancel rights; the review is recorded as cancelled by that user with reason "content trashed" or "content deleted" (the reason travels on the cancelled event). After a permanent delete the reviews and their assignment records go with the content [D134].
+- Trashing or deleting content with a review in progress is refused on bound models: CMS trash, permanent delete, single revision delete (that revision's review) and `deleteMultiple`, and WB page trash and delete fail with `Workflows/Review/ActiveReviewOnTrash` (data: the action and each in-progress review's id, target, title and current step). The admin shows the normal trash or delete confirmation first; when the server refuses, it warns and lists the blocking reviews ("This content has a review in progress. Trashing it cancels the review."); on confirm it calls the app's cancel-for-delete wrapper (`CancelCmsEntryReviewsForDelete`, `CancelWebsiteBuilderPageReviewsForDelete`, scoped to the revision when one revision is deleted) and repeats the action once, with no second confirm [D157]. Anyone who may delete the content may confirm, without cancel rights; the review is recorded as cancelled by that user with reason "content trashed" or "content deleted" (the reason travels on the cancelled event). After a permanent delete the reviews and their assignment records go with the content [D134].
 
 ### 5.2 Step reached [D2]
 
@@ -397,6 +398,10 @@ One adapter per namespace, replacing the duplicated CMS/WB handler pairs: `cms.*
 
 Not built in this refactor. Until it lands, the assignment log is the only record of reassignments (the brief's reassign audit entry is deferred). Domain events must carry enough data for a later "Workflows" audit app (entities workflow and review; actions workflow create/update/delete, review request, start, take over, approve, reject, cancel, reassign, restart, step failed). Remove the old v5 "APW" entry from `common-audit-logs/src/apps.ts` now.
 
+### 9.6 api-website-builder
+
+- `deletePageRevision(id: ID!)` on `WbMutation`: deletes one revision of a page through the CMS entry-revision path on the private page model, so the CMS rules apply unchanged (deleting the latest revision makes the previous one the latest; deleting the only revision deletes the page and publishes the page-delete events as well; a published revision is deletable exactly as a page is today, no unpublish step is added). Permission `WbPermissions.canDelete("page", page)`. No storage key, model or schema change. Workflows refuses it while the revision has a review in progress (same `Workflows/Review/ActiveReviewOnTrash` code and data as the CMS) and deletes the revision's reviews afterwards [D157].
+
 ## 10. GraphQL surface (outline)
 
 Two kinds of operations [D132, D133]:
@@ -408,7 +413,7 @@ The lists below name capabilities; each per-app capability exists once per app. 
 
 - Root `workflows` (`WorkflowsQuery` / `WorkflowsMutation`): the shared configuration operations (`getSettings`, `updateSettings`, `listStepTypes`, `listUsers(search, ids, limit)` → `{ users: { id, displayName }[], missingIds }`, `listAutomationDefinitions` → `{ id, name, models, settingsSchema }[]` (the settings schema as JSON schema); later transports; `listAiTools` → `{ name, title, description }[]` and `listAiModels` → `{ id, name, providerId, providerName }[]`, the latter registered by ai-powerups only when `aiPowerups` and `advancedPublishingWorkflow` are both on, so the field is absent otherwise). The review step exposes `taskId`, `runs` (the shared `WorkflowsStepRun { taskId, startedOn, finishedOn, outcome, reason }`, earlier attempts only) and `issues` (`WorkflowsAiIssue { fieldPath, severity, message, suggestion }`).
 - Root `cms` (the existing `CmsQuery` / `CmsMutation`): `listCmsEntryWorkflows`, `getCmsEntryWorkflow(id)`, `getCmsEntryReview(id)`, `getCmsEntryTargetReview(modelId, revisionId)`, `listCmsEntryReviews(list, where, sort, limit, after)`, `listCmsEntryWorkflowModels(search, limit, after)`, `listCmsEntryStepCandidates(workflowId, stepId, modelId, revisionId)`, `listCmsEntryReviewStepCandidates(reviewId, stepId)`, `inspectCmsEntryRouting(stepConfig, modelId, requesterId, folderId)`, `cmsEntryFolderExists(id, type)`; `storeCmsEntryWorkflow(data, savedOn)`, `deleteCmsEntryWorkflow(id)`, `requestCmsEntryReview(modelId, revisionId, title, picks)`, `startCmsEntryReviewStep`, `takeOverCmsEntryReviewStep` (also `notifyPreviousOwner: Boolean = true`), `approveCmsEntryReviewStep`, `rejectCmsEntryReviewStep` (each `reviewId, stepId`, approve and reject also `comment`), `reassignCmsEntryReviewStep(reviewId, stepId, userId)`, `restartCmsEntryReviewStep(reviewId, stepId)`, `cancelCmsEntryReview(reviewId)`, `cancelCmsEntryReviewsForDelete(modelId, entryId, revisionId, action)`.
-- Root `websiteBuilder` (the existing `WbQuery` / `WbMutation`): the same set with `WebsiteBuilderPage` in place of `CmsEntry` and no `modelId` (`getWebsiteBuilderPageTargetReview(revisionId)`, `requestWebsiteBuilderPageReview(revisionId, title, picks)`, `cancelWebsiteBuilderPageReviewsForDelete(pageId, action)`, `listWebsiteBuilderPageStepCandidates(workflowId, stepId, revisionId)`, `listWebsiteBuilderPageReviewStepCandidates(reviewId, stepId)`, `inspectWebsiteBuilderPageRouting(stepConfig, requesterId, folderId)`, `websiteBuilderPageFolderExists(id)` (the type is always `wb:page`), `reassignWebsiteBuilderPageReviewStep(reviewId, stepId, userId)`, `restartWebsiteBuilderPageReviewStep(reviewId, stepId)`); there is no WB model list.
+- Root `websiteBuilder` (the existing `WbQuery` / `WbMutation`): the same set with `WebsiteBuilderPage` in place of `CmsEntry` and no `modelId` (`getWebsiteBuilderPageTargetReview(revisionId)`, `requestWebsiteBuilderPageReview(revisionId, title, picks)`, `cancelWebsiteBuilderPageReviewsForDelete(pageId, revisionId, action)` (`revisionId` optional: only that revision's reviews when given, every revision of the page when omitted), `listWebsiteBuilderPageStepCandidates(workflowId, stepId, revisionId)`, `listWebsiteBuilderPageReviewStepCandidates(reviewId, stepId)`, `inspectWebsiteBuilderPageRouting(stepConfig, requesterId, folderId)`, `websiteBuilderPageFolderExists(id)` (the type is always `wb:page`), `reassignWebsiteBuilderPageReviewStep(reviewId, stepId, userId)`, `restartWebsiteBuilderPageReviewStep(reviewId, stepId)`); there is no WB model list.
 - Operations that take a review id take no model; a request takes the revision id and the server derives the content id from it. Every operation returns `{ data, error }` (lists `{ data, meta: { cursor, hasMoreItems }, error }`).
 
 Per-app queries:
@@ -436,7 +441,7 @@ Shared configuration operations (api-workflows, `editor`):
 
 Errors return `code`, `message` and `data`; the admin must keep them (today gateways drop them).
 
-Review reads (steps preview, review details) include each step's `description` [D120]. Reviewer candidates carry no workload counts [D104].
+Review reads (steps preview, review details) include each step's `description` [D120]. Reviewer candidates carry no workload counts [D104]. Each review step also returns `candidateTeams { id name }`, resolved from `candidateTeamIds` [D158]. Each skip entry of a step returns `userDisplayName` (resolved server-side, name only) and the review returns `cancelledBy { id displayName }`, the actor stored when the review was cancelled.
 
 ## 11. Review lists [D47]
 
@@ -484,7 +489,7 @@ Lists keep the folder-level read filter on the target, so review titles from res
 - Take over carries `notifyPreviousOwner` (default true) from the GraphQL argument through the wrapper and the engine to the fact; it is never stored [D111, D154]. Developers add channels by registering a `NotificationTransport` (`docs/.bruno/workflows/notifications.md`).
 - A notification links to the content or to the review in its own app (CMS or Website Builder); the message carries the review's namespace so the client opens that app's review [D133].
 - On the client an in-app notification is a toast through the admin `Notifications` feature; every workflow toast, including confirmations of the user's own actions, uses that one stack [D102, D125].
-- On the client every workflow websocket message also fires `WorkflowStateChangedEvent`, so the open bar, lists and editor refetch; the editor reloads the entry when its content changed.
+- On the client every `workflows.notification` message goes to one shared service: it shows the toast and signals the review activity bus, and the visible Content Reviews lists and dashboard widgets of that app refetch once per signal (own actions signal the same bus); there is no polling. New reviews appear in a list only through "New reviews are available." and Show. `ReviewChangedEvent` keeps the content lists' `system.workflow` cache in sync [D60, D157].
 
 ## 13. Admin UI
 
@@ -492,10 +497,15 @@ Screens, states and copy are specified in the UI design brief (`docs/.bruno/spec
 
 ### 13.1 Architecture
 
-- Keep the DI + MobX presenter pattern. No shared singleton presenters across independent views: each widget, list and target view gets its own instance [D71].
-- Gateways keep error `code` and `data`; presenters surface action errors.
-- Gateways are per app: the CMS and Website Builder workflow admin packages implement them over their app's operations. Shared presenters in app-workflows depend on a gateway abstraction and are shared only where the behaviour is truly app-neutral (review bar, dialogs, request dialog, editor shell); the six shared configuration operations (settings, users, step types, notification transports, automation definitions, AI tools) have one gateway [D132, D133].
-- Per-viewer flags come from the server.
+- Keep the DI + MobX presenter pattern. Presenters are transient: each target view, dialog, request dialog, details drawer, list and widget gets its own instance [D71]; singletons are services (activity bus, toasts, notification service, trash collector and guard), each app's gateway and use cases, and each editor's session.
+- The shared core lives in `app-workflows` and knows no app: domain types, DTOs, field fragments and mappers of the shared `Workflows*` types, the gateway interface, one shared `ReviewUseCases` implementation, presenters, views, dialogs, toasts, activity and notification handling, the cache-sync handler, the trash and delete warning flow and the mounting components. There is no namespace registry [D159].
+- Each app package (CMS, Website Builder) owns only what differs: GraphQL operation documents and the gateway that runs them, the registration binding its gateway to the shared use cases under its own tokens, a content adapter, a cache writer and thin glue at app-specific extension points. Shared presenters depend on use-case interfaces, never on a gateway; no logic is duplicated across the app packages [D159]. The six shared configuration operations (settings, users, step types, notification transports, automation definitions, AI tools) have one gateway [D132, D133].
+- Gateways return the `{ data, error }` envelope; the shared use cases turn `error` into a typed `GraphQLOperationError` (`@webiny/app`) that keeps `code`, `message` and `data`, and presenters map by code. The base CMS and Website Builder delete gateways throw the same error [D157].
+- Per-viewer flags come from the server; the client invents no rights.
+- Mouse and keyboard only; no touch behaviour.
+- Workflows decorators and registrations exist only when the `advancedPublishingWorkflow` feature is on; without it CMS and Website Builder are unchanged. Each app loads its workflow list once and caches it per namespace; the editor shows the bar only for content with a bound workflow.
+- Every workflow toast, including confirmations of the user's own actions, goes through the admin `Notifications` stack [D102, D125].
+- Each app's cache writer updates the content list cache only for the review's own revision, so other revisions of the same content keep their state.
 
 ### 13.2 Workflow editor
 
@@ -508,19 +518,29 @@ Screens, states and copy are specified in the UI design brief (`docs/.bruno/spec
 
 ### 13.3 Request review dialog
 
-- For each step with `allowManualPick`, a choice between automatic (preselected) and picking a person, all captured in one dialog.
-- The picker uses `listStepCandidates`; excluded users show as "Unavailable", with the reason only for `editor` / `reassign` [D22, D72, D97].
+- The dialog previews the workflow's steps (title, type, how the owner is chosen, description). For each step with `allowManualPick`, a choice between automatic (preselected) and "Choose a person"; all picks are captured in one dialog and sent only for steps with a person chosen.
+- The picker (`ReviewerPicker`, over the admin autocomplete) uses `listStepCandidates`; candidates arrive unpaged and are searched on the client. Excluded users show as "Unavailable", with the reason only when the server returns one (`editor` / `reassign`) [D22, D72, D97].
+- The title is prefilled with the content title and needs at least 5 characters; the server stays authoritative [D100, D135].
 
-### 13.4 Review view (bar, tooltip, dialogs)
+### 13.4 Review view (bar, tooltip, dialogs, details)
 
-- Shows per step: state (all six states), owner with actor type, assignment source, comment, AI issues.
-- Actions driven by server flags: start, take over, reassign, approve, reject, restart, cancel.
-- On a rejected WB draft, a "create new revision" action that navigates to the new revision (CMS already has one) [D24].
+- The bar shows a loading state, a failed state with "Try again" (and a no-access variant), no bar for content without a workflow, and for an active review the review state tag, the current step and owner, a progress popover and a tooltip. Editing and publishing are unavailable while the status is loading or failed.
+- All six step states (pending, awaiting, in review, approved, rejected, failed) render in the tag, popover and details. A failed step shows the generic in-review message in 8a; Restart, the running and failed messages, run history, AI issues and the Background task link arrive with 8b.
+- Actions come from server flags: request review, start (confirmed [D114]), take over (checkbox to notify the previous owner [D111]), reassign, approve, reject, cancel. Conflicts ("Someone else acted first") keep the dialog open, collapse it to Close and re-read the review; a typed comment is kept. Each dialog takes an optional conflict callback, so the host (the bar, the details drawer or a Content Reviews list) refreshes itself when a conflict happens. Own actions end with a toast.
+- The Review details drawer (D88) shows the header, the timeline with owner, "Why this owner" (hidden for AI and automation), times, comment and the skipped-by-assignment box exactly as received [D89]; it opens from the bar and from a list row, as presenter state (no route).
+- Editor rules: editing is open without a workflow and without an active review; publishing needs no workflow or an approved review; an approved revision that was unpublished keeps "Review: Approved" and can be published again [D121]; moving is disabled while the revision is in review (the CMS list Move action too); an unpublished page that was reviewed can be published again with no new review (a page published before the workflow was bound has no review and the server refuses with `Workflows/Review/PublishBlocked`, shown as an error toast); the Website Builder shows the bar for every page status, hides "New Revision" while a review is in progress and offers "Create new revision" on a rejected page [D24]. A disabled Publish stays visible, `aria-disabled`, with its reason.
+- Team pool owners read "Waiting in the {Team} team pool" with the names from `candidateTeams` [D158]; the bar names the viewer's own teams among them (the viewer's team names come from the admin `Identity`, no API change). Only a failed step is shown in a destructive (red) tag; the Rejected tag is neutral-dark for the review as a whole and for a step alike, while the progress segments keep the design's red for rejected steps.
+- The skipped-by-assignment box shows the display names of the skipped people (resolved server-side, name only); a cancelled review reads "{Name} cancelled this review at {time}." from the stored cancelling actor (`cancelledBy`; reviews cancelled before 8a read "Someone cancelled this review at {time}.").
+- Permissions follow the content: each app's own GraphQL carries that app's content permission checks, so a `Workflows/NotAuthorized` read happens only for a viewer without access to the content and shows the no-access state; the lock cannot hit a user who can edit the content.
 
 ### 13.5 Lists and dashboard
 
-- Content Reviews per app (CMS, Website Builder), each with the five lists over that app's reviews (Failed steps only with `reassign`); the CMS view has the "Content type" column and filter, the WB view (Pages only) does not need them [D47, D112, D113, D133].
-- Dashboard widgets per app: "For me to review" (tabs Assigned to me, Pool) and "My requests"; "View all" opens the matching list of that app [D71, D133].
+- Content Reviews exists once per app (CMS, Website Builder), each with four lists over that app's reviews: Assigned to me, Team pool, Team in review and My requests. The Failed steps list arrives with 8b. Sorting is by `lastChangedOn` only; search, a content type filter (CMS only), "Any review state" and "Any step state" (My requests only); load more by cursor [D47, D112, D113, D119, D133].
+- The list view and presenter work on app-neutral rows through a use-case interface and a row provider, and row links and actions resolve per row namespace, so a later global Content Reviews view can combine several apps without changing the view. No global route exists yet.
+- Live updates: the visible list refetches after the user's own actions and on every incoming `workflows.notification` for its namespaces; a signal that arrives while the list is still loading is queued and applied once after the load; new reviews are announced with "New reviews are available." and appear on Show; no polling [D60]. A conflict on an action started from a list ends with "The list has been refreshed." in the dialog, and the list refreshes.
+- Empty states of the Assigned to me and Team pool lists name the viewer's own teams (from the admin `Identity`).
+- Dashboard widgets per app: "For me to review" (segments Assigned to me, Team pool) and "My requests", five rows each, "View all" opens the matching list of that app; a widget also queues a signal that arrives during its load [D71, D133].
+- The Content Reviews menu item of each app is the one shared component, wrapped in `AdminConfig`, nested under that app's menu group.
 - CMS and WB content lists: row selectability reads `system.workflow.reviewState`; nothing else changes [D70].
 
 ### 13.6 Settings
@@ -530,6 +550,13 @@ Screens, states and copy are specified in the UI design brief (`docs/.bruno/spec
 ### 13.7 Security
 
 - Workflows permission UI with full and custom access (`editor`, `reassign` checkboxes) [D54].
+
+### 13.8 Trash and delete warning
+
+- The normal trash or delete confirmation runs first. When the server refuses with `Workflows/Review/ActiveReviewOnTrash`, a warning lists the blocking reviews; Confirm cancels them through the app's cancel-for-delete wrapper (scoped to the revision for a revision delete) and repeats the action once; Dismiss changes nothing. Trash, revision delete, permanent delete and bulk delete all use the one shared guard [D157].
+- A bulk delete collects the refusals of the whole run, shows one warning and retries only the blocked items. A bulk action over "all selected" content runs as a background task; refusals inside the task are not visible to the client, so that path has no pre-warning. A bulk retry's results dialog lists only the retried items; the first pass shows a `Notifications.warning` toast "{done} of {total} items done. {n} still need your confirmation.".
+- During a bulk run the per-item delete use cases report "not done" (`false`) instead of throwing, and the base CMS and Website Builder callers treat `false` as not done.
+- The Website Builder revision delete has no first confirmation dialog, so the warning is its only dialog. A trashed WB page cannot have an active review, so the WB trash bin has no hook; the CMS trash bin is covered by the `PermanentlyDeleteEntryUseCase` decorator.
 
 ## 14. Deferred
 
