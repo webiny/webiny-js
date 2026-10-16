@@ -122,9 +122,9 @@ export const WorkflowsFeature = createFeature({
         // Target queries for the app target adapters and wrappers
         GetTargetReviewFeature.register(container);
         ListTargetReviewsFeature.register(container);
-        // Team names of a review step's candidate teams (R208)
+        // Team names of a review step's candidate teams (R208).
         ListReviewCandidateTeamsFeature.register(container);
-        // Display names of the users skipped by assignment (R251)
+        // Display names of the users skipped by assignment (R251).
         ResolveReviewUserNameFeature.register(container);
         // Review lists for the app wrappers (spec 11)
         ListReviewsFeature.register(container);

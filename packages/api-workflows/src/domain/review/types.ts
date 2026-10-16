@@ -120,7 +120,7 @@ export interface ReviewData {
     steps: ReviewStep[];
     /** The requester. */
     createdBy: Actor;
-    /**
+    /*
      * Who cancelled the review (R252): set once by `cancel`, never changed after (D75). Absent on
      * a review that is not cancelled and on a review cancelled before the field existed; the
      * mapper reads both as `null`.

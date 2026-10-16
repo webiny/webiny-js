@@ -3,7 +3,7 @@ import type { Result } from "@webiny/feature/api";
 import type { ReviewPersistenceError } from "~/domain/review/errors.js";
 
 export interface ResolveReviewUserNameInput {
-    /** The `userId` of one assignment entry. */
+    // The `userId` of one assignment entry.
     userId: string;
 }
 
@@ -17,7 +17,7 @@ export interface IResolveReviewUserNameUseCase {
     execute(input: ResolveReviewUserNameInput): Promise<Result<string | null, UseCaseError>>;
 }
 
-/**
+/*
  * The display name of a user a review screen shows by name, such as a person skipped by
  * assignment (R251). Internal (D132): no permission check of its own, the field resolver of
  * `WorkflowsAssignmentEntry.userDisplayName` runs after the wrappers authorized the read. Only the

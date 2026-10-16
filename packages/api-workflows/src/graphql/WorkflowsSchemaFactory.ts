@@ -1,5 +1,6 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { ErrorResponse, Response } from "@webiny/api-graphql";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { GetWorkflowSettingsForEditorUseCase } from "~/features/config/GetWorkflowSettingsForEditor/index.js";
 import { SaveWorkflowSettingsForEditorUseCase } from "~/features/config/SaveWorkflowSettingsForEditor/index.js";
 import { ListAutomationDefinitionsUseCase } from "~/features/config/ListAutomationDefinitions/index.js";
@@ -9,7 +10,6 @@ import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStep
 import { ListWorkflowUsersUseCase } from "~/features/config/ListWorkflowUsers/index.js";
 import { ListReviewCandidateTeamsUseCase } from "~/features/review/ListReviewCandidateTeams/index.js";
 import { ResolveReviewUserNameUseCase } from "~/features/review/ResolveReviewUserName/index.js";
-import { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { WorkflowExclusion, WorkflowSettings } from "~/domain/settings/types.js";
 
 interface GetSettingsArgs {

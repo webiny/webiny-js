@@ -91,7 +91,7 @@ export interface ReviewEntryValues {
     workflow: ReviewEntryWorkflow | null;
     steps: ReviewEntryStep[] | null;
     requester: ActorEntryValues | null;
-    /** Absent on entries stored before the field existed (R252). */
+    // Absent on entries stored before the field existed (R252).
     cancelledBy?: ActorEntryValues | null;
     lastChangedOn: string | Date | null;
 }

@@ -8,7 +8,7 @@ export interface ReviewCandidateTeam {
 }
 
 export interface ListReviewCandidateTeamsInput {
-    /** The `candidateTeamIds` of one review step. */
+    // The `candidateTeamIds` of one review step.
     teamIds: string[];
 }
 
@@ -25,7 +25,7 @@ export interface IListReviewCandidateTeamsUseCase {
     ): Promise<Result<ReviewCandidateTeam[], UseCaseError>>;
 }
 
-/**
+/*
  * The names of a step's candidate teams (R208). Internal (D132): no permission check of its own,
  * the field resolver of `WorkflowsReviewStep.candidateTeams` runs after the wrappers authorized
  * the read. Only the team lookup runs without authorization, because `GetTeamUseCase` needs
