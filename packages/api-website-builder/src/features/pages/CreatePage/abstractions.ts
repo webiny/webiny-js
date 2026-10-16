@@ -75,7 +75,7 @@ export namespace CreatePageUseCase {
 export interface PageBeforeCreatePayload {
     /** The create request, as received. */
     input: ICreateWbPageParams;
-    /** What gets created. Starts as a copy of `input`; handlers can change or replace it. */
+    /** What gets created. Starts as a copy of `input`; handlers can edit it. */
     page: ICreateWbPageParams;
 }
 

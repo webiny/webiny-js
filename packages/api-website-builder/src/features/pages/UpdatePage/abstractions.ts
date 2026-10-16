@@ -91,7 +91,7 @@ export interface PageBeforeUpdatePayload {
         data: IUpdateWbPageData;
     };
     /**
-     * What gets saved: `original` with `input.data` applied. Handlers can change or replace it.
+     * What gets saved: `original` with `input.data` applied. Handlers can edit it.
      */
     page: WbPage;
 }

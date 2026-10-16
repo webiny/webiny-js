@@ -52,17 +52,16 @@ class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new PageNotAuthorizedError());
         }
 
-        // Publish before update event
+        // Publish before update event. Handlers can edit `page`, and that object is what we save.
+        const page = structuredClone(applyUpdate(original, data));
         const beforeEvent = new PageBeforeUpdateEvent({
             original,
             input: { id, data },
-            page: structuredClone(applyUpdate(original, data))
+            page
         });
 
         await this.eventPublisher.publish(beforeEvent);
 
-        // Save the page as the handlers left it.
-        const { page } = beforeEvent.payload;
         const result = await this.repository.execute(id, {
             ...PageToEntryValuesMapper.toValues(page),
             location: page.location,

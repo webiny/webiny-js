@@ -23,8 +23,8 @@ import {
 /*
  * "Before" event handlers run after authorization and before the write. Each event carries
  * `page`, which is what gets saved, next to `original` (the stored revision) and `input` (the
- * request) where those exist. Throwing stops the write. The handlers below replace `page`
- * instead of editing it in place, so the tests prove the event's `page` is what gets saved.
+ * request) where those exist. Handlers edit `page` in place, as with CMS and File Manager
+ * events. Throwing stops the write.
  */
 const setup = async (register: Parameters<typeof createContextPlugin>[0]) => {
     const handler = useHandler({ plugins: [createContextPlugin(register)] });
@@ -49,15 +49,12 @@ const setup = async (register: Parameters<typeof createContextPlugin>[0]) => {
 };
 
 describe("Page before-event handlers", () => {
-    it("creates the page a page.beforeCreate handler replaced", async () => {
+    it("creates the page a page.beforeCreate handler edited", async () => {
         const { page, getStored } = await setup(context => {
             context.container.registerFactory(PageBeforeCreateEventHandler, () => ({
                 async handle(event) {
                     const { page } = event.payload;
-                    event.payload.page = {
-                        ...page,
-                        properties: { ...page.properties, title: "Changed before create" }
-                    };
+                    page.properties.title = "Changed before create";
                 }
             }));
         });
@@ -66,7 +63,7 @@ describe("Page before-event handlers", () => {
         expect((await getStored(page.id)).properties.title).toBe("Changed before create");
     });
 
-    it("saves the page a page.beforeUpdate handler replaced", async () => {
+    it("saves the page a page.beforeUpdate handler edited", async () => {
         const { context, page, getStored } = await setup(context => {
             context.container.registerFactory(PageBeforeUpdateEventHandler, () => ({
                 async handle(event) {
@@ -75,11 +72,10 @@ describe("Page before-event handlers", () => {
                     expect(input.data.properties?.title).toBe("Typed by the user");
                     // `page` is `original` with the input applied.
                     expect(page.properties.title).toBe("Typed by the user");
-                    event.payload.page = {
-                        ...page,
-                        properties: { ...page.properties, title: "Changed before update" }
-                    };
+                    page.properties.title = "Changed before update";
+                    // `page` is a copy, so neither `original` nor `input` changes with it.
                     expect(original.properties.title).toBe("Page A");
+                    expect(input.data.properties?.title).toBe("Typed by the user");
                 }
             }));
         });
@@ -95,16 +91,13 @@ describe("Page before-event handlers", () => {
         expect((await getStored(page.id)).properties.title).toBe("Changed before update");
     });
 
-    it("publishes the page a page.beforePublish handler replaced", async () => {
+    it("publishes the page a page.beforePublish handler edited", async () => {
         const { context, page, getStored } = await setup(context => {
             context.container.registerFactory(PageBeforePublishEventHandler, () => ({
                 async handle(event) {
                     const { original, page } = event.payload;
                     expect(page.id).toBe(original.id);
-                    event.payload.page = {
-                        ...page,
-                        properties: { ...page.properties, title: "Changed before publish" }
-                    };
+                    page.properties.title = "Changed before publish";
                 }
             }));
         });
@@ -138,16 +131,13 @@ describe("Page before-event handlers", () => {
         expect((await getStored(page.id)).status).toBe("draft");
     });
 
-    it("creates the revision from the page a page.beforeCreateRevisionFrom handler replaced", async () => {
+    it("creates the revision from the page a page.beforeCreateRevisionFrom handler edited", async () => {
         const { context, page, getStored } = await setup(context => {
             context.container.registerFactory(PageBeforeCreateRevisionFromEventHandler, () => ({
                 async handle(event) {
                     const { original, page, params } = event.payload;
                     expect(original.id).toBe(params.id);
-                    event.payload.page = {
-                        ...page,
-                        properties: { ...page.properties, title: "Changed in new revision" }
-                    };
+                    page.properties.title = "Changed in new revision";
                 }
             }));
         });

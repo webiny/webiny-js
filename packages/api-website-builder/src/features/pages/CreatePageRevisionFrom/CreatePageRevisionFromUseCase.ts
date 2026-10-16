@@ -33,20 +33,20 @@ class CreatePageRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface 
             return getResult;
         }
 
-        // Publish before event
+        // Publish before event. Handlers can edit `page`, and that object is what the revision is created from.
         const original = getResult.value;
+        const pageToCreate = structuredClone(original);
         const beforeEvent = new PageBeforeCreateRevisionFromEvent({
             params,
             original,
-            page: structuredClone(original)
+            page: pageToCreate
         });
 
         await this.eventPublisher.publish(beforeEvent);
 
-        // Create the revision with the page as the handlers left it.
         const result = await this.repository.execute({
             id: params.id,
-            values: PageToEntryValuesMapper.toValues(beforeEvent.payload.page)
+            values: PageToEntryValuesMapper.toValues(pageToCreate)
         });
 
         if (result.isFail()) {

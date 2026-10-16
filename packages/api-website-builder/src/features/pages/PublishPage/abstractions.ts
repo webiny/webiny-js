@@ -81,7 +81,7 @@ export namespace PublishPageUseCase {
 export interface PageBeforePublishPayload {
     /** The stored revision being published. */
     original: WbPage;
-    /** What gets published. Starts as a copy of `original`; handlers can change or replace it. */
+    /** What gets published. Starts as a copy of `original`; handlers can edit it. */
     page: WbPage;
 }
 

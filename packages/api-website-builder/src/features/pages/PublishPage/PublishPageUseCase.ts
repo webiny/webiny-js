@@ -38,18 +38,18 @@ class PublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new PageNotAuthorizedError());
         }
 
-        // Publish before publish event
+        // Publish before publish event. Handlers can edit `page`, and that object is what we publish.
+        const pageToPublish = structuredClone(page);
         const beforeEvent = new PageBeforePublishEvent({
             original: page,
-            page: structuredClone(page)
+            page: pageToPublish
         });
 
         await this.eventPublisher.publish(beforeEvent);
 
-        // Publish the page as the handlers left it.
         const result = await this.repository.execute({
             id: params.id,
-            values: PageToEntryValuesMapper.toValues(beforeEvent.payload.page)
+            values: PageToEntryValuesMapper.toValues(pageToPublish)
         });
 
         if (result.isFail()) {
