@@ -165,6 +165,26 @@ describe("PageEditorTopBar", () => {
         expect(presenter.dispose).not.toHaveBeenCalled();
     });
 
+    it("updates the context with the new title when the page is renamed", async () => {
+        const { presenter, editor } = mountTopBar("draft", "none");
+
+        act(() => {
+            editor.updateDocument(state => {
+                state.properties.title = "Renamed home";
+            });
+        });
+
+        await waitFor(() => {
+            expect(presenter.setContext).toHaveBeenLastCalledWith({
+                targetTitle: "Renamed home",
+                canRequest: true,
+                isPublished: false,
+                isUnpublished: false
+            });
+        });
+        expect(presenter.init).toHaveBeenCalledTimes(1);
+    });
+
     it("updates the context without a reload when the page is unpublished (Q19)", async () => {
         const { presenter, editor } = mountTopBar("published", "approved");
 

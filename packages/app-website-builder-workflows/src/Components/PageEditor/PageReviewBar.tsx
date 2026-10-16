@@ -11,6 +11,7 @@ import { WB_PAGE_APP } from "~/constants.js";
 import { WbPageReviewFeature } from "~/features/editorReview/feature.js";
 import { Routes } from "~/routes.js";
 import { getPageReadOnlyReason } from "./getPageReadOnlyReason.js";
+import { getPageReviewContext } from "./getPageReviewContext.js";
 import type { IPageEditorDocument } from "./pageEditorDocument.js";
 import type { ISelectedPage } from "./pageEditorDocument.js";
 
@@ -28,14 +29,11 @@ export const PageReviewBar = createReactiveComponent(() => {
     const page = useSelectFromDocument<ISelectedPage, IPageEditorDocument>(selectPage);
 
     useEffect(() => {
-        const options = editor.getEditorOptions();
+        const context = getPageReviewContext(editor, page);
         session.presenter.init({
             useCases: session.useCases,
             target: { namespace: WB_PAGE_APP, targetRevisionId: page.id },
-            targetTitle: page.title,
-            canRequest: options.isReadOnly !== true,
-            isPublished: page.status === WbPageStatus.Published,
-            isUnpublished: page.status === WbPageStatus.Unpublished
+            ...context
         });
         return () => {
             session.presenter.dispose();
@@ -43,14 +41,9 @@ export const PageReviewBar = createReactiveComponent(() => {
     }, [session, editor, page.id]);
 
     useEffect(() => {
-        const options = editor.getEditorOptions();
-        session.presenter.setContext({
-            targetTitle: page.title,
-            canRequest: options.isReadOnly !== true,
-            isPublished: page.status === WbPageStatus.Published,
-            isUnpublished: page.status === WbPageStatus.Unpublished
-        });
-    }, [session, editor, page.status]);
+        const context = getPageReviewContext(editor, page);
+        session.presenter.setContext(context);
+    }, [session, editor, page.title, page.status]);
 
     const { vm } = session.presenter;
     if (vm.status === "noWorkflow") {
