@@ -3,11 +3,11 @@ import { observableRef } from "mobx";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import type { RequestReviewPick } from "~/review/gateway/IReviewGateway.js";
-import { NO_ACCESS_MESSAGE } from "../noAccessMessage.js";
 import { REVIEW_TITLE_MIN_LENGTH } from "~/review/domain/constants.js";
 import type { ReviewWorkflow } from "~/review/domain/types.js";
 import { ReviewerPickerFactory } from "../reviewerPicker/ReviewerPickerFactory.js";
 import { classifyReviewActionError } from "../actionDialog/classifyReviewActionError.js";
+import { getActionErrorMessage } from "../actionDialog/getActionErrorMessage.js";
 import { RequestReviewPresenter as Abstraction } from "./abstractions.js";
 import type { RequestReviewConflictVm } from "./abstractions.js";
 import type { RequestReviewInitParams } from "./abstractions.js";
@@ -16,7 +16,6 @@ import type { RequestReviewStepVm } from "./abstractions.js";
 import { getStepTypeLabel } from "./getStepTypeLabel.js";
 import type { ReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
 
-const SERVER_ERROR = "Could not request the review: the server did not respond. Try again.";
 const SHORT_TITLE = "Use at least 5 characters.";
 
 type Status = "loadingSteps" | "stepsFailed" | "ready" | "submitting";
@@ -242,11 +241,7 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
                 this.applyTitleError(error.message);
                 return;
             }
-            if (errorKind === "notAuthorized") {
-                this.applyDialogError(NO_ACCESS_MESSAGE);
-                return;
-            }
-            this.applyDialogError(SERVER_ERROR);
+            this.applyDialogError(getActionErrorMessage(errorKind, error));
             return;
         }
 

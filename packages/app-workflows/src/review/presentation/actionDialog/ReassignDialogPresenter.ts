@@ -2,7 +2,6 @@ import { makeAutoObservable } from "mobx";
 import { observableRef } from "mobx";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
-import { NO_ACCESS_MESSAGE } from "../noAccessMessage.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
 import type { StepCandidate } from "~/review/domain/types.js";
 import { ReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
@@ -10,9 +9,9 @@ import { ReassignDialogPresenter as Abstraction } from "./reassignAbstractions.j
 import type { ReassignDialogInitParams } from "./reassignAbstractions.js";
 import type { ReviewActionConflictVm } from "./abstractions.js";
 import { classifyReviewActionError } from "./classifyReviewActionError.js";
+import { getActionErrorMessage } from "./getActionErrorMessage.js";
 import { getConflictMessage } from "./getConflictMessage.js";
 
-const GENERIC_ERROR = "The server did not respond, so nothing was changed. Try again.";
 const NOBODY = "Nobody else is eligible to review this step.";
 const HINT = "The previous owner (if any) and the new owner are notified.";
 
@@ -210,15 +209,7 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
                 this.applyFieldError(error.message);
                 return;
             }
-            if (errorKind === "notAuthorized") {
-                this.applyDialogError(NO_ACCESS_MESSAGE);
-                return;
-            }
-            if (errorKind === "notFound") {
-                this.applyDialogError("This review no longer exists.");
-                return;
-            }
-            this.applyDialogError(GENERIC_ERROR);
+            this.applyDialogError(getActionErrorMessage(errorKind, error));
             return;
         }
 
@@ -277,15 +268,7 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
     private applyLoadFailure(error?: unknown): void {
         this.status = "failed";
         const errorKind = classifyReviewActionError(error);
-        if (errorKind === "notAuthorized") {
-            this.dialogError = NO_ACCESS_MESSAGE;
-            return;
-        }
-        if (errorKind === "notFound") {
-            this.dialogError = "This review no longer exists.";
-            return;
-        }
-        this.dialogError = GENERIC_ERROR;
+        this.dialogError = getActionErrorMessage(errorKind, error);
     }
 
     private startSubmit(): void {

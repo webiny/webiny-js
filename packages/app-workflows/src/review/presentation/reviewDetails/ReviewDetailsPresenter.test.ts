@@ -81,6 +81,20 @@ describe("ReviewDetailsPresenter", () => {
         expect(setup.presenter.vm.error).toBe("The server did not respond. Try again in a moment.");
     });
 
+    it("fails with the server message of a rejection that is not classified", async () => {
+        setup.useCases.getReview.mockRejectedValue(
+            new GraphQLOperationError({
+                message: "This content is locked by another review.",
+                code: ReviewErrorCode.TargetLocked
+            })
+        );
+
+        await setup.presenter.init(setup.params());
+
+        expect(setup.presenter.vm.status).toBe("failed");
+        expect(setup.presenter.vm.error).toBe("This content is locked by another review.");
+    });
+
     it("fails with the no-access text for a read that is not authorized (QBZ-59)", async () => {
         setup.useCases.getReview.mockRejectedValue(
             new GraphQLOperationError({ message: "No.", code: ReviewErrorCode.NotAuthorized })

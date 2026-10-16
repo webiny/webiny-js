@@ -2,8 +2,8 @@ import { makeAutoObservable } from "mobx";
 import { ActiveReviewWarningPresenter as Abstraction } from "./ActiveReviewWarningPresenter.js";
 import type { ActiveReviewWarningInitParams } from "./ActiveReviewWarningPresenter.js";
 import type { ActiveReviewWarningViewModel } from "./ActiveReviewWarningPresenter.js";
-
-const CONFIRM_FAILED = "The server did not respond, so nothing was changed. Try again.";
+import { classifyReviewActionError } from "~/review/presentation/actionDialog/classifyReviewActionError.js";
+import { getActionErrorMessage } from "~/review/presentation/actionDialog/getActionErrorMessage.js";
 
 class ActiveReviewWarningPresenterImpl implements Abstraction.Interface {
     private title = "";
@@ -47,8 +47,8 @@ class ActiveReviewWarningPresenterImpl implements Abstraction.Interface {
             await onConfirm();
             this.finishConfirm();
             return true;
-        } catch {
-            this.failConfirm();
+        } catch (error) {
+            this.failConfirm(error);
             return false;
         }
     }
@@ -74,9 +74,10 @@ class ActiveReviewWarningPresenterImpl implements Abstraction.Interface {
         this.busy = false;
     }
 
-    private failConfirm(): void {
+    private failConfirm(error: unknown): void {
+        const errorKind = classifyReviewActionError(error);
         this.busy = false;
-        this.error = CONFIRM_FAILED;
+        this.error = getActionErrorMessage(errorKind, error);
     }
 }
 

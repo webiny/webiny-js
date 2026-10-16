@@ -254,6 +254,15 @@ describe("ReassignDialogPresenter", () => {
         await setup.presenter.submit();
         expect(setup.presenter.vm.fieldError).toBe("Pick someone else.");
 
+        setup.useCases.reassignStep.mockRejectedValueOnce(
+            new GraphQLOperationError({
+                message: "This content is locked by another review.",
+                code: ReviewErrorCode.TargetLocked
+            })
+        );
+        await setup.presenter.submit();
+        expect(setup.presenter.vm.dialogError).toBe("This content is locked by another review.");
+
         setup.useCases.reassignStep.mockRejectedValueOnce(new Error("Network."));
         await setup.presenter.submit();
         expect(setup.presenter.vm.dialogError).toBe(

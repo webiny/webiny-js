@@ -2,8 +2,8 @@ import { makeAutoObservable } from "mobx";
 import { observableRef } from "mobx";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
-import { NO_ACCESS_MESSAGE } from "../noAccessMessage.js";
 import { classifyReviewActionError } from "../actionDialog/classifyReviewActionError.js";
+import { getActionErrorMessage } from "../actionDialog/getActionErrorMessage.js";
 import type { TargetReviewActionKind } from "../targetReview/abstractions.js";
 import type { TargetReviewOpenAction } from "../targetReview/abstractions.js";
 import { ReviewDetailsPresenter as Abstraction } from "./abstractions.js";
@@ -11,7 +11,7 @@ import type { ReviewDetailsInitParams } from "./abstractions.js";
 import type { ReviewDetailsStatus } from "./abstractions.js";
 import { buildReviewDetailsViewModel } from "./buildReviewDetailsViewModel.js";
 
-const GENERIC_ERROR = "The server did not respond. Try again in a moment.";
+const LOAD_FAILED_MESSAGE = "The server did not respond. Try again in a moment.";
 
 class ReviewDetailsPresenterImpl implements Abstraction.Interface {
     private params: ReviewDetailsInitParams | null = null;
@@ -134,10 +134,8 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
     private applyFailure(error: unknown): void {
         this.review = null;
         this.status = "failed";
-        this.error = GENERIC_ERROR;
-        if (classifyReviewActionError(error) === "notAuthorized") {
-            this.error = NO_ACCESS_MESSAGE;
-        }
+        const errorKind = classifyReviewActionError(error);
+        this.error = getActionErrorMessage(errorKind, error, LOAD_FAILED_MESSAGE);
     }
 }
 

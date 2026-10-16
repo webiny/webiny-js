@@ -584,6 +584,20 @@ describe("ReviewActionDialogPresenter", () => {
         expect(missing.presenter.vm.dialogError).toBe("This review no longer exists.");
     });
 
+    it("shows the server message of a rejection that is not classified", async () => {
+        setup.useCases.startStep.mockRejectedValueOnce(
+            new GraphQLOperationError({
+                message: "This content is locked by another review.",
+                code: ReviewErrorCode.TargetLocked
+            })
+        );
+        await setup.presenter.init(setup.params(REQUEST("start")));
+
+        await setup.presenter.submit();
+
+        expect(setup.presenter.vm.dialogError).toBe("This content is locked by another review.");
+    });
+
     it("keeps the dialog open with the transport error text and allows a retry", async () => {
         setup.useCases.startStep.mockRejectedValueOnce(new Error("Network."));
         await setup.presenter.init(setup.params(REQUEST("start")));

@@ -443,6 +443,21 @@ describe("RequestReviewPresenter", () => {
         expect(setup.presenter.vm.titleError).toBeNull();
     });
 
+    it("shows the server message of a rejection that is not classified", async () => {
+        setup.useCases.requestReview.mockRejectedValueOnce(
+            new GraphQLOperationError({
+                message: "This content is locked by another review.",
+                code: ReviewErrorCode.TargetLocked
+            })
+        );
+        await setup.presenter.init(setup.params());
+
+        await setup.presenter.submit();
+
+        expect(setup.presenter.vm.dialogError).toBe("This content is locked by another review.");
+        expect(setup.presenter.vm.status).toBe("ready");
+    });
+
     it("shows the server-error alert and allows a retry", async () => {
         setup.useCases.requestReview.mockRejectedValueOnce(new Error("Network."));
         await setup.presenter.init(setup.params());
@@ -450,7 +465,7 @@ describe("RequestReviewPresenter", () => {
         await setup.presenter.submit();
 
         expect(setup.presenter.vm.dialogError).toBe(
-            "Could not request the review: the server did not respond. Try again."
+            "The server did not respond, so nothing was changed. Try again."
         );
         expect(setup.presenter.vm.status).toBe("ready");
         expect(setup.onDone).not.toHaveBeenCalled();
