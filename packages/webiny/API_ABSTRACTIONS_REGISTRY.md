@@ -305,6 +305,7 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 | `CreatePageUseCase`                        | `@webiny/api-website-builder/features/pages/CreatePage/abstractions.js`             |
 | `CreatePageRevisionFromUseCase`            | `@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/abstractions.js` |
 | `DeletePageUseCase`                        | `@webiny/api-website-builder/features/pages/DeletePage/abstractions.js`             |
+| `DeletePageRevisionUseCase`                | `@webiny/api-website-builder/features/pages/DeletePageRevision/abstractions.js`     |
 | `DuplicatePageUseCase`                     | `@webiny/api-website-builder/features/pages/DuplicatePage/abstractions.js`          |
 | `GetPageByIdUseCase`                       | `@webiny/api-website-builder/features/pages/GetPageById/abstractions.js`            |
 | `GetPageByPathUseCase`                     | `@webiny/api-website-builder/features/pages/GetPageByPath/abstractions.js`          |
@@ -320,6 +321,8 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 | `PageAfterCreateRevisionFromEventHandler`  | `@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/abstractions.js` |
 | `PageBeforeDeleteEventHandler`             | `@webiny/api-website-builder/features/pages/DeletePage/abstractions.js`             |
 | `PageAfterDeleteEventHandler`              | `@webiny/api-website-builder/features/pages/DeletePage/abstractions.js`             |
+| `PageRevisionBeforeDeleteEventHandler`     | `@webiny/api-website-builder/features/pages/DeletePageRevision/abstractions.js`     |
+| `PageRevisionAfterDeleteEventHandler`      | `@webiny/api-website-builder/features/pages/DeletePageRevision/abstractions.js`     |
 | `PageBeforeDuplicateEventHandler`          | `@webiny/api-website-builder/features/pages/DuplicatePage/abstractions.js`          |
 | `PageAfterDuplicateEventHandler`           | `@webiny/api-website-builder/features/pages/DuplicatePage/abstractions.js`          |
 | `PageBeforeMoveEventHandler`               | `@webiny/api-website-builder/features/pages/MovePage/abstractions.js`               |

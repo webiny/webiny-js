@@ -139,6 +139,17 @@ export const DELETE_PAGE = /* GraphQL */ `
     }
 `;
 
+export const DELETE_PAGE_REVISION = /* GraphQL */ `
+    mutation DeletePageRevision($id: ID!) {
+        websiteBuilder {
+            deletePageRevision(id: $id) {
+                data
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const RESTORE_PAGE = /* GraphQL */ `
     mutation RestorePage($id: ID!) {
         websiteBuilder {
