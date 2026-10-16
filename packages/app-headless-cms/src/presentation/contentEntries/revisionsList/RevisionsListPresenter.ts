@@ -101,9 +101,10 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
     }
 
     async deleteRevision(revisionId: string): Promise<boolean> {
+        // A real confirm resolves undefined (the dialog passes no data); only a cancel resolves false.
         const confirmed = await this.confirmation.confirm(DELETE_REVISION_DIALOG, { revisionId });
 
-        if (!confirmed) {
+        if (confirmed === false) {
             return false;
         }
 
