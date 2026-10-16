@@ -48,7 +48,9 @@ export const BaseBulkAction = makeDecoratable(
 
 const useWorker = () => {
     const { list, actions } = useListView();
-    const { current: worker } = useRef(new Worker<PageDto>());
+    const { current: worker } = useRef(
+        new Worker<PageDto>({ getItemTitle: page => page.properties.title })
+    );
 
     const items = useMemo(() => {
         const selectedIds = list.selection.selectedIds;

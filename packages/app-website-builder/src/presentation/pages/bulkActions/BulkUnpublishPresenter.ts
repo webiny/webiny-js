@@ -7,7 +7,9 @@ import { UnpublishPageUseCase } from "~/features/pages/unpublishPage/abstraction
 import { BulkUnpublishPresenter as Abstraction } from "./abstractions.js";
 
 class BulkUnpublishPresenterImpl implements Abstraction.Interface {
-    private runner = new BulkActionRunner<Page>();
+    private runner = new BulkActionRunner<Page>({
+        getItemTitle: page => page.properties.title
+    });
 
     constructor(private unpublishPageUseCase: UnpublishPageUseCase.Interface) {}
 

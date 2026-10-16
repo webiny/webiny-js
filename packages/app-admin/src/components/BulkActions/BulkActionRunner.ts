@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { Worker, type Report, type Result } from "./Worker.js";
+import { Worker, type Report, type Result, type WorkerOptions } from "./Worker.js";
 
 export type { Report };
 
@@ -23,7 +23,8 @@ interface BulkActionHandlers<T> {
  * Usage:
  * ```ts
  * class BulkPublishPresenterImpl {
- *     private runner = new BulkActionRunner<MyItem>();
+ *     // `getItemTitle` names an item in the report when `onItem` throws for it.
+ *     private runner = new BulkActionRunner<MyItem>({ getItemTitle: item => item.title });
  *
  *     get vm() { return this.runner.vm; }
  *
@@ -38,10 +39,11 @@ interface BulkActionHandlers<T> {
  * ```
  */
 export class BulkActionRunner<T> {
-    private worker = new Worker<T>();
+    private worker: Worker<T>;
     private _processing = false;
 
-    constructor() {
+    constructor(options: WorkerOptions<T> = {}) {
+        this.worker = new Worker<T>(options);
         makeAutoObservable<BulkActionRunner<T>, "worker">(this, {
             worker: false
         });

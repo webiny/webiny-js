@@ -9,7 +9,9 @@ import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import { BulkMovePresenter as Abstraction } from "./abstractions.js";
 
 class BulkMovePresenterImpl implements Abstraction.Interface {
-    private runner = new BulkActionRunner<CmsContentEntry>();
+    private runner = new BulkActionRunner<CmsContentEntry>({
+        getItemTitle: entry => entry.meta.title
+    });
 
     constructor(
         private moveEntryUseCase: MoveEntryUseCase.Interface,
