@@ -1,7 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MockInstance } from "vitest";
 import { MailerService } from "@webiny/api-mailer";
-import { MailAfterSendEventHandler } from "@webiny/api-mailer/features/SendMail/index.js";
+import {
+    MailAfterSendEventHandler,
+    MailBeforeSendEventHandler
+} from "@webiny/api-mailer/features/SendMail/index.js";
 import type { Container } from "@webiny/feature/api";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
@@ -384,6 +387,34 @@ describe("MailNotificationTransport (R193)", () => {
 
         expect(loggedErrors).toHaveLength(1);
         expect(loggedErrors[0].fields.errorCode).toBe("HANDLER_FAILED");
+        expect(JSON.stringify(loggedErrors)).not.toContain("anna@webiny.test");
+    });
+
+    it("logs a throwing before-send handler once, never throws and sends no mail", async () => {
+        class ThrowingBeforeSend implements MailBeforeSendEventHandler.Interface {
+            public async handle(): Promise<void> {
+                throw Object.assign(new Error("handler for anna@webiny.test failed"), {
+                    code: "BEFORE_FAILED"
+                });
+            }
+        }
+        const handler = MailBeforeSendEventHandler.createImplementation({
+            implementation: ThrowingBeforeSend,
+            dependencies: []
+        });
+        const mailer = new RecordingMailer();
+        const transport = await createTransport(mailer, container => {
+            container.register(handler);
+        });
+
+        await expect(
+            transport.send({ users: toRecipients(createUsers(1)), message: MESSAGE })
+        ).resolves.toBeUndefined();
+
+        expect(mailer.sent).toEqual([]);
+        expect(loggedErrors).toHaveLength(1);
+        expect(loggedErrors[0].message).toBe("Could not send a workflow notification e-mail.");
+        expect(loggedErrors[0].fields.errorCode).toBe("BEFORE_FAILED");
         expect(JSON.stringify(loggedErrors)).not.toContain("anna@webiny.test");
     });
 
