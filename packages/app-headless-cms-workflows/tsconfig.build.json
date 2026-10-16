@@ -9,7 +9,8 @@
     { "path": "../app-headless-cms-common/tsconfig.build.json" },
     { "path": "../app-workflows/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" }
+    { "path": "../utils/tsconfig.build.json" },
+    { "path": "../feature-flags/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -33,7 +34,9 @@
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"]
     }
   }
 }

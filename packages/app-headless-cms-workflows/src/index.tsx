@@ -12,6 +12,7 @@ import { CmsEntryFormCreateNewRevisionButton } from "~/Components/ContentEntryFo
 import { CmsWorkflowsFeature } from "~/presentation/feature.js";
 import { CmsWorkflowsCacheFeature } from "~/features/feature.js";
 import { CmsWorkflowsEditorPresenterFeature } from "~/presentation/cmsWorkflowsEditor/feature.js";
+import { CmsReviewFeature } from "~/features/gateway/feature.js";
 
 export const CmsWorkflows = () => {
     const featureFlags = useFeatureFlags();
@@ -22,6 +23,7 @@ export const CmsWorkflows = () => {
 
     return (
         <>
+            <RegisterFeature feature={CmsReviewFeature} />
             <RegisterFeature feature={CmsWorkflowsFeature} />
             <RegisterFeature feature={CmsWorkflowsCacheFeature} />
             <RegisterFeature feature={CmsWorkflowsEditorPresenterFeature} />
