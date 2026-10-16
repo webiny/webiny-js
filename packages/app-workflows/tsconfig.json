@@ -9,7 +9,8 @@
     { "path": "../feature" },
     { "path": "../form" },
     { "path": "../utils" },
-    { "path": "../validation" }
+    { "path": "../validation" },
+    { "path": "../react-composition" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -33,7 +34,9 @@
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"]
     }
   }
 }
