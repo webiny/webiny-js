@@ -9,7 +9,7 @@ class DeletePageRevisionUseCaseWithLoadingImpl implements UseCaseAbstraction.Int
     ) {}
 
     async execute(params: UseCaseAbstraction.Params) {
-        await this.loadingRepository.runCallBack(
+        return this.loadingRepository.runCallBack(
             this.decoratee.execute(params),
             loadingActions.delete
         );

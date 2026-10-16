@@ -6,6 +6,7 @@ class DeletePageUseCaseImpl implements UseCaseAbstraction.Interface {
 
     async execute(params: UseCaseAbstraction.Params) {
         await this.repository.execute(Page.create({ id: params.id }), params.permanently);
+        return true;
     }
 }
 
