@@ -59,6 +59,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.2",
     "@types/deep-equal": "^1.0.4",
     "@types/is-hotkey": "^0.1.10",
     "@webiny/build-tools": "0.0.0",
