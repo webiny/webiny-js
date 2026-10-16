@@ -9,11 +9,14 @@ import { cleanup } from "@testing-library/react";
 import { render } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { DiContainerProvider } from "@webiny/app/shared/di/DiContainerProvider.js";
+import { EventPublisher } from "@webiny/app/features/eventPublisher/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { WorkflowsAdminApp } from "~/app.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import { ReviewNotificationService } from "~/review/notifications/abstractions.js";
+import { TargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
 
 const flags = vi.hoisted(() => {
     return { isEnabled: vi.fn() };
@@ -45,6 +48,12 @@ const mount = (flagOn: boolean): Container => {
         error: vi.fn(),
         getNotifications: vi.fn(),
         remove: vi.fn()
+    });
+    container.registerInstance(EventPublisher, { publish: vi.fn().mockResolvedValue(undefined) });
+    container.registerInstance(IdentityContext, {
+        getIdentity: vi.fn(),
+        setIdentity: vi.fn(),
+        clear: vi.fn()
     });
     render(
         <DiContainerProvider container={container}>
@@ -86,5 +95,35 @@ describe("WorkflowsAdminApp review services", () => {
         expect(() => container.resolve(ReviewActivity)).toThrow();
         expect(() => container.resolve(ReviewToasts)).toThrow();
         expect(() => container.resolve(ReviewNotificationService)).toThrow();
+    });
+});
+
+describe("WorkflowsAdminApp review view", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("registers the review view presenters when the flag is on", () => {
+        const container = mount(true);
+
+        expect(container.resolve(TargetReviewPresenter)).toBeDefined();
+    });
+
+    it("registers the presenters transient: every resolve is a new instance (R212)", () => {
+        const container = mount(true);
+
+        const first = container.resolve(TargetReviewPresenter);
+        const second = container.resolve(TargetReviewPresenter);
+        expect(first).not.toBe(second);
+    });
+
+    it("registers no review view presenter when the flag is off (R211)", () => {
+        const container = mount(false);
+
+        expect(() => container.resolve(TargetReviewPresenter)).toThrow();
     });
 });
