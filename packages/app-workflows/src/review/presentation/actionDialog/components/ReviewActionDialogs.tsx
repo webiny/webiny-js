@@ -1,6 +1,7 @@
 import React from "react";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import type { ReviewActionRequest } from "../ReviewActionRequest.js";
+import { ReassignDialogHost } from "./ReassignDialogHost.js";
 import { ReviewActionDialogHost } from "./ReviewActionDialogHost.js";
 
 export interface ReviewActionDialogsProps {
@@ -21,5 +22,8 @@ export const ReviewActionDialogs = (props: ReviewActionDialogsProps) => {
     }
 
     const key = `${request.kind}:${request.reviewId}:${request.stepId}`;
+    if (request.kind === "reassign") {
+        return <ReassignDialogHost key={key} {...props} request={request} />;
+    }
     return <ReviewActionDialogHost key={key} {...props} request={request} />;
 };

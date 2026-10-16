@@ -1,0 +1,304 @@
+import { makeAutoObservable } from "mobx";
+import { observableRef } from "mobx";
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
+import { ReviewToasts } from "~/review/toasts/abstractions.js";
+import { NO_ACCESS_MESSAGE } from "../noAccessMessage.js";
+import type { ReviewWithFlags } from "~/review/domain/types.js";
+import type { StepCandidate } from "~/review/domain/types.js";
+import { ReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
+import { ReassignDialogPresenter as Abstraction } from "./reassignAbstractions.js";
+import type { ReassignDialogInitParams } from "./reassignAbstractions.js";
+import type { ReviewActionConflictVm } from "./abstractions.js";
+import { classifyReviewActionError } from "./classifyReviewActionError.js";
+import { getConflictMessage } from "./getConflictMessage.js";
+
+const GENERIC_ERROR = "The server did not respond, so nothing was changed. Try again.";
+const NOBODY = "Nobody else is eligible to review this step.";
+const HINT = "The previous owner (if any) and the new owner are notified.";
+
+class ReassignDialogPresenterImpl implements Abstraction.Interface {
+    private params: ReassignDialogInitParams | null = null;
+    private review: ReviewWithFlags | null = null;
+    private candidates: StepCandidate[] = [];
+    private status: "loading" | "ready" | "failed" = "loading";
+    private submitting = false;
+    private fieldError: string | null = null;
+    private dialogError: string | null = null;
+    private conflict: ReviewActionConflictVm | null = null;
+    private token = 0;
+
+    constructor(
+        private picker: ReviewerPickerPresenter.Interface,
+        private toasts: ReviewToasts.Interface
+    ) {
+        makeAutoObservable<
+            ReassignDialogPresenterImpl,
+            "picker" | "toasts" | "token" | "params" | "review" | "candidates"
+        >(this, {
+            picker: false,
+            toasts: false,
+            token: false,
+            params: observableRef,
+            review: observableRef,
+            candidates: false
+        });
+    }
+
+    get vm(): Abstraction.ViewModel {
+        const params = this.params;
+        const review = this.review;
+        const stepId = params ? params.request.stepId : null;
+        const step = review ? review.review.steps.find(item => item.id === stepId) : undefined;
+        const pickerVm = this.picker.vm;
+        const ready = this.status === "ready";
+        const nobodyEligible = ready && pickerVm.error === null && pickerVm.eligibleCount === 0;
+        const closeOnly = nobodyEligible || this.conflict !== null || this.status === "failed";
+
+        let title = "";
+        if (step) {
+            title = `Reassign “${step.title}”`;
+        }
+        let hint = "";
+        if (ready && !nobodyEligible && this.conflict === null) {
+            hint = HINT;
+        }
+        let message = "";
+        if (nobodyEligible) {
+            message = NOBODY;
+        }
+        let cancelLabel = "Cancel";
+        if (closeOnly) {
+            cancelLabel = "Close";
+        }
+        const canSubmit =
+            ready &&
+            !nobodyEligible &&
+            this.conflict === null &&
+            !this.submitting &&
+            pickerVm.value !== null;
+
+        return {
+            status: this.status,
+            title,
+            hint,
+            message,
+            nobodyEligible,
+            confirmLabel: "Reassign",
+            cancelLabel,
+            canSubmit,
+            submitting: this.submitting,
+            fieldError: this.fieldError,
+            dialogError: this.dialogError,
+            conflict: this.conflict
+        };
+    }
+
+    getPickerPresenter(): ReviewerPickerPresenter.Interface {
+        return this.picker;
+    }
+
+    async init(params: ReassignDialogInitParams): Promise<void> {
+        const token = this.begin(params);
+        const { useCases, request } = params;
+        const stepId = request.stepId ?? "";
+
+        try {
+            const loaded = await useCases.getReview(request.reviewId);
+            if (token !== this.token) {
+                return;
+            }
+            const step = loaded.review.steps.find(item => item.id === request.stepId);
+            if (!step) {
+                this.applyLoadFailure();
+                return;
+            }
+            let currentOwnerId: string | null = null;
+            if (step.owner !== null && step.owner.type === "user") {
+                currentOwnerId = step.owner.id;
+            }
+
+            await this.picker.init({
+                load: async () => {
+                    const candidates = await useCases.listReviewStepCandidates({
+                        reviewId: request.reviewId,
+                        stepId
+                    });
+                    this.candidates = candidates;
+                    return candidates;
+                },
+                currentOwnerId,
+                selectedId: null
+            });
+            if (token !== this.token) {
+                return;
+            }
+            this.applyLoaded(loaded);
+        } catch {
+            if (token !== this.token) {
+                return;
+            }
+            this.applyLoadFailure();
+        }
+    }
+
+    async submit(): Promise<void> {
+        const params = this.params;
+        const loaded = this.review;
+        const userId = this.picker.vm.value;
+        if (!params || !loaded || userId === null || !this.vm.canSubmit) {
+            return;
+        }
+
+        const { useCases, request } = params;
+        const step = loaded.review.steps.find(item => item.id === request.stepId);
+        if (!step) {
+            return;
+        }
+        const newOwner = this.candidates.find(candidate => candidate.id === userId);
+        if (!newOwner) {
+            return;
+        }
+        const token = this.token;
+
+        this.startSubmit();
+
+        try {
+            await useCases.reassignStep({
+                reviewId: request.reviewId,
+                stepId: step.id,
+                userId
+            });
+        } catch (error) {
+            if (token !== this.token) {
+                return;
+            }
+
+            const errorKind = classifyReviewActionError(error);
+
+            if (errorKind === "conflict") {
+                let fresh: ReviewWithFlags | null = null;
+                try {
+                    fresh = await useCases.getReview(request.reviewId);
+                } catch {
+                    fresh = null;
+                }
+                if (token !== this.token) {
+                    return;
+                }
+                const now = new Date();
+                const message = getConflictMessage({
+                    kind: "reassign",
+                    stepId: request.stepId,
+                    review: fresh ? fresh.review : null,
+                    now,
+                    listRefreshed: false
+                });
+                this.applyConflict(message.title, message.message, fresh);
+                return;
+            }
+            if (errorKind === "validation" && error instanceof GraphQLOperationError) {
+                this.applyFieldError(error.message);
+                return;
+            }
+            if (errorKind === "notAuthorized") {
+                this.applyDialogError(NO_ACCESS_MESSAGE);
+                return;
+            }
+            if (errorKind === "notFound") {
+                this.applyDialogError("This review no longer exists.");
+                return;
+            }
+            this.applyDialogError(GENERIC_ERROR);
+            return;
+        }
+
+        if (token !== this.token) {
+            return;
+        }
+
+        this.toasts.show({
+            kind: "reassigned",
+            stepTitle: step.title,
+            personName: newOwner.displayName,
+            reviewsUrl: params.reviewsUrl
+        });
+        this.finishSubmit();
+        params.onDone();
+    }
+
+    dismiss(): void {
+        // A dialog that is submitting stays open: closing it would lose the success path.
+        if (this.params && !this.submitting) {
+            this.params.onClose();
+        }
+    }
+
+    dispose(): void {
+        this.token += 1;
+        this.picker.dispose();
+        this.params = null;
+        this.review = null;
+        this.candidates = [];
+        this.status = "loading";
+        this.submitting = false;
+        this.fieldError = null;
+        this.dialogError = null;
+        this.conflict = null;
+    }
+
+    private begin(params: ReassignDialogInitParams): number {
+        this.token += 1;
+        this.params = params;
+        this.review = null;
+        this.candidates = [];
+        this.status = "loading";
+        this.submitting = false;
+        this.fieldError = null;
+        this.dialogError = null;
+        this.conflict = null;
+        return this.token;
+    }
+
+    private applyLoaded(loaded: ReviewWithFlags): void {
+        this.review = loaded;
+        this.status = "ready";
+    }
+
+    private applyLoadFailure(): void {
+        this.status = "failed";
+        this.dialogError = GENERIC_ERROR;
+    }
+
+    private startSubmit(): void {
+        this.submitting = true;
+        this.fieldError = null;
+        this.dialogError = null;
+    }
+
+    private finishSubmit(): void {
+        this.submitting = false;
+    }
+
+    private applyConflict(title: string, message: string, fresh: ReviewWithFlags | null): void {
+        this.submitting = false;
+        this.conflict = { title, message, commentKept: false };
+        if (fresh) {
+            this.review = fresh;
+        }
+    }
+
+    private applyFieldError(message: string): void {
+        this.submitting = false;
+        this.fieldError = message;
+    }
+
+    private applyDialogError(message: string): void {
+        this.submitting = false;
+        this.dialogError = message;
+    }
+}
+
+export const ReassignDialogPresenter = Abstraction.createImplementation({
+    implementation: ReassignDialogPresenterImpl,
+    dependencies: [ReviewerPickerPresenter, ReviewToasts]
+});

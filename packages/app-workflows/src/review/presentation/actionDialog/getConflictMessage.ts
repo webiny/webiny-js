@@ -26,6 +26,7 @@ const TITLE = "Someone else acted first";
 const ACTION_NOUNS: Record<ReviewActionKind, string> = {
     start: "start",
     takeOver: "take-over",
+    reassign: "reassignment",
     approve: "approval",
     reject: "rejection",
     cancel: "cancellation"

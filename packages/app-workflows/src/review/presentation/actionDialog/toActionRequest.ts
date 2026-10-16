@@ -9,9 +9,5 @@ export const toActionRequest = (
     if (openAction === null || reviewId === null || openAction.kind === "request") {
         return null;
     }
-    // "reassign" joins ReviewActionKind in Task 16, which removes these three lines.
-    if (openAction.kind === "reassign") {
-        return null;
-    }
     return { kind: openAction.kind, reviewId, stepId: openAction.stepId };
 };

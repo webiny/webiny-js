@@ -18,6 +18,8 @@ import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import { ReviewNotificationService } from "~/review/notifications/abstractions.js";
 import { TargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
 import { ReviewActionDialogPresenter } from "~/review/presentation/actionDialog/abstractions.js";
+import { ReviewerPickerPresenter } from "~/review/presentation/reviewerPicker/abstractions.js";
+import { ReassignDialogPresenter } from "~/review/presentation/actionDialog/reassignAbstractions.js";
 
 const flags = vi.hoisted(() => {
     return { isEnabled: vi.fn() };
@@ -113,6 +115,8 @@ describe("WorkflowsAdminApp review view", () => {
 
         expect(container.resolve(TargetReviewPresenter)).toBeDefined();
         expect(container.resolve(ReviewActionDialogPresenter)).toBeDefined();
+        expect(container.resolve(ReviewerPickerPresenter)).toBeDefined();
+        expect(container.resolve(ReassignDialogPresenter)).toBeDefined();
     });
 
     it("registers the presenters transient: every resolve is a new instance (R212)", () => {
@@ -123,6 +127,9 @@ describe("WorkflowsAdminApp review view", () => {
         expect(first).not.toBe(second);
         const firstDialog = container.resolve(ReviewActionDialogPresenter);
         const secondDialog = container.resolve(ReviewActionDialogPresenter);
+        const firstPicker = container.resolve(ReviewerPickerPresenter);
+        const secondPicker = container.resolve(ReviewerPickerPresenter);
+        expect(firstPicker).not.toBe(secondPicker);
         expect(firstDialog).not.toBe(secondDialog);
     });
 
@@ -131,5 +138,7 @@ describe("WorkflowsAdminApp review view", () => {
 
         expect(() => container.resolve(TargetReviewPresenter)).toThrow();
         expect(() => container.resolve(ReviewActionDialogPresenter)).toThrow();
+        expect(() => container.resolve(ReviewerPickerPresenter)).toThrow();
+        expect(() => container.resolve(ReassignDialogPresenter)).toThrow();
     });
 });
