@@ -9,6 +9,7 @@ import { ReviewerPickerPresenterFeature } from "~/review/presentation/reviewerPi
 import { RequestReviewPresenterFeature } from "~/review/presentation/requestReview/feature.js";
 import { ReviewDetailsPresenterFeature } from "~/review/presentation/reviewDetails/feature.js";
 import { ReviewListPresenterFeature } from "~/review/presentation/reviewList/feature.js";
+import { ReviewWidgetPresenterFeature } from "~/review/presentation/reviewWidget/feature.js";
 import { ReassignDialogPresenterFeature } from "~/review/presentation/actionDialog/reassignFeature.js";
 import { ReviewServicesFeature } from "~/review/feature.js";
 import { WorkflowStatePresenterFeature } from "~/presentation/workflowState/feature.js";
@@ -40,6 +41,7 @@ export const WorkflowsAdminApp = () => {
             <RegisterFeature feature={RequestReviewPresenterFeature} />
             <RegisterFeature feature={ReviewDetailsPresenterFeature} />
             <RegisterFeature feature={ReviewListPresenterFeature} />
+            <RegisterFeature feature={ReviewWidgetPresenterFeature} />
             <SecurityPermissions />
             <ContentReviews />
         </>

@@ -1,0 +1,287 @@
+import { makeAutoObservable } from "mobx";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
+import { ReviewActivity } from "~/review/activity/abstractions.js";
+import type { ReviewListSort } from "~/review/domain/ReviewListSort.js";
+import { REVIEW_WIDGET_PAGE_SIZE } from "~/review/domain/constants.js";
+import type { ReviewListRow } from "~/review/domain/types.js";
+import { toReviewListRow } from "~/review/domain/toReviewListRow.js";
+import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
+import { formatLastChange } from "~/review/presentation/reviewList/formatLastChange.js";
+import { getListReviewStateLabel } from "~/review/presentation/reviewList/getListReviewStateLabel.js";
+import { resolveRowBinding } from "~/review/presentation/reviewList/resolveRowBinding.js";
+import type { TargetReviewTagVariant } from "~/review/presentation/targetReview/abstractions.js";
+import { getStepStateTag } from "~/review/presentation/targetReview/getStepStateTag.js";
+import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
+import type { ReviewListPage } from "~/review/useCases/IReviewListUseCases.js";
+import { ReviewWidgetPresenter as Abstraction } from "./abstractions.js";
+import type { ReviewWidgetInitParams } from "./abstractions.js";
+import type { ReviewWidgetKind } from "./abstractions.js";
+import type { ReviewWidgetRowVm } from "./abstractions.js";
+import type { ReviewWidgetStatus } from "./abstractions.js";
+import type { ReviewWidgetTab } from "./abstractions.js";
+
+const NEUTRAL_VARIANT: TargetReviewTagVariant = "neutral-base-outline";
+
+class ReviewWidgetPresenterImpl implements Abstraction.Interface {
+    private _kind: ReviewWidgetKind = "forMe";
+    private _tab: ReviewWidgetTab = "assignedToMe";
+    private _status: ReviewWidgetStatus = "loading";
+    private _rows: ReviewListRow[] = [];
+    private useCases: IReviewListUseCases | null = null;
+    private rowProvider: IReviewRowProvider | null = null;
+    private unsubscribe: (() => void) | null = null;
+    // A generation: every load, tab switch and dispose starts a new one, and a response of an
+    // older generation is ignored. An in-flight refresh only counts for the generation it started in.
+    private loadToken = 0;
+    private refreshingToken: number | null = null;
+    private refreshQueued = false;
+
+    constructor(
+        private activity: ReviewActivity.Interface,
+        private identityContext: IdentityContext.Interface
+    ) {
+        makeAutoObservable<
+            ReviewWidgetPresenterImpl,
+            | "activity"
+            | "identityContext"
+            | "useCases"
+            | "rowProvider"
+            | "unsubscribe"
+            | "loadToken"
+            | "refreshingToken"
+            | "refreshQueued"
+        >(this, {
+            activity: false,
+            identityContext: false,
+            useCases: false,
+            rowProvider: false,
+            unsubscribe: false,
+            loadToken: false,
+            refreshingToken: false,
+            refreshQueued: false
+        });
+    }
+
+    get vm(): Abstraction.ViewModel {
+        const now = new Date();
+        const rows = this._rows.map(row => this.toRowVm(row, now));
+
+        let tab: ReviewWidgetTab | null = null;
+        if (this._kind === "forMe") {
+            tab = this._tab;
+        }
+
+        return {
+            tab,
+            rows,
+            status: this._status,
+            empty: this._status === "ready" && rows.length === 0,
+            hasTeams: this.identityContext.getIdentity().teams.length > 0
+        };
+    }
+
+    async init(params: ReviewWidgetInitParams): Promise<void> {
+        this.dispose();
+        this.useCases = params.useCases;
+        this.rowProvider = params.rowProvider;
+        this._kind = params.kind;
+        this._tab = "assignedToMe";
+        this.unsubscribe = this.activity.subscribe(params.namespaces, () => {
+            void this.refresh();
+        });
+
+        const token = this.beginLoad();
+        try {
+            const listed = await params.useCases.listReviews({
+                list: this.getList(),
+                where: {},
+                sort: this.getSort(),
+                limit: REVIEW_WIDGET_PAGE_SIZE,
+                after: null
+            });
+            if (token === this.loadToken) {
+                this.applyPage(listed);
+            }
+        } catch {
+            if (token === this.loadToken) {
+                this.applyFailure();
+            }
+        }
+    }
+
+    async setTab(tab: ReviewWidgetTab): Promise<void> {
+        const useCases = this.useCases;
+        if (!useCases || this._kind !== "forMe" || tab === this._tab) {
+            return;
+        }
+
+        this._tab = tab;
+
+        const token = this.beginLoad();
+        try {
+            const listed = await useCases.listReviews({
+                list: this.getList(),
+                where: {},
+                sort: this.getSort(),
+                limit: REVIEW_WIDGET_PAGE_SIZE,
+                after: null
+            });
+            if (token === this.loadToken) {
+                this.applyPage(listed);
+            }
+        } catch {
+            if (token === this.loadToken) {
+                this.applyFailure();
+            }
+        }
+    }
+
+    async refresh(): Promise<void> {
+        const useCases = this.useCases;
+        if (!useCases) {
+            return;
+        }
+
+        // "Try again" on a failed widget: a reload with the skeleton.
+        if (this._status === "failed") {
+            const reloadToken = this.beginLoad();
+            try {
+                const listed = await useCases.listReviews({
+                    list: this.getList(),
+                    where: {},
+                    sort: this.getSort(),
+                    limit: REVIEW_WIDGET_PAGE_SIZE,
+                    after: null
+                });
+                if (reloadToken === this.loadToken) {
+                    this.applyPage(listed);
+                }
+            } catch {
+                if (reloadToken === this.loadToken) {
+                    this.applyFailure();
+                }
+            }
+            return;
+        }
+
+        if (this._status !== "ready") {
+            return;
+        }
+        if (this.refreshingToken === this.loadToken) {
+            this.refreshQueued = true;
+            return;
+        }
+
+        const token = this.loadToken;
+        this.refreshingToken = token;
+
+        try {
+            const listed = await useCases.listReviews({
+                list: this.getList(),
+                where: {},
+                sort: this.getSort(),
+                limit: REVIEW_WIDGET_PAGE_SIZE,
+                after: null
+            });
+            if (token === this.loadToken) {
+                this.applyPage(listed);
+            }
+        } catch {
+            // A failed background refresh keeps the rows on screen; the next signal tries again.
+        }
+
+        // A newer generation (tab switch, reload, dispose) owns the flags now.
+        if (token !== this.loadToken) {
+            return;
+        }
+        this.refreshingToken = null;
+        if (this.refreshQueued) {
+            this.refreshQueued = false;
+            await this.refresh();
+        }
+    }
+
+    dispose(): void {
+        if (this.unsubscribe) {
+            this.unsubscribe();
+            this.unsubscribe = null;
+        }
+        this.loadToken += 1;
+        this.refreshingToken = null;
+        this.refreshQueued = false;
+        this.useCases = null;
+        this.rowProvider = null;
+        this._kind = "forMe";
+        this._tab = "assignedToMe";
+        this._status = "loading";
+        this._rows = [];
+    }
+
+    // Starts a new generation and shows the skeleton.
+    private beginLoad(): number {
+        this.loadToken += 1;
+        this.refreshQueued = false;
+        this._status = "loading";
+        this._rows = [];
+        return this.loadToken;
+    }
+
+    private applyPage(listed: ReviewListPage): void {
+        this._rows = listed.items.map(item => toReviewListRow(item));
+        this._status = "ready";
+    }
+
+    private applyFailure(): void {
+        this._rows = [];
+        this._status = "failed";
+    }
+
+    private getList(): "assignedToMe" | "pool" | "myRequests" {
+        if (this._kind === "myRequests") {
+            return "myRequests";
+        }
+        return this._tab;
+    }
+
+    private getSort(): ReviewListSort {
+        if (this._kind === "myRequests") {
+            return "lastChangedOn_DESC";
+        }
+        return "lastChangedOn_ASC";
+    }
+
+    private toRowVm(row: ReviewListRow, now: Date): ReviewWidgetRowVm {
+        const resolved = resolveRowBinding(this.rowProvider, row);
+
+        const parts: string[] = [];
+        if (row.stepTitle) {
+            parts.push(row.stepTitle);
+        }
+        if (resolved.contentTypeLabel) {
+            parts.push(resolved.contentTypeLabel);
+        }
+
+        let stateLabel = getListReviewStateLabel(row.reviewState);
+        let stateVariant: TargetReviewTagVariant = NEUTRAL_VARIANT;
+        if (row.stepState) {
+            const tag = getStepStateTag(row.stepState);
+            stateLabel = tag.label;
+            stateVariant = tag.variant;
+        }
+
+        return {
+            reviewId: row.reviewId,
+            title: row.title,
+            stepLine: parts.join(" · "),
+            stateLabel,
+            stateVariant,
+            lastChange: formatLastChange(row.lastChangedOn, now),
+            contentUrl: resolved.contentUrl
+        };
+    }
+}
+
+export const ReviewWidgetPresenter = Abstraction.createImplementation({
+    implementation: ReviewWidgetPresenterImpl,
+    dependencies: [ReviewActivity, IdentityContext]
+});
