@@ -128,6 +128,10 @@ interface StepRow {
     candidateTeams: TeamRow[];
 }
 
+interface FieldRow {
+    name: string;
+}
+
 const EXPECTED_STEP: StepRow = {
     id: "step-1",
     candidateTeamIds: [LIVE_TEAM, DELETED_TEAM],
@@ -277,7 +281,7 @@ describe("CMS review candidateTeams (R208, Q7)", () => {
         const body = await reader(TYPE_FIELDS, { name: "WorkflowsTeam" });
 
         expect(body.errors).toBeUndefined();
-        const names = body.data.__type.fields.map((field: { name: string }) => field.name);
+        const names = body.data.__type.fields.map((field: FieldRow) => field.name);
         expect(names.sort()).toEqual(["id", "name"]);
     });
 });
