@@ -16,6 +16,7 @@ import { CmsWorkflowsCacheFeature } from "~/features/feature.js";
 import { CmsWorkflowsEditorPresenterFeature } from "~/presentation/cmsWorkflowsEditor/feature.js";
 import { CmsReviewFeature } from "~/features/gateway/feature.js";
 import { CmsContentReviewsPresenterFeature } from "~/presentation/contentReviews/feature.js";
+import { CmsReviewTrashFeature } from "~/features/trash/feature.js";
 
 export const CmsWorkflows = () => {
     const featureFlags = useFeatureFlags();
@@ -32,6 +33,7 @@ export const CmsWorkflows = () => {
             <RegisterFeature feature={CmsWorkflowsCacheFeature} />
             <RegisterFeature feature={CmsWorkflowsEditorPresenterFeature} />
             <RegisterFeature feature={CmsEntryReviewFeature} />
+            <RegisterFeature feature={CmsReviewTrashFeature} />
             <ListOpenInNewWindow />
             <CmsContentReviews />
             <CmsContentReviewsSidebarItem />
