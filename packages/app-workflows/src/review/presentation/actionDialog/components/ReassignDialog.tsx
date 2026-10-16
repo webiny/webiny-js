@@ -43,30 +43,30 @@ export const ReassignDialog = createReactiveComponent(function ReassignDialog(
             actions={actions}
         >
             <div className={"flex flex-col gap-md"}>
-                {vm.conflict ? (
+                {vm.conflict && (
                     <Alert type={"warning"} variant={"subtle"}>
                         <div className={"font-semibold"}>{vm.conflict.title}</div>
                         <div>{vm.conflict.message}</div>
                     </Alert>
-                ) : null}
-                {vm.dialogError ? (
+                )}
+                {vm.dialogError && (
                     <Alert type={"danger"} variant={"subtle"}>
                         {vm.dialogError}
                     </Alert>
-                ) : null}
+                )}
                 {vm.message ? <Text size={"md"}>{vm.message}</Text> : null}
-                {vm.showPicker ? (
+                {vm.showPicker && (
                     <ReviewerPicker
                         presenter={presenter.getPickerPresenter()}
                         label={"Reviewer"}
                         hint={vm.hint}
                     />
-                ) : null}
-                {vm.fieldError ? (
+                )}
+                {vm.fieldError && (
                     <Text size={"sm"} className={"text-destructive-default"}>
                         {vm.fieldError}
                     </Text>
-                ) : null}
+                )}
             </div>
         </Dialog>
     );

@@ -124,7 +124,7 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                     </div>
                 )}
             </div>
-            {vm.openAction !== null && vm.openAction.kind === "request" ? (
+            {vm.openAction !== null && vm.openAction.kind === "request" && (
                 <RequestReviewDialog
                     useCases={useCases}
                     target={target}
@@ -134,7 +134,7 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                     onDone={() => presenter.actionDone()}
                     onClose={() => presenter.closeAction()}
                 />
-            ) : null}
+            )}
             <ReviewActionDialogs
                 useCases={useCases}
                 request={request}

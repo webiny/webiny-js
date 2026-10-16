@@ -81,17 +81,17 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
             actions={actions}
         >
             <div className={"flex flex-col gap-md"}>
-                {vm.conflict ? (
+                {vm.conflict && (
                     <Alert type={"warning"} variant={"subtle"}>
                         <div className={"font-semibold"}>{vm.conflict.title}</div>
                         <div>{vm.conflict.message}</div>
                     </Alert>
-                ) : null}
-                {vm.dialogError ? (
+                )}
+                {vm.dialogError && (
                     <Alert type={"danger"} variant={"subtle"}>
                         {vm.dialogError}
                     </Alert>
-                ) : null}
+                )}
                 <Input
                     label={"Title *"}
                     value={vm.title}
@@ -99,15 +99,15 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                     disabled={collapsed}
                     validation={titleValidation}
                 />
-                {vm.status === "loadingSteps" ? (
+                {vm.status === "loadingSteps" && (
                     <div className={"flex flex-col gap-sm"}>
                         <Skeleton type={"text"} size={"lg"} />
                         <Skeleton type={"text"} size={"lg"} />
                         <Skeleton type={"text"} size={"lg"} />
                         <Skeleton type={"text"} size={"lg"} />
                     </div>
-                ) : null}
-                {vm.status === "stepsFailed" ? (
+                )}
+                {vm.status === "stepsFailed" && (
                     <Alert
                         type={"danger"}
                         variant={"subtle"}
@@ -120,7 +120,7 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                     >
                         {"Could not load the steps for this review."}
                     </Alert>
-                ) : null}
+                )}
                 {vm.steps.map(step => {
                     const picker = presenter.getPickerPresenter(step.stepId);
                     return (
@@ -140,12 +140,12 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                                 <Tag variant={"neutral-base-outline"} content={step.typeLabel} />
                                 <Tag variant={"neutral-light"} content={step.labelTag} />
                             </div>
-                            {step.description ? (
+                            {step.description && (
                                 <Text size={"sm"} className={"text-neutral-strong"}>
                                     {step.description}
                                 </Text>
-                            ) : null}
-                            {step.allowManualPick ? (
+                            )}
+                            {step.allowManualPick && (
                                 <RadioGroup
                                     items={[
                                         { label: "Automatic", value: "automatic" },
@@ -160,19 +160,19 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                                         presenter.setMode(step.stepId, toMode(value))
                                     }
                                 />
-                            ) : null}
-                            {step.noCandidates ? (
+                            )}
+                            {step.noCandidates && (
                                 <Alert type={"warning"} variant={"subtle"}>
                                     {NOBODY_NOTE}
                                 </Alert>
-                            ) : null}
-                            {step.mode === "pick" && picker ? (
+                            )}
+                            {step.mode === "pick" && picker && (
                                 <ReviewerPicker
                                     presenter={picker}
                                     label={"Reviewer"}
                                     hint={PICK_HINT}
                                 />
-                            ) : null}
+                            )}
                         </div>
                     );
                 })}

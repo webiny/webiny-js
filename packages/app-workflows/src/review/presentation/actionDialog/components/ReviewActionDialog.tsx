@@ -48,22 +48,22 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
             actions={actions}
         >
             <div className={"flex flex-col gap-md"}>
-                {vm.conflict ? (
+                {vm.conflict && (
                     <Alert type={"warning"} variant={"subtle"}>
                         <div className={"font-semibold"}>{vm.conflict.title}</div>
                         <div>{vm.conflict.message}</div>
-                        {vm.conflict.commentKept ? (
+                        {vm.conflict.commentKept && (
                             <div>{"Your comment is kept below so you can copy it."}</div>
-                        ) : null}
+                        )}
                     </Alert>
-                ) : null}
-                {vm.dialogError ? (
+                )}
+                {vm.dialogError && (
                     <Alert type={"danger"} variant={"subtle"}>
                         {vm.dialogError}
                     </Alert>
-                ) : null}
+                )}
                 {vm.body ? <Text size={"md"}>{vm.body}</Text> : null}
-                {vm.showComment ? (
+                {vm.showComment && (
                     <Textarea
                         label={vm.commentLabel}
                         description={vm.commentCounter}
@@ -72,14 +72,14 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
                         disabled={vm.conflict === null ? vm.submitting : false}
                         validation={validation}
                     />
-                ) : null}
-                {vm.showNotify && vm.conflict === null ? (
+                )}
+                {vm.showNotify && vm.conflict === null && (
                     <Checkbox
                         label={vm.notifyLabel}
                         checked={vm.notify}
                         onChange={checked => presenter.setNotify(checked)}
                     />
-                ) : null}
+                )}
             </div>
         </Dialog>
     );
