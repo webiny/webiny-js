@@ -1,5 +1,6 @@
 import React from "react";
 import { RegisterFeature, useFeatureFlags } from "@webiny/app-admin";
+import { WbContentReviews } from "~/Components/ContentReviews/WbContentReviews.js";
 import { WebsiteBuilderWorkflowsMenu } from "~/Routes/index.js";
 import { ListOpenInNewWindow, PageEditorConfig, PagesList } from "~/Components/index.js";
 import { PageListWorkflowsFeature } from "~/presentation/page/PageList/feature.js";
@@ -18,6 +19,7 @@ export const WebsiteBuilderWorkflows = () => {
     return (
         <>
             <RegisterFeature feature={WbReviewFeature} />
+            <WbContentReviews />
             <RegisterFeature feature={PageListWorkflowsFeature} />
             <RegisterFeature feature={PageGetWorkflowsFeature} />
             <RegisterFeature feature={WbPageReviewFeature} />

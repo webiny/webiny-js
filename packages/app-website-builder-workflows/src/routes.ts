@@ -13,7 +13,12 @@ export const Routes = {
         }),
         WorkflowStateList: new Route({
             name: "WebsiteBuilder/Pages/WorkflowStateList",
-            path: "/website-builder/pages/content-reviews"
+            path: "/website-builder/pages/content-reviews",
+            params: zod => {
+                return {
+                    tab: zod.string().optional()
+                };
+            }
         })
     }
 };

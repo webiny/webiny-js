@@ -43,6 +43,10 @@ vi.mock("~/Components/PagesList/index.js", () => {
     return { PagesList: () => null };
 });
 
+vi.mock("~/Components/ContentReviews/WbContentReviews.js", () => {
+    return { WbContentReviews: () => null };
+});
+
 vi.mock("~/Components/OptionItem/index.js", () => {
     return { ListOpenInNewWindow: () => null };
 });
