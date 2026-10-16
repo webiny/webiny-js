@@ -300,7 +300,7 @@ describe("DeletePageRevisionUseCase (R235, R236)", () => {
     });
 
     it("deletes a published revision exactly as today: not refused, no unpublish handling (A85, Q15)", async () => {
-        const [first, second] = await createPageWithRevisions(2);
+        const [first] = await createPageWithRevisions(2);
         const seed = await createContext({ legacyPlugins: [] });
         expectOk(await seed.container.resolve(PublishPageUseCase).execute({ id: first.id }));
         const context = await createContext();
