@@ -1,11 +1,11 @@
 ### Task 35: CMS trash and delete decorators (`app-headless-cms-workflows`)
 
-R202, R204, R205, R228, R211, D157, A71, A82; Review Focus 8, 10, 17. The CMS half of the warning flow: four decorators that only forward to the shared `ActiveReviewGuard` (Task 33), registered by a feature that `CmsWorkflows` mounts inside the flag gate. Plus the small base fixes the A82 caller review found. Review Focus 17: the decorators hold no logic, the guard holds all of it (the one addition is the bulk decorator's first-pass count toast, Q27).
+R202, R204, R205, R228, R211, D157, A71, A82; Review Focus 8, 10, 17. The CMS half of the warning flow: four decorators that only forward to the shared `ActiveReviewGuard` (Task 33), registered by a feature that `CmsWorkflows` mounts inside the flag gate. Plus the small base fixes the A82 caller review found. Review Focus 17: the decorators hold no logic, the guard holds all of it.
 
 - **`DeleteEntryUseCaseReviewDecorator`** (`DeleteEntryUseCase.createDecorator`, dependencies `[ActiveReviewGuard, CmsReviewUseCases]`): `execute(params)` -> `guard.run({ action: () => decoratee.execute(params), useCases, revisionId: null })`. The trash covers every revision.
 - **`DeleteEntryRevisionUseCaseReviewDecorator`**: `revisionId: params.revisionId`, so the confirm cancels only that revision's reviews (the CMS `cancelCmsEntryReviewsForDelete(revisionId)` of Task 11).
 - **`PermanentlyDeleteEntryUseCaseReviewDecorator`**: `revisionId: null`. This also covers the trash-bin delete: `CmsTrashBinDeleteGatewayAdapter` (`packages/app-headless-cms/src/features/contentEntry/trashBin/CmsTrashBinGatewayAdapter.ts`) calls `PermanentlyDeleteEntryUseCase`, so the trash-bin hook point for the CMS is this use case and needs no separate file (A71: the trash-bin dialog is `useConfirmationDialog` in `@webiny/app-admin`, not a named dialog; the warning is a named dialog and simply opens over it).
-- **`BulkDeletePresenterReviewDecorator`** (`BulkDeletePresenter.createDecorator`): `execute(items, allSelected)` -> `guard.runBulk({ items, getTargetId: item => item.entryId, run: (batch, isRetry) => decoratee.execute(batch, isRetry ? false : allSelected), useCases })`; `vm` delegates to the decoratee. The retry always runs per item (`false`), because the refused items must be deleted one by one after their reviews are cancelled. **First-pass summary (Q27, R228):** the CMS bulk flow shows no count before the warning (the results dialog comes after `execute` and, after a confirmed retry, lists only the retried items, accepted and documented in Task 38), so the decorator adds one, with the `Notifications` dependency (`[ActiveReviewGuard, CmsReviewUseCases, Notifications]`): after the **first** per-item run (`isRetry` false, `allSelected` false) it counts the `failure` results of `decoratee.vm.results` (in collect mode these are exactly the refused items) and, when there are some, shows `notifications.warning({ title: "{done} of {total} entries moved to trash", description: "{failed} {entry|entries} with a review in progress still {needs|need} your confirmation." })`; nothing is shown when nothing was refused, on the retry or for the background "all selected" path. The copy is proposed (the design has no string for it) and flagged in the Contract notes.
+- **`BulkDeletePresenterReviewDecorator`** (`BulkDeletePresenter.createDecorator`): `execute(items, allSelected)` -> `guard.runBulk({ items, getTargetId: item => item.entryId, run: (batch, isRetry) => decoratee.execute(batch, isRetry ? false : allSelected), useCases })`; `vm` delegates to the decoratee. The retry always runs per item (`false`), because the refused items must be deleted one by one after their reviews are cancelled. The first-pass count toast of Q27 is owned by `ActiveReviewGuard.runBulk` (Task 33); this decorator only forwards.
 - **Feature** `CmsReviewTrashFeature` (name `CmsWorkflows/Trash`) registers the four decorators with `container.registerDecorator`. Decorators registered on the root container apply to every container that resolves these tokens, including the scoped child containers the CMS list and editor create (`node_modules/@webiny/di/dist/index.js` `collectDecorators`: parent decorators first, so they sit closest to the use case). `CmsWorkflows` mounts it with `<RegisterFeature feature={CmsReviewTrashFeature} />` inside the gate, after the shared features (A77); with the flag off nothing is registered and every use case stays undecorated.
 
 **A82, the callers re-verified.** Each decorated use case returns `false` when the warning is dismissed (the guard's contract). Three base callers did not treat `false` as "not done", one never ran at all, and one bulk presenter aborts on the first failing item; all are fixed here, each with a test:
@@ -51,7 +51,7 @@ R202, R204, R205, R228, R211, D157, A71, A82; Review Focus 8, 10, 17. The CMS ha
   - Task 33: `ActiveReviewGuard` token (`@webiny/app-workflows/review/trash/ActiveReviewGuard.js`; `run`, `runBulk`), the implementations for the integration tests (`.../ActiveReviewGuard.js`, `.../ActiveReviewBlockCollector.js`). Task 34: `ActiveReviewTrashFeature` (registers them in the app; the dialog). Build `@webiny/app-workflows` before Step 1 so the deep imports resolve (`yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30`).
   - Task 11: `CmsReviewUseCases` (`~/features/gateway/CmsReviewUseCases.js`, one token per file, interface `IReviewUseCases`, which includes `cancelForDelete`); `CmsReviewFeature` registered in `CmsWorkflows`.
   - Task 31: the typed error from the base CMS gateways (what makes the refusal reach the decorators).
-  - Existing: `DeleteEntryUseCase` and `IDeleteEntryParams` (`@webiny/app-headless-cms/features/contentEntry/deleteEntry/abstractions.js`), `DeleteEntryRevisionUseCase` and `IDeleteEntryRevisionParams` (`.../deleteEntryRevision/abstractions.js`), `PermanentlyDeleteEntryUseCase` and `IPermanentlyDeleteEntryParams` (`.../permanentlyDeleteEntry/abstractions.js`), `BulkDeletePresenter` (`@webiny/app-headless-cms/presentation/contentEntries/bulkActions/abstractions.js`; `execute(items: CmsContentEntry[], allSelected: boolean)`, `vm: BulkActionViewModel`), `CmsContentEntry` and `CmsModel` (`@webiny/app-headless-cms/types.js`), `Confirmation` (`@webiny/app-admin/features/confirmation/abstractions.js`), `Notifications` (`@webiny/app-admin/features/notifications/abstractions.js`, `warning`, the first-pass summary of Q27), `Result` (`@webiny/app-admin/components/BulkActions/Worker.js`, the shape of `vm.results`), `RegisterFeature` and `useFeatureFlags` (`@webiny/app-admin`), `createFeature` (`@webiny/feature/admin`), `GraphQLOperationError` (`@webiny/app/errors/index.js`), `ReviewErrorCode` (`@webiny/app-workflows/review/domain/ReviewErrorCode.js`), `CancelForDeleteParams` (`@webiny/app-workflows/review/gateway/IReviewGateway.js`), `Review` (`@webiny/app-workflows/review/domain/types.js`).
+  - Existing: `DeleteEntryUseCase` and `IDeleteEntryParams` (`@webiny/app-headless-cms/features/contentEntry/deleteEntry/abstractions.js`), `DeleteEntryRevisionUseCase` and `IDeleteEntryRevisionParams` (`.../deleteEntryRevision/abstractions.js`), `PermanentlyDeleteEntryUseCase` and `IPermanentlyDeleteEntryParams` (`.../permanentlyDeleteEntry/abstractions.js`), `BulkDeletePresenter` (`@webiny/app-headless-cms/presentation/contentEntries/bulkActions/abstractions.js`; `execute(items: CmsContentEntry[], allSelected: boolean)`, `vm: BulkActionViewModel`), `CmsContentEntry` and `CmsModel` (`@webiny/app-headless-cms/types.js`), `Confirmation` (`@webiny/app-admin/features/confirmation/abstractions.js`), `Notifications` (`@webiny/app-admin/features/notifications/abstractions.js`, registered in the integrated test because the real guard depends on it), `RegisterFeature` and `useFeatureFlags` (`@webiny/app-admin`), `createFeature` (`@webiny/feature/admin`), `GraphQLOperationError` (`@webiny/app/errors/index.js`), `ReviewErrorCode` (`@webiny/app-workflows/review/domain/ReviewErrorCode.js`), `CancelForDeleteParams` (`@webiny/app-workflows/review/gateway/IReviewGateway.js`), `Review` (`@webiny/app-workflows/review/domain/types.js`).
 - Produces (no later consumer):
   - `CmsReviewTrashFeature`, `DeleteEntryUseCaseReviewDecorator`, `DeleteEntryRevisionUseCaseReviewDecorator`, `PermanentlyDeleteEntryUseCaseReviewDecorator`, `BulkDeletePresenterReviewDecorator`.
   - Base fixes: `ContentEntryFormPresenter.deleteEntry` and `RevisionsListPresenter.deleteRevision` treat `false` as not done; `RevisionsListPresenter.deleteRevision` confirms correctly; `BulkDeletePresenter.deleteItem` reports failures; `ITrashBinActions.deleteItem(id): Promise<boolean>`.
@@ -476,7 +476,6 @@ import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import type { Result } from "@webiny/app-admin/components/BulkActions/Worker.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
-import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { DeleteEntryUseCase } from "@webiny/app-headless-cms/features/contentEntry/deleteEntry/abstractions.js";
 import { BulkDeletePresenter } from "@webiny/app-headless-cms/presentation/contentEntries/bulkActions/abstractions.js";
 import type { CmsContentEntry } from "@webiny/app-headless-cms/types.js";
@@ -531,13 +530,12 @@ function createNotifications() {
 }
 
 describe("BulkDeletePresenterReviewDecorator (forwarding)", () => {
-    function setupForwarding(results: Result[] = []) {
+    function setupForwarding() {
         const decoratee = {
-            vm: { processing: false, results },
+            vm: { processing: false, results: [] },
             execute: vi.fn(async (_items: CmsContentEntry[], _allSelected: boolean) => undefined)
         };
         const useCases = createUseCases();
-        const notifications = createNotifications();
         const guard = {
             run: vi.fn(),
             runBulk: vi.fn(async <TItem>(params: GuardAbstraction.BulkParams<TItem>) => {
@@ -549,17 +547,10 @@ describe("BulkDeletePresenterReviewDecorator (forwarding)", () => {
         const container = new Container();
         container.registerInstance(GuardAbstraction, guard as unknown as GuardAbstraction.Interface);
         container.registerInstance(CmsReviewUseCases, useCases as unknown as CmsReviewUseCases.Interface);
-        container.registerInstance(Notifications, notifications as unknown as Notifications.Interface);
         container.registerInstance(BulkDeletePresenter, decoratee);
         container.registerDecorator(BulkDeletePresenterReviewDecorator);
 
-        return {
-            decoratee,
-            guard,
-            useCases,
-            notifications,
-            presenter: container.resolve(BulkDeletePresenter)
-        };
+        return { decoratee, guard, useCases, presenter: container.resolve(BulkDeletePresenter) };
     }
 
     it("hands the items, the entry id, the use cases and a run callback to the guard", async () => {
@@ -589,49 +580,6 @@ describe("BulkDeletePresenterReviewDecorator (forwarding)", () => {
         const { decoratee, presenter } = setupForwarding();
 
         expect(presenter.vm).toBe(decoratee.vm);
-    });
-
-    it("tells how many entries were moved after the first pass when some were refused (Q27)", async () => {
-        const results: Result[] = [
-            { title: "e1", status: "failure" },
-            { title: "e2", status: "success" },
-            { title: "e3", status: "failure" }
-        ];
-        const { notifications, presenter } = setupForwarding(results);
-
-        await presenter.execute([entry("e1"), entry("e2"), entry("e3")], false);
-
-        expect(notifications.warning).toHaveBeenCalledTimes(1);
-        expect(notifications.warning).toHaveBeenCalledWith({
-            title: "1 of 3 entries moved to trash",
-            description: "2 entries with a review in progress still need your confirmation."
-        });
-    });
-
-    it("uses the singular when one entry was refused", async () => {
-        const results: Result[] = [
-            { title: "e1", status: "failure" },
-            { title: "e2", status: "success" }
-        ];
-        const { notifications, presenter } = setupForwarding(results);
-
-        await presenter.execute([entry("e1"), entry("e2")], false);
-
-        expect(notifications.warning).toHaveBeenCalledWith({
-            title: "1 of 2 entries moved to trash",
-            description: "1 entry with a review in progress still needs your confirmation."
-        });
-    });
-
-    it("says nothing when no entry was refused, and nothing for the all-selected path", async () => {
-        const first = setupForwarding([{ title: "e1", status: "success" }]);
-        await first.presenter.execute([entry("e1")], false);
-
-        const second = setupForwarding([{ title: "e1", status: "failure" }]);
-        await second.presenter.execute([entry("e1")], true);
-
-        expect(first.notifications.warning).not.toHaveBeenCalled();
-        expect(second.notifications.warning).not.toHaveBeenCalled();
     });
 });
 
@@ -693,6 +641,7 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-it
                 }
             })
         };
+        // The real guard reports the first-pass count through Notifications (Task 33).
         const notifications = createNotifications();
         container.registerInstance(Notifications, notifications as unknown as Notifications.Interface);
         container.registerInstance(BulkDeletePresenter, decoratee);
@@ -705,7 +654,6 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-it
             failed,
             decoratee,
             useCases,
-            notifications,
             presenter: container.resolve(BulkDeletePresenter)
         };
     }
@@ -713,7 +661,7 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-it
     const items = [entry("e1"), entry("e2"), entry("e3")];
 
     it("collects every refused item, warns once and retries only the blocked items", async () => {
-        const { confirm, deleted, failed, decoratee, useCases, notifications, presenter } =
+        const { confirm, deleted, failed, decoratee, useCases, presenter } =
             setupIntegrated("confirm");
 
         await presenter.execute(items, false);
@@ -730,12 +678,6 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-it
         expect(decoratee.execute.mock.calls[1][1]).toBe(false);
         expect(failed).toEqual(["e1", "e3"]);
         expect(deleted).toEqual(["e2", "e1", "e3"]);
-        // The first-pass summary (Q27) is shown once; the retry shows none.
-        expect(notifications.warning).toHaveBeenCalledTimes(1);
-        expect(notifications.warning).toHaveBeenCalledWith({
-            title: "1 of 3 entries moved to trash",
-            description: "2 entries with a review in progress still need your confirmation."
-        });
     });
 
     it("resolves execute only after the warning flow has ended (R228)", async () => {
@@ -836,10 +778,8 @@ describe("CmsReviewTrashFeature", () => {
             )
         };
         const useCases = { cancelForDelete: vi.fn() };
-        const notifications = { notify: vi.fn(), success: vi.fn(), warning: vi.fn() };
         const container = new Container();
         container.registerInstance(ActiveReviewGuard, guard as unknown as ActiveReviewGuard.Interface);
-        container.registerInstance(Notifications, notifications as unknown as Notifications.Interface);
         container.registerInstance(CmsReviewUseCases, useCases as unknown as CmsReviewUseCases.Interface);
         container.registerInstance(DeleteEntryUseCase, { execute: vi.fn(async () => true) });
         container.registerInstance(DeleteEntryRevisionUseCase, { execute: vi.fn(async () => true) });
@@ -1552,7 +1492,6 @@ export const PermanentlyDeleteEntryUseCaseReviewDecorator =
 Create `packages/app-headless-cms-workflows/src/features/trash/BulkDeletePresenterReviewDecorator.ts`:
 
 ```ts
-import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { BulkDeletePresenter } from "@webiny/app-headless-cms/presentation/contentEntries/bulkActions/abstractions.js";
 import type { CmsContentEntry } from "@webiny/app-headless-cms/types.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard.js";
@@ -1562,7 +1501,6 @@ class BulkDeletePresenterReviewDecoratorImpl implements BulkDeletePresenter.Inte
     constructor(
         private guard: ActiveReviewGuard.Interface,
         private useCases: CmsReviewUseCases.Interface,
-        private notifications: Notifications.Interface,
         private decoratee: BulkDeletePresenter.Interface
     ) {}
 
@@ -1574,26 +1512,7 @@ class BulkDeletePresenterReviewDecoratorImpl implements BulkDeletePresenter.Inte
         await this.guard.runBulk({
             items,
             getTargetId: item => item.entryId,
-            run: async (batch, isRetry) => {
-                await this.decoratee.execute(batch, isRetry ? false : allSelected);
-
-                if (isRetry || allSelected) {
-                    return;
-                }
-
-                // First pass (Q27): in collect mode the failures are exactly the refused items.
-                const results = this.decoratee.vm.results;
-                const failed = results.filter(result => result.status === "failure").length;
-                const noun = failed === 1 ? "entry" : "entries";
-                const verb = failed === 1 ? "needs" : "need";
-
-                if (failed > 0) {
-                    this.notifications.warning({
-                        title: `${batch.length - failed} of ${batch.length} entries moved to trash`,
-                        description: `${failed} ${noun} with a review in progress still ${verb} your confirmation.`
-                    });
-                }
-            },
+            run: (batch, isRetry) => this.decoratee.execute(batch, isRetry ? false : allSelected),
             useCases: this.useCases
         });
     }
@@ -1601,7 +1520,7 @@ class BulkDeletePresenterReviewDecoratorImpl implements BulkDeletePresenter.Inte
 
 export const BulkDeletePresenterReviewDecorator = BulkDeletePresenter.createDecorator({
     decorator: BulkDeletePresenterReviewDecoratorImpl,
-    dependencies: [ActiveReviewGuard, CmsReviewUseCases, Notifications]
+    dependencies: [ActiveReviewGuard, CmsReviewUseCases]
 });
 ```
 
@@ -1896,11 +1815,11 @@ git commit -m "fix(app-admin): treat a false delete result as not done in the tr
 Commit 4, files: everything under `packages/app-headless-cms-workflows/src/features/trash/` and `packages/app-headless-cms-workflows/src/index.tsx`. Build lines: `yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30` then `yarn build -p @webiny/app-headless-cms-workflows --no-cache 2>&1 | tail -30`. `yarn adio` may list `@webiny/di` and `vitest` for `app-headless-cms-workflows` (Task 11 added them).
 
 ```bash
-git commit -m "feat(app-headless-cms-workflows): guard the CMS trash and delete with the review warning" -m "Four decorators forward the entry trash, revision delete, permanent delete and bulk trash to the shared guard; the trash-bin delete is covered through PermanentlyDeleteEntryUseCase. After the first bulk pass a toast states how many entries were moved when some were refused (the retry results dialog lists only the retried entries)." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-headless-cms-workflows): guard the CMS trash and delete with the review warning" -m "Four decorators forward the entry trash, revision delete, permanent delete and bulk trash to the shared guard; the trash-bin delete is covered through PermanentlyDeleteEntryUseCase. " -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 **Contract notes:**
-- For Task 38: a bulk retry's results dialog shows only the retried items (Q27, accepted); the first-pass toast above states how many entries were moved. **Proposed copy, flagged:** the title "{done} of {total} entries moved to trash" and the description "{failed} {entry|entries} with a review in progress still {needs|need} your confirmation." are not in the design; confirm or change them before the 8a.9 review. The same count logic would be needed for the WB bulk decorator (Task 36), which has its own wording ("pages"); it is not shared here because Task 33 owns the guard and has no hook for it.
+- For Task 38: a bulk retry's results dialog shows only the retried items (Q27, accepted). The first-pass count toast (Q27) is owned by `ActiveReviewGuard.runBulk` (Task 33), so the CMS bulk decorator only forwards.
 - The "all selected" background path (`onBulk`) has no pre-warning and no summary (A72).
 - The bulk confirmation dialog is a generic `showDialog` dialog, not a named one, so the A71 replace behaviour does not apply to bulk: the warning (named) stacks over the busy bulk dialog. Not covered by an automated test (it needs the bulk dialog host); verify by hand in the admin before the final review.
 - verify: `CmsReviewUseCases` path and the file and export of Task 11's token (`~/features/gateway/CmsReviewUseCases.js`); the `CmsReviewFeature` anchor line in `index.tsx`; the CMS package exports deep paths (`@webiny/app-headless-cms/features/...`, `./*` export in its `package.json`).
