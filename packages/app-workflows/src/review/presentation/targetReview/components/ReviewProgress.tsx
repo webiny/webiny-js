@@ -9,7 +9,7 @@ export interface ReviewProgressProps {
     progress: TargetReviewProgressVm;
 }
 
-/** Row 2 of the bar: 40x6 segments per step and "n of N steps approved" (README 6). */
+// Row 2 of the bar: 40x6 segments per step and "n of N steps approved" (README 6).
 export const ReviewProgress = (props: ReviewProgressProps) => {
     const { progress } = props;
 

@@ -11,7 +11,7 @@ export interface ReviewStepsPopoverProps {
     children: React.ReactNode;
 }
 
-/**
+/*
  * The steps popover (README 6): every step's state, owner and the full comment. Opens on hover
  * and on click or keyboard (the trigger is a button); `useState` holds one visual flag only.
  */

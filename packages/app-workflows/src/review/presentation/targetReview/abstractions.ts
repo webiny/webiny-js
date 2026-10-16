@@ -7,7 +7,7 @@ export type TargetReviewStatus = "loading" | "failed" | "noWorkflow" | "none" | 
 
 export type TargetReviewFailureKind = "noAccess" | "error";
 
-/** What the review is, once the status is `active` or `none` (cancelled reads as none, D75). */
+// What the review is, once the status is `active` or `none` (cancelled reads as none, D75).
 export type TargetReviewKind = "none" | "inProgress" | "approved" | "rejected";
 
 export type TargetReviewActionKind =
@@ -30,7 +30,7 @@ export type TargetReviewActionIcon =
 
 export type TargetReviewEmphasis = "ghost" | "tertiary" | "secondary" | "primary";
 
-/** The admin-ui `Tag` variants the review view uses. */
+// The admin-ui `Tag` variants the review view uses.
 export type TargetReviewTagVariant =
     | "accent-light"
     | "success-light"
@@ -39,7 +39,7 @@ export type TargetReviewTagVariant =
     | "neutral-base-outline"
     | "neutral-dark";
 
-/** The state tile of the bar (README 6): the Material icon name that names it. */
+// The state tile of the bar (README 6): the Material icon name that names it.
 export type TargetReviewTile =
     | "rule"
     | "rate_review"
@@ -80,7 +80,7 @@ export interface TargetReviewOpenAction {
     stepId: string | null;
 }
 
-/** Render-ready values only (R234): no domain object, no presenter, no callback. */
+// Render-ready values only (R234): no domain object, no presenter, no callback.
 export interface ITargetReviewViewModel {
     status: TargetReviewStatus;
     failureKind: TargetReviewFailureKind | null;
@@ -106,12 +106,12 @@ export interface ITargetReviewViewModel {
     busy: boolean;
 }
 
-/** What the editor knows about the content and may change while the editor is open. */
+// What the editor knows about the content and may change while the editor is open.
 export interface TargetReviewContext {
     targetTitle: string;
     canRequest: boolean;
     isPublished: boolean;
-    /** The revision was published before and is unpublished now (R226, R-h). */
+    // The revision was published before and is unpublished now (R226, R-h).
     isUnpublished: boolean;
 }
 

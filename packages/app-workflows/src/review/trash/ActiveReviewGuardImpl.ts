@@ -13,7 +13,7 @@ import { parseActiveReviewOnTrash } from "./parseActiveReviewOnTrash.js";
 import { REVIEW_TOAST_DURATION } from "~/review/toasts/constants.js";
 import { REVIEW_TOAST_POSITION } from "~/review/toasts/constants.js";
 
-/**
+/*
  * What the dialog's `execute` hands back. `Confirmation.confirm` resolves only after `execute`
  * returns, so `execute` never throws: it reports a failure here and the guard rethrows it once
  * `confirm` has resolved.

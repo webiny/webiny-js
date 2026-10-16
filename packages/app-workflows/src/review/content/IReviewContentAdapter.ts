@@ -5,7 +5,7 @@ export interface ReviewContentRef {
     contentTypeId: string | null;
 }
 
-/**
+/*
  * The only per-app content knowledge besides gateways and cache writers (R224). Built from route
  * path strings, no hooks, so handlers can use it.
  */

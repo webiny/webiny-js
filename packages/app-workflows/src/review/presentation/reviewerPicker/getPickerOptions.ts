@@ -1,7 +1,7 @@
 import type { StepCandidate } from "~/review/domain/types.js";
 import type { ReviewerPickerOptionVm } from "./abstractions.js";
 
-/**
+/*
  * The picker options (R209, R230): the current owner "Current owner", excluded people
  * "Unavailable[: reason]" (the reason only when the server sent it, D97), both disabled. Pure.
  */

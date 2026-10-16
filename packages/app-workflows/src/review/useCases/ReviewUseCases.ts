@@ -25,7 +25,7 @@ import { mapWorkflow } from "~/review/gateway/mapWorkflow.js";
 
 const FALLBACK_MESSAGE = "The request failed.";
 
-/**
+/*
  * The one shared implementation of the review use cases (R202). It runs the app's gateway, turns
  * an error envelope into a thrown `GraphQLOperationError` (R204, A81), lets transport errors pass
  * and caches the workflow list per instance (A74), so each app, which registers its own instance,

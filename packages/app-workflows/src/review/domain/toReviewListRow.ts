@@ -1,7 +1,7 @@
 import type { ReviewListRow } from "./types.js";
 import type { ReviewWithFlags } from "./types.js";
 
-/** One list item as an app-neutral row (R206): the namespace stays on the row. */
+// One list item as an app-neutral row (R206): the namespace stays on the row.
 export const toReviewListRow = (item: ReviewWithFlags): ReviewListRow => {
     const { review, flags } = item;
     const step = review.steps.find(candidate => candidate.id === review.currentStepId);

@@ -44,7 +44,7 @@ const getComment = (step: ReviewStep): string | null => {
     return null;
 };
 
-/**
+/*
  * The lead of a skipped entry while the server could not resolve a name (`userDisplayName` is
  * `null` or blank, R251). A raw user id is never shown.
  */
@@ -116,7 +116,7 @@ const getStepVm = (step: ReviewStep, now: Date): ReviewDetailsStepVm => {
     };
 };
 
-/**
+/*
  * The render-ready view model of the drawer (R234). Pure. `now` is a parameter so times are
  * deterministic. A cancelled review keeps its header and loses timeline and actions (QBZ-1).
  */

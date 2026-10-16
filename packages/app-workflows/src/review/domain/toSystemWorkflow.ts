@@ -15,7 +15,7 @@ const deriveReviewState = (stepState: StepStateValue): ReviewStateValue => {
     return ReviewState.InProgress;
 };
 
-/**
+/*
  * The `meta.system.workflow` value of a target revision, mirror of `Review.getSystemWorkflow()` in
  * api-workflows: `null` for no review or a cancelled one (D75); the current step is the first step
  * that is not approved (`findCurrentStep`), else the last step; the review state follows that step.

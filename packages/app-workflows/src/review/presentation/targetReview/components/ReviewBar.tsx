@@ -19,13 +19,13 @@ import type { TargetReviewPresenter } from "../abstractions.js";
 
 export interface ReviewBarProps {
     presenter: TargetReviewPresenter.Interface;
-    /** Used by the action dialogs mounted in Tasks 15 and 17. */
+    // Used by the action dialogs mounted in Tasks 15 and 17.
     useCases: IReviewUseCases;
     reviewsUrl: string | null;
     onOpenDetails?: () => void;
 }
 
-/**
+/*
  * The review bar card (README 6, UI-6, UI-7): state tile, review state tag, message, meta, lock
  * text, the actions the server allows and the progress row.
  */

@@ -80,7 +80,7 @@ export interface CancelForDeleteParams {
     action: ReviewForDeleteAction;
 }
 
-/**
+/*
  * The review operations one app exposes over its own GraphQL documents (R202). Every method
  * resolves with the shared envelope, also when the server reports an error, and rejects only on a
  * transport failure (R204). There is no abstraction token here: each app creates its own over this

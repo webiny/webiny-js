@@ -16,7 +16,7 @@ export interface ReviewActionDialogHostProps {
     onClose: () => void;
 }
 
-/** One presenter per mounted dialog (transient, R212): init on mount, dispose on unmount. */
+// One presenter per mounted dialog (transient, R212): init on mount, dispose on unmount.
 export const ReviewActionDialogHost = (props: ReviewActionDialogHostProps) => {
     const { useCases, request, reviewsUrl, listRefreshed, onConflict, onDone, onClose } = props;
     const { presenter } = useFeature(ReviewActionDialogPresenterFeature);

@@ -9,7 +9,7 @@ interface WorkflowsNotificationMessage extends IncomingGenericData {
     data?: WorkflowsNotificationData;
 }
 
-/**
+/*
  * Turns `workflows.notification` websocket messages of one app into toasts. Exported as a plain
  * class; each app subclasses it in its own file and binds the subclass to `WebsocketEventHandler`,
  * so the handler of one app ignores the namespaces of the other (R223).

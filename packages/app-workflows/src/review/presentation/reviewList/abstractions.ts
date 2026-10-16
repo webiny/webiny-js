@@ -9,7 +9,7 @@ import type { TargetReviewTagVariant } from "~/review/presentation/targetReview/
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 
-/**
+/*
  * What the list needs to know about one app for the rows of its namespace: the app's use cases
  * (row actions and the details drawer run on them), the content URL and the content type label.
  */
@@ -19,7 +19,7 @@ export interface IReviewRowBinding {
     getContentTypeLabel(contentTypeId: string): string | null;
 }
 
-/**
+/*
  * Resolves the binding of a row's namespace. A namespace nobody binds returns `null` and its rows
  * render without a link and without actions (R206). A future global list passes a provider over
  * several apps.

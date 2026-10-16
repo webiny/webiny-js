@@ -14,7 +14,7 @@ function formatReview(review: BlockingReview): string {
     return `${review.title} · ${position}${step}`;
 }
 
-/**
+/*
  * The render-ready texts of the warning dialog (R205, D134): the title, the body for the action
  * and one line per blocking review. Pure.
  */

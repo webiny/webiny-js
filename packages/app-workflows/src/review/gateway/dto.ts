@@ -69,7 +69,7 @@ export interface ReviewStepDto {
     taskId: string | null;
     runs: ReviewStepRunDto[];
     issues: ReviewAiIssueDto[];
-    /** Only on a single review read (`REVIEW_ASSIGNMENT_FIELDS`); absent on lists. */
+    // Only on a single review read (`REVIEW_ASSIGNMENT_FIELDS`); absent on lists.
     assignments?: ReviewAssignmentEntryDto[] | null;
 }
 
@@ -140,14 +140,14 @@ export interface WorkflowStepDto {
     color: string;
     description: string | null;
     type: string;
-    /** The step config (JSON); only `assignment.allowManualPick` of a review step is read. */
+    // The step config (JSON); only `assignment.allowManualPick` of a review step is read.
     config: unknown;
 }
 
 export interface WorkflowDto {
     id: string;
     name: string;
-    /** The namespaces the workflow binds (`cms.<modelId>`, `wb.page`). */
+    // The namespaces the workflow binds (`cms.<modelId>`, `wb.page`).
     models: string[];
     steps: WorkflowStepDto[];
 }

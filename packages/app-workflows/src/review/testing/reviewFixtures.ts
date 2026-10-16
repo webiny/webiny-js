@@ -126,7 +126,7 @@ export const createReviewWithFlagsDto = (
     };
 };
 
-/**
+/*
  * The domain review every later `app-workflows` test starts from (R243): one awaiting step
  * "Editorial check" (`step-1`), no teams, title "Spring campaign", requester "Maja Kos".
  */
@@ -195,7 +195,7 @@ const NO_FLAGS: ReviewViewerFlags = {
     canRestart: false
 };
 
-/** Positional (R243): the review first, then the flags; both default (all flags false). */
+// Positional (R243): the review first, then the flags; both default (all flags false).
 export const createReviewWithFlags = (
     review: Review = createReview(),
     flags: ReviewViewerFlags = NO_FLAGS

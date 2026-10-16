@@ -64,7 +64,7 @@ const Breadcrumb = (props: StubProps) => {
     );
 };
 
-/** Test double of the pieces of `@webiny/app-admin` the mounting components use. */
+// Test double of the pieces of `@webiny/app-admin` the mounting components use.
 export const createAdminConfigStub = () => {
     const MenuWithLink = Object.assign(Menu, {
         Link: Object.assign(MenuLink, { Icon: MenuLinkIcon })

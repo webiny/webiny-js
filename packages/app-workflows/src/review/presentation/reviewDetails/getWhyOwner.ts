@@ -1,6 +1,6 @@
 import type { ReviewStep } from "~/review/domain/types.js";
 
-/**
+/*
  * "Why this owner" (design prototype, D127): hidden for AI and automation owners (R216, QBZ-63)
  * and for a step without an assignment. A rule id is not a name, so a rule reads "Assigned by a
  * routing rule". Pure.

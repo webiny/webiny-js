@@ -30,7 +30,7 @@ const NO_TEAM_EMPTY: ReviewListEmptyVm = {
     description: "Steps appear here once you’re added to a team that reviews content."
 };
 
-/**
+/*
  * Empty-state copy of README 8, QBZ-72 and QBZ-73. The filtered state has a title only. A viewer
  * with no teams gets the no-team text on the two team tabs; the client cannot tell which teams
  * review content, so a member of only non-reviewing teams still sees the normal text.

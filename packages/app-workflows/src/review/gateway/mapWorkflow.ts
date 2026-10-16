@@ -19,7 +19,7 @@ const readAssignment = (type: string, config: unknown): object | null => {
     return assignment;
 };
 
-/**
+/*
  * Mirror of `canPickReviewer` in api-workflows: a manual pick is possible for a review step whose
  * config sets `assignment.allowManualPick` to `true` (R218).
  */
@@ -31,7 +31,7 @@ const readAllowManualPick = (type: string, config: unknown): boolean => {
     return assignment.allowManualPick === true;
 };
 
-/**
+/*
  * A review step whose `assignment.strategy` is anything but `none` (`roundRobin`, `leastLoaded`)
  * picks its reviewer itself (R246); a missing or unreadable config is not automatic.
  */
@@ -55,7 +55,7 @@ const mapStep = (dto: WorkflowStepDto): ReviewWorkflowStep => {
     };
 };
 
-/** Maps a `WorkflowsWorkflow`: `models` (the bound namespaces) becomes `namespaces`. */
+// Maps a `WorkflowsWorkflow`: `models` (the bound namespaces) becomes `namespaces`.
 export const mapWorkflow = (dto: WorkflowDto): ReviewWorkflow => {
     return {
         id: dto.id,

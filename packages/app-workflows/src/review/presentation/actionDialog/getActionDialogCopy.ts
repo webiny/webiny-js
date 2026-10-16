@@ -23,7 +23,7 @@ export interface ActionDialogCopy {
     canSubmit: boolean;
 }
 
-/** The design copy of the five dialogs (README 6, QBZ-5, QBZ-31, QBZ-50, QBZ-51). Pure. */
+// The design copy of the five dialogs (README 6, QBZ-5, QBZ-31, QBZ-50, QBZ-51). Pure.
 export const getActionDialogCopy = (params: ActionDialogCopyParams): ActionDialogCopy => {
     const { kind, review, stepId, comment } = params;
     const step = review.steps.find(item => item.id === stepId);

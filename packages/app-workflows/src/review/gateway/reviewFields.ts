@@ -96,7 +96,7 @@ export const REVIEW_FIELDS = /* GraphQL */ `
     lastChangedOn
 `;
 
-/**
+/*
  * The assignment log of each step (D127), single reads only. Add it with
  * `steps { ${REVIEW_ASSIGNMENT_FIELDS} }` next to `REVIEW_FIELDS`: GraphQL merges the two `steps`
  * selections.
@@ -127,7 +127,7 @@ const VIEWER_FLAGS_FIELDS = /* GraphQL */ `
     canRestart
 `;
 
-/** List-safe: the review and the viewer flags, without the assignment log. */
+// List-safe: the review and the viewer flags, without the assignment log.
 export const REVIEW_WITH_FLAGS_FIELDS = /* GraphQL */ `
     review {
         ${REVIEW_FIELDS}
@@ -137,7 +137,7 @@ export const REVIEW_WITH_FLAGS_FIELDS = /* GraphQL */ `
     }
 `;
 
-/** Single reads (`getTargetReview`, `getReview`): the review with the assignment log, and the flags. */
+// Single reads (`getTargetReview`, `getReview`): the review with the assignment log, and the flags.
 export const REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS = /* GraphQL */ `
     review {
         ${REVIEW_FIELDS}
@@ -171,5 +171,5 @@ export const STEP_CANDIDATE_FIELDS = /* GraphQL */ `
     excludedReason
 `;
 
-/** The `meta.system.workflow` selection on content lists (R213), shared by both apps. */
+// The `meta.system.workflow` selection on content lists (R213), shared by both apps.
 export const REVIEW_SYSTEM_WORKFLOW_SELECTION = "workflowId reviewState stepId stepName stepState";

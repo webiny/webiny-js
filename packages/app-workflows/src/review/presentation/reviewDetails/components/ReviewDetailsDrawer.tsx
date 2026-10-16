@@ -214,7 +214,7 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
     );
 });
 
-/** One presenter per mounted drawer (transient, R212): init on mount, dispose on unmount. */
+// One presenter per mounted drawer (transient, R212): init on mount, dispose on unmount.
 export const ReviewDetailsDrawer = (props: ReviewDetailsDrawerProps) => {
     const { useCases, reviewId, reviewsUrl, onClose, onChanged } = props;
     const { presenter } = useFeature(ReviewDetailsPresenterFeature);

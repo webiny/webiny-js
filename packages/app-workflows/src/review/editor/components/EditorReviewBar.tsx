@@ -12,7 +12,7 @@ export interface EditorReviewBarProps {
     reviewsRoute: Route<any>;
 }
 
-/**
+/*
  * What both app editors mount: the review bar of the session's presenter and, on demand, the
  * Review details drawer. The Content Reviews link of the toasts comes from the app's route (A76).
  */

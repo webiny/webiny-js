@@ -9,7 +9,7 @@ export interface ReviewListEmptyProps {
     onAction: () => void;
 }
 
-/** Empty and failed states share one layout: title, optional description, optional action. */
+// Empty and failed states share one layout: title, optional description, optional action.
 export const ReviewListEmpty = ({
     title,
     description,

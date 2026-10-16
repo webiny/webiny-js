@@ -14,11 +14,14 @@ export interface ReviewDashboardWidgetsProps {
     namespaces: string[];
     rowProvider: IReviewRowProvider;
     viewAllRoute: Route<any>;
-    /** `false` while the app still loads its namespaces: no widget is registered yet, so none starts twice. */
+    /*
+     * `false` while the app still loads its namespaces: no widget is registered yet, so none starts
+     * twice.
+     */
     ready?: boolean;
 }
 
-/** The two dashboard widgets of one app (R231): For me to review, and My requests. */
+// The two dashboard widgets of one app (R231): For me to review, and My requests.
 export const ReviewDashboardWidgets = (props: ReviewDashboardWidgetsProps) => {
     const { prefix, useCases, namespaces, rowProvider, viewAllRoute } = props;
     const router = useRouter();

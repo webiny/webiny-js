@@ -10,7 +10,7 @@ export interface ReviewerPickerProps {
     hint?: string;
 }
 
-/** The reviewer picker over `AutoComplete` (R209): client-side search, disabled people, retry. */
+// The reviewer picker over `AutoComplete` (R209): client-side search, disabled people, retry.
 export const ReviewerPicker = createReactiveComponent(function ReviewerPicker(
     props: ReviewerPickerProps
 ) {

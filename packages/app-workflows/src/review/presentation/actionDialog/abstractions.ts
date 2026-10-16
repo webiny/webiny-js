@@ -6,9 +6,9 @@ export interface ReviewActionDialogInitParams {
     useCases: IReviewUseCases;
     request: ReviewActionRequest;
     reviewsUrl: string | null;
-    /** Content Reviews refreshes its list behind a conflicting action; the message says so (R220). */
+    // Content Reviews refreshes its list behind a conflicting action; the message says so (R220).
     listRefreshed?: boolean;
-    /** Called once after a conflict, so the host can refresh what it shows. */
+    // Called once after a conflict, so the host can refresh what it shows.
     onConflict?: () => void;
     onDone: () => void;
     onClose: () => void;
@@ -20,7 +20,7 @@ export interface ReviewActionConflictVm {
     commentKept: boolean;
 }
 
-/** Render-ready (R234). */
+// Render-ready (R234).
 export interface IReviewActionDialogViewModel {
     status: "loading" | "ready" | "failed";
     title: string;

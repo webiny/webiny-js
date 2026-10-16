@@ -6,7 +6,7 @@ export interface ReviewListNoticeProps {
     onShow: () => void;
 }
 
-/** "New reviews are available." with Show (QBZ-71, QBZ-86). */
+// "New reviews are available." with Show (QBZ-71, QBZ-86).
 export const ReviewListNotice = ({ message, onShow }: ReviewListNoticeProps) => {
     return (
         <div

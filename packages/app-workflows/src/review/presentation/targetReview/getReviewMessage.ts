@@ -18,7 +18,7 @@ export interface ReviewMessageParams {
     flags: ReviewViewerFlags | null;
     isPublished: boolean;
     isUnpublished: boolean;
-    /** The ids of the viewer's own teams (`Identity.teams`), for the QBZ-25 wording (R232, R247). */
+    // The ids of the viewer's own teams (`Identity.teams`), for the QBZ-25 wording (R232, R247).
     viewerTeamIds: string[];
 }
 
@@ -47,7 +47,7 @@ const LOCK_APPROVED =
 const LOCK_REJECTED =
     "This revision is locked for good. Create a new revision to fix it, then request a new review.";
 
-/**
+/*
  * The viewer's own teams among the step's candidate teams joined with " and " (QBZ-25); a viewer
  * outside them gets every candidate team joined with ", " (R232).
  */
@@ -91,7 +91,7 @@ const getInProgressMessage = (
     return { message: `${ownerLabel} is reviewing`, lockText: LOCK_IN_REVIEW };
 };
 
-/**
+/*
  * The bar's message and lock text (README 6, R225, R226, R232). Pure. A running or failed step
  * reads like an in-review step here (R203, 8b adds their own messages).
  */

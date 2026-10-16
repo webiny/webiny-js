@@ -5,7 +5,7 @@ export interface ReviewToastText {
     description: string | null;
 }
 
-/**
+/*
  * The own-action toast texts (QBZ-93; Start per QBZ-82). Pure. The params are typed per kind, so
  * every text has what it needs. "Restarted" is 8b and has no kind.
  */

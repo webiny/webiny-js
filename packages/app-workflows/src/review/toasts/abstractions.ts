@@ -10,18 +10,21 @@ export type ReviewToastKind =
     | "cancelled";
 
 interface ReviewToastBase {
-    /** The Content Reviews URL for the "Open Content Reviews" link; `null` on Content Reviews itself. */
+    /*
+     * The Content Reviews URL for the "Open Content Reviews" link; `null` on Content Reviews
+     * itself.
+     */
     reviewsUrl: string | null;
 }
 
-/** `requested` (the first step of the workflow), `started` and `rejected` name one step. */
+// `requested` (the first step of the workflow), `started` and `rejected` name one step.
 export interface StepReviewToastParams extends ReviewToastBase {
     kind: "requested" | "started" | "rejected";
     stepTitle: string;
     personName: null;
 }
 
-/** `approved` names the step and the step that is next, `null` when it was the last step. */
+// `approved` names the step and the step that is next, `null` when it was the last step.
 export interface ApprovedReviewToastParams extends ReviewToastBase {
     kind: "approved";
     stepTitle: string;
@@ -29,14 +32,14 @@ export interface ApprovedReviewToastParams extends ReviewToastBase {
     nextStepTitle: string | null;
 }
 
-/** `tookOver` names the person notified, `null` when notify was not ticked. */
+// `tookOver` names the person notified, `null` when notify was not ticked.
 export interface TookOverReviewToastParams extends ReviewToastBase {
     kind: "tookOver";
     stepTitle: string;
     personName: string | null;
 }
 
-/** `reassigned` always names the new owner. */
+// `reassigned` always names the new owner.
 export interface ReassignedReviewToastParams extends ReviewToastBase {
     kind: "reassigned";
     stepTitle: string;

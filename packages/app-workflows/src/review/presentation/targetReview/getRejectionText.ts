@@ -2,7 +2,7 @@ import type { ReviewStep } from "~/review/domain/types.js";
 
 const COMMENT_LIMIT = 80;
 
-/**
+/*
  * "Rejected at {step}: “{comment}”", the comment cut to 80 characters (QBZ-64); without a comment
  * "Rejected at {step}." and never a "by" (R216, QBZ-83 as ruled).
  */

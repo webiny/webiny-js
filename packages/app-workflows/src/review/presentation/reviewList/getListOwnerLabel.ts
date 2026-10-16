@@ -1,6 +1,6 @@
 import type { ReviewActor } from "~/review/domain/types.js";
 
-/**
+/*
  * A person is named; an AI or automation owner shows the step title, never the model or
  * automation behind it (QBZ-79).
  */

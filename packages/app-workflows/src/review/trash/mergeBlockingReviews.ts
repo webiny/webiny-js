@@ -1,7 +1,7 @@
 import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
 import type { BlockingReview } from "~/review/domain/types.js";
 
-/**
+/*
  * Every review of the collected refusals, once by `reviewId`, in order. Pure.
  */
 export const mergeBlockingReviews = (collected: ActiveReviewOnTrashData[]): BlockingReview[] => {

@@ -2,7 +2,7 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 
-/** The bar while the review status loads (QBZ-1): a tile, two lines and the loading text. */
+// The bar while the review status loads (QBZ-1): a tile, two lines and the loading text.
 export const ReviewBarSkeleton = () => {
     return (
         <div

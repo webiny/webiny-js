@@ -3,7 +3,7 @@ import { ReviewState } from "~/review/domain/ReviewState.js";
 import type { TargetReviewKind } from "./abstractions.js";
 import type { TargetReviewStatus } from "./abstractions.js";
 
-/**
+/*
  * The review's kind for the editor rules, tags and app glue (they switch on `status` and
  * `reviewKind`, never on label text). Everything that is not an active review is "none";
  * a cancelled review is "none" (D75). Pure.

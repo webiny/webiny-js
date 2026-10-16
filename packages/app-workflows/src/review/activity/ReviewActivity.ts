@@ -7,7 +7,7 @@ interface ReviewActivitySubscription {
     listener: ReviewActivityListener;
 }
 
-/**
+/*
  * The live-update bus (R210). Own actions and incoming notifications signal it; list and widget
  * presenters subscribe to their namespaces and refetch. No polling, no stored state.
  */
@@ -25,7 +25,7 @@ class ReviewActivityImpl implements Abstraction.Interface {
         };
     }
 
-    /**
+    /*
      * Delivery iterates a snapshot of the subscriptions taken when `notify` starts: a listener
      * added during delivery only sees later signals, one removed during delivery may still
      * receive the current signal.

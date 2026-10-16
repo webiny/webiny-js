@@ -32,13 +32,13 @@ import { isBeyondRefetchWindow } from "./isBeyondRefetchWindow.js";
 import { prefersReducedMotion } from "./prefersReducedMotion.js";
 import { resolveRowBinding } from "./resolveRowBinding.js";
 
-/** The search input applies its draft after this long without typing. */
+// The search input applies its draft after this long without typing.
 const SEARCH_DEBOUNCE_MS = 300;
 
 const NEW_REVIEWS_NOTICE = "New reviews are available.";
 const LOAD_FAILED_MESSAGE = "The server did not respond. Try again in a moment.";
 
-/** The server caps a list page at 100 rows (`MAX_REVIEW_LIST_LIMIT`). */
+// The server caps a list page at 100 rows (`MAX_REVIEW_LIST_LIMIT`).
 const MAX_REFRESH_LIMIT = 100;
 
 interface ReviewListEntry {

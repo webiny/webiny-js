@@ -63,7 +63,7 @@ const ReviewWidgetRow = ({ row }: ReviewWidgetRowProps) => {
     );
 };
 
-/** The shared card of both widgets: title, optional segment, rows or a state, "View all →". */
+// The shared card of both widgets: title, optional segment, rows or a state, "View all →".
 export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCardProps) => {
     const { kind, title, useCases, namespaces, rowProvider, viewAllUrl } = props;
     const { presenter } = useFeature(ReviewWidgetPresenterFeature);

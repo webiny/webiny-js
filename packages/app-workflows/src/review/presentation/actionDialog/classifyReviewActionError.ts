@@ -19,7 +19,7 @@ const CONFLICT_CODES: string[] = [
     ReviewErrorCode.AlreadyActive
 ];
 
-/** R220: how a failed review action maps to dialog behaviour, by error code. Pure. */
+// R220: how a failed review action maps to dialog behaviour, by error code. Pure.
 export const classifyReviewActionError = (error: unknown): ReviewActionErrorKind => {
     if (!(error instanceof GraphQLOperationError) || error.code === null) {
         return "generic";

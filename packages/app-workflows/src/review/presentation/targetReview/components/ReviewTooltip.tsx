@@ -6,7 +6,7 @@ import type { TargetReviewPresenter } from "../abstractions.js";
 
 export interface ReviewTooltipProps {
     presenter: TargetReviewPresenter.Interface;
-    /**
+    /*
      * Renders the disabled control. The control itself must carry the `aria-describedby` it is
      * given (undefined when there is no reason), so a screen reader reads the reason from the
      * control and not from a wrapper (QBZ-36).
@@ -14,7 +14,7 @@ export interface ReviewTooltipProps {
     children: (describedBy: string | undefined) => React.ReactNode;
 }
 
-/**
+/*
  * Gives a disabled app control (Publish) its reason on hover and focus (QBZ-36), and describes it
  * through a visually hidden element that is always present while a reason exists. The control
  * stays `aria-disabled` and focusable; the app renders it.

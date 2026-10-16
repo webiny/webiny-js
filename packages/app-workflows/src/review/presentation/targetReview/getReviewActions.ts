@@ -2,14 +2,14 @@ import type { ReviewViewerFlags } from "~/review/domain/types.js";
 import type { TargetReviewActionVm } from "./abstractions.js";
 
 export interface ReviewActionsParams {
-    /** `null` when there is no active review. */
+    // `null` when there is no active review.
     flags: ReviewViewerFlags | null;
-    /** The current step of the review; `null` for Request review. */
+    // The current step of the review; `null` for Request review.
     stepId: string | null;
     canRequest: boolean;
 }
 
-/**
+/*
  * The actions of the bar and the drawer footer: README 6 labels and icons, ordered ghost,
  * tertiary, secondary, primary. Only server flags decide what is offered (D5, D54); Restart is 8b.
  */

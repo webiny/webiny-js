@@ -22,7 +22,7 @@ export interface FakeReviewUseCases extends IReviewUseCases {
     cancelForDelete: Mock<IReviewUseCases["cancelForDelete"]>;
 }
 
-/**
+/*
  * Fake use cases with sensible defaults: the namespace has a workflow, the revision has no review,
  * every action resolves the default review, the list is empty and nothing is cancelled for delete
  * (all fourteen methods of `IReviewUseCases`). Tests override single methods with `mockResolvedValue`

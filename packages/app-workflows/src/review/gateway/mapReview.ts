@@ -86,7 +86,7 @@ const mapStep = (dto: ReviewStepDto): ReviewStep => {
     };
 };
 
-/**
+/*
  * Maps a `WorkflowsReview` to the domain `Review`: `model` becomes `namespace`,
  * `workflow.name` becomes `workflowName`. Pure.
  */

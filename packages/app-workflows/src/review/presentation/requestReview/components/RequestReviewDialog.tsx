@@ -181,7 +181,7 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
     );
 });
 
-/** One presenter per mounted dialog (transient, R212): init on mount, dispose on unmount. */
+// One presenter per mounted dialog (transient, R212): init on mount, dispose on unmount.
 export const RequestReviewDialog = (props: RequestReviewDialogProps) => {
     const { useCases, target, targetTitle, reviewsUrl, onConflict, onDone, onClose } = props;
     const { presenter } = useFeature(RequestReviewPresenterFeature);

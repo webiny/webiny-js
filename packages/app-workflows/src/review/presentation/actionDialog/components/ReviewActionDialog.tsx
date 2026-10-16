@@ -11,7 +11,7 @@ export interface ReviewActionDialogProps {
     presenter: ReviewActionDialogPresenter.Interface;
 }
 
-/** One dialog for the five step actions, driven entirely by the presenter's view model. */
+// One dialog for the five step actions, driven entirely by the presenter's view model.
 export const ReviewActionDialog = createReactiveComponent(function ReviewActionDialog(
     props: ReviewActionDialogProps
 ) {

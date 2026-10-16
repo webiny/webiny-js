@@ -1,4 +1,4 @@
-/**
+/*
  * Name of the named dialog (`AdminConfig.Dialog`) that warns about the review in progress when a
  * trash or delete is refused by the server (R205, D157).
  */

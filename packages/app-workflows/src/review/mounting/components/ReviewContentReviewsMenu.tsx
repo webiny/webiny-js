@@ -10,7 +10,7 @@ export interface ReviewContentReviewsMenuProps {
     parent?: string;
 }
 
-/** The "Content Reviews" menu item of one app; `parent` nests it under that app's menu group. */
+// The "Content Reviews" menu item of one app; `parent` nests it under that app's menu group.
 export const ReviewContentReviewsMenu = ({
     name,
     route,

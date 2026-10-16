@@ -20,7 +20,10 @@ export interface ReviewContentReviewsRouteProps {
     showContentType: boolean;
     contentTypeFilter: IReviewContentTypeFilter | null;
     breadcrumbName: string;
-    /** `false` while the app still loads what the list needs (the CMS model list); a loader shows instead of the list. */
+    /*
+     * `false` while the app still loads what the list needs (the CMS model list); a loader shows
+     * instead of the list.
+     */
     ready?: boolean;
 }
 
@@ -58,7 +61,7 @@ const ReviewContentReviewsPage = (props: ReviewContentReviewsRouteProps) => {
     );
 };
 
-/** One Content Reviews route per app over the shared list view (R206). */
+// One Content Reviews route per app over the shared list view (R206).
 export const ReviewContentReviewsRoute = (props: ReviewContentReviewsRouteProps) => {
     return (
         <AdminConfig>

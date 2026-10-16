@@ -8,10 +8,10 @@ import type { ReviewActionKind } from "./ReviewActionKind.js";
 export interface ConflictMessageParams {
     kind: ReviewActionKind;
     stepId: string | null;
-    /** The review re-read after the conflict; `null` when the re-read failed. */
+    // The review re-read after the conflict; `null` when the re-read failed.
     review: Review | null;
     now: Date;
-    /** Content Reviews refreshes its list behind a conflicting action (R220, QBZ-31). */
+    // Content Reviews refreshes its list behind a conflicting action (R220, QBZ-31).
     listRefreshed: boolean;
 }
 
@@ -23,7 +23,7 @@ export interface ConflictMessage {
 const TITLE = "Someone else acted first";
 const LIST_REFRESHED = "The list has been refreshed.";
 
-/** `{action}` of QBZ-2: the user's action as a noun. */
+// `{action}` of QBZ-2: the user's action as a noun.
 const ACTION_NOUNS: Record<ReviewActionKind, string> = {
     start: "start",
     takeOver: "take-over",
@@ -33,7 +33,7 @@ const ACTION_NOUNS: Record<ReviewActionKind, string> = {
     cancel: "cancellation"
 };
 
-/**
+/*
  * One message per cause (QBZ-2), read from the re-read review. Pure. The time is the review's
  * `lastChangedOn`; a review that cannot be re-read gets a generic text.
  */

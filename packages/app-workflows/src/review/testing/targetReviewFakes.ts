@@ -68,7 +68,7 @@ export interface FakeTargetReviewPresenter extends TargetReviewPresenter.Interfa
     dispose: Mock<TargetReviewPresenter.Interface["dispose"]>;
 }
 
-/** A presenter that exposes a fixed view model and records every command. */
+// A presenter that exposes a fixed view model and records every command.
 export const createFakePresenter = (
     vm: TargetReviewPresenter.ViewModel = createViewModel()
 ): FakeTargetReviewPresenter => {

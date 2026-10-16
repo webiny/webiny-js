@@ -58,7 +58,7 @@ const getTile = (input: TargetReviewViewModelInput): TargetReviewTile => {
     return "rate_review";
 };
 
-/**
+/*
  * Builds the render-ready view model of the bar from the presenter's private state (R234). Pure:
  * every rule lives in the small functions it calls, so the presenter only holds state.
  */

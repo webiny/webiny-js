@@ -1,4 +1,4 @@
-/**
+/*
  * The one sentence for "the viewer may not read this review" (QBZ-59), shared by the bar, the
  * action dialogs and the details drawer.
  */

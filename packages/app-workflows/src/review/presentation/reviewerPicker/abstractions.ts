@@ -13,7 +13,7 @@ export interface ReviewerPickerOptionVm {
     disabled: boolean;
 }
 
-/** Render-ready (R234). `eligibleCount` counts selectable people, ignoring the search. */
+// Render-ready (R234). `eligibleCount` counts selectable people, ignoring the search.
 export interface IReviewerPickerViewModel {
     options: ReviewerPickerOptionVm[];
     value: string | null;

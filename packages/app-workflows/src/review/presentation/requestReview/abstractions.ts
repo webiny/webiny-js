@@ -8,7 +8,7 @@ export interface RequestReviewInitParams {
     target: ReviewTarget;
     targetTitle: string;
     reviewsUrl: string | null;
-    /** Called once after a conflict, so the host can refresh what it shows. */
+    // Called once after a conflict, so the host can refresh what it shows.
     onConflict?: () => void;
     onDone: () => void;
     onClose: () => void;
@@ -35,7 +35,7 @@ export interface RequestReviewConflictVm {
     message: string;
 }
 
-/** Render-ready (R234): the pickers are reached through `getPickerPresenter`, not the view model. */
+// Render-ready (R234): the pickers are reached through `getPickerPresenter`, not the view model.
 export interface IRequestReviewViewModel {
     status: "loadingSteps" | "stepsFailed" | "ready" | "submitting";
     title: string;

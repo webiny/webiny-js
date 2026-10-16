@@ -176,7 +176,7 @@ export interface ActiveReviewOnTrashData {
     reviews: BlockingReview[];
 }
 
-/**
+/*
  * One row of a review list, app-neutral (R206). Private state of `ReviewListPresenter`, never a
  * view model (R234).
  */
@@ -202,7 +202,7 @@ export interface ReviewListMeta {
     hasMoreItems: boolean;
 }
 
-/** `meta.system.workflow` of a target revision in the shape the lists select (R213). */
+// `meta.system.workflow` of a target revision in the shape the lists select (R213).
 export interface SystemWorkflowValue {
     workflowId: string;
     reviewState: ReviewStateValue;

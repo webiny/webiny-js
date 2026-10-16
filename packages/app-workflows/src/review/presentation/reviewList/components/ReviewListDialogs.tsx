@@ -11,7 +11,7 @@ export interface ReviewListDialogsProps {
     rowProvider: IReviewRowProvider;
 }
 
-/**
+/*
  * Mounts the row action dialog or the details drawer the presenter asks for, on the use cases of
  * the row's namespace. The list passes no `reviewsUrl`: it is Content Reviews itself (R214).
  */

@@ -3,7 +3,7 @@ import type { IReviewRowBinding } from "~/review/presentation/reviewList/abstrac
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 
-/**
+/*
  * Binds the shared list to one app: its use cases and its content adapter. Exported as a plain
  * class on purpose; each app subclasses it in its own file and binds the subclass with
  * `createImplementation`, so two apps never share one class's metadata.

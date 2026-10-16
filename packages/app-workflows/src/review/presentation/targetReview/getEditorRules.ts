@@ -5,7 +5,7 @@ import type { TargetReviewStatus } from "./abstractions.js";
 export interface EditorRulesParams {
     status: TargetReviewStatus;
     reviewKind: TargetReviewKind;
-    /** The revision was published before and is not published now (R226, Q19). */
+    // The revision was published before and is not published now (R226, Q19).
     isUnpublished: boolean;
 }
 
@@ -22,7 +22,7 @@ const NEEDS_REVIEW = "Publishing needs an approved review. Request a review firs
 const REJECTED = "This revision was rejected. Create a new revision, then request a new review.";
 const IN_REVIEW = "This revision is in review. Publishing is allowed once every step approves.";
 
-/**
+/*
  * Who may edit, publish and move (R226, D79, D80, D85, D121). Unknown status locks everything
  * (QBZ-1); no active review (including a cancelled one) unlocks editing (D75). A revision with no
  * review that was published before and is unpublished now may publish again (Q19: it was reviewed

@@ -8,7 +8,7 @@ import type { HandleReviewNotificationParams } from "./abstractions.js";
 
 const OPEN_CONTENT_LABEL = "Open content";
 
-/**
+/*
  * Turns one incoming `workflows.notification` message into a toast and a refetch signal (R223,
  * R210). It knows no app: the caller passes the content URL.
  */

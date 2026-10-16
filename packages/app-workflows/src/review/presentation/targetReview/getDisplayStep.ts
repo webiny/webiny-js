@@ -9,7 +9,7 @@ export interface DisplayStep {
     total: number;
 }
 
-/**
+/*
  * The step the bar describes: the current step; for a finished review the rejecting step or the
  * last step (QBZ-52, QBZ-70).
  */

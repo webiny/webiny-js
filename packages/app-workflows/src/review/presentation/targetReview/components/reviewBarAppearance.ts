@@ -39,7 +39,7 @@ export const REVIEW_TILE_ICONS: Record<TargetReviewTile, SvgComponent> = {
     cancel: CancelIcon
 };
 
-/** README 6: the 32px state tile colours. */
+// README 6: the 32px state tile colours.
 export const REVIEW_TILE_CLASSES: Record<TargetReviewTile, string> = {
     rule: "bg-neutral-dimmed",
     rate_review: "bg-primary-subtle",
@@ -49,7 +49,7 @@ export const REVIEW_TILE_CLASSES: Record<TargetReviewTile, string> = {
     cancel: "bg-destructive-subtle"
 };
 
-/** README 11: progress segment fills. */
+// README 11: progress segment fills.
 export const REVIEW_SEGMENT_CLASSES: Record<StepStateValue, string> = {
     [StepState.Pending]: "bg-neutral-muted",
     [StepState.Awaiting]: "bg-warning",

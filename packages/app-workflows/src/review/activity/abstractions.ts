@@ -10,7 +10,7 @@ export interface ReviewActivitySignal {
 export type ReviewActivityListener = (signal: ReviewActivitySignal) => void;
 
 export interface IReviewActivity {
-    /** Returns an idempotent unsubscribe. A listener only receives the signals of its namespaces. */
+    // Returns an idempotent unsubscribe. A listener only receives the signals of its namespaces.
     subscribe(namespaces: string[], listener: ReviewActivityListener): () => void;
     notify(signal: ReviewActivitySignal): void;
 }

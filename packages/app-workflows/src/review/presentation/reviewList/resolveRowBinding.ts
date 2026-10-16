@@ -9,7 +9,7 @@ export interface ResolvedRowBinding {
     contentTypeLabel: string | null;
 }
 
-/**
+/*
  * The app binding of a row and what it gives the row: the content URL and the content type label.
  * An unbound namespace (or no provider) gives nothing, so its row has no link and no actions (R206).
  * Shared by the list and the widget presenters.

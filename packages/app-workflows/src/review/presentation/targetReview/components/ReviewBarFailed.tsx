@@ -7,7 +7,7 @@ export interface ReviewBarFailedProps {
     presenter: TargetReviewPresenter.Interface;
 }
 
-/**
+/*
  * A failed load (QBZ-1): the title, the lock text and Try again. A read without access (R225) is a
  * plain message with no retry.
  */

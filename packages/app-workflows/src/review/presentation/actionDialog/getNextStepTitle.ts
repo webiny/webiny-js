@@ -1,7 +1,7 @@
 import type { Review } from "~/review/domain/types.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 
-/**
+/*
  * The title of the step that is next after an approval, from the review the approval returned:
  * its current step, or `null` when that was the last step (QBZ-93: "Next: {step}." or "All steps
  * approved."). Pure.

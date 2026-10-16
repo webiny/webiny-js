@@ -8,15 +8,15 @@ export interface ReviewActionDialogsProps {
     useCases: IReviewUseCases;
     request: ReviewActionRequest | null;
     reviewsUrl: string | null;
-    /** Set by Content Reviews, which refreshes its list behind a conflicting Start (QBZ-31). */
+    // Set by Content Reviews, which refreshes its list behind a conflicting Start (QBZ-31).
     listRefreshed?: boolean;
-    /** Called once after a conflict; the host refreshes what it shows. */
+    // Called once after a conflict; the host refreshes what it shows.
     onConflict?: () => void;
     onDone: () => void;
     onClose: () => void;
 }
 
-/** Mounts the dialog of the requested action; nothing without a request. */
+// Mounts the dialog of the requested action; nothing without a request.
 export const ReviewActionDialogs = (props: ReviewActionDialogsProps) => {
     const { request } = props;
     if (request === null) {

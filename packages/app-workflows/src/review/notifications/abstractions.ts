@@ -10,7 +10,7 @@ export type WorkflowsNotificationEvent =
     | "failed"
     | "cancelled";
 
-/** The data of a `workflows.notification` websocket message (phase 7 contract, R187). */
+// The data of a `workflows.notification` websocket message (phase 7 contract, R187).
 export interface WorkflowsNotificationData {
     event: WorkflowsNotificationEvent;
     reviewId: string;
@@ -24,7 +24,7 @@ export interface WorkflowsNotificationData {
 
 export interface HandleReviewNotificationParams {
     data: WorkflowsNotificationData;
-    /** The content URL for the "Open content" link; `null` when the app cannot build one. */
+    // The content URL for the "Open content" link; `null` when the app cannot build one.
     url: string | null;
 }
 

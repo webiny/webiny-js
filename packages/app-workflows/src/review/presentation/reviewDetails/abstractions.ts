@@ -11,7 +11,7 @@ export interface ReviewDetailsInitParams {
     reviewId: string;
     reviewsUrl: string | null;
     onClose: () => void;
-    /** Called after an action in the drawer changed the review (the editor refreshes its bar). */
+    // Called after an action in the drawer changed the review (the editor refreshes its bar).
     onChanged?: () => void;
 }
 
@@ -22,7 +22,7 @@ export interface ReviewDetailsHeaderVm {
     contentLine: string;
     requesterLine: string;
     requestedLine: string;
-    /** The full date and time with timezone, shown on hover (QBZ-54). */
+    // The full date and time with timezone, shown on hover (QBZ-54).
     requestedTitle: string;
 }
 
@@ -43,7 +43,7 @@ export interface ReviewDetailsStepVm {
     ownerLine: string | null;
     whyOwner: string | null;
     times: string | null;
-    /** The full date and time of each event with timezone, shown on hover (QBZ-54). */
+    // The full date and time of each event with timezone, shown on hover (QBZ-54).
     timesTitle: string | null;
     comment: string | null;
     skipped: ReviewDetailsSkippedVm[] | null;
@@ -51,7 +51,7 @@ export interface ReviewDetailsStepVm {
 
 export type ReviewDetailsStatus = "loading" | "failed" | "loaded";
 
-/** Render-ready (R234): no review, step or presenter object. */
+// Render-ready (R234): no review, step or presenter object.
 export interface IReviewDetailsViewModel {
     status: ReviewDetailsStatus;
     header: ReviewDetailsHeaderVm | null;

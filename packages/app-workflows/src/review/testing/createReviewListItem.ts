@@ -28,7 +28,10 @@ export interface ReviewListItemOverrides {
     flags?: Partial<ReviewViewerFlags>;
 }
 
-/** One review with one current step, built from the shared fixtures, as the list endpoints return it. */
+/*
+ * One review with one current step, built from the shared fixtures, as the list endpoints return
+ * it.
+ */
 export const createReviewListItem = (overrides: ReviewListItemOverrides = {}): ReviewWithFlags => {
     const id = overrides.id ?? "review-1";
     const stepId = overrides.stepId ?? "step-1";

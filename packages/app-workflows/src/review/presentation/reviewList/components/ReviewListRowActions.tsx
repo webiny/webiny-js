@@ -13,7 +13,7 @@ export interface ReviewListRowActionsProps {
     presenter: ReviewListPresenter.Interface;
 }
 
-/**
+/*
  * Start and Take over are buttons in the row, the other actions and Review details sit in the menu.
  * A row without a binding (no content URL) has neither (R206).
  */

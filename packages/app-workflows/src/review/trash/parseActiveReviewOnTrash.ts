@@ -41,7 +41,7 @@ function isActiveReviewOnTrashData(value: unknown): value is ActiveReviewOnTrash
     return value.reviews.every(isBlockingReview);
 }
 
-/**
+/*
  * Returns the data of the server refusal `Workflows/Review/ActiveReviewOnTrash`, or `null` for any
  * other error, any other code and malformed data (R205: those are rethrown unchanged). Pure.
  */

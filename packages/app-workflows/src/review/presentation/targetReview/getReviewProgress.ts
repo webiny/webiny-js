@@ -4,7 +4,7 @@ import type { TargetReviewProgressVm } from "./abstractions.js";
 import type { TargetReviewSegmentVm } from "./abstractions.js";
 import { getStepOwnerLabel } from "./getStepOwnerLabel.js";
 
-/** "n of N steps approved" and the segments of the popover (README 6). */
+// "n of N steps approved" and the segments of the popover (README 6).
 export const getReviewProgress = (review: Review): TargetReviewProgressVm => {
     const segments: TargetReviewSegmentVm[] = review.steps.map(step => {
         return {

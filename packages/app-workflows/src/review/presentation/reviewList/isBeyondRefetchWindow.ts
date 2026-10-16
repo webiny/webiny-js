@@ -1,7 +1,7 @@
 import type { ReviewListSort } from "~/review/domain/ReviewListSort.js";
 import type { ReviewListRow } from "~/review/domain/types.js";
 
-/**
+/*
  * Whether a row sorts after the last row a refetch returned. When the server says it has more,
  * such a row is not gone, the window just did not reach it. Equal timestamps count as beyond (the
  * row stays rather than fading by mistake). Without a last row (an empty page that still has more)

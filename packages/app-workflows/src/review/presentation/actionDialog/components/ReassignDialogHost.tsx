@@ -16,7 +16,7 @@ export interface ReassignDialogHostProps {
     onClose: () => void;
 }
 
-/** One presenter, with its private picker, per mounted dialog (transient, R212). */
+// One presenter, with its private picker, per mounted dialog (transient, R212).
 export const ReassignDialogHost = (props: ReassignDialogHostProps) => {
     const { useCases, request, reviewsUrl, listRefreshed, onConflict, onDone, onClose } = props;
     const { presenter } = useFeature(ReassignDialogPresenterFeature);

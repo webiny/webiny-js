@@ -2,7 +2,7 @@ import { StepState } from "~/review/domain/StepState.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
 import type { TargetReviewTag } from "./abstractions.js";
 
-/**
+/*
  * The six step states, each visibly distinct (README 1, UI-13). Only `failed` is red (R239, Q24);
  * a rejected step is the dark neutral tag.
  */

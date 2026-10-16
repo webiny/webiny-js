@@ -6,7 +6,7 @@ export interface ReviewCacheRef {
     targetRevisionId: string;
 }
 
-/** Writes `meta.system.workflow` into an app's content list cache (R213). */
+// Writes `meta.system.workflow` into an app's content list cache (R213).
 export interface IReviewCacheWriter {
     canHandle(namespace: string): boolean;
     write(ref: ReviewCacheRef, workflow: SystemWorkflowValue | null): void;
