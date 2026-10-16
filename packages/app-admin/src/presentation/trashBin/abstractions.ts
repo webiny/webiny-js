@@ -120,7 +120,7 @@ export interface ITrashBinViewModel {
 
 export interface ITrashBinActions extends IListActions {
     restoreItem(id: string): Promise<void>;
-    /**
+    /*
      * Resolves false when the delete was not carried out (the item stays listed).
      */
     deleteItem(id: string): Promise<boolean>;
