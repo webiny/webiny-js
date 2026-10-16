@@ -13,6 +13,7 @@ import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/in
 import { NoopGetTask } from "../__helpers/NoopGetTask.js";
 import { FakeTaskService } from "../__helpers/FakeTaskService.js";
 import { MailerService } from "@webiny/api-mailer";
+import { SendMailFeature } from "@webiny/api-mailer/features/SendMail/feature.js";
 import {
     WebsocketsListConnectionsUseCase,
     WebsocketsSendToConnectionsUseCase
@@ -45,6 +46,7 @@ export const createContextHandler = (
             // The review notification handlers (api-workflows) need a mailer and the websocket use
             // cases; this context has no request stack. Inert, so nothing is sent.
             container.registerInstance(MailerService, new InertMailer());
+            SendMailFeature.register(container);
             container.registerInstance(
                 WebsocketsListConnectionsUseCase,
                 new InertWebsocketConnections()

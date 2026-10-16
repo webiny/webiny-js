@@ -13,6 +13,7 @@ import { NoopInvalidateAssetCacheTaskDefinition } from "./NoopInvalidateAssetCac
 import { registerNoAcoFolders } from "./NoAcoFolders.js";
 import { createArticleModelPlugins } from "./cmsModel.js";
 import { MailerService } from "@webiny/api-mailer";
+import { SendMailFeature } from "@webiny/api-mailer/features/SendMail/feature.js";
 import {
     WebsocketsListConnectionsUseCase,
     WebsocketsSendToConnectionsUseCase
@@ -51,6 +52,7 @@ export const createContextHandler = (params: CmsTestHandlerParams = {}) => {
             // The review notification handlers (api-workflows) need a mailer and the websocket use
             // cases; this context has no request stack. Inert, so nothing is sent.
             container.registerInstance(MailerService, new InertMailer());
+            SendMailFeature.register(container);
             container.registerInstance(
                 WebsocketsListConnectionsUseCase,
                 new InertWebsocketConnections()
