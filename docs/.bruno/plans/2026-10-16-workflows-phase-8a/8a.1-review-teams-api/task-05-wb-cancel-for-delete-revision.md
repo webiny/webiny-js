@@ -90,7 +90,6 @@ and add these tests inside `describe("WB cancel-for-delete wrapper (D134)", ...)
                 "cancelled"
             );
             expect(expectOk(await getReview.execute({ id: review.id })).state).toBe("inProgress");
-            expect(page.id).not.toBe(second.id);
         });
 
         it("cancels every revision's review when the revision id is omitted, as before", async () => {
@@ -172,7 +171,12 @@ and add these tests inside `describe("WB cancel-for-delete wrapper (D134)", ...)
     });
 ```
 
-`packages/api-website-builder-workflows/__tests__/graphql/pageReviews.test.ts`, add imports (`CreatePageRevisionFromUseCase` from `@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/index.js`; `expectOk` is added to the existing `~tests/__helpers/pages.js` import, which is `import { createPage } from "~tests/__helpers/pages.js";` today) and these tests inside `describe("WB review operations through GraphQL", ...)`, after the last test:
+`packages/api-website-builder-workflows/__tests__/graphql/pageReviews.test.ts`, add these imports (`expectOk` joins the existing `import { createPage } from "~tests/__helpers/pages.js";`, which becomes `import { createPage, expectOk } from "~tests/__helpers/pages.js";`) and these tests inside `describe("WB review operations through GraphQL", ...)`, after the last test:
+
+```ts
+import { CreatePageRevisionFromUseCase } from "@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/index.js";
+import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
+```
 
 ```ts
     it("cancels only the given revision's review when revisionId is given (R235)", async () => {
@@ -223,7 +227,7 @@ and add these tests inside `describe("WB cancel-for-delete wrapper (D134)", ...)
         const { page } = await createScenario();
         const deleter = asGraphQLUser({ identity: REQUESTER, permissions: WB_DELETER });
 
-        for (const revisionId of ["", "#0001", "abc", "abc#x", "abc#0"]) {
+        for (const revisionId of MALFORMED_REVISION_IDS) {
             const body = await deleter.run(CANCEL_REVIEWS_FOR_DELETE, {
                 pageId: page.entryId,
                 revisionId,
@@ -299,7 +303,7 @@ and the engine call:
         });
 ```
 
-`packages/api-website-builder-workflows/src/graphql/WebsiteBuilderWorkflowsSchemaFactory.ts`, the args interface:
+`packages/api-website-builder-workflows/src/graphql/WebsiteBuilderWorkflowsSchemaFactory.ts`. Each of the three blocks below **replaces** the existing one: the args interface `CancelWebsiteBuilderPageReviewsForDeleteArgs` (about line 49), the typeDef description and field (the `"Cancels every in-progress review of the page ..."` line and the `cancelWebsiteBuilderPageReviewsForDelete(...)` field in `extend type WbMutation`, about line 186), and the whole resolver `WbMutation.cancelWebsiteBuilderPageReviewsForDelete` including its `// By page id, every revision: no revision id to validate (D134).` comment (about line 469). The args interface:
 
 ```ts
 interface CancelWebsiteBuilderPageReviewsForDeleteArgs {
@@ -320,7 +324,7 @@ the typeDef:
         ): WbPageReviewArrayResponse!
 ```
 
-and the resolver:
+and the resolver (replacing the existing one, comment included):
 
 ```ts
         builder.addResolver<CancelWebsiteBuilderPageReviewsForDeleteArgs>({
@@ -371,13 +375,11 @@ Expected: PASS.
 
 ```bash
 yarn test packages/api-website-builder-workflows/__tests__/target/WbPageTrashAndDelete.test.ts 2>&1 | tail -50
-yarn test packages/api-website-builder-workflows/__tests__/target/WbPageRevisionDelete.test.ts 2>&1 | tail -50
-yarn test packages/api-website-builder-workflows/__tests__/graphql/pageRevisionDelete.test.ts 2>&1 | tail -50
 yarn test packages/api-website-builder-workflows/__tests__/registration.test.ts 2>&1 | tail -50
 yarn check:test:types -p api-website-builder-workflows --report cli 2>&1 | tail -40
 ```
 
-Expected: all PASS, no type errors. The Task 4 GraphQL test uses the page-wide cancel and stays green with the new optional argument.
+Expected: all PASS, no type errors. When Task 4 exists, also run `yarn test packages/api-website-builder-workflows/__tests__/target/WbPageRevisionDelete.test.ts` and `yarn test packages/api-website-builder-workflows/__tests__/graphql/pageRevisionDelete.test.ts` (the latter uses the page-wide cancel and stays green with the new optional argument); Task 5 itself does not depend on Task 4.
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -396,7 +398,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/api-website-builder-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(api-website-builder-workflows): cancel the reviews of one page revision before a delete" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(api-website-builder-workflows): cancel the reviews of one page revision before a delete" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
@@ -406,5 +408,4 @@ If a pre-commit step fails and you fix anything, rerun the chain from the start.
 - **Unverified code.** Written as a mirror of the working CMS wrapper and resolver; **not run** when this plan was written (prototyping in the source tree was not allowed). The implementer runs the tests in Steps 2 and 4. The GraphQL tests need Tasks 3 and 4 only for the existing-test regression run in Step 5; Task 5 itself is independent of them (the contract says so), and Task 5's own tests create revisions with `CreatePageRevisionFromUseCase`, which exists today.
 - The contract said the wrapper test helper path is `__tests__/wrappers/cancelReviewsForDelete.test.ts` and the GraphQL case goes in `__tests__/graphql/pageReviews.test.ts`; both are modified as required. The shared document `CANCEL_REVIEWS_FOR_DELETE` lives in `__tests__/__helpers/graphql.ts` (not in the test file), so that file is modified too; the existing callers send no `revisionId` and keep working.
 - The contract said "the page revision id helper the schema factory file already uses (the task re-reads; a null check when none exists)": it uses `isValidRevisionId` (`src/graphql/isValidRevisionId.ts`), imported in the schema factory already, plus an explicit `null`/`undefined` check as in the CMS resolver.
-- verify: the first wrapper test asserts the cancel event reason `content deleted` for `action: "delete"` (from `getDeleteCancelReason`, `packages/api-workflows/src/domain/review/getDeleteCancelReason.ts`; the existing trash test asserts `content trashed`); check that file's text before running.
-- verify: in `cancelReviewsForDelete.test.ts` the expression `expect(page.id).not.toBe(second.id)` is only a sanity check of the scenario; remove it if lint flags it.
+- Confirmed: `REVIEW_CANCEL_REASON_CONTENT_DELETED = "content deleted"` (`packages/api-workflows/src/domain/review/getDeleteCancelReason.ts`), used by `getDeleteCancelReason("delete")`; the existing trash test asserts `content trashed`.

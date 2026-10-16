@@ -784,8 +784,8 @@ index 25add7aeaa..019c6191ae 100644
  import { ListWorkflowNotificationTransportsUseCase } from "~/features/config/ListWorkflowNotificationTransports/index.js";
  import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStepTypes/index.js";
  import { ListWorkflowUsersUseCase } from "~/features/config/ListWorkflowUsers/index.js";
-+import { Logger } from "@webiny/api-core/features/logger/index.js";
 +import { ListReviewCandidateTeamsUseCase } from "~/features/review/ListReviewCandidateTeams/index.js";
++import { Logger } from "@webiny/api-core/features/logger/index.js";
  import type { WorkflowExclusion, WorkflowSettings } from "~/domain/settings/types.js";
  
  interface GetSettingsArgs {
@@ -946,7 +946,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/api-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(api-workflows): name the candidate teams of a review step" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(api-workflows): name the candidate teams of a review step" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.

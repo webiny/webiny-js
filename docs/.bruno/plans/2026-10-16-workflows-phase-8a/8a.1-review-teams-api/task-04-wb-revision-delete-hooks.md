@@ -208,7 +208,7 @@ describe("WB revision delete with a review in progress (D134, R235)", () => {
         ]);
     });
 
-    it("also blocks the only revision, through the revision block and the page-delete block, once", async () => {
+    it("also refuses the only revision with one error, from the revision block", async () => {
         const context = await createUserContext();
         await storeWbWorkflow(context);
         const page = await createPage(context, { title: "Page A" });
@@ -221,6 +221,9 @@ describe("WB revision delete with a review in progress (D134, R235)", () => {
         expect(error.data.action).toBe("delete");
         expect(error.data.reviews).toHaveLength(1);
         expect(error.data.reviews[0].reviewId).toBe(review.id);
+        // The revision block runs first and its error ends the before phase, so the page-delete
+        // block (`BlockPageDeleteWhileInReview`) is not reached behind it here; it keeps guarding
+        // the page-delete event on its own (`WbPageTrashAndDelete.test.ts`).
     });
 
     it("deletes the only revision after the review is cancelled, and removes its reviews with the page", async () => {
@@ -340,7 +343,7 @@ describe("WB deletePageRevision through GraphQL with workflows (R235, D134)", ()
 });
 ```
 
-Create `packages/api-headless-cms-workflows/__tests__/hooks/privateModelRevisionDelete.test.ts`:
+Create `packages/api-headless-cms-workflows/__tests__/hooks/privateModelRevisionDelete.test.ts`. A review cannot be requested on a private model (no workflow can be bound to one), so the real `DeleteEntryRevisionUseCase` path on a private model (already pinned by `trashAndDelete.test.ts`, "neither blocks nor cleans up") cannot carry an in-progress review. This test therefore hands the two real CMS workflow handlers a revision-delete event for a private model while a review is in progress on the public model's entry. The handlers are picked by class name; the test asserts it found exactly one of each, so a rename fails loudly instead of passing vacuously:
 
 ```ts
 import { beforeEach, describe, expect, it } from "vitest";
@@ -358,11 +361,18 @@ import { createTestContext } from "~tests/__helpers/testContext.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import { requestEntryReview } from "~tests/__helpers/engine.js";
 
+const BLOCK_HANDLER = "BlockRevisionDeleteWhileInReviewImpl";
+const CLEANUP_HANDLER = "DeleteReviewsOnRevisionDeleteImpl";
+
+/** Only the workflow handlers: other packages' handlers are not under test here. */
+const pickByName = <THandler extends object>(handlers: THandler[], name: string): THandler[] => {
+    return handlers.filter(handler => handler.constructor.name === name);
+};
+
 /**
  * Website Builder pages are entries of a private CMS model. The CMS revision hooks must ignore a
  * private model (A87), so deleting a page revision runs only the Website Builder hooks
- * (`BlockPageRevisionDeleteWhileInReview`, `DeleteReviewsOnPageRevisionDelete`) and nothing
- * fires twice.
+ * (`BlockPageRevisionDeleteWhileInReview`, `DeleteReviewsOnPageRevisionDelete`).
  */
 describe("CMS revision hooks ignore the private model (A87, R52)", () => {
     beforeEach(() => {
@@ -376,24 +386,20 @@ describe("CMS revision hooks ignore the private model (A87, R52)", () => {
         const model = await getAuthorModel(context);
         const privateModel = { ...model, isPrivate: true };
         engineCalls.length = 0;
-
-        const beforeHandlers = context.container.resolveAll(EntryRevisionBeforeDeleteEventHandler);
-        const afterHandlers = context.container.resolveAll(EntryRevisionAfterDeleteEventHandler);
-        const before = await Promise.allSettled(
-            beforeHandlers.map(handler => {
-                return handler.handle(new EntryRevisionBeforeDeleteEvent({ entry, model: privateModel }));
-            })
+        const block = pickByName(
+            context.container.resolveAll(EntryRevisionBeforeDeleteEventHandler),
+            BLOCK_HANDLER
         );
-        const after = await Promise.allSettled(
-            afterHandlers.map(handler => {
-                return handler.handle(new EntryRevisionAfterDeleteEvent({ entry, model: privateModel }));
-            })
+        const cleanup = pickByName(
+            context.container.resolveAll(EntryRevisionAfterDeleteEventHandler),
+            CLEANUP_HANDLER
         );
 
-        expect(beforeHandlers.length).toBeGreaterThan(0);
-        expect(afterHandlers.length).toBeGreaterThan(0);
-        expect(before.every(result => result.status === "fulfilled")).toBe(true);
-        expect(after.every(result => result.status === "fulfilled")).toBe(true);
+        await block[0].handle(new EntryRevisionBeforeDeleteEvent({ entry, model: privateModel }));
+        await cleanup[0].handle(new EntryRevisionAfterDeleteEvent({ entry, model: privateModel }));
+
+        expect(block).toHaveLength(1);
+        expect(cleanup).toHaveLength(1);
         expect(engineCalls).toEqual([]);
         const stored = expectOk(
             await context.container.resolve(GetReviewUseCase).execute({ id: review.id })
@@ -406,22 +412,19 @@ describe("CMS revision hooks ignore the private model (A87, R52)", () => {
         const entry = await createAuthorEntry(context, { name: "Ann" });
         await requestEntryReview(context, entry);
         const model = await getAuthorModel(context);
-
-        const results = await Promise.allSettled(
-            context.container.resolveAll(EntryRevisionBeforeDeleteEventHandler).map(handler => {
-                return handler.handle(new EntryRevisionBeforeDeleteEvent({ entry, model }));
-            })
+        const block = pickByName(
+            context.container.resolveAll(EntryRevisionBeforeDeleteEventHandler),
+            BLOCK_HANDLER
         );
 
-        expect(results).toContainEqual({
-            status: "rejected",
-            reason: expect.objectContaining({ code: "Workflows/Review/ActiveReviewOnTrash" })
-        });
+        await expect(
+            block[0].handle(new EntryRevisionBeforeDeleteEvent({ entry, model }))
+        ).rejects.toMatchObject({ code: "Workflows/Review/ActiveReviewOnTrash" });
     });
 });
 ```
 
-`packages/api-website-builder-workflows/__tests__/registration.test.ts`, import the two abstractions and add them to the handler list (one each, none left over without the license):
+`packages/api-website-builder-workflows/__tests__/registration.test.ts`, add the import next to the `DeletePage` import, and replace the `handlers` array (one each, none left over without the license):
 
 ```ts
 import {
@@ -572,21 +575,18 @@ export const DeleteReviewsOnPageRevisionDelete =
 
 `packages/api-website-builder-workflows/src/features/hooks/feature.ts`:
 
-```ts
-import { BlockPageDeleteWhileInReview } from "./BlockPageDeleteWhileInReview.js";
-import { DeleteReviewsOnPageDelete } from "./DeleteReviewsOnPageDelete.js";
-import { BlockPageRevisionDeleteWhileInReview } from "./BlockPageRevisionDeleteWhileInReview.js";
-import { DeleteReviewsOnPageRevisionDelete } from "./DeleteReviewsOnPageRevisionDelete.js";
-```
-
-```ts
-        // Trash and delete (D134, R73) and review cleanup after a page delete (R56, R81)
-        container.register(BlockPageTrashWhileInReview);
-        container.register(BlockPageDeleteWhileInReview);
-        container.register(DeleteReviewsOnPageDelete);
-        // The page revision delete (R235): the same block and cleanup for one revision
-        container.register(BlockPageRevisionDeleteWhileInReview);
-        container.register(DeleteReviewsOnPageRevisionDelete);
+```diff
+ import { BlockPageDeleteWhileInReview } from "./BlockPageDeleteWhileInReview.js";
+ import { DeleteReviewsOnPageDelete } from "./DeleteReviewsOnPageDelete.js";
++import { BlockPageRevisionDeleteWhileInReview } from "./BlockPageRevisionDeleteWhileInReview.js";
++import { DeleteReviewsOnPageRevisionDelete } from "./DeleteReviewsOnPageRevisionDelete.js";
+@@
+         container.register(BlockPageTrashWhileInReview);
+         container.register(BlockPageDeleteWhileInReview);
+         container.register(DeleteReviewsOnPageDelete);
++        // The page revision delete (R235): the same block and cleanup for one revision
++        container.register(BlockPageRevisionDeleteWhileInReview);
++        container.register(DeleteReviewsOnPageRevisionDelete);
 ```
 
 - [ ] **Step 4: Run the new tests on both storages, expect pass**
@@ -635,7 +635,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/api-website-builder-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(api-website-builder-workflows): block and clean up reviews on a page revision delete" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(api-website-builder-workflows): block and clean up reviews on a page revision delete" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
@@ -647,4 +647,5 @@ If a pre-commit step fails and you fix anything, rerun the chain from the start.
 - The contract says `getCmsNamespace`/`isBindableModel` live in `packages/api-headless-cms-workflows/src/utils/`: re-read, `getCmsNamespace` is in `utils/appName.ts`, `isBindableModel` in `utils/isBindableModel.ts`. `getCmsNamespace` returns `null` for a private model, which is what A87 relies on.
 - verify: the cleanup log text. The fixed text `Could not delete the reviews of a deleted page revision; they are left orphaned.` is new (the page-delete one says "deleted page"); the tests pin it, change both together if the wording changes.
 - verify: "requests a review on revision 2 while revision 1 is approved" (test "deletes the reviews of the deleted revision only"): if the engine refuses a second active review on one page, request revision 2's review before approving revision 1's, as the test does not depend on the order beyond that.
-- verify: `PageRevisionBeforeDeleteEvent` is published before `PageBeforeDeleteEvent` (Task 3 use case), so the revision block's error wins for the only-revision case; both carry the same data.
+- In the only-revision case the cleanup runs twice: `DeleteReviewsOnPageRevisionDelete` (revision events) and `DeleteReviewsOnPageDelete` (page-delete events, every review of the page). The second finds nothing left to delete; harmless.
+- A87 test risk: it picks the CMS handlers by class name (`BlockRevisionDeleteWhileInReviewImpl`, `DeleteReviewsOnRevisionDeleteImpl`), so a rename fails the `toHaveLength(1)` assertions instead of passing vacuously. The real use-case path on a private model cannot hold a review (no workflow binds to a private model), which is why the test drives the handlers directly; `trashAndDelete.test.ts` covers the real `DeleteEntryRevisionUseCase` path with `engineCalls` empty.

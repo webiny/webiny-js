@@ -21,6 +21,7 @@ Added at the user's request (Q14, Q15, R235, R236; D5, D97, D134 for the later b
 - Modify: `packages/api-website-builder/src/graphql/pages/pages.gql.ts`
 - Modify: `packages/api-website-builder/src/exports/api/website-builder/page.ts`
 - Modify: `packages/webiny/src/api/website-builder/page.ts`
+- Modify: `packages/webiny/API_ABSTRACTIONS_REGISTRY.md` (three rows for the new abstractions, see Step 3)
 - Create: `packages/api-website-builder/__tests__/pageRevisionDelete.test.ts`
 - Create: `packages/api-website-builder/__tests__/pageRevisionDelete.gql.test.ts`
 - Modify: `packages/api-website-builder/__tests__/graphql/pages.gql.ts` (the `DELETE_PAGE_REVISION` document)
@@ -288,17 +289,12 @@ describe("DeletePageRevisionUseCase (R235, R236)", () => {
             { tries: 10 }
         );
         expect(versions).toEqual([1, 2]);
-        const latest = await until(
-            async () => {
-                const read = await context.container
-                    .resolve(GetPageByIdUseCase)
-                    .execute(first.entryId);
-                return read.isOk() ? read.value : null;
-            },
-            (page: { version: number } | null) => page !== null && page.version === 2,
-            { tries: 10 }
+        const revisions = expectOk(
+            await context.container.resolve(GetPageRevisionsUseCase).execute(first.entryId)
         );
-        expect(latest?.id).toBe(second.id);
+        const latest = revisions[revisions.length - 1];
+        expect(latest.id).toBe(second.id);
+        expect(latest.version).toBe(2);
         expect(recorded.map(item => item.type)).toEqual(["revision.before", "revision.after"]);
     });
 
@@ -354,9 +350,10 @@ describe("DeletePageRevisionUseCase (R235, R236)", () => {
         );
         expect(versions).toEqual([2]);
         const remaining = expectOk(
-            await context.container.resolve(GetPageByIdUseCase).execute(second.id)
+            await context.container.resolve(GetPageRevisionsUseCase).execute(first.entryId)
         );
-        expect(remaining.status).toBe("draft");
+        expect(remaining.map(page => page.status)).toEqual(["draft"]);
+        expect(remaining.some(page => page.status === "published")).toBe(false);
     });
 
     it("maps an unknown revision id to a not found error", async () => {
@@ -394,7 +391,7 @@ describe("DeletePageRevisionUseCase (R235, R236)", () => {
         const [first] = await createPageWithRevisions(2, identityA);
         const handler = useHandler({
             identity: identityB,
-            permissions: [{ name: "wb.page", own: true }],
+            permissions: [{ name: "wb.page", own: true, rwd: "rwd" }],
             legacyPlugins: [registerSpies]
         });
         const context = await handler.handler();
@@ -412,7 +409,7 @@ describe("DeletePageRevisionUseCase (R235, R236)", () => {
         const [first] = await createPageWithRevisions(2, identityA);
         const handler = useHandler({
             identity: identityA,
-            permissions: [{ name: "wb.page", own: true }],
+            permissions: [{ name: "wb.page", own: true, rwd: "rwd" }],
             legacyPlugins: [registerSpies]
         });
         const context = await handler.handler();
@@ -422,6 +419,25 @@ describe("DeletePageRevisionUseCase (R235, R236)", () => {
             .execute({ id: first.id });
 
         expect(result.isOk()).toBe(true);
+    });
+
+    it.each([
+        { label: "rwd=rw", permissions: [{ name: "wb.page", rwd: "rw" }] },
+        { label: "rwd=r", permissions: [{ name: "wb.page", rwd: "r" }] }
+    ])("refuses fine-grained permissions without delete ($label)", async ({ permissions }) => {
+        // Mirrors pages.permissions.finegrained.test.ts: `d` is what `canDelete` needs.
+        const [first] = await createPageWithRevisions(2);
+        const handler = useHandler({ permissions, legacyPlugins: [registerSpies] });
+        const context = await handler.handler();
+
+        const result = await context.container
+            .resolve(DeletePageRevisionUseCase)
+            .execute({ id: first.id });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe(NOT_AUTHORIZED);
+        expect(recorded).toEqual([]);
+        expect(await listRevisionVersions(context, first.entryId)).toEqual([1, 2]);
     });
 
     it("rejects with the handler's error and leaves the revision intact when a before handler throws", async () => {
@@ -457,14 +473,7 @@ describe("DeletePageRevisionUseCase (R235, R236)", () => {
             const context = await createContext();
             expectOk(await context.container.resolve(TrashPageUseCase).execute({ id: only.id }));
 
-            const result = await context.container
-                .resolve(GetPageRevisionsUseCase)
-                .execute(only.entryId);
-
-            // verify: if a trashed page lists no revisions, the only-revision rule of Task 3 still
-            // holds for live pages (a trashed page is not reachable through the revision delete,
-            // which reads the page with GetPageByIdUseCase); record the result in the commit.
-            expect(result.isOk()).toBe(true);
+            expect(await listRevisionVersions(context, only.entryId)).toEqual([1]);
         });
     });
 });
@@ -1001,6 +1010,14 @@ export {
 } from "@webiny/api-website-builder/features/pages/DeletePageRevision/abstractions.js";
 ```
 
+`packages/webiny/API_ABSTRACTIONS_REGISTRY.md`, add three rows after the `DeletePageUseCase` row (line 307) and after the `PageAfterDeleteEventHandler` row (line 322), in the table's column format (re-align the padding the way the file's formatter does; if the file is generated, regenerate it with the repo's script instead, and if neither is possible record it as stale in the commit body):
+
+```md
+| `DeletePageRevisionUseCase`                | `@webiny/api-website-builder/features/pages/DeletePageRevision/abstractions.js`     |
+| `PageRevisionBeforeDeleteEventHandler`     | `@webiny/api-website-builder/features/pages/DeletePageRevision/abstractions.js`     |
+| `PageRevisionAfterDeleteEventHandler`      | `@webiny/api-website-builder/features/pages/DeletePageRevision/abstractions.js`     |
+```
+
 - [ ] **Step 4: Run the new tests on both storages, expect pass**
 
 Run one command at a time:
@@ -1047,7 +1064,7 @@ yarn build -p @webiny/api-website-builder --no-cache 2>&1 | tail -30
 yarn build -p @webiny/webiny --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(api-website-builder): add the deletePageRevision mutation" -m "Published revisions delete as before: Ddb and DdbEs remove the published pointer record of the deleted revision, Sql clears the live pointer on every revision, PgOs removes the published search document; no unpublish handling is added." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(api-website-builder): add the deletePageRevision mutation" -m "Published revisions delete as before: Ddb and DdbEs remove the published pointer record of the deleted revision, Sql clears the live pointer on every revision, PgOs removes the published search document; no unpublish handling is added." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
@@ -1055,9 +1072,11 @@ If a pre-commit step fails and you fix anything, rerun the chain from the start.
 ## Contract notes
 
 - **Unverified code.** Unlike Tasks 1 and 2, the code and tests of this task were written from code read with codegraph and file reads but were **not run** when this plan was written (prototyping in the source tree was not allowed). The implementer runs them in Steps 2 and 4; assumptions are marked "verify:" below.
-- verify: `GetPageRevisionsUseCase` after a trash (A88 trashed-page case). `GetRevisionsByEntryIdUseCase` may or may not include a trashed page's revisions. The test only asserts the result is ok; record what it returns in the commit. Task 3's rule does not depend on it, because the revision delete reads the page with `GetPageByIdUseCase`, which does not find a trashed page.
-- verify: the test "makes the previous revision the latest" reads the latest with `GetPageByIdUseCase.execute(entryId)` (an id without a version). CMS `GetEntryById` returns the latest revision for a bare entry id; if it does not for pages, read the latest through `GetPageRevisionsUseCase` (last item) instead.
-- verify: the own-scope tests rely on `{ name: "wb.page", own: true }` limiting `canRead` and `canDelete` to the page creator (as `pages.permissions.own.test.ts` shows), and the read-only case on `{ name: "wb.page", rwd: "r" }` (the shape `api-website-builder-workflows/__tests__/__helpers/identities.ts` uses as `WB_READER`).
+- A88 trashed page: pinned as `[1]` in a test. Derived from code, not run: `GetRevisionsByEntryIdUseCase` and its repository have no deleted-entry filter, so a trashed page lists its revisions. If a storage returns `[]` here, change the expectation and record it in the commit; Task 3 does not depend on it because the revision delete reads the page with `GetPageByIdUseCase`, which does not find a trashed page.
+- The latest revision is read through `GetPageRevisionsUseCase` (last item), not by a bare entry id: the DDB revision loader skips ids without a version (`packages/api-headless-cms-ddb/src/operations/entry/dataLoader/getRevisionById.ts`, the `version === null` `continue`), so a bare id is not a revision read.
+- Page-delete subscribers in the only-revision case receive a **live (non-trashed)** page, unlike `DeletePageUseCase` (which needs a trashed page). Read their bodies: the audit-log `PageAfterDeleteHandler` only records `page` and `page.id`; the scheduler `CancelScheduledActionOnPageDeleteEventHandler` lists and cancels actions by `targetId: page.id`, ignoring trash state and errors; neither inspects trash state, so both tolerate it. The webhook `OnPageDeletedHandler` was not found under `packages/webhooks/src` when this plan was written: the implementer reads it (`grep -rn "OnPageDeleted" packages --include=*.ts`) and records the result; the workflows `BlockPageDeleteWhileInReview` and `DeleteReviewsOnPageDelete` read only `page.entryId`.
+- `DeletePageRevision/{abstractions,events}.ts` deliberately mirror `DeletePage/{abstractions,events}.ts` (two handler abstractions and two events), so subscribers of one are easy to compare with the other.
+- verify: the own-scope tests use `{ name: "wb.page", own: true, rwd: "rwd" }` (own deletes allowed, other users' pages refused); the read-only and `rwd: "rw"` cases mirror `pages.permissions.finegrained.test.ts`.
 - verify: a handler registered with `container.register(<Handler>.createImplementation(...))` inside a `legacyPlugins` function runs for page and revision events (same mechanism as `registerAco` in `pageFolderDelete.test.ts`).
 - Contract names kept: `IDeleteWbPageRevisionParams`, `PageRevisionBefore/AfterDeleteEventHandler`, `DeletePageRevisionFeature`, `"page.revision.beforeDelete"`, `"page.revision.afterDelete"`. The CMS use case also publishes its own CMS entry-revision events for the private page model; the workflows CMS hooks ignore the private model (A87, proven in Task 4).
 - Size: the largest task of the sub-phase (six new source files, five modified, two test files).

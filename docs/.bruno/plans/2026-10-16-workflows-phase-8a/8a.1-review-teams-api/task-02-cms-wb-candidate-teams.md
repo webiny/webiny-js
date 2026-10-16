@@ -1,6 +1,6 @@
 ### Task 2: CMS and WB end-to-end `candidateTeams` tests
 
-Spec 13.1; user answer Q7; R208, A68, A69; Review Focus 2. Task 1 put the field on the shared `WorkflowsReviewStep`, so the CMS and WB wrappers should return it without change. This task proves that end to end in both apps, for every read and for the request mutation, for a viewer without `security.team`, for a deleted team, and for a failing lookup, and fixes the two test handlers that could not run any review test (below).
+Spec 13.1; user answer Q7; R208, A68, A69; Review Focus 2. Task 1 put the field on the shared `WorkflowsReviewStep`, so the CMS and WB wrappers should return it without change. This task proves that end to end in both apps, for every read and for the request mutation, for a viewer without `security.team`, for a deleted team, and for a failing lookup.
 
 - CMS: `getCmsEntryReview`, `getCmsEntryTargetReview`, `listCmsEntryReviews` and `requestCmsEntryReview` select `steps { id candidateTeamIds candidateTeams { id name } }`. WB: the four matching `...WebsiteBuilderPage...` operations.
 - The workflow's step lists `team-1` (a code team named "Reviewers", registered through the api-core `TeamFactory`) and `team-gone` (never registered, as a deleted team). Every response keeps `candidateTeamIds: ["team-1", "team-gone"]` and returns `candidateTeams: [{ id: "team-1", name: "Reviewers" }]`.
@@ -12,12 +12,10 @@ Spec 13.1; user answer Q7; R208, A68, A69; Review Focus 2. Task 1 put the field 
 **Files:**
 - Create: `packages/api-headless-cms-workflows/__tests__/graphql/cmsReviewCandidateTeams.test.ts`
 - Create: `packages/api-website-builder-workflows/__tests__/graphql/pageReviewCandidateTeams.test.ts`
-- Modify: `packages/api-headless-cms-workflows/__tests__/__handler/context.ts` (register `SendMailFeature`)
-- Modify: `packages/api-website-builder-workflows/__tests__/__helpers/handler.ts` (register `SendMailFeature`)
 - Existing, must stay green: `packages/api-headless-cms-workflows/__tests__/graphql/cmsWorkflowsSchema.test.ts`, `packages/api-website-builder-workflows/__tests__/graphql/pageReviews.test.ts`
 
 **Interfaces:**
-- Consumes: Task 1 (`WorkflowsReviewStep.candidateTeams`, `WorkflowsTeam`); existing harnesses `createUserContext` and `createGraphQLClient` (CMS `__tests__/__helpers/`), `createUserContext` and `asGraphQLUser` (WB `__tests__/__helpers/`), `storeWorkflow`, `createWorkflowValues` (CMS `__tests__/__workflows/workflow.ts`), `createWbWorkflowValues`, `requestPageReview`, `WB_ADMIN_ACTOR` (WB `__helpers/engine.ts`), `createPage`, `expectOk` (WB `__helpers/pages.ts`), `createAuthorEntry`, `requestEntryReview`, `TeamFactory`, `GetTeamUseCase`, `SendMailFeature` (`@webiny/api-mailer/features/SendMail/feature.js`).
+- Consumes: Task 1 (`WorkflowsReviewStep.candidateTeams`, `WorkflowsTeam`); existing harnesses `createUserContext` and `createGraphQLClient` (CMS `__tests__/__helpers/`), `createUserContext` and `asGraphQLUser` (WB `__tests__/__helpers/`), `storeWorkflow`, `createWorkflowValues` (CMS `__tests__/__workflows/workflow.ts`), `createWbWorkflowValues`, `requestPageReview`, `WB_ADMIN_ACTOR` (WB `__helpers/engine.ts`), `createPage`, `expectOk` (WB `__helpers/pages.ts`), `createAuthorEntry`, `requestEntryReview`, `TeamFactory`, `GetTeamUseCase`, `TYPE_FIELDS` (WB `__helpers/graphql.ts`).
 - Produces: proof only, no export (confidence for Tasks 11 and 12).
 
 - [ ] **Step 1: Write the failing tests**
@@ -320,7 +318,7 @@ import {
     WB_ADMIN_ACTOR
 } from "~tests/__helpers/engine.js";
 import { REQUESTER, REVIEWER, WB_READER, WB_WRITER } from "~tests/__helpers/identities.js";
-import { asGraphQLUser } from "~tests/__helpers/graphql.js";
+import { asGraphQLUser, TYPE_FIELDS } from "~tests/__helpers/graphql.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 
 /** The first team exists (defined in code); the second one was deleted after the workflow was saved. */
@@ -401,16 +399,6 @@ const REQUEST_REVIEW = /* GraphQL */ `
             requestWebsiteBuilderPageReview(revisionId: $revisionId, title: $title) {
                 data { ${REVIEW} }
                 ${ERROR}
-            }
-        }
-    }
-`;
-
-const TYPE_FIELDS = /* GraphQL */ `
-    query TypeFields($name: String!) {
-        __type(name: $name) {
-            fields {
-                name
             }
         }
     }
@@ -584,78 +572,18 @@ describe("WB review candidateTeams (R208, Q7)", () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests, expect failure**
+- [ ] **Step 2: Run the tests**
 
 ```bash
 yarn test packages/api-headless-cms-workflows/__tests__/graphql/cmsReviewCandidateTeams.test.ts 2>&1 | tail -50
 yarn test packages/api-website-builder-workflows/__tests__/graphql/pageReviewCandidateTeams.test.ts 2>&1 | tail -50
 ```
 
-Expected: FAIL with `Error: No registration found for SendMail` in every test that stores a review. This is not a Task 1 gap: the phase 7 e-mail transport resolves `SendMailUseCase`, and neither test handler registers `SendMailFeature` (the api-workflows `createContextHandler` already does). The existing `cmsWorkflowsSchema.test.ts` and `pageReviews.test.ts` fail the same way at this commit (26 and 17 failures), so Step 3 also repairs them. Only the `WorkflowsTeam` schema test passes.
+Expected: PASS at once (proof-only task; a failure points at a Task 1 gap). Both test handlers already register `SendMailFeature` (commit 843e5eddaa).
 
 - [ ] **Step 3: Implement**
 
-No production change. Register the mailer feature in the two test handlers, as `packages/api-workflows/__tests__/__helpers/handler.ts` does.
-
-`packages/api-headless-cms-workflows/__tests__/__handler/context.ts`:
-
-```diff
-diff --git a/packages/api-headless-cms-workflows/__tests__/__handler/context.ts b/packages/api-headless-cms-workflows/__tests__/__handler/context.ts
-index d894bbb591..5b74e0a6d1 100644
---- a/packages/api-headless-cms-workflows/__tests__/__handler/context.ts
-+++ b/packages/api-headless-cms-workflows/__tests__/__handler/context.ts
-@@ -12,8 +12,9 @@ import { registerFakeFolders } from "../__helpers/FakeFolders.js";
- import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
- import { NoopGetTask } from "../__helpers/NoopGetTask.js";
- import { FakeTaskService } from "../__helpers/FakeTaskService.js";
- import { MailerService } from "@webiny/api-mailer";
-+import { SendMailFeature } from "@webiny/api-mailer/features/SendMail/feature.js";
- import {
-     WebsocketsListConnectionsUseCase,
-     WebsocketsSendToConnectionsUseCase
- } from "@webiny/api-websockets/exports/api.js";
-@@ -44,8 +45,10 @@ export const createContextHandler = (
-             CmsWorkflowsFeature.register(container);
-             // The review notification handlers (api-workflows) need a mailer and the websocket use
-             // cases; this context has no request stack. Inert, so nothing is sent.
-             container.registerInstance(MailerService, new InertMailer());
-+            // The e-mail transport sends through `SendMailUseCase`, which calls the mailer above.
-+            SendMailFeature.register(container);
-             container.registerInstance(
-                 WebsocketsListConnectionsUseCase,
-                 new InertWebsocketConnections()
-             );
-```
-
-`packages/api-website-builder-workflows/__tests__/__helpers/handler.ts`:
-
-```diff
-diff --git a/packages/api-website-builder-workflows/__tests__/__helpers/handler.ts b/packages/api-website-builder-workflows/__tests__/__helpers/handler.ts
-index 3096b1971b..35e1b885b0 100644
---- a/packages/api-website-builder-workflows/__tests__/__helpers/handler.ts
-+++ b/packages/api-website-builder-workflows/__tests__/__helpers/handler.ts
-@@ -12,8 +12,9 @@ import { WebsiteBuilderWorkflowsFeature } from "~/index.js";
- import { NoopInvalidateAssetCacheTaskDefinition } from "./NoopInvalidateAssetCacheTask.js";
- import { registerNoAcoFolders } from "./NoAcoFolders.js";
- import { createArticleModelPlugins } from "./cmsModel.js";
- import { MailerService } from "@webiny/api-mailer";
-+import { SendMailFeature } from "@webiny/api-mailer/features/SendMail/feature.js";
- import {
-     WebsocketsListConnectionsUseCase,
-     WebsocketsSendToConnectionsUseCase
- } from "@webiny/api-websockets/exports/api.js";
-@@ -50,8 +51,10 @@ export const createContextHandler = (params: CmsTestHandlerParams = {}) => {
-             CmsWorkflowsFeature.register(container);
-             // The review notification handlers (api-workflows) need a mailer and the websocket use
-             // cases; this context has no request stack. Inert, so nothing is sent.
-             container.registerInstance(MailerService, new InertMailer());
-+            // The e-mail transport sends through `SendMailUseCase`, which calls the mailer above.
-+            SendMailFeature.register(container);
-             container.registerInstance(
-                 WebsocketsListConnectionsUseCase,
-                 new InertWebsocketConnections()
-             );
-```
+No change.
 
 - [ ] **Step 4: Run the new tests on both storages, expect pass**
 
@@ -678,7 +606,7 @@ yarn test:os packages/api-website-builder-workflows/__tests__/graphql/pageReview
 yarn check:test:types -p api-headless-cms-workflows,api-website-builder-workflows --report cli 2>&1 | tail -40
 ```
 
-Expected: all PASS (28 and 17 tests), no type errors.
+Expected: all PASS, no type errors.
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -698,13 +626,13 @@ yarn build -p @webiny/api-headless-cms-workflows --no-cache 2>&1 | tail -30
 yarn build -p @webiny/api-website-builder-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "test(workflows): prove candidateTeams in the CMS and WB reviews" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "test(workflows): prove candidateTeams in the CMS and WB reviews" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
 
 ## Contract notes
 
-- The contract expected no source change and "a fix only if a wrapper builds a step shape without `candidateTeamIds`". None does; both wrappers return the shared shape and every response carries the names. The only edits are the two test handlers (`SendMailFeature`), which were needed for any review test in these two packages to run at this commit (phase 7 added the dependency without updating them). Task 12 and the later WB and CMS server tasks rely on this repair.
+- The contract expected no source change and "a fix only if a wrapper builds a step shape without `candidateTeamIds`". None does; both wrappers return the shared shape and every response carries the names.
 - The contract's "a non-editor viewer still gets names" is covered by `REVIEWER` with read-only CMS or WB permissions. The "request mutation result" case uses `REQUESTER` with write permissions.
 - Verified by running (ddb and ddb-os): the new tests and the two existing suites above pass.
