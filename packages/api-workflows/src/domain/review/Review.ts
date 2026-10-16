@@ -283,6 +283,7 @@ export class Review {
             },
             steps,
             createdBy: { ...params.requester },
+            cancelledBy: null,
             createdOn: params.now,
             savedOn: params.now,
             lastChangedOn: params.now
@@ -562,6 +563,7 @@ export class Review {
         const step = guard.value;
 
         this.data.state = "cancelled";
+        this.data.cancelledBy = { ...params.actor };
         this.facts.push({
             type: "cancelled",
             occurredOn: params.now,

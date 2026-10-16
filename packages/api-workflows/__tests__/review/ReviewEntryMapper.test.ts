@@ -10,6 +10,8 @@ import {
     createAiIssue,
     createRequestedReview,
     NOW,
+    otherReviewer,
+    requester,
     toSaveData
 } from "~tests/__helpers/fixtures.js";
 
@@ -182,5 +184,65 @@ describe("ReviewEntryMapper step issues (R171)", () => {
             { fieldPath: null, severity: "error", message: "Broken.", suggestion: null },
             { fieldPath: null, severity: "info", message: "Fine.", suggestion: null }
         ]);
+    });
+});
+
+describe("ReviewEntryMapper cancelledBy (R252, A91)", () => {
+    it("maps the cancelling actor both ways, with and without an identity type", () => {
+        const withIdentityType = toSaveData(createRequestedReview());
+        withIdentityType.state = "cancelled";
+        withIdentityType.cancelledBy = requester;
+        const withoutIdentityType = toSaveData(createRequestedReview());
+        withoutIdentityType.state = "cancelled";
+        withoutIdentityType.cancelledBy = otherReviewer;
+
+        const first = ReviewEntryMapper.toValues(withIdentityType);
+        const second = ReviewEntryMapper.toValues(withoutIdentityType);
+
+        expect(first.cancelledBy).toEqual({
+            type: "user",
+            id: "user-requester",
+            displayName: "Rita Requester",
+            identityType: "admin"
+        });
+        expect(second.cancelledBy).toEqual({
+            type: "user",
+            id: "user-other-reviewer",
+            displayName: "Olga Reviewer",
+            identityType: null
+        });
+        expect(ReviewEntryMapper.fromEntry(toEntry(first)).cancelledBy).toEqual(requester);
+        expect(ReviewEntryMapper.fromEntry(toEntry(second)).cancelledBy).toEqual(otherReviewer);
+    });
+
+    it("writes null for a review that is not cancelled", () => {
+        const values = ReviewEntryMapper.toValues(toSaveData(createRequestedReview()));
+
+        expect(values.cancelledBy).toBeNull();
+        expect(ReviewEntryMapper.fromEntry(toEntry(values)).cancelledBy).toBeNull();
+    });
+
+    it("reads an entry stored without the field, or with an empty actor, as null (no migration)", () => {
+        const values = ReviewEntryMapper.toValues(toSaveData(createRequestedReview()));
+        const absent: ReviewEntryValues = { ...values };
+        delete absent.cancelledBy;
+        const empty: ReviewEntryValues = {
+            ...values,
+            cancelledBy: { type: "", id: "", displayName: "", identityType: null }
+        };
+
+        expect(ReviewEntryMapper.fromEntry(toEntry(absent)).cancelledBy).toBeNull();
+        expect(ReviewEntryMapper.fromEntry(toEntry(empty)).cancelledBy).toBeNull();
+    });
+
+    it("does not share the actor object with the review data", () => {
+        const data = toSaveData(createRequestedReview());
+        data.state = "cancelled";
+        data.cancelledBy = { ...requester };
+
+        const values = ReviewEntryMapper.toValues(data);
+        data.cancelledBy.displayName = "Changed after mapping.";
+
+        expect(values.cancelledBy?.displayName).toBe("Rita Requester");
     });
 });

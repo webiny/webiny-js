@@ -323,6 +323,8 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         steps: [WorkflowsReviewStep!]!
         "The requester."
         createdBy: WorkflowsActor!
+        "Who cancelled the review (R252). Null unless the review is cancelled, and for reviews cancelled before this was recorded."
+        cancelledBy: WorkflowsActor
         createdOn: DateTime!
         savedOn: DateTime!
         lastChangedOn: DateTime!

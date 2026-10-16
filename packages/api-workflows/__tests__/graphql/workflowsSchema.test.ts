@@ -813,6 +813,7 @@ describe("workflows GraphQL root", () => {
             "workflow",
             "steps",
             "createdBy",
+            "cancelledBy",
             "createdOn",
             "savedOn",
             "lastChangedOn"

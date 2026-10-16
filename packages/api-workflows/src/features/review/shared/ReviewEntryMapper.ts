@@ -91,6 +91,8 @@ export interface ReviewEntryValues {
     workflow: ReviewEntryWorkflow | null;
     steps: ReviewEntryStep[] | null;
     requester: ActorEntryValues | null;
+    /** Absent on entries stored before the field existed (R252). */
+    cancelledBy?: ActorEntryValues | null;
     lastChangedOn: string | Date | null;
 }
 
@@ -122,6 +124,7 @@ export class ReviewEntryMapper {
             },
             steps: review.steps.map(step => ReviewEntryMapper.stepToEntry(step)),
             requester: ActorEntryMapper.toEntry(review.createdBy),
+            cancelledBy: review.cancelledBy ? ActorEntryMapper.toEntry(review.cancelledBy) : null,
             lastChangedOn: review.lastChangedOn
         };
     }
@@ -164,6 +167,8 @@ export class ReviewEntryMapper {
                 id: "",
                 displayName: ""
             },
+            // Reviews stored before the field existed, and reviews that are not cancelled, read `null`.
+            cancelledBy: ActorEntryMapper.fromEntry(values.cancelledBy),
             createdOn: entry.createdOn,
             savedOn: entry.savedOn,
             lastChangedOn: toIsoString(values.lastChangedOn) ?? entry.savedOn

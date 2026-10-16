@@ -152,6 +152,15 @@ class ReviewModelImpl implements ModelFactory.Interface {
                             displayName: requesterFields.text().label("Display name"),
                             identityType: requesterFields.text().label("Identity type")
                         })),
+                    cancelledBy: fields
+                        .object()
+                        .label("Cancelled by")
+                        .fields(cancelledByFields => ({
+                            type: cancelledByFields.text().label("Type"),
+                            id: cancelledByFields.text().label("ID"),
+                            displayName: cancelledByFields.text().label("Display name"),
+                            identityType: cancelledByFields.text().label("Identity type")
+                        })),
                     lastChangedOn: fields.datetime().label("Last changed on").withoutTimezone()
                 }))
         ];
