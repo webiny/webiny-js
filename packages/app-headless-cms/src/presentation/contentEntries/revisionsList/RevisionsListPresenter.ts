@@ -113,12 +113,12 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
         });
 
         try {
-            await this.deleteEntryRevisionUseCase.execute({
+            const deleted = await this.deleteEntryRevisionUseCase.execute({
                 model: this.model,
                 revisionId
             });
 
-            return true;
+            return deleted !== false;
         } catch {
             return false;
         } finally {

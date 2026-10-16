@@ -59,4 +59,24 @@ describe("RevisionsListPresenter.deleteRevision", () => {
         expect(result).toBe(false);
         expect(deleteUseCase.execute).not.toHaveBeenCalled();
     });
+
+    it("returns false when the use case returns false (warning dismissed)", async () => {
+        const { deleteUseCase, presenter } = setup(undefined, async () => false);
+
+        const result = await presenter.deleteRevision("entry-1#0002");
+
+        expect(result).toBe(false);
+        expect(deleteUseCase.execute).toHaveBeenCalledTimes(1);
+    });
+
+    it("returns false and clears loading when the use case throws", async () => {
+        const { presenter } = setup(undefined, async () => {
+            throw new Error("Network down");
+        });
+
+        const result = await presenter.deleteRevision("entry-1#0002");
+
+        expect(result).toBe(false);
+        expect(presenter.vm.loading).toBe(false);
+    });
 });

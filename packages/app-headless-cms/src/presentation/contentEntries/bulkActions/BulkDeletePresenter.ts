@@ -32,7 +32,13 @@ class BulkDeletePresenterImpl implements Abstraction.Interface {
     private async deleteItem(item: CmsContentEntry, report: Report): Promise<void> {
         const model = this.modelAccessor.getModel();
         const { id } = parseIdentifier(item.id);
-        await this.deleteEntryUseCase.execute({ model, id });
+        const deleted = await this.deleteEntryUseCase.execute({ model, id });
+
+        if (deleted === false) {
+            report.error({ title: item.meta.title, message: "The entry was not moved to trash." });
+            return;
+        }
+
         report.success({ title: item.meta.title, message: "Entry successfully moved to trash." });
     }
 
