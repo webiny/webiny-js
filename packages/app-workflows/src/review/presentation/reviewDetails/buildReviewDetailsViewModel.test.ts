@@ -28,8 +28,9 @@ describe("getRevisionNumber", () => {
         expect(getRevisionNumber("entry-1#0012")).toBe("12");
     });
 
-    it("returns an empty string without a version", () => {
-        expect(getRevisionNumber("entry-1")).toBe("");
+    it("returns null without a version or with a non-numeric one", () => {
+        expect(getRevisionNumber("entry-1")).toBeNull();
+        expect(getRevisionNumber("entry-1#abc")).toBeNull();
     });
 });
 
@@ -127,7 +128,7 @@ const skip = (
     reason: string | null,
     userDisplayName: string | null = null
 ): ReviewAssignmentEntry => ({
-    id: `skip-${userId}`,
+    id: `skip-${userId.replace("user-", "u")}`,
     kind: "skip",
     userId,
     userDisplayName,
@@ -298,14 +299,32 @@ describe("buildReviewDetailsViewModel", () => {
         const { steps } = build(review);
 
         expect(steps[0].skipped).toEqual([
-            { name: "Pat Kim", reason: "is the requester" },
-            { name: SKIPPED_PERSON_LABEL, reason: "excluded until 20 Oct: on leave" },
-            { name: SKIPPED_PERSON_LABEL, reason: "is on leave" }
+            { id: "skip-u9", name: "Pat Kim", reason: "is the requester" },
+            {
+                id: "skip-u8",
+                name: SKIPPED_PERSON_LABEL,
+                reason: "excluded until 20 Oct: on leave"
+            },
+            { id: "skip-u7", name: SKIPPED_PERSON_LABEL, reason: "is on leave" }
         ]);
         expect(SKIPPED_PERSON_LABEL).toBe("A person");
         expect(JSON.stringify(steps[0])).not.toContain("user-9");
         expect(JSON.stringify(steps[0])).not.toContain("user-8");
         expect(JSON.stringify(steps[0])).not.toContain("user-7");
+    });
+
+    it("gives two unresolved users with the same reason distinct ids", () => {
+        const review = createReview({
+            steps: [
+                createStep({
+                    assignments: [skip("user-1", "is on leave"), skip("user-2", "is on leave")]
+                })
+            ]
+        });
+
+        const skipped = build(review).steps[0].skipped ?? [];
+
+        expect(skipped.map(item => item.id)).toEqual(["skip-u1", "skip-u2"]);
     });
 
     it("has no skipped box without skip entries or without assignments", () => {

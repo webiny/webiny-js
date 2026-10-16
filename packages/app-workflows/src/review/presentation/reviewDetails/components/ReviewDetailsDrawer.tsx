@@ -66,7 +66,7 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                 actions={actions}
             >
                 <div className={"flex flex-col gap-md p-md"}>
-                    {vm.status === "loading" ? (
+                    {vm.status === "loading" && (
                         <div className={"flex flex-col gap-md"}>
                             <Text size={"lg"} className={"font-semibold"}>
                                 {"Loading review…"}
@@ -75,8 +75,8 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                             <Skeleton type={"text"} size={"xl"} />
                             <Skeleton type={"text"} size={"xl"} />
                         </div>
-                    ) : null}
-                    {vm.status === "failed" ? (
+                    )}
+                    {vm.status === "failed" && (
                         <div className={"flex flex-col items-center gap-sm text-center"}>
                             <Text size={"lg"} className={"font-semibold"}>
                                 {"Could not load review details"}
@@ -88,8 +88,8 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                                 onClick={() => presenter.refresh()}
                             />
                         </div>
-                    ) : null}
-                    {vm.header ? (
+                    )}
+                    {vm.header !== null && (
                         <div className={"flex flex-col gap-xs"}>
                             <div className={"flex flex-wrap items-center gap-sm"}>
                                 <Text size={"lg"} className={"font-semibold"}>
@@ -112,13 +112,13 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                                 </span>
                             </div>
                         </div>
-                    ) : null}
-                    {vm.cancelledText ? (
+                    )}
+                    {vm.cancelledText !== null && (
                         <Alert type={"info"} variant={"subtle"}>
                             <div className={"font-semibold"}>{"This review was cancelled"}</div>
                             <div>{vm.cancelledText}</div>
                         </Alert>
-                    ) : null}
+                    )}
                     {vm.steps.map(step => (
                         <div
                             key={step.stepId}
@@ -137,7 +137,7 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                                 <Tag variant={"neutral-base-outline"} content={step.typeLabel} />
                                 <Tag variant={step.stateVariant} content={step.stateLabel} />
                             </div>
-                            {step.ownerLine ? (
+                            {step.ownerLine !== null && (
                                 <div
                                     className={
                                         "grid grid-cols-[120px_1fr] gap-x-md gap-y-xs text-sm"
@@ -145,30 +145,30 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                                 >
                                     <span className={"text-neutral-muted"}>{"Owner"}</span>
                                     <span>{step.ownerLine}</span>
-                                    {step.whyOwner ? (
+                                    {step.whyOwner !== null && (
                                         <>
                                             <span className={"text-neutral-muted"}>
                                                 {"Why this owner"}
                                             </span>
                                             <span>{step.whyOwner}</span>
                                         </>
-                                    ) : null}
-                                    {step.times ? (
+                                    )}
+                                    {step.times !== null && (
                                         <>
                                             <span className={"text-neutral-muted"}>{"Times"}</span>
                                             <span title={step.timesTitle ?? undefined}>
                                                 {step.times}
                                             </span>
                                         </>
-                                    ) : null}
+                                    )}
                                 </div>
-                            ) : null}
-                            {step.comment ? (
+                            )}
+                            {step.comment !== null && (
                                 <div className={"rounded-md bg-neutral-light p-sm text-sm"}>
                                     {step.comment}
                                 </div>
-                            ) : null}
-                            {step.skipped ? (
+                            )}
+                            {step.skipped !== null && (
                                 <div
                                     className={
                                         "rounded-md border-sm border-dashed border-neutral-muted p-sm text-sm"
@@ -182,13 +182,13 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                                         {"Skipped by assignment"}
                                     </div>
                                     {step.skipped.map(item => (
-                                        <div key={`${item.name}:${item.reason}`}>
+                                        <div key={item.id}>
                                             <b className={"font-medium"}>{item.name}</b>
                                             {`: ${item.reason}`}
                                         </div>
                                     ))}
                                 </div>
-                            ) : null}
+                            )}
                         </div>
                     ))}
                 </div>

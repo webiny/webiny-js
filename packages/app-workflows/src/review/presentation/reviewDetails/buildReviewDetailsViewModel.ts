@@ -80,6 +80,7 @@ const getSkipped = (step: ReviewStep): ReviewDetailsSkippedVm[] | null => {
         .filter(entry => entry.kind === "skip")
         .map(entry => {
             return {
+                id: entry.id,
                 name: getSkippedName(entry),
                 reason: entry.reason ? entry.reason : ""
             };
@@ -114,13 +115,6 @@ const getStepVm = (step: ReviewStep, now: Date): ReviewDetailsStepVm => {
     };
 };
 
-const STATE_LABELS: Record<string, string> = {
-    [ReviewState.InProgress]: "In progress",
-    [ReviewState.Approved]: "Approved",
-    [ReviewState.Rejected]: "Rejected",
-    [ReviewState.Cancelled]: "Cancelled"
-};
-
 /**
  * The render-ready view model of the drawer (R234). Pure. `now` is a parameter so times are
  * deterministic. A cancelled review keeps its header and loses timeline and actions (QBZ-1).
@@ -149,15 +143,19 @@ export const buildReviewDetailsViewModel = (
     if (stateTag) {
         stateVariant = stateTag.variant;
     }
+    let stateLabel = "Cancelled";
+    if (stateTag) {
+        stateLabel = stateTag.label.replace("Review: ", "");
+    }
     const revision = getRevisionNumber(review.targetRevisionId);
     let contentLine = `Content: ${review.targetContext.title}`;
-    if (revision !== "") {
+    if (revision !== null) {
         contentLine = `${contentLine} (#${revision})`;
     }
 
     const header: ReviewDetailsHeaderVm = {
         title: review.title,
-        stateLabel: STATE_LABELS[review.state] ?? review.state,
+        stateLabel,
         stateVariant,
         contentLine,
         requesterLine: `Requester: ${review.createdBy.displayName}`,

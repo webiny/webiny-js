@@ -27,6 +27,7 @@ export interface ReviewDetailsHeaderVm {
 }
 
 export interface ReviewDetailsSkippedVm {
+    id: string;
     name: string;
     reason: string;
 }
