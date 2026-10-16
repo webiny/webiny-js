@@ -22,8 +22,12 @@ import { CancelTargetReviewsUseCase } from "~/features/review/CancelTargetReview
 
 const LATER = "2026-10-09T11:00:00.000Z";
 
+interface ObjectFieldChild {
+    fieldId: string;
+}
+
 interface ObjectFieldSettings {
-    fields: { fieldId: string }[];
+    fields: ObjectFieldChild[];
 }
 
 describe("Review.cancel stores who cancelled (R252)", () => {

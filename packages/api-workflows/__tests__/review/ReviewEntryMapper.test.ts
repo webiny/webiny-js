@@ -6,14 +6,12 @@ import {
     type ReviewEntryValues
 } from "~/features/review/shared/ReviewEntryMapper.js";
 import type { ReviewStepRun } from "~/domain/review/types.js";
-import {
-    createAiIssue,
-    createRequestedReview,
-    NOW,
-    otherReviewer,
-    requester,
-    toSaveData
-} from "~tests/__helpers/fixtures.js";
+import { createAiIssue } from "~tests/__helpers/fixtures.js";
+import { createRequestedReview } from "~tests/__helpers/fixtures.js";
+import { NOW } from "~tests/__helpers/fixtures.js";
+import { otherReviewer } from "~tests/__helpers/fixtures.js";
+import { requester } from "~tests/__helpers/fixtures.js";
+import { toSaveData } from "~tests/__helpers/fixtures.js";
 
 const LATER = "2026-10-09T11:00:00.000Z";
 
