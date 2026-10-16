@@ -30,6 +30,7 @@
     "react-helmet": "^6.1.0"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.2",
     "@types/react": "18.3.31",
     "@webiny/build-tools": "0.0.0",
     "rimraf": "^6.1.3",
