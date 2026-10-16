@@ -7,6 +7,8 @@ import { ListWorkflowAiToolsUseCase } from "~/features/config/ListWorkflowAiTool
 import { ListWorkflowNotificationTransportsUseCase } from "~/features/config/ListWorkflowNotificationTransports/index.js";
 import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStepTypes/index.js";
 import { ListWorkflowUsersUseCase } from "~/features/config/ListWorkflowUsers/index.js";
+import { ListReviewCandidateTeamsUseCase } from "~/features/review/ListReviewCandidateTeams/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { WorkflowExclusion, WorkflowSettings } from "~/domain/settings/types.js";
 
 interface GetSettingsArgs {
@@ -25,6 +27,14 @@ interface SettingsInputArgs {
 
 interface UpdateSettingsArgs {
     data: SettingsInputArgs;
+}
+
+interface CandidateTeamsParent {
+    candidateTeamIds?: string[] | null;
+}
+
+interface CandidateTeamsResolverArgs {
+    parent: CandidateTeamsParent;
 }
 
 interface ListUsersArgs {
@@ -80,6 +90,12 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
     type WorkflowsUser {
         id: ID!
         displayName: String!
+    }
+
+    "A team as the review screens name one (R208): id and name only."
+    type WorkflowsTeam {
+        id: ID!
+        name: String!
     }
 
     "A member of a step's teams (R120). excludedReason is null unless the viewer has editor or reassign (D97)."
@@ -238,6 +254,8 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         comment: String
         pickedUserId: String
         candidateTeamIds: [String!]!
+        "The candidate teams by name (R208). A team that no longer exists is left out; an empty list when the names could not be read."
+        candidateTeams: [WorkflowsTeam!]!
         assignmentSource: String
         assignment: WorkflowsReviewStepAssignment
         reachedOn: DateTime
@@ -473,6 +491,35 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     public async execute(builder: GraphQLSchemaFactory.SchemaBuilder): GraphQLSchemaFactory.Return {
         builder.addTypeDefs(SHARED_TYPE_DEFS);
         builder.addTypeDefs(ROOT_TYPE_DEFS);
+
+        // Never fails the read: a review is readable without the team names (R87, R208).
+        builder.addResolver({
+            path: "WorkflowsReviewStep.candidateTeams",
+            dependencies: [ListReviewCandidateTeamsUseCase, Logger],
+            resolver: (
+                listTeams: ListReviewCandidateTeamsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
+                return async ({ parent }: CandidateTeamsResolverArgs) => {
+                    try {
+                        const result = await listTeams.execute({
+                            teamIds: parent.candidateTeamIds ?? []
+                        });
+                        if (result.isFail()) {
+                            // The use case logged the failure.
+                            return [];
+                        }
+                        return result.value;
+                    } catch (error) {
+                        logger.error(
+                            { error },
+                            "Could not resolve the candidate teams of a review step."
+                        );
+                        return [];
+                    }
+                };
+            }
+        });
 
         builder.addResolver({
             path: "Query.workflows",

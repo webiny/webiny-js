@@ -726,6 +726,7 @@ describe("workflows GraphQL root", () => {
             "error"
         ]);
         expect(memberNames(types, "WorkflowsUser")).toEqual(["id", "displayName"]);
+        expect(memberNames(types, "WorkflowsTeam")).toEqual(["id", "name"]);
         expect(memberNames(types, "WorkflowsUserListResult")).toEqual(["users", "missingIds"]);
         expect(memberNames(types, "WorkflowsUserListResponse")).toEqual(["data", "error"]);
         expect(memberNames(types, "WorkflowsStepCandidate")).toEqual([
@@ -823,6 +824,7 @@ describe("workflows GraphQL root", () => {
             "comment",
             "pickedUserId",
             "candidateTeamIds",
+            "candidateTeams",
             "assignmentSource",
             "assignment",
             "reachedOn",
