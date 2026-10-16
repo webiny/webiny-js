@@ -19,7 +19,7 @@ describe("DeletePageRevisionUseCase result", () => {
 
         const result = await container
             .resolve(UseCaseAbstraction)
-            .execute({ id: "page-1#0002", permanently: true });
+            .execute({ id: "page-1#0002" });
 
         expect(result).toBe(true);
         expect(repository.execute).toHaveBeenCalledTimes(1);
@@ -43,7 +43,7 @@ describe("DeletePageRevisionUseCaseWithLoading", () => {
     it("runs the delete under the delete loading action and returns true", async () => {
         const { loading, useCase } = setup(true);
 
-        const result = await useCase.execute({ id: "page-1#0002", permanently: true });
+        const result = await useCase.execute({ id: "page-1#0002" });
 
         expect(result).toBe(true);
         expect(loading.runCallBack.mock.calls[0][1]).toBe(loadingActions.delete);
@@ -52,7 +52,7 @@ describe("DeletePageRevisionUseCaseWithLoading", () => {
     it("passes a false result of the decoratee through (the warning was dismissed)", async () => {
         const { useCase } = setup(false);
 
-        const result = await useCase.execute({ id: "page-1#0002", permanently: true });
+        const result = await useCase.execute({ id: "page-1#0002" });
 
         expect(result).toBe(false);
     });

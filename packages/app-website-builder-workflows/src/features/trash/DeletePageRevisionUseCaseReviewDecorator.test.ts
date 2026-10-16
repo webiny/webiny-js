@@ -78,10 +78,10 @@ describe("DeletePageRevisionUseCaseReviewDecorator", () => {
         const { confirm, decoratee, useCase } = setup();
         decoratee.execute.mockResolvedValue(true);
 
-        const result = await useCase.execute({ id: "page-1#0002", permanently: true });
+        const result = await useCase.execute({ id: "page-1#0002" });
 
         expect(result).toBe(true);
-        expect(decoratee.execute).toHaveBeenCalledWith({ id: "page-1#0002", permanently: true });
+        expect(decoratee.execute).toHaveBeenCalledWith({ id: "page-1#0002" });
         expect(confirm).not.toHaveBeenCalled();
     });
 
@@ -89,7 +89,7 @@ describe("DeletePageRevisionUseCaseReviewDecorator", () => {
         const { decoratee, useCases, useCase } = setup();
         decoratee.execute.mockRejectedValueOnce(createRefusal()).mockResolvedValueOnce(true);
 
-        const result = await useCase.execute({ id: "page-1#0002", permanently: true });
+        const result = await useCase.execute({ id: "page-1#0002" });
 
         expect(result).toBe(true);
         expect(useCases.cancelForDelete).toHaveBeenCalledTimes(1);
@@ -106,7 +106,7 @@ describe("DeletePageRevisionUseCaseReviewDecorator", () => {
         const { decoratee, useCases, useCase } = setup("dismiss");
         decoratee.execute.mockRejectedValue(createRefusal());
 
-        const result = await useCase.execute({ id: "page-1#0002", permanently: true });
+        const result = await useCase.execute({ id: "page-1#0002" });
 
         expect(result).toBe(false);
         expect(useCases.cancelForDelete).not.toHaveBeenCalled();
@@ -117,7 +117,7 @@ describe("DeletePageRevisionUseCaseReviewDecorator", () => {
         const failure = new Error("Network down");
         decoratee.execute.mockRejectedValue(failure);
 
-        const error = await useCase.execute({ id: "page-1#0002", permanently: true }).catch(e => e);
+        const error = await useCase.execute({ id: "page-1#0002" }).catch(e => e);
 
         expect(error).toBe(failure);
     });

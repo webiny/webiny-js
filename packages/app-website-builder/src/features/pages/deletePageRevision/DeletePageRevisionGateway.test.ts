@@ -41,7 +41,7 @@ describe("DeletePageRevisionGateway", () => {
             websiteBuilder: { deletePageRevision: { data: true, error: null } }
         });
 
-        await expect(gateway.execute("page-1#0002", true)).resolves.toBeUndefined();
+        await expect(gateway.execute("page-1#0002")).resolves.toBeUndefined();
 
         const request = client.execute.mock.calls[0][0];
         expect(request.variables).toEqual({ id: "page-1#0002" });
@@ -64,7 +64,7 @@ describe("DeletePageRevisionGateway", () => {
             }
         });
 
-        const error = await gateway.execute("page-1#0002", true).catch(e => e);
+        const error = await gateway.execute("page-1#0002").catch(e => e);
 
         expect(error).toBeInstanceOf(GraphQLOperationError);
         expect(error.message).toBe(
@@ -85,7 +85,7 @@ describe("DeletePageRevisionGateway", () => {
             }
         });
 
-        const error = await gateway.execute("page-1#0002", true).catch(e => e);
+        const error = await gateway.execute("page-1#0002").catch(e => e);
 
         expect(error).toBeInstanceOf(GraphQLOperationError);
         expect(error.message).toBe("Could not delete page revision.");
@@ -95,7 +95,7 @@ describe("DeletePageRevisionGateway", () => {
         const { client, gateway } = setup();
         client.execute.mockRejectedValue(new Error("Network down"));
 
-        const error = await gateway.execute("page-1#0002", true).catch(e => e);
+        const error = await gateway.execute("page-1#0002").catch(e => e);
 
         expect(error).not.toBeInstanceOf(GraphQLOperationError);
         expect(error.message).toBe("Network down");

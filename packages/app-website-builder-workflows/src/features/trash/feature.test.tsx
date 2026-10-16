@@ -92,9 +92,7 @@ describe("WebsiteBuilderWorkflows (composition root)", () => {
 
     const exercise = async (container: Container) => {
         await container.resolve(DeletePageUseCase).execute({ id: "p1#0001", permanently: false });
-        await container
-            .resolve(DeletePageRevisionUseCase)
-            .execute({ id: "p1#0002", permanently: true });
+        await container.resolve(DeletePageRevisionUseCase).execute({ id: "p1#0002" });
         await container
             .resolve(BulkDeletePresenter)
             .execute([Page.create({ id: "p1#0001", entryId: "p1" })]);
@@ -170,9 +168,7 @@ describe("WbReviewTrashFeature", () => {
         await container
             .resolve(DeletePageUseCase)
             .execute({ id: "page-1#0001", permanently: false });
-        await container
-            .resolve(DeletePageRevisionUseCase)
-            .execute({ id: "page-1#0002", permanently: true });
+        await container.resolve(DeletePageRevisionUseCase).execute({ id: "page-1#0002" });
         await container
             .resolve(BulkDeletePresenter)
             .execute([Page.create({ id: "p1#0001", entryId: "p1" })]);

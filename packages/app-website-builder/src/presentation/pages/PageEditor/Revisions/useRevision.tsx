@@ -8,6 +8,7 @@ import {
 import { useCallback } from "react";
 import { Routes } from "~/routes.js";
 import { useRouter } from "@webiny/app";
+import { useSnackbar } from "@webiny/app-admin";
 
 export interface UseRevisionProps {
     revision: PageRevision;
@@ -17,6 +18,7 @@ export const useRevision = (props: UseRevisionProps) => {
     const { revision } = props;
 
     const { goToRoute } = useRouter();
+    const { showSnackbar } = useSnackbar();
 
     const { createPageRevisionFrom } = useCreatePageRevisionFrom();
     const { deletePageRevision } = useDeletePageRevision();
@@ -29,12 +31,16 @@ export const useRevision = (props: UseRevisionProps) => {
         });
     }, [revision.id]);
 
-    const deleteRevision = useCallback(() => {
-        deletePageRevision({
-            id: revision.id,
-            permanently: true
-        });
-    }, [revision.id]);
+    const deleteRevision = useCallback(async () => {
+        try {
+            const deleted = await deletePageRevision({ id: revision.id });
+            if (!deleted) {
+                return;
+            }
+        } catch (error) {
+            showSnackbar(error.message);
+        }
+    }, [revision.id, deletePageRevision, showSnackbar]);
 
     const publishRevision = useCallback(() => {
         publishPage({
