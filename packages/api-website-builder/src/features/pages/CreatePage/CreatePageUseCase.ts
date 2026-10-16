@@ -22,12 +22,15 @@ class CreatePageUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Publish before create event
-        const beforeCreateEvent = new PageBeforeCreateEvent({ input: data });
+        const beforeCreateEvent = new PageBeforeCreateEvent({
+            input: data,
+            page: structuredClone(data)
+        });
 
         await this.eventPublisher.publish(beforeCreateEvent);
 
         // Create the page as the handlers left it.
-        const result = await this.repository.execute(beforeCreateEvent.payload.input);
+        const result = await this.repository.execute(beforeCreateEvent.payload.page);
 
         if (result.isFail()) {
             return result;

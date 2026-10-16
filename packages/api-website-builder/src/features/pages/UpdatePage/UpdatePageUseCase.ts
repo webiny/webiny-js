@@ -8,6 +8,21 @@ import { PageBeforeUpdateEvent, PageAfterUpdateEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
+import { PageToEntryValuesMapper } from "~/domain/page/PageToEntryValuesMapper.js";
+import type { WbPage } from "~/domain/page/abstractions.js";
+
+/** The page as it will be after the update. Fields the update leaves out keep their stored value. */
+const applyUpdate = (original: WbPage, data: UseCaseAbstraction.UpdateData): WbPage => {
+    return {
+        ...original,
+        location: data.location ?? original.location,
+        properties: (data.properties as WbPage["properties"] | undefined) ?? original.properties,
+        metadata: data.metadata ?? original.metadata,
+        bindings: data.bindings ?? original.bindings,
+        elements: data.elements ?? original.elements,
+        extensions: data.extensions ?? original.extensions
+    };
+};
 
 class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -40,13 +55,19 @@ class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
         // Publish before update event
         const beforeEvent = new PageBeforeUpdateEvent({
             original,
-            input: { id, data }
+            input: { id, data },
+            page: structuredClone(applyUpdate(original, data))
         });
 
         await this.eventPublisher.publish(beforeEvent);
 
-        // Update with the data as the handlers left it.
-        const result = await this.repository.execute(id, beforeEvent.payload.input.data);
+        // Save the page as the handlers left it.
+        const { page } = beforeEvent.payload;
+        const result = await this.repository.execute(id, {
+            ...PageToEntryValuesMapper.toValues(page),
+            location: page.location,
+            system: data.system
+        });
 
         if (result.isFail()) {
             return result;
@@ -55,7 +76,7 @@ class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
         // Publish after update event
         const afterEvent = new PageAfterUpdateEvent({
             original,
-            input: beforeEvent.payload.input,
+            input: { id, data },
             page: result.value
         });
 

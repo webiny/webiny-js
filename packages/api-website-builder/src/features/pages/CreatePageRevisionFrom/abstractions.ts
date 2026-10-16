@@ -93,11 +93,11 @@ export interface PageBeforeCreateRevisionFromPayload {
     params: ICreateWbPageRevisionFromParams;
     /** The revision the new one is created from. */
     original: WbPage;
-    /** What the new revision is created with. Handlers can change or replace `data`. */
-    input: {
-        id: string;
-        data: CmsEntryWbPage;
-    };
+    /**
+     * What the new revision is created with. Starts as a copy of `original`; handlers can change
+     * or replace it.
+     */
+    page: WbPage;
 }
 
 export interface PageAfterCreateRevisionFromPayload {
