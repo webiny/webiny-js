@@ -1,3 +1,4 @@
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { DeletePageGateway as GatewayAbstraction } from "./abstractions.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 
@@ -35,7 +36,11 @@ class DeletePageGatewayImpl implements GatewayAbstraction.Interface {
 
         const envelope = response.websiteBuilder.deletePage;
         if (envelope.error) {
-            throw new Error(envelope.error.message || "Could not delete page.");
+            throw new GraphQLOperationError({
+                message: envelope.error.message || "Could not delete page.",
+                code: envelope.error.code,
+                data: envelope.error.data
+            });
         }
     }
 }

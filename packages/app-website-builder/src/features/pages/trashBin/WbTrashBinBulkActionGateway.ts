@@ -4,13 +4,20 @@ import type {
     ITrashBinBulkActionResult
 } from "@webiny/app-admin/presentation/trashBin/abstractions.js";
 import { TrashBinBulkActionGateway } from "@webiny/app-admin/presentation/trashBin/abstractions.js";
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
+
+interface BulkActionsErrorResponse {
+    code: string;
+    message: string;
+    data?: unknown;
+}
 
 interface BulkActionsResponse {
     websiteBuilder: {
         bulkActions: {
             data: { id: string } | null;
-            error: { code: string; message: string } | null;
+            error: BulkActionsErrorResponse | null;
         };
     };
 }
@@ -30,6 +37,7 @@ class WbTrashBinBulkActionGatewayImpl implements ITrashBinBulkActionGateway {
                             error {
                                 code
                                 message
+                                data
                             }
                         }
                     }
@@ -41,7 +49,11 @@ class WbTrashBinBulkActionGatewayImpl implements ITrashBinBulkActionGateway {
         const { data, error } = response.websiteBuilder.bulkActions;
 
         if (error || !data) {
-            throw new Error(error?.message || "Could not perform the bulk action.");
+            throw new GraphQLOperationError({
+                message: error?.message || "Could not perform the bulk action.",
+                code: error?.code,
+                data: error?.data
+            });
         }
 
         return data;

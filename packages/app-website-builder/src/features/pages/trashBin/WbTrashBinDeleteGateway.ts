@@ -1,12 +1,19 @@
 import type { ITrashBinDeleteGateway } from "@webiny/app-admin/presentation/trashBin/abstractions.js";
 import { TrashBinDeleteGateway } from "@webiny/app-admin/presentation/trashBin/abstractions.js";
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
+
+interface DeletePageErrorResponse {
+    code: string;
+    message: string;
+    data?: unknown;
+}
 
 interface DeletePageResponse {
     websiteBuilder: {
         deletePage: {
             data: boolean | null;
-            error: { code: string; message: string } | null;
+            error: DeletePageErrorResponse | null;
         };
     };
 }
@@ -24,6 +31,7 @@ class WbTrashBinDeleteGatewayImpl implements ITrashBinDeleteGateway {
                             error {
                                 code
                                 message
+                                data
                             }
                         }
                     }
@@ -35,7 +43,11 @@ class WbTrashBinDeleteGatewayImpl implements ITrashBinDeleteGateway {
         const { error } = response.websiteBuilder.deletePage;
 
         if (error) {
-            throw new Error(error.message || "Could not permanently delete the page.");
+            throw new GraphQLOperationError({
+                message: error.message || "Could not permanently delete the page.",
+                code: error.code,
+                data: error.data
+            });
         }
 
         return true;
