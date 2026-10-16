@@ -30,7 +30,7 @@ export const PageReviewBar = createReactiveComponent(() => {
 
     useEffect(() => {
         const context = getPageReviewContext(editor, page);
-        session.presenter.init({
+        void session.presenter.init({
             useCases: session.useCases,
             target: { namespace: WB_PAGE_APP, targetRevisionId: page.id },
             ...context
