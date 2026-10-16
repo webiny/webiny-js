@@ -79,6 +79,7 @@ export interface IReviewListViewModel {
     hasMore: boolean;
     sort: ReviewListSort;
     search: string;
+    searchDraft: string;
     contentTypeId: string | null;
     reviewState: ReviewStateValue | null;
     stepState: StepStateValue | null;
@@ -93,6 +94,7 @@ export interface IReviewListPresenter {
     readonly vm: IReviewListViewModel;
     init(params: ReviewListInitParams): Promise<void>;
     setTab(tab: ReviewListTab): Promise<void>;
+    setSearchDraft(search: string): void;
     setSearch(search: string): Promise<void>;
     setContentType(contentTypeId: string | null): Promise<void>;
     setReviewState(reviewState: ReviewStateValue | null): Promise<void>;

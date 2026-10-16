@@ -1,3 +1,4 @@
+import { afterEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
@@ -678,5 +679,81 @@ describe("ReviewListPresenter", () => {
         expect(second.presenter.vm.tab).toBe("pool");
         expect(first.presenter.vm.rows.map(row => row.reviewId)).toEqual(["a"]);
         expect(second.presenter.vm.rows.map(row => row.reviewId)).toEqual(["b"]);
+    });
+
+    describe("search draft", () => {
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
+        it("updates the draft at once and applies the search after 300 ms without typing", async () => {
+            const { presenter, listReviews, params } = setup();
+            listReviews.mockResolvedValue(page([]));
+            await presenter.init(params);
+            vi.useFakeTimers();
+
+            presenter.setSearchDraft("bud");
+            await vi.advanceTimersByTimeAsync(200);
+            presenter.setSearchDraft("budget");
+            expect(presenter.vm.searchDraft).toBe("budget");
+            await vi.advanceTimersByTimeAsync(299);
+            expect(presenter.vm.search).toBe("");
+            expect(listReviews).toHaveBeenCalledTimes(1);
+
+            await vi.advanceTimersByTimeAsync(1);
+
+            expect(presenter.vm.search).toBe("budget");
+            expect(listReviews).toHaveBeenCalledTimes(2);
+            expect(listReviews).toHaveBeenLastCalledWith(
+                expect.objectContaining({
+                    where: expect.objectContaining({ titleContains: "budget" })
+                })
+            );
+        });
+
+        it("does not apply a draft equal to the applied search", async () => {
+            const { presenter, listReviews, params } = setup();
+            listReviews.mockResolvedValue(page([]));
+            await presenter.init(params);
+            vi.useFakeTimers();
+
+            presenter.setSearchDraft("");
+            await vi.advanceTimersByTimeAsync(1000);
+
+            expect(listReviews).toHaveBeenCalledTimes(1);
+        });
+
+        it("resets the draft on a tab switch and clears the timer on dispose", async () => {
+            const { presenter, listReviews, params } = setup();
+            listReviews.mockResolvedValue(page([]));
+            await presenter.init(params);
+            vi.useFakeTimers();
+
+            presenter.setSearchDraft("pending");
+            await presenter.setTab("pool");
+            expect(presenter.vm.searchDraft).toBe("");
+            await vi.advanceTimersByTimeAsync(1000);
+            expect(presenter.vm.search).toBe("");
+
+            presenter.setSearchDraft("again");
+            presenter.dispose();
+            await vi.advanceTimersByTimeAsync(1000);
+
+            expect(listReviews).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    it("drops a vanished row at once when the viewer prefers reduced motion", async () => {
+        vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({ matches: true }));
+        const { presenter, listReviews, activity, params } = setup();
+        listReviews.mockResolvedValueOnce(page(ascendingPage(2)));
+        listReviews.mockResolvedValueOnce(page(ascendingPage(1)));
+        await presenter.init(params);
+
+        activity.notify({ namespace: "cms.article", source: "remote" });
+
+        await vi.waitFor(() => expect(presenter.vm.rows).toHaveLength(1));
+        expect(presenter.vm.rows[0].leaving).toBe(false);
+        vi.unstubAllGlobals();
     });
 });

@@ -466,6 +466,29 @@ describe("ReviewListView", () => {
         expect(screen.getByText("Stays here")).toBeTruthy();
     });
 
+    it("ignores a transition end bubbling from a child of a leaving row", async () => {
+        const { activity } = renderView({
+            results: [
+                page([
+                    createReviewListItem({ id: "stays", title: "Stays here" }),
+                    createReviewListItem({ id: "gone", title: "Gone review" })
+                ]),
+                page([createReviewListItem({ id: "stays", title: "Stays here" })])
+            ]
+        });
+        await screen.findByText("Gone review");
+        act(() => {
+            activity.notify({ namespace: "cms.article", source: "remote" });
+        });
+        await waitFor(() => {
+            expect(rowOf("Gone review").className).toContain("opacity-35");
+        });
+
+        fireEvent.transitionEnd(screen.getByText("Gone review"));
+
+        expect(screen.getByText("Gone review")).toBeTruthy();
+    });
+
     it("loads more by cursor and ends with 'That's everything.'", async () => {
         const { listReviews } = renderView({
             results: [
@@ -584,7 +607,7 @@ describe("ReviewListView", () => {
         expect(await screen.findByTitle("Newest change first")).toBeTruthy();
     });
 
-    it("renders review and step state labels", async () => {
+    it("renders the step state label of a row", async () => {
         renderView({
             results: [
                 page([

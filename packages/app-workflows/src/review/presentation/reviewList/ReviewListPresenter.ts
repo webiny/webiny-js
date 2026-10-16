@@ -30,7 +30,11 @@ import { getListRowActions } from "./getListRowActions.js";
 import { getReviewListEmpty } from "./getReviewListEmpty.js";
 import { hasRowChanged } from "./hasRowChanged.js";
 import { isBeyondRefetchWindow } from "./isBeyondRefetchWindow.js";
+import { prefersReducedMotion } from "./prefersReducedMotion.js";
 import { resolveRowBinding } from "./resolveRowBinding.js";
+
+/** The search input applies its draft after this long without typing. */
+const SEARCH_DEBOUNCE_MS = 300;
 
 const NEW_REVIEWS_NOTICE = "New reviews are available.";
 const LOAD_FAILED_MESSAGE = "The server did not respond. Try again in a moment.";
@@ -50,6 +54,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     private _tab: ReviewListTab = "assignedToMe";
     private _sort: ReviewListSort = "lastChangedOn_ASC";
     private _search = "";
+    private _searchDraft = "";
     private _contentTypeId: string | null = null;
     private _reviewState: ReviewStateValue | null = null;
     private _stepState: StepStateValue | null = null;
@@ -69,6 +74,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     private loadToken = 0;
     private refreshingToken: number | null = null;
     private refreshQueued = false;
+    private searchTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(
         private activity: ReviewActivity.Interface,
@@ -84,6 +90,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             | "loadToken"
             | "refreshingToken"
             | "refreshQueued"
+            | "searchTimer"
         >(this, {
             activity: false,
             identityContext: false,
@@ -92,7 +99,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             unsubscribe: false,
             loadToken: false,
             refreshingToken: false,
-            refreshQueued: false
+            refreshQueued: false,
+            searchTimer: false
         });
     }
 
@@ -127,6 +135,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             hasMore: this._hasMore,
             sort: this._sort,
             search: this._search,
+            searchDraft: this._searchDraft,
             contentTypeId: this._contentTypeId,
             reviewState: this._reviewState,
             stepState: this._stepState,
@@ -170,7 +179,9 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
 
         this._tab = tab;
         this._sort = getDefaultReviewListSort(tab);
+        this.cancelSearchTimer();
         this._search = "";
+        this._searchDraft = "";
         this._contentTypeId = null;
         this._reviewState = null;
         this._stepState = null;
@@ -189,6 +200,18 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         }
     }
 
+    setSearchDraft(search: string): void {
+        this.cancelSearchTimer();
+        this._searchDraft = search;
+        if (search === this._search) {
+            return;
+        }
+        this.searchTimer = setTimeout(() => {
+            this.searchTimer = null;
+            void this.setSearch(search);
+        }, SEARCH_DEBOUNCE_MS);
+    }
+
     async setSearch(search: string): Promise<void> {
         const useCases = this.useCases;
         if (!useCases || search === this._search) {
@@ -196,6 +219,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         }
 
         this._search = search;
+        this._searchDraft = search;
 
         const token = this.beginLoad(false);
         const request = this.createParams(REVIEW_LIST_PAGE_SIZE, null);
@@ -309,7 +333,9 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             return;
         }
 
+        this.cancelSearchTimer();
         this._search = "";
+        this._searchDraft = "";
         this._contentTypeId = null;
         this._reviewState = null;
         this._stepState = null;
@@ -484,7 +510,9 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this.rowProvider = null;
         this._tab = "assignedToMe";
         this._sort = "lastChangedOn_ASC";
+        this.cancelSearchTimer();
         this._search = "";
+        this._searchDraft = "";
         this._contentTypeId = null;
         this._reviewState = null;
         this._stepState = null;
@@ -496,6 +524,13 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this._heldIds = [];
         this._error = null;
         this._dialog = null;
+    }
+
+    private cancelSearchTimer(): void {
+        if (this.searchTimer) {
+            clearTimeout(this.searchTimer);
+            this.searchTimer = null;
+        }
     }
 
     // Starts a new generation and resets what a first-page load replaces. `keepRows` keeps the
@@ -594,8 +629,14 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             entries.push({ row: entry.row, leaving: true, highlighted: false });
         });
 
+        // Without a fade no transition ends, so a viewer who prefers reduced motion loses the row at once.
+        let kept = entries;
+        if (prefersReducedMotion()) {
+            kept = entries.filter(entry => !entry.leaving);
+        }
+
         const fresh = incoming.filter(row => !known.has(row.reviewId));
-        this._entries = entries;
+        this._entries = kept;
         this._heldIds = fresh.map(row => row.reviewId);
         this._cursor = listed.meta.cursor;
         this._hasMore = listed.meta.hasMoreItems;

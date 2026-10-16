@@ -24,6 +24,7 @@ const createVm = (
         hasMore: false,
         sort: "lastChangedOn_ASC",
         search: "",
+        searchDraft: "",
         contentTypeId: null,
         reviewState: null,
         stepState: null,
@@ -41,6 +42,7 @@ const createPresenter = (vm: ReviewListPresenter.ViewModel): ReviewListPresenter
         vm,
         init: vi.fn(),
         setTab: vi.fn(),
+        setSearchDraft: vi.fn(),
         setSearch: vi.fn(),
         setContentType: vi.fn(),
         setReviewState: vi.fn(),
@@ -68,7 +70,7 @@ describe("ReviewListToolbar", () => {
         vi.useRealTimers();
     });
 
-    it("applies the search after 300 ms without typing and restarts on every keystroke", () => {
+    it("sends every keystroke to the presenter's draft and applies nothing itself", () => {
         const presenter = createPresenter(createVm());
         render(
             <ReviewListToolbar
@@ -80,25 +82,18 @@ describe("ReviewListToolbar", () => {
         const input = screen.getByPlaceholderText("Search by title");
 
         fireEvent.change(input, { target: { value: "bud" } });
-        act(() => {
-            vi.advanceTimersByTime(200);
-        });
         fireEvent.change(input, { target: { value: "budget" } });
         act(() => {
-            vi.advanceTimersByTime(299);
+            vi.advanceTimersByTime(1000);
         });
+
+        expect(presenter.setSearchDraft).toHaveBeenCalledTimes(2);
+        expect(presenter.setSearchDraft).toHaveBeenLastCalledWith("budget");
         expect(presenter.setSearch).not.toHaveBeenCalled();
-
-        act(() => {
-            vi.advanceTimersByTime(1);
-        });
-
-        expect(presenter.setSearch).toHaveBeenCalledTimes(1);
-        expect(presenter.setSearch).toHaveBeenCalledWith("budget");
     });
 
-    it("shows the applied search and does not re-apply it", () => {
-        const presenter = createPresenter(createVm({ search: "applied" }));
+    it("shows the draft of the view model", () => {
+        const presenter = createPresenter(createVm({ search: "applied", searchDraft: "typing" }));
         render(
             <ReviewListToolbar
                 presenter={presenter}
@@ -108,12 +103,8 @@ describe("ReviewListToolbar", () => {
         );
 
         const input = screen.getByPlaceholderText("Search by title") as HTMLInputElement;
-        act(() => {
-            vi.advanceTimersByTime(1000);
-        });
 
-        expect(input.value).toBe("applied");
-        expect(presenter.setSearch).not.toHaveBeenCalled();
+        expect(input.value).toBe("typing");
     });
 
     it("offers the content type filter only with the option and a filter", () => {

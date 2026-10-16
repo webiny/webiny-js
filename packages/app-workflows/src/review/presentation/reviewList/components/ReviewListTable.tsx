@@ -1,5 +1,4 @@
 import React from "react";
-import { useEffect } from "react";
 import { Button } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
 import { Table } from "@webiny/admin-ui";
@@ -9,7 +8,6 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { cn } from "@webiny/admin-ui";
 import type { ReviewListPresenter } from "../abstractions.js";
 import type { ReviewListRowVm } from "../abstractions.js";
-import { prefersReducedMotion } from "../prefersReducedMotion.js";
 import { ReviewListRowActions } from "./ReviewListRowActions.js";
 
 export interface ReviewListTableProps {
@@ -24,13 +22,6 @@ interface ReviewListTableRowProps {
 }
 
 const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTableRowProps) => {
-    // A viewer who prefers reduced motion sees no fade, so no transition ends: drop the row at once.
-    useEffect(() => {
-        if (row.leaving && prefersReducedMotion()) {
-            presenter.removeLeavingRow(row.reviewId);
-        }
-    }, [row.leaving, row.reviewId, presenter]);
-
     let title: React.ReactNode = row.title;
     if (row.contentUrl) {
         title = (
@@ -52,16 +43,21 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
 
     // A leaving row fades to 35 % and is dropped once its transition ends (QBZ-71); a row that
     // changed is highlighted (QBZ-86).
+    const onTransitionEnd = (event: React.TransitionEvent<HTMLElement>) => {
+        // Transitions of children (hover colours) bubble up; only the row's own fade counts.
+        if (event.target !== event.currentTarget) {
+            return;
+        }
+        presenter.removeLeavingRow(row.reviewId);
+    };
+
     const className = cn("transition-opacity duration-500 motion-reduce:transition-none", {
         "opacity-35": row.leaving,
         "bg-primary-subtle": row.highlighted
     });
 
     return (
-        <Table.Row
-            className={className}
-            onTransitionEnd={() => presenter.removeLeavingRow(row.reviewId)}
-        >
+        <Table.Row className={className} onTransitionEnd={onTransitionEnd}>
             <Table.Cell>{title}</Table.Cell>
             {contentType}
             <Table.Cell>{row.stepTitle ?? ""}</Table.Cell>

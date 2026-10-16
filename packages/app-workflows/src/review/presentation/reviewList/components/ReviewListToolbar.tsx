@@ -1,6 +1,4 @@
 import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
 import { Input } from "@webiny/admin-ui";
 import { Select } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
@@ -11,7 +9,6 @@ import type { StepStateValue } from "~/review/domain/StepState.js";
 import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
 import type { ReviewListPresenter } from "../abstractions.js";
 
-const SEARCH_DEBOUNCE_MS = 300;
 const ALL = "all";
 
 interface ReviewStateFilterOption {
@@ -49,25 +46,6 @@ export interface ReviewListToolbarProps {
 export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolbarProps) => {
     const { presenter, showContentType, contentTypeFilter } = props;
     const vm = presenter.vm;
-    const [draft, setDraft] = useState(vm.search);
-
-    // A tab switch resets the applied search; show it.
-    useEffect(() => {
-        setDraft(vm.search);
-    }, [vm.search]);
-
-    // Apply the draft after 300 ms without typing (design: search by title).
-    useEffect(() => {
-        if (draft === vm.search) {
-            return;
-        }
-        const timer = setTimeout(() => {
-            void presenter.setSearch(draft);
-        }, SEARCH_DEBOUNCE_MS);
-        return () => {
-            clearTimeout(timer);
-        };
-    }, [draft, vm.search, presenter]);
 
     let contentTypeSelect: React.ReactNode = null;
     if (showContentType && contentTypeFilter) {
@@ -126,7 +104,11 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
     return (
         <div className="flex flex-wrap items-center gap-sm mb-md">
             <div className="grow min-w-[220px]">
-                <Input value={draft} onChange={setDraft} placeholder="Search by title" />
+                <Input
+                    value={vm.searchDraft}
+                    onChange={value => presenter.setSearchDraft(value)}
+                    placeholder="Search by title"
+                />
             </div>
             {contentTypeSelect}
             {requestFilters}
