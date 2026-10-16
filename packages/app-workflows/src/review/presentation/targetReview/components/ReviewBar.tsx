@@ -13,6 +13,7 @@ import { ReviewBarFailed } from "./ReviewBarFailed.js";
 import { ReviewBarSkeleton } from "./ReviewBarSkeleton.js";
 import { ReviewProgress } from "./ReviewProgress.js";
 import { ReviewActionDialogs } from "../../actionDialog/components/ReviewActionDialogs.js";
+import { RequestReviewDialog } from "../../requestReview/components/RequestReviewDialog.js";
 import { toActionRequest } from "../../actionDialog/toActionRequest.js";
 import type { TargetReviewPresenter } from "../abstractions.js";
 
@@ -44,6 +45,7 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
 
     const TileIcon = REVIEW_TILE_ICONS[vm.tile];
     const request = toActionRequest(vm.openAction, vm.reviewId);
+    const target = { namespace: vm.namespace, targetRevisionId: vm.targetRevisionId };
 
     return (
         <>
@@ -122,6 +124,16 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                     </div>
                 )}
             </div>
+            {vm.openAction !== null && vm.openAction.kind === "request" ? (
+                <RequestReviewDialog
+                    useCases={useCases}
+                    target={target}
+                    targetTitle={vm.targetTitle}
+                    reviewsUrl={reviewsUrl}
+                    onDone={() => presenter.actionDone()}
+                    onClose={() => presenter.closeAction()}
+                />
+            ) : null}
             <ReviewActionDialogs
                 useCases={useCases}
                 request={request}
