@@ -17,6 +17,8 @@ import {
     PageAfterDeleteEventHandler,
     PageBeforeDeleteEventHandler
 } from "@webiny/api-website-builder/features/pages/DeletePage/index.js";
+import { PageRevisionAfterDeleteEventHandler } from "@webiny/api-website-builder/features/pages/DeletePageRevision/index.js";
+import { PageRevisionBeforeDeleteEventHandler } from "@webiny/api-website-builder/features/pages/DeletePageRevision/index.js";
 import { PAGE_MODEL_ID } from "@webiny/api-website-builder/domain/page/page.model.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
@@ -135,7 +137,9 @@ describe("WebsiteBuilderWorkflowsFeature registration", () => {
             PageBeforeMoveEventHandler,
             PageBeforeTrashEventHandler,
             PageBeforeDeleteEventHandler,
-            PageAfterDeleteEventHandler
+            PageAfterDeleteEventHandler,
+            PageRevisionBeforeDeleteEventHandler,
+            PageRevisionAfterDeleteEventHandler
         ];
         for (const handler of handlers) {
             expect(licensed.resolveAll(handler).length - container.resolveAll(handler).length).toBe(
