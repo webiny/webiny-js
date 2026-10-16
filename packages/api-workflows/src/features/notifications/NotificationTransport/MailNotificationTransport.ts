@@ -1,6 +1,7 @@
-import { MailerService } from "@webiny/api-mailer";
+import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { MAIL_BCC_CHUNK_SIZE } from "~/domain/notifications/constants.js";
+import { getErrorLogFields } from "~/domain/notifications/getErrorLogFields.js";
 import { escapeHtml } from "~/domain/notifications/escapeHtml.js";
 import { toSingleLine } from "~/domain/notifications/toSingleLine.js";
 import { NotificationTransport } from "./abstractions.js";
@@ -10,19 +11,13 @@ const PLAIN_ADDRESS = /^[^@\s,;<>]+@[^@\s,;<>]+$/;
 
 const SEND_FAILURE_LOG = "Could not send a workflow notification e-mail.";
 
-/** The two fields read off a thrown value; anything else about it is never logged (R193). */
-interface ThrownErrorFields {
-    code?: unknown;
-    name?: unknown;
-}
-
 class MailNotificationTransportImpl implements NotificationTransport.Interface {
     public readonly id = "e-mail";
     public readonly title = "E-Mail";
     public readonly description = "Sends an e-mail to the people who need to act.";
 
     public constructor(
-        private mailer: MailerService.Interface,
+        private sendMail: SendMailUseCase.Interface,
         private logger: Logger.Interface
     ) {}
 
@@ -61,23 +56,20 @@ class MailNotificationTransportImpl implements NotificationTransport.Interface {
             const bcc = chunk.map(user => user.email);
             const userIds = chunk.map(user => user.id);
             try {
-                const result = await this.mailer.sendMail({ bcc, subject, text, html });
+                const result = await this.sendMail.execute({ bcc, subject, text, html });
                 if (result.isFail()) {
                     this.logger.error(
                         {
-                            errorCode: result.error.code,
-                            errorName: result.error.name,
+                            ...getErrorLogFields(result.error),
                             userIds
                         },
                         SEND_FAILURE_LOG
                     );
                 }
             } catch (error) {
-                const thrown = error as ThrownErrorFields | null | undefined;
                 this.logger.error(
                     {
-                        errorCode: typeof thrown?.code === "string" ? thrown.code : undefined,
-                        errorName: typeof thrown?.name === "string" ? thrown.name : undefined,
+                        ...getErrorLogFields(error),
                         userIds
                     },
                     SEND_FAILURE_LOG
@@ -89,5 +81,5 @@ class MailNotificationTransportImpl implements NotificationTransport.Interface {
 
 export const MailNotificationTransport = NotificationTransport.createImplementation({
     implementation: MailNotificationTransportImpl,
-    dependencies: [MailerService, Logger]
+    dependencies: [SendMailUseCase, Logger]
 });

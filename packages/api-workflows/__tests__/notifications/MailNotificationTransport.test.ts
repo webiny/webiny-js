@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MockInstance } from "vitest";
 import { MailerService } from "@webiny/api-mailer";
+import { MailAfterSendEventHandler } from "@webiny/api-mailer/features/SendMail/index.js";
+import type { Container } from "@webiny/feature/api";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { RecordingMailer, type SentMail } from "~tests/__helpers/RecordingMailer.js";
@@ -25,12 +27,16 @@ const MESSAGE: NotificationTransport.Message = {
     linkLabel: "Open content"
 };
 
-const createTransport = async (mailer: RecordingMailer) => {
+const createTransport = async (
+    mailer: RecordingMailer,
+    register?: (container: Container) => void
+) => {
     loggedErrors.length = 0;
     const { context } = await createContextHandler({
         setup: container => {
             captureLoggedErrors(container);
             container.registerInstance(MailerService, mailer);
+            register?.(container);
         }
     });
     const transport = context.container
@@ -309,6 +315,75 @@ describe("MailNotificationTransport (R193)", () => {
             errorName: undefined,
             userIds: ["user-0"]
         });
+        expect(JSON.stringify(loggedErrors)).not.toContain("anna@webiny.test");
+    });
+
+    it("logs a mailer validation failure once with the fixed text and its code, and never throws", async () => {
+        const mailer = new RecordingMailer();
+        const transport = await createTransport(mailer);
+
+        // A one character subject is below the mailer schema's minimum of 2.
+        await expect(
+            transport.send({
+                users: toRecipients(createUsers(1)),
+                message: { ...MESSAGE, title: "A" }
+            })
+        ).resolves.toBeUndefined();
+
+        expect(mailer.sent).toEqual([]);
+        expect(loggedErrors).toHaveLength(1);
+        expect(loggedErrors[0].message).toBe("Could not send a workflow notification e-mail.");
+        expect(loggedErrors[0].fields).toEqual({
+            errorCode: "Mailer/SendMail/Validation",
+            errorName: "Error",
+            userIds: ["user-0"]
+        });
+    });
+
+    it("fires the mail events: an after-send handler sees the workflow mail", async () => {
+        const seen: string[] = [];
+        class RecordingAfterSend implements MailAfterSendEventHandler.Interface {
+            public async handle(event: MailAfterSendEventHandler.Event) {
+                seen.push(event.payload.data.subject);
+            }
+        }
+        const handler = MailAfterSendEventHandler.createImplementation({
+            implementation: RecordingAfterSend,
+            dependencies: []
+        });
+        const mailer = new RecordingMailer();
+        const transport = await createTransport(mailer, container => {
+            container.register(handler);
+        });
+
+        await transport.send({ users: toRecipients(createUsers(1)), message: MESSAGE });
+
+        expect(mailer.sent).toHaveLength(1);
+        expect(seen).toEqual([MESSAGE.title]);
+    });
+
+    it("logs a throwing event handler once and never throws", async () => {
+        class ThrowingAfterSend implements MailAfterSendEventHandler.Interface {
+            public async handle(): Promise<void> {
+                throw Object.assign(new Error("handler for anna@webiny.test failed"), {
+                    code: "HANDLER_FAILED"
+                });
+            }
+        }
+        const handler = MailAfterSendEventHandler.createImplementation({
+            implementation: ThrowingAfterSend,
+            dependencies: []
+        });
+        const transport = await createTransport(new RecordingMailer(), container => {
+            container.register(handler);
+        });
+
+        await expect(
+            transport.send({ users: toRecipients(createUsers(1)), message: MESSAGE })
+        ).resolves.toBeUndefined();
+
+        expect(loggedErrors).toHaveLength(1);
+        expect(loggedErrors[0].fields.errorCode).toBe("HANDLER_FAILED");
         expect(JSON.stringify(loggedErrors)).not.toContain("anna@webiny.test");
     });
 

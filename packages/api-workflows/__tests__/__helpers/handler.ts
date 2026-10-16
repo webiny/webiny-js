@@ -6,6 +6,7 @@ import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/in
 import { FakeTaskService } from "./FakeTaskService.js";
 import { fakeGetTask } from "./FakeGetTask.js";
 import { MailerService } from "@webiny/api-mailer";
+import { SendMailFeature } from "@webiny/api-mailer/features/SendMail/feature.js";
 import {
     WebsocketsListConnectionsUseCase,
     WebsocketsSendToConnectionsUseCase
@@ -38,6 +39,8 @@ export const createContextHandler = async (params: CmsTestHandlerParams = {}) =>
             // cases, which the test context does not provide. Inert instances, so no test sends a
             // mail or a frame; a test's own `registerInstance` in `params.setup` wins.
             container.registerInstance(MailerService, new RecordingMailer());
+            // The e-mail transport sends through `SendMailUseCase`, which calls the instance above.
+            SendMailFeature.register(container);
             container.registerInstance(
                 WebsocketsListConnectionsUseCase,
                 new FakeWebsocketConnections()
