@@ -7,7 +7,9 @@
     { "path": "../app-admin" },
     { "path": "../app-website-builder" },
     { "path": "../app-workflows" },
-    { "path": "../feature" }
+    { "path": "../feature" },
+    { "path": "../app-headless-cms-workflows" },
+    { "path": "../feature-flags" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -27,7 +29,11 @@
       "@webiny/app-workflows/*": ["../app-workflows/src/*"],
       "@webiny/app-workflows": ["../app-workflows/src"],
       "@webiny/feature/*": ["../feature/src/*"],
-      "@webiny/feature": ["../feature/src"]
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/app-headless-cms-workflows/*": ["../app-headless-cms-workflows/src/*"],
+      "@webiny/app-headless-cms-workflows": ["../app-headless-cms-workflows/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"]
     }
   }
 }
