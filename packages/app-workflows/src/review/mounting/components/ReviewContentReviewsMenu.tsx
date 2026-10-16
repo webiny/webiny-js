@@ -20,20 +20,25 @@ export const ReviewContentReviewsMenu = ({
     const { Menu } = AdminConfig;
 
     return (
-        <Menu
-            name={name}
-            parent={parent ?? null}
-            pinnable={true}
-            element={
-                <Menu.Link
-                    icon={
-                        <Menu.Link.Icon label="Content Reviews" element={<ContentReviewsIcon />} />
-                    }
-                    text="Content Reviews"
-                    to={router.getLink(route)}
-                    pinnable={true}
-                />
-            }
-        />
+        <AdminConfig>
+            <Menu
+                name={name}
+                parent={parent ?? null}
+                pinnable={true}
+                element={
+                    <Menu.Link
+                        icon={
+                            <Menu.Link.Icon
+                                label="Content Reviews"
+                                element={<ContentReviewsIcon />}
+                            />
+                        }
+                        text="Content Reviews"
+                        to={router.getLink(route)}
+                        pinnable={true}
+                    />
+                }
+            />
+        </AdminConfig>
     );
 };
