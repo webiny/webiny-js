@@ -5,7 +5,7 @@ import { StarterKitConfigPresenter } from "./StarterKitConfigPresenter.js";
 export const StarterKitConfigFeature = createFeature({
     name: "FrontendSettings/StarterKitConfig",
     register(container) {
-        container.register(StarterKitConfigPresenter);
+        container.register(StarterKitConfigPresenter).inSingletonScope();
     },
     resolve(container) {
         return {

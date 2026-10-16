@@ -2,11 +2,12 @@ import { createWorkflow, NormalJob } from "github-actions-wac";
 import {
     createDeployWebinySteps,
     createGlobalBuildCacheSteps,
+    createInstallationTestSteps,
     createInstallBuildSteps,
     createRunBuildCacheSteps,
     createSetupVerdaccioSteps,
-    createYarnCacheSteps,
-    withCommonParams
+    createUnlicensedE2eSteps,
+    createYarnCacheSteps
 } from "./steps/index.js";
 import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
@@ -30,44 +31,21 @@ const createCheckoutPrSteps = () =>
         }
     ] as NonNullable<NormalJob["steps"]>;
 
-const createCypressJobs = (dbSetup: string) => {
+// Scaffold a project, deploy it to AWS, then run the installation and login tests against the
+// deployed Admin app. One variant per storage setup ("ddb", "ddb-os").
+//
+// Pulumi state stays in the project's local `.pulumi` folder and goes away with the runner. The
+// nightly `cleanup.yml` removes what was deployed with aws-nuke, so nothing needs the state later.
+const createE2eJobs = (dbSetup: string) => {
     const jobNames = {
-        constants: `e2e-wby-cms-${dbSetup}-constants`,
-        projectSetup: `e2e-wby-cms-${dbSetup}-project-setup`,
-        cypressTests: `e2e-wby-cms-${dbSetup}-cypress-tests`
+        projectSetup: `e2e-wby-cms-${dbSetup}-project-setup`
     };
 
     const dbDisplayName = dbSetup === "ddb-os" ? "DDB+OS" : "DDB";
 
-    const constantsJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants", "build"],
-        name: `Constants - ${dbSetup.toUpperCase()}`,
-        outputs: {
-            "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}",
-            "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
-        },
-        checkout: { path: DIR_WEBINY_JS },
-        steps: [
-            ...createCheckoutPrSteps(),
-            {
-                name: "List Cypress tests folders",
-                id: "list-cypress-folders",
-                run: 'echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT',
-                "working-directory": DIR_WEBINY_JS
-            },
-            {
-                name: "Get Pulumi backend URL",
-                id: "get-pulumi-backend-url",
-                run: `echo "pulumi-backend-url=\${{ secrets.WEBINY_PULUMI_BACKEND }}\${{ github.run_id }}_${dbSetup}" >> $GITHUB_OUTPUT`
-            }
-        ]
-    });
-
     const env: Record<string, string> = {
-        CYPRESS_MAILOSAUR_API_KEY: "${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}",
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
         PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
-        WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
         WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}"
     };
 
@@ -80,11 +58,8 @@ const createCypressJobs = (dbSetup: string) => {
     }
 
     const projectSetupJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants", jobNames.constants, "checkComment"],
+        needs: ["baseBranch", "constants", "build", "checkComment"],
         name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
-        outputs: {
-            "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
-        },
         environment: "next",
         env,
         awsAuth: true,
@@ -193,44 +168,20 @@ const createCypressJobs = (dbSetup: string) => {
                     `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
                 ].join("\n")
             },
-            ...withCommonParams(
-                [
-                    // Commented this out b/c of an issue. Basically, the
-                    // script fails b/c its output is not pure JSON string.
-                    // {
-                    //     name: "Deployment Summary",
-                    //     run: `${runNodeScript(
-                    //         "printDeploymentSummary",
-                    //         `../${DIR_TEST_PROJECT}`
-                    //     )} >> $GITHUB_STEP_SUMMARY`
-                    // },
-                    {
-                        name: "Create Cypress config",
-                        run: `yarn setup-cypress --projectFolder ../${DIR_TEST_PROJECT}`
-                    },
-                    {
-                        name: "Save Cypress config",
-                        id: "save-cypress-config",
-                        run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
-                    },
-                    {
-                        name: "Install Cypress binary",
-                        run: "cd cypress-tests && yarn cypress install"
-                    },
-                    {
-                        name: "Cypress - run installation wizard test",
-                        run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
-                    }
-                ],
-                {
-                    "working-directory": DIR_WEBINY_JS
-                }
-            )
+            ...createInstallationTestSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
+                artifactName: `e2e-results-${dbSetup}`
+            }),
+            ...createUnlicensedE2eSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
+                artifactName: `e2e-test-results-${dbSetup}`
+            })
         ]
     });
 
     return {
-        [jobNames.constants]: constantsJob,
         [jobNames.projectSetup]: projectSetupJob
     };
 };
@@ -270,7 +221,7 @@ export const pullRequestsCommandE2e = createWorkflow({
                     uses: "peter-evans/create-or-update-comment@v2",
                     with: {
                         "issue-number": "${{ github.event.issue.number }}",
-                        body: "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:\n\n| Database | Status | Admin URL |\n| --- | --- | --- |\n| DDB | 🔄 Deploying... | - |\n| DDB+OS | 🔄 Deploying... | - |"
+                        body: "E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:\n\n| Database | Status | Admin URL |\n| --- | --- | --- |\n| DDB | 🔄 Deploying... | - |\n| DDB+OS | 🔄 Deploying... | - |"
                     }
                 }
             ]
@@ -334,7 +285,7 @@ export const pullRequestsCommandE2e = createWorkflow({
                 }
             ]
         }),
-        ...createCypressJobs("ddb"),
-        ...createCypressJobs("ddb-os")
+        ...createE2eJobs("ddb"),
+        ...createE2eJobs("ddb-os")
     }
 });

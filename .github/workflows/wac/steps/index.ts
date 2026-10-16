@@ -5,3 +5,5 @@ export * from "./createGlobalBuildCacheSteps.js";
 export * from "./createRunBuildCacheSteps.js";
 export * from "./createYarnCacheSteps.js";
 export * from "./withCommonParams.js";
+export * from "./createInstallationTestSteps.js";
+export * from "./createUnlicensedE2eSteps.js";

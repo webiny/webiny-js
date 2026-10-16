@@ -12,28 +12,48 @@ import {
     FrontendUpdateSettingsRepository
 } from "~/api/features/updateSettings/abstractions.js";
 import { StarterKitsProvider } from "~/api/features/starterKits/abstractions.js";
+import { FrontendPermissionsFeature } from "~/api/features/permissions/feature.js";
 import { FrontendUpdateSettingsUseCase as UpdateSettingsUseCaseImpl } from "~/api/features/updateSettings/FrontendUpdateSettingsUseCase.js";
 
 /*
  * Reading the domain only needs a signed-in user, because content editors need it to preview.
  * Starter kits contain the frontend integration API key token, so only callers with
- * `dev-tools.frontend-settings.*` get them, and only they can update. `getPermission()` is async, and
- * checking its result without awaiting it tests a Promise, which is always truthy. These tests
- * pin the awaited behavior: a denied or failed lookup must never reach the update repository.
+ * `dev-tools.frontend-settings.*` get them, and only they can update. The checks go through
+ * `FrontendPermissions`, which reads the identity's permissions asynchronously. Checking a lookup
+ * without awaiting it tests a Promise, which is always truthy, so these tests pin the awaited
+ * behavior: a denied or failed lookup must never reach the update repository.
  */
 type Lookup = "allowed" | "denied" | "rejected";
 
+const PERMISSION_NAME = "dev-tools.frontend-settings.*";
+
 const createIdentityContext = (params: { anonymous?: boolean; lookup: Lookup }) => {
-    const getPermission = vi.fn(async () => {
+    const lookup = async () => {
         if (params.lookup === "rejected") {
             throw new Error("Permission lookup failed.");
         }
-        return params.lookup === "allowed" ? { name: "dev-tools.frontend-settings.*" } : null;
+    };
+
+    const getPermission = vi.fn(async (name: string) => {
+        await lookup();
+        return params.lookup === "allowed" && name === PERMISSION_NAME ? { name } : null;
+    });
+
+    const getPermissions = vi.fn(async (name: string) => {
+        await lookup();
+        return params.lookup === "allowed" && name === PERMISSION_NAME ? [{ name }] : [];
+    });
+
+    const hasFullAccess = vi.fn(async () => {
+        await lookup();
+        return false;
     });
 
     return {
         getIdentity: () => ({ isAnonymous: () => params.anonymous === true }),
-        getPermission
+        getPermission,
+        getPermissions,
+        hasFullAccess
     };
 };
 
@@ -45,6 +65,7 @@ const setup = (params: { anonymous?: boolean; lookup: Lookup }) => {
     const starterKits = [{ id: "nextjs", label: "Next.js", config: "API_KEY=secret-token" }];
 
     container.registerInstance(IdentityContext, createIdentityContext(params) as any);
+    FrontendPermissionsFeature.register(container);
     container.registerInstance(FrontendGetSettingsRepository, getRepository);
     container.registerInstance(FrontendUpdateSettingsRepository, updateRepository);
     container.registerInstance(StarterKitsProvider, { execute: async () => starterKits });

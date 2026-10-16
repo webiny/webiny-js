@@ -80,6 +80,7 @@ const RefInner = observer(({ bind, modelIds }: RefInnerProps) => {
             value={vm.value}
             options={vm.options}
             validation={bind.validation}
+            shouldFilter={false}
             onValueSearch={query => presenter.search(query)}
             onValueChange={entryId => {
                 if (!entryId) {
