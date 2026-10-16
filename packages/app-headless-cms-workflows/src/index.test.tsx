@@ -4,6 +4,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { render } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { DiContainerProvider } from "@webiny/app/shared/di/DiContainerProvider.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
@@ -15,6 +16,9 @@ import { AppReviewRowProvider } from "@webiny/app-workflows/review/mounting/AppR
 import { ReviewNotificationHandler } from "@webiny/app-workflows/review/mounting/ReviewNotificationHandler.js";
 import { ReviewNotificationService } from "@webiny/app-workflows/review/notifications/abstractions.js";
 import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
+import { ListModelsUseCase } from "@webiny/app-headless-cms/features/model/listModels/abstractions.js";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { CmsContentReviewsPresenter } from "~/presentation/contentReviews/abstractions.js";
 import { CmsReviewRowProvider } from "~/features/gateway/CmsReviewRowProvider.js";
 import { CmsWorkflows } from "./index.js";
 
@@ -37,11 +41,13 @@ vi.mock("~/Components/ContentEntryForm/index.js", () => {
 });
 
 vi.mock("~/Components/ContentReviews/CmsContentReviews.js", () => {
-    return { CmsContentReviews: () => null };
+    return { CmsContentReviews: () => <div data-testid="cms-content-reviews" /> };
 });
 
 vi.mock("~/Components/ContentReviews/CmsContentReviewsSidebarItem.js", () => {
-    return { CmsContentReviewsSidebarItem: () => null };
+    return {
+        CmsContentReviewsSidebarItem: () => <div data-testid="cms-content-reviews-sidebar" />
+    };
 });
 
 vi.mock("~/Components/OptionItem/OpenInNewWindow.js", () => {
@@ -93,6 +99,12 @@ describe("CmsWorkflows composition", () => {
             hasItems: () => true
         } as unknown as ModelsCache.Interface);
         container.registerInstance(ReviewNotificationService, { handle: vi.fn() });
+        container.registerInstance(ListModelsUseCase, {
+            execute: async () => []
+        } as unknown as ListModelsUseCase.Interface);
+        container.registerInstance(Notifications, {
+            error: vi.fn()
+        } as unknown as Notifications.Interface);
         return container;
     };
 
@@ -152,5 +164,35 @@ describe("CmsWorkflows composition", () => {
         expect(() => container.resolve(CmsReviewRowProvider)).toThrow("No registration found");
         const handlers = container.resolveAll(WebsocketEventHandler);
         expect(handlers.some(handler => handler instanceof ReviewNotificationHandler)).toBe(false);
+    });
+
+    it("mounts the Content Reviews route and sidebar item and registers the presenter with the flag on", () => {
+        const container = createContainer(true);
+
+        render(
+            <DiContainerProvider container={container}>
+                <CmsWorkflows />
+            </DiContainerProvider>
+        );
+
+        expect(screen.queryByTestId("cms-content-reviews")).not.toBeNull();
+        expect(screen.queryByTestId("cms-content-reviews-sidebar")).not.toBeNull();
+        expect(container.resolve(CmsContentReviewsPresenter)).toBeDefined();
+    });
+
+    it("mounts no Content Reviews glue and registers no presenter with the flag off", () => {
+        const container = createContainer(false);
+
+        render(
+            <DiContainerProvider container={container}>
+                <CmsWorkflows />
+            </DiContainerProvider>
+        );
+
+        expect(screen.queryByTestId("cms-content-reviews")).toBeNull();
+        expect(screen.queryByTestId("cms-content-reviews-sidebar")).toBeNull();
+        expect(() => container.resolve(CmsContentReviewsPresenter)).toThrow(
+            "No registration found"
+        );
     });
 });

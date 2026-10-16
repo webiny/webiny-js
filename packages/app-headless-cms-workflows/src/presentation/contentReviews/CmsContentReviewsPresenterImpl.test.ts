@@ -68,4 +68,23 @@ describe("CmsContentReviewsPresenter", () => {
             description: "Content Reviews will not update live. Reload the page to try again."
         });
     });
+
+    it("lists the models once when init is called twice", async () => {
+        const execute = vi.fn(async () => [model("article", "Article")]);
+        const { presenter } = setup(execute);
+
+        await Promise.all([presenter.init(), presenter.init()]);
+
+        expect(execute).toHaveBeenCalledTimes(1);
+    });
+
+    it("tells the viewer once when init is called twice and the list fails", async () => {
+        const execute = vi.fn(() => Promise.reject(new Error("network")));
+        const { presenter, notifications } = setup(execute);
+
+        await Promise.all([presenter.init(), presenter.init()]);
+
+        expect(execute).toHaveBeenCalledTimes(1);
+        expect(notifications.error).toHaveBeenCalledTimes(1);
+    });
 });

@@ -11,6 +11,7 @@ import { toContentTypes } from "./toContentTypes.js";
 class CmsContentReviewsPresenterImpl implements Abstraction.Interface {
     private _loading = true;
     private _contentTypes: ContentType[] = [];
+    private started = false;
 
     constructor(
         private listModels: ListModelsUseCase.Interface,
@@ -34,6 +35,11 @@ class CmsContentReviewsPresenterImpl implements Abstraction.Interface {
     }
 
     async init(): Promise<void> {
+        // StrictMode runs effects twice; the model list is fetched once per presenter.
+        if (this.started) {
+            return;
+        }
+        this.started = true;
         try {
             const models = await this.listModels.execute();
             this.applyModels(models);
