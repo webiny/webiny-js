@@ -12,6 +12,7 @@ export { BooleanSwitchRenderer } from "./boolean/BooleanSwitchRenderer.js";
 
 export { DateTimeInputRenderer } from "./dateTime/DateTimeInputRenderer.js";
 export { DateTimeInputsRenderer } from "./dateTime/DateTimeInputsRenderer.js";
+export { BirthdayInputRenderer } from "./dateTime/BirthdayInputRenderer.js";
 
 export { SelectBoxRenderer } from "./common/SelectBoxRenderer.js";
 export { RadioButtonsRenderer } from "./common/RadioButtonsRenderer.js";

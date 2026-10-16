@@ -33,6 +33,14 @@ export interface IFieldRendererRegistry {
         fieldType: "datetime";
         settings: undefined;
     };
+    /** Picks a day, then a month, then a year. For date-only fields (`dateOnly()`); single-value only, not for `.list()`. */
+    birthdayInput: {
+        fieldType: "datetime";
+        settings?: {
+            /** Years offered, `[from, to]`. Defaults to this year back 120 years. */
+            yearRange?: [number, number];
+        };
+    };
     dateTimeInputs: {
         fieldType: "datetime";
         settings?: {
@@ -229,6 +237,7 @@ const rendererNameMap: Record<keyof IFieldRendererRegistry, string> = {
     checkboxes: "checkboxes",
     dateTimeInput: "date-time-input",
     dateTimeInputs: "date-time-inputs",
+    birthdayInput: "birthday-input",
     dynamicZone: "dynamicZone",
     hidden: "hidden",
     lexicalEditor: "lexical-text-input",

@@ -36,15 +36,30 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
 
     /**
      * Calendar date only.
-     * @example datetime().dateOnly()
+     * @example
+     * datetime().dateOnly()
+     * // day, then month, then year; suits dates far in the past, like a date of birth
+     * datetime().dateOnly().renderer("birthdayInput", { yearRange: [1900, 2026] })
      *
      * Value format: `"2026-05-01"` (YYYY-MM-DD)
      */
     dateOnly(): this {
         this._subtype = "date";
-        this._config.renderer = this._defaultRenderer();
+        this._config.renderer =
+            this._isBirthdayPicker() && !this._config.isList
+                ? "birthdayInput"
+                : this._defaultRenderer();
         this._config.rendererSettings = { ...this._config.rendererSettings, type: "date" };
         return this;
+    }
+
+    /**
+     * The CMS form sets a field's renderer before its subtype, so a birthday picker set
+     * earlier survives `dateOnly()`, since it renders the same value. Every other subtype
+     * resets it.
+     */
+    private _isBirthdayPicker(): boolean {
+        return this._config.renderer === "birthdayInput";
     }
 
     /**
@@ -414,7 +429,8 @@ declare module "../abstractions.js" {
          *
          * @example
          * datetime()                        // full UTC datetime (default)
-         * datetime().dateOnly()             // birthdays, due dates, holidays
+         * datetime().dateOnly()             // due dates, holidays
+         * datetime().dateOnly().renderer("birthdayInput")  // dates of birth
          * datetime().timeOnly()             // opening hours, daily reminders
          * datetime().withTimezone()         // events tied to a specific locale
          * datetime().withoutTimezone()      // timestamps, logs, sortable moments

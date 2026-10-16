@@ -27,6 +27,18 @@ interface DateOnlyPickerProps extends DatePickerBaseProps {
     presets?: DatePickerPreset[];
 }
 
+/**
+ * Picks a date as day, then month, then year. The value is a `YYYY-MM-DD` string, the same as
+ * the `date` picker's. `yearRange` sets the years offered; by default this year back 120 years,
+ * cut to `minDate` and `maxDate`. Days, months and years that can't make a date between
+ * `minDate` and `maxDate` can't be picked.
+ */
+interface BirthdayPickerProps extends DatePickerBaseProps {
+    type: "birthday";
+    value?: string;
+    onChange?: (value: string | undefined) => void;
+}
+
 interface TimeOnlyPickerProps extends DatePickerBaseProps {
     type: "time";
     value?: string;
@@ -89,6 +101,7 @@ interface MultipleYearsPickerProps extends DatePickerBaseProps {
 
 type DatePickerPrimitiveProps =
     | DateOnlyPickerProps
+    | BirthdayPickerProps
     | TimeOnlyPickerProps
     | DateTimeLocalPickerProps
     | DateTimeTzPickerProps
@@ -105,6 +118,7 @@ export {
     type DatePickerBaseProps,
     type DatePickerPrimitiveProps,
     type DateOnlyPickerProps,
+    type BirthdayPickerProps,
     type TimeOnlyPickerProps,
     type DateTimeLocalPickerProps,
     type DateTimeTzPickerProps,

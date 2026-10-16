@@ -235,7 +235,7 @@ The authoritative source for these field types is the `webiny/api/cms/model` bar
 | `fields.richText()`    | Rich text (Lexical)                                            | `"lexicalEditor"`                                                   | `"lexicalEditors"`                                                    |
 | `fields.number()`      | Numeric value                                                  | `"numberInput"`                                                     | `"numberInputs"`                                                      |
 | `fields.boolean()`     | True/false toggle                                              | `"switch"`                                                          | — (not supported)                                                     |
-| `fields.datetime()`    | Date/time picker                                               | `"dateTimeInput"`                                                   | `"dateTimeInputs"`                                                    |
+| `fields.datetime()`    | Date/time picker                                               | `"dateTimeInput"`, `"birthdayInput"` (`.dateOnly()` only)           | `"dateTimeInputs"`                                                    |
 | `fields.asset()`       | Asset (image/video/document with per-usage crop & focal point) | `"asset-input"`                                                     | `"asset-inputs"`                                                      |
 | `fields.file()`        | File/image attachment (deprecated, use `asset`)                | `"file"`                                                            | `"files"`                                                             |
 | `fields.ref()`         | Reference to another model                                     | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
@@ -339,12 +339,12 @@ Every `fields.datetime()` **MUST** chain exactly one subtype method. The subtype
 the value format, the GraphQL scalar, how the value is stored, and which picker the Admin
 UI shows — there is no sensible "plain datetime".
 
-| Subtype method       | Stored value example          | Use for                                          |
-| -------------------- | ----------------------------- | ------------------------------------------------ |
-| `.dateOnly()`        | `"2026-04-30"`                | Birthdays, holidays, due dates                   |
-| `.timeOnly()`        | `"19:35"`                     | Opening hours, time of day                       |
-| `.withTimezone()`    | `"2026-04-29T13:25:00+02:00"` | Events and moments tied to a location's timezone |
-| `.withoutTimezone()` | `"2026-04-30T13:25:00.000Z"`  | Timestamps stored in UTC                         |
+| Subtype method       | Stored value example          | Use for                                                        |
+| -------------------- | ----------------------------- | -------------------------------------------------------------- |
+| `.dateOnly()`        | `"2026-04-30"`                | Holidays, due dates (birthdays: see the birthday picker below) |
+| `.timeOnly()`        | `"19:35"`                     | Opening hours, time of day                                     |
+| `.withTimezone()`    | `"2026-04-29T13:25:00+02:00"` | Events and moments tied to a location's timezone               |
+| `.withoutTimezone()` | `"2026-04-30T13:25:00.000Z"`  | Timestamps stored in UTC                                       |
 
 **Correct:**
 
@@ -352,6 +352,16 @@ UI shows — there is no sensible "plain datetime".
 openTime: fields.datetime().timeOnly().renderer("dateTimeInput").label("Open Time");
 
 closedDates: fields.datetime().dateOnly().list().renderer("dateTimeInputs").label("Closed Dates");
+```
+
+For dates far in the past, like a date of birth, a date-only field can use a step-by-step
+picker (day, then month, then year) instead of the calendar. It stores the same value, so
+switching an existing field keeps its entries' data. The picker is single-value only; not for
+`.list()` fields:
+
+```typescript
+dateOfBirth: fields.datetime().dateOnly().renderer("birthdayInput").label("Date of Birth");
+// years offered: .renderer("birthdayInput", { yearRange: [1900, 2026] })
 ```
 
 **Wrong** — no subtype:

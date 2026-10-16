@@ -185,6 +185,25 @@ describe("DateTimeFieldBuilder", () => {
         }
     });
 
+    it("renders a date-only field with the birthday picker", () => {
+        const config = new DateTimeFieldBuilder()
+            .dateOnly()
+            .renderer("birthdayInput", { yearRange: [1900, 2026] })
+            .build("dob");
+        expect(config.renderer).toBe("birthdayInput");
+        expect(config.rendererSettings).toEqual({ yearRange: [1900, 2026] });
+    });
+
+    it("keeps a birthday picker set before dateOnly() and drops it for other subtypes", () => {
+        const birthday = () =>
+            new DateTimeFieldBuilder().renderer("birthdayInput", { yearRange: [1950, 2000] });
+        const dateOnly = birthday().dateOnly().build("dob");
+        expect(dateOnly.renderer).toBe("birthdayInput");
+        expect(dateOnly.rendererSettings).toEqual({ type: "date", yearRange: [1950, 2000] });
+
+        expect(birthday().timeOnly().build("t").renderer).toBe("dateTimeInput");
+    });
+
     it("normalizes withTimezone values", () => {
         const builder = new DateTimeFieldBuilder().withTimezone();
         expect(builder.normalizeValue("2026-05-01T14:30:00+02:00")).toBe(
