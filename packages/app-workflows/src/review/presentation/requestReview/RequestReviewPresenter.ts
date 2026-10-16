@@ -22,11 +22,8 @@ const SHORT_TITLE = "Use at least 5 characters.";
 type Status = "loadingSteps" | "stepsFailed" | "ready" | "submitting";
 
 const getLabelTag = (type: string, assignedAutomatically: boolean): string => {
-    if (type === "ai") {
-        return "AI";
-    }
-    if (type === "automation") {
-        return "Automation";
+    if (type === "ai" || type === "automation") {
+        return getStepTypeLabel(type);
     }
     if (assignedAutomatically) {
         return "Assigned automatically";
@@ -68,7 +65,9 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
         const workflow = this.workflow;
         const steps: RequestReviewStepVm[] = [];
 
-        if (workflow) {
+        // The steps stay hidden until the candidates are loaded, so no input is taken early.
+        const visible = this.status === "ready" || this.status === "submitting";
+        if (workflow && visible) {
             workflow.steps.forEach((step, index) => {
                 const picker = this.pickers.get(step.id);
                 const typeLabel = getStepTypeLabel(step.type);
@@ -143,9 +142,8 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
                     created.set(step.id, picker);
                 }
             }
-            this.applyWorkflow(workflow, created);
-
-            const loads = Array.from(created.entries()).map(([stepId, picker]) => {
+            const entries = Array.from(created.entries());
+            const loads = entries.map(([stepId, picker]) => {
                 return picker.init({
                     load: () =>
                         params.useCases.listStepCandidates({
@@ -161,7 +159,7 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
             if (token !== this.token) {
                 return;
             }
-            this.applyReady();
+            this.applyReady(workflow, created);
         } catch {
             if (token !== this.token) {
                 return;
@@ -176,6 +174,9 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
     }
 
     setMode(stepId: string, mode: RequestReviewMode): void {
+        if (this.status !== "ready") {
+            return;
+        }
         const step = this.vm.steps.find(item => item.stepId === stepId);
         if (!step || !step.allowManualPick) {
             return;
@@ -296,15 +297,12 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
         return this.token;
     }
 
-    private applyWorkflow(
+    private applyReady(
         workflow: ReviewWorkflow,
         pickers: Map<string, ReviewerPickerPresenter.Interface>
     ): void {
         this.workflow = workflow;
         this.pickers = pickers;
-    }
-
-    private applyReady(): void {
         this.status = "ready";
     }
 

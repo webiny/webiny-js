@@ -85,6 +85,20 @@ describe("RequestReviewDialog", () => {
         expect(screen.getAllByText("AI").length).toBeGreaterThan(0);
     });
 
+    it("shows no step controls while the candidates are loading", async () => {
+        const useCases = createUseCases();
+        useCases.listStepCandidates.mockReturnValue(new Promise(() => undefined));
+        renderDialog(useCases);
+
+        await vi.waitFor(() => expect(useCases.listStepCandidates).toHaveBeenCalled());
+
+        expect(screen.queryByText("Editorial check")).toBeNull();
+        expect(screen.queryByRole("radio", { name: "Choose a person" })).toBeNull();
+        expect(
+            document.querySelectorAll("[data-role='skeleton'], [class*='skeleton']").length
+        ).toBeGreaterThanOrEqual(4);
+    });
+
     it("disables Request review until the steps are ready", async () => {
         renderDialog();
 

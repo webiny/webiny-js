@@ -21,6 +21,13 @@ const PICK_HINT =
 const NOBODY_NOTE =
     "No one other than you can review this step right now. It may wait in the team pool until someone reassigns it.";
 
+const toMode = (value: string): RequestReviewMode => {
+    if (value === "pick") {
+        return "pick";
+    }
+    return "automatic";
+};
+
 export interface RequestReviewDialogProps {
     useCases: IReviewUseCases;
     target: ReviewTarget;
@@ -41,10 +48,10 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
     const { vm } = presenter;
     const collapsed = vm.conflict !== null;
 
-    let titleValidation;
-    if (vm.titleError !== null) {
-        titleValidation = { isValid: false, message: vm.titleError };
-    }
+    const titleValidation = {
+        isValid: vm.titleError === null,
+        message: vm.titleError ?? undefined
+    };
 
     let actions = (
         <>
@@ -149,7 +156,7 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                                     ]}
                                     value={step.mode}
                                     onChange={value =>
-                                        presenter.setMode(step.stepId, value as RequestReviewMode)
+                                        presenter.setMode(step.stepId, toMode(value))
                                     }
                                 />
                             ) : null}

@@ -122,6 +122,28 @@ describe("RequestReviewPresenter", () => {
         expect(setup.presenter.vm.canSubmit).toBe(true);
     });
 
+    it("keeps the steps hidden and ignores setMode until the candidates are loaded", async () => {
+        let release: (people: StepCandidate[]) => void = () => undefined;
+        setup.useCases.listStepCandidates.mockReturnValue(
+            new Promise<StepCandidate[]>(resolve => {
+                release = resolve;
+            })
+        );
+
+        const pending = setup.presenter.init(setup.params());
+        await vi.waitFor(() => expect(setup.useCases.listStepCandidates).toHaveBeenCalled());
+
+        expect(setup.presenter.vm.status).toBe("loadingSteps");
+        expect(setup.presenter.vm.steps).toEqual([]);
+        setup.presenter.setMode("editorial", "pick");
+
+        release([{ id: "u1", displayName: "Ivan Horvat", excluded: true, excludedReason: null }]);
+        await pending;
+
+        expect(setup.presenter.vm.steps[0].mode).toBe("automatic");
+        expect(setup.presenter.vm.steps[0].noCandidates).toBe(true);
+    });
+
     it("prefills the title with the content title", async () => {
         await setup.presenter.init(setup.params());
 
