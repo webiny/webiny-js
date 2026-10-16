@@ -30,3 +30,10 @@
 - Decided 2026-10-16: the e-mail transport sends through `SendMailUseCase` (83a11140c3, 2ccfa975b9).
 - Phases 8a-9c (admin UI; stale client gateway `listWorkflowNotificationTypes` in app-workflows).
 - Pre-merge: commit trailers (b52e5710bd Sonnet trailer, 0b0157fe9f, c9ec20e917 and older), useGraphQLHandler.ts ApiKey type error, earlier handoff items. Optional: widen the 5ms hold in the notifier fan-out test if CI flakes.
+
+## Phase 8a planning (paused 2026-10-16)
+
+- Plan: docs/.bruno/plans/2026-10-16-workflows-phase-8a/ (contract 00-answers Q1-Q15, 00-shared R202-R236/A68-A88/D157-D159; 38 task files in 10 sub-phases). Contract reviewed after every round; task files reviewed per sub-phase except 8a.1 and 8a.10.
+- Binding rulings found while writing tasks: .superpowers/sdd/p8a-plan/rule-subclass.md (per-app subclass because @webiny/di createImplementation stores metadata on the class; one token per file; deep imports; R-a..R-l).
+- Resume map: .superpowers/sdd/p8a-plan/progress.md ("PAUSE" section): 12 user questions queued, then 8a.1 review, cross-sub-phase consistency pass, contract fold-in, 8a.10 review, final plan review.
+- Also this session: phase 7 done (incl. SendMailUseCase switch 83a11140c3/2ccfa975b9); regression fix 843e5eddaa (SendMailFeature in CMS/WB test contexts). Pre-merge trailer list adds b52e5710bd, 843e5eddaa.
