@@ -4,7 +4,7 @@ export interface GraphQLOperationErrorInput {
     data?: unknown;
 }
 
-/**
+/*
  * Thrown by gateways and use cases when a GraphQL operation answers with an error envelope.
  * Unlike a plain `Error`, it keeps the server's machine-readable `code` and its `data`, so
  * callers can react to a specific refusal with `instanceof` and `code`.
