@@ -268,9 +268,17 @@ export const CANCEL_REVIEW = /* GraphQL */ `
 `;
 
 export const CANCEL_REVIEWS_FOR_DELETE = /* GraphQL */ `
-    mutation CancelReviewsForDelete($pageId: ID!, $action: WorkflowsReviewsForDeleteAction!) {
+    mutation CancelReviewsForDelete(
+        $pageId: ID!
+        $revisionId: ID
+        $action: WorkflowsReviewsForDeleteAction!
+    ) {
         websiteBuilder {
-            cancelWebsiteBuilderPageReviewsForDelete(pageId: $pageId, action: $action) {
+            cancelWebsiteBuilderPageReviewsForDelete(
+                pageId: $pageId
+                revisionId: $revisionId
+                action: $action
+            ) {
                 data { ${REVIEW_FIELDS} }
                 ${ERROR_FIELDS}
             }

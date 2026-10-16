@@ -48,6 +48,7 @@ interface RequestWebsiteBuilderPageReviewArgs {
 
 interface CancelWebsiteBuilderPageReviewsForDeleteArgs {
     pageId: string;
+    revisionId?: string | null;
     action: ReviewActiveOnTrashAction;
 }
 
@@ -183,9 +184,10 @@ const WB_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
             comment: String
         ): WbPageReviewResponse!
         cancelWebsiteBuilderPageReview(reviewId: ID!): WbPageReviewResponse!
-        "Cancels every in-progress review of the page before a trash or delete (D134)."
+        "Cancels every in-progress review of the page, or of one revision when \`revisionId\` is given, before a trash or delete (D134)."
         cancelWebsiteBuilderPageReviewsForDelete(
             pageId: ID!
+            revisionId: ID
             action: WorkflowsReviewsForDeleteAction!
         ): WbPageReviewArrayResponse!
     }
@@ -473,9 +475,19 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                 cancelForDelete: CancelWebsiteBuilderPageReviewsForDeleteUseCase.Interface
             ) => {
                 return async ({ args }) => {
-                    // By page id, every revision: no revision id to validate (D134).
+                    // A given revision id must be well formed (R107).
+                    if (
+                        args.revisionId !== null &&
+                        args.revisionId !== undefined &&
+                        !isValidRevisionId(args.revisionId)
+                    ) {
+                        return new ErrorResponse(
+                            new ReviewValidationError("The revision id is not valid.")
+                        );
+                    }
                     const result = await cancelForDelete.execute({
                         targetId: args.pageId,
+                        targetRevisionId: args.revisionId,
                         action: args.action
                     });
                     if (result.isFail()) {

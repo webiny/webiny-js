@@ -55,7 +55,12 @@ class CancelWebsiteBuilderPageReviewsForDeleteUseCaseImpl implements UseCase.Int
         if (reviews.isFail()) {
             return Result.fail(reviews.error);
         }
-        const inProgress = reviews.value.filter(review => review.state === "inProgress");
+        const inProgress = reviews.value.filter(review => {
+            if (review.state !== "inProgress") {
+                return false;
+            }
+            return !input.targetRevisionId || review.targetRevisionId === input.targetRevisionId;
+        });
         if (inProgress.length === 0) {
             return Result.ok([]);
         }
@@ -101,6 +106,7 @@ class CancelWebsiteBuilderPageReviewsForDeleteUseCaseImpl implements UseCase.Int
         return this.cancelTargetReviews.execute({
             model: WB_PAGE_NAMESPACE,
             targetId: input.targetId,
+            targetRevisionId: input.targetRevisionId ?? null,
             actor: actor.value,
             reason: getDeleteCancelReason(input.action)
         });

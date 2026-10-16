@@ -26,6 +26,7 @@ import {
 } from "~tests/__helpers/RecordingEventPublisher.js";
 import { CancelCmsEntryReviewsForDeleteUseCase } from "@webiny/api-headless-cms-workflows/features/wrappers/CancelCmsEntryReviewsForDelete/index.js";
 import { PAGE_MODEL_ID } from "@webiny/api-website-builder/domain/page/page.model.js";
+import { CreatePageRevisionFromUseCase } from "@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/index.js";
 import { CancelWebsiteBuilderPageReviewsForDeleteUseCase } from "~/features/wrappers/CancelWebsiteBuilderPageReviewsForDelete/index.js";
 
 /** Admin stores the pages workflow; REQUESTER's review is in progress on one page. */
@@ -300,5 +301,126 @@ describe("WB cancel-for-delete wrapper (D134)", () => {
             await admin.container.resolve(GetReviewUseCase).execute({ id: review.id })
         );
         expect(stored.state).toBe("inProgress");
+    });
+
+    describe("one revision (R235)", () => {
+        /** Revision 1 and revision 2 of Page A each have a review in progress. */
+        const createTwoReviewScenario = async () => {
+            const { admin, page, review } = await createScenario();
+            const second = expectOk(
+                await admin.container
+                    .resolve(CreatePageRevisionFromUseCase)
+                    .execute({ id: page.id })
+            );
+            const secondReview = await requestPageReview(admin, second);
+            return { admin, page, review, second, secondReview };
+        };
+
+        it("cancels only the given revision's review and leaves the other in progress", async () => {
+            const { admin, page, review, second, secondReview } = await createTwoReviewScenario();
+            const deleter = await createDeleterContext();
+
+            const cancelled = expectOk(
+                await cancelForDelete(deleter, {
+                    targetId: page.entryId,
+                    targetRevisionId: second.id,
+                    action: "delete"
+                })
+            );
+
+            expect(cancelled.map(item => item.id)).toEqual([secondReview.id]);
+            const facts = recordedEvents
+                .filter(event => event.eventType === "Workflows/Review/Cancelled")
+                .map(event => event.payload.fact);
+            expect(facts).toEqual([
+                expect.objectContaining({ actor: toActor(WRITER), reason: "content deleted" })
+            ]);
+            const getReview = admin.container.resolve(GetReviewUseCase);
+            expect(expectOk(await getReview.execute({ id: secondReview.id })).state).toBe(
+                "cancelled"
+            );
+            expect(expectOk(await getReview.execute({ id: review.id })).state).toBe("inProgress");
+        });
+
+        it("cancels every revision's review when the revision id is omitted, as before", async () => {
+            const { admin, page, review, secondReview } = await createTwoReviewScenario();
+            const deleter = await createDeleterContext();
+
+            const cancelled = expectOk(
+                await cancelForDelete(deleter, { targetId: page.entryId, action: "trash" })
+            );
+
+            expect(cancelled.map(item => item.id).sort()).toEqual(
+                [review.id, secondReview.id].sort()
+            );
+            const getReview = admin.container.resolve(GetReviewUseCase);
+            expect(expectOk(await getReview.execute({ id: review.id })).state).toBe("cancelled");
+            expect(expectOk(await getReview.execute({ id: secondReview.id })).state).toBe(
+                "cancelled"
+            );
+        });
+
+        it("cancels every revision's review when the revision id is null", async () => {
+            const { page, review, secondReview } = await createTwoReviewScenario();
+            const deleter = await createDeleterContext();
+
+            const cancelled = expectOk(
+                await cancelForDelete(deleter, {
+                    targetId: page.entryId,
+                    targetRevisionId: null,
+                    action: "trash"
+                })
+            );
+
+            expect(cancelled.map(item => item.id).sort()).toEqual(
+                [review.id, secondReview.id].sort()
+            );
+        });
+
+        it("answers an empty list for a revision with no review in progress, and cancels nothing", async () => {
+            const { admin, page, review } = await createScenario();
+            const second = expectOk(
+                await admin.container
+                    .resolve(CreatePageRevisionFromUseCase)
+                    .execute({ id: page.id })
+            );
+            const deleter = await createDeleterContext();
+
+            const cancelled = expectOk(
+                await cancelForDelete(deleter, {
+                    targetId: page.entryId,
+                    targetRevisionId: second.id,
+                    action: "delete"
+                })
+            );
+
+            expect(cancelled).toEqual([]);
+            const stored = expectOk(
+                await admin.container.resolve(GetReviewUseCase).execute({ id: review.id })
+            );
+            expect(stored.state).toBe("inProgress");
+        });
+
+        it("still refuses a user who cannot delete the page, for a revision too", async () => {
+            const { admin, page, review, second } = await createTwoReviewScenario();
+            const writer = await createUserContext({
+                identity: WRITER,
+                permissions: WB_WRITER,
+                legacyPlugins: [countEngineCalls]
+            });
+
+            const result = await cancelForDelete(writer, {
+                targetId: page.entryId,
+                targetRevisionId: second.id,
+                action: "delete"
+            });
+
+            expect(result.error.code).toBe("Workflows/NotAuthorized");
+            expect(engineCalls).toEqual([]);
+            const stored = expectOk(
+                await admin.container.resolve(GetReviewUseCase).execute({ id: review.id })
+            );
+            expect(stored.state).toBe("inProgress");
+        });
     });
 });

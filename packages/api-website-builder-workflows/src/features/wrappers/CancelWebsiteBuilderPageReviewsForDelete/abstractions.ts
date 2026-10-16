@@ -15,6 +15,8 @@ import type { CancelTargetReviewsUseCase } from "@webiny/api-workflows/features/
 export interface CancelWebsiteBuilderPageReviewsForDeleteInput {
     /** The page id (all revisions). */
     targetId: string;
+    /** Deleting one revision: only its review. Omitted for trash and page delete. */
+    targetRevisionId?: string | null;
     /** Recorded as the cancel reason: "content trashed" or "content deleted". */
     action: ReviewActiveOnTrashAction;
 }
@@ -38,9 +40,10 @@ export interface ICancelWebsiteBuilderPageReviewsForDeleteUseCase {
 }
 
 /**
- * The confirm path for trashing or deleting a page with a review in progress (D134, R74): cancels
- * the page's in-progress reviews as the caller, who needs delete access to the page and no cancel
- * right. The admin calls it, then repeats the trash or delete.
+ * The confirm path for trashing or deleting a page, or deleting one of its revisions, with a
+ * review in progress (D134, R74, R235): cancels the page's in-progress reviews, or only the given
+ * revision's, as the caller, who needs delete access to the page and no cancel right. The admin
+ * calls it, then repeats the trash or delete.
  */
 export const CancelWebsiteBuilderPageReviewsForDeleteUseCase =
     createAbstraction<ICancelWebsiteBuilderPageReviewsForDeleteUseCase>(

@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { Container } from "@webiny/di";
+import { CreatePageRevisionFromUseCase } from "@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/index.js";
+import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
-import { createPage } from "~tests/__helpers/pages.js";
+import { createPage, expectOk } from "~tests/__helpers/pages.js";
 import {
     requestPageReview,
     startPageReview,
@@ -412,5 +414,67 @@ describe("WB review operations through GraphQL", () => {
         expect(cancelResult.error).toBeNull();
         expect(cancelResult.data).toHaveLength(1);
         expect(cancelResult.data[0]).toMatchObject({ id: review.id, state: "cancelled" });
+    });
+
+    it("cancels only the given revision's review when revisionId is given (R235)", async () => {
+        const { admin, page, review } = await createScenario();
+        const second = expectOk(
+            await admin.container.resolve(CreatePageRevisionFromUseCase).execute({ id: page.id })
+        );
+        const secondReview = await requestPageReview(admin, second);
+        const deleter = asGraphQLUser({ identity: REQUESTER, permissions: WB_DELETER });
+
+        const body = await deleter.run(CANCEL_REVIEWS_FOR_DELETE, {
+            pageId: page.entryId,
+            revisionId: second.id,
+            action: "delete"
+        });
+
+        const result = body.data.websiteBuilder.cancelWebsiteBuilderPageReviewsForDelete;
+        expect(result.error).toBeNull();
+        expect(result.data).toHaveLength(1);
+        expect(result.data[0]).toMatchObject({ id: secondReview.id, state: "cancelled" });
+        const stored = expectOk(
+            await admin.container.resolve(GetReviewUseCase).execute({ id: review.id })
+        );
+        expect(stored.state).toBe("inProgress");
+    });
+
+    it("cancels every revision's review when revisionId is omitted (unchanged)", async () => {
+        const { admin, page, review } = await createScenario();
+        const second = expectOk(
+            await admin.container.resolve(CreatePageRevisionFromUseCase).execute({ id: page.id })
+        );
+        const secondReview = await requestPageReview(admin, second);
+        const deleter = asGraphQLUser({ identity: REQUESTER, permissions: WB_DELETER });
+
+        const body = await deleter.run(CANCEL_REVIEWS_FOR_DELETE, {
+            pageId: page.entryId,
+            action: "trash"
+        });
+
+        const result = body.data.websiteBuilder.cancelWebsiteBuilderPageReviewsForDelete;
+        expect(result.error).toBeNull();
+        expect(result.data.map((item: { id: string }) => item.id).sort()).toEqual(
+            [review.id, secondReview.id].sort()
+        );
+    });
+
+    it("returns the revision id validation error for a malformed revisionId (R107)", async () => {
+        const { page } = await createScenario();
+        const deleter = asGraphQLUser({ identity: REQUESTER, permissions: WB_DELETER });
+
+        for (const revisionId of MALFORMED_REVISION_IDS) {
+            const body = await deleter.run(CANCEL_REVIEWS_FOR_DELETE, {
+                pageId: page.entryId,
+                revisionId,
+                action: "delete"
+            });
+
+            expect(body.data.websiteBuilder.cancelWebsiteBuilderPageReviewsForDelete).toEqual({
+                data: null,
+                error: REVISION_ID_ERROR
+            });
+        }
     });
 });
