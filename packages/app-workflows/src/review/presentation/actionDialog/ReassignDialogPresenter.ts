@@ -140,11 +140,11 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
                 return;
             }
             this.applyLoaded(loaded);
-        } catch {
+        } catch (error) {
             if (token !== this.token) {
                 return;
             }
-            this.applyLoadFailure();
+            this.applyLoadFailure(error);
         }
     }
 
@@ -198,9 +198,12 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
                     stepId: request.stepId,
                     review: fresh ? fresh.review : null,
                     now,
-                    listRefreshed: false
+                    listRefreshed: params.listRefreshed === true
                 });
                 this.applyConflict(message.title, message.message, fresh);
+                if (params.onConflict) {
+                    params.onConflict();
+                }
                 return;
             }
             if (errorKind === "validation" && error instanceof GraphQLOperationError) {
@@ -271,8 +274,17 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
         this.status = "ready";
     }
 
-    private applyLoadFailure(): void {
+    private applyLoadFailure(error?: unknown): void {
         this.status = "failed";
+        const errorKind = classifyReviewActionError(error);
+        if (errorKind === "notAuthorized") {
+            this.dialogError = NO_ACCESS_MESSAGE;
+            return;
+        }
+        if (errorKind === "notFound") {
+            this.dialogError = "This review no longer exists.";
+            return;
+        }
         this.dialogError = GENERIC_ERROR;
     }
 

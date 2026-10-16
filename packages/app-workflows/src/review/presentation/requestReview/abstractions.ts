@@ -8,6 +8,8 @@ export interface RequestReviewInitParams {
     target: ReviewTarget;
     targetTitle: string;
     reviewsUrl: string | null;
+    /** Called once after a conflict, so the host can refresh what it shows. */
+    onConflict?: () => void;
     onDone: () => void;
     onClose: () => void;
 }

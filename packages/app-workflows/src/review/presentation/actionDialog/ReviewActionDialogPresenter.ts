@@ -113,11 +113,11 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
                 return;
             }
             this.applyLoaded(loaded);
-        } catch {
+        } catch (error) {
             if (token !== this.token) {
                 return;
             }
-            this.applyLoadFailure();
+            this.applyLoadFailure(error);
         }
     }
 
@@ -215,6 +215,9 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
                     listRefreshed: params.listRefreshed === true
                 });
                 this.applyConflict(message.title, message.message, fresh);
+                if (params.onConflict) {
+                    params.onConflict();
+                }
                 return;
             }
 
@@ -284,8 +287,17 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
         this.status = "ready";
     }
 
-    private applyLoadFailure(): void {
+    private applyLoadFailure(error?: unknown): void {
         this.status = "failed";
+        const errorKind = classifyReviewActionError(error);
+        if (errorKind === "notAuthorized") {
+            this.dialogError = NO_ACCESS_MESSAGE;
+            return;
+        }
+        if (errorKind === "notFound") {
+            this.dialogError = "This review no longer exists.";
+            return;
+        }
         this.dialogError = GENERIC_ERROR;
     }
 

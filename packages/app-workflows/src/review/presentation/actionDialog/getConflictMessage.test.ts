@@ -76,6 +76,39 @@ describe("getConflictMessage (QBZ-2)", () => {
         );
     });
 
+    it.each(["start", "takeOver", "reassign", "approve", "reject", "cancel"] as const)(
+        "ends a %s conflict with 'The list has been refreshed.' when Content Reviews refreshed (R220)",
+        kind => {
+            const result = getConflictMessage({
+                kind,
+                stepId: "step-1",
+                review: review({ state: StepState.Approved, owner: LUKA }),
+                now: NOW,
+                listRefreshed: true
+            });
+            expect(result.message.endsWith(" The list has been refreshed.")).toBe(true);
+        }
+    );
+
+    it("ends the generic text with the list note too, and never without listRefreshed", () => {
+        const refreshed = getConflictMessage({
+            kind: "approve",
+            stepId: "step-1",
+            review: null,
+            now: NOW,
+            listRefreshed: true
+        });
+        const plain = getConflictMessage({
+            kind: "approve",
+            stepId: "step-1",
+            review: null,
+            now: NOW,
+            listRefreshed: false
+        });
+        expect(refreshed.message).toBe(`${plain.message} The list has been refreshed.`);
+        expect(plain.message).not.toContain("refreshed");
+    });
+
     it("tells that the step was approved first", () => {
         const result = getConflictMessage({
             kind: "reject",

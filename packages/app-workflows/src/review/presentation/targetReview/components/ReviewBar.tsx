@@ -130,6 +130,7 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                     target={target}
                     targetTitle={vm.targetTitle}
                     reviewsUrl={reviewsUrl}
+                    onConflict={() => presenter.refresh()}
                     onDone={() => presenter.actionDone()}
                     onClose={() => presenter.closeAction()}
                 />
@@ -138,6 +139,7 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                 useCases={useCases}
                 request={request}
                 reviewsUrl={reviewsUrl}
+                onConflict={() => presenter.refresh()}
                 onDone={() => presenter.actionDone()}
                 onClose={() => presenter.closeAction()}
             />

@@ -6,7 +6,10 @@ import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { within } from "@testing-library/react";
 import { screen } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import { Container } from "@webiny/di";
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
+import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import { StepState } from "~/review/domain/StepState.js";
@@ -164,5 +167,37 @@ describe("ReviewDetailsDrawer", () => {
         fireEvent.click(within(screen.getByRole("dialog")).getAllByRole("button")[0]);
 
         expect(onClose).toHaveBeenCalled();
+    });
+
+    it("refreshes itself and tells the host after a conflict (F1)", async () => {
+        const useCases = createUseCases();
+        useCases.startStep.mockRejectedValue(
+            new GraphQLOperationError({
+                message: "Conflict.",
+                code: ReviewErrorCode.StepNotCurrent
+            })
+        );
+        const onChanged = vi.fn();
+        renderWithContainer(
+            <ReviewDetailsDrawer
+                useCases={useCases}
+                reviewId={"review-1"}
+                reviewsUrl={null}
+                onClose={vi.fn()}
+                onChanged={onChanged}
+            />,
+            createContainer()
+        );
+        await screen.findByText("Spring campaign review");
+        fireEvent.click(screen.getByText("Start", { selector: "button *, button" }));
+        await screen.findByText("Start “Legal sign-off”?");
+        const readsBefore = useCases.getReview.mock.calls.length;
+
+        fireEvent.click(screen.getAllByText("Start", { selector: "button *, button" }).pop()!);
+
+        expect(await screen.findByText("Someone else acted first")).toBeTruthy();
+        await waitFor(() => expect(onChanged).toHaveBeenCalledTimes(1));
+        // One read for the dialog's conflict re-read, one for the drawer's own refresh.
+        await waitFor(() => expect(useCases.getReview.mock.calls.length).toBe(readsBefore + 2));
     });
 });

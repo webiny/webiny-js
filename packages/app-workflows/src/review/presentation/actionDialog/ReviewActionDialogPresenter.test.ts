@@ -453,6 +453,72 @@ describe("ReviewActionDialogPresenter", () => {
         expect(setup.presenter.vm.conflict?.message).toContain("The list has been refreshed.");
     });
 
+    it("calls onConflict once after the re-read, on a conflict only (F1)", async () => {
+        const onConflict = vi.fn();
+        setup.useCases.approveStep.mockRejectedValue(
+            new GraphQLOperationError({
+                message: "Conflict.",
+                code: ReviewErrorCode.StepNotCurrent
+            })
+        );
+        await setup.presenter.init({ ...setup.params(REQUEST("approve")), onConflict });
+
+        await setup.presenter.submit();
+
+        expect(onConflict).toHaveBeenCalledTimes(1);
+        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+        expect(setup.presenter.vm.conflict).not.toBeNull();
+    });
+
+    it("does not call onConflict on success or on other errors (F1)", async () => {
+        const onConflict = vi.fn();
+        await setup.presenter.init({ ...setup.params(REQUEST("approve")), onConflict });
+        await setup.presenter.submit();
+
+        const codes = [ReviewErrorCode.NotAuthorized, ReviewErrorCode.NotFound];
+        for (const code of codes) {
+            const other = createSetup();
+            other.useCases.approveStep.mockRejectedValue(
+                new GraphQLOperationError({ message: "No.", code })
+            );
+            await other.presenter.init({ ...other.params(REQUEST("approve")), onConflict });
+            await other.presenter.submit();
+        }
+
+        expect(onConflict).not.toHaveBeenCalled();
+    });
+
+    it("ends the conflict of any action with the list note when listRefreshed (R220)", async () => {
+        setup.useCases.approveStep.mockRejectedValue(
+            new GraphQLOperationError({
+                message: "Conflict.",
+                code: ReviewErrorCode.StepNotCurrent
+            })
+        );
+        await setup.presenter.init({ ...setup.params(REQUEST("approve")), listRefreshed: true });
+
+        await setup.presenter.submit();
+
+        expect(setup.presenter.vm.conflict?.message).toMatch(/The list has been refreshed\.$/);
+    });
+
+    it("maps an initial NotAuthorized or NotFound read to the same messages as submit (F3)", async () => {
+        setup.useCases.getReview.mockRejectedValue(
+            new GraphQLOperationError({ message: "No.", code: ReviewErrorCode.NotAuthorized })
+        );
+        await setup.presenter.init(setup.params(REQUEST("approve")));
+        expect(setup.presenter.vm.status).toBe("failed");
+        expect(setup.presenter.vm.dialogError).toBe(NO_ACCESS_MESSAGE);
+
+        const missing = createSetup();
+        missing.useCases.getReview.mockRejectedValue(
+            new GraphQLOperationError({ message: "Gone.", code: ReviewErrorCode.NotFound })
+        );
+        await missing.presenter.init(missing.params(REQUEST("approve")));
+        expect(missing.presenter.vm.status).toBe("failed");
+        expect(missing.presenter.vm.dialogError).toBe("This review no longer exists.");
+    });
+
     it("does not claim a kept comment when none was typed", async () => {
         setup.useCases.startStep.mockRejectedValue(
             new GraphQLOperationError({

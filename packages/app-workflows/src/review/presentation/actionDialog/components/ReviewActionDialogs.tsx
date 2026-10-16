@@ -10,6 +10,8 @@ export interface ReviewActionDialogsProps {
     reviewsUrl: string | null;
     /** Set by Content Reviews, which refreshes its list behind a conflicting Start (QBZ-31). */
     listRefreshed?: boolean;
+    /** Called once after a conflict; the host refreshes what it shows. */
+    onConflict?: () => void;
     onDone: () => void;
     onClose: () => void;
 }

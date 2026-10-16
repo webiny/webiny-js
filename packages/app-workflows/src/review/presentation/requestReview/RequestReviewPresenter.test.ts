@@ -404,6 +404,28 @@ describe("RequestReviewPresenter", () => {
         expect(setup.onDone).not.toHaveBeenCalled();
     });
 
+    it("calls onConflict once on AlreadyActive, and not on success or other errors (F1)", async () => {
+        const onConflict = vi.fn();
+        setup.useCases.requestReview.mockRejectedValue(
+            new GraphQLOperationError({ message: "Active.", code: ReviewErrorCode.AlreadyActive })
+        );
+        await setup.presenter.init(setup.params({ onConflict }));
+        await setup.presenter.submit();
+        expect(onConflict).toHaveBeenCalledTimes(1);
+
+        const other = createSetup();
+        other.useCases.requestReview.mockRejectedValue(
+            new GraphQLOperationError({ message: "No.", code: ReviewErrorCode.NotAuthorized })
+        );
+        await other.presenter.init(other.params({ onConflict }));
+        await other.presenter.submit();
+        const ok = createSetup();
+        await ok.presenter.init(ok.params({ onConflict }));
+        await ok.presenter.submit();
+
+        expect(onConflict).toHaveBeenCalledTimes(1);
+    });
+
     it("shows a Validation error under the title and clears it on edit", async () => {
         setup.useCases.requestReview.mockRejectedValue(
             new GraphQLOperationError({

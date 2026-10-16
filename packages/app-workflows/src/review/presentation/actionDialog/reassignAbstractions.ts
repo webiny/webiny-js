@@ -8,6 +8,10 @@ export interface ReassignDialogInitParams {
     useCases: IReviewUseCases;
     request: ReviewActionRequest;
     reviewsUrl: string | null;
+    /** Content Reviews refreshes its list behind a conflicting action; the message says so (R220). */
+    listRefreshed?: boolean;
+    /** Called once after a conflict, so the host can refresh what it shows. */
+    onConflict?: () => void;
     onDone: () => void;
     onClose: () => void;
 }

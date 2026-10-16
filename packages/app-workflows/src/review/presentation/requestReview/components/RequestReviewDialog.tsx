@@ -33,6 +33,7 @@ export interface RequestReviewDialogProps {
     target: ReviewTarget;
     targetTitle: string;
     reviewsUrl: string | null;
+    onConflict?: () => void;
     onDone: () => void;
     onClose: () => void;
 }
@@ -182,11 +183,19 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
 
 /** One presenter per mounted dialog (transient, R212): init on mount, dispose on unmount. */
 export const RequestReviewDialog = (props: RequestReviewDialogProps) => {
-    const { useCases, target, targetTitle, reviewsUrl, onDone, onClose } = props;
+    const { useCases, target, targetTitle, reviewsUrl, onConflict, onDone, onClose } = props;
     const { presenter } = useFeature(RequestReviewPresenterFeature);
 
     useEffect(() => {
-        presenter.init({ useCases, target, targetTitle, reviewsUrl, onDone, onClose });
+        presenter.init({
+            useCases,
+            target,
+            targetTitle,
+            reviewsUrl,
+            onConflict,
+            onDone,
+            onClose
+        });
         return () => presenter.dispose();
     }, [presenter, target.namespace, target.targetRevisionId]);
 

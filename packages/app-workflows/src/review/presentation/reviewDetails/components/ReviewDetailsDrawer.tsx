@@ -28,12 +28,13 @@ interface ReviewDetailsDrawerViewProps {
     useCases: IReviewUseCases;
     reviewsUrl: string | null;
     onClose: () => void;
+    onChanged?: () => void;
 }
 
 const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDrawerView(
     props: ReviewDetailsDrawerViewProps
 ) {
-    const { presenter, useCases, reviewsUrl, onClose } = props;
+    const { presenter, useCases, reviewsUrl, onClose, onChanged } = props;
     const { vm } = presenter;
     const request = toActionRequest(vm.openAction, vm.reviewId);
 
@@ -50,6 +51,14 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
             />
         );
     });
+
+    // A conflict means the review changed behind the drawer: reload it and tell the host.
+    const handleConflict = async () => {
+        await presenter.refresh();
+        if (onChanged) {
+            onChanged();
+        }
+    };
 
     let actions: React.ReactNode = undefined;
     if (footer.length > 0) {
@@ -197,6 +206,7 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                 useCases={useCases}
                 request={request}
                 reviewsUrl={reviewsUrl}
+                onConflict={handleConflict}
                 onDone={() => presenter.actionDone()}
                 onClose={() => presenter.closeAction()}
             />
@@ -220,6 +230,7 @@ export const ReviewDetailsDrawer = (props: ReviewDetailsDrawerProps) => {
             useCases={useCases}
             reviewsUrl={reviewsUrl}
             onClose={onClose}
+            onChanged={onChanged}
         />
     );
 };

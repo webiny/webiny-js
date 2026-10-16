@@ -233,6 +233,9 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
 
             if (errorKind === "conflict") {
                 this.applyConflict();
+                if (params.onConflict) {
+                    params.onConflict();
+                }
                 return;
             }
             if (errorKind === "validation" && error instanceof GraphQLOperationError) {

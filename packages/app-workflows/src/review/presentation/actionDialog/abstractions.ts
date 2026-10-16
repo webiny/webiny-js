@@ -6,8 +6,10 @@ export interface ReviewActionDialogInitParams {
     useCases: IReviewUseCases;
     request: ReviewActionRequest;
     reviewsUrl: string | null;
-    /** Content Reviews refreshes its list behind a conflicting Start; the message says so (QBZ-31). */
+    /** Content Reviews refreshes its list behind a conflicting action; the message says so (R220). */
     listRefreshed?: boolean;
+    /** Called once after a conflict, so the host can refresh what it shows. */
+    onConflict?: () => void;
     onDone: () => void;
     onClose: () => void;
 }

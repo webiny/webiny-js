@@ -12,6 +12,10 @@ import { Container } from "@webiny/di";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import { StepState } from "~/review/domain/StepState.js";
 import { ReviewActionDialogPresenterFeature } from "../feature.js";
+import { ReassignDialogPresenterFeature } from "../reassignFeature.js";
+import { ReviewerPickerPresenterFeature } from "../../reviewerPicker/feature.js";
+import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewActionDialogs } from "./ReviewActionDialogs.js";
 import { ReviewBar } from "~/review/presentation/targetReview/components/ReviewBar.js";
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
@@ -28,6 +32,8 @@ const createContainer = () => {
     const container = new Container();
     container.registerInstance(ReviewToasts, { show: vi.fn() });
     ReviewActionDialogPresenterFeature.register(container);
+    ReviewerPickerPresenterFeature.register(container);
+    ReassignDialogPresenterFeature.register(container);
     return container;
 };
 
@@ -108,6 +114,40 @@ describe("ReviewActionDialogs", () => {
 
         await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
         expect(useCases.approveStep).toHaveBeenCalledTimes(1);
+    });
+
+    it("forwards listRefreshed and onConflict to the reassign dialog (R220, F1)", async () => {
+        const useCases = createUseCases();
+        useCases.listReviewStepCandidates.mockResolvedValue([
+            { id: "user-3", displayName: "Ivan Horvat", excluded: false, excludedReason: null }
+        ]);
+        useCases.reassignStep.mockRejectedValue(
+            new GraphQLOperationError({
+                message: "Conflict.",
+                code: ReviewErrorCode.StepNotReassignable
+            })
+        );
+        const onConflict = vi.fn();
+        renderWithContainer(
+            <ReviewActionDialogs
+                useCases={useCases}
+                request={{ kind: "reassign", reviewId: "review-1", stepId: "step-1" }}
+                reviewsUrl={null}
+                listRefreshed={true}
+                onConflict={onConflict}
+                onDone={onDone}
+                onClose={onClose}
+            />,
+            createContainer()
+        );
+        await screen.findByText("Reassign “Legal sign-off”");
+        fireEvent.click(screen.getByRole("combobox"));
+        fireEvent.click(await screen.findByText("Ivan Horvat"));
+
+        fireEvent.click(screen.getByRole("button", { name: "Reassign" }));
+
+        expect(await screen.findByText(/The list has been refreshed\./)).toBeTruthy();
+        expect(onConflict).toHaveBeenCalledTimes(1);
     });
 
     it("collapses to Close after a conflict", async () => {

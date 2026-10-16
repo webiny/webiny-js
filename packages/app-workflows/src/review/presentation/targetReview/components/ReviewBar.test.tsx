@@ -6,6 +6,14 @@ import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { within } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
+import { Container } from "@webiny/di";
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
+import { ReviewToasts } from "~/review/toasts/abstractions.js";
+import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
+import { RequestReviewPresenterFeature } from "../../requestReview/feature.js";
+import { ReviewerPickerPresenterFeature } from "../../reviewerPicker/feature.js";
+import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
 import { ReviewBar } from "./ReviewBar.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import { createFakePresenter } from "~/review/testing/targetReviewFakes.js";
@@ -276,5 +284,39 @@ describe("ReviewBar", () => {
         fireEvent.mouseEnter(screen.getByText("1 of 3 steps approved"));
 
         expect(document.querySelector("[data-slot='popover-content']")).not.toBeNull();
+    });
+});
+
+describe("ReviewBar after a conflict (F1)", () => {
+    it("refreshes the bar when the request dialog hits a conflict", async () => {
+        const container = new Container();
+        container.registerInstance(ReviewToasts, { show: vi.fn() });
+        ReviewerPickerPresenterFeature.register(container);
+        RequestReviewPresenterFeature.register(container);
+        const presenter = createFakePresenter(
+            createViewModel({
+                status: "none",
+                reviewId: null,
+                openAction: { kind: "request", stepId: null }
+            })
+        );
+        const useCases = createFakeUseCases();
+        useCases.requestReview.mockRejectedValue(
+            new GraphQLOperationError({
+                message: "Active.",
+                code: ReviewErrorCode.AlreadyActive
+            })
+        );
+        renderWithContainer(
+            <ReviewBar presenter={presenter} useCases={useCases} reviewsUrl={null} />,
+            container
+        );
+        await screen.findByText("Editorial check");
+
+        fireEvent.click(screen.getByRole("button", { name: "Request review" }));
+
+        expect(await screen.findByText("Someone else acted first")).toBeTruthy();
+        await waitFor(() => expect(presenter.refresh).toHaveBeenCalledTimes(1));
+        expect(presenter.actionDone).not.toHaveBeenCalled();
     });
 });
