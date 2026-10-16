@@ -8,10 +8,9 @@ import { ReactComponent as MoveIcon } from "@webiny/icons/exit_to_app.svg";
 import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
 import { MOVE_BLOCKED_IN_REVIEW } from "@webiny/app-workflows/review/presentation/targetReview/moveBlockedInReview.js";
 import type { ICmsEntryMetaWithReview } from "~/types.js";
+import { ignoreAction } from "../ignoreAction.js";
 
 const EntryAction = ContentEntryListConfig.Browser.Entry.Action;
-
-function ignoreAction(): void {}
 
 /*
  * A disabled menu item cannot take focus, so the reason is given on hover by the tooltip and to

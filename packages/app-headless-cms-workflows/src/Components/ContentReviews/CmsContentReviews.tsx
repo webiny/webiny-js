@@ -9,7 +9,7 @@ import { CmsReviewFeature } from "~/features/gateway/feature.js";
 import { CmsContentReviewsPresenterFeature } from "~/presentation/contentReviews/feature.js";
 import { Routes } from "~/routes.js";
 
-/**
+/*
  * Mounts the shared Content Reviews route, menu item and dashboard widgets with the CMS use cases.
  * Only the content type list is CMS knowledge (D113, A80); the page and the widgets wait for it
  * (`ready`), so the list starts once with the real namespaces.

@@ -20,7 +20,7 @@ const ContentReviewsSidebarLink = () => {
     );
 };
 
-// The "Content Reviews" item of the content entries sidebar; it opens the route (replaces the overlay).
+// The "Content Reviews" item of the content entries sidebar; it opens the route.
 export const CmsContentReviewsSidebarItem = () => {
     return (
         <ContentEntryListConfig>

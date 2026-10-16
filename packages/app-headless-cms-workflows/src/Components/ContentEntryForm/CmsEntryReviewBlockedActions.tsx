@@ -7,10 +7,9 @@ import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentat
 import { ReviewTooltip } from "@webiny/app-workflows/review/presentation/targetReview/components/ReviewTooltip.js";
 import { useCmsEntryReview } from "~/features/editorReview/useCmsEntryReview.js";
 import { isReviewableModel } from "~/utils/isReviewableModel.js";
+import { ignoreAction } from "../ignoreAction.js";
 
 const { Actions } = InternalContentEntryEditorConfig;
-
-function ignoreAction(): void {}
 
 const BlockedActions = createReactiveComponent(() => {
     const { ButtonPrimary, ButtonSecondary } = Actions.ButtonAction.useButtons();
@@ -65,8 +64,9 @@ const BlockedActions = createReactiveComponent(() => {
  * The base Save and Publish buttons render nothing when `canSave` or `canPublish` is false. While
  * the review status is unknown, or a review does not allow publishing yet, this shows them
  * `aria-disabled` and focusable (never removed, R226), with the reason from the shared review rules
- * given by `ReviewTooltip` (its render function hands each button the `aria-describedby`, R241). At most two buttons show (Save only while the status is unknown); the
- * base Save & Publish stays hidden because `canPublish` is false.
+ * given by `ReviewTooltip` (its render function hands each button the `aria-describedby`, R241).
+ * At most two buttons show (Save only while the status is unknown); the base Save & Publish stays
+ * hidden because `canPublish` is false.
  */
 export const CmsEntryReviewBlockedActions = () => {
     return (

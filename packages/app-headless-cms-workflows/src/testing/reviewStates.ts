@@ -12,7 +12,7 @@ export const NO_MOVE = "Can’t move while this revision is in review.";
 
 type Rules = Partial<TargetReviewPresenter.ViewModel>;
 
-/** A model without a workflow: nothing is shown and nothing is gated. */
+// A model without a workflow: nothing is shown and nothing is gated.
 export const NO_WORKFLOW: Rules = {
     status: "noWorkflow",
     allowsEditing: true,
@@ -21,7 +21,7 @@ export const NO_WORKFLOW: Rules = {
     moveDisabledReason: null
 };
 
-/** A workflow is bound but there is no active review: editing is free, publishing needs a review. */
+// A workflow is bound but there is no active review: editing is free, publishing needs a review.
 export const BOUND_NO_REVIEW: Rules = {
     status: "none",
     allowsEditing: true,
@@ -30,7 +30,10 @@ export const BOUND_NO_REVIEW: Rules = {
     moveDisabledReason: null
 };
 
-/** An unpublished revision with no review: it was reviewed before it was published, so it can be published again (R226, Q19). */
+/*
+ * An unpublished revision with no review: it was reviewed before it was published, so it can be
+ * published again (R226, Q19).
+ */
 export const BOUND_UNPUBLISHED: Rules = {
     status: "none",
     allowsEditing: true,

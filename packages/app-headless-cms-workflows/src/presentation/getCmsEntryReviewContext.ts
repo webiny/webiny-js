@@ -13,7 +13,7 @@ export function getCmsEntryReviewContext(
         targetTitle: `${model.name}: ${entryTitle}`,
         canRequest,
         isPublished: entry.meta?.status === "published",
-        // A revision published before and not published now (R226): it was reviewed before it was published.
+        // A revision published before and not published now (R226): it was reviewed before.
         isUnpublished: entry.meta?.status === "unpublished"
     };
 }

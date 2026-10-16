@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 
-/** The part of an admin model the content type list needs. */
+// The part of an admin model the content type list needs.
 export interface ListedModel {
     modelId: string;
     name: string;

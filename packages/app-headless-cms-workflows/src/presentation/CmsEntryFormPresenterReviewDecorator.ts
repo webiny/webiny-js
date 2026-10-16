@@ -108,9 +108,10 @@ class CmsEntryFormPresenterWithReview implements ContentEntryFormPresenter.Inter
         const review = this.session.presenter.vm;
 
         if (!review.allowsEditing) {
-            // Nothing can be saved while the status is unknown or a review locks the content. A clean,
-            // unlocked approved draft still reports success, so that "Save & Publish" goes on to
-            // publish. A locked entry never does: saving it would create a new revision.
+            // Nothing can be saved while the status is unknown or a review locks the content.
+            // A clean, unlocked approved draft still reports success, so that "Save & Publish"
+            // goes on to publish. A locked entry never does: saving it would create a new
+            // revision.
             const entry = this.original.vm.entry;
             const isCleanDraft = entry !== null && !entry.meta.locked && !this.original.vm.isDirty;
 
