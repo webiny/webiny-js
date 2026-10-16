@@ -1,16 +1,16 @@
 import { createFeature } from "@webiny/feature/admin";
 import { CmsEntryFormPresenterReviewDecorator } from "./CmsEntryFormPresenterReviewDecorator.js";
-import { TableRowMapperWorkflowDecorator } from "./TableRowMapperWorkflowDecorator.js";
-import { WorkflowStateListEntriesFieldSelection } from "./WorkflowStateListEntriesFieldSelection.js";
-import { WorkflowStateGetEntryFieldSelection } from "./WorkflowStateGetEntryFieldSelection.js";
+import { CmsReviewGetEntryFieldSelection } from "./CmsReviewGetEntryFieldSelection.js";
+import { CmsReviewListEntriesFieldSelection } from "./CmsReviewListEntriesFieldSelection.js";
+import { CmsReviewTableRowMapperDecorator } from "./CmsReviewTableRowMapperDecorator.js";
 
 export const CmsWorkflowsFeature = createFeature({
     name: "CmsWorkflows",
     register(container) {
-        // WorkflowsFeature and WorkflowStatePresenterFeature are registered by WorkflowsAdminApp.
+        // WorkflowsFeature and the review services are registered by WorkflowsAdminApp.
         container.registerDecorator(CmsEntryFormPresenterReviewDecorator);
-        container.registerDecorator(TableRowMapperWorkflowDecorator);
-        container.register(WorkflowStateListEntriesFieldSelection);
-        container.register(WorkflowStateGetEntryFieldSelection);
+        container.registerDecorator(CmsReviewTableRowMapperDecorator);
+        container.register(CmsReviewListEntriesFieldSelection);
+        container.register(CmsReviewGetEntryFieldSelection);
     }
 });

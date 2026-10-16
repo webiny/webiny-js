@@ -9,6 +9,7 @@ import { CmsEntryReviewScheduleMenuItem } from "~/Components/ContentEntryForm/in
 import { CmsEntriesWorkflowStateListFooterMenu } from "~/Components/CmsEntriesWorkflowStateList/index.js";
 import { ListOpenInNewWindow } from "~/Components/OptionItem/OpenInNewWindow.js";
 import { CmsEntryReviewFeature } from "~/features/editorReview/feature.js";
+import { CmsReviewMoveEntryAction } from "~/Components/CmsEntriesList/CmsReviewMoveEntryAction.js";
 import { CmsWorkflowsFeature } from "~/presentation/feature.js";
 import { CmsWorkflowsCacheFeature } from "~/features/feature.js";
 import { CmsWorkflowsEditorPresenterFeature } from "~/presentation/cmsWorkflowsEditor/feature.js";
@@ -36,6 +37,7 @@ export const CmsWorkflows = () => {
             <CmsEntryReviewBlockedActions />
             <CmsEntryReviewScheduleMenuItem />
             <CmsEntryReviewNewRevision />
+            <CmsReviewMoveEntryAction />
         </>
     );
 };

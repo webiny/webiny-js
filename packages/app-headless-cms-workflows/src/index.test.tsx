@@ -12,6 +12,10 @@ import { FeatureFlags } from "@webiny/feature-flags";
 import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
 import { CmsWorkflows } from "./index.js";
 
+vi.mock("~/Components/CmsEntriesList/CmsReviewMoveEntryAction.js", () => {
+    return { CmsReviewMoveEntryAction: () => null };
+});
+
 vi.mock("~/Routes/index.js", () => {
     return { CmsWorkflowsEditor: () => null };
 });
