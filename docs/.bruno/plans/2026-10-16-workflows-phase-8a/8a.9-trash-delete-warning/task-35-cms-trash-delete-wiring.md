@@ -717,7 +717,6 @@ Create `packages/app-headless-cms-workflows/src/features/trash/feature.test.tsx`
 
 ```tsx
 import React from "react";
-import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";

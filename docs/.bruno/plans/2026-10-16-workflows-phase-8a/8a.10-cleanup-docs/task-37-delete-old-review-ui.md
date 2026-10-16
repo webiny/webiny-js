@@ -691,7 +691,7 @@ export { WorkflowStepModel } from "./WorkflowStepModel.js";
 -            <ContentReviews />
 ```
 
-`packages/app-workflows/src/index.tsx` (removal hunks; the 8a export lines of Tasks 8-34 and `export { WorkflowsAdminApp } from "./app.js";`, the `WorkflowsEditor` and `HasWorkflowsEditorPermission` imports, `useCanUseWorkflows`, `useWorkflowsPermission`, `WorkflowsFeature`, `WorkflowsEditorPresenterFeature` and `WorkflowsPermissionsFeature` stay):
+`packages/app-workflows/src/index.tsx` (removal hunks; no 8a task adds to this file (R-k); `export { WorkflowsAdminApp } from "./app.js";`, the `WorkflowsEditor` and `HasWorkflowsEditorPermission` imports, `useCanUseWorkflows`, `useWorkflowsPermission`, `WorkflowsFeature`, `WorkflowsEditorPresenterFeature` and `WorkflowsPermissionsFeature` stay):
 
 ```diff
 -import { WorkflowStateOptionsOpenInNewWindow } from "~/presentation/shared/index.js";
@@ -934,5 +934,5 @@ yarn check-ts-configs                                                           
 4. The old `Components.Overlay`, `Components.Widget` and `Components.List` entries of the `@webiny/app-workflows` barrel are removed; their only consumers were the deleted old files of the two app packages (3a second grep proves it). If that grep shows another consumer, stop and report it.
 5. `Components.ContentReview.*`, `useWorkflowState`, `WorkflowStatePresenter` and `WorkflowStateValue` leave the public barrel; the three packages are not published outside this monorepo's unreleased rewrite, so no compatibility shim is added.
 6. The composition tests (`*.cleanup.test.tsx`) call the three roots as functions with `useFeatureFlags` mocked; they carry a small test-only element walker that is repeated in each package (test code, not production logic). The tests import the real roots (module imports only, nothing is rendered), so they need the DOM setup and svg alias of Task 14 (`app-workflows`), Task 20 (`app-headless-cms-workflows`) and Task 22 (`app-website-builder-workflows`); verify: that `@webiny/app-admin`'s barrel loads under each package's jsdom `vitest.config.ts` (the flag on/off tests of Tasks 10-12 rely on the same, and Tasks 20-30 add `vi.mock` stubs for the shell-dependent components, which are only needed when a root is rendered), and the rendered component names `CmsWorkflowsEditor`, `WebsiteBuilderWorkflowsMenu`, `PageEditorConfig`.
-7. The hunks for `app.tsx` and `index.tsx` are written against the pre-8a text of those files; Tasks 10-34 add lines to both, so every hunk is a removal and line numbers will have drifted.
+7. The hunks for `app.tsx` and `index.tsx` are written against the pre-8a text of those files. Tasks 10-34 add lines to `app.tsx` only (no 8a task adds to `index.tsx`, R-k), so every hunk is a removal and the `app.tsx` line numbers will have drifted.
 8. Size: a deletion of about 190 files plus six small file rewrites; the one step with judgement is the 3a/3e importer check, which is why it is a hard stop rather than a fix-up.
