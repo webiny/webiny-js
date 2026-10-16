@@ -8,7 +8,7 @@ export interface DisabledPublishButtonProps {
     presenter: TargetReviewPresenter.Interface;
 }
 
-/**
+/*
  * A disabled Publish that stays focusable (QBZ-36): `aria-disabled` instead of the `disabled`
  * attribute and no click handler. The shared `ReviewTooltip` gives it the reason on hover and
  * focus and through `aria-describedby`.

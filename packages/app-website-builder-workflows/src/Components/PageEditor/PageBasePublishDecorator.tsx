@@ -20,7 +20,7 @@ const BasePublishGate = createReactiveComponent((props: BasePublishGateProps) =>
     return null;
 });
 
-/**
+/*
  * Hides the base Publish for every page of a namespace that has a workflow; the workflows Publish
  * (`buttonWorkflowPublish`) takes over there. The one decoration of `buttonPublish` (A78).
  */

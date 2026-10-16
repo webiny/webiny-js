@@ -9,7 +9,7 @@ import { Routes } from "~/routes.js";
 
 const NAMESPACES = [WB_PAGE_APP];
 
-/**
+/*
  * Mounts the shared Content Reviews route, menu item and dashboard widgets with the Website
  * Builder use cases. Pages have no content type: no Content type column and no filter (D113).
  */

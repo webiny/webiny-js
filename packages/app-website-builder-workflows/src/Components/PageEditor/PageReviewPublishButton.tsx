@@ -13,7 +13,7 @@ const selectStatus = (doc: IPageEditorDocument): WbStatus => {
     return doc.status || WbPageStatus.Draft;
 };
 
-/**
+/*
  * Publish for every namespace that has a workflow. It does not depend on the canvas being editable:
  * an approved revision is read-only and still publishes (A73).
  */

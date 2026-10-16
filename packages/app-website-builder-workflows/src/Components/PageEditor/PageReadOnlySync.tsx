@@ -4,7 +4,7 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { useDocumentEditor } from "@webiny/app-website-builder/DocumentEditor/index.js";
 import { WbPageReviewFeature } from "~/features/editorReview/feature.js";
 
-/**
+/*
  * The one place that decides whether the canvas is read-only: the editor's own options (a page
  * that is not a draft) or a review state that does not allow editing, including an unknown one.
  */

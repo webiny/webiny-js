@@ -13,7 +13,7 @@ interface AutoSaveGateProps {
 const AutoSaveGate = createReactiveComponent((props: AutoSaveGateProps) => {
     const { session } = useFeature(WbPageReviewFeature);
 
-    /**
+    /*
      * Autosave runs only while editing is allowed: never while a review exists and never while the
      * review status is loading or failed.
      */

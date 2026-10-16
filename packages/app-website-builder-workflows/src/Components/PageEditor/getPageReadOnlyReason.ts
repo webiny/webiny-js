@@ -12,7 +12,7 @@ const APPROVED =
     "Read-only: this revision has an approved review. Create a new revision to make changes; it needs a new review.";
 const REJECTED = "Read-only: this revision was rejected. Create a new revision to fix it.";
 
-/**
+/*
  * The canvas note of the Website Builder design frames (QBZ-23), switched on `vm.status` and
  * `vm.reviewKind` (R240), never on label text.
  */

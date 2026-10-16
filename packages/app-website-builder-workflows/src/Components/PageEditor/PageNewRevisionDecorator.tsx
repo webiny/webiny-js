@@ -14,9 +14,9 @@ const NewRevisionGate = createReactiveComponent((props: NewRevisionGateProps) =>
     const { session } = useFeature(WbPageReviewFeature);
     const { vm } = session.presenter;
 
-    /**
-     * Hidden while the status is unknown (R225) and while a review is in progress (Q17). Shown for a
-     * rejected, an approved and an unpublished page (Q19) and where there is no workflow.
+    /*
+     * Hidden while the status is unknown (R225) and while a review is in progress (Q17). Shown
+     * for a rejected, an approved and an unpublished page (Q19) and where there is no workflow.
      */
     if (vm.status === "loading" || vm.status === "failed" || vm.reviewKind === "inProgress") {
         return null;
@@ -25,7 +25,7 @@ const NewRevisionGate = createReactiveComponent((props: NewRevisionGateProps) =>
     return props.element ?? null;
 });
 
-/**
+/*
  * The one decoration of the base `buttonNewRevision` (A78); every other action passes through.
  */
 export const PageNewRevisionDecorator = Ui.TopBar.Action.createDecorator(Original => {

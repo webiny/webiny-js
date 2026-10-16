@@ -12,7 +12,9 @@ class WbReviewContentAdapterImpl implements AdapterAbstraction.Interface {
     getContentUrl(ref: ReviewContentRef): string {
         assertWbPageNamespace(ref.namespace);
 
-        return Routes.Pages.Editor.path.replace(":id", encodeURIComponent(ref.targetRevisionId));
+        const encodedRevisionId = encodeURIComponent(ref.targetRevisionId);
+
+        return Routes.Pages.Editor.path.replace(":id", encodedRevisionId);
     }
 
     getContentTypeLabel(): string | null {

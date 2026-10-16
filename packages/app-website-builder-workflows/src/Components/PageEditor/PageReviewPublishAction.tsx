@@ -5,7 +5,7 @@ import { PageReviewPublishButton } from "./PageReviewPublishButton.js";
 
 const { Ui } = PageEditorConfig;
 
-/**
+/*
  * Registered outside `Ui.IsNotReadOnly` on purpose: the base Publish is mounted only while the
  * canvas is editable, and an approved revision is read-only (A73).
  */
