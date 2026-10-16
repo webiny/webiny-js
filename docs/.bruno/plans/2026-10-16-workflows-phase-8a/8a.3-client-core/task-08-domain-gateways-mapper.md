@@ -2028,7 +2028,7 @@ export const STEP_CANDIDATE_FIELDS = /* GraphQL */ `
 export const REVIEW_SYSTEM_WORKFLOW_SELECTION = "workflowId reviewState stepId stepName stepState";
 ```
 
-Note: `~/features/graphqlFields.ts` (the old file, deleted in Task 37) exports `ERROR_FIELDS` and `WORKFLOW_FIELDS` under the same names; the two files are separate modules and the barrel exports only the new ones.
+Note: `~/features/graphqlFields.ts` (the old file, trimmed in Task 37 to `ERROR_FIELDS` and `WORKFLOW_FIELDS`) exports `ERROR_FIELDS` and `WORKFLOW_FIELDS` under the same names; the two files are separate modules and the barrel exports only the new ones.
 
 `gateway/mapReview.ts`:
 

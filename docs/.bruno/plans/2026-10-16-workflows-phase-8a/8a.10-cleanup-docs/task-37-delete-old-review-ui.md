@@ -1,6 +1,6 @@
 ### Task 37: Delete the old review UI
 
-R219 (delete and keep lists), R211, R202; Review Focus 15 ("deleting the old UI breaks the build or removes something kept for 9a/9c"); Roadmap row 8a ("delete the old admin review UI"). Every task before this one built and mounted the replacement (Tasks 10-36), so the old review code is now unreferenced from the mounted roots. This task deletes exactly what R219 lists, trims the shared files that carried both halves (`types.ts`, `graphqlFields.ts`, `features/feature.ts`, `domain/index.ts`, the barrels, `app.tsx`), lets `yarn adio` fix `package.json`, and proves with composition tests, file checks, greps and builds that nothing live imports a deleted path and that the old workflow editor (kept for 9a, 9c) still compiles.
+R219 (delete and keep lists), R211, R202; Review Focus 15 ("deleting the old UI breaks the build or removes something kept for 9a/9c"); Roadmap row 8a ("delete the old admin review UI"). Every task before this one built and mounted the replacement (Tasks 10-36), so the old review code is now unreferenced from the mounted roots. This task deletes exactly what R219 lists, trims the shared files that carried both halves (`types.ts`, `graphqlFields.ts`, `features/feature.ts`, `domain/index.ts`, the barrels, `app.tsx`), edits each `package.json` by hand for what `yarn adio` reports, and proves with composition tests, file checks, greps and builds that nothing live imports a deleted path and that the old workflow editor (kept for 9a, 9c) still compiles.
 
 - **Deleted in `packages/app-workflows/src`:** `features/{approveStep,cancelWorkflowState,getTargetWorkflowState,listWorkflowStates,rejectStep,requestReview,startStep,takeOverStep}/`; `presentation/{workflowState,workflowStateList,workflowStatesWidget,shared}/`; `presentation/ContentReviews.tsx`; `routes.ts` (its one route, `Workflows/ContentReviews` at `/workflows/content-reviews`, is replaced by the per-app routes of Tasks 29-30, R206); `domain/WorkflowStateModel.ts`, `domain/WorkflowStateStepModel.ts`, `domain/abstractions/WorkflowStateModel.ts`, `domain/abstractions/WorkflowStateStepModel.ts`, `domain/events.ts` (`WorkflowStateChangedEvent`, replaced by `ReviewChangedEvent`, R213).
 - **Trimmed in `packages/app-workflows/src`:** `index.tsx`, `app.tsx`, `types.ts`, `features/graphqlFields.ts` (`ERROR_FIELDS` and `WORKFLOW_FIELDS` stay, four kept gateways import them), `features/feature.ts`, `domain/index.ts`.
@@ -8,7 +8,7 @@ R219 (delete and keep lists), R211, R202; Review Focus 15 ("deleting the old UI 
 - **Deleted in `packages/app-website-builder-workflows/src`:** `Components/PagesList/PagesListContentReviews.tsx`, `Components/OptionItem/`, `Components/PageEditor/{PageFormWorkflowState,PageFormWorkflowStateTooltip,PageFormWorkflowStatePublishButton,ToggleEditorMode}.tsx`, `presentation/page/PageGet/WorkflowStatesGetPageGraphQLFieldSelection.ts`, `presentation/page/PageList/WorkflowStateListPagesFieldSelection.ts` (`TableRowMapperDecorator.ts` is already deleted by Task 24; `ToggleEditorMode.tsx` is deleted here, Task 22 only stops mounting it). `hooks/usePage.ts` is **kept**: Task 24 left its code unchanged and `PageListChangeStatus.tsx` imports it.
 - **Kept until 9a/9c (must survive):** in `app-workflows`: `features/{listWorkflows,storeWorkflow,deleteWorkflow,listNotificationTypes,permissions}/`, `presentation/{workflowsEditor,permissions}/**`, `domain/{WorkflowModel,WorkflowStepModel}.ts` and their `abstractions/` twins, `domain/{index,permissionsSchema}.ts`, `hooks/canUseWorkflows.ts`, the `WorkflowsAdminApp` permission and editor registrations; in the apps the editor routes and views (`Routes/CmsWorkflowsEditor.tsx`, `presentation/CmsWorkflowsEditorView.tsx`, `presentation/cmsWorkflowsEditor/*`, `Routes/WebsiteBuilderWorkflowsMenu.tsx`, `Components/PageWorkflows/*`). The WB files `PageEditorConfig.tsx`, `PageEditorTopBar.tsx`, `PageEditorLayout.tsx`, `PageEditorAutoSave.tsx` are kept by name (rewritten by Tasks 22-23).
 - **Also fixed:** `packages/app-admin/src/components/DeveloperMode/DeveloperMode.tsx` carries two `@see` lines that name deleted bar files (Contract notes 2).
-- **Not changed:** the `exports` map of the three `package.json` files (`".": "./index.js"`, `"./*": "./*"` already cover everything); only `dependencies` change, through `yarn adio`.
+- **Not changed:** the `exports` map of the three `package.json` files (`".": "./index.js"`, `"./*": "./*"` already cover everything); only `dependencies` change, edited by hand for every unused or missing dependency `yarn adio` reports (adio only reports).
 
 **Files:**
 - Create: `packages/app-workflows/src/app.cleanup.test.tsx`
@@ -524,7 +524,248 @@ git rm -q packages/app-website-builder-workflows/src/presentation/page/PageGet/W
 
 `hooks/usePage.ts` (WB) is not deleted: Task 24 keeps its code and `PageListChangeStatus.tsx` imports it (the WB cleanup test lists it as kept). `ToggleEditorMode.tsx` is removed with `--ignore-unmatch` above because Task 22 only stops mounting it (its text says "deleted in Task 37") while the coordinator's note says Task 22 deletes it; both orders work.
 
-Keep `export { WorkflowsAdminApp } from "./app.js";`, `export { useCanUseWorkflows } ...`, `export { useWorkflowsPermission } ...`, `export { WorkflowsFeature } ...`, `export { WorkflowsEditorPresenterFeature } ...`, `export { WorkflowsPermissionsFeature } ...` and the `WorkflowsEditor` and `HasWorkflowsEditorPermission` imports.
+**3c. Trim the shared `app-workflows` files.** Before rewriting `types.ts`, prove nothing that remains uses the dropped types (the only users of `WorkflowStateValue`, `IWorkflowStateStep`, `IWorkflowState` and `IIdentity` were the deleted files, `routes.ts` and the deleted `workflowStatesWidget` row component; Tasks 8-36 write none, the `review/` tree has its own types):
+
+```
+grep -rnE "WorkflowStateValue|IWorkflowStateStep|IWorkflowState\b|IIdentity|WORKFLOW_STATE_STEP_FIELDS|WORKFLOW_STATE_FIELDS" packages/*/src --include='*.ts' --include='*.tsx' | grep -v "\.cleanup\.test\.tsx" | sort
+```
+
+Expected, run after 3b: only the two files this step rewrites (`packages/app-workflows/src/types.ts`, `packages/app-workflows/src/features/graphqlFields.ts`) and `packages/app-headless-cms-workflows/src/types.ts` (fixed in 3d). Any other hit is a live consumer: stop and report it. Also check the sibling task files: `grep -rnE "IIdentity|WorkflowStateValue|IWorkflowState\b|WORKFLOW_STATE_" docs/.bruno/plans/2026-10-16-workflows-phase-8a --include='*.md' | grep -v 8a.10-cleanup-docs` prints only the note lines of Task 8 about `graphqlFields.ts` (no code that imports them). `META_FIELDS` is dropped too: its only user was `ListWorkflowStatesGateway` (deleted), and the review gateways of Task 8 define their own fields.
+
+Replace `packages/app-workflows/src/types.ts` with:
+
+```ts
+import type { GenericRecord, NonEmptyArray } from "@webiny/app/types.js";
+import type { ReactElement } from "react";
+import { Identity } from "@webiny/app-admin/domain/Identity.js";
+
+export interface IGenericMeta {
+    totalCount: number;
+    hasMoreItems: boolean;
+    cursor: string | null;
+}
+
+export interface IGenericError {
+    message: string;
+    code: string | null;
+    data?: GenericRecord;
+    stack?: string;
+}
+
+export interface IWorkflowApplication {
+    id: string;
+    icon: ReactElement;
+    name: string;
+}
+
+export interface IWorkflowStepNotification {
+    id: string;
+}
+
+export interface IWorkflowStepTeam {
+    id: string;
+}
+
+export interface IWorkflowStep {
+    id: string;
+    title: string;
+    color: string;
+    description?: string;
+    teams: NonEmptyArray<IWorkflowStepTeam>;
+    notifications?: IWorkflowStepNotification[];
+}
+
+export interface IWorkflowNotificationType {
+    id: string;
+    title: string;
+}
+
+export interface IWorkflow {
+    id: string;
+    app: string;
+    name: string;
+    steps: NonEmptyArray<IWorkflowStep>;
+}
+
+export enum WorkflowsSecurityPermissionAccessLevel {
+    NO = "no",
+    YES = "yes"
+}
+
+export interface IWorkflowsSecurityPermission extends Identity.Permission {
+    editor: WorkflowsSecurityPermissionAccessLevel;
+}
+```
+
+(dropped: `WorkflowStateValue`, `IWorkflowStateStep`, `IWorkflowState` and `IIdentity`, whose only users were the deleted files.)
+
+Replace `packages/app-workflows/src/features/graphqlFields.ts` with (the four kept gateways import `ERROR_FIELDS` and `WORKFLOW_FIELDS`: `ListWorkflowsGateway` and `StoreWorkflowGateway` both, `ListNotificationTypesGateway` and `DeleteWorkflowGateway` `ERROR_FIELDS`):
+
+```ts
+export const ERROR_FIELDS = /* GraphQL */ `
+    code
+    message
+    data
+`;
+
+export const WORKFLOW_FIELDS = /* GraphQL */ `
+    id
+    app
+    name
+    steps {
+        id
+        title
+        color
+        description
+        teams {
+            id
+        }
+        notifications {
+            id
+        }
+    }
+`;
+```
+
+Replace `packages/app-workflows/src/features/feature.ts` with:
+
+```ts
+import { createFeature } from "@webiny/feature/admin";
+import { ListWorkflowsFeature } from "./listWorkflows/feature.js";
+import { StoreWorkflowFeature } from "./storeWorkflow/feature.js";
+import { DeleteWorkflowFeature } from "./deleteWorkflow/feature.js";
+import { ListNotificationTypesFeature } from "./listNotificationTypes/feature.js";
+
+export const WorkflowsFeature = createFeature({
+    name: "Workflows",
+    register(container) {
+        ListWorkflowsFeature.register(container);
+        StoreWorkflowFeature.register(container);
+        DeleteWorkflowFeature.register(container);
+        ListNotificationTypesFeature.register(container);
+    }
+});
+```
+
+Replace `packages/app-workflows/src/domain/index.ts` with:
+
+```ts
+export type { IWorkflowModel } from "./abstractions/WorkflowModel.js";
+export type { IWorkflowStepModel } from "./abstractions/WorkflowStepModel.js";
+export { WorkflowModel } from "./WorkflowModel.js";
+export { WorkflowStepModel } from "./WorkflowStepModel.js";
+```
+
+`packages/app-workflows/src/app.tsx` (removal hunks; Tasks 10-34 added review imports and `RegisterFeature` lines around these, all stay; `WorkflowsPermissionsFeature`, `WorkflowsFeature`, `WorkflowsEditorPresenterFeature` and `SecurityPermissions` stay):
+
+```diff
+-import { WorkflowStatePresenterFeature } from "~/presentation/workflowState/feature.js";
+-import { WorkflowStateListPresenterFeature } from "~/presentation/workflowStateList/feature.js";
+-import { WorkflowStatesWidgetPresenterFeature } from "~/presentation/workflowStatesWidget/feature.js";
+```
+
+```diff
+-import { ContentReviews } from "~/presentation/ContentReviews.js";
+```
+
+```diff
+-            <RegisterFeature feature={WorkflowStatePresenterFeature} />
+-            <RegisterFeature feature={WorkflowStateListPresenterFeature} />
+-            <RegisterFeature feature={WorkflowStatesWidgetPresenterFeature} />
+```
+
+```diff
+-            <ContentReviews />
+```
+
+`packages/app-workflows/src/index.tsx` (removal hunks; the 8a export lines of Tasks 8-34 and `export { WorkflowsAdminApp } from "./app.js";`, the `WorkflowsEditor` and `HasWorkflowsEditorPermission` imports, `useCanUseWorkflows`, `useWorkflowsPermission`, `WorkflowsFeature`, `WorkflowsEditorPresenterFeature` and `WorkflowsPermissionsFeature` stay):
+
+```diff
+-import { WorkflowStateOptionsOpenInNewWindow } from "~/presentation/shared/index.js";
+-import {
+-    WorkflowStatesOwnWidget,
+-    WorkflowStatesRequestedWidget
+-} from "./presentation/workflowStatesWidget/components/index.js";
+-
+-import { WorkflowStateListAppOverlay } from "./presentation/workflowStateList/components/Overlay/WorkflowStateListAppOverlay.js";
+-import { WorkflowStateBar } from "./presentation/workflowState/components/Bar/WorkflowStateBar.js";
+-import { WorkflowStateOverlay } from "./presentation/workflowState/components/Overlay/WorkflowStateOverlay.js";
+-import { WorkflowStateTooltip } from "./presentation/workflowState/components/Tooltip/WorkflowStateTooltip.js";
+```
+
+```diff
+-export { useWorkflowState } from "./presentation/workflowState/useWorkflowState.js";
+-export type { IWorkflowApplication, IWorkflowState } from "~/types.js";
+-export { WorkflowStateValue } from "~/types.js";
++export type { IWorkflowApplication } from "~/types.js";
+```
+
+```diff
+-export { WorkflowStatePresenterFeature } from "./presentation/workflowState/feature.js";
+-export { WorkflowStatePresenter } from "./presentation/workflowState/abstractions.js";
+-export type { IWorkflowStatePresenter } from "./presentation/workflowState/abstractions.js";
+-export { WorkflowStateListPresenterFeature } from "./presentation/workflowStateList/feature.js";
+-export { WorkflowStatesWidgetPresenterFeature } from "./presentation/workflowStatesWidget/feature.js";
+```
+
+and inside `export const Components = { ... }`:
+
+```diff
+ export const Components = {
+-    ContentReview: {
+-        WorkflowStateTooltip,
+-        WorkflowStateOverlay,
+-        WorkflowStateBar
+-    },
+     Permissions: {
+         HasWorkflowsEditorPermission
+     },
+     Admin: {
+         WorkflowsEditor
+-    },
+-    Overlay: {
+-        WorkflowStateListAppOverlay
+-    },
+-    Widget: {
+-        OwnWidget: WorkflowStatesOwnWidget,
+-        RequestedWidget: WorkflowStatesRequestedWidget
+-    },
+-    List: {
+-        Options: {
+-            OpenInNewWindow: WorkflowStateOptionsOpenInNewWindow
+-        }
+     }
+ };
+```
+
+If a task before this one already appended an entry to `Components` (re-read the object first), keep it and fix the trailing comma of the entry before it; the object then has no comma after its last entry.
+
+`packages/app-admin/src/components/DeveloperMode/DeveloperMode.tsx` (the two `@see` lines name deleted files; point them at the new bars):
+
+```diff
+- * @see packages/app-workflows/src/Components/WorkflowState/Bar/Bars/WorkflowStateBarApproved.tsx
+- * @see packages/app-workflows/src/Components/WorkflowState/Bar/Bars/WorkflowStateBarRejected.tsx
++ * @see packages/app-headless-cms-workflows/src/Components/ContentEntryForm/CmsEntryReviewBar.tsx
++ * @see packages/app-website-builder-workflows/src/Components/PageEditor/PageReviewBar.tsx
+```
+
+Also in the same comment, the sentence "Example usage is in Workflow State Bar" becomes "Example usage is in the review bars":
+
+```diff
+- * Example usage is in Workflow State Bar, where we need some button to be present only while developing the feature - and debugging.
++ * Example usage is in the review bars, where we need some button to be present only while developing the feature - and debugging.
+```
+
+verify: `grep -n "WorkflowState\|Workflow State" packages/app-admin/src/components/DeveloperMode/DeveloperMode.tsx` prints nothing after the edit.
+
+**3e. Importer check after the deletion (the hard stop).** Re-run the two greps of 3a, with the test files of this task excluded, and the repository-wide check:
+
+```
+grep -rlE "presentation/(workflowState|workflowStateList|workflowStatesWidget|shared)|domain/events|~/routes\.js|features/(approveStep|cancelWorkflowState|getTargetWorkflowState|listWorkflowStates|rejectStep|requestReview|startStep|takeOverStep)|domain/(WorkflowStateModel|WorkflowStateStepModel)|presentation/ContentReviews\.js" packages/*/src --include='*.ts' --include='*.tsx' --exclude='*.cleanup.test.tsx' | sort
+grep -rnE "WorkflowState|workflowState|useWorkflowState|Components\.(ContentReview|Overlay|Widget|List)\b" packages/*/src --include='*.ts' --include='*.tsx' --exclude='*.cleanup.test.tsx' | grep -vE "WorkflowStateList\b" | sort
+```
+
+Expected: no output from either. Fix loop for every hit, one file at a time: (1) a hit in a kept file is an import or reference of a deleted module: remove the import and the code that used it if that code was old review UI (an earlier task should already have replaced it; if it is live code with no replacement, stop and report, do not restore the deleted file); (2) a hit in a test file is a stale mock or assertion of a deleted module: remove it as in the mocks list below; (3) re-run both greps until empty, then Step 4. The whole word `WorkflowStateList` (route constants of R206) is the only allowed match.
 
 **3d. The two app packages.**
 
@@ -581,12 +822,19 @@ Keep `export { WorkflowsAdminApp } from "./app.js";`, `export { useCanUseWorkflo
 
 **Mocks of the deleted modules.** `vi.mock` of a path that no longer exists is a stale mock (it hides nothing and breaks the next reader). Remove these blocks, each only if present as written by the producing task; every other mock stays:
 
-- `packages/app-workflows/src/app.test.tsx`: `vi.mock("~/presentation/ContentReviews.js", () => { return { ContentReviews: () => null }; });` (and its blank line).
+- `packages/app-workflows/src/app.test.tsx` (Task 10): remove this block and the blank line that follows it (the new `~/Components/ContentReviews/*` mounts, if mocked by Tasks 28-30, stay):
+
+```tsx
+vi.mock("~/presentation/ContentReviews.js", () => {
+    return { ContentReviews: () => null };
+});
+
+```
 - `packages/app-headless-cms-workflows/src/index.test.tsx`, `index.editor.test.tsx`, `index.lists.test.tsx`: `vi.mock("~/Components/OptionItem/OpenInNewWindow.js", () => { return { ListOpenInNewWindow: () => null }; });`.
 - `packages/app-website-builder-workflows/src/index.test.tsx`: the line `        ListOpenInNewWindow: () => null,` inside `vi.mock("~/Components/index.js", ...)`.
 - `packages/app-website-builder-workflows/src/editorGlue.wiring.test.tsx`, `publishAutosave.wiring.test.tsx`, `pageListGlue.wiring.test.tsx`: `vi.mock("~/Components/OptionItem/index.js", () => { return { ListOpenInNewWindow: () => null }; });`.
 
-Then `grep -rn "OptionItem\|ContentReviews.js\|CmsEntriesWorkflowStateList\|PagesListContentReviews\|CmsEntryFormCreateNewRevisionButton" packages/app-workflows/src packages/app-headless-cms-workflows/src packages/app-website-builder-workflows/src` must print nothing (a stale mock of another deleted module, left by an earlier task, is removed the same way).
+Then `grep -rn "OptionItem\|presentation/ContentReviews\.js\|CmsEntriesWorkflowStateList\|PagesListContentReviews\|CmsEntryFormCreateNewRevisionButton" packages/app-workflows/src packages/app-headless-cms-workflows/src packages/app-website-builder-workflows/src` must print nothing (a stale mock of another deleted module, left by an earlier task, is removed the same way).
 
 - [ ] **Step 4: Run the tests and expect pass**
 
@@ -612,15 +860,7 @@ Run `yarn test <path> 2>&1 | tail -30` for each file the command prints (the fla
 git grep -l "~/types.js\|from \"~/index.js\"" -- 'packages/app-workflows/src/**/*.test.ts*'
 ```
 
-All green, none edited to pass. Type check (the tests of all three packages and `app-admin`'s touched file):
-
-```
-yarn check:test:types -p packages/app-workflows --report cli 2>&1 | tail -40
-yarn check:test:types -p packages/app-headless-cms-workflows --report cli 2>&1 | tail -40
-yarn check:test:types -p packages/app-website-builder-workflows --report cli 2>&1 | tail -40
-```
-
-No errors. Builds, including the old editor which must still compile (R219) and the package that mounts all three roots:
+All green, none edited to pass. The type check of these packages is their build (R-e: `yarn build -p`, there is no separate test-type command), run next. Builds (the type check), including the old editor which must still compile (R219) and the package that mounts all three roots:
 
 ```
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
@@ -629,7 +869,7 @@ yarn build -p @webiny/app-website-builder-workflows --no-cache 2>&1 | tail -30
 yarn build -p @webiny/app-serverless-cms --no-cache 2>&1 | tail -30
 ```
 
-All green. If a build fails on a missing module, the message names a deleted path a kept file still imports: fix that import (3e), do not restore the file.
+All green. If a build fails on a missing module, the message names a deleted path a kept file still imports: fix that import (Step 3e), do not restore the file.
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -652,12 +892,14 @@ git checkout -- .gitleaks.toml
 git commit -m "refactor(app-workflows): delete the old admin review UI" -m "Removes the old review presenters, dialogs, widgets, list, gateways, WorkflowState models and WorkflowStateChangedEvent from app-workflows, the old editor decorators, cache handler and mounting components from app-headless-cms-workflows and app-website-builder-workflows, and the global Workflows/ContentReviews route (R219). Kept for 9a and 9c: the workflow editor, notification types, permissions and the editor routes and views. Adds composition tests for the three gated roots." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
+`yarn adio` only reports. For every unused or missing dependency it prints for the three packages (expected: `@webiny/app-workflows` may lose nothing, the two app packages may lose entries only the deleted files used), edit that `package.json` by hand (`dependencies` only, no `exports` change), run `yarn` again and rerun `yarn adio` until it passes.
+
 If any step of the chain fails and you fix something, rerun the whole chain from the first line. Do not commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`.
 
 **Done-when check for this task (run after the commit, expected output in brackets):**
 
 ```
-grep -rnE "WorkflowState|workflowState|app-workflows/domain/events|Workflows/ContentReviews" packages/app-*/src packages/app/src | grep -vE "WorkflowStateList\b"   [no output]
+grep -rnE "WorkflowState|workflowState|app-workflows/domain/events|Workflows/ContentReviews" packages/app-*/src packages/app/src --exclude='*.cleanup.test.tsx' | grep -vE "WorkflowStateList\b"   [no output]
 yarn adio                                                                                                                          [passes]
 yarn check-ts-configs                                                                                                              [passes]
 ```

@@ -33,3 +33,5 @@
 - Q25 CMS revision delete bug (user): fix the base CMS `RevisionsListPresenter.deleteRevision` confirm bug in 8a, in a separate `fix(app-headless-cms)` commit (Task 35; R228).
 - Q26 Touch (user): no touch support is needed, the admin is not for tablets or mobiles. No admin-ui `Tooltip` change; the QBZ-36 tap-to-toggle is dropped (not a gap); mouse and keyboard only (Global Constraints).
 - Q27 Bulk retry results (user): accept that a bulk retry's results dialog shows only the retried items (documented in Task 38). Make sure a first-pass toast or summary states how many items were done; add one if the flow has none (R228, Tasks 35, 36, 38).
+- Q28 Bulk first-pass toast copy (user): approved as proposed, "{done} of {total} items done. {n} still need your confirmation." (Task 33).
+- Q29 Rejected colours (user): approved split. Tags use neutral-dark for Rejected and destructive for Failed; progress segments keep the design's red for rejected steps (design README 11).
