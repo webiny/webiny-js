@@ -1,9 +1,9 @@
 import { createFeature } from "@webiny/feature/admin";
-import { WorkflowStateGetPageFieldSelection } from "./WorkflowStatesGetPageGraphQLFieldSelection.js";
+import { WbReviewGetPageFieldSelection } from "./WbReviewGetPageFieldSelection.js";
 
 export const PageGetWorkflowsFeature = createFeature({
     name: "PageGetWorkflows",
     register(container) {
-        container.register(WorkflowStateGetPageFieldSelection);
+        container.register(WbReviewGetPageFieldSelection);
     }
 });

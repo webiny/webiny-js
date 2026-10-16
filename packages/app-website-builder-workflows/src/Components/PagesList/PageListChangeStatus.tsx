@@ -1,6 +1,6 @@
 import React from "react";
-import { PageListConfig } from "@webiny/app-website-builder";
-import { WorkflowStateValue } from "@webiny/app-workflows/types.js";
+import { PageListConfig } from "@webiny/app-website-builder/presentation/pages/PageList/configs/index.js";
+import { isReviewSelectable } from "@webiny/app-workflows/review/domain/isReviewSelectable.js";
 import { usePage } from "~/hooks/usePage.js";
 
 const { Browser } = PageListConfig;
@@ -11,11 +11,12 @@ interface IWrappedElementProps {
 
 const WrappedElement = (props: IWrappedElementProps) => {
     const { page } = usePage();
-    const workflowState = page.workflow?.state;
+    const reviewState = page.workflow?.reviewState ?? null;
 
-    if (!workflowState || workflowState === WorkflowStateValue.approved) {
-        return props.element;
+    if (isReviewSelectable(reviewState)) {
+        return props.element ?? null;
     }
+
     return null;
 };
 
