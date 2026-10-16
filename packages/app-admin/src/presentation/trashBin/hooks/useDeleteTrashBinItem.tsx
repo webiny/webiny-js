@@ -27,7 +27,11 @@ export const useDeleteTrashBinItem = ({ item }: UseDeleteItemParams) => {
         () =>
             showConfirmation(async () => {
                 try {
-                    await actions.deleteItem(item.id);
+                    const deleted = await actions.deleteItem(item.id);
+                    if (deleted === false) {
+                        return;
+                    }
+
                     toast.showSuccessToast({ title: `${item.title} was deleted successfully!` });
                 } catch (ex: any) {
                     toast.showWarningToast({
