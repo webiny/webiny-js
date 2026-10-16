@@ -3,7 +3,7 @@ import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
 
-/**
+/*
  * Deletes the reviews of a deleted page revision with their assignment records (spec 9.3, R56,
  * R235). Deleting the only revision also publishes the page-delete event, which
  * `DeleteReviewsOnPageDelete` handles for every revision. A failure (a failed result or a throw)

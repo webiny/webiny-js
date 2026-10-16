@@ -5,7 +5,7 @@ import { ReviewActiveOnTrashError } from "@webiny/api-workflows/domain/review/er
 import { toBlockingReview } from "@webiny/api-workflows/domain/review/toBlockingReview.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
 
-/**
+/*
  * Deleting one revision of a page is refused while that revision's review is in progress (D134,
  * R73, R235). Deleting the only revision also publishes the page-delete event, which
  * `BlockPageDeleteWhileInReview` guards with the same error.

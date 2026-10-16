@@ -16,11 +16,11 @@ export const WbHooksFeature = createFeature({
     register(container) {
         container.register(RequireApprovedReviewOnPagePublish);
         container.register(BlockPageMoveWhileInReview);
-        // Trash and delete (D134, R73) and review cleanup after a page delete (R56, R81)
+        // Trash and delete (D134, R73) and review cleanup after a page delete (R56, R81).
         container.register(BlockPageTrashWhileInReview);
         container.register(BlockPageDeleteWhileInReview);
         container.register(DeleteReviewsOnPageDelete);
-        // The page revision delete (R235): the same block and cleanup for one revision
+        // The page revision delete (R235): the same block and cleanup for one revision.
         container.register(BlockPageRevisionDeleteWhileInReview);
         container.register(DeleteReviewsOnPageRevisionDelete);
     }

@@ -15,7 +15,7 @@ import type { CancelTargetReviewsUseCase } from "@webiny/api-workflows/features/
 export interface CancelWebsiteBuilderPageReviewsForDeleteInput {
     /** The page id (all revisions). */
     targetId: string;
-    /** Deleting one revision: only its review. Omitted for trash and page delete. */
+    // Deleting one revision: only its review. Omitted for trash and page delete.
     targetRevisionId?: string | null;
     /** Recorded as the cancel reason: "content trashed" or "content deleted". */
     action: ReviewActiveOnTrashAction;
