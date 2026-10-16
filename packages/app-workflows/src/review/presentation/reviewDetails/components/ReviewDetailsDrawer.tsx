@@ -1,0 +1,225 @@
+import React from "react";
+import { useEffect } from "react";
+import { createReactiveComponent } from "@webiny/app-admin";
+import { useFeature } from "@webiny/app";
+import { Alert } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
+import { Drawer } from "@webiny/admin-ui";
+import { Skeleton } from "@webiny/admin-ui";
+import { Tag } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
+import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
+import { ReviewActionDialogs } from "../../actionDialog/components/ReviewActionDialogs.js";
+import { toActionRequest } from "../../actionDialog/toActionRequest.js";
+import { REVIEW_ACTION_ICONS } from "../../targetReview/components/reviewBarAppearance.js";
+import { ReviewDetailsPresenterFeature } from "../feature.js";
+import type { ReviewDetailsPresenter } from "../abstractions.js";
+
+export interface ReviewDetailsDrawerProps {
+    useCases: IReviewUseCases;
+    reviewId: string;
+    reviewsUrl: string | null;
+    onClose: () => void;
+    onChanged?: () => void;
+}
+
+interface ReviewDetailsDrawerViewProps {
+    presenter: ReviewDetailsPresenter.Interface;
+    useCases: IReviewUseCases;
+    reviewsUrl: string | null;
+    onClose: () => void;
+}
+
+const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDrawerView(
+    props: ReviewDetailsDrawerViewProps
+) {
+    const { presenter, useCases, reviewsUrl, onClose } = props;
+    const { vm } = presenter;
+    const request = toActionRequest(vm.openAction, vm.reviewId);
+
+    const footer = vm.actions.map(action => {
+        const ActionIcon = REVIEW_ACTION_ICONS[action.icon];
+        return (
+            <Button
+                key={action.kind}
+                variant={action.emphasis}
+                size={"md"}
+                text={action.label}
+                icon={<ActionIcon />}
+                onClick={() => presenter.openAction(action.kind, action.stepId)}
+            />
+        );
+    });
+
+    let actions: React.ReactNode = undefined;
+    if (footer.length > 0) {
+        actions = <>{footer}</>;
+    }
+
+    return (
+        <>
+            <Drawer
+                open={true}
+                size={"lg"}
+                title={"Review details"}
+                onClose={onClose}
+                actions={actions}
+            >
+                <div className={"flex flex-col gap-md p-md"}>
+                    {vm.status === "loading" ? (
+                        <div className={"flex flex-col gap-md"}>
+                            <Text size={"lg"} className={"font-semibold"}>
+                                {"Loading review…"}
+                            </Text>
+                            <Skeleton type={"text"} size={"xl"} />
+                            <Skeleton type={"text"} size={"xl"} />
+                            <Skeleton type={"text"} size={"xl"} />
+                        </div>
+                    ) : null}
+                    {vm.status === "failed" ? (
+                        <div className={"flex flex-col items-center gap-sm text-center"}>
+                            <Text size={"lg"} className={"font-semibold"}>
+                                {"Could not load review details"}
+                            </Text>
+                            <Text size={"md"}>{vm.error}</Text>
+                            <Button
+                                variant={"tertiary"}
+                                text={"Try again"}
+                                onClick={() => presenter.refresh()}
+                            />
+                        </div>
+                    ) : null}
+                    {vm.header ? (
+                        <div className={"flex flex-col gap-xs"}>
+                            <div className={"flex flex-wrap items-center gap-sm"}>
+                                <Text size={"lg"} className={"font-semibold"}>
+                                    {vm.header.title}
+                                </Text>
+                                <Tag
+                                    variant={vm.header.stateVariant}
+                                    content={vm.header.stateLabel}
+                                />
+                            </div>
+                            <div
+                                className={
+                                    "flex flex-wrap gap-x-md gap-y-xs text-sm text-neutral-strong"
+                                }
+                            >
+                                <span>{vm.header.contentLine}</span>
+                                <span>{vm.header.requesterLine}</span>
+                                <span title={vm.header.requestedTitle}>
+                                    {vm.header.requestedLine}
+                                </span>
+                            </div>
+                        </div>
+                    ) : null}
+                    {vm.cancelledText ? (
+                        <Alert type={"info"} variant={"subtle"}>
+                            <div className={"font-semibold"}>{"This review was cancelled"}</div>
+                            <div>{vm.cancelledText}</div>
+                        </Alert>
+                    ) : null}
+                    {vm.steps.map(step => (
+                        <div
+                            key={step.stepId}
+                            className={
+                                "flex flex-col gap-sm border-b-sm border-neutral-dimmed pb-md"
+                            }
+                        >
+                            <div className={"flex flex-wrap items-center gap-sm"}>
+                                <span
+                                    className={"h-[8px] w-[8px] rounded-full"}
+                                    style={{ backgroundColor: step.color }}
+                                />
+                                <Text size={"md"} className={"font-semibold"}>
+                                    {step.title}
+                                </Text>
+                                <Tag variant={"neutral-base-outline"} content={step.typeLabel} />
+                                <Tag variant={step.stateVariant} content={step.stateLabel} />
+                            </div>
+                            {step.ownerLine ? (
+                                <div
+                                    className={
+                                        "grid grid-cols-[120px_1fr] gap-x-md gap-y-xs text-sm"
+                                    }
+                                >
+                                    <span className={"text-neutral-muted"}>{"Owner"}</span>
+                                    <span>{step.ownerLine}</span>
+                                    {step.whyOwner ? (
+                                        <>
+                                            <span className={"text-neutral-muted"}>
+                                                {"Why this owner"}
+                                            </span>
+                                            <span>{step.whyOwner}</span>
+                                        </>
+                                    ) : null}
+                                    {step.times ? (
+                                        <>
+                                            <span className={"text-neutral-muted"}>{"Times"}</span>
+                                            <span title={step.timesTitle ?? undefined}>
+                                                {step.times}
+                                            </span>
+                                        </>
+                                    ) : null}
+                                </div>
+                            ) : null}
+                            {step.comment ? (
+                                <div className={"rounded-md bg-neutral-light p-sm text-sm"}>
+                                    {step.comment}
+                                </div>
+                            ) : null}
+                            {step.skipped ? (
+                                <div
+                                    className={
+                                        "rounded-md border-sm border-dashed border-neutral-muted p-sm text-sm"
+                                    }
+                                >
+                                    <div
+                                        className={
+                                            "text-xs font-semibold uppercase text-neutral-muted"
+                                        }
+                                    >
+                                        {"Skipped by assignment"}
+                                    </div>
+                                    {step.skipped.map(item => (
+                                        <div key={`${item.name}:${item.reason}`}>
+                                            <b className={"font-medium"}>{item.name}</b>
+                                            {`: ${item.reason}`}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : null}
+                        </div>
+                    ))}
+                </div>
+            </Drawer>
+            <ReviewActionDialogs
+                useCases={useCases}
+                request={request}
+                reviewsUrl={reviewsUrl}
+                onDone={() => presenter.actionDone()}
+                onClose={() => presenter.closeAction()}
+            />
+        </>
+    );
+});
+
+/** One presenter per mounted drawer (transient, R212): init on mount, dispose on unmount. */
+export const ReviewDetailsDrawer = (props: ReviewDetailsDrawerProps) => {
+    const { useCases, reviewId, reviewsUrl, onClose, onChanged } = props;
+    const { presenter } = useFeature(ReviewDetailsPresenterFeature);
+
+    useEffect(() => {
+        presenter.init({ useCases, reviewId, reviewsUrl, onClose, onChanged });
+        return () => presenter.dispose();
+    }, [presenter, reviewId]);
+
+    return (
+        <ReviewDetailsDrawerView
+            presenter={presenter}
+            useCases={useCases}
+            reviewsUrl={reviewsUrl}
+            onClose={onClose}
+        />
+    );
+};
