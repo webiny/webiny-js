@@ -20,6 +20,7 @@ import { getRevisionNumber } from "./getRevisionNumber.js";
 import { formatReviewTimeFull } from "./formatReviewTimeFull.js";
 import { getStepTimes } from "./getStepTimes.js";
 import { getStepTimesTitle } from "./getStepTimesTitle.js";
+import { REVIEW_STATE_LABELS } from "../targetReview/reviewStateLabels.js";
 import { getWhyOwner } from "./getWhyOwner.js";
 import type { ReviewDetailsPresenter } from "./abstractions.js";
 
@@ -143,10 +144,7 @@ export const buildReviewDetailsViewModel = (
     if (stateTag) {
         stateVariant = stateTag.variant;
     }
-    let stateLabel = "Cancelled";
-    if (stateTag) {
-        stateLabel = stateTag.label.replace("Review: ", "");
-    }
+    const stateLabel = REVIEW_STATE_LABELS[review.state];
     const revision = getRevisionNumber(review.targetRevisionId);
     let contentLine = `Content: ${review.targetContext.title}`;
     if (revision !== null) {
