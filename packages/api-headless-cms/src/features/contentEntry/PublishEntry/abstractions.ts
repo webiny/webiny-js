@@ -10,10 +10,19 @@ import type {
 /**
  * PublishEntry Use Case - Publishes an entry revision.
  */
+export interface IPublishEntryUseCaseOptions<T extends CmsEntryValues = CmsEntryValues> {
+    /**
+     * Values to publish instead of the revision's stored values. They go through the same
+     * validation as stored values do.
+     */
+    values?: T;
+}
+
 export interface IPublishEntryUseCase {
     execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        id: string
+        id: string,
+        options?: IPublishEntryUseCaseOptions<T>
     ): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 

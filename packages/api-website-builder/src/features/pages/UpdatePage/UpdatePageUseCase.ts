@@ -8,6 +8,21 @@ import { PageBeforeUpdateEvent, PageAfterUpdateEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
+import { PageToEntryValuesMapper } from "~/domain/page/PageToEntryValuesMapper.js";
+import type { WbPage } from "~/domain/page/abstractions.js";
+
+/** The page as it will be after the update. Fields the update leaves out keep their stored value. */
+const applyUpdate = (original: WbPage, data: UseCaseAbstraction.UpdateData): WbPage => {
+    return {
+        ...original,
+        location: data.location ?? original.location,
+        properties: (data.properties as WbPage["properties"] | undefined) ?? original.properties,
+        metadata: data.metadata ?? original.metadata,
+        bindings: data.bindings ?? original.bindings,
+        elements: data.elements ?? original.elements,
+        extensions: data.extensions ?? original.extensions
+    };
+};
 
 class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -37,16 +52,21 @@ class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new PageNotAuthorizedError());
         }
 
-        // Publish before update event
+        // Publish before update event. Handlers can edit `page`, and that object is what we save.
+        const page = structuredClone(applyUpdate(original, data));
         const beforeEvent = new PageBeforeUpdateEvent({
             original,
-            input: { id, data }
+            input: { id, data },
+            page
         });
 
         await this.eventPublisher.publish(beforeEvent);
 
-        // Execute the update operation
-        const result = await this.repository.execute(id, data);
+        const result = await this.repository.execute(id, {
+            ...PageToEntryValuesMapper.toValues(page),
+            location: page.location,
+            system: data.system
+        });
 
         if (result.isFail()) {
             return result;

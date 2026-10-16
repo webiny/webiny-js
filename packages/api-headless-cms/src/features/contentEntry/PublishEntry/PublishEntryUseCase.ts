@@ -1,7 +1,10 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
-import { PublishEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
+import {
+    PublishEntryUseCase as UseCaseAbstraction,
+    type IPublishEntryUseCaseOptions
+} from "./abstractions.js";
 import { PublishEntryRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
@@ -25,7 +28,8 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        id: string
+        id: string,
+        options?: IPublishEntryUseCaseOptions<T>
     ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         const canAccess = await this.accessControl.canAccessEntry({ model, pw: "p" });
         if (!canAccess) {
@@ -50,7 +54,10 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        const dataResult = await this.createPublishEntryDataFactory.create<T>(model, originalEntry);
+        const source = options?.values
+            ? { ...originalEntry, values: options.values }
+            : originalEntry;
+        const dataResult = await this.createPublishEntryDataFactory.create<T>(model, source);
         if (dataResult.isFail()) {
             return Result.fail(dataResult.error);
         }

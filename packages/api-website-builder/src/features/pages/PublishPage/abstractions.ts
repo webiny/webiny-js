@@ -1,7 +1,7 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
-import type { WbPage } from "~/domain/page/abstractions.js";
+import type { CmsEntryWbPage, WbPage } from "~/domain/page/abstractions.js";
 import {
     PageNotFoundError,
     PagePersistenceError,
@@ -16,12 +16,17 @@ export interface IPublishWbPageParams {
     id: string;
 }
 
+export interface IPublishPageRepositoryParams extends IPublishWbPageParams {
+    /** The page values to publish. They can differ from the stored ones after `page.beforePublish`. */
+    values: CmsEntryWbPage;
+}
+
 // ============================================================================
 // Repository Abstraction
 // ============================================================================
 
 export interface IPublishPageRepository {
-    execute(params: IPublishWbPageParams): Promise<Result<WbPage, RepositoryError>>;
+    execute(params: IPublishPageRepositoryParams): Promise<Result<WbPage, RepositoryError>>;
 }
 
 export interface IPublishPageRepositoryErrors {
@@ -37,7 +42,7 @@ export const PublishPageRepository = createAbstraction<IPublishPageRepository>(
 
 export namespace PublishPageRepository {
     export type Interface = IPublishPageRepository;
-    export type Params = IPublishWbPageParams;
+    export type Params = IPublishPageRepositoryParams;
     export type Return = Promise<Result<WbPage, RepositoryError>>;
     export type Error = RepositoryError;
 }
@@ -74,6 +79,9 @@ export namespace PublishPageUseCase {
 // ============================================================================
 
 export interface PageBeforePublishPayload {
+    /** The stored revision being published. */
+    original: WbPage;
+    /** What gets published. Starts as a copy of `original`; handlers can edit it. */
     page: WbPage;
 }
 

@@ -9,7 +9,7 @@ class ValidateWorkflowStateOnPageBeforePublishImpl
     constructor(private getTargetState: GetTargetWorkflowStateUseCase.Interface) {}
 
     async handle(event: PageBeforePublishEventHandler.Event): Promise<void> {
-        const { page } = event.payload;
+        const { original: page } = event.payload;
 
         const stateResult = await this.getTargetState.execute({
             app: WB_PAGE_APP,
