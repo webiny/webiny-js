@@ -82,4 +82,19 @@ describe("ReviewNotificationHandler", () => {
             url: "/cms/content-entries/article?id=entry-1#0002"
         });
     });
+
+    it("does not throw when the service throws", async () => {
+        const { handle, handler } = setup();
+        handle.mockImplementation(() => {
+            throw new Error("toast failed");
+        });
+        const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+        await expect(
+            handler.handle(new WebsocketEvent({ action: WORKFLOWS_NOTIFICATION_ACTION, data }))
+        ).resolves.toBeUndefined();
+
+        expect(error).toHaveBeenCalledTimes(1);
+        error.mockRestore();
+    });
 });

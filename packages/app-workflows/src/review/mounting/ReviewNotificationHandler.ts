@@ -36,12 +36,17 @@ export class ReviewNotificationHandler implements WebsocketEventHandler.Interfac
             return;
         }
 
-        const url = this.adapter.getContentUrl({
-            namespace: data.namespace,
-            targetId: data.targetId,
-            targetRevisionId: data.targetRevisionId,
-            contentTypeId: null
-        });
-        this.service.handle({ data, url });
+        // A toast must never break the event publisher: a failure is logged and dropped.
+        try {
+            const url = this.adapter.getContentUrl({
+                namespace: data.namespace,
+                targetId: data.targetId,
+                targetRevisionId: data.targetRevisionId,
+                contentTypeId: null
+            });
+            this.service.handle({ data, url });
+        } catch (error) {
+            console.error("[ReviewNotificationHandler] A notification failed.", error);
+        }
     }
 }

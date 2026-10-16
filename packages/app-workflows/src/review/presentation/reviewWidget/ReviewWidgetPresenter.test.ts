@@ -197,6 +197,36 @@ describe("ReviewWidgetPresenter", () => {
         await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(3));
     });
 
+    it("queues a signal that arrives while loading and refreshes once after the load (R210)", async () => {
+        const { presenter, activity, listReviews, params } = setup("forMe");
+        const first = createDeferred<ReviewListPage>();
+        listReviews.mockReturnValueOnce(first.promise);
+        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
+
+        const loading = presenter.init(params);
+        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({ namespace: "cms.article", source: "remote" });
+        expect(listReviews).toHaveBeenCalledTimes(1);
+
+        first.resolve(page([]));
+        await loading;
+
+        await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+        await Promise.resolve();
+        expect(listReviews).toHaveBeenCalledTimes(2);
+        await vi.waitFor(() => expect(presenter.vm.rows).toHaveLength(1));
+    });
+
+    it("does not refresh after a load when no signal arrived during it", async () => {
+        const { presenter, listReviews, params } = setup("forMe");
+        listReviews.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
+
+        await presenter.init(params);
+        await Promise.resolve();
+
+        expect(listReviews).toHaveBeenCalledTimes(1);
+    });
+
     it("keeps the rows during a refresh and applies the result", async () => {
         const { presenter, activity, listReviews, params } = setup("forMe");
         listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r1", title: "Old" })]));

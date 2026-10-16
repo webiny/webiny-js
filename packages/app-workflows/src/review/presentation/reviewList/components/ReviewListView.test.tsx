@@ -40,6 +40,7 @@ interface DialogStubProps {
 interface DrawerStubProps {
     useCases: { name: string };
     reviewId: string;
+    onChanged?: () => void;
     onClose(): void;
 }
 
@@ -79,6 +80,7 @@ vi.mock("~/review/presentation/reviewDetails/components/ReviewDetailsDrawer.js",
                     "data-review": props.reviewId,
                     "data-usecases": props.useCases.name
                 },
+                React.createElement("button", { onClick: props.onChanged }, "stub changed drawer"),
                 React.createElement("button", { onClick: props.onClose }, "stub close drawer")
             );
         }
@@ -358,6 +360,32 @@ describe("ReviewListView", () => {
         expect(drawer.getAttribute("data-usecases")).toBe("cms");
     });
 
+    it("refetches the list when the details drawer reports a change", async () => {
+        const { listReviews } = renderView({
+            results: [
+                page([
+                    createReviewListItem({
+                        id: "r1",
+                        title: "Review one",
+                        flags: { canReassign: true }
+                    })
+                ]),
+                page([])
+            ]
+        });
+        await screen.findByText("Review one");
+        const more = within(rowOf("Review one")).getByRole("button", { name: "More actions" });
+        fireEvent.keyDown(more, { key: "Enter" });
+        await screen.findByRole("menuitem", { name: "Review details" });
+        fireEvent.click(screen.getByText("Review details"));
+        await screen.findByTestId("details-drawer");
+        expect(listReviews).toHaveBeenCalledTimes(1);
+
+        fireEvent.click(screen.getByText("stub changed drawer"));
+
+        await waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+    });
+
     it("shows the notice for new reviews and Show reloads the first page", async () => {
         const { activity, listReviews } = renderView({
             results: [
@@ -410,6 +438,31 @@ describe("ReviewListView", () => {
         expect(rowOf("Stays here").className).not.toContain("opacity-35");
 
         fireEvent.transitionEnd(rowOf("Gone review"));
+
+        await waitFor(() => expect(screen.queryByText("Gone review")).toBeNull());
+        expect(screen.getByText("Stays here")).toBeTruthy();
+    });
+
+    it("drops a leaving row when its fade is cancelled", async () => {
+        const { activity } = renderView({
+            results: [
+                page([
+                    createReviewListItem({ id: "stays", title: "Stays here" }),
+                    createReviewListItem({ id: "gone", title: "Gone review" })
+                ]),
+                page([createReviewListItem({ id: "stays", title: "Stays here" })])
+            ]
+        });
+        await screen.findByText("Gone review");
+
+        act(() => {
+            activity.notify({ namespace: "cms.article", source: "remote" });
+        });
+        await waitFor(() => {
+            expect(rowOf("Gone review").className).toContain("opacity-35");
+        });
+
+        fireEvent.transitionCancel(rowOf("Gone review"));
 
         await waitFor(() => expect(screen.queryByText("Gone review")).toBeNull());
         expect(screen.getByText("Stays here")).toBeTruthy();

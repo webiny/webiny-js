@@ -33,6 +33,7 @@ export const ReviewListDialogs = createReactiveComponent((props: ReviewListDialo
                 useCases={binding.useCases}
                 reviewId={dialog.reviewId}
                 reviewsUrl={null}
+                onChanged={() => presenter.refresh()}
                 onClose={() => presenter.closeDialog()}
             />
         );

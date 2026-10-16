@@ -1,4 +1,5 @@
 import React from "react";
+import { useEffect } from "react";
 import { Button } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
 import { Table } from "@webiny/admin-ui";
@@ -57,7 +58,11 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
     });
 
     return (
-        <Table.Row className={className} onTransitionEnd={onTransitionEnd}>
+        <Table.Row
+            className={className}
+            data-review-id={row.reviewId}
+            onTransitionEnd={onTransitionEnd}
+        >
             <Table.Cell>{title}</Table.Cell>
             {contentType}
             <Table.Cell>{row.stepTitle ?? ""}</Table.Cell>
@@ -75,6 +80,23 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
 export const ReviewListTable = createReactiveComponent((props: ReviewListTableProps) => {
     const { presenter, showContentType } = props;
     const vm = presenter.vm;
+
+    // React 18 has no `onTransitionCancel`. A cancelled fade (the row unmounts or hides mid-fade)
+    // never ends, so the row would stay at 35 % forever: listen natively, for the row's own event.
+    useEffect(() => {
+        const onTransitionCancel = (event: TransitionEvent) => {
+            const target = event.target;
+            if (!(target instanceof HTMLElement)) {
+                return;
+            }
+            const reviewId = target.getAttribute("data-review-id");
+            if (reviewId) {
+                presenter.removeLeavingRow(reviewId);
+            }
+        };
+        document.addEventListener("transitioncancel", onTransitionCancel);
+        return () => document.removeEventListener("transitioncancel", onTransitionCancel);
+    }, [presenter]);
 
     let contentTypeHead: React.ReactNode = null;
     if (showContentType) {

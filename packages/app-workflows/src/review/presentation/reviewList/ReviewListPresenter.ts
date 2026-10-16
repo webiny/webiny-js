@@ -9,9 +9,8 @@ import type { ReviewListRow } from "~/review/domain/types.js";
 import { toReviewListRow } from "~/review/domain/toReviewListRow.js";
 import type { ListReviewsParams } from "~/review/gateway/IReviewGateway.js";
 import type { ReviewListWhere } from "~/review/gateway/IReviewGateway.js";
-import { getStepStateTag } from "~/review/presentation/targetReview/getStepStateTag.js";
+import { getRowStateTag } from "~/review/presentation/targetReview/getRowStateTag.js";
 import type { TargetReviewActionVm } from "~/review/presentation/targetReview/abstractions.js";
-import type { TargetReviewTagVariant } from "~/review/presentation/targetReview/abstractions.js";
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { ReviewListPage } from "~/review/useCases/IReviewListUseCases.js";
 import { ReviewListPresenter as Abstraction } from "./abstractions.js";
@@ -41,8 +40,6 @@ const LOAD_FAILED_MESSAGE = "The server did not respond. Try again in a moment."
 
 /** The server caps a list page at 100 rows (`MAX_REVIEW_LIST_LIMIT`). */
 const MAX_REFRESH_LIMIT = 100;
-
-const NEUTRAL_VARIANT: TargetReviewTagVariant = "neutral-base-outline";
 
 interface ReviewListEntry {
     row: ReviewListRow;
@@ -74,6 +71,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     private loadToken = 0;
     private refreshingToken: number | null = null;
     private refreshQueued = false;
+    // A live signal that arrived while a first-page load was in flight; consumed once it applies.
+    private signalDuringLoad = false;
     private searchTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(
@@ -90,6 +89,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             | "loadToken"
             | "refreshingToken"
             | "refreshQueued"
+            | "signalDuringLoad"
             | "searchTimer"
         >(this, {
             activity: false,
@@ -100,6 +100,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             loadToken: false,
             refreshingToken: false,
             refreshQueued: false,
+            signalDuringLoad: false,
             searchTimer: false
         });
     }
@@ -369,7 +370,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             }
         } catch {
             if (token === this.loadToken) {
-                this.applyLoadFailure();
+                this.applyKeepRowsFailure();
             }
         }
     }
@@ -419,6 +420,10 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             return;
         }
 
+        if (this._status === "loading") {
+            this.signalDuringLoad = true;
+            return;
+        }
         if (this._status !== "ready") {
             return;
         }
@@ -506,6 +511,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this.loadToken += 1;
         this.refreshingToken = null;
         this.refreshQueued = false;
+        this.signalDuringLoad = false;
         this.useCases = null;
         this.rowProvider = null;
         this._tab = "assignedToMe";
@@ -538,6 +544,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     private beginLoad(keepRows: boolean): number {
         this.loadToken += 1;
         this.refreshQueued = false;
+        this.signalDuringLoad = false;
         this._error = null;
         this._loadingMore = false;
         if (!keepRows) {
@@ -562,9 +569,25 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this._hasMore = listed.meta.hasMoreItems;
         this._error = null;
         this._status = "ready";
+        this.consumeSignalDuringLoad();
+    }
+
+    // A signal that arrived during the load is answered by one refetch now that the rows exist.
+    private consumeSignalDuringLoad(): void {
+        if (!this.signalDuringLoad) {
+            return;
+        }
+        this.signalDuringLoad = false;
+        void this.refresh();
+    }
+
+    // "Show" failed: the rows stay on screen, only the message is added.
+    private applyKeepRowsFailure(): void {
+        this._error = LOAD_FAILED_MESSAGE;
     }
 
     private applyLoadFailure(): void {
+        this.signalDuringLoad = false;
         this._entries = [];
         this._heldIds = [];
         this._hasMore = false;
@@ -678,13 +701,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             actions = getListRowActions(row);
         }
 
-        let stepStateLabel: string | null = null;
-        let stepStateVariant: TargetReviewTagVariant = NEUTRAL_VARIANT;
-        if (row.stepState) {
-            const tag = getStepStateTag(row.stepState);
-            stepStateLabel = tag.label;
-            stepStateVariant = tag.variant;
-        }
+        const stepStateTag = getRowStateTag(row);
 
         return {
             reviewId: row.reviewId,
@@ -692,8 +709,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             title: row.title,
             reviewStateLabel: getListReviewStateLabel(row.reviewState),
             stepTitle: row.stepTitle,
-            stepStateLabel,
-            stepStateVariant,
+            stepStateLabel: stepStateTag.label,
+            stepStateVariant: stepStateTag.variant,
             ownerLabel: getListOwnerLabel(row.owner, row.stepTitle),
             requesterName: row.requester.displayName,
             lastChange: formatLastChange(row.lastChangedOn, now),

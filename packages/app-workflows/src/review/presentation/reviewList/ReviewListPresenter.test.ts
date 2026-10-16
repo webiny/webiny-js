@@ -421,6 +421,54 @@ describe("ReviewListPresenter", () => {
         expect(listReviews).toHaveBeenCalledTimes(3);
     });
 
+    it("queues a signal that arrives while loading and refetches once after the load (R210)", async () => {
+        const { presenter, activity, listReviews, params } = setup();
+        const first = createDeferred<ReviewListPage>();
+        listReviews.mockReturnValueOnce(first.promise);
+        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
+
+        const loading = presenter.init(params);
+        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({ namespace: "cms.article", source: "remote" });
+        expect(listReviews).toHaveBeenCalledTimes(1);
+
+        first.resolve(page([createReviewListItem({ id: "r1" })]));
+        await loading;
+
+        await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+        await Promise.resolve();
+        expect(listReviews).toHaveBeenCalledTimes(2);
+        expect(presenter.vm.status).toBe("ready");
+    });
+
+    it("does not refetch after a load when no signal arrived during it", async () => {
+        const { presenter, listReviews, params } = setup();
+        listReviews.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
+
+        await presenter.init(params);
+        await Promise.resolve();
+
+        expect(listReviews).toHaveBeenCalledTimes(1);
+    });
+
+    it("keeps the rows and the ready status when showing new reviews fails", async () => {
+        const { presenter, activity, listReviews, params } = setup();
+        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "old" })]));
+        await presenter.init(params);
+        listReviews.mockResolvedValueOnce(
+            page([createReviewListItem({ id: "old" }), createReviewListItem({ id: "fresh" })])
+        );
+        activity.notify({ namespace: "cms.article", source: "remote" });
+        await vi.waitFor(() => expect(presenter.vm.notice).not.toBeNull());
+        listReviews.mockRejectedValueOnce(new Error("network"));
+
+        await presenter.showNewReviews();
+
+        expect(presenter.vm.status).toBe("ready");
+        expect(presenter.vm.rows.map(row => row.reviewId)).toEqual(["old"]);
+        expect(presenter.vm.error).not.toBeNull();
+    });
+
     it("never polls", async () => {
         vi.useFakeTimers();
         try {

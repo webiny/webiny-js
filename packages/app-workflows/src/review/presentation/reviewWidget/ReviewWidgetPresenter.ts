@@ -9,8 +9,7 @@ import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstra
 import { formatLastChange } from "~/review/presentation/reviewList/formatLastChange.js";
 import { getListReviewStateLabel } from "~/review/presentation/reviewList/getListReviewStateLabel.js";
 import { resolveRowBinding } from "~/review/presentation/reviewList/resolveRowBinding.js";
-import type { TargetReviewTagVariant } from "~/review/presentation/targetReview/abstractions.js";
-import { getStepStateTag } from "~/review/presentation/targetReview/getStepStateTag.js";
+import { getRowStateTag } from "~/review/presentation/targetReview/getRowStateTag.js";
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { ReviewListPage } from "~/review/useCases/IReviewListUseCases.js";
 import { ReviewWidgetPresenter as Abstraction } from "./abstractions.js";
@@ -19,8 +18,6 @@ import type { ReviewWidgetKind } from "./abstractions.js";
 import type { ReviewWidgetRowVm } from "./abstractions.js";
 import type { ReviewWidgetStatus } from "./abstractions.js";
 import type { ReviewWidgetTab } from "./abstractions.js";
-
-const NEUTRAL_VARIANT: TargetReviewTagVariant = "neutral-base-outline";
 
 class ReviewWidgetPresenterImpl implements Abstraction.Interface {
     private _kind: ReviewWidgetKind = "forMe";
@@ -35,6 +32,8 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
     private loadToken = 0;
     private refreshingToken: number | null = null;
     private refreshQueued = false;
+    // A live signal that arrived while a load was in flight; consumed once the page applies.
+    private signalDuringLoad = false;
 
     constructor(
         private activity: ReviewActivity.Interface,
@@ -50,6 +49,7 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
             | "loadToken"
             | "refreshingToken"
             | "refreshQueued"
+            | "signalDuringLoad"
         >(this, {
             activity: false,
             identityContext: false,
@@ -58,7 +58,8 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
             unsubscribe: false,
             loadToken: false,
             refreshingToken: false,
-            refreshQueued: false
+            refreshQueued: false,
+            signalDuringLoad: false
         });
     }
 
@@ -164,6 +165,10 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
             return;
         }
 
+        if (this._status === "loading") {
+            this.signalDuringLoad = true;
+            return;
+        }
         if (this._status !== "ready") {
             return;
         }
@@ -209,6 +214,7 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
         this.loadToken += 1;
         this.refreshingToken = null;
         this.refreshQueued = false;
+        this.signalDuringLoad = false;
         this.useCases = null;
         this.rowProvider = null;
         this._kind = "forMe";
@@ -221,6 +227,7 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
     private beginLoad(): number {
         this.loadToken += 1;
         this.refreshQueued = false;
+        this.signalDuringLoad = false;
         this._status = "loading";
         this._rows = [];
         return this.loadToken;
@@ -229,9 +236,16 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
     private applyPage(listed: ReviewListPage): void {
         this._rows = listed.items.map(item => toReviewListRow(item));
         this._status = "ready";
+
+        // A signal that arrived during the load is answered by one refresh now that the rows exist.
+        if (this.signalDuringLoad) {
+            this.signalDuringLoad = false;
+            void this.refresh();
+        }
     }
 
     private applyFailure(): void {
+        this.signalDuringLoad = false;
         this._rows = [];
         this._status = "failed";
     }
@@ -261,12 +275,10 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
             parts.push(resolved.contentTypeLabel);
         }
 
+        const stateTag = getRowStateTag(row);
         let stateLabel = getListReviewStateLabel(row.reviewState);
-        let stateVariant: TargetReviewTagVariant = NEUTRAL_VARIANT;
-        if (row.stepState) {
-            const tag = getStepStateTag(row.stepState);
-            stateLabel = tag.label;
-            stateVariant = tag.variant;
+        if (stateTag.label) {
+            stateLabel = stateTag.label;
         }
 
         return {
@@ -274,7 +286,7 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
             title: row.title,
             stepLine: parts.join(" · "),
             stateLabel,
-            stateVariant,
+            stateVariant: stateTag.variant,
             lastChange: formatLastChange(row.lastChangedOn, now),
             contentUrl: resolved.contentUrl
         };
