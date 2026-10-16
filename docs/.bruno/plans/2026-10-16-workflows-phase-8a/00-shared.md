@@ -58,9 +58,9 @@ Process:
 - Commits: Conventional Commits, one `-m` for the subject, **an optional `-m` for a body** when the commit needs one (A71/A72 findings, storage notes), and a separate `-m` for each trailer line (each trailer is its own paragraph), ending with exactly (Q16):
   ```
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-  Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u
+  Claude-Session: <CURRENT_SESSION_URL>
   ```
-  Never push, amend or revert. Behaviour-changing fixes to base packages (R228) are separate `fix(...)` commits.
+  `<CURRENT_SESSION_URL>` is not literal text: replace it with the `https://claude.ai/code/session_...` URL of the session that runs the commit (Q31). Never push, amend or revert. Behaviour-changing fixes to base packages (R228) are separate `fix(...)` commits.
 - **SEC ids appear only in plan files**, never in `decisions.md`, the spec, guides, code or commits.
 - Design copy comes verbatim from the design README 5-8 and `answers.md`; a missing string stops the task, it is not invented. Where the design conflicts with a ruling, the ruling wins and the task names the conflict.
 - `@webiny/admin-ui` components (verified present: `Drawer`, `Popover`, `Tag`, `Alert`, `AutoComplete`, `Skeleton`, `Tabs`, `Toast`/`useToast`, `Dialog`, `DataTable`): a task reads a component's props before using it.

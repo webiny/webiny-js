@@ -633,7 +633,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-headless-cms --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-headless-cms): throw GraphQLOperationError from the delete and bulk gateways" -m "The four delete and bulk gateways keep their throw condition and message fallback and now carry the envelope code and data, so the workflows warning can read ActiveReviewOnTrash. A72: bulkAction<Model> only triggers a background task and returns its id, so per-entry refusals never reach the response and the all-selected path has no pre-warning." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-headless-cms): throw GraphQLOperationError from the delete and bulk gateways" -m "The four delete and bulk gateways keep their throw condition and message fallback and now carry the envelope code and data, so the workflows warning can read ActiveReviewOnTrash. A72: bulkAction<Model> only triggers a background task and returns its id, so per-entry refusals never reach the response and the all-selected path has no pre-warning." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.

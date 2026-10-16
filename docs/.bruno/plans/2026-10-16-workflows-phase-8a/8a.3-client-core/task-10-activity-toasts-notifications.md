@@ -1519,7 +1519,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the review activity bus, cache sync handler, toasts and notification service" -m "ReviewChangedEvent replaces WorkflowStateChangedEvent and the shared ReviewCacheSyncHandler hands toSystemWorkflow(review) to the app cache writer. ReviewActivity is the refetch signal bus, ReviewToasts shows the QBZ-93 texts bottom right for 8 seconds with a close button, ReviewNotificationService turns incoming notifications into a toast plus a remote signal. WorkflowsAdminApp registers ReviewServicesFeature inside the feature flag gate." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-workflows): add the review activity bus, cache sync handler, toasts and notification service" -m "ReviewChangedEvent replaces WorkflowStateChangedEvent and the shared ReviewCacheSyncHandler hands toSystemWorkflow(review) to the app cache writer. ReviewActivity is the refetch signal bus, ReviewToasts shows the QBZ-93 texts bottom right for 8 seconds with a close button, ReviewNotificationService turns incoming notifications into a toast plus a remote signal. WorkflowsAdminApp registers ReviewServicesFeature inside the feature flag gate." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If any step fails and you fix something, rerun the chain from the top. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`. Never push or amend.

@@ -1339,19 +1339,19 @@ git add <the commit's files>
 Commit 1 (no behaviour change for callers that ignored the result), files: both `abstractions.ts`, both `...UseCase.ts`, both `...UseCaseWithLoading.ts` and the two `...WithLoading.test.ts` under `packages/app-website-builder/src/features/pages/{deletePage,deletePageRevision}/`. Build lines: `yarn build -p @webiny/app-website-builder --no-cache 2>&1 | tail -30`.
 
 ```bash
-git commit -m "refactor(app-website-builder): return a boolean from the page delete use cases" -m "The delete page and delete page revision use cases resolve true and their loading decorators pass the result on, so a decorator can report that the delete was not carried out." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "refactor(app-website-builder): return a boolean from the page delete use cases" -m "The delete page and delete page revision use cases resolve true and their loading decorators pass the result on, so a decorator can report that the delete was not carried out." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 Commit 2, files: `useDeletePageConfirmationDialog.tsx`, `useDeletePageConfirmationDialog.test.tsx`, `BulkDeletePresenter.ts`, `BulkDeletePresenter.test.ts`, `packages/app-website-builder/package.json` and `yarn.lock`. Build lines: the same single build.
 
 ```bash
-git commit -m "fix(app-website-builder): treat a false delete result as not done" -m "The table delete action no longer announces a trash that did not happen and the bulk delete reports a page whose delete returned false as a failure." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "fix(app-website-builder): treat a false delete result as not done" -m "The table delete action no longer announces a trash that did not happen and the bulk delete reports a page whose delete returned false as a failure." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 Commit 3, files: everything under `packages/app-website-builder-workflows/src/features/trash/` and `packages/app-website-builder-workflows/src/index.tsx`. Build lines: `yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30` then `yarn build -p @webiny/app-website-builder-workflows --no-cache 2>&1 | tail -30`. `yarn adio` may list `@webiny/di` and `vitest` for `app-website-builder-workflows` (Task 12 added them). The commit body records the Step 0 trash-bin evidence.
 
 ```bash
-git commit -m "feat(app-website-builder-workflows): guard the page trash and delete with the review warning" -m "Three decorators forward the page trash, revision delete and bulk delete to the shared guard. The trash-bin delete is not decorated: trashed pages are unreadable to the workflows server and the trash is refused while a review is in progress, so that path cannot hold an active review." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-website-builder-workflows): guard the page trash and delete with the review warning" -m "Three decorators forward the page trash, revision delete and bulk delete to the shared guard. The trash-bin delete is not decorated: trashed pages are unreadable to the workflows server and the trash is refused while a review is in progress, so that path cannot hold an active review." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 **Contract notes:**

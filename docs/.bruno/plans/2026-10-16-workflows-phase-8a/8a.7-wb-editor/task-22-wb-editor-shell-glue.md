@@ -1507,7 +1507,7 @@ git add .
 If any step fails and you fix anything, rerun the chain from the start. Then:
 
 ```bash
-git commit -m "feat(app-website-builder-workflows): review bar, canvas read-only source and tooltip in the page editor" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-website-builder-workflows): review bar, canvas read-only source and tooltip in the page editor" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 **Contract notes:**

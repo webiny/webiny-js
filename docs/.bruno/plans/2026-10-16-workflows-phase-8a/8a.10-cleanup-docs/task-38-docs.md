@@ -492,7 +492,7 @@ git status --short
 `git status --short` must list only the docs files of this task (the three spec, roadmap and decisions files, the three or four guides, the handoff file) and no `docs/.reports`, `.superpowers`, `docs/.bruno/workflows/design/` or `.gitleaks.toml` entry. Then:
 
 ```
-git commit -m "docs(workflows): record phase 8a (D157-D159), spec 13.x, roadmap and guides as built" -m "Adds D157 (trash and delete warning driven by the server refusal), D158 (review steps carry candidateTeams) and D159 (shared admin core in app-workflows), corrects D60 and D134 for the new client flow, updates spec 4.2, 5.1, 9.6, 10, 12 and 13.1-13.8, marks roadmap row 8a built with the 8b hand-off, refreshes app.md and integrations.md for the as-built admin code and adds the phase 8a session handoff." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "docs(workflows): record phase 8a (D157-D159), spec 13.x, roadmap and guides as built" -m "Adds D157 (trash and delete warning driven by the server refusal), D158 (review steps carry candidateTeams) and D159 (shared admin core in app-workflows), corrects D60 and D134 for the new client flow, updates spec 4.2, 5.1, 9.6, 10, 12 and 13.1-13.8, marks roadmap row 8a built with the 8b hand-off, refreshes app.md and integrations.md for the as-built admin code and adds the phase 8a session handoff." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If any step of the chain fails and you fix something, rerun the chain from the first line.

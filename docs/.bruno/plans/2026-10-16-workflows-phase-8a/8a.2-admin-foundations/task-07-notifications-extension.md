@@ -607,7 +607,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-admin --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-admin): add link, duration, position, dismissible and error variant to notifications" -m "The renderer forwards only the fields a notification sets, so existing toasts keep their exact arguments. The error variant uses the error icon from @webiny/icons with the fill-destructive class. Sonner 2.0.8 caps the visible toasts at 3 per position (VISIBLE_TOASTS_AMOUNT) and nothing here overrides it." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-admin): add link, duration, position, dismissible and error variant to notifications" -m "The renderer forwards only the fields a notification sets, so existing toasts keep their exact arguments. The error variant uses the error icon from @webiny/icons with the fill-destructive class. Sonner 2.0.8 caps the visible toasts at 3 per position (VISIBLE_TOASTS_AMOUNT) and nothing here overrides it." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.

@@ -2188,7 +2188,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-workflows): add the review list presenter" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-workflows): add the review list presenter" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.

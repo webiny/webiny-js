@@ -924,7 +924,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the shared ReviewUseCases" -m "One implementation of the review use cases over the gateway interface: error envelopes become GraphQLOperationError, transport errors pass through, results are mapped, and the workflow list is loaded once per instance (a missing workflow is cached, a failed load is not)." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-workflows): add the shared ReviewUseCases" -m "One implementation of the review use cases over the gateway interface: error envelopes become GraphQLOperationError, transport errors pass through, results are mapped, and the workflow list is loaded once per instance (a missing workflow is cached, a failed load is not)." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If any step fails and you fix something, rerun the chain from the top. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`. Never push or amend.

@@ -1003,7 +1003,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the review bar, progress popover and tooltip" -m "The bar renders the Task 13 view model: skeleton, failed alert with Try again, the state tile and tag, message, meta, lock text, server-driven actions and the steps popover. ReviewTooltip keeps a disabled control focusable and describes it through aria-describedby. The vitest config gains an SVG stub alias and a DOM setup file so components can render in jsdom." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-workflows): add the review bar, progress popover and tooltip" -m "The bar renders the Task 13 view model: skeleton, failed alert with Try again, the state tile and tag, message, meta, lock text, server-driven actions and the steps popover. ReviewTooltip keeps a disabled control focusable and describes it through aria-describedby. The vitest config gains an SVG stub alias and a DOM setup file so components can render in jsdom." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.

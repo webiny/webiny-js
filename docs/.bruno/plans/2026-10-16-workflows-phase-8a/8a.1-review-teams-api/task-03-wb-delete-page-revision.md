@@ -1058,7 +1058,7 @@ yarn build -p @webiny/api-website-builder --no-cache 2>&1 | tail -30
 yarn build -p @webiny/webiny --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(api-website-builder): add the deletePageRevision mutation" -m "Published revisions delete as before: Ddb and DdbEs remove the published pointer record of the deleted revision, Sql clears the live pointer on every revision, PgOs removes the published search document; no unpublish handling is added." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(api-website-builder): add the deletePageRevision mutation" -m "Published revisions delete as before: Ddb and DdbEs remove the published pointer record of the deleted revision, Sql clears the live pointer on every revision, PgOs removes the published search document; no unpublish handling is added." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.

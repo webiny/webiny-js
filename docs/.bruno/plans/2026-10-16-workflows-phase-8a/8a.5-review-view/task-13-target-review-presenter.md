@@ -2837,7 +2837,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the target review presenter and its message tables" -m "The presenter loads the bound workflow and the target review through the app's use cases, builds one render-ready view model and publishes ReviewChangedEvent after every settled load. The editing, publishing and moving rules, the review message table and the action list are pure functions driven by the server flags and the review state." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-workflows): add the target review presenter and its message tables" -m "The presenter loads the bound workflow and the target review through the app's use cases, builds one render-ready view model and publishes ReviewChangedEvent after every settled load. The editing, publishing and moving rules, the review message table and the action list are pure functions driven by the server flags and the review state." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.

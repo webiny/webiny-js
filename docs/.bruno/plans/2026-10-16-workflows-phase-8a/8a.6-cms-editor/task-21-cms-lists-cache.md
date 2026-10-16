@@ -1072,7 +1072,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-headless-cms-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-headless-cms-workflows): follow the review state in the CMS entry list and cache" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-headless-cms-workflows): follow the review state in the CMS entry list and cache" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.

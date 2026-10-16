@@ -1143,7 +1143,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-workflows): add the active review warning dialog and trash feature" -m "The named dialog lists the blocking reviews under the trash or delete text and confirms through the guard. A71: DialogsProvider keeps one named-dialog intent, so the warning replaces the open trash dialog and no fallback is needed." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-workflows): add the active review warning dialog and trash feature" -m "The named dialog lists the blocking reviews under the trash or delete text and confirms through the guard. A71: DialogsProvider keeps one named-dialog intent, so the warning replaces the open trash dialog and no fallback is needed." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start. `yarn adio` may ask for `@webiny/react-composition` only if a source file imports it; the tests import `CompositionProvider` through `@webiny/app`, so no new dependency is expected.

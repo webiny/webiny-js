@@ -1387,7 +1387,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the request review dialog" -m "The dialog previews the workflow steps, prefills the title (at least 5 characters), offers Automatic or Choose a person for steps that allow picks with one private picker per step, and sends picks only for steps with a person chosen. Conflicts, field errors and server errors follow the review dialog rules; the bar mounts the dialog for its request action." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-workflows): add the request review dialog" -m "The dialog previews the workflow steps, prefills the title (at least 5 characters), offers Automatic or Choose a person for steps that allow picks with one private picker per step, and sends picks only for steps with a person chosen. Conflicts, field errors and server errors follow the review dialog rules; the bar mounts the dialog for its request action." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.

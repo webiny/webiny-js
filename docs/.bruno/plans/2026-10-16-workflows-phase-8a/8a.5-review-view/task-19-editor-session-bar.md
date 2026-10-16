@@ -430,7 +430,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the editor review session and the editor review bar" -m "EditorReviewSession is a plain shared class holding an editor's presenter and its app's use cases; each app subclasses it once and binds the subclass to its own token. EditorReviewBar renders the shared bar and the details drawer and builds the Content Reviews link from the app's route." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-workflows): add the editor review session and the editor review bar" -m "EditorReviewSession is a plain shared class holding an editor's presenter and its app's use cases; each app subclasses it once and binds the subclass to its own token. EditorReviewBar renders the shared bar and the details drawer and builds the Content Reviews link from the app's route." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.

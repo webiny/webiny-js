@@ -21,7 +21,7 @@
 
 ## Answers to the questions raised while the task files were written (2026-10-16)
 
-- Q16 Commit trailer (user): from now on commits end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` and `Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u` (the current session id). Old commits stay untouched; every plan file carries the new trailer (Global Constraints, Process).
+- Q16 Commit trailer (user): from now on commits end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` and `Claude-Session: <URL of the session that makes the commit>` (Q31: resolved at run time). Old commits stay untouched; every plan file carries the new trailer (Global Constraints, Process).
 - Q17 WB "New Revision" while in review (user): hide the WB "New Revision" action while a review is in progress; it stays visible for a rejected and for an approved page (R227; Tasks 22, 23).
 - Q18 Permissions follow the content (user, with the note "that's why each of the apps will have their own GraphQL"): workflows on content fall under the content permissions, so anyone with access to the content has access to its workflow and review reads, because each app's own GraphQL carries that app's content permission checks. A `Workflows/NotAuthorized` read of the bar therefore happens only for a viewer without access to the content; it stays `failed` with `failureKind: "noAccess"` (no special case that turns it into `noWorkflow`). The lock cannot hit a user who can edit the content (R211, R225).
 - Q19 Unpublished WB page (user): an unpublished WB page can be published again with no new review, because it was reviewed before it was published. The unpublished page shows Publish enabled and "New Revision". The planner verified the server (A89): the publish block accepts a revision whose review is still approved; a revision with no review is refused with `Workflows/Review/PublishBlocked`, and then the error toast shows (R226, R227).
@@ -36,3 +36,4 @@
 - Q28 Bulk first-pass toast copy (user): approved as proposed, "{done} of {total} items done. {n} still need your confirmation." (Task 33).
 - Q29 Rejected colours (user): approved split. Tags use neutral-dark for Rejected and destructive for Failed; progress segments keep the design's red for rejected steps (design README 11).
 - Q30 Review-level Rejected tag (user): neutral-dark too, same as the step tag; only Failed is destructive (refines Q29; Task 13 getReviewStateTag).
+- Q31 Claude-Session trailer (user): the plan does not hard-code a session id; every commit step writes `<CURRENT_SESSION_URL>`, which the implementer replaces with the URL of the session that makes the commit.

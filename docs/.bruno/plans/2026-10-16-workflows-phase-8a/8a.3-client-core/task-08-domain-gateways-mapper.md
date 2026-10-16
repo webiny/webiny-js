@@ -2550,7 +2550,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the review domain, DTOs, fragments, mappers and gateway interfaces" -m "Adds the vitest setup of app-workflows (A75: runner starts, co-located tests discovered), the review domain types, the shared Workflows DTOs and field fragments (candidateTeams, userDisplayName and cancelledBy selected), the review, workflow and candidate mappers (with assignedAutomatically, userDisplayName and cancelledBy), toSystemWorkflow, toReviewListRow, isReviewSelectable, and the gateway, use-case, content adapter and cache writer interfaces." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-workflows): add the review domain, DTOs, fragments, mappers and gateway interfaces" -m "Adds the vitest setup of app-workflows (A75: runner starts, co-located tests discovered), the review domain types, the shared Workflows DTOs and field fragments (candidateTeams, userDisplayName and cancelledBy selected), the review, workflow and candidate mappers (with assignedAutomatically, userDisplayName and cancelledBy), toSystemWorkflow, toReviewListRow, isReviewSelectable, and the gateway, use-case, content adapter and cache writer interfaces." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If any step fails and you fix something, rerun the chain from the top. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`. Never push or amend.

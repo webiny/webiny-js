@@ -794,7 +794,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/api-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(api-workflows): store and expose who cancelled a review" -m "The review gains the optional data field cancelledBy, written by cancel with the cancelling actor. It is a field of the private review model: no key, no key format, nothing migrated; an entry stored without it reads null." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(api-workflows): store and expose who cancelled a review" -m "The review gains the optional data field cancelledBy, written by cancel with the cancelling actor. It is a field of the private review model: no key, no key format, nothing migrated; an entry stored without it reads null." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.

@@ -1822,25 +1822,25 @@ git add <the commit's files>
 Commit 1, files: `RevisionsListPresenter.ts` (the `confirmed === false` hunk only) and the first two tests of `RevisionsListPresenter.test.ts`. Build lines: `yarn build -p @webiny/app-headless-cms --no-cache 2>&1 | tail -30`.
 
 ```bash
-git commit -m "fix(app-headless-cms): run the revision delete after a real confirm" -m "RevisionsListPresenter.deleteRevision treated the undefined result of a real confirm as not confirmed, so deleting a revision from the list never ran; only a cancel resolves false." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "fix(app-headless-cms): run the revision delete after a real confirm" -m "RevisionsListPresenter.deleteRevision treated the undefined result of a real confirm as not confirmed, so deleting a revision from the list never ran; only a cancel resolves false." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 Commit 2, files: `ContentEntryFormPresenter.ts`, `ContentEntryFormPresenter.test.ts`, `RevisionsListPresenter.ts` (the `deleted !== false` hunk) with the remaining two tests, `BulkDeletePresenter.ts`, `BulkDeletePresenter.test.ts` (all in `packages/app-headless-cms`). Build lines: the same single build.
 
 ```bash
-git commit -m "fix(app-headless-cms): treat a false delete result as not done" -m "The entry form, the revisions list and the bulk trash now check the delete use case result, so a dismissed warning no longer blanks the editor, reports a revision deleted or lists a bulk item as trashed." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "fix(app-headless-cms): treat a false delete result as not done" -m "The entry form, the revisions list and the bulk trash now check the delete use case result, so a dismissed warning no longer blanks the editor, reports a revision deleted or lists a bulk item as trashed." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 Commit 3, files: `abstractions.ts`, `TrashBinPresenter.ts`, `TrashBinPresenter.test.ts`, `useDeleteTrashBinItem.tsx`, `useDeleteTrashBinItem.test.tsx`, `DeleteItems.tsx`, `DeleteItems.test.tsx` (all in `packages/app-admin/src/presentation/trashBin/`). Build lines: `yarn build -p @webiny/app-admin --no-cache 2>&1 | tail -30`.
 
 ```bash
-git commit -m "fix(app-admin): treat a false delete result as not done in the trash bin" -m "deleteItem now resolves a boolean; the row stays listed and no success is reported when the delete was not carried out." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "fix(app-admin): treat a false delete result as not done in the trash bin" -m "deleteItem now resolves a boolean; the row stays listed and no success is reported when the delete was not carried out." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 Commit 4, files: everything under `packages/app-headless-cms-workflows/src/features/trash/` and `packages/app-headless-cms-workflows/src/index.tsx`. Build lines: `yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30` then `yarn build -p @webiny/app-headless-cms-workflows --no-cache 2>&1 | tail -30`. `yarn adio` may list `@webiny/di` and `vitest` for `app-headless-cms-workflows` (Task 11 added them).
 
 ```bash
-git commit -m "feat(app-headless-cms-workflows): guard the CMS trash and delete with the review warning" -m "Four decorators forward the entry trash, revision delete, permanent delete and bulk trash to the shared guard; the trash-bin delete is covered through PermanentlyDeleteEntryUseCase. " -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
+git commit -m "feat(app-headless-cms-workflows): guard the CMS trash and delete with the review warning" -m "Four decorators forward the entry trash, revision delete, permanent delete and bulk trash to the shared guard; the trash-bin delete is covered through PermanentlyDeleteEntryUseCase. " -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: <CURRENT_SESSION_URL>"
 ```
 
 **Contract notes:**
