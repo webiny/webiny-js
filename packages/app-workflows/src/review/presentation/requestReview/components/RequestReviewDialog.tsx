@@ -156,9 +156,10 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                                         }
                                     ]}
                                     value={step.mode}
-                                    onChange={value =>
-                                        presenter.setMode(step.stepId, toMode(value))
-                                    }
+                                    onChange={value => {
+                                        const mode = toMode(value);
+                                        presenter.setMode(step.stepId, mode);
+                                    }}
                                 />
                             )}
                             {step.noCandidates && (

@@ -7,7 +7,8 @@ export const getRevisionNumber = (revisionId: string): string | null => {
     if (index === -1) {
         return null;
     }
-    const version = Number(revisionId.slice(index + 1));
+    const versionText = revisionId.slice(index + 1);
+    const version = Number(versionText);
     if (!Number.isFinite(version)) {
         return null;
     }

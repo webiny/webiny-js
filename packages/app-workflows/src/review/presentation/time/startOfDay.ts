@@ -1,4 +1,8 @@
 // The local midnight of the date's day, as a timestamp.
 export const startOfDay = (date: Date): number => {
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    const midnight = new Date(year, month, day);
+    return midnight.getTime();
 };

@@ -29,7 +29,8 @@ class ReviewerPickerPresenterImpl implements Abstraction.Interface {
         const matching = this.candidates.filter(candidate => {
             return candidate.displayName.toLowerCase().includes(needle);
         });
-        const options = getPickerOptions(matching, this.getCurrentOwnerId());
+        const currentOwnerId = this.getCurrentOwnerId();
+        const options = getPickerOptions(matching, currentOwnerId);
         const eligibleCount = all.filter(option => !option.disabled).length;
 
         let emptyMessage = "No reviewers to show.";
@@ -99,7 +100,8 @@ class ReviewerPickerPresenterImpl implements Abstraction.Interface {
     }
 
     private getAllOptions(): ReviewerPickerOptionVm[] {
-        return getPickerOptions(this.candidates, this.getCurrentOwnerId());
+        const currentOwnerId = this.getCurrentOwnerId();
+        return getPickerOptions(this.candidates, currentOwnerId);
     }
 
     private begin(params: ReviewerPickerInitParams): number {

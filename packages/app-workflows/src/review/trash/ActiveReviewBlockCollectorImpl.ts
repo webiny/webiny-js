@@ -18,7 +18,8 @@ class ActiveReviewBlockCollectorImpl implements Abstraction.Interface {
     begin(targetIds: string[]): string {
         this.counter += 1;
         const runId = `active-review-run-${this.counter}`;
-        this.runs.set(runId, { targetIds: new Set(targetIds), active: true, collected: [] });
+        const ids = new Set(targetIds);
+        this.runs.set(runId, { targetIds: ids, active: true, collected: [] });
         return runId;
     }
 

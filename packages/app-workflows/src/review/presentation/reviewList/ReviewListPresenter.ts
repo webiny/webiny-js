@@ -434,7 +434,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
 
         const token = this.loadToken;
         this.refreshingToken = token;
-        const request = this.createParams(this.getRefreshLimit(), null);
+        const limit = this.getRefreshLimit();
+        const request = this.createParams(limit, null);
 
         try {
             const listed = await useCases.listReviews(request);

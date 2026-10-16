@@ -1,5 +1,6 @@
 import React from "react";
-import { RegisterFeature, useFeatureFlags } from "@webiny/app-admin";
+import { RegisterFeature } from "@webiny/app-admin";
+import { useFeatureFlags } from "@webiny/app-admin";
 import { SecurityPermissions } from "~/presentation/permissions/index.js";
 import { WorkflowsPermissionsFeature } from "~/features/permissions/feature.js";
 import { ActiveReviewTrashFeature } from "~/review/trash/feature.js";
