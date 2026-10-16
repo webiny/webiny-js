@@ -80,6 +80,16 @@ describe("ReviewerPickerPresenter", () => {
         expect(presenter.vm.query).toBe("ivan");
     });
 
+    it("filters on the plain name, not on the Unavailable or Current owner suffix", async () => {
+        await presenter.init(params({ currentOwnerId: "u2" }));
+
+        presenter.search("owner");
+        expect(presenter.vm.options).toEqual([]);
+
+        presenter.search("unavail");
+        expect(presenter.vm.options).toEqual([]);
+    });
+
     it("explains an empty search result", async () => {
         await presenter.init(params());
 

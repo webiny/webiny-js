@@ -51,8 +51,11 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
         const step = review ? review.review.steps.find(item => item.id === stepId) : undefined;
         const pickerVm = this.picker.vm;
         const ready = this.status === "ready";
-        const nobodyEligible = ready && pickerVm.error === null && pickerVm.eligibleCount === 0;
+        const nobodyEligible =
+            ready && pickerVm.error === null && !pickerVm.loading && pickerVm.eligibleCount === 0;
         const closeOnly = nobodyEligible || this.conflict !== null || this.status === "failed";
+
+        const showPicker = ready && !nobodyEligible && this.conflict === null;
 
         let title = "";
         if (step) {
@@ -83,6 +86,8 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
             hint,
             message,
             nobodyEligible,
+            showPicker,
+            closeOnly,
             confirmLabel: "Reassign",
             cancelLabel,
             canSubmit,
@@ -123,7 +128,9 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
                         reviewId: request.reviewId,
                         stepId
                     });
-                    this.candidates = candidates;
+                    if (token === this.token) {
+                        this.candidates = candidates;
+                    }
                     return candidates;
                 },
                 currentOwnerId,

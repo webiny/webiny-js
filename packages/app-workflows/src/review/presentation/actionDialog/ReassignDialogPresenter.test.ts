@@ -198,6 +198,42 @@ describe("ReassignDialogPresenter", () => {
         expect(setup.onDone).not.toHaveBeenCalled();
     });
 
+    it("keeps the picker shown while a Retry is loading", async () => {
+        setup.useCases.listReviewStepCandidates.mockRejectedValueOnce(new Error("Network."));
+        await setup.presenter.init(setup.params());
+        expect(setup.presenter.vm.showPicker).toBe(true);
+
+        let release: (value: StepCandidate[]) => void = () => undefined;
+        setup.useCases.listReviewStepCandidates.mockReturnValue(
+            new Promise<StepCandidate[]>(resolve => {
+                release = resolve;
+            })
+        );
+        const pending = setup.presenter.getPickerPresenter().retry();
+
+        expect(setup.presenter.vm.nobodyEligible).toBe(false);
+        expect(setup.presenter.vm.showPicker).toBe(true);
+        expect(setup.presenter.vm.closeOnly).toBe(false);
+
+        release(CANDIDATES);
+        await pending;
+        expect(setup.presenter.vm.nobodyEligible).toBe(false);
+    });
+
+    it("names the chosen person in the toast even when a later search hides them", async () => {
+        await setup.presenter.init(setup.params());
+        const picker = setup.presenter.getPickerPresenter();
+        picker.select("user-3");
+        picker.search("petra");
+        expect(picker.vm.options.map(option => option.value)).toEqual(["user-4"]);
+
+        await setup.presenter.submit();
+
+        expect(setup.toasts.show).toHaveBeenCalledWith(
+            expect.objectContaining({ kind: "reassigned", personName: "Ivan Horvat" })
+        );
+    });
+
     it("fails the load with a dialog error", async () => {
         setup.useCases.getReview.mockRejectedValue(new Error("Network."));
 

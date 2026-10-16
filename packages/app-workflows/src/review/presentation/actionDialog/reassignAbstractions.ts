@@ -19,6 +19,8 @@ export interface IReassignDialogViewModel {
     hint: string;
     message: string;
     nobodyEligible: boolean;
+    showPicker: boolean;
+    closeOnly: boolean;
     confirmLabel: string;
     cancelLabel: string;
     canSubmit: boolean;

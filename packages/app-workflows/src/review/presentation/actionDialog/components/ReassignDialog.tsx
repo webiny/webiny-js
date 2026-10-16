@@ -15,7 +15,6 @@ export const ReassignDialog = createReactiveComponent(function ReassignDialog(
 ) {
     const { presenter } = props;
     const { vm } = presenter;
-    const closeOnly = vm.nobodyEligible || vm.conflict !== null || vm.status === "failed";
 
     let actions = (
         <>
@@ -27,11 +26,9 @@ export const ReassignDialog = createReactiveComponent(function ReassignDialog(
             />
         </>
     );
-    if (closeOnly) {
-        actions = <Dialog.CancelAction text={"Close"} />;
+    if (vm.closeOnly) {
+        actions = <Dialog.CancelAction text={vm.cancelLabel} />;
     }
-
-    const showPicker = vm.status === "ready" && !vm.nobodyEligible && vm.conflict === null;
 
     return (
         <Dialog
@@ -58,7 +55,7 @@ export const ReassignDialog = createReactiveComponent(function ReassignDialog(
                     </Alert>
                 ) : null}
                 {vm.message ? <Text size={"md"}>{vm.message}</Text> : null}
-                {showPicker ? (
+                {vm.showPicker ? (
                     <ReviewerPicker
                         presenter={presenter.getPickerPresenter()}
                         label={"Reviewer"}
