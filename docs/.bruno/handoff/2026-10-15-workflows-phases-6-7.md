@@ -27,6 +27,6 @@
 
 ## What might come next
 
-- Open user decision: the e-mail transport calls `MailerService` directly, not `SendMailUseCase` (skips mailer validation and the MailBeforeSend/AfterSend/SendError events). Keep and document in D153, or switch.
+- Decided 2026-10-16: the e-mail transport sends through `SendMailUseCase` (83a11140c3, 2ccfa975b9).
 - Phases 8a-9c (admin UI; stale client gateway `listWorkflowNotificationTypes` in app-workflows).
 - Pre-merge: commit trailers (b52e5710bd Sonnet trailer, 0b0157fe9f, c9ec20e917 and older), useGraphQLHandler.ts ApiKey type error, earlier handoff items. Optional: widen the 5ms hold in the notifier fan-out test if CI flakes.
