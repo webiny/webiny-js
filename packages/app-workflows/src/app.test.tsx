@@ -8,6 +8,7 @@ import { vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import { render } from "@testing-library/react";
 import { Container } from "@webiny/di";
+import { CompositionProvider } from "@webiny/app";
 import { DiContainerProvider } from "@webiny/app/shared/di/DiContainerProvider.js";
 import { EventPublisher } from "@webiny/app/features/eventPublisher/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
@@ -24,6 +25,8 @@ import { RequestReviewPresenter } from "~/review/presentation/requestReview/abst
 import { ReviewDetailsPresenter } from "~/review/presentation/reviewDetails/abstractions.js";
 import { ReviewListPresenter } from "~/review/presentation/reviewList/abstractions.js";
 import { ReviewWidgetPresenter } from "~/review/presentation/reviewWidget/abstractions.js";
+import { ActiveReviewBlockCollector } from "~/review/trash/ActiveReviewBlockCollector.js";
+import { ActiveReviewWarningPresenter } from "~/review/trash/ActiveReviewWarningPresenter.js";
 
 const flags = vi.hoisted(() => {
     return { isEnabled: vi.fn() };
@@ -64,7 +67,9 @@ const mount = (flagOn: boolean): Container => {
     });
     render(
         <DiContainerProvider container={container}>
-            <WorkflowsAdminApp />
+            <CompositionProvider>
+                <WorkflowsAdminApp />
+            </CompositionProvider>
         </DiContainerProvider>
     );
     return container;
@@ -164,5 +169,31 @@ describe("WorkflowsAdminApp review view", () => {
         expect(() => container.resolve(ReviewDetailsPresenter)).toThrow();
         expect(() => container.resolve(ReviewListPresenter)).toThrow();
         expect(() => container.resolve(ReviewWidgetPresenter)).toThrow();
+    });
+});
+
+describe("WorkflowsAdminApp active review warning", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("registers the warning presenter transient and the collector when the flag is on", () => {
+        const container = mount(true);
+
+        const first = container.resolve(ActiveReviewWarningPresenter);
+        const second = container.resolve(ActiveReviewWarningPresenter);
+        expect(first).not.toBe(second);
+        expect(container.resolve(ActiveReviewBlockCollector)).toBeDefined();
+    });
+
+    it("registers nothing of it when the flag is off (R211)", () => {
+        const container = mount(false);
+
+        expect(() => container.resolve(ActiveReviewWarningPresenter)).toThrow();
+        expect(() => container.resolve(ActiveReviewBlockCollector)).toThrow();
     });
 });
