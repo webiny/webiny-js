@@ -6,7 +6,8 @@ import { CmsEntryReviewBlockedActions } from "~/Components/ContentEntryForm/inde
 import { CmsEntryReviewFormLock } from "~/Components/ContentEntryForm/index.js";
 import { CmsEntryReviewNewRevision } from "~/Components/ContentEntryForm/index.js";
 import { CmsEntryReviewScheduleMenuItem } from "~/Components/ContentEntryForm/index.js";
-import { CmsEntriesWorkflowStateListFooterMenu } from "~/Components/CmsEntriesWorkflowStateList/index.js";
+import { CmsContentReviews } from "~/Components/ContentReviews/CmsContentReviews.js";
+import { CmsContentReviewsSidebarItem } from "~/Components/ContentReviews/CmsContentReviewsSidebarItem.js";
 import { ListOpenInNewWindow } from "~/Components/OptionItem/OpenInNewWindow.js";
 import { CmsEntryReviewFeature } from "~/features/editorReview/feature.js";
 import { CmsReviewMoveEntryAction } from "~/Components/CmsEntriesList/CmsReviewMoveEntryAction.js";
@@ -14,6 +15,7 @@ import { CmsWorkflowsFeature } from "~/presentation/feature.js";
 import { CmsWorkflowsCacheFeature } from "~/features/feature.js";
 import { CmsWorkflowsEditorPresenterFeature } from "~/presentation/cmsWorkflowsEditor/feature.js";
 import { CmsReviewFeature } from "~/features/gateway/feature.js";
+import { CmsContentReviewsPresenterFeature } from "~/presentation/contentReviews/feature.js";
 
 export const CmsWorkflows = () => {
     const featureFlags = useFeatureFlags();
@@ -25,12 +27,14 @@ export const CmsWorkflows = () => {
     return (
         <>
             <RegisterFeature feature={CmsReviewFeature} />
+            <RegisterFeature feature={CmsContentReviewsPresenterFeature} />
             <RegisterFeature feature={CmsWorkflowsFeature} />
             <RegisterFeature feature={CmsWorkflowsCacheFeature} />
             <RegisterFeature feature={CmsWorkflowsEditorPresenterFeature} />
             <RegisterFeature feature={CmsEntryReviewFeature} />
             <ListOpenInNewWindow />
-            <CmsEntriesWorkflowStateListFooterMenu />
+            <CmsContentReviews />
+            <CmsContentReviewsSidebarItem />
             <CmsWorkflowsEditor />
             <CmsEntryReviewBar />
             <CmsEntryReviewFormLock />

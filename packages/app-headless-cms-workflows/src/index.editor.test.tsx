@@ -41,7 +41,7 @@ vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", asy
 });
 
 /*
- * The editor route, the Content Reviews footer menu, the "open in new window" option and the old
+ * The editor route, the Content Reviews route, menu and sidebar item, the "open in new window" option and the old
  * editor presenter need routing and menu providers and are not what this test asserts (Task 11's
  * composition test stubs the same modules).
  */
@@ -49,8 +49,12 @@ vi.mock("~/Routes/index.js", () => {
     return { CmsWorkflowsEditor: () => null };
 });
 
-vi.mock("~/Components/CmsEntriesWorkflowStateList/index.js", () => {
-    return { CmsEntriesWorkflowStateListFooterMenu: () => null };
+vi.mock("~/Components/ContentReviews/CmsContentReviews.js", () => {
+    return { CmsContentReviews: () => null };
+});
+
+vi.mock("~/Components/ContentReviews/CmsContentReviewsSidebarItem.js", () => {
+    return { CmsContentReviewsSidebarItem: () => null };
 });
 
 vi.mock("~/Components/OptionItem/OpenInNewWindow.js", () => {

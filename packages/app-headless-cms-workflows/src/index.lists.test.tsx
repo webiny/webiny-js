@@ -70,8 +70,12 @@ vi.mock("~/Routes/index.js", () => {
     return { CmsWorkflowsEditor: () => null };
 });
 
-vi.mock("~/Components/CmsEntriesWorkflowStateList/index.js", () => {
-    return { CmsEntriesWorkflowStateListFooterMenu: () => null };
+vi.mock("~/Components/ContentReviews/CmsContentReviews.js", () => {
+    return { CmsContentReviews: () => null };
+});
+
+vi.mock("~/Components/ContentReviews/CmsContentReviewsSidebarItem.js", () => {
+    return { CmsContentReviewsSidebarItem: () => null };
 });
 
 vi.mock("~/Components/OptionItem/OpenInNewWindow.js", () => {

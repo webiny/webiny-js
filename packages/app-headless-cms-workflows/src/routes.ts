@@ -15,7 +15,12 @@ export const Routes = {
     ContentEntries: {
         ContentReviews: new Route({
             name: "Cms/ContentEntries/WorkflowStateList",
-            path: "/cms/content-reviews"
+            path: "/cms/content-reviews",
+            params: zod => {
+                return {
+                    tab: zod.string().optional()
+                };
+            }
         })
     }
 };
