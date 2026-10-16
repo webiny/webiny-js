@@ -15,7 +15,7 @@ Spec 13.1; R202 (one shared implementation, app-owned gateway and tokens), R204 
 - Modify: `packages/app-workflows/src/index.tsx` (barrel)
 
 **Interfaces:**
-- Consumes: Task 8 (`IReviewGateway` and its parameter types, `IReviewUseCases`, `ReviewListPage`, `ReviewErrorDto`, the DTOs, `mapReview`, `mapReviewWithFlags`, `mapWorkflow`, `mapStepCandidate`, `ReviewWorkflow`, `StepCandidate`, `Review`, `ReviewWithFlags`, `ReviewTarget`, the fixtures in `__tests__/fixtures/reviewFixtures.ts`); Task 6 (`GraphQLOperationError`, imported `@webiny/app/errors/index.js`; `yarn build -p @webiny/app --no-cache` first, as Task 6 requires for every task that imports it).
+- Consumes: Task 8 (`IReviewGateway` and its parameter types, `IReviewUseCases`, `ReviewListPage`, `ReviewErrorDto`, the DTOs, `mapReview`, `mapReviewWithFlags`, `mapWorkflow`, `mapStepCandidate`, `ReviewWorkflow`, `StepCandidate`, `Review`, `ReviewWithFlags`, `ReviewTarget`, the DTO builders of `src/review/testing/reviewFixtures.ts`, imported `~/review/testing/reviewFixtures.js`); Task 6 (`GraphQLOperationError`, imported `@webiny/app/errors/index.js`; `yarn build -p @webiny/app --no-cache` first, as Task 6 requires for every task that imports it).
 - Produces: `class ReviewUseCases implements IReviewUseCases`, `constructor(gateway: IReviewGateway)`, exported plain, to be subclassed once per app (Tasks 11 and 12 register the subclasses); barrel line `export { ReviewUseCases } from "./review/useCases/ReviewUseCases.js"`.
 
 - [ ] **Step 1: Write the failing tests**
@@ -25,34 +25,36 @@ In `packages/app-workflows/package.json` add `"@webiny/di": "^1.1.0"` to `depend
 Create `packages/app-workflows/src/review/useCases/ReviewUseCases.test.ts`:
 
 ```ts
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
 import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { createAbstraction } from "@webiny/feature/admin";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewUseCases } from "./ReviewUseCases.js";
 import type { IReviewUseCases } from "./IReviewUseCases.js";
-import type {
-    ApproveReviewParams,
-    CancelForDeleteParams,
-    CancelReviewParams,
-    IReviewGateway,
-    ListReviewsParams,
-    ListReviewStepCandidatesParams,
-    ListStepCandidatesParams,
-    ReassignReviewParams,
-    RejectReviewParams,
-    RequestReviewParams,
-    ReviewStepRef,
-    TakeOverReviewParams
-} from "~/review/gateway/IReviewGateway.js";
-import type { ReviewErrorDto, WorkflowDto } from "~/review/gateway/dto.js";
-import type { Review, ReviewTarget } from "~/review/domain/types.js";
-import {
-    createReviewDto,
-    createReviewWithFlagsDto,
-    createViewerFlagsDto
-} from "~tests/fixtures/reviewFixtures.js";
+import type { ApproveReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { CancelForDeleteParams } from "~/review/gateway/IReviewGateway.js";
+import type { CancelReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { IReviewGateway } from "~/review/gateway/IReviewGateway.js";
+import type { ListReviewsParams } from "~/review/gateway/IReviewGateway.js";
+import type { ListReviewStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
+import type { ListStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
+import type { ReassignReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { RejectReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { RequestReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { ReviewStepRef } from "~/review/gateway/IReviewGateway.js";
+import type { TakeOverReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { ReviewErrorDto } from "~/review/gateway/dto.js";
+import type { WorkflowDto } from "~/review/gateway/dto.js";
+import type { Review } from "~/review/domain/types.js";
+import type { ReviewTarget } from "~/review/domain/types.js";
+import { createReviewDto } from "~/review/testing/reviewFixtures.js";
+import { createReviewWithFlagsDto } from "~/review/testing/reviewFixtures.js";
+import { createViewerFlagsDto } from "~/review/testing/reviewFixtures.js";
 
 type FakeGateway = { [K in keyof IReviewGateway]: Mock };
 
@@ -531,8 +533,8 @@ describe("ReviewUseCases", () => {
         const UseCasesA = createAbstraction<IReviewUseCases>("Test/UseCasesA");
         const UseCasesB = createAbstraction<IReviewUseCases>("Test/UseCasesB");
 
-        class UseCasesAImpl extends ReviewUseCases implements IReviewUseCases {}
-        class UseCasesBImpl extends ReviewUseCases implements IReviewUseCases {}
+        class UseCasesAImpl extends ReviewUseCases implements UseCasesA.Interface {}
+        class UseCasesBImpl extends ReviewUseCases implements UseCasesB.Interface {}
 
         const BoundA = UseCasesA.createImplementation({
             implementation: UseCasesAImpl,
@@ -658,29 +660,25 @@ Create `packages/app-workflows/src/review/useCases/ReviewUseCases.ts`:
 
 ```ts
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
-import type {
-    ApproveReviewParams,
-    CancelForDeleteParams,
-    CancelReviewParams,
-    IReviewGateway,
-    ListReviewsParams,
-    ListReviewStepCandidatesParams,
-    ListStepCandidatesParams,
-    ReassignReviewParams,
-    RejectReviewParams,
-    RequestReviewParams,
-    ReviewStepRef,
-    TakeOverReviewParams
-} from "~/review/gateway/IReviewGateway.js";
+import type { ApproveReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { CancelForDeleteParams } from "~/review/gateway/IReviewGateway.js";
+import type { CancelReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { IReviewGateway } from "~/review/gateway/IReviewGateway.js";
+import type { ListReviewsParams } from "~/review/gateway/IReviewGateway.js";
+import type { ListReviewStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
+import type { ListStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
+import type { ReassignReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { RejectReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { RequestReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { ReviewStepRef } from "~/review/gateway/IReviewGateway.js";
+import type { TakeOverReviewParams } from "~/review/gateway/IReviewGateway.js";
 import type { IReviewUseCases } from "./IReviewUseCases.js";
 import type { ReviewListPage } from "./IReviewListUseCases.js";
-import type {
-    Review,
-    ReviewTarget,
-    ReviewWithFlags,
-    ReviewWorkflow,
-    StepCandidate
-} from "~/review/domain/types.js";
+import type { Review } from "~/review/domain/types.js";
+import type { ReviewTarget } from "~/review/domain/types.js";
+import type { ReviewWithFlags } from "~/review/domain/types.js";
+import type { ReviewWorkflow } from "~/review/domain/types.js";
+import type { StepCandidate } from "~/review/domain/types.js";
 import { mapReview } from "~/review/gateway/mapReview.js";
 import { mapReviewWithFlags } from "~/review/gateway/mapReviewWithFlags.js";
 import { mapStepCandidate } from "~/review/gateway/mapStepCandidate.js";
@@ -909,12 +907,11 @@ Expected: all PASS. If a "concurrent callers" or "does not cache an error" test 
 
 - [ ] **Step 5: Existing tests and type check**
 
-The Task 8 tests cover the mappers this class uses; run the two that guard its inputs, then the type check and the build:
+The Task 8 tests cover the mappers this class uses; run the two that guard its inputs, then the build, which is the type check of the co-located tests (R-e: `check:test:types` reports only `__tests__/` errors):
 
 ```bash
 yarn test packages/app-workflows/src/review/gateway/mapReview.test.ts 2>&1 | tail -50
 yarn test packages/app-workflows/src/review/gateway/mapWorkflow.test.ts 2>&1 | tail -50
-yarn check:test:types -p app-workflows --report cli 2>&1 | tail -40
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 
@@ -934,17 +931,14 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the shared ReviewUseCases" -m "One implementation of the review use cases over the gateway interface: error envelopes become GraphQLOperationError, transport errors pass through, results are mapped, and the workflow list is loaded once per instance (a missing workflow is cached, a failed load is not)." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the shared ReviewUseCases" -m "One implementation of the review use cases over the gateway interface: error envelopes become GraphQLOperationError, transport errors pass through, results are mapped, and the workflow list is loaded once per instance (a missing workflow is cached, a failed load is not)." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If any step fails and you fix something, rerun the chain from the top. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`. Never push or amend.
 
 **Contract notes**
 
-- The contract says Task 9 puts "the use-case interface types on the barrel"; Task 8 already exports them (its barrel block lists every interface it creates), so Task 9's barrel change is the one `ReviewUseCases` line.
-- The error-throw expression is repeated in each method on purpose (contract: "one throw site per method, no wrapper helper"); it is 14 copies of a five-line object literal. If review wants fewer lines, the only allowed alternative is a pure function that builds the error from a `ReviewErrorDto | null` (no dependency call inside); that is a style choice for the reviewer, not a behaviour change.
 - `getBoundWorkflow` keeps a stored `Promise` of the whole mapped list (not a per-namespace map); `null` for an unbound namespace is therefore "cached" by the list itself, which is what A74 requires.
-- `IReviewGateway.listWorkflows` returns the envelope with `data` or `error`; an envelope with neither is treated as a protocol breach (throws), not as an empty list.
-- The shared class is exported plain and never passed to `createImplementation` (binding rule: `createImplementation` stores metadata on the class, so a shared class bound by two apps would collide). The per-app subclass test pins the intended pattern; its last test pins the "No abstraction metadata found" message of the installed `@webiny/di` (verify the exact text on the first run and adjust the assertion string, not the pattern).
-- `@webiny/di` is added to `dependencies` here (first import, in this test).
+- `IReviewGateway.listWorkflows` returns the envelope with `data` or `error`; an envelope with neither is treated as a protocol breach (throws), not as an empty list. The contract does not state this case.
+- The per-app subclass test pins the R237 pattern; its last test pins the "No abstraction metadata found" message of the installed `@webiny/di` (verify the exact text on the first run and adjust the assertion string, not the pattern).
 - verify: `@webiny/app/errors/index.js` exports `GraphQLOperationError` after Task 6 and `yarn build -p @webiny/app --no-cache` made it resolvable for the package build; the test resolves the source through the package tsconfig `paths`.

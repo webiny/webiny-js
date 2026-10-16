@@ -26,7 +26,7 @@ R205, R212, D157, A71; Review Focus 8 (flag off registers nothing). The UI half 
 - Consumes:
   - Task 33: `ACTIVE_REVIEW_WARNING_DIALOG`, `ActiveReviewWarningDialogParams`, `ActiveReviewBlockCollector`, `ActiveReviewGuard` (tokens in `ActiveReviewBlockCollector.ts` and `ActiveReviewGuard.ts`, the dialog params type in `ActiveReviewGuard.ts`, implementations `ActiveReviewBlockCollectorImpl.ts`, `ActiveReviewGuardImpl.ts`).
   - Task 8: `BlockingReview` (`~/review/domain/types.js`).
-  - Task 15: dialog conventions (named dialog through `AdminConfig.Dialog`, `useNamedConfirmationDialog`, presenter through `useFeature`, `createReactiveComponent`).
+  - Task 15: only the presenter conventions (a transient presenter through `useFeature`, `createReactiveComponent`, `init` in an effect). Task 15 mounts a plain admin-ui `Dialog` from `ReviewActionDialogHost`, not a named dialog; this task uses the existing named-dialog mechanism (`AdminConfig.Dialog`, `useNamedConfirmationDialog`).
   - Existing: `useNamedConfirmationDialog`, `AdminConfig`, `createReactiveComponent`, `RegisterFeature`, `useFeatureFlags` (`@webiny/app-admin`); `DialogParamsContext` (`@webiny/app-admin/components/Dialogs/DialogParamsContext.js`); `DialogsProvider` (`@webiny/app-admin/components/Dialogs/DialogsContext.js`); `ConfirmationBridge` and `ConfirmationFeature` and `Confirmation` (`@webiny/app-admin/features/confirmation/`); `AdminWithConfig` and `AdminConfigPlugin` (`@webiny/app-admin/config/AdminConfig.js`); `Dialog`, `Alert`, `AdminUiProvider` (`@webiny/admin-ui`); `useFeature`, `DiContainerProvider`, `CompositionProvider` (`@webiny/app`); `createFeature`, `createAbstraction` (`@webiny/feature/admin`); `mobx`.
 - Produces (consumed by Tasks 35, 36):
   - `IActiveReviewWarningPresenter`, token `ActiveReviewWarningPresenter` (`Workflows/ActiveReviewWarningPresenter`, in `ActiveReviewWarningPresenter.ts`), implementation `ActiveReviewWarningPresenter` from `ActiveReviewWarningPresenterImpl.ts` (class `ActiveReviewWarningPresenterImpl`), transient.
@@ -449,6 +449,7 @@ import { DialogsProvider } from "@webiny/app-admin/components/Dialogs/DialogsCon
 import { ConfirmationBridge } from "@webiny/app-admin/features/confirmation/index.js";
 import { ConfirmationFeature } from "@webiny/app-admin/features/confirmation/feature.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { AdminConfig } from "@webiny/app-admin";
 import { useNamedConfirmationDialog } from "@webiny/app-admin";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
@@ -501,6 +502,14 @@ describe("ActiveReviewTrashFeature", () => {
         container.registerInstance(Confirmation, {
             confirm: vi.fn()
         } as unknown as Confirmation.Interface);
+        container.registerInstance(Notifications, {
+            notify: vi.fn(),
+            success: vi.fn(),
+            warning: vi.fn(),
+            error: vi.fn(),
+            getNotifications: vi.fn(),
+            remove: vi.fn()
+        });
         ActiveReviewTrashFeature.register(container);
 
         expect(container.resolve(ActiveReviewGuard)).toBe(container.resolve(ActiveReviewGuard));
@@ -518,6 +527,14 @@ describe("ActiveReviewTrashFeature", () => {
         container.registerInstance(Confirmation, {
             confirm
         } as unknown as Confirmation.Interface);
+        container.registerInstance(Notifications, {
+            notify: vi.fn(),
+            success: vi.fn(),
+            warning: vi.fn(),
+            error: vi.fn(),
+            getNotifications: vi.fn(),
+            remove: vi.fn()
+        });
         ActiveReviewTrashFeature.register(container);
         const guard = container.resolve(ActiveReviewGuard);
         const collector = container.resolve(ActiveReviewBlockCollector);
@@ -654,6 +671,14 @@ describe("A71: the named-dialog host", () => {
     function renderHost() {
         const container = new Container();
         ConfirmationFeature.register(container);
+        container.registerInstance(Notifications, {
+            notify: vi.fn(),
+            success: vi.fn(),
+            warning: vi.fn(),
+            error: vi.fn(),
+            getNotifications: vi.fn(),
+            remove: vi.fn()
+        });
         ActiveReviewTrashFeature.register(container);
         const useCases = { cancelForDelete: vi.fn(async () => []) };
         const results: unknown[] = [];
@@ -952,7 +977,8 @@ export const ActiveReviewTrashFeature = createFeature({
 Create `packages/app-workflows/src/review/trash/components/ActiveReviewWarningDialog.tsx`:
 
 ```tsx
-import React, { useEffect } from "react";
+import React from "react";
+import { useEffect } from "react";
 import { Alert } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
@@ -1105,7 +1131,7 @@ Expected: PASS (4 files). If the A71 host describe fails only because the real `
 ```bash
 yarn test packages/app-workflows/src/review/trash/ActiveReviewGuard.test.ts 2>&1 | tail -50
 yarn test packages/app-workflows/src/review/trash/ActiveReviewBlockCollector.test.ts 2>&1 | tail -50
-yarn check:test:types -p app-workflows --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 
 Expected: PASS and no type errors.
@@ -1125,16 +1151,15 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-workflows): add the active review warning dialog and trash feature" -m "The named dialog lists the blocking reviews under the trash or delete text and confirms through the guard. A71: DialogsProvider keeps one named-dialog intent, so the warning replaces the open trash dialog and no fallback is needed." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the active review warning dialog and trash feature" -m "The named dialog lists the blocking reviews under the trash or delete text and confirms through the guard. A71: DialogsProvider keeps one named-dialog intent, so the warning replaces the open trash dialog and no fallback is needed." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start. `yarn adio` may ask for `@webiny/react-composition` only if a source file imports it; the tests import `CompositionProvider` through `@webiny/app`, so no new dependency is expected.
 
 **Contract notes:**
 - The contract's `init({ title: string; reviews: string[] })` has no `body`, yet the VM has `body`; `init` takes `{ title, body, reviews }` here (the title is the dialog heading, the body the D134 sentence).
-- One token per file: the presenter token is `ActiveReviewWarningPresenter.ts`, its implementation `ActiveReviewWarningPresenterImpl.ts` (controller rule; the contract's single `abstractions.ts` is dropped).
 - `ActiveReviewWarningConfig` is an addition (the contract registers the dialog "as a named dialog" without naming the component).
 - The feature's `resolve` returns `{ presenter }` only (the contract does not say); the guard is reached by token.
-- Pending user confirmation: the dialog title "Review in progress" has no design source (named constant in `buildActiveReviewWarning.ts`); the busy label "Processing..." is the existing `ConfirmationDialog` default; everything else is verbatim from R205 and D134.
+- The dialog title "Review in progress" is confirmed (Q20, R205; a named constant in `buildActiveReviewWarning.ts`); the busy label "Processing..." is the existing `ConfirmationDialog` default; everything else is verbatim from R205 and D134.
 - The dialog does not display a failure of the guard's repeated action or of the cancel: the guard rethrows it to the original caller after the dialog has closed (Task 33); the presenter's `error` is defence only (kept, labelled in the Presenter section).
 - A71 resolved by reading `DialogsContext.tsx` (replace semantics) and pinned by the host test; if the test shows otherwise, Step 4 says what to do.

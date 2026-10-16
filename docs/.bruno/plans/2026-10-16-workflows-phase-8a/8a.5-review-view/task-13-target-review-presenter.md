@@ -2,7 +2,7 @@
 
 R202, R212, R216, R217, R225, R226 (as amended by R-h), R232, R234, R-a, R-c, R-e, R-f, R-i, R-k, R-l; D5, D54, D75, D79, D80, D85, D107, D121, D126; QBZ-1, QBZ-36, QBZ-52, QBZ-53, QBZ-58, QBZ-59, QBZ-64, QBZ-79, QBZ-83, QBZ-96; Review Focus 1, 3, 4, 5, 12. The state behind the review bar of one open editor: it asks the app's use cases whether the namespace has a workflow and whether the revision has a review, turns the answer into one render-ready view model (R234), and owns the rules that lock the editor (R226). Everything is app-neutral: the presenter knows no gateway and no app, only the `IReviewUseCases` passed to `init`.
 
-- **Presenter** (`TargetReviewPresenterImpl`, registered transient, dependencies `[EventPublisher, ReviewActivity]`):
+- **Presenter** (`TargetReviewPresenterImpl`, registered transient, dependencies `[EventPublisher, ReviewActivity, IdentityContext]`; the viewer's team ids come from `IdentityContext.getIdentity().teams`, R232, R247):
   - `init(params)` resets to `loading` and loads; `refresh()` loads again **without leaving the current view** (status stays, `vm.busy` is true) so the bar does not flash; both run `getBoundWorkflow(namespace)` (`null` -> `noWorkflow`, no review call) then `getTargetReview(target)` (`null` or a `cancelled` review -> `none`, a review -> `active`, D75).
   - A `GraphQLOperationError` with code `ReviewErrorCode.NotAuthorized` is `failed` with `failureKind: "noAccess"`; any other error is `failed` with `failureKind: "error"` (R225). A failed load publishes no event (an unknown state must not overwrite the list cache).
   - After every **settled successful** load the presenter publishes `ReviewChangedEvent({ namespace, targetId, targetRevisionId, review })` (`review: null` for `noWorkflow` and `none`); `targetId` is the review's own, or the part of the revision id before `#` when there is no review. A publisher that rejects (a failing cache writer) is swallowed after the state is applied: the bar must not break because a list cache could not be updated.
@@ -11,11 +11,11 @@ R202, R212, R216, R217, R225, R226 (as amended by R-h), R232, R234, R-a, R-c, R-
   - `setContext({ targetTitle, canRequest, isPublished, isUnpublished })` replaces the four context values after `init` without reloading (the editors call it when the form's save state or the publish state changes; additive to the contract, see Contract notes). `isUnpublished` is true for a revision that was published before and is not published now (R-h).
 - **View model** (render-ready only, R234): built by the pure `buildTargetReviewViewModel` from the presenter's private state, so the rules are tested without MobX. The status is `loading | failed | noWorkflow | none | active`; `reviewKind` (R-a) is `none | inProgress | approved | rejected`; `targetTitle`, `namespace` and `targetRevisionId` (R-f) let `ReviewBar` and the request dialog read the target from the presenter instead of taking props.
 - **Pure files** (one function each, all in `.../targetReview/`):
-  - `getReviewMessage` (README 6 table; R225 loading and failure texts; the shared QBZ-59 no-access sentence `NO_ACCESS_MESSAGE` (R-i, `presentation/noAccessMessage.ts`, also used by Tasks 15 and 18); "Waiting in the {names} team pool", names from `candidateTeams` joined ", ", none resolved "Waiting in the team pool" (R232); owner is the viewer = `flags.canApprove` ("You are reviewing this step"; the client never learns the viewer's id, approving is owner-only on the server); someone else "{Name} is reviewing"; AI and automation owners by the step title (R216, QBZ-79); approved and published "Approved and published", approved, not published and `isUnpublished` "Approved and unpublished. Publishing again needs no new review.", otherwise "Approved, ready to publish" (R226 as amended by R-h); rejected through `getRejectionText`; a `running` or `failed` step falls back to the generic "{Name} is reviewing" (R203)).
+  - `getReviewMessage` (README 6 table; R225 loading and failure texts; the shared QBZ-59 no-access sentence `NO_ACCESS_MESSAGE` (R-i, `presentation/noAccessMessage.ts`, also used by Tasks 15 and 18); "Waiting in the {names} team pool", names being the viewer's own teams among the step's `candidateTeams` joined " and " (QBZ-25, R232, R247; `viewerTeamIds` is a parameter), else all the step's `candidateTeams` joined ", ", none resolved "Waiting in the team pool"; owner is the viewer = `flags.canApprove` ("You are reviewing this step"; the client never learns the viewer's id, approving is owner-only on the server); someone else "{Name} is reviewing"; AI and automation owners by the step title (R216, QBZ-79); approved and published "Approved and published", approved, not published and `isUnpublished` "Approved and unpublished. Publishing again needs no new review.", otherwise "Approved, ready to publish" (R226 as amended by R-h); rejected through `getRejectionText`; a `running` or `failed` step falls back to the generic "{Name} is reviewing" (R203)).
   - `getRejectionText` (R216: "Rejected at {step}: “{comment}”", the comment cut to 80 characters with "…"; no comment "Rejected at {step}.").
   - `getStepOwnerLabel` (user name, "A user" when blank; AI and automation: the step title; no owner on an awaiting step: "Team pool ({names})" or "Team pool"; a pending step "Not reached yet").
-  - `getReviewStateTag` ("Review: In progress | Approved | Rejected", QBZ-52), `getStepStateTag` (labels and variants of the six step states, used by the popover here and the drawer in Task 18).
-  - `getReviewActions` (README 6 labels and icons, ordered ghost -> tertiary -> secondary -> primary, only what the server `flags` allow; "Request review" only without an active review and with `canRequest`, R217; no Restart, 8b), `getEditorRules` (R226; switches on `status` and `reviewKind`; a revision with no review: "Publishing needs an approved review. Request a review first.", a rejected one: "This revision was rejected. Create a new revision, then request a new review.", in review: "This revision is in review. Publishing is allowed once every step approves."), `getReviewKind`, `getReviewProgress`, `getDisplayStep` (the step the bar describes: the current step, else the rejecting step, else the last), `getTargetIdFromRevisionId`, `getTeamNames`.
+  - `getReviewStateTag` ("Review: In progress | Approved | Rejected", QBZ-52), `getStepStateTag` (labels and variants of the six step states, used by the popover here and the drawer in Task 18; `failed` is `destructive` (red), `rejected` is `neutral-dark`, no other step state is red, R239, Q24).
+  - `getReviewActions` (README 6 labels and icons, ordered ghost -> tertiary -> secondary -> primary, only what the server `flags` allow; "Request review" only without an active review and with `canRequest`, R217; no Restart, 8b), `getEditorRules` (R226, R240; switches on `status`, `reviewKind` and `isUnpublished`; an unpublished revision with no review may publish (Q19, `publishDisabledReason` null); a revision with no review: "Publishing needs an approved review. Request a review first.", a rejected one: "This revision was rejected. Create a new revision, then request a new review.", in review: "This revision is in review. Publishing is allowed once every step approves."), `getReviewKind`, `getReviewProgress`, `getDisplayStep` (the step the bar describes: the current step, else the rejecting step, else the last), `getTargetIdFromRevisionId`, `getTeamNames`.
 
 **Files:**
 - Create: `packages/app-workflows/src/review/presentation/targetReview/abstractions.ts`
@@ -35,7 +35,7 @@ R202, R212, R216, R217, R225, R226 (as amended by R-h), R232, R234, R-a, R-c, R-
 - Create: `packages/app-workflows/src/review/presentation/targetReview/TargetReviewPresenter.ts`
 - Create: `packages/app-workflows/src/review/presentation/targetReview/feature.ts`
 - Create: `packages/app-workflows/src/review/presentation/noAccessMessage.ts`
-- Create: `packages/app-workflows/src/review/testing/reviewTarget.ts`, `createActor.ts`, `createStep.ts`, `createFlags.ts`, `createWorkflow.ts` (pure builders, one per file; `createReview` and `createReviewWithFlags` stay in Task 8's `reviewFixtures.ts`, see Contract notes)
+- Create: `packages/app-workflows/src/review/testing/reviewTarget.ts`, `createActor.ts`, `createStep.ts`, `createFlags.ts`, `createWorkflow.ts` (pure builders, one per file; `createReview` and `createReviewWithFlags` stay in Task 8's `reviewFixtures.ts`, R243)
 - Create: `packages/app-workflows/src/review/testing/fakeReviewUseCases.ts`
 - Create: `packages/app-workflows/src/review/presentation/targetReview/getReviewKind.ts`
 - Create: `packages/app-workflows/src/review/presentation/targetReview/getReviewMessage.test.ts`
@@ -256,6 +256,7 @@ const params = (overrides: Partial<ReviewMessageParams> = {}): ReviewMessagePara
         flags: null,
         isPublished: false,
         isUnpublished: false,
+        viewerTeamIds: [],
         ...overrides
     };
 };
@@ -339,6 +340,45 @@ describe("getReviewMessage", () => {
             message: "Waiting in the Marketing, Compliance team pool",
             lockText: LOCK_IN_REVIEW
         });
+    });
+
+    it("names the viewer's own teams among the step's teams joined with 'and' (QBZ-25, R232)", () => {
+        const review = createReview({
+            currentStepState: StepState.Awaiting,
+            steps: [
+                createStep({
+                    state: StepState.Awaiting,
+                    candidateTeams: [
+                        { id: "t1", name: "Marketing" },
+                        { id: "t2", name: "Legal" },
+                        { id: "t3", name: "Compliance" }
+                    ]
+                })
+            ]
+        });
+        expect(
+            getReviewMessage(params({ review, flags: createFlags(), viewerTeamIds: ["t1", "t3"] }))
+                .message
+        ).toBe("Waiting in the Marketing and Compliance team pool");
+    });
+
+    it("names all the step's teams for a viewer outside them", () => {
+        const review = createReview({
+            currentStepState: StepState.Awaiting,
+            steps: [
+                createStep({
+                    state: StepState.Awaiting,
+                    candidateTeams: [
+                        { id: "t1", name: "Marketing" },
+                        { id: "t2", name: "Legal" }
+                    ]
+                })
+            ]
+        });
+        expect(
+            getReviewMessage(params({ review, flags: createFlags(), viewerTeamIds: ["other"] }))
+                .message
+        ).toBe("Waiting in the Marketing, Legal team pool");
     });
 
     it("does not invent a team name when none resolved", () => {
@@ -475,7 +515,7 @@ const IN_REVIEW = "This revision is in review. Publishing is allowed once every 
 
 describe("getEditorRules", () => {
     it("locks everything while the status loads (QBZ-1)", () => {
-        expect(getEditorRules({ status: "loading", reviewKind: "none" })).toEqual({
+        expect(getEditorRules({ status: "loading", reviewKind: "none", isUnpublished: false })).toEqual({
             allowsEditing: false,
             allowsPublishing: false,
             publishDisabledReason: CHECKING,
@@ -484,7 +524,7 @@ describe("getEditorRules", () => {
     });
 
     it("locks everything after a failed load", () => {
-        expect(getEditorRules({ status: "failed", reviewKind: "none" })).toEqual({
+        expect(getEditorRules({ status: "failed", reviewKind: "none", isUnpublished: false })).toEqual({
             allowsEditing: false,
             allowsPublishing: false,
             publishDisabledReason: FAILED,
@@ -493,7 +533,9 @@ describe("getEditorRules", () => {
     });
 
     it("changes nothing for content without a workflow", () => {
-        expect(getEditorRules({ status: "noWorkflow", reviewKind: "none" })).toEqual({
+        expect(
+            getEditorRules({ status: "noWorkflow", reviewKind: "none", isUnpublished: false })
+        ).toEqual({
             allowsEditing: true,
             allowsPublishing: true,
             publishDisabledReason: null,
@@ -502,7 +544,7 @@ describe("getEditorRules", () => {
     });
 
     it("allows editing but not publishing without a review", () => {
-        expect(getEditorRules({ status: "none", reviewKind: "none" })).toEqual({
+        expect(getEditorRules({ status: "none", reviewKind: "none", isUnpublished: false })).toEqual({
             allowsEditing: true,
             allowsPublishing: false,
             publishDisabledReason: NEEDS_REVIEW,
@@ -510,8 +552,34 @@ describe("getEditorRules", () => {
         });
     });
 
+    it("allows publishing an unpublished revision with no review (Q19, R226)", () => {
+        expect(getEditorRules({ status: "none", reviewKind: "none", isUnpublished: true })).toEqual({
+            allowsEditing: true,
+            allowsPublishing: true,
+            publishDisabledReason: null,
+            moveDisabledReason: null
+        });
+    });
+
+    it("does not let isUnpublished override an active review", () => {
+        expect(
+            getEditorRules({ status: "active", reviewKind: "inProgress", isUnpublished: true })
+        ).toEqual({
+            allowsEditing: false,
+            allowsPublishing: false,
+            publishDisabledReason: IN_REVIEW,
+            moveDisabledReason: MOVE_BLOCKED_IN_REVIEW
+        });
+        expect(
+            getEditorRules({ status: "active", reviewKind: "rejected", isUnpublished: true })
+                .allowsPublishing
+        ).toBe(false);
+    });
+
     it("locks editing, publishing and moving while a review is in progress", () => {
-        expect(getEditorRules({ status: "active", reviewKind: "inProgress" })).toEqual({
+        expect(
+            getEditorRules({ status: "active", reviewKind: "inProgress", isUnpublished: false })
+        ).toEqual({
             allowsEditing: false,
             allowsPublishing: false,
             publishDisabledReason: IN_REVIEW,
@@ -520,7 +588,9 @@ describe("getEditorRules", () => {
     });
 
     it("allows publishing an approved revision but not editing it", () => {
-        expect(getEditorRules({ status: "active", reviewKind: "approved" })).toEqual({
+        expect(
+            getEditorRules({ status: "active", reviewKind: "approved", isUnpublished: false })
+        ).toEqual({
             allowsEditing: false,
             allowsPublishing: true,
             publishDisabledReason: null,
@@ -529,7 +599,9 @@ describe("getEditorRules", () => {
     });
 
     it("locks a rejected revision for good", () => {
-        expect(getEditorRules({ status: "active", reviewKind: "rejected" })).toEqual({
+        expect(
+            getEditorRules({ status: "active", reviewKind: "rejected", isUnpublished: false })
+        ).toEqual({
             allowsEditing: false,
             allowsPublishing: false,
             publishDisabledReason: REJECTED,
@@ -734,6 +806,19 @@ describe("tags", () => {
         });
     });
 
+    it("makes only the failed step state red (R239, Q24)", () => {
+        expect(getStepStateTag(StepState.Failed)).toEqual({ label: "Failed", variant: "destructive" });
+        expect(getStepStateTag(StepState.Rejected).variant).toBe("neutral-dark");
+        const others = [
+            StepState.Pending,
+            StepState.Awaiting,
+            StepState.InReview,
+            StepState.Approved,
+            StepState.Rejected
+        ].map(state => getStepStateTag(state).variant);
+        expect(others).not.toContain("destructive");
+    });
+
     it("tags all six step states with distinct labels", () => {
         const labels = [
             StepState.Pending,
@@ -876,6 +961,7 @@ const input = (overrides: Partial<TargetReviewViewModelInput> = {}): TargetRevie
         canRequest: true,
         isPublished: false,
         isUnpublished: false,
+        viewerTeamIds: [],
         targetTitle: "Spring campaign",
         namespace: "cms.article",
         targetRevisionId: "entry-1#0001",
@@ -1018,7 +1104,7 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.tile).toBe("cancel");
         expect(vm.stepMeta).toBe("Step 1 of 1: Legal sign-off");
         expect(vm.ownerMeta).toBe("Owner: Ana Legal");
-        expect(vm.stepStateTag).toEqual({ label: "Rejected", variant: "destructive" });
+        expect(vm.stepStateTag).toEqual({ label: "Rejected", variant: "neutral-dark" });
     });
 
     it("carries the target the bar belongs to (R-f)", () => {
@@ -1044,6 +1130,45 @@ describe("buildTargetReviewViewModel", () => {
         expect(published.message).toBe("Approved and published");
         expect(unpublished.message).toBe("Approved and unpublished. Publishing again needs no new review.");
         expect(ready.message).toBe("Approved, ready to publish");
+    });
+
+    it("enables Publish for an unpublished revision with no review (Q19)", () => {
+        const vm = buildTargetReviewViewModel(input({ status: "none", isUnpublished: true }));
+        expect(vm.reviewKind).toBe("none");
+        expect(vm.allowsPublishing).toBe(true);
+        expect(vm.publishDisabledReason).toBeNull();
+        expect(vm.allowsEditing).toBe(true);
+    });
+
+    it("keeps Publish disabled for a revision with no review that was never published", () => {
+        const vm = buildTargetReviewViewModel(input({ status: "none", isUnpublished: false }));
+        expect(vm.allowsPublishing).toBe(false);
+        expect(vm.publishDisabledReason).toBe(
+            "Publishing needs an approved review. Request a review first."
+        );
+    });
+
+    it("names the viewer's own teams in the pool message (QBZ-25)", () => {
+        const review = createReview({
+            steps: [
+                createStep({
+                    state: StepState.Awaiting,
+                    candidateTeams: [
+                        { id: "t1", name: "Marketing" },
+                        { id: "t2", name: "Legal" }
+                    ]
+                })
+            ]
+        });
+        const vm = buildTargetReviewViewModel(
+            input({
+                status: "active",
+                review: createReviewWithFlags(review),
+                viewerTeamIds: ["t2"]
+            })
+        );
+        expect(vm.message).toBe("Waiting in the Legal team pool");
+        expect(vm.ownerMeta).toBe("Owner: Team pool (Marketing, Legal)");
     });
 
     it("carries the open action and the busy flag", () => {
@@ -1074,6 +1199,9 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { EventPublisher } from "@webiny/app/features/eventPublisher/abstractions.js";
+import type { Identity } from "@webiny/app-admin/domain/Identity.js";
+import type { ITeam } from "@webiny/app-admin/domain/Identity.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewChangedEvent } from "~/review/events/ReviewChangedEvent.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
@@ -1116,12 +1244,18 @@ const createParams = (
     };
 };
 
-const createSetup = () => {
+const createIdentityContext = (teams: ITeam[]): IdentityContext.Interface => {
+    const identity = { teams } as unknown as Identity;
+    return { getIdentity: () => identity, setIdentity: vi.fn(), clear: vi.fn() };
+};
+
+const createSetup = (teams: ITeam[] = []) => {
     const container = new Container();
     const publisher = { publish: vi.fn().mockResolvedValue(undefined) };
     const activity = { subscribe: vi.fn(), notify: vi.fn() };
     container.registerInstance(EventPublisher, publisher);
     container.registerInstance(ReviewActivity, activity);
+    container.registerInstance(IdentityContext, createIdentityContext(teams));
     TargetReviewPresenterFeature.register(container);
     const { presenter } = TargetReviewPresenterFeature.resolve(container);
     return { container, presenter, publisher, activity };
@@ -1138,6 +1272,27 @@ describe("TargetReviewPresenter", () => {
     beforeEach(() => {
         setup = createSetup();
         useCases = createFakeUseCases();
+    });
+
+    it("names the viewer's own teams in the pool message (QBZ-25, R247)", async () => {
+        setup = createSetup([{ id: "t2", slug: "legal", name: "Legal" }]);
+        const base = createReview();
+        const review = createReview({
+            steps: [
+                {
+                    ...base.steps[0],
+                    candidateTeams: [
+                        { id: "t1", name: "Marketing" },
+                        { id: "t2", name: "Legal" }
+                    ]
+                }
+            ]
+        });
+        useCases.getTargetReview.mockResolvedValue(createReviewWithFlags(review));
+
+        await setup.presenter.init(createParams(useCases));
+
+        expect(setup.presenter.vm.message).toBe("Waiting in the Legal team pool");
     });
 
     it("starts in the loading status before init", () => {
@@ -1429,13 +1584,19 @@ Modify Task 10's `packages/app-workflows/src/app.test.tsx` (the `WorkflowsAdminA
 
 ```tsx
 import { EventPublisher } from "@webiny/app/features/eventPublisher/abstractions.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { TargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
 ```
 
-In `mount`, register an event publisher next to the `Notifications` instance:
+In `mount`, register an event publisher and an identity context next to the `Notifications` instance (the real ones come from the admin; the presenter only reads the identity when its view model is built):
 
 ```tsx
     container.registerInstance(EventPublisher, { publish: vi.fn().mockResolvedValue(undefined) });
+    container.registerInstance(IdentityContext, {
+        getIdentity: vi.fn(),
+        setIdentity: vi.fn(),
+        clear: vi.fn()
+    });
 ```
 
 Append a `describe` (Tasks 15-18 add their presenter tokens to the three tests the same way: one `expect` line each):
@@ -1746,7 +1907,10 @@ import { StepState } from "~/review/domain/StepState.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
 import type { TargetReviewTag } from "./abstractions.js";
 
-/** The six step states, each visibly distinct (README 1, UI-13). */
+/**
+ * The six step states, each visibly distinct (README 1, UI-13). Only `failed` is red (R239, Q24);
+ * a rejected step is the dark neutral tag.
+ */
 export const getStepStateTag = (state: StepStateValue): TargetReviewTag => {
     switch (state) {
         case StepState.Awaiting:
@@ -1756,9 +1920,9 @@ export const getStepStateTag = (state: StepStateValue): TargetReviewTag => {
         case StepState.Approved:
             return { label: "Approved", variant: "success-light" };
         case StepState.Rejected:
-            return { label: "Rejected", variant: "destructive" };
+            return { label: "Rejected", variant: "neutral-dark" };
         case StepState.Failed:
-            return { label: "Failed", variant: "neutral-dark" };
+            return { label: "Failed", variant: "destructive" };
         default:
             return { label: "Pending", variant: "neutral-base-outline" };
     }
@@ -1814,6 +1978,7 @@ Create `packages/app-workflows/src/review/presentation/targetReview/getReviewMes
 
 ```ts
 import type { Review } from "~/review/domain/types.js";
+import type { ReviewStep } from "~/review/domain/types.js";
 import type { ReviewViewerFlags } from "~/review/domain/types.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
@@ -1832,6 +1997,8 @@ export interface ReviewMessageParams {
     flags: ReviewViewerFlags | null;
     isPublished: boolean;
     isUnpublished: boolean;
+    /** The ids of the viewer's own teams (`Identity.teams`), for the QBZ-25 wording (R232, R247). */
+    viewerTeamIds: string[];
 }
 
 export interface ReviewMessage {
@@ -1858,7 +2025,23 @@ const LOCK_APPROVED =
 const LOCK_REJECTED =
     "This revision is locked for good. Create a new revision to fix it, then request a new review.";
 
-const getInProgressMessage = (review: Review, flags: ReviewViewerFlags | null): ReviewMessage => {
+/**
+ * The viewer's own teams among the step's candidate teams joined with " and " (QBZ-25); a viewer
+ * outside them gets every candidate team joined with ", " (R232).
+ */
+const getPoolNames = (step: ReviewStep, viewerTeamIds: string[]): string => {
+    const own = step.candidateTeams.filter(team => viewerTeamIds.includes(team.id));
+    if (own.length > 0) {
+        return own.map(team => team.name).join(" and ");
+    }
+    return getTeamNames(step);
+};
+
+const getInProgressMessage = (
+    review: Review,
+    flags: ReviewViewerFlags | null,
+    viewerTeamIds: string[]
+): ReviewMessage => {
     const display = getDisplayStep(review);
     if (!display) {
         return { message: "Review in progress", lockText: LOCK_IN_REVIEW };
@@ -1866,7 +2049,7 @@ const getInProgressMessage = (review: Review, flags: ReviewViewerFlags | null): 
 
     const step = display.step;
     if (step.state === StepState.Awaiting && step.owner === null) {
-        const names = getTeamNames(step);
+        const names = getPoolNames(step, viewerTeamIds);
         if (names === "") {
             return { message: "Waiting in the team pool", lockText: LOCK_IN_REVIEW };
         }
@@ -1890,7 +2073,7 @@ const getInProgressMessage = (review: Review, flags: ReviewViewerFlags | null): 
  * reads like an in-review step here (R203, 8b adds their own messages).
  */
 export const getReviewMessage = (params: ReviewMessageParams): ReviewMessage => {
-    const { status, failureKind, review, flags, isPublished, isUnpublished } = params;
+    const { status, failureKind, review, flags, isPublished, isUnpublished, viewerTeamIds } = params;
 
     if (status === "loading") {
         return { message: "Loading review status…", lockText: null };
@@ -1938,7 +2121,7 @@ export const getReviewMessage = (params: ReviewMessageParams): ReviewMessage => 
         return { message: getRejectionText(display.step), lockText: LOCK_REJECTED };
     }
 
-    return getInProgressMessage(review, flags);
+    return getInProgressMessage(review, flags, viewerTeamIds);
 };
 ```
 
@@ -2083,6 +2266,8 @@ import type { TargetReviewStatus } from "./abstractions.js";
 export interface EditorRulesParams {
     status: TargetReviewStatus;
     reviewKind: TargetReviewKind;
+    /** The revision was published before and is not published now (R226, Q19). */
+    isUnpublished: boolean;
 }
 
 export interface EditorRules {
@@ -2100,11 +2285,12 @@ const IN_REVIEW = "This revision is in review. Publishing is allowed once every 
 
 /**
  * Who may edit, publish and move (R226, D79, D80, D85, D121). Unknown status locks everything
- * (QBZ-1); no active review (including a cancelled one) unlocks editing (D75). Switches on
- * `status` and `reviewKind` only. Pure.
+ * (QBZ-1); no active review (including a cancelled one) unlocks editing (D75). A revision with no
+ * review that was published before and is unpublished now may publish again (Q19: it was reviewed
+ * before it was published). Switches on `status`, `reviewKind` and `isUnpublished` only. Pure.
  */
 export const getEditorRules = (params: EditorRulesParams): EditorRules => {
-    const { status, reviewKind } = params;
+    const { status, reviewKind, isUnpublished } = params;
 
     if (status === "loading") {
         return {
@@ -2125,6 +2311,15 @@ export const getEditorRules = (params: EditorRulesParams): EditorRules => {
     }
 
     if (status === "noWorkflow") {
+        return {
+            allowsEditing: true,
+            allowsPublishing: true,
+            publishDisabledReason: null,
+            moveDisabledReason: null
+        };
+    }
+
+    if (reviewKind === "none" && isUnpublished) {
         return {
             allowsEditing: true,
             allowsPublishing: true,
@@ -2237,6 +2432,7 @@ export interface TargetReviewViewModelInput {
     canRequest: boolean;
     isPublished: boolean;
     isUnpublished: boolean;
+    viewerTeamIds: string[];
     targetTitle: string;
     namespace: string;
     targetRevisionId: string;
@@ -2288,10 +2484,15 @@ export const buildTargetReviewViewModel = (
         review,
         flags,
         isPublished: input.isPublished,
-        isUnpublished: input.isUnpublished
+        isUnpublished: input.isUnpublished,
+        viewerTeamIds: input.viewerTeamIds
     });
     const reviewKind = getReviewKind(input.status, review);
-    const rules = getEditorRules({ status: input.status, reviewKind });
+    const rules = getEditorRules({
+        status: input.status,
+        reviewKind,
+        isUnpublished: input.isUnpublished
+    });
 
     let actions = getReviewActions({ flags, stepId: null, canRequest: false });
     if (input.status === "none") {
@@ -2347,6 +2548,7 @@ import { makeAutoObservable } from "mobx";
 import { observableRef } from "mobx";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { EventPublisher } from "@webiny/app/features/eventPublisher/abstractions.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewChangedEvent } from "~/review/events/ReviewChangedEvent.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
@@ -2373,14 +2575,16 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
 
     constructor(
         private eventPublisher: EventPublisher.Interface,
-        private activity: ReviewActivity.Interface
+        private activity: ReviewActivity.Interface,
+        private identityContext: IdentityContext.Interface
     ) {
         makeAutoObservable<
             TargetReviewPresenterImpl,
-            "eventPublisher" | "activity" | "loadToken" | "params" | "review"
+            "eventPublisher" | "activity" | "identityContext" | "loadToken" | "params" | "review"
         >(this, {
             eventPublisher: false,
             activity: false,
+            identityContext: false,
             loadToken: false,
             params: observableRef,
             review: observableRef
@@ -2389,6 +2593,7 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
 
     get vm(): Abstraction.ViewModel {
         const params = this.params;
+        const teams = this.identityContext.getIdentity().teams;
         return buildTargetReviewViewModel({
             status: this.status,
             failureKind: this.failureKind,
@@ -2396,6 +2601,7 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
             canRequest: params ? params.canRequest : false,
             isPublished: params ? params.isPublished : false,
             isUnpublished: params ? params.isUnpublished : false,
+            viewerTeamIds: teams.map(team => team.id),
             targetTitle: params ? params.targetTitle : "",
             namespace: params ? params.target.namespace : "",
             targetRevisionId: params ? params.target.targetRevisionId : "",
@@ -2549,7 +2755,7 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
 
 export const TargetReviewPresenter = Abstraction.createImplementation({
     implementation: TargetReviewPresenterImpl,
-    dependencies: [EventPublisher, ReviewActivity]
+    dependencies: [EventPublisher, ReviewActivity, IdentityContext]
 });
 ```
 
@@ -2631,22 +2837,14 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the target review presenter and its message tables" -m "The presenter loads the bound workflow and the target review through the app's use cases, builds one render-ready view model and publishes ReviewChangedEvent after every settled load. The editing, publishing and moving rules, the review message table and the action list are pure functions driven by the server flags and the review state." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the target review presenter and its message tables" -m "The presenter loads the bound workflow and the target review through the app's use cases, builds one render-ready view model and publishes ReviewChangedEvent after every settled load. The editing, publishing and moving rules, the review message table and the action list are pure functions driven by the server flags and the review state." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.
 
 ## Contract notes
 
-- **`reviewKind` (R-a):** `ITargetReviewViewModel.reviewKind` is `"none" | "inProgress" | "approved" | "rejected"` (cancelled reads as none, D75; `noWorkflow`, `loading` and `failed` stay on `status`). `getEditorRules` takes `{ status, reviewKind }` and switches on those two only; app glue must do the same, never on label text.
-- **Target in the view model (R-f):** `targetTitle`, `namespace`, `targetRevisionId` are render-ready view model fields; `ReviewBar` and the request dialog read them from the presenter.
-- **R226 amended (R-h):** `TargetReviewContext` gains `isUnpublished`; the three approved messages and the two distinct publish tooltips (rejected, no review) follow the ruling. The CMS and WB glue (Tasks 20 and 22) must supply `isUnpublished` (a revision that was published before and is not published now) in `init` and `setContext`; where an app cannot tell, pass `false` and the bar reads "Approved, ready to publish".
-- **Fixtures (R-c):** `createReview` and `createReviewWithFlags` are Task 8's (`src/review/testing/reviewFixtures.ts`, positional `createReviewWithFlags(review, flags)`), and the tests rely on its defaults listed under Consumes. This task adds only `createActor`, `createStep`, `createFlags`, `createWorkflow` and `TARGET` in their own files, plus the vitest fake `fakeReviewUseCases.ts`. Task 8 must move its fixtures back to `src/review/testing/` (it currently plans `__tests__/fixtures`). Everything stays in `src/review/testing/` and not in `__tests__/` because `tsconfig.build.json` has `rootDir: ./src` and a co-located test under `src` importing from `__tests__/` fails the build with TS6059 (verified).
-- **Additive view model fields.** The contract's `ITargetReviewViewModel` has no field for the bar's state tile or the current step's own tag, both required by README 6 and QBZ-52 (the rejecting step keeps its Rejected tag). `tile` (`TargetReviewTile`) and `stepStateTag` are added; every contract field keeps its name and type.
-- **Additive presenter method `setContext`.** The editors change `isPublished`, `isUnpublished` and `canRequest` while the presenter is open (publish, save state); `init` runs once per editor. `setContext({ targetTitle, canRequest, isPublished, isUnpublished })` updates them without a reload. `TargetReviewInitParams` extends `TargetReviewContext`.
-- **"Owner is viewer" comes from `flags.canApprove`.** The contract's dependencies (`[EventPublisher, ReviewActivity]`) hold no identity, and the client must not invent rights (D5, D54). Approving is owner-only on the server, so `canApprove` is the client's only truthful "the viewer owns this step" signal.
-- **The viewer's own teams (QBZ-25/53) are not available.** The message names all candidate teams joined ", " (R232 as ruled); QBZ-25's "the viewer's own teams joined with 'and'" needs viewer team ids, which the client does not have.
-- **A failed load publishes no event.** `ReviewChangedEvent` follows only settled successful loads; an unknown state must not overwrite the list cache (R213). The contract says "after every settled load"; failed loads are the one exception.
-- **Composition-root test:** the assertions extend Task 10's `app.test.tsx` (no duplicate wiring test). That file mocks `~/presentation/ContentReviews.js`; Task 37 deletes that module and must drop the mock.
-- **Barrel (R-k):** this task adds nothing to `src/index.tsx`; the app packages import deep paths (`@webiny/app-workflows/review/presentation/targetReview/...js`).
+- **Composition-root test:** the registration assertions extend Task 10's `app.test.tsx` (a container-style `describe("WorkflowsAdminApp review view")`, no new file), and Tasks 15-18 and 25-27 add their tokens there. The contract's Interfaces for Tasks 10, 13, 25 and 27 also name a `wiring.test.tsx` that no 8a.3/8a.5 task creates; Tasks 25 and 27 use `app.test.tsx` and say so. That file mocks `~/presentation/ContentReviews.js`; Task 37 deletes that module and must drop the mock.
+- **Viewer teams:** `IdentityContext` is not registered by the `app.test.tsx` container, so the test registers a stub (the presenter reads `getIdentity().teams` only when it builds its view model). A viewer who is a member of none of the step's candidate teams reads the full ", " list (R232); a viewer in several candidate teams reads them joined with " and ".
+- `getEditorRules` lets `isUnpublished` enable Publish only when there is no active review (`reviewKind: "none"`); an unpublished revision with an in-progress, rejected or approved review follows that review's rules. The server still refuses a revision that has no review and was published before the workflow existed (A89); the client enables Publish and the refusal surfaces as the error toast.
 - Size: large (sixteen source files, six test files, six fixture files), all small and pure except the presenter.

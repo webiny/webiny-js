@@ -1424,7 +1424,8 @@ export const ReassignDialog = createReactiveComponent(function ReassignDialog(
 Create `packages/app-workflows/src/review/presentation/actionDialog/components/ReassignDialogHost.tsx`:
 
 ```tsx
-import React, { useEffect } from "react";
+import React from "react";
+import { useEffect } from "react";
 import { useFeature } from "@webiny/app";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import { ReassignDialogPresenterFeature } from "../reassignFeature.js";
@@ -1554,21 +1555,15 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the reviewer picker and the reassign dialog" -m "The picker lists candidates over AutoComplete with client-side search, disabled Unavailable and Current owner entries and a retry on load failure. The reassign dialog loads the review and the step candidates through a private picker presenter, shows only Close when nobody is eligible, and reuses the shared action error classification." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the reviewer picker and the reassign dialog" -m "The picker lists candidates over AutoComplete with client-side search, disabled Unavailable and Current owner entries and a retry on load failure. The reassign dialog loads the review and the step candidates through a private picker presenter, shows only Close when nobody is eligible, and reuses the shared action error classification." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.
 
 ## Contract notes
 
-- **`ReviewerPickerFactory` (additive):** Task 17's request dialog needs one picker per pick step, and a constructor dependency is a single instance; `ReviewerPickerPresenterFeature` also registers `ReviewerPickerFactory` (`create()` returns a new transient picker presenter) so Task 17 injects the factory instead of the presenter token. The contract's dependency list `[ReviewerPickerPresenter, ReviewToasts]` for Task 17 becomes `[ReviewerPickerFactory, ReviewToasts]`.
-- **Additive picker view model field `eligibleCount`** (the contract VM has none): the reassign dialog needs "nobody eligible" without reading the search-filtered `options`.
-- **`ReassignDialogPresenter` view model** is not specified by the contract beyond "mirror Task 15's"; it carries `title`, `hint`, `message`, `nobodyEligible`, `confirmLabel`, `cancelLabel`, `canSubmit` and the shared error fields. Its abstraction lives in `reassignAbstractions.ts` and feature in `reassignFeature.ts` (one abstraction per file).
 - The reassign title `Reassign “{step}”`, the placeholder "Search reviewers by name" and the empty message come from the design prototype (`Content Review.dc.html`); the picker's own empty messages ("No reviewers to show.", `Nothing matches “{q}”.`) follow README 9.
 - Picker search does not use a server query (R209: candidates arrive unpaged), so the design's "Searching…" row only shows while the candidates load.
-- **`ReassignDialog.tsx` location:** the contract names `[AW]/review/presentation/actionDialog/{ReassignDialogPresenter,ReassignDialog.tsx}`; the component is under `actionDialog/components/` (with the other dialog components) and the presenter abstraction and feature are `reassignAbstractions.ts` and `reassignFeature.ts` (one abstraction per file, and `actionDialog/abstractions.ts` already holds the action dialog's).
 - **`ReviewerPickerFactory` closure:** `container.registerFactory(ReviewerPickerFactory, () => ({ create: () => container.resolve(...) }))` sits in the feature's `register`, the one place allowed to touch the container; no class holds it. No admin-package precedent for `registerFactory` was found (`packages/app` and `packages/app-admin` use `register` and `registerInstance`); `@webiny/di` documents `registerFactory` (README "Factory Registration") and `Container.registerFactory` exists in its typings.
-- **`ReviewActionDialogPresenter.ts` is not modified here:** Task 15 builds the toast per kind without a lookup table, so the `reassign` kind needs nothing there.
-- **Toasts (R-g) and no-access (R-i):** the reassign toast is the exact `reassigned` union member; `NotAuthorized` shows the shared `NO_ACCESS_MESSAGE`.
-- **Barrel (R-k):** nothing is added to `src/index.tsx`.
+- `ReviewActionDialogPresenter.ts` is not modified here: Task 15 builds the toast per kind without a lookup table, so the `reassign` kind needs nothing there.
 - Size: large (ten source files, four test files, six small modifications).

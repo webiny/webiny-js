@@ -2,7 +2,7 @@
 
 Spec 13.1 and 13.4 (client core); R202 (shared core in `app-workflows`, app-owned gateways), R204 (the gateway returns envelopes, the shared use cases throw), R213 (`REVIEW_SYSTEM_WORKFLOW_SELECTION`, `toSystemWorkflow`, `IReviewCacheWriter`), R218 (`allowManualPick`), R222 (test setup for a package without tests), R224 (`IReviewContentAdapter`), R234 (`ReviewListRow` is private presenter state); A75 (this task proves the test setup in `app-workflows`); Q7 (`candidateTeams`, selected in the fragments). Everything here is pure types, constants and pure functions. No DI token lives in `app-workflows` for the gateway or the use cases (R202): each app creates its own tokens in Tasks 11 and 12 over the interfaces defined here.
 
-- `packages/app-workflows` gets its first vitest setup (a copy of `packages/app-admin/vitest.config.ts`, jsdom) and `vitest` as a devDependency. Every test in 8a.3 is co-located (`*.test.ts` next to the file under test). `@webiny/di` and `@testing-library/react` are added in Task 10, the first task that imports them (see Contract notes).
+- `packages/app-workflows` gets its first vitest setup (a copy of `packages/app-admin/vitest.config.ts`, jsdom) and `vitest` as a devDependency. Every test in 8a.3 is co-located (`*.test.ts` next to the file under test). `@webiny/di` is added in Task 9 and `@testing-library/react` in Task 10, the first tasks that import them (see Contract notes).
 - `review/domain/` holds the enums (`ReviewState`, `StepState`), the list kind and sort unions, the error code table (`ReviewErrorCode`, mirror of `packages/api-workflows/src/domain/review/errors.ts`), the constants and the plain domain interfaces (`types.ts`). Three pure functions, one per file: `toReviewListRow`, `toSystemWorkflow` (mirror of `Review.getSystemWorkflow()` and `findCurrentStep()` in `packages/api-workflows/src/domain/review/Review.ts`: `null` for a cancelled or missing review, current step = the first step that is not approved, else the last step, review state derived from that step) and `isReviewSelectable` (true for no review state and for `approved`).
 - `review/gateway/` holds the DTO types of the shared `Workflows*` GraphQL types (`dto.ts`), the field fragments (`reviewFields.ts`), the four mappers (`mapReview`, `mapReviewWithFlags`, `mapWorkflow`, `mapStepCandidate`, one per file) and the gateway interface `IReviewGateway` with its parameter types. A gateway never throws for an envelope error and rejects only on a transport failure (R204).
 - `review/useCases/` holds the use-case interfaces only (`IReviewReadUseCases`, `IReviewActionUseCases`, `IReviewListUseCases`, `IReviewCancelForDeleteUseCases`, composite `IReviewUseCases`). Task 9 implements them once.
@@ -10,7 +10,7 @@ Spec 13.1 and 13.4 (client core); R202 (shared core in `app-workflows`, app-owne
 - `REVIEW_FIELDS` is list-safe (no `assignments`). Single reads add the assignment log with `steps { ${REVIEW_ASSIGNMENT_FIELDS} }`, which GraphQL merges into the same `steps` selection; `REVIEW_WITH_FLAGS_FIELDS` is the list-safe `review` plus `flags` selection and `REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS` is the single-read variant (so the two apps do not each compose the merge, R202).
 - `allowManualPick` mirrors `packages/api-workflows/src/domain/workflow/canPickReviewer.ts`: true only for a step of type `review` whose `config.assignment.allowManualPick === true`.
 - `WorkflowsWorkflow.models` (the namespaces a workflow binds) maps to `ReviewWorkflow.namespaces`; `WorkflowsReview.model` maps to `Review.namespace`; `WorkflowsReview.workflow.name` maps to `Review.workflowName`.
-- The test fixtures live in `packages/app-workflows/__tests__/fixtures/reviewFixtures.ts` (test-only helpers, later tasks import them as `~tests/fixtures/reviewFixtures.js`; under `__tests__`, not `src`, so they never ship in `dist`).
+- The test fixtures live in `packages/app-workflows/src/review/testing/reviewFixtures.ts` (R243; pure builders, no vitest, mobx or `@webiny/di`; later `app-workflows` tasks import them as `~/review/testing/reviewFixtures.js`, other packages as `@webiny/app-workflows/review/testing/reviewFixtures.js`). They ship in `dist` on purpose: a co-located test importing from `__tests__/` fails the build with TS6059 (`rootDir: ./src`). `createReview(overrides)` builds a domain review with the defaults of R243 (one awaiting step "Editorial check" `step-1`, no teams, title "Spring campaign", requester "Maja Kos") and `createReviewWithFlags(review, flags)` is positional.
 - The barrel `packages/app-workflows/src/index.tsx` is an explicit export list. This task adds its own exports (Task 9 and Task 10 add theirs, the union is the barrel list named in Task 10).
 
 **Files:**
@@ -20,12 +20,12 @@ Spec 13.1 and 13.4 (client core); R202 (shared core in `app-workflows`, app-owne
 - Create: `packages/app-workflows/src/review/gateway/dto.ts`, `reviewFields.ts`, `mapReview.ts`, `mapReviewWithFlags.ts`, `mapWorkflow.ts`, `mapStepCandidate.ts`, `IReviewGateway.ts`
 - Create: `packages/app-workflows/src/review/useCases/IReviewReadUseCases.ts`, `IReviewActionUseCases.ts`, `IReviewListUseCases.ts`, `IReviewCancelForDeleteUseCases.ts`, `IReviewUseCases.ts`
 - Create: `packages/app-workflows/src/review/content/IReviewContentAdapter.ts`, `packages/app-workflows/src/review/cache/IReviewCacheWriter.ts`
-- Create: `packages/app-workflows/__tests__/fixtures/reviewFixtures.ts`
+- Create: `packages/app-workflows/src/review/testing/reviewFixtures.ts`
 - Create tests: `packages/app-workflows/src/review/domain/isReviewSelectable.test.ts`, `toSystemWorkflow.test.ts`, `toReviewListRow.test.ts`; `packages/app-workflows/src/review/gateway/mapReview.test.ts`, `mapReviewWithFlags.test.ts`, `mapWorkflow.test.ts`, `mapStepCandidate.test.ts`; `packages/app-workflows/__tests__/reviewFields.test.ts` (in `__tests__` on purpose, see Contract notes)
 - Modify: `packages/app-workflows/src/index.tsx` (barrel additions)
 
 **Interfaces:**
-- Consumes: Task 1 (`WorkflowsReviewStep.candidateTeams { id name }`, selected in `REVIEW_FIELDS`; the fragment is text only, so this task does not need the API running). Existing, verified with codegraph: `packages/app-admin/vitest.config.ts` and `testing/createTestConfig.ts` (`createTestConfig`, `path`, `vitestConfig`), the server codes in `packages/api-workflows/src/domain/review/errors.ts`, `canPickReviewer.ts` (`REVIEW_STEP_TYPE = "review"` in `.../domain/workflow/stepTypes.ts`), `Review.getSystemWorkflow` (`.../domain/review/Review.ts`), the shared types in `packages/api-workflows/src/graphql/WorkflowsSchemaFactory.ts` (`WorkflowsReview`, `WorkflowsReviewStep`, `WorkflowsViewerFlags`, `WorkflowsWorkflow`, `WorkflowsStepCandidate`, `WorkflowsListMeta`, `WorkflowsError`).
+- Consumes: Task 1 (`WorkflowsReviewStep.candidateTeams { id name }`, selected in `REVIEW_FIELDS`), Task 5b (`WorkflowsAssignmentEntry.userDisplayName`, selected in `REVIEW_ASSIGNMENT_FIELDS`, R251) and Task 5c (`WorkflowsReview.cancelledBy`, selected in `REVIEW_FIELDS`, R252); the fragments are text only, so this task does not need the API running. Existing, verified with codegraph: `packages/app-admin/vitest.config.ts` and `testing/createTestConfig.ts` (`createTestConfig`, `path`, `vitestConfig`), the server codes in `packages/api-workflows/src/domain/review/errors.ts`, `canPickReviewer.ts` (`REVIEW_STEP_TYPE = "review"` in `.../domain/workflow/stepTypes.ts`), `Review.getSystemWorkflow` (`.../domain/review/Review.ts`), the shared types in `packages/api-workflows/src/graphql/WorkflowsSchemaFactory.ts` (`WorkflowsReview`, `WorkflowsReviewStep`, `WorkflowsViewerFlags`, `WorkflowsWorkflow`, `WorkflowsStepCandidate`, `WorkflowsListMeta`, `WorkflowsError`).
 - Produces (consumed by every later `app-workflows` task and the app packages):
   - `review/domain/`: `ReviewStateValue`, `ReviewState`, `StepStateValue`, `StepState`, `ReviewListKind`, `ReviewListSort`, `ReviewErrorCode`, `REVIEW_TITLE_MIN_LENGTH = 5`, `REJECT_COMMENT_MIN_LENGTH = 10`, `REVIEW_LIST_PAGE_SIZE = 20`, `REVIEW_WIDGET_PAGE_SIZE = 5`, `WORKFLOWS_NOTIFICATION_ACTION`, the interfaces of `types.ts` (exact names per the contract), `toReviewListRow`, `toSystemWorkflow`, `isReviewSelectable`.
   - `review/gateway/`: the DTO types of `dto.ts`, `REVIEW_FIELDS`, `REVIEW_ASSIGNMENT_FIELDS`, `REVIEW_WITH_FLAGS_FIELDS`, `REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS`, `WORKFLOW_FIELDS`, `STEP_CANDIDATE_FIELDS`, `ERROR_FIELDS`, `REVIEW_SYSTEM_WORKFLOW_SELECTION`, `mapReview`, `mapReviewWithFlags`, `mapWorkflow`, `mapStepCandidate`, `IReviewGateway` and its parameter types.
@@ -62,19 +62,19 @@ In `packages/app-workflows/package.json`, add `"vitest": "^4.1.11"` to `devDepen
   },
 ```
 
-Create the shared test fixtures `packages/app-workflows/__tests__/fixtures/reviewFixtures.ts` (test-only helpers; the tests below import them, so they exist before the tests run):
+Create the shared test fixtures `packages/app-workflows/src/review/testing/reviewFixtures.ts` (R243: pure data builders, no vitest, mobx or `@webiny/di` import; they live under `src`, not `__tests__`, because other packages import them as `@webiny/app-workflows/review/testing/reviewFixtures.js` and a co-located test importing from `__tests__/` fails the build with TS6059; the tests below import them as `~/review/testing/reviewFixtures.js`, so they exist before the tests run). The DTO builders serve the mapper tests; `createReview` and `createReviewWithFlags` build domain objects directly with the defaults every later task relies on (R243): one awaiting step "Editorial check" with id `step-1`, no teams, title "Spring campaign", id `review-1`, namespace `cms.article`, requester "Maja Kos".
 
 ```ts
-import type {
-    ReviewActorDto,
-    ReviewDto,
-    ReviewStepDto,
-    ReviewWithFlagsDto,
-    ViewerFlagsDto
-} from "~/review/gateway/dto.js";
-import type { Review, ReviewWithFlags } from "~/review/domain/types.js";
-import { mapReview } from "~/review/gateway/mapReview.js";
-import { mapReviewWithFlags } from "~/review/gateway/mapReviewWithFlags.js";
+import type { ReviewActorDto } from "~/review/gateway/dto.js";
+import type { ReviewDto } from "~/review/gateway/dto.js";
+import type { ReviewStepDto } from "~/review/gateway/dto.js";
+import type { ReviewWithFlagsDto } from "~/review/gateway/dto.js";
+import type { ViewerFlagsDto } from "~/review/gateway/dto.js";
+import type { Review } from "~/review/domain/types.js";
+import type { ReviewViewerFlags } from "~/review/domain/types.js";
+import type { ReviewWithFlags } from "~/review/domain/types.js";
+import { ReviewState } from "~/review/domain/ReviewState.js";
+import { StepState } from "~/review/domain/StepState.js";
 
 export const T0 = "2026-10-16T08:00:00.000Z";
 export const T1 = "2026-10-16T09:00:00.000Z";
@@ -162,6 +162,7 @@ export const createReviewDto = (overrides: Partial<ReviewDto> = {}): ReviewDto =
             })
         ],
         createdBy: createActorDto({ id: "user-2", displayName: "Grace Hopper" }),
+        cancelledBy: null,
         createdOn: T0,
         savedOn: T3,
         lastChangedOn: T3,
@@ -192,19 +193,90 @@ export const createReviewWithFlagsDto = (
     };
 };
 
+/**
+ * The domain review every later `app-workflows` test starts from (R243): one awaiting step
+ * "Editorial check" (`step-1`), no teams, title "Spring campaign", requester "Maja Kos".
+ */
 export const createReview = (overrides: Partial<Review> = {}): Review => {
-    return { ...mapReview(createReviewDto()), ...overrides };
+    return {
+        id: "review-1",
+        workflowId: "workflow-1",
+        namespace: "cms.article",
+        targetId: "entry-1",
+        targetRevisionId: "entry-1#0001",
+        title: "Spring campaign",
+        isActive: true,
+        state: ReviewState.InProgress,
+        currentStepId: "step-1",
+        currentStepType: "review",
+        currentOwnerId: null,
+        currentStepState: StepState.Awaiting,
+        currentCandidateTeamIds: [],
+        targetContext: {
+            folder: null,
+            modelId: "article",
+            title: "Spring campaign",
+            author: { id: "user-1", displayName: "Maja Kos" }
+        },
+        workflowName: "Content review",
+        steps: [
+            {
+                id: "step-1",
+                title: "Editorial check",
+                color: "#FA5723",
+                description: null,
+                type: "review",
+                state: StepState.Awaiting,
+                owner: null,
+                comment: null,
+                pickedUserId: null,
+                candidateTeamIds: [],
+                candidateTeams: [],
+                assignmentSource: null,
+                assignment: null,
+                reachedOn: null,
+                startedOn: null,
+                finishedOn: null,
+                taskId: null,
+                runs: [],
+                issues: [],
+                assignments: null
+            }
+        ],
+        createdBy: { type: "user", id: "user-1", displayName: "Maja Kos", identityType: null },
+        cancelledBy: null,
+        createdOn: T0,
+        savedOn: T1,
+        lastChangedOn: T1,
+        ...overrides
+    };
 };
 
-export const createReviewWithFlags = (overrides: Partial<ReviewWithFlags> = {}): ReviewWithFlags => {
-    return { ...mapReviewWithFlags(createReviewWithFlagsDto()), ...overrides };
+const NO_FLAGS: ReviewViewerFlags = {
+    canStart: false,
+    canTakeOver: false,
+    canApprove: false,
+    canReject: false,
+    canCancel: false,
+    canReassign: false,
+    canRestart: false
+};
+
+/** Positional (R243): the review first, then the flags; both default (all flags false). */
+export const createReviewWithFlags = (
+    review: Review = createReview(),
+    flags: ReviewViewerFlags = NO_FLAGS
+): ReviewWithFlags => {
+    return { review, flags };
 };
 ```
 
 Create `packages/app-workflows/src/review/domain/isReviewSelectable.test.ts`:
 
 ```ts
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { isReviewSelectable } from "./isReviewSelectable.js";
 import { ReviewState } from "./ReviewState.js";
 
@@ -228,11 +300,15 @@ describe("isReviewSelectable", () => {
 Create `packages/app-workflows/src/review/domain/toSystemWorkflow.test.ts`:
 
 ```ts
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { toSystemWorkflow } from "./toSystemWorkflow.js";
 import { ReviewState } from "./ReviewState.js";
 import { StepState } from "./StepState.js";
-import { createReview, createReviewDto, createStepDto } from "~tests/fixtures/reviewFixtures.js";
+import { createReview } from "~/review/testing/reviewFixtures.js";
+import { createReviewDto } from "~/review/testing/reviewFixtures.js";
+import { createStepDto } from "~/review/testing/reviewFixtures.js";
 import { mapReview } from "~/review/gateway/mapReview.js";
 
 describe("toSystemWorkflow", () => {
@@ -246,7 +322,7 @@ describe("toSystemWorkflow", () => {
         expect(toSystemWorkflow(review)).toEqual({
             workflowId: "workflow-1",
             reviewState: ReviewState.InProgress,
-            stepId: "step-2",
+            stepId: "step-1",
             stepName: "Editorial check",
             stepState: StepState.Awaiting
         });
@@ -315,7 +391,7 @@ describe("toSystemWorkflow", () => {
     });
 
     it("takes the first step that is not approved, whatever currentStepId says (server rule)", () => {
-        const review = createReview({ currentStepId: null, currentStepState: null });
+        const review = mapReview(createReviewDto({ currentStepId: null, currentStepState: null }));
 
         expect(toSystemWorkflow(review)).toEqual({
             workflowId: "workflow-1",
@@ -363,11 +439,18 @@ describe("toSystemWorkflow", () => {
 Create `packages/app-workflows/src/review/domain/toReviewListRow.test.ts`:
 
 ```ts
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { toReviewListRow } from "./toReviewListRow.js";
 import { ReviewState } from "./ReviewState.js";
 import { StepState } from "./StepState.js";
-import { createActorDto, createReviewDto, createReviewWithFlagsDto, createStepDto, createViewerFlagsDto, T3 } from "~tests/fixtures/reviewFixtures.js";
+import { createActorDto } from "~/review/testing/reviewFixtures.js";
+import { createReviewDto } from "~/review/testing/reviewFixtures.js";
+import { createReviewWithFlagsDto } from "~/review/testing/reviewFixtures.js";
+import { createStepDto } from "~/review/testing/reviewFixtures.js";
+import { createViewerFlagsDto } from "~/review/testing/reviewFixtures.js";
+import { T3 } from "~/review/testing/reviewFixtures.js";
 import { mapReviewWithFlags } from "~/review/gateway/mapReviewWithFlags.js";
 
 describe("toReviewListRow", () => {
@@ -467,18 +550,19 @@ describe("toReviewListRow", () => {
 Create `packages/app-workflows/src/review/gateway/mapReview.test.ts`:
 
 ```ts
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { mapReview } from "./mapReview.js";
+import type { ReviewDto } from "./dto.js";
 import type { ReviewStepDto } from "./dto.js";
-import {
-    createActorDto,
-    createReviewDto,
-    createStepDto,
-    T0,
-    T1,
-    T2,
-    T3
-} from "~tests/fixtures/reviewFixtures.js";
+import { createActorDto } from "~/review/testing/reviewFixtures.js";
+import { createReviewDto } from "~/review/testing/reviewFixtures.js";
+import { createStepDto } from "~/review/testing/reviewFixtures.js";
+import { T0 } from "~/review/testing/reviewFixtures.js";
+import { T1 } from "~/review/testing/reviewFixtures.js";
+import { T2 } from "~/review/testing/reviewFixtures.js";
+import { T3 } from "~/review/testing/reviewFixtures.js";
 
 describe("mapReview", () => {
     it("maps every field of a fully populated review", () => {
@@ -532,6 +616,7 @@ describe("mapReview", () => {
                     id: "assignment-1",
                     kind: "skip",
                     userId: "user-9",
+                    userDisplayName: "Pat Kim",
                     assignedOn: T1,
                     source: "strategy",
                     ruleId: "rule-2",
@@ -630,6 +715,7 @@ describe("mapReview", () => {
                             id: "assignment-1",
                             kind: "skip",
                             userId: "user-9",
+                            userDisplayName: "Pat Kim",
                             assignedOn: T1,
                             source: "strategy",
                             ruleId: "rule-2",
@@ -650,6 +736,7 @@ describe("mapReview", () => {
                 displayName: "Grace Hopper",
                 identityType: "admin"
             },
+            cancelledBy: null,
             createdOn: T0,
             savedOn: T3,
             lastChangedOn: T3
@@ -733,6 +820,63 @@ describe("mapReview", () => {
         expect(step.taskId).toBeNull();
     });
 
+    it("maps cancelledBy to an actor and an absent cancelledBy to null (R252)", () => {
+        const cancelled = mapReview(
+            createReviewDto({
+                state: "cancelled",
+                isActive: false,
+                cancelledBy: createActorDto({ id: "user-5", displayName: "Nina Cole" })
+            })
+        );
+        const running = mapReview(createReviewDto());
+        const withoutField = mapReview({
+            ...createReviewDto(),
+            cancelledBy: undefined as unknown as ReviewDto["cancelledBy"]
+        });
+
+        expect(cancelled.cancelledBy).toEqual({
+            type: "user",
+            id: "user-5",
+            displayName: "Nina Cole",
+            identityType: "admin"
+        });
+        expect(running.cancelledBy).toBeNull();
+        expect(withoutField.cancelledBy).toBeNull();
+    });
+
+    it("keeps the skipped person's display name and maps an absent one to null (R251)", () => {
+        const entry = {
+            id: "assignment-1",
+            kind: "skip" as const,
+            userId: "user-9",
+            assignedOn: T1,
+            source: "strategy",
+            ruleId: null,
+            by: null,
+            reason: "On leave."
+        };
+        const review = mapReview(
+            createReviewDto({
+                steps: [
+                    createStepDto({
+                        assignments: [
+                            { ...entry, userDisplayName: "Pat Kim" },
+                            {
+                                ...entry,
+                                id: "assignment-2",
+                                userDisplayName: undefined as unknown as string | null
+                            },
+                            { ...entry, id: "assignment-3", userDisplayName: null }
+                        ]
+                    })
+                ]
+            })
+        );
+
+        const names = review.steps[0].assignments?.map(item => item.userDisplayName);
+        expect(names).toEqual(["Pat Kim", null, null]);
+    });
+
     it("maps absent assignments (a list selection) to null and an empty log to an empty array", () => {
         const onList = mapReview(createReviewDto({ steps: [createStepDto()] }));
         const onSingle = mapReview(createReviewDto({ steps: [createStepDto({ assignments: [] })] }));
@@ -753,13 +897,13 @@ describe("mapReview", () => {
 Create `packages/app-workflows/src/review/gateway/mapReviewWithFlags.test.ts`:
 
 ```ts
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { mapReviewWithFlags } from "./mapReviewWithFlags.js";
-import {
-    createReviewDto,
-    createReviewWithFlagsDto,
-    createViewerFlagsDto
-} from "~tests/fixtures/reviewFixtures.js";
+import { createReviewDto } from "~/review/testing/reviewFixtures.js";
+import { createReviewWithFlagsDto } from "~/review/testing/reviewFixtures.js";
+import { createViewerFlagsDto } from "~/review/testing/reviewFixtures.js";
 
 describe("mapReviewWithFlags", () => {
     it("maps the review and keeps every viewer flag", () => {
@@ -796,9 +940,12 @@ describe("mapReviewWithFlags", () => {
 Create `packages/app-workflows/src/review/gateway/mapWorkflow.test.ts`:
 
 ```ts
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { mapWorkflow } from "./mapWorkflow.js";
-import type { WorkflowDto, WorkflowStepDto } from "./dto.js";
+import type { WorkflowDto } from "./dto.js";
+import type { WorkflowStepDto } from "./dto.js";
 
 const createStep = (overrides: Partial<WorkflowStepDto> = {}): WorkflowStepDto => {
     return {
@@ -839,10 +986,47 @@ describe("mapWorkflow", () => {
                     color: "#2f80ed",
                     description: "Check the copy.",
                     type: "review",
-                    allowManualPick: false
+                    allowManualPick: false,
+                    assignedAutomatically: false
                 }
             ]
         });
+    });
+
+    it("sets assignedAutomatically for a review step whose strategy is not none (R246)", () => {
+        const workflow = mapWorkflow(
+            createWorkflow([
+                createStep({ id: "a", config: { assignment: { strategy: "none" } } }),
+                createStep({ id: "b", config: { assignment: { strategy: "roundRobin" } } }),
+                createStep({ id: "c", config: { assignment: { strategy: "leastLoaded" } } })
+            ])
+        );
+
+        expect(workflow.steps.map(step => step.assignedAutomatically)).toEqual([
+            false,
+            true,
+            true
+        ]);
+    });
+
+    it("leaves assignedAutomatically false when the config or the strategy is absent or unreadable", () => {
+        const workflow = mapWorkflow(
+            createWorkflow([
+                createStep({ id: "a", config: null }),
+                createStep({ id: "b", config: {} }),
+                createStep({ id: "c", config: { assignment: null } }),
+                createStep({ id: "d", config: { assignment: {} } }),
+                createStep({ id: "e", config: { assignment: { strategy: 1 } } })
+            ])
+        );
+
+        expect(workflow.steps.map(step => step.assignedAutomatically)).toEqual([
+            false,
+            false,
+            false,
+            false,
+            false
+        ]);
     });
 
     it("sets allowManualPick for a review step that allows it", () => {
@@ -885,12 +1069,13 @@ describe("mapWorkflow", () => {
             createWorkflow([
                 createStep({
                     type: "ai",
-                    config: { assignment: { allowManualPick: true } }
+                    config: { assignment: { allowManualPick: true, strategy: "roundRobin" } }
                 })
             ])
         );
 
         expect(workflow.steps[0].allowManualPick).toBe(false);
+        expect(workflow.steps[0].assignedAutomatically).toBe(false);
     });
 
     it("maps an absent description to null", () => {
@@ -904,7 +1089,9 @@ describe("mapWorkflow", () => {
 Create `packages/app-workflows/src/review/gateway/mapStepCandidate.test.ts`:
 
 ```ts
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { mapStepCandidate } from "./mapStepCandidate.js";
 
 describe("mapStepCandidate", () => {
@@ -953,17 +1140,17 @@ describe("mapStepCandidate", () => {
 Create `packages/app-workflows/__tests__/reviewFields.test.ts` (the one test under `__tests__`: `scripts/typecheckTests/getPackagesWithTests.ts` lists a package for `yarn check:test:types` only when `__tests__/` holds a `*.test.ts`, and the check then covers the co-located tests too, since `tsconfig.json` includes `src`):
 
 ```ts
-import { describe, it, expect } from "vitest";
-import {
-    ERROR_FIELDS,
-    REVIEW_ASSIGNMENT_FIELDS,
-    REVIEW_FIELDS,
-    REVIEW_SYSTEM_WORKFLOW_SELECTION,
-    REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS,
-    REVIEW_WITH_FLAGS_FIELDS,
-    STEP_CANDIDATE_FIELDS,
-    WORKFLOW_FIELDS
-} from "~/review/gateway/reviewFields.js";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { ERROR_FIELDS } from "~/review/gateway/reviewFields.js";
+import { REVIEW_ASSIGNMENT_FIELDS } from "~/review/gateway/reviewFields.js";
+import { REVIEW_FIELDS } from "~/review/gateway/reviewFields.js";
+import { REVIEW_SYSTEM_WORKFLOW_SELECTION } from "~/review/gateway/reviewFields.js";
+import { REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS } from "~/review/gateway/reviewFields.js";
+import { REVIEW_WITH_FLAGS_FIELDS } from "~/review/gateway/reviewFields.js";
+import { STEP_CANDIDATE_FIELDS } from "~/review/gateway/reviewFields.js";
+import { WORKFLOW_FIELDS } from "~/review/gateway/reviewFields.js";
 
 const isBalanced = (selection: string): boolean => {
     let depth = 0;
@@ -1011,6 +1198,13 @@ describe("reviewFields", () => {
     it("selects the team names with the team ids (Q7)", () => {
         expect(REVIEW_FIELDS).toContain("candidateTeamIds");
         expect(REVIEW_FIELDS).toMatch(/candidateTeams\s*\{\s*id\s+name\s*\}/);
+    });
+
+    it("selects who cancelled the review and the skipped person's name (R251, R252)", () => {
+        expect(REVIEW_FIELDS).toMatch(/cancelledBy\s*\{[^}]*\bid\b[^}]*\bdisplayName\b[^}]*\}/);
+        expect(words(REVIEW_ASSIGNMENT_FIELDS)).toContain("userDisplayName");
+        expect(REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS).toContain("userDisplayName");
+        expect(REVIEW_WITH_FLAGS_FIELDS).not.toContain("userDisplayName");
     });
 
     it("selects the run, issue and task fields the mapper reads", () => {
@@ -1195,6 +1389,7 @@ export interface ReviewAssignmentEntry {
     id: string;
     kind: "outcome" | "skip";
     userId: string | null;
+    userDisplayName: string | null;
     assignedOn: string;
     source: string;
     ruleId: string | null;
@@ -1280,6 +1475,7 @@ export interface Review {
     workflowName: string;
     steps: ReviewStep[];
     createdBy: ReviewActor;
+    cancelledBy: ReviewActor | null;
     createdOn: string;
     savedOn: string;
     lastChangedOn: string;
@@ -1307,6 +1503,7 @@ export interface ReviewWorkflowStep {
     description: string | null;
     type: string;
     allowManualPick: boolean;
+    assignedAutomatically: boolean;
 }
 
 export interface ReviewWorkflow {
@@ -1384,7 +1581,8 @@ export interface SystemWorkflowValue {
 `domain/isReviewSelectable.ts`:
 
 ```ts
-import { ReviewState, type ReviewStateValue } from "./ReviewState.js";
+import { ReviewState } from "./ReviewState.js";
+import type { ReviewStateValue } from "./ReviewState.js";
 
 /**
  * Whether a content row may be selected for an action that review blocks (move, schedule): only an
@@ -1398,9 +1596,12 @@ export const isReviewSelectable = (state: ReviewStateValue | null): boolean => {
 `domain/toSystemWorkflow.ts`:
 
 ```ts
-import { ReviewState, type ReviewStateValue } from "./ReviewState.js";
-import { StepState, type StepStateValue } from "./StepState.js";
-import type { Review, SystemWorkflowValue } from "./types.js";
+import { ReviewState } from "./ReviewState.js";
+import type { ReviewStateValue } from "./ReviewState.js";
+import { StepState } from "./StepState.js";
+import type { StepStateValue } from "./StepState.js";
+import type { Review } from "./types.js";
+import type { SystemWorkflowValue } from "./types.js";
 
 const deriveReviewState = (stepState: StepStateValue): ReviewStateValue => {
     if (stepState === StepState.Rejected) {
@@ -1439,7 +1640,8 @@ export const toSystemWorkflow = (review: Review | null): SystemWorkflowValue | n
 `domain/toReviewListRow.ts`:
 
 ```ts
-import type { ReviewListRow, ReviewWithFlags } from "./types.js";
+import type { ReviewListRow } from "./types.js";
+import type { ReviewWithFlags } from "./types.js";
 
 /** One list item as an app-neutral row (R206): the namespace stays on the row. */
 export const toReviewListRow = (item: ReviewWithFlags): ReviewListRow => {
@@ -1467,7 +1669,8 @@ export const toReviewListRow = (item: ReviewWithFlags): ReviewListRow => {
 `gateway/dto.ts`:
 
 ```ts
-import type { ReviewActorType, ReviewListMeta } from "~/review/domain/types.js";
+import type { ReviewActorType } from "~/review/domain/types.js";
+import type { ReviewListMeta } from "~/review/domain/types.js";
 import type { ReviewStateValue } from "~/review/domain/ReviewState.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
 
@@ -1489,6 +1692,7 @@ export interface ReviewAssignmentEntryDto {
     id: string;
     kind: "outcome" | "skip";
     userId: string | null;
+    userDisplayName: string | null;
     assignedOn: string;
     source: string;
     ruleId: string | null;
@@ -1580,6 +1784,7 @@ export interface ReviewDto {
     workflow: ReviewWorkflowRefDto;
     steps: ReviewStepDto[];
     createdBy: ReviewActorDto;
+    cancelledBy: ReviewActorDto | null;
     createdOn: string;
     savedOn: string;
     lastChangedOn: string;
@@ -1736,6 +1941,9 @@ export const REVIEW_FIELDS = /* GraphQL */ `
     createdBy {
         ${ACTOR_FIELDS}
     }
+    cancelledBy {
+        ${ACTOR_FIELDS}
+    }
     createdOn
     savedOn
     lastChangedOn
@@ -1751,6 +1959,7 @@ export const REVIEW_ASSIGNMENT_FIELDS = /* GraphQL */ `
         id
         kind
         userId
+        userDisplayName
         assignedOn
         source
         ruleId
@@ -1824,20 +2033,16 @@ Note: `~/features/graphqlFields.ts` (the old file, deleted in Task 37) exports `
 `gateway/mapReview.ts`:
 
 ```ts
-import type {
-    ReviewActorDto,
-    ReviewAssignmentEntryDto,
-    ReviewDto,
-    ReviewStepAssignmentDto,
-    ReviewStepDto
-} from "./dto.js";
-import type {
-    Review,
-    ReviewActor,
-    ReviewAssignmentEntry,
-    ReviewStep,
-    ReviewStepAssignment
-} from "~/review/domain/types.js";
+import type { ReviewActorDto } from "./dto.js";
+import type { ReviewAssignmentEntryDto } from "./dto.js";
+import type { ReviewDto } from "./dto.js";
+import type { ReviewStepAssignmentDto } from "./dto.js";
+import type { ReviewStepDto } from "./dto.js";
+import type { Review } from "~/review/domain/types.js";
+import type { ReviewActor } from "~/review/domain/types.js";
+import type { ReviewAssignmentEntry } from "~/review/domain/types.js";
+import type { ReviewStep } from "~/review/domain/types.js";
+import type { ReviewStepAssignment } from "~/review/domain/types.js";
 
 const mapActor = (dto: ReviewActorDto): ReviewActor => {
     return {
@@ -1869,6 +2074,7 @@ const mapAssignmentEntry = (dto: ReviewAssignmentEntryDto): ReviewAssignmentEntr
         id: dto.id,
         kind: dto.kind,
         userId: dto.userId ?? null,
+        userDisplayName: dto.userDisplayName ?? null,
         assignedOn: dto.assignedOn,
         source: dto.source,
         ruleId: dto.ruleId ?? null,
@@ -1945,6 +2151,7 @@ export const mapReview = (dto: ReviewDto): Review => {
         workflowName: dto.workflow.name,
         steps: dto.steps.map(mapStep),
         createdBy: mapActor(dto.createdBy),
+        cancelledBy: mapOptionalActor(dto.cancelledBy),
         createdOn: dto.createdOn,
         savedOn: dto.savedOn,
         lastChangedOn: dto.lastChangedOn
@@ -1978,27 +2185,49 @@ export const mapReviewWithFlags = (dto: ReviewWithFlagsDto): ReviewWithFlags => 
 `gateway/mapWorkflow.ts`:
 
 ```ts
-import type { WorkflowDto, WorkflowStepDto } from "./dto.js";
-import type { ReviewWorkflow, ReviewWorkflowStep } from "~/review/domain/types.js";
+import type { WorkflowDto } from "./dto.js";
+import type { WorkflowStepDto } from "./dto.js";
+import type { ReviewWorkflow } from "~/review/domain/types.js";
+import type { ReviewWorkflowStep } from "~/review/domain/types.js";
 
 const REVIEW_STEP_TYPE = "review";
+
+const readAssignment = (type: string, config: unknown): object | null => {
+    if (type !== REVIEW_STEP_TYPE) {
+        return null;
+    }
+    if (typeof config !== "object" || config === null || !("assignment" in config)) {
+        return null;
+    }
+    const assignment = config.assignment;
+    if (typeof assignment !== "object" || assignment === null) {
+        return null;
+    }
+    return assignment;
+};
 
 /**
  * Mirror of `canPickReviewer` in api-workflows: a manual pick is possible for a review step whose
  * config sets `assignment.allowManualPick` to `true` (R218).
  */
 const readAllowManualPick = (type: string, config: unknown): boolean => {
-    if (type !== REVIEW_STEP_TYPE) {
-        return false;
-    }
-    if (typeof config !== "object" || config === null || !("assignment" in config)) {
-        return false;
-    }
-    const assignment = config.assignment;
-    if (typeof assignment !== "object" || assignment === null || !("allowManualPick" in assignment)) {
+    const assignment = readAssignment(type, config);
+    if (!assignment || !("allowManualPick" in assignment)) {
         return false;
     }
     return assignment.allowManualPick === true;
+};
+
+/**
+ * A review step whose `assignment.strategy` is anything but `none` (`roundRobin`, `leastLoaded`)
+ * picks its reviewer itself (R246); a missing or unreadable config is not automatic.
+ */
+const readAssignedAutomatically = (type: string, config: unknown): boolean => {
+    const assignment = readAssignment(type, config);
+    if (!assignment || !("strategy" in assignment)) {
+        return false;
+    }
+    return typeof assignment.strategy === "string" && assignment.strategy !== "none";
 };
 
 const mapStep = (dto: WorkflowStepDto): ReviewWorkflowStep => {
@@ -2008,7 +2237,8 @@ const mapStep = (dto: WorkflowStepDto): ReviewWorkflowStep => {
         color: dto.color,
         description: dto.description ?? null,
         type: dto.type,
-        allowManualPick: readAllowManualPick(dto.type, dto.config)
+        allowManualPick: readAllowManualPick(dto.type, dto.config),
+        assignedAutomatically: readAssignedAutomatically(dto.type, dto.config)
     };
 };
 
@@ -2042,15 +2272,14 @@ export const mapStepCandidate = (dto: StepCandidateDto): StepCandidate => {
 `gateway/IReviewGateway.ts`:
 
 ```ts
-import type {
-    ReviewEnvelope,
-    ReviewDto,
-    ReviewListEnvelope,
-    ReviewWithFlagsDto,
-    StepCandidateDto,
-    WorkflowDto
-} from "./dto.js";
-import type { ReviewForDeleteAction, ReviewTarget } from "~/review/domain/types.js";
+import type { ReviewEnvelope } from "./dto.js";
+import type { ReviewDto } from "./dto.js";
+import type { ReviewListEnvelope } from "./dto.js";
+import type { ReviewWithFlagsDto } from "./dto.js";
+import type { StepCandidateDto } from "./dto.js";
+import type { WorkflowDto } from "./dto.js";
+import type { ReviewForDeleteAction } from "~/review/domain/types.js";
+import type { ReviewTarget } from "~/review/domain/types.js";
 import type { ReviewListKind } from "~/review/domain/ReviewListKind.js";
 import type { ReviewListSort } from "~/review/domain/ReviewListSort.js";
 import type { ReviewStateValue } from "~/review/domain/ReviewState.js";
@@ -2154,16 +2383,12 @@ export interface IReviewGateway {
 `useCases/IReviewReadUseCases.ts`:
 
 ```ts
-import type {
-    ListReviewStepCandidatesParams,
-    ListStepCandidatesParams
-} from "~/review/gateway/IReviewGateway.js";
-import type {
-    ReviewTarget,
-    ReviewWithFlags,
-    ReviewWorkflow,
-    StepCandidate
-} from "~/review/domain/types.js";
+import type { ListReviewStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
+import type { ListStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
+import type { ReviewTarget } from "~/review/domain/types.js";
+import type { ReviewWithFlags } from "~/review/domain/types.js";
+import type { ReviewWorkflow } from "~/review/domain/types.js";
+import type { StepCandidate } from "~/review/domain/types.js";
 
 export interface IReviewReadUseCases {
     getBoundWorkflow(namespace: string): Promise<ReviewWorkflow | null>;
@@ -2177,15 +2402,13 @@ export interface IReviewReadUseCases {
 `useCases/IReviewActionUseCases.ts`:
 
 ```ts
-import type {
-    ApproveReviewParams,
-    CancelReviewParams,
-    ReassignReviewParams,
-    RejectReviewParams,
-    RequestReviewParams,
-    ReviewStepRef,
-    TakeOverReviewParams
-} from "~/review/gateway/IReviewGateway.js";
+import type { ApproveReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { CancelReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { ReassignReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { RejectReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { RequestReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { ReviewStepRef } from "~/review/gateway/IReviewGateway.js";
+import type { TakeOverReviewParams } from "~/review/gateway/IReviewGateway.js";
 import type { Review } from "~/review/domain/types.js";
 
 export interface IReviewActionUseCases {
@@ -2203,7 +2426,8 @@ export interface IReviewActionUseCases {
 
 ```ts
 import type { ListReviewsParams } from "~/review/gateway/IReviewGateway.js";
-import type { ReviewListMeta, ReviewWithFlags } from "~/review/domain/types.js";
+import type { ReviewListMeta } from "~/review/domain/types.js";
+import type { ReviewWithFlags } from "~/review/domain/types.js";
 
 export interface ReviewListPage {
     items: ReviewWithFlags[];
@@ -2415,7 +2639,7 @@ yarn check:test:types -p app-workflows --report cli 2>&1 | tail -40
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 
-Expected: no type errors (in particular, `mapWorkflow.ts` narrows `config` with `in` checks and needs no cast, and the `ReviewActorDto.type` union flows into `ReviewActor`); the package builds.
+Expected: no type errors from the script (it only reports `__tests__/`, here `reviewFields.test.ts`) and none from the build, which type-checks the co-located tests and the fixtures (in particular, `mapWorkflow.ts` narrows `config` with `in` checks and needs no cast, and the `ReviewActorDto.type` union flows into `ReviewActor`); the package builds.
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -2431,7 +2655,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the review domain, DTOs, fragments, mappers and gateway interfaces" -m "Adds the vitest setup of app-workflows (A75: runner starts, co-located tests discovered), the review domain types, the shared Workflows DTOs and field fragments (candidateTeams selected), the review, workflow and candidate mappers, toSystemWorkflow, toReviewListRow, isReviewSelectable, and the gateway, use-case, content adapter and cache writer interfaces." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the review domain, DTOs, fragments, mappers and gateway interfaces" -m "Adds the vitest setup of app-workflows (A75: runner starts, co-located tests discovered), the review domain types, the shared Workflows DTOs and field fragments (candidateTeams, userDisplayName and cancelledBy selected), the review, workflow and candidate mappers (with assignedAutomatically, userDisplayName and cancelledBy), toSystemWorkflow, toReviewListRow, isReviewSelectable, and the gateway, use-case, content adapter and cache writer interfaces." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If any step fails and you fix something, rerun the chain from the top. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`. Never push or amend.
@@ -2440,9 +2664,10 @@ If any step fails and you fix something, rerun the chain from the top. Never com
 
 - `@webiny/di` (dependency) is added in Task 9, the first task whose test imports it (`yarn adio` flags a used but undeclared dependency); `@testing-library/react` (devDependency) is added in Task 10, where the first component test needs it. Neither is needed by Task 8.
 - Barrel: the contract says Task 8 modifies `index.tsx` with "additions named in Task 10". Each task here adds its own exports (Task 8 the domain, DTO, mapper, field, interface exports above; Task 9 `ReviewUseCases`; Task 10 the services), so every commit builds with an honest barrel; the union equals the Task 10 list. The generic `ERROR_FIELDS`, `WORKFLOW_FIELDS` and `STEP_CANDIDATE_FIELDS` are not on the barrel; the app packages import `app-workflows` through deep paths contract-wide, so the barrel carries only what is imported through it.
-- Added beyond the contract (names the contract does not give, all additive): `ReviewActorType`, `ReviewForDeleteAction`, `ReviewTargetFolder`, `ReviewTargetAuthor` (aliases for repeated unions and inline objects), the DTO helper interfaces (`ReviewActorDto`, `ReviewStepAssignmentDto`, `ReviewAssignmentEntryDto`, `ReviewStepRunDto`, `ReviewAiIssueDto`, `ReviewCandidateTeamDto`, `ReviewTargetContextDto`, `ReviewWorkflowRefDto`, `ViewerFlagsDto`, `WorkflowStepDto`), `REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS` (the single-read selection, so the two apps do not each compose the `steps` merge), `ReviewListMeta` (a domain type in `types.ts`, used by the DTO envelope and the list use case), and the test helper module `__tests__/fixtures/reviewFixtures.ts`.
+- Added beyond the contract (names the contract does not give, all additive): `ReviewActorType`, `ReviewForDeleteAction`, `ReviewTargetFolder`, `ReviewTargetAuthor` (aliases for repeated unions and inline objects), the DTO helper interfaces (`ReviewActorDto`, `ReviewStepAssignmentDto`, `ReviewAssignmentEntryDto`, `ReviewStepRunDto`, `ReviewAiIssueDto`, `ReviewCandidateTeamDto`, `ReviewTargetContextDto`, `ReviewWorkflowRefDto`, `ViewerFlagsDto`, `WorkflowStepDto`), `REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS` (the single-read selection, so the two apps do not each compose the `steps` merge), `ReviewListMeta` (a domain type in `types.ts`, used by the DTO envelope and the list use case), `ReviewAssignmentEntry.assignedOn` (the shared type has it; the contract's list omits it), and the test helper module `src/review/testing/reviewFixtures.ts`.
 - Nullability: the contract writes `reachedOn; startedOn; finishedOn: string | null`; the shared schema has all three nullable (`reachedOn: DateTime`, `startedOn: DateTime`, `finishedOn: DateTime` without `!`), so all three are `string | null`.
 - `ReviewListKind` and `ReviewListSort` are plain string-union types (the contract lists only their values), `ReviewState` and `StepState` are const objects with a `...Value` type as the contract names.
-- `WorkflowsWorkflow` exposes `models`, not `namespaces`; the mapper renames it. `WorkflowDto.config` is JSON (`unknown`) and only `assignment.allowManualPick` of a `review` step is read.
-- `yarn check:test:types -p app-workflows` only lists packages with a `__tests__/**/*.test.ts` file (`scripts/utils/getPackages.js` `hasTests`), so co-located tests alone would give "No matching packages found". `reviewFields.test.ts` therefore lives in `packages/app-workflows/__tests__/`; the type check then covers every co-located test as well. Task 10's flag test could live there too, but stays co-located with `app.tsx`.
+- `WorkflowsWorkflow` exposes `models`, not `namespaces`; the mapper renames it. `WorkflowDto.config` is JSON (`unknown`) and only `assignment.allowManualPick` and `assignment.strategy` of a `review` step are read; `assignedAutomatically` is true only for a string strategy other than `none` (a missing or unreadable config is not automatic, R246).
+- `yarn check:test:types -p app-workflows` only lists packages with a `__tests__/**/*.test.ts` file (`scripts/utils/getPackages.js` `hasTests`), so co-located tests alone would give "No matching packages found". `reviewFields.test.ts` therefore lives in `packages/app-workflows/__tests__/` (R243). The script keeps only errors inside `__tests__/` (`scripts/typecheckTests/typecheckPackage.ts`), so for the co-located tests the type check is `yarn build -p @webiny/app-workflows --no-cache` (R-e, Global Constraints), which also covers the fixtures. The fixtures live in `src/review/testing/` and not in `__tests__/` (TS6059, R243), so the build type-checks them.
+- The `cancelledBy` selection reuses the full actor fragment (`type id displayName identityType`, a superset of the contract's `cancelledBy { id displayName }`) so the mapper returns a complete `ReviewActor` for `Review.cancelledBy`.
 - Size: large (about 40 files) but all pure and mechanical; one test cycle, one review gate.

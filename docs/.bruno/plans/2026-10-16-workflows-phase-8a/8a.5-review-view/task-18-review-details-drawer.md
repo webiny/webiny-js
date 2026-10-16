@@ -5,10 +5,10 @@ R202, R203, R212, R216, R221, R225, R234, R-c, R-e, R-i, R-k, R-l; D5, D54, D88,
 - **Why this owner** (design prototype): `picked` "Picked by requester"; `rule` "Assigned by a routing rule" (a rule id is not a name); `roundRobin` "Round-robin"; `leastLoaded` "Least-loaded"; `pool` the server's `reason` when present, else "Sent to team pool"; `poolStart` "Started from team pool"; `takeOver` "Taken over by {name}"; `reassign` "Reassigned by {name}". **Hidden** for AI and automation owners (R216, QBZ-63) and for steps without an assignment.
 - **Times** (QBZ-54): "Reached 6 Oct, 10:41 · started 11:05 · finished 11:20", the date written once when start and finish fall on the day of "reached"; not shown for a step that was not reached.
 - **Comment:** `{Name}: “…”` (AI and automation owners by the step title, QBZ-79); a rejected step without a comment shows "Rejected at {step}." in its place (R216, the QBZ-83 "by" is dropped as ruled in Task 13).
-- **Skipped** entries (`assignments` of kind `skip`, present only for viewers who may see them, D89): `{ name, reason }` per step, the reason as received; the lead is the neutral "A person" (an entry carries a user id and no name, and a raw id is not shown, see Contract notes).
+- **Skipped** entries (`assignments` of kind `skip`, present only for viewers who may see them, D89): `{ name, reason }` per step, the reason as received, each line rendered "{Name}: {reason}" where `name` is the entry's `userDisplayName` (resolved server-side, Task 5b, R251) and, while the name is `null` or blank, the exported neutral constant `SKIPPED_PERSON_LABEL = "A person"`; a raw user id is never shown.
 - **Hover (QBZ-54):** the requested time and the step's Times line carry a `title` with the full date and time with timezone (`formatReviewTimeFull`, `getStepTimesTitle`).
 - **After an action in the drawer:** `actionDone` reads the review's namespace before the refresh (a failed refresh clears the review), refreshes, then always signals `ReviewActivity` (when a namespace was known) and calls `onChanged`.
-- **States:** loading "Loading review…" with three skeleton rows; failed "Could not load review details" / "The server did not respond. Try again in a moment." with Try again; no access the shared `NO_ACCESS_MESSAGE` (R-i); a cancelled review shows its header and "Someone cancelled this review at {time}. The revision has no review now; a new request starts again from the first step." and no timeline (QBZ-1).
+- **States:** loading "Loading review…" with three skeleton rows; failed "Could not load review details" / "The server did not respond. Try again in a moment." with Try again; no access the shared `NO_ACCESS_MESSAGE` (R-i); a cancelled review shows its header and "{Name} cancelled this review at {time}. The revision has no review now; a new request starts again from the first step." (`{Name}` is `review.cancelledBy.displayName`, R252; "Someone cancelled this review at {time}. ..." while `cancelledBy` is `null`) and no timeline (QBZ-1).
 
 **Files:**
 - Create: `packages/app-workflows/src/review/presentation/reviewDetails/abstractions.ts`
@@ -28,8 +28,8 @@ R202, R203, R212, R216, R221, R225, R234, R-c, R-e, R-i, R-k, R-l; D5, D54, D88,
 - Modify: `packages/app-workflows/src/app.tsx`
 
 **Interfaces:**
-- Consumes: Task 13 (`getReviewActions`, `getStepOwnerLabel`, `getStepStateTag`, `getReviewStateTag`, `getRejectionText`, `NO_ACCESS_MESSAGE`, `TargetReviewActionVm`, `TargetReviewTagVariant`, `TargetReviewOpenAction`), Task 15 (`ReviewActionDialogs`, `toActionRequest`, `formatReviewTime`, `classifyReviewActionError`, `renderWithContainer`), Task 17 (`getStepTypeLabel`), Task 10 (`ReviewActivity`), Task 8 (`Review`, `ReviewStep`, `ReviewWithFlags`, `ReviewAssignmentEntry`, `IReviewUseCases.getReview`, `createReview`/`createReviewWithFlags` from `reviewFixtures.js`), Task 6. Existing (verified): admin-ui `Drawer` (`open`, `onClose`, `title`, `actions`, `size`), `Button`, `Tag`, `Skeleton`, `Alert`, `Text`.
-- Produces: `ReviewDetailsInitParams { useCases; reviewId; reviewsUrl; onClose; onChanged? }`; `IReviewDetailsViewModel` (below); presenter `{ vm; init; refresh(); openAction(kind, stepId); closeAction(); dispose() }`; token `ReviewDetailsPresenter` (`"Workflows/ReviewDetailsPresenter"`, transient, dependencies `[ReviewActivity]`); `ReviewDetailsPresenterFeature`; `ReviewDetailsDrawer` props `{ useCases; reviewId; reviewsUrl; onClose; onChanged? }`. Consumed by Tasks 19, 26.
+- Consumes: Task 13 (`getReviewActions`, `getStepOwnerLabel`, `getStepStateTag`, `getReviewStateTag`, `getRejectionText`, `NO_ACCESS_MESSAGE`, `TargetReviewActionVm`, `TargetReviewTagVariant`, `TargetReviewOpenAction`), Task 15 (`ReviewActionDialogs`, `toActionRequest`, `formatReviewTime`, `classifyReviewActionError`, `renderWithContainer`), Task 17 (`getStepTypeLabel`), Task 10 (`ReviewActivity`), Task 8 (`Review` incl. `cancelledBy` (Task 5c, R252), `ReviewStep`, `ReviewWithFlags`, `ReviewAssignmentEntry` incl. `userDisplayName` (Task 5b, R251), `IReviewUseCases.getReview`, `createReview`/`createReviewWithFlags` from `~/review/testing/reviewFixtures.js`), Task 6. Existing (verified): admin-ui `Drawer` (`open`, `onClose`, `title`, `actions`, `size`), `Button`, `Tag`, `Skeleton`, `Alert`, `Text`.
+- Produces: `ReviewDetailsInitParams { useCases; reviewId; reviewsUrl; onClose; onChanged? }`; `IReviewDetailsViewModel` (below); presenter `{ vm; init; refresh(); actionDone(); openAction(kind, stepId); closeAction(); dispose() }`; token `ReviewDetailsPresenter` (`"Workflows/ReviewDetailsPresenter"`, transient, dependencies `[ReviewActivity]`); `ReviewDetailsPresenterFeature`; `ReviewDetailsDrawer` props `{ useCases; reviewId; reviewsUrl; onClose; onChanged? }`. Consumed by Tasks 19, 26.
 
 **Test runner note:** admin package, `yarn test <path>` only.
 
@@ -42,6 +42,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { buildReviewDetailsViewModel } from "./buildReviewDetailsViewModel.js";
+import { SKIPPED_PERSON_LABEL } from "./buildReviewDetailsViewModel.js";
 import { formatReviewTimeFull } from "./formatReviewTimeFull.js";
 import { getRevisionNumber } from "./getRevisionNumber.js";
 import { getStepTimes } from "./getStepTimes.js";
@@ -153,10 +154,15 @@ describe("getStepTimes (QBZ-54)", () => {
     });
 });
 
-const skip = (userId: string, reason: string | null): ReviewAssignmentEntry => ({
+const skip = (
+    userId: string,
+    reason: string | null,
+    userDisplayName: string | null = null
+): ReviewAssignmentEntry => ({
     id: `skip-${userId}`,
     kind: "skip",
     userId,
+    userDisplayName,
     assignedOn: at(6, 10, 0),
     source: "pool",
     ruleId: null,
@@ -297,12 +303,14 @@ describe("buildReviewDetailsViewModel", () => {
                     owner: LUKA,
                     reachedOn: at(16, 10, 0),
                     assignments: [
-                        skip("user-9", "is the requester"),
+                        skip("user-9", "is the requester", "Pat Kim"),
                         skip("user-8", "excluded until 20 Oct: on leave"),
+                        skip("user-7", "is on leave", "   "),
                         {
                             id: "outcome-1",
                             kind: "outcome",
                             userId: "user-2",
+                            userDisplayName: "Luka Perić",
                             assignedOn: at(16, 10, 0),
                             source: "pool",
                             ruleId: null,
@@ -317,11 +325,14 @@ describe("buildReviewDetailsViewModel", () => {
         const { steps } = build(review);
 
         expect(steps[0].skipped).toEqual([
-            { name: "A person", reason: "is the requester" },
-            { name: "A person", reason: "excluded until 20 Oct: on leave" }
+            { name: "Pat Kim", reason: "is the requester" },
+            { name: SKIPPED_PERSON_LABEL, reason: "excluded until 20 Oct: on leave" },
+            { name: SKIPPED_PERSON_LABEL, reason: "is on leave" }
         ]);
+        expect(SKIPPED_PERSON_LABEL).toBe("A person");
         expect(JSON.stringify(steps[0])).not.toContain("user-9");
         expect(JSON.stringify(steps[0])).not.toContain("user-8");
+        expect(JSON.stringify(steps[0])).not.toContain("user-7");
     });
 
     it("has no skipped box without skip entries or without assignments", () => {
@@ -357,6 +368,32 @@ describe("buildReviewDetailsViewModel", () => {
         expect(vm.cancelledText).toBe(
             "Someone cancelled this review at 14:20. The revision has no review now; a new request starts again from the first step."
         );
+    });
+
+    it("names who cancelled the review when the review carries it (R252)", () => {
+        const review = createReview({
+            state: ReviewState.Cancelled,
+            isActive: false,
+            lastChangedOn: at(16, 14, 20),
+            cancelledBy: createActor({ id: "user-5", displayName: "Nina Cole" })
+        });
+
+        const vm = build(review);
+
+        expect(vm.cancelledText).toBe(
+            "Nina Cole cancelled this review at 14:20. The revision has no review now; a new request starts again from the first step."
+        );
+    });
+
+    it("falls back to 'Someone' for a blank canceller name", () => {
+        const review = createReview({
+            state: ReviewState.Cancelled,
+            isActive: false,
+            lastChangedOn: at(16, 14, 20),
+            cancelledBy: createActor({ displayName: "  " })
+        });
+
+        expect(build(review).cancelledText).toContain("Someone cancelled this review at 14:20.");
     });
 
     it("builds the loading and failed states without a header", () => {
@@ -1071,6 +1108,8 @@ export const getStepTimes = (step: ReviewStep, now: Date): string | null => {
 Create `packages/app-workflows/src/review/presentation/reviewDetails/buildReviewDetailsViewModel.ts`:
 
 ```ts
+import type { Review } from "~/review/domain/types.js";
+import type { ReviewAssignmentEntry } from "~/review/domain/types.js";
 import type { ReviewStep } from "~/review/domain/types.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
@@ -1113,11 +1152,33 @@ const getComment = (step: ReviewStep): string | null => {
 };
 
 /**
- * The lead of a skipped entry. `WorkflowsAssignmentEntry` carries a user id and no name, and a raw
- * id must not be shown, so the entry reads "A person: {reason}". Pending user decision (a name
- * needs a server field or a user lookup).
+ * The lead of a skipped entry while the server could not resolve a name (`userDisplayName` is
+ * `null` or blank, R251). A raw user id is never shown.
  */
-const SKIPPED_PERSON_LABEL = "A person";
+export const SKIPPED_PERSON_LABEL = "A person";
+
+const getSkippedName = (entry: ReviewAssignmentEntry): string => {
+    if (entry.userDisplayName === null) {
+        return SKIPPED_PERSON_LABEL;
+    }
+    const name = entry.userDisplayName.trim();
+    if (name === "") {
+        return SKIPPED_PERSON_LABEL;
+    }
+    return name;
+};
+
+const getCancelledText = (review: Review, now: Date): string => {
+    let who = "Someone";
+    if (review.cancelledBy !== null) {
+        const name = review.cancelledBy.displayName.trim();
+        if (name !== "") {
+            who = name;
+        }
+    }
+    const time = formatReviewTime(review.lastChangedOn, now);
+    return `${who} cancelled this review at ${time}. The revision has no review now; a new request starts again from the first step.`;
+};
 
 const getSkipped = (step: ReviewStep): ReviewDetailsSkippedVm[] | null => {
     if (step.assignments === null) {
@@ -1127,7 +1188,7 @@ const getSkipped = (step: ReviewStep): ReviewDetailsSkippedVm[] | null => {
         .filter(entry => entry.kind === "skip")
         .map(entry => {
             return {
-                name: SKIPPED_PERSON_LABEL,
+                name: getSkippedName(entry),
                 reason: entry.reason ? entry.reason : ""
             };
         });
@@ -1211,7 +1272,7 @@ export const buildReviewDetailsViewModel = (
             status,
             header,
             steps: [],
-            cancelledText: `Someone cancelled this review at ${formatReviewTime(review.lastChangedOn, now)}. The revision has no review now; a new request starts again from the first step.`,
+            cancelledText: getCancelledText(review, now),
             actions: [],
             error: null,
             openAction,
@@ -1410,7 +1471,8 @@ export const ReviewDetailsPresenterFeature = createFeature({
 Create `packages/app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx`:
 
 ```tsx
-import React, { useEffect } from "react";
+import React from "react";
+import { useEffect } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import { Alert } from "@webiny/admin-ui";
@@ -1644,20 +1706,17 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the review details drawer" -m "The drawer loads a review by id and shows the header, a timeline with all six step states, owner, why this owner, times, comments and the skipped-by-assignment box as received. Footer actions come from the server flags and open the shared action dialogs. runs, issues and taskId are not rendered." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the review details drawer" -m "The drawer loads a review by id and shows the header, a timeline with all six step states, owner, why this owner, times, comments and the skipped-by-assignment box as received. Footer actions come from the server flags and open the shared action dialogs. runs, issues and taskId are not rendered." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.
 
 ## Contract notes
 
-- **Skipped box per step, not per review:** the contract VM has a root `skipped`; the assignment log is per step and the design shows the box inside the step, so `skipped` is on `ReviewDetailsStepVm` and the root field is dropped.
-- **Skipped names (pending user decision):** `WorkflowsAssignmentEntry` carries `userId` only, no display name. A raw id must not be shown, so every entry leads with the constant `SKIPPED_PERSON_LABEL = "A person"` ("A person: is the requester"; marked "pending user decision" in the code); the design's "Maja Kos: is the requester" needs a server field (a `displayName` on skip entries) or a user lookup, a decision for the user.
-- **Additive VM fields:** header `stateVariant`; step `color`, `stateVariant`; root `cancelledText`, `reviewId`; presenter `actionDone()` (used by the drawer component); init param `onChanged?` (the editor refreshes its bar, Task 19; lists refresh through the activity bus). The contract VM names are all kept except the moved `skipped`.
+- **Skipped box per step, not per review:** the assignment log is per step and the design shows the box inside the step (the contract's Interfaces entry already says so); `skipped` is on `ReviewDetailsStepVm`.
+- **Cancelled text keeps the design's second sentence:** R252 gives the lead ("{Name} cancelled this review at {time}."); the sentence "The revision has no review now; a new request starts again from the first step." stays from the design.
 - **Content line without the content type or an "Open content" link:** the shared drawer knows no app; `Content: {title} (#{revision})` omits the design's type name ("Article · ") and the cancelled state has no "Open content" button. Both need the app's content adapter (R224); a later task can pass the adapter's label and URL as optional props.
-- **Cancelled text names nobody:** the review carries no "cancelled by"; "Someone cancelled this review at {time}." replaces the design's "{name} cancelled ...".
-- **No-access** reuses the shared QBZ-59 sentence for the failed state (R-i; the drawer has no separate no-access frame in the design).
+- **No-access** reuses the shared QBZ-59 sentence for the failed state (the drawer has no separate no-access frame in the design).
 - **Hover times (QBZ-54):** `title` attributes on the requested line and the Times line; the other times in the drawer have none.
-- **Barrel (R-k):** nothing is added to `src/index.tsx`; Tasks 19 and 26 import the drawer by deep path.
-- **Composition-root test:** the assertions extend Task 10's `app.test.tsx` (see Task 13).
+- **Additive VM fields:** header `stateVariant`; step `color`, `stateVariant`, `timesTitle`; root `cancelledText`, `reviewId`; presenter `actionDone()` (used by the drawer component).
 - Size: large (six pure files, a presenter, a component, three test files).

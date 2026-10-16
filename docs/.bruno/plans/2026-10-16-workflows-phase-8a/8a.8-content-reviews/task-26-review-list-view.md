@@ -889,7 +889,8 @@ export const ReviewListTabs = createReactiveComponent(({ presenter }: ReviewList
 `packages/app-workflows/src/review/presentation/reviewList/components/ReviewListToolbar.tsx`:
 
 ```tsx
-import React, { useEffect } from "react";
+import React from "react";
+import { useEffect } from "react";
 import { useState } from "react";
 import { Input } from "@webiny/admin-ui";
 import { Select } from "@webiny/admin-ui";
@@ -1112,7 +1113,8 @@ export const ReviewListRowActions = ({ row, presenter }: ReviewListRowActionsPro
 `packages/app-workflows/src/review/presentation/reviewList/components/ReviewListTable.tsx`:
 
 ```tsx
-import React, { useEffect } from "react";
+import React from "react";
+import { useEffect } from "react";
 import { Button } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
 import { Table } from "@webiny/admin-ui";
@@ -1323,7 +1325,8 @@ export const ReviewListDialogs = createReactiveComponent((props: ReviewListDialo
 `packages/app-workflows/src/review/presentation/reviewList/components/ReviewListView.tsx`:
 
 ```tsx
-import React, { useEffect } from "react";
+import React from "react";
+import { useEffect } from "react";
 import { Alert } from "@webiny/admin-ui";
 import { Heading } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
@@ -1468,10 +1471,10 @@ Expected: PASS. Admin packages run `yarn test <path>` only (no storage). If the 
 ```bash
 yarn test packages/app-workflows/src/review/presentation/reviewList/ReviewListPresenter.test.ts 2>&1 | tail -50
 yarn test packages/app-workflows/src/review/presentation/reviewList/reviewListPure.test.ts 2>&1 | tail -50
-yarn check:test:types -p app-workflows --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 
-Expected: PASS, no type errors.
+Expected: PASS and the build (the type check of the co-located tests, R-e) prints no errors.
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -1490,19 +1493,16 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-workflows): add the review list view" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the review list view" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
 
 **Contract notes:**
-- The Interfaces entry names `DataTable`; the view renders the admin-ui `Table` primitives instead because `DataTable` offers no row-level class and a leaving row must fade (QBZ-71). Columns, order and copy are unchanged.
-- Additive file `ReviewListDialogs.tsx` (the contract lists seven components): it mounts the Task 15 and 16 dialogs and the Task 18 drawer from `vm.dialog` of Task 25.
 - `onTransitionEnd` on a leaving row drops it without checking `propertyName`; a hover colour transition on a row that is already fading would drop it a little early, which is harmless.
 - The design shows a step colour dot and the app name under the content type; neither is in the row model (`ReviewListRow` has no step colour, the binding returns a label only), so the table shows the step title and the content type label.
 - The "Last change" header uses the characters "↑" and "↓" with the design titles instead of icons, which keeps the header free of an icon import.
-- The row menu appears for every bound row (it always contains "Review details"); the contract's "row actions from flags" applies to the other items.
-- Task 18 dependency: the Review details drawer runs row actions through its own presenter, which must call `ReviewActivity.notify({ namespace, source: "own" })` after a successful action so the list (and the widgets) refetch. This task depends on that behaviour; Task 18 must state and test it (if its presenter only refreshes itself, Task 18 needs the one added `notify` call).
-- Task 14 dependency: `__tests__/setup/setupDom.ts` is the one place for jsdom stubs. The view tests mount `AdminUiProvider` (Task 14's `renderWithAdminUi`); if sonner's toast stack needs `window.matchMedia` and the setup file does not define it, Task 14's setup file must add it. This task adds no stub, no vitest config and no render helper.
+- The row menu appears for every bound row (it always contains "Review details"); the "row actions from flags" apply to the other items.
+- The view tests mount `AdminUiProvider` through Task 14's `renderWithAdminUi`; if sonner's toast stack needs `window.matchMedia` and Task 14's `setupDom.ts` does not define it, Task 14 adds it. This task adds no stub, no vitest config and no render helper.
 - Highlighted rows (QBZ-86) use `bg-primary-subtle`; the fade of leaving rows has a reduced-motion fallback (`prefersReducedMotion` drops the row at once, because no transition ends).
 - Size: eight components and two test files with full code; one test cycle.

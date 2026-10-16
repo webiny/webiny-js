@@ -619,10 +619,10 @@ Expected: PASS (4 files).
 
 ```bash
 yarn test packages/app-headless-cms/src/presentation/contentEntries/list/ContentEntriesPresenter.test.ts 2>&1 | tail -50
-yarn check:test:types -p app-headless-cms --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-headless-cms --no-cache 2>&1 | tail -30
 ```
 
-Expected: PASS and no type errors. (`ContentEntriesPresenter.test.ts` runs `DeleteEntryFeature` with a faked gateway, so it proves the repository and use case chain is unchanged.)
+Expected: PASS and no type errors. (`app-headless-cms` has no `__tests__/**/*.test.ts`, so `check:test:types` does not list it; the build type-checks the co-located tests, R243. `ContentEntriesPresenter.test.ts` runs `DeleteEntryFeature` with a faked gateway, so it proves the repository and use case chain is unchanged.)
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -641,12 +641,10 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-headless-cms --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-headless-cms): throw GraphQLOperationError from the delete and bulk gateways" -m "The four delete and bulk gateways keep their throw condition and message fallback and now carry the envelope code and data, so the workflows warning can read ActiveReviewOnTrash. A72: bulkAction<Model> only triggers a background task and returns its id, so per-entry refusals never reach the response and the all-selected path has no pre-warning." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-headless-cms): throw GraphQLOperationError from the delete and bulk gateways" -m "The four delete and bulk gateways keep their throw condition and message fallback and now carry the envelope code and data, so the workflows warning can read ActiveReviewOnTrash. A72: bulkAction<Model> only triggers a background task and returns its id, so per-entry refusals never reach the response and the all-selected path has no pre-warning." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
 
 **Contract notes:**
-- None conflict with the contract. The contract's "added where missing" for `error { message code data }` found nothing missing: all four documents already select `data`.
-- A72 (CMS half) resolved as stated above; no change to R228 for the CMS "all selected" path.
 - Unverified: whether `yarn test` for this package resolves `@webiny/app/errors/index.js` from `src` or from `dist`. Step 2 builds `@webiny/app` first so both work; if it still fails to resolve, check `packages/app-headless-cms/tsconfig.json` `paths` for `@webiny/app/*`.

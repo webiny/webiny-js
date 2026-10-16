@@ -18,11 +18,11 @@ Spec 13.5; R206, R210, R212, R229, R234, A74; Decisions D112, D113, D119; design
 - Create (pure, one function per file): `packages/app-workflows/src/review/presentation/reviewList/{getDefaultReviewListSort,getReviewListEmpty,getListReviewStateLabel,getListOwnerLabel,formatLastChange,getListRowActions,isBeyondRefetchWindow,hasRowChanged,resolveRowBinding,parseReviewListTab}.ts` and the constant file `reviewListTabs.ts`
 - Create (pure test builder, used by Tasks 25-28): `packages/app-workflows/src/review/testing/createReviewListItem.ts`
 - Create tests: `packages/app-workflows/src/review/presentation/reviewList/ReviewListPresenter.test.ts`, `packages/app-workflows/src/review/presentation/reviewList/reviewListPure.test.ts`
-- Modify: `packages/app-workflows/src/review/presentation/wiring.test.tsx` (Task 13's composition test, one case added)
+- Modify: `packages/app-workflows/src/app.test.tsx` (Task 10's composition test, extended by Task 13's "WorkflowsAdminApp review view" `describe`; one expectation per test added)
 - Modify: `packages/app-workflows/src/app.tsx` (register `ReviewListPresenterFeature` inside the gate). The package barrel `src/index.tsx` is edited once, in Task 28 (its "Barrel adds" list names every export of Tasks 25-27), so this task leaves `index.tsx` alone.
 
 **Interfaces:**
-- Consumes (Task 8): `IReviewListUseCases`, `ReviewListPage` (`~/review/useCases/IReviewListUseCases.js`), `IReviewUseCases` (`~/review/useCases/IReviewUseCases.js`), `ReviewListRow`, `ReviewWithFlags`, `ReviewActor` (`~/review/domain/types.js`), `ReviewState`, `ReviewStateValue` (`~/review/domain/ReviewState.js`), `StepState`, `StepStateValue` (`~/review/domain/StepState.js`), `ReviewListSort` (`~/review/domain/ReviewListSort.js`), `REVIEW_LIST_PAGE_SIZE` (`~/review/domain/constants.js`), `toReviewListRow(item: ReviewWithFlags): ReviewListRow` (`~/review/domain/toReviewListRow.js`), `ListReviewsParams`, `ReviewListWhere` (`~/review/gateway/IReviewGateway.js`), `ReviewContentRef` (`~/review/content/IReviewContentAdapter.js`). Task 10: `ReviewActivity` token and its `Interface` (`~/review/activity/abstractions.js`), the real implementation `ReviewActivity` (`~/review/activity/ReviewActivity.js`, used by the tests). Task 13: `getReviewActions({ flags, stepId, canRequest })` (`~/review/presentation/targetReview/getReviewActions.js`), `getStepStateTag(state)` (`.../getStepStateTag.js`), `TargetReviewActionVm`, `TargetReviewTagVariant` (`.../abstractions.js`), the fixtures `createReview`, `createStep`, `createFlags`, `createActor`, `createReviewWithFlags(review, flags)` (`~/review/testing/reviewFixtures.js`). Task 15: `ReviewActionKind` (`~/review/presentation/actionDialog/ReviewActionKind.js`; includes `"reassign"` after Task 16). Existing: `IdentityContext` (`@webiny/app-admin/features/security/IdentityContext/abstractions.js`, `getIdentity().teams`).
+- Consumes (Task 8): `IReviewListUseCases`, `ReviewListPage` (`~/review/useCases/IReviewListUseCases.js`), `IReviewUseCases` (`~/review/useCases/IReviewUseCases.js`), `ReviewListRow`, `ReviewWithFlags`, `ReviewActor` (`~/review/domain/types.js`), `ReviewState`, `ReviewStateValue` (`~/review/domain/ReviewState.js`), `StepState`, `StepStateValue` (`~/review/domain/StepState.js`), `ReviewListSort` (`~/review/domain/ReviewListSort.js`), `REVIEW_LIST_PAGE_SIZE` (`~/review/domain/constants.js`), `toReviewListRow(item: ReviewWithFlags): ReviewListRow` (`~/review/domain/toReviewListRow.js`), `ListReviewsParams`, `ReviewListWhere` (`~/review/gateway/IReviewGateway.js`), `ReviewContentRef` (`~/review/content/IReviewContentAdapter.js`). Task 10: `ReviewActivity` token and its `Interface` (`~/review/activity/abstractions.js`), the real implementation `ReviewActivity` (`~/review/activity/ReviewActivity.js`, used by the tests). Task 13: `getReviewActions({ flags, stepId, canRequest })` (`~/review/presentation/targetReview/getReviewActions.js`), `getStepStateTag(state)` (`.../getStepStateTag.js`), `TargetReviewActionVm`, `TargetReviewTagVariant` (`.../abstractions.js`), the fixtures `createActor` (`~/review/testing/createActor.js`), `createStep` (`createStep.js`), `createFlags` (`createFlags.js`) and `createReview`, `createReviewWithFlags(review, flags)` (Task 8, `~/review/testing/reviewFixtures.js`). Task 15: `ReviewActionKind` (`~/review/presentation/actionDialog/ReviewActionKind.js`; includes `"reassign"` after Task 16). Existing: `IdentityContext` (`@webiny/app-admin/features/security/IdentityContext/abstractions.js`, `getIdentity().teams`).
 - Produces (consumed by Tasks 26-30): `IReviewRowBinding`, `IReviewRowProvider`, `ReviewListTab`, `ReviewListInitParams`, `ReviewListRowVm`, `IReviewListViewModel`, `IReviewListPresenter`, token `ReviewListPresenter` (`"Workflows/ReviewListPresenter"`), `ReviewListPresenterFeature` (`resolve` -> `{ presenter }`), `REVIEW_LIST_TABS`, `parseReviewListTab`, `getReviewListEmpty`, `resolveRowBinding`, `formatLastChange`, and the test builder `createReviewListItem`. Additions to the contract (all additive, used by Tasks 26-28): `vm.dialog`, `removeLeavingRow`, `openRowAction`, `openDetails`, `closeDialog`, `actionDone`, `ReviewListRowVm.stepStateVariant`, `ReviewListRowVm.highlighted`.
 
 verify before writing code (record each result in the commit body):
@@ -43,11 +43,11 @@ import { ReviewState } from "~/review/domain/ReviewState.js";
 import type { ReviewStateValue } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
-import { createActor } from "./reviewFixtures.js";
-import { createFlags } from "./reviewFixtures.js";
+import { createActor } from "./createActor.js";
+import { createFlags } from "./createFlags.js";
 import { createReview } from "./reviewFixtures.js";
 import { createReviewWithFlags } from "./reviewFixtures.js";
-import { createStep } from "./reviewFixtures.js";
+import { createStep } from "./createStep.js";
 
 export interface ReviewListItemOverrides {
     id?: string;
@@ -117,7 +117,7 @@ import { it } from "vitest";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
 import { toReviewListRow } from "~/review/domain/toReviewListRow.js";
-import { createActor } from "~/review/testing/reviewFixtures.js";
+import { createActor } from "~/review/testing/createActor.js";
 import { createReviewListItem } from "~/review/testing/createReviewListItem.js";
 import type { IReviewRowBinding } from "./abstractions.js";
 import { formatLastChange } from "./formatLastChange.js";
@@ -333,7 +333,7 @@ import type { ReviewWithFlags } from "~/review/domain/types.js";
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { ReviewListPage } from "~/review/useCases/IReviewListUseCases.js";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
-import { createActor } from "~/review/testing/reviewFixtures.js";
+import { createActor } from "~/review/testing/createActor.js";
 import { createReviewListItem } from "~/review/testing/createReviewListItem.js";
 import { ReviewListPresenter } from "./abstractions.js";
 import type { IReviewRowBinding } from "./abstractions.js";
@@ -989,29 +989,30 @@ describe("ReviewListPresenter", () => {
 });
 ```
 
-Composition root (Review Focus 8). Task 13 created `src/review/presentation/wiring.test.tsx`, which mounts `WorkflowsAdminApp` with `useFeatureFlags` and `RegisterFeature` mocked (`state.registered` collects every registered feature, `state.flagOn` is the flag), and Tasks 15 to 18 each added one `it`. This task adds one more, next to them (the existing "registers nothing when the feature flag is off" case already covers the flag-off side for every feature, because it asserts `state.registered` is empty):
+Composition root (Review Focus 8). Task 13 added the container-style `describe("WorkflowsAdminApp review view")` to Task 10's `src/app.test.tsx` (it mounts `WorkflowsAdminApp` with the flag on and off and resolves tokens from the container; Tasks 15 to 18 each added their token to its three tests). This task adds its token the same way: import the token and add one line to each of the three tests.
 
 ```tsx
-import { ReviewListPresenterFeature } from "./reviewList/feature.js";
+import { ReviewListPresenter } from "~/review/presentation/reviewList/abstractions.js";
 
-it("registers the review list presenter when the feature flag is on", () => {
-    render(<WorkflowsAdminApp />);
+// in "registers the review view presenters when the flag is on":
+expect(container.resolve(ReviewListPresenter)).toBeDefined();
 
-    expect(state.registered).toContain(ReviewListPresenterFeature);
-});
+// in "registers the presenters transient: every resolve is a new instance (R212)":
+expect(container.resolve(ReviewListPresenter)).not.toBe(container.resolve(ReviewListPresenter));
+
+// in "registers no review view presenter when the flag is off (R211)":
+expect(() => container.resolve(ReviewListPresenter)).toThrow();
 ```
-
-(The import goes next to the file's other `./<module>/feature.js` imports; the `it` goes into the existing `describe`.)
 
 - [ ] **Step 2: Run the tests, expect failure**
 
 ```bash
 yarn test packages/app-workflows/src/review/presentation/reviewList/reviewListPure.test.ts 2>&1 | tail -50
 yarn test packages/app-workflows/src/review/presentation/reviewList/ReviewListPresenter.test.ts 2>&1 | tail -50
-yarn test packages/app-workflows/src/review/presentation/wiring.test.tsx 2>&1 | tail -50
+yarn test packages/app-workflows/src/app.test.tsx 2>&1 | tail -50
 ```
 
-Expected: the first two FAIL with `Failed to resolve import "./formatLastChange.js"`, `"./abstractions.js"` or `"./feature.js"` (the modules do not exist yet); `wiring.test.tsx` FAILS to load (`Failed to resolve import "./reviewList/feature.js"`). `createReviewListItem.ts` already exists and compiles once Tasks 8, 10 and 13 are in.
+Expected: the first two FAIL with `Failed to resolve import "./formatLastChange.js"`, `"./abstractions.js"` or `"./feature.js"` (the modules do not exist yet); `app.test.tsx` FAILS to load (`Failed to resolve import "~/review/presentation/reviewList/abstractions.js"`). `createReviewListItem.ts` already exists and compiles once Tasks 8, 10 and 13 are in.
 
 - [ ] **Step 3: Implement**
 
@@ -2155,7 +2156,7 @@ next to the other review `RegisterFeature` elements, inside the fragment that fo
 ```bash
 yarn test packages/app-workflows/src/review/presentation/reviewList/reviewListPure.test.ts 2>&1 | tail -50
 yarn test packages/app-workflows/src/review/presentation/reviewList/ReviewListPresenter.test.ts 2>&1 | tail -50
-yarn test packages/app-workflows/src/review/presentation/wiring.test.tsx 2>&1 | tail -50
+yarn test packages/app-workflows/src/app.test.tsx 2>&1 | tail -50
 ```
 
 Expected: PASS. Admin packages run `yarn test <path>` only: they have no OpenSearch or DynamoDB storage, so `yarn test:os` does not apply.
@@ -2166,10 +2167,10 @@ Expected: PASS. Admin packages run `yarn test <path>` only: they have no OpenSea
 yarn test packages/app-workflows/src/review/activity/ReviewActivity.test.ts 2>&1 | tail -50
 yarn test packages/app-workflows/src/review/domain/toReviewListRow.test.ts 2>&1 | tail -50
 yarn test packages/app-workflows/src/review/presentation/targetReview/getReviewActions.test.ts 2>&1 | tail -50
-yarn check:test:types -p app-workflows --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 
-Expected: PASS, no type errors.
+Expected: PASS and the build (the type check of the co-located tests, R-e) prints no errors.
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -2188,19 +2189,17 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-workflows): add the review list presenter" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the review list presenter" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
 
 **Contract notes:**
-- Task 13's `getReviewActions({ flags, stepId, canRequest })` and `getStepStateTag(state)` are used instead of local label tables (`getListRowActions` filters to start, take over, reassign and cancel; the row's step state tag comes from `getStepStateTag`, so the tag variant type is Task 13's `TargetReviewTagVariant`). The list keeps `getListReviewStateLabel` ("In progress", not the bar's "Review: In progress") and `getListOwnerLabel` (a row has the owner and the step title, not a step) because Task 13 has no equivalent.
-- Additions to the Interfaces entry, all additive: `vm.dialog`, `openRowAction`, `openDetails`, `closeDialog`, `actionDone`, `removeLeavingRow`, `ReviewListRowVm.stepStateVariant` and `ReviewListRowVm.highlighted` (QBZ-86), and the pure files. They exist because R234 puts dialog state in the presenter and the contract's row VM carries labels only.
-- The presenter now depends on `IdentityContext` (`[ReviewActivity, IdentityContext]`) for the QBZ-73 no-team text. Remaining gap: a member of only non-reviewing teams sees the normal empty state, because the client has no list of reviewing teams.
-- R210 says "a refetch in flight is not doubled". Signals that arrive during a refetch collapse into exactly one follow-up refetch (never a parallel request, at most two requests for any burst) so a change made while the first request was on the wire cannot be hidden (Review Focus 11). The in-flight flag is a generation token: a reload, tab switch or dispose supersedes it without a stale `refreshing = false`.
+- Task 13's `getReviewActions({ flags, stepId, canRequest })` and `getStepStateTag(state)` are used instead of local label tables (`getListRowActions` filters to start, take over, reassign and cancel; the row's step tag comes from `getStepStateTag`, so the tag variant type is Task 13's `TargetReviewTagVariant`). The list keeps `getListReviewStateLabel` ("In progress", not the bar's "Review: In progress") and `getListOwnerLabel` (a row has the owner and the step title, not a step) because Task 13 has no equivalent.
+- Remaining gap (R247): a member of only non-reviewing teams sees the normal empty state, because the client has no list of reviewing teams.
+- R210: signals that arrive during a refetch collapse into exactly one follow-up refetch (never a parallel request, at most two requests for any burst). The in-flight flag is a generation token: a reload, tab switch or dispose supersedes it without a stale `refreshing = false`.
 - The refetch window is `max(loaded rows, page size)` capped at the server maximum 100. A row that is missing from a window the server says has more behind it, and sorts after the last returned row, is kept (not faded); with equal timestamps the row is also kept. Beyond 100 loaded rows a row can therefore stay until the next Load more or Show; this is accepted.
 - Highlights (QBZ-86) last until the next merge, a tab or filter change, or Show; the design's "one row just updated, highlighted" has no timer here because the presenter never uses timers.
-- `useCases.listReviews` is called inline in ten methods (user rule: no wrapper around a use case call); only state helpers are shared, so a change to the fetch-and-apply shape is made in each.
-- The test builder `createReviewListItem` lives in `src/review/testing/` as pure data built from Task 13's fixtures (R-c); the activity bus in tests is the real Task 10 implementation, not a fake.
-- The composition-root case is added to Task 13's `src/review/presentation/wiring.test.tsx` (its mocked `RegisterFeature` records the registrations), not a new file; transient scope is asserted by `ReviewListPresenter.test.ts` ("keeps two presenters independent").
+- `useCases.listReviews` is called inline in ten methods (R248); only state helpers are shared, so a change to the fetch-and-apply shape is made in each.
+- The composition-root expectations go into Task 10's `src/app.test.tsx` (Task 13's container-style `describe`). The contract's Interfaces name a `wiring.test.tsx` for this; no 8a.3 or 8a.5 task creates it, so this task uses the file that exists. Transient scope is also asserted by `ReviewListPresenter.test.ts` ("keeps two presenters independent").
 - `src/index.tsx` is not edited here; Task 28 owns the barrel for Tasks 25-27.

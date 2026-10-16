@@ -23,7 +23,9 @@ R204 (user answer Q3, `../00-answers.md`), A81; Review Focus 9. Today every base
 Create `packages/app/src/errors/__tests__/GraphQLOperationError.test.ts`:
 
 ```ts
-import { describe, expect, it } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { GraphQLOperationError } from "../GraphQLOperationError.js";
 import { GraphQLOperationError as ExportedGraphQLOperationError } from "../index.js";
 
@@ -166,15 +168,14 @@ Expected: PASS, 7 tests.
 
 - [ ] **Step 5: Run the existing tests covering the changed code, type-check and build**
 
-The barrel is imported by the router and the GraphQL client code paths only through the event handlers, so run one existing suite as a smoke run only (it does not exercise the new class) and the type check of the package:
+The barrel is imported by the router and the GraphQL client code paths only through the event handlers, so run one existing suite as a smoke run only (it does not exercise the new class) and the build, which type-checks the package including the co-located test:
 
 ```bash
 yarn test packages/app/src/features/graphqlClient/__tests__/GraphQLClient.test.ts 2>&1 | tail -30
-yarn check:test:types -p app --report cli 2>&1 | tail -40
 yarn build -p @webiny/app --no-cache 2>&1 | tail -30
 ```
 
-Expected: the GraphQL client suite (smoke run only) passes unchanged, the type check prints no errors, the build succeeds. After the build, `packages/app/dist/errors/index.js` exports `GraphQLOperationError` (Tasks 9, 13, 15, 31, 32 and 33 import it from `@webiny/app/errors/index.js`).
+Expected: the GraphQL client suite (smoke run only) passes unchanged and the build succeeds. `packages/app` has no root `__tests__/` folder, so `check:test:types` does not list it (`scripts/utils/getPackages.js`, `hasTests`, R243); the build type-checks the co-located tests (`tsconfig.build.json` includes `src`). After the build, `packages/app/dist/errors/index.js` exports `GraphQLOperationError` (Tasks 9, 13, 15, 31, 32 and 33 import it from `@webiny/app/errors/index.js`).
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -190,7 +191,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app): add GraphQLOperationError that keeps the server error code and data" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app): add GraphQLOperationError that keeps the server error code and data" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.

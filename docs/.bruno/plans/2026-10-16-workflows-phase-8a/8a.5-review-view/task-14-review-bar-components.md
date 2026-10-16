@@ -22,7 +22,7 @@ This task also makes component tests possible in `app-workflows` (R222): the vit
 
 **Interfaces:**
 - Consumes: Task 13 (`TargetReviewPresenter.Interface`, `TargetReviewPresenter.ViewModel` (R-l, the `Foo.Interface` names), the pure builders `~/review/testing/{createActor,createStep,createFlags,createWorkflow,reviewTarget}.js`, `TargetReviewActionVm`, `TargetReviewProgressVm`, `TargetReviewTile`, `TargetReviewActionIcon`, `getStepStateTag`, `createReview` and `createReviewWithFlags` from Task 8's `~/review/testing/reviewFixtures.js`, `createFakeUseCases` from `fakeReviewUseCases.js`); Task 8 (`IReviewUseCases`, `StepState`, `StepStateValue`). Existing (verified): `createReactiveComponent` (`@webiny/app-admin`), admin-ui `Alert` (`Alert.Action`, `type`, `variant`), `Button` (`variant`, `size`, `text`, `icon`, `disabled`), `Icon`, `Popover` (`trigger`, `content`, `open`, `onOpenChange`, `align`), `Skeleton`, `Tag` (`variant`, `content`), `Text`, `Tooltip` (`trigger`, `content`), `AdminUiProvider`, `cn` (all `@webiny/admin-ui`); `@webiny/icons/{send,play_arrow,check,close,front_hand,swap_horiz,block,rule,rate_review,hourglass_empty,sync_problem,check_circle,cancel}.svg` (all present in `packages/icons/dist`).
-- Produces: `ReviewBar` props `{ presenter: TargetReviewPresenter.Interface; useCases: IReviewUseCases; reviewsUrl: string | null; onOpenDetails?: () => void }`; `ReviewTooltip` props `{ presenter: TargetReviewPresenter.Interface; children: (describedBy: string | undefined) => React.ReactNode }` (the contract names only `presenter`; the wrapped control is rendered by the child function, see Contract notes); `ReviewStepsPopover`, `ReviewProgress`, `ReviewBarSkeleton`, `ReviewBarFailed`; test helpers `renderWithAdminUi`, `createViewModel`, `createFakePresenter` (reused by Tasks 15-19, 26). Consumed by Tasks 15, 17, 19, 20, 22.
+- Produces: `ReviewBar` props `{ presenter: TargetReviewPresenter.Interface; useCases: IReviewUseCases; reviewsUrl: string | null; onOpenDetails?: () => void }`; `ReviewTooltip` props `{ presenter: TargetReviewPresenter.Interface; children: (describedBy: string | undefined) => React.ReactNode }` (R241: the wrapped control is rendered by the child function); `ReviewStepsPopover`, `ReviewProgress`, `ReviewBarSkeleton`, `ReviewBarFailed`; test helpers `renderWithAdminUi`, `createViewModel`, `createFakePresenter` (reused by Tasks 15-19, 26). Consumed by Tasks 15, 17, 19, 20, 22.
 
 **Test runner note:** admin package: `yarn test <path>` only. `.tsx` tests import `React` (classic JSX runtime).
 
@@ -453,8 +453,11 @@ Create `packages/app-workflows/src/review/presentation/targetReview/components/R
 
 ```tsx
 import React from "react";
-import { describe, expect, it } from "vitest";
-import { fireEvent, screen } from "@testing-library/react";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { fireEvent } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { ReviewTooltip } from "./ReviewTooltip.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import { createFakePresenter } from "~/review/testing/targetReviewFakes.js";
@@ -700,7 +703,8 @@ export const ReviewBarFailed = createReactiveComponent(function ReviewBarFailed(
 Create `packages/app-workflows/src/review/presentation/targetReview/components/ReviewStepsPopover.tsx`:
 
 ```tsx
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import { Popover } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
@@ -806,7 +810,8 @@ export const ReviewProgress = (props: ReviewProgressProps) => {
 Create `packages/app-workflows/src/review/presentation/targetReview/components/ReviewTooltip.tsx`:
 
 ```tsx
-import React, { useId } from "react";
+import React from "react";
+import { useId } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { Tooltip } from "@webiny/admin-ui";
 import type { TargetReviewPresenter } from "../abstractions.js";
@@ -998,19 +1003,12 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the review bar, progress popover and tooltip" -m "The bar renders the Task 13 view model: skeleton, failed alert with Try again, the state tile and tag, message, meta, lock text, server-driven actions and the steps popover. ReviewTooltip keeps a disabled control focusable and describes it through aria-describedby. The vitest config gains an SVG stub alias and a DOM setup file so components can render in jsdom." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the review bar, progress popover and tooltip" -m "The bar renders the Task 13 view model: skeleton, failed alert with Try again, the state tile and tag, message, meta, lock text, server-driven actions and the steps popover. ReviewTooltip keeps a disabled control focusable and describes it through aria-describedby. The vitest config gains an SVG stub alias and a DOM setup file so components can render in jsdom." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.
 
 ## Contract notes
 
-- **`ReviewTooltip` children (R-b):** the contract lists `{ presenter }`; a tooltip must wrap a control, so `children` is added, as a render function `(describedBy) => ReactNode` so that the control itself carries `aria-describedby` (not a wrapper element). The name and the `presenter` prop are kept.
-- **Touch (QBZ-36) gap:** the design asks that a tap toggles the tooltip. `@webiny/admin-ui` `Tooltip` passes only `delayDuration` and `onOpenChange` to Radix (`Tooltip.tsx` has no `open` prop), so a controlled open toggled on click is not possible without an admin-ui change; hover and focus work, and the hidden description is read by screen readers. Recorded as a gap for the controller (an `open` pass-through in admin-ui would close it).
-- **`moveDisabledReason` has no tooltip consumer here:** `ReviewTooltip` shows only `publishDisabledReason`. The Move reason ("Can’t move while this revision is in review.") is consumed by the CMS list Move gate (Task 21); this task does not wrap Move.
-- The progress popover also opens on hover (README 6) through `onMouseEnter`; it closes on outside click or Escape (Radix), not on mouse leave.
+- The progress segment fills follow README 11 (`REVIEW_SEGMENT_CLASSES`, the design's colours); the step state *tags* come from Task 13's `getStepStateTag`, where only `failed` is red (R239).
 - The bar's meta line has no coloured step dot (the view model carries no step colour); added only if a later task adds `stepColor`. The state tile icon is decorative (`label={""}`); the message beside it says the same in text.
-- Test helpers live in `src/review/testing/` because `tsconfig.build.json` has `rootDir: ./src` (an import from `__tests__/` fails the build); the vitest setup files stay in `__tests__/setup/` because only `vitest.config.ts` references them (R-c). `targetReviewFakes.ts` carries the new view model fields `targetTitle`, `namespace`, `targetRevisionId`.
-- `ReviewBar` takes no `target` or `targetTitle` prop (R-f): Task 17 mounts the request dialog from `vm.namespace`, `vm.targetRevisionId` and `vm.targetTitle`.
-- **Barrel (R-k):** this task adds nothing to `src/index.tsx`; app packages import the components by deep path.
-- Size: medium. Seven components, four helpers, two test files.

@@ -37,7 +37,7 @@ There is no fallback copy: `ReviewToastParams` is a union typed per kind, so a s
 - Modify: `packages/app-workflows/package.json` (devDependency `@testing-library/react`)
 
 **Interfaces:**
-- Consumes: Task 8 (`Review`, `SystemWorkflowValue`, `toSystemWorkflow`, `IReviewCacheWriter`, the fixtures in `__tests__/fixtures/reviewFixtures.ts`); Task 7 (`INotificationInput` gains `link`, `duration`, `position`, `dismissible`; `NotificationPosition`; `INotifications.error` exists but is not used here), imported `@webiny/app-admin/features/notifications/abstractions.js` (`Notifications`, `INotificationInput`, `NotificationPosition`); `BaseEvent`, `IEventHandler` from `@webiny/app/features/eventPublisher/abstractions.js`; `createAbstraction`, `createFeature` from `@webiny/feature/admin`; `Container` from `@webiny/di` (tests); `RegisterFeature`, `useFeatureFlags` from `@webiny/app-admin`; `DiContainerProvider` from `@webiny/app/shared/di/DiContainerProvider.js`. All verified in the current code (the old `packages/app-workflows/src/domain/events.ts` is the pattern for the event).
+- Consumes: Task 8 (`Review`, `SystemWorkflowValue`, `toSystemWorkflow`, `IReviewCacheWriter`, `createReview` from `src/review/testing/reviewFixtures.ts`, imported `~/review/testing/reviewFixtures.js`, R243); Task 7 (`INotificationInput` gains `link`, `duration`, `position`, `dismissible`; `NotificationPosition`; `INotifications.error` exists but is not used here), imported `@webiny/app-admin/features/notifications/abstractions.js` (`Notifications`, `INotificationInput`, `NotificationPosition`); `BaseEvent`, `IEventHandler` from `@webiny/app/features/eventPublisher/abstractions.js`; `createAbstraction`, `createFeature` from `@webiny/feature/admin`; `Container` from `@webiny/di` (tests); `RegisterFeature`, `useFeatureFlags` from `@webiny/app-admin`; `DiContainerProvider` from `@webiny/app/shared/di/DiContainerProvider.js`. All verified in the current code (the old `packages/app-workflows/src/domain/events.ts` is the pattern for the event).
 - Produces (consumed by Tasks 13-36):
   - `ReviewChangedPayload`, `ReviewChangedEvent`, `ReviewChangedHandler` (`"Workflows/ReviewChangedHandler"`, namespace `Interface`/`Event`), separate files.
   - `ReviewCacheSyncHandler implements ReviewChangedHandler.Interface`, constructor `(writer: IReviewCacheWriter)`, exported plain; Tasks 21 and 24 subclass it per app and register the subclass.
@@ -67,10 +67,12 @@ Run `yarn > /dev/null 2>&1` so the lockfile and `node_modules` pick them up.
 Create `packages/app-workflows/src/review/events/ReviewChangedEvent.test.ts`:
 
 ```ts
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { ReviewChangedEvent } from "./ReviewChangedEvent.js";
 import { ReviewChangedHandler } from "./ReviewChangedHandler.js";
-import { createReview } from "~tests/fixtures/reviewFixtures.js";
+import { createReview } from "~/review/testing/reviewFixtures.js";
 
 describe("ReviewChangedEvent", () => {
     it("has the review changed event type and carries the payload as is", () => {
@@ -120,7 +122,11 @@ describe("ReviewChangedEvent", () => {
 Create `packages/app-workflows/src/review/cache/ReviewCacheSyncHandler.test.ts`:
 
 ```ts
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { createAbstraction } from "@webiny/feature/admin";
 import { ReviewCacheSyncHandler } from "./ReviewCacheSyncHandler.js";
@@ -129,7 +135,7 @@ import { ReviewChangedEvent } from "~/review/events/ReviewChangedEvent.js";
 import { ReviewChangedHandler } from "~/review/events/ReviewChangedHandler.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
-import { createReview } from "~tests/fixtures/reviewFixtures.js";
+import { createReview } from "~/review/testing/reviewFixtures.js";
 
 const createEvent = (review: ReturnType<typeof createReview> | null): ReviewChangedEvent => {
     return new ReviewChangedEvent({
@@ -164,7 +170,7 @@ describe("ReviewCacheSyncHandler", () => {
             {
                 workflowId: "workflow-1",
                 reviewState: ReviewState.InProgress,
-                stepId: "step-2",
+                stepId: "step-1",
                 stepName: "Editorial check",
                 stepState: StepState.Awaiting
             }
@@ -259,7 +265,12 @@ describe("ReviewCacheSyncHandler", () => {
 Create `packages/app-workflows/src/review/activity/ReviewActivity.test.ts`:
 
 ```ts
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { ReviewActivity as ReviewActivityToken } from "./abstractions.js";
 import { ReviewActivity } from "./ReviewActivity.js";
@@ -388,7 +399,9 @@ describe("ReviewActivity", () => {
 Create `packages/app-workflows/src/review/toasts/getReviewToastText.test.ts`:
 
 ```ts
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { getReviewToastText } from "./getReviewToastText.js";
 
 describe("getReviewToastText (QBZ-93, QBZ-82)", () => {
@@ -519,13 +532,18 @@ describe("getReviewToastText (QBZ-93, QBZ-82)", () => {
 Create `packages/app-workflows/src/review/toasts/ReviewToasts.test.ts`:
 
 ```ts
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
 import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import type { INotificationInput } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { ReviewToasts as ReviewToastsToken } from "./abstractions.js";
-import type { ReviewToastKind, ReviewToastParams } from "./abstractions.js";
+import type { ReviewToastKind } from "./abstractions.js";
+import type { ReviewToastParams } from "./abstractions.js";
 import { ReviewToasts } from "./ReviewToasts.js";
 
 type FakeNotifications = { [K in keyof Notifications.Interface]: Mock };
@@ -683,7 +701,11 @@ describe("ReviewToasts", () => {
 Create `packages/app-workflows/src/review/notifications/ReviewNotificationService.test.ts`:
 
 ```ts
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
 import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
@@ -791,7 +813,10 @@ describe("ReviewNotificationService", () => {
 Create `packages/app-workflows/src/review/feature.test.ts`:
 
 ```ts
-import { describe, it, expect, vi } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { ReviewServicesFeature } from "./feature.js";
@@ -865,8 +890,14 @@ Create `packages/app-workflows/src/app.test.tsx` (the `WorkflowsAdminApp` flag t
 
 ```tsx
 import React from "react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render } from "@testing-library/react";
+import { afterEach } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
+import { cleanup } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { DiContainerProvider } from "@webiny/app/shared/di/DiContainerProvider.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
@@ -1070,11 +1101,9 @@ export namespace ReviewActivity {
 `packages/app-workflows/src/review/activity/ReviewActivity.ts`:
 
 ```ts
-import {
-    ReviewActivity as Abstraction,
-    type ReviewActivityListener,
-    type ReviewActivitySignal
-} from "./abstractions.js";
+import { ReviewActivity as Abstraction } from "./abstractions.js";
+import type { ReviewActivityListener } from "./abstractions.js";
+import type { ReviewActivitySignal } from "./abstractions.js";
 
 interface ReviewActivitySubscription {
     namespaces: string[];
@@ -1274,17 +1303,14 @@ export const getReviewToastText = (params: ReviewToastParams): ReviewToastText =
 `packages/app-workflows/src/review/toasts/ReviewToasts.ts`:
 
 ```ts
-import {
-    Notifications,
-    type INotificationInput
-} from "@webiny/app-admin/features/notifications/abstractions.js";
-import { ReviewToasts as Abstraction, type ReviewToastParams } from "./abstractions.js";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import type { INotificationInput } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { ReviewToasts as Abstraction } from "./abstractions.js";
+import type { ReviewToastParams } from "./abstractions.js";
 import { getReviewToastText } from "./getReviewToastText.js";
-import {
-    REVIEW_TOAST_DURATION,
-    REVIEW_TOAST_LINK_LABEL,
-    REVIEW_TOAST_POSITION
-} from "./constants.js";
+import { REVIEW_TOAST_DURATION } from "./constants.js";
+import { REVIEW_TOAST_LINK_LABEL } from "./constants.js";
+import { REVIEW_TOAST_POSITION } from "./constants.js";
 
 class ReviewToastsImpl implements Abstraction.Interface {
     constructor(private notifications: Notifications.Interface) {}
@@ -1363,16 +1389,13 @@ export namespace ReviewNotificationService {
 `packages/app-workflows/src/review/notifications/ReviewNotificationService.ts`:
 
 ```ts
-import {
-    Notifications,
-    type INotificationInput
-} from "@webiny/app-admin/features/notifications/abstractions.js";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import type { INotificationInput } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
-import { REVIEW_TOAST_DURATION, REVIEW_TOAST_POSITION } from "~/review/toasts/constants.js";
-import {
-    ReviewNotificationService as Abstraction,
-    type HandleReviewNotificationParams
-} from "./abstractions.js";
+import { REVIEW_TOAST_DURATION } from "~/review/toasts/constants.js";
+import { REVIEW_TOAST_POSITION } from "~/review/toasts/constants.js";
+import { ReviewNotificationService as Abstraction } from "./abstractions.js";
+import type { HandleReviewNotificationParams } from "./abstractions.js";
 
 const OPEN_CONTENT_LABEL = "Open content";
 
@@ -1504,12 +1527,11 @@ Expected: all PASS. If `app.test.tsx` fails at import time inside `@webiny/app-a
 
 - [ ] **Step 5: Existing tests and type check**
 
-The old `WorkflowsAdminApp` registrations are unchanged and the package has no other tests besides Tasks 8 and 9, so run those two guards for the shared domain these services use, then the type check and the build:
+The old `WorkflowsAdminApp` registrations are unchanged and the package has no other tests besides Tasks 8 and 9, so run those two guards for the shared domain these services use, then the build, which is the type check of the co-located tests (R-e: `check:test:types` reports only `__tests__/` errors):
 
 ```bash
 yarn test packages/app-workflows/src/review/domain/toSystemWorkflow.test.ts 2>&1 | tail -50
 yarn test packages/app-workflows/src/review/useCases/ReviewUseCases.test.ts 2>&1 | tail -50
-yarn check:test:types -p app-workflows --report cli 2>&1 | tail -40
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 
@@ -1529,19 +1551,12 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the review activity bus, cache sync handler, toasts and notification service" -m "ReviewChangedEvent replaces WorkflowStateChangedEvent and the shared ReviewCacheSyncHandler hands toSystemWorkflow(review) to the app cache writer. ReviewActivity is the refetch signal bus, ReviewToasts shows the QBZ-93 texts bottom right for 8 seconds with a close button, ReviewNotificationService turns incoming notifications into a toast plus a remote signal. WorkflowsAdminApp registers ReviewServicesFeature inside the feature flag gate." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the review activity bus, cache sync handler, toasts and notification service" -m "ReviewChangedEvent replaces WorkflowStateChangedEvent and the shared ReviewCacheSyncHandler hands toSystemWorkflow(review) to the app cache writer. ReviewActivity is the refetch signal bus, ReviewToasts shows the QBZ-93 texts bottom right for 8 seconds with a close button, ReviewNotificationService turns incoming notifications into a toast plus a remote signal. WorkflowsAdminApp registers ReviewServicesFeature inside the feature flag gate." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If any step fails and you fix something, rerun the chain from the top. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`. Never push or amend.
 
 **Contract notes**
 
-- `ReviewToastParams` is a discriminated union (the contract lists one shape `{ kind; stepTitle: string | null; personName: string | null; reviewsUrl }`) so that no fallback copy is needed: `stepTitle` is a required `string` for every kind except `cancelled` (`null`), `personName` is a required `string` for `reassigned`, `string | null` for `tookOver` (the design shows the body only when notify is ticked) and `null` otherwise, and `approved` carries `nextStepTitle: string | null` (QBZ-93: "Next: {step}." or "All steps approved…"; the contract has no such field). **Task 15 (the approve dialog presenter) must pass `nextStepTitle`** (the title of the step after the approved one in the returned `Review`, `null` for the last step) and a non-null step title and, for reassign, the new owner's name; Task 16/15 writers pass the matching member.
-- `ReviewChangedHandler` has its own file (the contract lists only `ReviewChangedEvent.ts`); one abstraction per file, the cycle is broken by a type-only import.
-- `ReviewCacheSyncHandler` is exported plain and never passed to `createImplementation`; Tasks 21 and 24 write per-app subclasses (the contract's `createImplementation({ implementation: ReviewCacheSyncHandler, ... })` would collide between apps).
-- `@testing-library/react` (devDependency) is added here, where the first component test needs it; `@webiny/di` came with Task 9.
-- The notification service and toasts share `review/toasts/constants.ts` (`REVIEW_TOAST_POSITION`, `REVIEW_TOAST_DURATION`, `REVIEW_TOAST_LINK_LABEL`), an addition the contract does not name; Task 28 and later tasks do not need it.
-- `app.test.tsx` mocks `SecurityPermissions` and `ContentReviews` so the test is about registration. **Task 37 deletes `~/presentation/ContentReviews.js`** and must drop that `vi.mock` line (and any old feature registrations the same task removes from `app.tsx`); Task 28/29 replace the mounting and add their own registrations and flag tests.
-- `yarn check:test:types -p app-workflows` needs the `__tests__/` file added by Task 8 to list the package.
 - verify: the real `@webiny/app-admin` barrel loads under jsdom in `app.test.tsx` (Step 4 gives the fallback); `Container.resolve` of an unregistered token throws "No registration found" (checked in the installed `@webiny/di`, `resolveInternal`).
 - Size: large (about 25 files) but every part is small and independent; one test cycle, one review gate.

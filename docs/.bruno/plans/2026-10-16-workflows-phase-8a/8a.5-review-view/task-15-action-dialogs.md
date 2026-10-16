@@ -1860,7 +1860,8 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
 Create `packages/app-workflows/src/review/presentation/actionDialog/components/ReviewActionDialogHost.tsx`:
 
 ```tsx
-import React, { useEffect } from "react";
+import React from "react";
+import { useEffect } from "react";
 import { useFeature } from "@webiny/app";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import { ReviewActionDialogPresenterFeature } from "../feature.js";
@@ -2021,19 +2022,15 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the review action dialogs" -m "One dialog presenter and component serve start, take over, approve, reject and cancel. The dialog loads the review by id, shows the design copy, submits through the use cases, shows the own-action toast and, on a conflict code, stays open with the cause, a kept comment and a Close button. ReviewBar mounts the dialogs from its open action." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the review action dialogs" -m "One dialog presenter and component serve start, take over, approve, reject and cancel. The dialog loads the review by id, shows the design copy, submits through the use cases, shows the own-action toast and, on a conflict code, stays open with the cause, a kept comment and a Close button. ReviewBar mounts the dialogs from its open action." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.
 
 ## Contract notes
 
-- **One generic dialog component** instead of "per-kind dialog components": the five dialogs differ only in copy and in two fields, which the presenter's view model already carries, so one `ReviewActionDialog` avoids five near-identical files.
+- **One generic dialog component** instead of "per-kind dialog components": the five dialogs differ only in copy and in two fields, which the presenter's view model already carries, so one `ReviewActionDialog` avoids five near-identical files. The dialog is a plain admin-ui `Dialog` mounted by `ReviewActionDialogHost` (no named-dialog registration); Task 34's warning dialog is a separate named dialog.
 - **Additive view model field `canSubmit`** (the contract VM has none): the reject confirm is disabled until 10 trimmed characters, and a submitting or conflicted dialog cannot submit.
-- **Strings the design does not give** (proposals to confirm with design): the `NotAuthorized` message "You don't have access to this review." and the `NotFound` message "This review no longer exists." (R220 asks for a dialog-level message, no copy exists). The conflict `{time}` is the re-read review's `lastChangedOn` (the step carries no event time of its own); the "Start from the pool first" text names the current owner.
-- QBZ-2 "{operator} reassigned ... to {name}" reads the operator from `step.assignment.by`; a conflict whose cause cannot be told from the re-read review gets "Someone else changed “{step}” at {time}, so your {action} was not saved."
+- The conflict `{time}` is the re-read review's `lastChangedOn` (the step carries no event time of its own); the "Start from the pool first" text names the current owner. QBZ-2 "{operator} reassigned ... to {name}" reads the operator from `step.assignment.by`; a conflict whose cause cannot be told from the re-read review gets "Someone else changed “{step}” at {time}, so your {action} was not saved."
 - Take over notify label follows the design prototype `Notify {Owner} that you took over`; README 6 only abbreviates the body, the full body text is taken from the prototype.
-- **Toast union (R-g) and the contract:** the contract's `ReviewToasts.show({ kind, stepTitle, personName, reviewsUrl })` is now Task 10's per-kind union; this task builds the exact member per kind.
-- **Barrel (R-k):** nothing is added to `src/index.tsx`; apps and the lists import the dialogs by deep path (`@webiny/app-workflows/review/presentation/actionDialog/components/ReviewActionDialogs.js`).
-- **Composition-root test:** assertions extend Task 10's `app.test.tsx` (see Task 13).
 - Size: large (twelve source files, four test files).

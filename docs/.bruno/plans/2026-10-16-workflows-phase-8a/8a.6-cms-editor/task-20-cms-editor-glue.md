@@ -1,14 +1,14 @@
 ### Task 20: CMS editor glue (bar, blocked actions and editor-rule decorators)
 
-Spec 13.1, 13.3; R202, R211, R212, R217, R225, R226; Review Focus 1, 3, 4, 5, 8, 16, 17; A78 (each extension point is decorated once, the old decorator is replaced), QBZ-1, QBZ-36, QBZ-58, QBZ-96. This task mounts the shared review bar and the shared editor rules at the CMS entry editor's extension points. Everything app-neutral (presenter, bar, tooltip, dialogs, rules, message tables) exists in `app-workflows` (Tasks 13-19); this package adds a session subclass and thin glue. No review logic is written here. Imports from `app-workflows` use deep paths (`@webiny/app-workflows/<path>.js`), never the barrel (controller rule).
+Spec 13.1, 13.3; R202, R211, R212, R217, R225, R226; Review Focus 1, 3, 4, 5, 8, 16, 17; A78 (each extension point is decorated once, the old decorator is replaced), QBZ-1, QBZ-36, QBZ-58, QBZ-96. This task mounts the shared review bar and the shared editor rules at the CMS entry editor's extension points. Everything app-neutral (presenter, bar, tooltip, dialogs, rules, message tables) exists in `app-workflows` (Tasks 13-19); this package adds a session subclass and thin glue. No review logic is written here. Imports from `app-workflows` use deep paths (`@webiny/app-workflows/<path>.js`), never the barrel (R238). Test support that several tasks share (Tasks 20, 21, 35) lives in `packages/app-headless-cms-workflows/src/testing/` and is imported as `~/testing/<file>.js`, because a co-located `src` test importing from `__tests__/` fails `yarn build` with TS6059 (`tsconfig.build.json` has `rootDir: ./src`, R243); only the vitest setup files stay in `__tests__/setup/`.
 
 - **Session:** `CmsEntryReview` (`"Cms/Workflows/EntryReview"`, token in `features/editorReview/CmsEntryReview.ts`) is the `IEditorReviewSession` of the CMS editor. Per the subclass rule the shared class is never registered: `class CmsEntryReviewSessionImpl extends EditorReviewSession implements CmsEntryReview.Interface {}` in `CmsEntryReviewImpl.ts`, registered with dependencies `[TargetReviewPresenter, CmsReviewUseCases]`, singleton (R212). It lives in its own `CmsEntryReviewFeature` (`register` + `resolve -> { session }`) because components reach it through `useFeature`.
 - **Bar:** `ContentEntryFormContent` decorator rendering `EditorReviewBar` (`reviewsRoute = Routes.ContentEntries.ContentReviews`) above the original, only for a loaded entry of a non-singleton model and while the status is not `noWorkflow`.
 - **No standalone tooltip action.** `ReviewTooltip` (Task 14) is `{ presenter, children }`: it wraps a disabled control and gives it the reason on hover and focus and through `aria-describedby`. It is used by `CmsEntryReviewBlockedActions` around the disabled Save and Publish. The old `workflowStateTooltip` action is not registered (the old `CmsEntryFormTooltipButton` is deleted in Task 37).
-- **Schedule:** `MenuItemAction` decorator hiding `schedule` unless `vm.allowsPublishing` (R226; note that "a workflow is bound but no review exists" also hides it, the real `getEditorRules` returns `allowsPublishing: false` for `none`).
+- **Schedule:** `MenuItemAction` decorator hiding `schedule` unless `vm.allowsPublishing` (R226; note that "a workflow is bound but no review exists" also hides it, the real `getEditorRules` returns `allowsPublishing: false` for `none`, except for an unpublished revision, which was reviewed before it was published and is publishable and schedulable again, Q19).
 - **New revision:** the `createNewRevision` options-menu item (kept by name, under `IsModelPublishable`) stays usable in every locked state (rejected, approved, in review) and is disabled only while the status is unknown. For a rejected revision it is the way to a new revision: it is available in the Options menu and the bar's lock text already names it ("... create a new revision ..."); the Task 13 view model has no rejected discriminator, so no extra button is added.
-- **Form presenter decorator** `CmsEntryFormPresenterReviewDecorator` (dependencies `[CmsEntryReview]`): `loadRevision(id)` -> original, then `session.presenter.init({ useCases, target: { namespace: createAppName(model), targetRevisionId }, targetTitle, canRequest: <original canSave>, isPublished })`; after a successful publish, unpublish or save of the same revision `session.presenter.setContext({ targetTitle, canRequest, isPublished })` (no reload); `init` again only when a save created a different revision id; `reset` -> `dispose()`. `canSave` = original && `allowsEditing`; `canCreateNewRevision` = original && `allowsEditing` (the base "New Revision" button reads only this flag and saves through `saveRevision`, which the rule refuses); `canPublish` = original && `allowsPublishing`; all three false from the moment a revision starts loading until the status is known. Singleton models and new entries pass through. `saveRevision` and `publishRevision` refuse when the rule says no; the one exception is a clean, unlocked approved draft, where `saveRevision` reports success without saving so "Save & Publish" goes on to publish.
-- **Two additions the base editor forces** (Contract notes 2, 3): `CmsEntryReviewBlockedActions` (the base Save and Publish buttons render nothing when `canSave` or `canPublish` is false, so the `aria-disabled` Publish, never removed per R226, has to be registered by us) and `CmsEntryReviewFormLock` (the CMS form has no read-only mode while R225 asks for one until the status is known).
+- **Form presenter decorator** `CmsEntryFormPresenterReviewDecorator` (dependencies `[CmsEntryReview]`): `loadRevision(id)` -> original, then `session.presenter.init({ useCases, target: { namespace: createAppName(model), targetRevisionId }, targetTitle, canRequest: <original canSave>, isPublished, isUnpublished })` (`isUnpublished` is true when the revision's status is `unpublished`, a revision published before and not published now, R226, Q19); after a successful publish, unpublish or save of the same revision `session.presenter.setContext({ targetTitle, canRequest, isPublished, isUnpublished })` (no reload); `init` again only when a save created a different revision id; `reset` -> `dispose()`. `canSave` = original && `allowsEditing`; `canCreateNewRevision` = original && `allowsEditing` (the base "New Revision" button reads only this flag and saves through `saveRevision`, which the rule refuses); `canPublish` = original && `allowsPublishing`; all three false from the moment a revision starts loading until the status is known. Singleton models and new entries pass through. `saveRevision` and `publishRevision` refuse when the rule says no; the one exception is a clean, unlocked approved draft, where `saveRevision` reports success without saving so "Save & Publish" goes on to publish.
+- **Two additions the base editor forces** (Contract notes 1, 2): `CmsEntryReviewBlockedActions` (the base Save and Publish buttons render nothing when `canSave` or `canPublish` is false, so the `aria-disabled` Publish, never removed per R226, has to be registered by us) and `CmsEntryReviewFormLock` (the CMS form has no read-only mode while R225 asks for one until the status is known).
 
 **Files:**
 - Modify: `packages/app-headless-cms-workflows/package.json` (devDependencies)
@@ -27,13 +27,13 @@ Spec 13.1, 13.3; R202, R211, R212, R217, R225, R226; Review Focus 1, 3, 4, 5, 8,
 - Modify: `packages/app-headless-cms-workflows/src/presentation/feature.ts` (the new decorator replaces the old one)
 - Modify: `packages/app-headless-cms-workflows/src/index.tsx` (mounts the new components in place of the old ones, registers `CmsEntryReviewFeature`)
 - Modify: `packages/app-headless-cms-workflows/src/index.test.tsx` (**Task 11's file**, edited only in the `vi.mock` factory for `~/Components/ContentEntryForm/index.js`, which must export the new names, and the obsolete `CmsEntryFormCreateNewRevisionButton.js` mock is removed; no case changes)
-- Create tests: helpers `__tests__/helpers/{createEntrySession,createEntry,createFormVm,renderEditorTree}.ts(x)`, `__tests__/helpers/{models,reviewStates}.ts`; `src/presentation/CmsEntryFormPresenterReviewDecorator.test.ts`, `src/features/editorReview/feature.test.ts`, `src/Components/ContentEntryForm/{CmsEntryReviewBar,CmsEntryReviewFormLock,CmsEntryReviewScheduleMenuItem,CmsEntryReviewBlockedActions,CmsEntryReviewNewRevision}.test.tsx`, `src/index.editor.test.tsx` (the Task 20 composition cases; Task 11's `index.test.tsx` keeps its own)
+- Create tests: shared test support `src/testing/{createEntrySession,createEntry,createFormVm,renderEditorTree}.ts(x)`, `src/testing/{models,reviewStates}.ts` (R243); `src/presentation/CmsEntryFormPresenterReviewDecorator.test.ts`, `src/features/editorReview/feature.test.ts`, `src/Components/ContentEntryForm/{CmsEntryReviewBar,CmsEntryReviewFormLock,CmsEntryReviewScheduleMenuItem,CmsEntryReviewBlockedActions,CmsEntryReviewNewRevision}.test.tsx`, `src/index.editor.test.tsx` (the Task 20 composition cases; Task 11's `index.test.tsx` keeps its own)
 - Not touched, deleted in Task 37: `Components/ContentEntryForm/{ContentEntryFormWorkflow,CmsEntryFormTooltipButton,CmsEntryFormScheduleMenuItemAction,CmsEntryFormCreateNewRevisionButton}.tsx`, `presentation/ContentEntryFormPresenterWorkflowDecorator.ts`.
 - Existing, must stay green unchanged: every other test file Task 11 added under `packages/app-headless-cms-workflows` (list with `git ls-files 'packages/app-headless-cms-workflows/**/*.test.ts*'`).
 
 **Interfaces:**
-- Consumes: Task 19 (`EditorReviewSession` `.../review/editor/EditorReviewSession.js`, `IEditorReviewSession` `.../review/editor/abstractions.js`, `EditorReviewBar` `.../review/editor/components/EditorReviewBar.js`), Task 14 (`ReviewTooltip` `.../review/presentation/targetReview/components/ReviewTooltip.js`, props `{ presenter, children }`; test helpers `createViewModel`, `createFakePresenter` in `.../review/testing/targetReviewFakes.js`), Task 13 (`TargetReviewPresenter`, `ITargetReviewPresenter`, `ITargetReviewViewModel`, `TargetReviewContext`, `TargetReviewInitParams` from `.../review/presentation/targetReview/abstractions.js`; `setContext`; test fixtures `createFakeUseCases` in `.../review/testing/reviewFixtures.js`), Task 8 (`IReviewUseCases`), Task 11 (`CmsReviewUseCases` token `~/features/gateway/CmsReviewUseCases.js`, `CmsReviewFeature` `~/features/gateway/feature.js`, `resolve -> { useCases, contentAdapter }`; `vitest.config.ts`, devDependencies, `src/index.test.tsx`). Existing, verified in code for this plan: `ContentEntryFormPresenter` / `IContentEntryFormPresenter` / `IContentEntryFormViewModel` (`packages/app-headless-cms/src/presentation/contentEntries/form/abstractions.ts`; `canCreateNewRevision` is read by the base `CreateNewRevisionButton` alone), `useContentEntryFormPresenter`, `ContentEntryFormContent` and `ContentEntryForm` (`.../views/layout/index.ts`, both `makeDecoratable`), `InternalContentEntryEditorConfig`, `ContentEntryEditorConfig`, `ContentEntryEditorWithConfig`, `useContentEntryEditorConfig` (`packages/app-headless-cms/src/admin/config/contentEntries/editor/ContentEntryEditorConfig.tsx`), `Actions.ButtonAction` (with `useButtons()` giving `ButtonPrimary`/`ButtonSecondary` with `onAction`, spread `...other` onto the admin-ui `Button`) and `Actions.MenuItemAction`, `Buttons` and `OptionsMenuItem` (`@webiny/app-admin`), `IsModelPublishable`, `usePermission` (`packages/app-headless-cms/src/admin/hooks/usePermission.ts`), `RevisionsListFeature` (`createRevision(revisionId)`), `CMS_MODEL_SINGLETON_TAG`, `createAppName`, `Routes.ContentEntries.ContentReviews`, `AdminUiProvider` (`@webiny/admin-ui`), `FeatureFlagsService` (`@webiny/app-admin/features/featureFlags/abstractions.js`), `Container` (`@webiny/di`: instance registrations win over class registrations; decorators apply to both).
-- Produces: `CmsEntryReview` (token), `CmsEntryReviewFeature` (`resolve -> { session }`), `useCmsEntryReview()`, `isReviewableModel(model)`, `getCmsEntryReviewContext`, `getCmsEntryReviewInitParams`, the decorators `CmsEntryFormPresenterReviewDecorator`, `CmsEntryReviewBar`, `CmsEntryReviewScheduleMenuItem`, `CmsEntryReviewFormLock`, the registrations `CmsEntryReviewNewRevision`, `CmsEntryReviewBlockedActions`, and the test helpers (`__tests__/helpers`, reused by Task 21 and 35).
+- Consumes: Task 19 (`EditorReviewSession` `.../review/editor/EditorReviewSession.js`, `IEditorReviewSession` `.../review/editor/abstractions.js`, `EditorReviewBar` `.../review/editor/components/EditorReviewBar.js`), Task 14 (`ReviewTooltip` `.../review/presentation/targetReview/components/ReviewTooltip.js`, props `{ presenter, children }`; test helpers `createViewModel`, `createFakePresenter` in `.../review/testing/targetReviewFakes.js`), Task 13 (`TargetReviewPresenter`, `ITargetReviewPresenter`, `ITargetReviewViewModel`, `TargetReviewContext`, `TargetReviewInitParams` from `.../review/presentation/targetReview/abstractions.js`; `setContext`; the vitest fake `createFakeUseCases` and the type `FakeReviewUseCases` in `.../review/testing/fakeReviewUseCases.js`), Task 8 (`IReviewUseCases`), Task 11 (`CmsReviewUseCases` token `~/features/gateway/CmsReviewUseCases.js`, `CmsReviewFeature` `~/features/gateway/feature.js`, `resolve -> { useCases, contentAdapter }`; `vitest.config.ts`, devDependencies, `src/index.test.tsx`). Existing, verified in code for this plan: `ContentEntryFormPresenter` / `IContentEntryFormPresenter` / `IContentEntryFormViewModel` (`packages/app-headless-cms/src/presentation/contentEntries/form/abstractions.ts`; `canCreateNewRevision` is read by the base `CreateNewRevisionButton` alone), `useContentEntryFormPresenter`, `ContentEntryFormContent` and `ContentEntryForm` (`.../views/layout/index.ts`, both `makeDecoratable`), `InternalContentEntryEditorConfig`, `ContentEntryEditorConfig`, `ContentEntryEditorWithConfig`, `useContentEntryEditorConfig` (`packages/app-headless-cms/src/admin/config/contentEntries/editor/ContentEntryEditorConfig.tsx`), `Actions.ButtonAction` (with `useButtons()` giving `ButtonPrimary`/`ButtonSecondary` with `onAction`, spread `...other` onto the admin-ui `Button`) and `Actions.MenuItemAction`, `Buttons` and `OptionsMenuItem` (`@webiny/app-admin`), `IsModelPublishable`, `usePermission` (`packages/app-headless-cms/src/admin/hooks/usePermission.ts`), `RevisionsListFeature` (`createRevision(revisionId)`), `CMS_MODEL_SINGLETON_TAG`, `createAppName`, `Routes.ContentEntries.ContentReviews`, `AdminUiProvider` (`@webiny/admin-ui`), `FeatureFlagsService` (`@webiny/app-admin/features/featureFlags/abstractions.js`), `Container` (`@webiny/di`: instance registrations win over class registrations; decorators apply to both).
+- Produces: `CmsEntryReview` (token), `CmsEntryReviewFeature` (`resolve -> { session }`), `useCmsEntryReview()`, `isReviewableModel(model)`, `getCmsEntryReviewContext`, `getCmsEntryReviewInitParams`, the decorators `CmsEntryFormPresenterReviewDecorator`, `CmsEntryReviewBar`, `CmsEntryReviewScheduleMenuItem`, `CmsEntryReviewFormLock`, the registrations `CmsEntryReviewNewRevision`, `CmsEntryReviewBlockedActions`, and the shared test support (`src/testing/`, reused by Task 21 and 35).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -98,7 +98,7 @@ export const ReactComponent = (props: React.SVGProps<SVGSVGElement>) => {
 export default "svg-stub";
 ```
 
-Create `packages/app-headless-cms-workflows/__tests__/helpers/models.ts`:
+Create `packages/app-headless-cms-workflows/src/testing/models.ts`:
 
 ```ts
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
@@ -123,14 +123,16 @@ export const NO_PUBLISHING_MODEL = {
 } as unknown as CmsModel;
 ```
 
-Create `packages/app-headless-cms-workflows/__tests__/helpers/reviewStates.ts` (the editor-rule fields of the view model per status; they mirror Task 13's `getEditorRules` exactly, so a change there needs a change here):
+Create `packages/app-headless-cms-workflows/src/testing/reviewStates.ts` (the editor-rule fields of the view model per status; they mirror Task 13's `getEditorRules` exactly, R226 included, so a change there needs a change here):
 
 ```ts
 import type { ITargetReviewViewModel } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 
 export const CHECKING = "Checking review status…";
 export const FAILED_REASON = "The review status could not be loaded. Try again from the review bar.";
-export const NEEDS_REVIEW = "Publishing needs an approved review.";
+export const NEEDS_REVIEW = "Publishing needs an approved review. Request a review first.";
+export const REJECTED_REASON =
+    "This revision was rejected. Create a new revision, then request a new review.";
 export const IN_REVIEW_REASON =
     "This revision is in review. Publishing is allowed once every step approves.";
 export const NO_MOVE = "Can’t move while this revision is in review.";
@@ -152,6 +154,15 @@ export const BOUND_NO_REVIEW: Rules = {
     allowsEditing: true,
     allowsPublishing: false,
     publishDisabledReason: NEEDS_REVIEW,
+    moveDisabledReason: null
+};
+
+/** An unpublished revision with no review: it was reviewed before it was published, so it can be published again (R226, Q19). */
+export const BOUND_UNPUBLISHED: Rules = {
+    status: "none",
+    allowsEditing: true,
+    allowsPublishing: true,
+    publishDisabledReason: null,
     moveDisabledReason: null
 };
 
@@ -183,7 +194,7 @@ export const REJECTED: Rules = {
     status: "active",
     allowsEditing: false,
     allowsPublishing: false,
-    publishDisabledReason: NEEDS_REVIEW,
+    publishDisabledReason: REJECTED_REASON,
     moveDisabledReason: null
 };
 
@@ -196,17 +207,18 @@ export const APPROVED: Rules = {
 };
 ```
 
-Create `packages/app-headless-cms-workflows/__tests__/helpers/createEntrySession.ts` (reuses Task 14's fakes; the fake presenter is wrapped so its view model can change during a test and components re-render):
+Create `packages/app-headless-cms-workflows/src/testing/createEntrySession.ts` (reuses Task 14's fakes; the fake presenter is wrapped so its view model can change during a test and components re-render):
 
 ```ts
-import { action, observable } from "mobx";
+import { action } from "mobx";
+import { observable } from "mobx";
 import type { IEditorReviewSession } from "@webiny/app-workflows/review/editor/abstractions.js";
 import type { ITargetReviewViewModel } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
 import { createViewModel } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
 import type { FakeTargetReviewPresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
-import { createFakeUseCases } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
-import type { FakeReviewUseCases } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
+import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
+import type { FakeReviewUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 
 export interface EntrySession {
     session: IEditorReviewSession;
@@ -234,7 +246,7 @@ export function createEntrySession(initial: Partial<ITargetReviewViewModel> = {}
 }
 ```
 
-Create `packages/app-headless-cms-workflows/__tests__/helpers/createEntry.ts`:
+Create `packages/app-headless-cms-workflows/src/testing/createEntry.ts`:
 
 ```ts
 import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
@@ -256,7 +268,7 @@ export function createEntry(overrides: Partial<CmsContentEntry["meta"]> = {}): C
 }
 ```
 
-Create `packages/app-headless-cms-workflows/__tests__/helpers/createFormVm.ts`:
+Create `packages/app-headless-cms-workflows/src/testing/createFormVm.ts`:
 
 ```ts
 import type { IContentEntryFormViewModel } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
@@ -284,7 +296,7 @@ export function createFormVm(
 }
 ```
 
-Create `packages/app-headless-cms-workflows/__tests__/helpers/renderEditorTree.tsx`:
+Create `packages/app-headless-cms-workflows/src/testing/renderEditorTree.tsx`:
 
 ```tsx
 import React from "react";
@@ -408,7 +420,11 @@ export function renderEditorTree(params: RenderEditorTreeParams): RenderedEditor
 Create `packages/app-headless-cms-workflows/src/presentation/CmsEntryFormPresenterReviewDecorator.test.ts`:
 
 ```ts
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
 import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
@@ -416,18 +432,19 @@ import type { IContentEntryFormPresenter } from "@webiny/app-headless-cms/presen
 import type { IContentEntryFormViewModel } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
 import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
 import { CmsEntryFormPresenterReviewDecorator } from "~/presentation/CmsEntryFormPresenterReviewDecorator.js";
-import type { EntrySession } from "~tests/helpers/createEntrySession.js";
-import { createEntrySession } from "~tests/helpers/createEntrySession.js";
-import { createEntry } from "~tests/helpers/createEntry.js";
-import { createFormVm } from "~tests/helpers/createFormVm.js";
-import { SINGLETON_MODEL } from "~tests/helpers/models.js";
-import { APPROVED } from "~tests/helpers/reviewStates.js";
-import { BOUND_NO_REVIEW } from "~tests/helpers/reviewStates.js";
-import { FAILED } from "~tests/helpers/reviewStates.js";
-import { IN_REVIEW } from "~tests/helpers/reviewStates.js";
-import { LOADING } from "~tests/helpers/reviewStates.js";
-import { NO_WORKFLOW } from "~tests/helpers/reviewStates.js";
-import { REJECTED } from "~tests/helpers/reviewStates.js";
+import type { EntrySession } from "~/testing/createEntrySession.js";
+import { createEntrySession } from "~/testing/createEntrySession.js";
+import { createEntry } from "~/testing/createEntry.js";
+import { createFormVm } from "~/testing/createFormVm.js";
+import { SINGLETON_MODEL } from "~/testing/models.js";
+import { APPROVED } from "~/testing/reviewStates.js";
+import { BOUND_NO_REVIEW } from "~/testing/reviewStates.js";
+import { BOUND_UNPUBLISHED } from "~/testing/reviewStates.js";
+import { FAILED } from "~/testing/reviewStates.js";
+import { IN_REVIEW } from "~/testing/reviewStates.js";
+import { LOADING } from "~/testing/reviewStates.js";
+import { NO_WORKFLOW } from "~/testing/reviewStates.js";
+import { REJECTED } from "~/testing/reviewStates.js";
 
 interface SaveRevisionOptions {
     skipValidation?: boolean;
@@ -532,7 +549,8 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
             target: { namespace: "cms.article", targetRevisionId: "entry-1#0001" },
             targetTitle: "Article: Hello",
             canRequest: true,
-            isPublished: false
+            isPublished: false,
+            isUnpublished: false
         });
     });
 
@@ -546,6 +564,19 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         const params = fake.presenter.init.mock.calls[0][0];
         expect(params.canRequest).toBe(false);
         expect(params.isPublished).toBe(true);
+        expect(params.isUnpublished).toBe(false);
+    });
+
+    it("passes isUnpublished for a revision that was published before and is unpublished now (R226, Q19)", async () => {
+        base.loadRevision.mockImplementation(async () => {
+            base.vm = loadedVm({ entry: createEntry({ status: "unpublished" }) });
+        });
+
+        await presenter.loadRevision("entry-1#0001");
+
+        const params = fake.presenter.init.mock.calls[0][0];
+        expect(params.isPublished).toBe(false);
+        expect(params.isUnpublished).toBe(true);
     });
 
     it("leaves a singleton model alone", async () => {
@@ -584,6 +615,7 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
     it.each([
         ["no workflow", NO_WORKFLOW, true, true],
         ["a bound workflow and no review", BOUND_NO_REVIEW, true, false],
+        ["an unpublished revision with no review (Q19)", BOUND_UNPUBLISHED, true, true],
         ["loading", LOADING, false, false],
         ["failed", FAILED, false, false],
         ["in review", IN_REVIEW, false, false],
@@ -711,7 +743,8 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         expect(fake.presenter.setContext).toHaveBeenCalledWith({
             targetTitle: "Article: Hello",
             canRequest: true,
-            isPublished: false
+            isPublished: false,
+            isUnpublished: false
         });
     });
 
@@ -755,7 +788,8 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         expect(fake.presenter.setContext).toHaveBeenCalledWith({
             targetTitle: "Article: Hello",
             canRequest: true,
-            isPublished: true
+            isPublished: true,
+            isUnpublished: false
         });
     });
 
@@ -774,6 +808,7 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         expect(fake.presenter.init).toHaveBeenCalledTimes(1);
         const context = fake.presenter.setContext.mock.calls[0][0];
         expect(context.isPublished).toBe(false);
+        expect(context.isUnpublished).toBe(true);
     });
 });
 ```
@@ -781,11 +816,13 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
 Create `packages/app-headless-cms-workflows/src/features/editorReview/feature.test.ts`:
 
 ```ts
-import { describe, expect, it } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
-import { createFakeUseCases } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
+import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
 import { CmsEntryReviewFeature } from "~/features/editorReview/feature.js";
 
@@ -844,17 +881,22 @@ Create `packages/app-headless-cms-workflows/src/Components/ContentEntryForm/CmsE
 
 ```tsx
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
-import { act, screen, waitFor } from "@testing-library/react";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
+import { act } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import type { Route } from "@webiny/app-admin";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { CmsEntryReviewBar } from "./CmsEntryReviewBar.js";
-import { SINGLETON_MODEL } from "~tests/helpers/models.js";
-import { renderEditorTree } from "~tests/helpers/renderEditorTree.js";
-import { BOUND_NO_REVIEW } from "~tests/helpers/reviewStates.js";
-import { IN_REVIEW } from "~tests/helpers/reviewStates.js";
-import { LOADING } from "~tests/helpers/reviewStates.js";
-import { NO_WORKFLOW } from "~tests/helpers/reviewStates.js";
+import { SINGLETON_MODEL } from "~/testing/models.js";
+import { renderEditorTree } from "~/testing/renderEditorTree.js";
+import { BOUND_NO_REVIEW } from "~/testing/reviewStates.js";
+import { IN_REVIEW } from "~/testing/reviewStates.js";
+import { LOADING } from "~/testing/reviewStates.js";
+import { NO_WORKFLOW } from "~/testing/reviewStates.js";
 
 interface FakeBarProps {
     reviewsRoute: Route;
@@ -947,17 +989,20 @@ Create `packages/app-headless-cms-workflows/src/Components/ContentEntryForm/CmsE
 
 ```tsx
 import React from "react";
-import { describe, expect, it } from "vitest";
-import { act, waitFor } from "@testing-library/react";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { act } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import { ContentEntryForm } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { CmsEntryReviewFormLock } from "./CmsEntryReviewFormLock.js";
-import { SINGLETON_MODEL } from "~tests/helpers/models.js";
-import { renderEditorTree } from "~tests/helpers/renderEditorTree.js";
-import { BOUND_NO_REVIEW } from "~tests/helpers/reviewStates.js";
-import { FAILED } from "~tests/helpers/reviewStates.js";
-import { IN_REVIEW } from "~tests/helpers/reviewStates.js";
-import { LOADING } from "~tests/helpers/reviewStates.js";
-import { NO_WORKFLOW } from "~tests/helpers/reviewStates.js";
+import { SINGLETON_MODEL } from "~/testing/models.js";
+import { renderEditorTree } from "~/testing/renderEditorTree.js";
+import { BOUND_NO_REVIEW } from "~/testing/reviewStates.js";
+import { FAILED } from "~/testing/reviewStates.js";
+import { IN_REVIEW } from "~/testing/reviewStates.js";
+import { LOADING } from "~/testing/reviewStates.js";
+import { NO_WORKFLOW } from "~/testing/reviewStates.js";
 
 function renderForm(params: Parameters<typeof renderEditorTree>[0]) {
     return renderEditorTree({
@@ -1038,16 +1083,20 @@ Create `packages/app-headless-cms-workflows/src/Components/ContentEntryForm/CmsE
 
 ```tsx
 import React from "react";
-import { describe, expect, it } from "vitest";
-import { screen, waitFor } from "@testing-library/react";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { screen } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import { ContentEntryEditorConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
 import { CmsEntryReviewScheduleMenuItem } from "./CmsEntryReviewScheduleMenuItem.js";
-import { renderEditorTree } from "~tests/helpers/renderEditorTree.js";
-import { APPROVED } from "~tests/helpers/reviewStates.js";
-import { BOUND_NO_REVIEW } from "~tests/helpers/reviewStates.js";
-import { IN_REVIEW } from "~tests/helpers/reviewStates.js";
-import { LOADING } from "~tests/helpers/reviewStates.js";
-import { NO_WORKFLOW } from "~tests/helpers/reviewStates.js";
+import { renderEditorTree } from "~/testing/renderEditorTree.js";
+import { APPROVED } from "~/testing/reviewStates.js";
+import { BOUND_NO_REVIEW } from "~/testing/reviewStates.js";
+import { BOUND_UNPUBLISHED } from "~/testing/reviewStates.js";
+import { IN_REVIEW } from "~/testing/reviewStates.js";
+import { LOADING } from "~/testing/reviewStates.js";
+import { NO_WORKFLOW } from "~/testing/reviewStates.js";
 
 const { Actions } = ContentEntryEditorConfig;
 
@@ -1075,7 +1124,8 @@ function renderMenu(params: Parameters<typeof renderEditorTree>[0]) {
 describe("CmsEntryReviewScheduleMenuItem", () => {
     it.each([
         ["no workflow", NO_WORKFLOW],
-        ["an approved review", APPROVED]
+        ["an approved review", APPROVED],
+        ["an unpublished revision with no review (Q19)", BOUND_UNPUBLISHED]
     ])("keeps schedule for %s", async (_name, reviewVm) => {
         renderMenu({ reviewVm });
 
@@ -1106,24 +1156,31 @@ Create `packages/app-headless-cms-workflows/src/Components/ContentEntryForm/CmsE
 
 ```tsx
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { screen, waitFor } from "@testing-library/react";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
+import { screen } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import { CmsEntryReviewBlockedActions } from "./CmsEntryReviewBlockedActions.js";
-import { MODEL } from "~tests/helpers/models.js";
-import { SINGLETON_MODEL } from "~tests/helpers/models.js";
-import { createEntry } from "~tests/helpers/createEntry.js";
-import { renderEditorTree } from "~tests/helpers/renderEditorTree.js";
-import { APPROVED } from "~tests/helpers/reviewStates.js";
-import { BOUND_NO_REVIEW } from "~tests/helpers/reviewStates.js";
-import { CHECKING } from "~tests/helpers/reviewStates.js";
-import { FAILED } from "~tests/helpers/reviewStates.js";
-import { FAILED_REASON } from "~tests/helpers/reviewStates.js";
-import { IN_REVIEW } from "~tests/helpers/reviewStates.js";
-import { IN_REVIEW_REASON } from "~tests/helpers/reviewStates.js";
-import { LOADING } from "~tests/helpers/reviewStates.js";
-import { NEEDS_REVIEW } from "~tests/helpers/reviewStates.js";
-import { NO_WORKFLOW } from "~tests/helpers/reviewStates.js";
-import { REJECTED } from "~tests/helpers/reviewStates.js";
+import { MODEL } from "~/testing/models.js";
+import { SINGLETON_MODEL } from "~/testing/models.js";
+import { createEntry } from "~/testing/createEntry.js";
+import { renderEditorTree } from "~/testing/renderEditorTree.js";
+import { APPROVED } from "~/testing/reviewStates.js";
+import { BOUND_NO_REVIEW } from "~/testing/reviewStates.js";
+import { BOUND_UNPUBLISHED } from "~/testing/reviewStates.js";
+import { CHECKING } from "~/testing/reviewStates.js";
+import { FAILED } from "~/testing/reviewStates.js";
+import { FAILED_REASON } from "~/testing/reviewStates.js";
+import { IN_REVIEW } from "~/testing/reviewStates.js";
+import { IN_REVIEW_REASON } from "~/testing/reviewStates.js";
+import { LOADING } from "~/testing/reviewStates.js";
+import { NEEDS_REVIEW } from "~/testing/reviewStates.js";
+import { NO_WORKFLOW } from "~/testing/reviewStates.js";
+import { REJECTED } from "~/testing/reviewStates.js";
+import { REJECTED_REASON } from "~/testing/reviewStates.js";
 
 const permission = vi.hoisted(() => {
     return { canPublish: true };
@@ -1198,7 +1255,7 @@ describe("CmsEntryReviewBlockedActions", () => {
 
         const publish = await screen.findByRole("button", { name: "Publish" });
 
-        expect(getDescription(publish)).toBe(NEEDS_REVIEW);
+        expect(getDescription(publish)).toBe(REJECTED_REASON);
         expect(screen.queryByRole("button", { name: "Save" })).toBeNull();
     });
 
@@ -1221,6 +1278,7 @@ describe("CmsEntryReviewBlockedActions", () => {
 
     it.each([
         ["publishing is allowed (the base Publish button is shown)", { canSave: false, canPublish: true }, APPROVED, MODEL],
+        ["an unpublished revision may be published again (Q19)", { canSave: true, canPublish: true }, BOUND_UNPUBLISHED, MODEL],
         ["no workflow is bound", BLOCKED, NO_WORKFLOW, MODEL],
         ["the model is a singleton", BLOCKED, LOADING, SINGLETON_MODEL]
     ])("shows nothing when %s", async (_name, formVm, reviewVm, model) => {
@@ -1264,20 +1322,26 @@ Create `packages/app-headless-cms-workflows/src/Components/ContentEntryForm/CmsE
 
 ```tsx
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
+import { fireEvent } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import { CmsEntryReviewNewRevision } from "./CmsEntryReviewNewRevision.js";
-import { NO_PUBLISHING_MODEL } from "~tests/helpers/models.js";
-import { SINGLETON_MODEL } from "~tests/helpers/models.js";
-import { createEntry } from "~tests/helpers/createEntry.js";
-import { renderEditorTree } from "~tests/helpers/renderEditorTree.js";
-import { APPROVED } from "~tests/helpers/reviewStates.js";
-import { BOUND_NO_REVIEW } from "~tests/helpers/reviewStates.js";
-import { FAILED } from "~tests/helpers/reviewStates.js";
-import { IN_REVIEW } from "~tests/helpers/reviewStates.js";
-import { LOADING } from "~tests/helpers/reviewStates.js";
-import { NO_WORKFLOW } from "~tests/helpers/reviewStates.js";
-import { REJECTED } from "~tests/helpers/reviewStates.js";
+import { NO_PUBLISHING_MODEL } from "~/testing/models.js";
+import { SINGLETON_MODEL } from "~/testing/models.js";
+import { createEntry } from "~/testing/createEntry.js";
+import { renderEditorTree } from "~/testing/renderEditorTree.js";
+import { APPROVED } from "~/testing/reviewStates.js";
+import { BOUND_NO_REVIEW } from "~/testing/reviewStates.js";
+import { FAILED } from "~/testing/reviewStates.js";
+import { IN_REVIEW } from "~/testing/reviewStates.js";
+import { LOADING } from "~/testing/reviewStates.js";
+import { NO_WORKFLOW } from "~/testing/reviewStates.js";
+import { REJECTED } from "~/testing/reviewStates.js";
 
 interface FakeMenuItemProps {
     label: string;
@@ -1427,8 +1491,14 @@ Create `packages/app-headless-cms-workflows/src/index.editor.test.tsx` (the Task
 
 ```tsx
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
+import { render } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { CompositionProvider } from "@webiny/react-composition";
 import { DiContainerProvider } from "@webiny/app/shared/di/DiContainerProvider.js";
@@ -1444,13 +1514,13 @@ import type { IContentEntryFormViewModel } from "@webiny/app-headless-cms/presen
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
-import { createFakeUseCases } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
+import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
 import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
 import { CmsWorkflows } from "./index.js";
-import { createEntry } from "~tests/helpers/createEntry.js";
-import { createFormVm } from "~tests/helpers/createFormVm.js";
-import { MODEL } from "~tests/helpers/models.js";
+import { createEntry } from "~/testing/createEntry.js";
+import { createFormVm } from "~/testing/createFormVm.js";
+import { MODEL } from "~/testing/models.js";
 
 vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", async () => {
     const React = await import("react");
@@ -1645,7 +1715,7 @@ import { CmsEntryReview as Abstraction } from "./CmsEntryReview.js";
 
 /*
  * The shared session class is never registered itself: `createImplementation` stores the
- * abstraction and dependencies on the class, so each app subclasses it once (controller rule).
+ * abstraction and dependencies on the class, so each app subclasses it once (R237).
  */
 class CmsEntryReviewSessionImpl extends EditorReviewSession implements Abstraction.Interface {}
 
@@ -1719,7 +1789,9 @@ export function getCmsEntryReviewContext(
     return {
         targetTitle: `${model.name}: ${entryTitle}`,
         canRequest,
-        isPublished: entry.meta?.status === "published"
+        isPublished: entry.meta?.status === "published",
+        // A revision published before and not published now (R226): it was reviewed before it was published.
+        isUnpublished: entry.meta?.status === "unpublished"
     };
 }
 ```
@@ -1756,7 +1828,8 @@ export function getCmsEntryReviewInitParams(input: CmsEntryReviewInitInput): Tar
 `packages/app-headless-cms-workflows/src/presentation/CmsEntryFormPresenterReviewDecorator.ts`:
 
 ```ts
-import { computed, makeAutoObservable } from "mobx";
+import { computed } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
 import type { IContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
 import type { IContentEntryFormViewModel } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
@@ -2161,7 +2234,9 @@ export const CmsEntryReviewNewRevision = () => {
 `packages/app-headless-cms-workflows/src/Components/ContentEntryForm/CmsEntryReviewFormLock.tsx`:
 
 ```tsx
-import React, { useEffect, useRef } from "react";
+import React from "react";
+import { useEffect } from "react";
+import { useRef } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { ContentEntryForm } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
@@ -2253,18 +2328,28 @@ const BlockedActions = createReactiveComponent(() => {
 
     return (
         <ReviewTooltip presenter={session.presenter}>
-            <span className={"flex items-center gap-sm"}>
-                {showSave && (
-                    <ButtonSecondary aria-disabled={true} onAction={ignoreAction}>
-                        {"Save"}
-                    </ButtonSecondary>
-                )}
-                {showPublish && (
-                    <ButtonPrimary aria-disabled={true} onAction={ignoreAction}>
-                        {"Publish"}
-                    </ButtonPrimary>
-                )}
-            </span>
+            {describedBy => (
+                <span className={"flex items-center gap-sm"}>
+                    {showSave && (
+                        <ButtonSecondary
+                            aria-disabled={true}
+                            aria-describedby={describedBy}
+                            onAction={ignoreAction}
+                        >
+                            {"Save"}
+                        </ButtonSecondary>
+                    )}
+                    {showPublish && (
+                        <ButtonPrimary
+                            aria-disabled={true}
+                            aria-describedby={describedBy}
+                            onAction={ignoreAction}
+                        >
+                            {"Publish"}
+                        </ButtonPrimary>
+                    )}
+                </span>
+            )}
         </ReviewTooltip>
     );
 });
@@ -2273,7 +2358,7 @@ const BlockedActions = createReactiveComponent(() => {
  * The base Save and Publish buttons render nothing when `canSave` or `canPublish` is false. While
  * the review status is unknown, or a review does not allow publishing yet, this shows them
  * `aria-disabled` and focusable (never removed, R226), with the reason from the shared review rules
- * given by `ReviewTooltip`. At most two buttons show (Save only while the status is unknown); the
+ * given by `ReviewTooltip` (its render function hands each button the `aria-describedby`, R241). At most two buttons show (Save only while the status is unknown); the
  * base Save & Publish stays hidden because `canPublish` is false.
  */
 export const CmsEntryReviewBlockedActions = () => {
@@ -2327,13 +2412,11 @@ import {
     ContentEntryFormWorkflow
 } from "~/Components/ContentEntryForm/index.js";
 // after
-import {
-    CmsEntryReviewBar,
-    CmsEntryReviewBlockedActions,
-    CmsEntryReviewFormLock,
-    CmsEntryReviewNewRevision,
-    CmsEntryReviewScheduleMenuItem
-} from "~/Components/ContentEntryForm/index.js";
+import { CmsEntryReviewBar } from "~/Components/ContentEntryForm/index.js";
+import { CmsEntryReviewBlockedActions } from "~/Components/ContentEntryForm/index.js";
+import { CmsEntryReviewFormLock } from "~/Components/ContentEntryForm/index.js";
+import { CmsEntryReviewNewRevision } from "~/Components/ContentEntryForm/index.js";
+import { CmsEntryReviewScheduleMenuItem } from "~/Components/ContentEntryForm/index.js";
 ```
 
 ```tsx
@@ -2428,10 +2511,10 @@ yarn test packages/app-headless-cms-workflows/src/features/gateway/CmsReviewGate
 yarn test packages/app-headless-cms-workflows/src/features/gateway/CmsReviewContentAdapterImpl.test.ts 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/features/gateway/feature.test.ts 2>&1 | tail -50
 yarn test packages/app-headless-cms/src/presentation/contentEntries/list/ContentEntriesPresenter.test.ts 2>&1 | tail -50
-yarn check:test:types -p app-headless-cms-workflows --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-headless-cms-workflows --no-cache 2>&1 | tail -30
 ```
 
-Expected: all PASS, no type errors (`check:test:types` covers `__tests__/helpers`). Old files left on disk still type-check against the old `app-workflows` code; do not delete them (Task 37).
+Expected: all PASS, no type errors. The package has no `__tests__/**/*.test.ts`, so `check:test:types` does not list it; the build type-checks the co-located tests and `src/testing/` (R243, R-e). Old files left on disk still type-check against the old `app-workflows` code; do not delete them (Task 37).
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -2450,23 +2533,19 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-headless-cms-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-headless-cms-workflows): mount the shared review bar and editor rules in the CMS entry editor" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-headless-cms-workflows): mount the shared review bar and editor rules in the CMS entry editor" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start. `yarn adio` may name `@webiny/di`, `@webiny/react-composition` or `@webiny/feature-flags` as missing or unused; make `package.json` match what it reports.
 
 ## Contract notes
 
-1. **Session registration location.** The contract says Task 20 modifies `[CMSW]/features/gateway/feature.ts`. This plan registers the session in its own `CmsEntryReviewFeature` (`features/editorReview/feature.ts`) because components reach it through `useFeature`, and Task 11's `CmsReviewFeature.resolve` returns `{ useCases, contentAdapter }`. The token name and id are the contract's; per the controller rule the registered class is the subclass `CmsEntryReviewSessionImpl extends EditorReviewSession`, and the token and implementation live in `CmsEntryReview.ts` and `CmsEntryReviewImpl.ts`.
-2. **Base Save and Publish buttons render nothing instead of being disabled.** `SaveContentButton`, `SaveAndPublishButton` and `PublishOnlyButton` return `null` when `canSave` or `canPublish` is false and there is no aria hook, so `CmsEntryReviewBlockedActions` (`workflowBlockedActions`, an extra file) registers the `aria-disabled` Publish (and Save while the status is unknown) wrapped in the shared `ReviewTooltip`. The standalone `workflowStateTooltip` action is not registered. The `ReviewTooltip` reason is `publishDisabledReason`, used for both buttons.
-3. **No read-only form in the CMS editor.** Field `disabled` is copied into each `Field` at build time, so `CmsEntryReviewFormLock` (an extra `ContentEntryForm` decorator) wraps the form in one stable fieldset that is `disabled` and `inert` while the rules forbid editing. Trade-off recorded in the code: `inert` also blocks text selection and copy while locked. Save is also refused by the presenter decorator.
-4. **List Move.** The editor has no Move control; the list row action is gated in Task 21.
-5. **"Create new revision" for a rejected revision** is the existing options-menu item (always usable once the status is known) plus the bar lock text that names it. The view model has no rejected discriminator and no bar action of that kind, so no extra button.
-6. **Context after publish.** `isPublished` changes through `presenter.setContext` (Task 13's additive method); `init` runs again only when a save created a different revision id.
-7. **`saveRevision` shortcut** reports success without saving only for a clean, unlocked approved draft (so "Save & Publish" publishes); an approved locked entry returns `false` and `canCreateNewRevision` is gated by `allowsEditing` too (the base "New Revision" button reads only that flag).
-8. **Schedule is hidden, not disabled** (contract Behaviour). It is also hidden when a workflow is bound and no review exists, because the real `getEditorRules` returns `allowsPublishing: false` for `none`.
-9. **`phase` in the decorator.** Task 13 does not specify the shared presenter state before `init`, so the decorator keeps `idle | loading | tracking` itself.
-10. **Test helpers reuse Task 13 and 14 helpers** (`createViewModel`, `createFakePresenter`, `createFakeUseCases`, `FakeReviewUseCases` from `@webiny/app-workflows/review/testing/...`); only the observable wrapper `createEntrySession` is new (the Task 14 fake exposes a fixed `vm`). `__tests__/helpers/reviewStates.ts` mirrors `getEditorRules` strings (the constants there are module-local); a change in Task 13's rules needs a change here.
-11. **Task 11's `src/index.test.tsx`** is edited only in its `vi.mock` for `~/Components/ContentEntryForm/index.js` (new names) and the removal of the obsolete `CmsEntryFormCreateNewRevisionButton.js` mock; Task 20's composition cases live in `index.editor.test.tsx`.
-12. **Verify (Tasks 8-19 are not all written):** Task 19's paths `review/editor/{abstractions,EditorReviewSession}.js` and `review/editor/components/EditorReviewBar.js`, and that `EditorReviewSession` is a public, non-final class with constructor `(presenter, useCases)`; Task 14's `ReviewTooltip` renders its children unchanged when `publishDisabledReason` is `null`; `FakeTargetReviewPresenter` and `FakeReviewUseCases` exports; the harness (`ContentEntryEditorWithConfig` with `Property` registration, `Buttons`, `AdminUiProvider`, the `vi.mock` of `@webiny/app-admin` `OptionsMenuItem` and of `@webiny/app` `useRoute`) has not been run. Tooltip opening on hover is not asserted (Radix, jsdom); the wrapper, `aria-disabled`, `aria-describedby` and reason text are.
-13. **Size.** One task, eight test files, small components. If the reviewer wants a split, cut after the presenter decorator and its test (the components and the root wiring second).
+1. **Base Save and Publish buttons render nothing instead of being disabled.** `SaveContentButton`, `SaveAndPublishButton` and `PublishOnlyButton` return `null` when `canSave` or `canPublish` is false and there is no aria hook, so `CmsEntryReviewBlockedActions` (`workflowBlockedActions`) registers the `aria-disabled` Publish (and Save while the status is unknown) inside the shared `ReviewTooltip` render function (R241). The reason is `publishDisabledReason`, used for both buttons.
+2. **No read-only form in the CMS editor.** Field `disabled` is copied into each `Field` at build time, so `CmsEntryReviewFormLock` wraps the form in one stable fieldset that is `disabled` and `inert` while the rules forbid editing. Trade-off recorded in the code: `inert` also blocks text selection and copy while locked. Save is also refused by the presenter decorator.
+3. **"Create new revision" for a rejected revision** is the existing options-menu item (always usable once the status is known) plus the bar lock text that names it; the view model has no rejected discriminator, so no extra button.
+4. **`saveRevision` shortcut** reports success without saving only for a clean, unlocked approved draft (so "Save & Publish" publishes); an approved locked entry returns `false` and `canCreateNewRevision` is gated by `allowsEditing` too (the base "New Revision" button reads only that flag).
+5. **`isUnpublished` (R226, Q19)** is the CMS entry status `unpublished`; `getEditorRules` then lets an unpublished revision with no review publish and schedule again. A revision published before the workflow was bound has no review and the server refuses it (A89); the admin error toast shows.
+6. **`phase` in the decorator.** Task 13 does not specify the shared presenter state before `init`, so the decorator keeps `idle | loading | tracking` itself.
+7. **`src/testing/reviewStates.ts` mirrors `getEditorRules` strings** (R226 texts); a change in Task 13's rules needs a change here.
+8. **Unrun harness:** the editor harness (`ContentEntryEditorWithConfig` with `Property` registration, `Buttons`, `AdminUiProvider`, the `vi.mock` of `@webiny/app-admin` `OptionsMenuItem` and of `@webiny/app` `useRoute`) has not been run when the plan is written. Tooltip opening on hover is not asserted (Radix, jsdom); the wrapper, `aria-disabled`, `aria-describedby` and reason text are. If a component test fails only because a config property is not applied yet, wrap the assertion in `waitFor`.
+9. **Size.** One task, eight test files, small components. If the reviewer wants a split, cut after the presenter decorator and its test (the components and the root wiring second).

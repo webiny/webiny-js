@@ -27,9 +27,9 @@ R202, R211, R222, R224, R204 (the envelope, not the throw); A77, A80, A83; D159;
 - Existing, must stay compiling: everything else in the package (the old components, presenters and editor views are untouched until Tasks 20, 21 and 37).
 
 **Interfaces:**
-- Consumes (Task 8, imported by deep path, see Contract notes): `IReviewGateway` and the parameter types (`ListStepCandidatesParams`, `ListReviewStepCandidatesParams`, `ReviewStepRef`, `RequestReviewParams`, `TakeOverReviewParams`, `ReassignReviewParams`, `ApproveReviewParams`, `RejectReviewParams`, `CancelReviewParams`, `ListReviewsParams`, `CancelForDeleteParams`) from `@webiny/app-workflows/review/gateway/IReviewGateway.js`; `ReviewDto`, `ReviewWithFlagsDto`, `WorkflowDto`, `StepCandidateDto`, `ReviewEnvelope`, `ReviewListEnvelope` from `.../review/gateway/dto.js`; `ReviewTarget` from `.../review/domain/types.js`; `ReviewState` (`.../review/domain/ReviewState.js`) and `StepState` (`.../review/domain/StepState.js`) in tests; `REVIEW_FIELDS`, `REVIEW_WITH_FLAGS_FIELDS`, `REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS`, `WORKFLOW_FIELDS`, `STEP_CANDIDATE_FIELDS`, `ERROR_FIELDS` from `.../review/gateway/reviewFields.js`; `IReviewUseCases` (`.../review/useCases/IReviewUseCases.js`); `IReviewContentAdapter` and `ReviewContentRef` (`.../review/content/IReviewContentAdapter.js`). Task 9: `ReviewUseCases` (`.../review/useCases/ReviewUseCases.js`, a public, non-final class with constructor `(gateway: IReviewGateway)`) and `GraphQLOperationError` (`@webiny/app/errors/index.js`, Task 6, asserted in the feature test). Task 1: `candidateTeams` (selected by the shared fragments).
+- Consumes (Task 8, imported by deep path, R238): `IReviewGateway` and the parameter types (`ListStepCandidatesParams`, `ListReviewStepCandidatesParams`, `ReviewStepRef`, `RequestReviewParams`, `TakeOverReviewParams`, `ReassignReviewParams`, `ApproveReviewParams`, `RejectReviewParams`, `CancelReviewParams`, `ListReviewsParams`, `CancelForDeleteParams`) from `@webiny/app-workflows/review/gateway/IReviewGateway.js`; `ReviewDto`, `ReviewWithFlagsDto`, `WorkflowDto`, `StepCandidateDto`, `ReviewEnvelope`, `ReviewListEnvelope` from `.../review/gateway/dto.js`; `ReviewTarget` from `.../review/domain/types.js`; `ReviewState` (`.../review/domain/ReviewState.js`) and `StepState` (`.../review/domain/StepState.js`) in tests; `REVIEW_FIELDS`, `REVIEW_WITH_FLAGS_FIELDS`, `REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS`, `WORKFLOW_FIELDS`, `STEP_CANDIDATE_FIELDS`, `ERROR_FIELDS` from `.../review/gateway/reviewFields.js`; `IReviewUseCases` (`.../review/useCases/IReviewUseCases.js`); `IReviewContentAdapter` and `ReviewContentRef` (`.../review/content/IReviewContentAdapter.js`). Task 9: `ReviewUseCases` (`.../review/useCases/ReviewUseCases.js`, a public, non-final class with constructor `(gateway: IReviewGateway)`) and `GraphQLOperationError` (`@webiny/app/errors/index.js`, Task 6, asserted in the feature test). Task 1: `candidateTeams` (selected by the shared fragments).
 - Consumes (existing code, verified): `MainGraphQLClient` (`packages/app/src/features/mainGraphQLClient/abstractions.ts`, `execute<TResult, TVariables>({ query, variables })`); `parseAppName`, `isCmsAppName` (`packages/app-headless-cms-workflows/src/utils/appName.ts`); `Routes.ContentEntries.List` (`packages/app-headless-cms/src/routes.ts`, path `/cms/content-entries/:modelId`; `Route.path` getter in `packages/app/src/features/router/Route.ts`); `ModelsCache` (`packages/app-headless-cms/src/features/model/abstractions.ts`, an `IListCache<CmsModel>` registered by `ModelFeature` in `HeadlessCMS.tsx`; `getItem(predicate)` is synchronous); `createAbstraction`, `createFeature` (`@webiny/feature/admin`); `RegisterFeature`, `useFeatureFlags` (`@webiny/app-admin`); `DiContainerProvider` (`packages/app/src/shared/di/DiContainerProvider.tsx`); `FeatureFlagsService` (`packages/app-admin/src/features/featureFlags/abstractions.ts`); `FeatureFlags` (`@webiny/feature-flags`); `Container` (`@webiny/di`); the server operations of `CmsWorkflowsSchemaFactory.ts` (argument names and types above, verified).
-- Produces (consumed by Tasks 20, 29, 35): `CmsReviewGateway = createAbstraction<IReviewGateway>("Cms/Workflows/ReviewGateway")`, `CmsReviewUseCases = createAbstraction<IReviewUseCases>("Cms/Workflows/ReviewUseCases")`, `CmsReviewContentAdapter = createAbstraction<IReviewContentAdapter>("Cms/Workflows/ReviewContentAdapter")` (each with a namespace `Interface`) each in its own file named after the token (`CmsReviewGateway.ts, CmsReviewUseCases.ts, CmsReviewContentAdapter.ts`); `CmsReviewGatewayImpl` exported as the implementation `CmsReviewGateway` (`CmsReviewGatewayImpl.ts`); the implementation `CmsReviewUseCases` (`CmsReviewUseCasesImpl.ts`, see Contract notes); `CmsReviewContentAdapterImpl` exported as the implementation `CmsReviewContentAdapter` (`CmsReviewContentAdapterImpl.ts`); `CmsReviewFeature` (`feature.ts`, name `"CmsWorkflows/Review"`, `resolve` -> `{ useCases: IReviewUseCases; contentAdapter: IReviewContentAdapter }`).
+- Produces (consumed by Tasks 20, 29, 35): `CmsReviewGateway = createAbstraction<IReviewGateway>("Cms/Workflows/ReviewGateway")`, `CmsReviewUseCases = createAbstraction<IReviewUseCases>("Cms/Workflows/ReviewUseCases")`, `CmsReviewContentAdapter = createAbstraction<IReviewContentAdapter>("Cms/Workflows/ReviewContentAdapter")` (each with a namespace `Interface`) each in its own file named after the token (`CmsReviewGateway.ts, CmsReviewUseCases.ts, CmsReviewContentAdapter.ts`); `CmsReviewGatewayImpl` exported as the implementation `CmsReviewGateway` (`CmsReviewGatewayImpl.ts`); the implementation `CmsReviewUseCases` (`CmsReviewUseCasesImpl.ts`, the one-line subclass `CmsReviewUseCasesImpl extends ReviewUseCases`, R237); `CmsReviewContentAdapterImpl` exported as the implementation `CmsReviewContentAdapter` (`CmsReviewContentAdapterImpl.ts`); `CmsReviewFeature` (`feature.ts`, name `"CmsWorkflows/Review"`, `resolve` -> `{ useCases: IReviewUseCases; contentAdapter: IReviewContentAdapter }`).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -738,13 +738,13 @@ describe("CmsWorkflows composition", () => {
 One file per command (admin package, `yarn test` only: a client package has no OpenSearch variant):
 
 ```bash
-yarn test packages/app-headless-cms-workflows/src/features/gateway/CmsReviewGateway.test.ts 2>&1 | tail -50
-yarn test packages/app-headless-cms-workflows/src/features/gateway/CmsReviewContentAdapter.test.ts 2>&1 | tail -50
+yarn test packages/app-headless-cms-workflows/src/features/gateway/CmsReviewGatewayImpl.test.ts 2>&1 | tail -50
+yarn test packages/app-headless-cms-workflows/src/features/gateway/CmsReviewContentAdapterImpl.test.ts 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/features/gateway/feature.test.ts 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/index.test.tsx 2>&1 | tail -50
 ```
 
-Expected: all four FAIL at import resolution (`./CmsReviewGateway.js`, `./CmsReviewGatewayImpl.js`, `./CmsReviewContentAdapterImpl.js`, `./feature.js`, `~/features/gateway/CmsReviewUseCases.js` do not exist). Record RED before writing source. If the run reports `No test files found`, the `vitest.config.ts` was not picked up: check its location and that `yarn` ran (A75, Task 8 verified the same setup in `app-workflows`).
+Expected: all four FAIL at import resolution (`./CmsReviewGateway.js`, `./CmsReviewGatewayImpl.js`, `./CmsReviewContentAdapter.js`, `./CmsReviewContentAdapterImpl.js`, `./feature.js`, `~/features/gateway/CmsReviewUseCases.js` do not exist). Record RED before writing source. If the run reports `No test files found`, the `vitest.config.ts` was not picked up: check its location and that `yarn` ran (A75, Task 8 verified the same setup in `app-workflows`).
 
 - [ ] **Step 3: Implement**
 
@@ -1417,7 +1417,7 @@ export const CmsReviewGateway = GatewayAbstraction.createImplementation({
 });
 ```
 
-`packages/app-headless-cms-workflows/src/features/gateway/CmsReviewUseCasesImpl.ts` (the shared `ReviewUseCases` bound under the CMS token; the subclass is required, see Contract notes):
+`packages/app-headless-cms-workflows/src/features/gateway/CmsReviewUseCasesImpl.ts` (the shared `ReviewUseCases` bound under the CMS token; the subclass is required, R237):
 
 ```ts
 import { ReviewUseCases } from "@webiny/app-workflows/review/useCases/ReviewUseCases.js";
@@ -1530,8 +1530,8 @@ Everything else in `index.tsx` stays (Tasks 20, 21 and 37 replace the old regist
 - [ ] **Step 4: Run the new tests to see them pass**
 
 ```bash
-yarn test packages/app-headless-cms-workflows/src/features/gateway/CmsReviewGateway.test.ts 2>&1 | tail -50
-yarn test packages/app-headless-cms-workflows/src/features/gateway/CmsReviewContentAdapter.test.ts 2>&1 | tail -50
+yarn test packages/app-headless-cms-workflows/src/features/gateway/CmsReviewGatewayImpl.test.ts 2>&1 | tail -50
+yarn test packages/app-headless-cms-workflows/src/features/gateway/CmsReviewContentAdapterImpl.test.ts 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/features/gateway/feature.test.ts 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/index.test.tsx 2>&1 | tail -50
 ```
@@ -1540,10 +1540,10 @@ Expected: PASS. If the composition test cannot load `@webiny/app-admin` (the roo
 
 - [ ] **Step 5: Run the existing tests covering the changed code and type-check**
 
-`CmsWorkflows` is the only existing file changed, and the package had no tests before this task, so the check is the type check of the package and the build:
+`CmsWorkflows` is the only existing file changed, and the package had no tests before this task, so the check is the type check of the package, which is its build (the package has no `__tests__/**/*.test.ts`, so `check:test:types` does not list it; the build type-checks the co-located tests, R243):
 
 ```bash
-yarn check:test:types -p app-headless-cms-workflows --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-headless-cms-workflows --no-cache 2>&1 | tail -30
 ```
 
 Expected: no type errors. Resolve any mismatch against the final Task 8 types (the parameter and DTO names are the contract's) by correcting this task's code, not the shared types.
@@ -1565,19 +1565,13 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-headless-cms-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-headless-cms-workflows): add the CMS review gateway, registration and content adapter" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-headless-cms-workflows): add the CMS review gateway, registration and content adapter" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
 
 **Contract notes**
 
-- **`createImplementation` collides when two apps bind the one shared `ReviewUseCases` class** (R202 and the Task 11/12 Produces say `CmsReviewUseCases.createImplementation({ implementation: ReviewUseCases, ... })`). `@webiny/di`'s `Abstraction.createImplementation` writes the abstraction and the dependencies as Reflect metadata **on the implementation class itself** and returns the same class (`node_modules/@webiny/di/dist/index.js`, `createImplementation`), so a second `createImplementation` with the same class overwrites the first and `container.register` of either would read the last app's token and gateway (A83 would fail). This task keeps every contract name and token id, and binds a one-line subclass per app instead (`class CmsReviewUseCasesImpl extends ReviewUseCases implements ...`, new file `CmsReviewUseCases.ts`, not in the contract's file list; Task 12 does the same in `WbReviewUseCases.ts`). `Reflect.getMetadata` reads the prototype chain and `defineMetadata` writes the subclass, so the shared class stays untouched. Task 9 must keep `ReviewUseCases` a public, non-final class with a public constructor `(gateway: IReviewGateway)`; Task 12's test pins the isolation.
-- **Deep imports instead of the barrel.** The contract lets the app packages import from the `app-workflows` barrel (Task 10 "Barrel adds"). This task imports from the deep paths of the Task 8 and 9 files (every admin package exports `"./*": "./*"`), so the gateway, adapter and their tests do not load the whole `app-workflows` UI barrel (old components included, until Task 37). If Task 8 or 9 names a file differently (`review/gateway/IReviewGateway.ts`, `dto.ts`, `reviewFields.ts`, `review/useCases/IReviewUseCases.ts`, `ReviewUseCases.ts`, `review/content/IReviewContentAdapter.ts`, `review/domain/{types,ReviewState,StepState}.ts`), adjust the import paths only.
-- **`REVIEW_SYSTEM_WORKFLOW_SELECTION` is not used here.** Task 8 lists Tasks 11 and 12 as users of it, but a gateway selects the review fields; the list field selection is Tasks 21 and 24.
-- **Single-read selection (resolved against Task 8).** The contract lists `REVIEW_ASSIGNMENT_FIELDS` without saying how a single read composes it. Task 8's file adds `REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS` (the list-safe selection plus `steps { assignments { ... } }`), beyond the contract's names, so neither app composes the merge; `getCmsEntryTargetReview` and `getCmsEntryReview` use it and the list uses `REVIEW_WITH_FLAGS_FIELDS`. The details drawer (Task 18, D89) gets the skipped-by-assignment entries from `getReview`.
-- **Adapter dependency on `ModelsCache` (A80).** The contract says the label comes "from the model name" and gives the adapter no dependency. `getContentTypeLabel` is synchronous, so the adapter reads the admin `ModelsCache` (an `IListCache<CmsModel>` that `ModelFeature` registers in `HeadlessCMS.tsx` and `ListModelsUseCase` fills; precedent `RefFieldSettingsModifier`). It returns `null` while the cache is empty, so Task 29 must run `ListModelsUseCase` (it needs the model list for the content-type filter anyway) before it renders labels. The adapter resolves only inside an admin container that has `HeadlessCMS` mounted.
-- **Composition test and A77.** The root test mounts `CmsWorkflows` alone with the old children stubbed (Tasks 20, 21, 37 replace them); it does not mount `WorkflowsAdminApp` because `CmsReviewFeature` registers nothing that needs a shared feature (its dependencies resolve lazily: `MainGraphQLClient`, `ModelsCache`). The order guarantee of A77 stays an app-level fact (`Admin.tsx`).
-- **Coexistence of the two apps' tokens (A83, Review Focus 1)** is carried by Task 12's `feature.test.ts` (it imports this package's gateway and use-case implementations through a devDependency), so Task 12 runs after this task; this task's tests cover only the CMS side.
-- **One abstraction per file (user rule):** the contract said `abstractions.ts` holding three tokens; the tokens are one file each named after the token (`CmsReviewGateway.ts`, `CmsReviewUseCases.ts`, `CmsReviewContentAdapter.ts`) and each implementation file is named `<Token>Impl.ts` (exported under the token's name). Extra files beyond the contract: `CmsReviewUseCases.ts`/`CmsReviewUseCasesImpl.ts` (subclass binding), `graphql/CmsOperationResponse.ts`.
+- **The adapter resolves only inside an admin container that has `HeadlessCMS` mounted** (it depends on `ModelsCache`, A80), and `getContentTypeLabel` returns `null` until `ListModelsUseCase` has filled the cache; Task 29 runs it before rows render.
+- **Composition test and A77.** `src/index.test.tsx` mounts `CmsWorkflows` alone with the old children stubbed (Tasks 20, 21, 29 and 37 replace the stubs in the same commits that replace the children); it does not mount `WorkflowsAdminApp` because `CmsReviewFeature` needs nothing from the shared features at registration (its dependencies resolve lazily). The order guarantee of A77 stays an app-level fact (`Admin.tsx`).
 - **Size:** large (14 documents, a 14-method gateway, adapter, feature, root change and 4 test files), but mechanical, one test cycle and one review gate.

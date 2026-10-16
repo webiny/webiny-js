@@ -1,8 +1,8 @@
 ### Task 30: WB Content Reviews mounting glue
 
-Spec 13.5; R202, R206, R211, R223, R231; A77; Decisions D113, D159; Review Focus 1, 8, 17. The Website Builder mounts the shared Content Reviews pieces of Task 28 with its own use cases and content adapter. Pure glue: registration, route, menu, widgets and the sidebar item. Unlike the CMS there is no content type: the WB view has no "Content type" column and no content-type filter (D113), and its single namespace is `wb.page`, so nothing has to load before the list can start (no `ready` gating).
+Spec 13.5; R202, R206, R211, R223, R231, R237; A77; Decisions D113, D159; Review Focus 1, 8, 17, 21. The Website Builder mounts the shared Content Reviews pieces of Task 28 with its own use cases and content adapter. Pure glue: registration, route, menu, widgets and the sidebar item. Unlike the CMS there is no content type: the WB view has no "Content type" column and no content-type filter (D113), and its single namespace is `wb.page`, so nothing has to load before the list can start (no `ready` gating).
 
-- **Registration (binding rule):** the shared `AppReviewRowProvider` and `ReviewNotificationHandler` are plain classes. The WB subclasses each in its own file and binds the subclass, in Task 12's naming style (`<Token>Impl.ts` exported under the token): `WbReviewRowProviderImpl.ts` exports `WbReviewRowProvider` (abstraction in `WbReviewRowProvider.ts`, dependencies `[WbReviewUseCases, WbReviewContentAdapter]`) and `WbReviewNotificationHandlerImpl.ts` exports `WbReviewNotificationHandler` (abstraction `WebsocketEventHandler`, dependencies `[ReviewNotificationService, WbReviewContentAdapter]`). `WbReviewFeature` registers both, so the handler ignores every namespace except `wb.page` (R223) and a CMS message never reaches it; the CMS bindings stay untouched in their own subclasses (Review Focus 1).
+- **Registration (subclass rule, R237):** the shared `AppReviewRowProvider` and `ReviewNotificationHandler` are plain classes. The WB subclasses each in its own file and binds the subclass, in Task 12's naming style (`<Token>Impl.ts` exported under the token): `WbReviewRowProviderImpl.ts` exports `WbReviewRowProvider` (abstraction in `WbReviewRowProvider.ts`, dependencies `[WbReviewUseCases, WbReviewContentAdapter]`) and `WbReviewNotificationHandlerImpl.ts` exports `WbReviewNotificationHandler` (abstraction `WebsocketEventHandler`, dependencies `[ReviewNotificationService, WbReviewContentAdapter]`). `WbReviewFeature` registers both, so the handler ignores every namespace except `wb.page` (R223) and a CMS message never reaches it; the CMS bindings stay untouched in their own subclasses (Review Focus 1).
 - **Mount (`WbContentReviews`):** one route (`Routes.Pages.WorkflowStateList`, name `WebsiteBuilder/Pages/WorkflowStateList`, `/website-builder/pages/content-reviews`, now with an optional `tab` parameter for "View all →"), one menu item `workflows.wb.contentReviews` nested under the Website Builder group (`parent: "wb"`, the group the existing WB workflow editor menu uses), the two widgets with prefix `wb` (`workflows.wb.review`, `workflows.wb.requested`), `namespaces: ["wb.page"]`, `showContentType: false`, `contentTypeFilter: null`.
 - **Sidebar (`WbContentReviewsSidebarItem`):** replaces `PagesListContentReviews`; the "Content Reviews" item in the page list sidebar footer (`Browser.Sidebar.Footer name="contentReviews"`) now navigates to the route instead of opening an overlay. `PagesList` mounts it.
 
@@ -39,10 +39,17 @@ import { Container } from "@webiny/di";
 import { WebsocketEvent } from "@webiny/app-websockets/events/WebsocketEvent.js";
 import { WebsocketEventHandler } from "@webiny/app-websockets/events/abstractions.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
+import { CmsReviewContentAdapter } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewContentAdapter.js";
+import { CmsReviewNotificationHandler } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewNotificationHandlerImpl.js";
+import { CmsReviewRowProvider as CmsRowProviderAbstraction } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewRowProvider.js";
+import { CmsReviewRowProvider } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewRowProviderImpl.js";
+import { CmsReviewUseCases } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewUseCases.js";
+import type { IReviewContentAdapter } from "@webiny/app-workflows/review/content/IReviewContentAdapter.js";
 import { AppReviewRowProvider } from "@webiny/app-workflows/review/mounting/AppReviewRowProvider.js";
 import { ReviewNotificationHandler } from "@webiny/app-workflows/review/mounting/ReviewNotificationHandler.js";
 import { ReviewNotificationService } from "@webiny/app-workflows/review/notifications/abstractions.js";
 import { WORKFLOWS_NOTIFICATION_ACTION } from "@webiny/app-workflows/review/domain/constants.js";
+import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import { WbReviewFeature } from "./feature.js";
 import { WbReviewRowProvider } from "./WbReviewRowProvider.js";
 
@@ -52,9 +59,7 @@ const handle = vi.fn();
 // service the handler reports to.
 const createContainer = (): Container => {
     const container = new Container();
-    container.registerInstance(MainGraphQLClient, {
-        execute: vi.fn()
-    } as unknown as MainGraphQLClient.Interface);
+    container.registerInstance(MainGraphQLClient, { execute: vi.fn() });
     container.registerInstance(ReviewNotificationService, { handle });
     return container;
 };
@@ -115,6 +120,46 @@ describe("WbReviewFeature Content Reviews registrations", () => {
 
         await own[0].handle(message("cms.article"));
         expect(handle).toHaveBeenCalledTimes(1);
+    });
+
+    it("coexists with the CMS bindings in one container, each binding only its own namespace (R237)", async () => {
+        const container = createContainer();
+        WbReviewFeature.register(container);
+        const cmsAdapter: IReviewContentAdapter = {
+            canHandle: namespace => namespace.startsWith("cms."),
+            getContentUrl: () => "/cms/content-entries/article?id=entry-1%230001",
+            getContentTypeLabel: () => null
+        };
+        container.registerInstance(CmsReviewUseCases, createFakeUseCases());
+        container.registerInstance(CmsReviewContentAdapter, cmsAdapter);
+        container.register(CmsReviewRowProvider).inSingletonScope();
+        container.register(CmsReviewNotificationHandler);
+
+        const wbProvider = container.resolve(WbReviewRowProvider);
+        const cmsProvider = container.resolve(CmsRowProviderAbstraction);
+
+        expect(cmsProvider).not.toBe(wbProvider);
+        expect(wbProvider.getBinding("wb.page")).not.toBeNull();
+        expect(wbProvider.getBinding("cms.article")).toBeNull();
+        expect(cmsProvider.getBinding("cms.article")).not.toBeNull();
+        expect(cmsProvider.getBinding("wb.page")).toBeNull();
+
+        const handlers = container
+            .resolveAll(WebsocketEventHandler)
+            .filter(handler => handler instanceof ReviewNotificationHandler);
+        expect(handlers).toHaveLength(2);
+
+        for (const handler of handlers) {
+            await handler.handle(message("wb.page"));
+        }
+        expect(handle).toHaveBeenCalledTimes(1);
+        expect(handle.mock.calls[0][0].url).toContain("/website-builder/pages/editor/");
+
+        for (const handler of handlers) {
+            await handler.handle(message("cms.article"));
+        }
+        expect(handle).toHaveBeenCalledTimes(2);
+        expect(handle.mock.calls[1][0].url).toBe("/cms/content-entries/article?id=entry-1%230001");
     });
 });
 ```
@@ -816,10 +861,10 @@ yarn test packages/app-website-builder-workflows/src/features/gateway/feature.te
 yarn test packages/app-website-builder-workflows/src/editorGlue.wiring.test.tsx 2>&1 | tail -50
 yarn test packages/app-website-builder-workflows/src/publishAutosave.wiring.test.tsx 2>&1 | tail -50
 yarn test packages/app-website-builder-workflows/src/pageListGlue.wiring.test.tsx 2>&1 | tail -50
-yarn check:test:types -p app-website-builder-workflows --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-website-builder-workflows --no-cache 2>&1 | tail -30
 ```
 
-Expected: PASS, no type errors. (If Task 12's `feature.test.ts` asserts the exact shape of what `WbReviewFeature.resolve` returns, extend that expectation by `rowProvider` and say so in the commit body. Run the other tests of Tasks 12 and 22 to 24 that touch `index.tsx`, `routes.ts` or `PagesList.tsx` the same way, one path per command.)
+`check:test:types` lists only packages with a `__tests__/**/*.test.ts` file, which this package does not have, so the package build is the type check of its co-located tests (R243). Expected: PASS, no type errors. (If Task 12's `feature.test.ts` asserts the exact shape of what `WbReviewFeature.resolve` returns, extend that expectation by `rowProvider` and say so in the commit body. Run the other tests of Tasks 12 and 22 to 24 that touch `index.tsx`, `routes.ts` or `PagesList.tsx` the same way, one path per command.)
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -838,16 +883,13 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-website-builder-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-website-builder-workflows): mount Content Reviews, widgets and notifications" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-website-builder-workflows): mount Content Reviews, widgets and notifications" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
 
 **Contract notes:**
-- Controller binding rule applied: the Interfaces entry says the WB registers `WbReviewRowProvider.createImplementation({ implementation: AppReviewRowProvider, ... })` and `WebsocketEventHandler.createImplementation({ implementation: ReviewNotificationHandler, ... })`. Both shared classes are plain; the WB subclasses each in `WbReviewRowProviderImpl.ts` and `WbReviewNotificationHandlerImpl.ts` (Task 12's `<Token>Impl.ts` naming) and binds the subclass, so it cannot overwrite the CMS binding.
-- `PagesList.tsx` is modified (not in the contract's file list): it mounted the old `PagesListContentReviews`, and replacing the element there is the thinnest way to keep the sidebar footer item in the one place the page list config is declared. Task 24 did not touch this file.
-- `routes.ts` gains the optional `tab` search parameter on `Routes.Pages.WorkflowStateList` (route name and path unchanged, R206) for the widgets' "View all →".
-- The menu nests under `wb` (the group the existing workflow editor item uses, `packages/app-website-builder-workflows/src/Components/PageWorkflows/PageWorkflowsEditorView.tsx`).
-- The gated-root cases live in Task 12's `index.test.tsx` (flag on: row provider and handler registered; flag off: neither); Tasks 22 to 24's wiring tests only stub the new component. The smoke test mounts the real shared route, menu and widgets under the real `AdminWithConfig` and `RouterWithConfig` and asserts what they register (the route name, the menu name with its `wb` parent, the two widget names in the right column); it is the one real-config mount for Tasks 29 and 30 (the CMS glue differs only in its model list).
-- Each app's handler ignoring the other app's namespace is asserted per app (Tasks 29 and 30 each test their own subclass); the two packages cannot import each other, so a combined two-app container test is not possible here. The class-level collision is excluded by construction (one subclass per app).
+- The WB subclasses each shared class (R237) and binds the subclass; `contentReviewsBindings.test.ts` proves the WB and CMS bindings coexist in one container through the `@webiny/app-headless-cms-workflows` devDependency Task 12 added (the CMS row provider and handler are registered next to the WB ones with a fake CMS adapter and use cases). It imports the Task 29 files named in the contract (`CmsReviewRowProvider.ts`, `CmsReviewRowProviderImpl.ts`, `CmsReviewNotificationHandlerImpl.ts`); if Task 29 named them differently, change those imports only.
+- `PagesList.tsx` is modified (the contract's file list names it): the thinnest way to keep the sidebar footer item in the one place the page list config is declared.
+- The smoke test mounts the real shared route, menu and widgets under the real `AdminWithConfig` and `RouterWithConfig` and asserts what they register (the route name, the menu name with its `wb` parent, the two widget names in the right column); it is the one real-config mount for Tasks 29 and 30 (the CMS glue differs only in its model list).
 - No `ready` gating here: the only namespace is a constant, so the list starts once. No vitest config change: Task 12's config stays, svg imports are mocked in the tests that render them, and `cleanup` is called in `afterEach` (Task 22's test runner note).

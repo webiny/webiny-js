@@ -57,7 +57,7 @@ Process:
 - Before every commit: `git add .`, `yarn > /dev/null 2>&1`, `node scripts/generateTsConfigsInPackages.js`, `yarn adio`, `yarn check-ts-configs`, `yarn format:fix > /dev/null 2>&1`, `yarn lint:fix`, `yarn webiny sync-dependencies`, `yarn build -p @webiny/<package> --no-cache 2>&1 | tail -30` for changed packages (a task that adds an export other packages import builds its package first), `git add .`. Restore `.gitleaks.toml` (`git checkout -- .gitleaks.toml`); never commit it, `docs/.reports` or `.superpowers`.
 - Commits: Conventional Commits, one `-m` for the subject, **an optional `-m` for a body** when the commit needs one (A71/A72 findings, storage notes), and a separate `-m` for each trailer line (each trailer is its own paragraph), ending with exactly (Q16):
   ```
-  Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
   Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u
   ```
   Never push, amend or revert. Behaviour-changing fixes to base packages (R228) are separate `fix(...)` commits.

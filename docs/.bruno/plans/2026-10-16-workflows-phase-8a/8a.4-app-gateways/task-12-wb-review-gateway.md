@@ -29,7 +29,7 @@ R202, R211, R222, R224, R204 (the envelope, not the throw), R227 (WB specifics);
 - Existing, must stay compiling: everything else in the package (the old components and hooks are untouched until Tasks 22-24 and 37).
 
 **Interfaces:**
-- Consumes (Task 8 and 9, imported by deep path, see Contract notes of Task 11): `IReviewGateway` and the parameter types from `@webiny/app-workflows/review/gateway/IReviewGateway.js`; `ReviewDto`, `ReviewWithFlagsDto`, `WorkflowDto`, `StepCandidateDto`, `ReviewEnvelope`, `ReviewListEnvelope` from `.../review/gateway/dto.js`; `ReviewTarget` from `.../review/domain/types.js`; `ReviewState`, `StepState` in tests; `REVIEW_FIELDS`, `REVIEW_WITH_FLAGS_FIELDS`, `REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS`, `WORKFLOW_FIELDS`, `STEP_CANDIDATE_FIELDS`, `ERROR_FIELDS` from `.../review/gateway/reviewFields.js`; `IReviewUseCases`; `IReviewContentAdapter` and `ReviewContentRef`; `ReviewUseCases` (a public, non-final class, constructor `(gateway: IReviewGateway)`); `GraphQLOperationError` (`@webiny/app/errors/index.js`, Task 6). Task 1: `candidateTeams`. Task 5: `cancelWebsiteBuilderPageReviewsForDelete(pageId, revisionId, action)`. Task 11: `CmsReviewGateway` and `CmsReviewUseCases` (implementations in `@webiny/app-headless-cms-workflows/features/gateway/CmsReviewGatewayImpl.js` and `.../CmsReviewUseCasesImpl.js`, tokens in `.../CmsReviewGateway.js` and `.../CmsReviewUseCases.js`), used only by the coexistence test.
+- Consumes (Task 8 and 9, imported by deep path, R238): `IReviewGateway` and the parameter types from `@webiny/app-workflows/review/gateway/IReviewGateway.js`; `ReviewDto`, `ReviewWithFlagsDto`, `WorkflowDto`, `StepCandidateDto`, `ReviewEnvelope`, `ReviewListEnvelope` from `.../review/gateway/dto.js`; `ReviewTarget` from `.../review/domain/types.js`; `ReviewState`, `StepState` in tests; `REVIEW_FIELDS`, `REVIEW_WITH_FLAGS_FIELDS`, `REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS`, `WORKFLOW_FIELDS`, `STEP_CANDIDATE_FIELDS`, `ERROR_FIELDS` from `.../review/gateway/reviewFields.js`; `IReviewUseCases`; `IReviewContentAdapter` and `ReviewContentRef`; `ReviewUseCases` (a public, non-final class, constructor `(gateway: IReviewGateway)`); `GraphQLOperationError` (`@webiny/app/errors/index.js`, Task 6). Task 1: `candidateTeams`. Task 5: `cancelWebsiteBuilderPageReviewsForDelete(pageId, revisionId, action)`. Task 11: `CmsReviewGateway` and `CmsReviewUseCases` (implementations in `@webiny/app-headless-cms-workflows/features/gateway/CmsReviewGatewayImpl.js` and `.../CmsReviewUseCasesImpl.js`, tokens in `.../CmsReviewGateway.js` and `.../CmsReviewUseCases.js`), used only by the coexistence test.
 - Consumes (existing code, verified): `MainGraphQLClient` (`packages/app/src/features/mainGraphQLClient/abstractions.ts`); `WB_PAGE_APP` (`packages/app-website-builder-workflows/src/constants.ts`, `"wb.page"`); `Routes.Pages.Editor` (`packages/app-website-builder/src/routes.ts`, path `/website-builder/pages/editor/:id`); `createAbstraction`, `createFeature` (`@webiny/feature/admin`); `RegisterFeature`, `useFeatureFlags` (`@webiny/app-admin`); `DiContainerProvider`; `FeatureFlagsService`; `FeatureFlags` (`@webiny/feature-flags`); `Container` (`@webiny/di`); the server operations of `WebsiteBuilderWorkflowsSchemaFactory.ts` (argument names and types above, verified).
 - Produces (consumed by Tasks 22, 30, 36): `WbReviewGateway = createAbstraction<IReviewGateway>("WebsiteBuilder/Workflows/ReviewGateway")`, `WbReviewUseCases = createAbstraction<IReviewUseCases>("WebsiteBuilder/Workflows/ReviewUseCases")`, `WbReviewContentAdapter = createAbstraction<IReviewContentAdapter>("Wb/Workflows/ReviewContentAdapter")` (each with a namespace `Interface`) each in its own file named after the token (`WbReviewGateway.ts, WbReviewUseCases.ts, WbReviewContentAdapter.ts`); `WbReviewGatewayImpl` exported as the implementation `WbReviewGateway`; the implementation `WbReviewUseCases` (`WbReviewUseCasesImpl.ts`); `WbReviewContentAdapterImpl` exported as the implementation `WbReviewContentAdapter`; `WbReviewFeature` (`feature.ts`, name `"WebsiteBuilderWorkflows/Review"`, `resolve` -> `{ useCases: IReviewUseCases; contentAdapter: IReviewContentAdapter }`).
 
@@ -772,8 +772,8 @@ describe("WebsiteBuilderWorkflows composition", () => {
 One file per command (admin package, `yarn test` only):
 
 ```bash
-yarn test packages/app-website-builder-workflows/src/features/gateway/WbReviewGateway.test.ts 2>&1 | tail -50
-yarn test packages/app-website-builder-workflows/src/features/gateway/WbReviewContentAdapter.test.ts 2>&1 | tail -50
+yarn test packages/app-website-builder-workflows/src/features/gateway/WbReviewGatewayImpl.test.ts 2>&1 | tail -50
+yarn test packages/app-website-builder-workflows/src/features/gateway/WbReviewContentAdapterImpl.test.ts 2>&1 | tail -50
 yarn test packages/app-website-builder-workflows/src/features/gateway/feature.test.ts 2>&1 | tail -50
 yarn test packages/app-website-builder-workflows/src/index.test.tsx 2>&1 | tail -50
 ```
@@ -1482,7 +1482,7 @@ export const WbReviewGateway = GatewayAbstraction.createImplementation({
 });
 ```
 
-`packages/app-website-builder-workflows/src/features/gateway/WbReviewUseCasesImpl.ts` (the shared `ReviewUseCases` bound under the WB token; the subclass is required, see Contract notes of Task 11):
+`packages/app-website-builder-workflows/src/features/gateway/WbReviewUseCasesImpl.ts` (the shared `ReviewUseCases` bound under the WB token; the subclass is required, R238):
 
 ```ts
 import { ReviewUseCases } from "@webiny/app-workflows/review/useCases/ReviewUseCases.js";
@@ -1581,8 +1581,8 @@ Everything else in `index.tsx` stays (Tasks 22-24 and 37 replace the old registr
 - [ ] **Step 4: Run the new tests to see them pass**
 
 ```bash
-yarn test packages/app-website-builder-workflows/src/features/gateway/WbReviewGateway.test.ts 2>&1 | tail -50
-yarn test packages/app-website-builder-workflows/src/features/gateway/WbReviewContentAdapter.test.ts 2>&1 | tail -50
+yarn test packages/app-website-builder-workflows/src/features/gateway/WbReviewGatewayImpl.test.ts 2>&1 | tail -50
+yarn test packages/app-website-builder-workflows/src/features/gateway/WbReviewContentAdapterImpl.test.ts 2>&1 | tail -50
 yarn test packages/app-website-builder-workflows/src/features/gateway/feature.test.ts 2>&1 | tail -50
 yarn test packages/app-website-builder-workflows/src/index.test.tsx 2>&1 | tail -50
 ```
@@ -1591,14 +1591,14 @@ Expected: PASS. The coexistence test (`feature.test.ts`) imports the Task 11 fil
 
 - [ ] **Step 5: Run the existing tests covering the changed code and type-check**
 
-`WebsiteBuilderWorkflows` is the only existing file changed, and the package had no tests before this task, so the check is the type check of the package (and of the CMS package, whose gateway files the coexistence test imports) and the Task 11 tests:
+`WebsiteBuilderWorkflows` is the only existing file changed, and the package had no tests before this task. `check:test:types` lists only packages that have a `__tests__/**/*.test.ts` file, so for this package the type check of its co-located tests is the package build (R243); then the Task 11 tests:
 
 ```bash
-yarn check:test:types -p app-website-builder-workflows --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-website-builder-workflows --no-cache 2>&1 | tail -30
 yarn test packages/app-headless-cms-workflows/src/features/gateway/feature.test.ts 2>&1 | tail -50
 ```
 
-Expected: no type errors, PASS. Resolve any mismatch against the final Task 8 types by correcting this task's code, not the shared types.
+Expected: the build prints no type errors, PASS. Resolve any mismatch against the final Task 8 types by correcting this task's code, not the shared types.
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -1617,19 +1617,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-website-builder-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-website-builder-workflows): add the WB review gateway, registration and content adapter" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-website-builder-workflows): add the WB review gateway, registration and content adapter" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
-
-**Contract notes**
-
-- **Same `createImplementation` collision as Task 11** (see its first note): `WbReviewUseCases.ts` binds a one-line subclass of the shared `ReviewUseCases`, a file the contract does not list. The coexistence test in `feature.test.ts` fails if either app binds the shared class directly.
-- **One abstraction per file (user rule):** the contract said `abstractions.ts` holding three tokens; the tokens are one file each named after the token (`WbReviewGateway.ts`, `WbReviewUseCases.ts`, `WbReviewContentAdapter.ts`) and each implementation file is named `<Token>Impl.ts` (exported under the token's name). Extra files beyond the contract: `WbReviewUseCases.ts`/`WbReviewUseCasesImpl.ts` (subclass binding), `graphql/WbOperationResponse.ts`, `assertWbPageNamespace.ts`.
-- **Task order:** the A83 and "other app's tokens unresolved" assertions import Task 11's gateway and use-case files (a devDependency on `@webiny/app-headless-cms-workflows`), so this task runs after Task 11. The CMS package cannot import this one for the mirror test without a dependency in the other direction.
-- **Extra pure file:** `assertWbPageNamespace.ts` (a pure function, no dependency call, so allowed by the no-wrapper rule) holds the one namespace check four gateway methods and the adapter share; the contract lists no such file. The CMS side needs none because `parseAppName` already throws.
-- **Task 5 dependency:** the `revisionId` argument of `cancelWebsiteBuilderPageReviewsForDelete` is added server-side by Task 5; against an API without Task 5 the document is rejected by validation. 8a.4's dependency line already requires Task 5 for this task.
-- **`REVIEW_SYSTEM_WORKFLOW_SELECTION` and the single-read selection:** same as Task 11 (not used by a gateway; `REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS` for `getTargetReview` and `getReview`).
-- **Adapter label:** `getContentTypeLabel` takes no parameter in the implementation (a shorter signature is assignable to the interface) and always returns `null`: WB has no content type (R224, R206).
-- **Composition test:** as in Task 11, the old children of `WebsiteBuilderWorkflows` are stubbed with `vi.mock`; Tasks 22-24 and 37 replace them and must update those stubs in the same commit.
-- **Size:** large (14 documents, a 14-method gateway, adapter, feature, root change and 4 test files), but mechanical, one test cycle and one review gate.

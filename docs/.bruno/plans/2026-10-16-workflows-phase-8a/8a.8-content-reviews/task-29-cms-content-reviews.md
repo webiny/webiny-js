@@ -549,7 +549,7 @@ and add two cases to the `describe("CmsWorkflows composition", ...)` block:
     });
 ```
 
-`packages/app-headless-cms-workflows/src/index.editor.test.tsx` (Task 20) and `packages/app-headless-cms-workflows/src/index.lists.test.tsx` (Task 21): in each, replace the same footer-menu mock with the two new mocks (the block is identical in both files, under the comment that lists the stubbed modules; update the comment to say "the Content Reviews route, menu and sidebar item"):
+`packages/app-headless-cms-workflows/src/index.editor.test.tsx` (Task 20) and `packages/app-headless-cms-workflows/src/index.lists.test.tsx` (Task 21): in each, replace the same footer-menu mock with the two new mocks (the block is identical in both files as the two tasks wrote them):
 
 ```diff
 -vi.mock("~/Components/CmsEntriesWorkflowStateList/index.js", () => {
@@ -562,6 +562,13 @@ and add two cases to the `describe("CmsWorkflows composition", ...)` block:
 +vi.mock("~/Components/ContentReviews/CmsContentReviewsSidebarItem.js", () => {
 +    return { CmsContentReviewsSidebarItem: () => null };
 +});
+```
+
+In `index.editor.test.tsx` only, the comment above the first stub names the old module; change its first line to match (Task 21's `index.lists.test.tsx` has no such comment):
+
+```diff
+- * The editor route, the Content Reviews footer menu, the "open in new window" option and the old
++ * The editor route, the Content Reviews route, menu and sidebar item, the "open in new window" option and the old
 ```
 
 No other change in those two files: they mount the real `CmsWorkflows` root, which now registers `CmsContentReviewsPresenterFeature` (register-only, harmless) and mounts the two stubbed components.
@@ -760,6 +767,7 @@ import { CmsContentReviewsPresenter as Abstraction } from "./abstractions.js";
 import type { CmsContentTypeOption } from "./abstractions.js";
 import type { ContentType } from "./abstractions.js";
 import type { ICmsContentReviewsViewModel } from "./abstractions.js";
+import type { ListedModel } from "./abstractions.js";
 import { toContentTypes } from "./toContentTypes.js";
 
 class CmsContentReviewsPresenterImpl implements Abstraction.Interface {
@@ -801,7 +809,7 @@ class CmsContentReviewsPresenterImpl implements Abstraction.Interface {
         }
     }
 
-    private applyModels(models: Parameters<typeof toContentTypes>[0]): void {
+    private applyModels(models: ListedModel[]): void {
         this._contentTypes = toContentTypes(models);
         this._loading = false;
     }
@@ -828,8 +836,8 @@ import { CmsContentReviewsPresenter } from "./CmsContentReviewsPresenter.js";
 export const CmsContentReviewsPresenterFeature = createFeature({
     name: "Cms/Workflows/ContentReviewsPresenter",
     register(container) {
-        // Mounted once at the root, so the loaded model list survives re-renders.
-        container.register(CmsContentReviewsPresenter).inSingletonScope();
+        // Transient (R212): `useFeature` memoizes the one instance the root component holds.
+        container.register(CmsContentReviewsPresenter);
     },
     resolve(container) {
         return {
@@ -987,10 +995,10 @@ Expected: PASS. Admin packages run `yarn test <path>` only (no storage).
 yarn test packages/app-headless-cms-workflows/src/features/gateway/feature.test.ts 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/index.editor.test.tsx 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/index.lists.test.tsx 2>&1 | tail -50
-yarn check:test:types -p app-headless-cms-workflows --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-headless-cms-workflows --no-cache 2>&1 | tail -30
 ```
 
-Expected: PASS, no type errors. (If Task 11's `feature.test.ts` asserts the exact shape of what `CmsReviewFeature.resolve` returns, extend that expectation by `rowProvider` and say so in the commit body.)
+Expected: PASS, no type errors (the package has no `__tests__/**/*.test.ts`, so the build is its type check of the co-located tests, R243). (If Task 11's `feature.test.ts` asserts the exact shape of what `CmsReviewFeature.resolve` returns, extend that expectation by `rowProvider` and say so in the commit body.)
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -1009,17 +1017,12 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-headless-cms-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-headless-cms-workflows): mount Content Reviews, widgets and notifications" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-headless-cms-workflows): mount Content Reviews, widgets and notifications" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
 
 **Contract notes:**
-- Controller binding rule applied: the Interfaces entry says the CMS registers `CmsReviewRowProvider.createImplementation({ implementation: AppReviewRowProvider, ... })` and `WebsocketEventHandler.createImplementation({ implementation: ReviewNotificationHandler, ... })`. Both shared classes are plain; the CMS subclasses each in `CmsReviewRowProviderImpl.ts` and `CmsReviewNotificationHandlerImpl.ts` (Task 11's `<Token>Impl.ts` naming) and binds the subclass.
-- Additive files: the model-list presenter under `presentation/contentReviews/` (the contract lists two components only). A80 needs an asynchronous model list, and component state belongs in a presenter; it is the only CMS-specific logic of this task. It now also depends on `Notifications` (a failed model list raises one error toast).
-- Task 28 gains two additive props used here: `ready` on `ReviewContentReviewsRoute` and `ReviewDashboardWidgets`. They replace the earlier "route starts with no namespaces, then again" behaviour: the page shows a loader and the widgets are not registered until the model list is known, so the list starts once.
-- Remaining limit: the route itself is registered at start-up (the router needs it). A direct page load shows the loader until `ListModelsUseCase` returns; the same call fills `ModelsCache`, which Task 11's adapter reads for the content type label, so the labels are ready when the first row renders.
-- Behaviour change recorded: the sidebar item used to open an overlay for the model being browsed; it now opens the Content Reviews route for all models, filterable by content type (D113).
-- `routes.ts` gains the optional `tab` search parameter on `Routes.ContentEntries.ContentReviews` (route name and path unchanged, R206) for the widgets' "View all →".
+- Remaining limit: the route itself is registered at start-up (the router needs it). A direct page load shows the loader until `ListModelsUseCase` returns; the same call fills `ModelsCache`, which Task 11's adapter reads for the content type label, so the labels are ready when the first row renders. If the model list fails the presenter ends loading with no namespaces and raises one error notification (A80).
 - The gated-root cases live in Task 11's `index.test.tsx` (flag on: row provider and handler registered; flag off: neither). Tasks 20 and 21's root tests only stub the two new components. The real route and menu under the real `AdminConfig` are smoke-mounted once, in Task 30.
-- Menu placement: `AdminConfig.Menu` supports `parent`, so the item nests under `headlessCMS` (the group the existing workflow editor item uses, `packages/app-headless-cms-workflows/src/presentation/CmsWorkflowsEditorView.tsx`); no top-level fallback is needed.
+- `AdminConfig.Menu` supports `parent`, so the item nests under `headlessCMS` (the group the existing workflow editor item uses, `packages/app-headless-cms-workflows/src/presentation/CmsWorkflowsEditorView.tsx`); no top-level fallback is needed.

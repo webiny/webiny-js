@@ -6,7 +6,7 @@ R207 (user answer Q6, `../00-answers.md`), D125, A70; Review Focus 7. The admin 
 - **Queue** (`Notifications.ts`): `NotificationsImpl.error` pushes with variant `"error"`; `push` already copies every input field onto the queued notification, so the new fields travel with it unchanged.
 - **Renderer** (`NotificationsRenderer.tsx`): the toast params are built by one pure function `getToastParams(notification)`: always `title` and `description` (the key is present even when `description` is `undefined`, as today), then `duration`, `position` and `dismissible` only when the notification sets them (plain `if`s, no conditional spreads), then `actions` only when `link` is set: `<SimpleLink to={link.url}>{link.label}</SimpleLink>` (`SimpleLink` from `@webiny/app`, `packages/app/src/presentation/router/components/SimpleLink.tsx`: renders an anchor whose plain left click calls `RouterGateway.pushState(to)`, so an in-app URL navigates without a reload, and cmd/ctrl/middle click and `target="_blank"` keep the browser behaviour). `useToast` wraps a non-`ToastActions` value in `ToastActions` itself. Calls: `default` -> `toast.showToast(params)`; `success` -> `toast.showSuccessToast(params)`; `warning` -> `toast.showWarningToast(params)`; `error` -> sets `params.icon` to the destructive error icon, then `toast.showToast(params)`.
 - **Error icon:** `@webiny/icons/error.svg` (a filled error glyph, present in `node_modules/@webiny/icons`), rendered with the admin-ui `Icon` and class `fill-destructive`, the same shape `useToast` uses for its success (`fill-success`) and warning (`fill-warning`) icons. `fill-destructive` is an existing admin-ui token class (`packages/admin-ui/src/Toast`-adjacent components use `fill-destructive`; `--fill-destructive` in the theme CSS). The commit message names the icon.
-- **Dismissible:** `Toast` (`packages/admin-ui/src/Toast/Toast.tsx`) defaults `dismissible = true`, so the close button already shows when the field is not passed; `useToast` forwards `dismissible` to sonner and to `Toast` unchanged. The renderer therefore forwards the field only when set and changes nothing in admin-ui (R207 says admin-ui shows the button "only when set"; the code shows it by default, so workflows passing `dismissible: true` is harmless and an explicit `false` is the only way to hide it; recorded under Contract notes).
+- **Dismissible:** `Toast` (`packages/admin-ui/src/Toast/Toast.tsx`) defaults `dismissible = true`, so the close button already shows when the field is not passed; `useToast` forwards `dismissible` to sonner and to `Toast` unchanged. The renderer therefore forwards the field only when set and changes nothing in admin-ui (R207: workflows passing `dismissible: true` is harmless and an explicit `false` is the only way to hide the button).
 - **Tests:** `Notifications.test.ts` (queue, in node through the real feature) and `NotificationsRenderer.test.tsx` (jsdom, `useToast`, `useFeature` and `SimpleLink` mocked, `@webiny/admin-ui` mocked so no SVG or sonner is loaded).
 
 **Files:**
@@ -27,7 +27,10 @@ R207 (user answer Q6, `../00-answers.md`), D125, A70; Review Focus 7. The admin 
 Create `packages/app-admin/src/features/notifications/Notifications.test.ts`:
 
 ```ts
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { NotificationsFeature } from "./feature.js";
 import { Notifications } from "./abstractions.js";
@@ -113,8 +116,15 @@ Create `packages/app-admin/src/features/notifications/NotificationsRenderer.test
 
 ```tsx
 import React from "react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
+import { cleanup } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { NotificationsRenderer } from "./NotificationsRenderer.js";
 import type { INotification } from "./abstractions.js";
 
@@ -465,10 +475,14 @@ After:
 `packages/app-admin/src/features/notifications/NotificationsRenderer.tsx`, replace the whole file:
 
 ```tsx
-import React, { useEffect } from "react";
+import React from "react";
+import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { SimpleLink, useFeature } from "@webiny/app";
-import { Icon, useToast, type ShowToastParams } from "@webiny/admin-ui";
+import { SimpleLink } from "@webiny/app";
+import { useFeature } from "@webiny/app";
+import { Icon } from "@webiny/admin-ui";
+import { useToast } from "@webiny/admin-ui";
+import type { ShowToastParams } from "@webiny/admin-ui";
 import { ReactComponent as ErrorIcon } from "@webiny/icons/error.svg";
 import { NotificationsFeature } from "./feature.js";
 import type { INotification } from "./abstractions.js";
@@ -544,7 +558,7 @@ export const NotificationsRenderer = observer(() => {
 });
 ```
 
-Notes on the file: the original had no `React` import because it used no JSX; the new code returns JSX, and the classic JSX runtime needs `React` in scope, hence `import React, { useEffect } from "react"`. In the `error` case `params` is the local object built a line above, so setting `icon` there is a plain assignment, not a conditional spread.
+Notes on the file: the original had no `React` import because it used no JSX; the new code returns JSX, and the classic JSX runtime needs `React` in scope, hence `import React from "react"` next to `import { useEffect } from "react"`. In the `error` case `params` is the local object built a line above, so setting `icon` there is a plain assignment, not a conditional spread.
 
 The `Icon` props were verified in `packages/admin-ui/src/Icon/Icon.tsx`: `label: string` (required) and `icon: React.ReactNode`, so `label={""}` as `useToast` passes it type-checks.
 
@@ -593,16 +607,13 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-admin --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-admin): add link, duration, position, dismissible and error variant to notifications" -m "The renderer forwards only the fields a notification sets, so existing toasts keep their exact arguments. The error variant uses the error icon from @webiny/icons with the fill-destructive class. Sonner 2.0.8 caps the visible toasts at 3 per position (VISIBLE_TOASTS_AMOUNT) and nothing here overrides it." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-admin): add link, duration, position, dismissible and error variant to notifications" -m "The renderer forwards only the fields a notification sets, so existing toasts keep their exact arguments. The error variant uses the error icon from @webiny/icons with the fill-destructive class. Sonner 2.0.8 caps the visible toasts at 3 per position (VISIBLE_TOASTS_AMOUNT) and nothing here overrides it." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.
 
 ## Contract notes
 
-- R207 says `dismissible` is "the close button; admin-ui shows it only when set". In the code `Toast` defaults `dismissible = true` (`packages/admin-ui/src/Toast/Toast.tsx`) and `useToast` forwards `undefined` as is, so the close button already shows when the field is absent. The contract name and type are kept; the renderer forwards the field only when set, and workflows pass `true`. No admin-ui change.
-- The contract's Behaviour line says `error` -> `toast.showToast({ ...params, icon })`; the code sets `params.icon` and calls `toast.showToast(params)` to follow the no-inline-conditional-spreads/no-nested-call-arguments style. The call arguments are identical.
-- `INotificationInput.position` is typed with the new `NotificationPosition` union (the contract's six values); it equals sonner's `position` union, so `ShowToastParams` accepts it unchanged.
-- The `error` icon file is `@webiny/icons/error.svg`; the contract leaves the icon to the task ("an existing error icon, named in the commit").
-- `jsx` is `react` (classic) in `tsconfig.build.json`, so the renderer now imports `React`.
+- The error icon file is `@webiny/icons/error.svg`; the contract leaves the icon to the task ("an existing error icon, named in the commit").
+- `jsx` is `react` (classic) in `tsconfig.build.json`, so the renderer imports `React`.
 - Size: small. Two modified source files plus one rewritten renderer, two test files.

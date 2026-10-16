@@ -12,11 +12,11 @@ Spec 13.5; R206, R210, R212, R231, R234; Decisions D71, D133; design README 8 (h
 - Create: `packages/app-workflows/src/review/presentation/reviewWidget/{abstractions,ReviewWidgetPresenter,feature}.ts` (class `ReviewWidgetPresenterImpl`)
 - Create: `packages/app-workflows/src/review/presentation/reviewWidget/components/{ReviewWidgetCard,ReviewForMeWidget,ReviewMyRequestsWidget}.tsx`
 - Create tests: `packages/app-workflows/src/review/presentation/reviewWidget/ReviewWidgetPresenter.test.ts`, `packages/app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgets.test.tsx`
-- Modify: `packages/app-workflows/src/review/presentation/wiring.test.tsx` (Task 13's composition test, one case added)
+- Modify: `packages/app-workflows/src/app.test.tsx` (Task 10's composition test, extended by Task 13's "WorkflowsAdminApp review view" `describe`; one expectation per test added)
 - Modify: `packages/app-workflows/src/app.tsx` (register `ReviewWidgetPresenterFeature` inside the gate). The barrel `src/index.tsx` is edited once, in Task 28.
 
 **Interfaces:**
-- Consumes: Task 25 (`IReviewRowProvider`, `ReviewListTab` from `~/review/presentation/reviewList/abstractions.js`, `getReviewListEmpty`, `resolveRowBinding`, `formatLastChange`, `getListReviewStateLabel`, the builder `createReviewListItem` from `~/review/testing/createReviewListItem.js`); Task 13 (`getStepStateTag` `~/review/presentation/targetReview/getStepStateTag.js`, `TargetReviewTagVariant` `.../abstractions.js`, the fixture `createActor` `~/review/testing/reviewFixtures.js`); Task 14 (`renderWithAdminUi` `~/review/testing/renderWithAdminUi.js`, the vitest config with the DOM setup and svg alias); Task 15 (`renderWithContainer` `~/review/testing/renderWithContainer.js`); Task 10 (`ReviewActivity` token `~/review/activity/abstractions.js`, the implementation `~/review/activity/ReviewActivity.js`); Task 8 (`IReviewListUseCases`, `ReviewListPage`, `REVIEW_WIDGET_PAGE_SIZE`, `toReviewListRow`, `ReviewListRow`, `ReviewListSort`). Existing: `IdentityContext` (`@webiny/app-admin/features/security/IdentityContext/abstractions.js`), `createReactiveComponent` (`@webiny/app-admin`), `useFeature` (`@webiny/app`), admin-ui `Button`, `Link`, `SegmentedControl`, `Skeleton`, `Tag`, `Text`.
+- Consumes: Task 25 (`IReviewRowProvider`, `ReviewListTab` from `~/review/presentation/reviewList/abstractions.js`, `getReviewListEmpty`, `resolveRowBinding`, `formatLastChange`, `getListReviewStateLabel`, the builder `createReviewListItem` from `~/review/testing/createReviewListItem.js`); Task 13 (`getStepStateTag` `~/review/presentation/targetReview/getStepStateTag.js`, `TargetReviewTagVariant` `.../abstractions.js`, the fixture `createActor` `~/review/testing/createActor.js`); Task 14 (`renderWithAdminUi` `~/review/testing/renderWithAdminUi.js`, the vitest config with the DOM setup and svg alias); Task 15 (`renderWithContainer` `~/review/testing/renderWithContainer.js`); Task 10 (`ReviewActivity` token `~/review/activity/abstractions.js`, the implementation `~/review/activity/ReviewActivity.js`); Task 8 (`IReviewListUseCases`, `ReviewListPage`, `REVIEW_WIDGET_PAGE_SIZE`, `toReviewListRow`, `ReviewListRow`, `ReviewListSort`). Existing: `IdentityContext` (`@webiny/app-admin/features/security/IdentityContext/abstractions.js`), `createReactiveComponent` (`@webiny/app-admin`), `useFeature` (`@webiny/app`), admin-ui `Button`, `Link`, `SegmentedControl`, `Skeleton`, `Tag`, `Text`.
 - Produces (consumed by Task 28): `ReviewWidgetKind = "forMe" | "myRequests"`; `ReviewWidgetInitParams { useCases: IReviewListUseCases; namespaces: string[]; kind: ReviewWidgetKind; rowProvider: IReviewRowProvider }`; `ReviewWidgetRowVm { reviewId; title; stepLine; stateLabel; stateVariant: TargetReviewTagVariant; lastChange; contentUrl: string | null }` (`stateVariant` is additive); `IReviewWidgetViewModel { tab: "assignedToMe" | "pool" | null; rows; status: "loading" | "ready" | "failed"; empty: boolean; hasTeams: boolean }` (`hasTeams` is additive, QBZ-73); `IReviewWidgetPresenter { vm; init; setTab; refresh; dispose }`; token `ReviewWidgetPresenter` (`"Workflows/ReviewWidgetPresenter"`, transient); `ReviewWidgetPresenterFeature` (`resolve` -> `{ presenter }`); `ReviewForMeWidget`, `ReviewMyRequestsWidget` with props `{ useCases: IReviewListUseCases; namespaces: string[]; rowProvider: IReviewRowProvider; viewAllUrl: (tab: ReviewListTab) => string }`.
 
 verify before writing code (record each result in the commit body):
@@ -559,16 +559,19 @@ describe("review dashboard widgets", () => {
 });
 ```
 
-Composition root (Review Focus 8): add one case to Task 13's `src/review/presentation/wiring.test.tsx` next to the existing ones (its mocked `RegisterFeature` records registrations, and its flag-off case already asserts nothing is registered):
+Composition root (Review Focus 8): extend Task 10's `src/app.test.tsx` (Task 13's container-style `describe("WorkflowsAdminApp review view")`) with one line in each of its three tests:
 
 ```tsx
-import { ReviewWidgetPresenterFeature } from "./reviewWidget/feature.js";
+import { ReviewWidgetPresenter } from "~/review/presentation/reviewWidget/abstractions.js";
 
-it("registers the review widget presenter when the feature flag is on", () => {
-    render(<WorkflowsAdminApp />);
+// in "registers the review view presenters when the flag is on":
+expect(container.resolve(ReviewWidgetPresenter)).toBeDefined();
 
-    expect(state.registered).toContain(ReviewWidgetPresenterFeature);
-});
+// in "registers the presenters transient: every resolve is a new instance (R212)":
+expect(container.resolve(ReviewWidgetPresenter)).not.toBe(container.resolve(ReviewWidgetPresenter));
+
+// in "registers no review view presenter when the flag is off (R211)":
+expect(() => container.resolve(ReviewWidgetPresenter)).toThrow();
 ```
 
 - [ ] **Step 2: Run the tests, expect failure**
@@ -576,10 +579,10 @@ it("registers the review widget presenter when the feature flag is on", () => {
 ```bash
 yarn test packages/app-workflows/src/review/presentation/reviewWidget/ReviewWidgetPresenter.test.ts 2>&1 | tail -50
 yarn test packages/app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgets.test.tsx 2>&1 | tail -50
-yarn test packages/app-workflows/src/review/presentation/wiring.test.tsx 2>&1 | tail -50
+yarn test packages/app-workflows/src/app.test.tsx 2>&1 | tail -50
 ```
 
-Expected: FAIL with `Failed to resolve import "./abstractions.js"` / `"./ReviewForMeWidget.js"` / `"./reviewWidget/feature.js"` (not created yet).
+Expected: FAIL with `Failed to resolve import "./abstractions.js"` / `"./ReviewForMeWidget.js"` / `"~/review/presentation/reviewWidget/abstractions.js"` (not created yet).
 
 - [ ] **Step 3: Implement**
 
@@ -959,7 +962,8 @@ export const ReviewWidgetPresenterFeature = createFeature({
 `packages/app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgetCard.tsx`:
 
 ```tsx
-import React, { useEffect } from "react";
+import React from "react";
+import { useEffect } from "react";
 import { Button } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
 import { SegmentedControl } from "@webiny/admin-ui";
@@ -1173,7 +1177,7 @@ next to `<RegisterFeature feature={ReviewListPresenterFeature} />`, inside the g
 ```bash
 yarn test packages/app-workflows/src/review/presentation/reviewWidget/ReviewWidgetPresenter.test.ts 2>&1 | tail -50
 yarn test packages/app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgets.test.tsx 2>&1 | tail -50
-yarn test packages/app-workflows/src/review/presentation/wiring.test.tsx 2>&1 | tail -50
+yarn test packages/app-workflows/src/app.test.tsx 2>&1 | tail -50
 ```
 
 Expected: PASS. Admin packages run `yarn test <path>` only (no storage). If `SegmentedControl` renders `button` instead of `radio`, change the `getByRole("radio", ...)` queries and say so in the commit body.
@@ -1183,10 +1187,10 @@ Expected: PASS. Admin packages run `yarn test <path>` only (no storage). If `Seg
 ```bash
 yarn test packages/app-workflows/src/review/presentation/reviewList/ReviewListPresenter.test.ts 2>&1 | tail -50
 yarn test packages/app-workflows/src/review/presentation/reviewList/reviewListPure.test.ts 2>&1 | tail -50
-yarn check:test:types -p app-workflows --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 
-Expected: PASS, no type errors.
+Expected: PASS and the build (the type check of the co-located tests, R-e) prints no errors.
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -1205,7 +1209,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-workflows): add the review dashboard widgets" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the review dashboard widgets" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
@@ -1218,4 +1222,4 @@ If a pre-commit step fails and you fix anything, rerun the chain from the start.
 - "Team pool" empty text for `forMe` uses `getReviewListEmpty` of Task 25, so list and widget copy cannot drift (QBZ-72, QBZ-73); the QBZ-73 gap of Task 25 (a member of only non-reviewing teams) applies here too.
 - `setTab` on a "myRequests" widget is a no-op (it has no segment).
 - `useCases.listReviews` is called inline in four methods (user rule: no wrapper around a use case call); only state helpers are shared.
-- The composition-root case is added to Task 13's `wiring.test.tsx`; the widget tests use Task 14's `renderWithAdminUi` through Task 15's `renderWithContainer`, so this task adds no vitest config, svg stub or render helper.
+- The composition-root expectations go into Task 10's `app.test.tsx` (the contract names a `wiring.test.tsx` that no earlier task creates); the widget tests use Task 14's `renderWithAdminUi` through Task 15's `renderWithContainer`, so this task adds no vitest config, svg stub or render helper.

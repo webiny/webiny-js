@@ -36,7 +36,11 @@ Added at the user's request (Q14, Q15, R235, R236; D5, D97, D134 for the later b
 Create `packages/api-website-builder/__tests__/pageRevisionDelete.test.ts`:
 
 ```ts
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { until } from "@webiny/api/testing/until.js";
 import type { Container } from "@webiny/di";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
@@ -49,20 +53,14 @@ import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisi
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
 import { PublishPageUseCase } from "~/features/pages/PublishPage/index.js";
-import {
-    PageAfterUnpublishEventHandler,
-    PageBeforeUnpublishEventHandler
-} from "~/features/pages/UnpublishPage/index.js";
+import { PageAfterUnpublishEventHandler } from "~/features/pages/UnpublishPage/index.js";
+import { PageBeforeUnpublishEventHandler } from "~/features/pages/UnpublishPage/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
-import {
-    PageAfterDeleteEventHandler,
-    PageBeforeDeleteEventHandler
-} from "~/features/pages/DeletePage/index.js";
-import {
-    DeletePageRevisionUseCase,
-    PageRevisionAfterDeleteEventHandler,
-    PageRevisionBeforeDeleteEventHandler
-} from "~/features/pages/DeletePageRevision/index.js";
+import { PageAfterDeleteEventHandler } from "~/features/pages/DeletePage/index.js";
+import { PageBeforeDeleteEventHandler } from "~/features/pages/DeletePage/index.js";
+import { DeletePageRevisionUseCase } from "~/features/pages/DeletePageRevision/index.js";
+import { PageRevisionAfterDeleteEventHandler } from "~/features/pages/DeletePageRevision/index.js";
+import { PageRevisionBeforeDeleteEventHandler } from "~/features/pages/DeletePageRevision/index.js";
 import * as pageExports from "~/exports/api/website-builder/page.js";
 
 const NOT_AUTHORIZED = "WebsiteBuilder/Page/NotAuthorized";
@@ -482,18 +480,18 @@ describe("DeletePageRevisionUseCase (R235, R236)", () => {
 Create `packages/api-website-builder/__tests__/pageRevisionDelete.gql.test.ts`:
 
 ```ts
-import { describe, expect, it } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { until } from "@webiny/api/testing/until.js";
 import type { Container } from "@webiny/di";
 import { BaseError } from "@webiny/feature/api";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler.js";
 import { pageMocks } from "./mocks/page.mock.js";
 import { PageRevisionBeforeDeleteEventHandler } from "~/features/pages/DeletePageRevision/index.js";
-import {
-    DELETE_PAGE_REVISION,
-    GET_PAGE_BY_ID,
-    GET_PAGE_REVISIONS
-} from "./graphql/pages.gql.js";
+import { DELETE_PAGE_REVISION } from "./graphql/pages.gql.js";
+import { GET_PAGE_BY_ID } from "./graphql/pages.gql.js";
+import { GET_PAGE_REVISIONS } from "./graphql/pages.gql.js";
 
 class RefusedError extends BaseError<{ reason: string }> {
     override readonly code = "Test/Refused" as const;
@@ -652,15 +650,14 @@ Expected: FAIL. The use-case test cannot resolve `~/features/pages/DeletePageRev
 `packages/api-website-builder/src/features/pages/DeletePageRevision/abstractions.ts`:
 
 ```ts
-import { createAbstraction, type Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
+import type { Result } from "@webiny/feature/api";
 import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { WbPage } from "~/domain/page/abstractions.js";
-import type {
-    PageNotFoundError,
-    PagePersistenceError,
-    PageNotAuthorizedError
-} from "~/domain/page/errors.js";
+import type { PageNotFoundError } from "~/domain/page/errors.js";
+import type { PagePersistenceError } from "~/domain/page/errors.js";
+import type { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 // ============================================================================
 // Type Definitions
@@ -772,14 +769,10 @@ export namespace PageRevisionAfterDeleteEventHandler {
 
 ```ts
 import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
-import {
-    PageRevisionAfterDeleteEventHandler,
-    PageRevisionBeforeDeleteEventHandler
-} from "./abstractions.js";
-import type {
-    PageRevisionAfterDeletePayload,
-    PageRevisionBeforeDeletePayload
-} from "./abstractions.js";
+import { PageRevisionAfterDeleteEventHandler } from "./abstractions.js";
+import { PageRevisionBeforeDeleteEventHandler } from "./abstractions.js";
+import type { PageRevisionAfterDeletePayload } from "./abstractions.js";
+import type { PageRevisionBeforeDeletePayload } from "./abstractions.js";
 
 // PageRevisionBeforeDelete Event
 export class PageRevisionBeforeDeleteEvent extends DomainEvent<PageRevisionBeforeDeletePayload> {
@@ -807,7 +800,8 @@ import { Result } from "@webiny/feature/api";
 import { DeleteEntryRevisionUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision";
 import { DeletePageRevisionRepository as RepositoryAbstraction } from "./abstractions.js";
 import { PageModelProvider } from "~/domain/page/abstractions.js";
-import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
+import { PageNotFoundError } from "~/domain/page/errors.js";
+import { PagePersistenceError } from "~/domain/page/errors.js";
 
 class DeletePageRevisionRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -843,12 +837,12 @@ export const DeletePageRevisionRepository = RepositoryAbstraction.createImplemen
 ```ts
 import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import {
-    DeletePageRevisionRepository,
-    DeletePageRevisionUseCase as UseCaseAbstraction
-} from "./abstractions.js";
-import { PageRevisionAfterDeleteEvent, PageRevisionBeforeDeleteEvent } from "./events.js";
-import { PageAfterDeleteEvent, PageBeforeDeleteEvent } from "~/features/pages/DeletePage/events.js";
+import { DeletePageRevisionRepository } from "./abstractions.js";
+import { DeletePageRevisionUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { PageRevisionAfterDeleteEvent } from "./events.js";
+import { PageRevisionBeforeDeleteEvent } from "./events.js";
+import { PageAfterDeleteEvent } from "~/features/pages/DeletePage/events.js";
+import { PageBeforeDeleteEvent } from "~/features/pages/DeletePage/events.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
@@ -1071,12 +1065,8 @@ If a pre-commit step fails and you fix anything, rerun the chain from the start.
 
 ## Contract notes
 
-- **Unverified code.** Unlike Tasks 1 and 2, the code and tests of this task were written from code read with codegraph and file reads but were **not run** when this plan was written (prototyping in the source tree was not allowed). The implementer runs them in Steps 2 and 4; assumptions are marked "verify:" below.
-- A88 trashed page: pinned as `[1]` in a test. Derived from code, not run: `GetRevisionsByEntryIdUseCase` and its repository have no deleted-entry filter, so a trashed page lists its revisions. If a storage returns `[]` here, change the expectation and record it in the commit; Task 3 does not depend on it because the revision delete reads the page with `GetPageByIdUseCase`, which does not find a trashed page.
-- The latest revision is read through `GetPageRevisionsUseCase` (last item), not by a bare entry id: the DDB revision loader skips ids without a version (`packages/api-headless-cms-ddb/src/operations/entry/dataLoader/getRevisionById.ts`, the `version === null` `continue`), so a bare id is not a revision read.
-- Page-delete subscribers in the only-revision case receive a **live (non-trashed)** page, unlike `DeletePageUseCase` (which needs a trashed page). Read their bodies: the audit-log `PageAfterDeleteHandler` only records `page` and `page.id`; the scheduler `CancelScheduledActionOnPageDeleteEventHandler` lists and cancels actions by `targetId: page.id`, ignoring trash state and errors; neither inspects trash state, so both tolerate it. The webhook `OnPageDeletedHandler` was not found under `packages/webhooks/src` when this plan was written: the implementer reads it (`grep -rn "OnPageDeleted" packages --include=*.ts`) and records the result; the workflows `BlockPageDeleteWhileInReview` and `DeleteReviewsOnPageDelete` read only `page.entryId`.
-- `DeletePageRevision/{abstractions,events}.ts` deliberately mirror `DeletePage/{abstractions,events}.ts` (two handler abstractions and two events), so subscribers of one are easy to compare with the other.
+- **Unverified code.** The code and tests of this task were written from code read with codegraph and file reads and were **not run** when this plan was written. The implementer runs them in Steps 2 and 4; assumptions are marked "verify:" below.
+- A88 trashed page: pinned as `[1]` in a test, derived from code (`GetRevisionsByEntryIdUseCase` has no deleted-entry filter), not run. If a storage returns `[]` here, change the expectation and record it in the commit; the revision delete does not depend on it.
+- The webhook `OnPageDeletedHandler` was not found under `packages/webhooks/src` when this plan was written: the implementer locates it (`grep -rn "OnPageDeleted" packages --include=*.ts`), reads its body (it receives a live, non-trashed page in the only-revision case) and records the result in the commit.
 - verify: the own-scope tests use `{ name: "wb.page", own: true, rwd: "rwd" }` (own deletes allowed, other users' pages refused); the read-only and `rwd: "rw"` cases mirror `pages.permissions.finegrained.test.ts`.
 - verify: a handler registered with `container.register(<Handler>.createImplementation(...))` inside a `legacyPlugins` function runs for page and revision events (same mechanism as `registerAco` in `pageFolderDelete.test.ts`).
-- Contract names kept: `IDeleteWbPageRevisionParams`, `PageRevisionBefore/AfterDeleteEventHandler`, `DeletePageRevisionFeature`, `"page.revision.beforeDelete"`, `"page.revision.afterDelete"`. The CMS use case also publishes its own CMS entry-revision events for the private page model; the workflows CMS hooks ignore the private model (A87, proven in Task 4).
-- Size: the largest task of the sub-phase (six new source files, five modified, two test files).

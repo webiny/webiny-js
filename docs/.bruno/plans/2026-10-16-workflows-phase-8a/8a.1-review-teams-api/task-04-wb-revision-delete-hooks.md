@@ -28,27 +28,28 @@ Spec 13.4; Q12 and Q14 (`../00-answers.md`); R73, R81, R235, R236, A87; D134. Ta
 Create `packages/api-website-builder-workflows/__tests__/target/WbPageRevisionDelete.test.ts`:
 
 ```ts
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { DeletePageRevisionUseCase } from "@webiny/api-website-builder/features/pages/DeletePageRevision/index.js";
 import { DeletePageUseCase } from "@webiny/api-website-builder/features/pages/DeletePage/index.js";
 import { TrashPageUseCase } from "@webiny/api-website-builder/features/pages/TrashPage/index.js";
 import { CreatePageRevisionFromUseCase } from "@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/index.js";
 import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
-import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
-import {
-    failDeleteTargetReviews,
-    throwDeleteTargetReviews
-} from "~tests/__helpers/FailingDeleteTargetReviews.js";
+import { captureLoggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { failDeleteTargetReviews } from "~tests/__helpers/FailingDeleteTargetReviews.js";
+import { throwDeleteTargetReviews } from "~tests/__helpers/FailingDeleteTargetReviews.js";
 import { failGetBoundWorkflow } from "~tests/__helpers/FailingGetBoundWorkflow.js";
 import { failListTargetReviews } from "~tests/__helpers/FailingListTargetReviews.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
-import { createPage, expectOk } from "~tests/__helpers/pages.js";
-import {
-    approvePageReview,
-    cancelPageReview,
-    requestPageReview,
-    storeWbWorkflow
-} from "~tests/__helpers/engine.js";
+import { createPage } from "~tests/__helpers/pages.js";
+import { expectOk } from "~tests/__helpers/pages.js";
+import { approvePageReview } from "~tests/__helpers/engine.js";
+import { cancelPageReview } from "~tests/__helpers/engine.js";
+import { requestPageReview } from "~tests/__helpers/engine.js";
+import { storeWbWorkflow } from "~tests/__helpers/engine.js";
 
 const CLEANUP_FAILURE = "Could not delete the reviews of a deleted page revision; they are left orphaned.";
 
@@ -260,15 +261,23 @@ describe("WB revision delete with a review in progress (D134, R235)", () => {
 Create `packages/api-website-builder-workflows/__tests__/graphql/pageRevisionDelete.test.ts`:
 
 ```ts
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { CreatePageRevisionFromUseCase } from "@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/index.js";
 import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
-import { createPage, expectOk } from "~tests/__helpers/pages.js";
-import { requestPageReview, storeWbWorkflow } from "~tests/__helpers/engine.js";
-import { REQUESTER, WB_DELETER } from "~tests/__helpers/identities.js";
+import { createPage } from "~tests/__helpers/pages.js";
+import { expectOk } from "~tests/__helpers/pages.js";
+import { requestPageReview } from "~tests/__helpers/engine.js";
+import { storeWbWorkflow } from "~tests/__helpers/engine.js";
+import { REQUESTER } from "~tests/__helpers/identities.js";
+import { WB_DELETER } from "~tests/__helpers/identities.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
-import { asGraphQLUser, CANCEL_REVIEWS_FOR_DELETE } from "~tests/__helpers/graphql.js";
+import { asGraphQLUser } from "~tests/__helpers/graphql.js";
+import { CANCEL_REVIEWS_FOR_DELETE } from "~tests/__helpers/graphql.js";
 
 const DELETE_PAGE_REVISION = /* GraphQL */ `
     mutation DeletePageRevision($id: ID!) {
@@ -346,19 +355,21 @@ describe("WB deletePageRevision through GraphQL with workflows (R235, D134)", ()
 Create `packages/api-headless-cms-workflows/__tests__/hooks/privateModelRevisionDelete.test.ts`. A review cannot be requested on a private model (no workflow can be bound to one), so the real `DeleteEntryRevisionUseCase` path on a private model (already pinned by `trashAndDelete.test.ts`, "neither blocks nor cleans up") cannot carry an in-progress review. This test therefore hands the two real CMS workflow handlers a revision-delete event for a private model while a review is in progress on the public model's entry. The handlers are picked by class name; the test asserts it found exactly one of each, so a rename fails loudly instead of passing vacuously:
 
 ```ts
-import { beforeEach, describe, expect, it } from "vitest";
-import {
-    EntryRevisionAfterDeleteEvent,
-    EntryRevisionBeforeDeleteEvent
-} from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/events.js";
-import {
-    EntryRevisionAfterDeleteEventHandler,
-    EntryRevisionBeforeDeleteEventHandler
-} from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/index.js";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { EntryRevisionAfterDeleteEvent } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/events.js";
+import { EntryRevisionBeforeDeleteEvent } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/events.js";
+import { EntryRevisionAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/index.js";
+import { EntryRevisionBeforeDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/index.js";
 import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
-import { createAuthorEntry, expectOk, getAuthorModel } from "~tests/__helpers/entries.js";
+import { createAuthorEntry } from "~tests/__helpers/entries.js";
+import { expectOk } from "~tests/__helpers/entries.js";
+import { getAuthorModel } from "~tests/__helpers/entries.js";
 import { createTestContext } from "~tests/__helpers/testContext.js";
-import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
+import { countEngineCalls } from "~tests/__helpers/CountingEngineCalls.js";
+import { engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import { requestEntryReview } from "~tests/__helpers/engine.js";
 
 const BLOCK_HANDLER = "BlockRevisionDeleteWhileInReviewImpl";
@@ -427,10 +438,8 @@ describe("CMS revision hooks ignore the private model (A87, R52)", () => {
 `packages/api-website-builder-workflows/__tests__/registration.test.ts`, add the import next to the `DeletePage` import, and replace the `handlers` array (one each, none left over without the license):
 
 ```ts
-import {
-    PageRevisionAfterDeleteEventHandler,
-    PageRevisionBeforeDeleteEventHandler
-} from "@webiny/api-website-builder/features/pages/DeletePageRevision/index.js";
+import { PageRevisionAfterDeleteEventHandler } from "@webiny/api-website-builder/features/pages/DeletePageRevision/index.js";
+import { PageRevisionBeforeDeleteEventHandler } from "@webiny/api-website-builder/features/pages/DeletePageRevision/index.js";
 ```
 
 ```ts
@@ -642,10 +651,6 @@ If a pre-commit step fails and you fix anything, rerun the chain from the start.
 
 ## Contract notes
 
-- **Unverified code.** The two hooks and the tests were written by analogy to the working page-delete and CMS revision hooks and to the existing `WbPageTrashAndDelete.test.ts`; they were **not run** when this plan was written (prototyping in the source tree was not allowed, and Task 3 must exist first). The implementer runs them in Steps 2 and 4.
-- Contract placement: the A87 test is in `packages/api-headless-cms-workflows/__tests__/hooks/` as required; the GraphQL case is a new file in `packages/api-website-builder-workflows/__tests__/graphql/` (`pageRevisionDelete.test.ts`) instead of an addition to `pageReviews.test.ts`, to keep that 400-line file unchanged; it defines its own `deletePageRevision` document (the shared `__helpers/graphql.ts` stays as is until Task 5 adds `revisionId` to the cancel document).
-- The contract says `getCmsNamespace`/`isBindableModel` live in `packages/api-headless-cms-workflows/src/utils/`: re-read, `getCmsNamespace` is in `utils/appName.ts`, `isBindableModel` in `utils/isBindableModel.ts`. `getCmsNamespace` returns `null` for a private model, which is what A87 relies on.
-- verify: the cleanup log text. The fixed text `Could not delete the reviews of a deleted page revision; they are left orphaned.` is new (the page-delete one says "deleted page"); the tests pin it, change both together if the wording changes.
-- verify: "requests a review on revision 2 while revision 1 is approved" (test "deletes the reviews of the deleted revision only"): if the engine refuses a second active review on one page, request revision 2's review before approving revision 1's, as the test does not depend on the order beyond that.
-- In the only-revision case the cleanup runs twice: `DeleteReviewsOnPageRevisionDelete` (revision events) and `DeleteReviewsOnPageDelete` (page-delete events, every review of the page). The second finds nothing left to delete; harmless.
-- A87 test risk: it picks the CMS handlers by class name (`BlockRevisionDeleteWhileInReviewImpl`, `DeleteReviewsOnRevisionDeleteImpl`), so a rename fails the `toHaveLength(1)` assertions instead of passing vacuously. The real use-case path on a private model cannot hold a review (no workflow binds to a private model), which is why the test drives the handlers directly; `trashAndDelete.test.ts` covers the real `DeleteEntryRevisionUseCase` path with `engineCalls` empty.
+- **Unverified code.** The two hooks and the tests were written by analogy to the working page-delete and CMS revision hooks and to `WbPageTrashAndDelete.test.ts`; they were **not run** when this plan was written (Task 3 must exist first). The implementer runs them in Steps 2 and 4.
+- verify: the cleanup log text `Could not delete the reviews of a deleted page revision; they are left orphaned.` is new (the page-delete one says "deleted page"); the tests pin it, change both together if the wording changes.
+- verify: the test "deletes the reviews of the deleted revision only" requests a review on revision 2 while revision 1 is approved; if the engine refuses a second active review on one page, request revision 2's review before approving revision 1's.

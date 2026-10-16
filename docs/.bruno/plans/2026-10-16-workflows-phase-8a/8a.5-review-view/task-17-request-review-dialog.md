@@ -1126,7 +1126,8 @@ export const RequestReviewPresenterFeature = createFeature({
 Create `packages/app-workflows/src/review/presentation/requestReview/components/RequestReviewDialog.tsx`:
 
 ```tsx
-import React, { useEffect } from "react";
+import React from "react";
+import { useEffect } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import { Alert } from "@webiny/admin-ui";
@@ -1386,18 +1387,12 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the request review dialog" -m "The dialog previews the workflow steps, prefills the title (at least 5 characters), offers Automatic or Choose a person for steps that allow picks with one private picker per step, and sends picks only for steps with a person chosen. Conflicts, field errors and server errors follow the review dialog rules; the bar mounts the dialog for its request action." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the request review dialog" -m "The dialog previews the workflow steps, prefills the title (at least 5 characters), offers Automatic or Choose a person for steps that allow picks with one private picker per step, and sends picks only for steps with a person chosen. Conflicts, field errors and server errors follow the review dialog rules; the bar mounts the dialog for its request action." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.
 
 ## Contract notes
 
-- **Dependencies `[ReviewerPickerFactory, ReviewToasts]`** instead of the contract's `[ReviewerPickerPresenter, ReviewToasts]` (one injected picker instance cannot serve several steps); the factory is added in Task 16.
-- **Target from the view model (R-f):** `ReviewBar` keeps its props and mounts this dialog with the target and title read from the presenter's view model; `RequestReviewDialog` keeps the contract props `{ useCases, target, targetTitle, reviewsUrl, onDone, onClose }`.
-- **"Assigned automatically" (R-j):** shown from `ReviewWorkflowStep.assignedAutomatically`, which Task 8 maps from `config.assignment.strategy !== "none"`.
-- **Limitation (QBZ-4):** only steps that allow picks (`allowManualPick`) call `listStepCandidates`, so the "No one other than you can review this step right now" note appears for pick steps only. A people step without picks is not checked and shows no such note; checking it needs a candidate call per people step (a server or DTO addition left to the controller).
-- **String the design does not give** (proposal to confirm): the conflict message "Someone else already requested a review for this revision." (README 5 names only the alert title). The server-error text is README 5's; `NotAuthorized` uses the shared QBZ-59 sentence.
-- **Barrel (R-k):** nothing is added to `src/index.tsx`.
-- **Composition-root test:** the assertions extend Task 10's `app.test.tsx` (see Task 13).
+- **String the design does not give** (proposal to confirm, R242): the conflict message "Someone else already requested a review for this revision." (README 5 names only the alert title). The server-error text is README 5's; `NotAuthorized` uses the shared QBZ-59 sentence.
 - Size: large (five source files, two test files, three small modifications).

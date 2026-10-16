@@ -13,7 +13,7 @@ Spec 13.5; R202, R206, R211, R223, R224, R231; Decisions D133, D159; design READ
 **Files:**
 - Create: `packages/app-workflows/src/review/mounting/AppReviewRowProvider.ts`, `packages/app-workflows/src/review/mounting/ReviewNotificationHandler.ts`
 - Create: `packages/app-workflows/src/review/mounting/components/{ReviewContentReviewsRoute,ReviewContentReviewsMenu,ReviewDashboardWidgets}.tsx`
-- Create (test support, in `__tests__/` because it is a test-only fake): `packages/app-workflows/__tests__/support/adminConfigStub.tsx`
+- Create (test support, a vitest fake in the testing folder because a co-located test cannot import from `__tests__/`, TS6059, R243): `packages/app-workflows/src/review/testing/adminConfigStub.tsx`
 - Create tests: `packages/app-workflows/src/review/mounting/AppReviewRowProvider.test.ts`, `packages/app-workflows/src/review/mounting/ReviewNotificationHandler.test.ts`, `packages/app-workflows/src/review/mounting/components/ReviewMountingComponents.test.tsx`
 - Modify: `packages/app-workflows/package.json` (dependency `@webiny/app-websockets`), `packages/app-workflows/src/index.tsx` (barrel)
 
@@ -35,7 +35,7 @@ verify before writing code (record each result in the commit body):
 
 - [ ] **Step 1: Write the failing tests**
 
-`packages/app-workflows/__tests__/support/adminConfigStub.tsx`:
+`packages/app-workflows/src/review/testing/adminConfigStub.tsx`:
 
 ```tsx
 import React from "react";
@@ -310,7 +310,7 @@ interface WidgetStubProps {
 
 vi.mock("@webiny/app-admin", async importOriginal => {
     const actual = await importOriginal<typeof import("@webiny/app-admin")>();
-    const { createAdminConfigStub } = await import("~tests/support/adminConfigStub.js");
+    const { createAdminConfigStub } = await import("~/review/testing/adminConfigStub.js");
     const stub = createAdminConfigStub();
     return {
         ...actual,
@@ -898,7 +898,7 @@ Expected: PASS. Admin packages run `yarn test <path>` only (no storage).
 ```bash
 yarn test packages/app-workflows/src/review/presentation/reviewList/components/ReviewListView.test.tsx 2>&1 | tail -50
 yarn test packages/app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgets.test.tsx 2>&1 | tail -50
-yarn check:test:types -p app-workflows --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 
 Expected: PASS, no type errors.
@@ -920,15 +920,11 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-workflows): add the shared Content Reviews mounting pieces" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the shared Content Reviews mounting pieces" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start. The package is built here because Tasks 29 and 30 import it.
 
 **Contract notes:**
-- Controller binding rule applied: the Interfaces entry says apps register `CmsReviewRowProvider.createImplementation({ implementation: AppReviewRowProvider, ... })` and `WebsocketEventHandler.createImplementation({ implementation: ReviewNotificationHandler, ... })`. This task exports both as plain classes and never calls `createImplementation`; Tasks 29 and 30 subclass them in their own files.
-- `ReviewContentReviewsMenu` gains the optional prop `parent` (additive; the contract's props were `{ name; route }`) so the CMS item nests under "headlessCMS" and the WB item under "wb", the groups the existing workflow editor menus use.
-- `ReviewContentReviewsRoute` reads the `tab` route parameter itself (additive) so "View all →" opens the matching tab; Tasks 29 and 30 declare `tab` on their routes.
 - A notification carries no content type id, so `ReviewNotificationHandler` passes `contentTypeId: null` to `getContentUrl`. **verify (Task 11):** the CMS adapter's `getContentUrl` must derive the model id from `ref.namespace` (`cms.<modelId>`), not from `ref.contentTypeId`. If it uses `contentTypeId`, change the CMS adapter, not this handler.
-- The contract's barrel list is applied here for completeness; the app packages import deep paths (controller rule), so nothing in Tasks 29 and 30 needs the barrel.
-- The test stub `__tests__/support/adminConfigStub.tsx` replaces `AdminConfig`, `AdminLayout`, `useRoute` and `useRouter` of `@webiny/app-admin` in the component tests because the real config components only emit properties into the admin shell; the real mounting is asserted from each app's root in Tasks 29 and 30.
+- The test stub `src/review/testing/adminConfigStub.tsx` (the contract's Files name `__tests__/support/`; a co-located test importing from `__tests__/` fails the build with TS6059, R243, so it sits next to the other vitest fakes) replaces `AdminConfig`, `AdminLayout`, `useRoute` and `useRouter` of `@webiny/app-admin` in the component tests because the real config components only emit properties into the admin shell; the real mounting is asserted from each app's root in Tasks 29 and 30.

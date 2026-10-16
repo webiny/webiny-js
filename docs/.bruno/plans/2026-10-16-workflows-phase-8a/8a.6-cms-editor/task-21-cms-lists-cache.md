@@ -4,8 +4,8 @@ Spec 13.1, 13.3; R202, R211, R213, R226, R229 (rows only), Review Focus 1, 8, 16
 
 - **Selections (D70):** `ListEntriesGraphQLFieldSelection` and `GetEntryGraphQLFieldSelection` implementations returning `meta { system { workflow { ${REVIEW_SYSTEM_WORKFLOW_SELECTION} } } }`. The server type is `CmsEntrySystemWorkflow { workflowId reviewState stepId stepName stepState }` (`packages/api-headless-cms-workflows/src/graphql/entrySystemSchema.ts`); the old selection asked for a field `state` that no longer exists.
 - **Row mapper:** `TableRowMapper` decorator; `$selectable` becomes `false` when `isReviewSelectable(reviewState)` is false (a review that is not approved: in progress, rejected, cancelled). A row with no `meta.system.workflow`, or already unselectable in the base, is returned unchanged.
-- **Move gate (QBZ-36):** a decorator of `ContentEntryListConfig.Browser.Entry.Action` (`EntryAction`, `packages/app-headless-cms/src/admin/config/contentEntries/list/Browser/EntryAction.tsx`, `makeDecoratable`; the base registers the action `move` with `MoveEntry`) that, for `props.name === "move"` only, reads the row's entry with `useEntry()` and, when `meta.system.workflow.reviewState` is `ReviewState.InProgress`, renders a disabled "Move" `OptionsMenuItem` with the reason "Can’t move while this revision is in review." (Task 13's `MOVE_BLOCKED_IN_REVIEW`, see Contract note 1) given on hover through `Tooltip` and to assistive technology through `aria-describedby` and a visually hidden element. Every other action and every other review state renders the original.
-- **Cache writer:** `canHandle` = `isCmsAppName`; `write(ref, workflow)` updates the entry in `ContentEntriesCacheProvider.get(modelId)` whose `entryId` equals the entry id parsed from `ref.targetRevisionId` (decision recorded in Contract note 4) and sets `meta.system.workflow`, keeping every other `meta` and `meta.system` key.
+- **Move gate (QBZ-36):** a decorator of `ContentEntryListConfig.Browser.Entry.Action` (`EntryAction`, `packages/app-headless-cms/src/admin/config/contentEntries/list/Browser/EntryAction.tsx`, `makeDecoratable`; the base registers the action `move` with `MoveEntry`) that, for `props.name === "move"` only, reads the row's entry with `useEntry()` and, when `meta.system.workflow.reviewState` is `ReviewState.InProgress`, renders a disabled "Move" `OptionsMenuItem` with the reason "Can’t move while this revision is in review." (`MOVE_BLOCKED_IN_REVIEW`, exported by Task 13 from `targetReview/moveBlockedInReview.ts`, R250) given on hover through `Tooltip` and to assistive technology through `aria-describedby` and a visually hidden element. Every other action and every other review state renders the original.
+- **Cache writer:** `canHandle` = `isCmsAppName`; `write(ref, workflow)` updates the entry in `ContentEntriesCacheProvider.get(modelId)` whose `entryId` equals the entry id parsed from `ref.targetRevisionId` (R213, so the writer does not depend on how `targetId` is filled; it merges the value into the existing `meta.system`) and sets `meta.system.workflow`, keeping every other `meta` and `meta.system` key.
 - **Registration:** per the subclass rule the shared `ReviewCacheSyncHandler` is never registered: `class CmsReviewCacheSyncHandlerImpl extends ReviewCacheSyncHandler implements ReviewChangedHandler.Interface {}` registered with `ReviewChangedHandler.createImplementation({ implementation, dependencies: [CmsReviewCacheWriter] })`. `CmsWorkflowsCacheFeature` registers the writer and the handler; `CmsWorkflowsFeature` registers the selections and the row mapper decorator; the root mounts the Move gate decorator (it is a component decorator, like Task 20's).
 
 **Files:**
@@ -26,7 +26,7 @@ Spec 13.1, 13.3; R202, R211, R213, R226, R229 (rows only), Review Focus 1, 8, 16
 - Existing, must stay green unchanged: the test files of Task 20 and every test file Task 11 added under `packages/app-headless-cms-workflows`.
 
 **Interfaces:**
-- Consumes: Task 8 (`REVIEW_SYSTEM_WORKFLOW_SELECTION` `.../review/gateway/reviewFields.js`, `isReviewSelectable` `.../review/domain/isReviewSelectable.js`, `toSystemWorkflow` `.../review/domain/toSystemWorkflow.js`, `IReviewCacheWriter` and `ReviewCacheRef` `.../review/cache/IReviewCacheWriter.js`, `SystemWorkflowValue` `.../review/domain/types.js`, `ReviewState` `.../review/domain/ReviewState.js`, `StepState` `.../review/domain/StepState.js`), Task 10 (`ReviewCacheSyncHandler` `.../review/cache/ReviewCacheSyncHandler.js`, `ReviewChangedHandler` `.../review/events/ReviewChangedHandler.js`, `ReviewChangedEvent` `.../review/events/ReviewChangedEvent.js`), Task 13 (the shared reason constant, see Contract note 1; the fixtures `createReview` in `.../review/testing/reviewFixtures.js`, importable across packages because `src/review/testing` ships in `dist`), Task 20 (`__tests__/helpers/{models,createEntry}.ts`, the DOM setup, the `vi.mock` stubs reused in `index.lists.test.tsx`). Existing, verified in code for this plan: `ListEntriesGraphQLFieldSelection`, `GetEntryGraphQLFieldSelection`, `TableRowMapper`, `ContentEntryListConfig` (`@webiny/app-headless-cms/exports/admin/cms/entry/list.js`; abstractions are `getSelection(): string[]` and `fromEntry(entry): IEntryTableRow`), `ContentEntriesCacheProvider` (`@webiny/app-headless-cms/features/contentEntry/abstractions.js`; `get(modelId)` returns an `IListCache<CmsContentEntry>` with `updateItems`, `setItems`, `getItem`; implementation `.../features/contentEntry/ContentEntriesCacheProvider.js`), `useEntry` and `EntryProvider` (`@webiny/app-headless-cms/admin/hooks/useEntry.js`), `OptionsMenuItem` (`@webiny/app-admin`, props `onAction`, `disabled`, `icon`, `label`), `Tooltip` (`@webiny/admin-ui`), `@webiny/icons/exit_to_app.svg` (the base `MoveEntry` icon), `parseIdentifier` (`@webiny/utils/parseIdentifier.js`), `isCmsAppName` and `parseAppName` (`src/utils/appName.ts`), `CmsContentEntry` (`@webiny/app-headless-cms-common/types/index.js`; its `meta` has no `system`, hence the local `ICmsEntryMetaWithReview`).
+- Consumes: Task 8 (`REVIEW_SYSTEM_WORKFLOW_SELECTION` `.../review/gateway/reviewFields.js`, `isReviewSelectable` `.../review/domain/isReviewSelectable.js`, `toSystemWorkflow` `.../review/domain/toSystemWorkflow.js`, `IReviewCacheWriter` and `ReviewCacheRef` `.../review/cache/IReviewCacheWriter.js`, `SystemWorkflowValue` `.../review/domain/types.js`, `ReviewState` `.../review/domain/ReviewState.js`, `StepState` `.../review/domain/StepState.js`), Task 10 (`ReviewCacheSyncHandler` `.../review/cache/ReviewCacheSyncHandler.js`, `ReviewChangedHandler` `.../review/events/ReviewChangedHandler.js`, `ReviewChangedEvent` `.../review/events/ReviewChangedEvent.js`), Task 13 (`MOVE_BLOCKED_IN_REVIEW` in `.../review/presentation/targetReview/moveBlockedInReview.js`), Task 8 (the pure builder `createReview` in `.../review/testing/reviewFixtures.js`, importable across packages because `src/review/testing` ships in `dist`, R243), Task 20 (`src/testing/models.ts`, the DOM setup, the `vi.mock` stubs reused in `index.lists.test.tsx`). Existing, verified in code for this plan: `ListEntriesGraphQLFieldSelection`, `GetEntryGraphQLFieldSelection`, `TableRowMapper`, `ContentEntryListConfig` (`@webiny/app-headless-cms/exports/admin/cms/entry/list.js`; abstractions are `getSelection(): string[]` and `fromEntry(entry): IEntryTableRow`), `ContentEntriesCacheProvider` (`@webiny/app-headless-cms/features/contentEntry/abstractions.js`; `get(modelId)` returns an `IListCache<CmsContentEntry>` with `updateItems`, `setItems`, `getItem`; implementation `.../features/contentEntry/ContentEntriesCacheProvider.js`), `useEntry` and `EntryProvider` (`@webiny/app-headless-cms/admin/hooks/useEntry.js`), `OptionsMenuItem` (`@webiny/app-admin`, props `onAction`, `disabled`, `icon`, `label`), `Tooltip` (`@webiny/admin-ui`), `@webiny/icons/exit_to_app.svg` (the base `MoveEntry` icon), `parseIdentifier` (`@webiny/utils/parseIdentifier.js`), `isCmsAppName` and `parseAppName` (`src/utils/appName.ts`), `CmsContentEntry` (`@webiny/app-headless-cms-common/types/index.js`; its `meta` has no `system`, hence the local `ICmsEntryMetaWithReview`).
 - Produces: `CmsReviewListEntriesFieldSelection`, `CmsReviewGetEntryFieldSelection`, `CmsReviewTableRowMapperDecorator`, `CmsReviewMoveEntryAction`, `CmsReviewCacheWriter` (token `"Cms/Workflows/ReviewCacheWriter"` in `CmsReviewCacheWriter.ts`, implementation `CmsReviewCacheWriterImpl` exported as `CmsReviewCacheWriter` from `CmsReviewCacheWriterImpl.ts`), `CmsReviewCacheSyncHandler`, `ICmsEntrySystemWithReview`, `ICmsEntryMetaWithReview`. Task 37 deletes the old files and the old types they use.
 
 - [ ] **Step 1: Write the failing tests**
@@ -34,7 +34,9 @@ Spec 13.1, 13.3; R202, R211, R213, R226, R229 (rows only), Review Focus 1, 8, 16
 Create `packages/app-headless-cms-workflows/src/presentation/CmsReviewFieldSelections.test.ts`:
 
 ```ts
-import { describe, expect, it } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { GetEntryGraphQLFieldSelection } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
 import { ListEntriesGraphQLFieldSelection } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
@@ -75,7 +77,10 @@ describe("CMS review field selections", () => {
 Create `packages/app-headless-cms-workflows/src/presentation/CmsReviewTableRowMapperDecorator.test.ts`:
 
 ```ts
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { TableRowMapper } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
 import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
@@ -179,8 +184,12 @@ Create `packages/app-headless-cms-workflows/src/Components/CmsEntriesList/CmsRev
 
 ```tsx
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
+import { render } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { CompositionProvider } from "@webiny/react-composition";
 import { AdminUiProvider } from "@webiny/admin-ui";
 import { ContentEntryListConfig } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
@@ -188,9 +197,9 @@ import { ModelContext } from "@webiny/app-headless-cms/admin/components/ModelPro
 import { EntryProvider } from "@webiny/app-headless-cms/admin/hooks/useEntry.js";
 import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
 import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
-import { MOVE_BLOCKED_IN_REVIEW } from "@webiny/app-workflows/review/presentation/targetReview/getEditorRules.js";
+import { MOVE_BLOCKED_IN_REVIEW } from "@webiny/app-workflows/review/presentation/targetReview/moveBlockedInReview.js";
 import { CmsReviewMoveEntryAction } from "./CmsReviewMoveEntryAction.js";
-import { MODEL } from "~tests/helpers/models.js";
+import { MODEL } from "~/testing/models.js";
 
 interface FakeActionProps {
     name: string;
@@ -303,7 +312,10 @@ describe("CmsReviewMoveEntryAction", () => {
 Create `packages/app-headless-cms-workflows/src/features/cache/CmsReviewCacheWriterImpl.test.ts`:
 
 ```ts
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { ContentEntriesCacheProvider } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
 import { ContentEntriesCacheProvider as ContentEntriesCacheProviderImpl } from "@webiny/app-headless-cms/features/contentEntry/ContentEntriesCacheProvider.js";
@@ -486,8 +498,12 @@ Create `packages/app-headless-cms-workflows/src/index.lists.test.tsx` (the same 
 
 ```tsx
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
+import { render } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { CompositionProvider } from "@webiny/react-composition";
 import { DiContainerProvider } from "@webiny/app/shared/di/DiContainerProvider.js";
@@ -509,7 +525,7 @@ import { ReviewChangedEvent } from "@webiny/app-workflows/review/events/ReviewCh
 import { ReviewChangedHandler } from "@webiny/app-workflows/review/events/ReviewChangedHandler.js";
 import { createReview } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
 import { CmsWorkflows } from "./index.js";
-import { MODEL } from "~tests/helpers/models.js";
+import { MODEL } from "~/testing/models.js";
 
 interface FakeActionProps {
     name: string;
@@ -696,7 +712,7 @@ yarn test packages/app-headless-cms-workflows/src/features/cache/CmsReviewCacheW
 yarn test packages/app-headless-cms-workflows/src/index.lists.test.tsx 2>&1 | tail -50
 ```
 
-Expected: the first four FAIL to load with `Failed to resolve import "~/presentation/CmsReviewGetEntryFieldSelection.js"`, `"~/presentation/CmsReviewTableRowMapperDecorator.js"`, `"./CmsReviewMoveEntryAction.js"` and `"~/features/cache/CmsReviewCacheWriter.js"`. `index.lists.test.tsx` loads (Task 20 is applied) and FAILS its assertions: the flag-on case finds the old selection (`state`, no `reviewState`), no Move gate and no `ReviewChangedHandler`. If a failure names an `@webiny/app-workflows` path or export (`MOVE_BLOCKED_IN_REVIEW`, `REVIEW_SYSTEM_WORKFLOW_SELECTION`, `isReviewSelectable`, `ReviewCacheSyncHandler`, `ReviewChangedHandler`) as missing, Tasks 8, 10 or 13 (including the one-line export of Contract note 1) are not applied: stop.
+Expected: the first four FAIL to load with `Failed to resolve import "~/presentation/CmsReviewGetEntryFieldSelection.js"`, `"~/presentation/CmsReviewTableRowMapperDecorator.js"`, `"./CmsReviewMoveEntryAction.js"` and `"~/features/cache/CmsReviewCacheWriter.js"`. `index.lists.test.tsx` loads (Task 20 is applied) and FAILS its assertions: the flag-on case finds the old selection (`state`, no `reviewState`), no Move gate and no `ReviewChangedHandler`. If a failure names an `@webiny/app-workflows` path or export (`MOVE_BLOCKED_IN_REVIEW`, `REVIEW_SYSTEM_WORKFLOW_SELECTION`, `isReviewSelectable`, `ReviewCacheSyncHandler`, `ReviewChangedHandler`) as missing, Tasks 8, 10 or 13 are not applied: stop.
 
 - [ ] **Step 3: Implement**
 
@@ -799,7 +815,7 @@ import { ContentEntryListConfig } from "@webiny/app-headless-cms/exports/admin/c
 import { useEntry } from "@webiny/app-headless-cms/admin/hooks/useEntry.js";
 import { ReactComponent as MoveIcon } from "@webiny/icons/exit_to_app.svg";
 import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
-import { MOVE_BLOCKED_IN_REVIEW } from "@webiny/app-workflows/review/presentation/targetReview/getEditorRules.js";
+import { MOVE_BLOCKED_IN_REVIEW } from "@webiny/app-workflows/review/presentation/targetReview/moveBlockedInReview.js";
 import type { ICmsEntryMetaWithReview } from "~/types.js";
 
 const EntryAction = ContentEntryListConfig.Browser.Entry.Action;
@@ -852,7 +868,7 @@ const MoveGate = createReactiveComponent((props: MoveGateProps) => {
 
 /*
  * Only the per-row "Move" action is gated. Moving by drag and drop and `MoveEntryUseCase` are not
- * gated in 8a (Contract note 3).
+ * gated in 8a (R250, Contract note 2).
  */
 export const CmsReviewMoveEntryAction = EntryAction.createDecorator(Original => {
     return function CmsReviewMoveEntryActionDecorator(props) {
@@ -936,7 +952,7 @@ import { CmsReviewCacheWriter } from "./CmsReviewCacheWriter.js";
 
 /*
  * The shared handler is never registered itself: `createImplementation` stores the abstraction and
- * dependencies on the class, so each app subclasses it once (controller rule).
+ * dependencies on the class, so each app subclasses it once (R237).
  */
 class CmsReviewCacheSyncHandlerImpl
     extends ReviewCacheSyncHandler
@@ -1031,7 +1047,7 @@ yarn test packages/app-headless-cms-workflows/src/index.editor.test.tsx 2>&1 | t
 yarn test packages/app-headless-cms-workflows/src/presentation/CmsEntryFormPresenterReviewDecorator.test.ts 2>&1 | tail -50
 yarn test packages/app-headless-cms-workflows/src/features/editorReview/feature.test.ts 2>&1 | tail -50
 git ls-files 'packages/app-headless-cms-workflows/**/*.test.ts*'
-yarn check:test:types -p app-headless-cms-workflows --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-headless-cms-workflows --no-cache 2>&1 | tail -30
 ```
 
 Run each other Task 11 and Task 20 test file the listing shows by path too. Expected: all PASS, no type errors. Task 20's `index.editor.test.tsx` mounts the same root and now also gets the list and cache pieces; it must stay green.
@@ -1053,19 +1069,15 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-headless-cms-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-headless-cms-workflows): follow the review state in the CMS entry list and cache" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-headless-cms-workflows): follow the review state in the CMS entry list and cache" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
 
 ## Contract notes
 
-1. **Prerequisite in Task 13 (one export).** The reason "Can’t move while this revision is in review." is a module-local `const NO_MOVE` in Task 13's `getEditorRules.ts`. This task needs it without a presenter, so Task 13 must export it as `MOVE_BLOCKED_IN_REVIEW` (rename the local constant and `export` it; the `getEditorRules` return value and its tests stay as they are). Nothing else of Task 13 changes. Until that edit lands, Step 2 fails on the import and Step 3 cannot compile.
-2. **Extra files and edits.** Besides the contract's files: `CmsReviewCacheSyncHandlerImpl.ts` (the subclass registration, controller rule), `CmsReviewCacheWriter.ts` + `CmsReviewCacheWriterImpl.ts` (token and implementation in separate files, as Task 11 does), and the Move gate `Components/CmsEntriesList/CmsReviewMoveEntryAction.tsx` with its `index.tsx` mounting. `index.tsx` is therefore modified (the earlier plan did not). Task 11's `index.test.tsx` gets one more stub.
-3. **Move scope (QBZ-36).** Gated: the per-row "Move" action of the list (`Browser.Entry.Action` name `move`), while `reviewState` is in progress. Not gated in 8a: moving by drag and drop in the list, the bulk "Move" (rows that are not approved are already unselectable through the row mapper) and `MoveEntryUseCase` / the move mutation (server enforcement of the review lock was not verified in this plan). The base `MoveEntry` row stays as is for every other state. A disabled Radix menu item cannot take focus, so the reason is given on hover and through a hidden `aria-describedby` element; verify in the browser that wrapping `OptionsMenuItem` in the tooltip's `span` keeps the item's menu behaviour (the wrapper is `Tooltip`'s own trigger span; if it breaks keyboard roving, render the blocked item without the tooltip and keep the hidden description).
-4. **Cache writer matching (decision).** The writer finds the entry with `parseIdentifier(ref.targetRevisionId).id` (the same rule as the old `WorkflowStateCacheHandler`, proven) and not `ref.targetId`; for CMS both are the entry id, but a revision id is always present and self-describing, so the writer does not depend on how Task 13 fills `targetId`. It merges `workflow` into the existing `meta.system` (the old handler replaced the whole `system` object).
-5. **Old types stay.** `ICmsEntryWorkflowState` and `ICmsEntrySystemWithWorkflow` stay in `types.ts` while the not-yet-deleted old files import them; Task 37 deletes those files and the two types. New: `ICmsEntrySystemWithReview`, `ICmsEntryMetaWithReview`. The `types.ts` hunk adds two imports at the top of the file and the two interfaces after the existing ones.
-6. **Fixtures.** `createReview` is imported from `@webiny/app-workflows/review/testing/reviewFixtures.js` (Task 13; `src/review/testing` ships in `dist` and is importable across packages, unlike Task 8's `__tests__/fixtures`). The expected cache value is computed with the real `toSystemWorkflow` of that review, so the test does not hard-code Task 8's mapping. `MODEL` and `createEntry` come from Task 20's `__tests__/helpers`.
-7. **Field names.** The old selection asked for `state`; the server type is `CmsEntrySystemWorkflow { workflowId reviewState stepId stepName stepState }` (checked in `entrySystemSchema.ts`). It applies to every model, as before.
-8. **Verify (Tasks 8, 10 and 13 are not all built):** the deep paths above; `isReviewSelectable(null)` is `true`; `ReviewCacheSyncHandler` is a public class with constructor `(writer)` implementing `ReviewChangedHandler.Interface`; `container.resolveAll` of an unregistered abstraction returns `[]` (read in `@webiny/di`'s `resolveMultiple`); `EntryAction`'s `createDecorator` props are `name` and `element` (`Record.Action` props); the `@webiny/app-aco` mock in the Move and root tests replaces only `AcoConfig.Record.Action`; `ContentEntriesCacheProvider` API as read in `packages/app-headless-cms/src/features/contentEntry/ContentEntriesCacheProvider.ts` and `packages/app-admin/src/features/listCache/ListCache.ts`.
-9. **Size.** Small to medium (seven tiny source files, five test files); no split needed.
+1. **Extra files and edits.** Besides the contract's files: `CmsReviewCacheSyncHandlerImpl.ts` (the subclass registration, R237), `CmsReviewCacheWriter.ts` + `CmsReviewCacheWriterImpl.ts` (token and implementation in separate files, as Task 11 does), and the Move gate `Components/CmsEntriesList/CmsReviewMoveEntryAction.tsx` with its `index.tsx` mounting. Task 11's `index.test.tsx` gets one more stub.
+2. **Move scope (R250, QBZ-36).** Gated: the per-row "Move" action of the list (`Browser.Entry.Action` name `move`), while `reviewState` is in progress. Not gated in 8a: moving by drag and drop in the list, the bulk "Move" (rows that are not approved are already unselectable through the row mapper) and `MoveEntryUseCase` / the move mutation (server enforcement was not verified). A disabled Radix menu item cannot take focus, so the reason is given on hover and through a hidden `aria-describedby` element; verify in the browser that wrapping `OptionsMenuItem` in the tooltip's `span` keeps the item's menu behaviour (if it breaks keyboard roving, render the blocked item without the tooltip and keep the hidden description).
+3. **Old types stay.** `ICmsEntryWorkflowState` and `ICmsEntrySystemWithWorkflow` stay in `types.ts` while the not-yet-deleted old files import them; Task 37 deletes those files and the two types. New: `ICmsEntrySystemWithReview`, `ICmsEntryMetaWithReview`.
+4. **Verify (Tasks 8, 10 and 13 are not all built):** `isReviewSelectable(null)` is `true`; `ReviewCacheSyncHandler` is a public class with constructor `(writer)` implementing `ReviewChangedHandler.Interface`; `container.resolveAll` of an unregistered abstraction returns `[]` (read in `@webiny/di`'s `resolveMultiple`); `EntryAction`'s `createDecorator` props are `name` and `element` (`Record.Action` props); the `@webiny/app-aco` mock in the Move and root tests replaces only `AcoConfig.Record.Action`; `ContentEntriesCacheProvider` API as read in `packages/app-headless-cms/src/features/contentEntry/ContentEntriesCacheProvider.ts` and `packages/app-admin/src/features/listCache/ListCache.ts`.
+5. **Size.** Small to medium (seven tiny source files, five test files); no split needed.

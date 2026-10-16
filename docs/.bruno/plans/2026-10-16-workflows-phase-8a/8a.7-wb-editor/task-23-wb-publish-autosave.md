@@ -1,12 +1,12 @@
 ### Task 23: WB publish and autosave rules
 
-Spec 13.1, 13.4; R225 (no editing or publishing while the status is unknown), R226 (lock and publish rules), A73 (Publish sits inside `Ui.IsNotReadOnly`), A78 (each extension point is decorated once, the old decorator is replaced); D79, D80, D85, D121; QBZ-1, QBZ-36; Review Focus 3, 4, 8, 16, 17. The base Website Builder editor shows Publish only while the canvas is editable. An approved revision is read-only (the canvas never opens again, D121), so the base Publish cannot show for it, and a decorator on `buttonPublish` cannot bring it back. This task adds the Publish the review rules need, hides the base one, and gates autosave.
+Spec 13.1, 13.4; R225 (no editing or publishing while the status is unknown), R226 (lock and publish rules), A73 (Publish sits inside `Ui.IsNotReadOnly`), A78 (each extension point is decorated once, the old decorator is replaced), A89; D79, D80, D85, D121; Q19; QBZ-1, QBZ-36; Review Focus 3, 4, 8, 16, 17. The base Website Builder editor shows Publish only while the canvas is editable. An approved revision is read-only (the canvas never opens again, D121), so the base Publish cannot show for it, and a decorator on `buttonPublish` cannot bring it back. This task adds the Publish the review rules need, hides the base one, and gates autosave.
 
 - **A73 decision (stated, with why):** a workflows-registered `Ui.TopBar.Action` named `buttonWorkflowPublish`, registered **outside** any `Ui.IsNotReadOnly`/`Ui.IsReadOnly` condition (inside the page editor secondary config, wrapped only in the base `HasPermission entity="page" action="publish"`), plus one decorator of `Ui.TopBar.Action` that hides the base `buttonPublish` unless the namespace has no workflow. The "cleaner switch" was looked for and does not exist: `Ui.TopBar.Action` takes `remove`, `before`, `after`, `name`, `element`, `group` only (`BaseEditor/config/Element.tsx`), and `Ui.IsNotReadOnly` has no override. `remove` on `buttonPublish` would also drop the base button for pages without a workflow and the base `HasPermission` wrapper, which would then have to be copied. A workflows action is also required for QBZ-1/QBZ-36: while the status loads or failed the canvas is read-only (R225), the base Publish is gone with it, yet the design wants a visible disabled Publish with a reason. The new button reuses the base `PublishButton` (publish dialog, revision description, publish call, redirect to the list) when publishing is allowed, so none of that logic is copied.
-- **Who shows what (`vm.status`, `vm.allowsPublishing`, page status):** `noWorkflow`: the base Publish only (the workflows action renders nothing; the base shows when the canvas is editable, as today). `loading`, `failed`, `none`, `active`: the base Publish is hidden by the decorator; the workflows action renders the base `PublishButton` when `vm.allowsPublishing` (approved), else a disabled button with `vm.publishDisabledReason`. A `published` page shows no Publish from workflows (it is already published; the base one is not mounted for a read-only canvas either). An approved revision shows an enabled Publish whether the page is a draft (canvas read-only because of the review) or unpublished (approved, later unpublished keeps "Review: Approved" with Publish enabled, R226).
-- **Disabled Publish (QBZ-36, R-b):** `DisabledPublishButton` takes the presenter and renders an admin-ui `Button` with `aria-disabled="true"` (not the `disabled` attribute, so it stays focusable), no click handler and `type="button"`, wrapped in the shared `ReviewTooltip` (`{ presenter; children }`, Task 14), which supplies the reason tooltip on hover and focus and the always-present `aria-describedby` description. This task builds no tooltip or description of its own.
+- **Who shows what (`vm.status`, `vm.allowsPublishing`, page status):** `noWorkflow`: the base Publish only (the workflows action renders nothing; the base shows when the canvas is editable, as today). `loading`, `failed`, `none`, `active`: the base Publish is hidden by the decorator; the workflows action renders the base `PublishButton` when `vm.allowsPublishing`, else a disabled button with `vm.publishDisabledReason`. `vm.allowsPublishing` comes from the shared `getEditorRules({ status, reviewKind, isUnpublished })` (R226): true for an approved review and, **for an unpublished page with no review (Q19)**, because it was reviewed before it was published; Task 22's bar passes `isUnpublished` to the presenter. A `published` page shows no Publish from workflows (it is already published; the base one is not mounted for a read-only canvas either). An approved revision shows an enabled Publish whether the page is a draft (canvas read-only because of the review) or unpublished (approved, later unpublished keeps "Review: Approved" with Publish enabled), and an unpublished page with no review shows it enabled too. Publish for such a page that was published before the workflow was bound is refused by the server with `Workflows/Review/PublishBlocked` (A89); the admin error toast shows it, the client has no flag to know in advance.
+- **Disabled Publish (QBZ-36, R241):** `DisabledPublishButton` takes the presenter and renders an admin-ui `Button` with `aria-disabled="true"` (not the `disabled` attribute, so it stays focusable), no click handler and `type="button"`, wrapped in the shared `ReviewTooltip` (`{ presenter; children }`, Task 14), which supplies the reason tooltip on hover and focus and the always-present `aria-describedby` description. This task builds no tooltip or description of its own.
 - **Autosave:** `PageEditorAutoSave` (`Ui.TopBar.Element.createDecorator`, name `autoSave`, replaced in place) renders the base autosave only while `vm.allowsEditing`, so autosave is off while a review exists and while the status is loading or failed (defence in depth: the base autosave also refuses while the canvas is read-only). Other elements pass through untouched.
-- **`PageEditorConfig`** (Task 22's rewrite) now also mounts `PageEditorAutoSave`, `PageBasePublishDecorator` and, inside the base config, `PageReviewPublishAction`.
+- **`PageEditorConfig`** (Task 22's rewrite, which already mounts `PageEditorTopBar`, `PageEditorLayout` and `PageNewRevisionDecorator`) now also mounts `PageEditorAutoSave`, `PageBasePublishDecorator` and, inside the base config, `PageReviewPublishAction`.
 
 **Files:**
 - Create: `packages/app-website-builder-workflows/src/Components/PageEditor/DisabledPublishButton.tsx`
@@ -19,7 +19,7 @@ Spec 13.1, 13.4; R225 (no editing or publishing while the status is unknown), R2
 - Not touched here (deleted in Task 37): `PageFormWorkflowStatePublishButton.tsx`.
 
 **Interfaces:**
-- Consumes: Task 22 (`WbPageReviewFeature`, `PageEditorConfig`, `PageEditorLayout`, `pageEditorDocument.ts`, the test support `createFakeSession`, `createFakeVm`, `createPageEditor`, `WbEditorHarness`); Task 13 (`ITargetReviewViewModel.allowsEditing`, `allowsPublishing`, `publishDisabledReason`, `status`); existing Website Builder code, deep imports: `PublishButton` (`@webiny/app-website-builder/presentation/pages/PageEditor/TopBar/PublishButton.js`), `HasPermission` (`@webiny/app-website-builder/presentation/security/HasPermission.js`), `PageEditorConfig` with `Ui.TopBar.Action`, `Ui.TopBar.Element`, `Ui.IsNotReadOnly` (`.../presentation/pages/PageEditor/PageEditorConfig.js`), `useSelectFromDocument`, `WbPageStatus`; `Button` (`@webiny/admin-ui`, forwards `aria-*` through `...rest` after its own `aria-disabled={disabled}`), `ReviewTooltip` (`@webiny/app-workflows/review/presentation/targetReview/components/ReviewTooltip.js`, Task 14, props `{ presenter; children }`); `@webiny/icons/publish.svg`.
+- Consumes: Task 22 (`WbPageReviewFeature`, `PageEditorConfig`, `PageEditorLayout`, `pageEditorDocument.ts`, the test support `createFakeSession`, `createFakeVm`, `createPageEditor`, `WbEditorHarness`); Task 13 (`TargetReviewPresenter.ViewModel`: `allowsEditing`, `allowsPublishing`, `publishDisabledReason`, `status`; `getEditorRules`, which the Task 22 fixture builds on); existing Website Builder code, deep imports: `PublishButton` (`@webiny/app-website-builder/presentation/pages/PageEditor/TopBar/PublishButton.js`), `HasPermission` (`@webiny/app-website-builder/presentation/security/HasPermission.js`), `PageEditorConfig` with `Ui.TopBar.Action`, `Ui.TopBar.Element`, `Ui.IsNotReadOnly` (`.../presentation/pages/PageEditor/PageEditorConfig.js`), `useSelectFromDocument`, `WbPageStatus`; `Button` (`@webiny/admin-ui`, forwards `aria-*` through `...rest` after its own `aria-disabled={disabled}`), `ReviewTooltip` (`@webiny/app-workflows/review/presentation/targetReview/components/ReviewTooltip.js`, Task 14, props `{ presenter; children }`, R241); `@webiny/icons/publish.svg`.
 - Produces: the `buttonWorkflowPublish` action, the `buttonPublish` decorator and the autosave gate; no export beyond the components.
 
 **Test runner note:** admin package: `yarn test <path>` only (no `test:os`). Rendered `.svg` imports are mocked (`@webiny/icons/publish.svg`), `PublishButton` and `HasPermission` are mocked (the real ones need the page features and the permission container, which these tests do not exercise), and every test calls `cleanup()` in `afterEach`. `ReviewTooltip` is mocked to a span that exposes the presenter's `publishDisabledReason` as `data-reason` and renders its children (its own behaviour is tested in Task 14), so these tests assert the button (focusable, `aria-disabled`, no submit) and the reason it is given.
@@ -39,7 +39,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
-import { createFakeSession } from "~tests/support/createFakeSession.js";
+import { createFakeSession } from "~/testing/createFakeSession.js";
 import { DisabledPublishButton } from "./DisabledPublishButton.js";
 
 vi.mock("@webiny/icons/publish.svg", () => {
@@ -88,7 +88,9 @@ describe("DisabledPublishButton", () => {
 
         const button = screen.getByRole("button", { name: "Publish" });
         const tooltip = button.closest("[data-testid='review-tooltip']");
-        expect(tooltip?.getAttribute("data-reason")).toBe("Publishing needs an approved review.");
+        const reason = presenter.vm.publishDisabledReason;
+        expect(reason).not.toBeNull();
+        expect(tooltip?.getAttribute("data-reason")).toBe(reason);
     });
 
     it("does nothing when activated, not even a form submit", () => {
@@ -127,10 +129,10 @@ import { InternalPageEditorConfig } from "@webiny/app-website-builder/presentati
 import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import type { WbStatus } from "@webiny/app-website-builder/constants.js";
 import { WbPageReview } from "~/features/editorReview/abstractions.js";
-import { WbEditorHarness } from "~tests/support/WbEditorHarness.js";
-import { createFakeSession } from "~tests/support/createFakeSession.js";
-import { createPageEditor } from "~tests/support/createPageEditor.js";
-import type { FakeReviewKind } from "~tests/support/createFakeVm.js";
+import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
+import { createFakeSession } from "~/testing/createFakeSession.js";
+import { createPageEditor } from "~/testing/createPageEditor.js";
+import type { FakeReviewKind } from "~/testing/createFakeVm.js";
 import { PageBasePublishDecorator } from "./PageBasePublishDecorator.js";
 import { PageEditorLayout } from "./PageEditorLayout.js";
 import { PageReviewPublishAction } from "./PageReviewPublishAction.js";
@@ -192,74 +194,45 @@ vi.mock("@webiny/app-website-builder/BaseEditor/config/Layout.js", async () => {
 
 const { Ui } = PageEditorConfig;
 
-const NEEDS_APPROVAL = "Publishing needs an approved review.";
-const CHECKING = "Checking review status…";
-const COULD_NOT_LOAD = "The review status could not be loaded. Try again from the review bar.";
-
 interface PublishCase {
     kind: FakeReviewKind;
     page: WbStatus;
     base: boolean;
     enabled: boolean;
-    disabledReason: string | null;
+    disabled: boolean;
 }
 
+/**
+ * `base` is the base Publish (only for a workflow-less namespace on an editable canvas), `enabled` the
+ * workflows Publish that publishes, `disabled` the focusable disabled one. The reasons are not
+ * repeated here: they come from the real `getEditorRules` through the fixture and are pinned by Task 13.
+ */
 const MATRIX: PublishCase[] = [
-    { kind: "loading", page: "draft", base: false, enabled: false, disabledReason: CHECKING },
-    { kind: "loading", page: "published", base: false, enabled: false, disabledReason: null },
-    { kind: "loading", page: "unpublished", base: false, enabled: false, disabledReason: CHECKING },
-    { kind: "failed", page: "draft", base: false, enabled: false, disabledReason: COULD_NOT_LOAD },
-    { kind: "failed", page: "published", base: false, enabled: false, disabledReason: null },
-    {
-        kind: "failed",
-        page: "unpublished",
-        base: false,
-        enabled: false,
-        disabledReason: COULD_NOT_LOAD
-    },
-    { kind: "noWorkflow", page: "draft", base: true, enabled: false, disabledReason: null },
-    { kind: "noWorkflow", page: "published", base: false, enabled: false, disabledReason: null },
-    { kind: "noWorkflow", page: "unpublished", base: false, enabled: false, disabledReason: null },
-    { kind: "none", page: "draft", base: false, enabled: false, disabledReason: NEEDS_APPROVAL },
-    { kind: "none", page: "published", base: false, enabled: false, disabledReason: null },
-    {
-        kind: "none",
-        page: "unpublished",
-        base: false,
-        enabled: false,
-        disabledReason: NEEDS_APPROVAL
-    },
-    {
-        kind: "inProgress",
-        page: "draft",
-        base: false,
-        enabled: false,
-        disabledReason: NEEDS_APPROVAL
-    },
-    { kind: "inProgress", page: "published", base: false, enabled: false, disabledReason: null },
-    {
-        kind: "inProgress",
-        page: "unpublished",
-        base: false,
-        enabled: false,
-        disabledReason: NEEDS_APPROVAL
-    },
-    { kind: "approved", page: "draft", base: false, enabled: true, disabledReason: null },
-    { kind: "approved", page: "published", base: false, enabled: false, disabledReason: null },
-    { kind: "approved", page: "unpublished", base: false, enabled: true, disabledReason: null },
-    { kind: "rejected", page: "draft", base: false, enabled: false, disabledReason: NEEDS_APPROVAL },
-    { kind: "rejected", page: "published", base: false, enabled: false, disabledReason: null },
-    {
-        kind: "rejected",
-        page: "unpublished",
-        base: false,
-        enabled: false,
-        disabledReason: NEEDS_APPROVAL
-    }
+    { kind: "loading", page: "draft", base: false, enabled: false, disabled: true },
+    { kind: "loading", page: "published", base: false, enabled: false, disabled: false },
+    { kind: "loading", page: "unpublished", base: false, enabled: false, disabled: true },
+    { kind: "failed", page: "draft", base: false, enabled: false, disabled: true },
+    { kind: "failed", page: "published", base: false, enabled: false, disabled: false },
+    { kind: "failed", page: "unpublished", base: false, enabled: false, disabled: true },
+    { kind: "noWorkflow", page: "draft", base: true, enabled: false, disabled: false },
+    { kind: "noWorkflow", page: "published", base: false, enabled: false, disabled: false },
+    { kind: "noWorkflow", page: "unpublished", base: false, enabled: false, disabled: false },
+    { kind: "none", page: "draft", base: false, enabled: false, disabled: true },
+    { kind: "none", page: "published", base: false, enabled: false, disabled: false },
+    { kind: "none", page: "unpublished", base: false, enabled: true, disabled: false },
+    { kind: "inProgress", page: "draft", base: false, enabled: false, disabled: true },
+    { kind: "inProgress", page: "published", base: false, enabled: false, disabled: false },
+    { kind: "inProgress", page: "unpublished", base: false, enabled: false, disabled: true },
+    { kind: "approved", page: "draft", base: false, enabled: true, disabled: false },
+    { kind: "approved", page: "published", base: false, enabled: false, disabled: false },
+    { kind: "approved", page: "unpublished", base: false, enabled: true, disabled: false },
+    { kind: "rejected", page: "draft", base: false, enabled: false, disabled: true },
+    { kind: "rejected", page: "published", base: false, enabled: false, disabled: false },
+    { kind: "rejected", page: "unpublished", base: false, enabled: false, disabled: true }
 ];
 
 const mountPublish = (pageStatus: WbStatus, kind: FakeReviewKind) => {
-    const handle = createFakeSession(kind);
+    const handle = createFakeSession(kind, pageStatus === "unpublished");
     const container = new Container();
     container.registerInstance(WbPageReview, handle.session);
     const editor = createPageEditor(pageStatus);
@@ -301,22 +274,23 @@ describe("Publish by review status and page status", () => {
         page,
         base,
         enabled,
-        disabledReason
+        disabled
     }) => {
-        mountPublish(page, kind);
+        const { presenter } = mountPublish(page, kind);
         await screen.findByTestId("sentinel");
 
         await waitFor(() => {
             expect(screen.queryAllByTestId("base-publish")).toHaveLength(base ? 1 : 0);
             expect(screen.queryAllByTestId("enabled-publish")).toHaveLength(enabled ? 1 : 0);
-            const disabled = getDisabledButtons();
-            expect(disabled).toHaveLength(disabledReason ? 1 : 0);
+            expect(getDisabledButtons()).toHaveLength(disabled ? 1 : 0);
         });
 
-        const disabled = getDisabledButtons();
-        if (disabledReason) {
-            const tooltip = disabled[0].closest("[data-testid='review-tooltip']");
-            expect(tooltip?.getAttribute("data-reason")).toBe(disabledReason);
+        if (disabled) {
+            const button = getDisabledButtons()[0];
+            const tooltip = button.closest("[data-testid='review-tooltip']");
+            const reason = presenter.vm.publishDisabledReason;
+            expect(reason).not.toBeNull();
+            expect(tooltip?.getAttribute("data-reason")).toBe(reason);
         }
     });
 
@@ -328,6 +302,18 @@ describe("Publish by review status and page status", () => {
             expect(screen.queryAllByTestId("enabled-publish")).toHaveLength(1);
         });
         expect(editor.getEditorState().read().isReadOnly).toBe(true);
+        expect(screen.queryAllByTestId("base-publish")).toHaveLength(0);
+    });
+
+    it("an unpublished page with no review shows an enabled Publish: it was reviewed before it was published (Q19)", async () => {
+        const { editor } = mountPublish("unpublished", "none");
+        await screen.findByTestId("sentinel");
+
+        await waitFor(() => {
+            expect(screen.queryAllByTestId("enabled-publish")).toHaveLength(1);
+        });
+        expect(editor.getEditorState().read().isReadOnly).toBe(true);
+        expect(getDisabledButtons()).toHaveLength(0);
         expect(screen.queryAllByTestId("base-publish")).toHaveLength(0);
     });
 
@@ -367,10 +353,10 @@ import { Container } from "@webiny/di";
 import { InternalPageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import { WbPageReview } from "~/features/editorReview/abstractions.js";
-import { WbEditorHarness } from "~tests/support/WbEditorHarness.js";
-import { createFakeSession } from "~tests/support/createFakeSession.js";
-import { createPageEditor } from "~tests/support/createPageEditor.js";
-import type { FakeReviewKind } from "~tests/support/createFakeVm.js";
+import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
+import { createFakeSession } from "~/testing/createFakeSession.js";
+import { createPageEditor } from "~/testing/createPageEditor.js";
+import type { FakeReviewKind } from "~/testing/createFakeVm.js";
 import { PageEditorAutoSave } from "./PageEditorAutoSave.js";
 
 const { Ui } = PageEditorConfig;
@@ -485,9 +471,9 @@ import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstra
 import { InternalPageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
-import { WbEditorHarness } from "~tests/support/WbEditorHarness.js";
-import { createFakeSession } from "~tests/support/createFakeSession.js";
-import { createPageEditor } from "~tests/support/createPageEditor.js";
+import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
+import { createFakeSession } from "~/testing/createFakeSession.js";
+import { createPageEditor } from "~/testing/createPageEditor.js";
 import { WebsiteBuilderWorkflows } from "~/index.js";
 
 const flags = vi.hoisted(() => {
@@ -647,12 +633,12 @@ Create `packages/app-website-builder-workflows/src/Components/PageEditor/Disable
 ```tsx
 import React from "react";
 import { Button } from "@webiny/admin-ui";
-import type { ITargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
+import type { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import { ReviewTooltip } from "@webiny/app-workflows/review/presentation/targetReview/components/ReviewTooltip.js";
 import { ReactComponent as PublishIcon } from "@webiny/icons/publish.svg";
 
 export interface DisabledPublishButtonProps {
-    presenter: ITargetReviewPresenter;
+    presenter: TargetReviewPresenter.Interface;
 }
 
 /**
@@ -824,13 +810,14 @@ export const PageEditorAutoSave = Ui.TopBar.Element.createDecorator(Original => 
 });
 ```
 
-Rewrite `packages/app-website-builder-workflows/src/Components/PageEditor/PageEditorConfig.tsx` (the whole file, Task 22's version plus this task's pieces; the base config is added here):
+Rewrite `packages/app-website-builder-workflows/src/Components/PageEditor/PageEditorConfig.tsx` (the whole file, Task 22's version, `PageNewRevisionDecorator` included, plus this task's pieces; the base config is added here):
 
 ```tsx
 import React from "react";
 import { PageEditorConfig as BaseConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import { PageEditorTopBar } from "./PageEditorTopBar.js";
 import { PageEditorLayout } from "./PageEditorLayout.js";
+import { PageNewRevisionDecorator } from "./PageNewRevisionDecorator.js";
 import { PageEditorAutoSave } from "./PageEditorAutoSave.js";
 import { PageBasePublishDecorator } from "./PageBasePublishDecorator.js";
 import { PageReviewPublishAction } from "./PageReviewPublishAction.js";
@@ -842,6 +829,8 @@ export const PageEditorConfig = () => {
             <PageEditorTopBar />
             {/* The one source of the canvas read-only flag. */}
             <PageEditorLayout />
+            {/* New Revision hidden while a review is in progress or its state is unknown. */}
+            <PageNewRevisionDecorator />
             {/* Autosave only while editing is allowed. */}
             <PageEditorAutoSave />
             {/* Hide the base Publish where a workflow exists. */}
@@ -875,9 +864,12 @@ yarn test packages/app-website-builder-workflows/src/Components/PageEditor/getPa
 yarn test packages/app-website-builder-workflows/src/Components/PageEditor/PageEditorLayout.test.tsx 2>&1 | tail -50
 yarn test packages/app-website-builder-workflows/src/Components/PageEditor/PageEditorTopBar.test.tsx 2>&1 | tail -50
 yarn test packages/app-website-builder-workflows/src/Components/PageEditor/pageReviewMatrix.test.tsx 2>&1 | tail -50
+yarn test packages/app-website-builder-workflows/src/Components/PageEditor/PageNewRevisionDecorator.test.tsx 2>&1 | tail -50
 yarn test packages/app-website-builder-workflows/src/editorGlue.wiring.test.tsx 2>&1 | tail -50
-yarn check:test:types -p app-website-builder-workflows --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-website-builder-workflows --no-cache 2>&1 | tail -30
 ```
+
+`check:test:types` lists only packages with a `__tests__/**/*.test.ts` file, which this package does not have, so the package build is the type check of its tests (R243).
 
 Expected: all pass, no type errors. In `editorGlue.wiring.test.tsx` the root now also mounts the autosave decorator and the Publish action; they render nothing there because that test mounts no top bar elements.
 
@@ -902,13 +894,10 @@ git checkout -- .gitleaks.toml
 If any step fails and you fix anything, rerun the chain from the start. Then:
 
 ```bash
-git commit -m "feat(app-website-builder-workflows): publish and autosave follow the review state" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-website-builder-workflows): publish and autosave follow the review state" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 **Contract notes:**
-- A73 chose the workflows `Ui.TopBar.Action` `buttonWorkflowPublish` plus one decorator hiding the base `buttonPublish` (reasons above). The contract's "base `buttonPublish` hidden for review states" is implemented as "hidden whenever the namespace has a workflow" (every status except `noWorkflow`): for `loading`, `failed` and `none` the base button would otherwise show beside the workflows one while the canvas is editable (`none`), and the workflows Publish must own the disabled states.
-- QBZ-36 touch toggle, the reason tooltip and the hidden description are the shared `ReviewTooltip`'s (Task 14); this task adds no tooltip.
-- Pending user decision (left as written): an unpublished page with no review and a workflow shows a disabled Publish ("Publishing needs an approved review.") where the base editor showed none (the canvas of an unpublished page is read-only). R226 gives `allowsPublishing` false for `none`, so the workflows button follows it; the base "New Revision" button is the way forward there.
-- The `ReviewBar` itself, the `Request review` action and the Publish tooltip texts come from Tasks 13 and 14; the fake view model in `createFakeVm.ts` mirrors Task 13's `getEditorRules` reasons ("Checking review status…", "The review status could not be loaded. Try again from the review bar.", "Publishing needs an approved review."). If Task 13 words them differently, align the fixture, the tests need no other change.
+- The base `buttonPublish` is hidden whenever the namespace has a workflow (A73), not only for review states: for `loading`, `failed` and `none` the base button would otherwise show beside the workflows one while the canvas is editable, and the workflows Publish owns the disabled states.
+- The fake view model in `createFakeVm.ts` (Task 22) is built from the real `getEditorRules`, so the reasons in the matrix come from Task 13 and nothing here repeats their wording.
 - Verify at implementation time: `Button` really forwards an `aria-disabled` override through `...rest` (read in `packages/admin-ui/src/Button/Button.tsx`: `aria-disabled={disabled}` is set before `{...rest}`, so the override wins); `PublishButton` is exported by name from the deep path; `HasPermission` accepts `entity` and `action` exactly as in `DefaultPageEditorConfig.tsx`.
-- Size: four test files, the matrix is 21 rows; the implementation is four small components and two rewrites.

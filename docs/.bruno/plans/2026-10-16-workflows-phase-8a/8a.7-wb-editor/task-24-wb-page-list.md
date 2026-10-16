@@ -1,13 +1,13 @@
 ### Task 24: WB page list glue (field selections, row mapper, `changeStatus`, `usePage`, cache writer)
 
-Spec 13.1, 13.4; R202 (shared core, thin glue), R211 (decorators registered only under the gated root), R213 (`ReviewChangedEvent` and the app cache writer), D60, D70, D112; Q10; Review Focus 1, 8, 17. The page list needs the review state of each row (to lock the row and hide Change status) and must follow review changes without a reload. Everything review-specific is shared; this task holds the Website Builder selection of `system.workflow`, the row decoration, the Change status gate and the one per-app piece, the cache writer.
+Spec 13.1, 13.4; R202 (shared core, thin glue), R211 (decorators registered only under the gated root), R213 (`ReviewChangedEvent` and the app cache writer), R237, R243, D60, D70, D112; Q10, Q19; Review Focus 1, 8, 17, 21. The page list needs the review state of each row (to lock the row and hide Change status) and must follow review changes without a reload. Everything review-specific is shared; this task holds the Website Builder selection of `system.workflow`, the row decoration, the Change status gate and the one per-app piece, the cache writer.
 
 - **Selections:** one constant `WB_REVIEW_PAGE_SELECTION` (`system { workflow { <REVIEW_SYSTEM_WORKFLOW_SELECTION> } }`, `REVIEW_SYSTEM_WORKFLOW_SELECTION = "workflowId reviewState stepId stepName stepState"`) is used by the list selection `WbReviewListPagesFieldSelection` and the single-page selection `WbReviewGetPageFieldSelection`. The API type is `WbPageSystemWorkflow { workflowId reviewState stepId stepName stepState }` (`packages/api-website-builder-workflows/src/WebsiteBuilderPageSchemaFactory.ts`); the old selection asked for a field `state` that no longer exists.
 - **Row mapper (D70, D112):** `WbReviewTableRowMapperDecorator` decorates `TableRowMapper`: a row is selectable only when `isReviewSelectable(page.system?.workflow?.reviewState ?? null)` (approved, or no review), otherwise `$selectable: false` (no bulk actions on pages in review, rejected or cancelled).
-- **Change status:** `PageListChangeStatus` (`Browser.Page.Action.createDecorator`, name `changeStatus`, replaced in place) renders the base action only when the row is review-selectable (approved or no review), so a published page with an approved review can still be unpublished and a page in review or rejected cannot be published or unpublished from the list.
+- **Change status:** `PageListChangeStatus` (`Browser.Page.Action.createDecorator`, name `changeStatus`, replaced in place) renders the base action only when the row is review-selectable (approved or no review), so a published page with an approved review can still be unpublished and a page in review or rejected cannot be published or unpublished from the list. An unpublished page with an approved review or no review keeps the action, so it can be published again from the list (Q19); a page that was published before the workflow was bound has no review, and the server refuses its publish with `Workflows/Review/PublishBlocked` (A89), which the admin error toast shows.
 - **`usePage`** keeps its code (it already maps `page.system?.workflow ?? null` to `page.workflow`); its type becomes `SystemWorkflowValue | null` through `types.ts`, and a test pins the mapping.
 - **Cache writer (R213):** `WbReviewPageCacheWriter` (`IReviewCacheWriter`): `canHandle(namespace)` is `namespace === WB_PAGE_APP`; `write(ref, workflow)` replaces `system.workflow` on the page whose **revision id** equals `ref.targetRevisionId` in the page list cache (`PageListCache`, keyed by `entryId`, holds the latest revision per page) and in the full page cache (`FullPageCache`, keyed by `id`), leaving every other page untouched; `null` clears it (cancelled review). A review of an older revision therefore never marks the latest revision's row. The writer is the only Website Builder knowledge in the sync: the shared `ReviewCacheSyncHandler` (Task 10) calls it.
-- **Controller rule (subclass, never `createImplementation` on a shared class):** the shared `ReviewCacheSyncHandler` is subclassed once for this app in the file `WbReviewCacheSyncHandler.ts`, with an unexported `WbReviewCacheSyncHandlerImpl extends ReviewCacheSyncHandler implements ReviewChangedHandler.Interface`, and `WbReviewCacheSyncHandler = ReviewChangedHandler.createImplementation({ implementation: WbReviewCacheSyncHandlerImpl, dependencies: [WbReviewPageCacheWriter] })`. The CMS binding (Task 21) is a separate subclass, so the two never collide.
+- **Subclass rule (R237, never `createImplementation` on a shared class):** the shared `ReviewCacheSyncHandler` is subclassed once for this app in the file `WbReviewCacheSyncHandler.ts`, with an unexported `WbReviewCacheSyncHandlerImpl extends ReviewCacheSyncHandler implements ReviewChangedHandler.Interface`, and `WbReviewCacheSyncHandler = ReviewChangedHandler.createImplementation({ implementation: WbReviewCacheSyncHandlerImpl, dependencies: [WbReviewPageCacheWriter] })`. The CMS binding (Task 21) is a separate subclass, so the two never collide.
 - **Registration:** `PageListWorkflowsFeature` and `PageGetWorkflowsFeature` (existing, gated by the root) now register the new selections and the row mapper decorator; `WbReviewCacheFeature` (new) registers the writer (singleton) and the handler, and `WebsiteBuilderWorkflows` registers it inside the flag gate.
 - **Replaced and removed:** the old `WorkflowStateListPagesFieldSelection.ts` and `WorkflowStatesGetPageGraphQLFieldSelection.ts` stop being registered (deleted in Task 37). The old `TableRowMapperDecorator.ts` reads `workflow.state`, which the new `types.ts` removes, so it would stop compiling: it is deleted here with `git rm` (see Contract notes).
 
@@ -27,7 +27,7 @@ Spec 13.1, 13.4; R202 (shared core, thin glue), R211 (decorators registered only
 - Create tests (under `packages/app-website-builder-workflows/`): `src/presentation/page/PageList/WbReviewListPagesFieldSelection.test.ts`, `src/presentation/page/PageGet/WbReviewGetPageFieldSelection.test.ts`, `src/presentation/page/PageList/WbReviewTableRowMapperDecorator.test.ts`, `src/features/cache/WbReviewPageCacheWriter.test.ts`, `src/Components/PagesList/PageListChangeStatus.test.tsx`, `src/hooks/usePage.test.tsx`, `src/pageListGlue.wiring.test.tsx`
 
 **Interfaces:**
-- Consumes: Task 8 (deep paths under `@webiny/app-workflows/review/`): `gateway/reviewFields.js` (`REVIEW_SYSTEM_WORKFLOW_SELECTION`), `domain/isReviewSelectable.js`, `domain/toSystemWorkflow.js`, `domain/types.js` (`SystemWorkflowValue`), `domain/ReviewState.js`, `domain/StepState.js`, `cache/IReviewCacheWriter.js` (`IReviewCacheWriter`, `ReviewCacheRef`), `testing/reviewFixtures.js` (`createReview`; the pure fixture builders are owned by Task 8 and extended by Task 13, R-c, so this task depends on Tasks 8 and 13 being merged; the overrides used here, `namespace`, `targetId`, `targetRevisionId` and `state`, are fields of Task 8's `Review`); Task 10: `cache/ReviewCacheSyncHandler.js` (public class, constructor `(writer: IReviewCacheWriter)`), `events/ReviewChangedEvent.js` (`ReviewChangedEvent`, constructor takes the payload, `BaseEvent`) and `events/ReviewChangedHandler.js` (`ReviewChangedHandler`, R-d); Task 12 `WB_PAGE_APP` (`~/constants.js`, `"wb.page"`); Task 22 (`WbPageReviewFeature` registration line in `index.tsx`). Existing Website Builder code (deep imports): `ListPagesGraphQLFieldSelection` (`.../features/pages/listPages/abstractions.js`), `GetPageGraphQLFieldSelection` (`.../features/pages/getPage/abstractions.js`), `TableRowMapper` abstraction (`.../presentation/pages/PageList/components/Table/abstractions.js`) and its base implementation (`.../Table/TableRowMapper.js`), `PageListCache` and `FullPageCache` (`.../features/pages/shared/abstractions.js`, both `IListCache<Page>`: `updateItems(updater)`, `getItems()`, `addItems`), `Page` and `PageDtoMapper` (`.../domain/Page/index.js`), `PageProvider` (`.../presentation/pages/PageList/hooks/usePage.js`), `PageListConfig` with `Browser.Page.Action` (`.../presentation/pages/PageList/configs/index.js`), `ListCache` (`@webiny/app-admin/features/listCache/index.js`).
+- Consumes: Task 8 (deep paths under `@webiny/app-workflows/review/`): `gateway/reviewFields.js` (`REVIEW_SYSTEM_WORKFLOW_SELECTION`), `domain/isReviewSelectable.js`, `domain/toSystemWorkflow.js`, `domain/types.js` (`SystemWorkflowValue`), `domain/ReviewState.js`, `domain/StepState.js`, `cache/IReviewCacheWriter.js` (`IReviewCacheWriter`, `ReviewCacheRef`), `testing/reviewFixtures.js` (`createReview`; the pure fixture builders are owned by Task 8 and extended by Task 13, R243, so this task depends on Tasks 8 and 13 being merged; the overrides used here, `namespace`, `targetId`, `targetRevisionId` and `state`, are fields of Task 8's `Review`); Task 10: `cache/ReviewCacheSyncHandler.js` (public class, constructor `(writer: IReviewCacheWriter)`), `events/ReviewChangedEvent.js` (`ReviewChangedEvent`, constructor takes the payload, `BaseEvent`) and `events/ReviewChangedHandler.js` (`ReviewChangedHandler`, R245); Task 12 `WB_PAGE_APP` (`~/constants.js`, `"wb.page"`); Task 22 (`WbPageReviewFeature` registration line in `index.tsx`). Existing Website Builder code (deep imports): `ListPagesGraphQLFieldSelection` (`.../features/pages/listPages/abstractions.js`), `GetPageGraphQLFieldSelection` (`.../features/pages/getPage/abstractions.js`), `TableRowMapper` abstraction (`.../presentation/pages/PageList/components/Table/abstractions.js`) and its base implementation (`.../Table/TableRowMapper.js`), `PageListCache` and `FullPageCache` (`.../features/pages/shared/abstractions.js`, both `IListCache<Page>`: `updateItems(updater)`, `getItems()`, `addItems`), `Page` and `PageDtoMapper` (`.../domain/Page/index.js`), `PageProvider` (`.../presentation/pages/PageList/hooks/usePage.js`), `PageListConfig` with `Browser.Page.Action` (`.../presentation/pages/PageList/configs/index.js`), `ListCache` (`@webiny/app-admin/features/listCache/index.js`).
 - Produces: `WbReviewPageCacheWriter` token (`features/cache/abstractions.ts`, one abstraction in the file) and implementation, `WbReviewCacheSyncHandler`, `WbReviewCacheFeature`, the three selection and mapper classes, the `changeStatus` gate. Consumed by Task 37 (deletes the old files) and by nothing else.
 
 **Test runner note:** admin package: `yarn test <path>` only (no `test:os`, not an `-es`/`-os` package). `PageAction` is mocked in the one component test (the real one registers a config property through `@webiny/app-aco`, which needs the whole list config provider); everything else uses real classes and real `ListCache`s. Every rendering test calls `cleanup()` in `afterEach`.
@@ -477,6 +477,7 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { DiContainerProvider } from "@webiny/app";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
+import { createAbstraction } from "@webiny/feature/admin";
 import { CompositionProvider } from "@webiny/react-composition";
 import { Page } from "@webiny/app-website-builder/domain/Page/index.js";
 import { WbPageStatus } from "@webiny/app-website-builder/constants.js";
@@ -489,6 +490,8 @@ import { TableRowMapper as BaseTableRowMapper } from "@webiny/app-website-builde
 import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
 import { StepState } from "@webiny/app-workflows/review/domain/StepState.js";
 import { toSystemWorkflow } from "@webiny/app-workflows/review/domain/toSystemWorkflow.js";
+import type { IReviewCacheWriter } from "@webiny/app-workflows/review/cache/IReviewCacheWriter.js";
+import { ReviewCacheSyncHandler } from "@webiny/app-workflows/review/cache/ReviewCacheSyncHandler.js";
 import { ReviewChangedEvent } from "@webiny/app-workflows/review/events/ReviewChangedEvent.js";
 import { ReviewChangedHandler } from "@webiny/app-workflows/review/events/ReviewChangedHandler.js";
 import { createReview } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
@@ -519,6 +522,21 @@ vi.mock("~/Components/OptionItem/index.js", () => {
 const createPage = (id: string, entryId: string): Page => {
     return Page.create({ id, entryId, status: WbPageStatus.Draft });
 };
+
+/**
+ * Stands in for another app's cache sync: its own subclass of the shared handler (R237), bound to
+ * its own writer token.
+ */
+const OtherAppWriter = createAbstraction<IReviewCacheWriter>("Test/OtherAppReviewCacheWriter");
+
+class OtherAppCacheSyncHandlerImpl
+    extends ReviewCacheSyncHandler
+    implements ReviewChangedHandler.Interface {}
+
+const OtherAppCacheSyncHandler = ReviewChangedHandler.createImplementation({
+    implementation: OtherAppCacheSyncHandlerImpl,
+    dependencies: [OtherAppWriter]
+});
 
 const mountRoot = (enabled: boolean) => {
     flags.enabled = enabled;
@@ -626,6 +644,59 @@ describe("Website Builder page list glue from the composition root", () => {
 
         const cleared = listCache.getItems().find(page => page.entryId === "page-1");
         expect(cleared?.system?.workflow).toBeNull();
+    });
+
+    it("flag on: another app's subclass of the shared handler coexists with this app's (R237)", async () => {
+        const { container, listCache } = mountRoot(true);
+        const otherWrite = vi.fn();
+        const otherWriter: IReviewCacheWriter = {
+            canHandle: namespace => namespace === "cms.article",
+            write: otherWrite
+        };
+        container.registerInstance(OtherAppWriter, otherWriter);
+        container.register(OtherAppCacheSyncHandler);
+        const handlers = container.resolveAll(ReviewChangedHandler);
+        expect(handlers).toHaveLength(2);
+        const pageReview = createReview({
+            namespace: "wb.page",
+            targetId: "page-1",
+            targetRevisionId: "page-1#0001",
+            state: ReviewState.InProgress
+        });
+        const entryReview = createReview({
+            namespace: "cms.article",
+            targetId: "entry-1",
+            targetRevisionId: "entry-1#0001",
+            state: ReviewState.InProgress
+        });
+
+        for (const handler of handlers) {
+            await handler.handle(
+                new ReviewChangedEvent({
+                    namespace: "wb.page",
+                    targetId: "page-1",
+                    targetRevisionId: "page-1#0001",
+                    review: pageReview
+                })
+            );
+        }
+        const home = listCache.getItems().find(page => page.entryId === "page-1");
+        expect(home?.system?.workflow).toEqual(toSystemWorkflow(pageReview));
+        expect(otherWrite).not.toHaveBeenCalled();
+
+        for (const handler of handlers) {
+            await handler.handle(
+                new ReviewChangedEvent({
+                    namespace: "cms.article",
+                    targetId: "entry-1",
+                    targetRevisionId: "entry-1#0001",
+                    review: entryReview
+                })
+            );
+        }
+        expect(otherWrite).toHaveBeenCalledTimes(1);
+        const stillHome = listCache.getItems().find(page => page.entryId === "page-1");
+        expect(stillHome?.system?.workflow).toEqual(toSystemWorkflow(pageReview));
     });
 
     it("flag on: a review of another namespace is ignored", async () => {
@@ -774,7 +845,6 @@ export namespace WbReviewPageCacheWriter {
 Create `packages/app-website-builder-workflows/src/features/cache/WbReviewPageCacheWriter.ts`:
 
 ```ts
-import type { IReviewCacheWriter } from "@webiny/app-workflows/review/cache/IReviewCacheWriter.js";
 import type { ReviewCacheRef } from "@webiny/app-workflows/review/cache/IReviewCacheWriter.js";
 import type { SystemWorkflowValue } from "@webiny/app-workflows/review/domain/types.js";
 import { Page } from "@webiny/app-website-builder/domain/Page/index.js";
@@ -785,7 +855,7 @@ import { WB_PAGE_APP } from "~/constants.js";
 import "~/types.js";
 import { WbReviewPageCacheWriter as Abstraction } from "./abstractions.js";
 
-class WbReviewPageCacheWriterImpl implements IReviewCacheWriter {
+class WbReviewPageCacheWriterImpl implements Abstraction.Interface {
     constructor(
         private pageListCache: PageListCache.Interface,
         private fullPageCache: FullPageCache.Interface
@@ -976,10 +1046,11 @@ yarn test packages/app-website-builder-workflows/src/features/gateway/<file> 2>&
 yarn test packages/app-website-builder-workflows/src/editorGlue.wiring.test.tsx 2>&1 | tail -50
 yarn test packages/app-website-builder-workflows/src/publishAutosave.wiring.test.tsx 2>&1 | tail -50
 yarn test packages/app-website-builder-workflows/src/Components/PageEditor/pageReviewMatrix.test.tsx 2>&1 | tail -50
-yarn check:test:types -p app-website-builder-workflows --report cli 2>&1 | tail -40
+yarn test packages/app-website-builder-workflows/src/Components/PageEditor/PageNewRevisionDecorator.test.tsx 2>&1 | tail -50
+yarn build -p @webiny/app-website-builder-workflows --no-cache 2>&1 | tail -30
 ```
 
-(run every file the `ls` prints). Expected: all pass and the type check prints no errors. A type error in the old files (`PagesListContentReviews.tsx`, `OptionItem`, `PageWorkflows`) that reads the removed `IPageWorkflowState` would mean they still use it: they do not today (`grep -rn "IPageWorkflowState\|WithWorkflows" packages/app-website-builder-workflows/src` must list only `types.ts`, `hooks/usePage.ts`).
+(run every file the `ls` prints). The package has no `__tests__/**/*.test.ts` file, so `check:test:types` does not list it and the package build is the type check of its co-located tests (R243). Expected: all pass and the build prints no type errors. A type error in the old files (`PagesListContentReviews.tsx`, `OptionItem`, `PageWorkflows`) that reads the removed `IPageWorkflowState` would mean they still use it: they do not today (`grep -rn "IPageWorkflowState\|WithWorkflows" packages/app-website-builder-workflows/src` must list only `types.ts`, `hooks/usePage.ts`).
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -1002,16 +1073,9 @@ git checkout -- .gitleaks.toml
 If any step fails and you fix anything, rerun the chain from the start. Then:
 
 ```bash
-git commit -m "feat(app-website-builder-workflows): page list follows the review state and review changes" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-website-builder-workflows): page list follows the review state and review changes" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 **Contract notes:**
-- The contract lists `hooks/usePage.ts` as modified; its code needs no change (`page.system?.workflow ?? null` is exactly right), only its type through `types.ts`. A characterization test pins it.
-- The contract says the old `TableRowMapperDecorator.ts` is deleted in Task 37. It reads `page.system?.workflow?.state`, which `types.ts` (the new `SystemWorkflowValue` has `reviewState`, no `state`) removes, so keeping it breaks the build between Task 24 and Task 37. It is deleted here; **Task 37 must drop `presentation/page/PageList/TableRowMapperDecorator.ts` from its delete list** for the Website Builder package. The two old selection files stay until Task 37 (they compile).
-- Writer match is on the revision id (`page.id === ref.targetRevisionId`), not the entry id, so a review of an older revision does not mark the latest row; both `PageListCache` and `FullPageCache` are updated (the single-page selection feeds `FullPageCache`). The contract only names "the page list cache".
-- Controller rule applied: `createImplementation` is never called on `ReviewCacheSyncHandler`; `WbReviewCacheSyncHandlerImpl` (unexported) subclasses it in `WbReviewCacheSyncHandler.ts`. The same rule changed Task 22: `EditorReviewSession` is subclassed by the unexported `WbPageReviewSessionImpl` (`features/editorReview/WbPageReviewSession.ts`).
-- Gating is `isReviewSelectable` (approved or no review). This is the contract correction: the contract text says `changeStatus` is "gated on `reviewState === approved`", which would hide it for a page with no review; the Task 8 function allows both, as the old code did (`!workflowState || approved`).
-- `{ ...page.system, workflow }` is typed as `WbPageSystem`: spreading `WbPageSystem | null` is valid and carries the other `system` keys; if `CmsContentEntrySystem` ever gains required fields they come through the spread, and `workflow` is the only key this writer sets.
-- `isReviewSelectable(null)` is true (Task 8), so a page whose `system.workflow` is `null` keeps Change status and stays selectable; a `cancelled` workflow value (if the server ever stores one) locks the row like in progress.
+- `{ ...page.system, workflow }` is typed as `WbPageSystem`: spreading `WbPageSystem | null` is valid and carries the other `system` keys; if the page system type ever gains required fields they come through the spread, and `workflow` is the only key this writer sets.
 - Verify at implementation time: `Container.resolveAll` returns `[]` for an abstraction with no registration (flag-off assertions rely on it; if it throws, assert `toThrow` instead); the `ReviewChangedEvent` constructor takes the payload (`BaseEvent`); `createReview` accepts the overrides used; the `PageAction` module path mocked in the component test is the one `Browser/index.ts` imports.
-- Size: seven test files; implementation is nine small files plus four rewrites and one deletion.

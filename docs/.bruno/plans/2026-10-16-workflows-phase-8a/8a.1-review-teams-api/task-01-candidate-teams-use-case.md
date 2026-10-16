@@ -29,7 +29,11 @@ Spec 13.1, 13.3; user answer Q7 (`../00-answers.md`); R208, D158, A68, A69; R87 
 Create `packages/api-workflows/__tests__/review/ListReviewCandidateTeams.test.ts`:
 
 ```ts
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
 import { Result } from "@webiny/feature/api";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -40,7 +44,8 @@ import { TeamStorageError } from "@webiny/api-core/features/security/teams/share
 import { ListReviewCandidateTeamsUseCase } from "~/features/review/ListReviewCandidateTeams/index.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { captureLoggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { expectOk } from "~tests/__helpers/fixtures.js";
 
 /** Has a workflows permission, but not `security.team`, as a reviewer has. */
@@ -270,7 +275,10 @@ describe("ListReviewCandidateTeamsUseCase (R208, A68, A69)", () => {
 Create `packages/api-workflows/__tests__/graphql/workflowsReviewTeams.test.ts`. The shared `WorkflowsReviewStep` is only reachable through the CMS and WB roots, which this package does not have, so the test registers a probe field on `WorkflowsQuery` that returns a step with only the ids it was given; the real shared field resolver then runs on the real schema:
 
 ```ts
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { Result } from "@webiny/feature/api";
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
@@ -280,7 +288,8 @@ import { GetTeamUseCase } from "@webiny/api-core/features/security/teams/GetTeam
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { ListReviewCandidateTeamsUseCase } from "~/features/review/ListReviewCandidateTeams/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { captureLoggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 
 /** Has a workflows permission, but not `security.team`, as a reviewer has. */
 const REVIEWER: SecurityPermission[] = [{ name: "workflows", reassign: true }];
@@ -626,7 +635,8 @@ Expected: FAIL. The unit test and the registration test cannot resolve `~/featur
 `packages/api-workflows/src/features/review/ListReviewCandidateTeams/abstractions.ts`:
 
 ```ts
-import { createAbstraction, type Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
+import type { Result } from "@webiny/feature/api";
 import type { ReviewPersistenceError } from "~/domain/review/errors.js";
 
 export interface ReviewCandidateTeam {
@@ -681,10 +691,8 @@ import { TeamNotFoundError } from "@webiny/api-core/features/security/teams/shar
 import type { Team } from "@webiny/api-core/types/security.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
-import {
-    ListReviewCandidateTeamsUseCase as UseCase,
-    type ReviewCandidateTeam
-} from "./abstractions.js";
+import { ListReviewCandidateTeamsUseCase as UseCase } from "./abstractions.js";
+import type { ReviewCandidateTeam } from "./abstractions.js";
 
 interface TeamLookup {
     teamId: string;
@@ -950,11 +958,3 @@ git commit -m "feat(api-workflows): name the candidate teams of a review step" -
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
-
-## Contract notes
-
-- The contract says "modify the feature that registers the review use cases (the task re-reads whether `ReviewLifecycleFeature.ts` or `WorkflowsFeature` does)". Re-read: `ReviewLifecycleFeature` registers only defaults (routing resolver, reacher, saver, editor service); every review use case has its own `*Feature` registered in `WorkflowsFeature.ts`. This task follows that and adds `ListReviewCandidateTeamsFeature` there.
-- The contract's GraphQL test needs a review step source. api-workflows has no review root (only the CMS and WB wrappers return reviews), so the test registers a probe field on `WorkflowsQuery` in the test file only; the production schema gains nothing but `WorkflowsTeam` and `candidateTeams`.
-- `workflowsSchema.test.ts` did assert the exact fields of `WorkflowsReviewStep`; it is modified as shown (the contract said "only if it asserts exact type fields").
-- A69 verified: the api-core `TeamsFeature` registers `TeamsRepositoryCachingDecorator`, and the api-workflows test container and the production request stack include it, so no in-call `Map` was added.
-- Verified by running (ddb and ddb-os): all tests in this task pass.

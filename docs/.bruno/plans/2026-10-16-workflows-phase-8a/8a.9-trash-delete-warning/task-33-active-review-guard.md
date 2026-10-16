@@ -11,6 +11,7 @@ R205, R228, D157, A71 (guard side); Review Focus 10 and 19. The one shared piece
   - `begin(items' target ids)` opens a collect run, `run(items, false)` runs the presenter's normal series; the run is ended (`end`) and drained (`drain`) in a `finally`, so nothing leaks when `run` rejects (the rejection propagates).
   - Nothing collected: return. Otherwise one dialog lists every collected review; on confirm it cancels each distinct target once (`revisionId: null`) and then runs **only the blocked items** again (`run(blocked, true)`); dismiss does nothing more (the first pass already reported the blocked items as failed, which is truthful; if the user confirms, the results dialog of the caller then shows only the retried items, R228, noted for Task 38).
   - The retry runs inside its own collect run so a second refusal during the retry is recorded (the guard returns `false`, the presenter reports the item as failed) instead of opening a nested dialog (the drained data is discarded).
+  - **First-pass summary (Q27, R228, controller addition):** when the first pass collected refusals, the guard itself shows one warning notification through `Notifications.warning` before it opens the dialog, so no app decorator repeats it: title "{done} of {total} items done", description "{refused} still need your confirmation." ("1 still needs your confirmation." for one); `total` is `items.length`, `refused` the number of items whose target id is blocked, `done` the rest. Neutral wording without an app noun (proposed copy, not in the design). Nothing is shown when nothing was refused. The all-selected background-task path does not go through `runBulk`.
   - `runBulk` resolves only after the dialog flow has ended, so a caller that shows its results dialog after `await execute(...)` shows no failure summary before the warning.
 - **`ActiveReviewBlockCollector`** records refusals per bulk run. `collects(data)` is true only while an **active** run's target ids include a `targetId` of one of the refusal's reviews, and `add` stores, per matching active run, only the reviews whose `targetId` that run owns, so an unrelated delete that overlaps a bulk run is not captured (R228, Review Focus 19). `end(runId)` stops collecting but keeps the data until `drain(runId)` returns and removes it (the contract's order is `end` in `finally`, then `drain`).
 - **Pure functions** (one per file): `parseActiveReviewOnTrash(error)` (the typed refusal data or `null`), `distinctReviewTargets(reviews)` (first review per (`model`, `targetId`)), `mergeBlockingReviews(collected)` (every review once by `reviewId`, in order).
@@ -36,12 +37,12 @@ R205, R228, D157, A71 (guard side); Review Focus 10 and 19. The one shared piece
 - Consumes:
   - Task 8: `ActiveReviewOnTrashData`, `BlockingReview` (`~/review/domain/types.js`), `ReviewErrorCode` (`~/review/domain/ReviewErrorCode.js`, const with `ActiveReviewOnTrash: "Workflows/Review/ActiveReviewOnTrash"`), `IReviewCancelForDeleteUseCases` (`~/review/useCases/IReviewCancelForDeleteUseCases.js`: `cancelForDelete(params: CancelForDeleteParams): Promise<Review[]>`), `CancelForDeleteParams { namespace; targetId; targetRevisionId: string | null; action: "trash" | "delete" }` (`~/review/gateway/IReviewGateway.js`). verify: the exact file names Task 8 created (one interface per file); adjust the three import paths if it named them differently.
   - Task 6: `GraphQLOperationError` (`@webiny/app/errors/index.js`).
-  - Existing: `Confirmation` (`@webiny/app-admin/features/confirmation/abstractions.js`; `confirm<TData, TParams, TResult>(name, params, execute)` resolves `TResult | false`), `createAbstraction` (`@webiny/feature/admin`), `Container` (`@webiny/di`).
+  - Existing: `Notifications` (`@webiny/app-admin/features/notifications/abstractions.js`, `warning({ title, description })`), `Confirmation` (`@webiny/app-admin/features/confirmation/abstractions.js`; `confirm<TData, TParams, TResult>(name, params, execute)` resolves `TResult | false`), `createAbstraction` (`@webiny/feature/admin`), `Container` (`@webiny/di`).
 - Produces (consumed by Tasks 34, 35, 36):
   - `ACTIVE_REVIEW_WARNING_DIALOG = "workflows-active-review-warning"`.
   - `ActiveReviewWarningDialogParams = { reviews: BlockingReview[]; action: "trash" | "delete" }` (the params the guard hands the dialog; declared in `ActiveReviewGuard.ts`).
   - `IActiveReviewBlockCollector { begin(targetIds: string[]): string; collects(data): boolean; add(data): void; drain(runId): ActiveReviewOnTrashData[]; end(runId): void }`, token `ActiveReviewBlockCollector` (`Workflows/ActiveReviewBlockCollector`), token file `ActiveReviewBlockCollector.ts`, implementation exported as `ActiveReviewBlockCollector` from `ActiveReviewBlockCollectorImpl.ts` (class `ActiveReviewBlockCollectorImpl`), registered singleton by Task 34.
-  - `ActiveReviewGuardParams<TResult> { action: () => Promise<TResult>; useCases: IReviewCancelForDeleteUseCases; revisionId: string | null }`, `ActiveReviewBulkParams<TItem> { items: TItem[]; getTargetId: (item: TItem) => string; run: (batch: TItem[], isRetry: boolean) => Promise<void>; useCases: IReviewCancelForDeleteUseCases }`, `IActiveReviewGuard { run<TResult>(params): Promise<TResult | false>; runBulk<TItem>(params): Promise<void> }`, token `ActiveReviewGuard` (`Workflows/ActiveReviewGuard`), token file `ActiveReviewGuard.ts`, implementation exported as `ActiveReviewGuard` from `ActiveReviewGuardImpl.ts` (class `ActiveReviewGuardImpl`, dependencies `[Confirmation, ActiveReviewBlockCollector]`), registered singleton by Task 34.
+  - `ActiveReviewGuardParams<TResult> { action: () => Promise<TResult>; useCases: IReviewCancelForDeleteUseCases; revisionId: string | null }`, `ActiveReviewBulkParams<TItem> { items: TItem[]; getTargetId: (item: TItem) => string; run: (batch: TItem[], isRetry: boolean) => Promise<void>; useCases: IReviewCancelForDeleteUseCases }`, `IActiveReviewGuard { run<TResult>(params): Promise<TResult | false>; runBulk<TItem>(params): Promise<void> }`, token `ActiveReviewGuard` (`Workflows/ActiveReviewGuard`), token file `ActiveReviewGuard.ts`, implementation exported as `ActiveReviewGuard` from `ActiveReviewGuardImpl.ts` (class `ActiveReviewGuardImpl`, dependencies `[Confirmation, ActiveReviewBlockCollector, Notifications]`), registered singleton by Task 34.
   - Barrel additions (end of `index.tsx`): `ActiveReviewGuard`, `ActiveReviewBlockCollector` (the tokens from `ActiveReviewGuard.ts` and `ActiveReviewBlockCollector.ts`) and `ACTIVE_REVIEW_WARNING_DIALOG`.
 
 - [ ] **Step 1: Write the failing tests**
@@ -349,6 +350,7 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
 import type { BlockingReview } from "~/review/domain/types.js";
@@ -424,12 +426,22 @@ function createDeferredConfirmation() {
 
 function setup(confirmation: Confirmation.Interface) {
     const container = new Container();
+    const notifications = {
+        notify: vi.fn(),
+        success: vi.fn(),
+        warning: vi.fn(),
+        error: vi.fn(),
+        getNotifications: vi.fn(),
+        remove: vi.fn()
+    };
     container.registerInstance(Confirmation, confirmation);
+    container.registerInstance(Notifications, notifications);
     container.register(ActiveReviewBlockCollector).inSingletonScope();
     container.register(ActiveReviewGuard).inSingletonScope();
     return {
         guard: container.resolve(GuardAbstraction),
-        collector: container.resolve(CollectorAbstraction)
+        collector: container.resolve(CollectorAbstraction),
+        notifications
     };
 }
 
@@ -732,6 +744,43 @@ describe("ActiveReviewGuard.runBulk", () => {
     }
 
     const items: Item[] = [{ entryId: "e1" }, { entryId: "e2" }, { entryId: "e3" }];
+
+    it("shows the first-pass summary once when some items were refused (Q27)", async () => {
+        const { confirmation } = createConfirmation("dismiss");
+        const { guard, notifications } = setup(confirmation);
+        const { run } = createRun(guard, new Set(["e2", "e3"]), useCases);
+
+        await guard.runBulk({ items, getTargetId: item => item.entryId, run, useCases });
+
+        expect(notifications.warning).toHaveBeenCalledTimes(1);
+        expect(notifications.warning).toHaveBeenCalledWith({
+            title: "1 of 3 items done",
+            description: "2 still need your confirmation."
+        });
+    });
+
+    it("uses the singular for one refused item", async () => {
+        const { confirmation } = createConfirmation("dismiss");
+        const { guard, notifications } = setup(confirmation);
+        const { run } = createRun(guard, new Set(["e1"]), useCases);
+
+        await guard.runBulk({ items, getTargetId: item => item.entryId, run, useCases });
+
+        expect(notifications.warning).toHaveBeenCalledWith({
+            title: "2 of 3 items done",
+            description: "1 still needs your confirmation."
+        });
+    });
+
+    it("shows no summary when nothing was refused", async () => {
+        const { confirmation } = createConfirmation("confirm");
+        const { guard, notifications } = setup(confirmation);
+        const { run } = createRun(guard, new Set(), useCases);
+
+        await guard.runBulk({ items, getTargetId: item => item.entryId, run, useCases });
+
+        expect(notifications.warning).not.toHaveBeenCalled();
+    });
 
     it("runs once and opens nothing when no item is blocked", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
@@ -1257,6 +1306,7 @@ Create `packages/app-workflows/src/review/trash/ActiveReviewGuardImpl.ts`:
 
 ```ts
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
 import { ActiveReviewBlockCollector } from "./ActiveReviewBlockCollector.js";
 import { ActiveReviewGuard as Abstraction } from "./ActiveReviewGuard.js";
@@ -1288,7 +1338,8 @@ type RetryOutcome<TResult> = RetrySucceeded<TResult> | RetryFailed;
 class ActiveReviewGuardImpl implements Abstraction.Interface {
     constructor(
         private confirmation: Confirmation.Interface,
-        private collector: ActiveReviewBlockCollector.Interface
+        private collector: ActiveReviewBlockCollector.Interface,
+        private notifications: Notifications.Interface
     ) {}
 
     async run<TResult>(params: ActiveReviewGuardParams<TResult>): Promise<TResult | false> {
@@ -1374,6 +1425,16 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
             return blockedTargetIds.has(targetId);
         });
         const retryTargetIds = retryItems.map(getTargetId);
+        const refused = retryItems.length;
+        const done = items.length - refused;
+        let remaining = `${refused} still need your confirmation.`;
+        if (refused === 1) {
+            remaining = "1 still needs your confirmation.";
+        }
+        this.notifications.warning({
+            title: `${done} of ${items.length} items done`,
+            description: remaining
+        });
         const targets = distinctReviewTargets(reviews);
         const dialogParams: ActiveReviewWarningDialogParams = { reviews, action };
 
@@ -1417,7 +1478,7 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
 
 export const ActiveReviewGuard = Abstraction.createImplementation({
     implementation: ActiveReviewGuardImpl,
-    dependencies: [Confirmation, ActiveReviewBlockCollector]
+    dependencies: [Confirmation, ActiveReviewBlockCollector, Notifications]
 });
 ```
 
@@ -1447,7 +1508,7 @@ Expected: PASS (5 files).
 
 ```bash
 yarn test packages/app-workflows/src/review/useCases/ReviewUseCases.test.ts 2>&1 | tail -50
-yarn check:test:types -p app-workflows --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 ```
 
 Expected: PASS and no type errors. (`ReviewUseCases.test.ts` from Task 9 exercises the use cases whose `IReviewCancelForDeleteUseCases` shape the guard depends on; if that file is named differently, run the Task 9 test file.)
@@ -1467,7 +1528,7 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-workflows): add the active review block collector and guard" -m "The guard turns the ActiveReviewOnTrash refusal into one warning, cancels each distinct target once on confirm and repeats the action once. Bulk runs collect only the refusals of their own targets and retry only the blocked items; the collector keeps overlapping runs apart." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the active review block collector and guard" -m "The guard turns the ActiveReviewOnTrash refusal into one warning, cancels each distinct target once on confirm and repeats the action once. Bulk runs collect only the refusals of their own targets and retry only the blocked items; the collector keeps overlapping runs apart." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
@@ -1479,4 +1540,5 @@ If a pre-commit step fails and you fix anything, rerun the chain from the start.
 - `execute` returns an outcome instead of throwing (see the first section). The contract's "a second refusal propagates" holds from the caller's side; the dialog does not show it.
 - The retry of `runBulk` runs inside its own collect run (contract: "run(blocked, true) once"), so that a second refusal on the retry is a reported failure and never a nested dialog. The retry is still one call of `run`.
 - R228 conflict, resolved by the controller (R211-safe): R228 says collect mode rethrows and the runner reports the item as failed, but `BulkActionRunner`/`Worker.processChunk` (`packages/app-admin/src/components/BulkActions/`) has no per-item error handling, so a rethrow would reject the whole `run`. Collect mode therefore records the refusal and resolves `false`; the two base `BulkDeletePresenter.deleteItem` methods (Tasks 35-36) only add `if (deleted === false) report.error(...)`, with no try/catch, so non-workflow error behaviour is unchanged. For Task 38: a bulk retry's results dialog shows only the retried items (R228).
+- The first-pass summary of Q27 lives in `runBulk` (controller addition); the CMS and WB bulk decorators (Tasks 35, 36) only forward `execute` and add no count message. Its copy is proposed, not from the design.
 - verify: `IReviewCancelForDeleteUseCases` and `CancelForDeleteParams` file names (Task 8), see Interfaces.

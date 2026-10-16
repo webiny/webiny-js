@@ -23,21 +23,30 @@ Spec 13.1; user answer Q7; R208, A68, A69; Review Focus 2. Task 1 put the field 
 Create `packages/api-headless-cms-workflows/__tests__/graphql/cmsReviewCandidateTeams.test.ts`:
 
 ```ts
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import type { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
 import { TeamStorageError } from "@webiny/api-core/features/security/teams/shared/errors.js";
 import { GetTeamUseCase } from "@webiny/api-core/features/security/teams/GetTeam/index.js";
 import type { WorkflowValues } from "@webiny/api-workflows/domain/workflow/types.js";
-import { createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow.js";
-import { createAuthorEntry, expectOk } from "~tests/__helpers/entries.js";
+import { createWorkflowValues } from "~tests/__workflows/workflow.js";
+import { storeWorkflow } from "~tests/__workflows/workflow.js";
+import { createAuthorEntry } from "~tests/__helpers/entries.js";
+import { expectOk } from "~tests/__helpers/entries.js";
 import { requestEntryReview } from "~tests/__helpers/engine.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
-import { createGraphQLClient, type GraphQLClient } from "~tests/__helpers/graphql.js";
-import { REQUESTER, REVIEWER } from "~tests/__helpers/identities.js";
-import { CMS_READER, CMS_WRITER } from "~tests/__helpers/permissions.js";
-import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { createGraphQLClient } from "~tests/__helpers/graphql.js";
+import type { GraphQLClient } from "~tests/__helpers/graphql.js";
+import { REQUESTER } from "~tests/__helpers/identities.js";
+import { REVIEWER } from "~tests/__helpers/identities.js";
+import { CMS_READER } from "~tests/__helpers/permissions.js";
+import { CMS_WRITER } from "~tests/__helpers/permissions.js";
+import { captureLoggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 
 /** The first team exists (defined in code); the second one was deleted after the workflow was saved. */
 const LIVE_TEAM = "team-1";
@@ -302,7 +311,10 @@ describe("CMS review candidateTeams (R208, Q7)", () => {
 Create `packages/api-website-builder-workflows/__tests__/graphql/pageReviewCandidateTeams.test.ts`:
 
 ```ts
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import type { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
@@ -311,15 +323,19 @@ import { GetTeamUseCase } from "@webiny/api-core/features/security/teams/GetTeam
 import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import type { WorkflowValues } from "@webiny/api-workflows/domain/workflow/types.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
-import { createPage, expectOk } from "~tests/__helpers/pages.js";
-import {
-    createWbWorkflowValues,
-    requestPageReview,
-    WB_ADMIN_ACTOR
-} from "~tests/__helpers/engine.js";
-import { REQUESTER, REVIEWER, WB_READER, WB_WRITER } from "~tests/__helpers/identities.js";
-import { asGraphQLUser, TYPE_FIELDS } from "~tests/__helpers/graphql.js";
-import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { createPage } from "~tests/__helpers/pages.js";
+import { expectOk } from "~tests/__helpers/pages.js";
+import { createWbWorkflowValues } from "~tests/__helpers/engine.js";
+import { requestPageReview } from "~tests/__helpers/engine.js";
+import { WB_ADMIN_ACTOR } from "~tests/__helpers/engine.js";
+import { REQUESTER } from "~tests/__helpers/identities.js";
+import { REVIEWER } from "~tests/__helpers/identities.js";
+import { WB_READER } from "~tests/__helpers/identities.js";
+import { WB_WRITER } from "~tests/__helpers/identities.js";
+import { asGraphQLUser } from "~tests/__helpers/graphql.js";
+import { TYPE_FIELDS } from "~tests/__helpers/graphql.js";
+import { captureLoggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 
 /** The first team exists (defined in code); the second one was deleted after the workflow was saved. */
 const LIVE_TEAM = "team-1";
@@ -630,9 +646,3 @@ git commit -m "test(workflows): prove candidateTeams in the CMS and WB reviews" 
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start.
-
-## Contract notes
-
-- The contract expected no source change and "a fix only if a wrapper builds a step shape without `candidateTeamIds`". None does; both wrappers return the shared shape and every response carries the names.
-- The contract's "a non-editor viewer still gets names" is covered by `REVIEWER` with read-only CMS or WB permissions. The "request mutation result" case uses `REQUESTER` with write permissions.
-- Verified by running (ddb and ddb-os): the new tests and the two existing suites above pass.

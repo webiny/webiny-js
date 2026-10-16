@@ -15,7 +15,7 @@ R202, R211, R212, R213, R234, R-c, R-e, R-f, R-k, R-l; A76, A77; Review Focus 5,
 - Create: `packages/app-workflows/src/review/editor/components/EditorReviewBar.test.tsx`
 
 **Interfaces:**
-- Consumes: Task 13 (`TargetReviewPresenter` with `.Interface`, `TargetReviewPresenterFeature`), Task 14 (`ReviewBar`, `createFakePresenter`, `createViewModel`), Task 18 (`ReviewDetailsDrawer`, `ReviewDetailsPresenterFeature`), Task 15 (`ReviewActionDialogPresenterFeature`, `renderWithContainer`), Task 8 (`IReviewUseCases`, `createReview`/`createReviewWithFlags` from `reviewFixtures.js`), Task 13's builders and `TARGET`. Existing (verified): `useRouter` and `Route` (`@webiny/app`; `Route` constructor `{ name, path }`), `RouteUrl.fromPattern` (`@webiny/app/features/router/RouteUrl.js`), `createAbstraction` (`@webiny/feature/admin`).
+- Consumes: Task 13 (`TargetReviewPresenter` with `.Interface`, `TargetReviewPresenterFeature`), Task 14 (`ReviewBar`, `createFakePresenter`, `createViewModel`), Task 18 (`ReviewDetailsDrawer`, `ReviewDetailsPresenterFeature`), Task 15 (`ReviewActionDialogPresenterFeature`, `renderWithContainer`), Task 8 (`IReviewUseCases`, `createReview`/`createReviewWithFlags` from `~/review/testing/reviewFixtures.js`), Task 13's builders and `TARGET`. Existing (verified): `useRouter` and `Route` (`@webiny/app`; `Route` constructor `{ name, path }`), `RouteUrl.fromPattern` (`@webiny/app/features/router/RouteUrl.js`), `createAbstraction` (`@webiny/feature/admin`).
 - Produces: `IEditorReviewSession { readonly presenter: TargetReviewPresenter.Interface; readonly useCases: IReviewUseCases }` (`editor/abstractions.ts`; it has no token of its own, each app declares one); class `EditorReviewSession` (plain, no `createImplementation`); `EditorReviewBar` props `{ session: IEditorReviewSession; reviewsRoute: Route }`. Imported by deep path (`@webiny/app-workflows/review/editor/EditorReviewSession.js`, `.../components/EditorReviewBar.js`); consumed by Tasks 20 and 22.
 
 **Test runner note:** admin package, `yarn test <path>` only.
@@ -181,7 +181,6 @@ import { EditorReviewSession } from "../EditorReviewSession.js";
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
 import { createFakePresenter } from "~/review/testing/targetReviewFakes.js";
 import { createViewModel } from "~/review/testing/targetReviewFakes.js";
-import { TARGET } from "~/review/testing/reviewTarget.js";
 import { createActor } from "~/review/testing/createActor.js";
 import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
@@ -346,7 +345,8 @@ export class EditorReviewSession implements IEditorReviewSession {
 Create `packages/app-workflows/src/review/editor/components/EditorReviewBar.tsx`:
 
 ```tsx
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app";
 import type { Route } from "@webiny/app";
@@ -426,15 +426,12 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-workflows --no-cache 2>&1 | tail -30
 git add .
 git checkout -- .gitleaks.toml
-git commit -m "feat(app-workflows): add the editor review session and the editor review bar" -m "EditorReviewSession is a plain shared class holding an editor's presenter and its app's use cases; each app subclasses it once and binds the subclass to its own token. EditorReviewBar renders the shared bar and the details drawer and builds the Content Reviews link from the app's route." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-workflows): add the editor review session and the editor review bar" -m "EditorReviewSession is a plain shared class holding an editor's presenter and its app's use cases; each app subclasses it once and binds the subclass to its own token. EditorReviewBar renders the shared bar and the details drawer and builds the Content Reviews link from the app's route." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If any step changes a file, fix it and rerun the chain from `git add .`. Never commit `.gitleaks.toml`, `docs/.reports` or `.superpowers`; never push, amend or revert.
 
 ## Contract notes
 
-- **No `createImplementation` on the shared class (controller rule):** the contract text "registered by each app ... `CmsEntryReview.createImplementation({ implementation: EditorReviewSession, dependencies: [...] })`" is replaced by a per-app subclass (shown in the task text); Tasks 20 and 22 write the subclass files. R212's "shared class `EditorReviewSession` ... registered under the app token" holds with the subclass.
-- **Props stay `{ session, reviewsRoute }` (R-f):** the target and the title come from the presenter's view model.
-- **Opened review id:** the drawer open state is a `useState<string | null>` holding the opened review id in `EditorReviewBar` (R221 says presenter state; one visual value is allowed, and the drawer's own state lives in its presenter).
-- **Barrel (R-k):** nothing is added to `src/index.tsx`; Tasks 20 and 22 import by deep path.
+- The app subclass files are named by the contract (R212, R237): CMS `CmsEntryReviewSessionImpl` in `CmsEntryReviewImpl.ts`, WB `WbPageReviewSessionImpl` (unexported) in `WbPageReviewSession.ts`; Tasks 20 and 22 write them.
 - Size: small (three source files, two test files).

@@ -695,10 +695,10 @@ Expected: PASS (4 files).
 
 ```bash
 yarn test packages/app-website-builder/src/features/pages/deletePage/DeletePage.test.ts 2>&1 | tail -50
-yarn check:test:types -p app-website-builder --report cli 2>&1 | tail -40
+yarn build -p @webiny/app-website-builder --no-cache 2>&1 | tail -30
 ```
 
-Expected: PASS and no type errors.
+`app-website-builder` has only co-located tests and no `__tests__/**/*.test.ts` file, so `check:test:types` does not list it; the package build is the type check of its tests (R243). Expected: PASS and no type errors.
 
 - [ ] **Step 6: Pre-commit chain and commit**
 
@@ -715,12 +715,11 @@ yarn webiny sync-dependencies
 yarn build -p @webiny/app-website-builder --no-cache 2>&1 | tail -30
 git checkout -- .gitleaks.toml
 git add .
-git commit -m "feat(app-website-builder): throw GraphQLOperationError from the page delete gateways" -m "The four delete gateways keep their throw condition and message fallback and now carry the envelope code and data, so the workflows warning can read ActiveReviewOnTrash. The two trash-bin gateways add data to their error selection, and the revision gateway stops sending an undeclared permanently variable. A72: the server defines no WB bulkActions mutation (the admin trash-bin gateway calls a field that does not exist) and the list bulk delete runs one page delete per call, so the WB bulk flow has no background-task path." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01EWvjsBXWqViJPTrgbzhYr4"
+git commit -m "feat(app-website-builder): throw GraphQLOperationError from the page delete gateways" -m "The four delete gateways keep their throw condition and message fallback and now carry the envelope code and data, so the workflows warning can read ActiveReviewOnTrash. The two trash-bin gateways add data to their error selection, and the revision gateway stops sending an undeclared permanently variable. A72: the server defines no WB bulkActions mutation (the admin trash-bin gateway calls a field that does not exist) and the list bulk delete runs one page delete per call, so the WB bulk flow has no background-task path." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" -m "Claude-Session: https://claude.ai/code/session_01M9iXGB9w796E8BHxEZUb4u"
 ```
 
 If a pre-commit step fails and you fix anything, rerun the chain from the start. If the A72 grep in Step 2 found a server definition, replace the A72 sentence of the commit body with what it showed.
 
-**Contract notes:**
-- `DeletePageGateway` sends `permanently` in its variables, but its document declares only `$id` and calls `deletePage(id: $id)` without `permanently`, so the server always trashes (`trashPageUseCase`). Unchanged by this task (the typed error does not depend on it); no caller sends `permanently: true` through this gateway today. verify: nothing in Task 36 depends on it (the permanent delete from the trash bin uses `WbTrashBinDeleteGateway`, whose document does declare `$permanently`).
-- A72 (WB half): the WB server has no `bulkActions` mutation, so `WbTrashBinBulkActionGateway` calls an operation the API does not define; the contract's wording "the WB bulk mutation" does not match the code. Nothing to extend in R228 for WB; Task 36 documents it.
-- The two trash-bin gateways and the shared `TrashBinPresenter` are used by both apps (Task 36 explains why the WB trash-bin delete path is not decorated).
+## Contract notes
+
+- `DeletePageGateway` sends `permanently` in its variables, but its document declares only `$id` and calls `deletePage(id: $id)`, so the server always trashes (R204). Unchanged by this task: the typed error does not depend on it and no caller sends `permanently: true` through this gateway (the permanent delete from the trash bin uses `WbTrashBinDeleteGateway`, whose document declares `$permanently`).
