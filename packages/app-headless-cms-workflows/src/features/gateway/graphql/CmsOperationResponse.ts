@@ -1,4 +1,4 @@
-/**
+/*
  * The response of one operation under the `cms` root: the root field name maps to the envelope
  * the shared gateway interface returns.
  */

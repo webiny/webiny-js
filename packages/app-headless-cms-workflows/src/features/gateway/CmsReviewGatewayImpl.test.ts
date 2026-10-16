@@ -73,31 +73,31 @@ describe("CmsReviewGateway", () => {
     });
 
     it("rejects a non-CMS namespace before sending a request", async () => {
-        await expect(
-            gateway.getTargetReview({ namespace: "wb.page", targetRevisionId: "page-1#0001" })
-        ).rejects.toThrow('Invalid app name: "wb.page".');
-        await expect(
-            gateway.requestReview({
-                target: { namespace: "wb.page", targetRevisionId: "page-1#0001" },
-                title: "Review",
-                picks: []
-            })
-        ).rejects.toThrow('Invalid app name: "wb.page".');
-        await expect(
-            gateway.listStepCandidates({
-                workflowId: "workflow-1",
-                stepId: "step-1",
-                target: { namespace: "wb.page", targetRevisionId: "page-1#0001" }
-            })
-        ).rejects.toThrow('Invalid app name: "wb.page".');
-        await expect(
-            gateway.cancelForDelete({
-                namespace: "wb.page",
-                targetId: "page-1",
-                targetRevisionId: null,
-                action: "trash"
-            })
-        ).rejects.toThrow('Invalid app name: "wb.page".');
+        const targetReview = gateway.getTargetReview({
+            namespace: "wb.page",
+            targetRevisionId: "page-1#0001"
+        });
+        const requestReview = gateway.requestReview({
+            target: { namespace: "wb.page", targetRevisionId: "page-1#0001" },
+            title: "Review",
+            picks: []
+        });
+        const stepCandidates = gateway.listStepCandidates({
+            workflowId: "workflow-1",
+            stepId: "step-1",
+            target: { namespace: "wb.page", targetRevisionId: "page-1#0001" }
+        });
+        const cancelForDelete = gateway.cancelForDelete({
+            namespace: "wb.page",
+            targetId: "page-1",
+            targetRevisionId: null,
+            action: "trash"
+        });
+
+        await expect(targetReview).rejects.toThrow('Invalid app name: "wb.page".');
+        await expect(requestReview).rejects.toThrow('Invalid app name: "wb.page".');
+        await expect(stepCandidates).rejects.toThrow('Invalid app name: "wb.page".');
+        await expect(cancelForDelete).rejects.toThrow('Invalid app name: "wb.page".');
 
         expect(client.execute).not.toHaveBeenCalled();
     });
@@ -386,6 +386,8 @@ describe("CmsReviewGateway", () => {
     it("lets a transport error pass through", async () => {
         client.execute.mockRejectedValue(new Error("Network down."));
 
-        await expect(gateway.getReview("review-1")).rejects.toThrow("Network down.");
+        const promise = gateway.getReview("review-1");
+
+        await expect(promise).rejects.toThrow("Network down.");
     });
 });

@@ -65,13 +65,16 @@ vi.mock("~/presentation/cmsWorkflowsEditor/feature.js", () => {
 describe("CmsWorkflows composition", () => {
     const createContainer = (isEnabled: boolean): Container => {
         const flagsService: FeatureFlagsService.Interface = {
-            getFlags: () => new FeatureFlags({ advancedPublishingWorkflow: isEnabled }),
+            getFlags: () => {
+                return new FeatureFlags({ advancedPublishingWorkflow: isEnabled });
+            },
             isLoaded: () => true,
             loadFlags: async () => undefined
         };
         const container = new Container();
         container.registerInstance(FeatureFlagsService, flagsService);
-        container.registerInstance(MainGraphQLClient, { execute: vi.fn() });
+        const client = { execute: vi.fn() };
+        container.registerInstance(MainGraphQLClient, client);
         return container;
     };
 
@@ -84,7 +87,9 @@ describe("CmsWorkflows composition", () => {
             </DiContainerProvider>
         );
 
-        expect(container.resolve(CmsReviewUseCases)).toBeDefined();
+        const useCases = container.resolve(CmsReviewUseCases);
+
+        expect(useCases).toBeDefined();
     });
 
     it("registers nothing with the flag off", () => {
@@ -96,6 +101,10 @@ describe("CmsWorkflows composition", () => {
             </DiContainerProvider>
         );
 
-        expect(() => container.resolve(CmsReviewUseCases)).toThrow("No registration found");
+        const resolve = () => {
+            return container.resolve(CmsReviewUseCases);
+        };
+
+        expect(resolve).toThrow("No registration found");
     });
 });

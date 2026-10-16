@@ -23,7 +23,8 @@ describe("CmsReviewFeature", () => {
 
         container = new Container();
         container.registerInstance(MainGraphQLClient, client);
-        container.registerInstance(ModelsCache, new ListCache<CmsModel>("modelId"));
+        const modelsCache = new ListCache<CmsModel>("modelId");
+        container.registerInstance(ModelsCache, modelsCache);
         CmsReviewFeature.register(container);
     });
 
@@ -32,15 +33,22 @@ describe("CmsReviewFeature", () => {
 
         expect(useCases).toBeDefined();
         expect(contentAdapter).toBeDefined();
-        expect(container.resolve(CmsReviewGateway)).toBeDefined();
+        const gateway = container.resolve(CmsReviewGateway);
+
+        expect(gateway).toBeDefined();
     });
 
     it("registers every token as a singleton", () => {
-        expect(container.resolve(CmsReviewGateway)).toBe(container.resolve(CmsReviewGateway));
-        expect(container.resolve(CmsReviewUseCases)).toBe(container.resolve(CmsReviewUseCases));
-        expect(container.resolve(CmsReviewContentAdapter)).toBe(
-            container.resolve(CmsReviewContentAdapter)
-        );
+        const gateway1 = container.resolve(CmsReviewGateway);
+        const gateway2 = container.resolve(CmsReviewGateway);
+        const useCases1 = container.resolve(CmsReviewUseCases);
+        const useCases2 = container.resolve(CmsReviewUseCases);
+        const adapter1 = container.resolve(CmsReviewContentAdapter);
+        const adapter2 = container.resolve(CmsReviewContentAdapter);
+
+        expect(gateway1).toBe(gateway2);
+        expect(useCases1).toBe(useCases2);
+        expect(adapter1).toBe(adapter2);
     });
 
     it("runs the shared use cases over the CMS gateway", async () => {
