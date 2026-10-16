@@ -1,5 +1,6 @@
 import React from "react";
 import { cleanup } from "@testing-library/react";
+import { fireEvent } from "@testing-library/react";
 import { render } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { afterEach } from "vitest";
@@ -15,6 +16,7 @@ import { CompositionProvider } from "@webiny/react-composition";
 import { Page } from "@webiny/app-website-builder/domain/Page/index.js";
 import { PageDtoMapper } from "@webiny/app-website-builder/domain/Page/index.js";
 import { PageListConfig } from "@webiny/app-website-builder/presentation/pages/PageList/configs/index.js";
+import { usePageListConfig } from "@webiny/app-website-builder/presentation/pages/PageList/configs/index.js";
 import { PageListWithConfig } from "@webiny/app-website-builder/presentation/pages/PageList/configs/index.js";
 import { PageProvider } from "@webiny/app-website-builder/presentation/pages/PageList/hooks/usePage.js";
 import { FullPageCache } from "@webiny/app-website-builder/features/pages/shared/abstractions.js";
@@ -24,6 +26,7 @@ import { ReviewNotificationService } from "@webiny/app-workflows/review/notifica
 import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
 import type { ReviewStateValue } from "@webiny/app-workflows/review/domain/ReviewState.js";
 import { StepState } from "@webiny/app-workflows/review/domain/StepState.js";
+import { Routes } from "~/routes.js";
 import "~/types.js";
 import { WebsiteBuilderWorkflows } from "~/index.js";
 
@@ -31,9 +34,28 @@ const flags = vi.hoisted(() => {
     return { enabled: true };
 });
 
+const goToRoute = vi.hoisted(() => vi.fn());
+
 vi.mock("@webiny/app-admin", async importOriginal => {
     const actual = await importOriginal<typeof import("@webiny/app-admin")>();
-    return { ...actual, useFeatureFlags: () => ({ isEnabled: () => flags.enabled }) };
+    return {
+        ...actual,
+        useFeatureFlags: () => ({ isEnabled: () => flags.enabled }),
+        useRouter: () => ({ goToRoute })
+    };
+});
+
+vi.mock("@webiny/admin-ui", async importOriginal => {
+    const actual = await importOriginal<typeof import("@webiny/admin-ui")>();
+    const React = await import("react");
+    const Item = (props: { text: string; onClick: () => void }) => {
+        return React.createElement("button", { onClick: props.onClick }, props.text);
+    };
+    const ItemIcon = () => React.createElement("span");
+    return {
+        ...actual,
+        Sidebar: { ...actual.Sidebar, Item: Object.assign(Item, { Icon: ItemIcon }) }
+    };
 });
 
 vi.mock("~/Routes/index.js", () => {
@@ -86,6 +108,21 @@ const createDto = (reviewState: ReviewStateValue | null) => {
     return PageDtoMapper.toDTO(page);
 };
 
+/* Renders the sidebar footer slot the way the page list does. */
+const SidebarFooterProbe = () => {
+    const { browser } = usePageListConfig();
+
+    return (
+        <div data-testid={"sidebar-footer"}>
+            {browser.sidebarFooter.map(footer => (
+                <div key={footer.name} data-name={footer.name}>
+                    {footer.element}
+                </div>
+            ))}
+        </div>
+    );
+};
+
 /* The page list renders its children once the config has been collected. */
 const waitForActions = async () => {
     await screen.findByTestId("edit");
@@ -109,6 +146,7 @@ const mountRoot = (enabled: boolean, reviewState: ReviewStateValue | null) => {
                     <Browser.Sidebar.Footer name={"neutral"} element={<span />} />
                 </PageListConfig>
                 <PageListWithConfig>
+                    <SidebarFooterProbe />
                     <PageProvider page={createDto(reviewState)}>
                         <Browser.Page.Action
                             name={"changeStatus"}
@@ -128,6 +166,7 @@ const mountRoot = (enabled: boolean, reviewState: ReviewStateValue | null) => {
 describe("Website Builder Change status decoration from the composition root", () => {
     afterEach(() => {
         cleanup();
+        goToRoute.mockReset();
     });
 
     it("flag on: the action is hidden for a page whose review is in progress", async () => {
@@ -157,5 +196,24 @@ describe("Website Builder Change status decoration from the composition root", (
 
         await waitForActions();
         expect(screen.queryAllByTestId("change-status")).toHaveLength(1);
+    });
+
+    it("flag on: the Content Reviews sidebar item is mounted and opens the route", async () => {
+        mountRoot(true, null);
+
+        await waitForActions();
+        const footer = screen.getByTestId("sidebar-footer");
+        expect(footer.querySelector('[data-name="contentReviews"]')).not.toBeNull();
+        fireEvent.click(screen.getByRole("button", { name: "Content Reviews" }));
+        expect(goToRoute).toHaveBeenCalledWith(Routes.Pages.WorkflowStateList);
+    });
+
+    it("flag off: no Content Reviews sidebar item is mounted", async () => {
+        mountRoot(false, null);
+
+        await waitForActions();
+        const footer = screen.getByTestId("sidebar-footer");
+        expect(footer.querySelector('[data-name="contentReviews"]')).toBeNull();
+        expect(screen.queryByRole("button", { name: "Content Reviews" })).toBeNull();
     });
 });

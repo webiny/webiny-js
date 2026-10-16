@@ -79,6 +79,7 @@ describe("WbContentReviews under the real admin and router configs", () => {
         render(
             <DiContainerProvider container={container}>
                 <CompositionProvider>
+                    {/* Mirrors App.tsx: the config declarations and the admin plugin come before the router, which renders its children only after its first config flush. */}
                     <WbContentReviews />
                     <AdminWithConfig>
                         {AdminConfigPlugin}
