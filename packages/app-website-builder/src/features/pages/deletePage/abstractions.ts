@@ -13,7 +13,7 @@ export interface DeletePageParams {
 // UseCase
 //
 export interface IDeletePageUseCase {
-    /**
+    /*
      * Resolves false when the delete was not carried out (a decorator's warning was dismissed).
      */
     execute(params: DeletePageParams): Promise<boolean>;

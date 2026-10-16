@@ -17,9 +17,7 @@ describe("DeletePageRevisionUseCase result", () => {
         container.registerInstance(DeletePageRevisionRepository, repository);
         container.register(DeletePageRevisionUseCase);
 
-        const result = await container
-            .resolve(UseCaseAbstraction)
-            .execute({ id: "page-1#0002" });
+        const result = await container.resolve(UseCaseAbstraction).execute({ id: "page-1#0002" });
 
         expect(result).toBe(true);
         expect(repository.execute).toHaveBeenCalledTimes(1);
