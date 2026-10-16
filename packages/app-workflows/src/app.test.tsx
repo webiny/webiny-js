@@ -17,6 +17,7 @@ import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import { ReviewNotificationService } from "~/review/notifications/abstractions.js";
 import { TargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
+import { ReviewActionDialogPresenter } from "~/review/presentation/actionDialog/abstractions.js";
 
 const flags = vi.hoisted(() => {
     return { isEnabled: vi.fn() };
@@ -111,6 +112,7 @@ describe("WorkflowsAdminApp review view", () => {
         const container = mount(true);
 
         expect(container.resolve(TargetReviewPresenter)).toBeDefined();
+        expect(container.resolve(ReviewActionDialogPresenter)).toBeDefined();
     });
 
     it("registers the presenters transient: every resolve is a new instance (R212)", () => {
@@ -119,11 +121,15 @@ describe("WorkflowsAdminApp review view", () => {
         const first = container.resolve(TargetReviewPresenter);
         const second = container.resolve(TargetReviewPresenter);
         expect(first).not.toBe(second);
+        const firstDialog = container.resolve(ReviewActionDialogPresenter);
+        const secondDialog = container.resolve(ReviewActionDialogPresenter);
+        expect(firstDialog).not.toBe(secondDialog);
     });
 
     it("registers no review view presenter when the flag is off (R211)", () => {
         const container = mount(false);
 
         expect(() => container.resolve(TargetReviewPresenter)).toThrow();
+        expect(() => container.resolve(ReviewActionDialogPresenter)).toThrow();
     });
 });

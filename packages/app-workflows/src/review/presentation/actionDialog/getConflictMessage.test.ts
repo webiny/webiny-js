@@ -1,0 +1,148 @@
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { getConflictMessage } from "./getConflictMessage.js";
+import { ReviewState } from "~/review/domain/ReviewState.js";
+import { StepState } from "~/review/domain/StepState.js";
+import { createActor } from "~/review/testing/createActor.js";
+import { createReview } from "~/review/testing/reviewFixtures.js";
+import { createStep } from "~/review/testing/createStep.js";
+
+const NOW = new Date(2026, 9, 16, 15, 0);
+const WHEN = new Date(2026, 9, 16, 10, 51).toISOString();
+const LUKA = createActor({ id: "user-2", displayName: "Luka Perić" });
+
+const review = (stepOverrides = {}, reviewOverrides = {}) => {
+    return createReview({
+        lastChangedOn: WHEN,
+        currentStepId: "step-1",
+        steps: [createStep({ title: "Legal sign-off", ...stepOverrides })],
+        ...reviewOverrides
+    });
+};
+
+describe("getConflictMessage (QBZ-2)", () => {
+    it("always uses the title 'Someone else acted first'", () => {
+        const result = getConflictMessage({
+            kind: "approve",
+            stepId: "step-1",
+            review: review(),
+            now: NOW,
+            listRefreshed: false
+        });
+        expect(result.title).toBe("Someone else acted first");
+    });
+
+    it("names who took the step over", () => {
+        const result = getConflictMessage({
+            kind: "approve",
+            stepId: "step-1",
+            review: review({
+                state: StepState.InReview,
+                owner: LUKA,
+                assignment: { source: "takeOver", ruleId: null, reason: null, by: LUKA }
+            }),
+            now: NOW,
+            listRefreshed: false
+        });
+        expect(result.message).toBe(
+            "Luka Perić took over “Legal sign-off” at 10:51, so your approval was not saved."
+        );
+    });
+
+    it("tells that someone started the step from the pool first", () => {
+        const result = getConflictMessage({
+            kind: "start",
+            stepId: "step-1",
+            review: review({ state: StepState.InReview, owner: LUKA }),
+            now: NOW,
+            listRefreshed: false
+        });
+        expect(result.message).toBe(
+            "Luka Perić started “Legal sign-off” at 10:51. You can still take it over."
+        );
+    });
+
+    it("adds 'The list has been refreshed.' to the started-first message for Content Reviews (QBZ-31)", () => {
+        const result = getConflictMessage({
+            kind: "start",
+            stepId: "step-1",
+            review: review({ state: StepState.InReview, owner: LUKA }),
+            now: NOW,
+            listRefreshed: true
+        });
+        expect(result.message).toBe(
+            "Luka Perić started “Legal sign-off” at 10:51. You can still take it over. The list has been refreshed."
+        );
+    });
+
+    it("tells that the step was approved first", () => {
+        const result = getConflictMessage({
+            kind: "reject",
+            stepId: "step-1",
+            review: review({ state: StepState.Approved, owner: LUKA }),
+            now: NOW,
+            listRefreshed: false
+        });
+        expect(result.message).toBe(
+            "Luka Perić approved “Legal sign-off” at 10:51, so your rejection was not saved. The review moved on to the next step."
+        );
+    });
+
+    it("tells that the step was rejected first", () => {
+        const result = getConflictMessage({
+            kind: "approve",
+            stepId: "step-1",
+            review: review({ state: StepState.Rejected, owner: LUKA }),
+            now: NOW,
+            listRefreshed: false
+        });
+        expect(result.message).toBe(
+            "Luka Perić rejected “Legal sign-off” at 10:51, so your approval was not saved. This revision is now rejected."
+        );
+    });
+
+    it("names the operator and the new owner of a reassigned step", () => {
+        const operator = createActor({ id: "user-3", displayName: "Jana Dolenc" });
+        const result = getConflictMessage({
+            kind: "approve",
+            stepId: "step-1",
+            review: review({
+                state: StepState.InReview,
+                owner: LUKA,
+                assignment: { source: "reassign", ruleId: null, reason: null, by: operator }
+            }),
+            now: NOW,
+            listRefreshed: false
+        });
+        expect(result.message).toBe(
+            "Jana Dolenc reassigned “Legal sign-off” to Luka Perić at 10:51, so your approval was not saved."
+        );
+    });
+
+    it("tells that the review was cancelled", () => {
+        const result = getConflictMessage({
+            kind: "approve",
+            stepId: "step-1",
+            review: review({}, { state: ReviewState.Cancelled, isActive: false }),
+            now: NOW,
+            listRefreshed: false
+        });
+        expect(result.message).toBe(
+            "Someone cancelled this review at 10:51, so your approval was not saved. The revision has no review now."
+        );
+    });
+
+    it("falls back to a generic text without a fresh review", () => {
+        const result = getConflictMessage({
+            kind: "cancel",
+            stepId: null,
+            review: null,
+            now: NOW,
+            listRefreshed: false
+        });
+        expect(result.message).toBe(
+            "Someone else changed this review, so your cancellation was not saved."
+        );
+    });
+});
