@@ -4,6 +4,7 @@ How data transforms, date/time, pagination, and TTL work in the SQL storage laye
 
 ---
 
+
 ## Storage Transform Override
 
 ### The Problem

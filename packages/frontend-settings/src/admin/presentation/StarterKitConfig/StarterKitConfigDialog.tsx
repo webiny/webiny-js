@@ -25,7 +25,19 @@ export const StarterKitConfigDialog = createReactiveComponent(({ open, onClose }
         }
     }, [open]);
 
-    const { loading, saving, domain, starterKits } = presenter.vm;
+    const { loading, saving, canSave, domain, domainError, starterKits } = presenter.vm;
+
+    const save = async () => {
+        const result = await presenter.save();
+        if (result.saved) {
+            toast.showSuccessToast({ title: "Frontend settings saved." });
+            return;
+        }
+        toast.showWarningToast({
+            title: "Could not save frontend settings.",
+            description: result.message
+        });
+    };
 
     const tabs = starterKits.map(kit => (
         <Tabs.Tab
@@ -49,14 +61,8 @@ export const StarterKitConfigDialog = createReactiveComponent(({ open, onClose }
                     <Button
                         text={saving ? "Saving..." : "Save"}
                         variant={"primary"}
-                        disabled={saving}
-                        onClick={() =>
-                            presenter.save().then(() => {
-                                toast.showSuccessToast({
-                                    title: "Frontend settings saved."
-                                });
-                            })
-                        }
+                        disabled={!canSave}
+                        onClick={save}
                     />
                 </>
             }
@@ -69,6 +75,7 @@ export const StarterKitConfigDialog = createReactiveComponent(({ open, onClose }
                         label={"Frontend Domain"}
                         description={"The domain where your frontend application is hosted."}
                         value={domain}
+                        validation={{ isValid: domainError === null, message: domainError ?? "" }}
                         onChange={value => presenter.setDomain(value ?? "")}
                     />
                 </div>

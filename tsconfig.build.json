@@ -23,7 +23,7 @@
       "webiny/*": ["./packages/webiny/src/*"],
       "@/*": ["./*"]
     },
-    "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"],
+    "typeRoots": ["./typings", "./node_modules/@types"],
     "isolatedModules": false,
     "noUnusedParameters": false,
     "noUnusedLocals": false,
