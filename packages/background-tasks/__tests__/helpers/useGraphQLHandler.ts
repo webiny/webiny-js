@@ -90,7 +90,7 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
 
             container.registerFactory(ApiKeyProvider, () => ({
                 async getByToken(token: string) {
-                    if (!token || token !== "aToken") {
+                    if (!token || token !== "wat_aToken") {
                         return null;
                     }
                     const apiKey = "a1234567890";
