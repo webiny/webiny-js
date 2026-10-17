@@ -15,3 +15,8 @@ Questions continue the 8a numbering (8a ended at Q31).
   5. Attempt outcomes: Approved, Rejected, Failed, Running.
   6. Task panel: heading "Background task", rows Status, Started, Finished, Iterations, Reason; statuses Pending, Running, Done, Failed, Aborted. When the task is gone: "This task is no longer available."
 - Q38 CMS bulk trash of "all selected" (all loaded rows, sent as `where: { id_in }` to a background task that swallows the workflows refusal). The first answer, "pre-check with the list's `where`", rested on a wrong premise; the planner corrected it and the user re-answered: pre-check by ids. A new CMS query `listCmsEntryBlockingReviews(modelId, entryIds)` returns the active reviews of those entries, reusing `toBlockingReview` and the read-access filter of `BlockDeleteMultipleWhileInReview`. Before the bulk task, the workflows decorator calls it, shows the 8a warning, cancels through cancel-for-delete, then runs the bulk task. Large selections keep the background task (R265).
+
+## Plan review decisions (2026-10-17)
+
+- Q39 CMS bulk trash success toast: after a dismissed warning or a failed pre-check nothing is trashed, but the base `ActionDelete` still showed "Entries will be trashed in the background" and cleared the selection. Fix in base, in its own `fix(app-headless-cms)` commit: `execute` reports whether the background task started, and the toast and deselection follow it (Task 19).
+- Q40 CMS content reload: the form's loading overlay shows briefly while the changed revision reloads. Accepted; no base change (Task 17).
