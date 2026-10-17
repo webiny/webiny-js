@@ -173,7 +173,7 @@ Everything under `Query.workflows` / `Mutation.workflows`. Responses mostly `{da
 
 ## 6. Notifications
 
-- Exists: `NotificationTransport` `{id, title, send({users, message: {title, body, url}})}` (`features/notifications/NotificationTransport/abstractions.ts:8-32`); `MailNotificationTransport` (`id: "e-mail"`, BCC via `MailerService`, console errors); `ListNotificationTypesUseCase`; step `notifications: [{id}]`; message abstractions `NotificationTypeMessageOn{RequestReview, RequestReviewCancel, ReviewStepStart, ReviewStepApprove, ReviewReject, ReviewApprove}` (`domain/notifications/abstractions.ts:9-92`).
+- Exists: `NotificationTransport` `{id, title, send({users, message: {title, body, url}})}` (`features/notifications/NotificationTransport/abstractions.ts:8-32`); `MailNotificationTransport` (`id: "e-mail"`, BCC via `SendMailUseCase`, send failures logged through `Logger`); `ListNotificationTypesUseCase`; step `notifications: [{id}]`; message abstractions `NotificationTypeMessageOn{RequestReview, RequestReviewCancel, ReviewStepStart, ReviewStepApprove, ReviewReject, ReviewApprove}` (`domain/notifications/abstractions.ts:9-92`).
 - Missing: nothing calls `send()`, no message implementations, no recipient resolution (team members to emails).
 
 ## 7. Step type, automation, AI, assignee

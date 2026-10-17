@@ -101,12 +101,12 @@ Discovery notes on infrastructure that routing, automated steps and AI steps can
 
 - api-workflows has a transport abstraction, but nothing sends.
   - `NotificationTransport` `{id, title, send({users: NonEmptyArray<{id, email, displayName}>, message})}` (`api-workflows/src/features/notifications/NotificationTransport/abstractions.ts:8-32`).
-  - Only implementation: `MailNotificationTransport` (`id: "e-mail"`), BCC via `MailerService.sendMail` (`MailNotificationTransport.ts:4-53`).
+  - Only implementation: `MailNotificationTransport` (`id: "e-mail"`), BCC via `SendMailUseCase.execute`, send failures logged through `Logger` (`MailNotificationTransport.ts:14-85`).
   - `ListNotificationTypes` lists registered transports (`ListNotificationTypesRepository.ts:8,26`).
   - Message abstractions `NotificationTypeMessageOn{RequestReview, RequestReviewCancel, ReviewStepStart, ReviewStepApprove, ReviewReject, ReviewApprove}` exist (`api-workflows/src/domain/notifications/abstractions.ts:3-60`) but are unused.
   - Step model field `notifications[{id}]` (`domain/workflow/workflowModel.ts:35-40`).
   - No `.send(` call anywhere in workflows packages. Must be wired to workflow-state events.
-- Mailer: `MailerService.sendMail(data)` returns `Result` (`api-mailer/src/domain/MailerService/abstractions.ts:14-26`). SMTP and Dummy transports; settings in KeyValueStore key `MAILER_TRANSPORT_SETTINGS` (`api-mailer/src/features/GetSettings/GetSettingsRepository.ts:26`); `CodeMailerSettings`.
+- Mailer: `SendMailUseCase.execute(data)` returns `Result`, with `MailerService` behind it (`api-mailer/src/features/SendMail/abstractions.ts:15-24`). SMTP and Dummy transports; settings in KeyValueStore key `MAILER_TRANSPORT_SETTINGS` (`api-mailer/src/features/GetSettings/GetSettingsRepository.ts:26`); `CodeMailerSettings`.
 - In-app channel: `WebsocketsSendToIdentityUseCase` (`api-websockets/src/features/SendToIdentity/abstractions.ts:15`), used in `AiImageEnrichmentTask.ts:107` and `CreateFolderTool.ts:89`.
 
 ## 6. Tenant settings
