@@ -256,7 +256,13 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         if (pending === null || this.dialogBusy) {
             return;
         }
-        await this.openModel(pending.action.modelId);
+        const modelId = pending.action.modelId;
+        if (!this.rows.some(item => item.modelId === modelId)) {
+            // A search replaced the rows while the dialog was open: there is nothing to open.
+            this.pending = null;
+            return;
+        }
+        await this.openModel(modelId);
     }
 
     cancelDialog(): void {
@@ -553,6 +559,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.selectToken += 1;
         this.resolveToken += 1;
         this.selectedRow = row;
+        this.teamsFailed = false;
         this.draft.reset(null);
         this.nameError = null;
         this.pending = null;

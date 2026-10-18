@@ -7,6 +7,8 @@ import { createEditorPresenterSetup } from "~/editor/testing/editorPresenterSetu
 import { createAutomationDefinition } from "~/editor/testing/editorFixtures.js";
 import { createEditorWorkflow } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowTeamSummary } from "~/editor/testing/editorFixtures.js";
+import { createWorkflowModelPage } from "~/editor/testing/editorFixtures.js";
+import { createWorkflowModelRow } from "~/editor/testing/editorFixtures.js";
 
 describe("WorkflowEditorPresenter: team names of the open workflow (R268, Review Focus 9)", () => {
     it("resolves the distinct team ids of every People step with one listTeams call", async () => {
@@ -116,6 +118,30 @@ describe("WorkflowEditorPresenter: team names of the open workflow (R268, Review
         await presenter.retryOptions();
 
         expect(config.listTeams).toHaveBeenCalledTimes(2);
+        expect(presenter.vm.optionsBanner).toBeNull();
+    });
+
+    it("clears the banner of a failed lookup when another workflow needs none", async () => {
+        const { presenter, params, useCases, config } = createEditorPresenterSetup();
+        useCases.listModels.mockResolvedValue(
+            createWorkflowModelPage({
+                rows: [
+                    createWorkflowModelRow({ modelId: "article", name: "Article" }),
+                    createWorkflowModelRow({
+                        model: "cms.blog",
+                        modelId: "blog",
+                        name: "Blog",
+                        workflow: null
+                    })
+                ]
+            })
+        );
+        config.listTeams.mockRejectedValueOnce(new Error("down"));
+        await presenter.init(params);
+        expect(presenter.vm.optionsBanner).not.toBeNull();
+
+        await presenter.selectModel("blog");
+
         expect(presenter.vm.optionsBanner).toBeNull();
     });
 });

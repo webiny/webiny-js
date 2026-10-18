@@ -313,6 +313,22 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
         expect(presenter.vm.header?.dirty).toBe(false);
     });
 
+    it("closes the dialog on confirm when a search dropped the pending model's row", async () => {
+        const { presenter, params, useCases } = setupWithThreeModels();
+        await presenter.init(params);
+        getDraft(presenter).setName("Changed");
+        await presenter.selectModel("press");
+        expect(presenter.vm.dialog).not.toBeNull();
+        useCases.listModels.mockResolvedValue(createWorkflowModelPage({ rows: [BLOG] }));
+        vi.useFakeTimers();
+        presenter.setSearch("blog");
+        await vi.advanceTimersByTimeAsync(250);
+
+        await presenter.confirmDialog();
+
+        expect(presenter.vm.dialog).toBeNull();
+    });
+
     it("asks before leaving a new unsaved draft", async () => {
         const { presenter, params } = setupWithThreeModels();
         await presenter.init(params);
