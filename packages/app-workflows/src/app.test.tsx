@@ -11,12 +11,15 @@ import { Container } from "@webiny/di";
 import { CompositionProvider } from "@webiny/app";
 import { DiContainerProvider } from "@webiny/app/shared/di/DiContainerProvider.js";
 import { EventPublisher } from "@webiny/app/features/eventPublisher/abstractions.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { WorkflowsAdminApp } from "~/app.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import { ReviewNotificationService } from "~/review/notifications/abstractions.js";
+import { WorkflowConfigUseCases } from "~/editor/useCases/WorkflowConfigUseCases.js";
+import { WorkflowEditorToasts } from "~/editor/toasts/WorkflowEditorToasts.js";
 import { TargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
 import { ReviewActionDialogPresenter } from "~/review/presentation/actionDialog/abstractions.js";
 import { ReviewerPickerPresenter } from "~/review/presentation/reviewerPicker/abstractions.js";
@@ -56,6 +59,7 @@ const mount = (flagOn: boolean): Container => {
         remove: vi.fn()
     });
     container.registerInstance(EventPublisher, { publish: vi.fn().mockResolvedValue(undefined) });
+    container.registerInstance(MainGraphQLClient, { execute: vi.fn() });
     container.registerInstance(IdentityContext, {
         getIdentity: vi.fn(),
         setIdentity: vi.fn(),
@@ -191,5 +195,40 @@ describe("WorkflowsAdminApp active review warning", () => {
 
         expect(() => container.resolve(ActiveReviewWarningPresenter)).toThrow();
         expect(() => container.resolve(ActiveReviewBlockCollector)).toThrow();
+    });
+});
+
+describe("WorkflowsAdminApp workflow editor services", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("registers the editor services when advancedPublishingWorkflow is on", () => {
+        const container = mount(true);
+
+        expect(container.resolve(WorkflowConfigUseCases)).toBeDefined();
+        expect(container.resolve(WorkflowEditorToasts)).toBeDefined();
+    });
+
+    it("registers them as singletons", () => {
+        const container = mount(true);
+
+        expect(container.resolve(WorkflowConfigUseCases)).toBe(
+            container.resolve(WorkflowConfigUseCases)
+        );
+        expect(container.resolve(WorkflowEditorToasts)).toBe(
+            container.resolve(WorkflowEditorToasts)
+        );
+    });
+
+    it("registers no editor service when the flag is off (R211)", () => {
+        const container = mount(false);
+
+        expect(() => container.resolve(WorkflowConfigUseCases)).toThrow();
+        expect(() => container.resolve(WorkflowEditorToasts)).toThrow();
     });
 });
