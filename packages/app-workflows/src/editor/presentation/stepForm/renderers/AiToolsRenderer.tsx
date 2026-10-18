@@ -23,8 +23,7 @@ import "../stepFormRendererNames.js";
 export const AiToolsRenderer = createFieldRenderer<"workflowAiTools">(({ field }) => {
     const { aiTools } = useStepFormOptions();
     const stored: string[] = Array.isArray(field.value) ? field.value : [];
-    const knownNames = aiTools.options.map(option => option.name);
-    const known = new Set(knownNames);
+    const known = new Set(aiTools.options.map(option => option.name));
     const kept = stored.filter(name => !known.has(name));
     const ticked = stored.filter(name => known.has(name));
 
@@ -59,6 +58,9 @@ export const AiToolsRenderer = createFieldRenderer<"workflowAiTools">(({ field }
 
     const invalid = field.validation.isValid === false;
 
+    const labelId = `${field.name}-label`;
+    const hintId = `${field.name}-hint`;
+
     const onToggle = (name: string, checked: boolean) => {
         const next = ticked.filter(item => item !== name);
         if (checked) {
@@ -69,8 +71,18 @@ export const AiToolsRenderer = createFieldRenderer<"workflowAiTools">(({ field }
     };
 
     return (
-        <div className={"flex w-full flex-col gap-sm"}>
-            <FormComponentLabel text={field.label} disabled={field.disabled} invalid={invalid} />
+        <div
+            className={"flex w-full flex-col gap-sm"}
+            role={"group"}
+            aria-labelledby={labelId}
+            aria-describedby={hintId}
+        >
+            <FormComponentLabel
+                id={labelId}
+                text={field.label}
+                disabled={field.disabled}
+                invalid={invalid}
+            />
             {aiTools.options.map(option => {
                 return (
                     <CheckboxPrimitiveRenderer
@@ -105,7 +117,11 @@ export const AiToolsRenderer = createFieldRenderer<"workflowAiTools">(({ field }
                 invalid={invalid}
                 disabled={field.disabled}
             />
-            <FormComponentDescription text={AI_FORM_MESSAGES.toolsHint} disabled={field.disabled} />
+            <FormComponentDescription
+                id={hintId}
+                text={AI_FORM_MESSAGES.toolsHint}
+                disabled={field.disabled}
+            />
         </div>
     );
 });

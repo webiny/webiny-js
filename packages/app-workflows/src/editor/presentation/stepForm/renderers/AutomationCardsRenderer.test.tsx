@@ -64,6 +64,12 @@ describe("AutomationCardsRenderer (R274)", () => {
         expect(screen.getByText("Automation")).toBeDefined();
     });
 
+    it("names the radio group by the Automation label", () => {
+        renderCards("send-webhook", automations());
+
+        expect(screen.getByRole("radiogroup", { name: /^Automation/ })).toBeDefined();
+    });
+
     it("asks the options to select instead of changing the field (the presenter decides, QBZ-14)", () => {
         const select = vi.fn();
         const form = renderCards("send-webhook", automations({ select }));

@@ -7,6 +7,7 @@ import { vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
+import { within } from "@testing-library/react";
 import { createStepFormOptions } from "~/editor/testing/createStepFormOptions.js";
 import { createTestFormModelFactory } from "~/editor/testing/createTestFormModelFactory.js";
 import { renderStepFormField } from "~/editor/testing/renderStepFormField.js";
@@ -43,8 +44,8 @@ const tools = (overrides: Partial<StepFormAiToolsOptions> = {}): StepFormAiTools
     };
 };
 
-const createForm = (stored: string[]) => {
-    const form = createTestFormModelFactory().create(buildAiStepForm({ readOnly: false }));
+const createForm = (stored: string[], readOnly = false) => {
+    const form = createTestFormModelFactory().create(buildAiStepForm({ readOnly }));
     form.setData({ tools: stored }, { dirty: false });
     return form;
 };
@@ -100,6 +101,29 @@ describe("AiToolsRenderer (R275)", () => {
         cleanup();
         renderTools(createForm([]), tools({ options: [] }));
         expect(screen.queryByText(hint)).toBeNull();
+    });
+
+    it("groups the tools under the label and describes the group by the hint", () => {
+        renderTools(createForm([]), tools());
+
+        const group = screen.getByRole("group", { name: "Tools" });
+
+        expect(group.getAttribute("aria-describedby")).not.toBeNull();
+        expect(group.textContent).toContain("Tools marked");
+        expect(within(group).getAllByRole("checkbox")).toHaveLength(3);
+    });
+
+    it("disables every tool and ignores a click when the step is read-only", () => {
+        const form = createForm(["read-fields"], true);
+        renderTools(form, tools());
+
+        const checkboxes = screen.getAllByRole("checkbox");
+        for (const checkbox of checkboxes) {
+            expect(checkbox.hasAttribute("disabled")).toBe(true);
+        }
+        fireEvent.click(screen.getByRole("checkbox", { name: /Check links/ }));
+
+        expect(form.field("tools").getValue()).toEqual(["read-fields"]);
     });
 
     it("ticks a tool and keeps the stored names the list does not offer", () => {

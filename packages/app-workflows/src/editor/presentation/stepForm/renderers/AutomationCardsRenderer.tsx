@@ -20,8 +20,10 @@ export const AutomationCardsRenderer = createFieldRenderer<"workflowAutomationCa
         const invalid = field.validation.isValid === false;
         const value = typeof field.value === "string" ? field.value : undefined;
 
+        const labelId = `${field.name}-label`;
         const label = (
             <FormComponentLabel
+                id={labelId}
                 text={field.label}
                 required
                 disabled={field.disabled}
@@ -61,6 +63,7 @@ export const AutomationCardsRenderer = createFieldRenderer<"workflowAutomationCa
                 )}
                 {automations.options.length > 0 && (
                     <DeprecatedRadioGroup
+                        aria-labelledby={labelId}
                         value={value ?? ""}
                         disabled={field.disabled}
                         onValueChange={id => automations.select(id)}

@@ -33,10 +33,11 @@ const TypeCard = ({ option, onPick }: TypeCardProps) => {
         );
     }
 
+    const reasonId = `step-type-${option.type}-reason`;
     let reason: React.ReactNode = null;
     if (option.reason !== null) {
         reason = (
-            <Text as="span" size="sm" className="text-neutral-primary">
+            <Text as="span" size="sm" id={reasonId} className="text-neutral-primary">
                 {option.reason}
             </Text>
         );
@@ -47,6 +48,7 @@ const TypeCard = ({ option, onPick }: TypeCardProps) => {
             type="button"
             data-testid={`step-type-${option.type}`}
             disabled={disabled}
+            aria-describedby={disabled && option.reason !== null ? reasonId : undefined}
             className={cardClass}
             onClick={() => onPick(option.type)}
         >

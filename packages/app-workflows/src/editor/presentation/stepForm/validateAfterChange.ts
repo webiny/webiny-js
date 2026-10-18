@@ -7,6 +7,10 @@ import type { AfterChangeCallback } from "@webiny/app-admin";
  */
 export const validateAfterChange = (path: string): AfterChangeCallback => {
     return (_value, params) => {
-        void params.form.field(path).validate();
+        // A rejected validation is not actionable here: the field keeps its previous state.
+        params.form
+            .field(path)
+            .validate()
+            .catch(() => undefined);
     };
 };

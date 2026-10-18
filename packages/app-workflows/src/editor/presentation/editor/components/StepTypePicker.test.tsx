@@ -95,6 +95,25 @@ describe("StepTypePicker", () => {
         expect(props.onPick).not.toHaveBeenCalled();
     });
 
+    it("describes a disabled card by its reason text", () => {
+        const ai: StepTypeOption = {
+            ...AI,
+            addable: false,
+            reason: "Requires the AI Power-Ups licence."
+        };
+        const props = createProps({ options: [PEOPLE, AUTOMATION, ai] });
+        renderWithAdminUi(<StepTypePicker {...props} />);
+
+        const card = screen.getByTestId("step-type-ai");
+        const describedBy = card.getAttribute("aria-describedby");
+
+        expect(describedBy).not.toBeNull();
+        expect(document.getElementById(describedBy ?? "")?.textContent).toBe(
+            "Requires the AI Power-Ups licence."
+        );
+        expect(screen.getByTestId("step-type-review").getAttribute("aria-describedby")).toBeNull();
+    });
+
     it("lists Automation as disabled with the model reason", () => {
         const automation: StepTypeOption = {
             ...AUTOMATION,
