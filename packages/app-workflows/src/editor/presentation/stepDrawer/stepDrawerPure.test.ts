@@ -34,13 +34,26 @@ describe("getFormFieldPath (R267, R276)", () => {
         expect(getFormFieldPath("config.teams.0")).toBe("teams");
     });
 
-    it("is null for a field with no form field in 9a", () => {
+    it("is null for a field with no form field", () => {
         expect(getFormFieldPath(null)).toBeNull();
         expect(getFormFieldPath("")).toBeNull();
         expect(getFormFieldPath("id")).toBeNull();
         expect(getFormFieldPath("type")).toBeNull();
         expect(getFormFieldPath("config.settings")).toBeNull();
-        expect(getFormFieldPath("config.assignment.rules")).toBeNull();
+        expect(getFormFieldPath("config.assignment")).toBeNull();
         expect(getFormFieldPath("config.somethingElse")).toBeNull();
+    });
+
+    it("maps the assignment fields (R303)", () => {
+        expect(getFormFieldPath("config.assignment.strategy")).toBe("assignment.strategy");
+        expect(getFormFieldPath("config.assignment.allowManualPick")).toBe(
+            "assignment.allowManualPick"
+        );
+        expect(getFormFieldPath("config.assignment.rules")).toBe("assignment.rules");
+        expect(getFormFieldPath("config.assignment.rules.target")).toBe("assignment.rules");
+        expect(getFormFieldPath("config.assignment.rules.target.id")).toBe("assignment.rules");
+        expect(getFormFieldPath("config.assignment.rules.conditions.folder.id")).toBe(
+            "assignment.rules"
+        );
     });
 });

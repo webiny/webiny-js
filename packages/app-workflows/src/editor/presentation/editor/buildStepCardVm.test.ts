@@ -14,6 +14,7 @@ const params = (overrides: Partial<StepCardParams> = {}): StepCardParams => {
         summary: "Editors",
         warnings: [],
         errors: [],
+        ruleIds: [],
         readOnly: false,
         ...overrides
     };
@@ -58,8 +59,12 @@ describe("buildStepCardVm", () => {
         const card = buildStepCardVm(
             params({
                 errors: [
-                    { field: "title", message: "Enter a title for this step." },
-                    { field: "color", message: "Enter a hex colour, e.g. #3B6FD4." }
+                    { field: "title", message: "Enter a title for this step.", ruleId: null },
+                    {
+                        field: "color",
+                        message: "Enter a hex colour, e.g. #3B6FD4.",
+                        ruleId: null
+                    }
                 ]
             })
         );
@@ -67,6 +72,41 @@ describe("buildStepCardVm", () => {
         expect(card.error).toBe("Enter a title for this step.");
     });
 
+    it("prefixes the strip of a rule error with the rule's current position (R303)", () => {
+        const errors = [
+            {
+                field: "config.assignment.rules.target",
+                message: "Choose who this rule assigns to.",
+                ruleId: "r-b"
+            }
+        ];
+
+        const before = buildStepCardVm(params({ errors, ruleIds: ["r-a", "r-b", "r-c"] }));
+        const reordered = buildStepCardVm(params({ errors, ruleIds: ["r-b", "r-c", "r-a"] }));
+
+        expect(before.error).toBe("Rule 2: Choose who this rule assigns to.");
+        expect(reordered.error).toBe("Rule 1: Choose who this rule assigns to.");
+    });
+
+    it("shows the plain message when the rule is gone or the error names no rule", () => {
+        const gone = buildStepCardVm(
+            params({
+                errors: [
+                    { field: "config.assignment.rules.target", message: "Gone.", ruleId: "r-x" }
+                ],
+                ruleIds: ["r-a"]
+            })
+        );
+        const none = buildStepCardVm(
+            params({
+                errors: [{ field: "config.assignment.rules", message: "Odd.", ruleId: null }],
+                ruleIds: ["r-a"]
+            })
+        );
+
+        expect(gone.error).toBe("Gone.");
+        expect(none.error).toBe("Odd.");
+    });
     it("carries the read-only flag and the warnings", () => {
         const card = buildStepCardVm(
             params({ readOnly: true, warnings: ["Editors has no members."] })

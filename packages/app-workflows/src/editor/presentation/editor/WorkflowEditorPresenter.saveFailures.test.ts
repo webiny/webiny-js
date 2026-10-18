@@ -52,7 +52,7 @@ describe("WorkflowEditorPresenter: server validation (R267, R276, Q41)", () => {
 
         expect(presenter.vm.flow.steps[0].error).toBe("Step needs a team.");
         expect(presenter.getStepFieldErrors("step-1")).toEqual([
-            { field: "config.teams", message: "Step needs a team." }
+            { field: "config.teams", message: "Step needs a team.", ruleId: null }
         ]);
         expect(presenter.vm.scrollRequest).toEqual({ stepId: "step-1", nonce: 1 });
         expect(toasts.error).toHaveBeenCalledWith("Could not save. Check the highlighted step.");
@@ -77,7 +77,7 @@ describe("WorkflowEditorPresenter: server validation (R267, R276, Q41)", () => {
         await presenter.save();
 
         expect(presenter.getStepFieldErrors("step-1")).toEqual([
-            { field: "", message: "Step is odd." }
+            { field: "", message: "Step is odd.", ruleId: null }
         ]);
     });
 

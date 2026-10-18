@@ -8,6 +8,7 @@ export interface ValidationFailure {
     stepId: string | null;
     field: string | null;
     workflowId: string | null;
+    ruleId: string | null;
 }
 
 export interface ConflictFailure {
@@ -52,7 +53,8 @@ function mapValidation(error: GraphQLOperationError): ValidationFailure {
         message: error.message,
         stepId: readString(data, "stepId"),
         field: readString(data, "field"),
-        workflowId: readString(data, "workflowId")
+        workflowId: readString(data, "workflowId"),
+        ruleId: readString(data, "ruleId")
     };
 }
 

@@ -4,8 +4,8 @@
 export interface StepFieldError {
     field: string;
     message: string;
-    // The rule a rule-level error belongs to (R288, R299); absent for every other error. Task 15 makes it required.
-    ruleId?: string | null;
+    // The rule a rule-level error belongs to (R288, R299, R303), else null. A rule error's `field` has no index.
+    ruleId: string | null;
 }
 
 export interface StepValidationErrors {

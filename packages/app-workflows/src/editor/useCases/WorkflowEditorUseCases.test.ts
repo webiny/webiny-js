@@ -214,6 +214,28 @@ describe("WorkflowEditorUseCases", () => {
             });
         });
 
+        it("throws the validation error with the rule id the server named (R288)", async () => {
+            const data = {
+                stepId: "step-1",
+                field: "config.assignment.rules.target",
+                workflowId: null,
+                ruleId: "r-1"
+            };
+            gateway.storeWorkflow.mockResolvedValue({
+                data: null,
+                error: {
+                    code: WorkflowErrorCode.Validation,
+                    message: "The target team is not one of the step's reviewing teams.",
+                    data
+                }
+            });
+
+            const promise = useCases.storeWorkflow(storeParams);
+
+            await expect(promise).rejects.toBeInstanceOf(GraphQLOperationError);
+            await expect(promise).rejects.toMatchObject({ data });
+        });
+
         it("throws a validation error that keeps the step and the field", async () => {
             const data = { stepId: "step-1", field: "config.teams", workflowId: null };
             gateway.storeWorkflow.mockResolvedValue({

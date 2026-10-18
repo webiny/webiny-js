@@ -879,7 +879,9 @@ describe("StepDrawerPresenter: unknown step type (R269, R270)", () => {
 describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () => {
     it("marks and focuses the form field the error names", () => {
         const { presenter, source } = createSetup(peopleStep(), configured => {
-            configured.errors = [{ field: "title", message: "The title is not allowed." }];
+            configured.errors = [
+                { field: "title", message: "The title is not allowed.", ruleId: null }
+            ];
         });
 
         presenter.open(source, "step-1");
@@ -895,7 +897,11 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
             peopleStep({ config: { teams: [] } }),
             configured => {
                 configured.errors = [
-                    { field: "config.teams", message: "Choose at least one reviewing team." }
+                    {
+                        field: "config.teams",
+                        message: "Choose at least one reviewing team.",
+                        ruleId: null
+                    }
                 ];
             }
         );
@@ -909,7 +915,9 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
 
     it("marks a setting for config.settings.<path>", () => {
         const { presenter, source } = createSetup(automationStep(), configured => {
-            configured.errors = [{ field: "config.settings.url", message: "URL must use https." }];
+            configured.errors = [
+                { field: "config.settings.url", message: "URL must use https.", ruleId: null }
+            ];
         });
 
         presenter.open(source, "step-1");
@@ -922,7 +930,11 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
     it("shows the message at the top for a field with no form field", () => {
         const { presenter, source } = createSetup(peopleStep(), configured => {
             configured.errors = [
-                { field: "config.assignment.rules", message: "Rule 1: the user was deleted." }
+                {
+                    field: "config.assignment.rules",
+                    message: "Rule 1: the user was deleted.",
+                    ruleId: null
+                }
             ];
         });
 
@@ -934,7 +946,7 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
     it("shows the message at the top for an empty field, for config.settings and for a form field that is missing", () => {
         for (const field of ["", "config.settings", "config.model"]) {
             const { presenter, source } = createSetup(peopleStep(), configured => {
-                configured.errors = [{ field, message: "Something is wrong." }];
+                configured.errors = [{ field, message: "Something is wrong.", ruleId: null }];
             });
 
             presenter.open(source, "step-1");
@@ -948,10 +960,14 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
             peopleStep({ title: "", config: { teams: [] } }),
             configured => {
                 configured.errors = [
-                    { field: "title", message: "Enter a title for this step." },
-                    { field: "config.assignment.rules", message: "Rule 1 is wrong." },
-                    { field: "config.teams", message: "Choose at least one reviewing team." },
-                    { field: "id", message: "Duplicate id." }
+                    { field: "title", message: "Enter a title for this step.", ruleId: null },
+                    { field: "config.assignment.rules", message: "Rule 1 is wrong.", ruleId: null },
+                    {
+                        field: "config.teams",
+                        message: "Choose at least one reviewing team.",
+                        ruleId: null
+                    },
+                    { field: "id", message: "Duplicate id.", ruleId: null }
                 ];
             }
         );
@@ -969,7 +985,9 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
 
     it("marks the teams field for a zod path under config.teams (R267)", () => {
         const { presenter, source } = createSetup(peopleStep(), configured => {
-            configured.errors = [{ field: "config.teams.0", message: "Team is not valid." }];
+            configured.errors = [
+                { field: "config.teams.0", message: "Team is not valid.", ruleId: null }
+            ];
         });
 
         presenter.open(source, "step-1");
@@ -990,7 +1008,7 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
 
     it("the first edit clears the top message", () => {
         const { presenter, source } = createSetup(peopleStep(), configured => {
-            configured.errors = [{ field: "", message: "Something is wrong." }];
+            configured.errors = [{ field: "", message: "Something is wrong.", ruleId: null }];
         });
         presenter.open(source, "step-1");
 
@@ -1001,7 +1019,9 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
 
     it("editing a field replaces its error with the next validation", async () => {
         const { presenter, source } = createSetup(peopleStep(), configured => {
-            configured.errors = [{ field: "title", message: "The title is not allowed." }];
+            configured.errors = [
+                { field: "title", message: "The title is not allowed.", ruleId: null }
+            ];
         });
         presenter.open(source, "step-1");
 
@@ -1014,7 +1034,7 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
 
     it("editing the AI tools clears a server error on config.tools (R276)", () => {
         const { presenter, source } = createSetup(aiStep(), configured => {
-            configured.errors = [{ field: "config.tools", message: "Unknown tool." }];
+            configured.errors = [{ field: "config.tools", message: "Unknown tool.", ruleId: null }];
         });
         presenter.open(source, "step-1");
         expect(findFormFieldVm(presenter.vm.form, "tools")?.validation.message).toBe(
@@ -1029,7 +1049,9 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
 
     it("editing Notify via clears a server error on notifications (R276)", () => {
         const { presenter, source } = createSetup(peopleStep(), configured => {
-            configured.errors = [{ field: "notifications", message: "Unknown transport." }];
+            configured.errors = [
+                { field: "notifications", message: "Unknown transport.", ruleId: null }
+            ];
         });
         presenter.open(source, "step-1");
         expect(findFormFieldVm(presenter.vm.form, "notifications")?.validation.message).toBe(
@@ -1045,7 +1067,9 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
 
     it("leaves an error on a field that was not edited", () => {
         const { presenter, source } = createSetup(peopleStep(), configured => {
-            configured.errors = [{ field: "notifications", message: "Unknown transport." }];
+            configured.errors = [
+                { field: "notifications", message: "Unknown transport.", ruleId: null }
+            ];
         });
         presenter.open(source, "step-1");
 
@@ -1060,7 +1084,9 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
 describe("StepDrawerPresenter: rebuilds keep what was typed", () => {
     it("a read-only change keeps the typed automation values, dirty state and errors", () => {
         const { presenter, source } = createSetup(automationStep(), configured => {
-            configured.errors = [{ field: "config.settings.url", message: "URL must use https." }];
+            configured.errors = [
+                { field: "config.settings.url", message: "URL must use https.", ruleId: null }
+            ];
         });
         presenter.open(source, "step-1");
         findFormFieldVm(presenter.vm.form, "title")?.onChange("Typed title");
@@ -1108,8 +1134,8 @@ describe("StepDrawerPresenter: marks after an automation switch", () => {
         const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
         const { presenter, source } = createSetup(automationStep(), configured => {
             configured.errors = [
-                { field: "config.settings.url", message: "URL must use https." },
-                { field: "notifications", message: "Unknown transport." }
+                { field: "config.settings.url", message: "URL must use https.", ruleId: null },
+                { field: "notifications", message: "Unknown transport.", ruleId: null }
             ];
         });
         presenter.open(source, "step-1");

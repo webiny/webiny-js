@@ -180,6 +180,30 @@ describe("WbWorkflowEditorGateway", () => {
             expect(result).toEqual({ data: null, error: null });
         });
 
+        it("returns a validation envelope with the rule id as it is (R288)", async () => {
+            const envelope = {
+                data: null,
+                error: {
+                    code: "Workflows/Workflow/Validation",
+                    message: "The target team is not one of the step's reviewing teams.",
+                    data: {
+                        stepId: "step-1",
+                        field: "config.assignment.rules.target",
+                        workflowId: null,
+                        ruleId: "r-1"
+                    }
+                }
+            };
+            client.execute.mockResolvedValue({
+                websiteBuilder: { storeWebsiteBuilderPageWorkflow: envelope }
+            });
+
+            const result = await gateway.storeWorkflow({ data: input, savedOn: EDITOR_SAVED_ON });
+
+            expect(result).toEqual(envelope);
+            expect(result.error?.data).toMatchObject({ ruleId: "r-1" });
+        });
+
         it("lets a transport failure pass as it is", async () => {
             const failure = new Error("Network down.");
             client.execute.mockRejectedValue(failure);

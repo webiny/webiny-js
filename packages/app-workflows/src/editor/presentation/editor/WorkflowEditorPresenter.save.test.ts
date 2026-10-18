@@ -180,7 +180,7 @@ describe("WorkflowEditorPresenter: client validation (R276, QBZ-12, Review Focus
 
         expect(presenter.vm.flow.steps[0].error).toBe("Enter a title for this step.");
         expect(presenter.getStepFieldErrors("step-1")).toEqual([
-            { field: "title", message: "Enter a title for this step." }
+            { field: "title", message: "Enter a title for this step.", ruleId: null }
         ]);
         expect(presenter.vm.scrollRequest).toEqual({ stepId: "step-1", nonce: 1 });
         expect(toasts.error).toHaveBeenCalledWith("Fix the highlighted steps before saving.");
@@ -201,7 +201,7 @@ describe("WorkflowEditorPresenter: client validation (R276, QBZ-12, Review Focus
         await presenter.save();
 
         expect(presenter.getStepFieldErrors("step-1")).toEqual([
-            { field: "config.teams", message: "Choose at least one reviewing team." }
+            { field: "config.teams", message: "Choose at least one reviewing team.", ruleId: null }
         ]);
     });
 
@@ -214,7 +214,8 @@ describe("WorkflowEditorPresenter: client validation (R276, QBZ-12, Review Focus
 
         expect(presenter.getStepFieldErrors("step-1")[0]).toEqual({
             field: "color",
-            message: "Enter a hex colour, e.g. #3B6FD4."
+            message: "Enter a hex colour, e.g. #3B6FD4.",
+            ruleId: null
         });
     });
 
@@ -230,7 +231,7 @@ describe("WorkflowEditorPresenter: client validation (R276, QBZ-12, Review Focus
         await presenter.save();
 
         expect(presenter.getStepFieldErrors(id)).toEqual([
-            { field: "config.settings.url", message: "URL is required." }
+            { field: "config.settings.url", message: "URL is required.", ruleId: null }
         ]);
     });
 });
@@ -259,8 +260,12 @@ describe("WorkflowEditorPresenter: more client validation (R276, M10.3)", () => 
         await presenter.save();
 
         expect(presenter.getStepFieldErrors(id)).toEqual([
-            { field: "config.instructions", message: "Enter instructions for the AI." },
-            { field: "config.model", message: "Choose an AI model." }
+            {
+                field: "config.instructions",
+                message: "Enter instructions for the AI.",
+                ruleId: null
+            },
+            { field: "config.model", message: "Choose an AI model.", ruleId: null }
         ]);
     });
 });

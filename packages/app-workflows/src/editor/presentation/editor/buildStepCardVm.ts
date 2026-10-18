@@ -13,12 +13,22 @@ export interface StepCardParams {
     summary: string;
     warnings: string[];
     errors: StepFieldError[];
+    // The step's rule ids in order, to number a rule error (R303).
+    ruleIds: string[];
     readOnly: boolean;
 }
 
 export const buildStepCardVm = (params: StepCardParams): StepCardVm => {
     const step = params.step;
-    const firstError = params.errors.length > 0 ? params.errors[0].message : null;
+    const firstError = params.errors.length > 0 ? params.errors[0] : null;
+    let error: string | null = null;
+    if (firstError !== null) {
+        error = firstError.message;
+        const position = params.ruleIds.indexOf(firstError.ruleId ?? "");
+        if (firstError.ruleId !== null && position !== -1) {
+            error = `Rule ${position + 1}: ${firstError.message}`;
+        }
+    }
 
     return {
         id: step.id,
@@ -30,7 +40,7 @@ export const buildStepCardVm = (params: StepCardParams): StepCardVm => {
         summary: params.summary,
         readOnly: params.readOnly,
         warnings: params.warnings,
-        error: firstError,
+        error,
         canMoveUp: params.index > 0,
         canMoveDown: params.index < params.count - 1
     };

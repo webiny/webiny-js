@@ -202,7 +202,11 @@ describe("StepDrawer (README 4, R284)", () => {
     it("shows an error with no form field at the top of the drawer", () => {
         const { open } = createSetup(createReviewStep(), configured => {
             configured.errors = [
-                { field: "config.assignment.rules", message: "Rule 1: the user was deleted." }
+                {
+                    field: "config.assignment.rules",
+                    message: "Rule 1: the user was deleted.",
+                    ruleId: null
+                }
             ];
         });
 

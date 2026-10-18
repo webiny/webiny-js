@@ -62,7 +62,7 @@ describe("validateWorkflowDraft: every step", () => {
         expect(errors.stepErrors).toEqual([
             {
                 stepId: "step-1",
-                errors: [{ field: "title", message: "Enter a title for this step." }]
+                errors: [{ field: "title", message: "Enter a title for this step.", ruleId: null }]
             }
         ]);
     });
@@ -78,7 +78,7 @@ describe("validateWorkflowDraft: every step", () => {
         const empty = validateWorkflowDraft(params({ steps: [createReviewStep({ color: "" })] }));
 
         expect(invalid.stepErrors[0].errors).toEqual([
-            { field: "color", message: "Enter a hex colour, e.g. #3B6FD4." }
+            { field: "color", message: "Enter a hex colour, e.g. #3B6FD4.", ruleId: null }
         ]);
         expect(hex.stepErrors).toEqual([]);
         expect(preset.stepErrors).toEqual([]);
@@ -107,7 +107,7 @@ describe("validateWorkflowDraft: People step", () => {
         const errors = validateWorkflowDraft(params({ steps: [step] }));
 
         expect(errors.stepErrors[0].errors).toEqual([
-            { field: "config.teams", message: "Choose at least one reviewing team." }
+            { field: "config.teams", message: "Choose at least one reviewing team.", ruleId: null }
         ]);
     });
 });
@@ -121,7 +121,7 @@ describe("validateWorkflowDraft: Automation step", () => {
         const errors = validateWorkflowDraft(params({ steps: [step] }));
 
         expect(errors.stepErrors[0].errors).toEqual([
-            { field: "config.settings.url", message: "URL is required." }
+            { field: "config.settings.url", message: "URL is required.", ruleId: null }
         ]);
     });
 
@@ -133,7 +133,7 @@ describe("validateWorkflowDraft: Automation step", () => {
         const errors = validateWorkflowDraft(params({ steps: [step] }));
 
         expect(errors.stepErrors[0].errors).toEqual([
-            { field: "config.settings.url", message: "URL is required." }
+            { field: "config.settings.url", message: "URL is required.", ruleId: null }
         ]);
     });
 
@@ -152,7 +152,7 @@ describe("validateWorkflowDraft: Automation step", () => {
         const errors = validateWorkflowDraft(params({ steps: [step], automations: [automation] }));
 
         expect(errors.stepErrors[0].errors).toEqual([
-            { field: "config.settings.endpoint", message: "endpoint is required." }
+            { field: "config.settings.endpoint", message: "endpoint is required.", ruleId: null }
         ]);
     });
 
@@ -220,8 +220,12 @@ describe("validateWorkflowDraft: AI step", () => {
         const errors = validateWorkflowDraft(params({ steps: [step] }));
 
         expect(errors.stepErrors[0].errors).toEqual([
-            { field: "config.instructions", message: "Enter instructions for the AI." },
-            { field: "config.model", message: "Choose an AI model." }
+            {
+                field: "config.instructions",
+                message: "Enter instructions for the AI.",
+                ruleId: null
+            },
+            { field: "config.model", message: "Choose an AI model.", ruleId: null }
         ]);
     });
 
@@ -349,7 +353,7 @@ describe("validateWorkflowDraft: People rules (R299, R304)", () => {
             "config.teams",
             RULE_TARGET_FIELD
         ]);
-        expect(errors.stepErrors[0].errors[0].ruleId).toBeUndefined();
+        expect(errors.stepErrors[0].errors[0].ruleId).toBeNull();
     });
 
     it("does not block Save on warnings: a deleted folder, a deleted requester team, a restricted folder and a deleted requester user", () => {

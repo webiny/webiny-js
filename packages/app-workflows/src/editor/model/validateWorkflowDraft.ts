@@ -41,7 +41,11 @@ function validateReviewStep(
     const config = readReviewConfig(step.config);
     const errors: StepFieldError[] = [];
     if (config.teams.length === 0) {
-        errors.push({ field: "config.teams", message: "Choose at least one reviewing team." });
+        errors.push({
+            field: "config.teams",
+            message: "Choose at least one reviewing team.",
+            ruleId: null
+        });
     }
 
     const assignment = readAssignment(config.assignment);
@@ -75,7 +79,8 @@ function validateAutomationStep(
         reported.add(setting.key);
         errors.push({
             field: `${SETTINGS_FIELD}.${setting.key}`,
-            message: `${setting.label} is required.`
+            message: `${setting.label} is required.`,
+            ruleId: null
         });
     }
 
@@ -86,7 +91,7 @@ function validateAutomationStep(
             continue;
         }
         const field = issue.path === "" ? SETTINGS_FIELD : `${SETTINGS_FIELD}.${issue.path}`;
-        errors.push({ field, message: issue.message });
+        errors.push({ field, message: issue.message, ruleId: null });
     }
 
     return errors;
@@ -96,10 +101,14 @@ function validateAiStep(step: EditorStep): StepFieldError[] {
     const config = readAiConfig(step.config);
     const errors: StepFieldError[] = [];
     if (config.instructions.trim() === "") {
-        errors.push({ field: "config.instructions", message: "Enter instructions for the AI." });
+        errors.push({
+            field: "config.instructions",
+            message: "Enter instructions for the AI.",
+            ruleId: null
+        });
     }
     if (config.model.trim() === "") {
-        errors.push({ field: "config.model", message: "Choose an AI model." });
+        errors.push({ field: "config.model", message: "Choose an AI model.", ruleId: null });
     }
     return errors;
 }
@@ -123,10 +132,10 @@ function validateTypeConfig(
 function validateStep(step: EditorStep, params: ValidateWorkflowDraftParams): StepFieldError[] {
     const errors: StepFieldError[] = [];
     if (step.title.trim() === "") {
-        errors.push({ field: "title", message: "Enter a title for this step." });
+        errors.push({ field: "title", message: "Enter a title for this step.", ruleId: null });
     }
     if (step.color.startsWith("#") && !isHexColour(step.color)) {
-        errors.push({ field: "color", message: HEX_COLOUR_MESSAGE });
+        errors.push({ field: "color", message: HEX_COLOUR_MESSAGE, ruleId: null });
     }
     const typeErrors = validateTypeConfig(step, params);
 

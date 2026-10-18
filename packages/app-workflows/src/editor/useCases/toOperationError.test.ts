@@ -36,4 +36,21 @@ describe("toOperationError", () => {
         expect(error.code).toBeNull();
         expect(error.data).toBeNull();
     });
+
+    it("keeps the rule id of a validation error in the data (R288)", () => {
+        const data = {
+            stepId: "step-1",
+            field: "config.assignment.rules.target",
+            workflowId: null,
+            ruleId: "r-1"
+        };
+
+        const error = toOperationError({
+            code: "Workflows/Workflow/Validation",
+            message: "The target user is not a member of the step's teams.",
+            data
+        });
+
+        expect(error.data).toEqual(data);
+    });
 });

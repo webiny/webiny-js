@@ -22,7 +22,8 @@ describe("mapSaveError (R267, R276)", () => {
             message: "Step needs a team.",
             stepId: "step-1",
             field: "config.teams",
-            workflowId: null
+            workflowId: null,
+            ruleId: null
         });
     });
 
@@ -90,5 +91,30 @@ describe("mapSaveError (R267, R276)", () => {
     it("maps a plain error and anything else to a transport failure", () => {
         expect(mapSaveError(new Error("Failed to fetch"))).toEqual({ kind: "transport" });
         expect(mapSaveError("boom")).toEqual({ kind: "transport" });
+    });
+
+    it("reads the rule id of a validation error, null when the server sends none (R288)", () => {
+        const withRule = mapSaveError(
+            operationError(
+                WorkflowErrorCode.Validation,
+                {
+                    stepId: "step-1",
+                    field: "config.assignment.rules.target",
+                    workflowId: null,
+                    ruleId: "r-1"
+                },
+                "The target team is not one of the step's reviewing teams."
+            )
+        );
+        const withoutRule = mapSaveError(
+            operationError(
+                WorkflowErrorCode.Validation,
+                { stepId: "step-1", field: "title", workflowId: null },
+                "Step needs a title."
+            )
+        );
+
+        expect(withRule).toMatchObject({ kind: "validation", ruleId: "r-1" });
+        expect(withoutRule).toMatchObject({ kind: "validation", ruleId: null });
     });
 });

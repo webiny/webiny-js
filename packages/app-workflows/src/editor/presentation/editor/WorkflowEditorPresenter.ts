@@ -99,6 +99,8 @@ import type { TypePickerVm } from "./abstractions.js";
 import type { WorkflowFlowVm } from "./abstractions.js";
 import type { WorkflowTeamOptions } from "./abstractions.js";
 import { buildStepCardVm } from "./buildStepCardVm.js";
+import { getRuleErrorsFromSave } from "./getRuleErrorsFromSave.js";
+import { getStepRuleIds } from "~/editor/model/getStepRuleIds.js";
 import { TEAM_SEARCH_LIMIT } from "./constants.js";
 import { deleteStepDialog } from "./dialogs/deleteStepDialog.js";
 
@@ -1018,6 +1020,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
                 summary: getStepSummary(step, context),
                 warnings,
                 errors: entry ? entry.errors : [],
+                ruleIds: getStepRuleIds(step),
                 readOnly: isStepReadOnly(step, stepTypes)
             });
         });
@@ -1443,7 +1446,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     ): Promise<void> {
         const stepId = failure.stepId;
         if (stepId !== null && this.draft.steps.some(step => step.id === stepId)) {
-            this.applyServerStepError(stepId, failure.field, failure.message);
+            this.applyServerStepError(stepId, failure);
             this.toasts.error("Could not save. Check the highlighted step.");
             return;
         }
@@ -1501,10 +1504,12 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         }
     }
 
-    private applyServerStepError(stepId: string, field: string | null, message: string): void {
+    private applyServerStepError(stepId: string, failure: ValidationFailure): void {
         this.nameError = null;
         this.stepsError = null;
-        this.stepErrors = [{ stepId, errors: [{ field: field ?? "", message }] }];
+        const step = this.draft.steps.find(item => item.id === stepId) ?? null;
+        const errors = getRuleErrorsFromSave(failure, step);
+        this.stepErrors = [{ stepId, errors }];
         this.requestScroll(stepId);
     }
 
