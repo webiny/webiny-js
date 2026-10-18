@@ -17,6 +17,8 @@ import type { UserOptionsState } from "~/editor/presentation/editor/abstractions
 import type { WorkflowTeamOptions } from "~/editor/presentation/editor/abstractions.js";
 import type { SwitchAutomationConfirmationVm } from "~/editor/presentation/stepForm/buildSwitchConfirmation.js";
 import type { StepFormOptions } from "~/editor/presentation/stepForm/StepFormOptions.js";
+import type { TestRoutingResultVm } from "~/editor/model/testRouting/TestRoutingResultVm.js";
+import type { TestRoutingStatus } from "./TestRoutingState.js";
 
 // `review` is the People type (D98); any other type id is unknown and shown read-only (R270).
 export type StepKind = "review" | "automation" | "ai" | "unknown";
@@ -72,6 +74,22 @@ export interface RuleErrorVm {
     message: string;
 }
 
+// The Test routing tab's state, render-ready (R300).
+export interface TestRoutingVm {
+    requesterId: string | null;
+    folderId: string | null;
+    canRun: boolean;
+    // `Choose a requester to test.` without a requester, else null.
+    hint: string | null;
+    buttonLabel: "Test routing" | "Testing…";
+    status: TestRoutingStatus;
+    // A done result whose configuration or inputs changed since the run.
+    stale: boolean;
+    result: TestRoutingResultVm | null;
+    // `Could not test routing: …` after a failed run, else null.
+    errorMessage: string | null;
+}
+
 // Render-ready (R234).
 export interface IStepDrawerViewModel {
     open: boolean;
@@ -96,6 +114,8 @@ export interface IStepDrawerViewModel {
     ruleErrors: RuleErrorVm[];
     // The live issues of the rules in the form: errors and warnings (R299).
     ruleIssues: RuleIssue[];
+    // The Test routing tab of a People step; null for any other step and for a read-only one (R300).
+    testRouting: TestRoutingVm | null;
 }
 
 export interface IStepDrawerPresenter {
@@ -115,6 +135,10 @@ export interface IStepDrawerPresenter {
     showErrorTab(): void;
     // Clears the server errors of one rule (the rule card calls it when its field is edited).
     clearRuleError(ruleId: string): void;
+    // The Test routing inputs (R315) and the run (R300).
+    setTestRequester(id: string | null): void;
+    setTestFolder(id: string | null): void;
+    runTest(): Promise<void>;
     dispose(): void;
 }
 

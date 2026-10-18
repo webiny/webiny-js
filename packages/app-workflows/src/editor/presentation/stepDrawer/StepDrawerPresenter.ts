@@ -6,6 +6,14 @@ import { FormModelFactory } from "@webiny/app-admin";
 import type { FormModel } from "@webiny/app-admin";
 import { jsonSchemaValueToFormData } from "@webiny/app-admin";
 import type { AutomationDefinition } from "~/editor/domain/types.js";
+import type { RoutingStepConfig } from "~/editor/domain/types.js";
+import { createDefaultAssignment } from "~/editor/model/createDefaultAssignment.js";
+import { readReviewConfig } from "~/editor/model/readReviewConfig.js";
+import { toStepInput } from "~/editor/model/toStepInput.js";
+import { composeTestRoutingResult } from "~/editor/model/testRouting/composeTestRoutingResult.js";
+import { getTestRoutingSignature } from "~/editor/model/testRouting/getTestRoutingSignature.js";
+import type { TestRoutingInput } from "~/editor/model/testRouting/TestRoutingInput.js";
+import type { TestRoutingResultVm } from "~/editor/model/testRouting/TestRoutingResultVm.js";
 import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
 import { getStepTypeLabel } from "~/editor/model/getStepTypeLabel.js";
@@ -48,6 +56,11 @@ import type { StepFormOptions } from "~/editor/presentation/stepForm/StepFormOpt
 import { StepDrawerPresenter as Abstraction } from "./abstractions.js";
 import type { StepDrawerSource } from "./abstractions.js";
 import type { StepKind } from "./abstractions.js";
+import type { TestRoutingVm } from "./abstractions.js";
+import { buildTestRoutingVm } from "./buildTestRoutingVm.js";
+import { getTestRoutingFailureMessage } from "./getTestRoutingFailureMessage.js";
+import { createTestRoutingState } from "./TestRoutingState.js";
+import type { TestRoutingState } from "./TestRoutingState.js";
 import type { RuleErrorVm } from "./abstractions.js";
 import { dropOverriddenIssues } from "./dropOverriddenIssues.js";
 import { getFormFieldPath } from "./getFormFieldPath.js";
@@ -103,6 +116,9 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
     private stopWatching: Array<() => void> = [];
     private markedFields: MarkedField[] = [];
     private markedRules: MarkedRule[] = [];
+    // The Test routing state of the open step and the token of its latest run (R300).
+    private testRouting: TestRoutingState = createTestRoutingState();
+    private testToken = 0;
 
     constructor(private formModelFactory: FormModelFactory.Interface) {
         makeAutoObservable<
@@ -115,6 +131,8 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             | "stopWatching"
             | "markedFields"
             | "markedRules"
+            | "testRouting"
+            | "testToken"
         >(this, {
             formModelFactory: false,
             source: observableRef,
@@ -123,7 +141,9 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             storedSettings: observableRef,
             stopWatching: false,
             markedFields: observableRef,
-            markedRules: observableRef
+            markedRules: observableRef,
+            testRouting: observableRef,
+            testToken: false
         });
     }
 
@@ -185,7 +205,8 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             notice,
             warnings: this.getWarnings(ruleIssues, ruleErrors, notice),
             ruleErrors,
-            ruleIssues
+            ruleIssues,
+            testRouting: this.getTestRoutingVm()
         };
     }
 
@@ -424,6 +445,76 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         this.clearEditedMarks();
     }
 
+    setTestRequester(id: string | null): void {
+        this.testRouting = { ...this.testRouting, requesterId: id };
+    }
+
+    setTestFolder(id: string | null): void {
+        this.testRouting = { ...this.testRouting, folderId: id };
+    }
+
+    async runTest(): Promise<void> {
+        const source = this.source;
+        const step = this.step;
+        const form = this.form;
+        if (source === null || step === null || form === null) {
+            return;
+        }
+        if (this.kind !== "review" || this.isReadOnly()) {
+            return;
+        }
+        const requesterId = this.testRouting.requesterId;
+        const folderId = this.testRouting.folderId;
+        if (requesterId === null || this.testRouting.status === "running") {
+            return;
+        }
+        const input = this.getTestRoutingInput();
+        if (input === null) {
+            return;
+        }
+
+        // The configuration on screen, as Save would send it (R300).
+        const data = form.getData();
+        const values = data as PeopleFormValues;
+        const patch = getPeopleStepPatch(step, values);
+        const draftStep: EditorStep = { ...step, ...patch };
+        const stepInput = toStepInput(draftStep);
+        const config = readReviewConfig(stepInput.config);
+        const stepConfig: RoutingStepConfig = {
+            teams: config.teams,
+            // The spread gives a plain object type, which is assignable to the record.
+            assignment: config.assignment ?? { ...createDefaultAssignment() }
+        };
+
+        this.testToken += 1;
+        const token = this.testToken;
+        const signature = getTestRoutingSignature(input);
+        this.startTest(signature);
+        try {
+            const inspection = await source.inspectRouting({ stepConfig, requesterId, folderId });
+            if (token !== this.testToken) {
+                return;
+            }
+            const names = await source.resolveInspectionNames(inspection);
+            if (token !== this.testToken) {
+                return;
+            }
+            const references = source.getReferences();
+            const result = composeTestRoutingResult(inspection, {
+                rules: input.rules,
+                strategy: input.strategy,
+                stepTeamIds: input.teams,
+                references,
+                names
+            });
+            this.finishTest(result);
+        } catch (error) {
+            if (token === this.testToken) {
+                this.failTest(getTestRoutingFailureMessage(error));
+            }
+        }
+    }
+
     dispose(): void {
         this.reset();
     }
@@ -459,6 +550,8 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         this.stopWatching = [];
         this.markedFields = [];
         this.markedRules = [];
+        this.testToken += 1;
+        this.testRouting = createTestRoutingState();
         this.source = null;
         this.stepId = "";
         this.step = null;
@@ -722,6 +815,60 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         }
         const rules: RuleValue[] = assignment.rules;
         return rules;
+    }
+
+    private startTest(signature: string): void {
+        this.testRouting = {
+            ...this.testRouting,
+            status: "running",
+            result: null,
+            errorMessage: null,
+            signature
+        };
+    }
+
+    private finishTest(result: TestRoutingResultVm): void {
+        this.testRouting = { ...this.testRouting, status: "done", result, errorMessage: null };
+    }
+
+    private failTest(message: string): void {
+        this.testRouting = {
+            ...this.testRouting,
+            status: "failed",
+            result: null,
+            errorMessage: message
+        };
+    }
+
+    // What the Test routing signature and the composer read: the People form as it is now.
+    private getTestRoutingInput(): TestRoutingInput | null {
+        if (this.form === null || this.kind !== "review") {
+            return null;
+        }
+        const data = this.form.getData();
+        const values = data as PeopleFormValues;
+        const assignment = values.assignment;
+        return {
+            stepId: this.stepId,
+            teams: values.teams ?? [],
+            strategy: assignment.strategy,
+            allowManualPick: assignment.allowManualPick,
+            rules: assignment.rules,
+            requesterId: this.testRouting.requesterId,
+            folderId: this.testRouting.folderId
+        };
+    }
+
+    private getTestRoutingVm(): TestRoutingVm | null {
+        if (this.kind !== "review" || this.isReadOnly()) {
+            return null;
+        }
+        const input = this.getTestRoutingInput();
+        if (input === null) {
+            return null;
+        }
+        const currentSignature = getTestRoutingSignature(input);
+        return buildTestRoutingVm({ state: this.testRouting, currentSignature });
     }
 
     private getMemberSearchKey(): string {
