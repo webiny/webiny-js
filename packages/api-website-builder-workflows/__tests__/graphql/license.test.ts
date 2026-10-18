@@ -8,6 +8,7 @@ const QUERIES = [
     "getWebsiteBuilderPageWorkflow",
     "getWebsiteBuilderPageReview",
     "getWebsiteBuilderPageTargetReview",
+    "getWebsiteBuilderPageReviewStepRun",
     "listWebsiteBuilderPageReviews",
     "listWebsiteBuilderPageStepCandidates",
     "listWebsiteBuilderPageReviewStepCandidates",

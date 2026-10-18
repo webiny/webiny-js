@@ -14,6 +14,7 @@ import { StoreWebsiteBuilderPageWorkflowUseCase } from "~/features/wrappers/Stor
 import { DeleteWebsiteBuilderPageWorkflowUseCase } from "~/features/wrappers/DeleteWebsiteBuilderPageWorkflow/index.js";
 import { GetWebsiteBuilderPageReviewUseCase } from "~/features/wrappers/GetWebsiteBuilderPageReview/index.js";
 import { GetWebsiteBuilderPageTargetReviewUseCase } from "~/features/wrappers/GetWebsiteBuilderPageTargetReview/index.js";
+import { GetWebsiteBuilderPageReviewStepRunUseCase } from "~/features/wrappers/GetWebsiteBuilderPageReviewStepRun/index.js";
 import { ListWebsiteBuilderPageReviewsUseCase } from "~/features/wrappers/ListWebsiteBuilderPageReviews/index.js";
 import { RequestWebsiteBuilderPageReviewUseCase } from "~/features/wrappers/RequestWebsiteBuilderPageReview/index.js";
 import { StartWebsiteBuilderPageReviewStepUseCase } from "~/features/wrappers/StartWebsiteBuilderPageReviewStep/index.js";
@@ -91,6 +92,11 @@ const WB_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         error: WorkflowsError
     }
 
+    type WbPageReviewStepRunResponse {
+        data: WorkflowsStepRunInfo
+        error: WorkflowsError
+    }
+
     type WbPageReviewListResponse {
         data: [WorkflowsReviewWithFlags!]
         meta: WorkflowsListMeta
@@ -121,6 +127,12 @@ const WB_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         getWebsiteBuilderPageReview(id: ID!): WbPageReviewWithFlagsResponse!
         "The active review of a page revision; data is null when it has none."
         getWebsiteBuilderPageTargetReview(revisionId: ID!): WbPageReviewWithFlagsResponse!
+        "The background task of one step attempt; needs workflows editor or reassign (R258). data is null when the task is gone."
+        getWebsiteBuilderPageReviewStepRun(
+            reviewId: ID!
+            stepId: ID!
+            taskId: ID!
+        ): WbPageReviewStepRunResponse!
         listWebsiteBuilderPageReviews(
             list: WorkflowsReviewListKind!
             where: WbPageReviewListWhere
@@ -271,6 +283,24 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
             resolver: (getReview: GetWebsiteBuilderPageReviewUseCase.Interface) => {
                 return async ({ args }) => {
                     const result = await getReview.execute({ id: args.id });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<GetWebsiteBuilderPageReviewStepRunUseCase.Input>({
+            path: "WbQuery.getWebsiteBuilderPageReviewStepRun",
+            dependencies: [GetWebsiteBuilderPageReviewStepRunUseCase],
+            resolver: (getStepRun: GetWebsiteBuilderPageReviewStepRunUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await getStepRun.execute({
+                        reviewId: args.reviewId,
+                        stepId: args.stepId,
+                        taskId: args.taskId
+                    });
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }
