@@ -3,6 +3,7 @@ import { observableRef } from "mobx";
 import { vi } from "vitest";
 import type { Mock } from "vitest";
 import type { RoutingInspection } from "~/editor/domain/types.js";
+import type { InspectionNames } from "~/editor/model/testRouting/TestRoutingContext.js";
 import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
 import type { StepFieldError } from "~/editor/model/StepFieldError.js";
@@ -42,6 +43,9 @@ export class FakeStepDrawerSource implements StepDrawerSource {
     searchTargetMembers: Mock<(stepTeamIds: string[], search: string) => void> = vi.fn();
     retryTargetMembers: Mock<(stepTeamIds: string[]) => void> = vi.fn();
     inspectRouting: Mock<(params: DrawerInspectParams) => Promise<RoutingInspection>> = vi.fn();
+    resolveInspectionNames: Mock<(inspection: RoutingInspection) => Promise<InspectionNames>> = vi
+        .fn()
+        .mockResolvedValue({ users: new Map(), teams: new Map() });
     updateStep: Mock<(stepId: string, patch: EditorStepPatch) => void> = vi.fn();
     closeStep: Mock<() => void> = vi.fn();
     searchTeams: Mock<(search: string) => void> = vi.fn();
@@ -66,6 +70,7 @@ export class FakeStepDrawerSource implements StepDrawerSource {
             searchTargetMembers: false,
             retryTargetMembers: false,
             inspectRouting: false,
+            resolveInspectionNames: false,
             updateStep: false,
             closeStep: false,
             searchTeams: false,

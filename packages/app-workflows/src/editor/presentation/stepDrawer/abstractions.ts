@@ -7,6 +7,7 @@ import type { StepFieldError } from "~/editor/model/StepFieldError.js";
 import type { WorkflowEditorOptions } from "~/editor/presentation/editor/abstractions.js";
 import type { ReferencesStatus } from "~/editor/presentation/editor/abstractions.js";
 import type { RoutingInspection } from "~/editor/domain/types.js";
+import type { InspectionNames } from "~/editor/model/testRouting/TestRoutingContext.js";
 import type { DrawerInspectParams } from "~/editor/presentation/editor/abstractions.js";
 import type { FolderOptionsState } from "~/editor/presentation/editor/abstractions.js";
 import type { UserOptionsState } from "~/editor/presentation/editor/abstractions.js";
@@ -47,6 +48,7 @@ export interface StepDrawerSource {
     getFolderType(): string;
     getModelId(): string | null;
     inspectRouting(params: DrawerInspectParams): Promise<RoutingInspection>;
+    resolveInspectionNames(inspection: RoutingInspection): Promise<InspectionNames>;
     // The open workflow's model namespace (`cms.article`, `wb.page`); null with no model open.
     getNamespace(): string | null;
     // Tells the editor the drawer closed itself (Done, X, Escape, scrim, a vanished step): `vm.openStepId` becomes null.

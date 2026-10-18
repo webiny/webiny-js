@@ -24,6 +24,7 @@ import type { EditorWorkflow } from "~/editor/domain/types.js";
 import type { WorkflowModelPage } from "~/editor/domain/types.js";
 import type { WorkflowModelRow } from "~/editor/domain/types.js";
 import type { RoutingInspection } from "~/editor/domain/types.js";
+import type { InspectionNames } from "~/editor/model/testRouting/TestRoutingContext.js";
 import type { WorkflowTeamSummary } from "~/editor/domain/types.js";
 import type { WorkflowUserSummary } from "~/editor/domain/types.js";
 import type { AiModel } from "~/editor/domain/types.js";
@@ -59,7 +60,9 @@ import { USER_SEARCH_LIMIT } from "./constants.js";
 import type { DrawerInspectParams } from "./abstractions.js";
 import type { FolderOptionsState } from "./abstractions.js";
 import type { UserOptionsState } from "./abstractions.js";
+import { buildInspectionNames } from "./buildInspectionNames.js";
 import { chunkIds } from "./chunkIds.js";
+import { collectInspectionLookupIds } from "./collectInspectionLookupIds.js";
 import { collectRuleReferenceIds } from "./collectRuleReferenceIds.js";
 import { findUnresolvedReferenceIds } from "./findUnresolvedReferenceIds.js";
 import { partitionSettled } from "./partitionSettled.js";
@@ -713,6 +716,33 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             requesterId: params.requesterId,
             folderId: params.folderId,
             modelId
+        });
+    }
+
+    async resolveInspectionNames(inspection: RoutingInspection): Promise<InspectionNames> {
+        const ids = collectInspectionLookupIds(inspection, this.references);
+        const userChunks = chunkIds(ids.userIds, USER_IDS_LIMIT);
+        const userCalls = userChunks.map(chunk => {
+            return this.config.listUsers({ search: null, ids: chunk, teamIds: null, limit: null });
+        });
+        const teamChunks = chunkIds(ids.teamIds, TEAM_IDS_LIMIT);
+        const teamCalls = teamChunks.map(chunk => {
+            return this.config.listTeams({ search: null, ids: chunk, limit: null });
+        });
+
+        // A rejected lookup leaves its ids unnamed; the test itself does not fail (R301).
+        const settledUsers = Promise.allSettled(userCalls);
+        const settledTeams = Promise.allSettled(teamCalls);
+        const [userAnswers, teamAnswers] = await Promise.all([settledUsers, settledTeams]);
+        const users = partitionSettled(userAnswers);
+        const teams = partitionSettled(teamAnswers);
+        const foundUsers = users.values.flatMap(list => list.users);
+        const foundTeams = teams.values.flatMap(list => list.teams);
+
+        return buildInspectionNames({
+            references: this.references,
+            users: foundUsers,
+            teams: foundTeams
         });
     }
 

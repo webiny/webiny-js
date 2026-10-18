@@ -6,6 +6,7 @@ import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorStepType } from "~/editor/domain/types.js";
 import type { NotificationTransport } from "~/editor/domain/types.js";
 import type { RoutingInspection } from "~/editor/domain/types.js";
+import type { InspectionNames } from "~/editor/model/testRouting/TestRoutingContext.js";
 import type { RoutingStepConfig } from "~/editor/domain/types.js";
 import type { WorkflowTeamSummary } from "~/editor/domain/types.js";
 import type { WorkflowUserSummary } from "~/editor/domain/types.js";
@@ -303,6 +304,9 @@ export interface IWorkflowEditorPresenter {
     // The selected row's bare model id, never derived from the namespace (R292, R300).
     getModelId(): string | null;
     inspectRouting(params: DrawerInspectParams): Promise<RoutingInspection>;
+    // The names of an inspection's candidates, skipped people and narrowed team: the maps first, then
+    // only the unknown ids; a failed lookup resolves with what is known (R301).
+    resolveInspectionNames(inspection: RoutingInspection): Promise<InspectionNames>;
     // The primary button of the open dialog.
     confirmDialog(): Promise<void>;
     // The secondary button of the open dialog.
