@@ -26,6 +26,7 @@ const CMS_QUERY_FIELDS = [
     "getCmsEntryWorkflow",
     "getCmsEntryReview",
     "getCmsEntryTargetReview",
+    "getCmsEntryReviewStepRun",
     "listCmsEntryReviews",
     "listCmsEntryWorkflowModels",
     "listCmsEntryStepCandidates",

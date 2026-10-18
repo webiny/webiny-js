@@ -16,6 +16,7 @@ import { DeleteCmsEntryWorkflowUseCase } from "~/features/wrappers/DeleteCmsEntr
 import { ListCmsEntryWorkflowModelsUseCase } from "~/features/wrappers/ListCmsEntryWorkflowModels/index.js";
 import { GetCmsEntryReviewUseCase } from "~/features/wrappers/GetCmsEntryReview/index.js";
 import { GetCmsEntryTargetReviewUseCase } from "~/features/wrappers/GetCmsEntryTargetReview/index.js";
+import { GetCmsEntryReviewStepRunUseCase } from "~/features/wrappers/GetCmsEntryReviewStepRun/index.js";
 import { ListCmsEntryReviewsUseCase } from "~/features/wrappers/ListCmsEntryReviews/index.js";
 import { RequestCmsEntryReviewUseCase } from "~/features/wrappers/RequestCmsEntryReview/index.js";
 import { StartCmsEntryReviewStepUseCase } from "~/features/wrappers/StartCmsEntryReviewStep/index.js";
@@ -103,6 +104,11 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         error: WorkflowsError
     }
 
+    type CmsEntryReviewStepRunResponse {
+        data: WorkflowsStepRunInfo
+        error: WorkflowsError
+    }
+
     type CmsEntryReviewListResponse {
         data: [WorkflowsReviewWithFlags!]
         meta: WorkflowsListMeta
@@ -143,6 +149,12 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         getCmsEntryWorkflow(id: ID!): CmsEntryWorkflowResponse!
         getCmsEntryReview(id: ID!): CmsEntryReviewWithFlagsResponse!
         getCmsEntryTargetReview(modelId: ID!, revisionId: ID!): CmsEntryReviewWithFlagsResponse!
+        "The background task of one step attempt; needs workflows editor or reassign (R258). data is null when the task is gone."
+        getCmsEntryReviewStepRun(
+            reviewId: ID!
+            stepId: ID!
+            taskId: ID!
+        ): CmsEntryReviewStepRunResponse!
         listCmsEntryReviews(
             list: WorkflowsReviewListKind!
             where: WorkflowsReviewListWhere
@@ -309,6 +321,24 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             resolver: (getReview: GetCmsEntryReviewUseCase.Interface) => {
                 return async ({ args }) => {
                     const result = await getReview.execute({ id: args.id });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<GetCmsEntryReviewStepRunUseCase.Input>({
+            path: "CmsQuery.getCmsEntryReviewStepRun",
+            dependencies: [GetCmsEntryReviewStepRunUseCase],
+            resolver: (getStepRun: GetCmsEntryReviewStepRunUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await getStepRun.execute({
+                        reviewId: args.reviewId,
+                        stepId: args.stepId,
+                        taskId: args.taskId
+                    });
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }

@@ -6,6 +6,7 @@ import { DeleteWorkflowUseCase } from "@webiny/api-workflows/features/workflow/D
 import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
 import { RequestReviewUseCase } from "@webiny/api-workflows/features/review/RequestReview/index.js";
 import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
+import { GetReviewStepRunUseCase } from "@webiny/api-workflows/features/stepRun/GetReviewStepRun/index.js";
 import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
 import { ListReviewsUseCase } from "@webiny/api-workflows/features/review/ListReviews/index.js";
 import { ListReviewAssignmentsUseCase } from "@webiny/api-workflows/features/assignment/ListReviewAssignments/index.js";
@@ -83,6 +84,15 @@ class CountingGetReview implements GetReviewUseCase.Interface {
 
     public async execute(input: GetReviewUseCase.Input): GetReviewUseCase.Return {
         engineCalls.push("GetReview");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingGetReviewStepRun implements GetReviewStepRunUseCase.Interface {
+    public constructor(private decoratee: GetReviewStepRunUseCase.Interface) {}
+
+    public async execute(input: GetReviewStepRunUseCase.Input): GetReviewStepRunUseCase.Return {
+        engineCalls.push("GetReviewStepRun");
         return this.decoratee.execute(input);
     }
 }
@@ -247,6 +257,12 @@ export const countEngineCalls = (container: Container) => {
     );
     container.registerDecorator(
         GetReviewUseCase.createDecorator({ decorator: CountingGetReview, dependencies: [] })
+    );
+    container.registerDecorator(
+        GetReviewStepRunUseCase.createDecorator({
+            decorator: CountingGetReviewStepRun,
+            dependencies: []
+        })
     );
     container.registerDecorator(
         ListTargetReviewsUseCase.createDecorator({
